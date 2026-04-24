@@ -14,19 +14,23 @@ Este documento expande los UCs UC-013, UC-014, UC-015. Para el lifecycle dependi
 
 ## States
 
-| Estado | Significado | Terminal |
-|---|---|---|
-| `cursando` | Alumno actualmente cursando la materia. Sin resultado final todavía. | No |
-| `regular` | Cursada terminada con TPs y parciales aprobados. Puede rendir final. | No |
-| `aprobada` | Materia aprobada por alguno de los métodos (cursada, promoción, final, final libre, equivalencia). | Sí |
-| `reprobada` | Cursada terminada sin regularizar. Para intentar de nuevo, recursar (enrollment nuevo). | Sí |
-| `abandonada` | Alumno dejó de cursar antes de terminar. | Sí |
+| Estado       | Significado                                                                                        | Terminal |
+| ------------ | -------------------------------------------------------------------------------------------------- | -------- |
+| `cursando`   | Alumno actualmente cursando la materia. Sin resultado final todavía.                               | No       |
+| `regular`    | Cursada terminada con TPs y parciales aprobados. Puede rendir final.                               | No       |
+| `aprobada`   | Materia aprobada por alguno de los métodos (cursada, promoción, final, final libre, equivalencia). | Sí       |
+| `reprobada`  | Cursada terminada sin regularizar. Para intentar de nuevo, recursar (enrollment nuevo).            | Sí       |
+| `abandonada` | Alumno dejó de cursar antes de terminar.                                                           | Sí       |
 
 Los estados "disponible para cursar" y "bloqueada por correlativas" **no** son estados persistidos del EnrollmentRecord — son estados derivados que se computan en query cruzando historial + correlativas. Ver [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md).
 
 ## State machine
 
 ```mermaid
+---
+config:
+    layout: elk
+---
 stateDiagram-v2
     [*] --> cursando : inscripción (UC-013 con status=cursando)
     [*] --> regular : carga histórica con status=regular
@@ -46,18 +50,18 @@ stateDiagram-v2
 
 ## Matriz de transiciones con side effects
 
-| De → A | Trigger | UC | Side effects |
-|---|---|---|---|
-| `null` → `cursando` | Inscripción con status=cursando | UC-013 | Bloquea creación de Review (`status != 'cursando'` es precondición de UC-017). Estados derivados "disponible/bloqueada" para otras materias se recomputan. |
-| `null` → `regular` | Carga histórica | UC-013 / UC-014 | Habilita UC-017 sobre esta cursada. Habilita correlativas `para_cursar` para materias dependientes. |
-| `null` → `aprobada` (`cursada` / `promocion` / `final`) | Carga histórica tradicional | UC-013 / UC-014 | Habilita UC-017. Habilita tanto `para_cursar` como `para_rendir` para correlativas dependientes. |
-| `null` → `aprobada` (`equivalencia`) | UC-013 con approval_method='equivalencia' | UC-013 | `commission_id` y `term_id` NULL. Habilita UC-017 solo si el alumno quisiera reseñar la experiencia de equivalencia (improbable). |
-| `null` → `aprobada` (`final_libre`) | UC-013 con approval_method='final_libre' | UC-013 | `commission_id` NULL, `term_id` NOT NULL. Sin docente_reseñado posible (no hubo comisión) — UC-017 no aplica. |
-| `cursando` → `regular` | Edit manual post-cuatrimestre | UC-015 | Habilita UC-017. Habilita `para_cursar` de dependientes. |
-| `cursando` → `aprobada` | Edit manual | UC-015 | Habilita UC-017. Habilita todas las correlativas. |
-| `cursando` → `reprobada` | Edit manual | UC-015 | Habilita UC-017 sobre esta cursada. Para recursar: enrollment nuevo. |
-| `cursando` → `abandonada` | Edit manual | UC-015 | Habilita UC-017 sobre esta cursada (el alumno puede reseñar aunque haya abandonado). |
-| `regular` → `aprobada` | Edit manual tras aprobar final | UC-015 | Habilita `para_rendir` de dependientes. Si había Review asociada, permanece válida (la nota final mostrada en la reseña es independiente de la nota del enrollment — ver nota). |
+| De → A                                                  | Trigger                                   | UC              | Side effects                                                                                                                                                                    |
+| ------------------------------------------------------- | ----------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `null` → `cursando`                                     | Inscripción con status=cursando           | UC-013          | Bloquea creación de Review (`status != 'cursando'` es precondición de UC-017). Estados derivados "disponible/bloqueada" para otras materias se recomputan.                      |
+| `null` → `regular`                                      | Carga histórica                           | UC-013 / UC-014 | Habilita UC-017 sobre esta cursada. Habilita correlativas `para_cursar` para materias dependientes.                                                                             |
+| `null` → `aprobada` (`cursada` / `promocion` / `final`) | Carga histórica tradicional               | UC-013 / UC-014 | Habilita UC-017. Habilita tanto `para_cursar` como `para_rendir` para correlativas dependientes.                                                                                |
+| `null` → `aprobada` (`equivalencia`)                    | UC-013 con approval_method='equivalencia' | UC-013          | `commission_id` y `term_id` NULL. Habilita UC-017 solo si el alumno quisiera reseñar la experiencia de equivalencia (improbable).                                               |
+| `null` → `aprobada` (`final_libre`)                     | UC-013 con approval_method='final_libre'  | UC-013          | `commission_id` NULL, `term_id` NOT NULL. Sin docente_reseñado posible (no hubo comisión) — UC-017 no aplica.                                                                   |
+| `cursando` → `regular`                                  | Edit manual post-cuatrimestre             | UC-015          | Habilita UC-017. Habilita `para_cursar` de dependientes.                                                                                                                        |
+| `cursando` → `aprobada`                                 | Edit manual                               | UC-015          | Habilita UC-017. Habilita todas las correlativas.                                                                                                                               |
+| `cursando` → `reprobada`                                | Edit manual                               | UC-015          | Habilita UC-017 sobre esta cursada. Para recursar: enrollment nuevo.                                                                                                            |
+| `cursando` → `abandonada`                               | Edit manual                               | UC-015          | Habilita UC-017 sobre esta cursada (el alumno puede reseñar aunque haya abandonado).                                                                                            |
+| `regular` → `aprobada`                                  | Edit manual tras aprobar final            | UC-015          | Habilita `para_rendir` de dependientes. Si había Review asociada, permanece válida (la nota final mostrada en la reseña es independiente de la nota del enrollment — ver nota). |
 
 **Nota sobre `grade` en Review vs EnrollmentRecord:** `Review.final_grade` captura la nota reportada por el alumno al momento de reseñar. No se deriva automáticamente de `EnrollmentRecord.grade`. Si el alumno actualiza su enrollment (ej. pasó de `regular` a `aprobada` con una nota nueva), la reseña sigue mostrando la nota que tenía al publicarse; para actualizarla, el alumno edita la reseña vía UC-018.
 
@@ -65,14 +69,14 @@ stateDiagram-v2
 
 El `approval_method` dicta qué campos deben o no deben estar poblados. La razón es semántica: cada método representa una situación académica distinta con contexto diferente.
 
-| `approval_method` | `commission_id` | `term_id` | Razón |
-|---|---|---|---|
-| `NULL` (cuando `status IN ('cursando','regular','reprobada','abandonada')`) | NOT NULL | NOT NULL | Hubo cursada en una comisión y cuatrimestre específicos. |
-| `cursada` | NOT NULL | NOT NULL | Aprobó con la cursada en sí (promoción con nota final en la cursada). |
-| `promocion` | NOT NULL | NOT NULL | Promoción directa (sin final). |
-| `final` | NOT NULL | NOT NULL | Aprobó final tras cursar. |
-| `final_libre` | **NULL** | NOT NULL | No cursó comisión, rindió libre en un cuatrimestre específico. |
-| `equivalencia` | **NULL** | **NULL** | Reconocimiento académico sin cursada ni término. |
+| `approval_method`                                                           | `commission_id` | `term_id` | Razón                                                                 |
+| --------------------------------------------------------------------------- | --------------- | --------- | --------------------------------------------------------------------- |
+| `NULL` (cuando `status IN ('cursando','regular','reprobada','abandonada')`) | NOT NULL        | NOT NULL  | Hubo cursada en una comisión y cuatrimestre específicos.              |
+| `cursada`                                                                   | NOT NULL        | NOT NULL  | Aprobó con la cursada en sí (promoción con nota final en la cursada). |
+| `promocion`                                                                 | NOT NULL        | NOT NULL  | Promoción directa (sin final).                                        |
+| `final`                                                                     | NOT NULL        | NOT NULL  | Aprobó final tras cursar.                                             |
+| `final_libre`                                                               | **NULL**        | NOT NULL  | No cursó comisión, rindió libre en un cuatrimestre específico.        |
+| `equivalencia`                                                              | **NULL**        | **NULL**  | Reconocimiento académico sin cursada ni término.                      |
 
 Estas invariantes están enforceadas como CHECKs en el data model (ver [data-model.md#entity-enrollmentrecord](../architecture/data-model.md#entity-enrollmentrecord)).
 
@@ -194,9 +198,9 @@ sequenceDiagram
 
 ## Cross-references
 
-| Tipo | Referencias |
-|---|---|
-| UCs | UC-013 (carga manual), UC-014 (import), UC-015 (edit), UC-017 (precondición: status != cursando). |
-| ADRs | [ADR-0002](../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md), [ADR-0005](../decisions/0005-resena-anclada-al-enrollment.md), [ADR-0006](../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md). |
-| Data model | [EnrollmentRecord + HistorialImport](../architecture/data-model.md#context-student-history). |
-| Lifecycle dependiente | [review-lifecycle.md](review-lifecycle.md). |
+| Tipo                  | Referencias                                                                                                                                                                                                                                                                                                                      |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UCs                   | UC-013 (carga manual), UC-014 (import), UC-015 (edit), UC-017 (precondición: status != cursando).                                                                                                                                                                                                                                |
+| ADRs                  | [ADR-0002](../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md), [ADR-0005](../decisions/0005-resena-anclada-al-enrollment.md), [ADR-0006](../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md). |
+| Data model            | [EnrollmentRecord + HistorialImport](../architecture/data-model.md#context-student-history).                                                                                                                                                                                                                                     |
+| Lifecycle dependiente | [review-lifecycle.md](review-lifecycle.md).                                                                                                                                                                                                                                                                                      |
