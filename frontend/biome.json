@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,16 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["src/**/*", "*.ts", "*.tsx", "*.js", "*.mjs", "*.json"]
+    "includes": [
+      "src/**/*",
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.mjs",
+      "*.json",
+      "!src/**/*.css",
+      "!**/next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -28,6 +37,10 @@
       "trailingCommas": "all",
       "arrowParentheses": "always"
     }
+  },
+  "css": {
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
   },
   "assist": {
     "actions": {
