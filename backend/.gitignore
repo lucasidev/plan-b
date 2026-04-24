@@ -11,6 +11,9 @@ publish/
 *.userprefs
 *.rsuser
 
+# Ionide (F# VS Code tools) — kept for parity with the MS .NET gitignore template
+.ionide/
+
 # NuGet
 *.nupkg
 *.snupkg
