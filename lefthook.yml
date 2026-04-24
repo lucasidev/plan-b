@@ -13,24 +13,28 @@ pre-commit:
 commit-msg:
   commands:
     conventional-commits:
-      run: |
-        msg=$(cat {1})
-        pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .{1,72}'
-        first_line=$(echo "$msg" | head -n 1)
-        if ! echo "$first_line" | grep -qE "$pattern"; then
-          echo "Error: Commit message must follow Conventional Commits format."
-          echo ""
-          echo "  <type>(<scope>): <description>"
-          echo ""
-          echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
-          echo "Scope is optional. Use ! for breaking changes (e.g. feat!: ...)"
-          echo ""
-          echo "Got: $first_line"
-          exit 1
-        fi
+      run: bun scripts/check-commit-msg.ts {1}
 
 pre-push:
+  parallel: true
   commands:
-    backend-test-quick:
-      glob: "backend/**/*.cs"
+    backend-build:
+      # Triggers restore which catches NU1608 (version conflicts) and NU1903
+      # (CVE-vulnerable packages) because of <TreatWarningsAsErrors>true</>.
+      glob: "backend/**/*.{cs,csproj,props,targets,sln,json}"
       run: cd backend && dotnet build --nologo --verbosity quiet
+    backend-vulns:
+      glob: "backend/**/*.{csproj,props,sln,json}"
+      run: |
+        cd backend
+        out=$(dotnet list package --vulnerable --include-transitive 2>&1)
+        if echo "$out" | grep -q 'has the following vulnerable packages'; then
+          echo "$out"
+          exit 1
+        fi
+    frontend-lint:
+      glob: "frontend/**/*.{ts,tsx,js,jsx,json}"
+      run: cd frontend && bun run lint
+    frontend-typecheck:
+      glob: "frontend/**/*.{ts,tsx}"
+      run: cd frontend && bunx tsc --noEmit
