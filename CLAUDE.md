@@ -36,7 +36,7 @@ plan-b/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
 ├── docs/
-│   ├── decisions/           25 ADRs (MADR) — fuente de verdad de decisiones
+│   ├── decisions/           26 ADRs (MADR) — fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   └── architecture/        ERD, data model
 ├── scripts/                 TS scripts (bun) — no usar bash
@@ -49,7 +49,7 @@ plan-b/
 
 - **Código en inglés** (clases, métodos, tablas, rutas). **UI en español rioplatense**. Error messages internos en inglés.
 - **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert.
-- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`).
+- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md).
 - **Decisiones con alternativas reales → ADR** en `docs/decisions/NNNN-titulo.md`. Ver [`docs/decisions/README.md`](docs/decisions/README.md) para criterios.
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
 - **Scripts en TypeScript** (`bun`), no en bash. Consistencia.
@@ -77,7 +77,7 @@ Las tres cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md) — glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/) — 25 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+3. [`docs/decisions/`](docs/decisions/) — 26 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
