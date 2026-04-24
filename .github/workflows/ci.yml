@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (.NET 10)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: planb
+          POSTGRES_PASSWORD: planb_test
+          POSTGRES_DB: planb_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U planb -d planb_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+      ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Restore
+        run: cd backend && dotnet restore
+      - name: Format check
+        run: cd backend && dotnet format --verify-no-changes
+      - name: Build
+        run: cd backend && dotnet build --no-restore --configuration Release
+      - name: Test
+        run: cd backend && dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: "**/test-results.trx"
+
+  frontend:
+    name: Frontend (Next.js 15 / Bun)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install
+        run: cd frontend && bun install --frozen-lockfile
+      - name: Lint
+        run: cd frontend && bun run lint
+      - name: Typecheck
+        run: cd frontend && bunx tsc --noEmit
+      - name: Build
+        run: cd frontend && bun run build
+      - name: Test
+        run: cd frontend && bun run test

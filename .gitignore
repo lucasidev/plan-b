@@ -1,0 +1,35 @@
+# Cross-cutting ignores. Service-specific patterns live in backend/.gitignore
+# and frontend/.gitignore.
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDEs
+.vs/
+.vscode/
+.idea/
+.cursor/
+.windsurf/
+*.swp
+*.swo
+
+# Claude Code workspace
+.claude/
+
+# Env files (secrets)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Dokploy state
+.dokploy/
+
+# Logs / misc
+*.log
+*.bak
+*.tmp
