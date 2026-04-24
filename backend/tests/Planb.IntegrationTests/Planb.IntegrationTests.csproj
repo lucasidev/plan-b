@@ -9,10 +9,11 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
-    <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\host\Planb.Api\Planb.Api.csproj" />
+    <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Domain\Planb.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

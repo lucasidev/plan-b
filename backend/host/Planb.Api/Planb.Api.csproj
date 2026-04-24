@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\libs\shared-kernel\src\Planb.SharedKernel\Planb.SharedKernel.csproj" />
-    <!-- Module Application references (added as modules are built) -->
-    <!-- Module Infrastructure references (added as modules are built) -->
+    <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,7 @@
 using Carter;
+using Planb.Identity.Application;
+using Planb.Identity.Infrastructure;
+using Planb.SharedKernel.Abstractions.Clock;
 using Serilog;
 using Wolverine;
 
@@ -15,18 +18,21 @@ builder.Host.UseSerilog((ctx, services, config) =>
         .WriteTo.Console());
 
 // ------------------------------------------------------------------
+// SharedKernel services
+// ------------------------------------------------------------------
+builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+
+// ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox)
 // See ADR-0015 for rationale.
 // ------------------------------------------------------------------
 builder.Host.UseWolverine(opts =>
 {
-    // Discovery: all loaded assemblies with handlers.
+    // Discovery: host + each module's Application assembly.
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Planb.Identity.Application.DependencyInjection).Assembly);
 
-    // TODO: Register each module's assembly for handler discovery as modules are added.
-    // opts.Discovery.IncludeAssembly(typeof(Planb.Identity.Application.DependencyInjection).Assembly);
-
-    // TODO: Configure Postgres outbox once connection strings are in place.
+    // TODO: Configure Postgres outbox once a module emits integration events.
     // var connStr = builder.Configuration.GetConnectionString("PlanbWolverine");
     // opts.PersistMessagesWithPostgreSql(connStr!, "wolverine");
     // opts.Policies.AutoApplyTransactions();
@@ -40,18 +46,9 @@ builder.Services.AddCarter();
 
 // ------------------------------------------------------------------
 // Modules (each module registers its Application + Infrastructure).
-// Will be added as the modules are implemented.
 // ------------------------------------------------------------------
-// builder.Services.AddIdentityApplication();
-// builder.Services.AddIdentityInfrastructure(builder.Configuration);
-// builder.Services.AddAcademicApplication();
-// builder.Services.AddAcademicInfrastructure(builder.Configuration);
-// builder.Services.AddEnrollmentsApplication();
-// builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
-// builder.Services.AddReviewsApplication();
-// builder.Services.AddReviewsInfrastructure(builder.Configuration);
-// builder.Services.AddModerationApplication();
-// builder.Services.AddModerationInfrastructure(builder.Configuration);
+builder.Services.AddIdentityApplication();
+builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
 // ------------------------------------------------------------------
 // HTTP pipeline
@@ -66,7 +63,7 @@ app.MapGet("/health", () => Results.Ok(new
 {
     status = "ok",
     service = "planb-api",
-    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0"
+    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0",
 }));
 
 app.Run();
