@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Enrollments.Domain</RootNamespace>
+    <AssemblyName>Planb.Enrollments.Domain</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libs\shared-kernel\src\Planb.SharedKernel\Planb.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

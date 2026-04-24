@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Moderation.Domain</RootNamespace>
+    <AssemblyName>Planb.Moderation.Domain</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libs\shared-kernel\src\Planb.SharedKernel\Planb.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

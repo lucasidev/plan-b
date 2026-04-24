@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Academic.Domain</RootNamespace>
+    <AssemblyName>Planb.Academic.Domain</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libs\shared-kernel\src\Planb.SharedKernel\Planb.SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Moderation.Application</RootNamespace>
+    <AssemblyName>Planb.Moderation.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Carter" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Planb.Moderation.Domain\Planb.Moderation.Domain.csproj" />
+  </ItemGroup>
+</Project>

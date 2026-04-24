@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.SharedKernel</RootNamespace>
+    <AssemblyName>Planb.SharedKernel</AssemblyName>
+  </PropertyGroup>
+</Project>
