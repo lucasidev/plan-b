@@ -6,10 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <AnalysisMode>Recommended</AnalysisMode>
+    <AnalysisMode>Minimal</AnalysisMode>
     <AnalysisLevel>latest</AnalysisLevel>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <!-- CS1591: missing XML docs (we don't ship docs).
+         CA1716: 'Error' conflicts with VB reserved keyword (we're C# only). -->
+    <NoWarn>$(NoWarn);CS1591;CA1716</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(IsPackable)' == ''">
