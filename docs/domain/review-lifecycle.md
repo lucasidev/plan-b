@@ -13,23 +13,27 @@ Este documento **expande** los UCs UC-017, UC-018, UC-019, UC-050, UC-051 y UC-0
 
 ### `Review.status`
 
-| Estado | Significado | Visibilidad pública |
-|---|---|---|
-| `published` | Reseña visible públicamente. | Sí |
-| `under_review` | En cola de moderación. Puede haber caído por filtro automático o por threshold de reports. | No |
-| `removed` | Removida por un moderador. | No |
+| Estado         | Significado                                                                                | Visibilidad pública |
+| -------------- | ------------------------------------------------------------------------------------------ | ------------------- |
+| `published`    | Reseña visible públicamente.                                                               | Sí                  |
+| `under_review` | En cola de moderación. Puede haber caído por filtro automático o por threshold de reports. | No                  |
+| `removed`      | Removida por un moderador.                                                                 | No                  |
 
 ### `ReviewReport.status`
 
-| Estado | Significado |
-|---|---|
-| `open` | Pendiente de resolución. |
-| `upheld` | El moderador (o cascade) aceptó: la reseña infringía. |
-| `dismissed` | El moderador rechazó: el report no procedía. |
+| Estado      | Significado                                           |
+| ----------- | ----------------------------------------------------- |
+| `open`      | Pendiente de resolución.                              |
+| `upheld`    | El moderador (o cascade) aceptó: la reseña infringía. |
+| `dismissed` | El moderador rechazó: el report no procedía.          |
 
 ## State machine — `Review.status`
 
 ```mermaid
+---
+config:
+    layout: elk
+---
 stateDiagram-v2
     [*] --> published : UC-017 publish (filtro pass)
     [*] --> under_review : UC-017 publish (filtro catch)
@@ -48,6 +52,10 @@ stateDiagram-v2
 ## State machine — `ReviewReport.status`
 
 ```mermaid
+---
+config:
+    layout: elk
+---
 stateDiagram-v2
     [*] --> open : UC-019 report creado
     open --> upheld : UC-051 moderador acepta
@@ -57,25 +65,25 @@ stateDiagram-v2
 
 ## Matriz de transiciones de `Review` con side effects
 
-| De → A | Trigger | UC | Side effects |
-|---|---|---|---|
-| `null` → `published` | publicar, filtro pass | UC-017 | `ReviewAuditLog(action=published)`. Enqueue job de `ReviewEmbedding`. |
-| `null` → `under_review` | publicar, filtro catch | UC-017 | `ReviewAuditLog(action=published, note="held by auto-filter")`. **No** enqueue de embedding — se encola recién cuando pase a `published`. |
-| `published` → `under_review` | N reports abiertos | UC-019 | Se registra el report que cruzó el threshold. El auto-hide queda implícito en la transición de Review; no hay entrada de audit adicional. |
-| `published` → `removed` | uphold sin pasar por under_review | UC-051 | `ReviewAuditLog(action=removed)`. El report se marca `upheld` con `resolved_at`. Otros reports open de la misma review → `upheld` (cascade). |
-| `under_review` → `published` | dismiss (y no quedan otros reports open) | UC-051 | `ReviewAuditLog(action=published, note="restored by moderator after review")`. Report `dismissed` con nota. Enqueue embedding si no había. |
-| `under_review` → `removed` | uphold | UC-051 | `ReviewAuditLog(action=removed)`. Todos los reports open → `upheld` (cascade). |
-| `removed` → `published` | restore | UC-052 | `ReviewAuditLog(action=restored, note)`. Reports `upheld` históricos **no** se revierten. Enqueue embedding si no había. |
-| `published` → `published` | edición (no es transición de estado) | UC-018 | `ReviewAuditLog(action=edited, changes={before, after})`. Re-enqueue de embedding sobre el nuevo contenido. Si había `TeacherResponse`, se muestra badge "editada después de tu respuesta". |
+| De → A                       | Trigger                                  | UC     | Side effects                                                                                                                                                                                |
+| ---------------------------- | ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `null` → `published`         | publicar, filtro pass                    | UC-017 | `ReviewAuditLog(action=published)`. Enqueue job de `ReviewEmbedding`.                                                                                                                       |
+| `null` → `under_review`      | publicar, filtro catch                   | UC-017 | `ReviewAuditLog(action=published, note="held by auto-filter")`. **No** enqueue de embedding — se encola recién cuando pase a `published`.                                                   |
+| `published` → `under_review` | N reports abiertos                       | UC-019 | Se registra el report que cruzó el threshold. El auto-hide queda implícito en la transición de Review; no hay entrada de audit adicional.                                                   |
+| `published` → `removed`      | uphold sin pasar por under_review        | UC-051 | `ReviewAuditLog(action=removed)`. El report se marca `upheld` con `resolved_at`. Otros reports open de la misma review → `upheld` (cascade).                                                |
+| `under_review` → `published` | dismiss (y no quedan otros reports open) | UC-051 | `ReviewAuditLog(action=published, note="restored by moderator after review")`. Report `dismissed` con nota. Enqueue embedding si no había.                                                  |
+| `under_review` → `removed`   | uphold                                   | UC-051 | `ReviewAuditLog(action=removed)`. Todos los reports open → `upheld` (cascade).                                                                                                              |
+| `removed` → `published`      | restore                                  | UC-052 | `ReviewAuditLog(action=restored, note)`. Reports `upheld` históricos **no** se revierten. Enqueue embedding si no había.                                                                    |
+| `published` → `published`    | edición (no es transición de estado)     | UC-018 | `ReviewAuditLog(action=edited, changes={before, after})`. Re-enqueue de embedding sobre el nuevo contenido. Si había `TeacherResponse`, se muestra badge "editada después de tu respuesta". |
 
 ## Matriz de transiciones de `ReviewReport`
 
-| De → A | Trigger | UC | Side effects |
-|---|---|---|---|
-| `null` → `open` | usuario reporta | UC-019 | INSERT `ReviewReport`. Si cruza threshold, la Review se mueve a `under_review`. |
-| `open` → `upheld` (directo) | moderador acepta | UC-051 | `moderator_id`, `resolution_note`, `resolved_at`. Dispara remoción de la Review y cascade. |
-| `open` → `upheld` (cascade) | otro report de la misma Review fue upheld | UC-051 | Mismos campos que el report original. `resolution_note` heredada. |
-| `open` → `dismissed` | moderador rechaza | UC-051 | `moderator_id`, `resolution_note`, `resolved_at`. Si era el único open, la Review vuelve a `published`. |
+| De → A                      | Trigger                                   | UC     | Side effects                                                                                            |
+| --------------------------- | ----------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------- |
+| `null` → `open`             | usuario reporta                           | UC-019 | INSERT `ReviewReport`. Si cruza threshold, la Review se mueve a `under_review`.                         |
+| `open` → `upheld` (directo) | moderador acepta                          | UC-051 | `moderator_id`, `resolution_note`, `resolved_at`. Dispara remoción de la Review y cascade.              |
+| `open` → `upheld` (cascade) | otro report de la misma Review fue upheld | UC-051 | Mismos campos que el report original. `resolution_note` heredada.                                       |
+| `open` → `dismissed`        | moderador rechaza                         | UC-051 | `moderator_id`, `resolution_note`, `resolved_at`. Si era el único open, la Review vuelve a `published`. |
 
 ## Sequence diagrams
 
@@ -206,8 +214,8 @@ En ningún momento la API expone `enrollment.student_id` o datos derivados del a
 
 ## Cross-references
 
-| Tipo | Referencia |
-|---|---|
-| UCs | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar). |
-| ADRs | [ADR-0005](../decisions/0005-resena-anclada-al-enrollment.md), [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md). |
-| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`, `ReviewEmbedding`](../architecture/data-model.md#context-reviews--moderation). |
+| Tipo       | Referencia                                                                                                                                                                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UCs        | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar).                                                                          |
+| ADRs       | [ADR-0005](../decisions/0005-resena-anclada-al-enrollment.md), [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md). |
+| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`, `ReviewEmbedding`](../architecture/data-model.md#context-reviews--moderation).                                                             |

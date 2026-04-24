@@ -16,19 +16,23 @@ Este documento expande UC-030, UC-031, UC-032, UC-066. Ver también [ADR-0008](.
 
 Los estados son conceptuales — no hay una columna `status` en `TeacherProfile`. El estado se deriva de la combinación de `verified_at`, `verification_method` y `rejection_reason`.
 
-| Estado conceptual | Condición en DB | Significado |
-|---|---|---|
-| `claim_pending` | `verified_at IS NULL AND verification_method IS NULL AND rejection_reason IS NULL` | Profile creado, no hay intento de verificación en curso. |
-| `email_pending` | `verification_method = 'institutional_email' AND verified_at IS NULL AND institutional_email NOT NULL AND rejection_reason IS NULL` | Email enviado, esperando click. |
-| `manual_pending` | `verified_at IS NULL AND evidencia subida (fuera de la tabla) AND rejection_reason IS NULL` | Esperando decisión del admin. |
-| `verified` | `verified_at NOT NULL` | Estable. Habilita UC-040. |
-| `rejected` | `verified_at IS NULL AND rejection_reason NOT NULL` | Rechazado (por admin o por token expirado cuando corresponda). |
+| Estado conceptual | Condición en DB                                                                                                                     | Significado                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `claim_pending`   | `verified_at IS NULL AND verification_method IS NULL AND rejection_reason IS NULL`                                                  | Profile creado, no hay intento de verificación en curso.       |
+| `email_pending`   | `verification_method = 'institutional_email' AND verified_at IS NULL AND institutional_email NOT NULL AND rejection_reason IS NULL` | Email enviado, esperando click.                                |
+| `manual_pending`  | `verified_at IS NULL AND evidencia subida (fuera de la tabla) AND rejection_reason IS NULL`                                         | Esperando decisión del admin.                                  |
+| `verified`        | `verified_at NOT NULL`                                                                                                              | Estable. Habilita UC-040.                                      |
+| `rejected`        | `verified_at IS NULL AND rejection_reason NOT NULL`                                                                                 | Rechazado (por admin o por token expirado cuando corresponda). |
 
 El state machine ayuda a razonar sobre el flow; no se materializa en un enum dedicado para mantener el schema simple.
 
 ## State machine
 
 ```mermaid
+---
+config:
+    layout: elk
+---
 stateDiagram-v2
     [*] --> claim_pending : UC-030 iniciar claim
 
@@ -57,16 +61,16 @@ stateDiagram-v2
 
 ## Matriz de transiciones
 
-| De → A | Trigger | UC | Side effects |
-|---|---|---|---|
-| `null` → `claim_pending` | Member inicia claim | UC-030 | INSERT `TeacherProfile(verified_at=NULL)`. |
-| `claim_pending` → `email_pending` | Alumno ingresa email institucional | UC-031 | Se setea `institutional_email` y `verification_method='institutional_email'`. Se genera token con TTL, se envía email. |
-| `claim_pending` → `manual_pending` | Alumno sube evidencia | UC-032 | Evidencia persistida (referencia en storage, no en tabla). Claim pasa a cola del admin. |
-| `email_pending` → `verified` | Click en link con token válido | UC-031 | Setea `verified_at=now()`. Capacidad `review:respond` activa. |
-| `email_pending` → `claim_pending` | Token expirado y alumno reinicia | UC-031 | Reseteo de `institutional_email` y `verification_method` a NULL. Nuevo token al retry. |
-| `manual_pending` → `verified` | Admin aprueba | UC-066 | Setea `verified_at=now()`, `verification_method='manual'`, `verified_by=admin.id`. |
-| `manual_pending` → `rejected` | Admin rechaza | UC-066 | Setea `rejection_reason`. `verified_at` sigue NULL. |
-| `verified` → `claim_pending` | Admin de-verifica | Manual admin action | Setea `verified_at=NULL`. Capacidad pierde. Libera el `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL` para que otro user pueda verificar. |
+| De → A                             | Trigger                            | UC                  | Side effects                                                                                                                                 |
+| ---------------------------------- | ---------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `null` → `claim_pending`           | Member inicia claim                | UC-030              | INSERT `TeacherProfile(verified_at=NULL)`.                                                                                                   |
+| `claim_pending` → `email_pending`  | Alumno ingresa email institucional | UC-031              | Se setea `institutional_email` y `verification_method='institutional_email'`. Se genera token con TTL, se envía email.                       |
+| `claim_pending` → `manual_pending` | Alumno sube evidencia              | UC-032              | Evidencia persistida (referencia en storage, no en tabla). Claim pasa a cola del admin.                                                      |
+| `email_pending` → `verified`       | Click en link con token válido     | UC-031              | Setea `verified_at=now()`. Capacidad `review:respond` activa.                                                                                |
+| `email_pending` → `claim_pending`  | Token expirado y alumno reinicia   | UC-031              | Reseteo de `institutional_email` y `verification_method` a NULL. Nuevo token al retry.                                                       |
+| `manual_pending` → `verified`      | Admin aprueba                      | UC-066              | Setea `verified_at=now()`, `verification_method='manual'`, `verified_by=admin.id`.                                                           |
+| `manual_pending` → `rejected`      | Admin rechaza                      | UC-066              | Setea `rejection_reason`. `verified_at` sigue NULL.                                                                                          |
+| `verified` → `claim_pending`       | Admin de-verifica                  | Manual admin action | Setea `verified_at=NULL`. Capacidad pierde. Libera el `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL` para que otro user pueda verificar. |
 
 ## Sequence diagrams
 
@@ -202,8 +206,8 @@ Esta migración está documentada pero no implementada.
 
 ## Cross-references
 
-| Tipo | Referencias |
-|---|---|
-| UCs | UC-030 (iniciar claim), UC-031 (email institucional), UC-032 (evidencia manual), UC-040 (habilitado tras verified), UC-066 (admin resuelve manual). |
-| ADRs | [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md). |
-| Data model | [TeacherProfile + Teacher + University.institutional_email_domains](../architecture/data-model.md#context-identity). |
+| Tipo       | Referencias                                                                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UCs        | UC-030 (iniciar claim), UC-031 (email institucional), UC-032 (evidencia manual), UC-040 (habilitado tras verified), UC-066 (admin resuelve manual). |
+| ADRs       | [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md).                                                                        |
+| Data model | [TeacherProfile + Teacher + University.institutional_email_domains](../architecture/data-model.md#context-identity).                                |
