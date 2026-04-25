@@ -14,5 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Planb.Identity.Domain\Planb.Identity.Domain.csproj" />
     <ProjectReference Include="..\..\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
