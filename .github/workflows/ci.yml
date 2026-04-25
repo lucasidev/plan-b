@@ -28,6 +28,22 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      # Mailpit (actively-maintained fork of MailHog) catches outbound SMTP from integration
+      # tests. SMTP on 1025; HTTP on 8025. Tests query the legacy `/api/v2/messages` shim that
+      # Mailpit preserves for MailHog compatibility. We use Mailpit over MailHog because the
+      # latter hasn't seen a release since 2020 and has known SMTP-binding quirks in GHA
+      # service containers that leave HTTP reachable while SMTP silently refuses connections.
+      mailpit:
+        image: axllent/mailpit:v1.29
+        ports:
+          - 1025:1025
+          - 8025:8025
+        options: >-
+          --health-cmd "/mailpit readyz"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 5s
     env:
       ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
       ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
