@@ -83,6 +83,21 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 - **Flujo**: click en link → sistema valida token → setea `email_verified_at=now()`.
 - **Post**: Cuenta habilitada para crear profiles y publicar contenido.
 
+### UC-021: Reenviar email de verificación
+
+- **Actor**: User pendiente de verificar.
+- **Pre**: Tiene cuenta no verificada (email_verified_at=null, expired_at=null).
+- **Flujo**: pide reenvío vía formulario con su email → sistema valida que existe user no verificado → invalida tokens activos del purpose=UserEmailVerification → emite token nuevo → envía email.
+- **Post**: User recibe nuevo email. Token previo queda invalidated.
+- **Notas**: rate-limited (≤ 3 reenvíos/hora). Anti-enumeration: si email no existe o ya verificado, retorna 200 sin revelar diferencia. Ver ADR-0033 (VerificationToken como child entity).
+
+### UC-022: Expirar registro no verificado (system action)
+
+- **Actor**: Sistema (scheduled job).
+- **Pre**: Existen Users con email_verified_at=null y registered_at > 7 días atrás.
+- **Flujo**: job daily corre, query identifica candidates, setea expired_at=now() en cada uno → emite event `UnverifiedRegistrationExpired`.
+- **Post**: Email queda re-claimable (índice único parcial WHERE expired_at IS NULL). Audit log registrado.
+
 ### UC-012: Crear StudentProfile eligiendo CareerPlan
 
 - **Actor**: Member con email verificado.
@@ -150,9 +165,45 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 
 - A1 (paso 3): Si el alumno intenta seleccionar una materia `bloqueada`, la UI la rechaza y muestra qué correlativa le falta.
 
-**Postconditions**: Ninguna persistente en MVP. Persistir la simulación (`SimulationDraft`) queda para evaluar post-MVP.
+**Postconditions**: Ninguna persistente en este UC. La persistencia ocurre solo si el alumno ejecuta UC-023 (guardar simulación) — esa es una capability premium.
 
-**ADRs referenciados**: [ADR-0003](../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md).
+**ADRs referenciados**: [ADR-0003](../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md), [ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md), [ADR-0029](../decisions/0029-planning-bc-separado.md).
+
+### UC-023: Guardar simulación como draft (premium)
+
+- **Actor**: Alumno con StudentProfile activo.
+- **Pre**: Tiene una simulación en curso desde UC-016. Tiene contribuciones suficientes (al menos 1 reseña publicada — threshold revisable en focus group).
+- **Flujo**: confirma "guardar" → sistema crea `SimulationDraft` con `visibility='private'`, `materias[]`, `term_id`.
+- **Post**: Draft accesible solo al owner.
+- **ADRs**: [ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md), [ADR-0029](../decisions/0029-planning-bc-separado.md).
+
+### UC-024: Editar simulación draft (premium)
+
+- **Actor**: Alumno (owner del draft).
+- **Pre**: Tiene un `SimulationDraft` propio.
+- **Flujo**: modifica composición de materias → sistema actualiza el draft.
+- **Post**: Draft con nuevas materias. Si era shared, queda shared con la nueva composición.
+
+### UC-025: Borrar simulación draft (premium)
+
+- **Actor**: Alumno (owner).
+- **Pre**: Tiene `SimulationDraft` propio.
+- **Flujo**: confirma "borrar" → sistema hard-delete.
+- **Post**: Draft eliminado. Sin auditoría (privado, sin valor de retención).
+
+### UC-026: Compartir simulación al corpus público (premium)
+
+- **Actor**: Alumno (owner).
+- **Pre**: Tiene `SimulationDraft` con `visibility='private'`.
+- **Flujo**: clickea "compartir" → sistema setea `visibility='shared'`. Queda en el corpus público anonimizado.
+- **Post**: Draft visible a otros alumnos del mismo plan + cuatrimestre vía UC-027.
+
+### UC-027: Ver simulaciones públicas de otros (premium)
+
+- **Actor**: Alumno con StudentProfile activo + contribuciones.
+- **Pre**: Logueado, ha publicado al menos una reseña.
+- **Flujo**: pide listado vía `GET /api/simulations/public?planId=&termId=` → sistema retorna drafts shared del mismo plan/term, anonimizados, con composición + métricas agregadas.
+- **Post**: Alumno tiene social proof / inspiración para sus propias decisiones.
 
 ### UC-017: Publicar reseña de una cursada
 
@@ -421,8 +472,18 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 
 ## Totales
 
-- **34 casos de uso** cubren el MVP completo.
+- **41 casos de uso** cubren el MVP completo (34 originales + 7 nuevos del discovery DDD: UC-021, UC-022, UC-023, UC-024, UC-025, UC-026, UC-027).
 - **7 en full form** (flujos con ramas significativas): UC-014, UC-016, UC-017, UC-019, UC-031, UC-051, UC-066.
-- **27 en short form** (CRUDs y flujos triviales).
+- **34 en short form** (CRUDs y flujos triviales).
+
+**UCs nuevos del discovery DDD** (ver `eventstorming.md` para captura del proceso):
+
+- UC-021 Reenviar email de verificación.
+- UC-022 Expirar registro no verificado (system).
+- UC-023 Guardar simulación como draft (premium).
+- UC-024 Editar simulación draft (premium).
+- UC-025 Borrar simulación draft (premium).
+- UC-026 Compartir simulación al corpus público (premium).
+- UC-027 Ver simulaciones públicas de otros (premium).
 
 Cada UC se traduce a un application service en la capa `Application/` de Clean Architecture y a un endpoint en `Api/`. La API puede organizarse en controllers por actor o por recurso — ese es el tema del próximo doc (`architecture/api-design.md`).
