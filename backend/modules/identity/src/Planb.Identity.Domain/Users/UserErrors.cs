@@ -13,6 +13,9 @@ public static class UserErrors
     public static readonly Error EmailTooLong =
         Error.Validation("identity.email.too_long", "Email exceeds the 254 character limit.");
 
+    public static readonly Error EmailAlreadyInUse =
+        Error.Conflict("identity.email.already_in_use", "An account with that email already exists.");
+
     public static readonly Error PasswordHashRequired =
         Error.Validation("identity.password_hash.required", "Password hash is required.");
 
