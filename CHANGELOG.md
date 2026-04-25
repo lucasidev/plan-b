@@ -15,4 +15,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Root tooling: `Justfile`, `lefthook.yml`, `docker-compose.yml`, `.env.example`, GitHub Actions CI.
   - Backend: solution `Planb.sln` con estructura modular monolith (SharedKernel + Host + 5 módulos + integration tests).
   - Frontend: Next.js 15 App Router con route groups `(public)`, `(auth)`, `(member)`, `(teacher)`, `(staff)`.
-  - Servicios dev: Postgres 17 + pgvector, MailHog.
+  - Servicios dev: Postgres 17 + pgvector, Mailpit.

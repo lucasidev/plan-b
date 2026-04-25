@@ -71,7 +71,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 ## Tests
 
 - **Unit**: xUnit + NSubstitute + Shouldly. Apuntan a Domain y Application. Mockeo de repositorios y query services.
-- **Integration**: `Planb.IntegrationTests` con Testcontainers.PostgreSql. Postgres real, no mock. Ejecuta el host completo con `WebApplicationFactory`.
+- **Integration**: `Planb.IntegrationTests` corre contra el Postgres compartido que levanta `just infra-up`. Cada test (o test class, para `WebApplicationFactory`) crea un database propio con nombre random (`planb_<label>_<guid>`) y lo dropea al terminar — isolation real sin el costo de un container por test. Ejecuta el host completo vía `WebApplicationFactory`. Ver [ADR-0027](../docs/decisions/0027-integration-tests-shared-postgres.md).
 
 ## Stack de paquetes (central en `Directory.Packages.props`)
 
@@ -84,7 +84,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 | Dapper | `Dapper` |
 | Auth | `BCrypt.Net-Next`, `System.IdentityModel.Tokens.Jwt`, `Microsoft.AspNetCore.Authentication.JwtBearer` |
 | Logging | `Serilog.AspNetCore`, `Serilog.Sinks.Console` |
-| Testing | `xunit`, `xunit.runner.visualstudio`, `Shouldly`, `NSubstitute`, `Testcontainers.PostgreSql`, `Microsoft.AspNetCore.Mvc.Testing` |
+| Testing | `xunit`, `xunit.runner.visualstudio`, `Shouldly`, `NSubstitute`, `Microsoft.AspNetCore.Mvc.Testing` |
 
 Bumps importantes: Wolverine **5.32+** (compatible con .NET 10), `System.Security.Cryptography.Xml` pinned a **10.0.7** por CVE transitivo.
 
