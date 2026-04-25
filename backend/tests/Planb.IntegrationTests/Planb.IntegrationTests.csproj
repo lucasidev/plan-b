@@ -17,4 +17,7 @@
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

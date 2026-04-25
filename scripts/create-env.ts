@@ -108,8 +108,8 @@ SESSION_SECRET=${s.SESSION_SECRET}
 
 # ── Ports (rewritten by ensure-infra.ts) ─────────────────────
 POSTGRES_HOST_PORT=5432
-MAILHOG_SMTP_PORT=1025
-MAILHOG_UI_PORT=8025
+MAILPIT_SMTP_PORT=1025
+MAILPIT_UI_PORT=8025
 
 # ── Backend (ASP.NET Core — '__' is nested config separator) ─
 ASPNETCORE_ENVIRONMENT=Development

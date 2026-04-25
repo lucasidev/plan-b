@@ -15,7 +15,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 {
     private readonly RegisterApiFixture _fixture;
     private readonly HttpClient _client;
-    private readonly MailHogClient _mailhog = new();
+    private readonly MailpitClient _mailpit = new();
 
     public RegisterUserEndpointTests(RegisterApiFixture fixture)
     {
@@ -23,7 +23,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         _client = fixture.Factory.CreateClient();
     }
 
-    public Task InitializeAsync() => _mailhog.ClearAsync();
+    public Task InitializeAsync() => _mailpit.ClearAsync();
     public Task DisposeAsync() => Task.CompletedTask;
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
@@ -59,7 +59,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     }
 
     [Fact]
-    public async Task Sends_verification_email_through_outbox_within_a_few_seconds()
+    public async Task Sends_verification_email_with_link_to_the_registered_address()
     {
         var email = FreshEmail("email-flow");
 
@@ -68,12 +68,14 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             new RegisterUserRequest(email, "valid-password-12c"));
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var message = await _mailhog.WaitForMessageToAsync(email, TimeSpan.FromSeconds(15));
+        var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
+        summary.ShouldNotBeNull(
+            "The verification email should hit Mailpit's inbox within 10s of registration.");
+        summary.Subject.ShouldContain("planb");
 
-        message.ShouldNotBeNull(
-            "Wolverine outbox should dispatch UserRegisteredDomainEvent → email handler within 15s");
-        message.Body.ShouldContain("planb");
-        message.Body.ShouldContain("token=");
+        var detail = await _mailpit.GetMessageDetailAsync(summary.Id);
+        detail.ShouldNotBeNull();
+        detail.Html.ShouldContain("token=");
     }
 
     [Fact]
