@@ -36,13 +36,13 @@ plan-b/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
 ├── docs/
-│   ├── decisions/           26 ADRs (MADR) — fuente de verdad de decisiones
+│   ├── decisions/           27 ADRs (MADR) — fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   └── architecture/        ERD, data model
 ├── scripts/                 TS scripts (bun) — no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
-└── docker-compose.yml       Postgres (pgvector) + MailHog
+└── docker-compose.yml       Postgres (pgvector) + Mailpit
 ```
 
 ## Reglas cross-cutting
@@ -66,7 +66,7 @@ just test            # Todos los tests
 just lint            # Biome + dotnet format check
 just lint-fix        # Autofix
 just migrate         # Aplicar migraciones EF Core pendientes
-just infra-up        # Levantar Postgres + MailHog (auto-detecta podman/docker)
+just infra-up        # Levantar Postgres + Mailpit (auto-detecta podman/docker)
 just infra-reset     # Volar volúmenes y rearmar
 just ci              # Las mismas gates que corre GitHub Actions
 ```
@@ -77,7 +77,7 @@ Las tres cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md) — glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/) — 26 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+3. [`docs/decisions/`](docs/decisions/) — 27 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
