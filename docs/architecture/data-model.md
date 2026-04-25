@@ -12,6 +12,7 @@ El "por qué" de las decisiones estructurales está en los ADRs referenciados. E
 - [Context: Student History](#context-student-history)
 - [Context: Reviews & Moderation](#context-reviews--moderation)
 - [Context: Semantic Analytics](#context-semantic-analytics)
+- [Context: Planning](#context-planning)
 - [Apéndice A: Enums](#apéndice-a-enums)
 - [Apéndice B: Invariantes transversales](#apéndice-b-invariantes-transversales)
 
@@ -136,6 +137,27 @@ Constraints adicionales:
 - CHECK: `verified_at NOT NULL` → `verification_method NOT NULL`.
 - CHECK: `verification_method = 'manual'` → `verified_by NOT NULL`.
 - CHECK: `verification_method = 'institutional_email'` → `institutional_email NOT NULL`.
+
+### Entity: VerificationToken (child de User / TeacherProfile)
+
+Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente — vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-como-child-entity.md).
+
+| Campo               | Tipo                              | Constraints                              | Notas                                              |
+| ------------------- | --------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| `id`                | UUID                              | PK                                       |                                                    |
+| `owner_id`          | UUID                              | NOT NULL                                 | FK a `user.id` cuando purpose=`user_email_verification`; FK a `teacher_profile.id` cuando purpose=`teacher_institutional_verification` (UNIQUE por purpose) |
+| `purpose`           | ENUM `verification_token_purpose` | NOT NULL                                 | `user_email_verification`, `teacher_institutional_verification` |
+| `value`             | TEXT                              | NOT NULL, UNIQUE                         | Opaque, 256-bit base64url                          |
+| `issued_at`         | TIMESTAMPTZ                       | NOT NULL                                 |                                                    |
+| `expires_at`        | TIMESTAMPTZ                       | NOT NULL                                 | TTL típicamente 24h                                |
+| `consumed_at`       | TIMESTAMPTZ                       | NULL                                     | Set cuando se consume; terminal                    |
+| `invalidated_at`    | TIMESTAMPTZ                       | NULL                                     | Set cuando se invalida (por resend o force expiry) |
+
+Constraints:
+
+- `UNIQUE(owner_id, purpose) WHERE consumed_at IS NULL AND invalidated_at IS NULL` — un solo token activo por purpose por owner.
+- CHECK: `consumed_at IS NULL OR invalidated_at IS NULL` — un token no puede estar consumido E invalidado simultáneamente.
+- CHECK: `expires_at > issued_at`.
 
 ### Invariantes cross-table (enforced en app)
 
@@ -544,6 +566,32 @@ Constraints:
 - `UNIQUE(review_id, source, model_name, model_version)`.
 - Index HNSW para búsqueda de similitud (a crear cuando se active el feature).
 
+## Context: Planning
+
+Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0029](../decisions/0029-planning-bc-separado.md)).
+
+### Entity: SimulationDraft
+
+| Campo           | Tipo                            | Constraints                              | Notas                                              |
+| --------------- | ------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| `id`            | UUID                            | PK                                       |                                                    |
+| `owner_profile_id` | UUID                         | NOT NULL                                 | FK lógica a `identity.student_profile.id` (no FK constraint cross-schema, [ADR-0017](../decisions/0017-persistence-ignorance.md)) |
+| `term_id`       | UUID                            | NOT NULL                                 | FK lógica a `academic.academic_term.id`            |
+| `subject_ids`   | UUID[]                          | NOT NULL                                 | Lista de subjects que componen la simulación       |
+| `visibility`    | ENUM `simulation_visibility`    | NOT NULL, DEFAULT `'private'`            | `private` o `shared`                               |
+| `label`         | TEXT                            | NULL                                     | Nombre opcional dado por el alumno                 |
+| `created_at`    | TIMESTAMPTZ                     | NOT NULL                                 |                                                    |
+| `updated_at`    | TIMESTAMPTZ                     | NOT NULL                                 |                                                    |
+| `shared_at`     | TIMESTAMPTZ                     | NULL                                     | Set cuando visibility pasa a 'shared'              |
+
+Constraints:
+
+- CHECK: `visibility='shared'` ⇒ `shared_at NOT NULL`.
+- CHECK: `visibility='private'` ⇒ `shared_at IS NULL`.
+- `subject_ids` no vacío.
+
+Hard delete permitido (drafts privados no tienen valor de retención).
+
 ## Apéndice A: Enums
 
 Nombres y valores de todos los enums del modelo.
@@ -567,6 +615,8 @@ Nombres y valores de todos los enums del modelo.
 | `teacher_response_status`     | `published`, `removed`                                                                |
 | `review_audit_action`         | `published`, `edited`, `reported`, `removed`, `restored`                              |
 | `embedding_source`            | `subject_text`, `teacher_text`, `combined`                                            |
+| `simulation_visibility`       | `private`, `shared`                                                                   |
+| `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 
 ## Apéndice B: Invariantes transversales
 
