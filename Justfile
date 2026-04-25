@@ -146,9 +146,13 @@ frontend-install:
 # Database (EF Core migrations, per module)
 # ═══════════════════════════════════════════════════════════════
 
-# Apply all pending migrations across all modules
+# Apply EF Core migrations + Wolverine resource setup (db-apply).
+# Wolverine's db-apply creates/updates the outbox/queue/durability tables.
 migrate:
-    cd backend/host/Planb.Api && dotnet run -- migrate
+    cd backend/host/Planb.Api && dotnet ef database update \
+        --project ../../modules/identity/src/Planb.Identity.Infrastructure \
+        --context IdentityDbContext
+    cd backend/host/Planb.Api && dotnet run --no-build -- db-apply
 
 # Add migration to a specific module. Usage: just migrate-add identity InitialSchema
 migrate-add module name:
