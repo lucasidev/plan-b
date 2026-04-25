@@ -4,6 +4,13 @@
     <AssemblyName>Planb.Identity.Application</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Planb.Identity.Tests" />
+    <InternalsVisibleTo Include="Planb.IntegrationTests" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Carter" />
     <PackageReference Include="WolverineFx" />
     <PackageReference Include="FluentValidation" />

@@ -7,7 +7,8 @@ namespace Planb.SharedKernel.Primitives;
 /// type with the same Id are considered equal regardless of in-memory state. Domain events are
 /// collected as the aggregate mutates and dispatched after persistence (see SaveChangesInterceptor).
 /// </summary>
-public abstract class Entity<TId> : IEquatable<Entity<TId>> where TId : notnull
+public abstract class Entity<TId> : IDomainEventSource, IEquatable<Entity<TId>>
+    where TId : notnull
 {
     public TId Id { get; protected set; } = default!;
 

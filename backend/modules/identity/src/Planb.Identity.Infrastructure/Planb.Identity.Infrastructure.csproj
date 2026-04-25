@@ -12,6 +12,9 @@
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />
     <PackageReference Include="BCrypt.Net-Next" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="MailKit" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Identity.Application\Planb.Identity.Application.csproj" />
