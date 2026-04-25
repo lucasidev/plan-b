@@ -9,8 +9,8 @@ using Planb.Identity.Domain.Users;
 namespace Planb.Identity.Infrastructure.Email;
 
 /// <summary>
-/// SMTP adapter using MailKit. In dev this points at MailHog (no auth, no SSL). In production
-/// it points at a real relay with credentials in <see cref="SmtpOptions"/>.
+/// SMTP adapter using MailKit. In dev and CI this points at Mailpit (no auth, no SSL). In
+/// production it points at a real relay with credentials in <see cref="SmtpOptions"/>.
 /// </summary>
 public sealed class SmtpVerificationEmailSender : IVerificationEmailSender
 {

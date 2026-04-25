@@ -83,7 +83,7 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 **Prerequisitos**: .NET 10 SDK, [bun](https://bun.sh), Docker, [just](https://just.systems), [lefthook](https://lefthook.dev).
 
 ```bash
-# Primera vez: crea .env, levanta Postgres + MailHog, instala deps, corre hooks
+# Primera vez: crea .env, levanta Postgres + Mailpit, instala deps, corre hooks
 just setup
 
 # Backend + frontend en paralelo (Ctrl+C frena ambos)
@@ -112,7 +112,7 @@ just db-reset         # borra volume y re-migra
 | Backend API | http://localhost:5000 | .NET 10 + Wolverine + Carter  |
 | Frontend    | http://localhost:3000 | Next.js 15 App Router         |
 | Postgres    | localhost:5432        | pgvector/pgvector:pg17        |
-| MailHog UI  | http://localhost:8025 | emails de verificación de dev |
+| Mailpit UI  | http://localhost:8025 | emails de verificación de dev |
 
 ## Estructura del repo
 

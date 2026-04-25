@@ -1,6 +1,6 @@
 # ADR-0024: Development tooling stack
 
-- **Estado**: aceptado
+- **Estado**: aceptado — la fila "Integration tests backend" fue parcialmente superseded por [ADR-0027](0027-integration-tests-shared-postgres.md) (Postgres compartido con DB per-test en vez de Testcontainers).
 - **Fecha**: 2026-04-23
 
 ## Contexto
@@ -23,7 +23,7 @@ Stack elegido por herramienta, con justificación:
 | Unit tests frontend | **Vitest** | Jest |
 | E2E tests frontend | **Playwright** | Cypress, WebdriverIO |
 | Unit tests backend | **xUnit** | NUnit, MSTest |
-| Integration tests backend | **xUnit + Testcontainers** | docker-compose manual, in-memory DB |
+| Integration tests backend | **xUnit + Testcontainers** ([superseded por ADR-0027](0027-integration-tests-shared-postgres.md): Postgres compartido con DB per-test) | docker-compose manual, in-memory DB |
 | Container orchestration dev | **docker-compose** | Podman compose, Tilt |
 | Deploy | **Dokploy sobre VPS** | raw Docker, Kubernetes, Vercel, Fly.io, Railway |
 | CI | **GitHub Actions** | GitLab CI, CircleCI, Jenkins |

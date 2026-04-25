@@ -31,10 +31,7 @@ public sealed class RegisterApiFixture : IAsyncLifetime
         // half-initialized state. See https://wolverinefx.net/guide/http/integration-testing.html.
         JasperFxEnvironment.AutoStartHost = true;
 
-        _adminConnectionString =
-            Environment.GetEnvironmentVariable("INTEGRATION_TEST_PG_CONNECTION")
-            ?? Environment.GetEnvironmentVariable("ConnectionStrings__Planb")
-            ?? "Host=localhost;Port=5432;Database=postgres;Username=planb;Password=planb_test";
+        _adminConnectionString = TestConnectionString.Resolve();
 
         var adminBuilder = new NpgsqlConnectionStringBuilder(_adminConnectionString)
         {
