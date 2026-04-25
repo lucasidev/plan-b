@@ -1,7 +1,7 @@
 /**
  * Ensures planb infrastructure is running with available ports.
  *
- * For each service (postgres, mailhog):
+ * For each service (postgres, mailpit):
  *   - If the container is already running, reuses its mapped host port.
  *   - If not, finds a free port and starts it.
  *
@@ -42,8 +42,8 @@ const compose = `${containerCmd} compose`;
 
 interface ServicePorts {
   postgres: number;
-  mailhogSmtp: number;
-  mailhogUi: number;
+  mailpitSmtp: number;
+  mailpitUi: number;
 }
 
 function getRunningPorts(): Partial<ServicePorts> {
@@ -73,20 +73,20 @@ function getRunningPorts(): Partial<ServicePorts> {
           }
         }
 
-        if (name.includes('mailhog')) {
+        if (name.includes('mailpit')) {
           const pubSmtp = publishers.find((p) => p.TargetPort === 1025);
           if (pubSmtp?.PublishedPort) {
-            ports.mailhogSmtp = pubSmtp.PublishedPort;
+            ports.mailpitSmtp = pubSmtp.PublishedPort;
           } else {
             const m = portStr.match(/:(\d+)->1025/);
-            if (m) ports.mailhogSmtp = Number(m[1]);
+            if (m) ports.mailpitSmtp = Number(m[1]);
           }
           const pubUi = publishers.find((p) => p.TargetPort === 8025);
           if (pubUi?.PublishedPort) {
-            ports.mailhogUi = pubUi.PublishedPort;
+            ports.mailpitUi = pubUi.PublishedPort;
           } else {
             const m = portStr.match(/:(\d+)->8025/);
-            if (m) ports.mailhogUi = Number(m[1]);
+            if (m) ports.mailpitUi = Number(m[1]);
           }
         }
       } catch {
@@ -135,11 +135,11 @@ function updateRootEnv(ports: ServicePorts) {
   const connStr = `Host=localhost;Port=${ports.postgres};Database=planb;Username=planb;Password=${pgPass}`;
   updateEnvFile(ROOT_ENV, {
     POSTGRES_HOST_PORT: String(ports.postgres),
-    MAILHOG_SMTP_PORT: String(ports.mailhogSmtp),
-    MAILHOG_UI_PORT: String(ports.mailhogUi),
+    MAILPIT_SMTP_PORT: String(ports.mailpitSmtp),
+    MAILPIT_UI_PORT: String(ports.mailpitUi),
     ConnectionStrings__Planb: connStr,
     ConnectionStrings__PlanbWolverine: connStr,
-    Smtp__Port: String(ports.mailhogSmtp),
+    Smtp__Port: String(ports.mailpitSmtp),
   });
 }
 
@@ -178,12 +178,12 @@ async function main() {
   guardSecrets();
 
   const running = getRunningPorts();
-  const allRunning = running.postgres && running.mailhogSmtp && running.mailhogUi;
+  const allRunning = running.postgres && running.mailpitSmtp && running.mailpitUi;
 
   if (allRunning) {
     const p = running as ServicePorts;
     console.error(
-      `Infrastructure already running — postgres:${p.postgres} mailhog-smtp:${p.mailhogSmtp} mailhog-ui:${p.mailhogUi}`,
+      `Infrastructure already running — postgres:${p.postgres} mailpit-smtp:${p.mailpitSmtp} mailpit-ui:${p.mailpitUi}`,
     );
     updateRootEnv(p);
     return;
@@ -191,14 +191,14 @@ async function main() {
 
   const [pg, smtp, ui] = await Promise.all([
     running.postgres ? Promise.resolve(running.postgres) : findPort(5432),
-    running.mailhogSmtp ? Promise.resolve(running.mailhogSmtp) : findPort(1025),
-    running.mailhogUi ? Promise.resolve(running.mailhogUi) : findPort(8025),
+    running.mailpitSmtp ? Promise.resolve(running.mailpitSmtp) : findPort(1025),
+    running.mailpitUi ? Promise.resolve(running.mailpitUi) : findPort(8025),
   ]);
 
-  const ports: ServicePorts = { postgres: pg, mailhogSmtp: smtp, mailhogUi: ui };
+  const ports: ServicePorts = { postgres: pg, mailpitSmtp: smtp, mailpitUi: ui };
 
   console.error(
-    `Starting infrastructure — postgres:${pg} mailhog-smtp:${smtp} mailhog-ui:${ui}`,
+    `Starting infrastructure — postgres:${pg} mailpit-smtp:${smtp} mailpit-ui:${ui}`,
   );
 
   try {
@@ -208,8 +208,8 @@ async function main() {
       env: {
         ...process.env,
         POSTGRES_HOST_PORT: String(pg),
-        MAILHOG_SMTP_PORT: String(smtp),
-        MAILHOG_UI_PORT: String(ui),
+        MAILPIT_SMTP_PORT: String(smtp),
+        MAILPIT_UI_PORT: String(ui),
       },
     });
   } catch (e) {
@@ -227,8 +227,8 @@ async function main() {
   console.error('');
   console.error('Infrastructure ready.');
   console.error(`  Postgres:      localhost:${pg}`);
-  console.error(`  MailHog SMTP:  localhost:${smtp}`);
-  console.error(`  MailHog UI:    http://localhost:${ui}`);
+  console.error(`  Mailpit SMTP:  localhost:${smtp}`);
+  console.error(`  Mailpit UI:    http://localhost:${ui}`);
 }
 
 await main();

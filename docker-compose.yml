@@ -19,13 +19,22 @@ services:
       timeout: 5s
       retries: 10
 
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: planb-mailhog
+  # Mailpit — actively-maintained fork of MailHog. Used in both dev and CI so the
+  # HTTP client has a single API to target. MailHog-compatible SMTP on 1025;
+  # Mailpit-native HTTP API at /api/v1/* on 8025.
+  mailpit:
+    image: axllent/mailpit:v1.29
+    container_name: planb-mailpit
     restart: unless-stopped
     ports:
-      - "${MAILHOG_SMTP_PORT:-1025}:1025"
-      - "${MAILHOG_UI_PORT:-8025}:8025"
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
 
 volumes:
   planb_postgres_data:
