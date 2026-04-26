@@ -1,166 +1,105 @@
 # Domain Events — planb
 
-Catálogo de events del modelo, agrupados por Bounded Context.
+Catálogo cross-cutting de events del modelo. Cada event vive descrito en el archivo del aggregate que lo emite (ver [aggregates/](aggregates/)). Este doc es índice + reglas globales.
 
-**Domain event vs Integration event**:
+## Distinción: domain event vs integration event
 
-- **Domain event** (`IDomainEvent`) — algo que pasó dentro de un BC. Lo emite un aggregate. Lo consumen handlers del mismo BC.
-- **Integration event** (`IIntegrationEvent`) — algo que cruza BCs. Se publica vía Wolverine outbox para asegurar at-least-once delivery. Lo consumen handlers de otros BCs.
+- **Domain event** (`IDomainEvent`): algo que pasó dentro de un BC. Lo emite un aggregate. Lo consumen handlers del mismo BC.
+- **Integration event** (`IIntegrationEvent`): algo que cruza BCs. Se publica vía Wolverine outbox para asegurar at-least-once delivery. Lo consumen handlers de otros BCs.
 
-Algunos events del modelo son **ambos**: el aggregate los emite como domain events, y un handler local los traduce a integration events para publicación cross-BC. Lo flageamos cuando aplica.
+Algunos events del modelo son **ambos**: el aggregate los emite como domain events, y un handler local los traduce a integration events para publicación cross-BC. Lo flageamos cuando aplica en el archivo del aggregate.
 
-Toda la infraestructura está en [`shared-kernel`](../../../backend/libs/shared-kernel/src/Planb.SharedKernel/) (`IDomainEvent`, `IDomainEventPublisher`, `DomainEventDispatcher`).
-
----
+Toda la infraestructura está en `Planb.SharedKernel` (`IDomainEvent`, `IDomainEventPublisher`, `DomainEventDispatcher`).
 
 ## Convenciones
 
-- **Past tense.** Un event es algo que YA pasó: `UserRegistered`, no `RegisterUser`.
-- **Carga inmutable.** Los events son `record` con propiedades `init`. Una vez creados, no se modifican.
-- **`OccurredAt` como timestamp canónico** del momento en que el event sucedió en dominio. Distinto de `committedAt` (cuándo se persistió) y `dispatchedAt` (cuándo se publicó al bus).
+- **Past tense**: un event es algo que YA pasó (`UserRegistered`, no `RegisterUser`).
+- **Carga inmutable**: los events son `record` con propiedades `init`. Una vez creados, no se modifican.
+- **`OccurredAt`** como timestamp canónico del momento en que el event sucedió en dominio. Distinto de `committedAt` (cuándo se persistió) y `dispatchedAt` (cuándo se publicó al bus).
 - **IDs como tipos strongly-typed** (`UserId`, `ReviewId`, etc.) para evitar mixing.
 
----
+## Catálogo por BC
 
-## Identity
+### Identity
 
-### Domain events emitidos por `User`
+- `UserRegistered` → emitido por [User](aggregates/User.md)
+- `StaffUserCreated` → [User](aggregates/User.md)
+- `UserEmailVerified` → [User](aggregates/User.md)
+- `UserDisabled` → [User](aggregates/User.md) (también integration event vía `UserDisabledIntegrationEvent`, consumido por Reviews y Moderation)
+- `UserRestored` → [User](aggregates/User.md)
+- `UnverifiedRegistrationExpired` → [User](aggregates/User.md)
+- `VerificationTokenIssued` → [User](aggregates/User.md)
+- `VerificationTokenConsumed` → [User](aggregates/User.md)
+- `VerificationTokenInvalidated` → [User](aggregates/User.md)
+- `StudentProfileCreated` → [StudentProfile](aggregates/StudentProfile.md)
+- `StudentProfileMarkedGraduated` → [StudentProfile](aggregates/StudentProfile.md)
+- `StudentProfileMarkedAbandoned` → [StudentProfile](aggregates/StudentProfile.md)
+- `TeacherProfileClaimInitiated` → [TeacherProfile](aggregates/TeacherProfile.md)
+- `TeacherProfileInstitutionalEmailSubmitted` → [TeacherProfile](aggregates/TeacherProfile.md)
+- `TeacherProfileVerifiedByInstitutionalEmail` → [TeacherProfile](aggregates/TeacherProfile.md) (también integration event vía `TeacherProfileVerifiedIntegrationEvent`)
+- `TeacherProfileEvidenceSubmitted` → [TeacherProfile](aggregates/TeacherProfile.md)
+- `TeacherProfileVerifiedManually` → [TeacherProfile](aggregates/TeacherProfile.md) (también integration event vía `TeacherProfileVerifiedIntegrationEvent`)
+- `TeacherProfileVerificationRejected` → [TeacherProfile](aggregates/TeacherProfile.md)
 
-| Event | Cuándo se emite | Carga |
-|---|---|---|
-| `UserRegistered` | Después de `User.Register(email, hash)` | `UserId`, `EmailAddress`, `OccurredAt` |
-| `StaffUserCreated` | Después de `User.CreateStaff(email, hash, role)` | `UserId`, `EmailAddress`, `UserRole`, `OccurredAt` |
-| `UserEmailVerified` | Después de `User.MarkEmailVerifiedFor(rawToken)` exitoso | `UserId`, `OccurredAt` |
-| `UserDisabled` | Después de `User.Disable(byId, reason)` | `UserId`, `DisabledById`, `Reason`, `OccurredAt` |
-| `UserRestored` | Después de `User.Restore()` | `UserId`, `OccurredAt` |
-| `UnverifiedRegistrationExpired` | Después de `User.ExpireUnverifiedRegistration()` (terminal) | `UserId`, `OccurredAt` |
-| `VerificationTokenIssued` | Cuando se agrega un token al collection del User | `UserId`, `VerificationTokenId`, `Purpose`, `ExpiresAt`, `OccurredAt` |
-| `VerificationTokenConsumed` | Cuando un token se consume exitosamente | `UserId`, `VerificationTokenId`, `Purpose`, `OccurredAt` |
-| `VerificationTokenInvalidated` | Cuando un token se invalida (resend, force expire) | `UserId`, `VerificationTokenId`, `Purpose`, `Reason`, `OccurredAt` |
+### Academic
 
-### Integration events de Identity
+Catálogo CRUD-flavored. Sin integration events cross-BC en MVP: el catálogo es estable y otros BCs no reaccionan activamente.
 
-| Event | Origen | Consumers |
-|---|---|---|
-| `UserDisabledIntegrationEvent` | Translated from `UserDisabled` | Reviews, Moderation |
-| `TeacherProfileVerifiedIntegrationEvent` | Translated from `TeacherProfileVerifiedByInstitutionalEmail` o `TeacherProfileVerifiedManually` | Reviews (capability `review:respond`) |
+- `UniversityCreated`, `UniversityUpdated` → [University](aggregates/University.md)
+- `CareerCreated`, `CareerUpdated` → [Career](aggregates/Career.md)
+- `CareerPlanCreated`, `CareerPlanRetired` → [CareerPlan](aggregates/CareerPlan.md)
+- `SubjectCreated`, `SubjectUpdated`, `SubjectArchived` → [Subject](aggregates/Subject.md)
+- `PrerequisiteAdded`, `PrerequisiteRemoved` → [Subject](aggregates/Subject.md) (operación sobre child Prerequisite, emitido por root)
+- `TeacherCreated`, `TeacherUpdated`, `TeacherDeactivated` → [Teacher](aggregates/Teacher.md)
+- `AcademicTermCreated`, `AcademicTermUpdated` → [AcademicTerm](aggregates/AcademicTerm.md)
+- `CommissionCreated`, `CommissionUpdated` → [Commission](aggregates/Commission.md)
+- `CommissionTeacherAssigned`, `CommissionTeacherUnassigned` → [Commission](aggregates/Commission.md) (operación sobre child CommissionTeacher)
 
-### Domain events de StudentProfile / TeacherProfile
+### Enrollments
 
-| Event | Aggregate | Notas |
-|---|---|---|
-| `StudentProfileCreated` | StudentProfile | `UserId`, `CareerPlanId`, `EnrollmentYear`, `OccurredAt` |
-| `StudentProfileMarkedGraduated` | StudentProfile | `StudentProfileId`, `GraduatedAt`, `OccurredAt` |
-| `StudentProfileMarkedAbandoned` | StudentProfile | `StudentProfileId`, `OccurredAt` |
-| `TeacherProfileClaimInitiated` | TeacherProfile | `TeacherProfileId`, `UserId`, `TeacherId`, `OccurredAt` |
-| `TeacherProfileInstitutionalEmailSubmitted` | TeacherProfile | `TeacherProfileId`, `EmailAddress`, `OccurredAt` |
-| `TeacherProfileVerifiedByInstitutionalEmail` | TeacherProfile | `TeacherProfileId`, `OccurredAt` |
-| `TeacherProfileEvidenceSubmitted` | TeacherProfile | `TeacherProfileId`, `EvidenceFileIds[]`, `OccurredAt` |
-| `TeacherProfileVerifiedManually` | TeacherProfile | `TeacherProfileId`, `ApprovedByAdminId`, `OccurredAt` |
-| `TeacherProfileVerificationRejected` | TeacherProfile | `TeacherProfileId`, `Reason`, `RejectedByAdminId`, `OccurredAt` |
+- `HistorialImportRequested` → [HistorialImport](aggregates/HistorialImport.md)
+- `HistorialImportCompleted` → [HistorialImport](aggregates/HistorialImport.md)
+- `HistorialImportFailed` → [HistorialImport](aggregates/HistorialImport.md)
+- `EnrollmentRecordCreated` → [EnrollmentRecord](aggregates/EnrollmentRecord.md)
+- `EnrollmentRecordEdited` → [EnrollmentRecord](aggregates/EnrollmentRecord.md) (también integration event vía `EnrollmentRecordEditedIntegrationEvent`, consumido por Reviews con policy `InvalidateReviewIfEnrollmentNoLongerValid`)
 
----
+### Reviews
 
-## Academic
+Casi todos también integration events publicados al outbox para Moderation (audit log).
 
-Catálogo de eventos CRUD-flavored. La mayoría son emitidos para audit y para que otros BCs (raramente) puedan reaccionar.
+- `ReviewPublished` → [Review](aggregates/Review.md) (integration)
+- `ReviewQuarantined` → [Review](aggregates/Review.md) (integration)
+- `ReviewEdited` → [Review](aggregates/Review.md) (integration)
+- `ReviewInvalidated` → [Review](aggregates/Review.md)
+- `ReviewRemoved` → [Review](aggregates/Review.md) (integration)
+- `ReviewRestored` → [Review](aggregates/Review.md) (integration)
+- `TeacherResponsePublished` → [Review](aggregates/Review.md) (integration, operación sobre child)
+- `TeacherResponseEdited` → [Review](aggregates/Review.md) (integration)
 
-| Event | Aggregate | Notas |
-|---|---|---|
-| `UniversityCreated`, `UniversityUpdated` | University | — |
-| `CareerCreated`, `CareerUpdated` | Career | — |
-| `CareerPlanCreated`, `CareerPlanRetired` | CareerPlan | `Retired` cuando se setea `EffectiveTo` |
-| `SubjectCreated`, `SubjectUpdated`, `SubjectArchived` | Subject | — |
-| `PrerequisiteAdded`, `PrerequisiteRemoved` | Subject | Operación sobre child entity Prerequisite, emitido por el aggregate root |
-| `TeacherCreated`, `TeacherUpdated`, `TeacherDeactivated` | Teacher | — |
-| `AcademicTermCreated`, `AcademicTermUpdated` | AcademicTerm | — |
-| `CommissionCreated`, `CommissionUpdated` | Commission | — |
-| `CommissionTeacherAssigned`, `CommissionTeacherUnassigned` | Commission | Operación sobre child entity CommissionTeacher |
+### Moderation
 
-Sin integration events cross-BC en MVP — el catálogo es estable y no suele cambiar lo suficiente como para que otros BCs reaccionen activamente.
+- `ReviewReported` → [ReviewReport](aggregates/ReviewReport.md)
+- `ReportUpheld` → [ReviewReport](aggregates/ReviewReport.md) (también integration event vía `ReportUpheldIntegrationEvent`, consumido por Reviews con policy `RemoveReviewOnReportUpheld`)
+- `ReportDismissed` → [ReviewReport](aggregates/ReviewReport.md) (integration)
 
----
-
-## Enrollments
-
-| Event | Aggregate | Notas |
-|---|---|---|
-| `HistorialImportRequested` | HistorialImport | `ImportId`, `StudentProfileId`, `SourceType`, `OccurredAt` |
-| `HistorialImportCompleted` | HistorialImport | `ImportId`, `ResolvedRows`, `UnresolvedRows`, `OccurredAt` |
-| `HistorialImportFailed` | HistorialImport | `ImportId`, `Error`, `OccurredAt` |
-| `EnrollmentRecordCreated` | EnrollmentRecord | `RecordId`, `StudentProfileId`, `SubjectId`, `AcademicTermId`, `Status`, `OccurredAt`. Emitido en cada creación, sea manual o desde import (HOT 6) |
-| `EnrollmentRecordEdited` | EnrollmentRecord | `RecordId`, `Changes` (diff de campos cambiados), `OccurredAt`. **También integration event** — Reviews lo consume (HOT 5, ADR-0032) |
-
-### Integration events de Enrollments
-
-| Event | Consumers |
-|---|---|
-| `EnrollmentRecordEditedIntegrationEvent` | Reviews — policy `InvalidateReviewIfEnrollmentNoLongerValid` |
-
----
-
-## Reviews
-
-| Event | Aggregate | Notas |
-|---|---|---|
-| `ReviewPublished` | Review | `ReviewId`, `EnrollmentRecordId`, `OccurredAt`. **También integration event** — Moderation lo consume para audit |
-| `ReviewQuarantined` | Review | `ReviewId`, `Reason` ∈ {AutoFilter, ReportThreshold, Other}, `OccurredAt`. Integration event |
-| `ReviewEdited` | Review | `ReviewId`, `Changes`, `OccurredAt`. Integration event |
-| `ReviewInvalidated` | Review | `ReviewId`, `TriggeringEventId` (referencia al EnrollmentRecordEdited), `OccurredAt` |
-| `ReviewRemoved` | Review | `ReviewId`, `RemovalReason`, `OccurredAt`. Integration event |
-| `ReviewRestored` | Review | `ReviewId`, `RestoredBy`, `OccurredAt`. Integration event |
-| `TeacherResponsePublished` | Review (operación sobre child) | `ReviewId`, `AuthorTeacherProfileId`, `OccurredAt`. Integration event |
-| `TeacherResponseEdited` | Review | `ReviewId`, `OccurredAt`. Integration event |
-
-### Integration events que Reviews consume
-
-| Event | Source | Policy |
-|---|---|---|
-| `EnrollmentRecordEditedIntegrationEvent` | Enrollments | `InvalidateReviewIfEnrollmentNoLongerValid` |
-| `UserDisabledIntegrationEvent` | Identity | `SoftFlagReviewsForPresentationOnUserDisabled` (visibilidad) |
-| `TeacherProfileVerifiedIntegrationEvent` | Identity | (futuro) habilita capability `review:respond` |
-| `ReportUpheldIntegrationEvent` | Moderation | `RemoveReviewOnReportUpheld` |
-
----
-
-## Moderation
-
-| Event | Aggregate | Notas |
-|---|---|---|
-| `ReviewReported` | ReviewReport | `ReportId`, `ReviewId`, `ReporterId`, `Reason`, `OccurredAt` |
-| `ReportUpheld` | ReviewReport | `ReportId`, `ReviewId`, `ModeratorId`, `ResolutionNote`, `OccurredAt`. Integration event |
-| `ReportDismissed` | ReviewReport | `ReportId`, `ReviewId`, `ModeratorId`, `ResolutionNote`, `OccurredAt`. Integration event |
-
-### Integration events que Moderation consume
-
-| Event | Source | Policy / Consumer |
-|---|---|---|
-| `ReviewPublished` | Reviews | `AppendToAuditLog` |
-| `ReviewQuarantined` | Reviews | `AppendToAuditLog` + `EnqueueModerationQueue` |
-| `ReviewEdited` | Reviews | `AppendToAuditLog` |
-| `ReviewRemoved` | Reviews | `AppendToAuditLog` |
-| `ReviewRestored` | Reviews | `AppendToAuditLog` |
-| `TeacherResponsePublished` | Reviews | `AppendToAuditLog` |
-| `TeacherResponseEdited` | Reviews | `AppendToAuditLog` |
-| `UserDisabledIntegrationEvent` | Identity | `AppendToAuditLog` |
-
-ReviewAuditLog (projection) se construye exclusivamente a partir de estos events — append-only, sin escrituras directas.
-
----
-
-## Planning
-
-| Event | Aggregate | Notas |
-|---|---|---|
-| `SimulationDraftSaved` | SimulationDraft | `DraftId`, `OwnerProfileId`, `Subjects[]`, `TermId`, `OccurredAt` |
-| `SimulationDraftEdited` | SimulationDraft | `DraftId`, `Changes`, `OccurredAt` |
-| `SimulationDraftDeleted` | SimulationDraft | `DraftId`, `OccurredAt` |
-| `SimulationDraftShared` | SimulationDraft | `DraftId`, `OccurredAt`. Pasa a corpus público |
-| `SimulationDraftUnshared` | SimulationDraft | `DraftId`, `OccurredAt`. Vuelve a privado |
+### Planning
 
 Sin integration events cross-BC en MVP. Recomendación de simulaciones (post-MVP) consumirá events de Reviews vía read model.
 
----
+- `SimulationDraftSaved` → [SimulationDraft](aggregates/SimulationDraft.md)
+- `SimulationDraftEdited` → [SimulationDraft](aggregates/SimulationDraft.md)
+- `SimulationDraftShared` → [SimulationDraft](aggregates/SimulationDraft.md)
+- `SimulationDraftUnshared` → [SimulationDraft](aggregates/SimulationDraft.md)
+- `SimulationDraftDeleted` → [SimulationDraft](aggregates/SimulationDraft.md)
+
+## Integration events: matriz cross-BC
+
+| Integration event | Origen | Consumers |
+|---|---|---|
+| `UserDisabledIntegrationEvent` | Identity (`UserDisabled`) | Reviews (`SoftFlagReviewsForPresentationOnUserDisabled`), Moderation (audit log) |
+| `TeacherProfileVerifiedIntegrationEvent` | Identity (`TeacherProfileVerifiedByInstitutionalEmail` o `TeacherProfileVerifiedManually`) | Reviews (capability `review:respond`) |
+| `EnrollmentRecordEditedIntegrationEvent` | Enrollments (`EnrollmentRecordEdited`) | Reviews (`InvalidateReviewIfEnrollmentNoLongerValid`) |
+| `ReportUpheldIntegrationEvent` | Moderation (`ReportUpheld`) | Reviews (`RemoveReviewOnReportUpheld`) |
 
 ## Patrones
 
@@ -195,7 +134,9 @@ Este flow está implementado y funcional desde slice B. Ver `RegisterUserCommand
 
 En MVP no versionamos events explícitamente. Cuando aparezca el primer cambio breaking en un event ya publicado en producción, agregamos sufijo `V2` y mantenemos el handler de `V1` para deserialization de mensajes antiguos del outbox. Mientras tanto, asumimos que los events están en su versión `V1` implícita.
 
----
+## Outbox y eventual consistency
+
+Ver [ADR-0030](../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md) para la decisión de usar Wolverine outbox como mecanismo de consistencia cross-BC.
 
 ## Cómo agregar un event nuevo
 
@@ -205,6 +146,11 @@ En MVP no versionamos events explícitamente. Cuando aparezca el primer cambio b
 4. Si cruza BCs:
    - Crear su contraparte integration event en `<SourceModule>.Application/IntegrationEvents/`.
    - Agregar handler que traduce domain → integration.
-   - Documentar consumers en este doc.
+   - Documentar consumers en este doc + en el archivo del aggregate.
 5. Tests unitarios del aggregate verificando el event en `DomainEvents`.
 6. Test integration de la policy si hay handler.
+
+## Refs
+
+- Aggregates: [aggregates/](aggregates/)
+- ADRs: [ADR-0030](../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md)
