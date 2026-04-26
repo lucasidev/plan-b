@@ -57,5 +57,54 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired();
 
         builder.Ignore(u => u.DomainEvents);
+
+        builder.OwnsMany(u => u.Tokens, tokens =>
+        {
+            tokens.ToTable("verification_tokens");
+
+            tokens.WithOwner().HasForeignKey("user_id");
+
+            tokens.HasKey(t => t.Id);
+
+            tokens.Property(t => t.Id)
+                .HasColumnName("id");
+
+            tokens.Property<UserId>("user_id")
+                .HasColumnName("user_id")
+                .HasConversion(id => id.Value, value => new UserId(value));
+
+            tokens.HasIndex("user_id").HasDatabaseName("ix_verification_tokens_user_id");
+
+            tokens.Property(t => t.Purpose)
+                .HasColumnName("purpose")
+                .HasConversion<string>()
+                .HasMaxLength(64)
+                .IsRequired();
+
+            tokens.Property(t => t.Token)
+                .HasColumnName("token")
+                .HasMaxLength(128)
+                .IsRequired();
+
+            tokens.HasIndex(t => t.Token)
+                .IsUnique()
+                .HasDatabaseName("ux_verification_tokens_token");
+
+            tokens.Property(t => t.IssuedAt)
+                .HasColumnName("issued_at")
+                .IsRequired();
+
+            tokens.Property(t => t.ExpiresAt)
+                .HasColumnName("expires_at")
+                .IsRequired();
+
+            tokens.Property(t => t.ConsumedAt)
+                .HasColumnName("consumed_at");
+
+            tokens.Property(t => t.InvalidatedAt)
+                .HasColumnName("invalidated_at");
+        });
+
+        builder.Navigation(u => u.Tokens).AutoInclude();
     }
 }

@@ -55,7 +55,9 @@ public class IdentityDatabaseTests
         var clock = new FixedClock(new DateTimeOffset(2026, 4, 24, 12, 0, 0, TimeSpan.Zero));
         var email = EmailAddress.Create("Lucas@UNSTA.edu.ar").Value;
         var user = User.Register(email, "bcrypt$placeholder", clock).Value;
-        user.MarkEmailVerified(clock);
+        user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification, "raw-token", TimeSpan.FromHours(24), clock);
+        user.VerifyEmail("raw-token", clock);
 
         db.Users.Add(user);
         await db.SaveChangesAsync();

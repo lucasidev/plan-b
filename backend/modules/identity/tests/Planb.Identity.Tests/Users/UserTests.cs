@@ -58,38 +58,104 @@ public class UserTests
         result.Error.ShouldBe(UserErrors.PasswordHashRequired);
     }
 
+    private static User RegisteredUserWithToken(
+        FixedClock clock, string rawToken = "raw-token", TimeSpan? ttl = null)
+    {
+        var user = User.Register(Email(), "hashed", clock).Value;
+        user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification,
+            rawToken,
+            ttl ?? TimeSpan.FromHours(24),
+            clock);
+        return user;
+    }
+
     [Fact]
-    public void MarkEmailVerified_sets_timestamp_and_raises_event_on_first_call()
+    public void VerifyEmail_consumes_token_and_raises_event()
     {
         var clock = new FixedClock(T0);
-        var user = User.Register(Email(), "hashed", clock).Value;
+        var user = RegisteredUserWithToken(clock);
         user.ClearDomainEvents();
 
         clock.Advance(TimeSpan.FromMinutes(5));
-        user.MarkEmailVerified(clock);
+        var result = user.VerifyEmail("raw-token", clock);
 
+        result.IsSuccess.ShouldBeTrue();
         user.EmailVerifiedAt.ShouldBe(T0.AddMinutes(5));
         user.UpdatedAt.ShouldBe(T0.AddMinutes(5));
         user.IsEmailVerified.ShouldBeTrue();
+        var token = user.Tokens.ShouldHaveSingleItem();
+        token.IsConsumed.ShouldBeTrue();
         user.DomainEvents.OfType<UserEmailVerifiedDomainEvent>().ShouldHaveSingleItem();
     }
 
     [Fact]
-    public void MarkEmailVerified_is_idempotent_and_emits_no_extra_event()
+    public void VerifyEmail_is_idempotent_when_already_verified()
     {
         var clock = new FixedClock(T0);
-        var user = User.Register(Email(), "hashed", clock).Value;
+        var user = RegisteredUserWithToken(clock);
         clock.Advance(TimeSpan.FromMinutes(5));
-        user.MarkEmailVerified(clock);
-        user.ClearDomainEvents();
+        user.VerifyEmail("raw-token", clock);
         var firstVerifiedAt = user.EmailVerifiedAt;
+        user.ClearDomainEvents();
 
         clock.Advance(TimeSpan.FromHours(1));
-        user.MarkEmailVerified(clock);
+        var second = user.VerifyEmail("raw-token", clock);
 
+        second.IsSuccess.ShouldBeTrue();
         user.EmailVerifiedAt.ShouldBe(firstVerifiedAt);
         user.UpdatedAt.ShouldBe(firstVerifiedAt!.Value);
         user.DomainEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void VerifyEmail_fails_when_token_does_not_match()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+
+        var result = user.VerifyEmail("wrong-token", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenInvalid);
+        user.IsEmailVerified.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void VerifyEmail_fails_when_token_is_expired()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock, ttl: TimeSpan.FromHours(1));
+
+        clock.Advance(TimeSpan.FromHours(2));
+        var result = user.VerifyEmail("raw-token", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenExpired);
+        user.IsEmailVerified.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IssueVerificationToken_invalidates_previous_active_token_of_same_purpose()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock, rawToken: "first");
+        user.ClearDomainEvents();
+
+        clock.Advance(TimeSpan.FromMinutes(10));
+        user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification,
+            "second",
+            TimeSpan.FromHours(24),
+            clock);
+
+        user.Tokens.Count.ShouldBe(2);
+        var first = user.Tokens.Single(t => t.Token == "first");
+        first.IsInvalidated.ShouldBeTrue();
+        var second = user.Tokens.Single(t => t.Token == "second");
+        second.IsActive.ShouldBeTrue();
+        user.DomainEvents.OfType<VerificationTokenInvalidatedDomainEvent>().ShouldHaveSingleItem();
+        user.DomainEvents.OfType<VerificationTokenIssuedDomainEvent>().ShouldHaveSingleItem();
     }
 
     [Fact]
