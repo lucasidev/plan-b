@@ -110,7 +110,7 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0005](../../decisions/0005-resena-anclada-al-enrollment.md) — reseña anclada a EnrollmentRecord (no a User + Subject).
+- [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md) — reseña anclada a EnrollmentRecord (no a User + Subject).
 - [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md) — pgvector pipeline implementado, UI gated hasta tener volumen.
 - [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md) — anonimato del autor en presentación pública.
 - [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md) — cascade de reports al upheld; sin reversión al restore.

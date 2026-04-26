@@ -437,7 +437,7 @@ Staging del parseo de PDF/texto.
 
 ## Context: Reviews & Moderation
 
-Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0005](../decisions/0005-resena-anclada-al-enrollment.md) y [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md).
+Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0005](../decisions/0005-reseña-anclada-al-enrollment.md) y [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md).
 
 ```mermaid
 ---

@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Una `Review` se ancla a un `EnrollmentRecord` específico (ver [ADR-0005](0005-resena-anclada-al-enrollment.md)). El alumno puede editar el EnrollmentRecord ([UC-015](../domain/actors-and-use-cases.md#uc-015)) — corregir status, grade, approval_method, etc. Eso introduce un riesgo:
+Una `Review` se ancla a un `EnrollmentRecord` específico (ver [ADR-0005](0005-reseña-anclada-al-enrollment.md)). El alumno puede editar el EnrollmentRecord ([UC-015](../domain/actors-and-use-cases.md#uc-015)) — corregir status, grade, approval_method, etc. Eso introduce un riesgo:
 
 **Caso problemático**: alumno reseñó la cursada cuando estaba en status='aprobada'. Después edita el record a status='cursando' (porque "perdí la final, vuelvo a cursar"). La Review sigue ancla — pero ahora habla de una cursada que aún no terminó. Inconsistente.
 
@@ -104,4 +104,4 @@ Contras (decisivos): UX broken. Audit log show inconsistencia. Visitors anónimo
 - Si los falsos positivos (edits inocentes que disparan invalidation) crecen mucho: refinar la heurística de "destructive". Hoy es conservadora.
 - Si el moderador termina con mucha cola de auto-invalidated waiting alumno: agregar un grace period (ej. 7 días para re-publicar) y auto-restore si el alumno no actuó.
 
-Refs: [ADR-0005](0005-resena-anclada-al-enrollment.md), [ADR-0011](0011-cascade-on-uphold-sin-reversion-on-restore.md), [ADR-0012](0012-edicion-de-resena-solo-desde-published.md), [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md).
+Refs: [ADR-0005](0005-reseña-anclada-al-enrollment.md), [ADR-0011](0011-cascade-on-uphold-sin-reversion-on-restore.md), [ADR-0012](0012-edicion-de-resena-solo-desde-published.md), [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md).
