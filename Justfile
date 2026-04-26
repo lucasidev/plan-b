@@ -36,13 +36,9 @@ lefthook-install:
 # Dev
 # ═══════════════════════════════════════════════════════════════
 
-# Run backend + frontend in parallel (Ctrl+C stops both). Requires bash (Git Bash on Windows).
+# Run backend + frontend in parallel (Ctrl+C stops both). Cross-platform (bun script).
 dev: infra-up
-    #!/usr/bin/env bash
-    trap 'kill 0' SIGINT
-    (cd backend/host/Planb.Api && dotnet watch run) &
-    (cd frontend && bun dev) &
-    wait
+    bun scripts/dev.ts
 
 # Run backend only (any shell)
 dev-backend: infra-up
@@ -68,12 +64,7 @@ infra-status:
     {{compose}} ps
 
 infra-logs service="":
-    #!/usr/bin/env bash
-    if [ -z "{{service}}" ]; then
-        {{compose}} logs -f
-    else
-        {{compose}} logs -f {{service}}
-    fi
+    bun scripts/infra-logs.ts {{container_cmd}} {{service}}
 
 # Reset: down + remove volumes + up
 infra-reset:
