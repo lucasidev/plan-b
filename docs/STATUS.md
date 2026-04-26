@@ -1,76 +1,180 @@
 # Estado del proyecto — planb
 
-Tracking de avance por fases del cronograma original. Documento orientado a evaluación académica (Ing. Copas) — estado al día concreto, sin jerga de dev.
+Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
 **Última actualización**: 2026-04-25.
 
 ---
 
-## Resumen ejecutivo
+## Resumen ejecutivo (sprints)
 
-| Fase | Título | Estado | Progreso |
+| Sprint | Rango | Foco | Status |
 |---|---|---|---|
-| 1 | Diseño y modelado de datos | ✓ Completa | 100% |
-| 2 | Backend y autenticación | 🔄 En progreso | 40% (2 de 5 slices entregadas) |
-| 3 | Precarga de planes + frontend base | ⏳ Pendiente | 0% |
-| 4 | Simulador + sistema de reseñas | ⏳ Pendiente | 0% |
-| 5 | Dashboard institucional + verificación de docentes | ⏳ Pendiente | 0% |
-| 6 | Focus group cerrado + ajustes | ⏳ Pendiente | 0% |
-| 7 | Lanzamiento público | ⏳ Pendiente | 0% |
+| S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity slices A+B | ✓ Done |
+| S1 | 2026-04-27 a 2026-05-03 | UC-011 Verify email (slice C) | 🔄 En progreso |
+| S2 | siguiente | UC-012 StudentProfile (slice D) | ⏳ Pendiente |
+| S3+ | next | JWT login + cookie (slice E) y siguientes | ⏳ Pendiente |
+
+Convenciones:
+
+- IDs de US: `US-NNN-x` con sufijo `-b` (backend), `-f` (frontend), `-i` (infra), `-t` (tooling). Sin sufijo cuando la US es uni-capa o documental.
+- Sprints: 7 días, identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle.
+- Definition of Done por US: [`docs/domain/definition-of-done.md`](domain/definition-of-done.md).
 
 ---
 
-## Fase 1 — Diseño y modelado de datos ✓
+## S0 (pre-sprint) ✓ Done
 
-**Entregables completados**:
+**Rango**: hasta 2026-04-25 (todo el trabajo previo a la formalización del cycle de sprints).
 
-- **27 ADRs** (`docs/decisions/`) cubriendo decisiones de dominio, arquitectura, frontend, tooling y workflow.
-- **5 documentos de dominio** (`docs/domain/`):
-  - `ubiquitous-language.md` — glosario.
-  - `actors-and-use-cases.md` — 34 UCs.
-  - `enrollment-lifecycle.md`, `review-lifecycle.md`, `verification-flows.md` — state machines.
-- **ERD consolidado** (`docs/architecture/data-model.md`) — modelo de datos por bounded context.
+**Foco**: foundations del repo, modelo DDD, primer slice end-to-end de Identity.
+
+### Entregables documentales
+
+- **33 ADRs** (`docs/decisions/`) cubriendo decisiones de dominio, arquitectura, frontend, tooling, workflow y outcomes recientes del DDD discovery (ADR-0028 a ADR-0033).
+- **Documentos de dominio** (`docs/domain/`):
+  - `ubiquitous-language.md`: glosario.
+  - `actors-and-use-cases.md` + `use-cases/`: índice y 41 archivos individuales por UC.
+  - `enrollment-lifecycle.md`, `review-lifecycle.md`, `verification-flows.md`: state machines.
+  - `definition-of-done.md`: criterios mínimos por US.
+- **ERD consolidado** (`docs/architecture/data-model.md`): modelo de datos por bounded context.
 - **Documentos DDD táctico/estratégico** (`docs/domain/strategic/`, `docs/domain/tactical/`):
   - `eventstorming.md`, `bounded-contexts.md`, `context-map.md`, `aggregates.md`, `domain-events.md`, `value-objects.md`.
-- **Catálogo de epics + user stories** (`docs/domain/epics.md`, `docs/domain/user-stories.md`) — 10 epics, 41 US.
+- **Catálogo de epics + user stories** (`docs/domain/epics/`, `docs/domain/user-stories/`): 11 epics (incluye EPIC-00 Foundations) y ~52 user stories en archivos individuales.
 
----
+### User stories cerradas (9)
 
-## Fase 2 — Backend y autenticación 🔄
+| US | Título | Epic |
+|---|---|---|
+| US-F01-b | Scaffolding modular monolith backend | EPIC-00 |
+| US-F01-f | Scaffolding frontend Next.js | EPIC-00 |
+| US-F02-t | Tooling: Justfile + Lefthook + Conventional Commits | EPIC-00 |
+| US-F03-i | Infra local: Docker Postgres pgvector + Mailpit | EPIC-00 |
+| US-F04-i | CI baseline GitHub Actions | EPIC-00 |
+| US-F05 | ADRs base 0001-0033 | EPIC-00 |
+| US-F06 | DDD formalization (strategic + tactical + epics + US) | EPIC-00 |
+| US-010-b | Register backend (slice A+B) | EPIC-02 |
+| US-010-f | Register frontend (slice B) | EPIC-02 |
 
-Subdividida en **5 slices end-to-end testeables**:
-
-| # | Slice | Status | Detalle |
-|---|---|---|---|
-| A | Identity schema + primera migración EF Core | ✓ Done | Aggregate User, value objects (UserId, EmailAddress), domain events, primera migration (`identity` schema, tabla `users`, enum PG `user_role`) |
-| B | UC-010 Register + email de verificación | ✓ Done | `POST /api/identity/register`, BCrypt password hash, VerificationToken, envío SMTP vía Mailpit, integration tests con WebApplicationFactory |
-| C | UC-011 Verify email + refactor token a child entity | ⏳ Próximo | `GET /api/identity/verify`, marca email_verified_at, refactor `EmailVerificationToken` aggregate → `VerificationToken` child entity de User (ver ADR-0033) |
-| D | UC-012 Create StudentProfile | ⏳ Pendiente | Aggregate StudentProfile, `POST /api/me/student-profiles` autenticado |
-| E | JWT login flow + cookie + frontend wiring | ⏳ Pendiente | LoginCommand, JWT issuance, cookie httpOnly, getSession() RSC helper, layout guards |
-
-**Posición exacta**: terminamos B (mergeado en main), próximo es C.
-
-**Stack técnico funcionando**:
+### Stack técnico funcionando
 
 - .NET 10 + ASP.NET Core 10 + Wolverine 5.32 + Carter 10 + EF Core 10 + Npgsql 10.
 - Postgres 17 + pgvector 0.8.
 - Mailpit en dev y CI.
 - BCrypt para password hashing.
-- Wolverine outbox configurado pero no usado todavía (slice futuro).
+- Wolverine outbox configurado pero no usado todavía (sprint futuro).
 - 51 unit tests + 8 integration tests passing.
 
-**ADRs nuevos del discovery DDD reciente** (escritos pero pendientes de merge en este branch):
+### ADRs nuevos del discovery DDD reciente
 
-- ADR-0028 — Reseñas opcionales + premium features como reward (no gating del simulador).
-- ADR-0029 — Bounded Context Planning separado.
-- ADR-0030 — Cross-BC consistency vía Wolverine outbox.
-- ADR-0031 — ReviewAuditLog como projection.
-- ADR-0032 — Edit destructive de EnrollmentRecord invalida Review.
-- ADR-0033 — VerificationToken como child entity (no aggregate independiente).
+- ADR-0028 Reseñas opcionales + premium features como reward (no gating del simulador).
+- ADR-0029 Bounded Context Planning separado.
+- ADR-0030 Cross-BC consistency vía Wolverine outbox.
+- ADR-0031 ReviewAuditLog como projection.
+- ADR-0032 Edit destructive de EnrollmentRecord invalida Review.
+- ADR-0033 VerificationToken como child entity (no aggregate independiente).
 
 ---
 
-## Fase 3 — Precarga de planes + frontend base ⏳
+## S1 (sprint actual) 🔄 En progreso
+
+**Rango**: 2026-04-27 a 2026-05-03.
+
+**Foco**: cerrar UC-011 Verify email end-to-end (slice C de la capability Identity). Incluye un refactor de modelo: `EmailVerificationToken` aggregate pasa a ser child entity `VerificationToken` de User (ADR-0033).
+
+### User stories incluidas (2)
+
+| US | Título | Epic | Status |
+|---|---|---|---|
+| US-011-b | Verify email backend | EPIC-02 | En progreso |
+| US-011-f | Verify email frontend | EPIC-02 | Pendiente (depende de -b) |
+
+### Entregables
+
+- `GET /api/identity/verify?token=...` consume token, marca `EmailVerifiedAt`, idempotente.
+- Refactor a `VerificationToken` child entity con discriminator `Purpose` (UserEmailVerification, TeacherInstitutionalVerification).
+- Página `/verify-email` en Next.js que dispara la llamada y muestra resultado (success / token inválido / token expirado).
+- Integration tests cubren happy path, doble click, token expirado, token inválido.
+
+---
+
+## S2 (próximo) ⏳ Pendiente
+
+**Foco previsto**: UC-012 Crear StudentProfile (slice D de Identity).
+
+### User stories previstas
+
+| US | Título | Epic |
+|---|---|---|
+| US-012 | Crear StudentProfile | EPIC-02 |
+
+### Entregables previstos
+
+- Aggregate `StudentProfile` en módulo Identity, con FK lógica a `CareerPlanId` (Academic).
+- `POST /api/me/student-profiles` autenticado.
+- Validaciones: un member puede tener múltiples StudentProfiles (multi-carrera permitido).
+- Frontend: pantalla de "agregar carrera" para member sin profile.
+
+---
+
+## S3+ ⏳ Pendiente
+
+**Foco previsto**: cerrar la capability Identity con login real (slice E) y luego abrir el siguiente bounded context.
+
+### Slice E (probablemente S3, posible S4)
+
+- LoginCommand, JWT issuance, cookie httpOnly.
+- `getSession()` RSC helper en frontend.
+- Layout guards (redirect si no autenticado en `(member)` route group).
+- Logout + token revoke.
+
+### Sprints siguientes (S4 en adelante)
+
+Pendiente de planificación detallada. Candidatos por prioridad:
+
+- Backoffice de catálogo (EPIC-08): University, Career, CareerPlan, Subject + Prerequisite, Teacher, Term, Commission. Sin esto no hay UC-001 ni nada del público.
+- Catálogo público (EPIC-01): visitor explora UNSTA.
+- Historial académico (EPIC-03): UC-013 cargar historial manual.
+
+---
+
+## Cómo seguir el avance
+
+- **Este doc** se actualiza al cerrar cada sprint o al iniciar uno nuevo.
+- **Notion** (page padre `plan-b project management` con dos listas anidadas):
+  - `plan-b: Tasks` (user stories + sub-tasks técnicas) con kanban del sprint actual y backlog priorizado, field `Sprint` (S0, S1, S2, ...).
+  - `plan-b: Epics` (vistas separadas por capability).
+- **GitHub** (`https://github.com/lucasidev/plan-b`): commits, PRs, CI status.
+
+Para preguntas sobre decisiones de diseño puntuales: `docs/decisions/`. Para lenguaje del dominio: `docs/domain/ubiquitous-language.md`. Para "qué hace el sistema": `docs/domain/actors-and-use-cases.md` (índice) o `docs/domain/use-cases/UC-NNN.md`. Para epics: `docs/domain/epics.md`.
+
+---
+
+## Anexo: hitos macro del cronograma original
+
+El plan inicial del proyecto definió 7 fases macro como referencia de planificación al arrancar. La cadencia real de trabajo es sprint (ver tabla arriba). Las fases siguen sirviendo como hitos macro del proyecto: agrupan varios sprints y marcan momentos donde el producto cruza estados (modelado completo, backend operativo, MVP usable, etc.).
+
+### Fase 1 — Diseño y modelado de datos ✓
+
+Completada en S0.
+
+Cubre los entregables documentales listados en S0 arriba: ADRs 0001-0033, ubiquitous language, use cases, ERD, DDD táctico y estratégico, catálogo de epics y user stories.
+
+### Fase 2 — Backend y autenticación 🔄
+
+En progreso. Subdividida en 5 slices end-to-end testeables, mapeados a sprints:
+
+| Slice | Sprint | Status | Detalle |
+|---|---|---|---|
+| A | S0 | ✓ Done | Identity schema + primera migración EF Core |
+| B | S0 | ✓ Done | UC-010 Register + email de verificación |
+| C | S1 | 🔄 En progreso | UC-011 Verify email + refactor token a child entity |
+| D | S2 | ⏳ Pendiente | UC-012 Create StudentProfile |
+| E | S3+ | ⏳ Pendiente | JWT login flow + cookie + frontend wiring |
+
+La fase 2 cierra cuando todos los slices A-E están done y la capability Identity es completa (registrarse, verificar email, loguearse, profile, disable).
+
+### Fase 3 — Precarga de planes + frontend base ⏳
 
 Foundational para que la plataforma sea utilizable. Trabajo previsto:
 
@@ -78,20 +182,18 @@ Foundational para que la plataforma sea utilizable. Trabajo previsto:
 - Implementar Academic module (currently solo scaffold). Aggregates: University, Career, CareerPlan, Subject (con Prerequisite child), Teacher, AcademicTerm, Commission (con CommissionTeacher child).
 - Backoffice CRUD endpoints (UC-060 a UC-065).
 - Domain service `IPrerequisiteGraphValidator` para aciclicidad.
-- Carga manual del plan UNSTA Tecnicatura — script de seed o CSV importer.
+- Carga manual del plan UNSTA Tecnicatura: script de seed o CSV importer.
 
 **Frontend (Next.js 15)**:
 - Layout público con route group `(public)`.
 - Páginas de catálogo: universidades, carreras, planes, materias.
 - Visualización del grafo de correlativas como árbol/graph interactivo (eligir librería: react-flow, dagre, etc.).
-- Interfaz de carga de historial (UC-013) — formulario por entrada, validaciones cliente-servidor.
+- Interfaz de carga de historial (UC-013): formulario por entrada, validaciones cliente-servidor.
 - Vista de "mi historial" para alumno autenticado.
 
 **Salida esperada**: alumno UNSTA puede registrarse, login, agregar StudentProfile a la carrera Tecnicatura, cargar manualmente sus cursadas pasadas. Visitor puede explorar el catálogo.
 
----
-
-## Fase 4 — Simulador + sistema de reseñas ⏳
+### Fase 4 — Simulador + sistema de reseñas ⏳
 
 El loop core del producto.
 
@@ -105,18 +207,16 @@ El loop core del producto.
 **Frontend**:
 - Simulador interactivo (UC-016): selección visual de materias, cálculo de métricas en cliente o server, feedback inmediato.
 - Formulario de publicación de reseña (UC-017).
-- Vistas públicas de reseñas (visitor) — UC-002, UC-003.
+- Vistas públicas de reseñas (visitor): UC-002, UC-003.
 - Search box (UC-004).
 - Reportar / ver mis reports (UC-019, UC-020).
 - Mod UI: cola, audit log, resolver reports (UC-050, UC-051, UC-052, UC-053).
 
 **Premium features de Planning**:
-- Guardar/editar/borrar simulación (US-NEW-03 a US-NEW-06).
-- Compartir / ver simulaciones públicas (US-NEW-04, US-NEW-07).
+- Guardar/editar/borrar simulación (US-023 a US-026).
+- Compartir / ver simulaciones públicas (US-024, US-027).
 
----
-
-## Fase 5 — Dashboard institucional + verificación de docentes ⏳
+### Fase 5 — Dashboard institucional + verificación de docentes ⏳
 
 **Backend**:
 - TeacherProfile aggregate con flow de claim (UC-030 a UC-032, UC-066, UC-040, UC-041).
@@ -130,11 +230,9 @@ El loop core del producto.
 - Admin UI de aprobación de claims pendientes.
 - Dashboard staff con métricas y filtros.
 
----
+### Fase 6 — Focus group cerrado + ajustes ⏳
 
-## Fase 6 — Focus group cerrado + ajustes ⏳
-
-Pre-condición: **MVP funcional** — al menos UC-001 a UC-020 más UC-050/051 operativos. Plan:
+Pre-condición: **MVP funcional** (al menos UC-001 a UC-020 más UC-050/051 operativos). Plan:
 
 - Convocar 8-12 alumnos UNSTA.
 - Sesión guiada de 60 min: registrarse, cargar historial, simular cuatrimestre real, leer reseñas, escribir una.
@@ -142,9 +240,7 @@ Pre-condición: **MVP funcional** — al menos UC-001 a UC-020 más UC-050/051 o
 - Backlog de ajustes priorizados.
 - Iteración corta (1-2 semanas) sobre los issues más graves.
 
----
-
-## Fase 7 — Lanzamiento público ⏳
+### Fase 7 — Lanzamiento público ⏳
 
 Timing: sincronizar con el período de inscripción de UNSTA (febrero/julio según cuatrimestre que arranca).
 
@@ -160,14 +256,3 @@ Métricas de éxito (a definir antes del launch):
 - Cantidad de reseñas publicadas.
 - Cantidad de simulaciones guardadas.
 - Tasa de "vuelve después de la primera visita".
-
----
-
-## Cómo seguir el avance
-
-- **Este doc** se actualiza al cerrar cada slice o pasar de fase.
-- **Notion** (`Plan-b project`) para tracking operacional de tareas individuales.
-- **GitHub** (`https://github.com/lucasidev/plan-b`) para commits, PRs, CI status.
-- **CHANGELOG.md** para release-style log técnico.
-
-Para preguntas sobre decisiones de diseño puntuales: `docs/decisions/`. Para lenguaje del dominio: `docs/domain/ubiquitous-language.md`. Para el "qué hace el sistema": `docs/domain/actors-and-use-cases.md`.
