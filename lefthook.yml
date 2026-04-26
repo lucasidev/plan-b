@@ -27,13 +27,7 @@ pre-push:
       run: cd backend && dotnet build --nologo --verbosity quiet
     backend-vulns:
       glob: "backend/**/*.{csproj,props,sln,json}"
-      run: |
-        cd backend
-        out=$(dotnet list package --vulnerable --include-transitive 2>&1)
-        if echo "$out" | grep -q 'has the following vulnerable packages'; then
-          echo "$out"
-          exit 1
-        fi
+      run: bun scripts/check-backend-vulns.ts
     frontend-lint:
       glob: "frontend/**/*.{ts,tsx,js,jsx,json}"
       run: cd frontend && bun run lint
