@@ -68,5 +68,5 @@ Descartada: similar a B en que el moderador sigue viendo contenido cambiante. Ad
 
 **Referencias:**
 
-- Relacionado con [ADR-0005](0005-resena-anclada-al-enrollment.md) (anclaje a enrollment, `UNIQUE(enrollment_id)`).
+- Relacionado con [ADR-0005](0005-reseña-anclada-al-enrollment.md) (anclaje a enrollment, `UNIQUE(enrollment_id)`).
 - Flujo completo en [review-lifecycle.md](../domain/review-lifecycle.md).
