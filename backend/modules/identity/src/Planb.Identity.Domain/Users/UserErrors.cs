@@ -27,4 +27,28 @@ public static class UserErrors
 
     public static readonly Error NotDisabled =
         Error.Conflict("identity.disable.not_disabled", "User is not currently disabled.");
+
+    public static readonly Error VerificationTokenRequired =
+        Error.Validation("identity.verification.token_required", "Token is required.");
+
+    public static readonly Error VerificationTokenTtlMustBePositive =
+        Error.Validation(
+            "identity.verification.ttl_must_be_positive",
+            "Token TTL must be a positive duration.");
+
+    public static readonly Error VerificationTokenInvalid =
+        Error.NotFound("identity.verification.invalid", "Verification token is invalid.");
+
+    public static readonly Error VerificationTokenExpired =
+        Error.Conflict("identity.verification.expired", "Verification token has expired.");
+
+    public static readonly Error VerificationTokenAlreadyConsumed =
+        Error.Conflict(
+            "identity.verification.already_consumed",
+            "Verification token has already been consumed.");
+
+    public static readonly Error VerificationTokenInvalidated =
+        Error.Conflict(
+            "identity.verification.invalidated",
+            "Verification token has been invalidated.");
 }

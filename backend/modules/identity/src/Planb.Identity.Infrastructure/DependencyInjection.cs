@@ -25,7 +25,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IEmailVerificationTokenRepository, EmailVerificationTokenRepository>();
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenGenerator, RandomTokenGenerator>();

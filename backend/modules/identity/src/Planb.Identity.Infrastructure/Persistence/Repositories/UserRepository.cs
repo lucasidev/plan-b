@@ -17,4 +17,12 @@ internal sealed class UserRepository : IUserRepository
 
     public Task<User?> FindByIdAsync(UserId id, CancellationToken ct = default) =>
         _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
+
+    public Task<User?> FindByVerificationTokenAsync(
+        string rawToken,
+        TokenPurpose purpose,
+        CancellationToken ct = default) =>
+        _db.Users.FirstOrDefaultAsync(
+            u => u.Tokens.Any(t => t.Token == rawToken && t.Purpose == purpose),
+            ct);
 }

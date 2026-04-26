@@ -1,7 +1,6 @@
 using Planb.Identity.Application.Abstractions.Email;
 using Planb.Identity.Application.Abstractions.Persistence;
 using Planb.Identity.Application.Abstractions.Security;
-using Planb.Identity.Domain.EmailVerifications;
 using Planb.Identity.Domain.Users;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Abstractions.DomainEvents;
@@ -20,7 +19,6 @@ public static class RegisterUserCommandHandler
     public static async Task<Result<RegisterUserResponse>> Handle(
         RegisterUserCommand command,
         IUserRepository users,
-        IEmailVerificationTokenRepository tokens,
         IIdentityUnitOfWork unitOfWork,
         IPasswordHasher passwords,
         ITokenGenerator tokenGenerator,
@@ -48,19 +46,18 @@ public static class RegisterUserCommandHandler
             return userResult.Error;
         }
         var user = userResult.Value;
-        users.Add(user);
 
         var rawToken = tokenGenerator.Generate();
-        var tokenResult = EmailVerificationToken.Issue(
-            user.Id, rawToken, VerificationTokenTtl, clock);
+        var tokenResult = user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification, rawToken, VerificationTokenTtl, clock);
         if (tokenResult.IsFailure)
         {
             return tokenResult.Error;
         }
-        tokens.Add(tokenResult.Value);
 
-        await DomainEventDispatcher.DispatchAsync(
-            [user, tokenResult.Value], publisher, ct);
+        users.Add(user);
+
+        await DomainEventDispatcher.DispatchAsync([user], publisher, ct);
 
         await unitOfWork.SaveChangesAsync(ct);
 

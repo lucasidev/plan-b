@@ -7,7 +7,8 @@ namespace Planb.Identity.Domain.Users;
 /// <summary>
 /// Aggregate root for an authenticated account. See ADR-0008 for role semantics.
 /// The aggregate treats <see cref="PasswordHash"/> as an opaque string — the hashing algorithm
-/// lives in the infrastructure layer (see the PasswordHasher port).
+/// lives in the infrastructure layer (see the PasswordHasher port). Per ADR-0033 verification
+/// tokens are child entities of this aggregate, not a separate aggregate.
 /// </summary>
 public sealed class User : Entity<UserId>, IAggregateRoot
 {
@@ -20,6 +21,9 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public Guid? DisabledBy { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
+
+    private readonly List<VerificationToken> _tokens = new();
+    public IReadOnlyCollection<VerificationToken> Tokens => _tokens.AsReadOnly();
 
     public bool IsEmailVerified => EmailVerifiedAt is not null;
     public bool IsDisabled => DisabledAt is not null;
@@ -60,21 +64,95 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Idempotent — verifying an already-verified user is a no-op (no state, timestamp, or event change).
+    /// Issues a new <see cref="VerificationToken"/> for the given purpose. Any existing active
+    /// token of the same purpose is invalidated (one active token per purpose, per ADR-0033).
     /// </summary>
-    public void MarkEmailVerified(IDateTimeProvider clock)
+    public Result<VerificationToken> IssueVerificationToken(
+        TokenPurpose purpose,
+        string token,
+        TimeSpan ttl,
+        IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (IsEmailVerified)
+        if (string.IsNullOrWhiteSpace(token))
         {
-            return;
+            return UserErrors.VerificationTokenRequired;
+        }
+
+        if (ttl <= TimeSpan.Zero)
+        {
+            return UserErrors.VerificationTokenTtlMustBePositive;
         }
 
         var now = clock.UtcNow;
+
+        foreach (var existing in _tokens.Where(t => t.Purpose == purpose && t.IsActive))
+        {
+            existing.Invalidate(now);
+            Raise(new VerificationTokenInvalidatedDomainEvent(Id, existing.Id, purpose, now));
+        }
+
+        var newToken = new VerificationToken(
+            Guid.NewGuid(), purpose, token, now, now.Add(ttl));
+        _tokens.Add(newToken);
+        UpdatedAt = now;
+        Raise(new VerificationTokenIssuedDomainEvent(
+            Id, newToken.Id, purpose, token, newToken.ExpiresAt, now));
+
+        return newToken;
+    }
+
+    /// <summary>
+    /// Consumes the verification token matching <paramref name="rawToken"/> for purpose
+    /// <see cref="TokenPurpose.UserEmailVerification"/>, marks the email as verified and emits
+    /// the corresponding domain event. Idempotent: re-verifying an already-verified user is a
+    /// no-op when the token is missing or matches an already-consumed token of this user.
+    /// </summary>
+    public Result VerifyEmail(string rawToken, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrWhiteSpace(rawToken))
+        {
+            return UserErrors.VerificationTokenRequired;
+        }
+
+        if (IsEmailVerified)
+        {
+            // Idempotent: don't fail double-clicks once the user is already verified.
+            return Result.Success();
+        }
+
+        var token = _tokens.FirstOrDefault(
+            t => t.Purpose == TokenPurpose.UserEmailVerification && t.Token == rawToken);
+
+        if (token is null)
+        {
+            return UserErrors.VerificationTokenInvalid;
+        }
+
+        if (token.IsInvalidated)
+        {
+            return UserErrors.VerificationTokenInvalidated;
+        }
+
+        if (token.IsConsumed)
+        {
+            return UserErrors.VerificationTokenAlreadyConsumed;
+        }
+
+        var now = clock.UtcNow;
+        if (token.IsExpired(now))
+        {
+            return UserErrors.VerificationTokenExpired;
+        }
+
+        token.Consume(now);
         EmailVerifiedAt = now;
         UpdatedAt = now;
         Raise(new UserEmailVerifiedDomainEvent(Id, now));
+        return Result.Success();
     }
 
     public Result Disable(Guid disabledBy, string reason, IDateTimeProvider clock)
