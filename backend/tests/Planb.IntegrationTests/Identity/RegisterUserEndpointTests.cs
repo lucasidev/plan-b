@@ -51,10 +51,12 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         user.EmailVerifiedAt.ShouldBeNull();
         user.Role.ShouldBe(UserRole.Member);
 
-        var token = await db.EmailVerificationTokens
-            .SingleAsync(t => t.UserId == user.Id);
+        var token = user.Tokens
+            .ShouldHaveSingleItem();
+        token.Purpose.ShouldBe(TokenPurpose.UserEmailVerification);
         token.Token.ShouldNotBeNullOrEmpty();
         token.ConsumedAt.ShouldBeNull();
+        token.InvalidatedAt.ShouldBeNull();
         token.ExpiresAt.ShouldBeGreaterThan(token.IssuedAt);
     }
 
