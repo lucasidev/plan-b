@@ -24,10 +24,10 @@ Discovery del dominio (ver `docs/domain/eventstorming.md`) puso el dedo en una a
 - Las reseñas son **opcionales**.
 - El simulador (UC-016) es **libre** para cualquier alumno con StudentProfile activo.
 - Las features premium quedan condicionadas a contribución:
-  - **Guardar simulación draft** (UC-NEW-03).
-  - **Compartir simulación al corpus público** (UC-NEW-04).
-  - **Ver simulaciones públicas de otros** (UC-NEW-07).
-  - **Simulación recomendada** (UC-NEW-08, post-MVP).
+  - **Guardar simulación draft** (UC-023).
+  - **Compartir simulación al corpus público** (UC-024).
+  - **Ver simulaciones públicas de otros** (UC-027).
+  - **Simulación recomendada** (UC-028, post-MVP).
 
 La regla concreta de "contribución" se evalúa al usar la feature premium, no al login:
 - Si el alumno no tiene reseñas o tiene pocas, la UI explica el incentivo: "Escribí reseñas de tus cursadas para guardar tus simulaciones".
@@ -86,4 +86,4 @@ Mantiene el funnel: alumno entra → recibe valor (simulador, ver reseñas) → 
 - Si los datos muestran que el corpus no crece: considerar nudges más agresivos o re-evaluar gating parcial.
 - Si aparece una feature premium que tiene sentido **gatear** (no solo "nudge soft"), evaluar pasar a modelo híbrido.
 
-Refs: [ADR-0005](0005-resena-anclada-al-enrollment.md) (Review anclada a EnrollmentRecord), [ADR-0029](0029-planning-bc-separado.md) (Planning BC).
+Refs: [ADR-0005](0005-reseña-anclada-al-enrollment.md) (Review anclada a EnrollmentRecord), [ADR-0029](0029-planning-bc-separado.md) (Planning BC).
