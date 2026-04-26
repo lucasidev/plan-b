@@ -2,12 +2,14 @@ pre-commit:
   parallel: true
   commands:
     frontend-format:
-      glob: "frontend/**/*.{ts,tsx,js,jsx,json,css}"
-      run: cd frontend && bunx biome check --write {staged_files}
+      root: "frontend/"
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: bunx biome check --write {staged_files}
       stage_fixed: true
     backend-format:
-      glob: "backend/**/*.cs"
-      run: cd backend && dotnet format --include {staged_files}
+      root: "backend/"
+      glob: "*.cs"
+      run: dotnet format --include {staged_files}
       stage_fixed: true
 
 commit-msg:
