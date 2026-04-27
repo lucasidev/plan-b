@@ -2,7 +2,7 @@
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-04-25.
+**Última actualización**: 2026-04-27.
 
 ---
 
@@ -11,9 +11,9 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 | Sprint | Rango | Foco | Status |
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity slices A+B | ✓ Done |
-| S1 | 2026-04-27 a 2026-05-03 | UC-011 Verify email (slice C) | 🔄 En progreso |
-| S2 | siguiente | UC-012 StudentProfile (slice D) | ⏳ Pendiente |
-| S3+ | next | JWT login + cookie (slice E) y siguientes | ⏳ Pendiente |
+| S1 | 2026-04-27 a 2026-05-03 | Auth slice completo (register UI + verify + login + sign-out) | 🔄 En progreso |
+| S2 | siguiente | UC-012 StudentProfile (slice D) + cleanup auth (resend, expire) | ⏳ Pendiente |
+| S3+ | next | Backoffice catálogo / catálogo público (Fase 3) | ⏳ Pendiente |
 
 Convenciones:
 
@@ -42,7 +42,9 @@ Convenciones:
   - `eventstorming.md`, `bounded-contexts.md`, `context-map.md`, `aggregates.md`, `domain-events.md`, `value-objects.md`.
 - **Catálogo de epics + user stories** (`docs/domain/epics/`, `docs/domain/user-stories/`): 11 epics (incluye EPIC-00 Foundations) y ~52 user stories en archivos individuales.
 
-### User stories cerradas (9)
+### User stories cerradas (8)
+
+> Nota: US-010-f figuraba "done" en S0 pero la página de signup no estaba implementada. Se movió a S1 con scope ajustado (sign-up tab del AuthView compartido).
 
 | US | Título | Epic |
 |---|---|---|
@@ -54,7 +56,6 @@ Convenciones:
 | US-F05 | ADRs base 0001-0033 | EPIC-00 |
 | US-F06 | DDD formalization (strategic + tactical + epics + US) | EPIC-00 |
 | US-010-b | Register backend (slice A+B) | EPIC-02 |
-| US-010-f | Register frontend (slice B) | EPIC-02 |
 
 ### Stack técnico funcionando
 
@@ -82,59 +83,65 @@ Convenciones:
 
 **Rango**: 2026-04-27 a 2026-05-03.
 
-**Foco**: cerrar UC-011 Verify email end-to-end (slice C de la capability Identity). Incluye un refactor de modelo: `EmailVerificationToken` aggregate pasa a ser child entity `VerificationToken` de User (ADR-0033).
+**Foco**: **cerrar el slice de auth completo end-to-end**. Cuando S1 cierre, alguien puede registrarse, verificar su email, iniciar sesión, usar la app, cerrar sesión. Sin esto, el resto del producto no se puede demostrar.
 
-### User stories incluidas (2)
+### User stories incluidas
 
 | US | Título | Epic | Status |
 |---|---|---|---|
-| US-011-b | Verify email backend | EPIC-02 | En progreso |
-| US-011-f | Verify email frontend | EPIC-02 | Pendiente (depende de -b) |
+| US-011-b | Verify email backend | EPIC-02 | ✓ Done en main |
+| US-010-f | Register frontend (sign-up tab del AuthView) | EPIC-02 | Pendiente |
+| US-011-f | Verify email frontend (rehecho con design system) | EPIC-02 | Pendiente (revertido en PR #14) |
+| US-028-b | Login backend | EPIC-02 | Pendiente |
+| US-028-f | Login frontend (sign-in tab del AuthView) | EPIC-02 | Pendiente |
+| US-029-i | Sign-out integrated | EPIC-02 | Pendiente |
 
-### Entregables
+### Entregables agrupados por PR
 
-- `GET /api/identity/verify?token=...` consume token, marca `EmailVerifiedAt`, idempotente.
-- Refactor a `VerificationToken` child entity con discriminator `Purpose` (UserEmailVerification, TeacherInstitutionalVerification).
-- Página `/verify-email` en Next.js que dispara la llamada y muestra resultado (success / token inválido / token expirado).
-- Integration tests cubren happy path, doble click, token expirado, token inválido.
+1. **`feat/identity-login-backend`** (US-028-b): `POST /api/identity/sign-in` + JWT HS256 + refresh token con revocation list en Redis (patrón #1 de redis-key-patterns) + `DevSeedHostedService` con las 4 personas de [docs/domain/personas.md](domain/personas.md). Tests integration cubren los 3 paths de error (401 invalid creds, 403 unverified, 403 disabled).
+2. **`feat/auth-view-and-verify`** (US-010-f + US-011-f + US-028-f): componente `AuthView` shared con tabs sign-up/sign-in (per mockup `screens.jsx`), 3 rutas `(auth)/sign-up`, `(auth)/sign-in`, `(auth)/verify-email`, server actions wireadas. Sign-up al register backend ya en main, sign-in al login del PR previo, verify-email rehecho sobre `AuthSplit`.
+3. **`feat/identity-sign-out`** (US-029-i): endpoint trivial `POST /api/identity/sign-out` que limpia revocation list + cookies, botón en frontend, integration test.
+
+### Definition of Done de S1
+
+- `just dev` levanta backend + frontend.
+- Lucía (`lucia.mansilla@gmail.com` / `lucia.mansilla.12`) puede iniciar sesión.
+- Mateo, Paula, Martín seedeados producen los caminos esperados (signin OK / 403 disabled / 403 unverified).
+- Un user nuevo se puede registrar desde la UI, verifica el email, queda logueado.
+- "Cerrar sesión" del menú deja al user en `/sign-in`.
 
 ---
 
 ## S2 (próximo) ⏳ Pendiente
 
-**Foco previsto**: UC-012 Crear StudentProfile (slice D de Identity).
+**Foco previsto**: cleanup del flujo de auth (lo que quedó fuera de S1) + arrancar StudentProfile.
 
 ### User stories previstas
 
 | US | Título | Epic |
 |---|---|---|
+| US-021-b | Resend verification backend | EPIC-02 |
+| US-021-f | Resend verification frontend | EPIC-02 |
+| US-022-i | Expirar registros no verificados (cron) | EPIC-02 |
 | US-012 | Crear StudentProfile | EPIC-02 |
 
 ### Entregables previstos
 
-- Aggregate `StudentProfile` en módulo Identity, con FK lógica a `CareerPlanId` (Academic).
-- `POST /api/me/student-profiles` autenticado.
-- Validaciones: un member puede tener múltiples StudentProfiles (multi-carrera permitido).
-- Frontend: pantalla de "agregar carrera" para member sin profile.
+- Resend verification con rate limit (3/h por user).
+- Cron diario que expira registros no verificados >7d.
+- Aggregate `StudentProfile` con `POST /api/me/student-profiles` + UI "agregar carrera".
 
 ---
 
 ## S3+ ⏳ Pendiente
 
-**Foco previsto**: cerrar la capability Identity con login real (slice E) y luego abrir el siguiente bounded context.
+**Foco previsto**: abrir bounded context Academic. Sin catálogo no hay catálogo público ni simulador.
 
-### Slice E (probablemente S3, posible S4)
-
-- LoginCommand, JWT issuance, cookie httpOnly.
-- `getSession()` RSC helper en frontend.
-- Layout guards (redirect si no autenticado en `(member)` route group).
-- Logout + token revoke.
-
-### Sprints siguientes (S4 en adelante)
+### Sprints siguientes
 
 Pendiente de planificación detallada. Candidatos por prioridad:
 
-- Backoffice de catálogo (EPIC-08): University, Career, CareerPlan, Subject + Prerequisite, Teacher, Term, Commission. Sin esto no hay UC-001 ni nada del público.
+- Backoffice de catálogo (EPIC-08): University, Career, CareerPlan, Subject + Prerequisite, Teacher, Term, Commission.
 - Catálogo público (EPIC-01): visitor explora UNSTA.
 - Historial académico (EPIC-03): UC-013 cargar historial manual.
 
@@ -169,12 +176,12 @@ En progreso. Subdividida en 5 slices end-to-end testeables, mapeados a sprints:
 | Slice | Sprint | Status | Detalle |
 |---|---|---|---|
 | A | S0 | ✓ Done | Identity schema + primera migración EF Core |
-| B | S0 | ✓ Done | UC-010 Register + email de verificación |
-| C | S1 | 🔄 En progreso | UC-011 Verify email + refactor token a child entity |
+| B | S0 | ✓ Done | UC-010 Register backend + email de verificación |
+| C+E | S1 | 🔄 En progreso | Slice end-to-end de auth: register UI + verify (b+f) + login (b+f) + sign-out. Cuando S1 cierre, auth está usable de punta a punta |
+| Cleanup | S2 | ⏳ Pendiente | Resend verification + expirar registros no verificados |
 | D | S2 | ⏳ Pendiente | UC-012 Create StudentProfile |
-| E | S3+ | ⏳ Pendiente | JWT login flow + cookie + frontend wiring |
 
-La fase 2 cierra cuando todos los slices A-E están done y la capability Identity es completa (registrarse, verificar email, loguearse, profile, disable).
+La fase 2 cierra cuando S1 + S2 están done: auth end-to-end + cleanup + StudentProfile inicial.
 
 ### Fase 3 — Precarga de planes + frontend base ⏳
 

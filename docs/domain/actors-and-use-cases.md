@@ -68,6 +68,8 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 | [UC-025](use-cases/UC-025.md) | Borrar simulación draft (premium) | [US-025](user-stories/US-025.md) | [EPIC-04](epics/EPIC-04.md) |
 | [UC-026](use-cases/UC-026.md) | Compartir simulación al corpus público (premium) | [US-026](user-stories/US-026.md) | [EPIC-04](epics/EPIC-04.md) |
 | [UC-027](use-cases/UC-027.md) | Ver simulaciones públicas de otros (premium) | [US-027](user-stories/US-027.md) | [EPIC-04](epics/EPIC-04.md) |
+| [UC-028](use-cases/UC-028.md) | Login | [US-028-b](user-stories/US-028-b.md), [US-028-f](user-stories/US-028-f.md) | [EPIC-02](epics/EPIC-02.md) |
+| [UC-029](use-cases/UC-029.md) | Sign-out | [US-029-i](user-stories/US-029-i.md) | [EPIC-02](epics/EPIC-02.md) |
 
 ### Claim de identidad docente (3 UCs)
 
@@ -117,7 +119,7 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 
 ## Totales
 
-- **41 casos de uso** cubren el MVP completo (34 originales + 7 nuevos del discovery DDD: UC-021, UC-022, UC-023, UC-024, UC-025, UC-026, UC-027).
+- **43 casos de uso** cubren el MVP completo (34 originales + 9 nuevos: UC-021 a UC-029).
 - **7 en full form** (flujos con ramas significativas): UC-014, UC-016, UC-017, UC-019, UC-031, UC-051, UC-066.
 - **34 en short form** (CRUDs y flujos triviales).
 
@@ -130,5 +132,7 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 - UC-025 Borrar simulación draft (premium).
 - UC-026 Compartir simulación al corpus público (premium).
 - UC-027 Ver simulaciones públicas de otros (premium).
+- UC-028 Login.
+- UC-029 Sign-out.
 
 Cada UC se traduce a un application service en la capa `Application/` de Clean Architecture y a un endpoint en `Api/`. La API puede organizarse en controllers por actor o por recurso: ese es el tema del próximo doc (`architecture/api-design.md`).
