@@ -58,6 +58,7 @@ function isRealSecret(v: string | undefined): boolean {
 
 interface Secrets {
   POSTGRES_PASSWORD: string;
+  REDIS_PASSWORD: string;
   JWT_SECRET: string;
   SESSION_SECRET: string;
 }
@@ -87,6 +88,7 @@ function resolveSecrets(force: boolean): { secrets: Secrets; changed: boolean; d
   return {
     secrets: {
       POSTGRES_PASSWORD: pick('POSTGRES_PASSWORD', existing.POSTGRES_PASSWORD, () => randomBase64Url(18)),
+      REDIS_PASSWORD: pick('REDIS_PASSWORD', existing.REDIS_PASSWORD, () => randomBase64Url(18)),
       JWT_SECRET: pick('JWT__Secret', existingJwt, () => randomBase64Url(48)),
       SESSION_SECRET: pick('SESSION_SECRET', existing.SESSION_SECRET, () => randomBase64Url(32)),
     },
@@ -97,17 +99,20 @@ function resolveSecrets(force: boolean): { secrets: Secrets; changed: boolean; d
 
 function rootEnv(s: Secrets, ts: string): string {
   const connStr = `Host=localhost;Port=5432;Database=planb;Username=planb;Password=${s.POSTGRES_PASSWORD}`;
+  const redisConn = `localhost:6379,password=${s.REDIS_PASSWORD}`;
   return `# planb — Generated ${ts}
 # This file is auto-managed by scripts/create-env.ts and scripts/ensure-infra.ts.
 # Ports are rewritten by ensure-infra.ts at each 'just infra-up'.
 
 # ── Secrets ──────────────────────────────────────────────────
 POSTGRES_PASSWORD=${s.POSTGRES_PASSWORD}
+REDIS_PASSWORD=${s.REDIS_PASSWORD}
 JWT__Secret=${s.JWT_SECRET}
 SESSION_SECRET=${s.SESSION_SECRET}
 
 # ── Ports (rewritten by ensure-infra.ts) ─────────────────────
 POSTGRES_HOST_PORT=5432
+REDIS_HOST_PORT=6379
 MAILPIT_SMTP_PORT=1025
 MAILPIT_UI_PORT=8025
 
@@ -117,6 +122,7 @@ ASPNETCORE_URLS=http://localhost:5000
 
 ConnectionStrings__Planb=${connStr}
 ConnectionStrings__PlanbWolverine=${connStr}
+ConnectionStrings__Redis=${redisConn}
 
 JWT__Issuer=planb
 JWT__Audience=planb
