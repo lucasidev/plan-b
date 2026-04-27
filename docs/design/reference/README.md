@@ -36,3 +36,17 @@ Ver [ADR-0020](../../decisions/0020-features-alineadas-con-modulos-backend.md) s
 El mockup está construido con Babel-in-browser + JSX plano. Los archivos `.jsx` no son ejecutables por el resto del repo y no se importan desde `frontend/`. Sirven como referencia para portar comportamiento + look y como prueba de que las decisiones de UX existían antes del código.
 
 Cuando portás algo a Next, **vení primero acá**: copiá los className, leé los strings de copy, mirá los layouts. Después lo traducís a Tailwind utilities + componentes shadcn-style. No inventes nada que no esté acá sin discutirlo primero.
+
+## Diferencias intencionales con el mockup
+
+El mockup es la fuente de verdad **visual**, no funcional. Hay decisiones del producto que el mockup ilustra pero que el código no replica. Lo que sigue es el catálogo de divergencias deliberadas, con la US donde se decidió. Si encontrás algo divergente que no está acá, abrí un issue antes de "alinear con el mockup".
+
+### Auth (`screens.jsx` → AuthView, sign-up, sign-in)
+
+- **Gate `email.endsWith('@unsta.edu.ar')` no se replica** (US-010-f). plan-b es multi-universidad por ADR-0001. Cualquier email válido se acepta. La verificación de afiliación institucional se hace después, fuera del registro.
+- **Botón "Continuar con Google" no se incluye**. OAuth está fuera del MVP (ADR-0023 explícitamente).
+- **Campo "name" en sign-up no se incluye** (US-010-f). El backend `RegisterUser` toma solo email + password; el display name pertenece a `StudentProfile` (F3+).
+- **Checkbox "acepto términos" no se incluye**. No hay términos publicados todavía.
+- **Email hint inline ("Email UNSTA verificado" / "Tiene que terminar en @unsta.edu.ar") no se incluye**. Atado al gate descartado.
+- **"¿Olvidaste tu contraseña?" no se incluye**. No hay endpoint backend de reset todavía.
+- **Password floor**: el mockup muestra "Mínimo 6 caracteres". El backend exige ≥12 (RegisterUser validator). El frontend valida ≥12 para alinear con el backend.
