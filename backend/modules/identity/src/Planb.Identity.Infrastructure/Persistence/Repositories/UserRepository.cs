@@ -15,6 +15,9 @@ internal sealed class UserRepository : IUserRepository
     public Task<bool> ExistsByEmailAsync(EmailAddress email, CancellationToken ct = default) =>
         _db.Users.AsNoTracking().AnyAsync(u => u.Email == email, ct);
 
+    public Task<User?> FindByEmailAsync(EmailAddress email, CancellationToken ct = default) =>
+        _db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
+
     public Task<User?> FindByIdAsync(UserId id, CancellationToken ct = default) =>
         _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
 

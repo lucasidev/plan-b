@@ -155,6 +155,41 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         return Result.Success();
     }
 
+    /// <summary>
+    /// Validates a sign-in attempt. Order matters for anti-enumeration: the password is
+    /// checked first, so a wrong password always returns <see cref="UserErrors.InvalidCredentials"/>
+    /// regardless of account state. Only when the password is correct does the response reveal
+    /// whether the account is disabled or unverified — and at that point the caller already had
+    /// the credentials, so leaking state is acceptable in exchange for a useful UX message.
+    ///
+    /// The hash verification is delegated to the caller via <paramref name="verifyHash"/> so the
+    /// domain stays unaware of the hashing algorithm (lives in the infrastructure layer behind
+    /// <c>IPasswordHasher</c>).
+    /// </summary>
+    public Result Authenticate(Func<string, bool> verifyHash, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(verifyHash);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!verifyHash(PasswordHash))
+        {
+            return UserErrors.InvalidCredentials;
+        }
+
+        if (IsDisabled)
+        {
+            return UserErrors.AccountDisabled;
+        }
+
+        if (!IsEmailVerified)
+        {
+            return UserErrors.EmailNotVerified;
+        }
+
+        Raise(new UserSignedInDomainEvent(Id, clock.UtcNow));
+        return Result.Success();
+    }
+
     public Result Disable(Guid disabledBy, string reason, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
