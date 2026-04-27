@@ -18,6 +18,9 @@ Thumbs.db
 .claude/*
 !.claude/settings.json
 
+# Playwright MCP scratch (snapshots, console logs from interactive debugging)
+.playwright-mcp/
+
 # Env files (secrets)
 .env
 .env.local

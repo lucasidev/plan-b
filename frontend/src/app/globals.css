@@ -1,54 +1,89 @@
 @import 'tailwindcss';
 
+/*
+ * plan-b design tokens.
+ *
+ * Source of truth: docs/design/reference/styles.css (Apricot Soft palette).
+ * Names mirror the source CSS variables but are prefixed with the Tailwind 4
+ * category (--color-, --font-, --radius-, --shadow-) so they generate
+ * utility classes automatically (bg-bg, text-ink, font-display, rounded-pill,
+ * shadow-card). Spacing uses Tailwind's default 0.25rem scale (p-1, p-2, ...)
+ * because shadowing it with a named --spacing-xs/sm/md/lg/xl scale clashes
+ * with built-in utilities like max-w-xl that resolve through the same scale.
+ * The mockup's pad-{xs,sm,md,lg,xl} (6/10/16/24/36px) maps cleanly to
+ * p-1.5 / p-2.5 / p-4 / p-6 / p-9 in the default scale.
+ *
+ * Other tones (cream, paper, charcoal) live in the mockup's tweak panel and
+ * are intentionally NOT ported. The MVP ships Apricot Soft only.
+ */
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 3.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 3.9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 3.9%);
-  --color-primary: hsl(0 0% 9%);
-  --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(0 0% 96.1%);
-  --color-secondary-foreground: hsl(0 0% 9%);
-  --color-muted: hsl(0 0% 96.1%);
-  --color-muted-foreground: hsl(0 0% 45.1%);
-  --color-accent: hsl(0 0% 96.1%);
-  --color-accent-foreground: hsl(0 0% 9%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 89.8%);
-  --color-input: hsl(0 0% 89.8%);
-  --color-ring: hsl(0 0% 3.9%);
-  --radius: 0.5rem;
-}
+  /* Surfaces */
+  --color-bg: #fbf3ec;
+  --color-bg-elev: #f6ebde;
+  --color-bg-card: #ffffff;
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: hsl(0 0% 3.9%);
-    --color-foreground: hsl(0 0% 98%);
-    --color-card: hsl(0 0% 3.9%);
-    --color-card-foreground: hsl(0 0% 98%);
-    --color-popover: hsl(0 0% 3.9%);
-    --color-popover-foreground: hsl(0 0% 98%);
-    --color-primary: hsl(0 0% 98%);
-    --color-primary-foreground: hsl(0 0% 9%);
-    --color-secondary: hsl(0 0% 14.9%);
-    --color-secondary-foreground: hsl(0 0% 98%);
-    --color-muted: hsl(0 0% 14.9%);
-    --color-muted-foreground: hsl(0 0% 63.9%);
-    --color-accent: hsl(0 0% 14.9%);
-    --color-accent-foreground: hsl(0 0% 98%);
-    --color-destructive: hsl(0 62.8% 30.6%);
-    --color-destructive-foreground: hsl(0 0% 98%);
-    --color-border: hsl(0 0% 14.9%);
-    --color-input: hsl(0 0% 14.9%);
-    --color-ring: hsl(0 0% 83.1%);
-  }
+  /* Text */
+  --color-ink: #2a1d12;
+  --color-ink-2: #5c4631;
+  --color-ink-3: #9c7e62;
+  --color-ink-4: #c2a98e;
+
+  /* Lines and dividers */
+  --color-line: #f0e2d2;
+  --color-line-2: #f6ebde;
+
+  /* Accent (terracotta) */
+  --color-accent: #e07a4d;
+  --color-accent-soft: #fbe5d6;
+  --color-accent-ink: #b04a1c;
+  --color-accent-hover: #c96638;
+
+  /* Subject lifecycle states (oklch — keep these intact for perceptual
+   * uniformity across hues). */
+  --color-st-approved-bg: oklch(0.94 0.05 145);
+  --color-st-approved-fg: oklch(0.42 0.09 145);
+  --color-st-regularized-bg: oklch(0.94 0.04 200);
+  --color-st-regularized-fg: oklch(0.42 0.09 220);
+  --color-st-coursing-bg: oklch(0.93 0.06 70);
+  --color-st-coursing-fg: oklch(0.45 0.12 60);
+  --color-st-failed-bg: oklch(0.93 0.05 25);
+  --color-st-failed-fg: oklch(0.48 0.14 25);
+  --color-st-pending-bg: oklch(0.96 0.004 80);
+  --color-st-pending-fg: oklch(0.55 0.008 80);
+  --color-st-available-bg: oklch(0.94 0.012 80);
+  --color-st-available-fg: oklch(0.35 0.012 80);
+  --color-st-planned-bg: oklch(0.92 0.05 290);
+  --color-st-planned-fg: oklch(0.42 0.14 290);
+
+  /* Typography. The actual font stacks are wired through next/font in
+   * src/lib/fonts.ts; these vars get their values from there at runtime.
+   * The fallbacks here are purely a defensive measure for when the page
+   * renders before next/font has injected its CSS variables. */
+  --font-display: var(--next-font-display, 'Geist'), 'Inter', system-ui, sans-serif;
+  --font-ui: var(--next-font-ui, 'Geist'), 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:
+    var(--next-font-mono, 'IBM Plex Mono'), ui-monospace, 'SF Mono', monospace;
+  --font-serif:
+    var(--next-font-serif, 'Instrument Serif'), 'Cambria', 'Georgia', serif;
+
+  /* Border radii */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* Shadows tuned for Apricot (warm tint in the alpha so they read as
+   * shadows on the cream BG without going gray). */
+  --shadow-card: 0 1px 2px rgb(120 40 10 / 5%);
+  --shadow-card-h: 0 4px 12px rgb(120 40 10 / 8%);
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }

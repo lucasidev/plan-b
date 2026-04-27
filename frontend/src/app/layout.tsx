@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { fontVariables } from '@/lib/fonts';
 import { Providers } from './providers';
 import './globals.css';
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" className={fontVariables} suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
       </body>
