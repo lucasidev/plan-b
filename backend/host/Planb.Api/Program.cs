@@ -39,24 +39,28 @@ var connectionString = builder.Configuration.GetConnectionString("Planb")
 
 // ------------------------------------------------------------------
 // Redis (cache + ephemeral state, ADR-0034). Registered as a singleton
-// IConnectionMultiplexer so handlers can pull it directly. AbortOnConnectFail =
-// false means a Redis outage does NOT prevent the host from starting; per the
-// ADR's degradation principle, each consumer handles unavailability locally
-// (cache miss → DB, rate limiter unreachable → fail open, etc.).
+// IConnectionMultiplexer so handlers can pull it directly.
 //
-// Skipped when no connection string is provided (e.g. some integration tests).
-// Consumers must guard for missing IConnectionMultiplexer in that case.
+// AbortOnConnectFail=false means a Redis outage does NOT prevent the host
+// from starting; per the ADR's degradation principle, each consumer handles
+// unavailability locally (cache miss → DB, rate limiter unreachable → fail
+// open, refresh tokens not validable → 401 and re-login).
+//
+// Required (not conditional). Earlier this was conditional on the connection
+// string being present, which silently dropped IRefreshTokenStore's
+// dependency in environments that forgot to configure Redis — manifesting
+// as a confusing DI validation error at host build instead of a clear
+// "missing connection string" message. Postgres is required and so is Redis.
 // ------------------------------------------------------------------
-var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
-if (!string.IsNullOrWhiteSpace(redisConnectionString))
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
+    ?? throw new InvalidOperationException("Connection string 'Redis' is not configured.");
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
 {
-    builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
-    {
-        var options = ConfigurationOptions.Parse(redisConnectionString);
-        options.AbortOnConnectFail = false;
-        return ConnectionMultiplexer.Connect(options);
-    });
-}
+    var options = ConfigurationOptions.Parse(redisConnectionString);
+    options.AbortOnConnectFail = false;
+    return ConnectionMultiplexer.Connect(options);
+});
 
 // ------------------------------------------------------------------
 // EF Core DbContext registered with Wolverine outbox integration. This makes
