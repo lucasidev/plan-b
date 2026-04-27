@@ -2,7 +2,13 @@
  * Response shapes mirrored from the backend Identity endpoints. Names match
  * the camelCase JSON the backend serializes (System.Text.Json defaults under
  * `JsonSerializerDefaults.Web`, no custom naming policy configured).
+ *
+ * Also: state shapes for the server actions in `./actions`. They live here
+ * (not next to the action) because actions.ts is `'use server'` per
+ * frontend/CLAUDE.md and can only export async functions.
  */
+
+// ── Backend response DTOs ────────────────────────────────────────
 
 export type RegisterUserResponse = {
   id: string;
@@ -40,3 +46,25 @@ export type ProblemDetails = {
 export type ValidationProblemDetails = ProblemDetails & {
   errors: Record<string, string[]>;
 };
+
+// ── Action state shapes ──────────────────────────────────────────
+
+export type SignUpFormState =
+  | { status: 'idle' }
+  | {
+      status: 'error';
+      message: string;
+      field?: 'email' | 'password' | 'confirm';
+    };
+
+export const initialSignUpState: SignUpFormState = { status: 'idle' };
+
+export type SignInFormState =
+  | { status: 'idle' }
+  | {
+      status: 'error';
+      kind: 'invalid_credentials' | 'email_not_verified' | 'account_disabled' | 'unknown';
+      message: string;
+    };
+
+export const initialSignInState: SignInFormState = { status: 'idle' };
