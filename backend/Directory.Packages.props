@@ -37,6 +37,10 @@
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
   </ItemGroup>
 
+  <ItemGroup Label="Cache / Ephemeral state (ADR-0034)">
+    <PackageVersion Include="StackExchange.Redis" Version="2.8.16" />
+  </ItemGroup>
+
   <ItemGroup Label="Auth / Crypto">
     <PackageVersion Include="BCrypt.Net-Next" Version="4.1.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />

@@ -68,6 +68,15 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0018-ef-core-writes-dapper-reads.md).
 
+## Redis (cache + ephemeral state)
+
+- **Source of truth siempre Postgres**. Redis es solo derivación o ephemeral.
+- **Toda key tiene TTL explícito**. Convención: ≤ 30 días.
+- **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): refresh token revocation list, rate limiting (sliding window), idempotency keys (SETNX), hot reads cache (cache-aside), crowd insights cache.
+- **No usar Redis raw** en handlers. Cada módulo expone abstracciones específicas (`IRefreshTokenStore`, `IRateLimiter`, `ISubjectCache`) que internamente usan `IRedisConnection` de SharedKernel.
+- **Degradación**: si Redis no responde, los handlers degradan (cache miss → DB; rate limiter no disponible → fail open con warning; refresh tokens no validables → 401 y user se relogea). No fallan completamente.
+- **Out of scope**: pub/sub (Wolverine outbox cubre messaging), vector search (pgvector), source of truth de cualquier dato persistente.
+
 ## Tests
 
 - **Unit**: xUnit + NSubstitute + Shouldly. Apuntan a Domain y Application. Mockeo de repositorios y query services.
@@ -82,6 +91,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 | Validación | `FluentValidation`, `FluentValidation.DependencyInjectionExtensions` |
 | EF Core | `Microsoft.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL`, `Pgvector.EntityFrameworkCore` |
 | Dapper | `Dapper` |
+| Cache | `StackExchange.Redis` (ADR-0034) |
 | Auth | `BCrypt.Net-Next`, `System.IdentityModel.Tokens.Jwt`, `Microsoft.AspNetCore.Authentication.JwtBearer` |
 | Logging | `Serilog.AspNetCore`, `Serilog.Sinks.Console` |
 | Testing | `xunit`, `xunit.runner.visualstudio`, `Shouldly`, `NSubstitute`, `Microsoft.AspNetCore.Mvc.Testing` |

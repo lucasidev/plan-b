@@ -1,7 +1,7 @@
 /**
  * Ensures planb infrastructure is running with available ports.
  *
- * For each service (postgres, mailpit):
+ * For each service (postgres, redis, mailpit):
  *   - If the container is already running, reuses its mapped host port.
  *   - If not, finds a free port and starts it.
  *
@@ -42,6 +42,7 @@ const compose = `${containerCmd} compose`;
 
 interface ServicePorts {
   postgres: number;
+  redis: number;
   mailpitSmtp: number;
   mailpitUi: number;
 }
@@ -70,6 +71,16 @@ function getRunningPorts(): Partial<ServicePorts> {
           } else {
             const m = portStr.match(/:(\d+)->5432/);
             if (m) ports.postgres = Number(m[1]);
+          }
+        }
+
+        if (name.includes('redis')) {
+          const pub = publishers.find((p) => p.TargetPort === 6379);
+          if (pub?.PublishedPort) {
+            ports.redis = pub.PublishedPort;
+          } else {
+            const m = portStr.match(/:(\d+)->6379/);
+            if (m) ports.redis = Number(m[1]);
           }
         }
 
@@ -133,12 +144,17 @@ function updateEnvFile(path: string, updates: Record<string, string>) {
 function updateRootEnv(ports: ServicePorts) {
   const pgPass = readEnvVar(ROOT_ENV, 'POSTGRES_PASSWORD') ?? 'planb_dev_password';
   const connStr = `Host=localhost;Port=${ports.postgres};Database=planb;Username=planb;Password=${pgPass}`;
+  const redisPass = readEnvVar(ROOT_ENV, 'REDIS_PASSWORD') ?? 'planb_dev_redis';
+  // StackExchange.Redis configuration string format: host:port,password=...
+  const redisConn = `localhost:${ports.redis},password=${redisPass}`;
   updateEnvFile(ROOT_ENV, {
     POSTGRES_HOST_PORT: String(ports.postgres),
+    REDIS_HOST_PORT: String(ports.redis),
     MAILPIT_SMTP_PORT: String(ports.mailpitSmtp),
     MAILPIT_UI_PORT: String(ports.mailpitUi),
     ConnectionStrings__Planb: connStr,
     ConnectionStrings__PlanbWolverine: connStr,
+    ConnectionStrings__Redis: redisConn,
     Smtp__Port: String(ports.mailpitSmtp),
   });
 }
@@ -163,7 +179,7 @@ async function waitForService(
 }
 
 function guardSecrets() {
-  const required = ['POSTGRES_PASSWORD'];
+  const required = ['POSTGRES_PASSWORD', 'REDIS_PASSWORD'];
   const missing = required.filter((k) => !process.env[k]);
   if (missing.length > 0) {
     console.error(
@@ -178,27 +194,29 @@ async function main() {
   guardSecrets();
 
   const running = getRunningPorts();
-  const allRunning = running.postgres && running.mailpitSmtp && running.mailpitUi;
+  const allRunning =
+    running.postgres && running.redis && running.mailpitSmtp && running.mailpitUi;
 
   if (allRunning) {
     const p = running as ServicePorts;
     console.error(
-      `Infrastructure already running — postgres:${p.postgres} mailpit-smtp:${p.mailpitSmtp} mailpit-ui:${p.mailpitUi}`,
+      `Infrastructure already running — postgres:${p.postgres} redis:${p.redis} mailpit-smtp:${p.mailpitSmtp} mailpit-ui:${p.mailpitUi}`,
     );
     updateRootEnv(p);
     return;
   }
 
-  const [pg, smtp, ui] = await Promise.all([
+  const [pg, redis, smtp, ui] = await Promise.all([
     running.postgres ? Promise.resolve(running.postgres) : findPort(5432),
+    running.redis ? Promise.resolve(running.redis) : findPort(6379),
     running.mailpitSmtp ? Promise.resolve(running.mailpitSmtp) : findPort(1025),
     running.mailpitUi ? Promise.resolve(running.mailpitUi) : findPort(8025),
   ]);
 
-  const ports: ServicePorts = { postgres: pg, mailpitSmtp: smtp, mailpitUi: ui };
+  const ports: ServicePorts = { postgres: pg, redis, mailpitSmtp: smtp, mailpitUi: ui };
 
   console.error(
-    `Starting infrastructure — postgres:${pg} mailpit-smtp:${smtp} mailpit-ui:${ui}`,
+    `Starting infrastructure — postgres:${pg} redis:${redis} mailpit-smtp:${smtp} mailpit-ui:${ui}`,
   );
 
   try {
@@ -208,6 +226,7 @@ async function main() {
       env: {
         ...process.env,
         POSTGRES_HOST_PORT: String(pg),
+        REDIS_HOST_PORT: String(redis),
         MAILPIT_SMTP_PORT: String(smtp),
         MAILPIT_UI_PORT: String(ui),
       },
@@ -224,9 +243,18 @@ async function main() {
     execSync(`${compose} exec postgres pg_isready -U planb -d planb`, { stdio: 'pipe' });
   });
 
+  await waitForService('redis', () => {
+    // -a + --no-auth-warning so the password is checked but the warning doesn't pollute stderr.
+    execSync(
+      `${compose} exec redis redis-cli -a "${process.env.REDIS_PASSWORD}" --no-auth-warning ping`,
+      { stdio: 'pipe' },
+    );
+  });
+
   console.error('');
   console.error('Infrastructure ready.');
   console.error(`  Postgres:      localhost:${pg}`);
+  console.error(`  Redis:         localhost:${redis}`);
   console.error(`  Mailpit SMTP:  localhost:${smtp}`);
   console.error(`  Mailpit UI:    http://localhost:${ui}`);
 }
