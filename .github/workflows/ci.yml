@@ -60,6 +60,12 @@ jobs:
           --health-timeout 3s
           --health-retries 10
     env:
+      # Pin the env explicitly so CI matches `just dev` (Wolverine dynamic codegen,
+      # EF resource auto-create, Mailpit accessible at localhost:1025). Default
+      # would be Production, which assumes pre-generated codegen artifacts that
+      # we don't ship from CI. ADR-0035 covers the rationale and the migration
+      # path to a Production-mode release pipeline once we have CD.
+      ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
       ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
       ConnectionStrings__Redis: localhost:6379
