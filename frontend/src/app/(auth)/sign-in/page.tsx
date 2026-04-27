@@ -1,10 +1,15 @@
+import { AuthView } from '@/components/layout/auth-view';
+import { SignInForm } from '@/features/identity/components/sign-in-form';
+
+/**
+ * Sign-in route. Counterpart to /sign-up; both render through AuthView so
+ * the marketing column stays identical. The (auth) layout guard already
+ * redirects logged-in users to /dashboard. (US-028-f)
+ */
 export default function SignInPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-8">
-      <div className="w-full max-w-md space-y-4">
-        <h1 className="font-bold text-3xl">Iniciar sesión</h1>
-        <p className="text-muted-foreground">TODO: formulario de login (UC-010).</p>
-      </div>
-    </main>
+    <AuthView mode="signin">
+      <SignInForm />
+    </AuthView>
   );
 }
