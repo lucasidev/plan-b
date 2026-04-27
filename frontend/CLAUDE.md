@@ -26,19 +26,22 @@ frontend/
     │   ├── (member)/         alumno autenticado (guard en layout)
     │   ├── (teacher)/        docente verificado (guard chequea teacherVerified)
     │   └── (staff)/          moderator, admin, university_staff
-    ├── features/             1:1 con módulos del backend
-    │   ├── identity/
-    │   ├── academic/
-    │   ├── enrollments/
-    │   ├── reviews/
-    │   └── moderation/
+    ├── features/             flat: una carpeta por use case
+    │   ├── sign-up/          (US-010-f)
+    │   ├── sign-in/          (US-028-f)
+    │   ├── verify-email/     (US-011-f)
+    │   ├── sign-out/         (US-029-i)
+    │   └── ...               browse-subjects, write-review, etc. al aterrizar
     ├── components/
-    │   ├── ui/               shadcn primitives
-    │   └── layout/           sidebar, header, footer
+    │   ├── ui/               primitivas (Button, DisplayHeading, Lede, ...)
+    │   └── layout/           AuthSplit, AuthView, sidebar, header, footer
     └── lib/
-        ├── env.ts            zod-validated env
-        ├── session.ts        getSession() RSC helper (JWT cookie)
-        ├── api-client.ts     fetch wrapper
+        ├── env.ts            zod-validated env (clientEnv + serverEnv())
+        ├── session.ts        getSession() RSC helper, jose JWT verify
+        ├── api-client.ts     fetch wrapper (apiFetch)
+        ├── api-problem.ts    RFC 7807 ProblemDetails / ValidationProblemDetails
+        ├── forward-set-cookies.ts  re-emite Set-Cookie del backend al user-agent
+        ├── fonts.ts          next/font setup
         └── utils.ts          cn() helper
 ```
 
@@ -54,22 +57,29 @@ Cada route group tiene su propio `layout.tsx` que hace el guard server-side usan
 
 La autorización real se hace en el backend. El guard del frontend existe para UX y evitar requests rechazados. Ver [ADR-0019](../docs/decisions/0019-single-nextjs-app-con-route-groups.md) y [ADR-0023](../docs/decisions/0023-auth-flow-jwt-cookie-layout-guards.md).
 
-## Features: vertical slice por dominio
+## Features: vertical slice por use case
 
-Cada feature espeja 1:1 un módulo del backend. Estructura interna:
+**Feature = un use case = una carpeta atómica.** No "feature = módulo backend": la agrupación por módulo (identity, academic, reviews, etc.) tiene sentido en el backend porque cada módulo tiene su DbContext y schema Postgres propio, pero esas razones técnicas no aplican en frontend. Acá usamos **layout flat**: cada use case (sign-up, sign-in, verify-email, write-review, etc.) cuelga directo de `features/`.
+
+Cada feature espeja 1:1 un use case del backend (en backend, `Planb.<Module>.Application/Features/<UseCase>/`). Estructura interna del feature:
 
 ```
 features/<feature>/
-├── actions.ts        Server Actions ('use server')
-├── api.ts            queryOptions helpers (TanStack Query) + fetch fns
-├── schemas/          Zod schemas compartidos client + server actions
+├── actions.ts        Server Actions ('use server' al tope; solo async exports)
+├── api.ts            fetchers contra el backend / queryOptions de TanStack Query
+├── schema.ts         Zod schema (o `schemas/` carpeta si hay varios)
 ├── hooks/            useSuspenseQuery wrappers, useOptimistic
-├── components/       componentes específicos del dominio
-├── types.ts          DTOs locales derivados de API
+├── components/       componentes específicos del use case
+├── types.ts          DTOs locales + estado del action (FormState, initialState)
 └── index.ts          barrel export
 ```
 
-Las rutas (`src/app/(member)/reviews/page.tsx`) son thin wrappers que importan del feature.
+**Reglas duras** (estas son las que rompí en mi primer intento; documentadas para no volver a romperlas):
+
+- `'use server'` siempre al tope de `actions.ts`. Nunca por función suelta. Y por la regla de Next.js, esos archivos solo pueden exportar funciones async — los tipos del action (FormState, initialState) viven en `types.ts`.
+- Nada de subcarpetas inventadas dentro de `features/<feature>/` (`actions/`, `state/`, `helpers/`, etc.). Si hace falta un helper que no es action ni component, evaluá si es genérico y va a `lib/`. Si es feature-specific y no es action, considera si realmente lo necesitás separado.
+- Tipos cross-feature (ej. `ProblemDetails` para parsear errores RFC 7807, `ResponseCookie` parser) viven en `lib/`, no se duplican en cada feature.
+- Las rutas (`src/app/(auth)/sign-up/page.tsx`) son thin wrappers que importan del feature.
 
 Ver [ADR-0020](../docs/decisions/0020-features-alineadas-con-modulos-backend.md).
 
@@ -96,7 +106,7 @@ export default async function SubjectPage({ params }) {
 2. **Client component** consume con el mismo `queryKey`:
 
 ```tsx
-// features/reviews/components/review-list.tsx
+// features/browse-reviews/components/review-list.tsx
 'use client';
 export function ReviewList({ subjectId }) {
   const { data } = useSuspenseQuery(reviewQueries.forSubject(subjectId));
@@ -160,7 +170,7 @@ Ver [ADR-0022](../docs/decisions/0022-forms-react19-primitives-tanstack-form.md)
 - **Zod schemas** en `features/<feature>/schemas/`, compartidos entre client (TanStack Form) y server actions.
 - **`'use client'` solo donde hace falta**. Default es Server Component.
 - **`'use server'` al tope del archivo** para Server Actions (no por función suelta).
-- **No imports cross-feature directos**. Si `reviews` necesita `academic`, consume su `api.ts` / `hooks/`, no componentes internos.
+- **No imports cross-feature directos**. Si `write-review` necesita data del feature `view-subject`, consume su `api.ts` / `hooks/`, no componentes internos.
 
 ## Comandos frontend-specific
 

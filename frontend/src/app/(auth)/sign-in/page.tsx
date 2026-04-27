@@ -1,5 +1,5 @@
 import { AuthView } from '@/components/layout/auth-view';
-import { SignInForm } from '@/features/identity/components/sign-in-form';
+import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 
 /**
  * Sign-in route. Counterpart to /sign-up; both render through AuthView so
