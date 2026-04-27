@@ -25,4 +25,15 @@
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dev seed data shipped to output so DevSeedHostedService can load it via
+         IConfiguration.AddJsonFile + Options pattern. Production deploys ship
+         their own personas.json (or skip the hosted service entirely).
+         `Update` (not `Include`) because the SDK already auto-globs *.json under
+         the project; we just override CopyToOutputDirectory. -->
+    <Content Update="seed-data\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

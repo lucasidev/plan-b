@@ -115,6 +115,28 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<DevMigrationsHostedService>();
 
 // ------------------------------------------------------------------
+// Dev seed: load personas from a separate JSON file (Options pattern), then
+// register the IdentitySeeder + hosted service that materializes them. The
+// hosted service is gated by IsDevelopment() internally; Configure can stay
+// unconditional because the file is also dev-only (production deploys ship
+// without it). Order: must be registered AFTER DevMigrationsHostedService so
+// it runs against an existing schema.
+// ------------------------------------------------------------------
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile(
+        "seed-data/personas.json", optional: true, reloadOnChange: false);
+}
+
+builder.Services.AddOptions<Planb.Identity.Application.Seeding.SeedPersonasOptions>()
+    .Bind(builder.Configuration.GetSection(
+        Planb.Identity.Application.Seeding.SeedPersonasOptions.SectionName))
+    .ValidateDataAnnotations();
+
+builder.Services.AddScoped<Planb.Identity.Application.Seeding.IdentitySeeder>();
+builder.Services.AddHostedService<DevSeedHostedService>();
+
+// ------------------------------------------------------------------
 // HTTP pipeline
 // ------------------------------------------------------------------
 var app = builder.Build();

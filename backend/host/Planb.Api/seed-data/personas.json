@@ -1,0 +1,30 @@
+{
+  "Seed": {
+    "Personas": [
+      {
+        "Email": "lucia.mansilla@gmail.com",
+        "Password": "lucia.mansilla.12",
+        "State": "VerifiedActive",
+        "DisplayName": "Lucía Mansilla"
+      },
+      {
+        "Email": "mateo.gimenez@hotmail.com",
+        "Password": "mateo.gimenez.12",
+        "State": "VerifiedActive",
+        "DisplayName": "Mateo Giménez"
+      },
+      {
+        "Email": "paula.suspendida@planb.local",
+        "Password": "paula.suspendida.12",
+        "State": "Disabled",
+        "DisplayName": "Paula Suárez"
+      },
+      {
+        "Email": "martin.pendiente@planb.local",
+        "Password": "martin.pendiente.12",
+        "State": "Unverified",
+        "DisplayName": "Martín Acosta"
+      }
+    ]
+  }
+}
