@@ -1,5 +1,5 @@
 import { AuthView } from '@/components/layout/auth-view';
-import { SignUpForm } from '@/features/identity/components/sign-up-form';
+import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 
 /**
  * Sign-up route. The (auth) layout already redirects to /dashboard if the
