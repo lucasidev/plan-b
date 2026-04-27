@@ -1,0 +1,21 @@
+# Normalize line endings to LF for all text files in the repo, regardless of
+# the host OS or core.autocrlf setting. Without this, Windows clients with
+# core.autocrlf=true write CRLF to disk; tools that enforce LF (Biome's
+# formatter, dotnet format) then flag every committed file as misformatted
+# and pre-push hooks fail.
+#
+# `text=auto` lets Git detect text vs binary; `eol=lf` forces LF on the
+# working copy for text files. Binary files are unaffected.
+* text=auto eol=lf
+
+# Explicit overrides for files that must stay CRLF (Windows-only scripts
+# would go here; we don't have any today).
+
+# Common binary types — opt out of any conversion just to be safe.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
