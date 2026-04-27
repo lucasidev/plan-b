@@ -67,10 +67,11 @@ public sealed class RegisterApiFixture : IAsyncLifetime
                 });
             });
 
-        // Trigger startup so Wolverine's UseResourceSetupOnStartup creates schemas.
-        using var scope = Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-        await db.Database.MigrateAsync();
+        // Trigger startup. Program.cs runs EF MigrateAsync in Development before
+        // the host starts serving, and Wolverine's UseResourceSetupOnStartup creates
+        // its own schema, so by the time Services is materialized everything is
+        // ready — we just need to force the lazy host build.
+        _ = Factory.Services;
     }
 
     public async Task DisposeAsync()

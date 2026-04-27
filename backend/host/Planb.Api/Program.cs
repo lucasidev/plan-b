@@ -1,5 +1,6 @@
 using Carter;
 using JasperFx;
+using Microsoft.EntityFrameworkCore;
 using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Planb.Api.Infrastructure;
@@ -85,6 +86,11 @@ builder.Services.AddCarter();
 // ------------------------------------------------------------------
 builder.Services.AddIdentityApplication();
 builder.Services.AddIdentityInfrastructure(builder.Configuration);
+
+// In Development, apply EF migrations on host startup. Lives as a hosted
+// service so WebApplicationFactory tests get the same treatment as `just dev`.
+// See DevMigrationsHostedService for the why.
+builder.Services.AddHostedService<DevMigrationsHostedService>();
 
 // ------------------------------------------------------------------
 // HTTP pipeline
