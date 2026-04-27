@@ -10,6 +10,7 @@ using Planb.Identity.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Abstractions.DomainEvents;
 using Serilog;
+using StackExchange.Redis;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
@@ -35,6 +36,27 @@ builder.Services.AddScoped<IDomainEventPublisher, WolverineDomainEventPublisher>
 
 var connectionString = builder.Configuration.GetConnectionString("Planb")
     ?? throw new InvalidOperationException("Connection string 'Planb' is not configured.");
+
+// ------------------------------------------------------------------
+// Redis (cache + ephemeral state, ADR-0034). Registered as a singleton
+// IConnectionMultiplexer so handlers can pull it directly. AbortOnConnectFail =
+// false means a Redis outage does NOT prevent the host from starting; per the
+// ADR's degradation principle, each consumer handles unavailability locally
+// (cache miss → DB, rate limiter unreachable → fail open, etc.).
+//
+// Skipped when no connection string is provided (e.g. some integration tests).
+// Consumers must guard for missing IConnectionMultiplexer in that case.
+// ------------------------------------------------------------------
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
+if (!string.IsNullOrWhiteSpace(redisConnectionString))
+{
+    builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
+    {
+        var options = ConfigurationOptions.Parse(redisConnectionString);
+        options.AbortOnConnectFail = false;
+        return ConnectionMultiplexer.Connect(options);
+    });
+}
 
 // ------------------------------------------------------------------
 // EF Core DbContext registered with Wolverine outbox integration. This makes
