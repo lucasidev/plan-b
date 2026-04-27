@@ -14,6 +14,9 @@ import { cookies } from 'next/headers';
  * The parser handles the cookie attributes the backend uses today
  * (Path, Expires, Max-Age, Domain, SameSite, Secure, HttpOnly). It is
  * deliberately small: a richer parser would be a dependency we don't need.
+ *
+ * Lives outside actions.ts because that file is `'use server'` (per
+ * frontend/CLAUDE.md) and can only export async functions.
  */
 
 type ParsedCookie = {

@@ -4,7 +4,8 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { initialSignUpState, type SignUpFormState, signUpAction } from '../actions';
+import { signUpAction } from '../actions';
+import { initialSignUpState, type SignUpFormState } from '../types';
 
 /**
  * Sign-up form. Three fields (email, password, confirm) plus submit.
