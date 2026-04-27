@@ -6,9 +6,10 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 
 | Directorio | Contiene | Estado |
 |---|---|---|
-| [`decisions/`](decisions/) | Decision Records (ADRs) — decisiones de diseño con alternativas consideradas. | 25 ADRs |
+| [`decisions/`](decisions/) | Decision Records (ADRs) — decisiones de diseño con alternativas consideradas. | 34 ADRs |
 | [`domain/`](domain/) | Modelo conceptual del negocio independiente de la tecnología: lenguaje, lifecycles, casos de uso. | 5 docs ([ubiquitous-language](domain/ubiquitous-language.md), [actors-and-use-cases](domain/actors-and-use-cases.md), [review-lifecycle](domain/review-lifecycle.md), [enrollment-lifecycle](domain/enrollment-lifecycle.md), [verification-flows](domain/verification-flows.md)) |
 | [`architecture/`](architecture/) | Diseño técnico: ERD, capas del backend, estructura del frontend, API, deploy. | 1 doc ([data-model](architecture/data-model.md)) |
+| [`design/`](design/) | Source-of-truth visual: paleta, tipografía, primitivas, layouts macro. El mockup original vendoreado + README explicando cómo se mapea a `frontend/`. | [reference/](design/reference/) |
 | `reference/` | Especificaciones externas o modelos archivados que conviene preservar. | Vacío |
 
 ## Cuándo va cada cosa

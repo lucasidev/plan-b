@@ -60,6 +60,7 @@ Convenciones:
 
 - .NET 10 + ASP.NET Core 10 + Wolverine 5.32 + Carter 10 + EF Core 10 + Npgsql 10.
 - Postgres 17 + pgvector 0.8.
+- Redis 7 (cache + ephemeral state, ADR-0034). Container levantado por `just infra-up`. Sin consumidor todavía; primer uso en US-021-b.
 - Mailpit en dev y CI.
 - BCrypt para password hashing.
 - Wolverine outbox configurado pero no usado todavía (sprint futuro).
@@ -73,6 +74,7 @@ Convenciones:
 - ADR-0031 ReviewAuditLog como projection.
 - ADR-0032 Edit destructive de EnrollmentRecord invalida Review.
 - ADR-0033 VerificationToken como child entity (no aggregate independiente).
+- ADR-0034 Redis como cache + ephemeral state.
 
 ---
 

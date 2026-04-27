@@ -59,6 +59,7 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 | **Frontend**                  | Next.js                  | SSR para indexar reseñas y materias                |
 | **Backend**                   | .NET                     | API REST con Clean Architecture                    |
 | **Base de datos**             | PostgreSQL               | JSONB, CTEs recursivos, full-text search, pgvector |
+| **Cache / ephemeral state**   | Redis                    | Refresh tokens, rate limiting, hot reads (ADR-0034) |
 | **Autenticación**             | JWT + email verification | Verificación manual para docentes en MVP           |
 | **Reverse proxy**             | Traefik                  | Ruteo y SSL automático                             |
 | **Deploy**                    | Dokploy sobre VPS        | Self-hosted, sin dependencias cloud pagas          |
@@ -76,7 +77,7 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 
 ## Estado actual
 
-**Fase 2 en curso.** El dominio está modelado, las decisiones formalizadas (25 ADRs) y el monorepo está scaffoldeado. La implementación concreta de features arranca en Fase 3.
+**Fase 2 en curso.** El dominio está modelado, las decisiones formalizadas (34 ADRs) y el monorepo está scaffoldeado. La implementación concreta de features arranca en Fase 3.
 
 ## Cómo correr local
 
@@ -112,6 +113,7 @@ just db-reset         # borra volume y re-migra
 | Backend API | http://localhost:5000 | .NET 10 + Wolverine + Carter  |
 | Frontend    | http://localhost:3000 | Next.js 15 App Router         |
 | Postgres    | localhost:5432        | pgvector/pgvector:pg17        |
+| Redis       | localhost:6379        | redis:7-alpine, AUTH required |
 | Mailpit UI  | http://localhost:8025 | emails de verificación de dev |
 
 ## Estructura del repo
@@ -133,7 +135,7 @@ plan-b/
 │       ├── app/          rutas por route group ((public), (auth), (member), (teacher), (staff))
 │       ├── features/     1:1 con módulos del backend
 │       └── lib/          api-client, session, env
-├── docs/                 25 ADRs + domain + architecture
+├── docs/                 34 ADRs + domain + architecture
 ├── scripts/
 ├── Justfile              task runner
 ├── lefthook.yml          pre-commit hooks
