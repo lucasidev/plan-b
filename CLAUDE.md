@@ -13,6 +13,7 @@ Detalle del dominio: [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquito
 | Endpoints | Carter |
 | Data | EF Core 10 (writes) + Dapper (reads complejos) |
 | DB | PostgreSQL 17 + pgvector |
+| Cache / ephemeral state | Redis 7 (refresh tokens, rate limiting, hot reads, idempotency). Ver [ADR-0034](docs/decisions/0034-redis-como-cache-y-ephemeral-state.md) |
 | Frontend | Next.js 15 App Router + React 19.1 |
 | Data fetching | TanStack Query v5 con RSC prefetch + HydrationBoundary |
 | Forms | React 19 primitives + TanStack Form |
@@ -36,13 +37,13 @@ plan-b/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
 ├── docs/
-│   ├── decisions/           33 ADRs (MADR) — fuente de verdad de decisiones
+│   ├── decisions/           34 ADRs (MADR) — fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   └── architecture/        ERD, data model
 ├── scripts/                 TS scripts (bun) — no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
-└── docker-compose.yml       Postgres (pgvector) + Mailpit
+└── docker-compose.yml       Postgres (pgvector) + Redis + Mailpit
 ```
 
 ## Reglas cross-cutting
@@ -66,7 +67,7 @@ just test            # Todos los tests
 just lint            # Biome + dotnet format check
 just lint-fix        # Autofix
 just migrate         # Aplicar migraciones EF Core pendientes
-just infra-up        # Levantar Postgres + Mailpit (auto-detecta podman/docker)
+just infra-up        # Levantar Postgres + Redis + Mailpit (auto-detecta podman/docker)
 just infra-reset     # Volar volúmenes y rearmar
 just ci              # Las mismas gates que corre GitHub Actions
 ```
@@ -77,7 +78,7 @@ Las tres cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md) — glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/) — 33 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+3. [`docs/decisions/`](docs/decisions/) — 34 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
