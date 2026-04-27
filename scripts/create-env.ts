@@ -103,6 +103,11 @@ function rootEnv(s: Secrets, ts: string): string {
   return `# planb — Generated ${ts}
 # This file is auto-managed by scripts/create-env.ts and scripts/ensure-infra.ts.
 # Ports are rewritten by ensure-infra.ts at each 'just infra-up'.
+#
+# Convention (ADR-0035): only secrets and host-dynamic values live here.
+# Non-secret tunables (JWT issuer/audience/timings, moderation thresholds, etc.)
+# live in appsettings.json. Dev-only overrides (SMTP host/auth/from, verification
+# link base URL) live in appsettings.Development.json. Each value has one home.
 
 # ── Secrets ──────────────────────────────────────────────────
 POSTGRES_PASSWORD=${s.POSTGRES_PASSWORD}
@@ -124,22 +129,9 @@ ConnectionStrings__Planb=${connStr}
 ConnectionStrings__PlanbWolverine=${connStr}
 ConnectionStrings__Redis=${redisConn}
 
-JWT__Issuer=planb
-JWT__Audience=planb
-JWT__AccessTokenMinutes=15
-JWT__RefreshTokenDays=30
-
-Moderation__AutoHideThreshold=3
-
-Smtp__Host=localhost
+# Mailpit SMTP port is host-dynamic (rewritten by ensure-infra.ts); the rest of
+# the SMTP settings live in appsettings.Development.json.
 Smtp__Port=1025
-Smtp__UseSsl=false
-Smtp__FromEmail=noreply@planb.local
-Smtp__FromName=planb
-
-Embeddings__ModelName=intfloat/multilingual-e5-base
-Embeddings__ModelVersion=1.0
-Embeddings__Dimensions=768
 `;
 }
 
