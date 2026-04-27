@@ -23,8 +23,7 @@ import { initialSignInState, type SignInFormState } from '../types';
  * we use it to surface a "registrate de nuevo" link when the email is
  * not verified — the resend-verification endpoint doesn't exist yet
  * (US-021 backlog), so the workaround is to nudge the user to register
- * again with the same email and get a fresh link. Once US-021-f lands,
- * that link gets swapped for a real resend button.
+ * again with the same email and get a fresh link.
  */
 export function SignInForm() {
   const [state, formAction] = useActionState<SignInFormState, FormData>(
