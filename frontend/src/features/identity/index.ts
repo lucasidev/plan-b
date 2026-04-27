@@ -3,6 +3,7 @@
 //       StudentProfile creation, TeacherProfile claim and verification.
 // See ADR-0020 for 1:1 alignment rationale.
 
+export * from './actions';
 export * from './api';
 export * from './schemas';
 export * from './types';
