@@ -44,9 +44,28 @@ jobs:
           --health-timeout 3s
           --health-retries 10
           --health-start-period 5s
+      # Redis backs the refresh-token revocation list (ADR-0034). DI validation in Release
+      # mode (ValidateOnBuild) requires IConnectionMultiplexer to resolve, so every test
+      # that builds the host needs Redis reachable, even those that don't exercise refresh.
+      # No password in CI: GHA service containers can't easily pass `--requirepass` as a
+      # command arg, and CI Redis is inherently scoped to a single ephemeral runner. Dev
+      # keeps AUTH on for prod parity (see docker-compose.yml).
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
       ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+      ConnectionStrings__Redis: localhost:6379
+      JWT__Secret: ci-test-jwt-secret-must-be-at-least-32-chars-long
+      JWT__Issuer: planb-test
+      JWT__Audience: planb-test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
