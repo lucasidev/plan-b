@@ -81,6 +81,13 @@ jobs:
         run: cd backend && dotnet restore
       - name: Format check
         run: cd backend && dotnet format --verify-no-changes
+      # Build + test in Release so CI exercises the same configuration the
+      # future deploy pipeline (F6 with Dokploy) will produce. Dev local stays
+      # Debug for compile speed; the divergence is intentional. The bug class
+      # this guards against (optimization-induced reordering, dead code paths
+      # under #if DEBUG) is rare but Release-only, so the cost of catching it
+      # in CI rather than at first deploy is small. Once release.yml exists,
+      # ci.yml stays Release for fast feedback on prod-equivalent binaries.
       - name: Build
         run: cd backend && dotnet build --no-restore --configuration Release
       - name: Test
