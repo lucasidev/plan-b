@@ -226,4 +226,86 @@ public class UserTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(UserErrors.NotDisabled);
     }
+
+    // ── Authenticate ─────────────────────────────────────────────────
+
+    private static User VerifiedActiveUser(FixedClock clock)
+    {
+        var user = User.Register(Email(), "hashed", clock).Value;
+        user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification, "raw", TimeSpan.FromHours(24), clock);
+        user.VerifyEmail("raw", clock);
+        user.ClearDomainEvents();
+        return user;
+    }
+
+    [Fact]
+    public void Authenticate_succeeds_for_verified_active_user_with_correct_password()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+
+        clock.Advance(TimeSpan.FromMinutes(1));
+        var result = user.Authenticate(_ => true, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var @event = user.DomainEvents.OfType<UserSignedInDomainEvent>().ShouldHaveSingleItem();
+        @event.UserId.ShouldBe(user.Id);
+        @event.OccurredAt.ShouldBe(T0.AddMinutes(1));
+    }
+
+    [Fact]
+    public void Authenticate_returns_invalid_credentials_for_wrong_password_even_when_state_is_off()
+    {
+        // Anti-enumeration: a wrong password must yield InvalidCredentials regardless of
+        // whether the account is unverified, disabled, or active. State-specific errors
+        // (EmailNotVerified / AccountDisabled) only leak after the password is correct.
+        var clock = new FixedClock(T0);
+
+        var unverified = User.Register(Email("unverified@x.com"), "hashed", clock).Value;
+        var disabled = VerifiedActiveUser(clock);
+        disabled.Disable(Guid.NewGuid(), "abuse", clock);
+
+        unverified.Authenticate(_ => false, clock).Error.ShouldBe(UserErrors.InvalidCredentials);
+        disabled.Authenticate(_ => false, clock).Error.ShouldBe(UserErrors.InvalidCredentials);
+    }
+
+    [Fact]
+    public void Authenticate_returns_email_not_verified_when_password_is_correct_but_email_pending()
+    {
+        var clock = new FixedClock(T0);
+        var user = User.Register(Email(), "hashed", clock).Value;
+
+        var result = user.Authenticate(_ => true, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.EmailNotVerified);
+        user.DomainEvents.OfType<UserSignedInDomainEvent>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Authenticate_returns_account_disabled_when_password_is_correct_but_user_disabled()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.Disable(Guid.NewGuid(), "abuse", clock);
+
+        var result = user.Authenticate(_ => true, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.AccountDisabled);
+        user.DomainEvents.OfType<UserSignedInDomainEvent>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Authenticate_passes_the_stored_hash_to_the_verifier_callback()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+
+        string? observed = null;
+        user.Authenticate(hash => { observed = hash; return true; }, clock);
+
+        observed.ShouldBe("hashed");
+    }
 }

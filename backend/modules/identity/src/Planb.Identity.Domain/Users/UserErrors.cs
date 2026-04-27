@@ -51,4 +51,24 @@ public static class UserErrors
         Error.Conflict(
             "identity.verification.invalidated",
             "Verification token has been invalidated.");
+
+    /// <summary>
+    /// Generic authentication failure. Returned both when the email isn't registered
+    /// and when the password doesn't match — anti-enumeration. The frontend never
+    /// distinguishes between the two.
+    /// </summary>
+    public static readonly Error InvalidCredentials =
+        Error.Unauthorized(
+            "identity.signin.invalid_credentials",
+            "Email or password is incorrect.");
+
+    public static readonly Error EmailNotVerified =
+        Error.Forbidden(
+            "identity.account.email_not_verified",
+            "Account email has not been verified.");
+
+    public static readonly Error AccountDisabled =
+        Error.Forbidden(
+            "identity.account.disabled",
+            "Account has been disabled.");
 }

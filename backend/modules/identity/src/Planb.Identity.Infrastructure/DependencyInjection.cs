@@ -34,6 +34,14 @@ public static class DependencyInjection
             configuration.GetSection(VerificationEmailOptions.SectionName));
         services.AddScoped<IVerificationEmailSender, SmtpVerificationEmailSender>();
 
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddSingleton<IJwtIssuer, JwtIssuer>();
+
+        services.AddSingleton<IRefreshTokenStore, RedisRefreshTokenStore>();
+
         return services;
     }
 
