@@ -21,7 +21,13 @@ export const env = clientEnv;
 // Validated lazily on first call so `bun run build` doesn't need real secrets
 // in CI. Any server route that touches serverEnv() in prod fails fast on
 // missing or short values. Throws if accidentally invoked from client code.
+//
+// JWT_SECRET must match the backend's JWT__Secret (HS256 symmetric key).
+// SESSION_SECRET signs the iron-session cookie if/when we adopt it; for the
+// pure-JWT flow that's currently in place it isn't strictly required, but
+// keeping it in the schema reserves the slot.
 const serverSchema = z.object({
+  JWT_SECRET: z.string().min(32),
   SESSION_SECRET: z.string().min(32),
 });
 
@@ -32,6 +38,9 @@ export function serverEnv() {
     throw new Error('serverEnv() must only be called from server-side code.');
   }
   if (cached) return cached;
-  cached = serverSchema.parse({ SESSION_SECRET: process.env.SESSION_SECRET });
+  cached = serverSchema.parse({
+    JWT_SECRET: process.env.JWT_SECRET,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+  });
   return cached;
 }

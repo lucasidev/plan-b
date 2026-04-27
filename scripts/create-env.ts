@@ -140,6 +140,9 @@ function frontendEnv(s: Secrets, ts: string): string {
 
 NEXT_PUBLIC_API_URL=http://localhost:5000
 SESSION_SECRET=${s.SESSION_SECRET}
+# Same value as the backend's JWT__Secret in the root .env. The frontend
+# verifies the JWT cookie issued by the backend (HS256, symmetric key).
+JWT_SECRET=${s.JWT_SECRET}
 `;
 }
 
