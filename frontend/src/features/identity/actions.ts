@@ -1,8 +1,8 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { forwardSetCookies } from '@/lib/forward-set-cookies';
 import { registerUser, signIn } from './api';
-import { forwardSetCookies } from './forward-set-cookies';
 import { signInSchema, signUpSchema } from './schemas';
 import type {
   ProblemDetails,

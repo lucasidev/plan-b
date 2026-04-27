@@ -15,8 +15,12 @@ import { cookies } from 'next/headers';
  * (Path, Expires, Max-Age, Domain, SameSite, Secure, HttpOnly). It is
  * deliberately small: a richer parser would be a dependency we don't need.
  *
- * Lives outside actions.ts because that file is `'use server'` (per
- * frontend/CLAUDE.md) and can only export async functions.
+ * Lives in lib/ rather than under features/identity/ because the helper is
+ * not Identity-specific: any feature that issues a server action against a
+ * backend that sets cookies will need this same parse-and-forward step.
+ * Sitting in lib/ also keeps features/<feature>/ confined to the directory
+ * shape that frontend/CLAUDE.md lists (actions.ts, api.ts, schemas/,
+ * hooks/, components/, types.ts, index.ts) — no extra ad-hoc files.
  */
 
 type ParsedCookie = {
