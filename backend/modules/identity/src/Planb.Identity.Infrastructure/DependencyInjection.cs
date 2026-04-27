@@ -29,9 +29,14 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenGenerator, RandomTokenGenerator>();
 
-        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
-        services.Configure<VerificationEmailOptions>(
-            configuration.GetSection(VerificationEmailOptions.SectionName));
+        services.AddOptions<SmtpOptions>()
+            .Bind(configuration.GetSection(SmtpOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddOptions<VerificationEmailOptions>()
+            .Bind(configuration.GetSection(VerificationEmailOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddScoped<IVerificationEmailSender, SmtpVerificationEmailSender>();
 
         services.AddOptions<JwtOptions>()
