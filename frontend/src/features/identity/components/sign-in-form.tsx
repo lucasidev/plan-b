@@ -5,7 +5,8 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { initialSignInState, type SignInFormState, signInAction } from '../actions';
+import { signInAction } from '../actions';
+import { initialSignInState, type SignInFormState } from '../types';
 
 /**
  * Sign-in form. Two fields plus submit. Same React 19 primitive stack
