@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1280"/>
+<title>plan-b — Plataforma de planificación académica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css?v=3"/>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="components/ui.jsx"></script>
+<script type="text/babel" src="components/shell.jsx"></script>
+<script type="text/babel" src="components/plan.jsx"></script>
+<script type="text/babel" src="components/simulator.jsx"></script>
+<script type="text/babel" src="components/details.jsx"></script>
+<script type="text/babel" src="components/screens.jsx"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "#e07a4d",
+  "bgTone": "apricot",
+  "displayFont": "Geist",
+  "uiFont": "Geist",
+  "density": "regular",
+  "simInfo": "rich",
+  "userState": "advanced"
+}/*EDITMODE-END*/;
+
+const BG_TONES = {
+  "apricot": { bg:"#fbf3ec", elev:"#f6ebde", ink:"#2a1d12",  line:"#f0e2d2",  line2:"#f6ebde" },
+  "cream":   { bg:"#fafaf7", elev:"#f4f2ec", ink:"#1c1917",  line:"#eeece8",  line2:"#f3f1ed" },
+  "paper":   { bg:"oklch(0.98 0.003 250)",  elev:"oklch(0.972 0.005 250)", ink:"oklch(0.2 0.012 250)",  line:"oklch(0.9 0.006 250)", line2:"oklch(0.94 0.004 250)" },
+  "charcoal":{ bg:"#1f1a14",  elev:"#26201a",   ink:"#f5ece1",  line:"#3a2f24",  line2:"#2c241c" },
+};
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  // Flujo: auth -> onboarding -> app
+  const [authed, setAuthed] = useState(false);
+  const [authedUser, setAuthedUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Debug shortcut for screenshots
+  React.useEffect(()=>{
+    window.__debugSkipAuth = ()=>{
+      setAuthedUser({ name: 'Lucía Mansilla', email: 'lucia.mansilla@unsta.edu.ar', isNew: false });
+      setAuthed(true);
+      setShowOnboarding(false);
+    };
+  }, []);
+  const [view, setView] = useState('home');
+  const [openedSubject, setOpenedSubject] = useState(null);
+  const [openedProf, setOpenedProf] = useState(null);
+  const [writingReview, setWritingReview] = useState(null);
+
+  const { SUBJECTS, USER_STATES } = window.PB_DATA;
+  const states = USER_STATES[t.userState] || USER_STATES.advanced;
+  const planned = ['ISW302','MOV302','INT302','SEG302','MAT201'];
+
+  // Aplicar tokens dinámicos
+  useEffect(()=>{
+    const root = document.documentElement;
+    root.dataset.density = t.density;
+    const tone = BG_TONES[t.bgTone] || BG_TONES.apricot;
+    const dark = t.bgTone === 'charcoal';
+    root.style.setProperty('--bg', tone.bg);
+    root.style.setProperty('--bg-elev', tone.elev);
+    root.style.setProperty('--bg-card', dark ? '#2a231c' : '#ffffff');
+    root.style.setProperty('--ink', tone.ink);
+    root.style.setProperty('--line', tone.line);
+    root.style.setProperty('--line-2', tone.line2);
+    if (t.bgTone === 'apricot') {
+      root.style.setProperty('--ink-2', '#5c4631');
+      root.style.setProperty('--ink-3', '#9c7e62');
+      root.style.setProperty('--ink-4', '#c2a98e');
+      root.style.setProperty('--shadow-card', '0 1px 2px rgba(120,40,10,0.06)');
+      root.style.setProperty('--shadow-card-h', '0 4px 14px rgba(120,40,10,0.10)');
+    } else if (dark) {
+      root.style.setProperty('--ink-2', '#cdbca8');
+      root.style.setProperty('--ink-3', '#9b8a76');
+      root.style.setProperty('--ink-4', '#6a5d4d');
+      root.style.setProperty('--shadow-card', '0 1px 2px rgba(0,0,0,0.4)');
+      root.style.setProperty('--shadow-card-h', '0 4px 14px rgba(0,0,0,0.5)');
+    } else {
+      root.style.setProperty('--ink-2', 'oklch(0.42 0.012 80)');
+      root.style.setProperty('--ink-3', 'oklch(0.62 0.01 80)');
+      root.style.setProperty('--ink-4', 'oklch(0.78 0.008 80)');
+      root.style.setProperty('--shadow-card', '0 1px 2px rgba(0,0,0,0.04)');
+      root.style.setProperty('--shadow-card-h', '0 4px 12px rgba(0,0,0,0.08)');
+    }
+    root.style.setProperty('--accent', t.accent);
+    root.style.setProperty('--font-display', `'${t.displayFont}', 'Geist', system-ui, sans-serif`);
+    root.style.setProperty('--font-ui', `'${t.uiFont}', 'Geist', system-ui, sans-serif`);
+  }, [t]);
+
+  const user = useMemo(()=>({
+    advanced: { name: 'Lucía Mansilla', initials: 'LM', year: 3, credits: 124 },
+    new: { name: 'Lucía Mansilla', initials: 'LM', year: 1, credits: 0 },
+    troubled: { name: 'Lucía Mansilla', initials: 'LM', year: 2, credits: 68 },
+  }[t.userState]), [t.userState]);
+
+  const crumbsByView = {
+    home: ['Mi cuatrimestre', 'Inicio'],
+    plan: ['Mi cuatrimestre', 'Plan de estudios'],
+    simulator: ['Mi cuatrimestre', 'Simulador 2026·1c'],
+    subjects: ['Comunidad', 'Materias'],
+    professors: ['Comunidad', 'Docentes'],
+    reviews: ['Comunidad', 'Mis reseñas'],
+    history: ['Cuenta', 'Historial académico'],
+    profile: ['Cuenta', 'Mi perfil'],
+    settings: ['Cuenta', 'Configuración'],
+  };
+
+  if (!authed) {
+    return <>
+      <AuthView onAuth={(u)=>{ setAuthedUser(u); setAuthed(true); setShowOnboarding(u.isNew); }}/>
+      <TweaksPanelComp t={t} setTweak={setTweak}/>
+    </>;
+  }
+
+  if (showOnboarding) {
+    return <>
+      <OnboardingView user={authedUser} onFinish={()=>setShowOnboarding(false)}/>
+      <TweaksPanelComp t={t} setTweak={setTweak}/>
+    </>;
+  }
+
+  return (
+    <div className="app" data-screen-label="plan-b app">
+      <Sidebar view={view} setView={setView} user={user}
+        onLogout={()=>{ setAuthed(false); setAuthedUser(null); }}
+        onShowOnboarding={()=>setShowOnboarding(true)}/>
+      <div className="main">
+        <Topbar crumbs={crumbsByView[view] || ['plan-b']}
+          right={
+            <button className="btn sm" onClick={()=>{
+              // Open write-review with the first pending subject
+              const reviewedCodes = new Set(['POO202','MAT201']);
+              const candidate = SUBJECTS.find(x=>
+                ['approved','regularized'].includes(states[x.code]) && !reviewedCodes.has(x.code)
+              ) || SUBJECTS.find(x=>x.code==='ISW302');
+              setWritingReview(candidate);
+            }}>＋ Escribir reseña</button>
+          }/>
+        <div className="view" data-screen-label={view}>
+          {view === 'home' && <HomeView user={user} states={states} subjects={SUBJECTS}
+            openSubject={setOpenedSubject} setView={setView}/>}
+          {view === 'plan' && <PlanView user={user} subjects={SUBJECTS} states={states}
+            planned={planned} openSubject={setOpenedSubject}/>}
+          {view === 'simulator' && <SimulatorView subjects={SUBJECTS} states={states}
+            density={t.density} simInfo={t.simInfo}/>}
+          {view === 'subjects' && <SubjectsListView subjects={SUBJECTS} openSubject={setOpenedSubject}/>}
+          {view === 'professors' && <ProfessorsListView openProf={setOpenedProf}/>}
+          {view === 'reviews' && <MyReviewsView subjects={SUBJECTS} states={states} openWriteReview={setWritingReview}/>}
+          {view === 'history' && <HistoryView subjects={SUBJECTS} states={states}/>}
+          {view === 'profile' && <ProfileView user={user} subjects={SUBJECTS} states={states} setView={setView}/>}
+          {view === 'settings' && <SettingsView/>}
+        </div>
+      </div>
+
+      {openedSubject && <>
+        <div className="scrim" onClick={()=>setOpenedSubject(null)}/>
+        <SubjectDetail subject={openedSubject}
+          onClose={()=>setOpenedSubject(null)}
+          openProf={(p)=>{ setOpenedSubject(null); setOpenedProf(p); }}
+          openWriteReview={(s)=>{ setOpenedSubject(null); setWritingReview(s); }}/>
+      </>}
+      {openedProf && <>
+        <div className="scrim" onClick={()=>setOpenedProf(null)}/>
+        <ProfessorDetail profKey={openedProf} onClose={()=>setOpenedProf(null)}/>
+      </>}
+      {writingReview && <>
+        <div className="scrim" onClick={()=>setWritingReview(null)}/>
+        <WriteReviewView subject={writingReview}
+          onClose={()=>setWritingReview(null)}
+          onSubmit={()=>setWritingReview(null)}/>
+      </>}
+
+      <TweaksPanelComp t={t} setTweak={setTweak}/>
+    </div>
+  );
+}
+
+function ProfessorsListView({ openProf }) {
+  const profs = window.PB_DATA.PROFESSORS;
+  return (
+    <div style={{padding:'var(--pad-xl) var(--pad-lg)',maxWidth:1200,margin:'0 auto'}}>
+      <div className="eyebrow" style={{marginBottom:8}}>{Object.keys(profs).length} docentes indexados</div>
+      <h1 className="h-display" style={{marginBottom:14}}>Docentes</h1>
+      <p className="lede" style={{marginBottom:24}}>
+        Ordenados por cantidad de reseñas. El badge indica si el docente
+        validó su identidad con email institucional o respondió reseñas públicamente.
+      </p>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+        {Object.entries(profs).map(([key,p])=>(
+          <button key={key} onClick={()=>openProf(key)}
+            className="card" style={{
+              padding:18,textAlign:'left',cursor:'pointer',
+              appearance:'none',font:'inherit',color:'inherit',
+              display:'flex',gap:14,alignItems:'flex-start'
+            }}
+            onMouseEnter={e=>e.currentTarget.style.background='var(--bg-elev)'}
+            onMouseLeave={e=>e.currentTarget.style.background='var(--bg-card)'}>
+            <div className="avatar" style={{width:42,height:42,fontSize:14}}>
+              {p.name.split(' ').slice(-2).map(w=>w[0]).join('')}
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+                <b style={{fontSize:14}}>{p.name}</b>
+                {p.verified && <VerifiedBadge kind="teacher"/>}
+              </div>
+              <div style={{fontSize:12,color:'var(--ink-3)',marginBottom:8}}>
+                Dicta {p.subjects.length} materias
+              </div>
+              <p style={{fontSize:12.5,color:'var(--ink-2)',margin:0,lineHeight:1.5}}>
+                {p.summary}
+              </p>
+              <div style={{display:'flex',gap:14,marginTop:10,fontFamily:'var(--font-mono)',fontSize:11,color:'var(--ink-3)'}}>
+                <span>★ <b className="tabular" style={{color:'var(--ink)'}}>{p.rating.toFixed(1)}</b></span>
+                <span>{p.ratings} reseñas</span>
+                {p.replies>0 && <span style={{color:'var(--accent-ink)'}}>{p.replies} respuestas</span>}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HistoryView({ subjects, states }) {
+  return (
+    <div style={{padding:'var(--pad-xl) var(--pad-lg)',maxWidth:1000,margin:'0 auto'}}>
+      <div className="eyebrow" style={{marginBottom:8}}>Solo vos ves esto</div>
+      <h1 className="h-display" style={{marginBottom:14}}>Historial académico</h1>
+      <p className="lede" style={{marginBottom:24}}>
+        Editá el estado de cada materia. Cuanto más completo, mejor el simulador
+        infiere correlativas y dificultad para tu caso.
+      </p>
+      <div className="card">
+        <div style={{
+          display:'grid',gridTemplateColumns:'80px 1fr 130px 110px 90px',gap:10,
+          padding:'10px 16px',borderBottom:'1px solid var(--line)',
+          fontFamily:'var(--font-mono)',fontSize:10.5,color:'var(--ink-3)',
+          letterSpacing:'0.1em',textTransform:'uppercase'
+        }}>
+          <span>Código</span><span>Materia</span><span>Estado</span><span>Año cursada</span><span>Nota</span>
+        </div>
+        {subjects.slice(0,18).map(s=>{
+          const st = states[s.code] || 'pending';
+          return (
+            <div key={s.code} style={{
+              display:'grid',gridTemplateColumns:'80px 1fr 130px 110px 90px',gap:10,
+              padding:'10px 16px',borderBottom:'1px solid var(--line-2)',
+              alignItems:'center'
+            }}>
+              <span className="mono" style={{fontSize:11,color:'var(--ink-3)'}}>{s.code}</span>
+              <span style={{fontSize:13.5}}>{s.name}</span>
+              <span className="tag" style={{
+                background: `var(--st-${st}-bg)`,
+                color: `var(--st-${st}-fg)`,
+                fontSize:10.5
+              }}>
+                {{approved:'Aprobada',regularized:'Regularizada',coursing:'Cursando',failed:'Recursando',pending:'Pendiente',available:'Disponible'}[st]}
+              </span>
+              <span className="mono tabular" style={{fontSize:11.5,color:'var(--ink-3)'}}>
+                {st==='approved'||st==='regularized' ? '2024·'+s.sem+'c' : st==='coursing' ? '2026·1c' : st==='failed' ? '2025·'+s.sem+'c' : '—'}
+              </span>
+              <span className="mono tabular" style={{fontSize:12,color:'var(--ink-2)'}}>
+                {st==='approved' ? (6+Math.round(Math.random()*4)) : '—'}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function MyReviewsView({ openWriteReview, subjects, states }) {
+  const myReviews = [
+    {
+      id: 1, rating: 4, subjectCode: 'POO202',
+      subjectName: 'Programación Orientada a Objetos',
+      prof: 'Lic. Castro', year: '2025-1c',
+      title: 'Castro hace que valga la pena',
+      body: 'Si tomás POO con Castro, vas a salir programando bien. Sus prácticas son las que más me sirvieron después en la vida real. La materia en sí es densa pero las clases hacen la diferencia.',
+      helpful: 6, notHelpful: 0, replies: 0
+    },
+    {
+      id: 2, rating: 2, subjectCode: 'MAT201',
+      subjectName: 'Probabilidad y Estadística',
+      prof: 'Dr. Iturralde', year: '2025-1c',
+      title: 'Recursando, ya van dos veces',
+      body: 'No es solo difícil. El problema es que asume que ya sabés cosas que nadie te enseñó. Iturralde tira la teoría como si fuera obvia. La recursé y otra vez no llegué con el final. Mi consejo: arrancá con el Walpole desde día uno.',
+      helpful: 14, notHelpful: 2, replies: 1
+    }
+  ];
+
+  const reviewed = new Set(myReviews.map(function(r){ return r.subjectCode; }));
+  const pendingReview = subjects.filter(function(s){
+    return ['approved','regularized'].includes(states[s.code]) && !reviewed.has(s.code);
+  }).slice(0, 4);
+
+  const totalHelpful = myReviews.reduce(function(a,r){ return a+r.helpful; }, 0);
+  const totalReplies = myReviews.reduce(function(a,r){ return a+r.replies; }, 0);
+
+  return (
+    <div style={{padding:'var(--pad-xl) var(--pad-lg)',maxWidth:1100,margin:'0 auto'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-end',gap:24,marginBottom:24}}>
+        <div>
+          <div className="eyebrow" style={{marginBottom:8}}>Anónimas, verificadas, tuyas</div>
+          <h1 className="h-display">Mis <em>reseñas</em></h1>
+          <p className="lede" style={{marginTop:12}}>
+            Lo que escribiste para ayudar a la próxima camada.
+            Nadie ve tu nombre, solo el badge de verificado que cursó.
+          </p>
+        </div>
+        <button className="btn accent" onClick={function(){
+          if (pendingReview[0]) openWriteReview(pendingReview[0]);
+        }}>
+          + Escribir nueva reseña
+        </button>
+      </div>
+
+      <div className="card" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',marginBottom:24}}>
+        <Stat label="Publicadas" value={myReviews.length} sub="reseñas activas"/>
+        <div style={{borderLeft:'1px solid var(--line)'}}>
+          <Stat label="Útiles" value={totalHelpful} sub="alumnos las marcaron"/>
+        </div>
+        <div style={{borderLeft:'1px solid var(--line)'}}>
+          <Stat label="Respuestas" value={totalReplies} sub="docentes te respondieron"/>
+        </div>
+        <div style={{borderLeft:'1px solid var(--line)'}}>
+          <Stat label="Pendientes" value={pendingReview.length} sub="materias sin reseñar"/>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 320px',gap:24}}>
+        <div>
+          <div className="eyebrow" style={{marginBottom:14}}>{myReviews.length} reseñas publicadas</div>
+          <div className="card">
+            {myReviews.map(function(r, i){
+              const stars = [0,1,2,3,4].map(function(j){
+                return <span key={j} style={{color: j<r.rating?'var(--accent)':'var(--line)',fontSize:14}}>★</span>;
+              });
+              return (
+                <div key={r.id} className="review">
+                  <div className="review-h">
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="ttl" style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+                        <span className="mono" style={{fontSize:10.5,color:'var(--ink-3)',letterSpacing:'0.04em'}}>{r.subjectCode}</span>
+                        <span style={{color:'var(--ink-4)'}}>·</span>
+                        <span>{r.title}</span>
+                      </div>
+                      <div className="who">
+                        <span style={{fontSize:12.5,color:'var(--ink-2)'}}>{r.subjectName}</span>
+                        <span>·</span>
+                        <span className="mono" style={{fontSize:10.5}}>{r.prof}</span>
+                        <span>·</span>
+                        <span className="mono" style={{fontSize:10.5}}>{r.year}</span>
+                      </div>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:2}}>{stars}</div>
+                  </div>
+                  <p className="review-body">{r.body}</p>
+                  <div className="review-foot">
+                    <span>👍 {r.helpful} útil</span>
+                    <span>·</span>
+                    <span>{r.replies > 0 ? (r.replies + ' respuesta del docente') : 'Sin respuestas'}</span>
+                    <span style={{marginLeft:'auto',display:'flex',gap:6}}>
+                      <button className="btn ghost sm">Editar</button>
+                      <button className="btn ghost sm">Borrar</button>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <div className="eyebrow" style={{marginBottom:14}}>Te faltan reseñar</div>
+          <div className="card" style={{padding:0}}>
+            {pendingReview.map(function(s, i){
+              const isLast = i === pendingReview.length - 1;
+              return (
+                <button key={s.code} onClick={function(){ openWriteReview(s); }}
+                  style={{
+                    appearance:'none', border:0, background:'transparent',
+                    textAlign:'left', width:'100%', cursor:'pointer',
+                    padding:'12px 14px',
+                    borderBottom: isLast ? 0 : '1px solid var(--line-2)',
+                    display:'flex', justifyContent:'space-between', alignItems:'center', gap:8
+                  }}
+                  onMouseEnter={function(e){ e.currentTarget.style.background='var(--bg-elev)'; }}
+                  onMouseLeave={function(e){ e.currentTarget.style.background='transparent'; }}>
+                  <div style={{minWidth:0}}>
+                    <div className="mono" style={{fontSize:10,color:'var(--ink-3)',marginBottom:2}}>{s.code}</div>
+                    <div style={{fontSize:12.5,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{s.name}</div>
+                  </div>
+                  <span style={{fontSize:14,color:'var(--ink-3)'}}>+</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{
+            marginTop:16, padding:14,
+            background:'var(--accent-soft)', borderRadius:'var(--radius)',
+            fontSize:12, lineHeight:1.55, color:'var(--accent-ink)'
+          }}>
+            <b style={{display:'block',marginBottom:4}}>Por qué importa</b>
+            Tus reseñas se anonimizan automáticamente. Lo que escribís hoy le sirve a un alumno que el cuatri que viene va a estar parado donde vos estuviste.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProfileView({ user, subjects, states, setView }) {
+  // Stats: derivar de "estados" + datos hardcoded plausibles
+  const approved = subjects.filter(s => states[s.code] === 'approved').length;
+  const regularized = subjects.filter(s => states[s.code] === 'regularized').length;
+  const pending = subjects.filter(s => ['approved','regularized'].includes(states[s.code])).length - 2; // 2 ya reseñadas
+  const reviewsPublished = 2;
+  const helpfulMarks = 20;
+  const profResponses = 1;
+
+  const career = 'Lic. en Sistemas';
+  const cohort = '2023';
+  const yearsLabel = `${user.year}° año en curso`;
+
+  const [editing, setEditing] = useState(false);
+
+  return (
+    <div style={{padding:'var(--pad-xl) var(--pad-lg)',maxWidth:880,margin:'0 auto'}}>
+      <div className="eyebrow" style={{marginBottom:8}}>Cuenta · Perfil</div>
+      <h1 className="h-display" style={{marginBottom:6}}>Mi perfil</h1>
+      <p style={{fontSize:14,color:'var(--ink-2)',marginBottom:28,maxWidth:560}}>
+        Acá vivís vos como estudiante: tu identidad real, tu trayecto, y cómo se ve tu actividad
+        en la comunidad. Lo que escribís en reseñas <b>no aparece</b> acá vinculado a tu nombre.
+      </p>
+
+      {/* Identidad */}
+      <div className="card" style={{padding:'var(--pad-lg)',marginBottom:14,display:'flex',gap:20,alignItems:'center'}}>
+        <div style={{
+          width:84,height:84,borderRadius:'50%',
+          background:'linear-gradient(135deg, var(--accent), var(--accent-2))',
+          display:'grid',placeItems:'center',
+          fontFamily:'var(--font-mono)',fontSize:28,fontWeight:600,
+          color:'white',letterSpacing:'-0.02em',
+          boxShadow:'inset 0 -2px 8px rgba(0,0,0,0.12)'
+        }}>{user.initials}</div>
+        <div style={{flex:1}}>
+          <div style={{fontSize:22,fontWeight:600,letterSpacing:'-0.01em',marginBottom:4,fontFamily:'var(--font-display)'}}>
+            {user.name}
+          </div>
+          <div style={{fontSize:13,color:'var(--ink-2)',marginBottom:8}}>
+            {career} · {yearsLabel} · cohorte {cohort}
+          </div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            <span style={{
+              fontSize:10.5,fontFamily:'var(--font-mono)',letterSpacing:'0.05em',
+              padding:'3px 8px',borderRadius:99,
+              background:'color-mix(in oklch, var(--accent-2) 20%, transparent)',
+              color:'var(--ink-1)',textTransform:'uppercase'
+            }}>✓ Verificado UNSTA</span>
+            <span style={{
+              fontSize:10.5,fontFamily:'var(--font-mono)',letterSpacing:'0.05em',
+              padding:'3px 8px',borderRadius:99,
+              background:'var(--bg-elev)',color:'var(--ink-2)',textTransform:'uppercase'
+            }}>{user.credits} créditos</span>
+          </div>
+        </div>
+        <button className="btn ghost sm" onClick={()=>setEditing(true)}>Editar</button>
+      </div>
+
+      {/* Cómo te ven */}
+      <div className="card" style={{
+        padding:'var(--pad-lg)',marginBottom:14,
+        background:'color-mix(in oklch, var(--accent-2) 8%, var(--bg-card))',
+        borderColor:'color-mix(in oklch, var(--accent-2) 35%, var(--line))'
+      }}>
+        <div className="eyebrow" style={{marginBottom:10}}>Cómo te ven los demás cuando reseñás</div>
+        <div style={{
+          background:'var(--bg-card)',
+          border:'1px solid var(--line)',
+          borderRadius:'var(--radius)',
+          padding:'14px 16px',marginBottom:10
+        }}>
+          <div style={{display:'flex',gap:8,alignItems:'center',marginBottom:6}}>
+            <div style={{
+              width:24,height:24,borderRadius:'50%',background:'var(--bg-elev)',
+              display:'grid',placeItems:'center',fontSize:11,color:'var(--ink-3)'
+            }}>?</div>
+            <span style={{fontSize:12.5,fontWeight:600}}>Anónimo</span>
+            <span style={{fontSize:11.5,color:'var(--ink-3)'}}>·</span>
+            <span className="mono" style={{fontSize:10.5,color:'var(--ink-3)',letterSpacing:'0.04em',textTransform:'uppercase'}}>
+              3° año · Sistemas
+            </span>
+            <span style={{fontSize:11.5,color:'var(--ink-3)'}}>·</span>
+            <span style={{fontSize:11.5,color:'var(--ink-2)'}}>cursó 2024·1c</span>
+            <span style={{
+              marginLeft:'auto',fontSize:10,fontFamily:'var(--font-mono)',
+              color:'var(--accent)',letterSpacing:'0.05em'
+            }}>VERIFICADO QUE CURSÓ</span>
+          </div>
+          <div style={{fontSize:13,color:'var(--ink-2)',fontStyle:'italic'}}>
+            "Esta es la metadata que aparece arriba de cada reseña tuya."
+          </div>
+        </div>
+        <p style={{fontSize:12.5,color:'var(--ink-2)',lineHeight:1.5,margin:0}}>
+          Nadie ve tu nombre, tu email, ni cuántas materias llevás aprobadas. El badge "verificado que cursó"
+          se calcula sin exponer tu legajo. Si después de leer pensás "se nota que soy yo", borrá la reseña.
+        </p>
+      </div>
+
+      {/* Stats actividad */}
+      <div className="eyebrow" style={{marginBottom:10,marginTop:24}}>Tu actividad</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10,marginBottom:24}}>
+        <StatTile k={reviewsPublished} l="reseñas publicadas" sub={`${pending} materias sin reseñar`}/>
+        <StatTile k={helpfulMarks} l="útiles" sub="alumnos te marcaron"/>
+        <StatTile k={profResponses} l="respuestas docentes" sub="recibiste"/>
+        <StatTile k={`${approved + regularized}`} l="materias cursadas" sub={`${approved} aprob · ${regularized} reg`}/>
+      </div>
+
+      {/* Datos académicos */}
+      <div className="card" style={{padding:'var(--pad-lg)',marginBottom:14}}>
+        <div className="eyebrow" style={{marginBottom:14}}>Datos académicos</div>
+        <ProfileRow label="Carrera" value={career}/>
+        <ProfileRow label="Plan" value="2019" mono/>
+        <ProfileRow label="Cohorte" value={cohort} mono/>
+        <ProfileRow label="Año en curso" value={yearsLabel}/>
+        <ProfileRow label="Créditos" value={`${user.credits} / 240`} mono/>
+        <ProfileRow label="Estado académico" value="Regular" tag="ok"/>
+        <div style={{marginTop:12,paddingTop:12,borderTop:'1px solid var(--line-2)'}}>
+          <button className="link" onClick={()=>setView('history')} style={{
+            background:'transparent',border:0,cursor:'pointer',padding:0,
+            color:'var(--accent)',fontSize:12.5,fontWeight:500
+          }}>
+            Ver historial académico completo →
+          </button>
+        </div>
+      </div>
+
+      {/* Identidad institucional */}
+      <div className="card" style={{padding:'var(--pad-lg)',marginBottom:14}}>
+        <div className="eyebrow" style={{marginBottom:14}}>Identidad institucional</div>
+        <ProfileRow label="Email" value="lucia.mansilla@unsta.edu.ar" mono tag="verificado"/>
+        <ProfileRow label="Legajo" value="UNSTA-23814" mono/>
+        <p style={{fontSize:12,color:'var(--ink-3)',lineHeight:1.5,marginTop:14,marginBottom:0,
+          paddingTop:12,borderTop:'1px solid var(--line-2)'}}>
+          Tu email y legajo se usan únicamente para verificar que sos alumno de UNSTA. <b>Nunca</b> se
+          muestran a otros usuarios ni se asocian a lo que escribís.
+        </p>
+      </div>
+
+      {/* Zona crítica */}
+      <div className="eyebrow" style={{marginBottom:10,marginTop:24,color:'var(--warn)'}}>Zona crítica</div>
+      <div className="card" style={{
+        padding:'var(--pad-lg)',
+        borderColor:'color-mix(in oklch, var(--warn) 30%, var(--line))'
+      }}>
+        <DangerRow
+          title="Descargar mis datos"
+          desc="Tus reseñas, tu historial y tus respuestas en un .json."
+          cta="Descargar"/>
+        <DangerRow
+          title="Pausar mi cuenta"
+          desc="Tus reseñas siguen visibles pero no podés escribir nuevas hasta que vuelvas."
+          cta="Pausar"/>
+        <DangerRow
+          title="Borrar mi cuenta"
+          desc="Se anonimiza para siempre. Las reseñas quedan, sin forma de vincularlas a vos."
+          cta="Borrar cuenta" danger/>
+      </div>
+
+      {editing && <EditProfileModal user={user} onClose={()=>setEditing(false)}/>}
+    </div>
+  );
+}
+
+function StatTile({ k, l, sub }) {
+  return (
+    <div className="card" style={{padding:'14px 16px'}}>
+      <div style={{
+        fontFamily:'var(--font-display)',fontSize:30,fontWeight:500,
+        letterSpacing:'-0.02em',lineHeight:1,marginBottom:6
+      }}>{k}</div>
+      <div style={{fontSize:11.5,color:'var(--ink-1)',fontWeight:500,marginBottom:2}}>{l}</div>
+      <div style={{fontSize:10.5,color:'var(--ink-3)',fontFamily:'var(--font-mono)',letterSpacing:'0.02em'}}>{sub}</div>
+    </div>
+  );
+}
+
+function ProfileRow({ label, value, mono, tag }) {
+  return (
+    <div style={{
+      display:'flex',alignItems:'baseline',gap:14,
+      padding:'10px 0',
+      borderTop:'1px solid var(--line-2)'
+    }}>
+      <div style={{
+        fontSize:11.5,color:'var(--ink-3)',fontFamily:'var(--font-mono)',
+        letterSpacing:'0.04em',textTransform:'uppercase',
+        width:140,flexShrink:0
+      }}>{label}</div>
+      <div style={{
+        fontSize:13.5,color:'var(--ink-1)',
+        fontFamily: mono ? 'var(--font-mono)' : 'inherit',
+        flex:1
+      }}>{value}</div>
+      {tag && (
+        <span style={{
+          fontSize:10,fontFamily:'var(--font-mono)',letterSpacing:'0.05em',
+          padding:'2px 8px',borderRadius:99,
+          background: tag==='ok' || tag==='verificado'
+            ? 'color-mix(in oklch, var(--accent-2) 25%, transparent)'
+            : 'var(--bg-elev)',
+          color:'var(--ink-1)',textTransform:'uppercase'
+        }}>{tag === 'verificado' ? '✓ verificado' : tag}</span>
+      )}
+    </div>
+  );
+}
+
+function DangerRow({ title, desc, cta, danger }) {
+  return (
+    <div style={{
+      display:'flex',alignItems:'center',gap:16,
+      padding:'12px 0',
+      borderTop:'1px solid var(--line-2)'
+    }}>
+      <div style={{flex:1}}>
+        <div style={{fontSize:13.5,fontWeight:500,marginBottom:3}}>{title}</div>
+        <div style={{fontSize:12,color:'var(--ink-3)',lineHeight:1.5}}>{desc}</div>
+      </div>
+      <button className={'btn sm ' + (danger ? '' : 'ghost')}
+        style={danger ? {background:'var(--warn)',borderColor:'var(--warn)'} : {}}>
+        {cta}
+      </button>
+    </div>
+  );
+}
+
+function EditProfileModal({ user, onClose }) {
+  const [name, setName] = useState(user.name);
+  return (
+    <>
+      <div className="scrim" onClick={onClose}/>
+      <div className="drawer" style={{maxWidth:480}}>
+        <div style={{padding:'24px 28px',borderBottom:'1px solid var(--line-2)'}}>
+          <div className="eyebrow" style={{marginBottom:6}}>Editar perfil</div>
+          <h2 style={{fontFamily:'var(--font-display)',fontSize:22,letterSpacing:'-0.01em',margin:0}}>
+            Tu información personal
+          </h2>
+        </div>
+        <div style={{padding:'20px 28px',flex:1,overflowY:'auto'}}>
+          <p style={{fontSize:12.5,color:'var(--ink-2)',marginBottom:18,lineHeight:1.5}}>
+            Esto solo te afecta a vos. Lo que ven otros estudiantes en tus reseñas es siempre anónimo.
+          </p>
+          <div className="field" style={{marginBottom:14}}>
+            <label>Nombre completo</label>
+            <input value={name} onChange={e=>setName(e.target.value)}/>
+          </div>
+          <div className="field" style={{marginBottom:14}}>
+            <label>Año en curso</label>
+            <select defaultValue={user.year}>
+              <option value="1">1° año</option>
+              <option value="2">2° año</option>
+              <option value="3">3° año</option>
+              <option value="4">4° año</option>
+              <option value="5">5° año</option>
+            </select>
+          </div>
+          <div className="field" style={{marginBottom:14}}>
+            <label>Avatar</label>
+            <div style={{display:'flex',gap:8,alignItems:'center'}}>
+              <div style={{
+                width:48,height:48,borderRadius:'50%',
+                background:'linear-gradient(135deg, var(--accent), var(--accent-2))',
+                display:'grid',placeItems:'center',
+                fontFamily:'var(--font-mono)',fontSize:18,fontWeight:600,color:'white'
+              }}>{user.initials}</div>
+              <button className="btn ghost sm">Subir foto</button>
+              <span style={{fontSize:11,color:'var(--ink-3)'}}>opcional · solo vos la ves</span>
+            </div>
+          </div>
+        </div>
+        <div style={{padding:'14px 28px',borderTop:'1px solid var(--line-2)',display:'flex',gap:8,justifyContent:'flex-end'}}>
+          <button className="btn ghost sm" onClick={onClose}>Cancelar</button>
+          <button className="btn sm" onClick={onClose}>Guardar cambios</button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function SettingsView() {
+  return (
+    <div style={{padding:'var(--pad-xl) var(--pad-lg)',maxWidth:760,margin:'0 auto'}}>
+      <h1 className="h-display" style={{marginBottom:24}}>Configuración</h1>
+      <div className="card" style={{padding:'var(--pad-lg)'}}>
+        <div className="eyebrow" style={{marginBottom:14}}>Privacidad</div>
+        <p style={{fontSize:13.5,color:'var(--ink-2)',lineHeight:1.55}}>
+          Tu nombre y email institucional <b>nunca</b> se asocian a tus reseñas.
+          Mostramos solo año de cursada y carrera. El badge de "verificado que cursó" se
+          deriva de tu historial sin revelar tu identidad.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TweaksPanelComp({ t, setTweak }) {
+  return (
+    <TweaksPanel title="Tweaks · plan-b">
+      <TweakSection label="Estado del usuario"/>
+      <TweakRadio label="Trayectoria" value={t.userState}
+        options={[{value:'new',label:'Nuevo'},{value:'advanced',label:'Avanzado'},{value:'troubled',label:'Atrasado'}]}
+        onChange={(v)=>setTweak('userState', v)}/>
+
+      <TweakSection label="Tipografía"/>
+      <TweakSelect label="Display" value={t.displayFont}
+        options={['Geist','Instrument Sans','Instrument Serif','EB Garamond','Newsreader','DM Serif Display']}
+        onChange={(v)=>setTweak('displayFont', v)}/>
+      <TweakSelect label="UI" value={t.uiFont}
+        options={['Geist','Inter','IBM Plex Sans','Manrope','DM Sans']}
+        onChange={(v)=>setTweak('uiFont', v)}/>
+
+      <TweakSection label="Color"/>
+      <TweakSelect label="Tono de fondo" value={t.bgTone}
+        options={[{value:'apricot',label:'Apricot Soft (default)'},{value:'cream',label:'Crema neutra'},{value:'paper',label:'Papel frío'},{value:'charcoal',label:'Charcoal (oscuro)'}]}
+        onChange={(v)=>setTweak('bgTone', v)}/>
+      <TweakColor label="Acento" value={t.accent}
+        onChange={(v)=>setTweak('accent', v)}/>
+
+      <TweakSection label="Densidad"/>
+      <TweakRadio label="Espaciado" value={t.density}
+        options={['compact','regular','comfy']}
+        onChange={(v)=>setTweak('density', v)}/>
+
+      <TweakSection label="Simulador"/>
+      <TweakRadio label="Información" value={t.simInfo}
+        options={[{value:'minimal',label:'Mínima'},{value:'rich',label:'Data-dense'}]}
+        onChange={(v)=>setTweak('simInfo', v)}/>
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
