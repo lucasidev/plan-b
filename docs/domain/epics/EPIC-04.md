@@ -20,7 +20,7 @@ Simular combinaciones de materias para el próximo cuatrimestre, guardarlas como
 - [US-025](../user-stories/US-025.md): Editar simulación
 - [US-026](../user-stories/US-026.md): Borrar simulación
 - [US-027](../user-stories/US-027.md): Ver simulaciones públicas de otros alumnos
-- [US-028](../user-stories/US-028.md): Recibir simulación recomendada (post-MVP)
+- "Recibir simulación recomendada" movida a [post-mvp.md](../post-mvp.md) (era US-028 placeholder, sin AC concretos hasta que se elija algoritmo).
 
 ## Decisiones que la condicionan
 

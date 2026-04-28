@@ -75,7 +75,8 @@ Agrupado por epic.
 | [US-025](user-stories/US-025.md) | Editar simulación | Medium | S |
 | [US-026](user-stories/US-026.md) | Borrar simulación | Low | S |
 | [US-027](user-stories/US-027.md) | Ver simulaciones públicas de otros alumnos | Medium | S |
-| [US-028](user-stories/US-028.md) | Recibir simulación recomendada (post-MVP) | Low | L |
+
+> "Recibir simulación recomendada" se movió a [post-mvp.md](post-mvp.md) hasta que se elija algoritmo (CF / heurística / embeddings).
 
 #### EPIC-05: Sistema de reseñas
 

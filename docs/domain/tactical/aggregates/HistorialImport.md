@@ -54,4 +54,5 @@ Ninguno específico (los enums `Status` y `SourceType` se modelan como columnas)
 
 - BC: [Enrollments](../../strategic/bounded-contexts.md#enrollments)
 - ADRs: [ADR-0004](../../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0006](../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)
-- User Stories: [US-024](../../user-stories/US-024.md), [US-025](../../user-stories/US-025.md), [US-026](../../user-stories/US-026.md), [US-027](../../user-stories/US-027.md), [US-028](../../user-stories/US-028.md)
+- User Stories: [US-024](../../user-stories/US-024.md), [US-025](../../user-stories/US-025.md), [US-026](../../user-stories/US-026.md), [US-027](../../user-stories/US-027.md)
+- Post-MVP: "Recibir simulación recomendada" en [post-mvp.md](../../post-mvp.md)
