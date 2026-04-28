@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { DisplayHeading, Lede } from '@/components/ui';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 import { cn } from '@/lib/utils';
@@ -10,23 +9,22 @@ import { AuthSplit } from './auth-split';
 export type AuthMode = 'signin' | 'signup';
 
 type Props = {
-  /** Initial mode driven by the URL the user landed on (/sign-up vs /sign-in).
-   *  After mount, the in-place switcher takes over and changes mode without
-   *  navigating, matching the mockup. */
+  /** Initial mode chosen by the page based on `?mode=` (signup) or default
+   *  (signin). After mount the local switcher takes over: clicks flip the
+   *  active form without navigating. */
   initialMode: AuthMode;
 };
 
 /**
- * Shared shell for `(auth)/sign-up` and `(auth)/sign-in`. Wraps AuthSplit
- * with the marketing column on the left and switcher + heading + active
- * form on the right.
+ * Single-route auth shell. Mounted by `(auth)/auth/page.tsx`; the page
+ * reads `searchParams.mode` and passes it through. Direct port of the
+ * auth screen from docs/design/reference/components/screens.jsx.
  *
- * The mode toggle is **local state**, not navigation: clicking "Ingresar"
- * from the sign-up screen swaps the form in place (matching the mockup's
- * `setMode('login')` button). The URL stays where the user landed so deep
- * links to /sign-up vs /sign-in still work for sharing. The forms also get
- * the setter as a prop so the in-form footer link ("¿Sos nuevo? Creá tu
- * cuenta") flips the mode without navigating either.
+ * Frontend exposes one URL (`/auth`) and swaps the form in place; backend
+ * keeps `POST /api/identity/sign-in` and `POST /api/identity/register`
+ * as separate endpoints. The forms get a setter as a prop so the in-form
+ * footer link ("¿Sos nuevo? Creá tu cuenta" / "¿Ya tenés cuenta? Ingresá")
+ * flips the mode without navigating either.
  */
 export function AuthView({ initialMode }: Props) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
@@ -35,46 +33,70 @@ export function AuthView({ initialMode }: Props) {
   return (
     <AuthSplit
       heading={
-        <DisplayHeading>
+        <h1
+          className="text-ink"
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 56,
+            lineHeight: 1.02,
+            letterSpacing: '-0.03em',
+            fontWeight: 600,
+            margin: 0,
+          }}
+        >
           Antes de inscribirte,
           <br />
-          mirá <em>quiénes ya pasaron</em>
+          mirá <em style={{ fontStyle: 'normal' }}>quiénes ya pasaron</em>
           <br />
           por esa materia.
-        </DisplayHeading>
+        </h1>
       }
-      description="plan-b es donde alumnos simulan su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
+      description="plan-b es la app donde alumnos de UNSTA simulan su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
+      quote={HERO_QUOTE}
       stats={HERO_STATS}
     >
-      <div className="space-y-6">
-        <ModeSwitcher mode={mode} onChange={setMode} />
-        <header className="space-y-2">
-          <DisplayHeading as="h2" size={28}>
-            {formCopy.heading}
-          </DisplayHeading>
-          <Lede>{formCopy.subheading}</Lede>
-        </header>
-        {mode === 'signup' ? (
-          <SignUpForm onSwitchToSignIn={() => setMode('signin')} />
-        ) : (
-          <SignInForm onSwitchToSignUp={() => setMode('signup')} />
-        )}
-      </div>
+      <ModeSwitcher mode={mode} onChange={setMode} />
+      <h2
+        className="text-ink"
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 32,
+          letterSpacing: '-0.02em',
+          fontWeight: 600,
+          margin: '0 0 8px',
+        }}
+      >
+        {formCopy.heading}
+      </h2>
+      <p className="text-ink-3" style={{ fontSize: 14, marginBottom: 28 }}>
+        {formCopy.subheading}
+      </p>
+      {mode === 'signup' ? (
+        <SignUpForm onSwitchToSignIn={() => setMode('signin')} />
+      ) : (
+        <SignInForm onSwitchToSignUp={() => setMode('signup')} />
+      )}
     </AuthSplit>
   );
 }
 
-// Hero stats: 3 métricas que dan presencia al hero del auth. La interfaz va
-// primero (filosofía de trabajo); estos valores son hardcodeados hasta que
-// aterrice GET /api/stats/public (universities count desde Academic, members
-// desde Identity, reviews desde Reviews — query agregada cross-module sin
-// auth, backlog como US separada). Cuando exista, este const se reemplaza
-// por un fetch RSC y este componente queda intacto en su shape.
+// Hero stats: 3 métricas que dan presencia al hero. Hardcoded hasta que
+// aterrice GET /api/stats/public (universities desde Academic, members
+// desde Identity, reviews desde Reviews, query agregada cross-module sin
+// auth, US separada). Cuando exista el endpoint, este const se reemplaza
+// por un fetch RSC y este componente queda intacto.
 const HERO_STATS: Array<{ label: string; value: string }> = [
   { label: 'alumnos verificados', value: '340' },
   { label: 'reseñas', value: '1.2k' },
   { label: 'universidades', value: '3' },
 ];
+
+// Testimonial fijo del mockup. Hardcoded por el mismo motivo que las stats:
+// cuando exista un sistema de testimonials reales (post-MVP), se rota.
+const HERO_QUOTE = {
+  text: '"Iba a anotarme en INT302 con el primero que tenía horario libre. Acá vi que había una comisión de 2c con 4.1★ vs 3.4★. Esperé un cuatri."',
+  attribution: 'Anónimo · 4° año Sistemas',
+};
 
 const FORM_COPY: Record<AuthMode, { heading: string; subheading: string }> = {
   signup: {
@@ -88,18 +110,14 @@ const FORM_COPY: Record<AuthMode, { heading: string; subheading: string }> = {
 };
 
 /**
- * Pill-shaped switcher, two segments. Active segment is bg-card (white-ish
- * on the cream background) with a thin border; inactive sits on bg-elev
- * with the same border to keep the rail height consistent. Matches the
- * mockup's auth-tabs.
+ * `.auth-tabs` from styles.css. Pill rail align-self flex-start (not full
+ * width). Active segment lifts to bg-card with a card shadow.
  */
 function ModeSwitcher({ mode, onChange }: { mode: AuthMode; onChange: (next: AuthMode) => void }) {
   return (
     <div
-      className={cn(
-        'inline-flex rounded-pill border border-line bg-bg-elev p-1',
-        'text-sm font-medium',
-      )}
+      className="inline-flex bg-bg-elev rounded-pill self-start"
+      style={{ padding: 4, marginBottom: 24 }}
       role="tablist"
       aria-label="Modo de autenticación"
     >
@@ -129,10 +147,11 @@ function ModeButton({
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        'px-4 py-1.5 rounded-pill transition-colors',
+        'rounded-pill transition-all',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
-        active ? 'bg-bg-card text-ink shadow-card' : 'bg-transparent text-ink-2 hover:text-ink',
+        active ? 'bg-bg-card text-ink shadow-card' : 'bg-transparent text-ink-3 hover:text-ink',
       )}
+      style={{ padding: '8px 18px', fontSize: 13, fontWeight: 500 }}
     >
       {children}
     </button>
