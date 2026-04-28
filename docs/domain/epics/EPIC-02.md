@@ -27,6 +27,8 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 - [US-012](../user-stories/US-012.md): Crear StudentProfile
 
 ### Backlog
+- [US-033](../user-stories/US-033.md): Recuperación de contraseña
+- [US-035](../user-stories/US-035.md): Sign-in con Google (OAuth)
 - [US-068](../user-stories/US-068.md): Deshabilitar cuenta member
 
 ## Decisiones que la condicionan

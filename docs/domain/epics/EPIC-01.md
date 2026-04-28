@@ -14,6 +14,9 @@ Visitor anónimo puede explorar el catálogo (universidades, carreras, planes, m
 - [US-003](../user-stories/US-003.md): Ver docente con sus reseñas
 - [US-004](../user-stories/US-004.md): Buscar materia o docente por texto libre
 
+### Backlog
+- [US-034](../user-stories/US-034.md): Stats públicas agregadas en hero
+
 ## Decisiones que la condicionan
 
 - [ADR-0001](../../decisions/0001-multi-universidad-desde-dia-1.md): multi-universidad desde día 1
