@@ -1,10 +1,10 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Button } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { Button, PasswordField, TextField } from '@/components/ui';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
 
@@ -31,23 +31,24 @@ export function SignInForm() {
     initialSignInState,
   );
 
+  const emailRef = useRef<HTMLInputElement>(null);
+  // Focus the email field on mount so a returning user lands ready to type.
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
+
   return (
     <form action={formAction} className="space-y-4" noValidate>
-      <Field
+      <TextField
+        ref={emailRef}
         name="email"
         type="email"
         label="Email"
-        placeholder="lucia@unsta.edu.ar"
+        placeholder="tu@email.com"
         autoComplete="email"
         required
       />
-      <Field
-        name="password"
-        type="password"
-        label="Contraseña"
-        autoComplete="current-password"
-        required
-      />
+      <PasswordField name="password" label="Contraseña" autoComplete="current-password" required />
 
       {state.status === 'error' && (
         <div
@@ -72,44 +73,16 @@ export function SignInForm() {
   );
 }
 
-type FieldProps = {
-  name: string;
-  type: 'email' | 'password' | 'text';
-  label: string;
-  placeholder?: string;
-  autoComplete?: string;
-  required?: boolean;
-};
-
-function Field({ name, type, label, placeholder, autoComplete, required }: FieldProps) {
-  const id = `signin-${name}`;
-  return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-ink-2">
-        {label}
-      </label>
-      <input
-        id={id}
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        required={required}
-        className={cn(
-          'w-full h-11 px-3 rounded border bg-bg-card text-ink',
-          'placeholder:text-ink-4',
-          'focus:outline-none focus:ring-2 focus:ring-accent-soft',
-          'border-line focus:border-accent',
-        )}
-      />
-    </div>
-  );
-}
-
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant="accent" disabled={pending} className="w-full justify-center">
+    <Button
+      type="submit"
+      variant="accent"
+      disabled={pending}
+      className="w-full justify-center gap-2"
+    >
+      {pending && <Loader2 size={16} className="animate-spin" aria-hidden />}
       {pending ? 'Ingresando...' : 'Entrar'}
     </Button>
   );

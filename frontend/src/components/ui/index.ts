@@ -8,6 +8,8 @@ export { Eyebrow } from './eyebrow';
 export { Lede } from './lede';
 export { Logo } from './logo';
 export { Meter } from './meter';
+export { PasswordField } from './password-field';
 export { Pill } from './pill';
 export { Stat } from './stat';
+export { TextField } from './text-field';
 export { VerifiedBadge } from './verified-badge';
