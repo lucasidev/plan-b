@@ -26,6 +26,12 @@ Como solo-dev y futuros evaluadores (Ing. Copas), quiero los 33 ADRs base escrit
 - [x] Escribir ADRs 0026-0033 (workflow + outbox + projections + child entities)
 - [x] Actualizar `docs/decisions/README.md` con criterios e índice
 
+## Notas de implementación
+
+- **Criterio de "decisión que amerita ADR"**: las tres preguntas del README. Si hay alternativa real descartada por motivo concreto, si rompe algo a 3 meses cuando alguien hace lo contrario, y si el "por qué" se va a olvidar, escribirlo. Si no, no.
+- **MADR como formato**: estable, lightweight, leído por humanos, no requiere tooling. Evita ADR tools custom que terminan abandonados.
+- **ADRs linkeadas desde docs y US**: los ADRs son fuente de verdad de decisiones. Las US referencian ADRs en su header (`**ADR refs**`) y en `## Refs`, no copian el rationale.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)

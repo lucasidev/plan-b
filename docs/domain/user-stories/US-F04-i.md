@@ -28,6 +28,12 @@ Como solo-dev defendiendo el `main`, quiero GitHub Actions corriendo en cada PR 
 - [x] Setup caching (NuGet + bun)
 - [x] Configurar branch protection en GitHub
 
+## Notas de implementación
+
+- **Postgres y Mailpit como GitHub Actions services**: corren al lado del job, mismos puertos que en local. ADR-0027 pide DB real en integration tests, no testcontainers ni mocks. Más fidelidad, menos magia.
+- **Branch protection con required check**: ADR-0026 no permite push directo a `main`. Sin CI verde, GitHub no permite mergear. La gate es estructural, no convenida.
+- **Cache de NuGet + bun**: el path crítico de CI es restore + build de .NET. Cache hit típico baja a < 8 min total. Si crece más, separar el job en restore vs test podría ahorrar.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)

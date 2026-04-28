@@ -32,6 +32,12 @@ Como tech lead solo-dev, quiero el scaffolding completo del backend (.NET 10, mo
 - [x] Implementar `Result<T>` y `Error` en shared kernel
 - [x] Setup project references respetando boundaries
 
+## Notas de implementación
+
+- **Modular monolith, no microservicios**: ADR-0014 elige un solo proceso .NET con módulos aislados por carpeta y schema Postgres. Cero overhead de network entre BCs, deploy simple, módulos extraíbles si en el futuro algún BC justifica un servicio aparte.
+- **Wolverine como mediator + outbox**: cubre dos roles (handler dispatch in-process y outbox durable para integration events cross-BC). Evita el combo MediatR + biblioteca outbox separada.
+- **Project references respetando boundaries**: `Planb.<Module>.Application` referencia `Planb.<Module>.Domain`, no aggregates de otros módulos. Cualquier acoplamiento cross-module pasa por `PublicContracts`.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
