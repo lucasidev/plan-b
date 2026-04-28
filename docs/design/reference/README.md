@@ -48,5 +48,5 @@ El mockup es la fuente de verdad **visual**, no funcional. Hay decisiones del pr
 - **Campo "name" en sign-up no se incluye** (US-010-f). El backend `RegisterUser` toma solo email + password; el display name pertenece a `StudentProfile` (F3+).
 - **Checkbox "acepto términos" no se incluye**. No hay términos publicados todavía.
 - **Email hint inline ("Email UNSTA verificado" / "Tiene que terminar en @unsta.edu.ar") no se incluye**. Atado al gate descartado.
-- **"¿Olvidaste tu contraseña?" no se incluye**. No hay endpoint backend de reset todavía.
+- **"¿Olvidaste tu contraseña?" se incluye como link a `/forgot-password`** pero la ruta no existe todavía (404). El visual del mockup va primero, el feature de password reset (frontend + endpoints backend) llega como US separada después de sign-out (US-029-i). Cuando aterrice, el link queda funcional sin tocar el sign-in form.
 - **Password floor**: el mockup muestra "Mínimo 6 caracteres". El backend exige ≥12 (RegisterUser validator). El frontend valida ≥12 para alinear con el backend.

@@ -39,7 +39,10 @@ type Props = {
  * - No name field on sign-up; the backend's RegisterUser command takes only
  *   email + password. A display name belongs to StudentProfile, which lands
  *   later in F3.
- * - No "olvidé contraseña" link. The reset flow has no backend support yet.
+ * - "Olvidaste tu contraseña?" link is in the sign-in form per the mockup,
+ *   but it points at /forgot-password which doesn't exist yet (404 until
+ *   the password-reset US lands, see docs/design/reference/README.md for
+ *   the deferral rationale).
  */
 export function AuthView({ initialMode }: Props) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
