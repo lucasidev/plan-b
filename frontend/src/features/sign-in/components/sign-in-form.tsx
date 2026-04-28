@@ -5,60 +5,59 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button, PasswordField, TextField } from '@/components/ui';
+import { GoogleIcon } from '@/components/ui/icons/google';
+import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
 
+type Props = {
+  /** Switches the AuthView mode without navigating. Used by the in-form
+   *  "¿Sos nuevo? Creá tu cuenta" footer link. */
+  onSwitchToSignUp: () => void;
+};
+
 /**
- * Sign-in form. Two fields plus submit. Same React 19 primitive stack
- * (useActionState + useFormStatus) as SignUpForm.
+ * Sign-in form. Ports the mockup faithfully: Google button on top, "O CON
+ * EMAIL" divider, email + password, anti-enumeration error block, accent
+ * submit, forgot/switch links, legal disclaimer.
  *
- * Errors don't get scoped per-field here — the backend deliberately
- * returns the anti-enumeration `InvalidCredentials` for both wrong-email
- * and wrong-password. Showing the error in a single alert above the
- * submit button matches that contract; per-field errors would leak
- * which input was wrong.
- *
- * The action state's `kind` discriminator lets us add side-effects to
- * specific failure modes without re-parsing the message string. Today
- * we use it to surface a "registrate de nuevo" link when the email is
- * not verified — the resend-verification endpoint doesn't exist yet
- * (US-021 backlog), so the workaround is to nudge the user to register
- * again with the same email and get a fresh link.
+ * The Google button and the forgot-password link are UI-only today: the
+ * OAuth flow and the password-reset flow don't have backend support yet.
+ * Both are placeholders pointing at routes that 404. The interface goes
+ * first; the features land in subsequent PRs without touching this file.
  */
-export function SignInForm() {
+export function SignInForm({ onSwitchToSignUp }: Props) {
   const [state, formAction] = useActionState<SignInFormState, FormData>(
     signInAction,
     initialSignInState,
   );
 
   const emailRef = useRef<HTMLInputElement>(null);
-  // Focus the email field on mount so a returning user lands ready to type.
   useEffect(() => {
     emailRef.current?.focus();
   }, []);
 
   return (
     <form action={formAction} className="space-y-4" noValidate>
+      <GoogleButton />
+      <Divider>O CON EMAIL</Divider>
+
       <TextField
         ref={emailRef}
         name="email"
         type="email"
-        label="Email"
-        placeholder="tu@email.com"
+        label="Email institucional"
+        placeholder="lucia.mansilla@unsta.edu.ar"
         autoComplete="email"
         required
       />
-      <PasswordField name="password" label="Contraseña" autoComplete="current-password" required />
-
-      <div className="flex justify-end -mt-1">
-        <Link
-          href="/forgot-password"
-          prefetch
-          className="text-xs text-ink-3 hover:text-ink underline underline-offset-2"
-        >
-          ¿Olvidaste tu contraseña?
-        </Link>
-      </div>
+      <PasswordField
+        name="password"
+        label="Contraseña"
+        placeholder="Mínimo 12 caracteres"
+        autoComplete="current-password"
+        required
+      />
 
       {state.status === 'error' && (
         <div
@@ -79,6 +78,10 @@ export function SignInForm() {
       )}
 
       <SubmitButton />
+
+      <FooterLinks onSwitchToSignUp={onSwitchToSignUp} />
+
+      <LegalText />
     </form>
   );
 }
@@ -95,5 +98,67 @@ function SubmitButton() {
       {pending && <Loader2 size={16} className="animate-spin" aria-hidden />}
       {pending ? 'Ingresando...' : 'Entrar'}
     </Button>
+  );
+}
+
+function GoogleButton() {
+  return (
+    <Link
+      href="/auth/google"
+      className={cn(
+        'w-full h-11 inline-flex items-center justify-center gap-3',
+        'rounded-pill border border-line bg-bg-card text-ink',
+        'text-sm font-medium hover:bg-bg-elev transition-colors',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+      )}
+    >
+      <GoogleIcon size={18} />
+      Continuar con Google
+    </Link>
+  );
+}
+
+function Divider({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 h-px bg-line" />
+      <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
+        {children}
+      </span>
+      <div className="flex-1 h-px bg-line" />
+    </div>
+  );
+}
+
+function FooterLinks({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
+  return (
+    <div className="space-y-1.5 pt-1">
+      <Link
+        href="/forgot-password"
+        prefetch
+        className="block text-sm text-accent-ink hover:underline underline-offset-2"
+      >
+        ¿Olvidaste tu contraseña?
+      </Link>
+      <p className="text-sm text-accent-ink">
+        ¿Sos nuevo?{' '}
+        <button
+          type="button"
+          onClick={onSwitchToSignUp}
+          className="underline underline-offset-2 hover:text-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+        >
+          Creá tu cuenta
+        </button>
+      </p>
+    </div>
+  );
+}
+
+function LegalText() {
+  return (
+    <p className="text-xs text-ink-3 leading-relaxed pt-2">
+      Al continuar entendés que plan-b no está afiliada oficialmente con UNSTA. Tu email
+      institucional se usa solo para verificar que sos alumno; nunca aparece en tus reseñas.
+    </p>
   );
 }

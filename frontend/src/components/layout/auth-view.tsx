@@ -18,31 +18,15 @@ type Props = {
 
 /**
  * Shared shell for `(auth)/sign-up` and `(auth)/sign-in`. Wraps AuthSplit
- * with the marketing column on the left and tabs + form-side heading +
- * the active form on the right.
+ * with the marketing column on the left and switcher + heading + active
+ * form on the right.
  *
  * The mode toggle is **local state**, not navigation: clicking "Ingresar"
  * from the sign-up screen swaps the form in place (matching the mockup's
  * `setMode('login')` button). The URL stays where the user landed so deep
- * links to /sign-up vs /sign-in still work for sharing.
- *
- * Why client component: the toggle is local UI state. Both forms are
- * already client components (useActionState / useFormStatus), so making
- * the parent client too costs nothing — actually slightly cheaper because
- * the page doesn't need to re-render shell when the mode flips.
- *
- * Differences from the mockup (intentional, see design/reference/README.md):
- * - No `@unsta.edu.ar` gate. Per US-010-f, anyone with a valid email format
- *   can register; the platform is multi-university (ADR-0001) and an
- *   institutional gate would contradict that.
- * - No "Continuar con Google" button. OAuth is out of MVP scope.
- * - No name field on sign-up; the backend's RegisterUser command takes only
- *   email + password. A display name belongs to StudentProfile, which lands
- *   later in F3.
- * - "Olvidaste tu contraseña?" link is in the sign-in form per the mockup,
- *   but it points at /forgot-password which doesn't exist yet (404 until
- *   the password-reset US lands, see docs/design/reference/README.md for
- *   the deferral rationale).
+ * links to /sign-up vs /sign-in still work for sharing. The forms also get
+ * the setter as a prop so the in-form footer link ("¿Sos nuevo? Creá tu
+ * cuenta") flips the mode without navigating either.
  */
 export function AuthView({ initialMode }: Props) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
@@ -70,7 +54,11 @@ export function AuthView({ initialMode }: Props) {
           </DisplayHeading>
           <Lede>{formCopy.subheading}</Lede>
         </header>
-        {mode === 'signup' ? <SignUpForm /> : <SignInForm />}
+        {mode === 'signup' ? (
+          <SignUpForm onSwitchToSignIn={() => setMode('signin')} />
+        ) : (
+          <SignInForm onSwitchToSignUp={() => setMode('signup')} />
+        )}
       </div>
     </AuthSplit>
   );
@@ -99,9 +87,22 @@ const FORM_COPY: Record<AuthMode, { heading: string; subheading: string }> = {
   },
 };
 
+/**
+ * Pill-shaped switcher, two segments. Active segment is bg-card (white-ish
+ * on the cream background) with a thin border; inactive sits on bg-elev
+ * with the same border to keep the rail height consistent. Matches the
+ * mockup's auth-tabs.
+ */
 function ModeSwitcher({ mode, onChange }: { mode: AuthMode; onChange: (next: AuthMode) => void }) {
   return (
-    <div className="flex gap-2" role="tablist" aria-label="Modo de autenticación">
+    <div
+      className={cn(
+        'inline-flex rounded-pill border border-line bg-bg-elev p-1',
+        'text-sm font-medium',
+      )}
+      role="tablist"
+      aria-label="Modo de autenticación"
+    >
       <ModeButton active={mode === 'signup'} onClick={() => onChange('signup')}>
         Crear cuenta
       </ModeButton>
@@ -128,11 +129,9 @@ function ModeButton({
       aria-selected={active}
       onClick={onClick}
       className={cn(
-        'flex-1 text-center rounded-pill border px-4 py-2',
-        'text-sm font-medium transition-colors',
-        active
-          ? 'bg-ink text-white border-ink'
-          : 'bg-bg-card text-ink-2 border-line hover:bg-bg-elev hover:text-ink',
+        'px-4 py-1.5 rounded-pill transition-colors',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+        active ? 'bg-bg-card text-ink shadow-card' : 'bg-transparent text-ink-2 hover:text-ink',
       )}
     >
       {children}
