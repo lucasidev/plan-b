@@ -24,8 +24,8 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 **Pending (added in S1 mid-sprint replan):**
 - [US-021-b](../user-stories/US-021-b.md): Resend verification backend
 - [US-021-f](../user-stories/US-021-f.md): Resend verification frontend
-- [US-022-i](../user-stories/US-022-i.md): Expirar registros no verificados (cron)
-- [US-033](../user-stories/US-033.md): Recuperación de contraseña
+- [US-022](../user-stories/US-022.md): Expirar registros no verificados (cron)
+- [US-033-i](../user-stories/US-033-i.md): Recuperación de contraseña (integrated)
 
 ### Sprint S2 (perfil + features iniciales)
 - [US-012](../user-stories/US-012.md): Crear StudentProfile
