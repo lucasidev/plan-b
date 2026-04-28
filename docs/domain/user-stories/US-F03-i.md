@@ -29,6 +29,13 @@ Como solo-dev, quiero un `docker-compose.yml` que levante Postgres 17 con extens
 - [x] Setear defaults Smtp host = localhost
 - [x] Documentar en `CLAUDE.md` y README
 
+## Notas de implementación
+
+- **Imagen Postgres con pgvector preinstalado**: la extensión se habilita en migration inicial. ADR-0007 mantiene pgvector implementado pero gated off en UI hasta tener volumen de reseñas suficiente.
+- **Mailpit en lugar de Mailhog**: Mailpit tiene mejor UI web y mejor performance para tests de integración que envían N emails. Misma puerta SMTP (1025), drop-in.
+- **Autodetección podman/docker**: el script bun chequea cuál binario está disponible. Resuelve el caso típico de developers en Linux con podman default y CI/Mac con docker. Misma `compose` invocation independiente del backend.
+- **Shared Postgres en CI**: ADR-0027. Un solo container con schemas separados por test parallel run, reseteo via `TRUNCATE` por aggregate. Más rápido que spinear container por suite.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)

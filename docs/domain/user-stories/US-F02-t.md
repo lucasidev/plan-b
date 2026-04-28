@@ -28,6 +28,12 @@ Como solo-dev y futuros colaboradores, quiero un Justfile con todas las operacio
 - [x] Implementar `scripts/check-commit-msg.ts` validando types y formato
 - [x] Documentar tasks en `CLAUDE.md`
 
+## Notas de implementación
+
+- **Scripts en TypeScript, no bash**: regla cross-cutting del repo. Bun ejecuta scripts TS directo, sin compilación previa, y evita inconsistencias entre Windows / Mac / Linux que aparecen con bash. Documentado en `CLAUDE.md`.
+- **Conventional Commits enforceado en commit-msg**: Lefthook corre `bun scripts/check-commit-msg.ts`. El parser valida formato `type(scope): descripción` y rechaza tipos fuera del catálogo (feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert). El feedback rápido evita rebases por mensajes mal formateados.
+- **`just ci` espeja CI**: cualquier diferencia entre local y GitHub Actions es bug de configuración. Mantener paridad simplifica debug "anda en local rompe en CI".
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
