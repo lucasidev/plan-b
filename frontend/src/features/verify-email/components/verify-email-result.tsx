@@ -10,8 +10,8 @@ type Props = {
  * Renders the outcome of /api/identity/verify-email. Server component:
  * the page hands a VerifyEmailOutcome and we map kind → copy + CTA. The
  * resend-verification endpoint doesn't exist yet (US-021 backlog), so
- * the workaround for any error case is to nudge the user back to /sign-up
- * with the same email to receive a fresh link.
+ * the workaround for any error case is to nudge the user back to
+ * /auth?mode=signup with the same email to receive a fresh link.
  */
 export function VerifyEmailResult({ result }: Props) {
   if (result.kind === 'success') {
@@ -23,7 +23,7 @@ export function VerifyEmailResult({ result }: Props) {
           </DisplayHeading>
           <Lede>Tu cuenta quedó verificada. Ya podés iniciar sesión.</Lede>
         </header>
-        <Link href="/sign-in" prefetch>
+        <Link href="/auth" prefetch>
           <Button type="button" variant="accent" className="w-full justify-center">
             Iniciar sesión
           </Button>
@@ -43,7 +43,7 @@ export function VerifyEmailResult({ result }: Props) {
           </DisplayHeading>
           <Lede>Este link ya se usó. Andá a iniciar sesión sin vueltas.</Lede>
         </header>
-        <Link href="/sign-in" prefetch>
+        <Link href="/auth" prefetch>
           <Button type="button" variant="accent" className="w-full justify-center">
             Iniciar sesión
           </Button>
@@ -63,12 +63,12 @@ export function VerifyEmailResult({ result }: Props) {
         <Lede>{errorCopy.body}</Lede>
       </header>
       <div className="flex flex-col gap-2">
-        <Link href="/sign-up" prefetch>
+        <Link href="/auth?mode=signup" prefetch>
           <Button type="button" variant="accent" className="w-full justify-center">
             Registrarme de nuevo
           </Button>
         </Link>
-        <Link href="/sign-in" prefetch>
+        <Link href="/auth" prefetch>
           <Button type="button" variant="ghost" className="w-full justify-center">
             Volver a iniciar sesión
           </Button>

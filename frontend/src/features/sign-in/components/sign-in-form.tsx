@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Button, PasswordField, TextField } from '@/components/ui';
+import { PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
 import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
@@ -17,14 +17,12 @@ type Props = {
 };
 
 /**
- * Sign-in form. Ports the mockup faithfully: Google button on top, "O CON
- * EMAIL" divider, email + password, anti-enumeration error block, accent
- * submit, forgot/switch links, legal disclaimer.
- *
- * The Google button and the forgot-password link are UI-only today: the
- * OAuth flow and the password-reset flow don't have backend support yet.
- * Both are placeholders pointing at routes that 404. The interface goes
- * first; the features land in subsequent PRs without touching this file.
+ * Sign-in form. Direct port of the `mode==='login'` branch in
+ * docs/design/reference/components/screens.jsx with the matching styles
+ * from .auth-* in styles.css. Field spacing, divider, footer links, legal
+ * disclaimer all mirror the mockup. Functional bits unchanged from the
+ * previous version (Zod schema, server action, anti-enumeration error
+ * surface, autofocus on email).
  */
 export function SignInForm({ onSwitchToSignUp }: Props) {
   const [state, formAction] = useActionState<SignInFormState, FormData>(
@@ -38,39 +36,48 @@ export function SignInForm({ onSwitchToSignUp }: Props) {
   }, []);
 
   return (
-    <form action={formAction} className="space-y-4" noValidate>
+    <form action={formAction} className="flex flex-col" noValidate>
       <GoogleButton />
-      <Divider>O CON EMAIL</Divider>
+      <Divider>o con email</Divider>
 
-      <TextField
-        ref={emailRef}
-        name="email"
-        type="email"
-        label="Email institucional"
-        placeholder="lucia.mansilla@unsta.edu.ar"
-        autoComplete="email"
-        required
-      />
-      <PasswordField
-        name="password"
-        label="Contraseña"
-        placeholder="Mínimo 12 caracteres"
-        autoComplete="current-password"
-        required
-      />
+      <div style={{ marginBottom: 14 }}>
+        <TextField
+          ref={emailRef}
+          name="email"
+          type="email"
+          label="Tu email"
+          placeholder="lucia.mansilla@email.com"
+          autoComplete="email"
+          required
+        />
+      </div>
+      <div style={{ marginBottom: 18 }}>
+        <PasswordField
+          name="password"
+          label="Contraseña"
+          placeholder="Mínimo 12 caracteres"
+          autoComplete="current-password"
+          required
+        />
+      </div>
 
       {state.status === 'error' && (
         <div
           role="alert"
-          className="text-sm rounded border border-line bg-bg-card p-3 space-y-2 text-st-failed-fg"
+          className="text-sm rounded border border-line bg-bg-card text-st-failed-fg"
+          style={{ padding: 12, marginBottom: 14 }}
         >
           <p>{state.message}</p>
           {state.kind === 'email_not_verified' && (
-            <p className="text-ink-2">
+            <p className="text-ink-2" style={{ marginTop: 6 }}>
               ¿No llegó el mail?{' '}
-              <Link href="/sign-up" prefetch className="underline">
+              <button
+                type="button"
+                onClick={onSwitchToSignUp}
+                className="underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+              >
                 Registrate de nuevo con el mismo email
-              </Link>{' '}
+              </button>{' '}
               para recibir un link nuevo.
             </p>
           )}
@@ -89,15 +96,21 @@ export function SignInForm({ onSwitchToSignUp }: Props) {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button
+    <button
       type="submit"
-      variant="accent"
       disabled={pending}
-      className="w-full justify-center gap-2"
+      className={cn(
+        'w-full inline-flex items-center justify-center gap-2',
+        'bg-accent text-white border border-accent rounded-pill shadow-card',
+        'transition-colors hover:bg-accent-hover',
+        'disabled:opacity-50 disabled:pointer-events-none',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+      )}
+      style={{ padding: '12px 18px', fontSize: 13.5, fontWeight: 500 }}
     >
       {pending && <Loader2 size={16} className="animate-spin" aria-hidden />}
       {pending ? 'Ingresando...' : 'Entrar'}
-    </Button>
+    </button>
   );
 }
 
@@ -106,11 +119,17 @@ function GoogleButton() {
     <Link
       href="/auth/google"
       className={cn(
-        'w-full h-11 inline-flex items-center justify-center gap-3',
-        'rounded-pill border border-line bg-bg-card text-ink',
-        'text-sm font-medium hover:bg-bg-elev transition-colors',
+        'w-full inline-flex items-center justify-center gap-2.5',
+        'bg-bg-card text-ink border border-line shadow-card',
+        'transition-colors hover:border-ink-3',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
       )}
+      style={{
+        padding: '12px 16px',
+        borderRadius: 8,
+        fontSize: 14,
+        fontWeight: 500,
+      }}
     >
       <GoogleIcon size={18} />
       Continuar con Google
@@ -120,45 +139,57 @@ function GoogleButton() {
 
 function Divider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 h-px bg-line" />
-      <span className="font-mono text-[10px] tracking-[0.12em] uppercase text-ink-3">
-        {children}
-      </span>
-      <div className="flex-1 h-px bg-line" />
+    <div
+      className="flex items-center text-ink-4"
+      style={{
+        gap: 12,
+        margin: '18px 0',
+        fontFamily: 'var(--font-mono)',
+        fontSize: 11,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+      }}
+    >
+      <span className="flex-1 h-px bg-line" />
+      <span>{children}</span>
+      <span className="flex-1 h-px bg-line" />
     </div>
   );
 }
 
 function FooterLinks({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
   return (
-    <div className="space-y-1.5 pt-1">
-      <Link
-        href="/forgot-password"
-        prefetch
-        className="block text-sm text-accent-ink hover:underline underline-offset-2"
-      >
-        ¿Olvidaste tu contraseña?
-      </Link>
-      <p className="text-sm text-accent-ink">
+    <>
+      <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
+        <Link
+          href="/forgot-password"
+          prefetch
+          className="text-accent-ink hover:underline"
+          style={{ fontWeight: 500 }}
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+      <div className="text-ink-3" style={{ marginTop: 14, fontSize: 13 }}>
         ¿Sos nuevo?{' '}
         <button
           type="button"
           onClick={onSwitchToSignUp}
-          className="underline underline-offset-2 hover:text-accent-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+          className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+          style={{ fontWeight: 500 }}
         >
           Creá tu cuenta
         </button>
-      </p>
-    </div>
+      </div>
+    </>
   );
 }
 
 function LegalText() {
   return (
-    <p className="text-xs text-ink-3 leading-relaxed pt-2">
-      Al continuar entendés que plan-b no está afiliada oficialmente con UNSTA. Tu email
-      institucional se usa solo para verificar que sos alumno; nunca aparece en tus reseñas.
+    <p className="text-ink-4" style={{ fontSize: 11.5, lineHeight: 1.55, marginTop: 20 }}>
+      Al continuar entendés que plan-b no está afiliada oficialmente con UNSTA. Tu email se usa solo
+      para verificar que sos alumno; nunca aparece en tus reseñas.
     </p>
   );
 }
