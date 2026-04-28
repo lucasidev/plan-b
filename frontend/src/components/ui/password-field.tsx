@@ -6,21 +6,18 @@ import { cn } from '@/lib/utils';
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & {
   label: string;
-  /** Inline error message rendered below the input. Sets aria-invalid and
-   *  describedby for screen readers. */
+  /** Inline error message rendered below the input. */
   error?: string;
   /** Optional helper text below the input. Hidden when an error is shown. */
   hint?: string;
 };
 
 /**
- * Password input with a show/hide toggle button on the right edge. Toggling
- * swaps `type` between `password` and `text` while preserving the typed
- * value. `aria-pressed` exposes the toggle state to screen readers; the
- * toggle gets its own focus ring and stays inside the field's visual frame.
- *
- * Used in sign-in (one field), sign-up (password + confirm) and any future
- * flow that asks for a password.
+ * Same shape as TextField (mockup `.field` styling) plus an Eye/EyeOff
+ * toggle on the right edge. Toggling swaps `type` between `password` and
+ * `text` while preserving the value. `aria-pressed` exposes the state to
+ * screen readers; the toggle gets `tabIndex={-1}` so Tab keeps going
+ * label → input → next field.
  */
 export const PasswordField = forwardRef<HTMLInputElement, Props>(function PasswordField(
   { label, error, hint, className, ...rest },
@@ -33,8 +30,16 @@ export const PasswordField = forwardRef<HTMLInputElement, Props>(function Passwo
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={inputId} className="block text-sm font-medium text-ink-2">
+    <div className="flex flex-col" style={{ gap: 5 }}>
+      <label
+        htmlFor={inputId}
+        className="text-ink-3"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 12,
+          letterSpacing: '0.04em',
+        }}
+      >
         {label}
       </label>
       <div className="relative">
@@ -45,12 +50,18 @@ export const PasswordField = forwardRef<HTMLInputElement, Props>(function Passwo
           aria-invalid={error ? true : undefined}
           aria-describedby={[errorId, hintId].filter(Boolean).join(' ') || undefined}
           className={cn(
-            'w-full h-11 px-3 pr-11 rounded border bg-bg-card text-ink',
+            'w-full bg-bg-card text-ink outline-none transition-colors',
             'placeholder:text-ink-4',
-            'focus:outline-none focus:ring-2 focus:ring-accent-soft',
-            error ? 'border-st-failed-fg' : 'border-line focus:border-accent',
+            'focus:border-accent focus:shadow-[0_0_0_3px_var(--color-accent-soft)]',
+            error ? 'border-st-failed-fg' : 'border-line',
             className,
           )}
+          style={{
+            padding: '11px 44px 11px 14px',
+            border: '1px solid',
+            borderRadius: 8,
+            fontSize: 14,
+          }}
           {...rest}
         />
         <button
@@ -70,12 +81,12 @@ export const PasswordField = forwardRef<HTMLInputElement, Props>(function Passwo
         </button>
       </div>
       {hint && !error && (
-        <p id={hintId} className="text-xs text-ink-3">
+        <p id={hintId} className="text-ink-3" style={{ fontSize: 11.5, marginTop: 4 }}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-xs text-st-failed-fg">
+        <p id={errorId} className="text-st-failed-fg" style={{ fontSize: 11.5, marginTop: 4 }}>
           {error}
         </p>
       )}

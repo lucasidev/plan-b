@@ -6,15 +6,15 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id'> & {
   /** Inline error message rendered below the input. Sets aria-invalid and
    *  describedby for screen readers. */
   error?: string;
-  /** Optional helper text below the input. Hidden when an error is shown so
-   *  the two don't fight for the same row. */
+  /** Optional helper text below the input. Hidden when an error is shown. */
   hint?: string;
 };
 
 /**
- * Standard text input with label + error + optional hint, wired for a11y.
- * Use `<TextField type="email" ...>` for emails; for passwords, use
- * `<PasswordField>` which adds the show/hide toggle.
+ * Direct port of `.field` from docs/design/reference/styles.css. Label is
+ * mono 12px ink-3 with letter-spacing; input is 14px on a soft 8px-radius
+ * border. Focus state is `border-accent` plus a 3px `accent-soft` ring
+ * (box-shadow, not outline, to match the mockup's calm focus look).
  */
 export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
   { label, error, hint, className, ...rest },
@@ -26,8 +26,16 @@ export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
   const hintId = hint && !error ? `${reactId}-hint` : undefined;
 
   return (
-    <div className="space-y-1.5">
-      <label htmlFor={inputId} className="block text-sm font-medium text-ink-2">
+    <div className="flex flex-col" style={{ gap: 5 }}>
+      <label
+        htmlFor={inputId}
+        className="text-ink-3"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: 12,
+          letterSpacing: '0.04em',
+        }}
+      >
         {label}
       </label>
       <input
@@ -36,21 +44,27 @@ export const TextField = forwardRef<HTMLInputElement, Props>(function TextField(
         aria-invalid={error ? true : undefined}
         aria-describedby={[errorId, hintId].filter(Boolean).join(' ') || undefined}
         className={cn(
-          'w-full h-11 px-3 rounded border bg-bg-card text-ink',
+          'w-full bg-bg-card text-ink outline-none transition-colors',
           'placeholder:text-ink-4',
-          'focus:outline-none focus:ring-2 focus:ring-accent-soft',
-          error ? 'border-st-failed-fg' : 'border-line focus:border-accent',
+          'focus:border-accent focus:shadow-[0_0_0_3px_var(--color-accent-soft)]',
+          error ? 'border-st-failed-fg' : 'border-line',
           className,
         )}
+        style={{
+          padding: '11px 14px',
+          border: '1px solid',
+          borderRadius: 8,
+          fontSize: 14,
+        }}
         {...rest}
       />
       {hint && !error && (
-        <p id={hintId} className="text-xs text-ink-3">
+        <p id={hintId} className="text-ink-3" style={{ fontSize: 11.5, marginTop: 4 }}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-xs text-st-failed-fg">
+        <p id={errorId} className="text-st-failed-fg" style={{ fontSize: 11.5, marginTop: 4 }}>
           {error}
         </p>
       )}

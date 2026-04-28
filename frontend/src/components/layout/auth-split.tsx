@@ -2,48 +2,47 @@ import { Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Right column. The actual interactive content (form, status card, etc.). */
+  /** Right column. The interactive content (form, status card, etc.). */
   children: React.ReactNode;
-  /**
-   * Left column hero. Heading + lede typically shared across sign-in / sign-up
-   * / verify-email so users don't get visual whiplash navigating between
-   * states. Use a `<DisplayHeading>` here.
-   */
+  /** Hero headline JSX (renderable). Sized at 56px / line-height 1.02 by AuthSplit. */
   heading: React.ReactNode;
-  /** Hero paragraph below the heading. ~38ch reads best in this column. */
+  /** Hero description paragraph. ~38ch. */
   description?: React.ReactNode;
-  /**
-   * Optional testimonial card. Renders inside a frosted-glass panel so it
-   * sits on top of the apricot gradient without competing with the heading.
-   */
+  /** Optional testimonial card on a frosted-glass panel. */
   quote?: { text: string; attribution: string };
-  /** Optional metric strip at the very bottom of the hero. */
+  /** Optional metric strip at the bottom of the hero column. */
   stats?: Array<{ label: string; value: string }>;
 };
 
 /**
- * Split layout shared by `(auth)` routes. Apricot gradient with two radial
- * glows on the left, plain bg on the right. Mirrors `.auth` from the
- * mockup. The heading + lede + quote + stats live on the left, the
- * interactive surface on the right.
+ * Split layout for the `(auth)` route group. Direct port of `.auth` /
+ * `.auth-side` from docs/design/reference/styles.css.
  *
- * Why the gradient + radial glows: the auth flow is the first impression
- * and the reference comp leans into a warm marketing mood here that the
- * rest of the app does not have. Keeping that mood specific to (auth)
- * avoids the rest of the product reading as "marketing".
+ * Left column: apricot gradient with two radial glows, padding 48 56,
+ * three rows top→bottom (logo+hero, quote, stats) via flex justify-between.
+ * Right column: plain bg, content centered vertically, padding 48 64,
+ * max-width 520.
  */
 export function AuthSplit({ children, heading, description, quote, stats }: Props) {
   return (
-    <main className={cn('min-h-screen grid bg-bg', 'grid-cols-1 lg:grid-cols-[1.1fr_1fr]')}>
+    <main className="min-h-screen grid bg-bg grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
+      {/*
+        Hero column anchors top-down with fixed gaps between blocks instead
+        of justify-between. justify-between stretches the gaps with the
+        viewport height, which was making the quote and stats float to
+        unpredictable positions on tall screens. Fixed gaps keep the
+        block heights stable across viewports, matching the right-column
+        anchor.
+      */}
       <aside
         className={cn(
           'relative overflow-hidden',
-          'flex flex-col justify-between gap-8',
-          'p-12 lg:p-14',
+          'flex flex-col',
           'bg-[linear-gradient(160deg,#fbe5d6_0%,#fbf3ec_60%)]',
         )}
+        style={{ padding: '48px 56px' }}
       >
-        {/* Two radial glows to add depth without a hard border on the seam. */}
+        {/* Two radial glows to add depth without a hard seam. */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -55,11 +54,16 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
 
         <div className="relative z-10">
           <Logo size={28} />
-          <div className="mt-16">{heading}</div>
+          <div style={{ marginTop: 64 }}>{heading}</div>
           {description && (
             <p
-              className="text-ink-2 mt-4"
-              style={{ fontSize: '16px', lineHeight: 1.55, maxWidth: '38ch' }}
+              className="text-ink-2"
+              style={{
+                fontSize: 16,
+                lineHeight: 1.55,
+                maxWidth: '38ch',
+                marginTop: 18,
+              }}
             >
               {description}
             </p>
@@ -68,23 +72,47 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
 
         {quote && (
           <div
-            className={cn(
-              'relative z-10',
-              'rounded backdrop-blur-sm',
-              'border border-white/60 bg-white/60',
-              'p-5 text-sm text-ink-2 leading-relaxed',
-            )}
-            style={{ maxWidth: '38ch' }}
+            className="relative z-10 backdrop-blur-[6px]"
+            style={{
+              marginTop: 64,
+              background: 'rgba(255,255,255,0.6)',
+              border: '1px solid rgba(255,255,255,0.6)',
+              borderRadius: 12,
+              padding: '18px 20px',
+              fontSize: 14,
+              lineHeight: 1.5,
+              color: 'var(--color-ink-2)',
+              maxWidth: '38ch',
+            }}
           >
             {quote.text}
-            <div className="mt-2.5 font-mono text-[11px] text-ink-3 tracking-wide uppercase">
+            <div
+              style={{
+                marginTop: 10,
+                fontFamily: 'var(--font-mono)',
+                fontSize: 11,
+                color: 'var(--color-ink-3)',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
               — {quote.attribution}
             </div>
           </div>
         )}
 
         {stats && stats.length > 0 && (
-          <div className="relative z-10 flex gap-6 font-mono text-[11px] text-ink-3 tracking-wide">
+          <div
+            className="relative z-10 flex"
+            style={{
+              marginTop: 48,
+              gap: 24,
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--color-ink-3)',
+              letterSpacing: '0.04em',
+            }}
+          >
             {stats.map((s) => (
               <div key={s.label}>
                 <b className="text-ink">{s.value}</b> {s.label}
@@ -94,7 +122,19 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
         )}
       </aside>
 
-      <section className={cn('flex flex-col justify-center', 'p-12 lg:p-16', 'max-w-xl w-full')}>
+      {/*
+        Right column anchors the content at the top instead of vertically
+        centering. Centering causes the switcher to bounce when AuthView
+        swaps between sign-in (shorter) and sign-up (taller) — the whole
+        block re-centers and the switcher's vertical position drifts.
+        Fixed top padding keeps the switcher pinned where it aligns with
+        the hero heading on the left column; sign-up grows down and
+        sign-in leaves bottom whitespace, both intentionally.
+      */}
+      <section
+        className="flex flex-col w-full"
+        style={{ padding: '140px 64px 48px', maxWidth: 520 }}
+      >
         {children}
       </section>
     </main>
