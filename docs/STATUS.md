@@ -2,7 +2,7 @@
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-04-27.
+**Última actualización**: 2026-04-28.
 
 ---
 
@@ -11,8 +11,8 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 | Sprint | Rango | Foco | Status |
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity slices A+B | ✓ Done |
-| S1 | 2026-04-27 a 2026-05-03 | Auth slice completo (register UI + verify + login + sign-out) | 🔄 En progreso |
-| S2 | siguiente | UC-012 StudentProfile (slice D) + cleanup auth (resend, expire) | ⏳ Pendiente |
+| S1 | 2026-04-27 a 2026-05-03 | Auth slice completo + cleanup auth + AppShell + dashboard home placeholder | 🔄 En progreso |
+| S2 | siguiente | UC-012 StudentProfile (slice D) + arranque Academic / catálogo | ⏳ Pendiente |
 | S3+ | next | Backoffice catálogo / catálogo público (Fase 3) | ⏳ Pendiente |
 
 Convenciones:
@@ -83,53 +83,69 @@ Convenciones:
 
 **Rango**: 2026-04-27 a 2026-05-03.
 
-**Foco**: **cerrar el slice de auth completo end-to-end**. Cuando S1 cierre, alguien puede registrarse, verificar su email, iniciar sesión, usar la app, cerrar sesión. Sin esto, el resto del producto no se puede demostrar.
+**Foco original**: cerrar el slice de auth completo end-to-end (register UI + verify + login + sign-out).
+
+**Replan mid-sprint (2026-04-28)**: el slice de auth original cerró en 2 días con runway de 5 días restantes. Se sumaron al sprint: cleanup de auth (resend / expire / forgot password) + AppShell del área autenticada + home del dashboard como placeholder visual del producto. La meta del sprint pasa a ser **"el evaluador entra a plan-b y ve la silueta completa del producto post-login"**, no solo "auth funciona".
 
 ### User stories incluidas
 
-| US | Título | Epic | Status |
-|---|---|---|---|
-| US-011-b | Verify email backend | EPIC-02 | ✓ Done en main |
-| US-010-f | Register frontend (sign-up tab del AuthView) | EPIC-02 | Pendiente |
-| US-011-f | Verify email frontend (rehecho con design system) | EPIC-02 | Pendiente (revertido en PR #14) |
-| US-028-b | Login backend | EPIC-02 | Pendiente |
-| US-028-f | Login frontend (sign-in tab del AuthView) | EPIC-02 | Pendiente |
-| US-029-i | Sign-out integrated | EPIC-02 | Pendiente |
+| US | Título | Epic | Effort | Status |
+|---|---|---|---|---|
+| US-010-f | Register frontend (sign-up tab del AuthView) | EPIC-02 | M | ✓ Done |
+| US-011-b | Verify email backend | EPIC-02 | S | ✓ Done |
+| US-011-f | Verify email frontend (rehecho con design system) | EPIC-02 | S | ✓ Done |
+| US-028-b | Login backend | EPIC-02 | M | ✓ Done |
+| US-028-f | Login frontend (sign-in tab del AuthView) | EPIC-02 | M | ✓ Done |
+| US-029-i | Sign-out integrated | EPIC-02 | S | ✓ Done |
+| US-021-b | Resend verification backend | EPIC-02 | S | Pendiente (replan) |
+| US-021-f | Resend verification frontend | EPIC-02 | S | Pendiente (replan) |
+| US-022-i | Expirar registros no verificados (cron) | EPIC-02 | S | Pendiente (replan) |
+| US-033 | Recuperación de contraseña (integrated) | EPIC-02 | M | Pendiente (replan) |
+| US-042-f | AppShell del área autenticada | EPIC-04 | M | Pendiente (replan) |
+| US-043-f | Home del dashboard (placeholder visual) | EPIC-04 | S | Pendiente (replan) |
 
 ### Entregables agrupados por PR
 
+**Done:**
 1. **`feat/identity-login-backend`** (US-028-b): `POST /api/identity/sign-in` + JWT HS256 + refresh token con revocation list en Redis (patrón #1 de redis-key-patterns) + `DevSeedHostedService` con las 4 personas de [docs/domain/personas.md](domain/personas.md). Tests integration cubren los 3 paths de error (401 invalid creds, 403 unverified, 403 disabled).
-2. **`feat/auth-view-and-verify`** (US-010-f + US-011-f + US-028-f): componente `AuthView` shared con tabs sign-up/sign-in (per mockup `screens.jsx`), 3 rutas `(auth)/sign-up`, `(auth)/sign-in`, `(auth)/verify-email`, server actions wireadas. Sign-up al register backend ya en main, sign-in al login del PR previo, verify-email rehecho sobre `AuthSplit`.
-3. **`feat/identity-sign-out`** (US-029-i): endpoint trivial `POST /api/identity/sign-out` que limpia revocation list + cookies, botón en frontend, integration test.
+2. **`feat/auth-view-and-verify`** (US-010-f + US-011-f + US-028-f): componente `AuthView` shared con tabs sign-up/sign-in (per mockup `screens.jsx`), 3 rutas `(auth)/sign-up`, `(auth)/sign-in`, `(auth)/verify-email`, server actions wireadas.
+3. **`feat/identity-sign-out`** (US-029-i): endpoint `POST /api/identity/sign-out` que revoca refresh token en Redis + limpia cookies, botón en frontend, integration tests.
+
+**Pending (replan):**
+4. **`feat/identity-resend-verification`** (US-021-b + US-021-f): un solo PR como sign-out, endpoint con rate limit + UI en pantalla post-registro.
+5. **`feat/identity-expire-unverified`** (US-022-i): cron diario que expira tokens y registros no verificados >7d.
+6. **`feat/identity-forgot-password`** (US-033): forgot + reset endpoint + 2 páginas frontend, anti-enumeración.
+7. **`feat/member-app-shell`** (US-042-f): sidebar + topbar + avatar dropdown que reemplaza el placeholder actual de `/dashboard`. Stubs `Próximamente` para rutas no implementadas.
+8. **`feat/dashboard-home-placeholder`** (US-043-f): home del dashboard con copy y datos del mockup, marcados con TODO por feature futura.
 
 ### Definition of Done de S1
 
 - `just dev` levanta backend + frontend.
-- Lucía (`lucia.mansilla@gmail.com` / `lucia.mansilla.12`) puede iniciar sesión.
-- Mateo, Paula, Martín seedeados producen los caminos esperados (signin OK / 403 disabled / 403 unverified).
-- Un user nuevo se puede registrar desde la UI, verifica el email, queda logueado.
-- "Cerrar sesión" del menú deja al user en `/sign-in`.
+- Lucía puede registrarse, verificar email, iniciar sesión.
+- Si Lucía no recibe el mail, puede pedir un reenvío (rate-limited).
+- Si Lucía olvida la contraseña, puede pedirla por email y resetearla.
+- Si Lucía nunca verifica, su registro se expira automáticamente >7 días.
+- Después del login, Lucía ve el AppShell con sidebar de navegación y home con la silueta del producto.
+- "Cerrar sesión" desde el avatar dropdown la lleva a `/auth`.
 
 ---
 
 ## S2 (próximo) ⏳ Pendiente
 
-**Foco previsto**: cleanup del flujo de auth (lo que quedó fuera de S1) + arrancar StudentProfile.
+**Foco previsto**: arrancar StudentProfile + abrir Academic (catálogo) para destrabar la siguiente fase.
 
 ### User stories previstas
 
 | US | Título | Epic |
 |---|---|---|
-| US-021-b | Resend verification backend | EPIC-02 |
-| US-021-f | Resend verification frontend | EPIC-02 |
-| US-022-i | Expirar registros no verificados (cron) | EPIC-02 |
 | US-012 | Crear StudentProfile | EPIC-02 |
+
+(Más US a definir cuando arranquemos planning de S2; candidatos: US-001 catálogo público, US-013 cargar historial manual, US-060+ backoffice de catálogo.)
 
 ### Entregables previstos
 
-- Resend verification con rate limit (3/h por user).
-- Cron diario que expira registros no verificados >7d.
 - Aggregate `StudentProfile` con `POST /api/me/student-profiles` + UI "agregar carrera".
+- Primera capa de Academic: University + Career + CareerPlan (read-only para empezar a alimentar la home con datos reales).
 
 ---
 
@@ -177,8 +193,8 @@ En progreso. Subdividida en 5 slices end-to-end testeables, mapeados a sprints:
 |---|---|---|---|
 | A | S0 | ✓ Done | Identity schema + primera migración EF Core |
 | B | S0 | ✓ Done | UC-010 Register backend + email de verificación |
-| C+E | S1 | 🔄 En progreso | Slice end-to-end de auth: register UI + verify (b+f) + login (b+f) + sign-out. Cuando S1 cierre, auth está usable de punta a punta |
-| Cleanup | S2 | ⏳ Pendiente | Resend verification + expirar registros no verificados |
+| C+E | S1 | 🔄 En progreso | Slice end-to-end de auth: register UI + verify (b+f) + login (b+f) + sign-out. Done en main al 2026-04-28 |
+| Cleanup | S1 | 🔄 En progreso | Resend verification + expirar registros no verificados + forgot password (movido a S1 en el replan del 2026-04-28) |
 | D | S2 | ⏳ Pendiente | UC-012 Create StudentProfile |
 
 La fase 2 cierra cuando S1 + S2 están done: auth end-to-end + cleanup + StudentProfile inicial.
