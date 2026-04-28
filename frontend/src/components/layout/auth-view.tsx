@@ -73,11 +73,15 @@ export function AuthView({ initialMode }: Props) {
   );
 }
 
-// Hardcoded for the MVP launch: planb arranca con tres universidades
-// precargadas (UNSTA inicial, más dos del foco de F6). El `340 alumnos /
-// 1.2k reseñas` del mockup eran números de demostración; los dejamos fuera
-// hasta tener data real para no mentirle al usuario en la home.
+// Hero stats: 3 métricas que dan presencia al hero del auth. La interfaz va
+// primero (filosofía de trabajo); estos valores son hardcodeados hasta que
+// aterrice GET /api/stats/public (universities count desde Academic, members
+// desde Identity, reviews desde Reviews — query agregada cross-module sin
+// auth, backlog como US separada). Cuando exista, este const se reemplaza
+// por un fetch RSC y este componente queda intacto en su shape.
 const HERO_STATS: Array<{ label: string; value: string }> = [
+  { label: 'alumnos verificados', value: '340' },
+  { label: 'reseñas', value: '1.2k' },
   { label: 'universidades', value: '3' },
 ];
 
