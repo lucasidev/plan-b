@@ -1,27 +1,35 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
 import { DisplayHeading, Lede } from '@/components/ui';
+import { SignInForm } from '@/features/sign-in/components/sign-in-form';
+import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 import { cn } from '@/lib/utils';
 import { AuthSplit } from './auth-split';
 
 export type AuthMode = 'signin' | 'signup';
 
 type Props = {
-  /** Which tab is active. Drives the heading on the right column and the tab styling. */
-  mode: AuthMode;
-  /** The form itself. The page passes a client component here. */
-  children: React.ReactNode;
+  /** Initial mode driven by the URL the user landed on (/sign-up vs /sign-in).
+   *  After mount, the in-place switcher takes over and changes mode without
+   *  navigating, matching the mockup. */
+  initialMode: AuthMode;
 };
 
 /**
- * Shared shell for `(auth)/sign-up` and `(auth)/sign-in`. Wraps the AuthSplit
- * marketing column with the same hero copy on both routes (heading + lede +
- * quote + stats from the design reference) and renders the tabs + form-side
- * heading on the right. The page is responsible only for the form itself.
+ * Shared shell for `(auth)/sign-up` and `(auth)/sign-in`. Wraps AuthSplit
+ * with the marketing column on the left and tabs + form-side heading +
+ * the active form on the right.
  *
- * Why a single component instead of duplicating the layout per page: every
- * change to the marketing column (copy, stats, quote) would otherwise need
- * to land in two places and inevitably drift. AuthView keeps that surface
- * centralized.
+ * The mode toggle is **local state**, not navigation: clicking "Ingresar"
+ * from the sign-up screen swaps the form in place (matching the mockup's
+ * `setMode('login')` button). The URL stays where the user landed so deep
+ * links to /sign-up vs /sign-in still work for sharing.
+ *
+ * Why client component: the toggle is local UI state. Both forms are
+ * already client components (useActionState / useFormStatus), so making
+ * the parent client too costs nothing — actually slightly cheaper because
+ * the page doesn't need to re-render shell when the mode flips.
  *
  * Differences from the mockup (intentional, see design/reference/README.md):
  * - No `@unsta.edu.ar` gate. Per US-010-f, anyone with a valid email format
@@ -33,8 +41,10 @@ type Props = {
  *   later in F3.
  * - No "olvidé contraseña" link. The reset flow has no backend support yet.
  */
-export function AuthView({ mode, children }: Props) {
+export function AuthView({ initialMode }: Props) {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const formCopy = FORM_COPY[mode];
+
   return (
     <AuthSplit
       heading={
@@ -47,32 +57,28 @@ export function AuthView({ mode, children }: Props) {
         </DisplayHeading>
       }
       description="plan-b es donde alumnos simulan su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
-      quote={HERO_QUOTE}
       stats={HERO_STATS}
     >
       <div className="space-y-6">
-        <Tabs mode={mode} />
+        <ModeSwitcher mode={mode} onChange={setMode} />
         <header className="space-y-2">
           <DisplayHeading as="h2" size={28}>
             {formCopy.heading}
           </DisplayHeading>
           <Lede>{formCopy.subheading}</Lede>
         </header>
-        {children}
+        {mode === 'signup' ? <SignUpForm /> : <SignInForm />}
       </div>
     </AuthSplit>
   );
 }
 
-const HERO_QUOTE = {
-  text: '"Iba a anotarme en INT302 con el primero que tenía horario libre. Acá vi que había una comisión de 2c con 4.1 vs 3.4. Esperé un cuatri."',
-  attribution: 'Anónimo · 4° año Sistemas',
-};
-
+// Hardcoded for the MVP launch: planb arranca con tres universidades
+// precargadas (UNSTA inicial, más dos del foco de F6). El `340 alumnos /
+// 1.2k reseñas` del mockup eran números de demostración; los dejamos fuera
+// hasta tener data real para no mentirle al usuario en la home.
 const HERO_STATS: Array<{ label: string; value: string }> = [
-  { label: 'alumnos verificados', value: '340' },
-  { label: 'reseñas', value: '1.2k' },
-  { label: 'carreras', value: '3' },
+  { label: 'universidades', value: '3' },
 ];
 
 const FORM_COPY: Record<AuthMode, { heading: string; subheading: string }> = {
@@ -86,34 +92,34 @@ const FORM_COPY: Record<AuthMode, { heading: string; subheading: string }> = {
   },
 };
 
-function Tabs({ mode }: { mode: AuthMode }) {
+function ModeSwitcher({ mode, onChange }: { mode: AuthMode; onChange: (next: AuthMode) => void }) {
   return (
     <div className="flex gap-2" role="tablist" aria-label="Modo de autenticación">
-      <Tab href="/sign-up" active={mode === 'signup'}>
+      <ModeButton active={mode === 'signup'} onClick={() => onChange('signup')}>
         Crear cuenta
-      </Tab>
-      <Tab href="/sign-in" active={mode === 'signin'}>
+      </ModeButton>
+      <ModeButton active={mode === 'signin'} onClick={() => onChange('signin')}>
         Ingresar
-      </Tab>
+      </ModeButton>
     </div>
   );
 }
 
-function Tab({
-  href,
+function ModeButton({
   active,
+  onClick,
   children,
 }: {
-  href: string;
   active: boolean;
+  onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      prefetch
+    <button
+      type="button"
       role="tab"
       aria-selected={active}
+      onClick={onClick}
       className={cn(
         'flex-1 text-center rounded-pill border px-4 py-2',
         'text-sm font-medium transition-colors',
@@ -123,6 +129,6 @@ function Tab({
       )}
     >
       {children}
-    </Link>
+    </button>
   );
 }
