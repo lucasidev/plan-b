@@ -51,7 +51,7 @@ Cada route group tiene su propio `layout.tsx` que hace el guard server-side usan
 
 - `(public)`: sin guard.
 - `(auth)`: redirige a `/dashboard` si YA hay sesión (evita re-login).
-- `(member)`: redirige a `/sign-in` si no hay sesión o rol no es `member`.
+- `(member)`: redirige a `/auth` si no hay sesión o rol no es `member`.
 - `(teacher)`: además chequea `session.teacherVerified`.
 - `(staff)`: rol en `{moderator, admin, university_staff}`.
 
@@ -79,7 +79,7 @@ features/<feature>/
 - `'use server'` siempre al tope de `actions.ts`. Nunca por función suelta. Y por la regla de Next.js, esos archivos solo pueden exportar funciones async — los tipos del action (FormState, initialState) viven en `types.ts`.
 - Nada de subcarpetas inventadas dentro de `features/<feature>/` (`actions/`, `state/`, `helpers/`, etc.). Si hace falta un helper que no es action ni component, evaluá si es genérico y va a `lib/`. Si es feature-specific y no es action, considera si realmente lo necesitás separado.
 - Tipos cross-feature (ej. `ProblemDetails` para parsear errores RFC 7807, `ResponseCookie` parser) viven en `lib/`, no se duplican en cada feature.
-- Las rutas (`src/app/(auth)/sign-up/page.tsx`) son thin wrappers que importan del feature.
+- Las rutas (`src/app/(auth)/auth/page.tsx`) son thin wrappers que importan del feature. Para auth la convención del frontend es **una sola ruta `/auth`** con switcher local; el backend mantiene endpoints separados (sign-in / register / verify-email) sin cambios.
 
 Ver [ADR-0020](../docs/decisions/0020-features-alineadas-con-modulos-backend.md).
 
