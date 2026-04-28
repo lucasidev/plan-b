@@ -32,6 +32,12 @@ Como solo-dev y candidato a recibir feedback académico, quiero documentación D
 - [x] Epics + user stories catalog
 - [x] Definition of Done
 
+## Notas de implementación
+
+- **DDD before code**: el modelo formalizado antes de implementar US individuales. Ubiquitous language, eventstorming, BCs, aggregates documentados primero. La US de implementación se monta sobre nomenclatura ya consensuada, no inventa términos.
+- **`docs/domain/user-stories.md` se splittió en archivos individuales**: cada US tiene archivo propio para que las modificaciones de detalle (acceptance criteria, subtasks, status) no compitan en el mismo file. El `user-stories.md` original quedó como índice.
+- **Lenguaje ubicuo enforceado**: el glosario manda. Si una US menciona "carrera" cuando habla de "plan", la US está mal escrita. La revisión de docs incluye chequeo del glosario.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)

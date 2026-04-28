@@ -33,6 +33,13 @@ Como tech lead solo-dev, quiero el scaffolding completo del frontend (Next.js 15
 - [x] Crear estructura de carpetas `features/` por módulo backend
 - [x] Setup Biome (lint + format)
 
+## Notas de implementación
+
+- **Single Next.js app con route groups**: ADR-0019 evita partir el frontend en múltiples apps (member, admin, etc.). Los route groups (`(auth)`, `(member)`, `(admin)`) dan separación lógica sin separar deploy.
+- **Features alineadas con módulos backend**: ADR-0020. `features/sign-in/` mapea a `modules/identity`, `features/reviews/` a `modules/reviews`. Mantener el mismo nombre evita drift de mental models.
+- **TanStack Query con RSC prefetch + HydrationBoundary**: ADR-0021. El RSC hace el primer fetch, el cliente lo hidrata, evitamos waterfalls y duplicación de fetch en client-side.
+- **React 19.1 sobre React 18**: forms primitives (`useActionState`, `useFormStatus`) cubren forms de 1-3 fields sin TanStack Form. ADR-0022.
+
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
