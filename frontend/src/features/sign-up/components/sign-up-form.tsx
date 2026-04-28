@@ -1,7 +1,6 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { PasswordField, TextField } from '@/components/ui';
@@ -121,14 +120,20 @@ function SubmitButton() {
 }
 
 function GoogleButton() {
+  // OAuth con Google está pendiente (no formalizado en el roadmap del MVP).
+  // El botón queda visible para mantener la UI del mockup, pero deshabilitado
+  // para no llevar a una ruta inexistente. Cuando aterrice US-GOOGLE-OAUTH
+  // esto vuelve a ser un <Link href="/auth/google">.
   return (
-    <Link
-      href="/auth/google"
+    <button
+      type="button"
+      disabled
+      aria-disabled="true"
+      title="Próximamente"
       className={cn(
         'w-full inline-flex items-center justify-center gap-2.5',
-        'bg-bg-card text-ink border border-line shadow-card',
-        'transition-colors hover:border-ink-3',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+        'bg-bg-card text-ink-3 border border-line shadow-card',
+        'cursor-not-allowed opacity-60',
       )}
       style={{
         padding: '12px 16px',
@@ -139,7 +144,10 @@ function GoogleButton() {
     >
       <GoogleIcon size={18} />
       Continuar con Google
-    </Link>
+      <span className="text-ink-4" style={{ fontSize: 11, fontWeight: 500, marginLeft: 4 }}>
+        (próximamente)
+      </span>
+    </button>
   );
 }
 
