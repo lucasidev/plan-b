@@ -9,6 +9,11 @@ Simular combinaciones de materias para el próximo cuatrimestre, guardarlas como
 
 ## User Stories
 
+### Sprint S1 (shell + home placeholder)
+- [US-042-f](../user-stories/US-042-f.md): AppShell del área autenticada (sidebar + topbar + avatar dropdown)
+- [US-043-f](../user-stories/US-043-f.md): Home del dashboard (placeholder visual con datos hardcoded del mockup)
+
+### Backlog
 - [US-016](../user-stories/US-016.md): Simular inscripción
 - [US-023](../user-stories/US-023.md): Guardar simulación como draft privado
 - [US-024](../user-stories/US-024.md): Compartir simulación al corpus público

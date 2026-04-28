@@ -13,21 +13,24 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 - [US-010-b](../user-stories/US-010-b.md): Register backend
 - [US-011-b](../user-stories/US-011-b.md): Verify email backend
 
-### Sprint S1 (current — auth slice end-to-end)
+### Sprint S1 (current — auth slice end-to-end + cleanup)
+**Done:**
 - [US-010-f](../user-stories/US-010-f.md): Register frontend (sign-up tab del AuthView)
 - [US-011-f](../user-stories/US-011-f.md): Verify email frontend (rehecho con design system)
 - [US-028-b](../user-stories/US-028-b.md): Login backend
 - [US-028-f](../user-stories/US-028-f.md): Login frontend (sign-in tab del AuthView)
 - [US-029-i](../user-stories/US-029-i.md): Sign-out integrated
 
-### Sprint S2 (cleanup auth + perfil)
+**Pending (added in S1 mid-sprint replan):**
 - [US-021-b](../user-stories/US-021-b.md): Resend verification backend
 - [US-021-f](../user-stories/US-021-f.md): Resend verification frontend
 - [US-022-i](../user-stories/US-022-i.md): Expirar registros no verificados (cron)
+- [US-033](../user-stories/US-033.md): Recuperación de contraseña
+
+### Sprint S2 (perfil + features iniciales)
 - [US-012](../user-stories/US-012.md): Crear StudentProfile
 
 ### Backlog
-- [US-033](../user-stories/US-033.md): Recuperación de contraseña
 - [US-035](../user-stories/US-035.md): Sign-in con Google (OAuth)
 - [US-068](../user-stories/US-068.md): Deshabilitar cuenta member
 
