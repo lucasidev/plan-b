@@ -50,6 +50,16 @@ export function SignInForm() {
       />
       <PasswordField name="password" label="Contraseña" autoComplete="current-password" required />
 
+      <div className="flex justify-end -mt-1">
+        <Link
+          href="/forgot-password"
+          prefetch
+          className="text-xs text-ink-3 hover:text-ink underline underline-offset-2"
+        >
+          ¿Olvidaste tu contraseña?
+        </Link>
+      </div>
+
       {state.status === 'error' && (
         <div
           role="alert"
