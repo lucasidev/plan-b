@@ -1,6 +1,7 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 import { breadcrumbsForPath } from '@/lib/member-shell';
@@ -11,6 +12,11 @@ import { breadcrumbsForPath } from '@/lib/member-shell';
  * Cliente porque deriva los breadcrumbs de `usePathname()`. La search bar
  * está visible per AC pero NO funcional (deuda explícita de US-042-f a una
  * US futura de búsqueda global). Click no hace nada por ahora.
+ *
+ * El botón "＋ Escribir reseña" del slot derecho linkea a `/reviews/new`,
+ * que hoy es un stub (aterriza con US-017). Per mockup `plan-b.html`
+ * líneas 146-156: el botón vive siempre en la topbar, accesible desde
+ * cualquier vista del área autenticada.
  */
 export function Topbar() {
   const pathname = usePathname();
@@ -24,7 +30,24 @@ export function Topbar() {
       <Crumbs items={crumbs} />
       <div className="flex-1" />
       <SearchBar />
+      <WriteReviewButton />
     </div>
+  );
+}
+
+function WriteReviewButton() {
+  return (
+    <Link
+      href="/reviews/new"
+      prefetch
+      className={
+        'inline-flex items-center gap-1.5 bg-ink text-white border border-ink rounded-pill shadow-card transition-colors hover:bg-[#1a110a] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft'
+      }
+      style={{ padding: '6px 12px', fontSize: 12.5, fontWeight: 500 }}
+    >
+      <Plus size={13} aria-hidden />
+      Escribir reseña
+    </Link>
   );
 }
 
