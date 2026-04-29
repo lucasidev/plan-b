@@ -154,12 +154,12 @@ function NavItem({
 }
 
 /**
- * Active when pathname matches exactly. For non-dashboard routes also
- * matches `/route/...` so a future `/subjects/[id]` keeps "Materias" lit.
- * Dashboard is exact-only so `/dashboard/foo` doesn't accidentally light
- * up the home item if some sub-route appears.
+ * Active when pathname matches exactly. For non-home routes also matches
+ * `/route/...` so a future `/subjects/[id]` keeps "Materias" lit. Home is
+ * exact-only so `/home/foo` (si alguna sub-ruta apareciera) no encienda
+ * Inicio incorrectamente.
  */
 function isActive(pathname: string, path: string): boolean {
-  if (path === '/dashboard') return pathname === '/dashboard';
+  if (path === '/home') return pathname === '/home';
   return pathname === path || pathname.startsWith(`${path}/`);
 }
