@@ -2,6 +2,7 @@
 // files, so the surface stays one path: `import { Button, Pill } from '@/components/ui'`.
 export { Button } from './button';
 export { Card } from './card';
+export { ComingSoon } from './coming-soon';
 export { DiffDots } from './diff-dots';
 export { DisplayHeading } from './display-heading';
 export { Eyebrow } from './eyebrow';
