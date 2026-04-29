@@ -31,11 +31,10 @@ export type MemberRoute = {
 export const memberRoutes: readonly MemberRoute[] = [
   // Mi cuatrimestre
   {
-    path: '/dashboard',
+    path: '/home',
     label: 'Inicio',
     section: 'mi-cuatrimestre',
     shortcut: '⌘1',
-    futureUs: 'US-043-f',
   },
   {
     path: '/plan',
