@@ -1,0 +1,48 @@
+name: PR title (Conventional Commits)
+
+# Cuando un PR se mergea con "Squash and merge", el título del PR se vuelve el
+# único commit en main. El workflow de changelog auto-append (changelog.yml)
+# asume que ese commit es un Conventional Commit válido — si el título no lo
+# es, el cambio no aparece en CHANGELOG.md o aparece mal clasificado.
+#
+# Lefthook commit-msg valida los commits localmente, pero no chequea PR titles.
+# Este workflow llena ese gap. Es la red de seguridad para Squash and merge
+# (Rebase and merge, default por ADR-0026, ya está cubierto por Lefthook).
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Catálogo de tipos: igual que scripts/check-commit-msg.ts (lefthook).
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          # Convención: subject empieza en minúscula (Conventional Commits).
+          subjectPattern: ^(?![A-Z]).+$
+          subjectPatternError: |
+            El subject del PR title debe empezar en minúscula.
+            Title actual: "{title}"
+            Subject parseado: "{subject}"
+            Ejemplo válido: "feat(identity): forgot-password backend (US-033-i)"
