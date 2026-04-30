@@ -190,6 +190,105 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         return Result.Success();
     }
 
+    /// <summary>
+    /// Minimum length for a member-set password. Mirrors <c>RegisterUserValidator.MinPasswordLength</c>
+    /// but lives on the aggregate so any path that accepts a password (register, reset) enforces it
+    /// without going through a specific validator.
+    /// </summary>
+    public const int MinPasswordLength = 12;
+
+    /// <summary>
+    /// Issues a fresh password-reset token. Wraps <see cref="IssueVerificationToken"/> with
+    /// <see cref="TokenPurpose.PasswordReset"/> and a 30-minute TTL (shorter than email
+    /// verification because reset is more sensitive). Returns the token wrapped in a
+    /// <see cref="Result{T}"/>; the caller emails the raw value to the user.
+    ///
+    /// Aggregate-level guarantees: any previously active password-reset token is invalidated
+    /// (one active token per purpose, per ADR-0033). Disabled or unverified users still get a
+    /// token issued at the aggregate level. The application handler is the one that decides
+    /// whether to actually send the email (per anti-enumeration in US-033 AC).
+    /// </summary>
+    public Result<VerificationToken> RequestPasswordReset(
+        string token, IDateTimeProvider clock) =>
+        IssueVerificationToken(TokenPurpose.PasswordReset, token, TimeSpan.FromMinutes(30), clock);
+
+    /// <summary>
+    /// Consumes a password-reset token and replaces the password hash. Per US-033 AC the failure
+    /// modes are explicit and order-sensitive:
+    /// <list type="bullet">
+    ///   <item>Token not found at all on this user → <see cref="UserErrors.VerificationTokenInvalid"/> (404).</item>
+    ///   <item>Token belongs to this user but a different purpose → <see cref="UserErrors.VerificationWrongPurpose"/> (409).</item>
+    ///   <item>Token already invalidated / consumed / expired → matching error (409).</item>
+    ///   <item>Account disabled or unverified → matching error (409). Token isn't consumed in those branches.</item>
+    ///   <item>New password under <see cref="MinPasswordLength"/> → <see cref="UserErrors.PasswordTooWeak"/> (400).</item>
+    /// </list>
+    /// On success: the token is consumed, the hash is replaced, <see cref="UpdatedAt"/> moves
+    /// forward, and a <see cref="PasswordResetCompletedDomainEvent"/> is raised. Refresh-token
+    /// revocation is *not* the aggregate's job; the handler does that against the Redis store.
+    /// </summary>
+    public Result ResetPassword(
+        string rawToken,
+        string newPlainPassword,
+        Func<string, string> hashPassword,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(hashPassword);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrWhiteSpace(rawToken))
+        {
+            return UserErrors.VerificationTokenRequired;
+        }
+
+        var token = _tokens.FirstOrDefault(t => t.Token == rawToken);
+        if (token is null)
+        {
+            return UserErrors.VerificationTokenInvalid;
+        }
+
+        if (token.Purpose != TokenPurpose.PasswordReset)
+        {
+            return UserErrors.VerificationWrongPurpose;
+        }
+
+        if (token.IsInvalidated)
+        {
+            return UserErrors.VerificationTokenInvalidated;
+        }
+
+        if (token.IsConsumed)
+        {
+            return UserErrors.VerificationTokenAlreadyConsumed;
+        }
+
+        var now = clock.UtcNow;
+        if (token.IsExpired(now))
+        {
+            return UserErrors.VerificationTokenExpired;
+        }
+
+        if (IsDisabled)
+        {
+            return UserErrors.AccountDisabled;
+        }
+
+        if (!IsEmailVerified)
+        {
+            return UserErrors.EmailNotVerified;
+        }
+
+        if (string.IsNullOrEmpty(newPlainPassword) || newPlainPassword.Length < MinPasswordLength)
+        {
+            return UserErrors.PasswordTooWeak;
+        }
+
+        token.Consume(now);
+        PasswordHash = hashPassword(newPlainPassword);
+        UpdatedAt = now;
+        Raise(new PasswordResetCompletedDomainEvent(Id, now));
+        return Result.Success();
+    }
+
     public Result Disable(Guid disabledBy, string reason, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);

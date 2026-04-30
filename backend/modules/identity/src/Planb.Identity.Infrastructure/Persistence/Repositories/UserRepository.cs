@@ -28,4 +28,11 @@ internal sealed class UserRepository : IUserRepository
         _db.Users.FirstOrDefaultAsync(
             u => u.Tokens.Any(t => t.Token == rawToken && t.Purpose == purpose),
             ct);
+
+    public Task<User?> FindByRawVerificationTokenAsync(
+        string rawToken,
+        CancellationToken ct = default) =>
+        _db.Users.FirstOrDefaultAsync(
+            u => u.Tokens.Any(t => t.Token == rawToken),
+            ct);
 }

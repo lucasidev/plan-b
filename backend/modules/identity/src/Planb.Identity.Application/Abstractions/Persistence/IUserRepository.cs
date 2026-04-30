@@ -16,4 +16,13 @@ public interface IUserRepository
         string rawToken,
         TokenPurpose purpose,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Finds the user that owns a verification token with the given raw value, regardless of
+    /// purpose. Used by the password-reset flow so the aggregate can distinguish between
+    /// "token does not exist" (404) and "token exists but is for a different purpose" (409).
+    /// </summary>
+    Task<User?> FindByRawVerificationTokenAsync(
+        string rawToken,
+        CancellationToken ct = default);
 }
