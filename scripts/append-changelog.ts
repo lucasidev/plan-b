@@ -1,14 +1,20 @@
 /**
- * Append the latest commit on HEAD to CHANGELOG.md under [Unreleased].
+ * Append every commit in the current push range to CHANGELOG.md under [Unreleased].
  *
  * Triggered by `.github/workflows/changelog.yml` on every push to main.
- * Runnable locally for testing with `bun scripts/append-changelog.ts --dry-run`.
+ * Runnable locally with `bun scripts/append-changelog.ts --dry-run`.
  *
  * Behavior (see ADR-0037):
- * - Reads HEAD commit (sha, subject, body) via `git log`.
- * - Parses the subject as a Conventional Commit using the same regex as
- *   `scripts/check-commit-msg.ts`. Refuses to run if the subject is not a
- *   valid CC.
+ * - Range: when GHA env vars `PUSH_BEFORE` and `PUSH_AFTER` are present, the
+ *   script processes every commit in `git log PUSH_BEFORE..PUSH_AFTER --reverse`
+ *   (oldest to newest, so the changelog reflects chronological order). Without
+ *   those env vars, falls back to processing only HEAD. This matters for
+ *   Rebase merges (default per ADR-0026), which push multiple commits in a
+ *   single push event — without range processing only the last would land in
+ *   CHANGELOG.
+ * - For each commit: parses the subject as a Conventional Commit using the
+ *   same regex as `scripts/check-commit-msg.ts`. Refuses to run if a subject
+ *   is not a valid CC.
  * - Maps the type to a Keep-a-Changelog section:
  *     feat   → Added
  *     perf   → Changed
@@ -16,11 +22,13 @@
  *     refactor → Changed
  *     revert → Removed
  *   `docs`, `style`, `test`, `build`, `ci`, `chore` are skipped silently.
- * - Skips if the body contains `[skip changelog]`.
+ * - Skips a commit if its body contains `[skip changelog]` ON ITS OWN LINE
+ *   (matching with `^\s*\[skip changelog\]\s*$` per-line). Mentioning the
+ *   tag inside prose ("Honors [skip changelog] in body") is fine.
  * - Marks the bullet with `**(BREAKING)**` when the subject has `!:` or the
  *   body contains `BREAKING CHANGE:`.
- * - Idempotent: if the commit sha already appears in CHANGELOG.md, the
- *   script is a no-op. Useful for replays / manual reruns.
+ * - Idempotent: if the commit sha already appears in CHANGELOG.md, that
+ *   commit is a no-op. Useful for replays / manual reruns.
  *
  * Versioning is intentionally out of scope. ADR-0038 covers it.
  */
@@ -35,7 +43,13 @@ import { resolve } from 'node:path';
 
 const CHANGELOG_PATH = resolve(process.cwd(), 'CHANGELOG.md');
 const UNRELEASED_HEADER = '## [Unreleased]';
-const SKIP_TAG = '[skip changelog]';
+// Skip-tag must appear on its own line (with optional surrounding whitespace).
+// Matching anywhere in the body would false-positive on prose mentions of the
+// tag — that bug bit us on the workflow's first live run.
+const SKIP_TAG_RE = /^\s*\[skip changelog\]\s*$/m;
+// Sentinel sha that GHA passes for the initial push to a new branch (no prior
+// commit to compare against).
+const ZERO_SHA = '0000000000000000000000000000000000000000';
 
 // Same regex as scripts/check-commit-msg.ts. Captures: type, optional scope, optional bang, description.
 const CONVENTIONAL_COMMIT_RE =
@@ -74,6 +88,10 @@ export function parseSubject(subject: string): Omit<ParsedCommit, 'sha' | 'short
     breaking: bang === '!',
     description,
   };
+}
+
+export function bodyHasSkipTag(body: string): boolean {
+  return SKIP_TAG_RE.test(body);
 }
 
 export function buildBullet(commit: ParsedCommit, repoUrl: string, breakingFromBody: boolean): string {
@@ -152,11 +170,9 @@ export function insertBullet(
       block.slice(0, subBodyStart) +
       `${subBody}\n${bullet}\n` +
       block.slice(subEnd);
-    // Normalize trailing whitespace: ensure exactly one blank line before next section.
     if (!newBlock.endsWith('\n')) newBlock += '\n';
   }
 
-  // Ensure the block ends with a single blank line before the next section.
   const normalizedBlock = newBlock.replace(/\n+$/, '\n') + (blockEnd < content.length ? '\n' : '');
 
   const updated = content.slice(0, blockStart) + normalizedBlock + content.slice(blockEnd);
@@ -167,12 +183,39 @@ export function insertBullet(
 // Side-effecting helpers (git, fs, env)
 // ────────────────────────────────────────────────────────────────────────────
 
-function readLastCommit(): { sha: string; shortSha: string; subject: string; body: string } {
-  const sha = execSync('git rev-parse HEAD').toString().trim();
-  const shortSha = execSync('git rev-parse --short HEAD').toString().trim();
-  const subject = execSync('git log -1 --format=%s HEAD').toString().trim();
-  const body = execSync('git log -1 --format=%b HEAD').toString();
-  return { sha, shortSha, subject, body };
+interface CommitInfo {
+  sha: string;
+  shortSha: string;
+  subject: string;
+  body: string;
+}
+
+function readCommit(sha: string): CommitInfo {
+  const fullSha = execSync(`git rev-parse "${sha}"`).toString().trim();
+  const shortSha = execSync(`git rev-parse --short "${sha}"`).toString().trim();
+  const subject = execSync(`git log -1 --format=%s "${sha}"`).toString().trim();
+  const body = execSync(`git log -1 --format=%b "${sha}"`).toString();
+  return { sha: fullSha, shortSha, subject, body };
+}
+
+/**
+ * Determine which commits to process. In CI on a push event, GHA exposes
+ * `before` and `after` shas of the push range — process every commit in
+ * `before..after` (chronological order). Locally or when env vars are
+ * absent, fall back to processing HEAD only.
+ */
+function commitsToProcess(): string[] {
+  const before = process.env.PUSH_BEFORE?.trim();
+  const after = process.env.PUSH_AFTER?.trim();
+
+  if (!before || !after || before === ZERO_SHA) {
+    // No range available (initial push, branch creation, or local invocation).
+    return [execSync('git rev-parse HEAD').toString().trim()];
+  }
+
+  const log = execSync(`git log --reverse --format=%H "${before}..${after}"`).toString().trim();
+  if (!log) return [];
+  return log.split('\n');
 }
 
 function inferRepoUrl(): string {
@@ -180,11 +223,8 @@ function inferRepoUrl(): string {
   const repo = process.env.GITHUB_REPOSITORY?.trim();
   if (server && repo) return `${server}/${repo}`;
 
-  // Fallback: parse from `git remote get-url origin`.
   try {
     const remote = execSync('git remote get-url origin').toString().trim();
-    // SSH form: git@github.com:owner/repo.git → https://github.com/owner/repo
-    // HTTPS form: https://github.com/owner/repo(.git)? → https://github.com/owner/repo
     const match = /github\.com[:/]([^/]+\/[^/.]+?)(?:\.git)?\/?$/.exec(remote);
     if (match) return `https://github.com/${match[1]}`;
   } catch {
@@ -194,64 +234,131 @@ function inferRepoUrl(): string {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Main
+// Per-commit processing (returns the new file content + a status, no I/O)
 // ────────────────────────────────────────────────────────────────────────────
 
-function main(): void {
-  const args = process.argv.slice(2);
-  const dryRun = args.includes('--dry-run');
+interface ProcessResult {
+  content: string;
+  changed: boolean;
+  reason: string;
+  shortSha: string;
+}
 
-  const { sha, shortSha, subject, body } = readLastCommit();
+export function processCommit(
+  commit: CommitInfo,
+  repoUrl: string,
+  changelog: string,
+): ProcessResult {
+  const { sha, shortSha, subject, body } = commit;
 
-  if (body.includes(SKIP_TAG)) {
-    console.log(`[skip] body contains "${SKIP_TAG}" (commit ${shortSha})`);
-    return;
+  if (bodyHasSkipTag(body)) {
+    return {
+      content: changelog,
+      changed: false,
+      reason: 'body contains "[skip changelog]" on its own line',
+      shortSha,
+    };
   }
 
   const parsed = parseSubject(subject);
   if (!parsed) {
-    console.error(
-      `[fail] HEAD commit subject is not a valid Conventional Commit:\n  "${subject}"\n` +
-        `  Expected format: <type>(<scope>): <description>`,
-    );
-    process.exit(1);
+    throw new Error(`Commit ${shortSha} subject is not a valid Conventional Commit: "${subject}"`);
   }
 
   if (SKIP_TYPES.has(parsed.type)) {
-    console.log(`[skip] type "${parsed.type}" does not appear in CHANGELOG (commit ${shortSha})`);
-    return;
+    return {
+      content: changelog,
+      changed: false,
+      reason: `type "${parsed.type}" does not appear in CHANGELOG`,
+      shortSha,
+    };
   }
 
   const section = TYPE_TO_SECTION[parsed.type];
   if (!section) {
-    console.log(`[skip] no Keep-a-Changelog mapping for type "${parsed.type}"`);
-    return;
+    return {
+      content: changelog,
+      changed: false,
+      reason: `no Keep-a-Changelog mapping for type "${parsed.type}"`,
+      shortSha,
+    };
   }
 
   const breakingFromBody = /^BREAKING CHANGE:/m.test(body);
-  const repoUrl = inferRepoUrl();
   const bullet = buildBullet({ ...parsed, sha, shortSha }, repoUrl, breakingFromBody);
+  const insertResult = insertBullet(changelog, section, bullet, sha);
 
+  if (!insertResult.changed) {
+    return {
+      content: changelog,
+      changed: false,
+      reason: insertResult.reason ?? 'no change',
+      shortSha,
+    };
+  }
+
+  return {
+    content: insertResult.content,
+    changed: true,
+    reason: `appended to "${section}"`,
+    shortSha,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Main
+// ────────────────────────────────────────────────────────────────────────────
+
+function main(): void {
+  const dryRun = process.argv.includes('--dry-run');
+
+  const shas = commitsToProcess();
+  if (shas.length === 0) {
+    console.log('No commits in range. Nothing to do.');
+    return;
+  }
+
+  console.log(`Processing ${shas.length} commit(s)`);
+
+  const repoUrl = inferRepoUrl();
   const original = readFileSync(CHANGELOG_PATH, 'utf-8');
-  const result = insertBullet(original, section, bullet, sha);
+  let working = original;
+  let appended = 0;
 
-  if (!result.changed) {
-    console.log(`[skip] ${result.reason ?? 'no change'} (commit ${shortSha})`);
+  for (const sha of shas) {
+    const commit = readCommit(sha);
+    const result = processCommit(commit, repoUrl, working);
+    if (result.changed) {
+      working = result.content;
+      appended++;
+      console.log(`  [ok]   ${result.shortSha}: ${result.reason}`);
+    } else {
+      console.log(`  [skip] ${result.shortSha}: ${result.reason}`);
+    }
+  }
+
+  if (working === original) {
+    console.log('No CHANGELOG.md changes.');
     return;
   }
 
   if (dryRun) {
-    console.log(`[dry-run] would append to "${section}":\n  ${bullet}\n`);
+    console.log(`\n[dry-run] would append ${appended} bullet(s).`);
     console.log('--- updated CHANGELOG.md ---');
-    console.log(result.content);
+    console.log(working);
     return;
   }
 
-  writeFileSync(CHANGELOG_PATH, result.content);
-  console.log(`[ok] appended to "${section}":\n  ${bullet}`);
+  writeFileSync(CHANGELOG_PATH, working);
+  console.log(`\nAppended ${appended} bullet(s) to CHANGELOG.md`);
 }
 
 // Allow `import { ... }` from a future test file without auto-running main.
 if (import.meta.main) {
-  main();
+  try {
+    main();
+  } catch (err) {
+    console.error(`[fail] ${(err as Error).message}`);
+    process.exit(1);
+  }
 }
