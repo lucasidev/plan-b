@@ -1,0 +1,44 @@
+# Lychee config — link checker para los markdown del repo.
+#
+# Filosofía:
+#   - Linkos relativos rotos (cross-refs entre docs) = error duro. Estos siempre
+#     se pueden controlar y romper alguno significa que el árbol de docs quedó
+#     inconsistente.
+#   - Linkos externos (URLs HTTP) = warning. Sitios externos pueden caerse, dar
+#     rate limit, o redirigir. No queremos que nuestro CI dependa del uptime
+#     ajeno.
+#
+# Lo logramos excluyendo los hosts conocidos por flakear y cacheando respuestas
+# exitosas (.lycheecache) para que el run sea rápido y predecible.
+
+# Cache de respuestas exitosas. La GHA action lo persiste con actions/cache.
+cache = true
+max_cache_age = "7d"
+
+# Timeouts razonables para evitar workflows colgados por externos lentos.
+timeout = 20
+max_concurrency = 8
+max_redirects = 5
+
+# Aceptar 200, 206 (partial), 304 (cached). Algunos sitios devuelven 403/429
+# como anti-bot — los marcamos como tolerables para no romper CI.
+accept = [200, 206, 304]
+
+# Excluir el directorio node_modules (frontend) y vendored content.
+exclude_path = [
+  "node_modules",
+  "frontend/node_modules",
+  "frontend/.next",
+]
+
+# Patterns de URLs externos que toleramos sin chequear (rate limits frecuentes,
+# servicios privados, redirects raros).
+exclude = [
+  # GitHub link a la propia repo en commits/branches que cambian: lychee a veces
+  # pega rate limit a github.com. Tolerable porque son refs internos en docs.
+  "^https?://github\\.com/lucasidev/plan-b/(commit|tree|blob)/",
+]
+
+# Excluir ancla-only (ej `#section`) — lychee a veces falla en heading IDs
+# que no resuelve bien. Las secciones internas se mantienen humanamente.
+include_fragments = false

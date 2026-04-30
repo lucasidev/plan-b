@@ -32,6 +32,7 @@ Es la base sobre la que se construyen todas las demás epics. Sin esto, no hay r
 - [US-T03-b](../user-stories/US-T03-b.md): Backend unit test layer split
 - [US-T04-b](../user-stories/US-T04-b.md): Backend architecture tests con NetArchTest
 - [US-T05-i](../user-stories/US-T05-i.md): Changelog auto-append + PR title validator
+- [US-T06-i](../user-stories/US-T06-i.md): Tier 1 CI workflows (Dependabot + all-commits CC + docs-links)
 
 ## Decisiones que la condicionan
 

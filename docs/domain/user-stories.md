@@ -143,6 +143,7 @@ Trabajo cross-cutting de infraestructura, no asociado a un BC. Vive bajo EPIC-00
 | [US-T03-b](user-stories/US-T03-b.md) | Backend unit test layer split (separar Domain/Handler unit de Integration) | Medium | M |
 | [US-T04-b](user-stories/US-T04-b.md) | Backend architecture tests con NetArchTest | Medium | S |
 | [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | Medium | S |
+| [US-T06-i](user-stories/US-T06-i.md) | Tier 1 CI workflows (Dependabot + all-commits CC + docs-links) | Medium | S |
 
 ---
 
