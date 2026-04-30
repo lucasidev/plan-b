@@ -1,0 +1,84 @@
+# Dependabot config — automated dependency update PRs.
+#
+# Ecosistemas cubiertos:
+#   - nuget        → backend (.NET 10) deps centralizados en Directory.Packages.props
+#   - npm          → frontend (bun lockfile + package.json)
+#   - github-actions → versiones de actions usadas en .github/workflows/
+#   - docker       → base images en docker-compose.yml + frontend/Dockerfile
+#
+# Schedule: lunes temprano. Cap de PRs abiertos por ecosistema para no inundar.
+# Conventional Commits prefix configurado para que cada PR pase pr-title.yml y
+# alimente el changelog auto-append correctamente.
+
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Argentina/Buenos_Aires"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      prefix-development: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+    groups:
+      # Agrupar minor/patch en un solo PR para reducir ruido.
+      backend-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Argentina/Buenos_Aires"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build"
+      prefix-development: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "frontend"
+    groups:
+      frontend-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Argentina/Buenos_Aires"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "ci"
+
+  # Base images en docker-compose.yml + Dockerfiles del frontend / backend.
+  # Dependabot detecta el directorio /, busca Dockerfiles y compose files.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Argentina/Buenos_Aires"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "infra"
