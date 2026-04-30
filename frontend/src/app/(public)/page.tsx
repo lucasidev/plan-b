@@ -1,20 +1,18 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/session';
 
 /**
- * Root `/`. Hoy redirige basado en session:
- *  - Hay session de member → `/home`
- *  - Cualquier otro caso (sin session, role distinto, session inválida) → `/auth`
+ * Root `/`. Siempre redirige a `/home`.
  *
- * Cuando aterrice el catálogo público (US-001), esta página se reemplaza
- * por la landing real (universidades / carreras / materias browseables sin
- * auth) y el redirect a `/home` para users logueados se mueve al
- * `(public)/layout.tsx` o sigue acá pero solo en el caso autenticado.
+ * El guard del route group `(member)/layout.tsx` se encarga del caso "no
+ * hay sesión" mandando a `/auth`, así que esta página no necesita leer la
+ * session: una sola decisión, un solo target.
  *
- * Por ahora: zero contenido propio. La aplicación tiene dos puertas: `/auth`
- * para visitors y `/home` para members. La raíz solo decide cuál.
+ * Cuando aterrice el catálogo público (US-001), `/` se va a convertir en
+ * la landing real (universidades / carreras / materias browseables sin
+ * auth) y el redirect a `/home` para members se mueve al
+ * `(public)/layout.tsx` o se gestiona condicionalmente acá según la
+ * sesión.
  */
-export default async function HomePage() {
-  const session = await getSession();
-  redirect(session?.role === 'member' ? '/home' : '/auth');
+export default function HomePage() {
+  redirect('/home');
 }
