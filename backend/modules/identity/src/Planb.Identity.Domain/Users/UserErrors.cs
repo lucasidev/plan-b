@@ -52,6 +52,16 @@ public static class UserErrors
             "identity.verification.invalidated",
             "Verification token has been invalidated.");
 
+    public static readonly Error VerificationWrongPurpose =
+        Error.Conflict(
+            "identity.verification.wrong_purpose",
+            "Verification token is for a different purpose.");
+
+    public static readonly Error PasswordTooWeak =
+        Error.Validation(
+            "identity.password.too_weak",
+            "Password must be at least 12 characters long.");
+
     /// <summary>
     /// Generic authentication failure. Returned both when the email isn't registered
     /// and when the password doesn't match — anti-enumeration. The frontend never
