@@ -58,4 +58,4 @@ Ninguno específico hoy. Cuando se incorporen VerificationTokens propios, hereda
 
 - BC: [Identity](../../strategic/bounded-contexts.md#identity)
 - ADRs: [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0033](../../../decisions/0033-verification-token-como-child-entity.md)
-- User Stories: [US-017](../../user-stories/US-017.md), [US-018](../../user-stories/US-018.md), [US-019](../../user-stories/US-019.md), [US-020](../../user-stories/US-020.md), [US-021](../../user-stories/US-021.md), [US-022](../../user-stories/US-022.md)
+- User Stories: [US-017](../../user-stories/US-017.md), [US-018](../../user-stories/US-018.md), [US-019](../../user-stories/US-019.md), [US-020](../../user-stories/US-020.md), [US-021-b](../../user-stories/US-021-b.md), [US-021-f](../../user-stories/US-021-f.md), [US-022-b](../../user-stories/US-022-b.md), [US-022-i](../../user-stories/US-022-i.md)
