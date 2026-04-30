@@ -37,9 +37,10 @@ plan-b/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
 ├── docs/
-│   ├── decisions/           34 ADRs (MADR) — fuente de verdad de decisiones
+│   ├── decisions/           38 ADRs (MADR) — fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
-│   └── architecture/        ERD, data model
+│   ├── architecture/        ERD, data model
+│   └── testing/             Convenciones cross-stack de testing (ADR-0036)
 ├── scripts/                 TS scripts (bun) — no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
@@ -49,7 +50,8 @@ plan-b/
 ## Reglas cross-cutting
 
 - **Código en inglés** (clases, métodos, tablas, rutas). **UI en español rioplatense**. Error messages internos en inglés.
-- **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert.
+- **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Los commits alimentan `CHANGELOG.md` automáticamente vía un workflow GHA que appendea bullets a `[Unreleased]` en cada merge a main ([ADR-0037](docs/decisions/0037-changelog-automation-auto-append.md)) — **no editar `CHANGELOG.md` a mano**.
+- **Versioning**: pre-deploy no hay versiones ni releases. Tags narrativos manuales (`presentacion-fase-2-...`) permitidos para hitos. Política completa en [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md); revisar cuando aterrice primer deploy.
 - **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md).
 - **Decisiones con alternativas reales → ADR** en `docs/decisions/NNNN-titulo.md`. Ver [`docs/decisions/README.md`](docs/decisions/README.md) para criterios.
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
@@ -74,11 +76,12 @@ just ci              # Las mismas gates que corre GitHub Actions
 
 ## Documentación
 
-Las tres cosas críticas para entender el sistema antes de programar:
+Las cuatro cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md) — glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/) — 34 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+3. [`docs/decisions/`](docs/decisions/) — 38 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+4. [`docs/testing/conventions.md`](docs/testing/conventions.md) — qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
