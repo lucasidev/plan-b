@@ -1,6 +1,6 @@
 name: Changelog auto-append
 
-# Appendea el commit recién mergeado a la sección [Unreleased] de CHANGELOG.md.
+# Appendea cada commit del push range a la sección [Unreleased] de CHANGELOG.md.
 # Implementa ADR-0037. Versioning está cubierto por separado en ADR-0038
 # (pre-deploy = no hay versiones), así que este workflow NO bumpea versión,
 # NO crea tags, y NO crea GitHub Releases.
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   append:
-    name: Append latest commit to CHANGELOG
+    name: Append commits to CHANGELOG
     runs-on: ubuntu-latest
     # No procesar nuestros propios commits (evita loop). El default GITHUB_TOKEN
     # ya tiene una protección a nivel de plataforma (commits hechos con él no
@@ -31,8 +31,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Sólo necesitamos el último commit; el script lee HEAD.
-          fetch-depth: 1
+          # Necesitamos historia suficiente para resolver el rango
+          # PUSH_BEFORE..PUSH_AFTER. fetch-depth: 0 hace clone completo;
+          # planb es chico, así que el costo es bajo. Si llegara a doler,
+          # usar `fetch-depth: ${{ github.event.commits.length + 1 }}`.
+          fetch-depth: 0
           # Token con permisos para pushear back al repo.
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -41,20 +44,26 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Append commit to CHANGELOG
+      - name: Append commits to CHANGELOG
         run: bun scripts/append-changelog.ts
         env:
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          # Push range: el script itera git log PUSH_BEFORE..PUSH_AFTER --reverse.
+          # Esto es necesario para Rebase merges (default por ADR-0026), donde
+          # un PR con N commits triggerea un solo push event con N commits en
+          # el rango. Sin esto sólo HEAD entra al CHANGELOG.
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
 
       - name: Commit changes back
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'docs(changelog): auto-update from ${{ github.event.head_commit.id }}'
           file_pattern: CHANGELOG.md
-          # Si el script no modificó nada (commit type skip-by-default, o sha
-          # ya presente, o body con [skip changelog]), la action no hace nada.
-          # No fallar en ese caso.
+          # Si el script no modificó nada (todos los commits del rango son
+          # skip-by-default, o todos ya están en el CHANGELOG, o todos tienen
+          # [skip changelog]), la action no hace nada en lugar de fallar.
           skip_dirty_check: false
           skip_fetch: true
           skip_checkout: true
