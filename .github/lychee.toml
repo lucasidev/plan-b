@@ -32,11 +32,17 @@ exclude_path = [
 ]
 
 # Patterns de URLs externos que toleramos sin chequear (rate limits frecuentes,
-# servicios privados, redirects raros).
+# servicios privados, redirects raros, URLs de documentación que no son links
+# a seguir).
 exclude = [
   # GitHub link a la propia repo en commits/branches que cambian: lychee a veces
   # pega rate limit a github.com. Tolerable porque son refs internos en docs.
   "^https?://github\\.com/lucasidev/plan-b/(commit|tree|blob)/",
+  # localhost URLs en docs son referencias al setup de dev (`just dev` levanta
+  # frontend en :3000, backend en :5000, mailpit UI en :8025). No son links
+  # navegables desde CI; documentamos para humanos.
+  "^https?://localhost(:[0-9]+)?",
+  "^https?://127\\.0\\.0\\.1(:[0-9]+)?",
 ]
 
 # Excluir ancla-only (ej `#section`) — lychee a veces falla en heading IDs
