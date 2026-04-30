@@ -2,7 +2,7 @@
 
 Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
 
-Convención de IDs: `US-NNN[-x]` con `-b` backend, `-f` frontend, `-i` infra, `-t` tooling. Foundations (`US-FNN`) son trabajo del Sprint 0 (pre-sprint).
+Convención de IDs: `US-NNN[-x]` con `-b` backend, `-f` frontend, `-i` infra, `-t` tooling. Foundations (`US-FNN`) son trabajo del Sprint 0 (pre-sprint). Tooling cross-cutting post-S0 usa prefijo `US-TNN` (e.g. testing infra, observability infra, release tooling).
 
 Granularidad: cada US backlog mapea 1:1 con un UC del catálogo ([actors-and-use-cases.md](actors-and-use-cases.md)). Los UCs identificados durante el DDD discovery se integraron al rango canónico (US-021 a US-028 cubren los flujos nuevos de Identity onboarding y Planning premium).
 
@@ -131,6 +131,18 @@ Agrupado por epic.
 | ID | Título | Priority | Effort |
 |---|---|---|---|
 | [US-080](user-stories/US-080.md) | Ver dashboard institucional | Low | L |
+
+#### Tooling post-S0 (T-series)
+
+Trabajo cross-cutting de infraestructura, no asociado a un BC. Vive bajo EPIC-00 extendido.
+
+| ID | Título | Priority | Effort |
+|---|---|---|---|
+| [US-T01-f](user-stories/US-T01-f.md) | Frontend unit/component testing infra (vitest + Testing Library) | High | M |
+| [US-T02-f](user-stories/US-T02-f.md) | Frontend E2E infra (Playwright permanente + CI on-demand) | High | M |
+| [US-T03-b](user-stories/US-T03-b.md) | Backend unit test layer split (separar Domain/Handler unit de Integration) | Medium | M |
+| [US-T04-b](user-stories/US-T04-b.md) | Backend architecture tests con NetArchTest | Medium | S |
+| [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | Medium | S |
 
 ---
 
