@@ -37,6 +37,10 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(VerificationEmailOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        services.AddOptions<PasswordResetEmailOptions>()
+            .Bind(configuration.GetSection(PasswordResetEmailOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddScoped<IVerificationEmailSender, SmtpVerificationEmailSender>();
 
         services.AddOptions<JwtOptions>()
@@ -46,6 +50,7 @@ public static class DependencyInjection
         services.AddSingleton<IJwtIssuer, JwtIssuer>();
 
         services.AddSingleton<IRefreshTokenStore, RedisRefreshTokenStore>();
+        services.AddSingleton<IRateLimiter, RedisRateLimiter>();
 
         return services;
     }
