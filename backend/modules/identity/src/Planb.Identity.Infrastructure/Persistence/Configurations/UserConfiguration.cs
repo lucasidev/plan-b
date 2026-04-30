@@ -67,7 +67,14 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             tokens.HasKey(t => t.Id);
 
             tokens.Property(t => t.Id)
-                .HasColumnName("id");
+                .HasColumnName("id")
+                // The aggregate generates Ids itself (Guid.NewGuid in IssueVerificationToken)
+                // so the value is NEVER produced by the database. Without this, EF Core's
+                // detect-changes heuristic for owned collections sees a non-default Id and
+                // assumes the entity already exists in the DB, marking new tokens as Modified
+                // instead of Added. The UPDATE then affects 0 rows and SaveChanges blows up
+                // with DbUpdateConcurrencyException.
+                .ValueGeneratedNever();
 
             tokens.Property<UserId>("user_id")
                 .HasColumnName("user_id")
