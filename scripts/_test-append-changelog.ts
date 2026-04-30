@@ -4,7 +4,7 @@
  *
  * Run: bun scripts/_test-append-changelog.ts
  */
-import { parseSubject, buildBullet, insertBullet } from './append-changelog';
+import { parseSubject, buildBullet, insertBullet, bodyHasSkipTag } from './append-changelog';
 
 let pass = 0;
 let fail = 0;
@@ -160,6 +160,25 @@ group('insertBullet — Unreleased before older versioned section', () => {
   const idxVersioned = result.content.indexOf('## [0.1.0]');
   check('inserts under Unreleased, not under [0.1.0]', idxNewBullet < idxVersioned && idxNewBullet !== -1);
   check('preserves [0.1.0] section', result.content.includes('- old — sha-old'));
+});
+
+group('bodyHasSkipTag', () => {
+  // Skip-tag must be on its own line. This is the bug we fixed in workflow run #1:
+  // the previous impl used body.includes('[skip changelog]') which matched the tag
+  // anywhere — including in prose like "Honors [skip changelog] in body".
+  check('matches tag on its own line', bodyHasSkipTag('something\n[skip changelog]\n'));
+  check('matches tag with trailing whitespace', bodyHasSkipTag('something\n  [skip changelog]  \n'));
+  check('matches tag at end of body without trailing newline', bodyHasSkipTag('something\n[skip changelog]'));
+  check('matches tag at start of body', bodyHasSkipTag('[skip changelog]\nsomething'));
+  check(
+    'does NOT match tag in prose (sentence)',
+    !bodyHasSkipTag('Honors [skip changelog] tag in the body for opt-out.'),
+  );
+  check(
+    'does NOT match tag inside backticks in prose',
+    !bodyHasSkipTag('Skips when body has `[skip changelog]` token.'),
+  );
+  check('empty body returns false', !bodyHasSkipTag(''));
 });
 
 // ────────────────────────────────────────────────────────────────────────────
