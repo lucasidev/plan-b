@@ -61,8 +61,8 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 | [UC-018](use-cases/UC-018.md) | Editar reseña propia | [US-018](user-stories/US-018.md) | [EPIC-05](epics/EPIC-05.md) |
 | [UC-019](use-cases/UC-019.md) | Reportar una reseña | [US-019](user-stories/US-019.md) | [EPIC-05](epics/EPIC-05.md) |
 | [UC-020](use-cases/UC-020.md) | Ver el estado de sus reports | [US-020](user-stories/US-020.md) | [EPIC-05](epics/EPIC-05.md) |
-| [UC-021](use-cases/UC-021.md) | Reenviar email de verificación | [US-021](user-stories/US-021.md) | [EPIC-02](epics/EPIC-02.md) |
-| [UC-022](use-cases/UC-022.md) | Expirar registro no verificado (system) | [US-022](user-stories/US-022.md) | [EPIC-02](epics/EPIC-02.md) |
+| [UC-021](use-cases/UC-021.md) | Reenviar email de verificación | [US-021-b](user-stories/US-021-b.md) + [US-021-f](user-stories/US-021-f.md) | [EPIC-02](epics/EPIC-02.md) |
+| [UC-022](use-cases/UC-022.md) | Expirar registro no verificado (system) | [US-022-b](user-stories/US-022-b.md) + [US-022-i](user-stories/US-022-i.md) | [EPIC-02](epics/EPIC-02.md) |
 | [UC-023](use-cases/UC-023.md) | Guardar simulación como draft (premium) | [US-023](user-stories/US-023.md) | [EPIC-04](epics/EPIC-04.md) |
 | [UC-024](use-cases/UC-024.md) | Editar simulación draft (premium) | [US-024](user-stories/US-024.md) | [EPIC-04](epics/EPIC-04.md) |
 | [UC-025](use-cases/UC-025.md) | Borrar simulación draft (premium) | [US-025](user-stories/US-025.md) | [EPIC-04](epics/EPIC-04.md) |
