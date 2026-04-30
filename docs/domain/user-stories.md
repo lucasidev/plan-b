@@ -53,8 +53,10 @@ Agrupado por epic.
 | ID | Título | Priority | Effort |
 |---|---|---|---|
 | [US-012](user-stories/US-012.md) | Crear StudentProfile | High | M |
-| [US-021](user-stories/US-021.md) | Reenviar verification email | Medium | S |
-| [US-022](user-stories/US-022.md) | Expirar registro no verificado | Low | S |
+| [US-021-b](user-stories/US-021-b.md) | Reenviar verification email (backend) | High | S |
+| [US-021-f](user-stories/US-021-f.md) | Reenviar verification email (frontend) | Medium | S |
+| [US-022-b](user-stories/US-022-b.md) | Expirar registros no verificados (backend) | Medium | S |
+| [US-022-i](user-stories/US-022-i.md) | Expirar registros no verificados (infra: migrations + scheduling) | Medium | XS |
 | [US-068](user-stories/US-068.md) | Deshabilitar cuenta member | Medium | S |
 
 #### EPIC-03: Historial académico

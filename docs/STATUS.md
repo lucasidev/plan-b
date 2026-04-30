@@ -17,8 +17,9 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 
 Convenciones:
 
-- **US como value increment**: una US = un incremento de valor visible al usuario, vive en backlog como doc parent (`US-NNN`). Las sub-tasks pre-comprometen la decomposición técnica (Backend / Frontend / Infra). Cuando la US entra a sprint, **se subdivide** en work items con sufijo: `US-NNN-b` (backend), `US-NNN-f` (frontend), `US-NNN-i` (integrated, b + f en single PR). Cada work item le llega al dev sin que tenga que leer la otra capa.
-- **Sufijo `-i` significa integrated**: `US-029-i`, `US-033-i`. Un solo PR que junta backend + frontend porque el slice es chico y no es usable hasta tener las dos puntas. **Excepción**: el namespace foundational `US-FNN-x` usa `-i` con otro sentido (`-i` = infra, `-t` = tooling, `-b` = backend, `-f` = frontend). Esa convención queda historizada en F-series; nuevas US del sistema usan solo `-b` / `-f` / `-i` (integrated).
+- **US como value increment**: una US = un incremento de valor visible al usuario. **En backlog vive como doc parent (`US-NNN`)** con sub-tasks que pre-comprometen la decomposición técnica (Backend / Frontend / Infra). **Cuando entra a sprint el parent se reemplaza por subdivisiones** (`US-NNN-b`, `US-NNN-f`, `US-NNN-i`); el parent doc deja de existir como archivo separado. **No coexisten parent + subdivisiones** al mismo tiempo: o lo uno o lo otro, según el estado del slice.
+- **Sufijo `-i` significa integrated**: `US-029-i`, `US-033-i`. Un solo PR que junta backend + frontend porque el slice es chico y no es usable hasta tener las dos puntas. **Excepciones**: el namespace foundational `US-FNN-x` usa `-i` con sentido "infra" (`US-F03-i`, `US-F04-i`); fuera de F, también se permite `-i` con sentido "infra/scheduling" cuando el slice es backend + DB schema (ej. `US-022-i` para Wolverine ScheduledJob + migrations). Cada doc lo aclara explícito en su header.
+- **Reglas duras**: parent y subdivisiones no coexisten. Si una US ya está en sprint o done, su archivo es la subdivisión correspondiente, NO el parent. Para integrated (`-i`), el doc único es la subdivisión.
 - Sprints: 7 días, identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle.
 - Definition of Done por US: [`docs/domain/definition-of-done.md`](domain/definition-of-done.md).
 
@@ -100,7 +101,8 @@ Convenciones:
 | US-029-i | Sign-out integrated | EPIC-02 | S | ✓ Done |
 | US-021-b | Resend verification backend | EPIC-02 | S | Pendiente (replan) |
 | US-021-f | Resend verification frontend | EPIC-02 | S | Pendiente (replan) |
-| US-022 | Expirar registros no verificados (cron) | EPIC-02 | S | Pendiente (replan) |
+| US-022-b | Expirar registros no verificados (backend) | EPIC-02 | S | Pendiente (replan) |
+| US-022-i | Expirar registros no verificados (infra: migrations + scheduling) | EPIC-02 | XS | Pendiente (replan) |
 | US-033-i | Recuperación de contraseña (integrated) | EPIC-02 | L | Pendiente (replan) |
 | US-042-f | AppShell del área autenticada | EPIC-04 | M | Pendiente (replan) |
 | US-043-f | Home del dashboard (placeholder visual) | EPIC-04 | S | Pendiente (replan) |
@@ -114,7 +116,7 @@ Convenciones:
 
 **Pending (replan):**
 4. **`feat/identity-resend-verification`** (US-021-b + US-021-f): un solo PR como sign-out, endpoint con rate limit + UI en pantalla post-registro.
-5. **`feat/identity-expire-unverified`** (US-022): cron diario que expira tokens y registros no verificados >7d.
+5. **`feat/identity-expire-unverified`** (US-022-b + US-022-i): backend logic + Wolverine ScheduledJob diario que expira tokens y registros no verificados >7d.
 6. **`feat/identity-forgot-password`** (US-033-i): forgot + reset endpoint + 2 páginas frontend, anti-enumeración. Trae infra nueva: `IRateLimiter` + secondary index Redis para `RevokeAllForUserAsync`.
 7. **`feat/member-app-shell`** (US-042-f): sidebar + topbar + avatar dropdown que reemplaza el placeholder actual de `/dashboard`. Stubs `Próximamente` para rutas no implementadas.
 8. **`feat/dashboard-home-placeholder`** (US-043-f): home del dashboard con copy y datos del mockup, marcados con TODO por feature futura.
