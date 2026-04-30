@@ -1,5 +1,6 @@
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Pill } from '@/components/ui';
+import { InlineStars, Pill } from '@/components/ui';
 import type { Decision } from '../data/mock-decisions';
 
 /**
@@ -49,7 +50,7 @@ export function DecisionCard({ decision }: { decision: Decision }) {
       </h3>
 
       <p className="text-ink-2" style={{ fontSize: 13.5, margin: 0, lineHeight: 1.5 }}>
-        {body}
+        <InlineStars>{body}</InlineStars>
       </p>
 
       <div style={{ marginTop: 6 }}>
@@ -60,7 +61,7 @@ export function DecisionCard({ decision }: { decision: Decision }) {
           style={{ padding: '6px 12px', fontSize: 12.5, fontWeight: 500 }}
         >
           {action}
-          <span aria-hidden>→</span>
+          <ArrowRight size={12} aria-hidden strokeWidth={2.25} className="text-ink-3" />
         </Link>
       </div>
     </article>
