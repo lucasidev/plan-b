@@ -29,4 +29,14 @@ public interface IRefreshTokenStore
     /// Used by sign-out.
     /// </summary>
     Task RevokeAsync(string refreshToken, CancellationToken ct = default);
+
+    /// <summary>
+    /// Revokes every refresh token belonging to the given user. Used by password-reset and,
+    /// later, account-disable flows so an attacker holding an old refresh cannot stay logged
+    /// in past the credential change. Idempotent: a user with no live refresh tokens is a no-op.
+    ///
+    /// Implementation reads the per-user secondary index documented in
+    /// <c>docs/architecture/redis-key-patterns.md</c> patrón #1 ("índice secundario").
+    /// </summary>
+    Task RevokeAllForUserAsync(UserId userId, CancellationToken ct = default);
 }
