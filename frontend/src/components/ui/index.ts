@@ -6,6 +6,7 @@ export { ComingSoon } from './coming-soon';
 export { DiffDots } from './diff-dots';
 export { DisplayHeading } from './display-heading';
 export { Eyebrow } from './eyebrow';
+export { InlineStars } from './inline-stars';
 export { Lede } from './lede';
 export { Logo } from './logo';
 export { Meter } from './meter';

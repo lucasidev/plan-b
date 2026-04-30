@@ -1,4 +1,4 @@
-import { Logo } from '@/components/ui';
+import { InlineStars, Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -85,7 +85,7 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
               maxWidth: '38ch',
             }}
           >
-            {quote.text}
+            <InlineStars>{quote.text}</InlineStars>
             <div
               style={{
                 marginTop: 10,
