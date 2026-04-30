@@ -207,7 +207,7 @@ Las US para implementar esta decisión viven en `docs/domain/user-stories/` con 
 - **US-T02-f**: Frontend E2E infra (Playwright config permanente + e2e helpers + migración del spec de US-033 + CI job on-demand).
 - **US-T03-b**: Backend unit test layer split (separar `Planb.<M>.UnitTests` por módulo, empezando por identity).
 - **US-T04-b**: Backend architecture tests con NetArchTest.
-- **US-T05-i**: PR template + CHANGELOG automation (ver [ADR-0037](0037-changelog-automation-release-please.md)).
+- **US-T05-i**: PR template + CHANGELOG automation (ver [ADR-0037](0037-changelog-automation-auto-append.md)).
 
 Las T-stories son **non-blocking**: pueden aterrizar en paralelo a features regulares. La única dependencia dura es US-T01 antes de T02 (Playwright reusa setup helpers de vitest si los hay).
 
@@ -215,6 +215,6 @@ Las T-stories son **non-blocking**: pueden aterrizar en paralelo a features regu
 
 - [ADR-0024](0024-dev-tooling-stack.md): tooling stack (parcialmente superseded por esta ADR).
 - [ADR-0027](0027-integration-tests-shared-postgres.md): integration tests pattern (vigente).
-- [ADR-0037](0037-changelog-automation-release-please.md): changelog automation (companion).
+- [ADR-0037](0037-changelog-automation-auto-append.md): changelog automation (companion).
 - [docs/testing/conventions.md](../testing/conventions.md): living how-to.
 - [.github/pull_request_template.md](../../.github/pull_request_template.md): checklist por PR.
