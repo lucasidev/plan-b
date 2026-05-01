@@ -12,7 +12,7 @@ Decisión que lo motiva: [ADR-0036 — Pirámide de testing cross-stack](../deci
 | Wolverine handler + validator | Handler unit | xUnit + NSubstitute + Shouldly | `modules/<m>/tests/Planb.<M>.UnitTests/Application/Features/<UseCase>/` |
 | Endpoint Carter / repository EF / Dapper query | Integration | xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales | `tests/Planb.IntegrationTests/<Module>/` |
 | Regla cross-cutting (boundaries, naming, etc.) | Architecture | NetArchTest | `tests/Planb.ArchitectureTests/` |
-| Util / parser / `lib/*.ts` | Utils | vitest + happy-dom | `lib/utils.test.ts` (co-localizado) |
+| Util / parser / `lib/*.ts` | Utils | vitest + jsdom | `lib/utils.test.ts` (co-localizado) |
 | Schema Zod | Schema | vitest | `features/<f>/schema.test.ts` |
 | Server Action | Action | vitest + fetch mockeado | `features/<f>/actions.test.ts` |
 | Componente cliente / hook | Component | vitest + @testing-library/react + user-event | `features/<f>/components/<comp>.test.tsx` |
