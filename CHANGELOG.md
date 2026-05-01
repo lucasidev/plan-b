@@ -25,3 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - broken link in ADR-0036 + lychee config tweaks (docs) — [`f4ef9c5`](https://github.com/lucasidev/plan-b/commit/f4ef9c5f5888cd67c4e2e867eaed4ab4e0217d9e)
 - skip pr-title workflow on dependabot PRs (ci) — [`6aae01f`](https://github.com/lucasidev/plan-b/commit/6aae01f1a1ae3074266073d2401fefdc558e323d)
 - pr-title skip uses pull_request.user.login (not actor) (ci) — [`921113b`](https://github.com/lucasidev/plan-b/commit/921113b74be04845871d94edcfd635a7babefd1c)
+- e2e first-run issues (alert, seed timing, validation scope) (test) — [`ba8e5ce`](https://github.com/lucasidev/plan-b/commit/ba8e5ce8832a0825e0ecf1054111b324358fa852)
