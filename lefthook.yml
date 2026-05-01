@@ -34,3 +34,9 @@ pre-push:
     frontend-typecheck:
       glob: "frontend/**/*.{ts,tsx}"
       run: cd frontend && bunx tsc --noEmit
+    frontend-test:
+      # Vitest unit/component (US-T01). Rápido (~3s con jsdom + sample suite).
+      # E2E (Playwright) NO entra al pre-push: lentos, requieren backend
+      # levantado, y van por CI on-demand (label `e2e` en el PR per ADR-0036).
+      glob: "frontend/**/*.{ts,tsx}"
+      run: cd frontend && bun run test

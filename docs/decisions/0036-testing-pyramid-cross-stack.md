@@ -32,7 +32,7 @@ Tres hechos forzaron la decisión:
                                 │ HTTP + Postgres + Redis + Mailpit reales│
                                 └────────────────────┬────────────────────┘
               ┌──────────────────────────────────────┴───────────────────────────────────┐
-              │ Component (vitest + Testing Library + happy-dom)                         │
+              │ Component (vitest + Testing Library + jsdom)                             │
               │ formularios, hooks, RSC con stubs                                        │
               ├──────────────────────────────────────────────────────────────────────────┤
               │ Server Action (vitest, fetch mockeado)                                   │
@@ -65,7 +65,7 @@ Reglas duras:
 | **Backend Handler unit** | xUnit + NSubstitute + Shouldly | No existe | Agregar (US-T03) |
 | **Backend Integration** | xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales | Existe | Mantener tal cual (ADR-0027) |
 | **Backend Architecture** | NetArchTest | No existe | Nuevo proyecto `Planb.ArchitectureTests` (US-T04) |
-| **Frontend Schemas/Utils** | vitest + happy-dom | Config existe, 0 tests | Agregar tests sample + convención (US-T01) |
+| **Frontend Schemas/Utils** | vitest + jsdom | Config existe, 0 tests | Agregar tests sample + convención (US-T01) |
 | **Frontend Server Actions** | vitest + fetch mockeado | No existe | Patrón nuevo (US-T01) |
 | **Frontend Components** | vitest + @testing-library/react + user-event | No existe; faltan deps | Instalar + setup (US-T01) |
 | **Frontend E2E** | Playwright + chromium (FF/Webkit opcional) | `@playwright/test` instalado, 0 tests | Setup permanente + helpers (US-T02) |
