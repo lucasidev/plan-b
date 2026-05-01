@@ -1,0 +1,167 @@
+name: E2E (Playwright)
+
+# Frontend E2E. Levanta backend + servicios + frontend production build,
+# corre Playwright contra todo, sube traces como artifact si falla.
+#
+# Trigger on-demand (no en cada push):
+#   - PR con label `e2e`: corre la suite contra esa branch.
+#   - Push a main: corre como gate post-merge.
+#   - workflow_dispatch: trigger manual desde la UI de Actions.
+#
+# Decisión de "on-demand" en ADR-0036: la suite es lenta (~5-7min) y los
+# specs de auth ya tienen cobertura unit+integration en backend +
+# component en frontend (US-T01). E2E sirve para integración cross-stack,
+# no para feedback rápido.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: E2E suite
+    runs-on: ubuntu-latest
+    # Solo corre si el PR tiene label `e2e`, OR push a main, OR dispatch manual.
+    # Para PRs sin label: skip (mostrará "Skipped" en el merge UI).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'e2e'))
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: planb
+          POSTGRES_PASSWORD: planb_test
+          POSTGRES_DB: planb_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U planb -d planb_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+
+      mailpit:
+        image: axllent/mailpit:v1.29
+        ports: ['1025:1025', '8025:8025']
+        options: >-
+          --health-cmd "/mailpit readyz"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+          --health-start-period 5s
+
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+      ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+      ConnectionStrings__Redis: localhost:6379
+      JWT__Secret: ci-test-jwt-secret-must-be-at-least-32-chars-long
+      JWT__Issuer: planb-test
+      JWT__Audience: planb-test
+      # Para que el helper de redis.ts no intente podman exec en CI.
+      REDIS_CONTAINER_CMD: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v5
+        with: { dotnet-version: '10.0.x' }
+
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+
+      - name: Restore + build backend
+        working-directory: backend
+        run: |
+          dotnet restore
+          dotnet build --no-restore --configuration Release
+
+      - name: Start backend in background
+        # En Development env, el host arranca con Wolverine ResourceAutoCreate
+        # = CreateOrUpdate (Program.cs:95), así que migra y crea las tablas
+        # automáticamente al primer startup. No necesitamos un step de
+        # migrate explícito en CI E2E.
+        working-directory: backend
+        run: |
+          nohup dotnet run --no-build --configuration Release --project host/Planb.Api > /tmp/backend.log 2>&1 &
+          echo "BACKEND_PID=$!" >> $GITHUB_ENV
+          # Esperar healthcheck
+          for i in {1..30}; do
+            if curl -sf http://localhost:5000/health > /dev/null; then
+              echo "Backend ready after ${i}s"; break
+            fi
+            sleep 1
+          done
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: frontend
+        run: bun run build
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright chromium
+        working-directory: frontend
+        run: bunx playwright install --with-deps chromium
+
+      - name: Start frontend in background
+        working-directory: frontend
+        run: |
+          nohup bun next start -p 3000 > /tmp/frontend.log 2>&1 &
+          echo "FRONTEND_PID=$!" >> $GITHUB_ENV
+          for i in {1..30}; do
+            if curl -sf http://localhost:3000 > /dev/null; then
+              echo "Frontend ready after ${i}s"; break
+            fi
+            sleep 1
+          done
+
+      - name: Run Playwright
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          BACKEND_URL: http://localhost:5000
+          MAILPIT_URL: http://localhost:8025
+          CI: 'true'
+        run: bunx playwright test
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 7
+
+      - name: Upload backend log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-log
+          path: /tmp/backend.log
+          retention-days: 7

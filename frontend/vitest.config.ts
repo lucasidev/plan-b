@@ -17,10 +17,11 @@ export default defineConfig({
     // grite en lugar de pasar trivialmente (e.g. test glob mal configurado).
     passWithNoTests: false,
     setupFiles: ['./test-setup.ts'],
-    // Vitest sólo busca tests en src/ (co-localizados al source). Si en el
-    // futuro necesitamos tests fuera (e.g. e2e/), usar otro config o glob
-    // explícito.
+    // Vitest sólo busca tests en src/ (co-localizados al source). Los specs
+    // de Playwright (e2e/) tienen su propio runner — los excluimos explícito
+    // por las dudas (el include glob ya los filtra, pero double-belt no daña).
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    exclude: ['e2e/**', 'node_modules/**', '.next/**'],
   },
   resolve: {
     alias: {
