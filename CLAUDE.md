@@ -40,7 +40,8 @@ plan-b/
 │   ├── decisions/           38 ADRs (MADR) — fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   ├── architecture/        ERD, data model
-│   └── testing/             Convenciones cross-stack de testing (ADR-0036)
+│   ├── testing/             Convenciones cross-stack de testing (ADR-0036)
+│   └── operations/          Playbooks operacionales (rollback, ...)
 ├── scripts/                 TS scripts (bun) — no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
@@ -82,6 +83,7 @@ Las cuatro cosas críticas para entender el sistema antes de programar:
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
 3. [`docs/decisions/`](docs/decisions/) — 38 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 4. [`docs/testing/conventions.md`](docs/testing/conventions.md) — qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
+5. [`docs/operations/rollback.md`](docs/operations/rollback.md) — qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
