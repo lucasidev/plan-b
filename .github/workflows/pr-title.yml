@@ -23,9 +23,13 @@ jobs:
     # Dependabot genera PR titles con la primera letra del subject capitalizada
     # ("Bump foo from X to Y") que rompe el subjectPattern de abajo. Sus
     # commits internamente sí siguen Conventional Commits (build(deps): bump...);
-    # el problema es sólo el title. Skipear el actor evita falsos negativos
+    # el problema es sólo el title. Skipear el bot evita falsos negativos
     # sin debilitar la regla para PRs humanas.
-    if: github.actor != 'dependabot[bot]'
+    #
+    # Usamos `pull_request.user.login` (creador del PR) en vez de `github.actor`
+    # porque actor puede cambiar en re-runs / rebase-via-comment, pero el creador
+    # del PR es invariante (siempre dependabot[bot] para PRs abiertos por el bot).
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - uses: amannn/action-semantic-pull-request@v5
         env:
