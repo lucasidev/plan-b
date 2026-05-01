@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rate limiter + refresh bulk revoke (US-033-i infra) (identity) — [`75af6ba`](https://github.com/lucasidev/plan-b/commit/75af6ba5f2a3aed0e083473a5f75049b7e6363e6)
 - forgot-password + reset-password backend (US-033-i) (identity) — [`053636d`](https://github.com/lucasidev/plan-b/commit/053636de4aaa3bc6d8b2d280a69f59bb9c7ee752)
 - vitest + Testing Library setup + sample tests (US-T01) (test) — [`d96994f`](https://github.com/lucasidev/plan-b/commit/d96994f58492ae9068f55a646f1a940064cf27b4)
+- Playwright e2e infra + auth flows (US-T02) (test) — [`af4a527`](https://github.com/lucasidev/plan-b/commit/af4a527d733d65869e057076a94d525a264d1713)
 
 ### Fixed
 
