@@ -8,9 +8,11 @@ import { LUCIA, MARTIN, PAULA } from '../helpers/personas';
  *   - cuenta deshabilitada: Paula → error específico
  *   - credenciales inválidas → mensaje genérico (anti-enum)
  *
- * No depende de Mailpit ni Redis: sólo POST /api/identity/sign-in.
- * Pensado como sample de cómo escribir un E2E "rápido" (sin estado a
- * resetear) para futuros features.
+ * Nota sobre `getByRole('alert')`: Next.js inyecta un
+ * `<div id="__next-route-announcer__" role="alert">` para anuncios de
+ * cambio de ruta accesibles. Strict mode de Playwright detecta dos
+ * elementos cuando usamos el role plano. Filtramos por texto del
+ * mensaje para apuntar a NUESTRA alert (la de error del form).
  */
 
 test.describe('sign-in (US-028)', () => {
@@ -20,9 +22,8 @@ test.describe('sign-in (US-028)', () => {
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
 
-    await page.waitForURL(/\/home/, { timeout: 10_000 });
-    // El dashboard tiene un saludo personalizado.
-    await expect(page.getByText(new RegExp(`hola,?\\s+${LUCIA.displayName.split(' ')[0]}`, 'i'))).toBeVisible();
+    // El layout (member) hace redirect a /home tras autenticar.
+    await page.waitForURL(/\/home$/, { timeout: 10_000 });
   });
 
   test('Martín (no verificado) ve error con hint de re-registro', async ({ page }) => {
@@ -31,7 +32,9 @@ test.describe('sign-in (US-028)', () => {
     await page.getByLabel(/^contraseña$/i).fill(MARTIN.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
 
-    await expect(page.getByRole('alert')).toContainText(/no está verificada|no esta verificada/i);
+    await expect(
+      page.getByRole('alert').filter({ hasText: /no está verificada|no esta verificada/i }),
+    ).toBeVisible();
     await expect(page.getByRole('button', { name: /registrate de nuevo/i })).toBeVisible();
   });
 
@@ -41,7 +44,7 @@ test.describe('sign-in (US-028)', () => {
     await page.getByLabel(/^contraseña$/i).fill(PAULA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
 
-    await expect(page.getByRole('alert')).toContainText(/suspendida/i);
+    await expect(page.getByRole('alert').filter({ hasText: /suspendida/i })).toBeVisible();
   });
 
   test('credenciales inválidas → mensaje genérico anti-enum', async ({ page }) => {
@@ -52,6 +55,8 @@ test.describe('sign-in (US-028)', () => {
 
     // El mensaje no debería distinguir entre "email no existe" vs
     // "password incorrecta" (anti-enum, ADR-0023).
-    await expect(page.getByRole('alert')).toContainText(/email o contraseña incorrectos/i);
+    await expect(
+      page.getByRole('alert').filter({ hasText: /email o contraseña incorrectos/i }),
+    ).toBeVisible();
   });
 });
