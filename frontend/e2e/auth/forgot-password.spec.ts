@@ -1,40 +1,29 @@
 import { expect, test } from '@playwright/test';
+import { clearAllMessages, extractTokenFromLatestMail } from '../helpers/mailpit';
 import { LUCIA } from '../helpers/personas';
-import {
-  clearAllMessages,
-  extractTokenFromLatestMail,
-  waitForMail,
-} from '../helpers/mailpit';
 import { clearForgotPasswordRateLimits } from '../helpers/redis';
 
 /**
  * E2E happy path + edge cases del flow forgot/reset password (US-033).
  *
- * Migrado del throwaway que escribí durante US-033 contra el frontend en
- * vivo (Playwright headless smoke). Cubre lo que en su momento validamos
- * a mano + dejé en `docs/domain/user-stories/US-033-i.md` AC matrix:
+ * Migrado del throwaway que escribí durante US-033. Cubre lo que en su
+ * momento validamos a mano + lo que está en `docs/domain/user-stories/US-033-i.md`.
  *
- *   - sign-in → click forgot link → /forgot-password
- *   - submit email → /forgot-password/check-inbox?email=...
- *   - extract token de mailpit → /reset-password?token=...
- *   - errors in-field: password corta, mismatch
- *   - happy path → /auth?reset=success con banner
- *   - sign-in con la nueva pw → /home
- *   - garbage token → CTA "Pedí un link nuevo"
- *   - sin token → fallback "Falta el link"
- *
- * Cada test deja a Lucía con su pw original al final (helper
- * `restoreLuciaPassword()`). El test runner los ejecuta serial por default,
- * pero el restore es defensivo: si un test crashea sin restaurar, el siguiente
- * arranca con pw rota. Tradeoff aceptado para mantener la suite simple.
+ * Diseño:
+ * - El happy path se concentra en validar el FLUJO completo (sign-in →
+ *   forgot → mail → reset → success → re-signin con la nueva pw). Los
+ *   error states inline (validation messages bajo el campo) se cubren
+ *   en `frontend/src/features/reset-password/components/*.test.tsx` con
+ *   vitest, no acá: el component test es más rápido + más predecible
+ *   para esos detalles de DOM.
+ * - Los edge cases que SÍ requieren browser (garbage token, sin token,
+ *   anti-enum) tienen su propio test cada uno.
  */
 
 const TEMP_PASSWORD = 'temp-pw-for-e2e-12';
 const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 
 async function restoreLuciaPassword() {
-  // Vía backend directo: forgot-password + reset-password con el token del mail.
-  // Reusa los helpers en lugar de repetir lógica.
   await clearForgotPasswordRateLimits();
   await clearAllMessages();
 
@@ -77,32 +66,23 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.goto(`/reset-password?token=${token}`);
     await expect(page.getByLabel(/^contraseña nueva$/i)).toBeVisible();
 
-    // 4. errors in-field: password corta
-    await page.getByLabel(/^contraseña nueva$/i).fill('short1');
-    await page.getByLabel(/repetí la contraseña/i).fill('short1');
-    await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
-    await expect(page.getByText(/al menos 12 caracteres/i)).toBeVisible();
-
-    // 5. errors in-field: mismatch
-    await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
-    await page.getByLabel(/repetí la contraseña/i).fill(`${TEMP_PASSWORD}WRONG`);
-    await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
-    await expect(page.getByText(/no coinciden/i)).toBeVisible();
-
-    // 6. happy path → /auth?reset=success
+    // 4. Happy path → /auth?reset=success.
+    // (Inline validation errors – password corta, mismatch – se cubren
+    // en el component test del reset-password-form, no acá. Acá nos
+    // concentramos en el flow cross-stack.)
     await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
     await page.getByLabel(/repetí la contraseña/i).fill(TEMP_PASSWORD);
     await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
     await page.waitForURL(/\/auth\?reset=success/);
-    await expect(page.getByRole('status')).toContainText(/listo/i);
+    await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
 
-    // 7. sign-in con la nueva pw → /home
+    // 5. Sign-in con la nueva pw → /home
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await page.waitForURL((u) => !u.pathname.startsWith('/auth'), { timeout: 10_000 });
+    await page.waitForURL(/\/home$/, { timeout: 10_000 });
 
-    // 8. cleanup: restaurar pw original
+    // 6. Cleanup: restaurar pw original
     await restoreLuciaPassword();
   });
 
@@ -112,8 +92,7 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.getByRole('button', { name: /mandame el link/i }).click();
     await page.waitForURL(/\/forgot-password\/check-inbox/);
 
-    // No debería haber mail. Esperamos un poco para asegurar que el backend
-    // tuvo chance de enviar (no debería) y verificamos que el inbox sigue vacío.
+    // Esperamos a que el backend tenga chance de enviar mail (no debería).
     await page.waitForTimeout(800);
     const inbox = await fetch(
       `${process.env.MAILPIT_URL ?? 'http://localhost:8025'}/api/v1/messages?limit=10`,
