@@ -95,18 +95,38 @@ jobs:
       - name: Start backend in background
         # En Development env, el host arranca con Wolverine ResourceAutoCreate
         # = CreateOrUpdate (Program.cs:95), así que migra y crea las tablas
-        # automáticamente al primer startup. No necesitamos un step de
-        # migrate explícito en CI E2E.
+        # automáticamente al primer startup. La DevSeedHostedService corre en
+        # paralelo y siembra las personas (Lucía, Mateo, Paula, Martín).
+        #
+        # Ojo: /health responde 200 ni bien el host está sirviendo, ANTES de
+        # que el seeder termine. Si los tests pegan al sign-in antes que la
+        # DevSeedHostedService haya materializado a Lucía, las creds caen
+        # con 401. Por eso poleamos contra un sign-in real (rápido, idempotente)
+        # como proxy de "seed listo".
         working-directory: backend
         run: |
           nohup dotnet run --no-build --configuration Release --project host/Planb.Api > /tmp/backend.log 2>&1 &
           echo "BACKEND_PID=$!" >> $GITHUB_ENV
-          # Esperar healthcheck
+          # 1) Esperar que el host responda al healthcheck.
           for i in {1..30}; do
             if curl -sf http://localhost:5000/health > /dev/null; then
-              echo "Backend ready after ${i}s"; break
+              echo "Host healthy after ${i}s"; break
             fi
             sleep 1
+          done
+          # 2) Esperar que el seed haya materializado las personas. Sondeamos
+          # con un sign-in de Lucía: 200 = persona creada, 401 = todavía no.
+          for i in {1..30}; do
+            status=$(curl -sf -o /dev/null -w "%{http_code}" \
+              -X POST http://localhost:5000/api/identity/sign-in \
+              -H "Content-Type: application/json" \
+              -d '{"email":"lucia.mansilla@gmail.com","password":"lucia.mansilla.12"}' \
+              || echo "000")
+            if [ "$status" = "200" ]; then
+              echo "Seed ready after ${i}s"; break
+            fi
+            echo "Seed not ready yet (status=$status), waiting..."
+            sleep 2
           done
 
       - name: Install frontend deps
