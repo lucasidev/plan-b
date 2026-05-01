@@ -154,14 +154,14 @@ Ver [ADR-0022](../docs/decisions/0022-forms-react19-primitives-tanstack-form.md)
 
 Convenciones detalladas en [`docs/testing/conventions.md`](../docs/testing/conventions.md). Resumen para frontend:
 
-- **Utils / Schemas** (vitest + happy-dom): helpers de `lib/` y zod schemas. Test co-localizado al source: `foo.ts` + `foo.test.ts`.
-- **Server Actions** (vitest, fetch mockeado): lógica de actions sin browser. Co-localizado: `actions.ts` + `actions.test.ts`.
-- **Components** (vitest + `@testing-library/react` + `user-event`): formularios, hooks, componentes interactivos. Co-localizado: `<comp>.tsx` + `<comp>.test.tsx`.
+- **Utils / Schemas** (vitest + jsdom): helpers de `lib/` y zod schemas. Test co-localizado al source: `foo.ts` + `foo.test.ts`.
+- **Server Actions** (vitest, fetch / next/navigation mockeados): lógica de actions sin browser. Co-localizado: `actions.ts` + `actions.test.ts`.
+- **Components** (vitest + `@testing-library/react` + `user-event` + `jest-dom`): formularios, hooks, componentes interactivos. Co-localizado: `<comp>.tsx` + `<comp>.test.tsx`. Setup global en `test-setup.ts` (cleanup automático tras cada test, matchers DOM-aware).
 - **E2E** (Playwright + chromium): user flows reales (multi-página, redirects, banners temporales). Vive aparte en `frontend/e2e/<área>/<flow>.spec.ts`. Helpers en `frontend/e2e/helpers/` (personas, mailpit, redis).
 
 Pirámide formal: [ADR-0036](../docs/decisions/0036-testing-pyramid-cross-stack.md). Regla dura: **subir un nivel sólo si el inferior no alcanza**. Una validación de Zod se testea con vitest; no se sube a component test ni a E2E si no hace falta.
 
-Stack permanente aterriza con US-T01 (vitest + Testing Library + sample tests por capa) y US-T02 (Playwright config + e2e helpers + sample spec). Hoy `vitest.config.ts` existe pero `passWithNoTests: true`; `@playwright/test` está instalado pero falta `playwright.config.ts`.
+Stack permanente aterrizó con US-T01 (vitest + Testing Library + jsdom + sample tests por capa). US-T02 (Playwright config + e2e helpers + sample spec) sigue pendiente.
 
 Locators en componentes: priorizar `getByRole`, `getByLabelText`. Tests deben fallar cuando el ARIA cambia, no cuando agregamos un `data-testid` nuevo.
 
@@ -177,7 +177,7 @@ UX strings en español (la app es en español). Descriptores técnicos de `descr
 | URL state | `nuqs` |
 | UI | shadcn/ui (no package, se instalan con `bunx shadcn@latest add <x>`), `lucide-react`, `class-variance-authority`, `tailwind-merge`, `clsx` |
 | Auth | `jose`, `iron-session` |
-| Tests | `vitest`, `happy-dom`, `@playwright/test`; `@testing-library/react` + `user-event` + `jest-dom` (US-T01) |
+| Tests | `vitest`, `jsdom`, `@testing-library/react` + `user-event` + `dom` + `jest-dom`, `@playwright/test` (E2E pendiente US-T02) |
 | Tooling | `@biomejs/biome`, `typescript`, `bun` |
 
 ## Convenciones
