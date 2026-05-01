@@ -61,7 +61,7 @@ Reglas duras:
 
 | Capa | Stack | Estado pre-ADR | Acción |
 |---|---|---|---|
-| **Backend Domain unit** | xUnit + Shouldly | Mezclado dentro de IntegrationTests | Separar en `Planb.<Module>.UnitTests` (US-T03) |
+| **Backend Domain unit** | xUnit + Shouldly | Mezclado dentro de IntegrationTests | Separar en `Planb.<Module>.Tests` (US-T03) |
 | **Backend Handler unit** | xUnit + NSubstitute + Shouldly | No existe | Agregar (US-T03) |
 | **Backend Integration** | xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales | Existe | Mantener tal cual (ADR-0027) |
 | **Backend Architecture** | NetArchTest | No existe | Nuevo proyecto `Planb.ArchitectureTests` (US-T04) |
@@ -80,7 +80,7 @@ backend/
 ├── modules/<m>/
 │   ├── src/...
 │   └── tests/
-│       └── Planb.<M>.UnitTests/                ← domain + handlers, mockeados
+│       └── Planb.<M>.Tests/                    ← domain + handlers, mockeados
 │           ├── Domain/
 │           │   └── Users/UserTests.cs
 │           └── Application/
@@ -188,7 +188,7 @@ Considerada y descartada. La regla "% cubierto" optimiza para tests que ejercen 
 
 ### Negativas
 
-- CI se vuelve más lento. Estimación: backend +0s (proyectos UnitTests usan in-memory, son rápidos); frontend +30s con vitest reales; frontend-e2e job +5-7min on-demand. Se mitiga con on-demand trigger y caching de browsers.
+- CI se vuelve más lento. Estimación: backend +0s (proyectos `Planb.<M>.Tests` usan in-memory, son rápidos); frontend +30s con vitest reales; frontend-e2e job +5-7min on-demand. Se mitiga con on-demand trigger y caching de browsers.
 - Inversión inicial 1-2 sprints (US-T01 a T05). Bloquea features urgentes si se priorizan los T-stories arriba de las features. Mitigación: T-stories son non-blocking, podemos aterrizarlos en paralelo a features.
 - Más superficie para mantener cuando hay refactor grande (cambios de routing, cambios de schema). Tests E2E especialmente son frágiles a redesigns. Mitigación: helpers (`personas.ts`, `mailpit.ts`) absorben el churn donde se puede.
 
@@ -205,7 +205,7 @@ Las US para implementar esta decisión viven en `docs/domain/user-stories/` con 
 
 - **US-T01-f**: Frontend unit/component testing infra (vitest + Testing Library + sample tests por capa).
 - **US-T02-f**: Frontend E2E infra (Playwright config permanente + e2e helpers + migración del spec de US-033 + CI job on-demand).
-- **US-T03-b**: Backend unit test layer split (separar `Planb.<M>.UnitTests` por módulo, empezando por identity).
+- **US-T03-b**: Backend unit test layer split (separar `Planb.<M>.Tests` por módulo, empezando por identity).
 - **US-T04-b**: Backend architecture tests con NetArchTest.
 - **US-T05-i**: PR template + CHANGELOG automation (ver [ADR-0037](0037-changelog-automation-auto-append.md)).
 
