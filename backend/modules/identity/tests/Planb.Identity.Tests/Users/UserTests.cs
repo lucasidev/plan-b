@@ -308,4 +308,192 @@ public class UserTests
 
         observed.ShouldBe("hashed");
     }
+
+    // ── RequestPasswordReset ─────────────────────────────────────────
+
+    [Fact]
+    public void RequestPasswordReset_issues_token_with_password_reset_purpose_and_30min_ttl()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        // VerifiedActiveUser dejó un UserEmailVerification token consumido en Tokens.
+        // Filtramos por purpose para apuntar al password-reset que recién se issue.
+
+        var result = user.RequestPasswordReset("reset-token", clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var token = user.Tokens.Single(t => t.Purpose == TokenPurpose.PasswordReset);
+        token.Token.ShouldBe("reset-token");
+        token.ExpiresAt.ShouldBe(T0.AddMinutes(30));
+        token.IsActive.ShouldBeTrue();
+        user.DomainEvents.OfType<VerificationTokenIssuedDomainEvent>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void RequestPasswordReset_invalidates_previous_active_password_reset_token()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.RequestPasswordReset("first", clock);
+        user.ClearDomainEvents();
+
+        clock.Advance(TimeSpan.FromMinutes(5));
+        user.RequestPasswordReset("second", clock);
+
+        // Sólo nos importa el comportamiento entre los dos password-reset tokens.
+        // (En total user tiene 1 verify consumido + 2 password-reset = 3 tokens.)
+        user.Tokens.Single(t => t.Token == "first").IsInvalidated.ShouldBeTrue();
+        user.Tokens.Single(t => t.Token == "second").IsActive.ShouldBeTrue();
+        user.DomainEvents.OfType<VerificationTokenInvalidatedDomainEvent>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void RequestPasswordReset_succeeds_at_aggregate_level_even_for_disabled_user()
+    {
+        // The aggregate doesn't gate on user state — that's the handler's job
+        // (anti-enumeration: handler decides whether to actually send mail).
+        // Documented in the User.RequestPasswordReset docstring.
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.Disable(Guid.NewGuid(), "abuse", clock);
+
+        var result = user.RequestPasswordReset("reset-token", clock);
+
+        result.IsSuccess.ShouldBeTrue();
+    }
+
+    // ── ResetPassword ────────────────────────────────────────────────
+
+    private static User UserWithPasswordResetToken(
+        FixedClock clock, string token = "raw-reset", TimeSpan? ttl = null)
+    {
+        var user = VerifiedActiveUser(clock);
+        user.IssueVerificationToken(
+            TokenPurpose.PasswordReset, token, ttl ?? TimeSpan.FromMinutes(30), clock);
+        user.ClearDomainEvents();
+        return user;
+    }
+
+    [Fact]
+    public void ResetPassword_consumes_token_replaces_hash_and_raises_event()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+
+        clock.Advance(TimeSpan.FromMinutes(5));
+        var result = user.ResetPassword(
+            "raw-reset",
+            new string('x', User.MinPasswordLength),
+            plain => $"hashed:{plain}",
+            clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        user.PasswordHash.ShouldBe($"hashed:{new string('x', User.MinPasswordLength)}");
+        user.UpdatedAt.ShouldBe(T0.AddMinutes(5));
+        var token = user.Tokens.Single(t => t.Token == "raw-reset");
+        token.IsConsumed.ShouldBeTrue();
+        var @event = user.DomainEvents.OfType<PasswordResetCompletedDomainEvent>().ShouldHaveSingleItem();
+        @event.UserId.ShouldBe(user.Id);
+        @event.OccurredAt.ShouldBe(T0.AddMinutes(5));
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_VerificationTokenInvalid_when_token_does_not_exist()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+
+        var result = user.ResetPassword("wrong-token", "any-pw-12345", _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenInvalid);
+        user.PasswordHash.ShouldBe("hashed"); // unchanged
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_WrongPurpose_when_token_belongs_to_email_verification()
+    {
+        var clock = new FixedClock(T0);
+        var user = User.Register(Email("new@x.com"), "hashed", clock).Value;
+        user.IssueVerificationToken(
+            TokenPurpose.UserEmailVerification, "verify-token", TimeSpan.FromHours(24), clock);
+
+        var result = user.ResetPassword("verify-token", "any-pw-12345", _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationWrongPurpose);
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_AlreadyConsumed_when_token_already_used()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+        user.ResetPassword(
+            "raw-reset", new string('x', User.MinPasswordLength), _ => "h", clock);
+
+        var second = user.ResetPassword(
+            "raw-reset", new string('y', User.MinPasswordLength), _ => "h2", clock);
+
+        second.IsFailure.ShouldBeTrue();
+        second.Error.ShouldBe(UserErrors.VerificationTokenAlreadyConsumed);
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_Expired_when_token_past_ttl()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock, ttl: TimeSpan.FromMinutes(30));
+
+        clock.Advance(TimeSpan.FromHours(1));
+        var result = user.ResetPassword(
+            "raw-reset", new string('x', User.MinPasswordLength), _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenExpired);
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_AccountDisabled_when_user_disabled_after_token_issued()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+        user.Disable(Guid.NewGuid(), "abuse", clock);
+
+        var result = user.ResetPassword(
+            "raw-reset", new string('x', User.MinPasswordLength), _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.AccountDisabled);
+    }
+
+    [Fact]
+    public void ResetPassword_fails_with_PasswordTooWeak_when_under_minimum()
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+
+        var result = user.ResetPassword(
+            "raw-reset", new string('x', User.MinPasswordLength - 1), _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.PasswordTooWeak);
+        // Token should NOT be consumed when password fails validation — user can retry.
+        user.Tokens.Single(t => t.Token == "raw-reset").IsConsumed.ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void ResetPassword_fails_with_TokenRequired_when_token_blank(string token)
+    {
+        var clock = new FixedClock(T0);
+        var user = UserWithPasswordResetToken(clock);
+
+        var result = user.ResetPassword(
+            token, new string('x', User.MinPasswordLength), _ => "h", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenRequired);
+    }
 }

@@ -8,8 +8,8 @@ Decisión que lo motiva: [ADR-0036 — Pirámide de testing cross-stack](../deci
 
 | Tocaste… | Test que necesitás | Stack | Dónde vive |
 |---|---|---|---|
-| Entidad / VO / Error del dominio backend | Domain unit | xUnit + Shouldly | `modules/<m>/tests/Planb.<M>.UnitTests/Domain/` |
-| Wolverine handler + validator | Handler unit | xUnit + NSubstitute + Shouldly | `modules/<m>/tests/Planb.<M>.UnitTests/Application/Features/<UseCase>/` |
+| Entidad / VO / Error del dominio backend | Domain unit | xUnit + Shouldly | `modules/<m>/tests/Planb.<M>.Tests/Domain/` |
+| Wolverine handler + validator | Handler unit | xUnit + NSubstitute + Shouldly | `modules/<m>/tests/Planb.<M>.Tests/Features/<UseCase>/` o `Application/Features/<UseCase>/` |
 | Endpoint Carter / repository EF / Dapper query | Integration | xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales | `tests/Planb.IntegrationTests/<Module>/` |
 | Regla cross-cutting (boundaries, naming, etc.) | Architecture | NetArchTest | `tests/Planb.ArchitectureTests/` |
 | Util / parser / `lib/*.ts` | Utils | vitest + jsdom | `lib/utils.test.ts` (co-localizado) |
@@ -49,7 +49,7 @@ just frontend-test-e2e            # Playwright, requiere backend levantado
 Pure logic. Sin EF, sin Postgres, sin nada I/O. Sólo entidades, VOs, errors.
 
 ```csharp
-// modules/identity/tests/Planb.Identity.UnitTests/Domain/Users/UserTests.cs
+// modules/identity/tests/Planb.Identity.Tests/Domain/Users/UserTests.cs
 public class UserTests
 {
     [Fact]
@@ -76,7 +76,7 @@ Reglas:
 Wolverine handler + FluentValidation, deps mockeadas con NSubstitute.
 
 ```csharp
-// modules/identity/tests/Planb.Identity.UnitTests/Application/Features/RequestPasswordReset/RequestPasswordResetCommandHandlerTests.cs
+// modules/identity/tests/Planb.Identity.Tests/Features/RequestPasswordReset/RequestPasswordResetCommandHandlerTests.cs
 public class RequestPasswordResetCommandHandlerTests
 {
     [Fact]
