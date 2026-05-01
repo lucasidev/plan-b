@@ -161,7 +161,7 @@ Convenciones detalladas en [`docs/testing/conventions.md`](../docs/testing/conve
 
 Pirámide formal: [ADR-0036](../docs/decisions/0036-testing-pyramid-cross-stack.md). Regla dura: **subir un nivel sólo si el inferior no alcanza**. Una validación de Zod se testea con vitest; no se sube a component test ni a E2E si no hace falta.
 
-Stack permanente aterrizó con US-T01 (vitest + Testing Library + jsdom + sample tests por capa). US-T02 (Playwright config + e2e helpers + sample spec) sigue pendiente.
+Stack permanente aterrizó con US-T01 (vitest + Testing Library + jsdom + sample tests por capa) y US-T02 (Playwright config permanente + helpers en `e2e/helpers/{personas,mailpit,redis}.ts` + specs `e2e/auth/{forgot-password,sign-in}.spec.ts`). E2E corre on-demand en CI (label `e2e` en el PR o push a main); localmente con `just frontend-test-e2e` cuando el dev stack está arriba.
 
 Locators en componentes: priorizar `getByRole`, `getByLabelText`. Tests deben fallar cuando el ARIA cambia, no cuando agregamos un `data-testid` nuevo.
 
