@@ -12,9 +12,9 @@ Effort: Small ≈ 1-3 días, Medium ≈ 3-7 días, Large ≈ 1-2 semanas.
 
 ## Por estado
 
-### Done (15)
+### Done (14)
 
-Foundations + slice A/B de EPIC-02 (Sprint 0) + slice C/D de EPIC-02 (Sprint 1, US-033) + institucionalización de testing/changelog/versioning (Sprint 1, T-series).
+Foundations + slice A/B de EPIC-02 (Sprint 0) + slice C/D de EPIC-02 (Sprint 1, US-033 integrated) + institucionalización de testing/changelog/versioning (Sprint 1, T-series).
 
 | ID | Título | Sprint | Epic |
 |---|---|---|---|
@@ -27,8 +27,7 @@ Foundations + slice A/B de EPIC-02 (Sprint 0) + slice C/D de EPIC-02 (Sprint 1, 
 | [US-F06](user-stories/US-F06.md) | DDD formalization (strategic + tactical + epics + US) | S0 | EPIC-00 |
 | [US-010-b](user-stories/US-010-b.md) | Register backend | S0 | EPIC-02 |
 | [US-010-f](user-stories/US-010-f.md) | Register frontend | S0 | EPIC-02 |
-| [US-033-i](user-stories/US-033-i.md) | Forgot/reset password backend (rate limiter + bulk revoke + flow) | S1 | EPIC-02 |
-| [US-033-f](user-stories/US-033-f.md) | Forgot/reset password frontend | S1 | EPIC-02 |
+| [US-033-i](user-stories/US-033-i.md) | Forgot/reset password (integrated: backend + frontend + e2e) | S1 | EPIC-02 |
 | [US-T01-f](user-stories/US-T01-f.md) | Frontend unit/component testing infra (vitest + Testing Library) | S1 | EPIC-00 |
 | [US-T02-f](user-stories/US-T02-f.md) | Frontend E2E infra (Playwright permanente + helpers + CI on-demand) | S1 | EPIC-00 |
 | [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | S1 | EPIC-00 |
