@@ -33,15 +33,19 @@ Formato: `<type>/<scope>-<short-description>` alineado con Conventional Commits.
 
 Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
 
-Ejemplos:
+Ejemplos válidos:
 - `feat/identity-register`
 - `fix/moderation-cascade-bug`
 - `docs/adr-git-workflow`
 - `chore/bump-wolverine`
 
+**No incluir US numbers en el branch name.** El branch name describe el cambio técnico (scope); las US se referencian en el commit body y/o PR body. `feat/us033-forgot-password` o `feat/t04-architecture-tests` son inválidos: el reemplazo es `feat/identity-forgot-password`, `feat/backend-architecture-tests`. Ver `docs/operations/git-workflow.md` para tabla de anti-patterns y la bitácora operacional completa.
+
 ### Convención de commit message
 
 Conventional Commits (`type(scope): descripción`), enforceado por lefthook commit-msg hook (`scripts/check-commit-msg.ts`). Ver [ADR-0024](0024-dev-tooling-stack.md).
+
+`pr-title.yml` enforce el subject pattern `^(?![A-Z]).+$`: el subject empieza en minúscula. Si el primer token sería un nombre propio (`Playwright`, `NetArchTest`, `React`), reformular la frase. No es overhead arbitrario: si se squashea, el PR title pasa a ser el commit en `main` y alimenta el CHANGELOG.
 
 ### Cuándo migrar a OneFlow
 
@@ -106,3 +110,5 @@ Descartada: lo más ruidoso sin upside en un proyecto chico. Útil en teams gran
   - Tags semver formales.
 
 Relacionados: [ADR-0024](0024-dev-tooling-stack.md) (tooling incluye Conventional Commits via lefthook).
+
+**Operacional:** [`docs/operations/git-workflow.md`](../operations/git-workflow.md) es la bitácora paso a paso del flow (commit / branch / conflict / merge). El ADR define la decisión + rationale; el doc operacional define el cómo. Si el doc se contradice con este ADR, gana el ADR; el doc se actualiza.

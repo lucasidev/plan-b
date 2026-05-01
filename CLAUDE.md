@@ -53,7 +53,7 @@ plan-b/
 - **Código en inglés** (clases, métodos, tablas, rutas). **UI en español rioplatense**. Error messages internos en inglés.
 - **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Los commits alimentan `CHANGELOG.md` automáticamente vía un workflow GHA que appendea bullets a `[Unreleased]` en cada merge a main ([ADR-0037](docs/decisions/0037-changelog-automation-auto-append.md)) — **no editar `CHANGELOG.md` a mano**.
 - **Versioning**: pre-deploy no hay versiones ni releases. Tags narrativos manuales (`presentacion-fase-2-...`) permitidos para hitos. Política completa en [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md); revisar cuando aterrice primer deploy.
-- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md).
+- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). **Sin US numbers en el branch name** (las US van en commit body o PR body). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md) (decisión) y [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md) (bitácora operacional con anti-patterns).
 - **Decisiones con alternativas reales → ADR** en `docs/decisions/NNNN-titulo.md`. Ver [`docs/decisions/README.md`](docs/decisions/README.md) para criterios.
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
 - **Scripts en TypeScript** (`bun`), no en bash. Consistencia.
@@ -77,13 +77,14 @@ just ci              # Las mismas gates que corre GitHub Actions
 
 ## Documentación
 
-Las cuatro cosas críticas para entender el sistema antes de programar:
+Las cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md) — glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md) — ERD consolidado por bounded context.
 3. [`docs/decisions/`](docs/decisions/) — 38 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 4. [`docs/testing/conventions.md`](docs/testing/conventions.md) — qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 5. [`docs/operations/rollback.md`](docs/operations/rollback.md) — qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
+6. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md) — reglas duras de commit / branching / conflict / merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
