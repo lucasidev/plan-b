@@ -3,6 +3,8 @@ using JasperFx;
 using Microsoft.EntityFrameworkCore;
 using JasperFx.CodeGeneration;
 using JasperFx.Resources;
+using Planb.Academic.Application;
+using Planb.Academic.Infrastructure;
 using Planb.Api.Infrastructure;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
@@ -63,12 +65,16 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
 });
 
 // ------------------------------------------------------------------
-// EF Core DbContext registered with Wolverine outbox integration. This makes
+// EF Core DbContexts registered with Wolverine outbox integration. This makes
 // IMessageBus.PublishAsync calls inside [Transactional] handlers enroll messages
 // in the same Postgres transaction as SaveChangesAsync. See ADR-0015.
 // ------------------------------------------------------------------
 builder.Services.AddDbContextWithWolverineIntegration<IdentityDbContext>(opts =>
     Planb.Identity.Infrastructure.DependencyInjection.ConfigureIdentityDbContext(
+        opts, connectionString));
+
+builder.Services.AddDbContextWithWolverineIntegration<Planb.Academic.Infrastructure.Persistence.AcademicDbContext>(opts =>
+    Planb.Academic.Infrastructure.DependencyInjection.ConfigureAcademicDbContext(
         opts, connectionString));
 
 // ------------------------------------------------------------------
@@ -78,6 +84,7 @@ builder.Host.UseWolverine(opts =>
 {
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Identity.Application.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Planb.Academic.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
@@ -113,6 +120,9 @@ builder.Services.AddCarter();
 builder.Services.AddIdentityApplication();
 builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
+builder.Services.AddAcademicApplication();
+builder.Services.AddAcademicInfrastructure(builder.Configuration);
+
 // In Development, apply EF migrations on host startup. Lives as a hosted
 // service so WebApplicationFactory tests get the same treatment as `just dev`.
 // See DevMigrationsHostedService for the why.
@@ -143,6 +153,11 @@ builder.Services.AddOptions<Planb.Identity.Application.Seeding.SeedPersonasOptio
 
 builder.Services.AddScoped<Planb.Identity.Application.Seeding.IdentitySeeder>();
 builder.Services.AddHostedService<DevSeedHostedService>();
+
+// Academic seed: UNSTA + TUDCS + CareerPlan 2024 (US-012). Idempotente, gateado por
+// IsDevelopment() internamente. Debe registrarse después de DevMigrationsHostedService
+// (mismo motivo que el seed de Identity: necesita schema academic existente).
+builder.Services.AddHostedService<AcademicSeedHostedService>();
 
 // ------------------------------------------------------------------
 // HTTP pipeline

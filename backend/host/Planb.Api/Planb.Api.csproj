@@ -24,6 +24,8 @@
     <ProjectReference Include="..\..\libs\shared-kernel\src\Planb.SharedKernel\Planb.SharedKernel.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
+    <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Infrastructure\Planb.Academic.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

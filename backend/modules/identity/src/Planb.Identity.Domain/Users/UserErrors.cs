@@ -92,4 +92,51 @@ public static class UserErrors
         Error.Conflict(
             "identity.account.not_eligible_for_expiration",
             "User is not eligible for unverified expiration.");
+
+    // -- StudentProfile (US-012) --------------------------------------------------
+
+    /// <summary>
+    /// Solo users con role=Member pueden tener StudentProfiles. Staff (moderator/admin/
+    /// university_staff) operan el catálogo pero no son alumnos del mismo (ADR-0008).
+    /// </summary>
+    public static readonly Error OnlyMembersCanHaveProfiles =
+        Error.Conflict(
+            "identity.student_profile.only_members",
+            "Only users with role=Member can create student profiles.");
+
+    public static readonly Error EnrollmentYearOutOfRange =
+        Error.Validation(
+            "identity.student_profile.enrollment_year_out_of_range",
+            "Enrollment year must be between 2010 and the current year.");
+
+    /// <summary>
+    /// Un user solo puede tener un StudentProfile activo por carrera. Si quiere cambiar el plan
+    /// de la misma carrera, primero deberá deactivar el activo (path de deactivación todavía
+    /// no implementado).
+    /// </summary>
+    public static readonly Error DuplicateStudentProfile =
+        Error.Conflict(
+            "identity.student_profile.duplicate_for_career",
+            "User already has an active student profile for that career.");
+
+    /// <summary>
+    /// User no encontrado por Id. Llega al handler solo si el JWT fue válido pero el user fue
+    /// borrado mid-session (estado degenerado). Mapea a 404, distinto de InvalidCredentials que
+    /// mapea a 401 anti-enum.
+    /// </summary>
+    public static readonly Error NotFoundById =
+        Error.NotFound(
+            "identity.user.not_found",
+            "User not found.");
+
+    /// <summary>
+    /// El CareerPlanId pasado al CreateStudentProfile no existe en Academic. Identity expone
+    /// su propio error para no acoplarse a CareerPlanErrors (Academic.Domain): el handler
+    /// resuelve la ausencia via IAcademicQueryService (cross-BC read, ADR-0017) y traduce a un
+    /// código del namespace Identity.
+    /// </summary>
+    public static readonly Error StudentProfileCareerPlanNotFound =
+        Error.NotFound(
+            "identity.student_profile.career_plan_not_found",
+            "Career plan referenced by the student profile was not found in the academic catalog.");
 }

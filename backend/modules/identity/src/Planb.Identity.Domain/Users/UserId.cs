@@ -1,3 +1,5 @@
+using Planb.SharedKernel.Primitives;
+
 namespace Planb.Identity.Domain.Users;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace Planb.Identity.Domain.Users;
 /// another aggregate (e.g. a TeacherId) where a UserId is expected — that becomes a compile-time
 /// error instead of a silent bug.
 /// </summary>
-public readonly record struct UserId
+public readonly record struct UserId : IValueObject
 {
     public Guid Value { get; private init; }
 

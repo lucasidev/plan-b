@@ -121,5 +121,64 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         });
 
         builder.Navigation(u => u.Tokens).AutoInclude();
+
+        builder.OwnsMany(u => u.StudentProfiles, profiles =>
+        {
+            profiles.ToTable("student_profiles");
+
+            profiles.WithOwner().HasForeignKey("user_id");
+
+            profiles.HasKey(p => p.Id);
+
+            profiles.Property(p => p.Id)
+                .HasColumnName("id")
+                // Mismo motivo que en VerificationToken: el aggregate genera el Id (StudentProfileId.New),
+                // EF no debe asumir DB-generated.
+                .HasConversion(id => id.Value, value => new StudentProfileId(value))
+                .ValueGeneratedNever();
+
+            profiles.Property<UserId>("user_id")
+                .HasColumnName("user_id")
+                .HasConversion(id => id.Value, value => new UserId(value));
+
+            profiles.HasIndex("user_id").HasDatabaseName("ix_student_profiles_user_id");
+
+            profiles.Property(p => p.CareerPlanId)
+                .HasColumnName("career_plan_id")
+                .IsRequired();
+
+            profiles.Property(p => p.CareerId)
+                .HasColumnName("career_id")
+                .IsRequired();
+
+            profiles.Property(p => p.EnrollmentYear)
+                .HasColumnName("enrollment_year")
+                .IsRequired();
+
+            profiles.Property(p => p.Status)
+                .HasColumnName("status")
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
+            profiles.Property(p => p.CreatedAt)
+                .HasColumnName("created_at")
+                .IsRequired();
+
+            // Partial unique: un mismo user no puede tener dos profiles activos para la misma
+            // carrera. Postgres-specific. El filter "status = 'Active'" garantiza que un perfil
+            // Inactive (cuando ese estado exista) no bloquee el alta de uno nuevo activo para
+            // la misma carrera.
+            //
+            // Usamos nombres mixtos: "user_id" es shadow property (declarada arriba), "CareerId"
+            // es CLR property. Si pasáramos "career_id" EF crearía un nuevo shadow property con
+            // ese nombre en lugar de mapear a la columna existente.
+            profiles.HasIndex("user_id", nameof(StudentProfile.CareerId))
+                .IsUnique()
+                .HasDatabaseName("ux_student_profiles_user_career_active")
+                .HasFilter("status = 'Active'");
+        });
+
+        builder.Navigation(u => u.StudentProfiles).AutoInclude();
     }
 }

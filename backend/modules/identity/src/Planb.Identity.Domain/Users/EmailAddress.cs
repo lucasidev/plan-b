@@ -6,7 +6,7 @@ namespace Planb.Identity.Domain.Users;
 /// Value object representing a user email. Immutable, lowercase-normalized, equatable by the
 /// normalized value. Validation and normalization live here so every consumer sees a canonical form.
 /// </summary>
-public readonly record struct EmailAddress
+public readonly record struct EmailAddress : IValueObject
 {
     public string Value { get; private init; }
 

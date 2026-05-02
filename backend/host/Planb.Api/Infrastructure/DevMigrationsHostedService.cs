@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Planb.Academic.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence;
 
 namespace Planb.Api.Infrastructure;
@@ -20,6 +21,10 @@ namespace Planb.Api.Infrastructure;
 /// source cached the missing `identity.user_role` enum on its first
 /// connection. Running migrations before any request reaches an enum-mapped
 /// column avoids the stale cache.
+///
+/// Aplica migraciones de TODOS los DbContexts registrados (Identity, Academic, ...).
+/// Cuando aterrice un módulo nuevo con su propio DbContext, agregar otro
+/// <see cref="MigrateAsync{TContext}"/> a <see cref="StartAsync"/>.
 /// </summary>
 public sealed class DevMigrationsHostedService : IHostedService
 {
@@ -42,16 +47,23 @@ public sealed class DevMigrationsHostedService : IHostedService
         if (!_env.IsDevelopment()) return;
 
         using var scope = _sp.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
 
+        await MigrateAsync<IdentityDbContext>(scope.ServiceProvider, "Identity", ct);
+        await MigrateAsync<AcademicDbContext>(scope.ServiceProvider, "Academic", ct);
+    }
+
+    private async Task MigrateAsync<TContext>(
+        IServiceProvider sp, string label, CancellationToken ct)
+        where TContext : DbContext
+    {
+        var db = sp.GetRequiredService<TContext>();
         var pending = await db.Database.GetPendingMigrationsAsync(ct);
         var pendingList = pending.ToList();
         if (pendingList.Count == 0) return;
 
         _log.LogInformation(
-            "Applying {Count} pending Identity migrations: {Migrations}",
-            pendingList.Count,
-            string.Join(", ", pendingList));
+            "Applying {Count} pending {Label} migrations: {Migrations}",
+            pendingList.Count, label, string.Join(", ", pendingList));
         await db.Database.MigrateAsync(ct);
     }
 
