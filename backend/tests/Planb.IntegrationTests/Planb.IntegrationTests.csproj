@@ -16,6 +16,9 @@
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Domain\Planb.Identity.Domain.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
+    <!-- Para AcademicSeedData en tests integration: el seed determinístico es la fuente de
+         CareerPlanId que el test pasa al endpoint. -->
+    <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Infrastructure\Planb.Academic.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
