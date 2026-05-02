@@ -12,37 +12,53 @@ Effort: Small ≈ 1-3 días, Medium ≈ 3-7 días, Large ≈ 1-2 semanas.
 
 ## Por estado
 
-### Done (14)
+### Done (28)
 
-Foundations + slice A/B de EPIC-02 (Sprint 0) + slice C/D de EPIC-02 (Sprint 1, US-033 integrated) + institucionalización de testing/changelog/versioning (Sprint 1, T-series).
+Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home + StudentProfile) + institucionalización de testing/changelog/versioning + git workflow rules (S1, T-series).
 
-| ID | Título | Sprint | Epic |
-|---|---|---|---|
-| [US-F01-b](user-stories/US-F01-b.md) | Scaffolding modular monolith backend | S0 | EPIC-00 |
-| [US-F01-f](user-stories/US-F01-f.md) | Scaffolding frontend Next.js | S0 | EPIC-00 |
-| [US-F02-t](user-stories/US-F02-t.md) | Tooling: Justfile + Lefthook + Conventional Commits | S0 | EPIC-00 |
-| [US-F03-i](user-stories/US-F03-i.md) | Infra local: Docker Postgres pgvector + Mailpit | S0 | EPIC-00 |
-| [US-F04-i](user-stories/US-F04-i.md) | CI baseline GitHub Actions | S0 | EPIC-00 |
-| [US-F05](user-stories/US-F05.md) | ADRs base 0001-0033 | S0 | EPIC-00 |
-| [US-F06](user-stories/US-F06.md) | DDD formalization (strategic + tactical + epics + US) | S0 | EPIC-00 |
-| [US-010-b](user-stories/US-010-b.md) | Register backend | S0 | EPIC-02 |
-| [US-010-f](user-stories/US-010-f.md) | Register frontend | S0 | EPIC-02 |
-| [US-033-i](user-stories/US-033-i.md) | Forgot/reset password (integrated: backend + frontend + e2e) | S1 | EPIC-02 |
-| [US-T01-f](user-stories/US-T01-f.md) | Frontend unit/component testing infra (vitest + Testing Library) | S1 | EPIC-00 |
-| [US-T02-f](user-stories/US-T02-f.md) | Frontend E2E infra (Playwright permanente + helpers + CI on-demand) | S1 | EPIC-00 |
-| [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | S1 | EPIC-00 |
-| [US-T06-i](user-stories/US-T06-i.md) | Tier 1 CI workflows (Dependabot + all-commits CC + docs-links) | S1 | EPIC-00 |
+#### S0 — pre-sprint
 
-### Sprint actual — S1 (4)
+| ID | Título | Epic |
+|---|---|---|
+| [US-F01-b](user-stories/US-F01-b.md) | Scaffolding modular monolith backend | EPIC-00 |
+| [US-F01-f](user-stories/US-F01-f.md) | Scaffolding frontend Next.js | EPIC-00 |
+| [US-F02-t](user-stories/US-F02-t.md) | Tooling: Justfile + Lefthook + Conventional Commits | EPIC-00 |
+| [US-F03-i](user-stories/US-F03-i.md) | Infra local: Docker Postgres pgvector + Mailpit | EPIC-00 |
+| [US-F04-i](user-stories/US-F04-i.md) | CI baseline GitHub Actions | EPIC-00 |
+| [US-F05](user-stories/US-F05.md) | ADRs base 0001-0033 | EPIC-00 |
+| [US-F06](user-stories/US-F06.md) | DDD formalization (strategic + tactical + epics + US) | EPIC-00 |
+| [US-010-b](user-stories/US-010-b.md) | Register backend | EPIC-02 |
 
-| ID | Título | Epic | Priority |
-|---|---|---|---|
-| [US-011-b](user-stories/US-011-b.md) | Verify email backend | EPIC-02 | High |
-| [US-011-f](user-stories/US-011-f.md) | Verify email frontend | EPIC-02 | High |
-| [US-T03-b](user-stories/US-T03-b.md) | Backend unit test layer split (Domain/Handler unit) | EPIC-00 | Medium |
-| [US-T04-b](user-stories/US-T04-b.md) | Backend architecture tests con NetArchTest | EPIC-00 | Medium |
+#### S1 — sprint actual (cierra Fase 2)
 
-### Backlog (40)
+| ID | Título | Epic |
+|---|---|---|
+| [US-010-f](user-stories/US-010-f.md) | Register frontend (sign-up tab del AuthView) | EPIC-02 |
+| [US-011-b](user-stories/US-011-b.md) | Verify email backend | EPIC-02 |
+| [US-011-f](user-stories/US-011-f.md) | Verify email frontend | EPIC-02 |
+| [US-028-b](user-stories/US-028-b.md) | Login backend | EPIC-02 |
+| [US-028-f](user-stories/US-028-f.md) | Login frontend | EPIC-02 |
+| [US-029-i](user-stories/US-029-i.md) | Sign-out integrated | EPIC-02 |
+| [US-033-i](user-stories/US-033-i.md) | Recuperación de contraseña (integrated) | EPIC-02 |
+| [US-021-b](user-stories/US-021-b.md) | Reenviar verification email (backend) | EPIC-02 |
+| [US-021-f](user-stories/US-021-f.md) | Reenviar verification email (frontend) | EPIC-02 |
+| [US-022-b](user-stories/US-022-b.md) | Expirar registros no verificados (backend) | EPIC-02 |
+| [US-022-i](user-stories/US-022-i.md) | Expirar registros no verificados (infra: migrations + scheduling) | EPIC-02 |
+| [US-012-b](user-stories/US-012-b.md) | Crear StudentProfile (backend) | EPIC-02 |
+| [US-042-f](user-stories/US-042-f.md) | AppShell del área autenticada | EPIC-04 |
+| [US-043-f](user-stories/US-043-f.md) | Home del dashboard (placeholder visual) | EPIC-04 |
+| [US-T01-f](user-stories/US-T01-f.md) | Frontend unit/component testing infra (vitest + Testing Library) | EPIC-00 |
+| [US-T02-f](user-stories/US-T02-f.md) | Frontend E2E infra (Playwright permanente + helpers + CI on-demand) | EPIC-00 |
+| [US-T03-b](user-stories/US-T03-b.md) | Backend unit test layer split (Domain/Handler unit) | EPIC-00 |
+| [US-T04-b](user-stories/US-T04-b.md) | Backend architecture tests con NetArchTest | EPIC-00 |
+| [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | EPIC-00 |
+| [US-T06-i](user-stories/US-T06-i.md) | Tier 1 CI workflows (Dependabot + all-commits CC + docs-links) | EPIC-00 |
+
+### Sprint actual
+
+S1 cerrado el 2026-05-02. El próximo sprint (S2) define candidatos al planning.
+
+### Backlog (33)
 
 Agrupado por epic.
 
@@ -59,11 +75,6 @@ Agrupado por epic.
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
-| [US-012](user-stories/US-012.md) | Crear StudentProfile | High | M |
-| [US-021-b](user-stories/US-021-b.md) | Reenviar verification email (backend) | High | S |
-| [US-021-f](user-stories/US-021-f.md) | Reenviar verification email (frontend) | Medium | S |
-| [US-022-b](user-stories/US-022-b.md) | Expirar registros no verificados (backend) | Medium | S |
-| [US-022-i](user-stories/US-022-i.md) | Expirar registros no verificados (infra: migrations + scheduling) | Medium | XS |
 | [US-068](user-stories/US-068.md) | Deshabilitar cuenta member | Medium | S |
 
 #### EPIC-03: Historial académico
@@ -141,16 +152,7 @@ Agrupado por epic.
 
 #### Tooling post-S0 (T-series)
 
-Trabajo cross-cutting de infraestructura, no asociado a un BC. Vive bajo EPIC-00 extendido.
-
-| ID | Título | Priority | Effort |
-|---|---|---|---|
-| [US-T01-f](user-stories/US-T01-f.md) | Frontend unit/component testing infra (vitest + Testing Library) | High | M |
-| [US-T02-f](user-stories/US-T02-f.md) | Frontend E2E infra (Playwright permanente + CI on-demand) | High | M |
-| [US-T03-b](user-stories/US-T03-b.md) | Backend unit test layer split (separar Domain/Handler unit de Integration) | Medium | M |
-| [US-T04-b](user-stories/US-T04-b.md) | Backend architecture tests con NetArchTest | Medium | S |
-| [US-T05-i](user-stories/US-T05-i.md) | Changelog auto-append + PR title validator | Medium | S |
-| [US-T06-i](user-stories/US-T06-i.md) | Tier 1 CI workflows (Dependabot + all-commits CC + docs-links) | Medium | S |
+Toda la T-series del MVP cerró en S1 (Done arriba). Trabajo de tooling futuro va a entrar como T07+ cuando se identifique necesidad concreta.
 
 ---
 

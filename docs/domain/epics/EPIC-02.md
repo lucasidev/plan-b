@@ -28,8 +28,8 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 - [US-022-i](../user-stories/US-022-i.md): Expirar registros no verificados (infra: migrations + scheduling)
 - [US-033-i](../user-stories/US-033-i.md): Recuperación de contraseña (integrated)
 
-### Sprint S2 (perfil + features iniciales)
-- [US-012](../user-stories/US-012.md): Crear StudentProfile
+### Sprint S1 (perfil)
+- [US-012-b](../user-stories/US-012-b.md): Crear StudentProfile (backend) — frontend diferido a una US separada cuando aterrice JwtBearer middleware en backend
 
 ### Backlog
 - [US-035](../user-stories/US-035.md): Sign-in con Google (OAuth)
