@@ -1,5 +1,6 @@
 import { MailCheck } from 'lucide-react';
 import Link from 'next/link';
+import { ResendVerificationButton } from '@/features/resend-verification';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -108,6 +109,12 @@ export default async function CheckInboxPage({ searchParams }: Props) {
         >
           Ir a iniciar sesión
         </Link>
+
+        {email && (
+          <div className="w-full" style={{ marginTop: 14 }}>
+            <ResendVerificationButton email={email} variant="primary" />
+          </div>
+        )}
 
         <p className="text-ink-3" style={{ fontSize: 13, marginTop: 18 }}>
           ¿Te equivocaste de email?{' '}
