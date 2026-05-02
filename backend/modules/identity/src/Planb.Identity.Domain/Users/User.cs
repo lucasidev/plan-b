@@ -19,6 +19,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public DateTimeOffset? DisabledAt { get; private set; }
     public string? DisabledReason { get; private set; }
     public Guid? DisabledBy { get; private set; }
+    public DateTimeOffset? ExpiredAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
 
@@ -27,7 +28,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
 
     public bool IsEmailVerified => EmailVerifiedAt is not null;
     public bool IsDisabled => DisabledAt is not null;
-    public bool IsActive => !IsDisabled && IsEmailVerified;
+    public bool IsExpired => ExpiredAt is not null;
+    public bool IsActive => !IsDisabled && !IsExpired && IsEmailVerified;
 
     private User() { }
 
@@ -342,6 +344,48 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         DisabledBy = null;
         UpdatedAt = now;
         Raise(new UserRestoredDomainEvent(Id, now));
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Marks an unverified registration as expired (US-022). El registro queda en la DB para
+    /// trazabilidad (no se hard-delete) pero se trata como inexistente para el flow de sign-in
+    /// (el handler convierte el check a <see cref="UserErrors.InvalidCredentials"/> per anti-enum).
+    ///
+    /// Precondiciones: <see cref="IsEmailVerified"/> false (un user verificado no expira nunca)
+    /// y <see cref="IsExpired"/> false (idempotencia explícita: si ya está expirado, no se vuelve
+    /// a expirar). Si el user está disabled, también se rechaza porque disabled es estado terminal
+    /// y mezclar las dos transiciones perdería el reason original.
+    ///
+    /// Side effects:
+    /// <list type="bullet">
+    ///   <item>Setea <see cref="ExpiredAt"/> al now del clock.</item>
+    ///   <item>Invalida cualquier token activo (no tiene sentido un verification token vivo en un
+    ///         registro expirado; si después se re-registra el mismo email, el partial unique
+    ///         index permite el INSERT y un token nuevo se emite desde Register).</item>
+    ///   <item>Levanta <see cref="UnverifiedRegistrationExpiredDomainEvent"/>.</item>
+    /// </list>
+    /// </summary>
+    public Result ExpireRegistration(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsEmailVerified || IsExpired || IsDisabled)
+        {
+            return UserErrors.NotEligibleForExpiration;
+        }
+
+        var now = clock.UtcNow;
+        ExpiredAt = now;
+
+        foreach (var token in _tokens.Where(t => t.IsActive))
+        {
+            token.Invalidate(now);
+            Raise(new VerificationTokenInvalidatedDomainEvent(Id, token.Id, token.Purpose, now));
+        }
+
+        UpdatedAt = now;
+        Raise(new UnverifiedRegistrationExpiredDomainEvent(Id, Email, now));
         return Result.Success();
     }
 }
