@@ -52,7 +52,7 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 |---|---|---|---|
 | [UC-010](use-cases/UC-010.md) | Registrarse | [US-010-b](user-stories/US-010-b.md), [US-010-f](user-stories/US-010-f.md) | [EPIC-02](epics/EPIC-02.md) |
 | [UC-011](use-cases/UC-011.md) | Verificar email | [US-011-b](user-stories/US-011-b.md), [US-011-f](user-stories/US-011-f.md) | [EPIC-02](epics/EPIC-02.md) |
-| [UC-012](use-cases/UC-012.md) | Crear StudentProfile eligiendo CareerPlan | [US-012](user-stories/US-012.md) | [EPIC-02](epics/EPIC-02.md) |
+| [UC-012](use-cases/UC-012.md) | Crear StudentProfile eligiendo CareerPlan | [US-012-b](user-stories/US-012-b.md) | [EPIC-02](epics/EPIC-02.md) |
 | [UC-013](use-cases/UC-013.md) | Cargar historial manualmente | [US-013](user-stories/US-013.md) | [EPIC-03](epics/EPIC-03.md) |
 | [UC-014](use-cases/UC-014.md) | Importar historial desde PDF/texto | [US-014](user-stories/US-014.md) | [EPIC-03](epics/EPIC-03.md) |
 | [UC-015](use-cases/UC-015.md) | Editar una entrada del historial | [US-015](user-stories/US-015.md) | [EPIC-03](epics/EPIC-03.md) |
