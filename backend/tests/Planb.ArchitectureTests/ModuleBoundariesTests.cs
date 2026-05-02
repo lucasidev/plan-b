@@ -125,41 +125,48 @@ public class ModuleBoundariesTests
     [Fact]
     public void Identity_assemblies_do_not_reference_other_module_internals()
     {
-        // Cross-module reads van por Contracts/ (interfaces). Cross-module
-        // writes van por integration events (Wolverine). Identity no debería
-        // tener dependencia directa al Domain/Application/Infrastructure de
-        // otros módulos (cuando aterricen).
+        // Cross-module reads van por Contracts/ (interfaces sync). Cross-module writes van por
+        // IntegrationEvents/ (Wolverine outbox). Identity NO debe acoplarse al Domain ni al
+        // Infrastructure de otros bounded contexts. Sí puede consumir el namespace público
+        // (Application/Contracts y Application/IntegrationEvents).
         //
-        // Hoy no hay otros módulos con código real, así que este test es
-        // forward-looking: cuando aterrice el primer módulo (academic, etc.)
-        // este test ya está activo y cualquier acoplamiento accidental se
-        // atrapa de entrada.
-        var otherModulePrefixes = new[]
-        {
-            "Planb.Academic",
-            "Planb.Reviews",
-            "Planb.Moderation",
-            "Planb.Enrollments",
-        };
+        // El Identity Domain no debe depender de NINGUNA capa de otros módulos, ni siquiera
+        // Contracts: el dominio es puro.
+        var otherModules = new[] { "Academic", "Reviews", "Moderation", "Enrollments" };
 
-        foreach (var prefix in otherModulePrefixes)
+        foreach (var module in otherModules)
         {
-            var result = Types.InAssembly(IdentityDomain)
+            // Domain: prohibido todo cross-module (incluso Contracts).
+            var domainResult = Types.InAssembly(IdentityDomain)
                 .Should()
-                .NotHaveDependencyOn(prefix)
+                .NotHaveDependencyOn($"Planb.{module}")
                 .GetResult();
 
-            result.IsSuccessful.ShouldBeTrue(
-                FailureMessage(result, $"Identity Domain no debería depender de {prefix}.*"));
+            domainResult.IsSuccessful.ShouldBeTrue(
+                FailureMessage(domainResult,
+                    $"Identity Domain no debería depender de Planb.{module}.* (el dominio es puro)"));
 
-            var appResult = Types.InAssembly(IdentityApplication)
-                .Should()
-                .NotHaveDependencyOn(prefix)
-                .GetResult();
+            // Application: prohibido Domain + Infrastructure de otros módulos. Contracts y
+            // IntegrationEvents son superficie pública y SI están permitidos.
+            var forbiddenAppPrefixes = new[]
+            {
+                $"Planb.{module}.Domain",
+                $"Planb.{module}.Infrastructure",
+            };
 
-            appResult.IsSuccessful.ShouldBeTrue(
-                FailureMessage(appResult,
-                    $"Identity Application no debería depender de {prefix}.* directo. Usá Contracts/ o IntegrationEvents/"));
+            foreach (var prefix in forbiddenAppPrefixes)
+            {
+                var appResult = Types.InAssembly(IdentityApplication)
+                    .Should()
+                    .NotHaveDependencyOn(prefix)
+                    .GetResult();
+
+                appResult.IsSuccessful.ShouldBeTrue(
+                    FailureMessage(appResult,
+                        $"Identity Application no debería depender de {prefix}.* — usá " +
+                        $"Planb.{module}.Application.Contracts (reads sync) o " +
+                        $"Planb.{module}.Application.IntegrationEvents (writes async)"));
+            }
         }
     }
 

@@ -666,4 +666,120 @@ public class UserTests
 
         user.IsActive.ShouldBeFalse();
     }
+
+    // -- AddStudentProfile (US-012) -----------------------------------------------
+    // Reusa el helper VerifiedActiveUser definido más arriba.
+
+    [Fact]
+    public void AddStudentProfile_creates_active_profile_for_verified_member()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        var careerPlanId = Guid.NewGuid();
+        var careerId = Guid.NewGuid();
+
+        var result = user.AddStudentProfile(careerPlanId, careerId, 2024, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var profile = result.Value;
+        profile.CareerPlanId.ShouldBe(careerPlanId);
+        profile.CareerId.ShouldBe(careerId);
+        profile.EnrollmentYear.ShouldBe(2024);
+        profile.Status.ShouldBe(StudentProfileStatus.Active);
+        profile.IsActive.ShouldBeTrue();
+
+        user.StudentProfiles.ShouldHaveSingleItem();
+        user.UpdatedAt.ShouldBe(clock.UtcNow);
+    }
+
+    [Fact]
+    public void AddStudentProfile_raises_StudentProfileCreatedDomainEvent()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        var careerPlanId = Guid.NewGuid();
+        var careerId = Guid.NewGuid();
+
+        user.AddStudentProfile(careerPlanId, careerId, 2024, clock);
+
+        var @event = user.DomainEvents
+            .OfType<StudentProfileCreatedDomainEvent>()
+            .ShouldHaveSingleItem();
+        @event.UserId.ShouldBe(user.Id);
+        @event.CareerPlanId.ShouldBe(careerPlanId);
+        @event.CareerId.ShouldBe(careerId);
+        @event.EnrollmentYear.ShouldBe(2024);
+        @event.OccurredAt.ShouldBe(clock.UtcNow);
+    }
+
+    [Fact]
+    public void AddStudentProfile_fails_when_email_not_verified()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        user.ClearDomainEvents();
+
+        var result = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.EmailNotVerified);
+        user.StudentProfiles.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AddStudentProfile_fails_when_user_disabled()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.Disable(Guid.NewGuid(), "abuse", clock);
+
+        var result = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.AccountDisabled);
+    }
+
+    [Theory]
+    [InlineData(2009)] // antes del MinEnrollmentYear
+    [InlineData(2027)] // T0 está en 2026, así que 2027 es futuro
+    public void AddStudentProfile_fails_when_year_out_of_range(int year)
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+
+        var result = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), year, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.EnrollmentYearOutOfRange);
+        user.StudentProfiles.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AddStudentProfile_fails_when_active_profile_for_same_career_already_exists()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        var careerId = Guid.NewGuid();
+
+        user.AddStudentProfile(Guid.NewGuid(), careerId, 2024, clock).IsSuccess.ShouldBeTrue();
+
+        var second = user.AddStudentProfile(Guid.NewGuid(), careerId, 2024, clock);
+
+        second.IsFailure.ShouldBeTrue();
+        second.Error.ShouldBe(UserErrors.DuplicateStudentProfile);
+        user.StudentProfiles.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void AddStudentProfile_allows_two_active_profiles_for_distinct_careers()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+
+        user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock).IsSuccess.ShouldBeTrue();
+        var second = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock);
+
+        second.IsSuccess.ShouldBeTrue();
+        user.StudentProfiles.Count.ShouldBe(2);
+    }
 }

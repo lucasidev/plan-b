@@ -18,5 +18,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Identity.Domain\Planb.Identity.Domain.csproj" />
+    <!--
+      Cross-BC read: Identity consume IAcademicQueryService de Academic.Application.Contracts
+      para validar que el CareerPlanId del CreateStudentProfile apunte a un plan real (US-012,
+      ADR-0017). Sin FK Postgres cross-schema; la validación es runtime via la interface.
+      Si en el futuro Academic agrega un Contracts assembly separado, mover la referencia ahí.
+    -->
+    <ProjectReference Include="..\..\..\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
   </ItemGroup>
 </Project>

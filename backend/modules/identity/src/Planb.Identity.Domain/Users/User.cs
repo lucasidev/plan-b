@@ -26,6 +26,9 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     private readonly List<VerificationToken> _tokens = new();
     public IReadOnlyCollection<VerificationToken> Tokens => _tokens.AsReadOnly();
 
+    private readonly List<StudentProfile> _studentProfiles = new();
+    public IReadOnlyCollection<StudentProfile> StudentProfiles => _studentProfiles.AsReadOnly();
+
     public bool IsEmailVerified => EmailVerifiedAt is not null;
     public bool IsDisabled => DisabledAt is not null;
     public bool IsExpired => ExpiredAt is not null;
@@ -387,5 +390,81 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         UpdatedAt = now;
         Raise(new UnverifiedRegistrationExpiredDomainEvent(Id, Email, now));
         return Result.Success();
+    }
+
+    /// <summary>
+    /// Año mínimo de inscripción aceptado en US-012. La universidad puede no haber existido en la
+    /// plataforma antes de 2010. Cualquier valor menor se rechaza para evitar tipos de inputs
+    /// degenerados desde forms abiertos al member.
+    /// </summary>
+    public const int MinEnrollmentYear = 2010;
+
+    /// <summary>
+    /// Crea un <see cref="StudentProfile"/> activo asociando al user con un CareerPlan + año de
+    /// ingreso (US-012). Aggregate-level invariants:
+    /// <list type="bullet">
+    ///   <item>El user debe estar verificado y no disabled / expired (un member sin verificar
+    ///         no debería poder crear profiles aún).</item>
+    ///   <item>Solo users con <see cref="UserRole.Member"/> tienen profiles. Staff
+    ///         (moderator/admin/university_staff) no aplican (ADR-0008).</item>
+    ///   <item>El año debe estar en [<see cref="MinEnrollmentYear"/>, año actual del clock].</item>
+    ///   <item>No puede haber dos StudentProfiles activos del mismo user para la misma carrera.
+    ///         Un mismo user sí puede tener profiles activos en carreras distintas (ej. doble
+    ///         titulación).</item>
+    /// </list>
+    /// El handler valida ANTES que el <paramref name="careerPlanId"/> exista en Academic via
+    /// <c>IAcademicQueryService</c> (ADR-0017: no FK cross-schema). El <paramref name="careerId"/>
+    /// se denormaliza acá desde el plan para que el constraint UNIQUE(user_id, career_id) sea
+    /// evaluable en DB sin JOIN cross-schema.
+    /// </summary>
+    public Result<StudentProfile> AddStudentProfile(
+        Guid careerPlanId,
+        Guid careerId,
+        int enrollmentYear,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!IsEmailVerified)
+        {
+            return UserErrors.EmailNotVerified;
+        }
+
+        if (IsDisabled)
+        {
+            return UserErrors.AccountDisabled;
+        }
+
+        if (Role != UserRole.Member)
+        {
+            return UserErrors.OnlyMembersCanHaveProfiles;
+        }
+
+        var now = clock.UtcNow;
+        if (enrollmentYear < MinEnrollmentYear || enrollmentYear > now.Year)
+        {
+            return UserErrors.EnrollmentYearOutOfRange;
+        }
+
+        var hasActiveForCareer = _studentProfiles.Any(sp =>
+            sp.CareerId == careerId && sp.IsActive);
+        if (hasActiveForCareer)
+        {
+            return UserErrors.DuplicateStudentProfile;
+        }
+
+        var profile = new StudentProfile(
+            StudentProfileId.New(),
+            careerPlanId,
+            careerId,
+            enrollmentYear,
+            now);
+        _studentProfiles.Add(profile);
+        UpdatedAt = now;
+
+        Raise(new StudentProfileCreatedDomainEvent(
+            Id, profile.Id, careerPlanId, careerId, enrollmentYear, now));
+
+        return profile;
     }
 }
