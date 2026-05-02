@@ -81,4 +81,15 @@ public static class UserErrors
         Error.Forbidden(
             "identity.account.disabled",
             "Account has been disabled.");
+
+    /// <summary>
+    /// La transición a expired solo aplica a registros sin verificar. Si el user ya está
+    /// verificado, ya está expirado o está disabled, este error se levanta (idempotencia
+    /// explícita en el handler del scheduled job — un registro que dejó de ser candidato entre
+    /// la query y el update no rompe la corrida).
+    /// </summary>
+    public static readonly Error NotEligibleForExpiration =
+        Error.Conflict(
+            "identity.account.not_eligible_for_expiration",
+            "User is not eligible for unverified expiration.");
 }

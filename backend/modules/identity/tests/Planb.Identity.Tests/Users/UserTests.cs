@@ -567,4 +567,103 @@ public class UserTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(UserErrors.VerificationTokenRequired);
     }
+
+    // -- ExpireRegistration (US-022) -----------------------------------------------
+
+    [Fact]
+    public void ExpireRegistration_marks_unverified_user_as_expired_and_invalidates_active_tokens()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        user.ClearDomainEvents();
+
+        clock.Advance(TimeSpan.FromDays(8));
+        var result = user.ExpireRegistration(clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        user.ExpiredAt.ShouldBe(clock.UtcNow);
+        user.IsExpired.ShouldBeTrue();
+        user.UpdatedAt.ShouldBe(clock.UtcNow);
+        user.IsActive.ShouldBeFalse();
+
+        var token = user.Tokens.ShouldHaveSingleItem();
+        token.IsInvalidated.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ExpireRegistration_raises_event_with_email_and_now()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        user.ClearDomainEvents();
+
+        clock.Advance(TimeSpan.FromDays(8));
+        user.ExpireRegistration(clock);
+
+        var @event = user.DomainEvents
+            .OfType<UnverifiedRegistrationExpiredDomainEvent>()
+            .ShouldHaveSingleItem();
+        @event.UserId.ShouldBe(user.Id);
+        @event.Email.ShouldBe(user.Email);
+        @event.OccurredAt.ShouldBe(clock.UtcNow);
+
+        // También levanta el invalidate del token activo.
+        user.DomainEvents
+            .OfType<VerificationTokenInvalidatedDomainEvent>()
+            .ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void ExpireRegistration_fails_when_user_already_verified()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        user.VerifyEmail("raw-token", clock);
+
+        var result = user.ExpireRegistration(clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.NotEligibleForExpiration);
+        user.ExpiredAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ExpireRegistration_fails_when_user_already_expired()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        clock.Advance(TimeSpan.FromDays(8));
+        user.ExpireRegistration(clock).IsSuccess.ShouldBeTrue();
+
+        var second = user.ExpireRegistration(clock);
+
+        second.IsFailure.ShouldBeTrue();
+        second.Error.ShouldBe(UserErrors.NotEligibleForExpiration);
+    }
+
+    [Fact]
+    public void ExpireRegistration_fails_when_user_disabled()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        user.Disable(Guid.NewGuid(), "abuse", clock);
+
+        var result = user.ExpireRegistration(clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.NotEligibleForExpiration);
+        user.ExpiredAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public void IsActive_returns_false_for_expired_user_even_if_other_flags_match()
+    {
+        // Sanity check: la propiedad computed IsActive se contagia de IsExpired.
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+        clock.Advance(TimeSpan.FromDays(8));
+        user.ExpireRegistration(clock);
+
+        user.IsActive.ShouldBeFalse();
+    }
 }
