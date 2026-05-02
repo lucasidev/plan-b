@@ -8,10 +8,10 @@ import { serverEnv } from './env';
  * See ADR-0023 for the auth flow design.
  *
  * `hasTeacherProfile` and `teacherVerified` aren't carried in the access
- * JWT today (TeacherProfile lands in F3+); leaving them in the type but
- * always undefined keeps the (teacher) layout guards type-correct and
- * lets the backend start populating them later without any frontend
- * structural change.
+ * JWT yet (the TeacherProfile aggregate isn't implemented). Leaving them
+ * in the type but always undefined keeps the (teacher) layout guards
+ * type-correct and lets the backend start populating them later without
+ * any frontend structural change.
  */
 export type Session = {
   userId: string;

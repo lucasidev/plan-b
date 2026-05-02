@@ -6,9 +6,9 @@ import { Loader2 } from 'lucide-react';
  * surfaces (login, sign-up, verify, check-inbox) — they're all small
  * server components and rarely show this for more than a frame.
  *
- * Heavier surfaces (simulator, plan grid, review lists in F3+) should
- * ship their own `loading.tsx` with a skeleton that matches their
- * layout. This root file is the safety net.
+ * Heavier surfaces (simulator, plan grid, review lists) should ship
+ * their own `loading.tsx` with a skeleton that matches their layout
+ * once they exist. This root file is the safety net.
  */
 export default function Loading() {
   return (

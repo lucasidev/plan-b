@@ -11,9 +11,9 @@ import { cn } from '@/lib/utils';
  * no extra icon. Keeps the page sober and saves the user from another
  * piece of decoration to parse.
  *
- * The "Volver al inicio" CTA points at /auth because there's no public
- * landing yet (F3+); when one lands, this should change to / or wherever
- * the public home is.
+ * The "Volver al inicio" CTA points at /auth porque no hay landing pública
+ * todavía. Cuando exista una ruta home pública (`/` o equivalente), este
+ * link se actualiza.
  */
 export default function NotFound() {
   return (

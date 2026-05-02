@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils';
 /**
  * Offline fallback. Plain route at /offline. Shown by the service worker
  * when the user navigates while offline (the SW catches the failed fetch
- * and serves this cached page). Until we ship a SW (PWA work, post-MVP)
- * this route is a placeholder that the ops layer can redirect to from
- * the proxy on detected network issues, or that we can pre-cache for
- * future use.
+ * and serves this cached page). Mientras no exista un service worker
+ * registrado, esta ruta queda como placeholder que la capa de ops puede
+ * redirigir desde el proxy ante problemas de red, o que se puede pre-cachear
+ * para uso futuro.
  */
 export default function OfflinePage() {
   return (

@@ -11,9 +11,8 @@ namespace Planb.Identity.Infrastructure.Reading;
 /// Dapper-backed read service para Identity (ADR-0018: writes via EF + repositorios, reads
 /// complejos via Dapper que devuelven primitivos / DTOs planos sin pasar por aggregate).
 ///
-/// Hoy expone una sola query (US-022) pero la abstracción está pensada para crecer cuando
-/// aterricen otros reads que no se justifican en EF (ej. user listings con filtros, audit
-/// queries, etc.).
+/// Hoy expone una sola query (US-022). La abstracción acepta más reads complejos (user
+/// listings con filtros, audit queries, etc.) sin acoplarse a EF.
 /// </summary>
 internal sealed class DapperIdentityReadService : IIdentityReadService
 {

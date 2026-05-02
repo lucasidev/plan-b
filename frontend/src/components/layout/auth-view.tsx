@@ -97,7 +97,8 @@ const HERO_STATS: Array<{ label: string; value: string }> = [
 ];
 
 // Testimonial fijo del mockup. Hardcoded por el mismo motivo que las stats:
-// cuando exista un sistema de testimonials reales (post-MVP), se rota.
+// cuando exista un sistema real de testimonials, este valor se reemplaza
+// por una rotación dinámica.
 const HERO_QUOTE = {
   text: '"Iba a anotarme en INT302 con el primero que tenía horario libre. Acá vi que había una comisión de 2c con 4.1★ vs 3.4★. Esperé un cuatri."',
   attribution: 'Anónimo · 4° año Sistemas',
