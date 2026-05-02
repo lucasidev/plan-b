@@ -3,11 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Identity.Application.Abstractions.Email;
 using Planb.Identity.Application.Abstractions.Persistence;
+using Planb.Identity.Application.Abstractions.Reading;
 using Planb.Identity.Application.Abstractions.Security;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Email;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence.Repositories;
+using Planb.Identity.Infrastructure.Reading;
 using Planb.Identity.Infrastructure.Security;
 
 namespace Planb.Identity.Infrastructure;
@@ -25,6 +27,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IIdentityReadService, DapperIdentityReadService>();
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenGenerator, RandomTokenGenerator>();

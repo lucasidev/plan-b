@@ -29,8 +29,13 @@ public static class SignInCommandHandler
         }
 
         var user = await users.FindByEmailAsync(emailResult.Value, ct);
-        if (user is null)
+        if (user is null || user.IsExpired)
         {
+            // El repo ya filtra por expired_at IS NULL, por lo que esta rama del IsExpired
+            // debería ser inalcanzable. La dejamos defensiva: si en el futuro alguien refactorea
+            // el repo y olvida el filter, el sign-in no debería empezar a funcionar para users
+            // expired (sería un leak de info silencioso). Anti-enum: misma respuesta que un
+            // user no encontrado.
             return UserErrors.InvalidCredentials;
         }
 

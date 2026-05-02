@@ -118,6 +118,10 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 // See DevMigrationsHostedService for the why.
 builder.Services.AddHostedService<DevMigrationsHostedService>();
 
+// US-022: scheduled job que expira registros no verificados a los 7 días. Corre cada 24h con
+// un PeriodicTimer; primer fire 24h post-startup así no molesta en tests / dev sessions cortas.
+builder.Services.AddHostedService<UnverifiedRegistrationExpirationScheduler>();
+
 // ------------------------------------------------------------------
 // Dev seed: load personas from a separate JSON file (Options pattern), then
 // register the IdentitySeeder + hosted service that materializes them. The

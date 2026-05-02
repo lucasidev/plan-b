@@ -24,9 +24,14 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(254)
             .IsRequired();
 
+        // Partial unique index: solo bloqueamos duplicados de email cuando expired_at IS NULL.
+        // Esto permite que un user expirado (US-022) coexista en la DB con un re-registro nuevo
+        // del mismo email. El expired queda para audit, el activo es el operativo. Postgres
+        // específico (HasFilter genera "WHERE ...").
         builder.HasIndex(u => u.Email)
             .IsUnique()
-            .HasDatabaseName("ux_users_email");
+            .HasDatabaseName("ux_users_email_active")
+            .HasFilter("expired_at IS NULL");
 
         builder.Property(u => u.PasswordHash)
             .HasColumnName("password_hash")
@@ -47,6 +52,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.DisabledBy)
             .HasColumnName("disabled_by");
+
+        builder.Property(u => u.ExpiredAt)
+            .HasColumnName("expired_at");
 
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
