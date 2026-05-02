@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - vitest + Testing Library setup + sample tests (US-T01) (test) — [`d96994f`](https://github.com/lucasidev/plan-b/commit/d96994f58492ae9068f55a646f1a940064cf27b4)
 - Playwright e2e infra + auth flows (US-T02) (test) — [`af4a527`](https://github.com/lucasidev/plan-b/commit/af4a527d733d65869e057076a94d525a264d1713)
 - resend verification email end-to-end (US-021) (identity) — [`4ef9f60`](https://github.com/lucasidev/plan-b/commit/4ef9f60f5d8062be5c356bf22a3f4a92e4267afe)
+- expirar registros no verificados a los 7 dias (US-022) (identity) — [`ff8a872`](https://github.com/lucasidev/plan-b/commit/ff8a872ed5c88a083f101b97feddd52d01655067)
 
 ### Fixed
 
