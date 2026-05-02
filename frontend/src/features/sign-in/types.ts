@@ -16,13 +16,25 @@ export type SignInUserPayload = {
  * (e.g. show resend hint when email_not_verified) without re-parsing the
  * message. Anti-enumeration: invalid_credentials is returned for both
  * wrong-email and wrong-password (mirrors the backend's UserErrors).
+ *
+ * `email` se carga sólo cuando `kind === 'email_not_verified'`. Lo usa el
+ * formulario para inyectar el email en el botón de resend (US-021) sin
+ * necesidad de un controlled input. El backend no lo confirma como verdadero
+ * (anti-enumeración), pero a esta altura el usuario ya escribió su email asi
+ * que filtrarlo de vuelta a su propio cliente no agrega información.
  */
 export type SignInFormState =
   | { status: 'idle' }
   | {
       status: 'error';
-      kind: 'invalid_credentials' | 'email_not_verified' | 'account_disabled' | 'unknown';
+      kind: 'invalid_credentials' | 'account_disabled' | 'unknown';
       message: string;
+    }
+  | {
+      status: 'error';
+      kind: 'email_not_verified';
+      message: string;
+      email: string;
     };
 
 export const initialSignInState: SignInFormState = { status: 'idle' };

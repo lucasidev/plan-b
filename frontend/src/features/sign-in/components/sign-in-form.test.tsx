@@ -87,11 +87,12 @@ describe('SignInForm', () => {
     expect(alert).toHaveTextContent(/email o contraseña incorrectos/i);
   });
 
-  it('muestra hint de "Registrate de nuevo" cuando el kind es email_not_verified', async () => {
+  it('muestra el botón de resend cuando el kind es email_not_verified', async () => {
     actionMock.mockResolvedValue({
       status: 'error',
       kind: 'email_not_verified',
       message: 'Tu cuenta todavía no está verificada.',
+      email: 'lucia@test.com',
     });
     const user = userEvent.setup();
     render(<SignInForm onSwitchToSignUp={() => {}} />);
@@ -101,8 +102,7 @@ describe('SignInForm', () => {
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
     expect(await screen.findByText(/no llegó el mail/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /registrate de nuevo con el mismo email/i }),
-    ).toBeInTheDocument();
+    // El botón de resend debe estar presente después del error.
+    expect(screen.getByRole('button', { name: /reenviar el link/i })).toBeInTheDocument();
   });
 });

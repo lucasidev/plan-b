@@ -61,6 +61,7 @@ export async function signInAction(
         kind: 'email_not_verified',
         message:
           'Tu cuenta todavía no está verificada. Revisá el mail que te mandamos al registrarte.',
+        email: parsed.data.email,
       };
     }
     if (code === 'identity.account.disabled') {

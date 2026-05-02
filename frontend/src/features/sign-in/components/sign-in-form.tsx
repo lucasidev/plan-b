@@ -6,6 +6,7 @@ import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
+import { ResendVerificationButton } from '@/features/resend-verification';
 import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
@@ -69,17 +70,10 @@ export function SignInForm({ onSwitchToSignUp }: Props) {
         >
           <p>{state.message}</p>
           {state.kind === 'email_not_verified' && (
-            <p className="text-ink-2" style={{ marginTop: 6 }}>
-              ¿No llegó el mail?{' '}
-              <button
-                type="button"
-                onClick={onSwitchToSignUp}
-                className="underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
-              >
-                Registrate de nuevo con el mismo email
-              </button>{' '}
-              para recibir un link nuevo.
-            </p>
+            <div className="text-ink-2" style={{ marginTop: 8 }}>
+              <p style={{ marginBottom: 6 }}>¿No llegó el mail?</p>
+              <ResendVerificationButton email={state.email} variant="inline" />
+            </div>
           )}
         </div>
       )}
