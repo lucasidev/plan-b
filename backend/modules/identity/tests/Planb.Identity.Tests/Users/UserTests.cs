@@ -496,4 +496,75 @@ public class UserTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(UserErrors.VerificationTokenRequired);
     }
+
+    // -- RequestVerificationResend (US-021) ----------------------------------------
+
+    [Fact]
+    public void RequestVerificationResend_issues_new_token_with_24h_ttl_and_invalidates_previous()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock, "original-token");
+        user.ClearDomainEvents();
+
+        clock.Advance(TimeSpan.FromMinutes(2));
+        var result = user.RequestVerificationResend("regenerated-token", clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var tokens = user.Tokens
+            .Where(t => t.Purpose == TokenPurpose.UserEmailVerification)
+            .ToList();
+        tokens.Count.ShouldBe(2);
+
+        var original = tokens.Single(t => t.Token == "original-token");
+        original.IsActive.ShouldBeFalse();
+        original.IsInvalidated.ShouldBeTrue();
+
+        var fresh = tokens.Single(t => t.Token == "regenerated-token");
+        fresh.IsActive.ShouldBeTrue();
+        fresh.ExpiresAt.ShouldBe(clock.UtcNow.AddHours(24));
+    }
+
+    [Fact]
+    public void RequestVerificationResend_raises_invalidated_then_issued_events()
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock, "original-token");
+        user.ClearDomainEvents();
+
+        user.RequestVerificationResend("regenerated-token", clock);
+
+        user.DomainEvents.OfType<VerificationTokenInvalidatedDomainEvent>().Count().ShouldBe(1);
+        user.DomainEvents.OfType<VerificationTokenIssuedDomainEvent>().Count().ShouldBe(1);
+    }
+
+    [Fact]
+    public void RequestVerificationResend_works_when_no_previous_token_exists()
+    {
+        // Edge case: user que nunca tuvo un token (no debería pasar en práctica porque Register
+        // emite uno, pero el aggregate no lo asume y resend funciona igual).
+        var clock = new FixedClock(T0);
+        var user = User.Register(Email(), "hashed", clock).Value;
+        user.ClearDomainEvents();
+
+        var result = user.RequestVerificationResend("fresh-token", clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var token = user.Tokens.Single(t => t.Purpose == TokenPurpose.UserEmailVerification);
+        token.Token.ShouldBe("fresh-token");
+        token.IsActive.ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void RequestVerificationResend_fails_with_TokenRequired_when_token_blank(string token)
+    {
+        var clock = new FixedClock(T0);
+        var user = RegisteredUserWithToken(clock);
+
+        var result = user.RequestVerificationResend(token, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.VerificationTokenRequired);
+    }
 }

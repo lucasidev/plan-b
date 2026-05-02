@@ -213,6 +213,21 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         IssueVerificationToken(TokenPurpose.PasswordReset, token, TimeSpan.FromMinutes(30), clock);
 
     /// <summary>
+    /// Issues a fresh email-verification token (US-021 resend flow). Wraps
+    /// <see cref="IssueVerificationToken"/> with <see cref="TokenPurpose.UserEmailVerification"/>
+    /// and a 24h TTL (same as the original token emitido en Register). Returns the token wrapped
+    /// in a <see cref="Result{T}"/>; the caller emails the raw value to the user.
+    ///
+    /// Aggregate-level guarantees: cualquier token de email-verification activo previo se
+    /// invalida (one-active-per-purpose, ADR-0033). Already-verified or disabled users still
+    /// get a token issued at the aggregate level — the application handler is the one que decide
+    /// whether to actually send the email (per anti-enumeration en US-021 AC).
+    /// </summary>
+    public Result<VerificationToken> RequestVerificationResend(
+        string token, IDateTimeProvider clock) =>
+        IssueVerificationToken(TokenPurpose.UserEmailVerification, token, TimeSpan.FromHours(24), clock);
+
+    /// <summary>
     /// Consumes a password-reset token and replaces the password hash. Per US-033 AC the failure
     /// modes are explicit and order-sensitive:
     /// <list type="bullet">
