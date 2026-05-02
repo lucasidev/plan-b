@@ -16,15 +16,14 @@ namespace Planb.Api.Infrastructure;
 ///   <item>Trivial de testear (los integration tests llaman al handler directamente; el scheduler
 ///         como hosted service se registra pero no interfiere porque el primer fire ocurre 24h
 ///         post-startup).</item>
-///   <item>Cuando aterricen más jobs scheduled (Fase 4+), se evalúa migrar a
-///         Wolverine.Scheduled o Hangfire de raíz; por ahora un timer es suficiente.</item>
+///   <item>Si aparece la necesidad de varios jobs scheduled, se evalúa migrar a
+///         Wolverine.Scheduled o Hangfire; un timer alcanza para un job único.</item>
 /// </list>
 ///
-/// Single-instance assumption: el MVP corre en una sola instancia del backend (Dokploy). Si en
-/// algún momento se escala horizontalmente, este scheduler tendría que ganar leader election
-/// (typical pattern: lease distribuido en Redis o Postgres advisory lock). El idempotency del
-/// comando (handler tolera concurrent runs porque el aggregate rechaza re-expirar) limita el
-/// blast radius si llegara a correr en N instancias.
+/// Single-instance assumption: el host corre en una sola instancia (Dokploy). Si se escala
+/// horizontalmente, este scheduler necesita leader election (lease distribuido en Redis o
+/// Postgres advisory lock). El idempotency del comando (el handler tolera concurrent runs
+/// porque el aggregate rechaza re-expirar) limita el blast radius si corriera en N instancias.
 /// </summary>
 internal sealed class UnverifiedRegistrationExpirationScheduler : BackgroundService
 {
