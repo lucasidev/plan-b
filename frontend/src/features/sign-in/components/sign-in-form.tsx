@@ -109,10 +109,10 @@ function SubmitButton() {
 }
 
 function GoogleButton() {
-  // OAuth con Google está pendiente (no formalizado en el roadmap del MVP).
-  // El botón queda visible para mantener la UI del mockup, pero deshabilitado
-  // para no llevar a una ruta inexistente. Cuando aterrice US-GOOGLE-OAUTH
-  // esto vuelve a ser un <Link href="/auth/google">.
+  // OAuth con Google no está implementado todavía. El botón queda visible
+  // para mantener la UI del mockup pero deshabilitado para no llevar a una
+  // ruta inexistente. Cuando exista el flow OAuth, este botón se convierte
+  // en un <Link href="/auth/google">.
   return (
     <button
       type="button"
