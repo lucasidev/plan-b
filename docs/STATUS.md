@@ -2,7 +2,7 @@
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-05-02.
+**Última actualización**: 2026-05-03.
 
 ---
 
@@ -12,8 +12,10 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity slices A+B | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
-| S2 | siguiente | A definir en planning. Candidatos: arranque Academic backoffice (Fase 3), catálogo público, US-013 cargar historial manual. | ⏳ Pendiente |
-| S3+ | next | Backoffice catálogo / catálogo público (Fase 3) | ⏳ Pendiente |
+| S2 | próximo | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell (stub data) | ⏳ Pendiente |
+| S3 | next | Planificar shell + Mi perfil + self-disable | ⏳ Pendiente |
+| S4 | next+1 | Reseñas (shell + editor) + Rankings | ⏳ Pendiente |
+| S5 | next+2 | Búsqueda global + Ajustes + Soporte (Ayuda + Sobre plan-b) | ⏳ Pendiente |
 
 Convenciones:
 
@@ -161,35 +163,72 @@ Todas Done al cierre del sprint.
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
-**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs + R-series de 19 US (ver [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md)):
+**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md)):
 - [ADR-0039](decisions/0039-meilisearch-como-motor-de-busqueda-global.md) — Meilisearch como motor de búsqueda global.
 - [ADR-0040](decisions/0040-notifications-como-bounded-context.md) — Notifications como BC nuevo.
 - [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md) — Delta del rediseño + plan de migración.
 
-**Scope confirmado para S2** (decisión 2026-05-02 post-rediseño):
+**Roadmap S2-S5 confirmado** (decisión 2026-05-03):
+
+### Scope de S2
+
 - [US-036](domain/user-stories/US-036.md) — **Auth rebuild** a 4 rutas separadas (Signup / Login / Forgot / ForgotSent).
 - [US-037](domain/user-stories/US-037.md) — **Onboarding** 4 pasos (Bienvenida / Carrera / Historial / Listo).
 - [US-044](domain/user-stories/US-044.md) — **Inicio v2** con pregunta dominante.
-
-**Otros candidatos a evaluar en planning** (no comprometidos):
-- US-013 (cargar historial manual) — abre Fase 3 del lado de Enrollments.
-- US-060/US-061 (backoffice de Academic: gestionar University + Career + CareerPlan) — empieza Fase 3 del lado de Academic.
-- US-001 (catálogo público) — depende de Academic backoffice o puede arrancar en paralelo con seed manual.
-- Frontend "agregar carrera" + JwtBearer middleware backend — cierra US-012 entera.
+- [US-045](domain/user-stories/US-045.md) — **Mi carrera shell** + 5 tabs con stub data. Backend de catálogo (Academic CRUD) queda como deuda diferida; se decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
 
 ---
 
-## S3+ ⏳ Pendiente
+## S3 ⏳ Pendiente
 
-**Foco previsto**: abrir bounded context Academic. Sin catálogo no hay catálogo público ni simulador.
+**Foco**: Planificar (shell + 2 tabs En curso / Borrador) + identidad académica (Mi perfil + self-disable).
 
-### Sprints siguientes
+### Scope de S3
 
-Pendiente de planificación detallada. Candidatos por prioridad:
+- [US-046](domain/user-stories/US-046.md) — **Planificar shell** + 2 tabs (en curso / borrador) + nudge de promoción manual.
+- [US-047](domain/user-stories/US-047.md) — **Mi perfil** (view + edit datos académicos + foto, accesible desde menú del avatar).
+- [US-075](domain/user-stories/US-075.md) — **Member self-disable** (zona peligrosa de Mi perfil).
 
-- Backoffice de catálogo (EPIC-08): University, Career, CareerPlan, Subject + Prerequisite, Teacher, Term, Commission.
-- Catálogo público (EPIC-01): visitor explora UNSTA.
-- Historial académico (EPIC-03): UC-013 cargar historial manual.
+**Dependencias diferidas**:
+- Backend de simulación (US-016): puede entrar en S3 si Planificar lo necesita, sino queda backlog hasta S4.
+- Backend de Academic CRUD: si no aterrizó en S2, parte del scope vive como stub en S3 también.
+
+---
+
+## S4 ⏳ Pendiente
+
+**Foco**: el loop core del producto (reseñas + descubrimiento de señal del corpus).
+
+### Scope de S4
+
+- [US-017](domain/user-stories/US-017.md), [US-018](domain/user-stories/US-018.md), [US-019](domain/user-stories/US-019.md), [US-020](domain/user-stories/US-020.md) — Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
+- [US-048](domain/user-stories/US-048.md) — **Reseñas shell** + 3 tabs (explorar / pendientes / mías).
+- [US-049](domain/user-stories/US-049.md) — **Editor de reseña** 6 campos numerados con preview vivo.
+- [US-070](domain/user-stories/US-070.md) — **Rankings** top 10 paginado (docentes / materias / comisiones).
+
+---
+
+## S5 ⏳ Pendiente
+
+**Foco**: descubrimiento + cuenta + soporte. Cierra el set de pantallas del MVP.
+
+### Scope de S5
+
+- [US-071](domain/user-stories/US-071.md) — **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-busqueda-global.md) operacional.
+- [US-072](domain/user-stories/US-072.md) — **Ajustes** (notificaciones / privacidad / idioma / tema).
+- [US-073](domain/user-stories/US-073.md) — **Ayuda** (FAQ + contacto soporte).
+- [US-074](domain/user-stories/US-074.md) — **Sobre plan-b** (página informacional + créditos).
+
+---
+
+## Backlog open (sin sprint asignado)
+
+- US-001 a US-004 (catálogo público): aterrizan cuando Academic CRUD esté listo. Pueden arrancar paralelos a S2 si se prioriza.
+- US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera (US-045) en frontend; backend va aterrizar dentro o cerca de S2.
+- US-016 + US-023..027 (simulación + planificación-storage backend): aterrizan en torno a S3 si Planificar lo demanda.
+- US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero, sin sprint asignado todavía.
+- US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-068 (admin/mod disable), US-080 (dashboard institucional): backlog open.
+- Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera, sin sprint asignado.
 
 ---
 

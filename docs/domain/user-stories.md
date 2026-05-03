@@ -56,11 +56,29 @@ Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home +
 
 ### Sprint actual
 
-S1 cerrado el 2026-05-02. El próximo sprint (S2) define candidatos al planning.
+S1 cerrado el 2026-05-02. Roadmap confirmado de S2 a S5 abajo.
 
-### Backlog (39)
+### Roadmap S2 — S5 (confirmado)
 
-> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseno-ux-post-claude-design.md)) impacta el scope de varias US del backlog (drawers v2, editor 6-pasos, Planificar tabs, búsqueda Meilisearch, etc). Cada US del backlog que cambie escopo va a referenciar el ADR cuando aterrice a sprint. Las US enteramente nuevas que el rediseño introduce (Auth rebuild, Onboarding, Inicio v2, Mi carrera consolidada, Sidebar v2, Topbar v2, Rankings, Mi perfil, Ajustes, Soporte, Estados vacíos, Notifications, Notifications UI) se agregan al backlog con IDs en sus epics correspondientes. Hoy hay 3 candidatos concretos para S2: US-036 (Auth rebuild), US-037 (Onboarding), US-044 (Inicio v2).
+Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por sprint está cerrado; el orden interno de cada sprint se afina al planificar.
+
+| Sprint | Foco | US |
+|---|---|---|
+| **S2** | Auth + Onboarding + Inicio + Mi carrera (shell, stub data) | [US-036](user-stories/US-036.md), [US-037](user-stories/US-037.md), [US-044](user-stories/US-044.md), [US-045](user-stories/US-045.md) |
+| **S3** | Planificar (shell + tabs) + Mi perfil + self-disable | [US-046](user-stories/US-046.md), [US-047](user-stories/US-047.md), [US-075](user-stories/US-075.md) |
+| **S4** | Reseñas (shell + editor) + Rankings | [US-017](user-stories/US-017.md), [US-018](user-stories/US-018.md), [US-019](user-stories/US-019.md), [US-020](user-stories/US-020.md), [US-048](user-stories/US-048.md), [US-049](user-stories/US-049.md), [US-070](user-stories/US-070.md) |
+| **S5** | Búsqueda global + Ajustes + Soporte (Ayuda + Sobre plan-b) | [US-071](user-stories/US-071.md), [US-072](user-stories/US-072.md), [US-073](user-stories/US-073.md), [US-074](user-stories/US-074.md) |
+
+**Notas del roadmap:**
+
+- El backend de Mi carrera (catálogo + plan + correlativas) queda como deuda diferida en S2 con stub data (decisión Lucas 2026-05-03). Se decide en planning si entra en S2 o S3 cuando llegue el momento, según cómo venga el sprint.
+- US-016 (simular inscripción backend) puede entrar en S3 si Planificar lo necesita, sino queda backlog hasta S4.
+- US-013/14/15 (cargar / importar / editar historial) son tabs internos de Mi carrera (S2). El backend de cargar manual puede aterrizar en S2 o quedar deuda diferida igual que el resto de Academic CRUD.
+- US-068 (admin/mod deshabilita member) sigue backlog open: es flow de moderación, no MVP.
+
+### Backlog (50)
+
+> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseno-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
 
 Agrupado por epic.
 
@@ -72,6 +90,7 @@ Agrupado por epic.
 | [US-002](user-stories/US-002.md) | Ver materia con sus reseñas | High | M |
 | [US-003](user-stories/US-003.md) | Ver docente con sus reseñas | High | M |
 | [US-004](user-stories/US-004.md) | Buscar materia o docente | Medium | S |
+| [US-071](user-stories/US-071.md) | Búsqueda global (topbar dropdown con Meilisearch) | High | L |
 
 #### EPIC-02: Identidad y autenticación
 
@@ -79,7 +98,12 @@ Agrupado por epic.
 |---|---|---|---|
 | [US-036](user-stories/US-036.md) | Auth rebuild: 4 rutas separadas (Signup / Login / Forgot / ForgotSent) | Medium | M |
 | [US-037](user-stories/US-037.md) | Onboarding 4 pasos (Bienvenida / Carrera / Historial / Listo) | High | M |
-| [US-068](user-stories/US-068.md) | Deshabilitar cuenta member | Medium | S |
+| [US-047](user-stories/US-047.md) | Mi perfil (view + edit datos académicos + foto) | High | M |
+| [US-068](user-stories/US-068.md) | Deshabilitar cuenta member (admin/mod) | Medium | S |
+| [US-072](user-stories/US-072.md) | Ajustes (notificaciones / privacidad / idioma / tema) | Medium | M |
+| [US-073](user-stories/US-073.md) | Ayuda (FAQ + contacto soporte) | Low | S |
+| [US-074](user-stories/US-074.md) | Sobre plan-b (página informacional + créditos) | Low | S |
+| [US-075](user-stories/US-075.md) | Member deshabilita su propia cuenta (self-disable) | Medium | S |
 
 #### EPIC-03: Historial académico
 
@@ -88,6 +112,7 @@ Agrupado por epic.
 | [US-013](user-stories/US-013.md) | Cargar historial manual | High | M |
 | [US-014](user-stories/US-014.md) | Importar historial desde PDF/texto | Low | L |
 | [US-015](user-stories/US-015.md) | Editar entrada del historial | Medium | S |
+| [US-045](user-stories/US-045.md) | Mi carrera shell + 5 tabs (consolidación de vistas académicas) | High | L |
 
 #### EPIC-04: Planificación de cuatrimestre
 
@@ -100,6 +125,7 @@ Agrupado por epic.
 | [US-026](user-stories/US-026.md) | Borrar simulación | Low | S |
 | [US-027](user-stories/US-027.md) | Ver simulaciones públicas de otros alumnos | Medium | S |
 | [US-044](user-stories/US-044.md) | Inicio v2 con pregunta dominante | High | M |
+| [US-046](user-stories/US-046.md) | Planificar shell + 2 tabs (en curso / borrador) + nudge de promoción | High | L |
 
 > "Recibir simulación recomendada" se movió a [post-mvp.md](post-mvp.md) hasta que se elija algoritmo (CF / heurística / embeddings).
 
@@ -111,6 +137,9 @@ Agrupado por epic.
 | [US-018](user-stories/US-018.md) | Editar reseña propia | Medium | S |
 | [US-019](user-stories/US-019.md) | Reportar reseña | Medium | M |
 | [US-020](user-stories/US-020.md) | Ver mis reports | Low | S |
+| [US-048](user-stories/US-048.md) | Reseñas shell + 3 tabs (explorar / pendientes / mías) | High | M |
+| [US-049](user-stories/US-049.md) | Editor de reseña 6 campos numerados con preview vivo | High | L |
+| [US-070](user-stories/US-070.md) | Rankings (top 10 paginado: docentes / materias / comisiones) | Medium | M |
 
 #### EPIC-06: Claim e identidad docente
 
