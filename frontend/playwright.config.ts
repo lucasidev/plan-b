@@ -1,4 +1,15 @@
+import { resolve } from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Cargar el .env del root del repo (donde vive REDIS_PASSWORD, MAILPIT_URL,
+// BACKEND_URL, etc.). Sin esto, los helpers que tocan Redis (clear rate
+// limits) no autentican y los rate limits del backend se acumulan entre
+// tests, haciendo flakear los flows de resend / forgot-password. `just`
+// carga .env automáticamente cuando se invoca via `just frontend-test-e2e`,
+// pero correr `bunx playwright test` directo no, así que cargarlo acá da
+// invariante más fuerte.
+dotenv.config({ path: resolve(__dirname, '../.env') });
 
 /**
  * Playwright config — E2E suite del frontend.
@@ -26,7 +37,14 @@ export default defineConfig({
   // No retries local (queremos ver los flakes); 1 retry en CI para
   // tolerar flakes transientes de network.
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Workers: 1 siempre. Los specs comparten state externo (Mailpit, Redis,
+  // backend DB con personas pre-seedeadas). Tests paralelos racean: el
+  // `clearAllMessages()` de un test borra el mail que otro está esperando;
+  // dos tests intentan login con la misma persona y los refresh tokens
+  // chocan. Serializar es más simple que aislar cada resource compartido
+  // (alternativa: dedicated personas por test, mailpit search filtrado por
+  // tag, etc.). El costo es ~25s extras locales vs paralelo.
+  workers: 1,
 
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
 
