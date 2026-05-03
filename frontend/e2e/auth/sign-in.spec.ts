@@ -4,7 +4,7 @@ import { LUCIA, MARTIN, PAULA } from '../helpers/personas';
 /**
  * Sample E2E para sign-in (US-028). Cubre:
  *   - happy path: Lucía (verified) → /home
- *   - cuenta no verificada: Martín → error in-form con hint de re-registro
+ *   - cuenta no verificada: Martín → error in-form con botón de resend (US-021)
  *   - cuenta deshabilitada: Paula → error específico
  *   - credenciales inválidas → mensaje genérico (anti-enum)
  *
@@ -26,7 +26,7 @@ test.describe('sign-in (US-028)', () => {
     await page.waitForURL(/\/home$/, { timeout: 10_000 });
   });
 
-  test('Martín (no verificado) ve error con hint de re-registro', async ({ page }) => {
+  test('Martín (no verificado) ve error con botón de resend', async ({ page }) => {
     await page.goto('/auth');
     await page.getByLabel(/tu email/i).fill(MARTIN.email);
     await page.getByLabel(/^contraseña$/i).fill(MARTIN.password);
@@ -35,7 +35,7 @@ test.describe('sign-in (US-028)', () => {
     await expect(
       page.getByRole('alert').filter({ hasText: /no está verificada|no esta verificada/i }),
     ).toBeVisible();
-    await expect(page.getByRole('button', { name: /registrate de nuevo/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /reenviar el link/i })).toBeVisible();
   });
 
   test('Paula (deshabilitada) ve error específico', async ({ page }) => {
