@@ -23,7 +23,7 @@ test.describe('sign-in (US-028)', () => {
     await page.getByRole('button', { name: /^entrar$/i }).click();
 
     // El layout (member) hace redirect a /home tras autenticar.
-    await page.waitForURL(/\/home$/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
   });
 
   test('Martín (no verificado) ve error con botón de resend', async ({ page }) => {

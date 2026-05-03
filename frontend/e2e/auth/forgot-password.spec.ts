@@ -53,12 +53,12 @@ test.describe('forgot/reset password (US-033)', () => {
     // 1. /auth → click forgot link → /forgot-password
     await page.goto('/auth');
     await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
-    await page.waitForURL(/\/forgot-password$/);
+    await expect(page).toHaveURL(/\/forgot-password$/, { timeout: 15_000 });
 
     // 2. submit email → /forgot-password/check-inbox?email=...
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByRole('button', { name: /mandame el link/i }).click();
-    await page.waitForURL(/\/forgot-password\/check-inbox/);
+    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 15_000 });
     expect(new URL(page.url()).searchParams.get('email')).toBe(LUCIA.email);
 
     // 3. extract token de mailpit → /reset-password?token=...
@@ -73,14 +73,14 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
     await page.getByLabel(/repetí la contraseña/i).fill(TEMP_PASSWORD);
     await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
-    await page.waitForURL(/\/auth\?reset=success/);
+    await expect(page).toHaveURL(/\/auth\?reset=success/, { timeout: 15_000 });
     await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
 
     // 5. Sign-in con la nueva pw → /home
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await page.waitForURL(/\/home$/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
 
     // 6. Cleanup: restaurar pw original
     await restoreLuciaPassword();
@@ -90,7 +90,7 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.goto('/forgot-password');
     await page.getByLabel(/tu email/i).fill('no-existe@nope.com');
     await page.getByRole('button', { name: /mandame el link/i }).click();
-    await page.waitForURL(/\/forgot-password\/check-inbox/);
+    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 15_000 });
 
     // Esperamos a que el backend tenga chance de enviar mail (no debería).
     await page.waitForTimeout(800);

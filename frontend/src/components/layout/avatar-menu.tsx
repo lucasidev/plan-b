@@ -185,7 +185,11 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         <button
           type="submit"
           role="menuitem"
-          onClick={onClose}
+          // No `onClick={onClose}` acá. El server action hace redirect('/auth')
+          // que navega fuera del area autenticada y desmonta este dropdown
+          // natural. Si cerrábamos el dropdown manualmente en el mismo evento,
+          // React podía re-renderear antes del submit y descartar el form
+          // entero (race observable en E2E con clicks ultra-rápidos).
           className={cn(
             'w-full text-left cursor-pointer border-0 bg-transparent',
             'text-st-failed-fg hover:bg-bg-elev',
