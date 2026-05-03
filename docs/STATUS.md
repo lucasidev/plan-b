@@ -163,10 +163,10 @@ Todas Done al cierre del sprint.
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
-**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md)):
-- [ADR-0039](decisions/0039-meilisearch-como-motor-de-busqueda-global.md) — Meilisearch como motor de búsqueda global.
+**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md)):
+- [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) — Meilisearch como motor de búsqueda global.
 - [ADR-0040](decisions/0040-notifications-como-bounded-context.md) — Notifications como BC nuevo.
-- [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md) — Delta del rediseño + plan de migración.
+- [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md) — Delta del rediseño + plan de migración.
 
 **Roadmap S2-S5 confirmado** (decisión 2026-05-03):
 
@@ -214,7 +214,7 @@ Todas Done al cierre del sprint.
 
 ### Scope de S5
 
-- [US-071](domain/user-stories/US-071.md) — **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-busqueda-global.md) operacional.
+- [US-071](domain/user-stories/US-071.md) — **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) operacional.
 - [US-072](domain/user-stories/US-072.md) — **Ajustes** (notificaciones / privacidad / idioma / tema).
 - [US-073](domain/user-stories/US-073.md) — **Ayuda** (FAQ + contacto soporte).
 - [US-074](domain/user-stories/US-074.md) — **Sobre plan-b** (página informacional + créditos).

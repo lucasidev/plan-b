@@ -52,7 +52,7 @@ Meilisearch (read-side de búsqueda)
 
 ### Configuración por entorno
 
-Per [ADR-0035](0035-configuracion-de-entornos.md):
+Per [ADR-0035](0035-configuración-de-entornos.md):
 
 - **Dev local**: container Meilisearch en `docker-compose.yml`, master key en `.env`.
 - **CI**: servicio Meilisearch en GitHub Actions matrix, key hardcoded en el workflow.
