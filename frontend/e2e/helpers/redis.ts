@@ -8,53 +8,62 @@
  *   - Limpiar refresh-token revocation list cuando un test cierra y
  *     reabre sesión.
  *
- * Implementación: usa `podman exec` (o `docker exec` como fallback) contra
- * el container del dev stack. En CI, donde Redis corre como service
- * container sin nombre planb-redis, los tests pueden setear
- * `REDIS_CONTAINER_CMD=""` para skipear (y los rate limiters arrancan
- * desde cero igual porque el container es ephemeral).
+ * Implementación: cliente TCP con `ioredis`. La versión vieja usaba
+ * `podman exec planb-redis redis-cli` y skipeaba en CI (donde Redis
+ * corre como service container sin nombre planb-redis); esto dejaba
+ * los rate limits acumulados entre tests en CI y rompía el flow de
+ * forgot-password en el segundo run del mismo spec. La conexión TCP
+ * funciona idéntico local + CI.
  *
- * Si en algún momento queremos hablarle a Redis directo desde Node, podemos
- * cambiar esto por un cliente nativo. Por ahora, exec contra el container
- * es zero-deps.
+ * Resolución del URL:
+ *   - `REDIS_URL` (override explícito, formato `redis://...`).
+ *   - Else: deriva desde `REDIS_PASSWORD` + `REDIS_HOST` (default
+ *     localhost) + `REDIS_HOST_PORT` (default 6379). Local en .env
+ *     tiene REDIS_PASSWORD; CI no, y default sin password funciona.
  */
 
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
+import IORedis from 'ioredis';
 
-const execAsync = promisify(exec);
-
-const REDIS_CONTAINER = process.env.REDIS_CONTAINER ?? 'planb-redis';
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
-const CONTAINER_CMD = process.env.REDIS_CONTAINER_CMD ?? 'podman';
-
-/**
- * Skip cuando estamos en CI (service container, no podman exec disponible)
- * o cuando el dev no tiene container CLI configurado.
- */
-function shouldSkip(): boolean {
-  return process.env.CI === 'true' || !CONTAINER_CMD;
+function buildUrl(): string {
+  if (process.env.REDIS_URL) return process.env.REDIS_URL;
+  const host = process.env.REDIS_HOST ?? 'localhost';
+  const port = process.env.REDIS_HOST_PORT ?? '6379';
+  const auth = process.env.REDIS_PASSWORD
+    ? `default:${encodeURIComponent(process.env.REDIS_PASSWORD)}@`
+    : '';
+  return `redis://${auth}${host}:${port}`;
 }
 
-async function redisCli(args: string[]): Promise<string> {
-  if (shouldSkip()) return '';
-  const auth = REDIS_PASSWORD ? ['-a', REDIS_PASSWORD, '--no-auth-warning'] : [];
-  const cmd = [CONTAINER_CMD, 'exec', REDIS_CONTAINER, 'redis-cli', ...auth, ...args]
-    .map((a) => (a.includes(' ') ? `"${a}"` : a))
-    .join(' ');
-  const { stdout } = await execAsync(cmd);
-  return stdout;
+let client: IORedis | null = null;
+
+function getClient(): IORedis {
+  if (!client) {
+    client = new IORedis(buildUrl(), {
+      // Lazy connect + fast fail: queremos saber rápido si Redis no está,
+      // no que el helper bloquee el test esperando reconnect.
+      lazyConnect: true,
+      maxRetriesPerRequest: 1,
+    });
+  }
+  return client;
 }
 
 /**
  * Borra todas las keys que matchean un pattern. Tolerante a no-matches.
+ * Usa SCAN en lugar de KEYS para no bloquear Redis con corpus grande
+ * (Redis docs: KEYS es solo para debug).
  */
 async function delByPattern(pattern: string): Promise<number> {
-  if (shouldSkip()) return 0;
-  const keysRaw = await redisCli(['KEYS', pattern]);
-  const keys = keysRaw.split(/\r?\n/).filter(Boolean);
+  const c = getClient();
+  let cursor = '0';
+  const keys: string[] = [];
+  do {
+    const [next, batch] = await c.scan(cursor, 'MATCH', pattern, 'COUNT', '500');
+    keys.push(...batch);
+    cursor = next;
+  } while (cursor !== '0');
   if (keys.length === 0) return 0;
-  await redisCli(['DEL', ...keys]);
+  await c.del(...keys);
   return keys.length;
 }
 
@@ -67,9 +76,24 @@ export async function clearForgotPasswordRateLimits(): Promise<number> {
 }
 
 /**
- * Limpia los buckets de rate-limit para todos los flows de identity.
- * Útil al setup de la suite E2E completa.
+ * Limpia los buckets de rate-limit para todos los flows de identity:
+ * forgot-password, resend-verification, sign-in, etc. Útil al setup
+ * de suites E2E que tocan varios endpoints.
  */
 export async function clearAllIdentityRateLimits(): Promise<number> {
   return delByPattern('identity:ratelimit:*');
+}
+
+/**
+ * Cierra el client si fue inicializado. Llamar al final de la suite
+ * en globalTeardown si Playwright lo expone; sin esto, ioredis deja
+ * el handle abierto y el proceso de tests no termina limpio.
+ */
+export async function disconnectRedis(): Promise<void> {
+  if (client) {
+    await client.quit().catch(() => {
+      // Ya cerrado o error transient; no nos importa, estamos cerrando.
+    });
+    client = null;
+  }
 }
