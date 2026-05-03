@@ -58,7 +58,9 @@ Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home +
 
 S1 cerrado el 2026-05-02. El próximo sprint (S2) define candidatos al planning.
 
-### Backlog (33)
+### Backlog (39)
+
+> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseno-ux-post-claude-design.md)) impacta el scope de varias US del backlog (drawers v2, editor 6-pasos, Planificar tabs, búsqueda Meilisearch, etc). Cada US del backlog que cambie escopo va a referenciar el ADR cuando aterrice a sprint. Las US enteramente nuevas que el rediseño introduce (Auth rebuild, Onboarding, Inicio v2, Mi carrera consolidada, Sidebar v2, Topbar v2, Rankings, Mi perfil, Ajustes, Soporte, Estados vacíos, Notifications, Notifications UI) se agregan al backlog con IDs en sus epics correspondientes. Hoy hay 3 candidatos concretos para S2: US-036 (Auth rebuild), US-037 (Onboarding), US-044 (Inicio v2).
 
 Agrupado por epic.
 
@@ -75,6 +77,8 @@ Agrupado por epic.
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
+| [US-036](user-stories/US-036.md) | Auth rebuild: 4 rutas separadas (Signup / Login / Forgot / ForgotSent) | Medium | M |
+| [US-037](user-stories/US-037.md) | Onboarding 4 pasos (Bienvenida / Carrera / Historial / Listo) | High | M |
 | [US-068](user-stories/US-068.md) | Deshabilitar cuenta member | Medium | S |
 
 #### EPIC-03: Historial académico
@@ -89,12 +93,13 @@ Agrupado por epic.
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
-| [US-016](user-stories/US-016.md) | Simular inscripción | High | L |
+| [US-016](user-stories/US-016.md) | Simular inscripción (rediseño: Planificar 2 tabs En curso / Borrador, ADR-0041) | High | L |
 | [US-023](user-stories/US-023.md) | Guardar simulación como draft privado | Medium | M |
 | [US-024](user-stories/US-024.md) | Compartir simulación al corpus público | Medium | S |
 | [US-025](user-stories/US-025.md) | Editar simulación | Medium | S |
 | [US-026](user-stories/US-026.md) | Borrar simulación | Low | S |
 | [US-027](user-stories/US-027.md) | Ver simulaciones públicas de otros alumnos | Medium | S |
+| [US-044](user-stories/US-044.md) | Inicio v2 con pregunta dominante | High | M |
 
 > "Recibir simulación recomendada" se movió a [post-mvp.md](post-mvp.md) hasta que se elija algoritmo (CF / heurística / embeddings).
 
