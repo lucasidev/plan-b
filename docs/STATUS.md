@@ -161,13 +161,21 @@ Todas Done al cierre del sprint.
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
-**Candidatos a planning de S2**:
+**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs + R-series de 19 US (ver [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md)):
+- [ADR-0039](decisions/0039-meilisearch-como-motor-de-busqueda-global.md) — Meilisearch como motor de búsqueda global.
+- [ADR-0040](decisions/0040-notifications-como-bounded-context.md) — Notifications como BC nuevo.
+- [ADR-0041](decisions/0041-rediseno-ux-post-claude-design.md) — Delta del rediseño + plan de migración.
+
+**Scope confirmado para S2** (decisión 2026-05-02 post-rediseño):
+- [US-036](domain/user-stories/US-036.md) — **Auth rebuild** a 4 rutas separadas (Signup / Login / Forgot / ForgotSent).
+- [US-037](domain/user-stories/US-037.md) — **Onboarding** 4 pasos (Bienvenida / Carrera / Historial / Listo).
+- [US-044](domain/user-stories/US-044.md) — **Inicio v2** con pregunta dominante.
+
+**Otros candidatos a evaluar en planning** (no comprometidos):
 - US-013 (cargar historial manual) — abre Fase 3 del lado de Enrollments.
 - US-060/US-061 (backoffice de Academic: gestionar University + Career + CareerPlan) — empieza Fase 3 del lado de Academic.
 - US-001 (catálogo público) — depende de Academic backoffice o puede arrancar en paralelo con seed manual.
 - Frontend "agregar carrera" + JwtBearer middleware backend — cierra US-012 entera.
-
-A definir en planning según prioridades.
 
 ---
 

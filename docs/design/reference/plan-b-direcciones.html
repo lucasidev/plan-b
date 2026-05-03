@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>plan-b — direcciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="canvas-tokens.css"/>
+<style>
+  body { margin:0; font-family:'Geist', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="canvas-mocks/design-system.jsx"></script>
+<script type="text/babel" src="canvas-mocks/landing.jsx"></script>
+<script type="text/babel" src="canvas-mocks/auth.jsx"></script>
+<script type="text/babel" src="canvas-mocks/onboarding.jsx"></script>
+<script type="text/babel" src="canvas-mocks/main.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-shell.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-screens.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-screens-2.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-screens-3.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-screens-4.jsx"></script>
+
+<script type="text/babel">
+
+const W = 1200, H = 750;
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="ds" title="⓪ Design System"
+        subtitle="Sistema visual del proyecto. Tokens, tipografía, componentes y patrones — la fuente única.">
+        <DCArtboard id="ds-main" label="Sistema visual" width={1280} height={900}><DesignSystem/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="landing" title="① Landing"
+        subtitle="La venta. Un alumno que llega por primera vez. Separada de auth a propósito.">
+        <DCArtboard id="lp" label="plan-b.com.ar" width={1440} height={2400}><Landing/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="auth" title="② Auth"
+        subtitle="Trámite. Centradas, mínimas, mismo contrato visual entre las 4. Sin venta.">
+        <DCArtboard id="signup"     label="Crear cuenta"           width={W} height={H}><SignupView/></DCArtboard>
+        <DCArtboard id="login"      label="Ingresar"               width={W} height={H}><LoginView/></DCArtboard>
+        <DCArtboard id="forgot"     label="Recuperar contraseña"   width={W} height={H}><ForgotView/></DCArtboard>
+        <DCArtboard id="forgot-ok"  label="Link enviado"            width={W} height={H}><ForgotSentView/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="onb" title="③ Onboarding"
+        subtitle="Primer ingreso. Cargamos carrera + historial. Después de esto el alumno aterriza en Inicio.">
+        <DCArtboard id="welcome" label="01 · Bienvenida"   width={W} height={H}><OnbWelcome/></DCArtboard>
+        <DCArtboard id="career"  label="02 · Carrera"      width={W} height={H}><OnbCareer/></DCArtboard>
+        <DCArtboard id="history" label="03 · Historial"    width={W} height={H}><OnbHistory/></DCArtboard>
+        <DCArtboard id="done"    label="04 · Listo"        width={W} height={H}><OnbDone/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="home" title="④ Inicio"
+        subtitle="Hub del alumno. Estado del cuatrimestre + acceso a las acciones recurrentes.">
+        <DCArtboard id="v2-inicio" label="Inicio" width={W} height={H}><V2Inicio/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="plan" title="⑤ Mi carrera"
+        subtitle="El núcleo académico del alumno: plan, correlativas, catálogo de materias y docentes, historial. Una sola sección con tabs.">
+        <DCArtboard id="v2-carrera-p" label="Plan de estudios"  width={W} height={H}><V2MiCarrera tab="plan"/></DCArtboard>
+        <DCArtboard id="v2-carrera-g" label="Correlativas (grafo)" width={W} height={H}><V2MiCarrera tab="grafo"/></DCArtboard>
+        <DCArtboard id="v2-carrera-c" label="Catálogo de materias" width={W} height={H}><V2MiCarrera tab="materias"/></DCArtboard>
+        <DCArtboard id="v2-mat-detail" label="Materia · detalle (ISW302)" width={W} height={H}><V2MateriaDetalle/></DCArtboard>
+        <DCArtboard id="v2-carrera-d" label="Docentes"           width={W} height={H}><V2MiCarrera tab="docentes"/></DCArtboard>
+        <DCArtboard id="v2-doc-detail" label="Docente · detalle (Brandt)" width={W} height={H}><V2DocenteDetalle/></DCArtboard>
+        <DCArtboard id="v2-carrera-h" label="Historial académico" width={W} height={H}><V2MiCarrera tab="historial"/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="sim" title="⑥ Planificar"
+        subtitle="Armado de cuatrimestre. En curso (lo que estás cursando ahora) + Borradores (próximos períodos).">
+        <DCArtboard id="v2-plan-curso"  label="En curso"            width={W} height={H}><V2Planificar tab="curso"/></DCArtboard>
+        <DCArtboard id="v2-plan-borr"   label="Borrador 2027·1c"    width={W} height={H}><V2Planificar tab="borrador1"/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="resenas" title="⑦ Reseñas"
+        subtitle="Lo que el alumno escribe sobre lo que cursó. Anónimas hacia afuera, editables para uno mismo. Una reseña por cursada — califica materia + docente + comisión + cuatri en una sola.">
+        <DCArtboard id="v2-resenas-l" label="Explorar"      width={W} height={H}><V2Resenas tab="leer"/></DCArtboard>
+        <DCArtboard id="v2-resenas-e" label="Pendientes"    width={W} height={H}><V2Resenas tab="escribir"/></DCArtboard>
+        <DCArtboard id="v2-resenas-m" label="Mis reseñas"   width={W} height={H}><V2Resenas tab="mias"/></DCArtboard>
+        <DCArtboard id="v2-resenas-edit" label="Editor de reseña" width={W} height={1100}><V2EditorResena/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="rankings" title="⑧ Rankings"
+        subtitle="Top docentes / materias / comisiones según los datos agregados de la comunidad.">
+        <DCArtboard id="v2-rankings" label="Rankings" width={W} height={H}><V2Rankings/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="busqueda" title="⑨ Búsqueda global"
+        subtitle="Dropdown desde el topbar — busca materias, docentes y comisiones, con resaltado del query y atajos de teclado.">
+        <DCArtboard id="v2-buscar" label="Búsqueda · dropdown abierto" width={W} height={H}><V2Buscar/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="cuenta" title="⑩ Cuenta"
+        subtitle="Mi perfil (identidad) + Ajustes (cómo se comporta la app). Mi perfil se abre desde el menú del avatar.">
+        <DCArtboard id="v2-perfil"  label="Mi perfil" width={W} height={H}><V2Perfil/></DCArtboard>
+        <DCArtboard id="v2-ajustes" label="Ajustes"   width={W} height={H}><V2Ajustes/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="soporte" title="⑪ Soporte"
+        subtitle="Páginas planas que se llegan desde el footer del sidebar.">
+        <DCArtboard id="v2-ayuda" label="Ayuda"        width={W} height={H}><V2Ayuda/></DCArtboard>
+        <DCArtboard id="v2-sobre" label="Sobre plan-b" width={W} height={H}><V2Sobre/></DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
