@@ -17,13 +17,15 @@ Este ADR documenta **qué cambia respecto del estado actual del código** y **qu
 
 **Antes**: una sola ruta `/auth` con `AuthView` que tiene tabs para Sign-up y Sign-in. Estado: shipped en S1.
 
-**Después**: 4 rutas separadas con layouts diferenciados:
-- `/auth/sign-up`
-- `/auth/sign-in`
-- `/auth/forgot`
-- `/auth/forgot-sent`
+**Después**: rutas top-level dentro del route group `(auth)`, sin double-namespacing. El route group no aparece en la URL (convención de Next.js App Router):
+- `/sign-up`
+- `/sign-in`
+- `/forgot-password` (ya existe desde US-033-i)
+- `/forgot-password/check-inbox` (ya existe desde US-033-i)
+- `/reset-password` (ya existe desde US-033-i)
+- `/verify-email` (ya existe desde US-011-f)
 
-Razón: signup y signin son flujos distintos (no vistas equivalentes del mismo recurso). El AuthView de S1 mezcló dos verbos (registro vs autenticación) por economía visual; el rediseño lo separa para reducir fricción cognitiva.
+Razón: signup y signin son flujos distintos (no vistas equivalentes del mismo recurso). El AuthView de S1 mezcló dos verbos (registro vs autenticación) por economía visual; el rediseño lo separa para reducir fricción cognitiva. Las páginas viven todas bajo `app/(auth)/<page>/page.tsx` agrupadas por route group; repetir `auth/` adentro sería redundante (`/auth/sign-in` con el "auth" doble).
 
 ### Onboarding (sección ③)
 
@@ -160,7 +162,7 @@ Sin "v0.2" en el logo (era artefacto del canvas, no del producto).
 
 1. **Web first, mobile later**. Lucas confirmó: el MVP va a web; mobile entra como deuda diferida explícita. No se escribe CSS responsive ahora (más allá de lo que ya hicimos en S1).
 2. **Patrón "tabs"** como herramienta principal de organización en vistas con sub-secciones (Mi carrera, Planificar, Reseñas).
-3. **Meilisearch** como motor de búsqueda global ([ADR-0039](0039-meilisearch-como-motor-de-busqueda-global.md)).
+3. **Meilisearch** como motor de búsqueda global ([ADR-0039](0039-meilisearch-como-motor-de-búsqueda-global.md)).
 4. **Notifications** como bounded context nuevo ([ADR-0040](0040-notifications-como-bounded-context.md)).
 5. **Estados vacíos invitan a completar el estado académico**: cuando un alumno entra a Inicio sin historial cargado, sin reseñas pendientes, sin nada — la pantalla lo invita a cargar el historial (link al onboarding del paso 3) o a planificar el próximo cuatri. Empty state empuja al user al next step.
 6. **Truncar últimos 3** (TBD): patrón a aplicar a alguna lista (probable: reseñas en detalle de materia o historial). Aterriza cuando una US específica lo necesite.

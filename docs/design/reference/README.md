@@ -7,7 +7,7 @@ Hay **dos generaciones** de mockup conviviendo en este directorio:
 - **v1** (Apr 2026): `plan-b.html` + `styles.css` + `components/*.jsx`. Es el mockup que guió el trabajo de S0 y S1 (auth slice + AppShell + home placeholder).
 - **v2** (May 2026): `plan-b-direcciones.html` + `canvas-mocks/*.jsx` + `canvas-tokens.css` + `design-canvas.jsx` + `tweaks-panel.jsx` + `data.jsx`. Es la iteración de claude-design del 2026-05-02 que define el rediseño completo (Auth a 4 rutas, Onboarding, Mi carrera consolidada, Planificar 2 tabs, Reseñas 3 tabs + editor, Rankings, Búsqueda global, Notifications, Cuenta split, Soporte).
 
-**El v2 es el target a futuro**. El v1 queda como referencia histórica de lo que ya está shipped (con divergencias documentadas más abajo). Para detalles del rediseño y plan de migración, ver [ADR-0041](../../decisions/0041-rediseno-ux-post-claude-design.md).
+**El v2 es el target a futuro**. El v1 queda como referencia histórica de lo que ya está shipped (con divergencias documentadas más abajo). Para detalles del rediseño y plan de migración, ver [ADR-0041](../../decisions/0041-rediseño-ux-post-claude-design.md).
 
 ## Archivos del v1 (mockup original)
 

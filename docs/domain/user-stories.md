@@ -78,7 +78,7 @@ Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por
 
 ### Backlog (50)
 
-> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseno-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
+> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
 
 Agrupado por epic.
 
