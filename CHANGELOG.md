@@ -30,3 +30,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pr-title skip uses pull_request.user.login (not actor) (ci) — [`921113b`](https://github.com/lucasidev/plan-b/commit/921113b74be04845871d94edcfd635a7babefd1c)
 - e2e first-run issues (alert, seed timing, validation scope) (test) — [`ba8e5ce`](https://github.com/lucasidev/plan-b/commit/ba8e5ce8832a0825e0ecf1054111b324358fa852)
 - drop dangling US-033-f link (US-033 is integrated, lives in US-033-i.md) (docs) — [`e304ad1`](https://github.com/lucasidev/plan-b/commit/e304ad1aeeb1682bb8c5e9baeb40243f14ee1237)
+- actualizar locator de sign-in tras rename del hint a boton resend (e2e) — [`2277bd4`](https://github.com/lucasidev/plan-b/commit/2277bd4ab4eeed44ef1d15970a06f868a6881dc1)
