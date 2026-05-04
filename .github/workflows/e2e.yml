@@ -72,18 +72,17 @@ jobs:
       ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
       ConnectionStrings__Redis: localhost:6379
       JWT__Secret: ci-test-jwt-secret-must-be-at-least-32-chars-long
-      JWT__Issuer: planb-test
-      JWT__Audience: planb-test
-      # Frontend env (lib/env.ts serverSchema). El JWT_SECRET TIENE que matchear
+      # Issuer y Audience TIENEN que matchear los hardcoded del frontend
+      # (lib/session.ts: ISSUER='planb', AUDIENCE='planb'). Si CI emite con
+      # otro valor (ej. 'planb-test'), jwtVerify rechaza con "unexpected
+      # 'iss' claim value", el guard considera "sin sesión" y redirect /auth.
+      JWT__Issuer: planb
+      JWT__Audience: planb
+      # Frontend env (lib/env.ts serverSchema). JWT_SECRET TIENE que matchear
       # el JWT__Secret del backend porque el frontend valida el access token
-      # via jwtVerify (HS256 simétrico). Si esto falta, getSession() retorna
-      # null silente y el layout (member) redirige a /auth aunque el sign-in
-      # haya pegado OK — exactamente el síntoma del fail original.
+      # via jose.jwtVerify (HS256 simétrico).
       JWT_SECRET: ci-test-jwt-secret-must-be-at-least-32-chars-long
       SESSION_SECRET: ci-test-session-secret-must-be-at-least-32-chars-long
-      # TEMP: enable debug logs en getSession() y forwardSetCookies para
-      # diagnosticar por qué el guard rechaza la sesión post-sign-in en CI.
-      E2E_DEBUG: '1'
       # Override que usa el helper redis.ts para skipear podman exec viejo.
       # Hoy el helper usa ioredis directo y no mira esto, pero lo dejamos
       # como cinturón para no romper si reintroducimos el path container.
