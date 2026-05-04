@@ -17,7 +17,7 @@ import { LUCIA, MARTIN, PAULA } from '../helpers/personas';
 
 test.describe('sign-in (US-028)', () => {
   test('Lucía entra con credenciales válidas y aterriza en /home', async ({ page }) => {
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
@@ -27,7 +27,7 @@ test.describe('sign-in (US-028)', () => {
   });
 
   test('Martín (no verificado) ve error con botón de resend', async ({ page }) => {
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(MARTIN.email);
     await page.getByLabel(/^contraseña$/i).fill(MARTIN.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
@@ -39,7 +39,7 @@ test.describe('sign-in (US-028)', () => {
   });
 
   test('Paula (deshabilitada) ve error específico', async ({ page }) => {
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(PAULA.email);
     await page.getByLabel(/^contraseña$/i).fill(PAULA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
@@ -48,7 +48,7 @@ test.describe('sign-in (US-028)', () => {
   });
 
   test('credenciales inválidas → mensaje genérico anti-enum', async ({ page }) => {
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill('contraseña-incorrecta-12');
     await page.getByRole('button', { name: /^entrar$/i }).click();

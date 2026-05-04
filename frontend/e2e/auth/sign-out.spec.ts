@@ -4,9 +4,9 @@ import { LUCIA } from '../helpers/personas';
 /**
  * E2E del sign-out (US-029).
  *
- * Flow: login → avatar dropdown del sidebar → "Cerrar sesión" → /auth.
+ * Flow: login → avatar dropdown del sidebar → "Cerrar sesión" → /sign-in.
  * Después validamos que el guard del layout (member) bloquee volver a
- * /home sin sesión, redirigiendo a /auth.
+ * /home sin sesión, redirigiendo a /sign-in.
  *
  * El componente del avatar dropdown está en
  * `components/layout/avatar-menu.tsx`. Es un button con aria-haspopup
@@ -23,7 +23,7 @@ test.describe('sign-out (US-029)', () => {
     page,
   }) => {
     // 1. Login → /home
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
@@ -38,13 +38,13 @@ test.describe('sign-out (US-029)', () => {
 
     // 3. Click en "Cerrar sesión" del dropdown. Es un submit button dentro
     // de <form action={signOutAction}>; el server action revoca refresh,
-    // limpia cookies y redirect('/auth'). Soft navigation RSC, no "load"
+    // limpia cookies y redirect('/sign-in'). Soft navigation RSC, no "load"
     // event — usamos toHaveURL para evitar el timeout de waitForURL.
     await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
-    await expect(page).toHaveURL(/\/auth(\?|$)/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
 
-    // 4. Volver a /home sin sesión → guard del layout (member) redirige a /auth
+    // 4. Volver a /home sin sesión → guard del layout (member) redirige a /sign-in
     await page.goto('/home');
-    await expect(page).toHaveURL(/\/auth(\?|$)/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 10_000 });
   });
 });

@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
  * session and there isn't one — typically because it expired mid-action
  * and the layout guard's redirect would lose the user's place.
  *
- * Today the (member)/(staff)/(teacher) layouts redirect to /auth on a
+ * Today the (member)/(staff)/(teacher) layouts redirect to /sign-in on a
  * missing session, so this surface mostly covers the in-flight case
- * (e.g. a server action firing on a stale cookie). The CTA goes to /auth
+ * (e.g. a server action firing on a stale cookie). The CTA goes a /sign-in
  * because that's where the user has to start over from.
  */
 export default function Unauthorized() {
@@ -76,7 +76,7 @@ export default function Unauthorized() {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',

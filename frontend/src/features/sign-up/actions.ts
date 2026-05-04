@@ -8,7 +8,7 @@ import type { SignUpFormState } from './types';
 
 /**
  * Sign-up server action. Validates with signUpSchema (Zod), calls
- * POST /api/identity/register, and on 201 redirects to /auth/check-inbox
+ * POST /api/identity/register, and on 201 redirects to /sign-up/check-inbox
  * via Next's redirect() (which throws NEXT_REDIRECT, short-circuiting return
  * semantics). On errors maps the backend's ProblemDetails / ValidationProblem
  * payloads to the SignUpFormState shape useActionState consumes.
@@ -43,7 +43,7 @@ export async function signUpAction(
   });
 
   if (response.status === 201) {
-    redirect(`/auth/check-inbox?email=${encodeURIComponent(parsed.data.email)}`);
+    redirect(`/sign-up/check-inbox?email=${encodeURIComponent(parsed.data.email)}`);
   }
 
   if (response.status === 409) {
