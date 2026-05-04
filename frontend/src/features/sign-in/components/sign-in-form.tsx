@@ -11,21 +11,17 @@ import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
 
-type Props = {
-  /** Switches the AuthView mode without navigating. Used by the in-form
-   *  "¿Sos nuevo? Creá tu cuenta" footer link. */
-  onSwitchToSignUp: () => void;
-};
-
 /**
- * Sign-in form. Direct port of the `mode==='login'` branch in
- * docs/design/reference/components/screens.jsx with the matching styles
- * from .auth-* in styles.css. Field spacing, divider, footer links, legal
- * disclaimer all mirror the mockup. Functional bits unchanged from the
- * previous version (Zod schema, server action, anti-enumeration error
+ * Sign-in form. Renders the credentials form for `/sign-in`. Backend
+ * endpoint is `POST /api/identity/sign-in`. Field spacing, divider, footer
+ * links and legal disclaimer mirror the mockup
+ * (docs/design/reference/components/screens.jsx); functional bits
+ * unchanged from S1 (Zod schema, server action, anti-enumeration error
  * surface, autofocus on email).
+ *
+ * Cross-flow footer links navigate to `/sign-up` and `/forgot-password`.
  */
-export function SignInForm({ onSwitchToSignUp }: Props) {
+export function SignInForm() {
   const [state, formAction] = useActionState<SignInFormState, FormData>(
     signInAction,
     initialSignInState,
@@ -80,7 +76,7 @@ export function SignInForm({ onSwitchToSignUp }: Props) {
 
       <SubmitButton />
 
-      <FooterLinks onSwitchToSignUp={onSwitchToSignUp} />
+      <FooterLinks />
 
       <LegalText />
     </form>
@@ -112,7 +108,7 @@ function GoogleButton() {
   // OAuth con Google no está implementado todavía. El botón queda visible
   // para mantener la UI del mockup pero deshabilitado para no llevar a una
   // ruta inexistente. Cuando exista el flow OAuth, este botón se convierte
-  // en un <Link href="/auth/google">.
+  // en un <Link href="/oauth/google"> (path TBD según el callback OAuth).
   return (
     <button
       type="button"
@@ -160,7 +156,7 @@ function Divider({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterLinks({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
+function FooterLinks() {
   return (
     <>
       <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
@@ -175,14 +171,14 @@ function FooterLinks({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
       </div>
       <div className="text-ink-3" style={{ marginTop: 14, fontSize: 13 }}>
         ¿Sos nuevo?{' '}
-        <button
-          type="button"
-          onClick={onSwitchToSignUp}
+        <Link
+          href="/sign-up"
+          prefetch
           className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
           style={{ fontWeight: 500 }}
         >
           Creá tu cuenta
-        </button>
+        </Link>
       </div>
     </>
   );

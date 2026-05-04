@@ -4,10 +4,10 @@ import { ForgotPasswordForm } from '@/features/forgot-password';
 
 /**
  * /forgot-password (US-033-f). Mirrors the AuthSplit hero layout used by
- * /auth and /verify-email so the experience feels continuous: the user that
- * clicked "¿Olvidaste tu contraseña?" from sign-in lands on the same visual
- * grammar (hero on the left, form on the right) instead of jumping into a
- * different screen.
+ * /sign-in, /sign-up and /verify-email so the experience feels continuous:
+ * the user that clicked "¿Olvidaste tu contraseña?" from sign-in lands on
+ * the same visual grammar (hero on the left, form on the right) instead
+ * of jumping into a different screen.
  *
  * No server-side data fetching: the action is a pure POST. The page is RSC
  * because there's no client-side state at this level.

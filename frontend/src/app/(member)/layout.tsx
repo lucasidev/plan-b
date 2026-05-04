@@ -5,8 +5,8 @@ import { getSession } from '@/lib/session';
 /**
  * Layout del route group `(member)`. Hace dos cosas:
  *
- *  1. **Guard server-side**: redirige a `/auth` si no hay session válida o
- *     el role no es `member`. La autorización real igual la hace el backend
+ *  1. **Guard server-side**: redirige a `/sign-in` si no hay session válida
+ *     o el role no es `member`. La autorización real igual la hace el backend
  *     (ADR-0023); este guard es UX para evitar request rechazados y flashes.
  *
  *  2. **AppShell**: envuelve cada página del route group con el chrome
@@ -16,8 +16,8 @@ import { getSession } from '@/lib/session';
  */
 export default async function MemberLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
-  if (!session) redirect('/auth');
-  if (session.role !== 'member') redirect('/auth');
+  if (!session) redirect('/sign-in');
+  if (session.role !== 'member') redirect('/sign-in');
 
   return <AppShell email={session.email}>{children}</AppShell>;
 }

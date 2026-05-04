@@ -10,7 +10,7 @@ import { SignInForm } from './sign-in-form';
  *   - happy path: typing + submit dispara el action con los valores correctos
  *   - error: el component renderiza alert + mensaje cuando el action devuelve
  *     status: 'error'
- *   - footer link: switch a sign-up llama al callback que recibe por prop
+ *   - footer link: "Creá tu cuenta" navega a /sign-up (post US-036)
  *
  * El action está mockeado al nivel del módulo (`./actions`) para no acoplar
  * el component test al server-side. El detalle del action vive en
@@ -31,7 +31,7 @@ beforeEach(() => {
 
 describe('SignInForm', () => {
   it('renderiza email + password + submit "Entrar"', () => {
-    render(<SignInForm onSwitchToSignUp={() => {}} />);
+    render(<SignInForm />);
 
     expect(screen.getByLabelText(/tu email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^contraseña$/i)).toBeInTheDocument();
@@ -39,24 +39,21 @@ describe('SignInForm', () => {
   });
 
   it('muestra el link "¿Olvidaste tu contraseña?" en el footer', () => {
-    render(<SignInForm onSwitchToSignUp={() => {}} />);
+    render(<SignInForm />);
     expect(screen.getByRole('link', { name: /olvidaste tu contraseña/i })).toBeInTheDocument();
   });
 
-  it('llama al callback onSwitchToSignUp cuando se clickea "Creá tu cuenta"', async () => {
-    const user = userEvent.setup();
-    const onSwitch = vi.fn();
-    render(<SignInForm onSwitchToSignUp={onSwitch} />);
+  it('"Creá tu cuenta" es un link a /sign-up (post US-036)', () => {
+    render(<SignInForm />);
 
-    await user.click(screen.getByRole('button', { name: /creá tu cuenta/i }));
-
-    expect(onSwitch).toHaveBeenCalledTimes(1);
+    const link = screen.getByRole('link', { name: /creá tu cuenta/i });
+    expect(link).toHaveAttribute('href', '/sign-up');
   });
 
   it('dispara el action con los valores del form al hacer submit', async () => {
     actionMock.mockResolvedValue({ status: 'idle' });
     const user = userEvent.setup();
-    render(<SignInForm onSwitchToSignUp={() => {}} />);
+    render(<SignInForm />);
 
     await user.type(screen.getByLabelText(/tu email/i), 'lucia@test.com');
     await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');
@@ -77,7 +74,7 @@ describe('SignInForm', () => {
       message: 'Email o contraseña incorrectos',
     });
     const user = userEvent.setup();
-    render(<SignInForm onSwitchToSignUp={() => {}} />);
+    render(<SignInForm />);
 
     await user.type(screen.getByLabelText(/tu email/i), 'lucia@test.com');
     await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');
@@ -95,7 +92,7 @@ describe('SignInForm', () => {
       email: 'lucia@test.com',
     });
     const user = userEvent.setup();
-    render(<SignInForm onSwitchToSignUp={() => {}} />);
+    render(<SignInForm />);
 
     await user.type(screen.getByLabelText(/tu email/i), 'lucia@test.com');
     await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');

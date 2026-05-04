@@ -28,7 +28,7 @@ test.describe('resend verification (US-021)', () => {
 
   test('Martín pide reenvío del link y el mail llega a su inbox', async ({ page }) => {
     // 1. Sign-in con Martín (no verificado) → error in-form + botón resend
-    await page.goto('/auth');
+    await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(MARTIN.email);
     await page.getByLabel(/^contraseña$/i).fill(MARTIN.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();

@@ -81,7 +81,7 @@ export default function OfflinePage() {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',

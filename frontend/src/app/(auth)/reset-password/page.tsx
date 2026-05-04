@@ -49,7 +49,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
                 Pedir un link nuevo
               </Button>
             </Link>
-            <Link href="/auth" prefetch>
+            <Link href="/sign-in" prefetch>
               <Button type="button" variant="ghost" className="w-full justify-center">
                 Volver a iniciar sesión
               </Button>

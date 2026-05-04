@@ -20,9 +20,12 @@ type Props = {
  *  - **open**: panel encima del avatar con links a Mi perfil, Configuración,
  *    Onboarding (no implementados, llevan a stubs), Ayuda, y "Cerrar sesión".
  *
- * Sign-out usa el server action existente de US-029-i. Click cierra el
- * dropdown antes de disparar el form para que no quede abierto durante el
- * redirect.
+ * Sign-out usa el server action existente de US-029-i. El form submit
+ * dispara la action; el redirect a `/sign-in` que devuelve desmonta este
+ * dropdown natural (la nav saca al usuario del area autenticada). No hay
+ * onClick={onClose} en el submit button: si lo tuviéramos, el state
+ * change podría unmountear el form antes que la action ejecute (race
+ * observable en E2E con clicks ultra-rápidos).
  *
  * El click fuera del dropdown lo cierra (event listener en `document`).
  */
@@ -185,11 +188,11 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         <button
           type="submit"
           role="menuitem"
-          // No `onClick={onClose}` acá. El server action hace redirect('/auth')
-          // que navega fuera del area autenticada y desmonta este dropdown
-          // natural. Si cerrábamos el dropdown manualmente en el mismo evento,
-          // React podía re-renderear antes del submit y descartar el form
-          // entero (race observable en E2E con clicks ultra-rápidos).
+          // No `onClick={onClose}` acá: el server action hace redirect a
+          // `/sign-in` que desmonta este dropdown natural via navegación.
+          // Si cerrábamos el dropdown manualmente en el mismo evento, React
+          // podía re-renderear antes del submit y descartar el form entero
+          // (race observable en E2E con clicks ultra-rápidos).
           className={cn(
             'w-full text-left cursor-pointer border-0 bg-transparent',
             'text-st-failed-fg hover:bg-bg-elev',

@@ -9,7 +9,7 @@ const REFRESH_COOKIE = 'planb_refresh';
 
 /**
  * Sign-out server action. Calls the backend to revoke the refresh token
- * server-side, then clears the auth cookies locally and redirects to /auth.
+ * server-side, then clears the auth cookies locally and redirects to /sign-in.
  *
  * Order matters: revoke first, delete second. If the backend call fails
  * (network error, backend down) we still clear the cookies so the user
@@ -45,5 +45,5 @@ export async function signOutAction(): Promise<void> {
 
   cookieStore.delete(ACCESS_COOKIE);
   cookieStore.delete(REFRESH_COOKIE);
-  redirect('/auth');
+  redirect('/sign-in');
 }

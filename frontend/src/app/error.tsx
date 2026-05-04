@@ -123,7 +123,7 @@ export default function ErrorBoundary({ error, reset }: Props) {
         </button>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
           style={{ fontSize: 13, fontWeight: 500, marginTop: 18 }}

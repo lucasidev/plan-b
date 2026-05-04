@@ -16,7 +16,12 @@ type Props = {
  * Centered single-card layout (no AuthSplit). This is a transition screen,
  * not a marketing surface — the user already converted, we're just telling
  * them what to do next. The cream background + sutil radial glow keeps it
- * tonally aligned with /auth without re-using the heavier split layout.
+ * tonally aligned con `/sign-in` y `/sign-up` sin reusar el split layout
+ * heavier.
+ *
+ * Path: `/sign-up/check-inbox`. Vive como sub-ruta de sign-up porque es
+ * la continuación natural del flow: registro → "revisá tu inbox" →
+ * (clic en el mail) → /verify-email → /sign-in.
  */
 export default async function CheckInboxPage({ searchParams }: Props) {
   const { email } = await searchParams;
@@ -97,7 +102,7 @@ export default async function CheckInboxPage({ searchParams }: Props) {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',
@@ -119,7 +124,7 @@ export default async function CheckInboxPage({ searchParams }: Props) {
         <p className="text-ink-3" style={{ fontSize: 13, marginTop: 18 }}>
           ¿Te equivocaste de email?{' '}
           <Link
-            href="/auth?mode=signup"
+            href="/sign-up"
             prefetch
             className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
             style={{ fontWeight: 500 }}

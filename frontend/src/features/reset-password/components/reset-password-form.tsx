@@ -139,7 +139,7 @@ function FooterLinks() {
   return (
     <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
       <Link
-        href="/auth"
+        href="/sign-in"
         prefetch
         className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
         style={{ fontWeight: 500 }}

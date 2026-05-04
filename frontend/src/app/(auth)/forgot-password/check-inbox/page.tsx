@@ -11,7 +11,7 @@ type Props = {
  * here on the silent-success 204 (per US-033 anti-enumeration AC: same
  * outcome whether the email exists or not).
  *
- * Visually identical to /auth/check-inbox to reinforce the "we sent
+ * Visually identical to /sign-up/check-inbox to reinforce the "we sent
  * something to your inbox, go look at it" pattern. The copy differs because
  * the user came from forgot-password (not registration) and the link
  * lifetime is 30 minutes (not 24 hours).
@@ -95,7 +95,7 @@ export default async function CheckInboxPage({ searchParams }: Props) {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',
