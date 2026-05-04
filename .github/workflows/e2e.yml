@@ -208,3 +208,11 @@ jobs:
           name: backend-log
           path: /tmp/backend.log
           retention-days: 7
+
+      - name: Upload frontend log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-log
+          path: /tmp/frontend.log
+          retention-days: 7
