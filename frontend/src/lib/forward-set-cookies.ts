@@ -60,27 +60,11 @@ function parseSetCookieHeader(raw: string): ParsedCookie {
 
 export async function forwardSetCookies(response: Response): Promise<void> {
   const setCookieHeaders = response.headers.getSetCookie();
-  // TEMP CI-DEBUG: revertir tras diagnosticar el fail de E2E en main.
-  if (process.env.E2E_DEBUG === '1') {
-    // eslint-disable-next-line no-console
-    console.log('[forward-set-cookies-debug] count=', setCookieHeaders.length);
-  }
   if (setCookieHeaders.length === 0) return;
 
   const cookieStore = await cookies();
   for (const raw of setCookieHeaders) {
     const { name, value, options } = parseSetCookieHeader(raw);
-    if (process.env.E2E_DEBUG === '1') {
-      // eslint-disable-next-line no-console
-      console.log(
-        '[forward-set-cookies-debug] setting',
-        name,
-        'len=',
-        value.length,
-        'opts=',
-        JSON.stringify(options),
-      );
-    }
     cookieStore.set(name, value, options);
   }
 }
