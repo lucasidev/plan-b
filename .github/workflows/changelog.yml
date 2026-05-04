@@ -29,7 +29,7 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, 'docs(changelog):') }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # Necesitamos historia suficiente para resolver el rango
           # PUSH_BEFORE..PUSH_AFTER. fetch-depth: 0 hace clone completo;

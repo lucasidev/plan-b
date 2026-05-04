@@ -28,7 +28,7 @@ jobs:
     name: Validate every commit message
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           # Necesitamos el commit base del PR para hacer git log <base>..<head>.
           # fetch-depth: 0 hace clone completo. PR.s grandes (raros) podrían
