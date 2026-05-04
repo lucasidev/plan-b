@@ -74,7 +74,16 @@ jobs:
       JWT__Secret: ci-test-jwt-secret-must-be-at-least-32-chars-long
       JWT__Issuer: planb-test
       JWT__Audience: planb-test
-      # Para que el helper de redis.ts no intente podman exec en CI.
+      # Frontend env (lib/env.ts serverSchema). El JWT_SECRET TIENE que matchear
+      # el JWT__Secret del backend porque el frontend valida el access token
+      # via jwtVerify (HS256 simétrico). Si esto falta, getSession() retorna
+      # null silente y el layout (member) redirige a /auth aunque el sign-in
+      # haya pegado OK — exactamente el síntoma del fail original.
+      JWT_SECRET: ci-test-jwt-secret-must-be-at-least-32-chars-long
+      SESSION_SECRET: ci-test-session-secret-must-be-at-least-32-chars-long
+      # Override que usa el helper redis.ts para skipear podman exec viejo.
+      # Hoy el helper usa ioredis directo y no mira esto, pero lo dejamos
+      # como cinturón para no romper si reintroducimos el path container.
       REDIS_CONTAINER_CMD: ''
 
     steps:
