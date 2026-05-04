@@ -142,6 +142,20 @@ jobs:
         working-directory: frontend
         run: bun install --frozen-lockfile
 
+      - name: Write frontend .env.local for CI
+        # Las server env vars (JWT_SECRET, SESSION_SECRET) están en el `env:`
+        # del job pero `bun next start` no siempre las propaga al runtime de
+        # Next.js cuando se levanta como background process. Materializarlas
+        # en .env.local garantiza que Next las lea por su mecanismo estándar
+        # (cwd-based dotenv) al arrancar.
+        working-directory: frontend
+        run: |
+          cat > .env.local <<EOF
+          NEXT_PUBLIC_API_URL=http://localhost:5000
+          JWT_SECRET=${{ env.JWT_SECRET }}
+          SESSION_SECRET=${{ env.SESSION_SECRET }}
+          EOF
+
       - name: Build frontend
         working-directory: frontend
         run: bun run build
