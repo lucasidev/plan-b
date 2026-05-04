@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { PasswordField, TextField } from '@/components/ui';
@@ -9,24 +10,20 @@ import { cn } from '@/lib/utils';
 import { signUpAction } from '../actions';
 import { initialSignUpState, type SignUpFormState } from '../types';
 
-type Props = {
-  /** Switches the AuthView mode without navigating. Used by the in-form
-   *  "¿Ya tenés cuenta? Ingresá" footer link. */
-  onSwitchToSignIn: () => void;
-};
-
 /**
- * Sign-up form. Mirrors sign-in's structure plus the confirm-password
- * field that's specific to registration. Direct port of `mode==='signup'`
- * branch in docs/design/reference/components/screens.jsx with the
- * matching styles from .auth-* in styles.css.
+ * Sign-up form. Renders the registration form for `/sign-up`. Backend
+ * endpoint is `POST /api/identity/register`; on 201 the action redirects
+ * to `/sign-up/check-inbox?email=...`.
  *
- * The mockup's name field and "acepto términos" checkbox are deliberately
- * left out (US-010-f): backend's RegisterUser command takes only email +
- * password, no terms published. Documented in
+ * Mirrors sign-in's structure plus the confirm-password field that's
+ * specific to registration. The mockup's name field and "acepto términos"
+ * checkbox are deliberately left out (US-010-f): backend's RegisterUser
+ * command takes only email + password, no terms published. Documented in
  * docs/design/reference/README.md.
+ *
+ * Cross-flow footer link navigates to `/sign-in`.
  */
-export function SignUpForm({ onSwitchToSignIn }: Props) {
+export function SignUpForm() {
   const [state, formAction] = useActionState<SignUpFormState, FormData>(
     signUpAction,
     initialSignUpState,
@@ -91,7 +88,7 @@ export function SignUpForm({ onSwitchToSignIn }: Props) {
 
       <SubmitButton />
 
-      <FooterLinks onSwitchToSignIn={onSwitchToSignIn} />
+      <FooterLinks />
 
       <LegalText />
     </form>
@@ -123,7 +120,7 @@ function GoogleButton() {
   // OAuth con Google no está implementado todavía. El botón queda visible
   // para mantener la UI del mockup pero deshabilitado para no llevar a una
   // ruta inexistente. Cuando exista el flow OAuth, este botón se convierte
-  // en un <Link href="/auth/google">.
+  // en un <Link href="/oauth/google"> (path TBD según el callback OAuth).
   return (
     <button
       type="button"
@@ -171,18 +168,18 @@ function Divider({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterLinks({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
+function FooterLinks() {
   return (
     <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
       ¿Ya tenés cuenta?{' '}
-      <button
-        type="button"
-        onClick={onSwitchToSignIn}
+      <Link
+        href="/sign-in"
+        prefetch
         className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
         style={{ fontWeight: 500 }}
       >
         Ingresá
-      </button>
+      </Link>
     </div>
   );
 }

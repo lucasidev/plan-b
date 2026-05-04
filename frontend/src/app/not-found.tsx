@@ -4,14 +4,14 @@ import { cn } from '@/lib/utils';
 /**
  * 404 page. Next.js renders this whenever a route segment calls notFound()
  * or the URL doesn't match any route. Same centered single-card layout as
- * /auth/check-inbox so the design language stays consistent across
+ * /sign-up/check-inbox so the design language stays consistent across
  * non-marketing transition surfaces.
  *
  * The "404" itself is the visual lead — display-sized in the accent color,
  * no extra icon. Keeps the page sober and saves the user from another
  * piece of decoration to parse.
  *
- * The "Volver al inicio" CTA points at /auth porque no hay landing pública
+ * The "Volver al inicio" CTA points at /sign-in porque no hay landing pública
  * todavía. Cuando exista una ruta home pública (`/` o equivalente), este
  * link se actualiza.
  */
@@ -79,7 +79,7 @@ export default function NotFound() {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',

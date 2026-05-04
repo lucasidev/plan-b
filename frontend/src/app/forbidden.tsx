@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
  * 403 page. Next.js (with experimental.authInterrupts) renders this when
  * a route segment calls `forbidden()`. Use it when an authenticated user
  * lands on a route they don't have the role for — e.g. a `member` opening
- * a `(staff)` URL deliberately. Today the layout guards redirect to /auth
+ * a `(staff)` URL deliberately. Today the layout guards redirect to /sign-in
  * on a role mismatch; if we ever want to show "no tenés permiso" instead
  * of a silent redirect, the guard can call forbidden() and this surface
  * appears.
@@ -74,7 +74,7 @@ export default function Forbidden() {
         </p>
 
         <Link
-          href="/auth"
+          href="/sign-in"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',

@@ -43,9 +43,9 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     const email = uniqueEmail('e2e-signup');
     const password = 'e2e-test-pw-1234';
 
-    // 1. /auth?mode=signup → form de registro visible
-    await page.goto('/auth?mode=signup');
-    await expect(page.getByRole('tab', { name: /crear cuenta/i, selected: true })).toBeVisible();
+    // 1. /sign-up → form de registro visible
+    await page.goto('/sign-up');
+    await expect(page.getByRole('heading', { name: /empezá en 30 segundos/i })).toBeVisible();
 
     // 2. Submit con email + password + confirm
     await page.getByLabel(/tu email/i).fill(email);
@@ -53,8 +53,8 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.getByLabel(/repetí la contraseña/i).fill(password);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
 
-    // 3. Backend devuelve 201 → redirect a /auth/check-inbox?email=
-    await expect(page).toHaveURL(/\/auth\/check-inbox/, { timeout: 15_000 });
+    // 3. Backend devuelve 201 → redirect a /sign-up/check-inbox?email=
+    await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
     expect(new URL(page.url()).searchParams.get('email')).toBe(email);
 
     // 4. Mailpit recibió el mail con el token de verify
@@ -66,10 +66,10 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await expect(page.getByRole('heading', { name: /^¡listo!$/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /iniciar sesión/i })).toBeVisible();
 
-    // 6. CTA "Iniciar sesión" → /auth en modo signin
+    // 6. CTA "Iniciar sesión" → /sign-in
     await page.getByRole('link', { name: /iniciar sesión/i }).click();
-    await expect(page).toHaveURL(/\/auth(\?|$)/, { timeout: 15_000 });
-    await expect(page.getByRole('tab', { name: /^ingresar$/i, selected: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /buenas de nuevo/i })).toBeVisible();
 
     // 7. Login con la cuenta recién creada → /home
     await page.getByLabel(/tu email/i).fill(email);
@@ -83,7 +83,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
 
   test('email duplicado en sign-up muestra error in-form', async ({ page }) => {
     // Reusamos LUCIA: su email ya existe en el seed.
-    await page.goto('/auth?mode=signup');
+    await page.goto('/sign-up');
     await page.getByLabel(/tu email/i).fill('lucia.mansilla@gmail.com');
     await page.getByLabel(/^contraseña$/i).fill('any-valid-pw-123');
     await page.getByLabel(/repetí la contraseña/i).fill('any-valid-pw-123');

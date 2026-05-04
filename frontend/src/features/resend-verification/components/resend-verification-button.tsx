@@ -7,7 +7,7 @@ import { resendVerificationAction } from '../actions';
 import { initialResendVerificationState, type ResendVerificationFormState } from '../types';
 
 type Props = {
-  /** Email para reenviar el link. Puede venir de un searchParam (`/auth/check-inbox?email=`)
+  /** Email para reenviar el link. Puede venir de un searchParam (`/sign-up/check-inbox?email=`)
    *  o de un error previo de sign-in (`email_not_verified`). */
   email: string;
   /** Variante visual:

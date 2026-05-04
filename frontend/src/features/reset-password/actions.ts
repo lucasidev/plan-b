@@ -10,8 +10,8 @@ import type { ResetPasswordFormState } from './types';
  * Reset-password server action. The token is carried as a hidden input on
  * the form (the page reads it from the search params and injects it),
  * so the action signature stays the same uniform shape `useActionState`
- * expects. On 204 it redirects to `/auth?reset=success`; the auth page
- * reacts to that param and renders a "ya podés ingresar con tu nueva
+ * expects. On 204 it redirects to `/sign-in?reset=success`; the sign-in
+ * page reacts to that param and renders a "ya podés ingresar con tu nueva
  * contraseña" banner.
  */
 export async function resetPasswordAction(
@@ -42,7 +42,7 @@ export async function resetPasswordAction(
   });
 
   if (response.status === 204) {
-    redirect('/auth?reset=success');
+    redirect('/sign-in?reset=success');
   }
 
   const body = (await response.json().catch(() => null)) as ProblemDetails | null;

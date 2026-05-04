@@ -6,7 +6,7 @@ type StaffRole = (typeof STAFF_ROLES)[number];
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
-  if (!session) redirect('/auth');
-  if (!STAFF_ROLES.includes(session.role as StaffRole)) redirect('/auth');
+  if (!session) redirect('/sign-in');
+  if (!STAFF_ROLES.includes(session.role as StaffRole)) redirect('/sign-in');
   return <>{children}</>;
 }

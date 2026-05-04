@@ -50,8 +50,8 @@ test.describe('forgot/reset password (US-033)', () => {
   });
 
   test('Lucía recupera su contraseña desde sign-in y vuelve a entrar', async ({ page }) => {
-    // 1. /auth → click forgot link → /forgot-password
-    await page.goto('/auth');
+    // 1. /sign-in → click forgot link → /forgot-password
+    await page.goto('/sign-in');
     await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
     await expect(page).toHaveURL(/\/forgot-password$/, { timeout: 15_000 });
 
@@ -66,14 +66,14 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.goto(`/reset-password?token=${token}`);
     await expect(page.getByLabel(/^contraseña nueva$/i)).toBeVisible();
 
-    // 4. Happy path → /auth?reset=success.
+    // 4. Happy path → /sign-in?reset=success.
     // (Inline validation errors – password corta, mismatch – se cubren
     // en el component test del reset-password-form, no acá. Acá nos
     // concentramos en el flow cross-stack.)
     await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
     await page.getByLabel(/repetí la contraseña/i).fill(TEMP_PASSWORD);
     await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
-    await expect(page).toHaveURL(/\/auth\?reset=success/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/sign-in\?reset=success/, { timeout: 15_000 });
     await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
 
     // 5. Sign-in con la nueva pw → /home
