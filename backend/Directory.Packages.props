@@ -15,10 +15,10 @@
 
   <ItemGroup Label="Endpoints / Messaging">
     <PackageVersion Include="Carter" Version="10.0.0" />
-    <PackageVersion Include="WolverineFx" Version="5.35.2" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.35.2" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.35.2" />
-    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.35.2" />
+    <PackageVersion Include="WolverineFx" Version="5.36.2" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.36.2" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.36.2" />
+    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.36.2" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
   </ItemGroup>
