@@ -57,7 +57,7 @@ jobs:
           PUSH_AFTER: ${{ github.event.after }}
 
       - name: Commit changes back
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: 'docs(changelog): auto-update from ${{ github.event.head_commit.id }}'
           file_pattern: CHANGELOG.md
