@@ -22,8 +22,6 @@ export type Session = {
 };
 
 const ACCESS_COOKIE = 'planb_session';
-const ISSUER = 'planb';
-const AUDIENCE = 'planb';
 
 // .NET's JwtSecurityTokenHandler maps ClaimTypes.Role onto this URL on the
 // wire unless OutboundClaimTypeMap is cleared. The backend keeps the default
@@ -56,9 +54,10 @@ export async function getSession(): Promise<Session | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(serverEnv().JWT_SECRET), {
-      issuer: ISSUER,
-      audience: AUDIENCE,
+    const env = serverEnv();
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(env.JWT_SECRET), {
+      issuer: env.JWT_ISSUER,
+      audience: env.JWT_AUDIENCE,
       algorithms: ['HS256'],
     });
 
