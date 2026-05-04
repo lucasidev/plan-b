@@ -81,6 +81,9 @@ jobs:
       # haya pegado OK — exactamente el síntoma del fail original.
       JWT_SECRET: ci-test-jwt-secret-must-be-at-least-32-chars-long
       SESSION_SECRET: ci-test-session-secret-must-be-at-least-32-chars-long
+      # TEMP: enable debug logs en getSession() y forwardSetCookies para
+      # diagnosticar por qué el guard rechaza la sesión post-sign-in en CI.
+      E2E_DEBUG: '1'
       # Override que usa el helper redis.ts para skipear podman exec viejo.
       # Hoy el helper usa ioredis directo y no mira esto, pero lo dejamos
       # como cinturón para no romper si reintroducimos el path container.
