@@ -53,6 +53,11 @@ const ROLE_MAP: Record<string, Session['role']> = {
 export async function getSession(): Promise<Session | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(ACCESS_COOKIE)?.value;
+  // TEMP CI-DEBUG: revertir tras diagnosticar el fail de E2E en main.
+  if (process.env.E2E_DEBUG === '1') {
+    // eslint-disable-next-line no-console
+    console.log('[session-debug] hasCookie=', Boolean(token), 'tokenLen=', token?.length ?? 0);
+  }
   if (!token) return null;
 
   try {
@@ -67,9 +72,30 @@ export async function getSession(): Promise<Session | null> {
     const rawRole = payload.role ?? payload[ROLE_CLAIM_URI];
     const role = typeof rawRole === 'string' ? ROLE_MAP[rawRole] : undefined;
 
+    if (process.env.E2E_DEBUG === '1') {
+      // eslint-disable-next-line no-console
+      console.log(
+        '[session-debug] verify ok, userId=',
+        userId,
+        'email=',
+        email,
+        'rawRole=',
+        rawRole,
+        'mappedRole=',
+        role,
+      );
+    }
+
     if (!userId || !email || !role) return null;
     return { userId, email, role };
-  } catch {
+  } catch (error) {
+    if (process.env.E2E_DEBUG === '1') {
+      // eslint-disable-next-line no-console
+      console.log(
+        '[session-debug] verify failed:',
+        error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      );
+    }
     // jose throws JOSEError variants for: bad signature, expired, malformed,
     // wrong issuer/audience. For any of those we treat the session as absent.
     return null;
