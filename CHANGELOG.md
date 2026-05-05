@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - inyectar JWT_SECRET + SESSION_SECRET al frontend en E2E (ci) — [`9101155`](https://github.com/lucasidev/plan-b/commit/9101155b4df813a75207cef6a3d9d56ac0b1c93a)
 - materializar frontend/.env.local con secrets en CI (ci) — [`3f96ea9`](https://github.com/lucasidev/plan-b/commit/3f96ea9eddd467d4076930c866a7dd721fddbbcf)
 - JWT__Issuer/Audience deben ser 'planb' (matchean hardcoded del frontend) (ci) — [`3f53709`](https://github.com/lucasidev/plan-b/commit/3f53709ad721a373dd78be60e2b3be4b3350e412)
+- reemplazar link a INVEST de Agile Alliance por XP123 (Bill Wake) (docs) — [`b0a3763`](https://github.com/lucasidev/plan-b/commit/b0a37635e3c00db0ba171f6e15627bae740e305f)
 
 ### Changed
 
