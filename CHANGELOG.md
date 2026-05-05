@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - resend verification email end-to-end (US-021) (identity) — [`4ef9f60`](https://github.com/lucasidev/plan-b/commit/4ef9f60f5d8062be5c356bf22a3f4a92e4267afe)
 - expirar registros no verificados a los 7 dias (US-022) (identity) — [`ff8a872`](https://github.com/lucasidev/plan-b/commit/ff8a872ed5c88a083f101b97feddd52d01655067)
 - catalogo Academic minimo + StudentProfile (US-012) (identity) — [`fe7c4be`](https://github.com/lucasidev/plan-b/commit/fe7c4be41e6d6f404cb0f3a8b492cf4db996e859)
+- rebuild auth a 4 rutas separadas (US-036) (auth) — [`ab73b1a`](https://github.com/lucasidev/plan-b/commit/ab73b1a662b0beff0e7b8f5e793ae8669e6bccf0)
 
 ### Fixed
 
