@@ -4,6 +4,8 @@ Criterios mínimos que toda User Story debe cumplir para considerarse `Done`. Ap
 
 Cada AC específica de una US se suma a estos criterios generales, no los reemplaza.
 
+> **Definition of Ready (DoR)** — pre-sprint, lista de criterios para que una US esté lista para entrar al sprint planning. Vive en [`us-template.md`](us-template.md) porque depende del shape de la US, no del shape del código. DoD (este doc) cubre el post-implementación.
+
 ---
 
 ## 1. Código
@@ -68,4 +70,12 @@ Cada AC específica de una US se suma a estos criterios generales, no los reempl
 
 ---
 
-Actualizado: 2026-04-25.
+## Refs
+
+- Template + DoR: [`us-template.md`](us-template.md)
+- Conventions de US: [`user-stories.md`](user-stories.md)
+- Bases industriales (INVEST, Connextra, BDD, AC limit) citadas en `us-template.md`.
+
+---
+
+Actualizado: 2026-05-05.
