@@ -206,9 +206,13 @@ Toda la T-series del MVP cerró en S1 (Done arriba). Trabajo de tooling futuro v
 
 ---
 
-## Definition of Done
+## Template y criterios
 
-[definition-of-done.md](definition-of-done.md)
+- **Template de US**: [us-template.md](us-template.md) — incluye estructura completa, sources de las prácticas (INVEST / Connextra / BDD / DoR), y guía de cuándo aplicar cada sección.
+- **Definition of Ready (DoR)**: dentro de `us-template.md` — pre-sprint, qué tiene que tener una US para entrar al sprint planning.
+- **Definition of Done (DoD)**: [definition-of-done.md](definition-of-done.md) — post-implementación, qué tiene que cumplir una US para considerarse Done.
+
+US que entran a sprint backfillean (si faltan): Out of scope, Edge cases, Test scenarios (Given-When-Then), Dependencies. US en Backlog pueden estar más livianas — el backfill es parte del sprint planning.
 
 ---
 
