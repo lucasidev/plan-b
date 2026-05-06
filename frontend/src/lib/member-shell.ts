@@ -120,3 +120,18 @@ export function getInitialsFromEmail(email: string): string {
 
   return local.slice(0, 2).toUpperCase().padEnd(2, '?');
 }
+
+/**
+ * Display name temporal: "lucia.mansilla@gmail.com" → "Lucia Mansilla".
+ * Mismo motivo que getInitialsFromEmail: el StudentProfile no carga
+ * todavía el firstName/lastName en el JWT. Cuando aterrice, este helper
+ * se reemplaza por leer eso directo desde la sesión (US-047 Mi perfil).
+ */
+export function displayNameFromEmail(email: string): string {
+  const local = email.split('@')[0] ?? '';
+  if (!local) return email;
+  return local
+    .split('.')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
