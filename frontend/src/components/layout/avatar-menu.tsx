@@ -4,7 +4,7 @@ import { ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { signOutAction } from '@/features/sign-out';
-import { getInitialsFromEmail } from '@/lib/member-shell';
+import { displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -119,20 +119,6 @@ function Identity({ email }: { email: string }) {
       </small>
     </div>
   );
-}
-
-/**
- * Display name temporal: "lucia.mansilla@gmail.com" → "Lucia Mansilla".
- * Cuando US-012 (StudentProfile) aterrice y la session lleve `firstName +
- * lastName`, este helper se reemplaza por leer eso directo.
- */
-function displayNameFromEmail(email: string): string {
-  const local = email.split('@')[0] ?? '';
-  if (!local) return email;
-  return local
-    .split('.')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
 }
 
 function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
