@@ -11,9 +11,10 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 ///
 /// Caller: dropdown 3 de la cascada del onboarding (US-037), después de elegir Carrera.
 ///
-/// Devuelve TODOS los planes (current / draft / deprecated) para que admin UIs futuras puedan
-/// reusar el endpoint. El cliente del onboarding filtra <c>Status == "current"</c> para no
-/// ofrecer planes obsoletos al alumno.
+/// Devuelve TODOS los planes para que admin UIs futuras puedan reusar el endpoint. El status
+/// viene como el enum <see cref="Planb.Academic.Domain.CareerPlans.CareerPlanStatus"/> serializado
+/// por EF (Active | Deprecated). El cliente del onboarding filtra <c>Status == "Active"</c> para
+/// no ofrecer planes históricos al alumno.
 /// </summary>
 public sealed class ListCareerPlansEndpoint : ICarterModule
 {
