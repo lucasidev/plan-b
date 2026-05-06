@@ -1,3 +1,4 @@
+using Planb.Identity.Application.Features.GetStudentProfile;
 using Planb.Identity.Domain.Users;
 
 namespace Planb.Identity.Application.Abstractions.Reading;
@@ -17,5 +18,15 @@ public interface IIdentityReadService
     /// </summary>
     Task<IReadOnlyList<UserId>> GetUnverifiedExpirationCandidatesAsync(
         DateTimeOffset cutoff,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Devuelve el StudentProfile asociado a un user (uno por user en el modelo MVP, ver
+    /// US-012). Null si el user no tiene profile aún. Caller principal: GET /api/me/student-profiles
+    /// (US-037) para el guard del layout (member) "user tiene profile" que decide entre /home
+    /// y /onboarding/welcome.
+    /// </summary>
+    Task<StudentProfileResponse?> GetStudentProfileByUserIdAsync(
+        UserId userId,
         CancellationToken ct = default);
 }

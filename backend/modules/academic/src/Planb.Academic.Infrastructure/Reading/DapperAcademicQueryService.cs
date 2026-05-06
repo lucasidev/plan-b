@@ -54,4 +54,59 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return await db.QuerySingleOrDefaultAsync<CareerPlanSummary>(
             new CommandDefinition(sql, new { Id = careerPlanId }, cancellationToken: ct));
     }
+
+    public async Task<IReadOnlyList<UniversityListItem>> ListUniversitiesAsync(
+        CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id   AS Id,
+                name AS Name,
+                slug AS Slug
+            FROM academic.universities
+            ORDER BY name ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<UniversityListItem>(
+            new CommandDefinition(sql, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<IReadOnlyList<CareerListItem>> ListCareersByUniversityAsync(
+        Guid universityId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id            AS Id,
+                university_id AS UniversityId,
+                name          AS Name,
+                slug          AS Slug
+            FROM academic.careers
+            WHERE university_id = @UniversityId
+            ORDER BY name ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<CareerListItem>(
+            new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<IReadOnlyList<CareerPlanListItem>> ListCareerPlansByCareerAsync(
+        Guid careerId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id        AS Id,
+                career_id AS CareerId,
+                year      AS Year,
+                status    AS Status
+            FROM academic.career_plans
+            WHERE career_id = @CareerId
+            ORDER BY year DESC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<CareerPlanListItem>(
+            new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
+        return rows.AsList();
+    }
 }

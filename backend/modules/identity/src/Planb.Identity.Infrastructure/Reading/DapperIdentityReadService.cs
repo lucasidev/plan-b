@@ -3,6 +3,7 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Planb.Identity.Application.Abstractions.Reading;
+using Planb.Identity.Application.Features.GetStudentProfile;
 using Planb.Identity.Domain.Users;
 
 namespace Planb.Identity.Infrastructure.Reading;
@@ -46,5 +47,30 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
             new CommandDefinition(sql, new { Cutoff = cutoff }, cancellationToken: ct));
 
         return ids.Select(id => new UserId(id)).ToList();
+    }
+
+    public async Task<StudentProfileResponse?> GetStudentProfileByUserIdAsync(
+        UserId userId,
+        CancellationToken ct = default)
+    {
+        // El modelo MVP tiene 1 StudentProfile por user (UNIQUE constraint en user_id +
+        // career_id, y de hecho enforce 1-a-1 a nivel aggregate en User.AddStudentProfile).
+        // Si en algún momento permitimos múltiples (cambio de carrera con histórico), este
+        // endpoint cambia a devolver el "current" según un campo nuevo.
+        const string sql = @"
+            SELECT
+                id               AS Id,
+                user_id          AS UserId,
+                career_id        AS CareerId,
+                career_plan_id   AS CareerPlanId,
+                enrollment_year  AS EnrollmentYear,
+                status           AS Status
+            FROM identity.student_profiles
+            WHERE user_id = @UserId
+            LIMIT 1;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<StudentProfileResponse>(
+            new CommandDefinition(sql, new { UserId = userId.Value }, cancellationToken: ct));
     }
 }
