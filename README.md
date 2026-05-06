@@ -6,13 +6,11 @@ Resuelve cinco decisiones concretas que enfrenta el alumno al inscribirse (¿rec
 
 ## Contexto académico
 
-|                 |                                                               |
-| --------------- | ------------------------------------------------------------- |
-| **Asignatura**  | Proyecto Final                                                |
-| **Carrera**     | Tecnicatura Universitaria en Desarrollo y Calidad de Software |
-| **Universidad** | Universidad del Norte Santo Tomás de Aquino (UNSTA)           |
-| **Docente**     | Ing. Elio Copas                                               |
-| **Alumno**      | Lucas Daniel Iriarte                                          |
+- **Asignatura**: Proyecto Final
+- **Carrera**: Tecnicatura Universitaria en Desarrollo y Calidad de Software
+- **Universidad**: Universidad del Norte Santo Tomás de Aquino (UNSTA)
+- **Docente**: Ing. Elio Copas
+- **Alumno**: Lucas Daniel Iriarte
 
 ## Problema
 
