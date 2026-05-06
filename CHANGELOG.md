@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - catalogo Academic minimo + StudentProfile (US-012) (identity) — [`fe7c4be`](https://github.com/lucasidev/plan-b/commit/fe7c4be41e6d6f404cb0f3a8b492cf4db996e859)
 - rebuild auth a 4 rutas separadas (US-036) (auth) — [`ab73b1a`](https://github.com/lucasidev/plan-b/commit/ab73b1a662b0beff0e7b8f5e793ae8669e6bccf0)
 - public catalog endpoints + GET student-profile (US-037-b) (onboarding) — [`fe06ec5`](https://github.com/lucasidev/plan-b/commit/fe06ec5e651d99fde073fa51926529433d1a9e36)
+- frontend del onboarding 4 pasos post-registro (US-037-f) (onboarding) — [`0fa503a`](https://github.com/lucasidev/plan-b/commit/0fa503aac505b47fbd8a0a90511514d7bed1b5dc)
 
 ### Fixed
 
