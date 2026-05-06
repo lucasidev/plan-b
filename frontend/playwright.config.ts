@@ -56,6 +56,11 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
+    // PLAYWRIGHT_SLOWMO=<ms> ralentiza cada acción del browser. Útil con
+    // `--headed` para demos visibles ("mostrame el flow corriendo").
+    launchOptions: process.env.PLAYWRIGHT_SLOWMO
+      ? { slowMo: Number(process.env.PLAYWRIGHT_SLOWMO) }
+      : undefined,
   },
 
   // Default chromium siempre. FF/Webkit como matrix opcional via env var.

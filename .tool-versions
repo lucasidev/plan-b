@@ -1,0 +1,18 @@
+# Pin de versiones del toolchain. Lo respetan asdf y mise — devs que usan
+# alguna de esas herramientas instalan automáticamente la versión correcta
+# con `mise install` o `asdf install` desde la raíz del repo.
+#
+# Devs sin asdf/mise: este archivo es inerte. `just doctor` chequea las
+# versiones contra estos pins y advierte si hay drift.
+#
+# Política de bumps (ver docs/decisions/0XXX cuando aterrice ADR de
+# pinning policy):
+#   - Tier 1 (toolchain core): patch bumps OK, minor manual, major review.
+#   - dotnet: rollForward=latestPatch en backend/global.json hace patches
+#     auto. Minor/major se sincroniza acá manualmente.
+#   - bun: pin a la última stable conocida; bump cuando el ecosistema lo
+#     requiera o haya CVE.
+#   - lefthook: pin a la última stable; bump al unísono con bun.
+dotnet 10.0.201
+bun 1.3.5
+lefthook 2.1.1
