@@ -3,8 +3,27 @@
 # Ecosistemas cubiertos:
 #   - nuget        → backend (.NET 10) deps centralizados en Directory.Packages.props
 #   - npm          → frontend (bun lockfile + package.json)
+#   - dotnet-sdk   → backend/global.json (SDK version pin)
 #   - github-actions → versiones de actions usadas en .github/workflows/
 #   - docker       → base images en docker-compose.yml + frontend/Dockerfile
+#
+# Política de pinning por tier (ver docs/testing/conventions.md y la mención
+# en `.tool-versions`):
+#
+#   - **Tier 1 (framework core)**: deps que estructuran cómo está armado planb.
+#     Breaking changes = refactor de toda la app. Ejemplos: Microsoft.AspNetCore.*,
+#     WolverineFx, Microsoft.EntityFrameworkCore.*, react, next, @tanstack/react-*,
+#     tailwindcss, zod. Política: **ignore major**. Auto minor+patch. Major manual
+#     SOLO cuando: (a) el ecosistema lo fuerza, (b) hay CVE (security advisory
+#     bypass del ignore — Dependabot abre PR igual).
+#
+#   - **Tier 2 (libs cohesivas)**: lucide-react, BCrypt.Net-Next, Carter, Dapper,
+#     iron-session, jose, etc. Política: auto minor+patch agrupados, major queda
+#     como PR individual con review humano.
+#
+#   - **Tier 3 (devDeps / tooling)**: @biomejs/biome, vitest, @playwright/test,
+#     @types/*, typescript, Shouldly, xunit. Política: auto todo (incluso majors).
+#     Blast radius chico, fácil revertir.
 #
 # Schedule: lunes temprano. Cap de PRs abiertos por ecosistema para no inundar.
 # Conventional Commits prefix configurado para que cada PR pase pr-title.yml y
@@ -27,6 +46,20 @@ updates:
     labels:
       - "dependencies"
       - "backend"
+    # Tier 1 backend: ignore major (security advisories bypassan este filtro).
+    ignore:
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.EntityFrameworkCore*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Npgsql.EntityFrameworkCore.PostgreSQL"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "WolverineFx*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Carter"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "FluentValidation*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Agrupar minor/patch en un solo PR para reducir ruido.
       backend-minor-patch:
@@ -47,9 +80,60 @@ updates:
     labels:
       - "dependencies"
       - "frontend"
+    # Tier 1 frontend: ignore major (security advisories bypassan).
+    ignore:
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@tanstack/react-query"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@tanstack/react-query-next-experimental"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@tanstack/react-form"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@tailwindcss/postcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "zod"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "iron-session"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "jose"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
     groups:
       frontend-minor-patch:
         update-types: ["minor", "patch"]
+
+  # SDK de .NET. Lee backend/global.json y abre PRs cuando aparece nueva
+  # versión. Combinado con `rollForward: latestPatch` del global.json, esto
+  # permite que el SDK se mantenga al día dentro de 10.0.x sin saltar a 11.0
+  # sin review humano.
+  - package-ecosystem: "dotnet-sdk"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Argentina/Buenos_Aires"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "toolchain"
+    # Mismo pattern: ignore major bumps; minor/patch OK auto.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -82,3 +166,10 @@ updates:
     labels:
       - "dependencies"
       - "infra"
+    # Bases de infra: Postgres / Redis / Mailpit. Major bumps requieren
+    # review (Postgres 17 → 18 es upgrade real, no patch). Patches OK auto.
+    ignore:
+      - dependency-name: "pgvector/pgvector"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "redis"
+        update-types: ["version-update:semver-major"]
