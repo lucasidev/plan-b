@@ -2,6 +2,9 @@
   "name": "planb-frontend",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "bun": ">=1.3.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

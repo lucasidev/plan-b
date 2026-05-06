@@ -78,6 +78,12 @@ container-info:
     @echo ""
     @echo "Override with: CONTAINER_CMD=docker just <recipe>"
 
+# Validate toolchain: dotnet, bun, lefthook, playwright browsers, container runtime.
+# Reads pins from .tool-versions and backend/global.json, compares with installed.
+# Reports drift but does not auto-install (devs decide what to bump).
+doctor:
+    bun scripts/doctor.ts
+
 # ═══════════════════════════════════════════════════════════════
 # Build / Test / Lint
 # ═══════════════════════════════════════════════════════════════
@@ -132,6 +138,11 @@ backend-restore:
 
 frontend-install:
     cd frontend && bun install
+    # Idempotente: Playwright skip si el binary ya está instalado y matchea
+    # la versión de @playwright/test. Sin esto, `just frontend-test-e2e` falla
+    # con "Executable not found" en máquina nueva. CI ya lo hace en e2e.yml,
+    # pero el setup local no lo cubría — gap que cierra US devex S2.
+    cd frontend && bunx playwright install chromium
 
 # ═══════════════════════════════════════════════════════════════
 # Database (EF Core migrations, per module)
