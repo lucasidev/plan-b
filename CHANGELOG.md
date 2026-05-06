@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - expirar registros no verificados a los 7 dias (US-022) (identity) — [`ff8a872`](https://github.com/lucasidev/plan-b/commit/ff8a872ed5c88a083f101b97feddd52d01655067)
 - catalogo Academic minimo + StudentProfile (US-012) (identity) — [`fe7c4be`](https://github.com/lucasidev/plan-b/commit/fe7c4be41e6d6f404cb0f3a8b492cf4db996e859)
 - rebuild auth a 4 rutas separadas (US-036) (auth) — [`ab73b1a`](https://github.com/lucasidev/plan-b/commit/ab73b1a662b0beff0e7b8f5e793ae8669e6bccf0)
+- public catalog endpoints + GET student-profile (US-037-b) (onboarding) — [`fe06ec5`](https://github.com/lucasidev/plan-b/commit/fe06ec5e651d99fde073fa51926529433d1a9e36)
 
 ### Fixed
 
@@ -38,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - materializar frontend/.env.local con secrets en CI (ci) — [`3f96ea9`](https://github.com/lucasidev/plan-b/commit/3f96ea9eddd467d4076930c866a7dd721fddbbcf)
 - JWT__Issuer/Audience deben ser 'planb' (matchean hardcoded del frontend) (ci) — [`3f53709`](https://github.com/lucasidev/plan-b/commit/3f53709ad721a373dd78be60e2b3be4b3350e412)
 - reemplazar link a INVEST de Agile Alliance por XP123 (Bill Wake) (docs) — [`b0a3763`](https://github.com/lucasidev/plan-b/commit/b0a37635e3c00db0ba171f6e15627bae740e305f)
+- quitar links a US-037-f.md que aun no existe (docs) — [`ca2a50e`](https://github.com/lucasidev/plan-b/commit/ca2a50e332b31ee23e90d526e32d943e48473c26)
 
 ### Changed
 
