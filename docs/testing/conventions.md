@@ -286,6 +286,24 @@ Reglas:
 - Cada test es independiente: limpia rate limits, restaura estado al final si modificó datos.
 - E2E corre on-demand en CI (label `e2e` en el PR o push a main). Localmente: `just frontend-test-e2e`.
 
+#### Dominio vs infra: cuándo un helper directo está OK
+
+Una pregunta recurrente: ¿está bien que `e2e/helpers/mailpit.ts` lea Mailpit HTTP directo en vez de pasar por un endpoint del backend? ¿Y `e2e/helpers/redis.ts` que borra keys de rate limit? La regla es:
+
+> **Helpers de infra directos están OK si lo que tocan es infra. NO están OK si tocan dominio.**
+
+| Helper | Qué toca | ¿OK? | Por qué |
+|---|---|---|---|
+| `mailpit.ts` | "Inbox del user" — equivalente local de SES/SendGrid | Sí | Mailpit ES tu SMTP server en dev. El backend envía mail SMTP real, Mailpit lo intercepta, el test extrae el token con regex. El template HTML sí se renderiza, el link sí se valida. El único atajo es que el "click humano" lo hace un regex — inevitable en CI. |
+| `redis.ts` | Rate limit state (clave de implementación) | Sí | Atajo semántico (en prod no reseteás rate limits, esperás el TTL). Pero esperar 15 min entre tests es inviable. El test ejerce fielmente el rate limit, solo manipula el estado de inicio. |
+| Hipotético helper que hace `DELETE FROM identity.users WHERE email = ...` | Modelo del dominio | **No** | Eso requiere endpoint real (`DELETE /api/me/account`). Si el verb no existe en la API, **es señal de US faltante** (compliance + UX), no de "necesitamos un helper". |
+
+**Corolario**: cuando un E2E necesita "limpiar" data del dominio, la primera pregunta no es "qué helper escribo" sino "qué verb me falta exponer en la API". Casi siempre es un verb que el producto debería tener anyway por compliance (Ley 25.326 art. 6 — derecho de supresión) o UX. El helper directo a la DB de dominio es atajo arquitectónico que esconde una US faltante.
+
+**Lo que sí es legítimo como helper de infra**: Mailpit (mail server local), Redis (cache/rate-limit state), Wolverine outbox query (state interno del messaging), file system (uploads tmp). Lo que NO: tablas del dominio (`users`, `reviews`, `student_profiles`, etc.).
+
+**Atajos que aceptamos deliberadamente**: ningún E2E es 100% fiel al user real. Siempre hay alguno (el "click humano" del mail, el "esperar TTL" del rate limit, el tiempo físico). La regla práctica: que los atajos sean en la **interacción con sistemas externos** (mail provider, clock), no en el **comportamiento del producto**.
+
 ## Changelog automation
 
 Cubierto por [ADR-0037](../decisions/0037-changelog-automation-auto-append.md). Resumen:
