@@ -467,4 +467,30 @@ public sealed class User : Entity<UserId>, IAggregateRoot
 
         return profile;
     }
+
+    /// <summary>
+    /// Marks the account as deleted by the user themselves (UC-038, right of erasure / Ley 25.326
+    /// art. 6). The aggregate is about to be removed from persistence — this method does not
+    /// mutate the user state, it only emits the corresponding domain event so subscribers
+    /// (notably the integration-event translator and the audit-log writer) can react.
+    /// <para>
+    /// Hard delete by design: soft delete leaves the user's identifiable data "present but
+    /// hidden", which is ambiguous under Ley 25.326. The right of erasure asks for suppression,
+    /// not archival. The <see cref="UserDeletionLog"/> with <c>email_hash</c> preserves audit
+    /// continuity without violating that intent.
+    /// </para>
+    /// <para>
+    /// Idempotency is enforced at the persistence layer: re-issuing the command for an already
+    /// deleted user fails the lookup (the row is gone) and the handler returns <c>404</c>. This
+    /// method itself is unconditional — by the time we reach the aggregate, the row exists.
+    /// </para>
+    /// </summary>
+    public Result Delete(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        var now = clock.UtcNow;
+        Raise(new UserAccountDeletedDomainEvent(Id, Email, now));
+        return Result.Success();
+    }
 }

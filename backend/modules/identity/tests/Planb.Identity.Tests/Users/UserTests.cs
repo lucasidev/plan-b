@@ -782,4 +782,42 @@ public class UserTests
         second.IsSuccess.ShouldBeTrue();
         user.StudentProfiles.Count.ShouldBe(2);
     }
+
+    [Fact]
+    public void Delete_emits_UserAccountDeletedDomainEvent_with_user_id_email_and_clock_time()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.ClearDomainEvents();
+
+        var result = user.Delete(clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var evt = user.DomainEvents.OfType<UserAccountDeletedDomainEvent>().ShouldHaveSingleItem();
+        evt.UserId.ShouldBe(user.Id);
+        evt.Email.ShouldBe(user.Email);
+        evt.OccurredAt.ShouldBe(clock.UtcNow);
+    }
+
+    [Fact]
+    public void Delete_does_not_mutate_aggregate_state()
+    {
+        // The aggregate is about to be removed at the persistence layer; Delete() only signals
+        // intent via the domain event. State assertions guard against future regressions where
+        // someone adds disabling-style mutations and breaks idempotency or removes the right of
+        // erasure semantics (we want hard delete, not soft).
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        var emailBefore = user.Email;
+        var roleBefore = user.Role;
+        var verifiedAtBefore = user.EmailVerifiedAt;
+
+        user.Delete(clock);
+
+        user.Email.ShouldBe(emailBefore);
+        user.Role.ShouldBe(roleBefore);
+        user.EmailVerifiedAt.ShouldBe(verifiedAtBefore);
+        user.IsDisabled.ShouldBeFalse();
+        user.IsExpired.ShouldBeFalse();
+    }
 }
