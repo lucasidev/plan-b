@@ -10,11 +10,14 @@ public sealed class IdentityDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<UserDeletionLog> UserDeletionLogs => Set<UserDeletionLog>();
+
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(SchemaName);
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new UserDeletionLogConfiguration());
     }
 }

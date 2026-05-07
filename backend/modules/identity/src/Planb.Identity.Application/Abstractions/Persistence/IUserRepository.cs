@@ -6,6 +6,14 @@ public interface IUserRepository
 {
     void Add(User user);
 
+    /// <summary>
+    /// Marks the user as removed in the unit of work. The actual delete is issued by EF Core
+    /// when <see cref="IIdentityUnitOfWork.SaveChangesAsync"/> commits. Owned collections
+    /// (verification tokens, student profiles) cascade automatically via EF's default delete
+    /// behavior for owned-entity relationships.
+    /// </summary>
+    void Remove(User user);
+
     Task<bool> ExistsByEmailAsync(EmailAddress email, CancellationToken ct = default);
 
     Task<User?> FindByEmailAsync(EmailAddress email, CancellationToken ct = default);
