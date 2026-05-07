@@ -10,7 +10,7 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 
 | Sprint | Rango | Foco | Status |
 |---|---|---|---|
-| S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity slices A+B | ✓ Done |
+| S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | próximo | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell (stub data) | ⏳ Pendiente |
 | S3 | next | Planificar shell + Mi perfil + self-disable | ⏳ Pendiente |
@@ -59,7 +59,7 @@ Convenciones:
 | US-F04-i | CI baseline GitHub Actions | EPIC-00 |
 | US-F05 | ADRs base 0001-0033 | EPIC-00 |
 | US-F06 | DDD formalization (strategic + tactical + epics + US) | EPIC-00 |
-| US-010-b | Register backend (slice A+B) | EPIC-02 |
+| US-010-b | Register backend (S0) | EPIC-02 |
 
 ### Stack técnico funcionando
 
@@ -256,16 +256,13 @@ Cubre los entregables documentales listados en S0 arriba: ADRs 0001-0033, ubiqui
 
 ### Fase 2 — Backend y autenticación ✓
 
-Cerrada al final de S1 (2026-05-02). Subdividida en 5 slices end-to-end:
+Cerrada al final de S1 (2026-05-02). Sprints involucrados:
 
-| Slice | Sprint | Status | Detalle |
-|---|---|---|---|
-| A | S0 | ✓ Done | Identity schema + primera migración EF Core |
-| B | S0 | ✓ Done | UC-010 Register backend + email de verificación |
-| C+E | S1 | ✓ Done | Slice end-to-end de auth: register UI + verify (b+f) + login (b+f) + sign-out |
-| Cleanup | S1 | ✓ Done | Resend verification + expirar registros no verificados + forgot password |
-| D | S1 | ✓ Done | UC-012 StudentProfile (backend) + catálogo Academic mínimo seedeado |
-| D | S2 | ⏳ Pendiente | UC-012 Create StudentProfile |
+| Sprint | Status | Detalle |
+|---|---|---|
+| S0 | ✓ Done | Identity schema + primera migración EF Core; UC-010 Register backend + email de verificación |
+| S1 | ✓ Done | Auth end-to-end: register UI + verify (b+f) + login (b+f) + sign-out + resend verification + expirar registros no verificados + forgot password; UC-012 StudentProfile (backend) + catálogo Academic mínimo seedeado |
+| S2 | ⏳ Pendiente | UC-012 Create StudentProfile (frontend, parte del onboarding US-037-f) |
 
 **Salida real**: auth end-to-end + cleanup + StudentProfile inicial + catálogo Academic mínimo (4 universidades + 18 carreras IT). Lucía puede registrarse, verificar email, hacer login, ver el AppShell con home, asociarse a una carrera (vía API), y hacer sign-out.
 

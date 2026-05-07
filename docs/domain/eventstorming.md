@@ -58,7 +58,7 @@ Ocurre una vez por alumno (o pocas — si crea profiles para múltiples carreras
 
 ⚠️ **Hot spots resueltos durante este momento**:
 
-- **HOT 1**: ¿Atomic o eventual la emisión del token? **Eventual via outbox.** El token se emite en una transacción separada al `UserRegistered`. Wolverine outbox garantiza durabilidad. Esto contradice slice B implementation actual (atomic) → flagged como deuda en slice C.
+- **HOT 1**: ¿Atomic o eventual la emisión del token? **Eventual via outbox.** El token se emite en una transacción separada al `UserRegistered`. Wolverine outbox garantiza durabilidad. Esto contradice la implementación actual de S0 (atomic) → flagged como deuda en S1.
 - **HOT 2**: ¿Modelar stuck users? **Sí**, expire después de 7 días sin verificar. Email queda re-claimable vía índice único parcial `WHERE expired_at IS NULL`.
 
 ---
