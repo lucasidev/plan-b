@@ -9,10 +9,10 @@ supersedes-partial: 0024
 
 ## Contexto
 
-[ADR-0024](0024-dev-tooling-stack.md) fijó Testcontainers como la herramienta de integration testing ("levanta un Postgres real por test"). Cuando arrancó Fase 2 y los primeros tests de integration reales (Slice A del módulo Identity) empezaron a correr local y en CI, la realidad golpeó la teoría:
+[ADR-0024](0024-dev-tooling-stack.md) fijó Testcontainers como la herramienta de integration testing ("levanta un Postgres real por test"). Cuando arrancó Fase 2 y los primeros tests de integration reales (S0 del módulo Identity) empezaron a correr local y en CI, la realidad golpeó la teoría:
 
 - **Testcontainers + Podman + Windows no anda out-of-the-box.** Testcontainers-.NET usa `Docker.DotNet` para hablarle a un Docker Engine vía socket/named pipe. Podman en Windows (WSL backend) no expone un docker-compatible named pipe por default; la API viaja sobre SSH. `Docker.DotNet` no maneja SSH URIs. Hacer andar Testcontainers requiere habilitar manualmente `podman system service tcp:0.0.0.0:2375` dentro del WSL y setear `DOCKER_HOST=tcp://localhost:2375` — setup opcional que un dev nuevo no tiene por qué saber.
-- **Startup tax por test class.** Arrancar un Postgres container nuevo por test class agrega ~3-5s de cold start. En Slice A con 3 integration tests era tolerable; en Slice B pasó a 8 tests y la espera se sintió.
+- **Startup tax por test class.** Arrancar un Postgres container nuevo por test class agrega ~3-5s de cold start. Al inicio con 3 integration tests era tolerable; cuando subió a 8 tests la espera se sintió.
 - **No soluciona ningún problema que no se resuelva con `just infra-up`.** Ya tenemos un Postgres compartido en docker-compose que arranca al principio del día de trabajo. Si cada test crea su propio *database* dentro de ese Postgres, la isolation es la misma que un container separado — con zero startup tax.
 
 Hay que decidir cómo van a correr los integration tests en dev y en CI.

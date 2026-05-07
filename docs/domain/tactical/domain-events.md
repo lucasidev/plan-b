@@ -128,7 +128,7 @@ public static async Task HandleAsync(
 
 Aggregates emiten via `Raise(event)`. El application handler, después de mutar el aggregate, llama a `DomainEventDispatcher.DispatchAsync([aggregate], publisher, ct)` antes de SaveChanges. El publisher (`WolverineDomainEventPublisher`) los enrolla en el outbox de Wolverine en la misma transacción.
 
-Este flow está implementado y funcional desde slice B. Ver `RegisterUserCommandHandler.Handle` como ejemplo.
+Este flow está implementado y funcional desde S0. Ver `RegisterUserCommandHandler.Handle` como ejemplo.
 
 ### Versioning de events
 

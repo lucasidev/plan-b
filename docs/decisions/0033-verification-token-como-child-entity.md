@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Slice B implementó `EmailVerificationToken` como **aggregate independiente** — propio repositorio, propio Entity con IAggregateRoot, separado del aggregate `User`. Discovery del dominio reveló que esta separación es incorrecta: hay invariantes cross-objects (User + Token) que merecen consistencia atómica.
+S0 implementó `EmailVerificationToken` como **aggregate independiente** — propio repositorio, propio Entity con IAggregateRoot, separado del aggregate `User`. Discovery del dominio reveló que esta separación es incorrecta: hay invariantes cross-objects (User + Token) que merecen consistencia atómica.
 
 Discovery también identificó que el mismo shape de token se reusará para verificación de email institucional de docentes (UC-031). Pregunta abierta: ¿el token es un type específico por contexto, o uno genérico parametrizado?
 
@@ -52,7 +52,7 @@ internal sealed class VerificationToken : Entity<VerificationTokenId>
 
 `TeacherProfile` aggregate sigue el mismo patrón con `purpose=TeacherInstitutionalVerification`.
 
-### Razonamiento del cambio respecto a slice B
+### Razonamiento del cambio respecto a la implementación de S0
 
 El test de Khorikov / Mantinband: **"¿Necesito cargar este objeto independientemente?"** Si la respuesta es no, es child entity, no aggregate.
 
@@ -70,7 +70,7 @@ Para VerificationToken:
 
 ### A — Aggregate independiente especializado por contexto (`EmailVerificationToken`)
 
-Lo que tenemos en código de slice B. Funciona — el handler usa app service para cross-aggregate. Pero:
+Lo que tenemos en código de S0. Funciona — el handler usa app service para cross-aggregate. Pero:
 
 - Pierde atomicidad de "consume + verify".
 - Repository y aggregate boundary innecesarios.
@@ -95,13 +95,13 @@ Mejor que A (no duplica), pero sigue teniendo los problemas de cross-aggregate i
 
 **Negativas**:
 
-- **Refactor required en slice C**:
+- **Refactor required en S1**:
   - Borrar `IEmailVerificationTokenRepository`.
   - Mover la entity al folder de User (Domain/Users/Entities/VerificationToken.cs).
   - User aggregate gana métodos `IssueVerificationToken`, `MarkEmailVerifiedFor`.
   - Migration: rename tabla `email_verification_tokens` → `verification_tokens` + agregar columna `purpose` enum.
   - Refactor de `RegisterUserCommandHandler` para llamar `user.IssueVerificationToken(...)` antes del `users.Add(user)`.
-- Costo del refactor: medio. Slice C ya iba a tocar tokens (verify flow), aprovechamos.
+- Costo del refactor: medio. S1 ya iba a tocar tokens (verify flow), aprovechamos.
 - Cargar User trae los tokens en eager: ~mismo dato que antes (un user típico tiene 0-1 tokens activos), no es perf concern.
 
 **Tabla canónica de child entities**:
