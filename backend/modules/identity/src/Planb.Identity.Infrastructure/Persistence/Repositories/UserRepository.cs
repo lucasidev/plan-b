@@ -12,6 +12,8 @@ internal sealed class UserRepository : IUserRepository
 
     public void Add(User user) => _db.Users.Add(user);
 
+    public void Remove(User user) => _db.Users.Remove(user);
+
     // Filtramos expired_at IS NULL en las queries por email porque, post-US-022, un email puede
     // tener un row expired (sobreviviendo en la DB para audit) y un row nuevo activo. La regla
     // semántica: para "¿este email está en uso?" y "buscame el user con este email", solo
