@@ -29,9 +29,9 @@ Todos los IDs son VO. Ningún aggregate ni entity usa `Guid` directamente. Razó
 
 | ID | BC | Tipo wrapped | Notas |
 |---|---|---|---|
-| `UserId` | Identity | Guid | Implementado en slice A |
-| `VerificationTokenId` | Identity | Guid | Implementado en slice B (renombrado en slice C de `EmailVerificationTokenId`) |
-| `StudentProfileId` | Identity | Guid | Slice D |
+| `UserId` | Identity | Guid | Implementado en S0 |
+| `VerificationTokenId` | Identity | Guid | Implementado en S0 (renombrado en S1 de `EmailVerificationTokenId`) |
+| `StudentProfileId` | Identity | Guid | S1 |
 | `TeacherProfileId` | Identity | Guid | Post-MVP |
 | `UniversityId` | Academic | Guid | Cuando se implementa Academic module |
 | `CareerId` | Academic | Guid | — |

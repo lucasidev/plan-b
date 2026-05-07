@@ -120,14 +120,14 @@ Contras: eventual consistency es más mental load para el dev. Pero está alinea
 **Negativas**:
 
 - Eventual consistency: el dev tiene que diseñar pensando "esto va a converger en milisegundos, no instantáneamente". Para writes sensibles (ej. authorization), validar siempre con read síncrono al BC autoritativo.
-- Más infrastructure: Wolverine schema en Postgres, durability worker corriendo, polling del outbox. Aceptable — ya lo tenemos instalado desde slice B.
+- Más infrastructure: Wolverine schema en Postgres, durability worker corriendo, polling del outbox. Aceptable — ya lo tenemos instalado desde S0.
 - Tests integration tienen que esperar (con timeout) a que el outbox procese events. Patrón estándar en CI.
 
 ## Implementación actual
 
-- **En slice B** ya wireamos el outbox plumbing (`PersistMessagesWithPostgresql`, `AddDbContextWithWolverineIntegration`, `RunWolverineInSoloMode` en tests, `CritterStackDefaults` para dev/prod split).
-- **Aún no usamos** el patrón end-to-end — slice B envía email síncronamente desde el handler en vez de via outbox-driven dispatch. Es deuda explícita, marcada como TODO en el código y en este ADR.
-- **Slice C arranca a usar el patrón en serio**: cuando se refactorea VerificationToken como child entity, el flow de "email verification consumed → mark user verified" debe ser eventually consistent.
+- **En S0** ya wireamos el outbox plumbing (`PersistMessagesWithPostgresql`, `AddDbContextWithWolverineIntegration`, `RunWolverineInSoloMode` en tests, `CritterStackDefaults` para dev/prod split).
+- **Aún no usamos** el patrón end-to-end — el handler de S0 envía email síncronamente en vez de via outbox-driven dispatch. Es deuda explícita, marcada como TODO en el código y en este ADR.
+- **S1 arranca a usar el patrón en serio**: cuando se refactorea VerificationToken como child entity, el flow de "email verification consumed → mark user verified" debe ser eventually consistent.
 
 ## Cuándo revisitar
 
