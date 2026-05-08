@@ -118,8 +118,11 @@ frontend-test-e2e *args:
 # Acepta los mismos args que playwright test (filtros, --grep, etc.).
 # Ej: just frontend-test-e2e-show e2e/auth/onboarding.spec.ts
 #     just frontend-test-e2e-show --grep "happy path"
+# Wrapped en TS porque pwsh (default Windows shell del Justfile) no entiende
+# la sintaxis bash `VAR=value cmd`. El script setea PLAYWRIGHT_SLOWMO via
+# process.env y forwardea args.
 frontend-test-e2e-show *args:
-    cd frontend && PLAYWRIGHT_SLOWMO=300 bunx playwright test --headed {{args}}
+    bun scripts/run-e2e-show.ts {{args}}
 
 lint: backend-lint frontend-lint
 
