@@ -109,7 +109,7 @@ Vincula un User con un CareerPlan. Un User `member` puede tener múltiples Stude
 
 Constraints adicionales:
 
-- `UNIQUE(user_id, career_id)` — un user no puede tener dos profiles en la misma carrera-plan.
+- `UNIQUE(user_id, career_id)`: un user no puede tener dos profiles en la misma carrera-plan.
 - CHECK: `status = 'graduated'` → `graduated_at NOT NULL`.
 - CHECK: `status IN ('active', 'abandoned')` → `graduated_at IS NULL`.
 
@@ -133,14 +133,14 @@ Claim de identidad docente por parte de un User. Sin `verified_at`, el profile e
 Constraints adicionales:
 
 - `UNIQUE(user_id, teacher_id)`.
-- `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL` — un Teacher tiene un único profile verificado.
+- `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL`: un Teacher tiene un único profile verificado.
 - CHECK: `verified_at NOT NULL` → `verification_method NOT NULL`.
 - CHECK: `verification_method = 'manual'` → `verified_by NOT NULL`.
 - CHECK: `verification_method = 'institutional_email'` → `institutional_email NOT NULL`.
 
 ### Entity: VerificationToken (child de User / TeacherProfile)
 
-Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente — vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-como-child-entity.md).
+Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-como-child-entity.md).
 
 | Campo               | Tipo                              | Constraints                              | Notas                                              |
 | ------------------- | --------------------------------- | ---------------------------------------- | -------------------------------------------------- |
@@ -155,8 +155,8 @@ Token opaco usado para verificar el email de un User (purpose=`user_email_verifi
 
 Constraints:
 
-- `UNIQUE(owner_id, purpose) WHERE consumed_at IS NULL AND invalidated_at IS NULL` — un solo token activo por purpose por owner.
-- CHECK: `consumed_at IS NULL OR invalidated_at IS NULL` — un token no puede estar consumido E invalidado simultáneamente.
+- `UNIQUE(owner_id, purpose) WHERE consumed_at IS NULL AND invalidated_at IS NULL`: un solo token activo por purpose por owner.
+- CHECK: `consumed_at IS NULL OR invalidated_at IS NULL`: un token no puede estar consumido E invalidado simultáneamente.
 - CHECK: `expires_at > issued_at`.
 
 ### Invariantes cross-table (enforced en app)
@@ -218,7 +218,7 @@ erDiagram
 
 Constraints:
 
-- `UNIQUE(university_id, code)` — código único por universidad cuando se provee.
+- `UNIQUE(university_id, code)`: código único por universidad cuando se provee.
 
 ### Entity: CareerPlan
 
@@ -431,8 +431,8 @@ Staging del parseo de PDF/texto.
 
 ### Invariantes cross-table (enforced en app)
 
-- `StudentProfile.career_id.career.university_id = Subject.career_plan.career.university_id` para un `EnrollmentRecord` — el alumno cursa materias de su propia universidad/plan.
-- `Commission.subject_id = EnrollmentRecord.subject_id` y `Commission.term_id = EnrollmentRecord.term_id` — la comisión del enrollment corresponde a la materia y cuatrimestre del enrollment.
+- `StudentProfile.career_id.career.university_id = Subject.career_plan.career.university_id` para un `EnrollmentRecord`: el alumno cursa materias de su propia universidad/plan.
+- `Commission.subject_id = EnrollmentRecord.subject_id` y `Commission.term_id = EnrollmentRecord.term_id`: la comisión del enrollment corresponde a la materia y cuatrimestre del enrollment.
 - Una Review solo puede existir sobre enrollments con `status != 'cursando'`.
 
 ## Context: Reviews & Moderation
@@ -477,7 +477,7 @@ Constraints:
 
 - CHECK: `difficulty_rating BETWEEN 1 AND 5`.
 - CHECK: `final_grade IS NULL OR final_grade BETWEEN 0 AND 10`.
-- CHECK: `coalesce(subject_text,'') || coalesce(teacher_text,'') != ''` — no reseña vacía.
+- CHECK: `coalesce(subject_text,'') || coalesce(teacher_text,'') != ''`: no reseña vacía.
 
 ### Entity: ReviewReport
 
@@ -532,7 +532,7 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 
 - `Review.docente_reseñado_id` debe existir en `CommissionTeacher` para la `Commission` del `EnrollmentRecord.commission_id`.
 - `Review` solo se puede crear si `EnrollmentRecord.status != 'cursando'`.
-- `TeacherResponse.teacher_id = Review.docente_reseñado_id` — solo el docente reseñado responde.
+- `TeacherResponse.teacher_id = Review.docente_reseñado_id`: solo el docente reseñado responde.
 - `TeacherResponse` solo puede crearse si existe un `TeacherProfile` con `teacher_id = TeacherResponse.teacher_id` y `verified_at NOT NULL`.
 - `ReviewReport.moderator_id` debe apuntar a un User con `role IN ('moderator','admin')`.
 - `ReviewAuditLog`: cuando `action = 'edited'`, `changes` contiene estructura `{before: {...}, after: {...}}`.

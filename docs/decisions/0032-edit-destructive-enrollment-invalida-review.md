@@ -5,19 +5,19 @@
 
 ## Contexto
 
-Una `Review` se ancla a un `EnrollmentRecord` específico (ver [ADR-0005](0005-reseña-anclada-al-enrollment.md)). El alumno puede editar el EnrollmentRecord ([UC-015](../domain/actors-and-use-cases.md#uc-015)) — corregir status, grade, approval_method, etc. Eso introduce un riesgo:
+Una `Review` se ancla a un `EnrollmentRecord` específico (ver [ADR-0005](0005-reseña-anclada-al-enrollment.md)). El alumno puede editar el EnrollmentRecord ([UC-015](../domain/actors-and-use-cases.md#uc-015)): corregir status, grade, approval_method, etc. Eso introduce un riesgo:
 
-**Caso problemático**: alumno reseñó la cursada cuando estaba en status='aprobada'. Después edita el record a status='cursando' (porque "perdí la final, vuelvo a cursar"). La Review sigue ancla — pero ahora habla de una cursada que aún no terminó. Inconsistente.
+**Caso problemático**: alumno reseñó la cursada cuando estaba en status='aprobada'. Después edita el record a status='cursando' (porque "perdí la final, vuelvo a cursar"). La Review sigue ancla: pero ahora habla de una cursada que aún no terminó. Inconsistente.
 
 Tres respuestas posibles:
 
-- **A — Rechazar la edit**: el EnrollmentRecord no se puede editar mientras tenga Review. El alumno debe primero borrar la Review.
-- **B — Invalidar la Review automáticamente**: la edit es válida; la Review pasa a `under_review` con razón `enrollment_changed`. UI confirma al alumno antes.
-- **C — Permitir la edit, dejar la Review inconsistente**: zero validation, el frontend muestra "esta reseña habla de una cursada que aún no terminó". Desastre de UX.
+- **A: Rechazar la edit**: el EnrollmentRecord no se puede editar mientras tenga Review. El alumno debe primero borrar la Review.
+- **B: Invalidar la Review automáticamente**: la edit es válida; la Review pasa a `under_review` con razón `enrollment_changed`. UI confirma al alumno antes.
+- **C: Permitir la edit, dejar la Review inconsistente**: zero validation, el frontend muestra "esta reseña habla de una cursada que aún no terminó". Desastre de UX.
 
 ## Decisión
 
-**Opción B — invalidar la Review automáticamente (con UI confirmation).**
+**Opción B: invalidar la Review automáticamente (con UI confirmation).**
 
 Concretamente:
 
@@ -32,9 +32,9 @@ Concretamente:
 3. **Si el alumno confirma**: el handler emite `EnrollmentRecordEdited` con un flag/payload identificando qué cambió. Reviews escucha el integration event vía Wolverine outbox ([ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md)) y dispara el command interno `InvalidateReview(reviewId, reason='enrollment_changed')`.
 
 4. **Review invalidada**: pasa a `status='under_review'`. El alumno la ve marcada como "necesita revisión". Puede:
-   - Editarla para reflejar el nuevo estado del EnrollmentRecord (ej. ahora "estoy cursando de nuevo, mi opinión es ...") — vuelve a `published` después de pasar el filter.
+   - Editarla para reflejar el nuevo estado del EnrollmentRecord (ej. ahora "estoy cursando de nuevo, mi opinión es ..."): vuelve a `published` después de pasar el filter.
    - Borrarla.
-   - Esperar — no queda visible al público.
+   - Esperar: no queda visible al público.
 
 ### Cross-BC integration
 
@@ -58,7 +58,7 @@ Eventual consistency. La Review queda inconsistente por unos ms hasta que el out
 
 ## Alternativas consideradas
 
-### A — Rechazar la edit
+### A: Rechazar la edit
 
 Pros: simplifica el modelo (no hay states inconsistentes intermedios).
 
@@ -68,13 +68,13 @@ Contras (decisivos):
 - No hay forma de "preservar la Review original como historia". Borrar + re-escribir pierde la versión vieja.
 - Atrapa al alumno: si quiere reflejar un cambio real (perdió una final), tiene que destruir su contribución previa.
 
-### B — Invalidar automáticamente (elegido)
+### B: Invalidar automáticamente (elegido)
 
 Pros: balance entre consistency y UX. La Review no se borra, queda preservada. El alumno decide qué hacer (re-publicar editada, borrar, ignorar).
 
 Contras: complejidad cross-BC. Pero ya está pagada por [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md).
 
-### C — Dejar inconsistente
+### C: Dejar inconsistente
 
 Pros: zero work.
 

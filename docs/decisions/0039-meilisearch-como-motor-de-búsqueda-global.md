@@ -108,7 +108,7 @@ Descartada por la regla de stack open-source self-hosted del proyecto. UNSTA com
 ### Negativas
 
 - **Servicio nuevo en el stack**: 4 containers (Postgres, Redis, Mailpit, Meilisearch) en docker-compose. Más cosas que pueden fallar al levantar dev.
-- **Sincronización Postgres ↔ Meilisearch**: si un evento se pierde (caso degenerado del outbox), el índice queda stale. Mitigación: job batch nocturno que reconcilia (read-from-DB, push-to-meili) — diferido hasta que aparezca incident real.
+- **Sincronización Postgres ↔ Meilisearch**: si un evento se pierde (caso degenerado del outbox), el índice queda stale. Mitigación: job batch nocturno que reconcilia (read-from-DB, push-to-meili): diferido hasta que aparezca incident real.
 - **Multi-tenant queries**: el MVP es multi-universidad. Hay que filtrar resultados por `university_id` en cada query para que un alumno de UNSTA no vea reseñas de SIGLO 21. Eso es config de Meili, no es problema técnico, pero requiere disciplina al construir queries.
 - **Bumps de versión**: Meilisearch hace bumps mayores ocasionales que requieren reindex. Aceptable para self-hosted con downtime planeable.
 

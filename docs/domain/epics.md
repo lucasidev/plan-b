@@ -1,4 +1,4 @@
-# Epics — planb
+# Epics: planb
 
 Capabilities mayores del producto. Cada epic agrupa user stories que aportan valor al usuario y comparten contexto de implementación. Cada epic vive en su propio archivo dentro de [epics/](epics/).
 
@@ -7,16 +7,16 @@ Granularidad: una epic es una unidad que en un equipo grande podría asumirse co
 | ID | Epic | Sprint target | Status | Stories |
 |---|---|---|---|---|
 | [EPIC-00](epics/EPIC-00.md) | Foundations & DevEx | S0 | Done | 7 |
-| [EPIC-01](epics/EPIC-01.md) | Catálogo público y exploración | — | Not started | 4 |
+| [EPIC-01](epics/EPIC-01.md) | Catálogo público y exploración |: | Not started | 4 |
 | [EPIC-02](epics/EPIC-02.md) | Identidad y autenticación | S1+ | In progress | 8 |
-| [EPIC-03](epics/EPIC-03.md) | Historial académico | — | Not started | 3 |
-| [EPIC-04](epics/EPIC-04.md) | Planificación de cuatrimestre | — | Not started | 7 |
-| [EPIC-05](epics/EPIC-05.md) | Sistema de reseñas | — | Not started | 4 |
-| [EPIC-06](epics/EPIC-06.md) | Claim e identidad docente | — | Not started | 6 |
-| [EPIC-07](epics/EPIC-07.md) | Moderación | — | Not started | 4 |
-| [EPIC-08](epics/EPIC-08.md) | Backoffice de catálogo | — | Not started | 6 |
-| [EPIC-09](epics/EPIC-09.md) | Backoffice de cuentas staff | — | Not started | 1 |
-| [EPIC-10](epics/EPIC-10.md) | Dashboard institucional | — | Not started | 1 |
+| [EPIC-03](epics/EPIC-03.md) | Historial académico |: | Not started | 3 |
+| [EPIC-04](epics/EPIC-04.md) | Planificación de cuatrimestre |: | Not started | 7 |
+| [EPIC-05](epics/EPIC-05.md) | Sistema de reseñas |: | Not started | 4 |
+| [EPIC-06](epics/EPIC-06.md) | Claim e identidad docente |: | Not started | 6 |
+| [EPIC-07](epics/EPIC-07.md) | Moderación |: | Not started | 4 |
+| [EPIC-08](epics/EPIC-08.md) | Backoffice de catálogo |: | Not started | 6 |
+| [EPIC-09](epics/EPIC-09.md) | Backoffice de cuentas staff |: | Not started | 1 |
+| [EPIC-10](epics/EPIC-10.md) | Dashboard institucional |: | Not started | 1 |
 
 `Sprint target` indica el sprint donde la epic queda funcional al usuario, no necesariamente cuándo todas sus stories cierran. El guión en la columna significa "pendiente de planificación". Cada sprint dura 7 días.
 

@@ -1,4 +1,4 @@
-# Estado del proyecto — planb
+# Estado del proyecto: planb
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
@@ -133,7 +133,7 @@ Todas Done al cierre del sprint.
 9. **`feat/academic-and-student-profile`** (PR #54, US-012-b): catálogo Academic mínimo (4 unis + 18 carreras IT + 18 planes) + StudentProfile child entity + endpoint + IValueObject marker.
 10. **`docs/sprint-s1-closure`**: housekeeping + cierre Fase 2.
 
-### Definition of Done de S1 — verificación
+### Definition of Done de S1: verificación
 
 - ✓ `just dev` levanta backend + frontend.
 - ✓ Lucía puede registrarse, verificar email, iniciar sesión.
@@ -164,18 +164,18 @@ Todas Done al cierre del sprint.
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
 **Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md)):
-- [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) — Meilisearch como motor de búsqueda global.
-- [ADR-0040](decisions/0040-notifications-como-bounded-context.md) — Notifications como BC nuevo.
-- [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md) — Delta del rediseño + plan de migración.
+- [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md): Meilisearch como motor de búsqueda global.
+- [ADR-0040](decisions/0040-notifications-como-bounded-context.md): Notifications como BC nuevo.
+- [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md): Delta del rediseño + plan de migración.
 
 **Roadmap S2-S5 confirmado** (decisión 2026-05-03):
 
 ### Scope de S2
 
-- [US-036](domain/user-stories/US-036.md) — **Auth rebuild** a 4 rutas separadas (Signup / Login / Forgot / ForgotSent).
-- [US-037](domain/user-stories/US-037.md) — **Onboarding** 4 pasos (Bienvenida / Carrera / Historial / Listo).
-- [US-044](domain/user-stories/US-044.md) — **Inicio v2** con pregunta dominante.
-- [US-045](domain/user-stories/US-045.md) — **Mi carrera shell** + 5 tabs con stub data. Backend de catálogo (Academic CRUD) queda como deuda diferida; se decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
+- [US-036](domain/user-stories/US-036.md): **Auth rebuild** a 4 rutas separadas (Signup / Login / Forgot / ForgotSent).
+- [US-037](domain/user-stories/US-037.md): **Onboarding** 4 pasos (Bienvenida / Carrera / Historial / Listo).
+- [US-044](domain/user-stories/US-044.md): **Inicio v2** con pregunta dominante.
+- [US-045](domain/user-stories/US-045.md): **Mi carrera shell** + 5 tabs con stub data. Backend de catálogo (Academic CRUD) queda como deuda diferida; se decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
 
 ---
 
@@ -185,9 +185,9 @@ Todas Done al cierre del sprint.
 
 ### Scope de S3
 
-- [US-046](domain/user-stories/US-046.md) — **Planificar shell** + 2 tabs (en curso / borrador) + nudge de promoción manual.
-- [US-047](domain/user-stories/US-047.md) — **Mi perfil** (view + edit datos académicos + foto, accesible desde menú del avatar).
-- [US-075](domain/user-stories/US-075.md) — **Member self-disable** (zona peligrosa de Mi perfil).
+- [US-046](domain/user-stories/US-046.md): **Planificar shell** + 2 tabs (en curso / borrador) + nudge de promoción manual.
+- [US-047](domain/user-stories/US-047.md): **Mi perfil** (view + edit datos académicos + foto, accesible desde menú del avatar).
+- [US-075](domain/user-stories/US-075.md): **Member self-disable** (zona peligrosa de Mi perfil).
 
 **Dependencias diferidas**:
 - Backend de simulación (US-016): puede entrar en S3 si Planificar lo necesita, sino queda backlog hasta S4.
@@ -201,10 +201,10 @@ Todas Done al cierre del sprint.
 
 ### Scope de S4
 
-- [US-017](domain/user-stories/US-017.md), [US-018](domain/user-stories/US-018.md), [US-019](domain/user-stories/US-019.md), [US-020](domain/user-stories/US-020.md) — Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
-- [US-048](domain/user-stories/US-048.md) — **Reseñas shell** + 3 tabs (explorar / pendientes / mías).
-- [US-049](domain/user-stories/US-049.md) — **Editor de reseña** 6 campos numerados con preview vivo.
-- [US-070](domain/user-stories/US-070.md) — **Rankings** top 10 paginado (docentes / materias / comisiones).
+- [US-017](domain/user-stories/US-017.md), [US-018](domain/user-stories/US-018.md), [US-019](domain/user-stories/US-019.md), [US-020](domain/user-stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
+- [US-048](domain/user-stories/US-048.md): **Reseñas shell** + 3 tabs (explorar / pendientes / mías).
+- [US-049](domain/user-stories/US-049.md): **Editor de reseña** 6 campos numerados con preview vivo.
+- [US-070](domain/user-stories/US-070.md): **Rankings** top 10 paginado (docentes / materias / comisiones).
 
 ---
 
@@ -214,10 +214,10 @@ Todas Done al cierre del sprint.
 
 ### Scope de S5
 
-- [US-071](domain/user-stories/US-071.md) — **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) operacional.
-- [US-072](domain/user-stories/US-072.md) — **Ajustes** (notificaciones / privacidad / idioma / tema).
-- [US-073](domain/user-stories/US-073.md) — **Ayuda** (FAQ + contacto soporte).
-- [US-074](domain/user-stories/US-074.md) — **Sobre plan-b** (página informacional + créditos).
+- [US-071](domain/user-stories/US-071.md): **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) operacional.
+- [US-072](domain/user-stories/US-072.md): **Ajustes** (notificaciones / privacidad / idioma / tema).
+- [US-073](domain/user-stories/US-073.md): **Ayuda** (FAQ + contacto soporte).
+- [US-074](domain/user-stories/US-074.md): **Sobre plan-b** (página informacional + créditos).
 
 ---
 
@@ -248,13 +248,13 @@ Para preguntas sobre decisiones de diseño puntuales: `docs/decisions/`. Para le
 
 El plan inicial del proyecto definió 7 fases macro como referencia de planificación al arrancar. La cadencia real de trabajo es sprint (ver tabla arriba). Las fases siguen sirviendo como hitos macro del proyecto: agrupan varios sprints y marcan momentos donde el producto cruza estados (modelado completo, backend operativo, MVP usable, etc.).
 
-### Fase 1 — Diseño y modelado de datos ✓
+### Fase 1: Diseño y modelado de datos ✓
 
 Completada en S0.
 
 Cubre los entregables documentales listados en S0 arriba: ADRs 0001-0033, ubiquitous language, use cases, ERD, DDD táctico y estratégico, catálogo de epics y user stories.
 
-### Fase 2 — Backend y autenticación ✓
+### Fase 2: Backend y autenticación ✓
 
 Cerrada al final de S1 (2026-05-02). Sprints involucrados:
 
@@ -266,12 +266,12 @@ Cerrada al final de S1 (2026-05-02). Sprints involucrados:
 
 **Salida real**: auth end-to-end + cleanup + StudentProfile inicial + catálogo Academic mínimo (4 universidades + 18 carreras IT). Lucía puede registrarse, verificar email, hacer login, ver el AppShell con home, asociarse a una carrera (vía API), y hacer sign-out.
 
-### Fase 3 — Precarga de planes + frontend base ⏳
+### Fase 3: Precarga de planes + frontend base ⏳
 
 Foundational para que la plataforma sea utilizable. Trabajo previsto:
 
 **Backend**:
-- Extender Academic module (hoy: 3 aggregates seedeados — University, Career, CareerPlan). Sumar: Subject (con Prerequisite child), Teacher, AcademicTerm, Commission (con CommissionTeacher child).
+- Extender Academic module (hoy: 3 aggregates seedeados: University, Career, CareerPlan). Sumar: Subject (con Prerequisite child), Teacher, AcademicTerm, Commission (con CommissionTeacher child).
 - Backoffice CRUD endpoints (UC-060 a UC-065).
 - Domain service `IPrerequisiteGraphValidator` para aciclicidad.
 - Carga manual del plan UNSTA Tecnicatura: script de seed o CSV importer.
@@ -285,7 +285,7 @@ Foundational para que la plataforma sea utilizable. Trabajo previsto:
 
 **Salida esperada**: alumno UNSTA puede registrarse, login, agregar StudentProfile a la carrera Tecnicatura, cargar manualmente sus cursadas pasadas. Visitor puede explorar el catálogo.
 
-### Fase 4 — Simulador + sistema de reseñas ⏳
+### Fase 4: Simulador + sistema de reseñas ⏳
 
 El loop core del producto.
 
@@ -308,7 +308,7 @@ El loop core del producto.
 - Guardar/editar/borrar simulación (US-023 a US-026).
 - Compartir / ver simulaciones públicas (US-024, US-027).
 
-### Fase 5 — Dashboard institucional + verificación de docentes ⏳
+### Fase 5: Dashboard institucional + verificación de docentes ⏳
 
 **Backend**:
 - TeacherProfile aggregate con flow de claim (UC-030 a UC-032, UC-066, UC-040, UC-041).
@@ -322,7 +322,7 @@ El loop core del producto.
 - Admin UI de aprobación de claims pendientes.
 - Dashboard staff con métricas y filtros.
 
-### Fase 6 — Focus group cerrado + ajustes ⏳
+### Fase 6: Focus group cerrado + ajustes ⏳
 
 Pre-condición: **MVP funcional** (al menos UC-001 a UC-020 más UC-050/051 operativos). Plan:
 
@@ -332,7 +332,7 @@ Pre-condición: **MVP funcional** (al menos UC-001 a UC-020 más UC-050/051 oper
 - Backlog de ajustes priorizados.
 - Iteración corta (1-2 semanas) sobre los issues más graves.
 
-### Fase 7 — Lanzamiento público ⏳
+### Fase 7: Lanzamiento público ⏳
 
 Timing: sincronizar con el período de inscripción de UNSTA (febrero/julio según cuatrimestre que arranca).
 

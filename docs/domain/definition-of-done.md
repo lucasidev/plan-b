@@ -4,7 +4,7 @@ Criterios mínimos que toda User Story debe cumplir para considerarse `Done`. Ap
 
 Cada AC específica de una US se suma a estos criterios generales, no los reemplaza.
 
-> **Definition of Ready (DoR)** — pre-sprint, lista de criterios para que una US esté lista para entrar al sprint planning. Vive en [`us-template.md`](us-template.md) porque depende del shape de la US, no del shape del código. DoD (este doc) cubre el post-implementación.
+> **Definition of Ready (DoR)**: pre-sprint, lista de criterios para que una US esté lista para entrar al sprint planning. Vive en [`us-template.md`](us-template.md) porque depende del shape de la US, no del shape del código. DoD (este doc) cubre el post-implementación.
 
 ---
 

@@ -1,4 +1,4 @@
-# ADR-0017: Persistence Ignorance — infraestructura pluggable, sin FKs cross-schema
+# ADR-0017: Persistence Ignorance: infraestructura pluggable, sin FKs cross-schema
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23
@@ -39,7 +39,7 @@ Descartada porque:
 - Crea acoplamiento tácito: ciertas garantías del sistema dependen de que el adapter sea Postgres. Si se reemplaza por Notion o un archivo, esas garantías desaparecen silenciosamente.
 - Las migraciones de módulos quedan acopladas: migrar Enrollments requiere coordinar con Reviews.
 
-### B. Híbrido — FKs para "referencias fuertes", sin FKs para "referencias débiles"
+### B. Híbrido: FKs para "referencias fuertes", sin FKs para "referencias débiles"
 
 Algunas referencias son semánticamente críticas (Review → Enrollment) y ameritan FK; otras son históricas (ReviewReport.reporter_id → User) y pueden ser solo lógicas.
 
@@ -56,7 +56,7 @@ Descartada tras discusión: introduce inconsistencia en la política. La semánt
 
 **Negativas:**
 
-- Si un bug en el application layer falla en validar una referencia, Postgres no va a atraparlo — puede crearse una Review con `enrollment_id` inexistente (orphan row). Esto es un bug de código, trackeable y solucionable, no un defecto del sistema.
+- Si un bug en el application layer falla en validar una referencia, Postgres no va a atraparlo: puede crearse una Review con `enrollment_id` inexistente (orphan row). Esto es un bug de código, trackeable y solucionable, no un defecto del sistema.
 - Analítica cross-module que necesita JOIN (dashboard institucional) tiene dos caminos: read models denormalizados mantenidos por integration events, o Dapper cross-schema saltando el DbContext. Ambos son válidos y vivendo en Infrastructure.
 
 **Reglas derivadas:**
@@ -68,4 +68,4 @@ Descartada tras discusión: introduce inconsistencia en la política. La semánt
 
 **Cuándo revisitar:**
 
-- Nunca, en principio. Si aparece presión para agregar FKs cross-schema por performance u otro motivo, rediscutir el scope del modular monolith — probablemente sea señal de que los módulos están mal divididos.
+- Nunca, en principio. Si aparece presión para agregar FKs cross-schema por performance u otro motivo, rediscutir el scope del modular monolith: probablemente sea señal de que los módulos están mal divididos.

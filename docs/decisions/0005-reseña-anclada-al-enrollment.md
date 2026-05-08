@@ -58,9 +58,9 @@ Granular pero genera tantas reseñas por materia como comisiones × cuatrimestre
 **Negativas:**
 
 - Requiere que exista un EnrollmentRecord antes de poder reseñar. No se puede reseñar "en abstracto".
-- El CHECK de que `docente_reseñado_id` pertenece a la comisión del enrollment es una validación cross-table que no se puede expresar como CHECK de DB simple — vive en la capa de aplicación.
+- El CHECK de que `docente_reseñado_id` pertenece a la comisión del enrollment es una validación cross-table que no se puede expresar como CHECK de DB simple: vive en la capa de aplicación.
 
 **Invariantes:**
 
 - `Review.docente_reseñado_id` debe existir en `CommissionTeacher` con `commission_id = Review.enrollment.commission_id`.
-- No se permite reseñar enrollments con `status = 'cursando'` — hay que esperar que termine el cuatrimestre.
+- No se permite reseñar enrollments con `status = 'cursando'`: hay que esperar que termine el cuatrimestre.

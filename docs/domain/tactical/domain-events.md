@@ -1,4 +1,4 @@
-# Domain Events — planb
+# Domain Events: planb
 
 Catálogo cross-cutting de events del modelo. Cada event vive descrito en el archivo del aggregate que lo emite (ver [aggregates/](aggregates/)). Este doc es índice + reglas globales.
 

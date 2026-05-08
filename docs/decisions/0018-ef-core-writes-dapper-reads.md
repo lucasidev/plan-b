@@ -68,8 +68,8 @@ Planb.<Module>.Infrastructure/
 ├── Database/<Module>DbContext.cs
 ├── Configurations/         (EF Core fluent API)
 ├── Migrations/             (EF Core)
-├── Repositories/           (EF Core — writes)
-└── QueryServices/          (Dapper — reads)
+├── Repositories/           (EF Core: writes)
+└── QueryServices/          (Dapper: reads)
 ```
 
 **Negativas:**

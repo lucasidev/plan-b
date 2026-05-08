@@ -2,10 +2,10 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: High
 **Effort**: S
-**UC**: —
+**UC**: 
 **ADR refs**: ADR-0007, ADR-0027
 
 ## Como dev, quiero infra local levantada con un comando para que el stack corra contra dependencias reales sin instalar nada manual
@@ -39,5 +39,5 @@ Como solo-dev, quiero un `docker-compose.yml` que levante Postgres 17 con extens
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: —
+- Use Case: 
 - ADRs: [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0027](../../decisions/0027-integration-tests-shared-postgres.md)

@@ -9,8 +9,8 @@ Discovery del dominio (ver `docs/domain/eventstorming.md`) introdujo features de
 
 Dos opciones reales:
 
-- **Dentro de Enrollments** — porque comparte data shape (StudentProfile + Subject + Plan).
-- **BC propio "Planning"** — porque comparte data shape pero no semántica.
+- **Dentro de Enrollments**: porque comparte data shape (StudentProfile + Subject + Plan).
+- **BC propio "Planning"**: porque comparte data shape pero no semántica.
 
 ## Decisión
 
@@ -60,14 +60,14 @@ Costos: un módulo más, ergonomía similar al resto (Application + Domain + Inf
 **Positivas**:
 
 - Separación clara de "pasado" vs "futuro" en el modelo del alumno.
-- Planning puede evolucionar sin tocar Enrollments. Recomendaciones, comparaciones, integración con embeddings — todo en su carpeta.
+- Planning puede evolucionar sin tocar Enrollments. Recomendaciones, comparaciones, integración con embeddings: todo en su carpeta.
 - Tests de Planning quedan focalizados sin necesidad de mocks del historial completo.
 - El lenguaje hablado en `aggregates.md` y los nombres de namespaces son consistentes con el modelo mental.
 
 **Negativas**:
 
 - Un módulo más para mantener (`backend/modules/planning/`).
-- Si Planning queda vacío durante MVP (ej. si las premium features se posponen), el módulo queda como skeleton. Aceptable — el módulo se llena al implementar Fase 4.
+- Si Planning queda vacío durante MVP (ej. si las premium features se posponen), el módulo queda como skeleton. Aceptable: el módulo se llena al implementar Fase 4.
 - Cross-BC reads: Planning consume Academic + Enrollments + Reviews. Bien acotado vía interfaces (`I<BC>QueryService`).
 
 **Estructura física**:

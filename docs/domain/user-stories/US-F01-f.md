@@ -2,10 +2,10 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: High
 **Effort**: M
-**UC**: —
+**UC**: 
 **ADR refs**: ADR-0019, ADR-0020, ADR-0021, ADR-0022, ADR-0024
 
 ## Como dev, quiero el scaffolding del frontend Next.js para tener base sobre la que implementar UI
@@ -43,5 +43,5 @@ Como tech lead solo-dev, quiero el scaffolding completo del frontend (Next.js 15
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: —
+- Use Case: 
 - ADRs: [ADR-0019](../../decisions/0019-single-nextjs-app-con-route-groups.md), [ADR-0020](../../decisions/0020-features-alineadas-con-modulos-backend.md), [ADR-0021](../../decisions/0021-data-fetching-rsc-tanstack-query.md), [ADR-0022](../../decisions/0022-forms-react19-primitives-tanstack-form.md), [ADR-0024](../../decisions/0024-dev-tooling-stack.md)

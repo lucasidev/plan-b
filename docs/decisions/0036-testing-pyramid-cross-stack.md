@@ -69,7 +69,7 @@ Reglas duras:
 | **Frontend Server Actions** | vitest + fetch mockeado | No existe | Patrón nuevo (US-T01) |
 | **Frontend Components** | vitest + @testing-library/react + user-event | No existe; faltan deps | Instalar + setup (US-T01) |
 | **Frontend E2E** | Playwright + chromium (FF/Webkit opcional) | `@playwright/test` instalado, 0 tests | Setup permanente + helpers (US-T02) |
-| **API contract** | (deferred — TBD ADR aparte) | No existe | Defer hasta que duela |
+| **API contract** | (deferred: TBD ADR aparte) | No existe | Defer hasta que duela |
 
 ### Layout de archivos
 
@@ -140,7 +140,7 @@ Coverage gates: **no**. Tracking sí (subir reports a artifacts), gate no. Cover
 
 ### Pre-commit / pre-push
 
-- **Pre-commit** (lefthook actual): format + lint sólo, sin tests. Mantener — los tests rápidos viven en `pre-push`.
+- **Pre-commit** (lefthook actual): format + lint sólo, sin tests. Mantener: los tests rápidos viven en `pre-push`.
 - **Pre-push** (lefthook actual): backend build + frontend lint + typecheck. **Ajuste con US-T01**: agregar `bun run test` (vitest, < 5s con tests sample). NO agregar E2E al pre-push (lento, requiere backend levantado).
 
 ## Alternativas consideradas
@@ -151,7 +151,7 @@ Costo: cero. Lo descartamos porque ya está fallando: cada US frontend nueva mul
 
 ### B. Adopción lazy "agregamos tests cuando duela"
 
-Costo: aparente cero, real progresivo. Lo descartamos porque no hay convención compartida — cada US autora elige stack distinto, layout distinto, granularidad distinta. La doc fragmenta y los reviewers no saben qué pedir. El próximo developer tiene que reverse-engineer convenciones.
+Costo: aparente cero, real progresivo. Lo descartamos porque no hay convención compartida: cada US autora elige stack distinto, layout distinto, granularidad distinta. La doc fragmenta y los reviewers no saben qué pedir. El próximo developer tiene que reverse-engineer convenciones.
 
 ### C. Pirámide completa con convenciones formales (la elegida)
 

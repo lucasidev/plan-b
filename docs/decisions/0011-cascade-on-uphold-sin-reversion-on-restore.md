@@ -20,7 +20,7 @@ Dos dimensiones de decisión, con implicaciones en UX de moderadores, UX de repo
 
 ## Alternativas consideradas
 
-### A. Sin cascade — cada report se resuelve individual
+### A. Sin cascade: cada report se resuelve individual
 
 Moderador upholda un report → la reseña se remueve → los demás reports quedan `open` con la reseña ya removida. Hay que entrar a cada uno y resolverlo.
 
@@ -30,7 +30,7 @@ Descartada: la reseña ya no existe como entidad pública removida. Los otros re
 
 Los reports cascade-upheld vuelven a `open` si la reseña se restaura, para que los reporters sigan pudiendo ver su caso como "pendiente" y ser reevaluados.
 
-Descartada: la decisión que se tomó en el momento fue "upheld". Que un moderador posterior haya restaurado la reseña (por apelación, por criterio distinto, o porque se levantó la ambigüedad) no invalida históricamente la decisión original. Mantenerlos upheld es consistente con la cronología real. Los reporters ven "su report fue upheld en su momento" — no es engañoso. El estado actual de la reseña es visible separadamente.
+Descartada: la decisión que se tomó en el momento fue "upheld". Que un moderador posterior haya restaurado la reseña (por apelación, por criterio distinto, o porque se levantó la ambigüedad) no invalida históricamente la decisión original. Mantenerlos upheld es consistente con la cronología real. Los reporters ven "su report fue upheld en su momento": no es engañoso. El estado actual de la reseña es visible separadamente.
 
 Además, revert introduce complejidad no trivial: ¿qué si varios reports se cascade-upholdearon con razones distintas y el restore fue por una apelación que contradice solo algunas? ¿Se revierten todos o selectivamente? Evita el problema eligiendo no revertir.
 
@@ -50,9 +50,9 @@ Mantiene el modelo de "sin revert" pero agrega UI que indica la situación ambig
 **Negativas:**
 
 - Si los reports tenían razones estructuralmente distintas (ej. uno por spam, otro por datos personales), la cascade los nivela bajo la misma `resolution_note`. Se pierde granularidad de análisis post-hoc.
-- Un reporter cuyo report se cascadeó por una razón distinta a la que él mismo planteó podría ver "upheld" con una nota que no menciona su reason — leve disonancia.
+- Un reporter cuyo report se cascadeó por una razón distinta a la que él mismo planteó podría ver "upheld" con una nota que no menciona su reason: leve disonancia.
 
 **Mitigaciones:**
 
-- El `reason` original del report se preserva — solo se comparte la `resolution_note`. Análisis por reason sigue siendo posible.
+- El `reason` original del report se preserva: solo se comparte la `resolution_note`. Análisis por reason sigue siendo posible.
 - En la UI de reporter (UC-020), se puede mostrar el reason original junto a la resolution_note, clarificando que la decisión fue holística.

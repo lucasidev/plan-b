@@ -34,20 +34,20 @@ Todos los IDs son VO. Ningún aggregate ni entity usa `Guid` directamente. Razó
 | `StudentProfileId` | Identity | Guid | S1 |
 | `TeacherProfileId` | Identity | Guid | Post-MVP |
 | `UniversityId` | Academic | Guid | Cuando se implementa Academic module |
-| `CareerId` | Academic | Guid | — |
-| `CareerPlanId` | Academic | Guid | — |
-| `SubjectId` | Academic | Guid | — |
+| `CareerId` | Academic | Guid |: |
+| `CareerPlanId` | Academic | Guid |: |
+| `SubjectId` | Academic | Guid |: |
 | `PrerequisiteId` | Academic | Guid | child entity de Subject, igual ID strongly-typed |
-| `TeacherId` | Academic | Guid | — |
-| `AcademicTermId` | Academic | Guid | — |
-| `CommissionId` | Academic | Guid | — |
+| `TeacherId` | Academic | Guid |: |
+| `AcademicTermId` | Academic | Guid |: |
+| `CommissionId` | Academic | Guid |: |
 | `CommissionTeacherId` | Academic | Guid | child entity de Commission |
-| `HistorialImportId` | Enrollments | Guid | — |
-| `EnrollmentRecordId` | Enrollments | Guid | — |
-| `ReviewId` | Reviews | Guid | — |
+| `HistorialImportId` | Enrollments | Guid |: |
+| `EnrollmentRecordId` | Enrollments | Guid |: |
+| `ReviewId` | Reviews | Guid |: |
 | `TeacherResponseId` | Reviews | Guid | child entity de Review |
-| `ReviewReportId` | Moderation | Guid | — |
-| `SimulationDraftId` | Planning | Guid | — |
+| `ReviewReportId` | Moderation | Guid |: |
+| `SimulationDraftId` | Planning | Guid |: |
 
 (El guión en la columna "Notas" indica "sin nota especial".)
 

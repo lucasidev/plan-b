@@ -1,8 +1,8 @@
-# Testing — convenciones de planb
+# Testing: convenciones de planb
 
 Living document. Cómo escribir, dónde poner y cómo correr tests.
 
-Decisión que lo motiva: [ADR-0036 — Pirámide de testing cross-stack](../decisions/0036-testing-pyramid-cross-stack.md).
+Decisión que lo motiva: [ADR-0036: Pirámide de testing cross-stack](../decisions/0036-testing-pyramid-cross-stack.md).
 
 ## TL;DR
 
@@ -105,7 +105,7 @@ public class RequestPasswordResetCommandHandlerTests
 Reglas:
 - Mockear puertos (`IUserRepository`, `IVerificationEmailSender`, `IRateLimiter`, etc.). NO mockear `User`/`EmailAddress`/`Result` (son value types/aggregates, los construís de verdad).
 - Una assertion por test cuando sea posible. Si necesitás múltiples, agrupá con descriptivos.
-- Si el test pide demasiado setup (más de 5-6 substitutes), probablemente el handler tenga demasiadas deps — refactor antes de testear.
+- Si el test pide demasiado setup (más de 5-6 substitutes), probablemente el handler tenga demasiadas deps: refactor antes de testear.
 
 ### Integration
 
@@ -283,7 +283,7 @@ test('Lucía recovers her password from sign-in', async ({ page }) => {
 ```
 
 Reglas:
-- Helpers en `e2e/helpers/` — no copiar parsing de mail por test.
+- Helpers en `e2e/helpers/`: no copiar parsing de mail por test.
 - Personas (`LUCIA`, `MATEO`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
 - Cada test es independiente: limpia rate limits, restaura estado al final si modificó datos.
@@ -329,11 +329,11 @@ Una pregunta recurrente: ¿está bien que `e2e/helpers/mailpit.ts` lea Mailpit H
 
 | Helper | Qué toca | ¿OK? | Por qué |
 |---|---|---|---|
-| `mailpit.ts` | "Inbox del user" — equivalente local de SES/SendGrid | Sí | Mailpit ES tu SMTP server en dev. El backend envía mail SMTP real, Mailpit lo intercepta, el test extrae el token con regex. El template HTML sí se renderiza, el link sí se valida. El único atajo es que el "click humano" lo hace un regex — inevitable en CI. |
+| `mailpit.ts` | "Inbox del user": equivalente local de SES/SendGrid | Sí | Mailpit ES tu SMTP server en dev. El backend envía mail SMTP real, Mailpit lo intercepta, el test extrae el token con regex. El template HTML sí se renderiza, el link sí se valida. El único atajo es que el "click humano" lo hace un regex: inevitable en CI. |
 | `redis.ts` | Rate limit state (clave de implementación) | Sí | Atajo semántico (en prod no reseteás rate limits, esperás el TTL). Pero esperar 15 min entre tests es inviable. El test ejerce fielmente el rate limit, solo manipula el estado de inicio. |
 | Hipotético helper que hace `DELETE FROM identity.users WHERE email = ...` | Modelo del dominio | **No** | Eso requiere endpoint real (`DELETE /api/me/account`). Si el verb no existe en la API, **es señal de US faltante** (compliance + UX), no de "necesitamos un helper". |
 
-**Corolario**: cuando un E2E necesita "limpiar" data del dominio, la primera pregunta no es "qué helper escribo" sino "qué verb me falta exponer en la API". Casi siempre es un verb que el producto debería tener anyway por compliance (Ley 25.326 art. 6 — derecho de supresión) o UX. El helper directo a la DB de dominio es atajo arquitectónico que esconde una US faltante.
+**Corolario**: cuando un E2E necesita "limpiar" data del dominio, la primera pregunta no es "qué helper escribo" sino "qué verb me falta exponer en la API". Casi siempre es un verb que el producto debería tener anyway por compliance (Ley 25.326 art. 6: derecho de supresión) o UX. El helper directo a la DB de dominio es atajo arquitectónico que esconde una US faltante.
 
 **Lo que sí es legítimo como helper de infra**: Mailpit (mail server local), Redis (cache/rate-limit state), Wolverine outbox query (state interno del messaging), file system (uploads tmp). Lo que NO: tablas del dominio (`users`, `reviews`, `student_profiles`, etc.).
 
@@ -369,8 +369,8 @@ Política completa en [ADR-0038](../decisions/0038-release-and-versioning-policy
 
 ## Cuando no sabés qué hacer
 
-1. Mirá el [PR template](../../.github/pull_request_template.md) — el checklist te dice qué capa estás tocando y qué test esperar.
-2. Si el patrón no está cubierto en este doc, abrí un issue / Slack / lo que sea — la convención se actualiza acá.
+1. Mirá el [PR template](../../.github/pull_request_template.md): el checklist te dice qué capa estás tocando y qué test esperar.
+2. Si el patrón no está cubierto en este doc, abrí un issue / Slack / lo que sea: la convención se actualiza acá.
 3. Si la respuesta involucra "agregar una capa de tests nueva" → ADR.
 
 ## Refs
