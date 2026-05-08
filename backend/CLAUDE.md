@@ -1,4 +1,4 @@
-# Backend: planb
+# Backend (planb)
 
 .NET 10 modular monolith. 5 módulos (bounded contexts) + SharedKernel + Host.
 

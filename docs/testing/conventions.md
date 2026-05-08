@@ -1,4 +1,4 @@
-# Testing: convenciones de planb
+# Testing (convenciones de planb)
 
 Living document. Cómo escribir, dónde poner y cómo correr tests.
 

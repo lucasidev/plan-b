@@ -1,4 +1,4 @@
-# Ubiquitous Language: planb
+# Ubiquitous Language (planb)
 
 Glosario de términos del dominio. Es la referencia autoritativa para el uso de cada término en código, UI, documentación y conversación con stakeholders. Si un término aparece acá con un significado específico, no se usa con otro significado en otro lado.
 

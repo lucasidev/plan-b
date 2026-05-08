@@ -1,4 +1,4 @@
-# Verification Flows: planb
+# Verification Flows (planb)
 
 Flows completos de verificación de `TeacherProfile`. Un `member` reclama identidad de docente creando un `TeacherProfile`, pero ese profile no desbloquea la capacidad `review:respond` (UC-040) hasta verificarse. Hay dos caminos: email institucional (automático) o evidencia manual revisada por admin.
 

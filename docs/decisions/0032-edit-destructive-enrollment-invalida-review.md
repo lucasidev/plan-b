@@ -58,7 +58,7 @@ Eventual consistency. La Review queda inconsistente por unos ms hasta que el out
 
 ## Alternativas consideradas
 
-### A: Rechazar la edit
+### A. Rechazar la edit
 
 Pros: simplifica el modelo (no hay states inconsistentes intermedios).
 
@@ -68,13 +68,13 @@ Contras (decisivos):
 - No hay forma de "preservar la Review original como historia". Borrar + re-escribir pierde la versión vieja.
 - Atrapa al alumno: si quiere reflejar un cambio real (perdió una final), tiene que destruir su contribución previa.
 
-### B: Invalidar automáticamente (elegido)
+### B. Invalidar automáticamente (elegido)
 
 Pros: balance entre consistency y UX. La Review no se borra, queda preservada. El alumno decide qué hacer (re-publicar editada, borrar, ignorar).
 
 Contras: complejidad cross-BC. Pero ya está pagada por [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md).
 
-### C: Dejar inconsistente
+### C. Dejar inconsistente
 
 Pros: zero work.
 

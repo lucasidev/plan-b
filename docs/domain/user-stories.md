@@ -1,4 +1,4 @@
-# User Stories: planb
+# User Stories (planb)
 
 Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
 

@@ -68,7 +68,7 @@ Para VerificationToken:
 
 ## Alternativas consideradas
 
-### A: Aggregate independiente especializado por contexto (`EmailVerificationToken`)
+### A. Aggregate independiente especializado por contexto (`EmailVerificationToken`)
 
 Lo que tenemos en código de S0. Funciona: el handler usa app service para cross-aggregate. Pero:
 
@@ -76,11 +76,11 @@ Lo que tenemos en código de S0. Funciona: el handler usa app service para cross
 - Repository y aggregate boundary innecesarios.
 - Cuando agreguemos teacher institutional verification, duplicamos: `TeacherInstitutionalVerificationToken` aggregate. Dos clases con la misma lógica.
 
-### B: Aggregate genérico independiente (`VerificationToken` con `purpose`)
+### B. Aggregate genérico independiente (`VerificationToken` con `purpose`)
 
 Mejor que A (no duplica), pero sigue teniendo los problemas de cross-aggregate invariants. Sin atomicidad.
 
-### C: Child entity (elegido)
+### C. Child entity (elegido)
 
 Único modelo donde el invariante "un solo activo por purpose por user" se enforce sin saga. Único modelo donde "consume + verify" es atómico. Mismo type de entity reusable parametrizada por purpose.
 
