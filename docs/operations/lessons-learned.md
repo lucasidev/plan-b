@@ -12,6 +12,26 @@ Formato de cada entrada:
 
 ---
 
+## 2026-05-08 · Regla "zona E2E" + auto-label vs olvidos del label `e2e`
+
+**Síntoma**: la entrada anterior del 2026-05-08 ("CI estándar verde no implica E2E verde") cerró el incidente concreto pero dejó la regla operacional dependiendo de memoria humana ("aplicar label `e2e` cuando el PR toca código que afecte E2E"). En la práctica eso falla: olvidé el label en al menos 4 PRs seguidos pre-incidente y casi olvido en el siguiente.
+
+**Causa raíz**: regla escrita en prosa, sin lista cerrada de paths que la disparen + sin enforcement. La memoria humana no escala como mecanismo de detección.
+
+**Fix**: 
+
+- Lista cerrada de paths (zona E2E) en `docs/testing/conventions.md` sección "Cuándo un PR necesita E2E".
+- Auto-label vía GitHub Action en `.github/workflows/auto-label.yml` + `.github/labeler.yml`. Si el PR matchea la zona E2E, el label `e2e` se aplica solo (y se quita si en una iteración siguiente ya no aplica, gracias a `sync-labels: true`).
+- Recipe `just frontend-test-e2e-show` (headed + slowMo) para que correr E2E local sea cero fricción cognitiva.
+
+**Prevención**:
+
+- Antes de mergear un PR con label `e2e`, correr `just frontend-test-e2e-show` local y validar 16/16 verde. Si la suite no pasa local, no mergear.
+- Si el auto-label no detecta tu PR pero sabés que tocó algo que va a romper E2E, agregar el label a mano + actualizar `.github/labeler.yml` con el path nuevo en el mismo PR.
+- Si el auto-label se aplica pero es false positive (toca un path de la lista pero la zona E2E no aplica realmente), removerlo a mano + considerar si el path glob es demasiado laxo.
+
+---
+
 ## 2026-05-08 · CI estándar verde no implica E2E verde
 
 **Síntoma**: PRs mergearon a main con `CI ✅` pero al push a main el workflow `E2E (Playwright)` corrió y falló. Específicamente, los specs `forgot-password`, `route-guards`, `sign-in`, `sign-out`, `sign-up` rompieron post-merge desde US-037-f hasta US-038-f (cuatro PRs seguidos).

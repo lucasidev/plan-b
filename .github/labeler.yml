@@ -1,0 +1,39 @@
+# Auto-label config for actions/labeler@v5.
+#
+# Aplica labels en PRs según los paths que tocan. La label `e2e` dispara el
+# workflow E2E (Playwright) en `.github/workflows/e2e.yml`, que de otra forma
+# corre solo on-demand (manual + push a main).
+#
+# Reglas detalladas en docs/testing/conventions.md sección "E2E zone".
+# Lessons-learned: bitácora `docs/operations/lessons-learned.md` entrada
+# "CI estándar verde no implica E2E verde" (2026-05-08) explica por qué.
+#
+# Sintaxis: https://github.com/actions/labeler#configuration-options
+
+e2e:
+  - changed-files:
+      - any-glob-to-any-file:
+          # Frontend: rutas, layouts, server actions, guards, middleware.
+          # Cualquier cambio acá puede afectar lo que un E2E spec verifica
+          # (redirects, cookies, sesión, render server-side).
+          - 'frontend/src/app/**'
+          - 'frontend/middleware.ts'
+          # Cross-cutting auth / session / api wiring.
+          - 'frontend/src/lib/session.ts'
+          - 'frontend/src/lib/forward-set-cookies.ts'
+          - 'frontend/src/lib/api-client.ts'
+          - 'frontend/src/lib/env.ts'
+          # E2E suite directa.
+          - 'frontend/e2e/**'
+          # Playwright config.
+          - 'frontend/playwright.config.ts'
+          # Backend: host (DI, pipeline, auth) + seed data + migrations.
+          - 'backend/host/Planb.Api/**'
+          # Migrations (cualquier módulo).
+          - 'backend/modules/*/src/**/Migrations/**'
+          # Identity entero: auth y session live en este módulo, todos los
+          # specs E2E actuales lo tocan transitivamente.
+          - 'backend/modules/identity/**'
+          # CI workflows que afectan E2E.
+          - '.github/workflows/e2e.yml'
+          - '.github/workflows/ci.yml'
