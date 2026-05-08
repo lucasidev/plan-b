@@ -23,6 +23,33 @@ public sealed class PersonaConfig
 
     [Required]
     public string DisplayName { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Optional StudentProfile to attach at seed time. Si está presente, después de aplicar el
+    /// estado (verified / disabled / unverified) el seeder le agrega el profile. Sirve para
+    /// que personas como Lucía aterricen directo en /home tras el sign-in (el guard del
+    /// frontend redirige a /onboarding/welcome si no hay profile). Mateo deliberadamente NO
+    /// trae profile para cubrir el path de "user nuevo va a onboarding" en E2E specs.
+    /// </summary>
+    public PersonaStudentProfile? StudentProfile { get; init; }
+}
+
+/// <summary>
+/// Coordenadas mínimas para crear un StudentProfile al seed. CareerPlanId y CareerId vienen del
+/// catálogo de Academic (constantes en <c>AcademicSeedData</c>), pero acá los recibimos como
+/// Guid para no acoplar este módulo a Academic en la binding del JSON.
+/// </summary>
+public sealed class PersonaStudentProfile
+{
+    [Required]
+    public Guid CareerPlanId { get; init; }
+
+    [Required]
+    public Guid CareerId { get; init; }
+
+    [Required]
+    [Range(1990, 2100)]
+    public int EnrollmentYear { get; init; }
 }
 
 public enum PersonaState

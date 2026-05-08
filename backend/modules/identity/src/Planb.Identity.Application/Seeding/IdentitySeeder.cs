@@ -77,6 +77,7 @@ public sealed class IdentitySeeder
             var user = registerResult.Value;
 
             ApplyState(user, persona);
+            ApplyStudentProfile(user, persona);
             _users.Add(user);
             created++;
         }
@@ -125,5 +126,36 @@ public sealed class IdentitySeeder
         user.IssueVerificationToken(
             TokenPurpose.UserEmailVerification, token, TimeSpan.FromHours(24), _clock);
         user.VerifyEmail(token, _clock);
+    }
+
+    private void ApplyStudentProfile(User user, PersonaConfig persona)
+    {
+        if (persona.StudentProfile is null)
+        {
+            return;
+        }
+
+        // Solo personas verified+active pueden tener profile (el aggregate invariante también
+        // lo enforce: lo dejamos defensivo acá para fallar limpio en el seed sin ruido).
+        if (persona.State != PersonaState.VerifiedActive)
+        {
+            _log.LogWarning(
+                "Persona {Email} has StudentProfile config but state is {State}. Skipping profile.",
+                persona.Email, persona.State);
+            return;
+        }
+
+        var result = user.AddStudentProfile(
+            careerPlanId: persona.StudentProfile.CareerPlanId,
+            careerId: persona.StudentProfile.CareerId,
+            enrollmentYear: persona.StudentProfile.EnrollmentYear,
+            clock: _clock);
+
+        if (result.IsFailure)
+        {
+            _log.LogWarning(
+                "AddStudentProfile failed for {Email}: {Error}. Persona sin profile, va a onboarding tras sign-in.",
+                persona.Email, result.Error.Code);
+        }
     }
 }

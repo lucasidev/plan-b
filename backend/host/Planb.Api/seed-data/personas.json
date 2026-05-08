@@ -5,7 +5,12 @@
         "Email": "lucia.mansilla@gmail.com",
         "Password": "lucia.mansilla.12",
         "State": "VerifiedActive",
-        "DisplayName": "Lucía Mansilla"
+        "DisplayName": "Lucía Mansilla",
+        "StudentProfile": {
+          "CareerPlanId": "00000003-0000-4000-a000-000000000003",
+          "CareerId": "00000002-0000-4000-a000-000000000003",
+          "EnrollmentYear": 2024
+        }
       },
       {
         "Email": "mateo.gimenez@hotmail.com",
