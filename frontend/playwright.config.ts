@@ -25,6 +25,10 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 export default defineConfig({
   testDir: './e2e',
   testMatch: /.*\.spec\.ts/,
+  // `_capture/` es para automatizaciones one-off (ej. screenshot del canvas
+  // de design). No corren con la suite normal: para invocarlas hay que
+  // pasarlas como argumento explícito al cli de playwright.
+  testIgnore: process.env.PLAYWRIGHT_INCLUDE_CAPTURE === '1' ? [] : ['**/_capture/**'],
 
   // Default timeouts: 60s por test (algunos flujos esperan emails en mailpit),
   // 10s para auto-wait de locators.
