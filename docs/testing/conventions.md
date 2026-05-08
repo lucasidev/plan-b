@@ -291,9 +291,17 @@ Reglas:
 
 #### Cuándo un PR necesita E2E (zona E2E)
 
-**Regla**: si un PR toca cualquier path de la lista de zona E2E, antes de mergear hay que correr `just frontend-test-e2e-show` localmente con suite verde y aplicar label `e2e` al PR para que CI ejercite la suite pre-merge.
+**Regla**: si un PR toca cualquier path de la lista de zona E2E, antes de pushear hay que correr la suite Playwright localmente con verde y aplicar label `e2e` al PR para que CI ejercite la suite pre-merge.
 
-**Detección automática**: `.github/workflows/auto-label.yml` aplica el label `e2e` automáticamente cuando los paths del PR matchean la lista en `.github/labeler.yml`. Si tu PR matchea, el label aparece solo. Igual hay que correr la suite local antes de mergear.
+**Enforcement (3 capas)**:
+
+1. **Pre-push hook lefthook** (`scripts/check-e2e-zone.ts`): cuando hacés `git push`, el hook compara el branch contra `origin/main`, matchea contra los globs de zona E2E, y si matchea exige que el stack esté arriba (backend :5000 + frontend :3000) y que la suite pase. Si el stack está abajo, el push falla con instrucciones para arrancarlo. Si la suite falla, el push falla y mostramos `just frontend-test-e2e-show` para inspección visual.
+2. **Auto-label** (`.github/workflows/auto-label.yml`): aplica el label `e2e` automáticamente cuando los paths del PR matchean la lista en `.github/labeler.yml`.
+3. **CI on-demand** (`.github/workflows/e2e.yml`): el label `e2e` dispara la suite en GitHub Actions como gate pre-merge.
+
+**Escape hatches del pre-push** (usalos sólo cuando sabés exactamente por qué):
+- `SKIP_E2E_PRECHECK=1 git push`: salta solo el hook E2E (sigue corriendo lint/build/typecheck).
+- `git push --no-verify`: salta todos los hooks. Última opción.
 
 **Zona E2E** (paths que disparan el label automático):
 
