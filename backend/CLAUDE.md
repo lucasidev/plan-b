@@ -1,4 +1,4 @@
-# Backend — planb
+# Backend: planb
 
 .NET 10 modular monolith. 5 módulos (bounded contexts) + SharedKernel + Host.
 
@@ -44,14 +44,14 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 ## Convenciones core
 
-- **Nunca throw** para fallas de negocio — usar `Result<T>` y `Error`. Ver [ADR-0015](../docs/decisions/0015-wolverine-como-mediator-y-message-bus.md).
-- **Nunca inyectar `DbContext`** en endpoints — solo `IMessageBus` de Wolverine. El endpoint dispara un command/query; el handler hace el trabajo.
+- **Nunca throw** para fallas de negocio: usar `Result<T>` y `Error`. Ver [ADR-0015](../docs/decisions/0015-wolverine-como-mediator-y-message-bus.md).
+- **Nunca inyectar `DbContext`** en endpoints: solo `IMessageBus` de Wolverine. El endpoint dispara un command/query; el handler hace el trabajo.
 - **`IDateTimeProvider.UtcNow`**, nunca `DateTime.UtcNow`. El dominio es testeable time-independiente.
 - **Columnas DB en `snake_case`**. EF Core config define esto per-column.
 - **Rutas API**: `/api/<modulo>/<recurso>` (ej. `/api/reviews`, `/api/identity/users`).
 - **Nombres de endpoint Carter**: `<Modulo>_<UseCase>` (ej. `Reviews_CreateReview`).
 
-## Modular monolith — reglas físicas
+## Modular monolith: reglas físicas
 
 - **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`). Misma connection string, schemas distintos.
 - **No EF navigation cross-module**: un `Review` no tiene `.Subject` cargado con JOIN. Si necesita data de Subject, el handler pide `IAcademicQueryService.GetSubjectByIdAsync(subjectId)` (de `Planb.Academic.Application.Contracts`).
@@ -83,7 +83,7 @@ Convenciones detalladas en [`docs/testing/conventions.md`](../docs/testing/conve
 
 - **Domain unit** (xUnit + Shouldly): entidades / VOs / errors. Sin mocks, sin I/O. Vive en `modules/<m>/tests/Planb.<M>.Tests/Domain/`.
 - **Handler unit** (xUnit + NSubstitute + Shouldly): Wolverine handler + FluentValidation, deps mockeadas. Vive en `modules/<m>/tests/Planb.<M>.Tests/Features/<UseCase>/`.
-- **Integration** (xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales): endpoints, repos EF, Dapper queries. `Planb.IntegrationTests` corre contra el Postgres compartido que levanta `just infra-up`. Cada test class crea un database propio con nombre random (`planb_<label>_<guid>`) y lo dropea al terminar — isolation real sin el costo de un container por test. Ver [ADR-0027](../docs/decisions/0027-integration-tests-shared-postgres.md).
+- **Integration** (xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales): endpoints, repos EF, Dapper queries. `Planb.IntegrationTests` corre contra el Postgres compartido que levanta `just infra-up`. Cada test class crea un database propio con nombre random (`planb_<label>_<guid>`) y lo dropea al terminar: isolation real sin el costo de un container por test. Ver [ADR-0027](../docs/decisions/0027-integration-tests-shared-postgres.md).
 - **Architecture** (NetArchTest, llega con US-T04): reglas de boundary cross-módulo. Falla en CI si alguien rompe la convención (e.g. endpoint inyectando `DbContext`).
 
 Pirámide formal: [ADR-0036](../docs/decisions/0036-testing-pyramid-cross-stack.md). Regla dura: **subir un nivel sólo si el inferior no alcanza**. Una regla del dominio que se puede testear sin EF va al unit del dominio, no a integration.
@@ -128,5 +128,5 @@ just backend-build / backend-test / backend-lint / migrate
 - **No** usar `DateTime.UtcNow` directo. `IDateTimeProvider.UtcNow`.
 - **No** cargar EF navigation cross-module.
 - **No** crear FKs cross-schema.
-- **No** usar `ConfigureAwait(false)` — ASP.NET Core no tiene sync context, no hace falta.
+- **No** usar `ConfigureAwait(false)`: ASP.NET Core no tiene sync context, no hace falta.
 - **No** agregar paquetes sin actualizar `Directory.Packages.props`.

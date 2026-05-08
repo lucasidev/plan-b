@@ -20,7 +20,7 @@ Hay tres decisiones anidadas:
 - Extensión `pgvector` habilitada en la migración inicial.
 - Tabla `ReviewEmbedding(review_id, source, model_name, model_version, embedding, created_at)` creada desde day 1. Tabla aparte de Review (no columna embebida) para permitir re-embeber al cambiar modelo sin tocar la reseña original.
 - Pipeline de generación: al publicar reseña, se encola un job async que genera el embedding y lo persiste. Worker implementado como `IHostedService` in-process con `Channel<Guid>` (sin infra externa).
-- **Modelo**: `intfloat/multilingual-e5-base` — 768 dimensiones, open source, multilingüe (español incluido), ejecución local sin costos por token.
+- **Modelo**: `intfloat/multilingual-e5-base`: 768 dimensiones, open source, multilingüe (español incluido), ejecución local sin costos por token.
 - **Gating de UI**: los endpoints que usan embeddings (búsqueda semántica, clustering) retornan `404` o `"feature not available"` mientras `COUNT(Reviews WHERE status='published') < threshold` (configurable, default 200). Cuando se supera el umbral, se levanta el gate con un config change, sin deploy de código.
 
 ## Alternativas consideradas
@@ -32,7 +32,7 @@ Más simple al inicio. Descartada porque:
 - Tener la infra lista desde el inicio permite iterar sobre el pipeline y detectar issues temprano con data real de reseñas.
 
 ### B. OpenAI `text-embedding-3-small` (1536 dims)
-Calidad ligeramente superior. Descartada por costo (la universidad comparte la propiedad del proyecto sin aportar recursos — ver memoria de contexto de Lucas). El modelo open source e5-multilingual es suficiente para el caso de uso (clustering de reseñas en español).
+Calidad ligeramente superior. Descartada por costo (la universidad comparte la propiedad del proyecto sin aportar recursos: ver memoria de contexto de Lucas). El modelo open source e5-multilingual es suficiente para el caso de uso (clustering de reseñas en español).
 
 ### C. Embedding como columna en Review
 Más simple, menos joins. Descartada porque:

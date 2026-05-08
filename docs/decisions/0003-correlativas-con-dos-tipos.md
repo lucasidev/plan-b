@@ -14,7 +14,7 @@ Son dos grafos dirigidos distintos sobre las mismas materias, con semánticas di
 
 ## Decisión
 
-Tabla `Prerequisite(subject_id, required_subject_id, type)` donde `type` es un enum con dos valores: `para_cursar` y `para_rendir`. La primary key es `(subject_id, required_subject_id, type)` — permite que una misma pareja aparezca en los dos grafos si así lo define el plan.
+Tabla `Prerequisite(subject_id, required_subject_id, type)` donde `type` es un enum con dos valores: `para_cursar` y `para_rendir`. La primary key es `(subject_id, required_subject_id, type)`: permite que una misma pareja aparezca en los dos grafos si así lo define el plan.
 
 El UI del grafo de carrera pinta dos tipos de arista (p.ej. línea sólida vs punteada) según el tipo. Cálculos de "materias disponibles para cursar" filtran por `type = 'para_cursar'`, y "materias disponibles para rendir" filtran por `type = 'para_rendir'`.
 

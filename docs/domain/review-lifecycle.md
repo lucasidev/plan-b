@@ -1,4 +1,4 @@
-# Review Lifecycle — planb
+# Review Lifecycle: planb
 
 Ciclo de vida de una reseña desde su publicación hasta su eventual remoción o restauración. Cubre:
 
@@ -27,7 +27,7 @@ Este documento **expande** los UCs UC-017, UC-018, UC-019, UC-050, UC-051 y UC-0
 | `upheld`    | El moderador (o cascade) aceptó: la reseña infringía. |
 | `dismissed` | El moderador rechazó: el report no procedía.          |
 
-## State machine — `Review.status`
+## State machine: `Review.status`
 
 ```mermaid
 ---
@@ -47,9 +47,9 @@ stateDiagram-v2
     removed --> published : UC-052 restore
 ```
 
-**Nota sobre edición:** la edición (UC-018) solo se permite desde `published` y mantiene el estado. No aparece como transición porque no cambia el estado — cambia el contenido y dispara efectos (ver matriz abajo). No se permite editar reseñas en `under_review` ni `removed` para evitar edit-bombing como evasión de moderación.
+**Nota sobre edición:** la edición (UC-018) solo se permite desde `published` y mantiene el estado. No aparece como transición porque no cambia el estado: cambia el contenido y dispara efectos (ver matriz abajo). No se permite editar reseñas en `under_review` ni `removed` para evitar edit-bombing como evasión de moderación.
 
-## State machine — `ReviewReport.status`
+## State machine: `ReviewReport.status`
 
 ```mermaid
 ---
@@ -68,7 +68,7 @@ stateDiagram-v2
 | De → A                       | Trigger                                  | UC     | Side effects                                                                                                                                                                                |
 | ---------------------------- | ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `null` → `published`         | publicar, filtro pass                    | UC-017 | `ReviewAuditLog(action=published)`. Enqueue job de `ReviewEmbedding`.                                                                                                                       |
-| `null` → `under_review`      | publicar, filtro catch                   | UC-017 | `ReviewAuditLog(action=published, note="held by auto-filter")`. **No** enqueue de embedding — se encola recién cuando pase a `published`.                                                   |
+| `null` → `under_review`      | publicar, filtro catch                   | UC-017 | `ReviewAuditLog(action=published, note="held by auto-filter")`. **No** enqueue de embedding: se encola recién cuando pase a `published`.                                                   |
 | `published` → `under_review` | N reports abiertos                       | UC-019 | Se registra el report que cruzó el threshold. El auto-hide queda implícito en la transición de Review; no hay entrada de audit adicional.                                                   |
 | `published` → `removed`      | uphold sin pasar por under_review        | UC-051 | `ReviewAuditLog(action=removed)`. El report se marca `upheld` con `resolved_at`. Otros reports open de la misma review → `upheld` (cascade).                                                |
 | `under_review` → `published` | dismiss (y no quedan otros reports open) | UC-051 | `ReviewAuditLog(action=published, note="restored by moderator after review")`. Report `dismissed` con nota. Enqueue embedding si no había.                                                  |
@@ -87,7 +87,7 @@ stateDiagram-v2
 
 ## Sequence diagrams
 
-### 1. Happy path — publicación con filtro pass
+### 1. Happy path: publicación con filtro pass
 
 ```mermaid
 sequenceDiagram
@@ -181,7 +181,7 @@ sequenceDiagram
 
 Un alumno **no puede** editar una reseña en `under_review` ni en `removed`. Si intenta, el endpoint devuelve 403.
 
-**Why:** permitir edit sobre contenido en revisión abre edit-bombing como vector de evasión — el alumno podría modificar la reseña para burlar al moderador antes de que la resuelva. Sobre removidas, el alumno primero debe apelar (que es out-of-flow en MVP, típicamente via email al admin) y ser restaurada.
+**Why:** permitir edit sobre contenido en revisión abre edit-bombing como vector de evasión: el alumno podría modificar la reseña para burlar al moderador antes de que la resuelva. Sobre removidas, el alumno primero debe apelar (que es out-of-flow en MVP, típicamente via email al admin) y ser restaurada.
 
 ### Threshold de auto-hide configurable por env var
 
@@ -193,7 +193,7 @@ La cantidad N de reports open que dispara la transición `published → under_re
 
 Cuando un moderador upholdea un report, la Review pasa a `removed` y **todos los reports open** sobre esa Review se marcan `upheld` automáticamente con la misma `resolution_note`. No requieren resolución individual.
 
-Si después la Review se restaura (UC-052), los reports cascade-upheld **no** se revierten — quedan marcados upheld aunque la Review vuelva a `published`. La cronología real se reconstruye desde `ReviewAuditLog`.
+Si después la Review se restaura (UC-052), los reports cascade-upheld **no** se revierten: quedan marcados upheld aunque la Review vuelva a `published`. La cronología real se reconstruye desde `ReviewAuditLog`.
 
 **Why:** consistente con la intuición de "decisión de moderación = ban del contenido", análogo a bans en plataformas de juegos donde los reports que llevaron al ban quedan como registro aunque el ban se levante después. Evita burocracia sin sacrificar trazabilidad (el audit log tiene todo).
 

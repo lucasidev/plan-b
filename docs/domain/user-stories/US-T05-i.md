@@ -2,15 +2,15 @@
 
 **Status**: Done (shipped en branch `docs/testing-strategy-cross-stack`)
 **Sprint**: S1 (junto con la institucionalización de testing)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: S
-**UC**: —
+**UC**: 
 **ADR refs**: [ADR-0037](../../decisions/0037-changelog-automation-auto-append.md), [ADR-0038](../../decisions/0038-release-and-versioning-policy.md), [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md)
 
 ## Como dev, quiero que `CHANGELOG.md` se actualice solo a partir de Conventional Commits para que mantener el changelog no dependa de memoria humana
 
-`CHANGELOG.md` existe pero nadie lo edita en cada PR. Lefthook ya enforcea Conventional Commits, así que el input estructurado está disponible. Falta la pipa que lo convierta en bullets del CHANGELOG. [ADR-0037](../../decisions/0037-changelog-automation-auto-append.md) elige un workflow GHA con script TS que appendea el último commit a `[Unreleased]`. **Sin version bump, sin tag, sin GitHub Release** — la política de versioning está cubierta por separado en [ADR-0038](../../decisions/0038-release-and-versioning-policy.md) (pre-deploy = no hay versiones).
+`CHANGELOG.md` existe pero nadie lo edita en cada PR. Lefthook ya enforcea Conventional Commits, así que el input estructurado está disponible. Falta la pipa que lo convierta en bullets del CHANGELOG. [ADR-0037](../../decisions/0037-changelog-automation-auto-append.md) elige un workflow GHA con script TS que appendea el último commit a `[Unreleased]`. **Sin version bump, sin tag, sin GitHub Release**: la política de versioning está cubierta por separado en [ADR-0038](../../decisions/0038-release-and-versioning-policy.md) (pre-deploy = no hay versiones).
 
 ## Acceptance Criteria
 
@@ -18,7 +18,7 @@
   - [x] Lee `git log -1` para sha, short sha, subject, body.
   - [x] Parsea el subject como Conventional Commit usando el mismo regex de `scripts/check-commit-msg.ts`.
   - [x] Mapea tipos a secciones de Keep-a-Changelog: `feat` → "Added", `perf`/`refactor` → "Changed", `fix` → "Fixed", `revert` → "Removed". Tipos `docs`/`style`/`test`/`build`/`ci`/`chore` → skip (exit 0 sin cambios).
-  - [x] Construye el bullet: `- <descripción> (<scope>) — [<short-sha>](<repo>/commit/<sha>)`.
+  - [x] Construye el bullet: `- <descripción> (<scope>): [<short-sha>](<repo>/commit/<sha>)`.
   - [x] Si el subject tiene `!:` o el body contiene `BREAKING CHANGE:`, agrega marker `**(BREAKING)**` al bullet.
   - [x] Inserta el bullet en `CHANGELOG.md` bajo `## [Unreleased]` → `### <sección>`, creando el subheader si no existe.
   - [x] Si el commit ya fue procesado (sha presente en el changelog), exit 0 sin cambios. Idempotente.
@@ -66,7 +66,7 @@
 
 - **Loop prevention**: el workflow `changelog.yml` ignora sus propios commits con `if: !startsWith(github.event.head_commit.message, 'docs(changelog):')`. GITHUB_TOKEN ya tiene una protección nativa (commits hechos con él no disparan workflows), pero el filtro `if` es belt-and-suspenders + visibilidad ("este run se skipeó porque…").
 - **Squash and merge**: cuando se mergea con Squash, el único commit en main es el título del PR. Si el título no es Conventional Commit, el script falla al parsear o mapea mal. `pr-title.yml` es la red de seguridad.
-- **Rebase and merge** (default per [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md)): preserva commits individuales. El workflow corre por cada commit pusheado a main individualmente — como cada uno es CC válido y el script es idempotente, no hay duplicación.
+- **Rebase and merge** (default per [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md)): preserva commits individuales. El workflow corre por cada commit pusheado a main individualmente: como cada uno es CC válido y el script es idempotente, no hay duplicación.
 - **Tests embebidos vs vitest**: el archivo `scripts/_test-append-changelog.ts` usa `bun` directo sin vitest API porque vitest todavía no está configurado para `scripts/` (esa setup vive en US-T01-f). Cuando aterrice US-T01, el archivo se renombra a `scripts/append-changelog.test.ts` y se reescribe con `describe`/`it`/`expect`.
 - **`CHANGELOG.md` limpio**: la sección `[Unreleased]` quedó vacía (sólo header). El script crea subsecciones `### Added` / `### Changed` / etc. on-demand cuando aterriza el primer bullet de cada tipo.
 - **Identidad del bot**: por defecto `github-actions[bot]`. Si querés que aparezca como vos, setear `commit_user_name` + `commit_user_email` en el step. No relevante para nuestro caso.

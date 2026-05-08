@@ -38,7 +38,7 @@ Modela la universidad raíz pero pierde la flexibilidad de calendarios. Descarta
 
 **Negativas:**
 - +1 tabla al inicio, +1 FK en cada entidad académica.
-- Las queries del dashboard institucional tienen que filtrar por `university_id` siempre — los clientes del dashboard solo ven datos de su universidad.
+- Las queries del dashboard institucional tienen que filtrar por `university_id` siempre: los clientes del dashboard solo ven datos de su universidad.
 
 **Invariantes a mantener en app:**
 - `Career.university_id = Teacher.university_id` cuando un teacher está en `CommissionTeacher` de una comisión de esa carrera.

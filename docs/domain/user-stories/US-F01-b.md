@@ -2,10 +2,10 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: High
 **Effort**: L
-**UC**: —
+**UC**: 
 **ADR refs**: ADR-0014, ADR-0015, ADR-0016, ADR-0017, ADR-0018, ADR-0025
 
 ## Como dev, quiero el scaffolding del modular monolith para tener base sobre la que implementar features
@@ -41,5 +41,5 @@ Como tech lead solo-dev, quiero el scaffolding completo del backend (.NET 10, mo
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: —
+- Use Case: 
 - ADRs: [ADR-0014](../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0015](../../decisions/0015-wolverine-como-mediator-y-message-bus.md), [ADR-0016](../../decisions/0016-carter-para-endpoints-http.md), [ADR-0017](../../decisions/0017-persistence-ignorance.md), [ADR-0018](../../decisions/0018-ef-core-writes-dapper-reads.md), [ADR-0025](../../decisions/0025-dotnet-10-como-runtime-target.md)

@@ -1,4 +1,4 @@
-# User Stories — planb
+# User Stories: planb
 
 Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
 
@@ -16,7 +16,7 @@ Effort: Small ≈ 1-3 días, Medium ≈ 3-7 días, Large ≈ 1-2 semanas.
 
 Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home + StudentProfile) + institucionalización de testing/changelog/versioning + git workflow rules (S1, T-series).
 
-#### S0 — pre-sprint
+#### S0: pre-sprint
 
 | ID | Título | Epic |
 |---|---|---|
@@ -29,7 +29,7 @@ Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home +
 | [US-F06](user-stories/US-F06.md) | DDD formalization (strategic + tactical + epics + US) | EPIC-00 |
 | [US-010-b](user-stories/US-010-b.md) | Register backend | EPIC-02 |
 
-#### S1 — sprint actual (cierra Fase 2)
+#### S1: sprint actual (cierra Fase 2)
 
 | ID | Título | Epic |
 |---|---|---|
@@ -58,7 +58,7 @@ Foundations (S0) + Fase 2 completa (S1: auth slice + cleanup + AppShell + home +
 
 S1 cerrado el 2026-05-02. Roadmap confirmado de S2 a S5 abajo.
 
-### Roadmap S2 — S5 (confirmado)
+### Roadmap S2: S5 (confirmado)
 
 Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por sprint está cerrado; el orden interno de cada sprint se afina al planificar.
 
@@ -208,16 +208,16 @@ Toda la T-series del MVP cerró en S1 (Done arriba). Trabajo de tooling futuro v
 
 ## Template y criterios
 
-- **Template de US**: [us-template.md](us-template.md) — incluye estructura completa, sources de las prácticas (INVEST / Connextra / BDD / DoR), y guía de cuándo aplicar cada sección.
-- **Definition of Ready (DoR)**: dentro de `us-template.md` — pre-sprint, qué tiene que tener una US para entrar al sprint planning.
-- **Definition of Done (DoD)**: [definition-of-done.md](definition-of-done.md) — post-implementación, qué tiene que cumplir una US para considerarse Done.
+- **Template de US**: [us-template.md](us-template.md): incluye estructura completa, sources de las prácticas (INVEST / Connextra / BDD / DoR), y guía de cuándo aplicar cada sección.
+- **Definition of Ready (DoR)**: dentro de `us-template.md`: pre-sprint, qué tiene que tener una US para entrar al sprint planning.
+- **Definition of Done (DoD)**: [definition-of-done.md](definition-of-done.md): post-implementación, qué tiene que cumplir una US para considerarse Done.
 
-US que entran a sprint backfillean (si faltan): Out of scope, Edge cases, Test scenarios (Given-When-Then), Dependencies. US en Backlog pueden estar más livianas — el backfill es parte del sprint planning.
+US que entran a sprint backfillean (si faltan): Out of scope, Edge cases, Test scenarios (Given-When-Then), Dependencies. US en Backlog pueden estar más livianas: el backfill es parte del sprint planning.
 
 ---
 
 ## Cómo se trackean
 
 - Catálogo canónico: este doc + archivos individuales en [user-stories/](user-stories/).
-- Tracking operacional: Notion (DB `plan-b — User Stories`), con cross-link a este file vía property `Doc link`.
+- Tracking operacional: Notion (DB `plan-b: User Stories`), con cross-link a este file vía property `Doc link`.
 - En código: PRs referencian `US-NNN` o `UC-NNN` desde la descripción y los commits.

@@ -28,12 +28,12 @@ Hay **dos generaciones** de mockup conviviendo en este directorio:
 |---|---|
 | `plan-b-direcciones.html` | Design canvas con 12 secciones organizadas: ⓪ Design System · ① Landing · ② Auth · ③ Onboarding · ④ Inicio · ⑤ Mi carrera · ⑥ Planificar · ⑦ Reseñas · ⑧ Rankings · ⑨ Búsqueda global · ⑩ Cuenta · ⑪ Soporte. |
 | `design-canvas.jsx` | Componente `<DesignCanvas>` que renderiza secciones + artboards con grid + zoom + pan. Es el chrome del canvas. |
-| `tweaks-panel.jsx` | Panel lateral del canvas para tunear tokens en runtime (densidad, acento, fuente). Sin equivalente en `frontend/` — es del canvas. |
+| `tweaks-panel.jsx` | Panel lateral del canvas para tunear tokens en runtime (densidad, acento, fuente). Sin equivalente en `frontend/`: es del canvas. |
 | `data.jsx` | Mock data compartido entre todos los artboards (alumno demo, materias demo, etc.). |
 | `canvas-tokens.css` | Tokens del shell del canvas (no del producto). Sin equivalente en `frontend/`. |
 | `canvas-mocks/design-system.jsx` | Artboard con todas las primitivas + tokens visibles. |
 | `canvas-mocks/landing.jsx` | Landing pública. Antes de `/auth`. |
-| `canvas-mocks/auth.jsx` | 4 vistas separadas: `Signup`, `Login`, `Forgot`, `ForgotSent`. **Sin tabs** — diferencia clave con v1. |
+| `canvas-mocks/auth.jsx` | 4 vistas separadas: `Signup`, `Login`, `Forgot`, `ForgotSent`. **Sin tabs**: diferencia clave con v1. |
 | `canvas-mocks/onboarding.jsx` | 4 pasos: `Welcome`, `Career`, `History`, `Done`. |
 | `canvas-mocks/main.jsx` | Probablemente entry point con sidebar v1 + topbar v1, pre-rediseño. |
 | `canvas-mocks/v2-shell.jsx` | **Sidebar v2** (Producto / Otros + avatar menu) y **Topbar v2** (período + búsqueda + campanita + CTA). |

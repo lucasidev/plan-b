@@ -15,9 +15,9 @@ La tentación común: poner metadata de reseñas en JSONB "por las dudas" para e
 
 **JSONB se usa solo en dos lugares donde el shape es genuinamente variable:**
 
-1. **`HistorialImport.raw_payload`** — staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. El formato del historial académico varía por universidad y por versión del sistema de gestión. Guardar el crudo permite reprocesar si el parser cambia o falla.
+1. **`HistorialImport.raw_payload`**: staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. El formato del historial académico varía por universidad y por versión del sistema de gestión. Guardar el crudo permite reprocesar si el parser cambia o falla.
 
-2. **`ReviewAuditLog.changes`** — diff de cambios sobre una reseña. La estructura varía según la acción (edit, report, remove, restore): un edit tiene `before/after` de campos; un report tiene `reason` y `reporter_id`; un remove tiene `reason_code` y `moderator_id`. El log se consume como timeline, rara vez se consulta por dentro.
+2. **`ReviewAuditLog.changes`**: diff de cambios sobre una reseña. La estructura varía según la acción (edit, report, remove, restore): un edit tiene `before/after` de campos; un report tiene `reason` y `reporter_id`; un remove tiene `reason_code` y `moderator_id`. El log se consume como timeline, rara vez se consulta por dentro.
 
 ## Alternativas consideradas
 

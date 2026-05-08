@@ -1,4 +1,4 @@
-# ADR-0022: Forms — React 19 primitives + TanStack Form para complejos
+# ADR-0022: Forms: React 19 primitives + TanStack Form para complejos
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23
@@ -14,9 +14,9 @@ Planb tiene forms de complejidad variable:
 En React 19.1 + Next.js 15, hay primitives nativos que reemplazan mucha de la ceremonia que antes requería librerías:
 
 - `<form action={serverAction}>` con progressive enhancement.
-- `useActionState` — state + action dispatcher integrado.
-- `useFormStatus` — estado pending de un form para componentes nested.
-- `useOptimistic` — updates optimistas antes del server response.
+- `useActionState`: state + action dispatcher integrado.
+- `useFormStatus`: estado pending de un form para componentes nested.
+- `useOptimistic`: updates optimistas antes del server response.
 
 Y para forms complejos, **TanStack Form** (2026) ha ganado tracción sobre react-hook-form por type-safety de primer nivel y framework-agnostic design, con integración específica con shadcn/ui vía `shadcn-tanstack-form`.
 

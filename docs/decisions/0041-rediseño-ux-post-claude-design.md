@@ -1,4 +1,4 @@
-# ADR-0041: Rediseño UX post-claude-design — delta y plan de migración
+# ADR-0041: Rediseño UX post-claude-design: delta y plan de migración
 
 - **Estado**: aceptado
 - **Fecha**: 2026-05-02
@@ -43,7 +43,7 @@ Después del paso 4 el alumno aterriza en Inicio. Si elige "después" en el paso
 
 **Antes**: home con DecisionCards + CoursingNow (mock data hardcoded) implementada en S1.
 
-**Después**: rediseñada con jerarquía clara — una "pregunta dominante" arriba (ej. "¿qué te anotás este cuatri?") y todo lo demás subordinado. El bloque de DecisionCards del actual queda como deuda visual hasta que aterrice el rediseño.
+**Después**: rediseñada con jerarquía clara: una "pregunta dominante" arriba (ej. "¿qué te anotás este cuatri?") y todo lo demás subordinado. El bloque de DecisionCards del actual queda como deuda visual hasta que aterrice el rediseño.
 
 ### Mi carrera (sección ⑤)
 
@@ -86,7 +86,7 @@ Plus editor de reseña en `/reseñas/escribir/[cursada-id]` con **6 campos numer
 2. Dificultad (1-5).
 3. Horas de estudio/semana (slider, opcional).
 4. Texto libre (opcional, sin mínimo).
-5. Tags rápidos preseleccionables (claro, exige, responde tarde, TPs buenos, aprueba justo, etc.) — múltiples.
+5. Tags rápidos preseleccionables (claro, exige, responde tarde, TPs buenos, aprueba justo, etc.): múltiples.
 6. Recomendaciones sí/no:
    - Recomendarías esta cursada.
    - Volverías a tomar a este docente.
@@ -126,8 +126,8 @@ Highlight del query en cada resultado. Atajos de teclado (⌘K para abrir, flech
 **Antes**: stub `(member)/profile/page.tsx` + `(member)/settings/page.tsx`.
 
 **Después**: split clarificado:
-- **Mi perfil** — identidad del usuario (nombre, mail, datos académicos: universidad, carrera, plan, año, legajo, estado regular, foto). Acceso desde **menú del avatar** en footer del sidebar.
-- **Ajustes** — config de la app (notificaciones, privacidad, idioma, tema). Acceso desde **item propio** en sección "Otros" del sidebar.
+- **Mi perfil**: identidad del usuario (nombre, mail, datos académicos: universidad, carrera, plan, año, legajo, estado regular, foto). Acceso desde **menú del avatar** en footer del sidebar.
+- **Ajustes**: config de la app (notificaciones, privacidad, idioma, tema). Acceso desde **item propio** en sección "Otros" del sidebar.
 
 Razón: ajustes de la app no tienen nada que ver con identidad. Mezclarlos era vagancia mental.
 
@@ -164,7 +164,7 @@ Sin "v0.2" en el logo (era artefacto del canvas, no del producto).
 2. **Patrón "tabs"** como herramienta principal de organización en vistas con sub-secciones (Mi carrera, Planificar, Reseñas).
 3. **Meilisearch** como motor de búsqueda global ([ADR-0039](0039-meilisearch-como-motor-de-búsqueda-global.md)).
 4. **Notifications** como bounded context nuevo ([ADR-0040](0040-notifications-como-bounded-context.md)).
-5. **Estados vacíos invitan a completar el estado académico**: cuando un alumno entra a Inicio sin historial cargado, sin reseñas pendientes, sin nada — la pantalla lo invita a cargar el historial (link al onboarding del paso 3) o a planificar el próximo cuatri. Empty state empuja al user al next step.
+5. **Estados vacíos invitan a completar el estado académico**: cuando un alumno entra a Inicio sin historial cargado, sin reseñas pendientes, sin nada: la pantalla lo invita a cargar el historial (link al onboarding del paso 3) o a planificar el próximo cuatri. Empty state empuja al user al next step.
 6. **Truncar últimos 3** (TBD): patrón a aplicar a alguna lista (probable: reseñas en detalle de materia o historial). Aterriza cuando una US específica lo necesite.
 
 ## Cambios pendientes que NO se zanjaron en la sesión
@@ -188,28 +188,28 @@ Sin "v0.2" en el logo (era artefacto del canvas, no del producto).
 
 El alcance por sprint está cerrado; el orden interno de cada sprint se afina al planificar.
 
-**S2 — Auth + Onboarding + Inicio + Mi carrera shell**
-- [US-036](../domain/user-stories/US-036.md) — Auth rebuild (4 rutas separadas).
-- [US-037](../domain/user-stories/US-037.md) — Onboarding 4 pasos.
-- [US-044](../domain/user-stories/US-044.md) — Inicio v2 con pregunta dominante.
-- [US-045](../domain/user-stories/US-045.md) — Mi carrera shell + 5 tabs con stub data. **Backend de Academic CRUD queda como deuda diferida**: se hace después del shell. Lucas decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
+**S2: Auth + Onboarding + Inicio + Mi carrera shell**
+- [US-036](../domain/user-stories/US-036.md): Auth rebuild (4 rutas separadas).
+- [US-037](../domain/user-stories/US-037.md): Onboarding 4 pasos.
+- [US-044](../domain/user-stories/US-044.md): Inicio v2 con pregunta dominante.
+- [US-045](../domain/user-stories/US-045.md): Mi carrera shell + 5 tabs con stub data. **Backend de Academic CRUD queda como deuda diferida**: se hace después del shell. Lucas decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
 
-**S3 — Planificar + Mi perfil + self-disable**
-- [US-046](../domain/user-stories/US-046.md) — Planificar shell + 2 tabs + nudge de promoción manual.
-- [US-047](../domain/user-stories/US-047.md) — Mi perfil (view + edit + foto, acceso desde menú del avatar).
-- [US-075](../domain/user-stories/US-075.md) — Member self-disable (zona peligrosa de Mi perfil).
+**S3: Planificar + Mi perfil + self-disable**
+- [US-046](../domain/user-stories/US-046.md): Planificar shell + 2 tabs + nudge de promoción manual.
+- [US-047](../domain/user-stories/US-047.md): Mi perfil (view + edit + foto, acceso desde menú del avatar).
+- [US-075](../domain/user-stories/US-075.md): Member self-disable (zona peligrosa de Mi perfil).
 
-**S4 — Reseñas + Rankings**
-- [US-017](../domain/user-stories/US-017.md), [US-018](../domain/user-stories/US-018.md), [US-019](../domain/user-stories/US-019.md), [US-020](../domain/user-stories/US-020.md) — Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
-- [US-048](../domain/user-stories/US-048.md) — Reseñas shell + 3 tabs.
-- [US-049](../domain/user-stories/US-049.md) — Editor de reseña 6 campos numerados con preview vivo.
-- [US-070](../domain/user-stories/US-070.md) — Rankings top 10 paginado.
+**S4: Reseñas + Rankings**
+- [US-017](../domain/user-stories/US-017.md), [US-018](../domain/user-stories/US-018.md), [US-019](../domain/user-stories/US-019.md), [US-020](../domain/user-stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
+- [US-048](../domain/user-stories/US-048.md): Reseñas shell + 3 tabs.
+- [US-049](../domain/user-stories/US-049.md): Editor de reseña 6 campos numerados con preview vivo.
+- [US-070](../domain/user-stories/US-070.md): Rankings top 10 paginado.
 
-**S5 — Búsqueda global + Ajustes + Soporte**
-- [US-071](../domain/user-stories/US-071.md) — Búsqueda global topbar dropdown (Meilisearch).
-- [US-072](../domain/user-stories/US-072.md) — Ajustes (notificaciones / privacidad / idioma / tema).
-- [US-073](../domain/user-stories/US-073.md) — Ayuda (FAQ + contacto soporte).
-- [US-074](../domain/user-stories/US-074.md) — Sobre plan-b (página informacional + créditos).
+**S5: Búsqueda global + Ajustes + Soporte**
+- [US-071](../domain/user-stories/US-071.md): Búsqueda global topbar dropdown (Meilisearch).
+- [US-072](../domain/user-stories/US-072.md): Ajustes (notificaciones / privacidad / idioma / tema).
+- [US-073](../domain/user-stories/US-073.md): Ayuda (FAQ + contacto soporte).
+- [US-074](../domain/user-stories/US-074.md): Sobre plan-b (página informacional + créditos).
 
 **Backlog open (sin sprint asignado)**:
 - US-001 a US-004 (catálogo público), US-013/14/15 (historial backend), US-016 + US-023..027 (simulación + planning storage backend), US-030 a US-032 + US-040/041 + US-066 (claim docente), US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-068 (admin/mod disable), US-080 (dashboard institucional).

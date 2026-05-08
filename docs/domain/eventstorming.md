@@ -1,17 +1,17 @@
-# EventStorming — planb
+# EventStorming: planb
 
 Captura del discovery de DDD del proyecto. Reproducimos en formato markdown lo que típicamente sería un mural con sticky notes de colores siguiendo la metodología de Alberto Brandolini.
 
 **Convenciones**:
 
-- 🟧 **Domain Event** (en pasado) — algo que ya pasó.
-- 🟦 **Command** (en imperativo) — intent que dispara algo.
-- 🟨 **Actor** — quién ejecuta el command.
-- 🟪 **Policy** — regla "cuando X event → entonces Y command".
-- 🟩 **Read model** — query usada para validar invariantes o tomar decisiones.
-- ⚠️ **Hot spot** — pregunta sin respuesta, ambigüedad, decisión pendiente al momento del discovery.
+- 🟧 **Domain Event** (en pasado): algo que ya pasó.
+- 🟦 **Command** (en imperativo): intent que dispara algo.
+- 🟨 **Actor**: quién ejecuta el command.
+- 🟪 **Policy**: regla "cuando X event → entonces Y command".
+- 🟩 **Read model**: query usada para validar invariantes o tomar decisiones.
+- ⚠️ **Hot spot**: pregunta sin respuesta, ambigüedad, decisión pendiente al momento del discovery.
 
-Este doc no es la verdad final del modelo — la verdad vive en `strategic/`, `tactical/` y los ADRs. Acá se captura el **proceso** que llevó a esas decisiones, para que un revisor o un futuro contribuidor pueda reconstruir el razonamiento.
+Este doc no es la verdad final del modelo: la verdad vive en `strategic/`, `tactical/` y los ADRs. Acá se captura el **proceso** que llevó a esas decisiones, para que un revisor o un futuro contribuidor pueda reconstruir el razonamiento.
 
 ---
 
@@ -20,13 +20,13 @@ Este doc no es la verdad final del modelo — la verdad vive en `strategic/`, `t
 El producto resuelve un loop concreto: **review-driven semester planning**.
 
 ```
-[ONBOARDING — único por alumno]
+[ONBOARDING: único por alumno]
   Visitor anónimo → registra cuenta → verifica email → crea StudentProfile → carga historial inicial
 
-[LOOP — iterativo, cada cuatrimestre]
+[LOOP: iterativo, cada cuatrimestre]
   Planifica → Cursa (off-system) → Registra resultado → Reseña (opcional pero esperada) → Reacciona ↻
 
-[GOBERNANZA paralela — no en el loop]
+[GOBERNANZA paralela: no en el loop]
   Admin precarga catálogo, modera staff, gestiona cuentas
   Moderador opera cola de reseñas en revisión
   Docente verificado responde reseñas sobre sí mismo
@@ -39,21 +39,21 @@ Todo lo demás (búsqueda, exploración pública, etc.) son enablers o vistas de
 
 ## 1. Onboarding del alumno
 
-Ocurre una vez por alumno (o pocas — si crea profiles para múltiples carreras).
+Ocurre una vez por alumno (o pocas: si crea profiles para múltiples carreras).
 
 | Event 🟧 | Command 🟦 | Actor 🟨 | Read models 🟩 | Policies 🟪 |
 |---|---|---|---|---|
 | `UserRegistered` | `RegisterUser(email, password)` | Visitor | `EmailIsAvailable(email)` (no User no-expirado con ese email) | → `IssueVerificationToken(userId, purpose=UserEmailVerification)` |
 | `VerificationTokenIssued` | `IssueVerificationToken(userId, purpose, ttl)` | System (policy de UserRegistered o Resend) | `UserExists(userId)`, `UserHasActiveTokenForPurpose(userId, purpose)` | → integration: enviar email vía SMTP (Mailpit dev, relay prod) |
 | `VerificationTokenConsumed` | `ConsumeVerificationToken(rawValue)` | Visitor (click en link) | `TokenExists(rawValue)`, `TokenIsActive(rawValue)` | → `MarkUserEmailVerified(userId)` |
-| `UserEmailVerified` | `MarkUserEmailVerified(userId)` | System (policy de TokenConsumed) | — | (none — capability "create profile" se desbloquea implícitamente) |
-| `VerificationTokenInvalidated` | `InvalidateVerificationToken(tokenId, reason)` | System (en resend o expiry job) | — | → si reason='resend': `IssueVerificationToken(userId, purpose)` |
-| `UnverifiedRegistrationExpired` | `ExpireUnverifiedRegistration(userId)` | System (scheduled job, daily) | `UserIsUnverified(userId)`, `RegisteredMoreThan(userId, 7.days)` | (none — terminal state; email queda re-claimable) |
-| `StudentProfileCreated` | `CreateStudentProfile(userId, careerPlanId, enrollmentYear)` | Member verificado | `UserIsVerified(userId)`, `CareerPlanExists(careerPlanId)`, `NoActiveProfileForPair(userId, careerPlanId)` | (none — habilita commands sobre EnrollmentRecord para esta carrera) |
+| `UserEmailVerified` | `MarkUserEmailVerified(userId)` | System (policy de TokenConsumed) |: | (none: capability "create profile" se desbloquea implícitamente) |
+| `VerificationTokenInvalidated` | `InvalidateVerificationToken(tokenId, reason)` | System (en resend o expiry job) |: | → si reason='resend': `IssueVerificationToken(userId, purpose)` |
+| `UnverifiedRegistrationExpired` | `ExpireUnverifiedRegistration(userId)` | System (scheduled job, daily) | `UserIsUnverified(userId)`, `RegisteredMoreThan(userId, 7.days)` | (none: terminal state; email queda re-claimable) |
+| `StudentProfileCreated` | `CreateStudentProfile(userId, careerPlanId, enrollmentYear)` | Member verificado | `UserIsVerified(userId)`, `CareerPlanExists(careerPlanId)`, `NoActiveProfileForPair(userId, careerPlanId)` | (none: habilita commands sobre EnrollmentRecord para esta carrera) |
 | `HistorialImportRequested` | `SubmitHistorialImport(studentProfileId, sourceType, raw)` | Alumno | `StudentProfileOwnedBy(profileId, userId)`, `SourceFormatValid(sourceType, raw)` | → `ProcessHistorialImport(importId)` (background worker, async) |
-| `HistorialImportCompleted` | `CompleteHistorialImport(importId, results)` | System (worker) | — | → batch de `CreateEnrollmentRecord(...)` por cada row resuelto |
-| `HistorialImportFailed` | `FailHistorialImport(importId, error)` | System (worker, en exception) | — | → integration: notificar alumno, sugerir flow manual |
-| `EnrollmentRecordCreated` | `CreateEnrollmentRecord(profileId, subjectId, status, ...)` | Alumno (manual) o System (desde import) | `SubjectInPlan(subjectId, profile.careerPlanId)`, `NoDuplicate(profileId, subjectId, termId)`, invariantes de status/grade | (none — pero invalida queries de "materias disponibles" para simulador) |
+| `HistorialImportCompleted` | `CompleteHistorialImport(importId, results)` | System (worker) |: | → batch de `CreateEnrollmentRecord(...)` por cada row resuelto |
+| `HistorialImportFailed` | `FailHistorialImport(importId, error)` | System (worker, en exception) |: | → integration: notificar alumno, sugerir flow manual |
+| `EnrollmentRecordCreated` | `CreateEnrollmentRecord(profileId, subjectId, status, ...)` | Alumno (manual) o System (desde import) | `SubjectInPlan(subjectId, profile.careerPlanId)`, `NoDuplicate(profileId, subjectId, termId)`, invariantes de status/grade | (none: pero invalida queries de "materias disponibles" para simulador) |
 | `EnrollmentRecordEdited` | `UpdateEnrollmentRecord(recordId, changes)` | Alumno (autor) | `EnrollmentRecordOwnedBy(recordId, userId)`, invariantes | → si edit destructive (cambio a status='cursando' habiendo Review): `InvalidateReview(reviewId)` cross-BC |
 
 ⚠️ **Hot spots resueltos durante este momento**:
@@ -63,7 +63,7 @@ Ocurre una vez por alumno (o pocas — si crea profiles para múltiples carreras
 
 ---
 
-## 2. Loop iterativo — Planificación
+## 2. Loop iterativo: Planificación
 
 El alumno usa el simulador para decidir qué cursar. La simulación en sí **no genera events** (es query/computación). Los events aparecen cuando el alumno **persiste** algo.
 
@@ -77,25 +77,25 @@ El alumno usa el simulador para decidir qué cursar. La simulación en sí **no 
 
 ⚠️ **Hot spots**:
 
-- **HOT 9**: ¿`SimulationDraft` en BC propio (Planning) o dentro de Enrollments? **BC propio** — distinción semántica futuro vs pasado vale la separación.
+- **HOT 9**: ¿`SimulationDraft` en BC propio (Planning) o dentro de Enrollments? **BC propio**: distinción semántica futuro vs pasado vale la separación.
 - Discusión "¿reseñas obligatorias o opcionales?" se resolvió aquí: **opcionales con incentivos** (capability rewards en lugar de gating). Ver ADR-0028.
 
 **Read models para el simulador** (no emiten events, son queries puras):
 
-- `AvailableSubjectsForTerm(profileId, termId)` — devuelve subjects que cumplen correlativas para_cursar dado el historial.
-- `BlockedSubjectsForTerm(profileId, termId)` — devuelve subjects bloqueadas + qué correlativa falta.
-- `CombinationMetrics(profileId, materias[])` — carga horaria, dificultad ponderada, histograma de combinaciones similares.
-- `PublicSimulations(careerPlanId, termId)` — simulations compartidas por otros, anonimizadas.
+- `AvailableSubjectsForTerm(profileId, termId)`: devuelve subjects que cumplen correlativas para_cursar dado el historial.
+- `BlockedSubjectsForTerm(profileId, termId)`: devuelve subjects bloqueadas + qué correlativa falta.
+- `CombinationMetrics(profileId, materias[])`: carga horaria, dificultad ponderada, histograma de combinaciones similares.
+- `PublicSimulations(careerPlanId, termId)`: simulations compartidas por otros, anonimizadas.
 
 ---
 
-## 3. Loop iterativo — Registrar (idéntico a onboarding)
+## 3. Loop iterativo: Registrar (idéntico a onboarding)
 
 Mismos events que onboarding (`EnrollmentRecordCreated`, `EnrollmentRecordEdited`). En el loop iterativo se ejecutan con frecuencia.
 
 ---
 
-## 4. Loop iterativo — Reseñar
+## 4. Loop iterativo: Reseñar
 
 | Event 🟧 | Command 🟦 | Actor 🟨 | Read models 🟩 / Policies 🟪 |
 |---|---|---|---|
@@ -103,18 +103,18 @@ Mismos events que onboarding (`EnrollmentRecordCreated`, `EnrollmentRecordEdited
 | `ReviewQuarantined` | `QuarantineReview(reviewId, reason)` | System (policy de filter trigger O threshold de reports) | (none directo; mod queue lo recoge) |
 | `ReviewEdited` | `EditReview(reviewId, changes)` | Alumno (autor) | RM: re-corre filter sobre nuevo texto; si previamente había TeacherResponse, marca "editada después de respuesta" |
 | `ReviewInvalidated` | `InvalidateReview(reviewId, reason='enrollment_changed')` | System (policy cross-BC) | Disparado por `EnrollmentRecordEdited` (edit destructive) |
-| `ReviewRemoved` | (resultante de `UpholdReport`) | System (policy) | — |
+| `ReviewRemoved` | (resultante de `UpholdReport`) | System (policy) |: |
 | `ReviewRestored` | `RestoreReview(reviewId)` | Moderator | Tras apelación |
 
 ⚠️ **Hot spots resueltos**:
 
 - **HOT 5**: ¿Edit destructive de EnrollmentRecord rechaza la edit, invalida la Review, o ignora? **Invalida la Review** (Review pasa a `under_review`). Cross-BC vía outbox. Ver ADR-0032.
 - **Auto-filter**: domain service `IReviewContentFilter`, no parte del aggregate. App service obtiene el verdict y lo pasa al aggregate `Review.Publish(verdict)`.
-- **`ReviewEmbedding`** no es event ni aggregate — es un read model derivado, computado async.
+- **`ReviewEmbedding`** no es event ni aggregate: es un read model derivado, computado async.
 
 ---
 
-## 5. Loop iterativo — Reaccionar (governance interna del loop)
+## 5. Loop iterativo: Reaccionar (governance interna del loop)
 
 ### 5a. Reportar
 
@@ -142,7 +142,7 @@ Mismos events que onboarding (`EnrollmentRecordCreated`, `EnrollmentRecordEdited
 ⚠️ **Hot spots resueltos**:
 
 - **HOT 11**: Cross-BC consistency entre Enrollments → Reviews → Moderation. **Eventual via Wolverine outbox.** Ver ADR-0030.
-- **HOT 10**: `ReviewAuditLog` — ¿aggregate o projection? **Projection.** Append-only, sin invariantes complejos. Listener escucha events de Review/Report/Response y persiste en `review_audit_log`.
+- **HOT 10**: `ReviewAuditLog`: ¿aggregate o projection? **Projection.** Append-only, sin invariantes complejos. Listener escucha events de Review/Report/Response y persiste en `review_audit_log`.
 
 ---
 
@@ -199,13 +199,13 @@ Actor: Admin. Read models para validación de invariantes intra-aggregate.
 
 No emiten events, son queries:
 
-- 🟩 `ReviewsUnderReview()` — cola de moderación.
-- 🟩 `ReviewAuditLogFor(reviewId)` — historial completo de una review.
-- 🟩 `UniversityDashboard(universityId)` — agregados de reseñas + tasas de abandono + combinaciones que más fallan, scoped a la universidad del staff.
+- 🟩 `ReviewsUnderReview()`: cola de moderación.
+- 🟩 `ReviewAuditLogFor(reviewId)`: historial completo de una review.
+- 🟩 `UniversityDashboard(universityId)`: agregados de reseñas + tasas de abandono + combinaciones que más fallan, scoped a la universidad del staff.
 
 ---
 
-## Inventario emergente — aggregates y entities
+## Inventario emergente: aggregates y entities
 
 Resumen de lo que apareció en el discovery. Detalle completo en `tactical/aggregates.md`.
 
@@ -233,7 +233,7 @@ Resumen de lo que apareció en el discovery. Detalle completo en `tactical/aggre
 
 ---
 
-## Hot spots — index final
+## Hot spots: index final
 
 Para que un revisor pueda saltar al razonamiento de cualquiera:
 
@@ -241,12 +241,12 @@ Para que un revisor pueda saltar al razonamiento de cualquiera:
 |---|---|---|---|
 | 1 | Atomic vs eventual emisión de token | Eventual via outbox | this doc, sección 1 |
 | 2 | Stuck users (registrados sin verificar) | Expire después de 7 días | this doc, sección 1 |
-| 3 | (n/a — descartado) | — | — |
-| 4 | (n/a — descartado) | — | — |
+| 3 | (n/a: descartado) |: |: |
+| 4 | (n/a: descartado) |: |: |
 | 5 | Edit destructive de EnrollmentRecord | Invalida Review (status=under_review) | ADR-0032 |
 | 6 | EnrollmentRecord events: batch o individuales | Individuales | this doc, sección 1 |
-| 7 | (anulado por HOT 15) | — | — |
-| 8 | (n/a — descartado) | — | — |
+| 7 | (anulado por HOT 15) |: |: |
+| 8 | (n/a: descartado) |: |: |
 | 9 | Planning BC separado | Sí | ADR-0029 |
 | 10 | ReviewAuditLog: aggregate o projection | Projection | ADR-0031 |
 | 11 | Cross-BC consistency | Eventual via Wolverine outbox | ADR-0030 |

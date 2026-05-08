@@ -74,13 +74,13 @@ Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event 
 
 - Modelo simple. Una tabla, un handler, una API de lectura.
 - Append-only se respeta naturalmente porque el projector solo INSERT-ea.
-- Se puede reconstruir totalmente desde el log de events (en teoría — práctica requiere que los events estén durables, lo cual está garantizado por el outbox de Wolverine, [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md)).
+- Se puede reconstruir totalmente desde el log de events (en teoría: práctica requiere que los events estén durables, lo cual está garantizado por el outbox de Wolverine, [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md)).
 - Si en futuro queremos features como "exportar audit log a SIEM", el projector se enchufa a otro destino.
 
 **Negativas**:
 
 - El audit log es un single point of failure de auditoría. Si el projector falla por un bug, faltan entries (aunque los events siguen en el outbox para reprocessing).
-- Mitigación: el projector es código simple (insert por event). Tests unitarios cubren cada mapping. Si un event nuevo no tiene mapping, queda sin entry — flag-able con CI rule "todo event de Reviews debe estar mapeado en el projector".
+- Mitigación: el projector es código simple (insert por event). Tests unitarios cubren cada mapping. Si un event nuevo no tiene mapping, queda sin entry: flag-able con CI rule "todo event de Reviews debe estar mapeado en el projector".
 
 **No-decisión explícita**:
 

@@ -51,10 +51,10 @@ Nuestro workflow `changelog.yml` (ADR-0037) mapea commits `revert:` a la secció
 ## [Unreleased]
 
 ### Added
-- foo (frontend) — abc123
+- foo (frontend): abc123
 
 ### Removed
-- "feat(frontend): foo (commit abc123)" — def456 **(BREAKING)**
+- "feat(frontend): foo (commit abc123)": def456 **(BREAKING)**
 ```
 
 Si el commit del revert no tiene type `revert:` (e.g. `Revert "feat(test): ..."`), el script no lo procesa porque no matchea el regex de Conventional Commits. Si querés que entre al CHANGELOG, editá el title:
@@ -100,7 +100,7 @@ dotnet ef migrations remove \
   --startup-project host/Planb.Api
 ```
 
-**Caveat**: si el `Down()` de la migración está mal escrito (no es rollback-safe), `database update <previa>` falla. Hoy no hay test automático para `Down()` correctness — es responsabilidad del autor de la migración escribir uno consistente.
+**Caveat**: si el `Down()` de la migración está mal escrito (no es rollback-safe), `database update <previa>` falla. Hoy no hay test automático para `Down()` correctness: es responsabilidad del autor de la migración escribir uno consistente.
 
 **En dev local**: si todo se rompió y querés empezar de cero, `just infra-reset` (volca volúmenes + relevanta containers + recrea DB).
 

@@ -13,7 +13,7 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 - [US-010-b](../user-stories/US-010-b.md): Register backend
 - [US-011-b](../user-stories/US-011-b.md): Verify email backend
 
-### Sprint S1 (current — auth slice end-to-end + cleanup)
+### Sprint S1 (current: auth slice end-to-end + cleanup)
 **Done:**
 - [US-010-f](../user-stories/US-010-f.md): Register frontend (sign-up tab del AuthView)
 - [US-011-f](../user-stories/US-011-f.md): Verify email frontend (rehecho con design system)
@@ -29,7 +29,7 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 - [US-033-i](../user-stories/US-033-i.md): Recuperación de contraseña (integrated)
 
 ### Sprint S1 (perfil)
-- [US-012-b](../user-stories/US-012-b.md): Crear StudentProfile (backend) — frontend diferido a una US separada cuando aterrice JwtBearer middleware en backend
+- [US-012-b](../user-stories/US-012-b.md): Crear StudentProfile (backend): frontend diferido a una US separada cuando aterrice JwtBearer middleware en backend
 
 ### Backlog
 - [US-035](../user-stories/US-035.md): Sign-in con Google (OAuth)

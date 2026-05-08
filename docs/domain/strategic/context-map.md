@@ -1,4 +1,4 @@
-# Context Map — planb
+# Context Map: planb
 
 Mapa de relaciones entre los 6 Bounded Contexts. Para cada par definimos el **patrón de integración** (en términos de Evans/Vernon) y el **mecanismo técnico** (synchronous reads, integration events, etc.).
 
@@ -46,7 +46,7 @@ Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../decisions/001
 
 ### Identity → Enrollments
 
-**Patrón**: Customer/Supplier — Identity es upstream (publishes), Enrollments es downstream (consumes).
+**Patrón**: Customer/Supplier: Identity es upstream (publishes), Enrollments es downstream (consumes).
 
 **Por qué Customer/Supplier y no Conformist**: el equipo es el mismo, hay control sobre ambos, y Enrollments tiene voz para pedir cambios al contract de Identity (ej. agregar `IsVerified(userId)` al query service).
 
@@ -99,7 +99,7 @@ Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../decisions/001
 
 **Mecanismo**:
 
-- **Reads sync**: `IAcademicQueryService.GetSubjectsInPlan(careerPlanId)`, `GetPrerequisitesFor(subjectId)`, `GetTermsForUniversity(universityId)` — todo lo que necesita el simulador para presentar opciones.
+- **Reads sync**: `IAcademicQueryService.GetSubjectsInPlan(careerPlanId)`, `GetPrerequisitesFor(subjectId)`, `GetTermsForUniversity(universityId)`: todo lo que necesita el simulador para presentar opciones.
 - Sin writes cross-BC.
 
 ### Enrollments → Reviews
@@ -129,7 +129,7 @@ Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../decisions/001
 
 - **Reads sync**: `IReviewQueryService.GetReview(reviewId)` para que Moderator UI muestre el contenido al resolver un report. `IReviewQueryService.GetReviewsForReports(reviewIds[])` para la cola.
 - **Integration events**:
-  - Reviews emite `ReviewPublished`, `ReviewQuarantined`, `ReviewEdited`, `ReviewRemoved`, `ReviewRestored` — Moderation observa y persiste en `ReviewAuditLog` projection.
+  - Reviews emite `ReviewPublished`, `ReviewQuarantined`, `ReviewEdited`, `ReviewRemoved`, `ReviewRestored`: Moderation observa y persiste en `ReviewAuditLog` projection.
   - Moderation emite `ReportUpheld` → Reviews reacciona disparando `RemoveReview(reviewId)`.
 - Sin reads de Moderation desde Reviews (Reviews no necesita saber sobre reports en su lógica core; los reports son responsabilidad de Moderation).
 
@@ -168,7 +168,7 @@ Todos los integration events viajan por **Wolverine outbox** persistido en Postg
 | `TeacherResponsePublished` | Reviews | Moderation (audit) |
 | `TeacherResponseEdited` | Reviews | Moderation (audit) |
 
-Domain events (intra-BC) NO cruzan boundaries — quedan dentro del BC y se manejan en transacción local. La distinción event-domain vs event-integration está documentada en `tactical/domain-events.md`.
+Domain events (intra-BC) NO cruzan boundaries: quedan dentro del BC y se manejan en transacción local. La distinción event-domain vs event-integration está documentada en `tactical/domain-events.md`.
 
 ---
 
@@ -181,7 +181,7 @@ Domain events (intra-BC) NO cruzan boundaries — quedan dentro del BC y se mane
 - `Result`, `Result<T>`, `Error`, `ErrorType`.
 - `IDateTimeProvider`, `SystemDateTimeProvider`.
 
-**Regla**: shared-kernel NO contiene lógica de dominio — solo abstracciones que todos los BCs usan. Si una abstracción es específica de un BC, vive en ese BC.
+**Regla**: shared-kernel NO contiene lógica de dominio: solo abstracciones que todos los BCs usan. Si una abstracción es específica de un BC, vive en ese BC.
 
 ---
 

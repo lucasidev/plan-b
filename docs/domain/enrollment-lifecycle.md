@@ -1,4 +1,4 @@
-# Enrollment Lifecycle — planb
+# Enrollment Lifecycle: planb
 
 Ciclo de vida del `EnrollmentRecord`, la entidad que representa una cursada específica de un alumno (par alumno × materia × cuatrimestre). Es el ancla del historial académico y la precondición del sistema de reseñas.
 
@@ -22,7 +22,7 @@ Este documento expande los UCs UC-013, UC-014, UC-015. Para el lifecycle dependi
 | `reprobada`  | Cursada terminada sin regularizar. Para intentar de nuevo, recursar (enrollment nuevo).            | Sí       |
 | `abandonada` | Alumno dejó de cursar antes de terminar.                                                           | Sí       |
 
-Los estados "disponible para cursar" y "bloqueada por correlativas" **no** son estados persistidos del EnrollmentRecord — son estados derivados que se computan en query cruzando historial + correlativas. Ver [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md).
+Los estados "disponible para cursar" y "bloqueada por correlativas" **no** son estados persistidos del EnrollmentRecord: son estados derivados que se computan en query cruzando historial + correlativas. Ver [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md).
 
 ## State machine
 
@@ -56,12 +56,12 @@ stateDiagram-v2
 | `null` → `regular`                                      | Carga histórica                           | UC-013 / UC-014 | Habilita UC-017 sobre esta cursada. Habilita correlativas `para_cursar` para materias dependientes.                                                                             |
 | `null` → `aprobada` (`cursada` / `promocion` / `final`) | Carga histórica tradicional               | UC-013 / UC-014 | Habilita UC-017. Habilita tanto `para_cursar` como `para_rendir` para correlativas dependientes.                                                                                |
 | `null` → `aprobada` (`equivalencia`)                    | UC-013 con approval_method='equivalencia' | UC-013          | `commission_id` y `term_id` NULL. Habilita UC-017 solo si el alumno quisiera reseñar la experiencia de equivalencia (improbable).                                               |
-| `null` → `aprobada` (`final_libre`)                     | UC-013 con approval_method='final_libre'  | UC-013          | `commission_id` NULL, `term_id` NOT NULL. Sin docente_reseñado posible (no hubo comisión) — UC-017 no aplica.                                                                   |
+| `null` → `aprobada` (`final_libre`)                     | UC-013 con approval_method='final_libre'  | UC-013          | `commission_id` NULL, `term_id` NOT NULL. Sin docente_reseñado posible (no hubo comisión): UC-017 no aplica.                                                                   |
 | `cursando` → `regular`                                  | Edit manual post-cuatrimestre             | UC-015          | Habilita UC-017. Habilita `para_cursar` de dependientes.                                                                                                                        |
 | `cursando` → `aprobada`                                 | Edit manual                               | UC-015          | Habilita UC-017. Habilita todas las correlativas.                                                                                                                               |
 | `cursando` → `reprobada`                                | Edit manual                               | UC-015          | Habilita UC-017 sobre esta cursada. Para recursar: enrollment nuevo.                                                                                                            |
 | `cursando` → `abandonada`                               | Edit manual                               | UC-015          | Habilita UC-017 sobre esta cursada (el alumno puede reseñar aunque haya abandonado).                                                                                            |
-| `regular` → `aprobada`                                  | Edit manual tras aprobar final            | UC-015          | Habilita `para_rendir` de dependientes. Si había Review asociada, permanece válida (la nota final mostrada en la reseña es independiente de la nota del enrollment — ver nota). |
+| `regular` → `aprobada`                                  | Edit manual tras aprobar final            | UC-015          | Habilita `para_rendir` de dependientes. Si había Review asociada, permanece válida (la nota final mostrada en la reseña es independiente de la nota del enrollment: ver nota). |
 
 **Nota sobre `grade` en Review vs EnrollmentRecord:** `Review.final_grade` captura la nota reportada por el alumno al momento de reseñar. No se deriva automáticamente de `EnrollmentRecord.grade`. Si el alumno actualiza su enrollment (ej. pasó de `regular` a `aprobada` con una nota nueva), la reseña sigue mostrando la nota que tenía al publicarse; para actualizarla, el alumno edita la reseña vía UC-018.
 
@@ -89,7 +89,7 @@ Si un alumno reprueba Matemática I en 2025-C1 y recursa en 2025-C2:
 - EnrollmentRecord A: `student=X, subject=Mate1, term=2025-C1, status=reprobada`.
 - EnrollmentRecord B: `student=X, subject=Mate1, term=2025-C2, status=cursando` (y después se edita a su estado final).
 
-No hay transición entre A y B. Cada uno es un registro independiente. El `UNIQUE(student_id, subject_id, term_id)` lo garantiza — un alumno no puede tener dos cursadas de la misma materia en el mismo término, pero sí en términos distintos.
+No hay transición entre A y B. Cada uno es un registro independiente. El `UNIQUE(student_id, subject_id, term_id)` lo garantiza: un alumno no puede tener dos cursadas de la misma materia en el mismo término, pero sí en términos distintos.
 
 Esto habilita:
 
@@ -113,7 +113,7 @@ Cuando un alumno rinde final libre (`approval_method='final_libre'`), el modelo 
 
 Consecuencias de diseño:
 
-- **No hay docente_reseñado posible** sobre un final libre — UC-017 requiere elegir docente de la `CommissionTeacher` de la comisión del enrollment, y no hay comisión. El alumno puede igualmente querer dejar comentario sobre la materia en sí; por ahora esto no se habilita. Si aparece demanda, el modelo puede evolucionar permitiendo Review sin `docente_reseñado`.
+- **No hay docente_reseñado posible** sobre un final libre: UC-017 requiere elegir docente de la `CommissionTeacher` de la comisión del enrollment, y no hay comisión. El alumno puede igualmente querer dejar comentario sobre la materia en sí; por ahora esto no se habilita. Si aparece demanda, el modelo puede evolucionar permitiendo Review sin `docente_reseñado`.
 - **El dashboard institucional** puede filtrar rehabilitaciones libres para medir efectividad de la preparación autodidacta (o detectar materias cuyo final libre es comparativamente fácil).
 
 ### Equivalencia sin comisión ni término
@@ -138,7 +138,7 @@ sequenceDiagram
     API->>DB: INSERT EnrollmentRecord(status=cursando)
     API-->>Alumno: 201 Created
 
-    Note over Alumno,DB: Fin del cuatrimestre — alumno regularizó
+    Note over Alumno,DB: Fin del cuatrimestre: alumno regularizó
     Alumno->>API: PATCH /enrollments/{id} (status=regular, grade=7)
     API->>DB: UPDATE EnrollmentRecord
     API-->>Alumno: 200 OK

@@ -11,9 +11,9 @@ supersedes-partial: 0024
 
 [ADR-0024](0024-dev-tooling-stack.md) fijó Testcontainers como la herramienta de integration testing ("levanta un Postgres real por test"). Cuando arrancó Fase 2 y los primeros tests de integration reales (S0 del módulo Identity) empezaron a correr local y en CI, la realidad golpeó la teoría:
 
-- **Testcontainers + Podman + Windows no anda out-of-the-box.** Testcontainers-.NET usa `Docker.DotNet` para hablarle a un Docker Engine vía socket/named pipe. Podman en Windows (WSL backend) no expone un docker-compatible named pipe por default; la API viaja sobre SSH. `Docker.DotNet` no maneja SSH URIs. Hacer andar Testcontainers requiere habilitar manualmente `podman system service tcp:0.0.0.0:2375` dentro del WSL y setear `DOCKER_HOST=tcp://localhost:2375` — setup opcional que un dev nuevo no tiene por qué saber.
+- **Testcontainers + Podman + Windows no anda out-of-the-box.** Testcontainers-.NET usa `Docker.DotNet` para hablarle a un Docker Engine vía socket/named pipe. Podman en Windows (WSL backend) no expone un docker-compatible named pipe por default; la API viaja sobre SSH. `Docker.DotNet` no maneja SSH URIs. Hacer andar Testcontainers requiere habilitar manualmente `podman system service tcp:0.0.0.0:2375` dentro del WSL y setear `DOCKER_HOST=tcp://localhost:2375`: setup opcional que un dev nuevo no tiene por qué saber.
 - **Startup tax por test class.** Arrancar un Postgres container nuevo por test class agrega ~3-5s de cold start. Al inicio con 3 integration tests era tolerable; cuando subió a 8 tests la espera se sintió.
-- **No soluciona ningún problema que no se resuelva con `just infra-up`.** Ya tenemos un Postgres compartido en docker-compose que arranca al principio del día de trabajo. Si cada test crea su propio *database* dentro de ese Postgres, la isolation es la misma que un container separado — con zero startup tax.
+- **No soluciona ningún problema que no se resuelva con `just infra-up`.** Ya tenemos un Postgres compartido en docker-compose que arranca al principio del día de trabajo. Si cada test crea su propio *database* dentro de ese Postgres, la isolation es la misma que un container separado: con zero startup tax.
 
 Hay que decidir cómo van a correr los integration tests en dev y en CI.
 
@@ -25,7 +25,7 @@ Hay que decidir cómo van a correr los integration tests en dev y en CI.
 
 **CI**: el workflow de GitHub Actions usa Postgres como `services:` container (igual que antes). Los tests leen el admin connection string del env var que el workflow exporta. Cada run de CI arranca con un Postgres fresh; no hay accumulation.
 
-**Isolation garantizada por** nombre random (`Guid.NewGuid()`) en cada test — sin posibilidad de colisión incluso si dos tests corren en paralelo contra el mismo server.
+**Isolation garantizada por** nombre random (`Guid.NewGuid()`) en cada test: sin posibilidad de colisión incluso si dos tests corren en paralelo contra el mismo server.
 
 ## Alternativas consideradas
 
@@ -33,7 +33,7 @@ Hay que decidir cómo van a correr los integration tests en dev y en CI.
 
 Pros:
 - Isolation física, no lógica.
-- Setup de test 100% autocontenido — no depende de `just infra-up`.
+- Setup de test 100% autocontenido: no depende de `just infra-up`.
 - El flow "clone repo, open test, F5" funciona sin preparar infra.
 
 Contras (lo que nos tumbó):
@@ -52,7 +52,7 @@ Pros:
 - Zero startup tax. Tests arrancan tan rápido como el segundo CREATE DATABASE que corre el día.
 - Un solo runtime de containers para dev y CI; mismo mental model.
 - Postgres real, con pgvector, migraciones EF Core reales, constraints reales.
-- Isolation por nombre — tan fuerte como Testcontainers en la práctica (el único risk es ejecutar DROP DATABASE con un bug, pero los scripts usan `CREATE DATABASE "<exact-name>"` con guid en el nombre).
+- Isolation por nombre: tan fuerte como Testcontainers en la práctica (el único risk es ejecutar DROP DATABASE con un bug, pero los scripts usan `CREATE DATABASE "<exact-name>"` con guid en el nombre).
 
 Contras:
 - Requiere `just infra-up` corriendo local antes de los tests. Si alguien abre el repo por primera vez y corre `dotnet test` sin haber hecho `just setup`, falla con mensaje de conexión rechazada.
@@ -76,8 +76,8 @@ Contras:
 
 **Lo que se conserva de ADR-0024:**
 
-- xUnit como test runner — sin cambios.
-- Tests backend cubren Domain + Application con mocks + Infrastructure con Postgres real — mismo principio.
-- WebApplicationFactory para host-level integration tests — mismo.
+- xUnit como test runner: sin cambios.
+- Tests backend cubren Domain + Application con mocks + Infrastructure con Postgres real: mismo principio.
+- WebApplicationFactory para host-level integration tests: mismo.
 
 Este ADR **parcialmente supersede ADR-0024** (solo la fila "Integration tests backend" de la tabla de decisiones de tooling). El resto de ADR-0024 (Just, Lefthook, Bun, Biome, Vitest, Playwright, xUnit, Dokploy, GitHub Actions) sigue vigente sin cambios.

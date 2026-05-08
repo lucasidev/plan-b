@@ -32,15 +32,15 @@ Patrón de uso en código:
 
 ## Alternativas consideradas
 
-### A — Postgres-only (rechazada)
+### A: Postgres-only (rechazada)
 
 Refresh tokens en una tabla `identity.refresh_tokens` (mismo patrón que `verification_tokens`), rate limiting con tabla `identity.login_attempts` y query de window, hot reads sin cache (siempre query). Funciona para el inicio. Cuando lleguen hot reads de catálogo (F3-F5), latencias notables y cache invalidation ad-hoc se vuelven dolor. Migración Postgres → Redis a mitad del proyecto cuesta más que adoptarlo ahora.
 
-### B — Redis ahora (elegida)
+### B: Redis ahora (elegida)
 
 Un container más + lib + ADR. Ese costo único habilita los seis casos de uso de la tabla sin reabrir la decisión cada vez. Operacionalmente es trivial en dev (Podman lo levanta como Postgres). En producción es una pieza más para monitorear, pero simple comparado con un broker o un search engine.
 
-### C — In-memory dentro del proceso del backend (rechazada)
+### C: In-memory dentro del proceso del backend (rechazada)
 
 `IMemoryCache` para cache, dictionary in-memory para refresh tokens revocados. Ventaja: cero infra. Desventaja: no sobrevive restarts, no escala horizontal (cada réplica tiene su propia memoria, refresh revocado en una no se ve en otra). Para refresh tokens significa invalidar todas las sesiones en cada deploy. Inviable.
 
@@ -52,7 +52,7 @@ Un container más + lib + ADR. Ese costo único habilita los seis casos de uso d
   - Cache miss → consulta a DB (costo: una request más lenta).
   - Rate limiter no disponible → fail open con warning log (preferimos servir un poco más vs cortar todo).
   - Refresh tokens no validables → 401, user se relogea (fail safe).
-- **Cache invalidation se hace por TTL + invalidación explícita en writes.** No event-driven cross-module por ahora — esa complejidad solo justifica si vemos staleness real en producto.
+- **Cache invalidation se hace por TTL + invalidación explícita en writes.** No event-driven cross-module por ahora: esa complejidad solo justifica si vemos staleness real en producto.
 - **Out of scope para Redis en este proyecto:**
   - Pub/Sub (Wolverine outbox cubre messaging).
   - Message queue (Wolverine outbox).
@@ -64,7 +64,7 @@ Un container más + lib + ADR. Ese costo único habilita los seis casos de uso d
 **Positivas:**
 
 - Una decisión única que cubre los seis casos esperados sin reabrir cada vez.
-- Patrones canónicos documentados (cache-aside, sliding window rate limiter, revocation list, SETNX idempotency) — no inventamos en cada PR.
+- Patrones canónicos documentados (cache-aside, sliding window rate limiter, revocation list, SETNX idempotency): no inventamos en cada PR.
 - Habilita performance work futuro sin ADR adicional.
 - Permite, si llega el momento, escalar el backend horizontalmente sin perder coherencia de sesiones / rate limits.
 

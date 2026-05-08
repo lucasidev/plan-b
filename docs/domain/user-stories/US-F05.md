@@ -2,10 +2,10 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: High
 **Effort**: L
-**UC**: —
+**UC**: 
 **ADR refs**: 0001-0033 (todos)
 
 ## Como dev, quiero las decisiones arquitectónicas formalizadas para que cada decisión tenga contexto y alternativas registradas
@@ -35,5 +35,5 @@ Como solo-dev y futuros evaluadores (Ing. Copas), quiero los 33 ADRs base escrit
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: —
+- Use Case: 
 - ADRs: [docs/decisions/](../../decisions/)

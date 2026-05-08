@@ -1,6 +1,6 @@
 # Decision Records
 
-Registro de decisiones del proyecto planb. No limitado a arquitectura — cubre patrones de diseño, convenciones, trade-offs, elecciones de herramientas, o cualquier decisión donde hubo alternativas reales y el "por qué" amerita quedar por escrito.
+Registro de decisiones del proyecto planb. No limitado a arquitectura: cubre patrones de diseño, convenciones, trade-offs, elecciones de herramientas, o cualquier decisión donde hubo alternativas reales y el "por qué" amerita quedar por escrito.
 
 ## Cuándo escribir un registro
 

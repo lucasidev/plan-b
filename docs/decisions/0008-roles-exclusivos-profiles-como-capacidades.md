@@ -28,7 +28,7 @@ Un modelo multi-rol naïve (`User.roles[]`) permite que la misma persona sea doc
 - `admin`: staff con permisos totales.
 - `university_staff`: cliente comercial que accede al dashboard institucional.
 
-**"Docente" no es un rol — es un profile.** Un `member` puede reclamar identidad de docente creando un `TeacherProfile` y verificándose (por email institucional o manual). Lo mismo con identidad de alumno via `StudentProfile`.
+**"Docente" no es un rol: es un profile.** Un `member` puede reclamar identidad de docente creando un `TeacherProfile` y verificándose (por email institucional o manual). Lo mismo con identidad de alumno via `StudentProfile`.
 
 **Moderator/admin/university_staff no pueden tener profiles.** Sus cuentas existen exclusivamente para su función operativa, sin identidad académica en la plataforma. Un docente que quiera moderar debe tener una cuenta separada con rol `moderator` (distinta cuenta, distinto email).
 
@@ -62,7 +62,7 @@ Moderadores viven en otra tabla, con su propio login. Descartada para MVP: overk
 - Separación de poderes garantizada estructuralmente: no hay combinación posible de columnas donde un moderador sea docente.
 - El permiso "responder reseña" nunca se le otorga a un moderador porque estructuralmente no puede tener `TeacherProfile`.
 - Un usuario comunidad que "se jubila de alumno y empieza a enseñar" no cambia de rol: agrega `TeacherProfile` y desactiva `StudentProfile`.
-- Moderadores y admins se crean manualmente desde el backoffice — no hay flujo público de registro que los produzca, reduciendo superficie de ataque.
+- Moderadores y admins se crean manualmente desde el backoffice: no hay flujo público de registro que los produzca, reduciendo superficie de ataque.
 
 **Negativas:**
 

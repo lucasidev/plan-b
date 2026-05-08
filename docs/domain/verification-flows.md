@@ -1,4 +1,4 @@
-# Verification Flows — planb
+# Verification Flows: planb
 
 Flows completos de verificación de `TeacherProfile`. Un `member` reclama identidad de docente creando un `TeacherProfile`, pero ese profile no desbloquea la capacidad `review:respond` (UC-040) hasta verificarse. Hay dos caminos: email institucional (automático) o evidencia manual revisada por admin.
 
@@ -14,7 +14,7 @@ Este documento expande UC-030, UC-031, UC-032, UC-066. Ver también [ADR-0008](.
 
 ## States (conceptuales)
 
-Los estados son conceptuales — no hay una columna `status` en `TeacherProfile`. El estado se deriva de la combinación de `verified_at`, `verification_method` y `rejection_reason`.
+Los estados son conceptuales: no hay una columna `status` en `TeacherProfile`. El estado se deriva de la combinación de `verified_at`, `verification_method` y `rejection_reason`.
 
 | Estado conceptual | Condición en DB                                                                                                                     | Significado                                                    |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -74,7 +74,7 @@ stateDiagram-v2
 
 ## Sequence diagrams
 
-### 1. Happy path — email institucional (UC-031)
+### 1. Happy path: email institucional (UC-031)
 
 ```mermaid
 sequenceDiagram
@@ -100,7 +100,7 @@ sequenceDiagram
     Alumno->>API: GET /teacher-claims/verify?token=...
     API->>DB: validar token (unused, not expired)
     API->>DB: UPDATE TeacherProfile(verified_at=now())
-    API-->>Alumno: 200 OK — redirige a perfil docente
+    API-->>Alumno: 200 OK: redirige a perfil docente
     Note over API,DB: Capacidad review:respond desbloqueada
 ```
 
@@ -116,7 +116,7 @@ sequenceDiagram
     Alumno->>API: POST /teacher-claims/{id}/verify-email {email: alice@gmail.com}
     API->>DB: SELECT Teacher.university.institutional_email_domains
     Note over API,DB: ['unsta.edu.ar'] no incluye 'gmail.com'
-    API-->>Alumno: 400 Bad Request — "dominio no pertenece a UNSTA,<br/>elegí verificación manual (UC-032)"
+    API-->>Alumno: 400 Bad Request: "dominio no pertenece a UNSTA,<br/>elegí verificación manual (UC-032)"
 ```
 
 ### 3. Verificación manual aprobada (UC-032 + UC-066)
@@ -135,7 +135,7 @@ sequenceDiagram
     API->>DB: UPDATE TeacherProfile metadata con ref al archivo
     API-->>Alumno: 202 Accepted (en cola)
 
-    Note over Admin,DB: Más tarde — admin revisa la cola
+    Note over Admin,DB: Más tarde: admin revisa la cola
     Admin->>API: GET /admin/teacher-verifications/pending
     API-->>Admin: lista con TeacherProfile + evidencia link
 
@@ -160,7 +160,7 @@ sequenceDiagram
     Admin->>API: GET /admin/teacher-verifications/pending
     API-->>Admin: lista con TeacherProfile + evidencia
 
-    Admin->>Admin: evalúa — evidencia insuficiente / incorrecta
+    Admin->>Admin: evalúa: evidencia insuficiente / incorrecta
     Admin->>API: POST /admin/teacher-verifications/{id}/reject {reason}
     API->>DB: UPDATE TeacherProfile(rejection_reason=<motivo>)
     API-->>Admin: 200 OK
@@ -172,8 +172,8 @@ sequenceDiagram
 
 Enforceadas a nivel de DB o en la capa de aplicación:
 
-- `UNIQUE(user_id, teacher_id)` — un user no puede tener dos claims sobre el mismo Teacher (DB).
-- `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL` — un Teacher tiene a lo sumo **un** TeacherProfile verificado (DB, partial unique).
+- `UNIQUE(user_id, teacher_id)`: un user no puede tener dos claims sobre el mismo Teacher (DB).
+- `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL`: un Teacher tiene a lo sumo **un** TeacherProfile verificado (DB, partial unique).
 - `verified_at NOT NULL → verification_method NOT NULL` (DB CHECK).
 - `verification_method = 'manual' → verified_by NOT NULL` (DB CHECK).
 - `verification_method = 'institutional_email' → institutional_email NOT NULL` (DB CHECK).

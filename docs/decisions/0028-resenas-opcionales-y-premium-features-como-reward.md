@@ -9,13 +9,13 @@ El producto vive del crowdsourcing de reseñas. Sin reseñas, el simulador no ti
 
 Tres modelos posibles:
 
-- **A — Opcional puro**: alumno puede usar todo sin reseñar. Riesgo: si todos opcionan no, no hay corpus.
-- **B — Atómico (registro = registro + reseña)**: cada `EnrollmentRecord` finalizado obliga a reseñar. Riesgo: fricción brutal en onboarding (un alumno avanzado cargando 30 cursadas pasadas no puede escribir 30 reseñas en una sentada).
-- **C — Capability gating**: el simulador queda gateado por un score de reciprocidad (ej. ≥ 80% de cursadas finalizadas con reseña). Riesgo: bloquear features core es agresivo y puede expulsar alumnos que aún no aportaron.
+- **A: Opcional puro**: alumno puede usar todo sin reseñar. Riesgo: si todos opcionan no, no hay corpus.
+- **B: Atómico (registro = registro + reseña)**: cada `EnrollmentRecord` finalizado obliga a reseñar. Riesgo: fricción brutal en onboarding (un alumno avanzado cargando 30 cursadas pasadas no puede escribir 30 reseñas en una sentada).
+- **C: Capability gating**: el simulador queda gateado por un score de reciprocidad (ej. ≥ 80% de cursadas finalizadas con reseña). Riesgo: bloquear features core es agresivo y puede expulsar alumnos que aún no aportaron.
 
 Discovery del dominio (ver `docs/domain/eventstorming.md`) puso el dedo en una alternativa cuarta:
 
-- **D — Reward additive**: el simulador queda **disponible para todos**. Reseñar desbloquea **features premium** (guardar simulación, ver simulaciones públicas de otros, recomendación). El alumno que no reseña no pierde acceso al producto core; solo no accede a features adicionales que se nutren del corpus.
+- **D: Reward additive**: el simulador queda **disponible para todos**. Reseñar desbloquea **features premium** (guardar simulación, ver simulaciones públicas de otros, recomendación). El alumno que no reseña no pierde acceso al producto core; solo no accede a features adicionales que se nutren del corpus.
 
 ## Decisión
 
@@ -39,23 +39,23 @@ La regla concreta de "contribución" se evalúa al usar la feature premium, no a
 - Tras una mala calificación: "¿Te gustaría contar tu experiencia? Le sirve a alumnos futuros".
 - Tras una aprobación: "¿Te gustó la materia? Compartí qué te funcionó".
 
-Estos nudges son **product layer** — no domain rules. Pero son parte de cómo se materializa este ADR.
+Estos nudges son **product layer**: no domain rules. Pero son parte de cómo se materializa este ADR.
 
 ## Alternativas consideradas
 
-### A — Opcional puro
+### A: Opcional puro
 
 Es lo que tenemos hoy en código (Modelo A del data model: Review separada de EnrollmentRecord, opcional). Sin incentivo claro, asumimos que la mayoría no reseñaría. Descartado por riesgo al loop del producto.
 
-### B — Atómico
+### B: Atómico
 
 Forzaría la reseña al momento de cargar la cursada. Para alumnos avanzados (caso primary del onboarding), 30 reseñas en una sentada es inviable. Descartado por fricción.
 
-### C — Gating del simulador
+### C: Gating del simulador
 
 Bloquear la feature core a alumnos sin reciprocidad puede causar que abandonen antes de aportar. El loop de "primero recibo valor, después contribuyo" se rompe. Descartado.
 
-### D — Reward additive (elegido)
+### D: Reward additive (elegido)
 
 Mantiene el funnel: alumno entra → recibe valor (simulador, ver reseñas) → percibe el upside de aportar (premium features) → reseñar se vuelve naturalmente atractivo, no forzado.
 
@@ -72,13 +72,13 @@ Mantiene el funnel: alumno entra → recibe valor (simulador, ver reseñas) → 
 
 - Si el threshold de reciprocidad es poco visible o poco atractivo, los alumnos pueden no notar el incentivo. Mitigación: UX explícita.
 - El corpus puede crecer lento al inicio (cold start del producto). Mitigación: alimentar el corpus inicial con reseñas semilla (escritas por el equipo o por focus group).
-- Ningún mecanismo previene que un mal actor extraiga valor sin contribuir. Aceptable — el costo de "leer reseñas sin escribir" es bajo, y matar la posibilidad sería peor (modelo C). El abuso de scale (scrapeo) se mitiga con rate limits.
+- Ningún mecanismo previene que un mal actor extraiga valor sin contribuir. Aceptable: el costo de "leer reseñas sin escribir" es bajo, y matar la posibilidad sería peor (modelo C). El abuso de scale (scrapeo) se mitiga con rate limits.
 
 **Implicancias en el modelo**:
 
 - Aparece BC `Planning` con aggregate `SimulationDraft`. Ver [ADR-0029](0029-planning-bc-separado.md).
 - Aparecen 6 UCs nuevos (US-NEW-03 a US-NEW-08).
-- El cálculo de reciprocidad es un **read model** que se computa al usar features premium — no es estado persistente del User.
+- El cálculo de reciprocidad es un **read model** que se computa al usar features premium: no es estado persistente del User.
 
 ## Cuándo revisitar
 

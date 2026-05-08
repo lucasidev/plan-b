@@ -1,6 +1,6 @@
 # ADR-0024: Development tooling stack
 
-- **Estado**: aceptado — la fila "Integration tests backend" fue parcialmente superseded por [ADR-0027](0027-integration-tests-shared-postgres.md) (Postgres compartido con DB per-test en vez de Testcontainers).
+- **Estado**: aceptado: la fila "Integration tests backend" fue parcialmente superseded por [ADR-0027](0027-integration-tests-shared-postgres.md) (Postgres compartido con DB per-test en vez de Testcontainers).
 - **Fecha**: 2026-04-23
 
 ## Contexto

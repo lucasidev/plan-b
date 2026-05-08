@@ -9,7 +9,7 @@ El modular monolith de planb (ADR-0014) requiere tres capacidades:
 
 1. **Mediator in-process** para dispatch de commands y queries dentro de un módulo.
 2. **Pipeline behaviors** (logging, validación, unit of work) cross-cutting aplicables a los handlers.
-3. **Integration events cross-module con outbox durable** — cuando un módulo emite un evento, la entrega a otros módulos tiene que ser transaccional (commit conjunto con el cambio local) y resistente a reinicios.
+3. **Integration events cross-module con outbox durable**: cuando un módulo emite un evento, la entrega a otros módulos tiene que ser transaccional (commit conjunto con el cambio local) y resistente a reinicios.
 
 (3) es el corazón del modular monolith. Sin outbox confiable, los eventos cross-module pueden perderse o dispararse antes de que el commit de la DB sea durable, causando inconsistencia.
 

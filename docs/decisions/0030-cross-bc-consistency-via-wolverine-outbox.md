@@ -7,7 +7,7 @@
 
 Discovery del dominio identificó múltiples flujos cross-BC donde un cambio en un BC debe propagarse a otro:
 
-- Edit destructive de `EnrollmentRecord` (Enrollments) debe invalidar la `Review` correspondiente (Reviews) — ver [ADR-0032](0032-edit-destructive-enrollment-invalida-review.md).
+- Edit destructive de `EnrollmentRecord` (Enrollments) debe invalidar la `Review` correspondiente (Reviews): ver [ADR-0032](0032-edit-destructive-enrollment-invalida-review.md).
 - `UserDisabled` (Identity) debe soft-flag las reviews del usuario para presentación (Reviews) y registrarse en el audit log (Moderation).
 - `TeacherProfileVerified` (Identity) debe habilitar la capability `review:respond` (Reviews).
 - `ReportUpheld` (Moderation) debe disparar `RemoveReview` (Reviews).
@@ -25,7 +25,7 @@ Concretamente:
 
 1. **Domain events** (`IDomainEvent`) son emitidos por aggregates dentro de su BC. Se persisten en el outbox de Wolverine en la misma transacción que el SaveChanges que los produjo (vía `AddDbContextWithWolverineIntegration`).
 
-2. **Integration events** (`IIntegrationEvent`) son una clase distinta — los emite un handler local del BC origen, escuchando un domain event y traduciendo a un evento que cruza BCs. La distinción fuerza separación de concerns: el dominio no sabe quién consume sus events; un handler-bridge decide qué publicar afuera.
+2. **Integration events** (`IIntegrationEvent`) son una clase distinta: los emite un handler local del BC origen, escuchando un domain event y traduciendo a un evento que cruza BCs. La distinción fuerza separación de concerns: el dominio no sabe quién consume sus events; un handler-bridge decide qué publicar afuera.
 
 3. **Wolverine despacha** los integration events al(los) BC(s) consumer(s) asincrónicamente vía el outbox. **At-least-once delivery** garantizada.
 
@@ -101,7 +101,7 @@ Atomic write across BCs vía 2PC. Pros: consistencia fuerte. Contras (decisivos)
 
 ### Messaging síncrono (RPC entre BCs)
 
-Como los BCs viven en el mismo proceso, podríamos hacer comunicación in-process síncrona vía Wolverine también. Pros: respuesta inmediata. Contras: pierde el desacoplamiento — el caller espera al callee. Si el callee es lento o falla, el caller falla.
+Como los BCs viven en el mismo proceso, podríamos hacer comunicación in-process síncrona vía Wolverine también. Pros: respuesta inmediata. Contras: pierde el desacoplamiento: el caller espera al callee. Si el callee es lento o falla, el caller falla.
 
 ### Outbox + integration events (elegido)
 
@@ -120,19 +120,19 @@ Contras: eventual consistency es más mental load para el dev. Pero está alinea
 **Negativas**:
 
 - Eventual consistency: el dev tiene que diseñar pensando "esto va a converger en milisegundos, no instantáneamente". Para writes sensibles (ej. authorization), validar siempre con read síncrono al BC autoritativo.
-- Más infrastructure: Wolverine schema en Postgres, durability worker corriendo, polling del outbox. Aceptable — ya lo tenemos instalado desde S0.
+- Más infrastructure: Wolverine schema en Postgres, durability worker corriendo, polling del outbox. Aceptable: ya lo tenemos instalado desde S0.
 - Tests integration tienen que esperar (con timeout) a que el outbox procese events. Patrón estándar en CI.
 
 ## Implementación actual
 
 - **En S0** ya wireamos el outbox plumbing (`PersistMessagesWithPostgresql`, `AddDbContextWithWolverineIntegration`, `RunWolverineInSoloMode` en tests, `CritterStackDefaults` para dev/prod split).
-- **Aún no usamos** el patrón end-to-end — el handler de S0 envía email síncronamente en vez de via outbox-driven dispatch. Es deuda explícita, marcada como TODO en el código y en este ADR.
+- **Aún no usamos** el patrón end-to-end: el handler de S0 envía email síncronamente en vez de via outbox-driven dispatch. Es deuda explícita, marcada como TODO en el código y en este ADR.
 - **S1 arranca a usar el patrón en serio**: cuando se refactorea VerificationToken como child entity, el flow de "email verification consumed → mark user verified" debe ser eventually consistent.
 
 ## Cuándo revisitar
 
 - Si el delay del outbox se vuelve user-visible (ej. user verifica email pero la UI no refleja por > 5s), evaluar tuning del polling interval o transport sync para casos críticos.
 - Si los integration events crecen a > 50 tipos, evaluar versioning explícito (V1 / V2 / etc.).
-- Si los BCs salen a microservicios, el outbox sigue siendo válido pero el transport cambia — Wolverine soporta Rabbit, Azure Service Bus, etc.
+- Si los BCs salen a microservicios, el outbox sigue siendo válido pero el transport cambia: Wolverine soporta Rabbit, Azure Service Bus, etc.
 
 Refs: [ADR-0014](0014-arquitectura-modular-monolith.md), [ADR-0015](0015-wolverine-como-mediator-y-message-bus.md), [ADR-0017](0017-persistence-ignorance.md).

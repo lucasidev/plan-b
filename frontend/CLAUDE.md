@@ -1,4 +1,4 @@
-# Frontend — planb
+# Frontend: planb
 
 Next.js 15 App Router + React 19.1 + Bun + TanStack Query + shadcn/ui + Tailwind 4.
 
@@ -61,14 +61,14 @@ La autorización real se hace en el backend. El guard del frontend existe para U
 
 El route group `(auth)` no aparece en la URL (Next.js convention). Las páginas viven todas top-level:
 
-- `/sign-in` — login (US-036).
-- `/sign-up` — registro (US-036).
-- `/sign-up/check-inbox?email=` — pantalla post-registro "te mandamos un mail".
-- `/forgot-password` + `/forgot-password/check-inbox` — flow forgot password (US-033).
-- `/reset-password?token=` — pantalla del reset (US-033).
-- `/verify-email?token=` — pantalla de verificación post-mail (US-011).
+- `/sign-in`: login (US-036).
+- `/sign-up`: registro (US-036).
+- `/sign-up/check-inbox?email=`: pantalla post-registro "te mandamos un mail".
+- `/forgot-password` + `/forgot-password/check-inbox`: flow forgot password (US-033).
+- `/reset-password?token=`: pantalla del reset (US-033).
+- `/verify-email?token=`: pantalla de verificación post-mail (US-011).
 
-`sign-in` y `sign-up` montan `<AuthSplit>` con copy compartido (`components/layout/auth-hero.tsx`) más su heading propio. Cada flow es página separada con su layout — no hay tabs ni AuthView intermedio (deuda de S1 cerrada con US-036).
+`sign-in` y `sign-up` montan `<AuthSplit>` con copy compartido (`components/layout/auth-hero.tsx`) más su heading propio. Cada flow es página separada con su layout: no hay tabs ni AuthView intermedio (deuda de S1 cerrada con US-036).
 
 ## Features: vertical slice por use case
 
@@ -89,14 +89,14 @@ features/<feature>/
 
 **Reglas duras** (estas son las que rompí en mi primer intento; documentadas para no volver a romperlas):
 
-- `'use server'` siempre al tope de `actions.ts`. Nunca por función suelta. Y por la regla de Next.js, esos archivos solo pueden exportar funciones async — los tipos del action (FormState, initialState) viven en `types.ts`.
+- `'use server'` siempre al tope de `actions.ts`. Nunca por función suelta. Y por la regla de Next.js, esos archivos solo pueden exportar funciones async: los tipos del action (FormState, initialState) viven en `types.ts`.
 - Nada de subcarpetas inventadas dentro de `features/<feature>/` (`actions/`, `state/`, `helpers/`, etc.). Si hace falta un helper que no es action ni component, evaluá si es genérico y va a `lib/`. Si es feature-specific y no es action, considera si realmente lo necesitás separado.
 - Tipos cross-feature (ej. `ProblemDetails` para parsear errores RFC 7807, `ResponseCookie` parser) viven en `lib/`, no se duplican en cada feature.
 - Las rutas (`src/app/(auth)/sign-in/page.tsx`, `src/app/(auth)/sign-up/page.tsx`, etc.) son thin wrappers que importan el form del feature. Cada flow auth tiene su propia ruta top-level (US-036); el backend mantiene endpoints separados (sign-in / register / verify-email) sin cambios.
 
 Ver [ADR-0020](../docs/decisions/0020-features-alineadas-con-modulos-backend.md).
 
-## Data fetching — patrón unificado
+## Data fetching: patrón unificado
 
 **Nunca elegir entre "RSC only" o "client only".** El patrón es **ambos al mismo tiempo** con TanStack Query v5:
 
@@ -123,7 +123,7 @@ export default async function SubjectPage({ params }) {
 'use client';
 export function ReviewList({ subjectId }) {
   const { data } = useSuspenseQuery(reviewQueries.forSubject(subjectId));
-  // data disponible inmediatamente — cache hidratada del server
+  // data disponible inmediatamente: cache hidratada del server
 }
 ```
 

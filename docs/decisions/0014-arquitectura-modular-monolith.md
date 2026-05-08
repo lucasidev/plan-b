@@ -17,7 +17,7 @@ Layout:
 
 ```
 backend/
-├── libs/shared-kernel/     (Result, Error, abstractions — 1 csproj src + 1 tests)
+├── libs/shared-kernel/     (Result, Error, abstractions: 1 csproj src + 1 tests)
 ├── modules/
 │   ├── identity/       (Domain + Application + Infrastructure + Tests = 4 csprojs)
 │   ├── academic/       (idem)
@@ -56,7 +56,7 @@ Descartada porque mezcla las capas dentro del mismo ensamblado. El discernimient
 
 - Boundaries físicos: csproj references + `internal sealed` evitan acoplamiento accidental cross-module.
 - Cada módulo con su `DbContext`, schema propio, y migraciones independientes.
-- DDD rigor defensible ante el docente — puede ver en el solution explorer cómo los bounded contexts del ubiquitous language se materializan en proyectos.
+- DDD rigor defensible ante el docente: puede ver en el solution explorer cómo los bounded contexts del ubiquitous language se materializan en proyectos.
 - Escala de refactoring: cambiar algo dentro de un módulo no toca los demás.
 
 **Negativas:**

@@ -51,7 +51,7 @@ Descartada porque:
 
 - No escala. Con 50+ componentes, el directorio `components/` se vuelve inmanejable.
 - No refleja el dominio. Alguien nuevo al proyecto no tiene pista de que los reviews son un bounded context.
-- Cambios de dominio tocan archivos distribuidos por tipo — refactoring pesado.
+- Cambios de dominio tocan archivos distribuidos por tipo: refactoring pesado.
 
 ### B. Por ruta (todo en `app/`)
 

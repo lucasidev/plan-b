@@ -16,7 +16,7 @@ El "por qué" de Redis está en ADR-0034. Este doc es el "cómo": los shapes con
 - **purpose**: tipo de uso del key (`refresh`, `ratelimit`, `idempotency`, `cache`, `insights`). Si ves un purpose nuevo en código, debería corresponder a uno de los seis patrones del ADR.
 - **identifier**: lo que distingue una instancia de otra. Hash de token, ID de usuario, código de materia, etc. **Nunca PII en plano** (email, nombre): siempre hash o ID interno.
 
-Separador siempre `:`. No usar `_` ni `/` ni kebab-case en este nivel — son consistentes con el ecosistema Redis (RedisInsight, MONITOR, KEYS pattern matching).
+Separador siempre `:`. No usar `_` ni `/` ni kebab-case en este nivel: son consistentes con el ecosistema Redis (RedisInsight, MONITOR, KEYS pattern matching).
 
 ### TTL
 
@@ -84,7 +84,7 @@ identity:refresh:{tokenHash}
 | Login handler | Al emitir refresh token | `SET identity:refresh:{hash} {userId} EX 2592000` |
 | Refresh handler | Al validar refresh entrante | `GET identity:refresh:{hash}` → si null, 401 |
 | Sign-out handler | Al cerrar sesión | `DEL identity:refresh:{hash}` |
-| Password change | Al cambiar contraseña | `DEL` de todos los tokens del user — requiere índice secundario, ver abajo |
+| Password change | Al cambiar contraseña | `DEL` de todos los tokens del user: requiere índice secundario, ver abajo |
 
 **Índice secundario (revocar todos los tokens del user)**: además del key principal, mantener un set por user:
 
@@ -217,7 +217,7 @@ await redis.DeleteAsync($"academic:cache:subject:{id}");
 return Result.Success();
 ```
 
-Si la write ocurre en otro módulo (cross-module event-driven invalidation), no lo hacemos por ahora — TTL se encarga, y el costo de staleness aceptable (max 30 min).
+Si la write ocurre en otro módulo (cross-module event-driven invalidation), no lo hacemos por ahora: TTL se encarga, y el costo de staleness aceptable (max 30 min).
 
 **Si Redis muere**: cache miss → query a DB. Latencia de la primera request degrada, pero funciona. Sin error al usuario.
 

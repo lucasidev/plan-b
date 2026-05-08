@@ -70,7 +70,7 @@ Descartada: overkill para un entero. Suma dependencia externa pagada o otro serv
 **Negativas:**
 
 - Cambiar el valor requiere container restart. En un deploy de alta disponibilidad esto obliga a rolling restart; en el MVP single-instance no es problema.
-- Si más parámetros ameritan configurabilidad runtime, eventualmente hay que migrar a `SystemConfig` — no se reaprovecha la infraestructura de env vars.
+- Si más parámetros ameritan configurabilidad runtime, eventualmente hay que migrar a `SystemConfig`: no se reaprovecha la infraestructura de env vars.
 
 **Cuándo revisitar:**
 

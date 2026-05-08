@@ -26,17 +26,17 @@ Los tres momentos del Big Picture ([eventstorming.md](eventstorming.md)) reorden
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva (whenever X then Y) | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | Visitor | `Register(email, passwordHash)` | User | `UserRegistered` | whenever `UserRegistered` then `IssueVerificationToken(userId, purpose=UserEmailVerification)` | `EmailIsAvailable(email)` (uniqueness check pre-command) | — |
+| 1 | Visitor | `Register(email, passwordHash)` | User | `UserRegistered` | whenever `UserRegistered` then `IssueVerificationToken(userId, purpose=UserEmailVerification)` | `EmailIsAvailable(email)` (uniqueness check pre-command) |: |
 | 2 | System (policy de step 1) | `IssueVerificationToken(rawValue, purpose, ttl)` | User | `VerificationTokenIssued` (+ `VerificationTokenInvalidated` si había activos del mismo purpose) | whenever `VerificationTokenIssued (purpose=UserEmailVerification)` then enviar email con link de verificación | `UserHasActiveTokenForPurpose(userId, purpose)` | SMTP (Mailpit dev, relay prod) |
-| 3 | Visitor (click link) | `MarkEmailVerifiedFor(rawValue)` | User | `VerificationTokenConsumed` + `UserEmailVerified` | whenever `UserEmailVerified` then habilitar capability "create StudentProfile" (implícito, sin command) | `TokenExists(rawValue)`, `TokenIsActive(rawValue)` | — |
-| 4 | Member verificado (resend explícito) | `IssueVerificationToken(...)` (re-issue) | User | `VerificationTokenInvalidated` (token previo) + `VerificationTokenIssued` (nuevo) | whenever `VerificationTokenIssued` then enviar email | — | SMTP |
+| 3 | Visitor (click link) | `MarkEmailVerifiedFor(rawValue)` | User | `VerificationTokenConsumed` + `UserEmailVerified` | whenever `UserEmailVerified` then habilitar capability "create StudentProfile" (implícito, sin command) | `TokenExists(rawValue)`, `TokenIsActive(rawValue)` |: |
+| 4 | Member verificado (resend explícito) | `IssueVerificationToken(...)` (re-issue) | User | `VerificationTokenInvalidated` (token previo) + `VerificationTokenIssued` (nuevo) | whenever `VerificationTokenIssued` then enviar email |: | SMTP |
 | 5 | System (scheduled job, daily) | `ExpireUnverifiedRegistration()` (sobre cada user `email_verified_at IS NULL` registrado hace > 7 días) | User | `UnverifiedRegistrationExpired` | whenever `UnverifiedRegistrationExpired` then liberar email para re-registro (terminal state, sin command) | `UserIsUnverified(userId)`, `RegisteredMoreThan(userId, 7.days)` | Scheduled job runner |
-| 6 | Member verificado | `Create(userId, careerPlanId, enrollmentYear)` | StudentProfile | `StudentProfileCreated` | (none: habilita commands sobre EnrollmentRecord para esa carrera) | `UserIsVerified(userId)`, `CareerPlanExists(careerPlanId)`, `NoActiveProfileForPair(userId, careerPlanId)` | — |
+| 6 | Member verificado | `Create(userId, careerPlanId, enrollmentYear)` | StudentProfile | `StudentProfileCreated` | (none: habilita commands sobre EnrollmentRecord para esa carrera) | `UserIsVerified(userId)`, `CareerPlanExists(careerPlanId)`, `NoActiveProfileForPair(userId, careerPlanId)` |: |
 | 7 | Alumno | `Request(studentProfileId, sourceType, rawPayload)` | HistorialImport | `HistorialImportRequested` | whenever `HistorialImportRequested` then worker consume y procesa el payload | `StudentProfileOwnedBy(profileId, userId)`, `SourceFormatValid(sourceType, raw)` | Worker (background job) |
-| 8 | Worker (system) | `MarkProcessing()` | HistorialImport | (sin event público) | — | — | — |
-| 9 | Worker (system, on success) | `Complete(results)` | HistorialImport | `HistorialImportCompleted` | whenever `HistorialImportCompleted` then por cada row resuelto: `Create(profileId, subjectId, termId, status, ...)` sobre EnrollmentRecord; notificar al alumno | — | SMTP (notificación opcional) |
+| 8 | Worker (system) | `MarkProcessing()` | HistorialImport | (sin event público) |: |: |: |
+| 9 | Worker (system, on success) | `Complete(results)` | HistorialImport | `HistorialImportCompleted` | whenever `HistorialImportCompleted` then por cada row resuelto: `Create(profileId, subjectId, termId, status, ...)` sobre EnrollmentRecord; notificar al alumno |: | SMTP (notificación opcional) |
 | 10 | Worker (system, on error) | `Fail(error)` | HistorialImport | `HistorialImportFailed` | whenever `HistorialImportFailed` then notificar al alumno y sugerir flow manual | `FailedHistorialImportLine` (projection) | SMTP |
-| 11 | Admin | `CreateStaff(email, passwordHash, role)` | User | `StaffUserCreated` | (none: staff queda auto-verified, sin token email; ver eventstorming HOT 14) | `EmailIsAvailable(email)` | — |
+| 11 | Admin | `CreateStaff(email, passwordHash, role)` | User | `StaffUserCreated` | (none: staff queda auto-verified, sin token email; ver eventstorming HOT 14) | `EmailIsAvailable(email)` |: |
 
 **Policies que cruzan BC**: ninguna en onboarding. Todo Identity-internal hasta que aparezca StudentProfile, que vive también en Identity.
 
@@ -48,8 +48,8 @@ Iterativo cada cuatrimestre. El simulador en sí no emite events (es query pura 
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | Alumno | `Create(profileId, subjectId, termId, status, grade?, approvalMethod?)` | EnrollmentRecord | `EnrollmentRecordCreated` | whenever `EnrollmentRecordCreated` then habilita el command `Publish` sobre Review (si `status != cursando`); invalida cache del read model `AvailableSubjectsForProfile` | `SubjectInPlan(subjectId, profile.careerPlanId)`, `NoDuplicate(profileId, subjectId, termId)` | — |
-| 2 | Alumno | `Edit(changes)` | EnrollmentRecord | `EnrollmentRecordEdited` (+ `EnrollmentRecordEditedIntegrationEvent` cross-BC si destructive) | whenever `EnrollmentRecordEditedIntegrationEvent` then `Invalidate(reviewId, reason='enrollment_changed')` sobre Review (ADR-0032) | `EnrollmentRecordOwnedBy(recordId, userId)` | — |
+| 1 | Alumno | `Create(profileId, subjectId, termId, status, grade?, approvalMethod?)` | EnrollmentRecord | `EnrollmentRecordCreated` | whenever `EnrollmentRecordCreated` then habilita el command `Publish` sobre Review (si `status != cursando`); invalida cache del read model `AvailableSubjectsForProfile` | `SubjectInPlan(subjectId, profile.careerPlanId)`, `NoDuplicate(profileId, subjectId, termId)` |: |
+| 2 | Alumno | `Edit(changes)` | EnrollmentRecord | `EnrollmentRecordEdited` (+ `EnrollmentRecordEditedIntegrationEvent` cross-BC si destructive) | whenever `EnrollmentRecordEditedIntegrationEvent` then `Invalidate(reviewId, reason='enrollment_changed')` sobre Review (ADR-0032) | `EnrollmentRecordOwnedBy(recordId, userId)` |: |
 
 #### 2.2. Reseñar (opcional pero esperada)
 
@@ -57,9 +57,9 @@ Iterativo cada cuatrimestre. El simulador en sí no emite events (es query pura 
 |---|---|---|---|---|---|---|---|
 | 3 | Alumno autor del EnrollmentRecord | `Publish(verdict)` (verdict viene del domain service `IReviewContentFilter`) | Review | `ReviewPublished` (verdict Clean) o `ReviewQuarantined` (verdict Triggered) | whenever `ReviewPublished` then encolar job de embedding (gated en transición a `published`, ADR-0013); whenever `ReviewQuarantined` then notificar al autor + agregar a `ModeratorQueue` | `IReviewContentFilter` (domain service); `ReviewAggregatesForSubject`, `ReviewAggregatesForTeacher` (se actualizan al publicar) | pgvector (storage del embedding) |
 | 4 | Alumno autor | `Edit(changes)` | Review | `ReviewEdited` | whenever `ReviewEdited` then re-correr `IReviewContentFilter`; si texto cambió, re-enqueue embedding job (reemplaza el anterior por mismo `model_name + model_version`, ADR-0013) | (filter re-run) | pgvector |
-| 5 | System (policy de step 2 cross-BC) | `Invalidate(reviewId, reason='enrollment_changed')` | Review | `ReviewInvalidated` | whenever `ReviewInvalidated` then notificar autor (UI muestra "tu reseña queda pendiente"); el moderador puede skip-resolve (cola filtrable por reason) | — | — |
-| 6 | Docente verificado (TeacherProfile.verified_at NOT NULL, teacher_id == DocenteResenadoId) | `PostTeacherResponse(authorTeacherProfileId, text)` | Review (sobre child TeacherResponse) | `TeacherResponsePublished` | whenever `TeacherResponsePublished` then notificar al autor de la review | — | SMTP |
-| 7 | Docente author de la response | `EditTeacherResponse(authorTeacherProfileId, newText)` | Review (sobre child TeacherResponse) | `TeacherResponseEdited` | whenever `TeacherResponseEdited` then marcar review como "respuesta editada"; audit log entry | — | — |
+| 5 | System (policy de step 2 cross-BC) | `Invalidate(reviewId, reason='enrollment_changed')` | Review | `ReviewInvalidated` | whenever `ReviewInvalidated` then notificar autor (UI muestra "tu reseña queda pendiente"); el moderador puede skip-resolve (cola filtrable por reason) |: |: |
+| 6 | Docente verificado (TeacherProfile.verified_at NOT NULL, teacher_id == DocenteResenadoId) | `PostTeacherResponse(authorTeacherProfileId, text)` | Review (sobre child TeacherResponse) | `TeacherResponsePublished` | whenever `TeacherResponsePublished` then notificar al autor de la review |: | SMTP |
+| 7 | Docente author de la response | `EditTeacherResponse(authorTeacherProfileId, newText)` | Review (sobre child TeacherResponse) | `TeacherResponseEdited` | whenever `TeacherResponseEdited` then marcar review como "respuesta editada"; audit log entry |: |: |
 
 #### 2.3. Planificar próximo cuatrimestre (Simulador)
 
@@ -67,11 +67,11 @@ Las consultas al simulador (qué materias podés cursar, métricas de combinacio
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 8 | Alumno (premium feature, ADR-0028) | `Save(profileId, subjects, termId)` | SimulationDraft | `SimulationDraftSaved` | (none: telemetría de uso) | `AvailableSubjectsForProfile`, `BlockedSubjectsForProfile`, `CombinationMetrics` | — |
-| 9 | Owner del draft | `Update(subjects)` | SimulationDraft | `SimulationDraftEdited` | (none) | (mismas validaciones que Save) | — |
-| 10 | Owner del draft | `Share()` | SimulationDraft | `SimulationDraftShared` | whenever `SimulationDraftShared` then actualizar read model `PublicSimulationDrafts` (corpus público anónimo) | `PublicSimulationDrafts` | — |
-| 11 | Owner del draft | `Unshare()` | SimulationDraft | `SimulationDraftUnshared` | whenever `SimulationDraftUnshared` then quitar del corpus público | `PublicSimulationDrafts` | — |
-| 12 | Owner del draft | `Delete()` | SimulationDraft | `SimulationDraftDeleted` | (hard delete, sin audit) | — | — |
+| 8 | Alumno (premium feature, ADR-0028) | `Save(profileId, subjects, termId)` | SimulationDraft | `SimulationDraftSaved` | (none: telemetría de uso) | `AvailableSubjectsForProfile`, `BlockedSubjectsForProfile`, `CombinationMetrics` |: |
+| 9 | Owner del draft | `Update(subjects)` | SimulationDraft | `SimulationDraftEdited` | (none) | (mismas validaciones que Save) |: |
+| 10 | Owner del draft | `Share()` | SimulationDraft | `SimulationDraftShared` | whenever `SimulationDraftShared` then actualizar read model `PublicSimulationDrafts` (corpus público anónimo) | `PublicSimulationDrafts` |: |
+| 11 | Owner del draft | `Unshare()` | SimulationDraft | `SimulationDraftUnshared` | whenever `SimulationDraftUnshared` then quitar del corpus público | `PublicSimulationDrafts` |: |
+| 12 | Owner del draft | `Delete()` | SimulationDraft | `SimulationDraftDeleted` | (hard delete, sin audit) |: |: |
 
 ### 3. Governance (reportes, moderación, audit, gestión de cuentas)
 
@@ -81,12 +81,12 @@ Paralelo al loop core, sin retorno automático al alumno. Tiene tres sub-flujos:
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | User logueado (≠ author) | `Open(reviewId, reporterId, reason, details?)` | ReviewReport | `ReviewReported` | whenever `ReviewReported` then incrementar `count(reports open por reviewId)`; si `count >= MODERATION_AUTO_HIDE_THRESHOLD` (default 3, ADR-0010) then `Quarantine(reason='ReportThreshold')` sobre Review | `UserAlreadyReported(userId, reviewId)`, `IsAuthor(userId, reviewId)` | — |
+| 1 | User logueado (≠ author) | `Open(reviewId, reporterId, reason, details?)` | ReviewReport | `ReviewReported` | whenever `ReviewReported` then incrementar `count(reports open por reviewId)`; si `count >= MODERATION_AUTO_HIDE_THRESHOLD` (default 3, ADR-0010) then `Quarantine(reason='ReportThreshold')` sobre Review | `UserAlreadyReported(userId, reviewId)`, `IsAuthor(userId, reviewId)` |: |
 | 2 | System (policy de step 1) | `Quarantine(reason)` | Review | `ReviewQuarantined` | whenever `ReviewQuarantined` then notificar al autor; agregar a `ModeratorQueue` ordenada por count(reports open) | `ModeratorQueue` | SMTP (notificación al autor) |
-| 3 | Moderator | `Uphold(moderatorId, resolutionNote)` | ReviewReport | `ReportUpheld` (+ `ReportUpheldIntegrationEvent` cross-BC) | whenever `ReportUpheldIntegrationEvent` then: (a) cascade upheld a otros reports `Status='open'` de la misma review (ADR-0011); (b) `Remove(reason)` sobre Review; (c) notificar reporters via UC-020 | — | — |
-| 4 | System (cascade de step 3) | `Uphold(...)` (sobre cada report sibling open) | ReviewReport | `ReportUpheld` | (sin cascade ulterior; los siblings ya están cerrados al heredar `resolution_note` y `moderator_id`) | — | — |
+| 3 | Moderator | `Uphold(moderatorId, resolutionNote)` | ReviewReport | `ReportUpheld` (+ `ReportUpheldIntegrationEvent` cross-BC) | whenever `ReportUpheldIntegrationEvent` then: (a) cascade upheld a otros reports `Status='open'` de la misma review (ADR-0011); (b) `Remove(reason)` sobre Review; (c) notificar reporters via UC-020 |: |: |
+| 4 | System (cascade de step 3) | `Uphold(...)` (sobre cada report sibling open) | ReviewReport | `ReportUpheld` | (sin cascade ulterior; los siblings ya están cerrados al heredar `resolution_note` y `moderator_id`) |: |: |
 | 5 | System (policy de step 3) | `Remove(reason)` | Review | `ReviewRemoved` | whenever `ReviewRemoved` then append entry a `ReviewAuditLog` projection (ADR-0031); notificar autor | `ReviewAuditLog` | SMTP |
-| 6 | Moderator | `Dismiss(moderatorId, resolutionNote)` | ReviewReport | `ReportDismissed` | whenever `ReportDismissed` then: si era el único report open y review estaba `under_review`, restore review a `published` (UC-052 path); audit log entry | `ReviewAuditLog` | — |
+| 6 | Moderator | `Dismiss(moderatorId, resolutionNote)` | ReviewReport | `ReportDismissed` | whenever `ReportDismissed` then: si era el único report open y review estaba `under_review`, restore review a `published` (UC-052 path); audit log entry | `ReviewAuditLog` |: |
 | 7 | Moderator | `Restore(restoredBy)` | Review | `ReviewRestored` | whenever `ReviewRestored` then: append entry a `ReviewAuditLog`; **NO** revertir reports cascade-upheld a `open` (ADR-0011: "sin reversión on restore"); re-enqueue embedding job si no existía (ADR-0013) | `ReviewAuditLog` | pgvector |
 | 8 | Sistema (policy de transición a published por step 6 o 7) | (kick async embedding job) | ReviewEmbedding (projection, no aggregate) | (sin event de dominio; es read model) | (job worker computa el embedding y lo persiste en pgvector) | `ReviewEmbedding` | pgvector |
 
@@ -94,21 +94,21 @@ Paralelo al loop core, sin retorno automático al alumno. Tiene tres sub-flujos:
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | Member verificado | `InitiateClaim(userId, teacherId)` | TeacherProfile | `TeacherProfileClaimInitiated` | (none: pasa a pending) | `TeacherExists(teacherId)`, `NoActiveClaim(userId, teacherId)` | — |
+| 1 | Member verificado | `InitiateClaim(userId, teacherId)` | TeacherProfile | `TeacherProfileClaimInitiated` | (none: pasa a pending) | `TeacherExists(teacherId)`, `NoActiveClaim(userId, teacherId)` |: |
 | 2 | Owner del profile | `SubmitInstitutionalEmail(emailAddress)` | TeacherProfile | `TeacherProfileInstitutionalEmailSubmitted` | whenever `TeacherProfileInstitutionalEmailSubmitted` then `IssueVerificationToken(profileOwner, purpose=TeacherInstitutionalVerification)` (post-MVP) | `Teacher.University.institutional_email_domains` (validación de dominio) | SMTP |
-| 3 | Owner via link | `VerifyByInstitutionalEmail(rawToken)` | TeacherProfile | `TeacherProfileVerifiedByInstitutionalEmail` (+ `TeacherProfileVerifiedIntegrationEvent` cross-BC) | whenever `TeacherProfileVerifiedIntegrationEvent` then habilitar capability `review:respond` en Reviews (el docente puede `PostTeacherResponse` en sus reviews) | — | — |
-| 4 | Owner del profile | `SubmitEvidence(evidenceFileIds)` | TeacherProfile | `TeacherProfileEvidenceSubmitted` | whenever `TeacherProfileEvidenceSubmitted` then agregar a cola admin de revisión manual | (cola admin) | — |
-| 5 | Admin | `VerifyManually(approvedByAdminId)` | TeacherProfile | `TeacherProfileVerifiedManually` (+ `TeacherProfileVerifiedIntegrationEvent`) | whenever `TeacherProfileVerifiedIntegrationEvent` then habilitar capability `review:respond` (mismo handler que step 3) | — | SMTP |
-| 6 | Admin | `RejectVerification(reason, rejectedByAdminId)` | TeacherProfile | `TeacherProfileVerificationRejected` | whenever `TeacherProfileVerificationRejected` then notificar al user con razón | — | SMTP |
+| 3 | Owner via link | `VerifyByInstitutionalEmail(rawToken)` | TeacherProfile | `TeacherProfileVerifiedByInstitutionalEmail` (+ `TeacherProfileVerifiedIntegrationEvent` cross-BC) | whenever `TeacherProfileVerifiedIntegrationEvent` then habilitar capability `review:respond` en Reviews (el docente puede `PostTeacherResponse` en sus reviews) |: |: |
+| 4 | Owner del profile | `SubmitEvidence(evidenceFileIds)` | TeacherProfile | `TeacherProfileEvidenceSubmitted` | whenever `TeacherProfileEvidenceSubmitted` then agregar a cola admin de revisión manual | (cola admin) |: |
+| 5 | Admin | `VerifyManually(approvedByAdminId)` | TeacherProfile | `TeacherProfileVerifiedManually` (+ `TeacherProfileVerifiedIntegrationEvent`) | whenever `TeacherProfileVerifiedIntegrationEvent` then habilitar capability `review:respond` (mismo handler que step 3) |: | SMTP |
+| 6 | Admin | `RejectVerification(reason, rejectedByAdminId)` | TeacherProfile | `TeacherProfileVerificationRejected` | whenever `TeacherProfileVerificationRejected` then notificar al user con razón |: | SMTP |
 
 #### 3.3. Gestión de cuentas (admin/moderator)
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | Admin / Moderator | `Disable(byId, reason)` | User | `UserDisabled` (+ `UserDisabledIntegrationEvent` cross-BC) | whenever `UserDisabledIntegrationEvent` then: (a) Reviews soft-flag las reviews del user (handler `SoftFlagReviewsForPresentationOnUserDisabled`, ADR-0030); (b) Moderation appendea audit log entry; cascade soft delete (lógico) a SimulationDrafts si aplica | — | — |
-| 2 | Admin / Moderator | `Restore()` | User | `UserRestored` | whenever `UserRestored` then audit log entry (no se re-publican reviews soft-flagged automáticamente) | — | — |
-| 3 | Alumno (status) | `MarkGraduated(graduatedAt)` | StudentProfile | `StudentProfileMarkedGraduated` | (none: telemetría) | — | — |
-| 4 | Alumno (status) | `MarkAbandoned()` | StudentProfile | `StudentProfileMarkedAbandoned` | (none: telemetría) | — | — |
+| 1 | Admin / Moderator | `Disable(byId, reason)` | User | `UserDisabled` (+ `UserDisabledIntegrationEvent` cross-BC) | whenever `UserDisabledIntegrationEvent` then: (a) Reviews soft-flag las reviews del user (handler `SoftFlagReviewsForPresentationOnUserDisabled`, ADR-0030); (b) Moderation appendea audit log entry; cascade soft delete (lógico) a SimulationDrafts si aplica |: |: |
+| 2 | Admin / Moderator | `Restore()` | User | `UserRestored` | whenever `UserRestored` then audit log entry (no se re-publican reviews soft-flagged automáticamente) |: |: |
+| 3 | Alumno (status) | `MarkGraduated(graduatedAt)` | StudentProfile | `StudentProfileMarkedGraduated` | (none: telemetría) |: |: |
+| 4 | Alumno (status) | `MarkAbandoned()` | StudentProfile | `StudentProfileMarkedAbandoned` | (none: telemetría) |: |: |
 
 #### 3.4. Catálogo (admin)
 
@@ -116,7 +116,7 @@ CRUD-flavored, sin integration events cross-BC en MVP. Cada command emite su eve
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
-| 1 | Admin | `AddPrerequisite(subjectId, prerequisiteSubjectId, type)` | Subject (sobre child Prerequisite) | `PrerequisiteAdded` | whenever `AddPrerequisite` (pre-command) then validar aciclicidad vía domain service `IPrerequisiteGraphValidator` (cross-aggregate, simula inserción + BFS); si genera ciclo, command rechazado (ADR-0029, eventstorming HOT 12) | `IPrerequisiteGraphValidator` | — |
+| 1 | Admin | `AddPrerequisite(subjectId, prerequisiteSubjectId, type)` | Subject (sobre child Prerequisite) | `PrerequisiteAdded` | whenever `AddPrerequisite` (pre-command) then validar aciclicidad vía domain service `IPrerequisiteGraphValidator` (cross-aggregate, simula inserción + BFS); si genera ciclo, command rechazado (ADR-0029, eventstorming HOT 12) | `IPrerequisiteGraphValidator` |: |
 
 ## Catálogo de Policies (whenever X then Y)
 
@@ -140,7 +140,7 @@ Tabla resumida de **todas** las policies del sistema. Cada policy es un handler 
 | `ReviewQuarantined` / `ReviewRemoved` / `ReviewRestored` / `ReviewEdited` / `TeacherResponsePublished` / `TeacherResponseEdited` | append entry a `ReviewAuditLog` projection | ReviewAuditLog (projection) | ADR-0031, eventstorming HOT 10 |
 | `HistorialImportRequested` | worker procesa el payload (parsing + matching contra plan) | HistorialImport, EnrollmentRecord (batch create) | tactical/aggregates/HistorialImport |
 | `HistorialImportCompleted` | por cada row resuelto: `Create(...)` sobre EnrollmentRecord; notificar al alumno | EnrollmentRecord | tactical/aggregates/HistorialImport |
-| `HistorialImportFailed` | notificar al alumno y sugerir flow manual | — | tactical/aggregates/HistorialImport |
+| `HistorialImportFailed` | notificar al alumno y sugerir flow manual |: | tactical/aggregates/HistorialImport |
 | `SimulationDraftShared` | actualizar read model `PublicSimulationDrafts` (corpus público anónimo) | (read model only) | tactical/aggregates/SimulationDraft |
 | `SimulationDraftUnshared` | quitar del corpus público | (read model only) | tactical/aggregates/SimulationDraft |
 | Pre-command: `AddPrerequisite` | validar aciclicidad vía `IPrerequisiteGraphValidator` (BFS); rechazar si ciclo | Subject (Prerequisite child) | ADR-0029, eventstorming HOT 12 |

@@ -15,7 +15,7 @@ planb está en Fase 2 (post-Sprint 0), sin deploy ni clientes externos. La audie
 
 La política se divide en tres etapas, con triggers explícitos para pasar de una a la siguiente.
 
-### Etapa 1 — Pre-deploy (estamos acá)
+### Etapa 1: Pre-deploy (estamos acá)
 
 **No hay releases, no hay versiones, no hay tags-as-releases.**
 
@@ -28,7 +28,7 @@ La política se divide en tres etapas, con triggers explícitos para pasar de un
 | GitHub Releases | No se crean. La pestaña "Releases" del repo queda vacía. |
 | Tags como hito narrativo | **Permitidos**. Manuales. Sin formato fijo. Sirven para marcar puntos importantes del proyecto: presentaciones a docente, demos, refactor pre-points. Ver "Tags como hito" abajo. |
 
-### Etapa 2 — Trigger fires → abrir nueva ADR
+### Etapa 2: Trigger fires → abrir nueva ADR
 
 **Trigger** (lo primero que ocurra):
 
@@ -47,7 +47,7 @@ Una ADR nueva (`0039` o donde corresponda) que decida lo concreto:
 
 **Mientras el trigger no se dispare**, esta ADR-0038 es la única política. No se requieren actualizaciones intermedias.
 
-### Etapa 3 — Post-deploy (futuro)
+### Etapa 3: Post-deploy (futuro)
 
 Definida por la ADR que abra el trigger. No la pre-decidimos acá.
 
@@ -120,7 +120,7 @@ Contras:
 - Genera la decisión de "feature vs fix" en cada PR sin que sirva para nada.
 - Cuando aterrice deploy, probablemente queramos cambiar la política (ej. de semver a calver, o cadencia distinta). Mejor decidirlo con datos del momento.
 
-Descartada — premature optimization de proceso.
+Descartada: premature optimization de proceso.
 
 ### B. Tag por cada merge a main (modelo release-please)
 
@@ -140,7 +140,7 @@ Contras:
 
 - **`CHANGELOG.md` queda como bitácora `[Unreleased]` única**. Crece sin cortes hasta etapa 2.
 - **Tags narrativos pueden aparecer en `git tag --list`** sin ser releases. La pestaña "Tags" de GitHub se vuelve la línea de tiempo del proyecto, distinta de "Releases" (que queda vacía).
-- **El reviewer del PR no necesita pensar en versioning** — la pregunta no aplica todavía.
+- **El reviewer del PR no necesita pensar en versioning**: la pregunta no aplica todavía.
 - **El docente y la presentación final pueden referirse a tags concretos** ("para Fase 2 mostramos `presentacion-fase-2-2026-05-15`") sin necesidad de versión formal.
 
 ## Refs
