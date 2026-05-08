@@ -1,100 +1,60 @@
-import { CoursingNow } from '@/features/home/components/coursing-now';
-import { DecisionCard } from '@/features/home/components/decision-card';
-import { homeDecisions } from '@/features/home/data/mock-decisions';
+import { DisplayHeading } from '@/components/ui/display-heading';
+import { Eyebrow } from '@/components/ui/eyebrow';
+import { Lede } from '@/components/ui/lede';
+import { PeriodProgressCard } from '@/features/home/components/period-progress-card';
+import { currentPeriod } from '@/features/home/data/period';
+import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
 
 /**
- * Home del área autenticada (US-043-f). Port literal del mockup
- * `screens.jsx::HomeView`.
+ * Home v2 (US-044). Port literal del mock
+ * `docs/design/reference/canvas-mocks/v2-screens.jsx::V2Inicio`.
  *
- * Greeting + display heading + lede + grid de 4 DecisionCards + sección
- * "Cursando ahora". Toda la data de las decisiones y de las materias en
- * curso es hardcoded (`features/home/data/mock-*.ts`), per la regla
- * design-first: la interfaz se entrega como la referencia, los datos
- * reales aterrizan progresivamente con las US correspondientes (planning,
- * historial, simulador).
+ * Esta es la US-044-a: shell (eyebrow + greeting + subtitle stats) + período
+ * progress card. Deja la sección reservada para los bloques de columnas que
+ * aterrizan en US-044-b (En curso + Más adelante en la izquierda) y US-044-c
+ * (Reseñá + Pensando en lo que viene + Movimientos en la derecha).
  *
- * Cuando aterrice US-013 (cargar historial) la sección "Cursando ahora"
- * lee de `EnrollmentRecord` filtrando `status='cursando'`. Cuando US-016
- * aterrice (simulador) las DecisionCards se generan a partir del estado
- * del alumno y métricas cross-cohort.
+ * Hasta que `-b` aterrice, los counts del subtitle ("4 materias cursando, 1
+ * arranca más adelante") se muestran como placeholder ("0 materias cursando").
+ * Cuando US-044-b agregue el mock activo, el subtitle pasa a leer counts
+ * reales desde `activeSubjects.filter(s => s.week > 0).length`.
+ *
+ * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user no
+ * tiene StudentProfile (US-037-f). Esta página asume sesión + profile activos.
  */
 export default async function HomePage() {
   const session = await getSession();
   const firstName = session ? greetingNameFromEmail(session.email) : 'alumno';
 
+  // TODO(US-044-b): reemplazar por counts reales del mock activeSubjects.
+  // Mientras tanto, placeholder coherente con período "en curso".
+  const cursandoCount = 0;
+  const futurasCount = 0;
+
   return (
-    <div style={{ padding: '36px 24px', maxWidth: 1200, margin: '0 auto' }}>
-      <p
-        className="text-ink-3"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          marginBottom: 8,
-        }}
-      >
-        Hola, {firstName}
-      </p>
-      <h1
-        className="text-ink"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 56,
-          margin: 0,
-          letterSpacing: '-0.02em',
-          fontWeight: 500,
-          lineHeight: 1.05,
-          marginBottom: 14,
-        }}
-      >
-        Cinco decisiones <em style={{ fontStyle: 'italic' }}>esta semana</em>
-      </h1>
-      <p
-        className="text-ink-2"
-        style={{
-          fontSize: 15,
-          maxWidth: 540,
-          lineHeight: 1.55,
-          margin: 0,
-        }}
-      >
-        Inscripción para 2026·1c abre el lunes 4 de mayo. Esto es lo que tu cuatrimestre actual te
-        está pidiendo decidir.
-      </p>
+    <div className="px-6 py-9 max-w-[1200px] mx-auto">
+      <Eyebrow>Inicio</Eyebrow>
+      <DisplayHeading size={56} className="mt-2 mb-3">
+        Hola {firstName}.
+      </DisplayHeading>
+      <Lede className="mb-8 max-w-[640px]">
+        Vas por la semana {currentPeriod.weekOfYear} del año. {cursandoCount} materias cursando,{' '}
+        {futurasCount} arrancan más adelante.
+      </Lede>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 14,
-          marginTop: 32,
-        }}
-      >
-        {homeDecisions.map((d) => (
-          <DecisionCard key={d.num} decision={d} />
-        ))}
-      </div>
+      <PeriodProgressCard period={currentPeriod} />
 
-      <CoursingNow />
+      {/*
+        Sección reservada para los bloques secundarios.
+        - US-044-b agrega columna izq: <CurrentSubjectsCard /> + <UpcomingSubjectsCard />.
+        - US-044-c agrega columna der: <PendingReviewsCard /> + <NextPeriodCard /> + <MovementsCard />.
+        El grid 1.55fr / 1fr del mock se materializa cuando -b y -c estén.
+      */}
+      <section
+        aria-label="Bloques secundarios del Inicio"
+        className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4"
+      />
     </div>
   );
-}
-
-/**
- * "lucia.mansilla@gmail.com" → "Lucia". Capitaliza la primera parte del
- * local antes del primer punto. Cuando aterrice US-012 (StudentProfile)
- * la session lleva `firstName` y este helper se reemplaza por leerlo
- * directo.
- *
- * Nota: el mockup tiene "Lucía" con tilde. Si el local del email no la
- * lleva (porque el dato vino de un teclado sin acentos), el display sale
- * "Lucia". Ese matching pertenece al display name del User, no acá.
- */
-function greetingNameFromEmail(email: string): string {
-  const local = email.split('@')[0] ?? '';
-  const first = local.split('.')[0] ?? local;
-  if (!first) return email;
-  return first.charAt(0).toUpperCase() + first.slice(1);
 }
