@@ -14,32 +14,64 @@ import { extractTokenFromLatestMail } from '../helpers/mailpit';
  * Splitearlo agregaría setup repetido (signup + verify) sin valor extra. El
  * negativo se hace dentro del mismo test al final, reusando la sesión.
  *
- * **Cleanup**: deuda explícita. El test no limpia los users que crea — eso
- * requiere el endpoint `DELETE /api/me/account` (US planeada para "el user
- * elimina su cuenta", compliance Ley 25.326 art. 6). Mientras tanto, en CI
- * la DB es efímera por job (no afecta) y en local se acepta que `*@planb.local`
- * users se acumulan entre runs (ver `docs/testing/conventions.md`, sección
- * "Dominio vs infra"). Cuando aterrice la US de delete account, este spec
- * agrega `test.afterEach` que llama el endpoint real.
+ * **Cleanup**: el `test.afterEach` llama `DELETE /api/me/account?userId=...`
+ * (US-038-b/f) para borrar el user descartable + cascade del student profile.
+ * Sigue la regla "helpers de infra OK, dominio = endpoints reales" de
+ * `docs/testing/conventions.md`: no tocamos la DB directo, usamos el verb
+ * real de la API que también cumple Ley 25.326 art. 6 y se ejerce desde
+ * la UI del producto.
  */
+
+const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
 
 function uniqueEmail(prefix: string): string {
   return `${prefix}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@planb.local`;
 }
 
 test.describe('onboarding (US-037-f)', () => {
+  // Captura del userId creado durante el test, para que `afterEach` pueda
+  // hacer cleanup aunque el test haya fallado a la mitad. Si el spec arrancó
+  // pero todavía no llegó a tener userId, queda null y el cleanup skippea.
+  let createdUserId: string | null = null;
+
+  test.afterEach(async () => {
+    if (!createdUserId) return;
+    try {
+      // Endpoint dev-friendly de US-038-b: hard delete + cascade. Idempotente:
+      // si el user ya fue borrado por el test mismo (cuando US-038-f exponga
+      // el flow desde la UI dentro del onboarding spec), un 404 acá es OK.
+      await fetch(`${BACKEND_URL}/api/me/account?userId=${encodeURIComponent(createdUserId)}`, {
+        method: 'DELETE',
+      });
+    } catch {
+      // No queremos que un cleanup roto tumbe el reporte del test. Si Postgres
+      // está caído al final del test, lo veremos por otro lado.
+    }
+    createdUserId = null;
+  });
+
   test('alumno nuevo completa onboarding 4 pasos y aterriza en /home con AppShell', async ({
     page,
   }) => {
     const email = uniqueEmail('e2e-onboarding');
     const password = 'e2e-test-pw-1234';
 
-    // 1. Register vía /sign-up
+    // 1. Register vía /sign-up. Interceptamos la response del backend para
+    //    capturar el userId del JSON, así el `afterEach` puede limpiar el row
+    //    sin tener que adivinar el id.
+    const registerResponse = page.waitForResponse(
+      (resp) => resp.url().includes('/api/identity/register') && resp.request().method() === 'POST',
+    );
     await page.goto('/sign-up');
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByLabel(/repetí la contraseña/i).fill(password);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
+    const resp = await registerResponse;
+    if (resp.ok()) {
+      const body = (await resp.json()) as { id?: string };
+      if (body.id) createdUserId = body.id;
+    }
     await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
 
     // 2. Extraer token del mail y verificar
