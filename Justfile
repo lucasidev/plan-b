@@ -110,8 +110,16 @@ backend-test-integration:
 frontend-test:
     cd frontend && bun run test
 
-frontend-test-e2e:
-    cd frontend && bunx playwright test
+frontend-test-e2e *args:
+    cd frontend && bunx playwright test {{args}}
+
+# E2E con browser visible y slowMo (ver el flow correr en pantalla).
+# Usalo para inspección visual o cuando un spec falla y querés mirar.
+# Acepta los mismos args que playwright test (filtros, --grep, etc.).
+# Ej: just frontend-test-e2e-show e2e/auth/onboarding.spec.ts
+#     just frontend-test-e2e-show --grep "happy path"
+frontend-test-e2e-show *args:
+    cd frontend && PLAYWRIGHT_SLOWMO=300 bunx playwright test --headed {{args}}
 
 lint: backend-lint frontend-lint
 
