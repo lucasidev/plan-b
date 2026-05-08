@@ -21,7 +21,7 @@ const REFRESH_COOKIE = 'planb_refresh';
  *      writes the audit log, publishes UserAccountDeleted to the outbox
  *      and revokes the user's refresh tokens server-side.
  *   3. On 4xx/5xx, return the error so the modal renders it inline. We
- *      do NOT clear cookies on failure — the user is still logged in.
+ *      do NOT clear cookies on failure: the user is still logged in.
  *   4. On 204 (success), clear the auth cookies locally so this device
  *      stops carrying a session that points to a now-non-existent user,
  *      and redirect to /sign-in?deleted=1 so the SignInPage shows the
@@ -64,8 +64,8 @@ export async function deleteAccountAction(
 
   if (!response.ok) {
     // Map common backend statuses to copy. 404 means the row is already
-    // gone — surface a friendly "ya estaba borrada" instead of a generic
-    // failure, since for the user the end-state is correct.
+    // gone, así que surface "ya estaba borrada" en lugar de un fallo
+    // genérico: para el user el end-state es el correcto.
     if (response.status === 404) {
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);

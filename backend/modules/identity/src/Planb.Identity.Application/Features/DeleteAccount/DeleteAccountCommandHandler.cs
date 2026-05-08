@@ -12,14 +12,14 @@ namespace Planb.Identity.Application.Features.DeleteAccount;
 /// <list type="number">
 ///   <item>Look up the user by id from the session claim. If gone (already deleted, or never
 ///     existed) return <see cref="UserErrors.NotFound"/> so the endpoint maps to <c>404</c>.</item>
-///   <item>Build the immutable <see cref="UserDeletionLog"/> from the user's email — the email
+///   <item>Build the immutable <see cref="UserDeletionLog"/> from the user's email. The email
 ///     is hashed inside the entity factory, so no plain email is persisted in the log.</item>
 ///   <item>Have the aggregate emit <see cref="UserAccountDeletedDomainEvent"/>; that event is
 ///     translated to the integration counterpart by a local handler so other BCs (when they
 ///     subscribe later) can clean up owned data via Wolverine's outbox.</item>
 ///   <item>Stage the user removal and the log insert in the unit of work. Owned collections
-///     (verification tokens, student profiles) cascade by EF default for owned entities — no
-///     explicit cleanup needed at this layer.</item>
+///     (verification tokens, student profiles) cascade by EF default for owned entities, so
+///     no explicit cleanup is needed at this layer.</item>
 ///   <item>Dispatch domain events before <c>SaveChanges</c> so the outbox row lands in the same
 ///     transaction as the deletes.</item>
 ///   <item>After persistence, revoke any active refresh tokens. We do this last (and tolerate

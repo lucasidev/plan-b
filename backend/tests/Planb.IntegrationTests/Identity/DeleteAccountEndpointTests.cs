@@ -27,7 +27,7 @@ namespace Planb.IntegrationTests.Identity;
 /// the handler calls RevokeAllForUserAsync after SaveChanges, and (b) the integration fixture
 /// uses the real Redis but inspecting the revocation list contents per-user requires the
 /// Redis index keys, which are private to the store impl. Adding that probe would couple the
-/// test to the storage layout — kept out per testing pyramid (ADR-0036).
+/// test to the storage layout, kept out per testing pyramid (ADR-0036).
 /// </summary>
 public class DeleteAccountEndpointTests : IClassFixture<RegisterApiFixture>
 {

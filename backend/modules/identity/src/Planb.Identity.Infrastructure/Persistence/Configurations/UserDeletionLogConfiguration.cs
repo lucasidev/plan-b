@@ -40,7 +40,7 @@ internal sealed class UserDeletionLogConfiguration : IEntityTypeConfiguration<Us
         // without scanning the table. Not unique: in theory two users could have the same email
         // hash (different casings of the same address normalize to one), but they'd be the same
         // user, which is impossible for active rows because of the partial unique on users.email
-        // — so collisions only happen via brute-force collision attacks, ignored.
+        // so collisions only happen via brute-force collision attacks, ignored.
         builder.HasIndex(l => l.EmailHash)
             .HasDatabaseName("ix_user_deletion_log_email_hash");
 
