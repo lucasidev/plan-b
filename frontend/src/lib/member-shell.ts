@@ -37,11 +37,11 @@ export const memberRoutes: readonly MemberRoute[] = [
     shortcut: '⌘1',
   },
   {
-    path: '/plan',
-    label: 'Plan de estudios',
+    path: '/mi-carrera',
+    label: 'Mi carrera',
     section: 'mi-cuatrimestre',
     shortcut: '⌘2',
-    futureUs: 'US-001',
+    futureUs: 'US-045',
   },
   {
     path: '/simulator',
@@ -52,18 +52,9 @@ export const memberRoutes: readonly MemberRoute[] = [
   },
 
   // Comunidad
-  { path: '/subjects', label: 'Materias', section: 'comunidad', shortcut: 'M', futureUs: 'US-002' },
-  {
-    path: '/professors',
-    label: 'Docentes',
-    section: 'comunidad',
-    shortcut: 'D',
-    futureUs: 'US-003',
-  },
   { path: '/reviews', label: 'Mis reseñas', section: 'comunidad', futureUs: 'US-020' },
 
   // Cuenta
-  { path: '/history', label: 'Historial académico', section: 'cuenta', futureUs: 'US-013' },
   { path: '/settings', label: 'Configuración', section: 'cuenta' },
 ] as const;
 
