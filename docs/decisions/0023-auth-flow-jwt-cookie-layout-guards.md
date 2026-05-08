@@ -1,4 +1,4 @@
-# ADR-0023: Auth flow — JWT en cookie httpOnly + guards en layouts RSC
+# ADR-0023: Auth flow: JWT en cookie httpOnly + guards en layouts RSC
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23
@@ -81,7 +81,7 @@ Descartada porque:
 
 ### C. Auth0 / Clerk / Supabase Auth
 
-Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente no gasta en servicios pagos — ver memoria de contexto), (2) añaden dependencia externa para algo que es corazón del sistema, (3) planb tiene su propia identidad, no hay razón para delegarla.
+Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente no gasta en servicios pagos: ver memoria de contexto), (2) añaden dependencia externa para algo que es corazón del sistema, (3) planb tiene su propia identidad, no hay razón para delegarla.
 
 ## Consecuencias
 
@@ -96,7 +96,7 @@ Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente n
 **Negativas:**
 
 - Cada request a una ruta protegida hace verificación JWT server-side (costo CPU mínimo por request).
-- Si se agregan muchas rutas públicas distintas (`/forgot-password`, `/reset`, `/verify-email`, `/public-review/<id>`, etc.), la lógica podría empezar a duplicarse. Entonces se podría promover a un middleware compartido, o a helpers — sin volver al middleware Edge necesariamente.
+- Si se agregan muchas rutas públicas distintas (`/forgot-password`, `/reset`, `/verify-email`, `/public-review/<id>`, etc.), la lógica podría empezar a duplicarse. Entonces se podría promover a un middleware compartido, o a helpers: sin volver al middleware Edge necesariamente.
 
 **Security boundary critical:**
 
@@ -105,7 +105,7 @@ Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente n
 **Refresh token rotation:**
 
 - Al refreshear, el backend invalida el refresh token viejo y emite uno nuevo.
-- Detección de reuso de refresh tokens (el backend detecta si un refresh token ya usado intenta reutilizarse) revoca toda la cadena de la sesión — defensa contra token theft.
+- Detección de reuso de refresh tokens (el backend detecta si un refresh token ya usado intenta reutilizarse) revoca toda la cadena de la sesión: defensa contra token theft.
 
 **Cuándo revisitar:**
 

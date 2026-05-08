@@ -2,10 +2,10 @@
 
 **Status**: Done (shipped en branch `feat/t04-backend-architecture-tests`)
 **Sprint**: S1
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: S
-**UC**: —
+**UC**: 
 **ADR refs**: [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0014](../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0017](../../decisions/0017-persistence-ignorance.md)
 
 ## Como dev, quiero tests de arquitectura que enforcen los boundaries del modular monolith para que las reglas de ADRs no dependan de memoria humana
@@ -18,16 +18,16 @@ Las reglas duras del modular monolith vivían sólo en CLAUDE.md y ADRs. Si algu
 - [x] Package `NetArchTest.Rules` v1.3.2 agregado a `Directory.Packages.props`.
 - [x] `Planb.sln` incluye el proyecto.
 - [x] 7 tests cubriendo:
-  - [x] `Identity_Domain_does_not_reference_EntityFrameworkCore` — persistence ignorance (ADR-0017).
-  - [x] `Identity_Domain_does_not_reference_AspNetCore` — domain no sabe HTTP.
-  - [x] `Identity_Domain_does_not_reference_Wolverine` — domain no sabe del bus.
-  - [x] `Identity_handlers_do_not_reference_EntityFrameworkCore` — handlers usan repos/UoW, no DbContext directo.
-  - [x] `Identity_endpoints_do_not_reference_EntityFrameworkCore` — endpoints son thin (ADR-0016).
-  - [x] `Identity_assemblies_do_not_reference_other_module_internals` — forward-looking: cuando aterricen academic/reviews/etc, atrapamos acoplamiento accidental.
-  - [x] `Identity_Domain_aggregates_and_VOs_are_sealed` — convención del dominio.
+  - [x] `Identity_Domain_does_not_reference_EntityFrameworkCore`: persistence ignorance (ADR-0017).
+  - [x] `Identity_Domain_does_not_reference_AspNetCore`: domain no sabe HTTP.
+  - [x] `Identity_Domain_does_not_reference_Wolverine`: domain no sabe del bus.
+  - [x] `Identity_handlers_do_not_reference_EntityFrameworkCore`: handlers usan repos/UoW, no DbContext directo.
+  - [x] `Identity_endpoints_do_not_reference_EntityFrameworkCore`: endpoints son thin (ADR-0016).
+  - [x] `Identity_assemblies_do_not_reference_other_module_internals`: forward-looking: cuando aterricen academic/reviews/etc, atrapamos acoplamiento accidental.
+  - [x] `Identity_Domain_aggregates_and_VOs_are_sealed`: convención del dominio.
 - [x] Cada test, al fallar, imprime los tipos infractores via helper `FailureMessage`.
 - [x] `dotnet test` global corre Architecture (no necesita filter especial).
-- [x] CI sin cambios — los tests entran al `dotnet test` existente del workflow.
+- [x] CI sin cambios: los tests entran al `dotnet test` existente del workflow.
 - [x] 7/7 verde local: `dotnet test tests/Planb.ArchitectureTests/...` → 7/7.
 
 ### Out of scope (intencional)

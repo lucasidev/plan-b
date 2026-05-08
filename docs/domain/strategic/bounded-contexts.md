@@ -1,4 +1,4 @@
-# Bounded Contexts — planb
+# Bounded Contexts: planb
 
 Seis BCs definen el modelo de dominio. Cada uno tiene **lenguaje propio** (un mismo término puede significar cosas distintas en BCs distintos), **decisiones que lo gobiernan**, y un **contract con otros BCs** explícito.
 
@@ -19,15 +19,15 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Identity
 
-**Capacidad**: gestiona la identidad del usuario en la plataforma — quién es, cómo se autentica, qué identidades académicas tiene reclamadas.
+**Capacidad**: gestiona la identidad del usuario en la plataforma: quién es, cómo se autentica, qué identidades académicas tiene reclamadas.
 
 **Aggregates**: User, StudentProfile, TeacherProfile.
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) — roles mutuamente exclusivos (`member` / `moderator` / `admin` / `university_staff`) + profiles como unlockers de capabilities. Un docente que también es alumno tiene un solo `User`-`role=member` con dos profiles distintos.
-- [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md) — anonimato de autores en presentación pública.
-- ADR-0033 — VerificationToken vive como child entity dentro de User (y dentro de TeacherProfile), no como aggregate independiente.
+- [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md): roles mutuamente exclusivos (`member` / `moderator` / `admin` / `university_staff`) + profiles como unlockers de capabilities. Un docente que también es alumno tiene un solo `User`-`role=member` con dos profiles distintos.
+- [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato de autores en presentación pública.
+- ADR-0033: VerificationToken vive como child entity dentro de User (y dentro de TeacherProfile), no como aggregate independiente.
 
 **Lenguaje propio**:
 
@@ -46,16 +46,16 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Academic
 
-**Capacidad**: representar la realidad fija del mundo académico — universidades, sus carreras, sus planes de estudio, sus materias, sus correlativas, sus docentes, sus comisiones, sus cuatrimestres. Es **catálogo precargado**: las altas/modificaciones las hace admin desde backoffice, no se generan por flujo de usuario.
+**Capacidad**: representar la realidad fija del mundo académico: universidades, sus carreras, sus planes de estudio, sus materias, sus correlativas, sus docentes, sus comisiones, sus cuatrimestres. Es **catálogo precargado**: las altas/modificaciones las hace admin desde backoffice, no se generan por flujo de usuario.
 
 **Aggregates**: University, Career, CareerPlan, Subject (con Prerequisite como child), Teacher, AcademicTerm, Commission (con CommissionTeacher como child).
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0001](../../decisions/0001-multi-universidad-desde-dia-1.md) — multi-universidad desde día 1.
-- [ADR-0002](../../decisions/0002-versionado-de-planes-de-estudio.md) — versioning de planes (CareerPlan).
-- [ADR-0003](../../decisions/0003-correlativas-con-dos-tipos.md) — Prerequisites con dos tipos: `para_cursar` y `para_rendir`.
-- ADR-0029 — Planning BC separado (ergo Academic NO incluye SimulationDraft, aunque la simulación use materias del catálogo).
+- [ADR-0001](../../decisions/0001-multi-universidad-desde-dia-1.md): multi-universidad desde día 1.
+- [ADR-0002](../../decisions/0002-versionado-de-planes-de-estudio.md): versioning de planes (CareerPlan).
+- [ADR-0003](../../decisions/0003-correlativas-con-dos-tipos.md): Prerequisites con dos tipos: `para_cursar` y `para_rendir`.
+- ADR-0029: Planning BC separado (ergo Academic NO incluye SimulationDraft, aunque la simulación use materias del catálogo).
 
 **Lenguaje propio**:
 
@@ -76,19 +76,19 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Enrollments
 
-**Capacidad**: capturar el historial académico real del alumno — qué cursó, cuándo, con qué resultado, en qué comisión. Es **input del usuario** (manual o vía import), opera sobre la realidad ya ocurrida (cursadas finalizadas o en curso).
+**Capacidad**: capturar el historial académico real del alumno: qué cursó, cuándo, con qué resultado, en qué comisión. Es **input del usuario** (manual o vía import), opera sobre la realidad ya ocurrida (cursadas finalizadas o en curso).
 
 **Aggregates**: HistorialImport, EnrollmentRecord.
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0004](../../decisions/0004-enrollment-guarda-hechos.md) — EnrollmentRecord guarda hechos, no estados derivados. El estado del grafo (materia disponible / bloqueada) se computa al vuelo, no se persiste.
-- [ADR-0006](../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md) — HistorialImport.raw_payload es JSONB (shape variable según `source_type`). EnrollmentRecord es columnas tipadas.
-- ADR-0032 — Edit destructive de EnrollmentRecord (cambio a `cursando` cuando había Review) emite event cross-BC `EnrollmentRecordEdited` que Reviews consume para invalidar la reseña.
+- [ADR-0004](../../decisions/0004-enrollment-guarda-hechos.md): EnrollmentRecord guarda hechos, no estados derivados. El estado del grafo (materia disponible / bloqueada) se computa al vuelo, no se persiste.
+- [ADR-0006](../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md): HistorialImport.raw_payload es JSONB (shape variable según `source_type`). EnrollmentRecord es columnas tipadas.
+- ADR-0032: Edit destructive de EnrollmentRecord (cambio a `cursando` cuando había Review) emite event cross-BC `EnrollmentRecordEdited` que Reviews consume para invalidar la reseña.
 
 **Lenguaje propio**:
 
-- "EnrollmentRecord" = registro de cursada (un (alumno, materia, cuatrimestre)). Distinto de "matrícula formal en la universidad" — acá modelamos lo que el alumno reporta, no lo que la universidad inscribe.
+- "EnrollmentRecord" = registro de cursada (un (alumno, materia, cuatrimestre)). Distinto de "matrícula formal en la universidad": acá modelamos lo que el alumno reporta, no lo que la universidad inscribe.
 - "Status" en Enrollments = estado de la cursada del alumno: cursando / aprobada / desaprobada / abandonada / equivalencia.
 - "Approval method" = cómo se aprobó: parcial / final / promoción / equivalencia.
 
@@ -110,13 +110,13 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md) — reseña anclada a EnrollmentRecord (no a User + Subject).
-- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md) — pgvector pipeline implementado, UI gated hasta tener volumen.
-- [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md) — anonimato del autor en presentación pública.
-- [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md) — cascade de reports al upheld; sin reversión al restore.
-- [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md) — edit solo desde `published`.
-- [ADR-0013](../../decisions/0013-embedding-gated-en-transiciones-a-published.md) — embedding job en transiciones a `published`.
-- ADR-0028 — reseñas opcionales + premium features como reward (no gating del simulador).
+- [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md): reseña anclada a EnrollmentRecord (no a User + Subject).
+- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector pipeline implementado, UI gated hasta tener volumen.
+- [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato del autor en presentación pública.
+- [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade de reports al upheld; sin reversión al restore.
+- [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md): edit solo desde `published`.
+- [ADR-0013](../../decisions/0013-embedding-gated-en-transiciones-a-published.md): embedding job en transiciones a `published`.
+- ADR-0028: reseñas opcionales + premium features como reward (no gating del simulador).
 
 **Lenguaje propio**:
 
@@ -143,9 +143,9 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0010](../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md) — threshold de auto-hide configurable por env var.
-- ADR-0031 — ReviewAuditLog como projection, no aggregate.
-- [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) (referencial) — moderators no tienen profiles académicos, no pueden reseñar ni responder; rol exclusivo evita conflicto de interés.
+- [ADR-0010](../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md): threshold de auto-hide configurable por env var.
+- ADR-0031: ReviewAuditLog como projection, no aggregate.
+- [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) (referencial): moderators no tienen profiles académicos, no pueden reseñar ni responder; rol exclusivo evita conflicto de interés.
 
 **Lenguaje propio**:
 
@@ -163,14 +163,14 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Planning
 
-**Capacidad**: capturar el lado **futuro** del alumno — qué planea cursar el próximo cuatrimestre. Es la herramienta de decisión (simulador) + la capa de social-proof (ver simulaciones de otros) + la recomendación.
+**Capacidad**: capturar el lado **futuro** del alumno: qué planea cursar el próximo cuatrimestre. Es la herramienta de decisión (simulador) + la capa de social-proof (ver simulaciones de otros) + la recomendación.
 
 **Aggregates**: SimulationDraft.
 
 **Decisiones que lo gobiernan**:
 
-- ADR-0028 — premium features (save / share / recommend) en lugar de gating del simulador. La feature core (simular sin guardar) es libre.
-- ADR-0029 — Planning como BC separado de Enrollments.
+- ADR-0028: premium features (save / share / recommend) en lugar de gating del simulador. La feature core (simular sin guardar) es libre.
+- ADR-0029: Planning como BC separado de Enrollments.
 
 **Lenguaje propio**:
 
@@ -181,7 +181,7 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Lo que expone a otros BCs**:
 
-- En MVP, Planning no expone APIs a otros BCs — es feature de cara al alumno.
+- En MVP, Planning no expone APIs a otros BCs: es feature de cara al alumno.
 - Consume reads de Academic (subjects, plans) y Enrollments (historial para "available subjects").
 
 ---

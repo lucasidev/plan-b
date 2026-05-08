@@ -2,10 +2,10 @@
 
 **Status**: Done (shipped en branch `ci/workflow-improvements`)
 **Sprint**: S1 (junto con la institucionalización de testing)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: S
-**UC**: —
+**UC**: 
 **ADR refs**: [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md), [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0037](../../decisions/0037-changelog-automation-auto-append.md)
 
 ## Como dev, quiero workflows base que mantengan el repo sano sin esfuerzo manual

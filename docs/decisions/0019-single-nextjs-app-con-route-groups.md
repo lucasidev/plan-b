@@ -45,7 +45,7 @@ Descartada porque:
 
 - Duplica infraestructura: dos builds, dos deploys, dos conjuntos de dependencias a mantener.
 - Componentes compartidos (shadcn/ui primitives, design tokens, api-client) tendrían que duplicarse o extraerse a una lib común.
-- Solo dev, MVP — la separación no paga su costo de mantenimiento.
+- Solo dev, MVP: la separación no paga su costo de mantenimiento.
 - La seguridad real del admin no depende de que esté en una app separada; depende de la validación del JWT y del role en el backend. El backend rechaza operaciones no autorizadas independientemente de desde qué frontend vengan.
 
 ### B. Microfrontends

@@ -8,12 +8,12 @@ Las US existentes que cubren menos secciones se backfillean **cuando entran a sp
 
 Este template incorpora las prácticas establecidas que la industria reconoce desde 2003+:
 
-- **INVEST criteria** ([Bill Wake, 2003 — artículo original en XP123](https://xp123.com/articles/invest-in-good-stories-and-smart-tasks/)) — toda US debería ser **I**ndependent, **N**egotiable, **V**aluable, **E**stimable, **S**mall, **T**estable. La sección "Dependencies" hace explícitas las violaciones de Independent (cuando son inevitables); el formato de AC + Test scenarios apuntan a Testable.
-- **Connextra format** ([Mike Cohn, Mountain Goat Software](https://www.mountaingoatsoftware.com/agile/user-stories)) — "Como [actor], quiero [capability] para [outcome]". El "para [outcome]" puede omitirse si la US es self-evident.
-- **AC limit 6-9 ítems** ([Atlassian](https://www.atlassian.com/work-management/project-management/acceptance-criteria), [AltexSoft](https://www.altexsoft.com/blog/acceptance-criteria-purposes-formats-and-best-practices/)) — si tenés 10+ AC, la US es too big y conviene splitear, o el overflow se mueve a "Edge cases" / "Test scenarios".
-- **AC cubre edge cases / negative scenarios** ([Atlassian](https://www.atlassian.com/work-management/project-management/acceptance-criteria)) — happy path no alcanza. El template separa "Acceptance Criteria" (lo que el sistema hace en el flow esperado) de "Edge cases" (estados inusuales) para que cada uno tenga su propio espacio.
-- **Given-When-Then para AC complejos** ([Thoughtworks BDD](https://www.thoughtworks.com/insights/blog/applying-bdd-acceptance-criteria-user-stories), [Gherkin](https://www.parallelhq.com/blog/given-when-then-acceptance-criteria)) — la sección "Test scenarios" usa este formato porque mapea 1:1 a tests automatizados (Playwright especs, integration tests).
-- **Definition of Ready separada de DoD** ([Pega Academy](https://academy.pega.com/topic/user-story-readiness/v1), [CodeLucky](https://codelucky.com/definition-of-ready-user-stories-sprint/)) — la DoR define cuándo una US **entra** a sprint; la DoD cuándo **sale** como Done.
+- **INVEST criteria** ([Bill Wake, 2003: artículo original en XP123](https://xp123.com/articles/invest-in-good-stories-and-smart-tasks/)): toda US debería ser **I**ndependent, **N**egotiable, **V**aluable, **E**stimable, **S**mall, **T**estable. La sección "Dependencies" hace explícitas las violaciones de Independent (cuando son inevitables); el formato de AC + Test scenarios apuntan a Testable.
+- **Connextra format** ([Mike Cohn, Mountain Goat Software](https://www.mountaingoatsoftware.com/agile/user-stories)): "Como [actor], quiero [capability] para [outcome]". El "para [outcome]" puede omitirse si la US es self-evident.
+- **AC limit 6-9 ítems** ([Atlassian](https://www.atlassian.com/work-management/project-management/acceptance-criteria), [AltexSoft](https://www.altexsoft.com/blog/acceptance-criteria-purposes-formats-and-best-practices/)): si tenés 10+ AC, la US es too big y conviene splitear, o el overflow se mueve a "Edge cases" / "Test scenarios".
+- **AC cubre edge cases / negative scenarios** ([Atlassian](https://www.atlassian.com/work-management/project-management/acceptance-criteria)): happy path no alcanza. El template separa "Acceptance Criteria" (lo que el sistema hace en el flow esperado) de "Edge cases" (estados inusuales) para que cada uno tenga su propio espacio.
+- **Given-When-Then para AC complejos** ([Thoughtworks BDD](https://www.thoughtworks.com/insights/blog/applying-bdd-acceptance-criteria-user-stories), [Gherkin](https://www.parallelhq.com/blog/given-when-then-acceptance-criteria)): la sección "Test scenarios" usa este formato porque mapea 1:1 a tests automatizados (Playwright especs, integration tests).
+- **Definition of Ready separada de DoD** ([Pega Academy](https://academy.pega.com/topic/user-story-readiness/v1), [CodeLucky](https://codelucky.com/definition-of-ready-user-stories-sprint/)): la DoR define cuándo una US **entra** a sprint; la DoD cuándo **sale** como Done.
 
 ---
 
@@ -23,8 +23,8 @@ Este template incorpora las prácticas establecidas que la industria reconoce de
 # US-NNN: <título corto y accionable>
 
 **Status**: Backlog | Sprint actual | Done
-**Sprint**: candidato a SX | SX | —
-**Epic**: [EPIC-NN — Nombre](../epics/EPIC-NN.md)
+**Sprint**: candidato a SX | SX |: 
+**Epic**: [EPIC-NN: Nombre](../epics/EPIC-NN.md)
 **Priority**: High | Medium | Low
 **Effort**: S | M | L
 **UC**: [UC-NNN](../use-cases/UC-NNN.md) (si mapea 1:1)
@@ -66,7 +66,7 @@ Categorías típicas a considerar (no todas aplican siempre):
 - **A11y**: keyboard-only, screen reader, focus management.
 - **Time-based**: timezone, expirations cruzando bordes, DST.
 
-No es obligatorio listar las 9 categorías — solo las que aplican a este US. Si alguna no aplica, omitir.
+No es obligatorio listar las 9 categorías: solo las que aplican a este US. Si alguna no aplica, omitir.
 
 ## Test scenarios
 
@@ -133,7 +133,7 @@ Una US está lista para entrar a sprint cuando:
 - [ ] **Mockup** linkeado para US con UI.
 - [ ] **Sub-tasks** desglosadas por capa.
 
-Una US en Backlog que solo tiene AC + sub-tasks NO está Ready para sprint todavía — eso es backfill que se hace al planificar el sprint.
+Una US en Backlog que solo tiene AC + sub-tasks NO está Ready para sprint todavía: eso es backfill que se hace al planificar el sprint.
 
 DoD (post-implementación) sigue en [`definition-of-done.md`](definition-of-done.md). DoR (pre-sprint) vive acá porque depende del shape de la US, no del shape del código.
 

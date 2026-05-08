@@ -9,7 +9,7 @@ Según [ADR-0007](0007-pgvector-implementado-ui-gated-off.md), el pipeline de ge
 
 La pregunta de este ADR: **¿en qué momento del ciclo de vida de una reseña se encola el job de generación?**
 
-Los estados posibles de `Review.status` son `published`, `under_review`, y `removed`. Las transiciones entre ellos están en [review-lifecycle.md](../domain/review-lifecycle.md). Una reseña puede pasar por `under_review` (retenida por filtro o por threshold de reports) y eventualmente ser removida — en cuyo caso gastar compute en embebber su contenido es desperdicio.
+Los estados posibles de `Review.status` son `published`, `under_review`, y `removed`. Las transiciones entre ellos están en [review-lifecycle.md](../domain/review-lifecycle.md). Una reseña puede pasar por `under_review` (retenida por filtro o por threshold de reports) y eventualmente ser removida: en cuyo caso gastar compute en embebber su contenido es desperdicio.
 
 ## Decisión
 
@@ -29,7 +29,7 @@ El job de generación de embedding se encola **únicamente** en las transiciones
 
 ### A. Enqueue en cualquier INSERT de Review
 
-Simpler de implementar — un trigger o hook en el create. Descartada porque:
+Simpler de implementar: un trigger o hook en el create. Descartada porque:
 
 - Gasta compute en reseñas retenidas por filtro que pueden ser removidas.
 - Aunque el costo por embedding es bajo (el modelo corre local y tarda menos de un segundo), escala mal si hay un spike de reseñas retenidas.
@@ -37,11 +37,11 @@ Simpler de implementar — un trigger o hook en el create. Descartada porque:
 
 ### B. Enqueue basado en content hash sin importar status
 
-Calcular hash del contenido, deduplicar por hash. Si el contenido cambia, re-enqueue. Descartada: la deduplicación a nivel de contenido no resuelve el problema de status — una reseña con contenido idéntico a otra aprobada pero en estado `removed` igualmente se debería excluir. El status es la señal correcta, no el hash.
+Calcular hash del contenido, deduplicar por hash. Si el contenido cambia, re-enqueue. Descartada: la deduplicación a nivel de contenido no resuelve el problema de status: una reseña con contenido idéntico a otra aprobada pero en estado `removed` igualmente se debería excluir. El status es la señal correcta, no el hash.
 
 ### C. Enqueue lazy solo cuando se consulta el embedding
 
-El embedding se genera on-demand cuando alguna query de búsqueda semántica lo pide. Descartada por la UX: la query se bloquea esperando la generación. Además, en el MVP la feature UI está gated off — no hay queries aún, por lo que nunca se dispararía la generación.
+El embedding se genera on-demand cuando alguna query de búsqueda semántica lo pide. Descartada por la UX: la query se bloquea esperando la generación. Además, en el MVP la feature UI está gated off: no hay queries aún, por lo que nunca se dispararía la generación.
 
 ## Consecuencias
 
@@ -54,7 +54,7 @@ El embedding se genera on-demand cuando alguna query de búsqueda semántica lo 
 **Negativas:**
 
 - Hay un pequeño delay entre que una reseña pasa de `under_review` a `published` (por dismiss) y el momento en que su embedding está disponible. En MVP ese delay es invisible porque la feature UI está gated off.
-- La lógica de "cuándo enqueuar" vive en el servicio de moderación y en el de publicación — requiere tests que cubran todas las transiciones para no perder una.
+- La lógica de "cuándo enqueuar" vive en el servicio de moderación y en el de publicación: requiere tests que cubran todas las transiciones para no perder una.
 
 **Referencias:**
 

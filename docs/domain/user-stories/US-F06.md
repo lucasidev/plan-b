@@ -2,11 +2,11 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: M
-**UC**: —
-**ADR refs**: —
+**UC**: 
+**ADR refs**: 
 
 ## Como dev, quiero el modelo DDD formalizado para que el dominio esté documentado antes de implementar features
 
@@ -41,5 +41,5 @@ Como solo-dev y candidato a recibir feedback académico, quiero documentación D
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: —
-- ADRs: —
+- Use Case: 
+- ADRs: 

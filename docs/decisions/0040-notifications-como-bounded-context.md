@@ -9,12 +9,12 @@ El rediseño UX (claude-design) suma una **campanita de notificaciones** en el t
 
 Eventos disparadores definidos (4 triggers iniciales):
 
-1. **Reseña publicada en una materia que el alumno cursa actualmente** — "Hay una reseña nueva de ISW302 (que estás cursando)".
-2. **Reseña publicada sobre un docente con el que el alumno cursó** — "Hay una reseña nueva sobre Brandt (cursaste con él en 2024·1c)".
-3. **Una reseña propia del alumno fue reportada** — "Tu reseña de MAT201 fue reportada y está en moderación".
-4. **Una reseña propia del alumno recibió una valoración (helpful)** — "Tu reseña de QUI301 marcó 5 personas como útil".
+1. **Reseña publicada en una materia que el alumno cursa actualmente**: "Hay una reseña nueva de ISW302 (que estás cursando)".
+2. **Reseña publicada sobre un docente con el que el alumno cursó**: "Hay una reseña nueva sobre Brandt (cursaste con él en 2024·1c)".
+3. **Una reseña propia del alumno fue reportada**: "Tu reseña de MAT201 fue reportada y está en moderación".
+4. **Una reseña propia del alumno recibió una valoración (helpful)**: "Tu reseña de QUI301 marcó 5 personas como útil".
 
-Esos 4 son el primer set. Más triggers van a aparecer (respuesta de docente verificado a una reseña tuya, claim de docente aprobado, etc.) — la arquitectura tiene que soportar agregar tipos sin re-trabajo.
+Esos 4 son el primer set. Más triggers van a aparecer (respuesta de docente verificado a una reseña tuya, claim de docente aprobado, etc.): la arquitectura tiene que soportar agregar tipos sin re-trabajo.
 
 Hoy el backend tiene 5 módulos (identity, academic, enrollments, reviews, moderation). Notifications cruza varios:
 
@@ -87,7 +87,7 @@ Notifications subscribers en `Application/Subscribers/`:
 
 - `ReviewPublishedSubscriber`: recibe el event, consulta Identity para resolver "alumnos cursando subject_id" + "alumnos que cursaron con teacher_id", crea N notifications (una por destinatario).
 - `ReviewReportedSubscriber`: una notification al author de la reseña.
-- `ReviewVotedHelpfulSubscriber`: una notification al author si la valoración hace cruzar threshold (1, 5, 10) — diseño concreto cuando aterrice la US.
+- `ReviewVotedHelpfulSubscriber`: una notification al author si la valoración hace cruzar threshold (1, 5, 10): diseño concreto cuando aterrice la US.
 
 ### Resolver "alumnos cursando X" cross-BC
 

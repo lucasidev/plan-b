@@ -10,7 +10,7 @@ Las personas son **idempotentes**. Si ya existen en la DB, el seeder las saltea.
 
 Las personas son **no commiteables a producción**. El hosted service que las crea está gateado por `IsDevelopment()`. En staging / prod nunca se ejecuta.
 
-## Member personas — Sprint S1 (auth slice)
+## Member personas: Sprint S1 (auth slice)
 
 ### Lucía Mansilla
 
@@ -64,17 +64,17 @@ Se registró pero nunca clickeó el link del mail. Tiene un `VerificationToken` 
 
 **La usamos para**: probar el 403 con `title: identity.account.email_not_verified`. También para probar el flow de "pedir reenvío" cuando exista, y `verify-email` consumiendo su token.
 
-## Personas docentes — F3+ (cuando exista TeacherProfile)
+## Personas docentes: F3+ (cuando exista TeacherProfile)
 
 Placeholder. Cuando aterrice el aggregate `TeacherProfile` y la verificación institucional de docentes (UC-031), seedeamos las tres figuras del mockup como teachers verificados:
 
-- **Lic. Brandt** — el docente que responde reseñas, perfil empático.
-- **Lic. Castro** — POO, bien valorado, didáctico.
-- **Dr. Iturralde** — Probabilidad, exigente, reseñas mixtas.
+- **Lic. Brandt**: el docente que responde reseñas, perfil empático.
+- **Lic. Castro**: POO, bien valorado, didáctico.
+- **Dr. Iturralde**: Probabilidad, exigente, reseñas mixtas.
 
 Cada uno con su email institucional fake (`brandt@unsta.edu.ar` style), su `TeacherProfile` verificado, y un set de comisiones asignadas. Los detalles cuando llegue la fase.
 
-## Personas staff — más adelante
+## Personas staff: más adelante
 
 Cuando aparezca el flujo de moderación (F4+) seedeamos un moderador y un admin para probar el panel staff. No urgentes hasta entonces.
 

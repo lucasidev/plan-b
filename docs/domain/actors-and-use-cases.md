@@ -1,4 +1,4 @@
-# Actors and Use Cases — planb
+# Actors and Use Cases: planb
 
 Catálogo completo de UCs del MVP. Cada UC vive en su propio archivo dentro de [use-cases/](use-cases/) y tiene un ID estable que se referencia desde la API, desde diagramas de secuencia futuros y desde user stories.
 

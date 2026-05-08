@@ -1,4 +1,4 @@
-# ADR-0021: Data fetching — RSC prefetch + TanStack Query hydration
+# ADR-0021: Data fetching: RSC prefetch + TanStack Query hydration
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23
@@ -42,7 +42,7 @@ export default async function SubjectPage({ params }) {
 'use client'
 export function ReviewList({ subjectId }) {
   const { data } = useSuspenseQuery(reviewQueries.forSubject(subjectId))
-  // data está disponible inmediatamente — hidratada desde el server
+  // data está disponible inmediatamente: hidratada desde el server
 }
 ```
 
@@ -95,7 +95,7 @@ export async function publishReview(input) {
 
 Todo server-side. Cada interacción = round-trip al servidor, cada render = re-fetch. Simple, pero las UIs interactivas (simulator, dashboard) se vuelven tortuosas.
 
-Descartada porque el simulator específicamente necesita estado cliente rápido — ajustar selección de materias y ver métricas debe ser instantáneo, no con round-trip.
+Descartada porque el simulator específicamente necesita estado cliente rápido: ajustar selección de materias y ver métricas debe ser instantáneo, no con round-trip.
 
 ### B. Client-side exclusivo con TanStack Query
 
@@ -122,7 +122,7 @@ Parece razonable pero introduce inconsistencia: mismo feature, distinto patrón 
 
 **Invariantes:**
 
-- Todo `queryKey` debe ser consistente entre RSC prefetch y client `useSuspenseQuery`. El helper `queryOptions` en `api.ts` es la fuente de verdad — todos lo importan desde ahí, nadie escribe keys sueltos.
+- Todo `queryKey` debe ser consistente entre RSC prefetch y client `useSuspenseQuery`. El helper `queryOptions` en `api.ts` es la fuente de verdad: todos lo importan desde ahí, nadie escribe keys sueltos.
 - Server Actions que mutan data llaman `revalidatePath` o `revalidateTag` para invalidar la cache de RSC, y opcionalmente `queryClient.invalidateQueries` desde el client side para coherencia.
 
 **Cuándo revisitar:**

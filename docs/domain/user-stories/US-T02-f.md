@@ -2,10 +2,10 @@
 
 **Status**: Done (shipped en branch `feat/t02-playwright-e2e-infra`)
 **Sprint**: S1 (junto con la institucionalización de testing)
-**Epic**: [EPIC-00 — Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: High
 **Effort**: M
-**UC**: —
+**UC**: 
 **ADR refs**: [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.md)
 **Blocked by**: [US-T01-f](US-T01-f.md) (Done)
 
@@ -24,11 +24,11 @@ Durante US-033 escribí un Playwright spec ad-hoc, lo corrí, lo borré. Probó 
   - [x] Timeouts: 60s por test, 10s para auto-wait de locators.
   - [x] CI: `forbidOnly: true`, `retries: 1`, `workers: 1`, reporters `github` + `html`. Local: `retries: 0`, `list` reporter.
 - [x] `frontend/e2e/helpers/` con helpers reutilizables:
-  - [x] `personas.ts` — exporta `LUCIA`, `MATEO`, `PAULA`, `MARTIN` con email + password tomados del seed (`backend/host/Planb.Api/seed-data/personas.json`).
-  - [x] `mailpit.ts` — `listMessages`, `waitForMail`, `getMessage`, `extractTokenFromLatestMail`, `clearAllMessages`.
-  - [x] `redis.ts` — `clearForgotPasswordRateLimits`, `clearAllIdentityRateLimits`. Skip automático en CI (donde Redis es service container sin nombre `planb-redis`).
-- [x] `frontend/e2e/auth/forgot-password.spec.ts` — migración del spec ad-hoc de US-033, ahora reusando helpers, con assertions estables (no relying on auto-wait timing). Cubre happy path + 3 edge cases (anti-enum, garbage token, sin token).
-- [x] `frontend/e2e/auth/sign-in.spec.ts` — sample con 4 cases: happy path Lucía, Martín no verificado, Paula deshabilitada, credenciales inválidas (anti-enum).
+  - [x] `personas.ts`: exporta `LUCIA`, `MATEO`, `PAULA`, `MARTIN` con email + password tomados del seed (`backend/host/Planb.Api/seed-data/personas.json`).
+  - [x] `mailpit.ts`: `listMessages`, `waitForMail`, `getMessage`, `extractTokenFromLatestMail`, `clearAllMessages`.
+  - [x] `redis.ts`: `clearForgotPasswordRateLimits`, `clearAllIdentityRateLimits`. Skip automático en CI (donde Redis es service container sin nombre `planb-redis`).
+- [x] `frontend/e2e/auth/forgot-password.spec.ts`: migración del spec ad-hoc de US-033, ahora reusando helpers, con assertions estables (no relying on auto-wait timing). Cubre happy path + 3 edge cases (anti-enum, garbage token, sin token).
+- [x] `frontend/e2e/auth/sign-in.spec.ts`: sample con 4 cases: happy path Lucía, Martín no verificado, Paula deshabilitada, credenciales inválidas (anti-enum).
 - [x] `package.json` script `test:e2e` ya existía (`playwright test`); funcional contra el config permanente.
 - [x] `Justfile` recipe `frontend-test-e2e` ya existía; funcional sin cambios.
 - [x] `vitest.config.ts` actualizado con `exclude: ['e2e/**', ...]` para que vitest no intente correr los specs de Playwright.
@@ -65,7 +65,7 @@ Durante US-033 escribí un Playwright spec ad-hoc, lo corrí, lo borré. Probó 
 - **Browser cache en CI**: `actions/cache@v5` con key `playwright-${{ runner.os }}-${{ hashFiles('frontend/bun.lock') }}`. Baja runtime de ~5min cold a ~30s con cache hit.
 - **Backend en CI**: arranca con `nohup dotnet run --no-build --configuration Release` en background. Espera healthcheck en :5000 hasta 30s. En Development env el host migra + seedea automáticamente vía Wolverine ResourceAutoCreate + DevSeedHostedService.
 - **Frontend en CI**: production build + `bun next start` (no Turbopack dev mode). Más estable para CI.
-- **Restore de pw**: el spec de forgot-password modifica la pw de Lucía. Al final llama `restoreLuciaPassword()` que pega contra el backend directo (forgot + reset con el mail). Si el spec crashea sin restaurar, el siguiente run arranca con pw rota — tradeoff aceptado para mantener simple.
+- **Restore de pw**: el spec de forgot-password modifica la pw de Lucía. Al final llama `restoreLuciaPassword()` que pega contra el backend directo (forgot + reset con el mail). Si el spec crashea sin restaurar, el siguiente run arranca con pw rota: tradeoff aceptado para mantener simple.
 - **redis.ts skip en CI**: En CI, Redis es un service container sin nombre `planb-redis`. El helper detecta `process.env.CI === 'true'` y skipea las llamadas. Como el service container es ephemeral por run, los rate-limit buckets arrancan vacíos sin necesidad de limpiar.
 
 ## Refs

@@ -1,4 +1,4 @@
-# Aggregates — planb
+# Aggregates: planb
 
 Inventario tactical DDD del modelo. Cada aggregate vive en su propio archivo dentro de [aggregates/](aggregates/).
 

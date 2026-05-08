@@ -11,7 +11,7 @@ A nivel de implementación hay dos caminos posibles:
 
 1. **Anonimato en storage:** al crear la reseña, no se guarda vinculación con el autor. O se guarda un hash/identificador opaco. La identidad se pierde al momento de persistir.
 
-2. **Anonimato en presentación:** se guarda la identidad vía `Review.enrollment_id → StudentProfile`, pero la capa pública jamás la expone. Endpoints, UI, dashboard institucional — todos omiten la identidad.
+2. **Anonimato en presentación:** se guarda la identidad vía `Review.enrollment_id → StudentProfile`, pero la capa pública jamás la expone. Endpoints, UI, dashboard institucional: todos omiten la identidad.
 
 La elección tiene implicaciones en moderación, prevención de abuso, y features futuras.
 
@@ -35,7 +35,7 @@ La capa pública (API GET de reseñas, UI, dashboard institucional) nunca serial
 Opción más fuerte en términos de privacidad. Descartada por:
 
 - **Moderación ciega:** sin poder vincular reseñas a autores, es imposible detectar un alumno que crea 50 cuentas para inflar reseñas malas contra un docente. Los filtros automáticos solo pescan spam obvio.
-- **Sin reversibilidad:** si aparece una orden judicial legítima (difamación con daño real), no hay forma de responder. La política del proyecto plantea cooperar con orden judicial — storage anonimizado lo vuelve imposible aunque se quisiera.
+- **Sin reversibilidad:** si aparece una orden judicial legítima (difamación con daño real), no hay forma de responder. La política del proyecto plantea cooperar con orden judicial: storage anonimizado lo vuelve imposible aunque se quisiera.
 - **Feature bloqueada:** "firmar con nombre opcional" como mejora post-MVP requiere identidad retenida. Con storage anonimizado habría que migrar.
 
 ### B. Identidad expuesta con flag `is_anonymous`
@@ -45,7 +45,7 @@ Las reseñas con `is_anonymous = true` se muestran sin autor, las demás con aut
 
 **Positivas:**
 - Moderación robusta: detección de sockpuppets, rate limiting por autor, análisis de patrones.
-- Base lista para feature "firmar con nombre opcional" — se agrega como flag sin migrar identidades.
+- Base lista para feature "firmar con nombre opcional": se agrega como flag sin migrar identidades.
 - Cumplimiento con orden judicial posible si alguna vez aparece.
 - Auditoría completa (quién escribió qué, cuándo, qué editó) para uso interno de moderación.
 

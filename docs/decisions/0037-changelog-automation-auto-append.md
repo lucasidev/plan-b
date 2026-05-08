@@ -25,11 +25,11 @@ Cómo funciona:
 2. El script:
    a. Lee el último commit (`HEAD`) y parsea su mensaje como Conventional Commit. Mismo regex que `scripts/check-commit-msg.ts`.
    b. Mapea el tipo a una sección de Keep-a-Changelog: `feat`/`perf` → "Added"; `fix` → "Fixed"; `refactor` → "Changed"; `revert` → "Removed"; `docs`/`style`/`test`/`build`/`ci`/`chore` → no entra al CHANGELOG (auto-skip).
-   c. Construye el bullet: `- <descripción> (<scope>) — <short-sha>` con link al commit.
+   c. Construye el bullet: `- <descripción> (<scope>): <short-sha>` con link al commit.
    d. Lo inserta en la sección `[Unreleased]` debajo del subheader correspondiente, creando el subheader si no existe.
    e. Si el commit incluye `BREAKING CHANGE:` en el body o `!:` en el header, agrega un sub-bullet "(BREAKING)".
 3. El workflow commitea el cambio con mensaje `docs(changelog): auto-update from <sha>`. El commit lo hace un bot (`stefanzweifel/git-auto-commit-action@v5` o equivalente) que NO dispara otros workflows (evita loops).
-4. Squash/Rebase irrelevante: el script lee el commit que ya quedó en `main`. Si la merge fue Squash y el título del PR estaba mal, el bullet sale mal — mitigación en el `pr-title.yml` que valida PR titles como Conventional Commits.
+4. Squash/Rebase irrelevante: el script lee el commit que ya quedó en `main`. Si la merge fue Squash y el título del PR estaba mal, el bullet sale mal: mitigación en el `pr-title.yml` que valida PR titles como Conventional Commits.
 
 ### Lo que NO hace este ADR
 
@@ -55,7 +55,7 @@ Contras:
 - Olvidable. La mitad de los PRs no van a editar `CHANGELOG.md`. El reviewer también puede no chequearlo.
 - Conflicts merge: cada PR que toca `[Unreleased]` mete una línea en la misma posición. Conflicts triviales pero ruidosos.
 
-Descartada — todo lo malo del proceso manual sin upside.
+Descartada: todo lo malo del proceso manual sin upside.
 
 ### B. Lefthook commit-msg gate ("si el commit es feat/fix, debe tocar CHANGELOG.md")
 
@@ -66,7 +66,7 @@ Contras:
 - No funciona con Squash and merge (el commit que falla es el local pre-squash, no el de main).
 - El bullet escrito por el dev puede ser distinto del título del commit, generando ruido.
 
-Descartada — fricción local sin solucionar el problema real.
+Descartada: fricción local sin solucionar el problema real.
 
 ### C. CI gate (job de GHA que falla si el PR no toca CHANGELOG.md)
 
@@ -115,9 +115,9 @@ Contras:
 
 US-T05-i cubre:
 
-- `.github/workflows/changelog.yml` — trigger push:main, ejecuta el script, commitea el cambio.
-- `scripts/append-changelog.ts` — lógica de parseo + insert.
-- `.github/workflows/pr-title.yml` — valida PR titles como Conventional Commit, red de seguridad para Squash and merge.
+- `.github/workflows/changelog.yml`: trigger push:main, ejecuta el script, commitea el cambio.
+- `scripts/append-changelog.ts`: lógica de parseo + insert.
+- `.github/workflows/pr-title.yml`: valida PR titles como Conventional Commit, red de seguridad para Squash and merge.
 - Updates en `docs/testing/conventions.md`, `CLAUDE.md` (root) y `.github/pull_request_template.md` para reflejar el flujo.
 
 ## Refs
