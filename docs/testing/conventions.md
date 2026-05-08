@@ -35,8 +35,11 @@ just backend-test-integration     # próximamente
 
 # frontend solo
 just frontend-test                # vitest, rápido
-just frontend-test-e2e            # Playwright, requiere backend levantado
+just frontend-test-e2e            # Playwright headless, requiere backend levantado
+just frontend-test-e2e-show       # Playwright con browser visible y slowMo (ver el flow correr)
 ```
+
+Ambos recipes aceptan args, ej: `just frontend-test-e2e-show e2e/auth/onboarding.spec.ts`.
 
 ### CI
 
