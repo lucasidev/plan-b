@@ -139,16 +139,20 @@ if (!backendUp || !frontendUp) {
 console.log('[check-e2e-zone] Stack arriba (backend + frontend). Corriendo Playwright...');
 console.log('');
 
-// 4) Correr Playwright. Headless (rápido y silencioso), no --headed.
-const playwrightResult = spawnSync('bunx', ['playwright', 'test'], {
-  cwd: FRONTEND,
+// 4) Correr Playwright via run-e2e-show (--headed + slowMo). El dev ve el
+// browser abrirse y los flows correr. Single source of truth con el recipe
+// `just frontend-test-e2e-show`. Si necesitás headless por algún motivo
+// (raro local, casi siempre CI que usa otro path), exportá
+// `SKIP_E2E_PRECHECK=1` y corré explícitamente.
+const playwrightResult = spawnSync('bun', ['scripts/run-e2e-show.ts'], {
+  cwd: ROOT,
   stdio: 'inherit',
 });
 
 if (playwrightResult.status !== 0) {
   console.error('');
   console.error('[check-e2e-zone] ✗ Playwright falló. Fixear specs antes de pushear.');
-  console.error('  Para correr con browser visible y ver qué falla:');
+  console.error('  Para re-correr aislado (mismo modo headed + slowMo):');
   console.error('    just frontend-test-e2e-show');
   process.exit(playwrightResult.status ?? 1);
 }
