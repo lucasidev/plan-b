@@ -36,7 +36,13 @@ pre-push:
       run: cd frontend && bunx tsc --noEmit
     frontend-test:
       # Vitest unit/component (US-T01). Rápido (~3s con jsdom + sample suite).
-      # E2E (Playwright) NO entra al pre-push: lentos, requieren backend
-      # levantado, y van por CI on-demand (label `e2e` en el PR per ADR-0036).
+      # E2E (Playwright) corre en `e2e-zone` cuando el branch toca paths
+      # listados en `.github/labeler.yml`.
       glob: "frontend/**/*.{ts,tsx}"
       run: cd frontend && bun run test
+    e2e-zone:
+      # Si el branch toca zona E2E (mismo glob set que `.github/labeler.yml`),
+      # exigimos que Playwright pase localmente antes de pushear. Si la zona
+      # no se toca, el script salta. Ver `scripts/check-e2e-zone.ts` para el
+      # algoritmo completo y los escape hatches.
+      run: bun scripts/check-e2e-zone.ts
