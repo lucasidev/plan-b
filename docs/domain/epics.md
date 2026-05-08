@@ -1,4 +1,4 @@
-# Epics: planb
+# Epics (planb)
 
 Capabilities mayores del producto. Cada epic agrupa user stories que aportan valor al usuario y comparten contexto de implementación. Cada epic vive en su propio archivo dentro de [epics/](epics/).
 

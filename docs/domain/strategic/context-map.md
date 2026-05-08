@@ -1,4 +1,4 @@
-# Context Map: planb
+# Context Map (planb)
 
 Mapa de relaciones entre los 6 Bounded Contexts. Para cada par definimos el **patrón de integración** (en términos de Evans/Vernon) y el **mecanismo técnico** (synchronous reads, integration events, etc.).
 

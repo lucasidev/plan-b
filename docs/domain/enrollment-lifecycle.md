@@ -1,4 +1,4 @@
-# Enrollment Lifecycle: planb
+# Enrollment Lifecycle (planb)
 
 Ciclo de vida del `EnrollmentRecord`, la entidad que representa una cursada específica de un alumno (par alumno × materia × cuatrimestre). Es el ancla del historial académico y la precondición del sistema de reseñas.
 

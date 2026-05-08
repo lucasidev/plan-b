@@ -14,7 +14,7 @@ El UI del grafo de carrera muestra seis estados posibles por materia:
 - Reprobada
 - Cursando
 
-De estos, solo cuatro son **hechos** del historial del alumno: aprobada, regular, reprobada, cursando (y abandonada como quinto). Los otros dos: "disponible" y "bloqueada": son estados **derivables** cruzando correlativas con el historial actual.
+De estos, solo cuatro son **hechos** del historial del alumno: aprobada, regular, reprobada, cursando (y abandonada como quinto). Los otros dos ("disponible" y "bloqueada") son estados **derivables** cruzando correlativas con el historial actual.
 
 La tentación es guardar los seis estados como columna en `EnrollmentRecord` y actualizarlos con triggers o jobs cuando cambian las correlativas. Esta tentación debe resistirse.
 

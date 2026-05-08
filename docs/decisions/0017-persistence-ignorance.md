@@ -1,4 +1,4 @@
-# ADR-0017: Persistence Ignorance: infraestructura pluggable, sin FKs cross-schema
+# ADR-0017: Persistence Ignorance (infraestructura pluggable, sin FKs cross-schema)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23

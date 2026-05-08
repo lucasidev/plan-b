@@ -37,7 +37,7 @@ Simpler de implementar: un trigger o hook en el create. Descartada porque:
 
 ### B. Enqueue basado en content hash sin importar status
 
-Calcular hash del contenido, deduplicar por hash. Si el contenido cambia, re-enqueue. Descartada: la deduplicación a nivel de contenido no resuelve el problema de status: una reseña con contenido idéntico a otra aprobada pero en estado `removed` igualmente se debería excluir. El status es la señal correcta, no el hash.
+Calcular hash del contenido, deduplicar por hash. Si el contenido cambia, re-enqueue. Descartada porque la deduplicación a nivel de contenido no resuelve el problema de status: una reseña con contenido idéntico a otra aprobada pero en estado `removed` igualmente se debería excluir. El status es la señal correcta, no el hash.
 
 ### C. Enqueue lazy solo cuando se consulta el embedding
 

@@ -1,4 +1,4 @@
-# Review Lifecycle: planb
+# Review Lifecycle (planb)
 
 Ciclo de vida de una reseña desde su publicación hasta su eventual remoción o restauración. Cubre:
 
@@ -27,7 +27,7 @@ Este documento **expande** los UCs UC-017, UC-018, UC-019, UC-050, UC-051 y UC-0
 | `upheld`    | El moderador (o cascade) aceptó: la reseña infringía. |
 | `dismissed` | El moderador rechazó: el report no procedía.          |
 
-## State machine: `Review.status`
+## State machine de `Review.status`
 
 ```mermaid
 ---
@@ -49,7 +49,7 @@ stateDiagram-v2
 
 **Nota sobre edición:** la edición (UC-018) solo se permite desde `published` y mantiene el estado. No aparece como transición porque no cambia el estado: cambia el contenido y dispara efectos (ver matriz abajo). No se permite editar reseñas en `under_review` ni `removed` para evitar edit-bombing como evasión de moderación.
 
-## State machine: `ReviewReport.status`
+## State machine de `ReviewReport.status`
 
 ```mermaid
 ---

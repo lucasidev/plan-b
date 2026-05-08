@@ -1,4 +1,4 @@
-# ADR-0026: Git workflow: GitHub Flow con Rebase/Squash; OneFlow diferido
+# ADR-0026: Git workflow (GitHub Flow con Rebase/Squash; OneFlow diferido)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-24

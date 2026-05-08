@@ -1,4 +1,4 @@
-# US-F02-t: Tooling: Justfile, Lefthook, Conventional Commits
+# US-F02-t: Tooling (Justfile, Lefthook, Conventional Commits)
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
@@ -37,5 +37,5 @@ Como solo-dev y futuros colaboradores, quiero un Justfile con todas las operacio
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: 
+- Use Case: ninguno.
 - ADRs: [ADR-0024](../../decisions/0024-dev-tooling-stack.md), [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md)

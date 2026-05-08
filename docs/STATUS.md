@@ -1,4 +1,4 @@
-# Estado del proyecto: planb
+# Estado del proyecto (planb)
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
@@ -133,7 +133,7 @@ Todas Done al cierre del sprint.
 9. **`feat/academic-and-student-profile`** (PR #54, US-012-b): catálogo Academic mínimo (4 unis + 18 carreras IT + 18 planes) + StudentProfile child entity + endpoint + IValueObject marker.
 10. **`docs/sprint-s1-closure`**: housekeeping + cierre Fase 2.
 
-### Definition of Done de S1: verificación
+### Definition of Done de S1 (verificación)
 
 - ✓ `just dev` levanta backend + frontend.
 - ✓ Lucía puede registrarse, verificar email, iniciar sesión.

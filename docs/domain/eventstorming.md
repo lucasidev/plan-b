@@ -1,4 +1,4 @@
-# EventStorming: planb
+# EventStorming (planb)
 
 Captura del discovery de DDD del proyecto. Reproducimos en formato markdown lo que típicamente sería un mural con sticky notes de colores siguiendo la metodología de Alberto Brandolini.
 

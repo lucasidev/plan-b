@@ -6,7 +6,7 @@
 **Priority**: Medium
 **Effort**: M
 **UC**: 
-**ADR refs**: 
+**ADR refs**: ninguno.
 
 ## Como dev, quiero el modelo DDD formalizado para que el dominio esté documentado antes de implementar features
 
@@ -41,5 +41,5 @@ Como solo-dev y candidato a recibir feedback académico, quiero documentación D
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: 
-- ADRs: 
+- Use Case: ninguno.
+- ADRs: ninguno.

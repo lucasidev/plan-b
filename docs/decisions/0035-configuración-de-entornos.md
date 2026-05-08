@@ -49,25 +49,25 @@ Las env vars se validan en dos schemas separados (`frontend/src/lib/env.ts`):
 
 ## Alternativas consideradas
 
-### A: Status quo (rechazada)
+### A. Status quo (rechazada)
 
 Mantener `appsettings.json` con dev defaults + `.env` con duplicados + Options sin validación. Costo cero, pero deja al sistema arrancando con configuración inválida en cualquier entorno mal configurado y delega el descubrimiento del problema al primer usuario que dispara la feature afectada (típicamente, primer email de verificación → primera queja de soporte).
 
-### B: Convención adoptada (elegida)
+### B. Convención adoptada (elegida)
 
 Seis reglas + matriz explícita + `ValidateOnStart` en todas las Options + split client/server en frontend. Costo: una pasada de refactor (este PR). Beneficio: cualquier entorno mal configurado falla al construir el host, no en producción.
 
-### C: Centralizar todo en un secret manager (rechazada por ahora)
+### C. Centralizar todo en un secret manager (rechazada por ahora)
 
 Mover incluso los no-secrets a un manager (Vault, Doppler, AWS Secrets Manager, etc.) y eliminar `appsettings.*.json` casi entero. Es lo que se hace en orgs grandes. Para planb (proyecto académico, self-hosted en Dokploy, sin equipo de SRE) es overkill. Cuando armemos CD a Dokploy, evaluamos un secret store ligero (probablemente env vars de Dokploy + sealed secrets si vamos a Kubernetes). Por ahora, env vars del runtime alcanzan.
 
-### D: `ASPNETCORE_ENVIRONMENT=Production` en CI (rechazada por ahora)
+### D. `ASPNETCORE_ENVIRONMENT=Production` en CI (rechazada por ahora)
 
 CI corriendo con la misma configuración que prod. Encuentra production-only issues antes del deploy. Requiere un paso previo de `dotnet run -- codegen write` (Wolverine) y migrations bundle pre-generado. La doc oficial de Wolverine recomienda este patrón para deploys, pero como step de CD, no de CI rápido. Adoptar antes de tener pipeline de deploy es invertir en infra que aún no necesitamos.
 
 **Migración prevista**: en F6 (focus group cerrado, primer deploy real a Dokploy), separar `ci.yml` (Development, fast feedback) de `release.yml` (Production, prod parity con codegen pre-generado).
 
-### E: Env "Testing" propio con `appsettings.Testing.json` (rechazada por ahora)
+### E. Env "Testing" propio con `appsettings.Testing.json` (rechazada por ahora)
 
 Microsoft documenta este patrón en el ejemplo de `WebApplicationFactory.UseEnvironment("test")`. Útil cuando los tests requieren config específica que no es ni dev ni prod (ej. logger silencioso, DB in-memory, JWT test secret). Para planb hoy, los tests usan la misma config que dev. Si emerge un caso, agregamos `appsettings.Testing.json` y movemos CI a `Testing`.
 

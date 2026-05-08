@@ -35,5 +35,5 @@ Como solo-dev y futuros evaluadores (Ing. Copas), quiero los 33 ADRs base escrit
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: 
+- Use Case: ninguno.
 - ADRs: [docs/decisions/](../../decisions/)

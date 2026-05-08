@@ -1,4 +1,4 @@
-# Value Objects: planb
+# Value Objects (planb)
 
 Inventario cross-cutting de Value Objects del modelo. Cada VO vive descrito en el archivo del aggregate que lo usa primario (ver [aggregates/](aggregates/)). Los VOs shared del kernel viven en [shared-kernel.md](shared-kernel.md).
 

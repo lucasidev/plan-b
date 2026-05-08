@@ -1,4 +1,4 @@
-# ADR-0041: Rediseño UX post-claude-design: delta y plan de migración
+# ADR-0041: Rediseño UX post-claude-design (delta y plan de migración)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-05-02
