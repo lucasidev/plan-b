@@ -19,7 +19,7 @@ Re-correr cuando:
 
 | Sección canvas | Artboard | Imagen | US relacionadas |
 |---|---|---|---|
-| ⓪ Design System | `ds-main` | `ds-ds-main.png` | (referencia transversal, ADR-0041) |
+| ⓪ Design System | `ds-main` | `ds-ds-main.png` | [`docs/design/design-system.md`](../../design-system.md) (doc canónico transversal) |
 | ① Landing | `lp` | `landing-lp.png` | (Landing pública, US futura) |
 | ② Auth | `signup` | `auth-signup.png` | [US-010-f](../../../domain/user-stories/US-010-f.md), [US-036](../../../domain/user-stories/US-036.md) |
 | ② Auth | `login` | `auth-login.png` | [US-028-f](../../../domain/user-stories/US-028-f.md), [US-036](../../../domain/user-stories/US-036.md) |

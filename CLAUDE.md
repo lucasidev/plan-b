@@ -85,6 +85,7 @@ Las cosas críticas para entender el sistema antes de programar:
 4. [`docs/testing/conventions.md`](docs/testing/conventions.md) — qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 5. [`docs/operations/rollback.md`](docs/operations/rollback.md) — qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 6. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md) — reglas duras de commit / branching / conflict / merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
+7. [`docs/design/design-system.md`](docs/design/design-system.md) — contrato visual del producto (paleta, tipografía, mapping canvas → frontend). Antes de tocar visuales, chequear acá. Screenshots de cada vista en [`docs/design/reference/screenshots/`](docs/design/reference/screenshots/) (auto-generados desde el canvas, son la fuente).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 

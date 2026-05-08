@@ -227,5 +227,6 @@ just dev-frontend / frontend-build / frontend-lint / frontend-test
 - **No** usar imports relativos largos. Siempre `@/` alias.
 - **No** mezclar server state (TanStack Query) con ephemera UI (useState) en el mismo hook.
 - **No** poner lógica de dominio en componentes. Va en `features/<feature>/` (hooks, actions, schemas).
-- **No** tocar `globals.css` para agregar clases arbitrarias. Usar Tailwind utilities o `@theme` si es variable de diseño.
+- **No** tocar `globals.css` para agregar clases arbitrarias. Usar Tailwind utilities o `@theme` si es variable de diseño. Tokens documentados en [`docs/design/design-system.md`](../docs/design/design-system.md).
 - **No** saltear el guard del backend confiando solo en el guard del frontend. El layout guard es UX, no seguridad.
+- **No** improvisar visuales. Cada US frontend tiene su mockup como image embed en `## Refs > Mockup` (auto-generado del canvas). Si el código difiere de la imagen, fixear código.
