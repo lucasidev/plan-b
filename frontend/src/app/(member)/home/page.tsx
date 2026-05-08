@@ -1,7 +1,10 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Lede } from '@/components/ui/lede';
+import { CurrentSubjectsCard } from '@/features/home/components/current-subjects-card';
 import { PeriodProgressCard } from '@/features/home/components/period-progress-card';
+import { UpcomingSubjectsCard } from '@/features/home/components/upcoming-subjects-card';
+import { activeSubjects } from '@/features/home/data/active-subjects';
 import { currentPeriod } from '@/features/home/data/period';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
@@ -10,27 +13,20 @@ import { getSession } from '@/lib/session';
  * Home v2 (US-044). Port literal del mock
  * `docs/design/reference/canvas-mocks/v2-screens.jsx::V2Inicio`.
  *
- * Esta es la US-044-a: shell (eyebrow + greeting + subtitle stats) + período
- * progress card. Deja la sección reservada para los bloques de columnas que
- * aterrizan en US-044-b (En curso + Más adelante en la izquierda) y US-044-c
- * (Reseñá + Pensando en lo que viene + Movimientos en la derecha).
+ * Estado: shell (US-044-a) + columna izquierda (US-044-b). La columna
+ * derecha (Reseñá + Pensando en lo que viene + Movimientos) aterriza en
+ * US-044-c y se inserta en el `<aside>` reservado.
  *
- * Hasta que `-b` aterrice, los counts del subtitle ("4 materias cursando, 1
- * arranca más adelante") se muestran como placeholder ("0 materias cursando").
- * Cuando US-044-b agregue el mock activo, el subtitle pasa a leer counts
- * reales desde `activeSubjects.filter(s => s.week > 0).length`.
- *
- * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user no
- * tiene StudentProfile (US-037-f). Esta página asume sesión + profile activos.
+ * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user
+ * no tiene StudentProfile (US-037-f). Esta página asume sesión + profile
+ * activos.
  */
 export default async function HomePage() {
   const session = await getSession();
   const firstName = session ? greetingNameFromEmail(session.email) : 'alumno';
 
-  // TODO(US-044-b): reemplazar por counts reales del mock activeSubjects.
-  // Mientras tanto, placeholder coherente con período "en curso".
-  const cursandoCount = 0;
-  const futurasCount = 0;
+  const cursando = activeSubjects.filter((s) => s.week > 0);
+  const futuras = activeSubjects.filter((s) => s.week === 0);
 
   return (
     <div className="px-6 py-9 max-w-[1200px] mx-auto">
@@ -39,22 +35,28 @@ export default async function HomePage() {
         Hola {firstName}.
       </DisplayHeading>
       <Lede className="mb-8 max-w-[640px]">
-        Vas por la semana {currentPeriod.weekOfYear} del año. {cursandoCount} materias cursando,{' '}
-        {futurasCount} arrancan más adelante.
+        Vas por la semana {currentPeriod.weekOfYear} del año. {cursando.length} materias cursando,{' '}
+        {futuras.length} arrancan más adelante.
       </Lede>
 
       <PeriodProgressCard period={currentPeriod} />
 
-      {/*
-        Sección reservada para los bloques secundarios.
-        - US-044-b agrega columna izq: <CurrentSubjectsCard /> + <UpcomingSubjectsCard />.
-        - US-044-c agrega columna der: <PendingReviewsCard /> + <NextPeriodCard /> + <MovementsCard />.
-        El grid 1.55fr / 1fr del mock se materializa cuando -b y -c estén.
-      */}
       <section
         aria-label="Bloques secundarios del Inicio"
         className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4"
-      />
+      >
+        <div className="flex flex-col gap-[14px]">
+          <CurrentSubjectsCard subjects={cursando} />
+          <UpcomingSubjectsCard subjects={futuras} />
+        </div>
+
+        {/*
+          TODO(US-044-c): columna derecha con PendingReviewsCard +
+          NextPeriodCard + MovementsCard. Hasta que aterrice, el grid
+          mantiene el ratio 1.55fr/1fr y la columna derecha queda vacía.
+        */}
+        <aside aria-label="Pendientes y actividad reciente" className="flex flex-col gap-[14px]" />
+      </section>
     </div>
   );
 }
