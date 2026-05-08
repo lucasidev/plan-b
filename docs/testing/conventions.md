@@ -284,7 +284,31 @@ Reglas:
 - Personas (`LUCIA`, `MATEO`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
 - Cada test es independiente: limpia rate limits, restaura estado al final si modificó datos.
-- E2E corre on-demand en CI (label `e2e` en el PR o push a main). Localmente: `just frontend-test-e2e`.
+- E2E corre on-demand en CI (label `e2e` en el PR o push a main). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
+
+#### Cuándo un PR necesita E2E (zona E2E)
+
+**Regla**: si un PR toca cualquier path de la lista de zona E2E, antes de mergear hay que correr `just frontend-test-e2e-show` localmente con suite verde y aplicar label `e2e` al PR para que CI ejercite la suite pre-merge.
+
+**Detección automática**: `.github/workflows/auto-label.yml` aplica el label `e2e` automáticamente cuando los paths del PR matchean la lista en `.github/labeler.yml`. Si tu PR matchea, el label aparece solo. Igual hay que correr la suite local antes de mergear.
+
+**Zona E2E** (paths que disparan el label automático):
+
+| Path glob | Por qué |
+|---|---|
+| `frontend/src/app/**` | Routes, layouts, server actions, guards. Cambios acá afectan redirects / cookies / sesión / render server-side que los specs verifican. |
+| `frontend/middleware.ts` | Si existe, define cross-cutting auth/redirect. |
+| `frontend/src/lib/{session,forward-set-cookies,api-client,env}.ts` | Cross-cutting auth + session + api wiring. Tocar cualquiera puede romper todos los specs de auth. |
+| `frontend/e2e/**` | Suite directa o helpers compartidos. |
+| `frontend/playwright.config.ts` | Config de la suite. |
+| `backend/host/Planb.Api/**` | Host (DI, pipeline auth, seed data, Program.cs). Cualquier cambio afecta startup. |
+| `backend/modules/*/src/**/Migrations/**` | Migrations de cualquier módulo. Pueden romper la inicialización del backend. |
+| `backend/modules/identity/**` | Auth y session viven en Identity, todos los specs E2E actuales lo tocan transitivamente. |
+| `.github/workflows/{e2e,ci}.yml` | Workflow que ejercita la suite o CI estándar. |
+
+**Quedan fuera explícitamente**: cambios docs-only (`docs/**`, `*.md`), `.github/dependabot.yml`, `Justfile` (a menos que cambie comandos de CI), ADRs, lessons-learned, componentes aislados con cobertura vitest, otros módulos backend (academic, reviews, enrollments, moderation) que aún no tienen specs E2E. Si en el futuro un nuevo módulo gana cobertura E2E, agregar su path al `labeler.yml`.
+
+**Si el label se aplica pero no aplica realmente** (false positive): removerlo manualmente del PR. CI no va a forzar la corrida, solo dispara cuando el label está. Documentar el caso si pasa seguido (puede indicar que el path glob es muy laxo).
 
 #### Dominio vs infra: cuándo un helper directo está OK
 

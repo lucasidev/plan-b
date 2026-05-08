@@ -1,0 +1,28 @@
+name: Auto-label PRs
+
+# Aplica labels automáticas en PRs según los paths que tocan.
+# Config: `.github/labeler.yml`. La label más importante es `e2e`, que
+# dispara `.github/workflows/e2e.yml` (E2E suite Playwright) que de otra
+# forma solo corre on-demand. Esto cierra el gap "olvidé el label" del
+# lessons-learned 2026-05-08.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: Apply labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          # `sync-labels: true` quita labels que ya no aplican (ej. PR
+          # original tocaba `frontend/src/app/`, push posterior elimina ese
+          # cambio: la label `e2e` se remueve). Eso permite que CI no corra
+          # E2E innecesario en iteraciones que ya no la necesitan.
+          sync-labels: true
