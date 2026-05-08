@@ -12,6 +12,27 @@ Formato de cada entrada:
 
 ---
 
+## 2026-05-08 · Regla declarada pero sin enforcement: olvidé correr E2E local de nuevo
+
+**Síntoma**: tras mergear los PRs de auto-label + recipe `frontend-test-e2e-show` (zona E2E declarada + UX para correr local cero fricción), arrancó US-044 + US-045-a y empecé a iterar sin correr E2E local. Solo cuando Lucas preguntó "¿requiere E2E?" caí en la cuenta de que correspondía. La regla declarada del lessons-learned anterior (correr local antes de pushear) se quedó otra vez en memoria humana.
+
+**Causa raíz**: en la entrada del 2026-05-08 ("Regla zona E2E + auto-label") dejé como deuda explícita: *"Pre-push hook lefthook queda como deuda solo si volvemos a olvidar correr E2E local"*. Volví a olvidar. La memoria humana / del asistente sigue siendo un mecanismo defectuoso para reglas operacionales nuevas, especialmente las que requieren parar el flow de trabajo.
+
+**Fix**: pre-push hook lefthook + script `scripts/check-e2e-zone.ts` que:
+
+- Compara el branch contra `origin/main`, matchea files cambiados contra los mismos globs de `.github/labeler.yml`.
+- Si matchea zona E2E: chequea backend `:5000/health` + frontend `:3000`. Si no están arriba, falla con instrucciones (`just dev`). Si están arriba, corre `bunx playwright test`. Si la suite falla, el push se aborta.
+- Si NO matchea: skip transparente.
+
+Escape hatches: `SKIP_E2E_PRECHECK=1 git push` (skip selectivo) y `git push --no-verify` (skip total, último recurso).
+
+**Prevención**:
+
+- "Cuando vuelva a olvidar X, implemento enforcement" es buena heurística pero peligrosa: la próxima vez la deuda sigue acumulando hasta el incidente. Mejor: cuando una regla nueva queda escrita en docs sin enforcement, **agendar el enforcement en el mismo sprint** (no diferirlo a "si pasa de nuevo").
+- Las 3 capas de la zona E2E (lista de paths en docs, auto-label en CI, pre-push hook) son redundantes a propósito: una sola no alcanza. Lista en docs es para la persona que lee; auto-label es para CI gates; pre-push es para no pushear roto a CI.
+
+---
+
 ## 2026-05-08 · Regla "zona E2E" + auto-label vs olvidos del label `e2e`
 
 **Síntoma**: la entrada anterior del 2026-05-08 ("CI estándar verde no implica E2E verde") cerró el incidente concreto pero dejó la regla operacional dependiendo de memoria humana ("aplicar label `e2e` cuando el PR toca código que afecte E2E"). En la práctica eso falla: olvidé el label en al menos 4 PRs seguidos pre-incidente y casi olvido en el siguiente.
