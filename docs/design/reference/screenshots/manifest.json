@@ -1,0 +1,276 @@
+{
+  "generatedAt": "2026-05-08T21:11:47.325Z",
+  "source": "docs/design/reference/plan-b-direcciones.html",
+  "artboards": [
+    {
+      "section": "ds",
+      "id": "ds-main",
+      "label": "Sistema visual",
+      "width": 1280,
+      "height": 900,
+      "file": "ds-ds-main.png",
+      "ok": true
+    },
+    {
+      "section": "landing",
+      "id": "lp",
+      "label": "plan-b.com.ar",
+      "width": 1440,
+      "height": 2400,
+      "file": "landing-lp.png",
+      "ok": true
+    },
+    {
+      "section": "auth",
+      "id": "signup",
+      "label": "Crear cuenta",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-signup.png",
+      "ok": true
+    },
+    {
+      "section": "auth",
+      "id": "login",
+      "label": "Ingresar",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-login.png",
+      "ok": true
+    },
+    {
+      "section": "auth",
+      "id": "forgot",
+      "label": "Recuperar contraseña",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-forgot.png",
+      "ok": true
+    },
+    {
+      "section": "auth",
+      "id": "forgot-ok",
+      "label": "Link enviado",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-forgot-ok.png",
+      "ok": true
+    },
+    {
+      "section": "onb",
+      "id": "welcome",
+      "label": "01 · Bienvenida",
+      "width": 1200,
+      "height": 750,
+      "file": "onb-welcome.png",
+      "ok": true
+    },
+    {
+      "section": "onb",
+      "id": "career",
+      "label": "02 · Carrera",
+      "width": 1200,
+      "height": 750,
+      "file": "onb-career.png",
+      "ok": true
+    },
+    {
+      "section": "onb",
+      "id": "history",
+      "label": "03 · Historial",
+      "width": 1200,
+      "height": 750,
+      "file": "onb-history.png",
+      "ok": true
+    },
+    {
+      "section": "onb",
+      "id": "done",
+      "label": "04 · Listo",
+      "width": 1200,
+      "height": 750,
+      "file": "onb-done.png",
+      "ok": true
+    },
+    {
+      "section": "home",
+      "id": "v2-inicio",
+      "label": "Inicio",
+      "width": 1200,
+      "height": 750,
+      "file": "home-v2-inicio.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-carrera-p",
+      "label": "Plan de estudios",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-carrera-p.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-carrera-g",
+      "label": "Correlativas (grafo)",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-carrera-g.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-carrera-c",
+      "label": "Catálogo de materias",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-carrera-c.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-mat-detail",
+      "label": "Materia · detalle",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-mat-detail.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-carrera-d",
+      "label": "Docentes",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-carrera-d.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-doc-detail",
+      "label": "Docente · detalle",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-doc-detail.png",
+      "ok": true
+    },
+    {
+      "section": "plan",
+      "id": "v2-carrera-h",
+      "label": "Historial académico",
+      "width": 1200,
+      "height": 750,
+      "file": "plan-v2-carrera-h.png",
+      "ok": true
+    },
+    {
+      "section": "sim",
+      "id": "v2-plan-curso",
+      "label": "En curso",
+      "width": 1200,
+      "height": 750,
+      "file": "sim-v2-plan-curso.png",
+      "ok": true
+    },
+    {
+      "section": "sim",
+      "id": "v2-plan-borr",
+      "label": "Borrador 2027·1c",
+      "width": 1200,
+      "height": 750,
+      "file": "sim-v2-plan-borr.png",
+      "ok": true
+    },
+    {
+      "section": "resenas",
+      "id": "v2-resenas-l",
+      "label": "Explorar",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-resenas-l.png",
+      "ok": true
+    },
+    {
+      "section": "resenas",
+      "id": "v2-resenas-e",
+      "label": "Pendientes",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-resenas-e.png",
+      "ok": true
+    },
+    {
+      "section": "resenas",
+      "id": "v2-resenas-m",
+      "label": "Mis reseñas",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-resenas-m.png",
+      "ok": true
+    },
+    {
+      "section": "resenas",
+      "id": "v2-resenas-edit",
+      "label": "Editor de reseña",
+      "width": 1200,
+      "height": 1100,
+      "file": "resenas-v2-resenas-edit.png",
+      "ok": true
+    },
+    {
+      "section": "rankings",
+      "id": "v2-rankings",
+      "label": "Rankings",
+      "width": 1200,
+      "height": 750,
+      "file": "rankings-v2-rankings.png",
+      "ok": true
+    },
+    {
+      "section": "busqueda",
+      "id": "v2-buscar",
+      "label": "Búsqueda · dropdown abierto",
+      "width": 1200,
+      "height": 750,
+      "file": "busqueda-v2-buscar.png",
+      "ok": true
+    },
+    {
+      "section": "cuenta",
+      "id": "v2-perfil",
+      "label": "Mi perfil",
+      "width": 1200,
+      "height": 750,
+      "file": "cuenta-v2-perfil.png",
+      "ok": true
+    },
+    {
+      "section": "cuenta",
+      "id": "v2-ajustes",
+      "label": "Ajustes",
+      "width": 1200,
+      "height": 750,
+      "file": "cuenta-v2-ajustes.png",
+      "ok": true
+    },
+    {
+      "section": "soporte",
+      "id": "v2-ayuda",
+      "label": "Ayuda",
+      "width": 1200,
+      "height": 750,
+      "file": "soporte-v2-ayuda.png",
+      "ok": true
+    },
+    {
+      "section": "soporte",
+      "id": "v2-sobre",
+      "label": "Sobre plan-b",
+      "width": 1200,
+      "height": 750,
+      "file": "soporte-v2-sobre.png",
+      "ok": true
+    }
+  ]
+}

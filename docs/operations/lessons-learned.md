@@ -33,6 +33,26 @@ Escape hatches: `SKIP_E2E_PRECHECK=1 git push` (skip selectivo) y `git push --no
 
 ---
 
+## 2026-05-08 · Confiar en JPGs de scratch en vez del canvas como fuente
+
+**Síntoma**: Lucas me pasó el link de Claude Design (bundle del proyecto) y me dijo "los tenes ahi, en imagen y en codigo, no podes ser tan basura de ni tomarte el tiempo de copiar y hacer un puto port". Yo había estado mirando `docs/design/reference/canvas-mocks/auth.jsx` (correcto) pero después miré los JPGs en `scratch/` (iteraciones intermedias obsoletas) y armé un audit equivocado, diciendo que `AuthSplit` actual estaba "cerca" del mock cuando en realidad faltaba todo el `AuthShell` con leftPanel contextual + eyebrow numerado.
+
+**Causa raíz**: cuando descomprimí el bundle, vi múltiples carpetas (`canvas-mocks/`, `scratch/`, `_check/`, `uploads/`). Asumí que cualquiera servía como fuente. La fuente real es el **canvas que se renderea desde `plan-b direcciones.html`**, que orquesta los `canvas-mocks/*.jsx` finales. Los JPGs de `scratch/` son artefactos de iteración que no se descartaron del bundle.
+
+**Fix**:
+
+- Spec Playwright `frontend/e2e/_capture/canvas-screenshots.spec.ts` que levanta un static server sobre `docs/design/reference/`, navega al canvas con chromium, y captura 30 artboards a `docs/design/reference/screenshots/<sección>-<id>.png`. Manifest.json con metadata. Trigger explícito vía `PLAYWRIGHT_INCLUDE_CAPTURE=1 bunx playwright test e2e/_capture/...`.
+- README en `screenshots/` con tabla artboard → US correspondiente.
+- Cada US frontend ahora cita su screenshot en la sección `## Refs > Mockup` con un image embed markdown. Si hay drift entre código e imagen, fixear código.
+
+**Prevención**:
+
+- **La fuente única de verdad para diseño es el canvas (`plan-b direcciones.html`) que renderea los `canvas-mocks/*.jsx`.** Ignorar carpetas `scratch/`, `_check/`, `uploads/` salvo que estén explícitamente referenciadas por el canvas.
+- Cuando el canvas cambie, regenerar screenshots (re-correr el spec). Las imágenes son derivadas, el JSX es la fuente.
+- Si hay duda sobre cuál es la fuente correcta, abrir el canvas o mirar el screenshot generado, no JPGs sueltos del bundle.
+
+---
+
 ## 2026-05-08 · Regla "zona E2E" + auto-label vs olvidos del label `e2e`
 
 **Síntoma**: la entrada anterior del 2026-05-08 ("CI estándar verde no implica E2E verde") cerró el incidente concreto pero dejó la regla operacional dependiendo de memoria humana ("aplicar label `e2e` cuando el PR toca código que afecte E2E"). En la práctica eso falla: olvidé el label en al menos 4 PRs seguidos pre-incidente y casi olvido en el siguiente.
