@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - reemplazar link a INVEST de Agile Alliance por XP123 (Bill Wake) (docs) — [`b0a3763`](https://github.com/lucasidev/plan-b/commit/b0a37635e3c00db0ba171f6e15627bae740e305f)
 - quitar links a US-037-f.md que aun no existe (docs) — [`ca2a50e`](https://github.com/lucasidev/plan-b/commit/ca2a50e332b31ee23e90d526e32d943e48473c26)
 - agregar StudentProfile a Lucía para no romper E2E pre-onboarding (seed) — [`024c12a`](https://github.com/lucasidev/plan-b/commit/024c12ad304c5d748b507af5e9147b4e854434e1)
+- convertir link a US-005.md (no existe) en texto plano (docs) — [`bfbb254`](https://github.com/lucasidev/plan-b/commit/bfbb25490fbeff08b6fa0370a29e56e390746454)
 
 ### Changed
 
