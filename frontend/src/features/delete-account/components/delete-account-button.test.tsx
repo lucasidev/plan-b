@@ -103,7 +103,7 @@ describe('DeleteAccountButton', () => {
 
     await user.type(screen.getByLabelText(/tu email/i), 'wrong@email.com');
 
-    // El submit está disabled, así que ni siquiera intentamos clickearlo —
+    // El submit está disabled, así que ni siquiera intentamos clickearlo.
     // user-event tira en disabled buttons. Verificamos el contrato: el botón
     // queda inactivo y el action nunca se llama.
     expect(screen.getByRole('button', { name: /eliminar definitivamente/i })).toBeDisabled();

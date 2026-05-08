@@ -56,22 +56,12 @@ test.describe('onboarding (US-037-f)', () => {
     const email = uniqueEmail('e2e-onboarding');
     const password = 'e2e-test-pw-1234';
 
-    // 1. Register vía /sign-up. Interceptamos la response del backend para
-    //    capturar el userId del JSON, así el `afterEach` puede limpiar el row
-    //    sin tener que adivinar el id.
-    const registerResponse = page.waitForResponse(
-      (resp) => resp.url().includes('/api/identity/register') && resp.request().method() === 'POST',
-    );
+    // 1. Register vía /sign-up
     await page.goto('/sign-up');
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByLabel(/repetí la contraseña/i).fill(password);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
-    const resp = await registerResponse;
-    if (resp.ok()) {
-      const body = (await resp.json()) as { id?: string };
-      if (body.id) createdUserId = body.id;
-    }
     await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
 
     // 2. Extraer token del mail y verificar
@@ -85,6 +75,24 @@ test.describe('onboarding (US-037-f)', () => {
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
+
+    // Esperar a que se asiente la cookie de sesión y extraer el userId del
+    // JWT. La cookie `planb_session` es httpOnly server-side, pero Playwright
+    // sí puede leerla por la API de cookies. Decodificamos el JWT (no validamos
+    // firma: solo necesitamos el claim sub para el cleanup).
+    await page.waitForURL(/\/(onboarding\/welcome|home)/, { timeout: 15_000 });
+    const cookies = await page.context().cookies();
+    const session = cookies.find((c) => c.name === 'planb_session');
+    if (session) {
+      const payload = session.value.split('.')[1];
+      if (payload) {
+        const padded = payload + '='.repeat((4 - (payload.length % 4)) % 4);
+        const json = JSON.parse(
+          Buffer.from(padded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString(),
+        ) as { sub?: string };
+        if (json.sub) createdUserId = json.sub;
+      }
+    }
 
     // 4. El guard de (member) detecta que NO tiene profile → redirige a
     //    /onboarding/welcome (paso 01).

@@ -9,9 +9,9 @@ namespace Planb.Identity.Domain.Users;
 /// art. 6). Lives independently of the <see cref="User"/> aggregate (the user row is gone
 /// after the delete) so that two questions remain answerable:
 /// <list type="bullet">
-///   <item>"Did this user ever exist on plan-b?" — yes, the row is in this log.</item>
-///   <item>"Did the same email come back later?" — comparing the SHA-256 hash of the new email
-///     to <see cref="EmailHash"/> answers it without retaining the original email.</item>
+///   <item>"Did this user ever exist on plan-b?" (yes, the row is in this log).</item>
+///   <item>"Did the same email come back later?" (comparing the SHA-256 hash of the new email
+///     to <see cref="EmailHash"/> answers it without retaining the original email).</item>
 /// </list>
 /// We hash the email instead of storing it plain because the act of deletion is supposed to
 /// remove the user's identifiable data; keeping a hash respects that intent (you cannot recover
@@ -26,8 +26,8 @@ public sealed class UserDeletionLog : Entity<UserDeletionLogId>, IAggregateRoot
     private UserDeletionLog() { }
 
     /// <summary>
-    /// Creates a deletion log entry. The caller is expected to pass the user's email plain text
-    /// — this method handles hashing internally so callers cannot accidentally persist the raw
+    /// Creates a deletion log entry. The caller is expected to pass the user's email plain text;
+    /// this method handles hashing internally so callers cannot accidentally persist the raw
     /// value. Use <see cref="HashEmail"/> directly only when correlating an existing log entry
     /// with a candidate email (e.g. forensic lookup).
     /// </summary>

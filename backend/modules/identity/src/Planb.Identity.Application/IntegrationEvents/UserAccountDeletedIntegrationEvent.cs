@@ -4,7 +4,7 @@ namespace Planb.Identity.Application.IntegrationEvents;
 
 /// <summary>
 /// Cross-BC announcement that a user has self-deleted (UC-038). Carries only the
-/// <see cref="UserId"/> — no email, no PII — because every consumer (Reviews, Enrollments,
+/// <see cref="UserId"/> (no email, no PII), because every consumer (Reviews, Enrollments,
 /// Moderation) only needs the id to look up its own user-owned data and remove it.
 /// <para>
 /// Published to Wolverine's outbox by a local handler that reacts to

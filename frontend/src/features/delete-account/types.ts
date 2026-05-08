@@ -7,7 +7,7 @@
  * already-typed email).
  *
  * The happy path is a server-side `redirect()` that throws NEXT_REDIRECT,
- * so it never reaches `useActionState` — there is no `success` variant.
+ * so it never reaches `useActionState`: there is no `success` variant.
  */
 export type DeleteAccountFormState = { status: 'idle' } | { status: 'error'; message: string };
 

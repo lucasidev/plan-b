@@ -3,7 +3,7 @@ import { DeleteAccountButton } from '@/features/delete-account';
 import { getSession } from '@/lib/session';
 
 /**
- * `/settings/account` — pantalla de gestión de la cuenta del member.
+ * `/settings/account`: pantalla de gestión de la cuenta del member.
  *
  * MVP scope: solo expone el botón de "Eliminar mi cuenta" (US-038-f). Cuando
  * aterrice US-047 (Mi perfil) y US-072 (Ajustes completos), esta página se
@@ -13,7 +13,7 @@ import { getSession } from '@/lib/session';
  *
  * Server Component: lee la sesión para pasarle el email al CTA destructivo
  * (que lo usa como anti-accidental check en el modal). Si no hay sesión,
- * redirect — duplica el guard del layout pero es defensa explícita ante un
+ * redirect. Duplica el guard del layout pero es defensa explícita ante un
  * caso degenerado donde el JWT haya expirado entre el render del layout y
  * el render de la página.
  */

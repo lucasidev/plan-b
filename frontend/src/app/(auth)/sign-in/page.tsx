@@ -14,7 +14,7 @@ type Props = {
 };
 
 /**
- * `/sign-in` — pantalla de login. Server component thin que arma el
+ * `/sign-in`: pantalla de login. Server component thin que arma el
  * shell (AuthSplit con hero) y delega el form a `<SignInForm>`.
  *
  * `?reset=success` lo setea el flow de reset-password al 204 (US-033-i).
