@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rebuild auth a 4 rutas separadas (US-036) (auth) — [`ab73b1a`](https://github.com/lucasidev/plan-b/commit/ab73b1a662b0beff0e7b8f5e793ae8669e6bccf0)
 - public catalog endpoints + GET student-profile (US-037-b) (onboarding) — [`fe06ec5`](https://github.com/lucasidev/plan-b/commit/fe06ec5e651d99fde073fa51926529433d1a9e36)
 - frontend del onboarding 4 pasos post-registro (US-037-f) (onboarding) — [`0fa503a`](https://github.com/lucasidev/plan-b/commit/0fa503aac505b47fbd8a0a90511514d7bed1b5dc)
+- backend de delete account (US-038-b) (identity) — [`e33deda`](https://github.com/lucasidev/plan-b/commit/e33deda463fc4df782aa6b22a77de7864793205f)
 
 ### Fixed
 
