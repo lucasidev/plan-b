@@ -37,5 +37,5 @@ Como solo-dev defendiendo el `main`, quiero GitHub Actions corriendo en cada PR 
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: 
+- Use Case: ninguno.
 - ADRs: [ADR-0024](../../decisions/0024-dev-tooling-stack.md), [ADR-0026](../../decisions/0026-git-workflow-github-flow-con-rebase.md), [ADR-0027](../../decisions/0027-integration-tests-shared-postgres.md)

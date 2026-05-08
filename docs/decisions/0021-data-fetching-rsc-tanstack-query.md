@@ -1,4 +1,4 @@
-# ADR-0021: Data fetching: RSC prefetch + TanStack Query hydration
+# ADR-0021: Data fetching (RSC prefetch + TanStack Query hydration)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23

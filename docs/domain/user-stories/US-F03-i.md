@@ -1,4 +1,4 @@
-# US-F03-i: Infra local: Docker Postgres pgvector + Mailpit
+# US-F03-i: Infra local (Docker Postgres pgvector + Mailpit)
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
@@ -39,5 +39,5 @@ Como solo-dev, quiero un `docker-compose.yml` que levante Postgres 17 con extens
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Use Case: 
+- Use Case: ninguno.
 - ADRs: [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0027](../../decisions/0027-integration-tests-shared-postgres.md)

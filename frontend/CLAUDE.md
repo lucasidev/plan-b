@@ -1,4 +1,4 @@
-# Frontend: planb
+# Frontend (planb)
 
 Next.js 15 App Router + React 19.1 + Bun + TanStack Query + shadcn/ui + Tailwind 4.
 
@@ -61,12 +61,12 @@ La autorización real se hace en el backend. El guard del frontend existe para U
 
 El route group `(auth)` no aparece en la URL (Next.js convention). Las páginas viven todas top-level:
 
-- `/sign-in`: login (US-036).
-- `/sign-up`: registro (US-036).
-- `/sign-up/check-inbox?email=`: pantalla post-registro "te mandamos un mail".
-- `/forgot-password` + `/forgot-password/check-inbox`: flow forgot password (US-033).
-- `/reset-password?token=`: pantalla del reset (US-033).
-- `/verify-email?token=`: pantalla de verificación post-mail (US-011).
+- `/sign-in` (login, US-036).
+- `/sign-up` (registro, US-036).
+- `/sign-up/check-inbox?email=` (pantalla post-registro "te mandamos un mail").
+- `/forgot-password` + `/forgot-password/check-inbox` (flow forgot password, US-033).
+- `/reset-password?token=` (pantalla del reset, US-033).
+- `/verify-email?token=` (pantalla de verificación post-mail, US-011).
 
 `sign-in` y `sign-up` montan `<AuthSplit>` con copy compartido (`components/layout/auth-hero.tsx`) más su heading propio. Cada flow es página separada con su layout: no hay tabs ni AuthView intermedio (deuda de S1 cerrada con US-036).
 

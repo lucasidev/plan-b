@@ -43,19 +43,19 @@ Estos nudges son **product layer**: no domain rules. Pero son parte de cómo se 
 
 ## Alternativas consideradas
 
-### A: Opcional puro
+### A. Opcional puro
 
 Es lo que tenemos hoy en código (Modelo A del data model: Review separada de EnrollmentRecord, opcional). Sin incentivo claro, asumimos que la mayoría no reseñaría. Descartado por riesgo al loop del producto.
 
-### B: Atómico
+### B. Atómico
 
 Forzaría la reseña al momento de cargar la cursada. Para alumnos avanzados (caso primary del onboarding), 30 reseñas en una sentada es inviable. Descartado por fricción.
 
-### C: Gating del simulador
+### C. Gating del simulador
 
 Bloquear la feature core a alumnos sin reciprocidad puede causar que abandonen antes de aportar. El loop de "primero recibo valor, después contribuyo" se rompe. Descartado.
 
-### D: Reward additive (elegido)
+### D. Reward additive (elegido)
 
 Mantiene el funnel: alumno entra → recibe valor (simulador, ver reseñas) → percibe el upside de aportar (premium features) → reseñar se vuelve naturalmente atractivo, no forzado.
 

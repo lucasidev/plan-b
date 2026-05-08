@@ -32,15 +32,15 @@ Patrón de uso en código:
 
 ## Alternativas consideradas
 
-### A: Postgres-only (rechazada)
+### A. Postgres-only (rechazada)
 
 Refresh tokens en una tabla `identity.refresh_tokens` (mismo patrón que `verification_tokens`), rate limiting con tabla `identity.login_attempts` y query de window, hot reads sin cache (siempre query). Funciona para el inicio. Cuando lleguen hot reads de catálogo (F3-F5), latencias notables y cache invalidation ad-hoc se vuelven dolor. Migración Postgres → Redis a mitad del proyecto cuesta más que adoptarlo ahora.
 
-### B: Redis ahora (elegida)
+### B. Redis ahora (elegida)
 
 Un container más + lib + ADR. Ese costo único habilita los seis casos de uso de la tabla sin reabrir la decisión cada vez. Operacionalmente es trivial en dev (Podman lo levanta como Postgres). En producción es una pieza más para monitorear, pero simple comparado con un broker o un search engine.
 
-### C: In-memory dentro del proceso del backend (rechazada)
+### C. In-memory dentro del proceso del backend (rechazada)
 
 `IMemoryCache` para cache, dictionary in-memory para refresh tokens revocados. Ventaja: cero infra. Desventaja: no sobrevive restarts, no escala horizontal (cada réplica tiene su propia memoria, refresh revocado en una no se ve en otra). Para refresh tokens significa invalidar todas las sesiones en cada deploy. Inviable.
 

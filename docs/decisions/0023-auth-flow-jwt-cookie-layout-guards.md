@@ -1,4 +1,4 @@
-# ADR-0023: Auth flow: JWT en cookie httpOnly + guards en layouts RSC
+# ADR-0023: Auth flow (JWT en cookie httpOnly + guards en layouts RSC)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23

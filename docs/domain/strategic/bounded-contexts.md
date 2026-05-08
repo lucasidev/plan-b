@@ -1,4 +1,4 @@
-# Bounded Contexts: planb
+# Bounded Contexts (planb)
 
 Seis BCs definen el modelo de dominio. Cada uno tiene **lenguaje propio** (un mismo término puede significar cosas distintas en BCs distintos), **decisiones que lo gobiernan**, y un **contract con otros BCs** explícito.
 
