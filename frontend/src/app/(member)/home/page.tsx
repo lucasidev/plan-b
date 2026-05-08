@@ -2,20 +2,26 @@ import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Lede } from '@/components/ui/lede';
 import { CurrentSubjectsCard } from '@/features/home/components/current-subjects-card';
+import { MovementsCard } from '@/features/home/components/movements-card';
+import { NextPeriodCard } from '@/features/home/components/next-period-card';
+import { PendingReviewsCard } from '@/features/home/components/pending-reviews-card';
 import { PeriodProgressCard } from '@/features/home/components/period-progress-card';
 import { UpcomingSubjectsCard } from '@/features/home/components/upcoming-subjects-card';
 import { activeSubjects } from '@/features/home/data/active-subjects';
+import { movements } from '@/features/home/data/movements';
 import { currentPeriod } from '@/features/home/data/period';
+import { pendingReviews } from '@/features/home/data/to-review';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
 
 /**
- * Home v2 (US-044). Port literal del mock
+ * Home v2 (US-044, completa). Port literal del mock
  * `docs/design/reference/canvas-mocks/v2-screens.jsx::V2Inicio`.
  *
- * Estado: shell (US-044-a) + columna izquierda (US-044-b). La columna
- * derecha (Reseñá + Pensando en lo que viene + Movimientos) aterriza en
- * US-044-c y se inserta en el `<aside>` reservado.
+ * Estructura: header (eyebrow + greeting + subtitle stats) + período
+ * progress card + grid 2-col (En curso + Más adelante a la izquierda;
+ * Reseñá lo que cursaste + Pensando en lo que viene + Movimientos a la
+ * derecha).
  *
  * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user
  * no tiene StudentProfile (US-037-f). Esta página asume sesión + profile
@@ -50,12 +56,11 @@ export default async function HomePage() {
           <UpcomingSubjectsCard subjects={futuras} />
         </div>
 
-        {/*
-          TODO(US-044-c): columna derecha con PendingReviewsCard +
-          NextPeriodCard + MovementsCard. Hasta que aterrice, el grid
-          mantiene el ratio 1.55fr/1fr y la columna derecha queda vacía.
-        */}
-        <aside aria-label="Pendientes y actividad reciente" className="flex flex-col gap-[14px]" />
+        <aside aria-label="Pendientes y actividad reciente" className="flex flex-col gap-[14px]">
+          <PendingReviewsCard reviews={pendingReviews} year={currentPeriod.year} />
+          <NextPeriodCard nextYear={currentPeriod.year + 1} />
+          <MovementsCard movements={movements} />
+        </aside>
       </section>
     </div>
   );
