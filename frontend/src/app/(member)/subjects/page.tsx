@@ -1,11 +1,9 @@
-import { ComingSoon } from '@/components/ui';
+import { redirect } from 'next/navigation';
 
-export default function SubjectsPage() {
-  return (
-    <ComingSoon
-      section="Materias"
-      futureUs="US-002"
-      description="Catálogo de materias con sus reseñas, dificultad, tasa de aprobación y links a docentes. Aterriza con la vista de materia (US-002)."
-    />
-  );
+/**
+ * Legacy redirect: `/subjects` se consolidó en `/mi-carrera?tab=catalogo`
+ * (US-045-a). Mantenemos la ruta para no romper bookmarks.
+ */
+export default function SubjectsRedirect() {
+  redirect('/mi-carrera?tab=catalogo');
 }
