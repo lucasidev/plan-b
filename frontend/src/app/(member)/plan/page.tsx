@@ -1,11 +1,10 @@
-import { ComingSoon } from '@/components/ui';
+import { redirect } from 'next/navigation';
 
-export default function PlanPage() {
-  return (
-    <ComingSoon
-      section="Plan de estudios"
-      futureUs="US-001"
-      description="Acá vas a ver tu plan de carrera con las materias agrupadas por año, las correlativas, y el progreso sobre tu historial. Cuando aterrice el catálogo público (US-001), esta sección lo muestra scopeado a vos."
-    />
-  );
+/**
+ * Legacy redirect: `/plan` se consolidó en `/mi-carrera?tab=plan` (US-045-a).
+ * Mantenemos la ruta para no romper bookmarks. Cuando confirmemos que no
+ * hay tráfico residual, borramos este file.
+ */
+export default function PlanRedirect() {
+  redirect('/mi-carrera?tab=plan');
 }
