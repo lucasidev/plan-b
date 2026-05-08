@@ -32,6 +32,25 @@ Formato de cada entrada:
 
 ---
 
+## 2026-05-08 · Splittear una US sin releer el mock visual
+
+**Síntoma**: PR #82 abrió docs de slices (US-044-a/b/c) describiendo una UI distinta a la del canvas mock de origen (`v2-screens.jsx::V2Inicio`). Los slices hablaban de "pregunta dominante + CTA accent + 3 bloques", el mock real tenía "greeting + stats subtitle + período progress card + grid 2-col (En curso/Más adelante · Reseñá/Planificar/Movimientos)". Drift detectado solo cuando arrancaba a codear US-044-a y se hizo evidente la mismatch al abrir el mock por primera vez en mucho.
+
+**Causa raíz**: redacté los AC de los slices desde el doc parent (US-044.md), no desde el mock. El doc parent había acumulado drift respecto al mock con el tiempo. La regla "diseño primero" la apliqué a la implementación, no al splitting. Splittear sin volver a la fuente visual significa propagar el drift a 3 archivos en vez de 1.
+
+**Fix original (2026-05-08)**: refactor de los 4 docs (parent + 3 slices) a la estructura literal del mock + sync de Notion (titles + descriptions de los 3 slice pages). Sumar al mismo PR antes del merge para no acumular deuda visible en main.
+
+**Postmortem ampliado (mismo día)**: el commit del fix se quedó local porque el PR #82 mergeó con solo 2 de sus 3 commits (el realinear se perdió en el rebase). Resultado: docs en main siguieron con la versión "pregunta dominante" mientras Notion ya estaba updateado a la versión del mock. Drift al revés (Notion correcto, repo incorrecto). Re-aplicado en PR posterior.
+
+**Prevención**:
+
+- Antes de redactar AC de un slice frontend, abrir el canvas mock referenciado y leerlo end-to-end. Si el parent doc tiene drift respecto al mock, fixearlo primero, después splitear.
+- "Diseño primero" no aplica solo a implementación; aplica a la **redacción de cualquier doc que describa una UI**. El parent doc, los slices, las descriptions de Notion, todo se redacta desde el mock.
+- Cuando se cita un mock como source of truth en un doc (ej. `Mockup: v2-screens.jsx::V2Inicio`), hay que abrir y leer el mock antes de escribir AC.
+- Cuando un PR está cerca de mergear y se acaban de pushear commits nuevos, refrescar la página del PR en GitHub antes de tocar Merge: el botón puede estar mostrando el estado del primer push, no el del último. El que mergea verifica que el HEAD del PR es el HEAD del branch local antes de confirmar.
+
+---
+
 ## 2026-05-08 · CI estándar verde no implica E2E verde
 
 **Síntoma**: PRs mergearon a main con `CI ✅` pero al push a main el workflow `E2E (Playwright)` corrió y falló. Específicamente, los specs `forgot-password`, `route-guards`, `sign-in`, `sign-out`, `sign-up` rompieron post-merge desde US-037-f hasta US-038-f (cuatro PRs seguidos).
