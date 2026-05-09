@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - backend de delete account (US-038-b) (identity) — [`e33deda`](https://github.com/lucasidev/plan-b/commit/e33deda463fc4df782aa6b22a77de7864793205f)
 - frontend del delete account (US-038-f) (delete-account) — [`b3a4ff1`](https://github.com/lucasidev/plan-b/commit/b3a4ff18fe94a94608f046f53d5adc1b2d46edd3)
 - shell + nav de 5 tabs (US-045-a) (mi-carrera) — [`ea03a06`](https://github.com/lucasidev/plan-b/commit/ea03a0650f9125b7b46cd5d760deb221a5aadf6d)
+- shell v2 con greeting + período progress card (US-044-a) (home) — [`c172cb7`](https://github.com/lucasidev/plan-b/commit/c172cb7a4e23765df88ec001a725774f2ab23e28)
+- columna izq con En curso + Más adelante (US-044-b) (home) — [`3ac53a4`](https://github.com/lucasidev/plan-b/commit/3ac53a47045bde997cbd8056effbd2ea3e38e092)
+- columna der con Reseñá + Planificar + Movimientos (US-044-c) (home) — [`ce187bd`](https://github.com/lucasidev/plan-b/commit/ce187bd408e6dbd268edbdb74a622a1191395153)
 
 ### Fixed
 
