@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - convertir link a US-005.md (no existe) en texto plano (docs) — [`bfbb254`](https://github.com/lucasidev/plan-b/commit/bfbb25490fbeff08b6fa0370a29e56e390746454)
 - just frontend-test-e2e-show roto en Windows pwsh (devx) — [`aecf1b3`](https://github.com/lucasidev/plan-b/commit/aecf1b3bb5a26c9d25e835d1e3dcc6cfdc00d774)
 - hook e2e-zone usa --headed + single source of truth (devx) — [`7910751`](https://github.com/lucasidev/plan-b/commit/7910751b9f5e981a3635fa4d204df2ecdfebe156)
+- paths relativos a screenshots desde docs/domain/user-stories/ (docs) — [`2347b03`](https://github.com/lucasidev/plan-b/commit/2347b030b78c0d9bf47a37966a17c3cc48dbd65c)
+- sign-up chain espera /onboarding/welcome (no /home) post US-037-f (e2e) — [`1a4fa31`](https://github.com/lucasidev/plan-b/commit/1a4fa31e1068e57d4bf9b8dfed7790357de23a1e)
 
 ### Changed
 
