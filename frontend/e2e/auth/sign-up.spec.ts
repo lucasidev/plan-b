@@ -39,7 +39,7 @@ async function disableUserByEmail(email: string): Promise<void> {
 }
 
 test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)', () => {
-  test('alumno nuevo se registra, verifica el mail y entra a /home', async ({ page }) => {
+  test('alumno nuevo se registra, verifica el mail y aterriza en onboarding', async ({ page }) => {
     const email = uniqueEmail('e2e-signup');
     const password = 'e2e-test-pw-1234';
 
@@ -71,11 +71,15 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: /buenas de nuevo/i })).toBeVisible();
 
-    // 7. Login con la cuenta recién creada → /home
+    // 7. Login con la cuenta recién creada. Guard de (member) lo manda a
+    //    /onboarding/welcome porque el alumno todavía no tiene StudentProfile
+    //    (US-037-f). El flow completo de onboarding hasta /home queda
+    //    cubierto por `onboarding.spec.ts`; este spec verifica solo el chain
+    //    sign-up → verify → sign-in.
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/onboarding\/welcome$/, { timeout: 15_000 });
 
     // Cleanup defensivo. No rompe si el endpoint de delete no existe.
     await disableUserByEmail(email);
