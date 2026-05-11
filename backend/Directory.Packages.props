@@ -15,10 +15,10 @@
 
   <ItemGroup Label="Endpoints / Messaging">
     <PackageVersion Include="Carter" Version="10.0.0" />
-    <PackageVersion Include="WolverineFx" Version="5.37.2" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.37.2" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.37.2" />
-    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.37.2" />
+    <PackageVersion Include="WolverineFx" Version="5.39.0" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.39.0" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.39.0" />
+    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.39.0" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
   </ItemGroup>
@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Auth / Crypto">
-    <PackageVersion Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageVersion Include="BCrypt.Net-Next" Version="4.2.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
     <!-- Pinned to override CVE-vulnerable 9.0.0 brought in by transitive deps.
          See GHSA-37gx-xxp4-5rgx and GHSA-w3x6-4m5h-cxqf. -->
