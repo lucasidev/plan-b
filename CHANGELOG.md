@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - hook e2e-zone usa --headed + single source of truth (devx) — [`7910751`](https://github.com/lucasidev/plan-b/commit/7910751b9f5e981a3635fa4d204df2ecdfebe156)
 - paths relativos a screenshots desde docs/domain/user-stories/ (docs) — [`2347b03`](https://github.com/lucasidev/plan-b/commit/2347b030b78c0d9bf47a37966a17c3cc48dbd65c)
 - sign-up chain espera /onboarding/welcome (no /home) post US-037-f (e2e) — [`1a4fa31`](https://github.com/lucasidev/plan-b/commit/1a4fa31e1068e57d4bf9b8dfed7790357de23a1e)
+- broken links a US/capturas que aterrizan en PR del backoffice (docs) — [`294b604`](https://github.com/lucasidev/plan-b/commit/294b60421753daefd16688e388eed02936e3f0f7)
 
 ### Changed
 
