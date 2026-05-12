@@ -493,7 +493,7 @@ function V2Sobre() {
     <V2Shell active="sobre"
       pageEyebrow="Sobre plan-b"
       pageTitle="Estamos haciendo la app que nos hubiera gustado tener."
-      pageSub="plan-b es una herramienta de planificación académica hecha por estudiantes de la UNSTA, para estudiantes."
+      pageSub="plan-b es una herramienta de planificación académica hecha por estudiantes, para estudiantes."
     >
       <div style={{display:'grid', gridTemplateColumns:'1fr 320px', gap:18}}>
         <div style={{display:'flex', flexDirection:'column', gap:14}}>
@@ -514,8 +514,8 @@ function V2Sobre() {
               apuesta.
             </p>
             <p style={{fontSize:13.5, color:'var(--ink-3)', lineHeight:1.6, margin:0, fontStyle:'italic'}}>
-              No estamos afiliados a la UNSTA. Es una herramienta independiente, hecha
-              por alumnos en sus ratos libres.
+              No estamos afiliados oficialmente a ninguna universidad. Es una herramienta independiente, hecha
+              por alumnos en sus ratos libres. Cada facu que sumamos la cargamos nosotros.
             </p>
           </div>
 

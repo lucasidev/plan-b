@@ -2,15 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
-<title>plan-b — direcciones</title>
+<title>plan-b — app del alumno</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 <link rel="stylesheet" href="canvas-tokens.css"/>
-<style>
-  body { margin:0; font-family:'Geist', system-ui, sans-serif; }
-</style>
+<style>body { margin:0; font-family:'Geist', system-ui, sans-serif; }</style>
 </head>
 <body>
 <div id="root"></div>
@@ -19,8 +17,6 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script type="text/babel" src="design-canvas.jsx"></script>
-<script type="text/babel" src="canvas-mocks/design-system.jsx"></script>
-<script type="text/babel" src="canvas-mocks/landing.jsx"></script>
 <script type="text/babel" src="canvas-mocks/auth.jsx"></script>
 <script type="text/babel" src="canvas-mocks/onboarding.jsx"></script>
 <script type="text/babel" src="canvas-mocks/main.jsx"></script>
@@ -29,33 +25,28 @@
 <script type="text/babel" src="canvas-mocks/v2-screens-2.jsx"></script>
 <script type="text/babel" src="canvas-mocks/v2-screens-3.jsx"></script>
 <script type="text/babel" src="canvas-mocks/v2-screens-4.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-screens-5.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-empty.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-errors.jsx"></script>
+<script type="text/babel" src="canvas-mocks/v2-modals.jsx"></script>
 
 <script type="text/babel">
-
 const W = 1200, H = 750;
 
 function App() {
   return (
     <DesignCanvas>
-      <DCSection id="ds" title="⓪ Design System"
-        subtitle="Sistema visual del proyecto. Tokens, tipografía, componentes y patrones — la fuente única.">
-        <DCArtboard id="ds-main" label="Sistema visual" width={1280} height={900}><DesignSystem/></DCArtboard>
-      </DCSection>
-
-      <DCSection id="landing" title="① Landing"
-        subtitle="La venta. Un alumno que llega por primera vez. Separada de auth a propósito.">
-        <DCArtboard id="lp" label="plan-b.com.ar" width={1440} height={2400}><Landing/></DCArtboard>
-      </DCSection>
-
-      <DCSection id="auth" title="② Auth"
+      <DCSection id="auth" title="① Auth"
         subtitle="Trámite. Centradas, mínimas, mismo contrato visual entre las 4. Sin venta.">
         <DCArtboard id="signup"     label="Crear cuenta"           width={W} height={H}><SignupView/></DCArtboard>
+        <DCArtboard id="signup-err" label="Crear cuenta · email duplicado" width={W} height={H}><SignupErrorView/></DCArtboard>
         <DCArtboard id="login"      label="Ingresar"               width={W} height={H}><LoginView/></DCArtboard>
+        <DCArtboard id="login-err"  label="Ingresar · credenciales inválidas" width={W} height={H}><LoginErrorView/></DCArtboard>
         <DCArtboard id="forgot"     label="Recuperar contraseña"   width={W} height={H}><ForgotView/></DCArtboard>
         <DCArtboard id="forgot-ok"  label="Link enviado"            width={W} height={H}><ForgotSentView/></DCArtboard>
       </DCSection>
 
-      <DCSection id="onb" title="③ Onboarding"
+      <DCSection id="onb" title="② Onboarding"
         subtitle="Primer ingreso. Cargamos carrera + historial. Después de esto el alumno aterriza en Inicio.">
         <DCArtboard id="welcome" label="01 · Bienvenida"   width={W} height={H}><OnbWelcome/></DCArtboard>
         <DCArtboard id="career"  label="02 · Carrera"      width={W} height={H}><OnbCareer/></DCArtboard>
@@ -63,12 +54,16 @@ function App() {
         <DCArtboard id="done"    label="04 · Listo"        width={W} height={H}><OnbDone/></DCArtboard>
       </DCSection>
 
-      <DCSection id="home" title="④ Inicio"
-        subtitle="Hub del alumno. Estado del cuatrimestre + acceso a las acciones recurrentes.">
+      <DCSection id="home" title="③ Inicio"
+        subtitle="Hub del alumno. Estado del cuatrimestre + acceso a las acciones recurrentes. Acá también caen los errores a nivel shell — la URL no existe, el servidor se cayó, no hay red.">
         <DCArtboard id="v2-inicio" label="Inicio" width={W} height={H}><V2Inicio/></DCArtboard>
+        <DCArtboard id="v2-inicio-empty" label="Inicio · vacío (alumno nuevo)" width={W} height={H}><V2InicioVacio/></DCArtboard>
+        <DCArtboard id="v2-inicio-offline" label="Inicio · sin conexión" width={W} height={H}><V2OfflineBanner/></DCArtboard>
+        <DCArtboard id="v2-err-404" label="404 · No encontrado" width={W} height={H}><V2Error404/></DCArtboard>
+        <DCArtboard id="v2-err-5xx" label="500 · Algo se rompió" width={W} height={H}><V2Error5xx/></DCArtboard>
       </DCSection>
 
-      <DCSection id="plan" title="⑤ Mi carrera"
+      <DCSection id="plan" title="④ Mi carrera"
         subtitle="El núcleo académico del alumno: plan, correlativas, catálogo de materias y docentes, historial. Una sola sección con tabs.">
         <DCArtboard id="v2-carrera-p" label="Plan de estudios"  width={W} height={H}><V2MiCarrera tab="plan"/></DCArtboard>
         <DCArtboard id="v2-carrera-g" label="Correlativas (grafo)" width={W} height={H}><V2MiCarrera tab="grafo"/></DCArtboard>
@@ -79,34 +74,50 @@ function App() {
         <DCArtboard id="v2-carrera-h" label="Historial académico" width={W} height={H}><V2MiCarrera tab="historial"/></DCArtboard>
       </DCSection>
 
-      <DCSection id="sim" title="⑥ Planificar"
+      <DCSection id="sim" title="⑤ Planificar"
         subtitle="Armado de cuatrimestre. En curso (lo que estás cursando ahora) + Borradores (próximos períodos).">
         <DCArtboard id="v2-plan-curso"  label="En curso"            width={W} height={H}><V2Planificar tab="curso"/></DCArtboard>
         <DCArtboard id="v2-plan-borr"   label="Borrador 2027·1c"    width={W} height={H}><V2Planificar tab="borrador1"/></DCArtboard>
+        <DCArtboard id="v2-plan-empty"  label="Planificar · sin borradores" width={W} height={H}><V2PlanificarVacio/></DCArtboard>
+        <DCArtboard id="v2-modal-publicar" label="Modal · publicar plan del cuatri" width={W} height={H}><V2ModalPublicarPlan/></DCArtboard>
+        <DCArtboard id="v2-modal-descartar" label="Modal · descartar borrador" width={W} height={H}><V2ModalDescartarBorrador/></DCArtboard>
       </DCSection>
 
-      <DCSection id="resenas" title="⑦ Reseñas"
+      <DCSection id="resenas" title="⑥ Reseñas"
         subtitle="Lo que el alumno escribe sobre lo que cursó. Anónimas hacia afuera, editables para uno mismo. Una reseña por cursada — califica materia + docente + comisión + cuatri en una sola.">
         <DCArtboard id="v2-resenas-l" label="Explorar"      width={W} height={H}><V2Resenas tab="leer"/></DCArtboard>
         <DCArtboard id="v2-resenas-e" label="Pendientes"    width={W} height={H}><V2Resenas tab="escribir"/></DCArtboard>
+        <DCArtboard id="v2-resenas-e-empty" label="Pendientes · al día" width={W} height={H}><V2ResenasPendientesVacio/></DCArtboard>
         <DCArtboard id="v2-resenas-m" label="Mis reseñas"   width={W} height={H}><V2Resenas tab="mias"/></DCArtboard>
+        <DCArtboard id="v2-resenas-m-empty" label="Mis reseñas · primera vez" width={W} height={H}><V2MisResenasVacio/></DCArtboard>
         <DCArtboard id="v2-resenas-edit" label="Editor de reseña" width={W} height={1100}><V2EditorResena/></DCArtboard>
+        <DCArtboard id="v2-modal-borrar" label="Modal · borrar reseña" width={W} height={H}><V2ModalBorrarResena/></DCArtboard>
+        <DCArtboard id="v2-modal-reportar" label="Modal · reportar reseña" width={W} height={H}><V2ModalReportar/></DCArtboard>
       </DCSection>
 
-      <DCSection id="rankings" title="⑧ Rankings"
+      <DCSection id="rankings" title="⑦ Rankings"
         subtitle="Top docentes / materias / comisiones según los datos agregados de la comunidad.">
         <DCArtboard id="v2-rankings" label="Rankings" width={W} height={H}><V2Rankings/></DCArtboard>
       </DCSection>
 
-      <DCSection id="busqueda" title="⑨ Búsqueda global"
+      <DCSection id="busqueda" title="⑧ Búsqueda global"
         subtitle="Dropdown desde el topbar — busca materias, docentes y comisiones, con resaltado del query y atajos de teclado.">
         <DCArtboard id="v2-buscar" label="Búsqueda · dropdown abierto" width={W} height={H}><V2Buscar/></DCArtboard>
+        <DCArtboard id="v2-buscar-empty" label="Búsqueda · sin resultados" width={W} height={H}><V2BusquedaVacia/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="notificaciones" title="⑨ Notificaciones"
+        subtitle="Panel anclado al bell del topbar. Tipos: utilidad, respuestas de docentes, nuevas reseñas en lo que seguís, recordatorios, cambios de plan, sistema.">
+        <DCArtboard id="v2-notif" label="Notificaciones · panel abierto" width={W} height={H}><V2Notif/></DCArtboard>
+        <DCArtboard id="v2-notif-empty" label="Notificaciones · al día" width={W} height={H}><V2NotifVacio/></DCArtboard>
       </DCSection>
 
       <DCSection id="cuenta" title="⑩ Cuenta"
         subtitle="Mi perfil (identidad) + Ajustes (cómo se comporta la app). Mi perfil se abre desde el menú del avatar.">
         <DCArtboard id="v2-perfil"  label="Mi perfil" width={W} height={H}><V2Perfil/></DCArtboard>
         <DCArtboard id="v2-ajustes" label="Ajustes"   width={W} height={H}><V2Ajustes/></DCArtboard>
+        <DCArtboard id="v2-modal-pass" label="Modal · cambiar contraseña" width={W} height={H}><V2ModalCambiarContrasena/></DCArtboard>
+        <DCArtboard id="v2-modal-logout" label="Modal · cerrar sesión" width={W} height={H}><V2ModalCerrarSesion/></DCArtboard>
       </DCSection>
 
       <DCSection id="soporte" title="⑪ Soporte"
@@ -117,7 +128,6 @@ function App() {
     </DesignCanvas>
   );
 }
-
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>

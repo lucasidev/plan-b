@@ -1,8 +1,13 @@
 {
-  "generatedAt": "2026-05-08T21:11:47.325Z",
-  "source": "docs/design/reference/plan-b-direcciones.html",
+  "generatedAt": "2026-05-12T22:21:43.814Z",
+  "sources": [
+    "docs/design/reference/plan-b-design-system.html",
+    "docs/design/reference/plan-b-landing.html",
+    "docs/design/reference/plan-b-app.html"
+  ],
   "artboards": [
     {
+      "canvas": "ds",
       "section": "ds",
       "id": "ds-main",
       "label": "Sistema visual",
@@ -12,6 +17,7 @@
       "ok": true
     },
     {
+      "canvas": "landing",
       "section": "landing",
       "id": "lp",
       "label": "plan-b.com.ar",
@@ -21,6 +27,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "auth",
       "id": "signup",
       "label": "Crear cuenta",
@@ -30,6 +37,17 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "auth",
+      "id": "signup-err",
+      "label": "Crear cuenta · email duplicado",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-signup-err.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "auth",
       "id": "login",
       "label": "Ingresar",
@@ -39,6 +57,17 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "auth",
+      "id": "login-err",
+      "label": "Ingresar · credenciales inválidas",
+      "width": 1200,
+      "height": 750,
+      "file": "auth-login-err.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "auth",
       "id": "forgot",
       "label": "Recuperar contraseña",
@@ -48,6 +77,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "auth",
       "id": "forgot-ok",
       "label": "Link enviado",
@@ -57,6 +87,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "onb",
       "id": "welcome",
       "label": "01 · Bienvenida",
@@ -66,6 +97,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "onb",
       "id": "career",
       "label": "02 · Carrera",
@@ -75,6 +107,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "onb",
       "id": "history",
       "label": "03 · Historial",
@@ -84,6 +117,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "onb",
       "id": "done",
       "label": "04 · Listo",
@@ -93,6 +127,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "home",
       "id": "v2-inicio",
       "label": "Inicio",
@@ -102,6 +137,47 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "home",
+      "id": "v2-inicio-empty",
+      "label": "Inicio · vacío (alumno nuevo)",
+      "width": 1200,
+      "height": 750,
+      "file": "home-v2-inicio-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "home",
+      "id": "v2-inicio-offline",
+      "label": "Inicio · sin conexión",
+      "width": 1200,
+      "height": 750,
+      "file": "home-v2-inicio-offline.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "home",
+      "id": "v2-err-404",
+      "label": "404 · No encontrado",
+      "width": 1200,
+      "height": 750,
+      "file": "home-v2-err-404.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "home",
+      "id": "v2-err-5xx",
+      "label": "500 · Algo se rompió",
+      "width": 1200,
+      "height": 750,
+      "file": "home-v2-err-5xx.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-carrera-p",
       "label": "Plan de estudios",
@@ -111,6 +187,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-carrera-g",
       "label": "Correlativas (grafo)",
@@ -120,6 +197,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-carrera-c",
       "label": "Catálogo de materias",
@@ -129,6 +207,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-mat-detail",
       "label": "Materia · detalle",
@@ -138,6 +217,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-carrera-d",
       "label": "Docentes",
@@ -147,6 +227,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-doc-detail",
       "label": "Docente · detalle",
@@ -156,6 +237,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "plan",
       "id": "v2-carrera-h",
       "label": "Historial académico",
@@ -165,6 +247,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "sim",
       "id": "v2-plan-curso",
       "label": "En curso",
@@ -174,6 +257,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "sim",
       "id": "v2-plan-borr",
       "label": "Borrador 2027·1c",
@@ -183,6 +267,37 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "sim",
+      "id": "v2-plan-empty",
+      "label": "Planificar · sin borradores",
+      "width": 1200,
+      "height": 750,
+      "file": "sim-v2-plan-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "sim",
+      "id": "v2-modal-publicar",
+      "label": "Modal · publicar plan del cuatri",
+      "width": 1200,
+      "height": 750,
+      "file": "sim-v2-modal-publicar.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "sim",
+      "id": "v2-modal-descartar",
+      "label": "Modal · descartar borrador",
+      "width": 1200,
+      "height": 750,
+      "file": "sim-v2-modal-descartar.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "resenas",
       "id": "v2-resenas-l",
       "label": "Explorar",
@@ -192,6 +307,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "resenas",
       "id": "v2-resenas-e",
       "label": "Pendientes",
@@ -201,6 +317,17 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "resenas",
+      "id": "v2-resenas-e-empty",
+      "label": "Pendientes · al día",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-resenas-e-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "resenas",
       "id": "v2-resenas-m",
       "label": "Mis reseñas",
@@ -210,6 +337,17 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "resenas",
+      "id": "v2-resenas-m-empty",
+      "label": "Mis reseñas · primera vez",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-resenas-m-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "resenas",
       "id": "v2-resenas-edit",
       "label": "Editor de reseña",
@@ -219,6 +357,27 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "resenas",
+      "id": "v2-modal-borrar",
+      "label": "Modal · borrar reseña",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-modal-borrar.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "resenas",
+      "id": "v2-modal-reportar",
+      "label": "Modal · reportar reseña",
+      "width": 1200,
+      "height": 750,
+      "file": "resenas-v2-modal-reportar.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "rankings",
       "id": "v2-rankings",
       "label": "Rankings",
@@ -228,6 +387,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "busqueda",
       "id": "v2-buscar",
       "label": "Búsqueda · dropdown abierto",
@@ -237,6 +397,37 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "busqueda",
+      "id": "v2-buscar-empty",
+      "label": "Búsqueda · sin resultados",
+      "width": 1200,
+      "height": 750,
+      "file": "busqueda-v2-buscar-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "notificaciones",
+      "id": "v2-notif",
+      "label": "Notificaciones · panel abierto",
+      "width": 1200,
+      "height": 750,
+      "file": "notificaciones-v2-notif.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "notificaciones",
+      "id": "v2-notif-empty",
+      "label": "Notificaciones · al día",
+      "width": 1200,
+      "height": 750,
+      "file": "notificaciones-v2-notif-empty.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "cuenta",
       "id": "v2-perfil",
       "label": "Mi perfil",
@@ -246,6 +437,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "cuenta",
       "id": "v2-ajustes",
       "label": "Ajustes",
@@ -255,6 +447,27 @@
       "ok": true
     },
     {
+      "canvas": "app",
+      "section": "cuenta",
+      "id": "v2-modal-pass",
+      "label": "Modal · cambiar contraseña",
+      "width": 1200,
+      "height": 750,
+      "file": "cuenta-v2-modal-pass.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
+      "section": "cuenta",
+      "id": "v2-modal-logout",
+      "label": "Modal · cerrar sesión",
+      "width": 1200,
+      "height": 750,
+      "file": "cuenta-v2-modal-logout.png",
+      "ok": true
+    },
+    {
+      "canvas": "app",
       "section": "soporte",
       "id": "v2-ayuda",
       "label": "Ayuda",
@@ -264,6 +477,7 @@
       "ok": true
     },
     {
+      "canvas": "app",
       "section": "soporte",
       "id": "v2-sobre",
       "label": "Sobre plan-b",
