@@ -2,7 +2,7 @@
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-05-03.
+**Última actualización**: 2026-05-09 (audit canvas v3 app/landing/design-system: 48 artboards en 3 HTMLs; el módulo backoffice admin con sus 21 artboards y módulo propio aterriza en PR siguiente).
 
 ---
 
@@ -12,10 +12,9 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
-| S2 | próximo | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell (stub data) | ⏳ Pendiente |
-| S3 | next | Planificar shell + Mi perfil + self-disable | ⏳ Pendiente |
-| S4 | next+1 | Reseñas (shell + editor) + Rankings | ⏳ Pendiente |
-| S5 | next+2 | Búsqueda global + Ajustes + Soporte (Ayuda + Sobre plan-b) | ⏳ Pendiente |
+| S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 app/landing/design-system + rediseño app (12 US nuevas para la app del alumno) | ✓ Done |
+| S3 | próximo | TBD (foco a definir en planning) | ⏳ Pendiente |
+| S4+ | next+ | Backlog post-S3 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074) sin asignación de sprint hasta planning | ⏳ Pendiente |
 
 Convenciones:
 
@@ -159,7 +158,9 @@ Todas Done al cierre del sprint.
 
 ---
 
-## S2 (próximo) ⏳ Pendiente
+## S2 ✓ Done
+
+**Rango**: 2026-05-03 a 2026-05-09 (sprint de 7 días, extendido al día 7 con audit canvas v3 + backlog grooming).
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
@@ -168,67 +169,115 @@ Todas Done al cierre del sprint.
 - [ADR-0040](decisions/0040-notifications-como-bounded-context.md): Notifications como BC nuevo.
 - [ADR-0041](decisions/0041-rediseño-ux-post-claude-design.md): Delta del rediseño + plan de migración.
 
-**Roadmap S2-S5 confirmado** (decisión 2026-05-03):
+### Scope cerrado en S2
 
-### Scope de S2
+- [US-037-f](domain/user-stories/US-037-f.md): **Onboarding frontend** 4 pasos (Bienvenida / Carrera / Historial / Listo). **Done.**
+- [US-044](domain/user-stories/US-044.md) + [US-044-a](domain/user-stories/US-044-a.md) + [US-044-b](domain/user-stories/US-044-b.md) + [US-044-c](domain/user-stories/US-044-c.md): **Inicio v2** port literal del mock V2Inicio. **Done.**
+- [US-045-a](domain/user-stories/US-045-a.md): **Mi carrera shell + 5 tabs** con stubs. **Done.**
+- **DevEx**: pre-push hook que enforce E2E local cuando se tocan paths de la "E2E zone" (`scripts/check-e2e-zone.ts` + auto-label workflow). PR #87 merged.
+- **Design pipeline**: canvas screenshots auto-generados via Playwright sobre `plan-b-direcciones.html`, embed en US frontend como mockup ref, doc canónico [`docs/design/design-system.md`](design/design-system.md). PR #90 merged.
+- **Em-dash audit**: 210 docs sweep + auditoría manual de 73 files (titles, headings, comentarios) post regla absoluta.
+- **Audit canvas v3 app/landing/design-system + rediseño app (día 7, 2026-05-09)**:
+  - Sync del canvas v2 con 3 HTMLs (design-system / landing / app) + 48 artboards totales. Pipeline de screenshots reescrita para iterar multi-HTML. El canvas admin/backoffice + sus 21 artboards aterrizan en PR siguiente.
+  - **12 US nuevas creadas para la app del alumno**: US-054-f (landing), US-055 (borrar reseña), US-059-f (rediseño Auth+Onb), US-076-f (offline banner), US-077-f (panel notifs frontend), US-077-b + b-1/-b-2/-b-3 (Notifications BC backend splitada), US-078-f (errores 404/5xx), US-079-i (cambio password integrated), US-085 (strike system + pedir edición al autor, extiende US-051).
+  - **15 US existentes actualizadas** con mockup refs + AC visual del canvas v3 (auth, onb, home, mi-carrera, planificar, reseñas, rankings, búsqueda, notif, cuenta, soporte).
+  - **3 decisiones de scope zanjadas** en el rediseño app: US-051 scope (→ split a US-085 con strike system + pedir edición), US-072 modal cambiar contraseña (→ split a US-079-i integrated siguiendo patrón US-029-i / US-033-i), US-077-b backend de notifications (→ full BC siguiendo ADR-0040, splitado en 3 sub-slices b-1 / b-2 / b-3).
 
-- [US-036](domain/user-stories/US-036.md): **Auth rebuild** a 4 rutas separadas (Signup / Login / Forgot / ForgotSent).
-- [US-037](domain/user-stories/US-037.md): **Onboarding** 4 pasos (Bienvenida / Carrera / Historial / Listo).
-- [US-044](domain/user-stories/US-044.md): **Inicio v2** con pregunta dominante.
-- [US-045](domain/user-stories/US-045.md): **Mi carrera shell** + 5 tabs con stub data. Backend de catálogo (Academic CRUD) queda como deuda diferida; se decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
+### Audit del estado del frontend vs canvas (2026-05-09 v3)
+
+Tercera iteración del canvas: ahora se splitea en HTMLs por área. En este PR aterrizan 3 canvases (app del alumno + landing + design system: 48 artboards en `plan-b-design-system.html`, `plan-b-landing.html`, `plan-b-app.html`). El canvas admin/backoffice (21 artboards en 5 secciones: shell, afiliar uni, datos académicos, moderación, ops) aterriza en PR siguiente con su módulo propio.
+
+Reorganización del app canvas: ya no hay sección "Modales" ni "Errores globales" como separadas; los modales y errores ahora viven dentro de la sección a la que pertenecen (errores en Inicio, modales en Planificar / Reseñas / Cuenta).
+
+Audit 1-a-1 contra el código actual:
+
+| Bucket | Capturas | US distintas | Acción |
+|---|---|---|---|
+| `IMPL_OK` (matchea) | 2 | 1 (US-044) + DS transversal | Nada. |
+| `IMPL_DRIFT` (rediseño visual + estados de error) | 10 | 4 (US-010-f, US-028-f, US-033-i, US-037-f) | Cubierto por [US-059-f](domain/user-stories/US-059-f.md) (incluye AC nuevos para banners inline `AuthErrorBanner` en signup-err / login-err). |
+| `PENDIENTE_US_DOC` | 32 | 16 (mi-carrera b/c/d/e + US-046 + US-047 + US-048 + US-049 + US-054-f + US-059-f + US-070..074 + US-019) | Implementar; docs ya existen + AC nuevas de empty states / modales agregadas. |
+| `SIN_US` resuelto con US nuevas | 4 | 4 nuevas | Ver lista abajo. |
+
+**Total US a agregar al backlog post-audit (2026-05-09 v2)**: 4 nuevas + 7 existentes con AC nuevas + las 2 doc'd antes (US-054-f, US-059-f). 
+
+US nuevas creadas:
+- [US-055](domain/user-stories/US-055.md): Borrar reseña propia (action + modal destructivo). Cubre `modales-v2-modal-borrar`.
+- [US-076-f](domain/user-stories/US-076-f.md): Estado offline (banner global + acciones en pausa). Cubre `home-v2-inicio-offline`.
+- [US-077-f](domain/user-stories/US-077-f.md): Panel de notificaciones (dropdown del bell). Cubre `notificaciones-v2-notif` + `notificaciones-v2-notif-empty`. Pendiente crear US-077-b para el backend.
+- [US-078-f](domain/user-stories/US-078-f.md): Páginas de error globales (404 + 5xx). Cubre `errores-v2-err-404` + `errores-v2-err-5xx`.
+
+US existentes con AC nuevas:
+- [US-019](domain/user-stories/US-019.md): mockup ref del modal de reportar agregado.
+- [US-026](domain/user-stories/US-026.md): AC visual del modal descartar borrador.
+- [US-029-i](domain/user-stories/US-029-i.md): AC modal de confirmación antes del sign-out.
+- [US-044](domain/user-stories/US-044.md): AC empty state global del Inicio (alumno sin período).
+- [US-046](domain/user-stories/US-046.md): AC empty state Planificar + AC modal publicar plan.
+- [US-048](domain/user-stories/US-048.md): AC empty states de tabs Pendientes y Mis reseñas.
+- [US-072](domain/user-stories/US-072.md): AC sección Seguridad + modal cambiar contraseña con sesión activa (decisión pendiente: AC interno vs splittear US-079-i).
+- [US-059-f](domain/user-stories/US-059-f.md): AC banners de error inline en signup y login.
+
+### Definition of Done de S2 (verificación)
+
+- ✓ Lucía (verificada en S1) puede entrar a `/onboarding/welcome` y completar los 4 pasos hasta crear su StudentProfile.
+- ✓ Lucía con StudentProfile entra a `/home` y ve el Inicio v2 completo (greeting + período + 2 columnas con todos los bloques).
+- ✓ Lucía entra a `/mi-carrera` y ve el shell + 5 tabs (Plan / Correlativas / Catálogo / Docentes / Historial), todos como `ComingSoon` stubs.
+- ✓ El pre-push hook bloquea push cuando se tocan paths de E2E zone sin haber corrido E2E local; escape `SKIP_E2E_PRECHECK=1`.
+- ✓ Cada US frontend tiene mockup embed con la imagen del canvas correspondiente.
+
+### Retrospectiva corta
+
+**Salió mejor de lo esperado**:
+- Pipeline de canvas screenshots: 1 spec automatiza captura de 30 artboards. Reduce drift entre código y diseño.
+- US-044 port literal: el mock como fuente única funcionó perfecto. Cero ambigüedad.
+
+**Quedó débil**:
+- Auth + onboarding tienen drift visual con el canvas v2 (que cerró el 2026-05-02, después de implementar US-010-f / US-028-f / US-037-f en S1). Documentado en [US-059-f](domain/user-stories/US-059-f.md). No es bug, es deuda visual conocida.
+- "Regla declarada pero sin enforcement": antes del pre-push hook, hubo merges que pasaron CI gates pero rompieron E2E (caso US-037-f que dejó `sign-up.spec.ts` esperando `/home`). Ahora con el hook + auto-label + docs, las 3 capas del enforcement están alineadas.
 
 ---
 
 ## S3 ⏳ Pendiente
 
-**Foco**: Planificar (shell + 2 tabs En curso / Borrador) + identidad académica (Mi perfil + self-disable).
-
-### Scope de S3
-
-- [US-046](domain/user-stories/US-046.md): **Planificar shell** + 2 tabs (en curso / borrador) + nudge de promoción manual.
-- [US-047](domain/user-stories/US-047.md): **Mi perfil** (view + edit datos académicos + foto, accesible desde menú del avatar).
-- [US-075](domain/user-stories/US-075.md): **Member self-disable** (zona peligrosa de Mi perfil).
-
-**Dependencias diferidas**:
-- Backend de simulación (US-016): puede entrar en S3 si Planificar lo necesita, sino queda backlog hasta S4.
-- Backend de Academic CRUD: si no aterrizó en S2, parte del scope vive como stub en S3 también.
-
----
-
-## S4 ⏳ Pendiente
-
-**Foco**: el loop core del producto (reseñas + descubrimiento de señal del corpus).
-
-### Scope de S4
-
-- [US-017](domain/user-stories/US-017.md), [US-018](domain/user-stories/US-018.md), [US-019](domain/user-stories/US-019.md), [US-020](domain/user-stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
-- [US-048](domain/user-stories/US-048.md): **Reseñas shell** + 3 tabs (explorar / pendientes / mías).
-- [US-049](domain/user-stories/US-049.md): **Editor de reseña** 6 campos numerados con preview vivo.
-- [US-070](domain/user-stories/US-070.md): **Rankings** top 10 paginado (docentes / materias / comisiones).
-
----
-
-## S5 ⏳ Pendiente
-
-**Foco**: descubrimiento + cuenta + soporte. Cierra el set de pantallas del MVP.
-
-### Scope de S5
-
-- [US-071](domain/user-stories/US-071.md): **Búsqueda global** topbar dropdown (Meilisearch). Depende de [ADR-0039](decisions/0039-meilisearch-como-motor-de-búsqueda-global.md) operacional.
-- [US-072](domain/user-stories/US-072.md): **Ajustes** (notificaciones / privacidad / idioma / tema).
-- [US-073](domain/user-stories/US-073.md): **Ayuda** (FAQ + contacto soporte).
-- [US-074](domain/user-stories/US-074.md): **Sobre plan-b** (página informacional + créditos).
+Foco a definir en planning.
 
 ---
 
 ## Backlog open (sin sprint asignado)
 
-- US-001 a US-004 (catálogo público): aterrizan cuando Academic CRUD esté listo. Pueden arrancar paralelos a S2 si se prioriza.
-- US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera (US-045) en frontend; backend va aterrizar dentro o cerca de S2.
-- US-016 + US-023..027 (simulación + planificación-storage backend): aterrizan en torno a S3 si Planificar lo demanda.
-- US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero, sin sprint asignado todavía.
+**Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
+- [US-054-f](domain/user-stories/US-054-f.md) landing pública.
+- [US-055](domain/user-stories/US-055.md) borrar reseña propia (action + modal destructivo).
+- [US-059-f](domain/user-stories/US-059-f.md) auth + onboarding migración a AuthShell / OnbShell.
+- [US-045-b](domain/user-stories/US-045-b.md) / [-c](domain/user-stories/US-045-c.md) / [-d](domain/user-stories/US-045-d.md) / [-e](domain/user-stories/US-045-e.md) tabs de Mi carrera.
+- [US-046](domain/user-stories/US-046.md) Planificar shell + tabs + empty + modal publicar.
+- [US-047](domain/user-stories/US-047.md) Mi perfil.
+- [US-048](domain/user-stories/US-048.md) Reseñas shell + empty states.
+- [US-049](domain/user-stories/US-049.md) Editor de reseña 6 campos.
+- [US-070](domain/user-stories/US-070.md) Rankings.
+- [US-071](domain/user-stories/US-071.md) Búsqueda global (Meilisearch).
+- [US-072](domain/user-stories/US-072.md) Ajustes (UI: notificaciones / privacidad / apariencia / datos / row Seguridad que dispara modal de US-079-i).
+- [US-073](domain/user-stories/US-073.md) Ayuda.
+- [US-074](domain/user-stories/US-074.md) Sobre plan-b.
+- [US-075](domain/user-stories/US-075.md) Member self-disable.
+- [US-076-f](domain/user-stories/US-076-f.md) estado offline (banner global).
+- [US-077-f](domain/user-stories/US-077-f.md) panel de notificaciones (dropdown del bell).
+- [US-078-f](domain/user-stories/US-078-f.md) páginas de error globales (404 + 5xx).
+- [US-079-i](domain/user-stories/US-079-i.md) cambio de contraseña con sesión activa (integrated: endpoint `PATCH /api/me/password` + modal frontend). Patrón alineado a US-029-i / US-033-i.
+
+**Notifications BC (decisión 2026-05-09 sobre INDEFINIDO #5)**:
+- [US-077-b](domain/user-stories/US-077-b.md) parent: Notifications BC completo siguiendo ADR-0040. Splitada en 3 sub-slices secuenciales:
+  - [US-077-b-1](domain/user-stories/US-077-b-1.md): core aggregate + read API + mutations. Bloquea a US-077-f.
+  - [US-077-b-2](domain/user-stories/US-077-b-2.md): subscribers Wolverine cross-BC para events (UserPasswordChanged, ReviewEditRequested, ReviewResponded, etc.).
+  - [US-077-b-3](domain/user-stories/US-077-b-3.md): email delivery con SMTP genérico (Mailpit en dev/CI, vendor de prod por env vars en deploy).
+
+**Backend / cross-stack**:
+- US-001 a US-004 (catálogo público): aterrizan cuando Academic CRUD esté listo.
+- US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
+- US-016 + US-023..027 (simulación + planificación-storage backend): pendientes.
+- US-017 / US-018 / US-019 / US-020 (publicar / editar / reportar reseñas backend): pendientes.
+- US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero.
 - US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-068 (admin/mod disable), US-080 (dashboard institucional): backlog open.
-- Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera, sin sprint asignado.
+- Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
 
 ---
 

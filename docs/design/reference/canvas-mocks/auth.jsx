@@ -243,7 +243,7 @@ function SignupView() {
       stepName="Crear cuenta"
       leftPanel={<CarnetPreview/>}
       title="Empezá en 30 segundos"
-      sub="Validamos que seas alumno de UNSTA. Después, lo que escribas es anónimo."
+      sub="Validamos que seas alumno con tu email institucional. Después, lo que escribas es anónimo."
       foot={<>¿Ya tenés cuenta? <button type="button" className="linkbtn">Ingresá</button></>}
     >
       <form onSubmit={e=>e.preventDefault()}>
@@ -645,3 +645,169 @@ window.SignupView     = SignupView;
 window.LoginView      = LoginView;
 window.ForgotView     = ForgotView;
 window.ForgotSentView = ForgotSentView;
+
+// ════════════════════════════════════════════════════════════════
+// Estados de error de auth (variantes con error inline)
+// ════════════════════════════════════════════════════════════════
+
+function AuthErrorBanner({ title, body }) {
+  return (
+    <div style={{
+      display:'flex', gap:10, alignItems:'flex-start',
+      padding:'10px 12px',
+      background:'oklch(0.95 0.04 30)',
+      border:'1px solid oklch(0.78 0.12 30)',
+      borderRadius:8,
+      marginBottom:18,
+    }}>
+      <span aria-hidden="true" style={{
+        flexShrink:0, marginTop:1,
+        width:18, height:18, borderRadius:'50%',
+        background:'oklch(0.55 0.16 30)', color:'white',
+        display:'grid', placeItems:'center',
+        fontSize:11, fontWeight:700,
+        fontFamily:'var(--font-mono)',
+      }}>!</span>
+      <div style={{flex:1, minWidth:0}}>
+        <div style={{
+          fontSize:13, fontWeight:600,
+          color:'oklch(0.35 0.14 30)', lineHeight:1.35,
+        }}>{title}</div>
+        {body && <div style={{
+          fontSize:12, color:'oklch(0.42 0.10 30)',
+          marginTop:2, lineHeight:1.45,
+        }}>{body}</div>}
+      </div>
+    </div>
+  );
+}
+
+function LoginErrorView() {
+  return (
+    <AuthShell
+      stepCode="02"
+      stepName="Ingresar"
+      leftPanel={<LastActivityPanel/>}
+      title="Buenas de nuevo"
+      sub="Ingresá con la cuenta que usaste para registrarte."
+      foot={<>¿Sos nuevo? <button type="button" className="linkbtn">Creá tu cuenta</button></>}
+    >
+      <form onSubmit={e=>e.preventDefault()}>
+        <AuthErrorBanner
+          title="Email o contraseña incorrectos"
+          body="Revisá los datos. Si los olvidaste, te mandamos un link en 30 segundos."
+        />
+
+        <div className="field" style={{marginBottom:14}}>
+          <label>Email</label>
+          <input type="email" defaultValue="lucia.mansilla@unsta.edu.ar" autoComplete="email"
+            style={{borderColor:'oklch(0.78 0.12 30)'}}/>
+        </div>
+        <div className="field" style={{marginBottom:6}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'baseline'}}>
+            <label style={{margin:0}}>Contraseña</label>
+            <button type="button" className="linkbtn" style={{fontSize:11.5}}>
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+          <input type="password" defaultValue="••••••••" autoComplete="current-password"
+            style={{borderColor:'oklch(0.78 0.12 30)'}}/>
+          <div style={{
+            marginTop:6, fontSize:11.5,
+            color:'oklch(0.45 0.14 30)', display:'flex', alignItems:'center', gap:6,
+          }}>
+            <span style={{
+              width:12, height:12, borderRadius:'50%',
+              background:'oklch(0.78 0.12 30)', color:'white',
+              display:'grid', placeItems:'center', fontSize:9, fontWeight:700,
+              fontFamily:'var(--font-mono)',
+            }}>!</span>
+            Falló el último intento (hace unos segundos)
+          </div>
+        </div>
+
+        <label className="checkbox-row" style={{marginTop:14, marginBottom:18}}>
+          <input type="checkbox" defaultChecked/>
+          <span>Mantenerme conectado en este dispositivo</span>
+        </label>
+
+        <button type="submit" className="btn accent"
+          style={{justifyContent:'center', padding:'12px 18px', width:'100%'}}>
+          Entrar
+        </button>
+      </form>
+    </AuthShell>
+  );
+}
+
+function SignupErrorView() {
+  return (
+    <AuthShell
+      stepCode="01"
+      stepName="Crear cuenta"
+      leftPanel={<CarnetPreview/>}
+      title="Empezá en 30 segundos"
+      sub="Validamos que seas alumno con tu email institucional. Después, lo que escribas es anónimo."
+      foot={<>¿Ya tenés cuenta? <button type="button" className="linkbtn">Ingresá</button></>}
+    >
+      <form onSubmit={e=>e.preventDefault()}>
+        <AuthErrorBanner
+          title="Ya hay una cuenta con ese email"
+          body="Ingresá con tu contraseña existente o recuperala si no la recordás."
+        />
+
+        <div className="field" style={{marginBottom:14}}>
+          <label>¿Cómo te llamás?</label>
+          <input defaultValue="Lucía Mansilla"/>
+        </div>
+        <div className="field" style={{marginBottom:14}}>
+          <label>Email institucional</label>
+          <input type="email" defaultValue="lucia.mansilla@unsta.edu.ar"
+            style={{borderColor:'oklch(0.78 0.12 30)'}}/>
+          <div style={{
+            marginTop:6, fontSize:11.5,
+            color:'oklch(0.45 0.14 30)',
+            display:'flex', alignItems:'center', gap:8,
+          }}>
+            <span>Esta cuenta ya existe</span>
+            <span style={{color:'var(--ink-3)'}}>·</span>
+            <button type="button" className="linkbtn" style={{fontSize:11.5}}>
+              Ingresar con esa cuenta
+            </button>
+            <span style={{color:'var(--ink-3)'}}>·</span>
+            <button type="button" className="linkbtn" style={{fontSize:11.5}}>
+              Recuperar contraseña
+            </button>
+          </div>
+        </div>
+        <div className="field" style={{marginBottom:18}}>
+          <label>Contraseña</label>
+          <input type="password" defaultValue="••" placeholder="Mínimo 6 caracteres"
+            style={{borderColor:'oklch(0.78 0.12 30)'}}/>
+          <div style={{
+            marginTop:6, fontSize:11.5,
+            color:'oklch(0.45 0.14 30)',
+          }}>
+            Muy corta — usá al menos 6 caracteres
+          </div>
+        </div>
+
+        <label className="checkbox-row" style={{marginBottom:20}}>
+          <input type="checkbox" defaultChecked/>
+          <span>
+            Acepto los <a href="#" onClick={e=>e.preventDefault()}>términos</a> y
+            entiendo que mis reseñas son anónimas pero verificadas.
+          </span>
+        </label>
+
+        <button type="submit" className="btn accent"
+          style={{justifyContent:'center', padding:'12px 18px', width:'100%'}}>
+          Crear mi cuenta
+        </button>
+      </form>
+    </AuthShell>
+  );
+}
+
+window.LoginErrorView  = LoginErrorView;
+window.SignupErrorView = SignupErrorView;
