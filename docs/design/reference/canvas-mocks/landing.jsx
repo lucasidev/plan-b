@@ -346,7 +346,7 @@ function Landing() {
         <span style={{
           fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--ink-3)',
           letterSpacing:'0.06em', textTransform:'uppercase',
-        }}>· beta abierta · UNSTA</span>
+        }}>· beta abierta</span>
         <span style={{flex:1}}/>
         <nav style={{display:'flex', gap:24, fontSize:13, color:'var(--ink-2)'}}>
           <a href="#features" onClick={e=>e.preventDefault()} style={{color:'inherit', textDecoration:'none'}}>Cómo funciona</a>
@@ -369,7 +369,7 @@ function Landing() {
             fontFamily:'var(--font-mono)', fontSize:11, color:'var(--accent-ink)',
             letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:16,
           }}>
-            Para alumnos de UNSTA
+            Para alumnos universitarios
           </div>
           <h1 style={{
             margin:0, fontSize:56, fontWeight:600,
@@ -431,7 +431,7 @@ function Landing() {
           fontFamily:'var(--font-mono)', fontSize:11, color:'var(--ink-3)',
           letterSpacing:'0.04em',
         }}>
-          — Anónimo · 4° año Sistemas · UNSTA
+          — Anónimo · 4° año Sistemas
         </div>
       </section>
 
@@ -513,7 +513,7 @@ function Landing() {
             display:'flex', flexDirection:'column', gap:14,
           }}>
             {[
-              ['1', 'Te registrás con email institucional', 'lucia.mansilla@unsta.edu.ar'],
+              ['1', 'Te registrás con email institucional', 'lucia.mansilla@tu-universidad.edu.ar'],
               ['2', 'Cargás tu historial académico', '8 materias aprobadas, 1 cursando'],
               ['3', 'Reseñás solo materias que cursaste', 'Visible como "Anónimo · 4° año"'],
             ].map(([n, t, ex]) => (
@@ -554,8 +554,8 @@ function Landing() {
         }}>Lo que probablemente te estés preguntando.</h2>
 
         {[
-          ['¿plan-b está afiliada con UNSTA?',
-           'No. Es un proyecto independiente hecho por alumnos. La universidad no opera ni modera el contenido.'],
+          ['¿plan-b está afiliada con mi universidad?',
+           'No. Es un proyecto independiente hecho por alumnos. Las universidades no operan ni moderan el contenido — el equipo de plan-b cura los datos académicos.'],
           ['¿Pueden los profesores ver quién los reseñó?',
            'No. Las reseñas son anónimas hacia afuera. Internamente verificamos que cursaste, pero esa data no sale del backend.'],
           ['¿Tengo que cargar todo mi historial?',
@@ -600,7 +600,7 @@ function Landing() {
             </p>
           </div>
           <button className="btn accent" style={{padding:'12px 24px', fontSize:14}}>
-            Crear cuenta con email UNSTA
+            Crear cuenta con email institucional
           </button>
         </div>
       </section>
@@ -616,7 +616,7 @@ function Landing() {
         display:'flex', justifyContent:'space-between',
       }}>
         <span>plan-b · 2026 · proyecto independiente</span>
-        <span>no afiliado oficialmente con UNSTA</span>
+        <span>no afiliado oficialmente con ninguna universidad</span>
       </footer>
     </div>
   );
