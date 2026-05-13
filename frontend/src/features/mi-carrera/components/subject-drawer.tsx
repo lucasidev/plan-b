@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { type Comision, comisionesForSubject } from '@/features/mi-carrera/data/comisiones';
+import { comisionesForSubject } from '@/features/mi-carrera/data/comisiones';
 import {
   plan as defaultPlan,
   type PlannedSubject,
   type PlanYear,
 } from '@/features/mi-carrera/data/plan';
 import { reviewCountForSubject, topReviewsForSubject } from '@/features/mi-carrera/data/reviews';
-import { teacherById, teachersForSubject } from '@/features/mi-carrera/data/teachers';
+import { teachersForSubject } from '@/features/mi-carrera/data/teachers';
 import {
   approvedCodes,
   isUnlocked,
