@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>plan-b — admin (panel interno)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="canvas-tokens.css"/>
+<style>
+  body { margin:0; font-family:'Geist', system-ui, sans-serif; }
+
+  /* ── Admin tokens (más densos, tablas) ───────────────────────── */
+  :root {
+    --adm-bg: #fbf3ec;
+    --adm-bg-elev: #f4e9da;
+    --adm-bg-card: #ffffff;
+    --adm-line: #ebd9c4;
+    --adm-line-2: #f4e9da;
+    --adm-row-h: 36px;
+  }
+
+  .adm { width:100%; height:100%; overflow:hidden;
+    background:var(--adm-bg); color:var(--ink);
+    font-family:'Geist', system-ui, sans-serif;
+    font-size:13px; line-height:1.4;
+    display:grid; grid-template-columns: 220px 1fr;
+  }
+
+  /* Sidebar */
+  .adm-sb {
+    background:var(--adm-bg-elev);
+    border-right:1px solid var(--adm-line);
+    display:flex; flex-direction:column;
+    padding:12px 10px;
+  }
+  .adm-sb .brand {
+    display:flex; align-items:baseline; gap:7px;
+    padding:6px 8px 12px;
+    border-bottom:1px solid var(--adm-line);
+  }
+  .adm-sb .brand .logo { font-weight:600; font-size:14px; letter-spacing:-0.01em; }
+  .adm-sb .brand .logo .dot { display:inline-block; width:5px; height:5px; background:var(--accent); border-radius:50%; margin-left:2px; transform:translateY(-3px); }
+  .adm-sb .brand .pill {
+    font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.12em;
+    background:var(--ink); color:#fff; padding:2px 7px; border-radius:3px;
+    text-transform:uppercase; font-weight:600;
+  }
+  .adm-sb .group { font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-3); padding:14px 8px 4px; }
+  .adm-sb .it { padding:5px 8px; font-size:12.5px; color:var(--ink-2); border-radius:5px; cursor:pointer; display:flex; gap:8px; align-items:center; justify-content:space-between; }
+  .adm-sb .it:hover { background:rgba(255,255,255,0.5); color:var(--ink); }
+  .adm-sb .it.active { background:var(--adm-bg-card); color:var(--ink); box-shadow:0 1px 2px rgba(120,40,10,0.06); }
+  .adm-sb .it .ic { width:13px; opacity:0.65; font-family:'IBM Plex Mono',monospace; font-size:11px; text-align:center; }
+  .adm-sb .it .tag { font-family:'IBM Plex Mono',monospace; font-size:9.5px; background:var(--accent-soft); color:var(--accent-ink); padding:1px 4px; border-radius:3px; font-weight:600; }
+  .adm-sb .me { margin-top:auto; padding:9px 8px; border-top:1px solid var(--adm-line); display:flex; gap:9px; align-items:center; font-size:11.5px; color:var(--ink-2); }
+  .adm-sb .me .av { width:24px; height:24px; border-radius:4px; background:var(--ink); color:#fff; display:grid; place-items:center; font-size:10px; font-weight:600; font-family:'IBM Plex Mono',monospace; }
+  .adm-sb .me small { display:block; color:var(--ink-3); font-size:10px; font-family:'IBM Plex Mono',monospace; }
+
+  /* Topbar */
+  .adm-tb { display:flex; align-items:center; gap:14px; padding:10px 22px; border-bottom:1px solid var(--adm-line); background:var(--adm-bg); height:46px; }
+  .adm-tb .crumbs { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-3); letter-spacing:0.02em; }
+  .adm-tb .crumbs b { color:var(--ink); font-weight:500; }
+  .adm-tb .crumbs .sep { margin:0 6px; color:var(--ink-4); }
+  .adm-tb .spacer { flex:1; }
+  .adm-tb .search { display:flex; align-items:center; gap:6px; background:var(--adm-bg-card); border:1px solid var(--adm-line); border-radius:5px; padding:4px 9px; width:280px; font-size:12px; color:var(--ink-3); }
+  .adm-tb .search kbd { font-family:'IBM Plex Mono',monospace; font-size:9.5px; background:var(--adm-bg-elev); border:1px solid var(--adm-line); padding:0 4px; border-radius:3px; color:var(--ink-3); }
+  .adm-tb .ic-btn { width:28px; height:28px; border-radius:5px; background:transparent; border:0; color:var(--ink-2); cursor:pointer; display:grid; place-items:center; }
+  .adm-tb .ic-btn:hover { background:var(--adm-bg-elev); }
+
+  /* Main */
+  .adm-main { display:flex; flex-direction:column; overflow:hidden; }
+  .adm-content { flex:1; overflow:auto; padding:22px 28px 40px; }
+
+  /* Page header */
+  .adm-ph { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:22px; }
+  .adm-ph h1 { font-size:22px; font-weight:600; letter-spacing:-0.018em; margin:0; line-height:1.15; }
+  .adm-ph .eyebrow { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:5px; }
+  .adm-ph p { font-size:12.5px; color:var(--ink-3); margin:6px 0 0; max-width:60ch; line-height:1.5; }
+  .adm-ph .actions { display:flex; gap:6px; align-items:center; }
+
+  /* Buttons */
+  .adm-btn { appearance:none; border:1px solid var(--adm-line); background:var(--adm-bg-card); color:var(--ink); font:inherit; font-size:12px; font-weight:500; padding:5px 11px; border-radius:5px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+  .adm-btn:hover { background:var(--adm-bg-elev); }
+  .adm-btn.primary { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .adm-btn.primary:hover { background:#1a110a; }
+  .adm-btn.danger { color:#b04a1c; }
+  .adm-btn.danger:hover { background:#fbe5d6; }
+  .adm-btn.sm { padding:3px 8px; font-size:11px; }
+  .adm-btn.ghost { background:transparent; border-color:transparent; color:var(--ink-2); }
+  .adm-btn.ghost:hover { background:var(--adm-bg-elev); color:var(--ink); }
+
+  /* Tabs */
+  .adm-tabs { display:flex; gap:0; border-bottom:1px solid var(--adm-line); margin-bottom:18px; }
+  .adm-tabs .tab { padding:8px 12px; font-size:12.5px; color:var(--ink-3); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; display:flex; gap:7px; align-items:center; }
+  .adm-tabs .tab.on { color:var(--ink); font-weight:500; border-bottom-color:var(--accent); }
+  .adm-tabs .tab .n { font-family:'IBM Plex Mono',monospace; font-size:10px; background:var(--adm-bg-elev); padding:1px 5px; border-radius:3px; color:var(--ink-3); }
+
+  /* Table */
+  .adm-table { width:100%; background:var(--adm-bg-card); border:1px solid var(--adm-line); border-radius:7px; overflow:hidden; font-size:12.5px; }
+  .adm-table .thead, .adm-table .tr { display:grid; align-items:center; padding:0 14px; height:var(--adm-row-h); gap:14px; }
+  .adm-table .thead { background:var(--adm-bg-elev); border-bottom:1px solid var(--adm-line); height:32px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-3); }
+  .adm-table .tr { border-bottom:1px solid var(--adm-line-2); cursor:pointer; transition:background .1s; }
+  .adm-table .tr:hover { background:var(--adm-bg-elev); }
+  .adm-table .tr:last-child { border-bottom:0; }
+  .adm-table .mono { font-family:'IBM Plex Mono',monospace; font-size:11.5px; }
+  .adm-table .num { font-variant-numeric:tabular-nums; }
+  .adm-table .muted { color:var(--ink-3); }
+  .adm-table .center { text-align:center; }
+  .adm-table .right { text-align:right; }
+  .adm-table .actions { display:flex; gap:4px; justify-content:flex-end; }
+
+  /* Pills / badges */
+  .adm-pill { display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:1px 7px; border-radius:3px; background:var(--adm-bg-elev); color:var(--ink-2); font-family:'IBM Plex Mono',monospace; letter-spacing:0.02em; }
+  .adm-pill.live { background:#e8f0e0; color:#3d5a1f; }
+  .adm-pill.draft { background:#f6ead7; color:#945a14; }
+  .adm-pill.archived { background:var(--adm-bg-elev); color:var(--ink-4); }
+  .adm-pill.danger { background:#fbe5d6; color:#b04a1c; }
+  .adm-pill.dot::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.85; }
+
+  /* Cards */
+  .adm-card { background:var(--adm-bg-card); border:1px solid var(--adm-line); border-radius:8px; padding:16px 18px; }
+  .adm-card .h { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px; }
+  .adm-card h3 { font-size:13px; font-weight:600; margin:0; }
+  .adm-card .h small { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-3); letter-spacing:0.05em; text-transform:uppercase; }
+
+  /* Field */
+  .adm-field { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+  .adm-field label { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-3); }
+  .adm-field .req { color:var(--accent-ink); margin-left:3px; }
+  .adm-field input, .adm-field select, .adm-field textarea {
+    padding:7px 10px; border:1px solid var(--adm-line); background:var(--adm-bg-card);
+    border-radius:5px; font:inherit; font-size:12.5px; color:var(--ink); outline:none;
+  }
+  .adm-field input:focus { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-soft); }
+  .adm-field .hint { font-size:11px; color:var(--ink-3); }
+  .adm-field .err { font-size:11px; color:var(--accent-ink); }
+
+  /* KV grid */
+  .adm-kv { display:grid; grid-template-columns:140px 1fr; row-gap:9px; column-gap:14px; font-size:12.5px; }
+  .adm-kv dt { font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-3); letter-spacing:0.04em; text-transform:uppercase; }
+  .adm-kv dd { margin:0; color:var(--ink); }
+
+  /* Stat */
+  .adm-stat { padding:14px 16px; background:var(--adm-bg-card); border:1px solid var(--adm-line); border-radius:7px; }
+  .adm-stat .lbl { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-3); }
+  .adm-stat .val { font-size:24px; font-weight:600; letter-spacing:-0.02em; line-height:1.1; margin-top:4px; font-variant-numeric:tabular-nums; }
+  .adm-stat .delta { font-size:11px; color:var(--ink-3); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .adm-stat .delta.up { color:#3d5a1f; }
+  .adm-stat .delta.down { color:#b04a1c; }
+
+  /* Steps (onboarding) */
+  .adm-steps { display:flex; gap:0; align-items:center; }
+  .adm-steps .st { display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-3); }
+  .adm-steps .st .n { width:22px; height:22px; border-radius:50%; background:var(--adm-bg-elev); color:var(--ink-3); display:grid; place-items:center; font-size:11px; font-weight:600; }
+  .adm-steps .st.on .n { background:var(--ink); color:#fff; }
+  .adm-steps .st.done .n { background:#3d5a1f; color:#fff; }
+  .adm-steps .st.on { color:var(--ink); }
+  .adm-steps .st.done { color:var(--ink-3); }
+  .adm-steps .ln { width:36px; height:1px; background:var(--adm-line); margin:0 10px; }
+
+  /* Diff (importer) */
+  .adm-diff-row { display:grid; grid-template-columns:18px 80px 1fr 60px 60px 60px 80px; gap:10px; padding:5px 12px; font-size:12px; align-items:center; border-bottom:1px solid var(--adm-line-2); }
+  .adm-diff-row.add { background:#e8f0e0; }
+  .adm-diff-row.del { background:#fbe5d6; }
+  .adm-diff-row.mod { background:#f6ead7; }
+  .adm-diff-row .gut { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; }
+  .adm-diff-row.add .gut { color:#3d5a1f; }
+  .adm-diff-row.del .gut { color:#b04a1c; }
+  .adm-diff-row.mod .gut { color:#945a14; }
+
+  /* Validation chip */
+  .adm-vchip { display:inline-flex; align-items:center; gap:5px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; padding:2px 7px; border-radius:3px; background:#e8f0e0; color:#3d5a1f; }
+  .adm-vchip.warn { background:#f6ead7; color:#945a14; }
+  .adm-vchip.err { background:#fbe5d6; color:#b04a1c; }
+
+  /* Modal */
+  .adm-modal-overlay { position:absolute; inset:0; background:rgba(20,18,12,0.45); display:grid; place-items:center; z-index:50; }
+  .adm-modal { background:var(--adm-bg-card); border-radius:10px; padding:22px 24px; width:480px; box-shadow:0 16px 40px rgba(0,0,0,0.18); }
+  .adm-modal h3 { margin:0 0 6px; font-size:15px; font-weight:600; }
+  .adm-modal p { margin:0 0 16px; font-size:12.5px; color:var(--ink-3); line-height:1.5; }
+  .adm-modal .foot { display:flex; justify-content:flex-end; gap:7px; margin-top:14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="canvas-mocks/admin-shell.jsx"></script>
+<script type="text/babel" src="canvas-mocks/admin-screens-1.jsx"></script>
+<script type="text/babel" src="canvas-mocks/admin-screens-2.jsx"></script>
+<script type="text/babel" src="canvas-mocks/admin-screens-3.jsx"></script>
+
+<script type="text/babel">
+const W = 1280, H = 800;
+
+function App() {
+  return (
+    <DesignCanvas>
+      <DCSection id="intro" title="⓪ Shell del admin"
+        subtitle="Panel interno del equipo plan-b. Tabular, denso, utilitario. Mismo design system que la app del alumno pero otro registro: tablas, mono para IDs, menos aire. Lo usa solo el equipo plan-b — todos full-admin, sin scoping por uni todavía.">
+        <DCArtboard id="adm-shell" label="Shell · pantalla por defecto (Dashboard)" width={W} height={H}><AdmDashboard/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="onb" title="① Afiliar una universidad"
+        subtitle="Flujo guiado de 4 pasos. Lo dispara el equipo cuando una facu se afilia. Carga la uni, sus carreras, el plan vigente y el catálogo inicial de docentes/comisiones. Después se mantiene desde Datos académicos.">
+        <DCArtboard id="adm-onb-1" label="Paso 1 · Universidad"        width={W} height={H}><AdmOnbUni/></DCArtboard>
+        <DCArtboard id="adm-onb-2" label="Paso 2 · Carrera"            width={W} height={H}><AdmOnbCarrera/></DCArtboard>
+        <DCArtboard id="adm-onb-3" label="Paso 3 · Plan de estudios"   width={W} height={H}><AdmOnbPlan/></DCArtboard>
+        <DCArtboard id="adm-onb-4" label="Paso 4 · Catálogo inicial"   width={W} height={H}><AdmOnbCatalogo/></DCArtboard>
+        <DCArtboard id="adm-onb-5" label="Listo · resumen"             width={W} height={H}><AdmOnbDone/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="datos" title="② Datos académicos"
+        subtitle="Lo que se mantiene día a día. Universidades / carreras / planes / materias / docentes / comisiones. Edición rápida, merge de duplicados, validación de correlativas.">
+        <DCArtboard id="adm-uni-list"  label="Universidades"                width={W} height={H}><AdmUniList/></DCArtboard>
+        <DCArtboard id="adm-uni-det"   label="Universidad · UNSTA"          width={W} height={H}><AdmUniDetalle/></DCArtboard>
+        <DCArtboard id="adm-car-det"   label="Carrera · Ing. en Sistemas (UNSTA)" width={W} height={H}><AdmCarreraDetalle/></DCArtboard>
+        <DCArtboard id="adm-plan-edit" label="Plan · editor de materias"    width={W} height={H}><AdmPlanEditor/></DCArtboard>
+        <DCArtboard id="adm-corr-edit" label="Plan · editor de correlativas con validación" width={W} height={H}><AdmCorrelativasEditor/></DCArtboard>
+        <DCArtboard id="adm-imp"       label="Importador · pegar CSV / preview"   width={W} height={1000}><AdmImportador/></DCArtboard>
+        <DCArtboard id="adm-mat-list"  label="Materias · catálogo"          width={W} height={H}><AdmMateriasList/></DCArtboard>
+        <DCArtboard id="adm-mat-merge" label="Materias · merge de duplicados" width={W} height={H}><AdmMateriasMerge/></DCArtboard>
+        <DCArtboard id="adm-doc-list"  label="Docentes"                     width={W} height={H}><AdmDocentesList/></DCArtboard>
+        <DCArtboard id="adm-com-list"  label="Comisiones · oferta 2026·1c"  width={W} height={H}><AdmComisiones/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="mod" title="③ Moderación"
+        subtitle="Reseñas reportadas + gestión de usuarios. La cola es lo que se mira a diario.">
+        <DCArtboard id="adm-rep-list" label="Reportes · cola"              width={W} height={H}><AdmReportesCola/></DCArtboard>
+        <DCArtboard id="adm-rep-det"  label="Reporte · detalle (decidir)"  width={W} height={H}><AdmReporteDetalle/></DCArtboard>
+        <DCArtboard id="adm-usr-list" label="Usuarios"                     width={W} height={H}><AdmUsuariosList/></DCArtboard>
+        <DCArtboard id="adm-usr-det"  label="Usuario · detalle / acciones" width={W} height={H}><AdmUsuarioDetalle/></DCArtboard>
+      </DCSection>
+
+      <DCSection id="ops" title="④ Operación"
+        subtitle="Cosas que se hacen pocas veces al año pero son críticas: cambios de plan, recuperar dato perdido.">
+        <DCArtboard id="adm-mig" label="Migración de plan · 2008 → 2023"   width={W} height={900}><AdmMigracionPlan/></DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

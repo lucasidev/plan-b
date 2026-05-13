@@ -1,9 +1,7 @@
 /**
  * Captura screenshots de cada artboard del canvas de Claude Design.
  *
- * El canvas se splitea en HTMLs por área. En este PR aterrizan 3 canvases
- * (app del alumno + landing + design system); el canvas admin/backoffice
- * aterriza en un PR siguiente con su propio HTML + módulo:
+ * El canvas se splitea en HTMLs por área. Cuatro canvases en total:
  *   - `plan-b-design-system.html`  → 1 artboard (sistema visual)
  *   - `plan-b-landing.html`        → 1 artboard (landing pública)
  *   - `plan-b-app.html`            → app del alumno (auth, onb, inicio,
@@ -11,6 +9,10 @@
  *                                     rankings, búsqueda, notif, cuenta,
  *                                     soporte; modales y errores adentro
  *                                     de cada sección)
+ *   - `plan-b-admin.html`          → panel interno (shell + afiliar uni,
+ *                                     datos académicos, moderación, ops).
+ *                                     Mismo design system pero registro
+ *                                     denso/tabular; viewport 1280x800.
  *
  * No es un spec de E2E del producto: usa la infra de Playwright únicamente
  * para automatizar la captura visual del canvas. Por eso vive en
@@ -70,6 +72,9 @@ type Canvas = {
 
 const APP_W = 1200;
 const APP_H = 750;
+
+const ADM_W = 1280;
+const ADM_H = 800;
 
 const CANVASES: ReadonlyArray<Canvas> = [
   {
@@ -315,6 +320,134 @@ const CANVASES: ReadonlyArray<Canvas> = [
       // ⑪ Soporte
       { section: 'soporte', id: 'v2-ayuda', label: 'Ayuda', width: APP_W, height: APP_H },
       { section: 'soporte', id: 'v2-sobre', label: 'Sobre plan-b', width: APP_W, height: APP_H },
+    ],
+  },
+  {
+    file: 'plan-b-admin.html',
+    slug: 'admin',
+    artboards: [
+      // ⓪ Shell del admin
+      {
+        section: 'intro',
+        id: 'adm-shell',
+        label: 'Shell · pantalla por defecto (Dashboard)',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      // ① Afiliar una universidad
+      {
+        section: 'onb',
+        id: 'adm-onb-1',
+        label: 'Paso 1 · Universidad',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      { section: 'onb', id: 'adm-onb-2', label: 'Paso 2 · Carrera', width: ADM_W, height: ADM_H },
+      {
+        section: 'onb',
+        id: 'adm-onb-3',
+        label: 'Paso 3 · Plan de estudios',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'onb',
+        id: 'adm-onb-4',
+        label: 'Paso 4 · Catálogo inicial',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      { section: 'onb', id: 'adm-onb-5', label: 'Listo · resumen', width: ADM_W, height: ADM_H },
+      // ② Datos académicos
+      { section: 'datos', id: 'adm-uni-list', label: 'Universidades', width: ADM_W, height: ADM_H },
+      {
+        section: 'datos',
+        id: 'adm-uni-det',
+        label: 'Universidad · UNSTA',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'datos',
+        id: 'adm-car-det',
+        label: 'Carrera · Ing. en Sistemas (UNSTA)',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'datos',
+        id: 'adm-plan-edit',
+        label: 'Plan · editor de materias',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'datos',
+        id: 'adm-corr-edit',
+        label: 'Plan · editor de correlativas con validación',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'datos',
+        id: 'adm-imp',
+        label: 'Importador · pegar CSV / preview',
+        width: ADM_W,
+        height: 1000,
+      },
+      {
+        section: 'datos',
+        id: 'adm-mat-list',
+        label: 'Materias · catálogo',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'datos',
+        id: 'adm-mat-merge',
+        label: 'Materias · merge de duplicados',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      { section: 'datos', id: 'adm-doc-list', label: 'Docentes', width: ADM_W, height: ADM_H },
+      {
+        section: 'datos',
+        id: 'adm-com-list',
+        label: 'Comisiones · oferta 2026·1c',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      // ③ Moderación
+      {
+        section: 'mod',
+        id: 'adm-rep-list',
+        label: 'Reportes · cola',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      {
+        section: 'mod',
+        id: 'adm-rep-det',
+        label: 'Reporte · detalle (decidir)',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      { section: 'mod', id: 'adm-usr-list', label: 'Usuarios', width: ADM_W, height: ADM_H },
+      {
+        section: 'mod',
+        id: 'adm-usr-det',
+        label: 'Usuario · detalle / acciones',
+        width: ADM_W,
+        height: ADM_H,
+      },
+      // ④ Operación
+      {
+        section: 'ops',
+        id: 'adm-mig',
+        label: 'Migración de plan · 2008 → 2023',
+        width: ADM_W,
+        height: 900,
+      },
     ],
   },
 ];
