@@ -1,7 +1,9 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
+import { PlanGrid } from '@/features/mi-carrera/components/plan-grid';
 import { TabStub } from '@/features/mi-carrera/components/tab-stub';
 import { TabsNav } from '@/features/mi-carrera/components/tabs-nav';
+import { plan } from '@/features/mi-carrera/data/plan';
 import { type MiCarreraTabId, parseTab } from '@/features/mi-carrera/lib/tabs';
 
 /**
@@ -49,7 +51,7 @@ export default async function MiCarreraPage({
 function TabContent({ tab }: { tab: MiCarreraTabId }) {
   switch (tab) {
     case 'plan':
-      return <TabStub label="Plan de estudios" futureUs="US-045-b" />;
+      return <PlanGrid plan={plan} />;
     case 'correlativas':
       return <TabStub label="Correlativas" futureUs="US-045-c" />;
     case 'catalogo':
