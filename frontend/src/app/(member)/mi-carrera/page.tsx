@@ -1,8 +1,10 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { PlanGrid } from '@/features/mi-carrera/components/plan-grid';
+import { SubjectList } from '@/features/mi-carrera/components/subject-list';
 import { TabStub } from '@/features/mi-carrera/components/tab-stub';
 import { TabsNav } from '@/features/mi-carrera/components/tabs-nav';
+import { TeacherList } from '@/features/mi-carrera/components/teacher-list';
 import { plan } from '@/features/mi-carrera/data/plan';
 import { type MiCarreraTabId, parseTab } from '@/features/mi-carrera/lib/tabs';
 
@@ -55,9 +57,9 @@ function TabContent({ tab }: { tab: MiCarreraTabId }) {
     case 'correlativas':
       return <TabStub label="Correlativas" futureUs="US-045-c" />;
     case 'catalogo':
-      return <TabStub label="Materias del plan" futureUs="US-045-d" />;
+      return <SubjectList plan={plan} />;
     case 'docentes':
-      return <TabStub label="Docentes" futureUs="US-045-d" />;
+      return <TeacherList />;
     case 'historial':
       return <TabStub label="Historial académico" futureUs="US-045-e" />;
   }
