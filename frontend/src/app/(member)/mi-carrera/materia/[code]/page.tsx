@@ -1,37 +1,45 @@
 import Link from 'next/link';
-import { DisplayHeading } from '@/components/ui/display-heading';
-import { Eyebrow } from '@/components/ui/eyebrow';
+import { notFound } from 'next/navigation';
+import { SubjectDrawer } from '@/features/mi-carrera/components/subject-drawer';
+import { plan } from '@/features/mi-carrera/data/plan';
 
 /**
- * Stub del detalle de materia. Hoy es destino del click desde el plan grid
- * (US-045-b). Cuando aterrice US-045-d, esta ruta se convierte en el drawer
- * real con datos del catálogo + correlativas + comisiones + reseñas. La URL
- * `/mi-carrera/materia/[code]` se mantiene para que los links del PlanGrid
- * no se rompan.
+ * Drawer de detalle de materia (US-045-d). Ruta dedicada con la materia
+ * resuelta por code. Si el code no existe en el plan del alumno, 404.
  *
- * Server component liviano: solo lee el code de los params y muestra el
- * placeholder. Sin fetch, sin cliente.
+ * Visualmente es un panel sobre el shell de la app — no es modal todavía.
+ * Cuando aterrice un patrón de parallel routes (`@modal`), evaluar
+ * migrar; mientras tanto, página dedicada da sharable URL y simplicidad.
+ *
+ * Reemplaza el stub de US-045-b que era solo "Próximamente".
  */
-export default async function MateriaStubPage({ params }: { params: Promise<{ code: string }> }) {
+export default async function SubjectDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
+  const found = findSubject(code);
+
+  if (!found) {
+    notFound();
+  }
 
   return (
-    <div className="px-6 py-9 max-w-[800px] mx-auto">
-      <Eyebrow>Mi carrera · Materia · {code}</Eyebrow>
-      <DisplayHeading size={32} className="mt-2 mb-4">
-        Próximamente: detalle de materia.
-      </DisplayHeading>
-      <p className="text-ink-2 mb-6">
-        El drawer con info completa de <strong>{code}</strong> (descripción, correlativas,
-        comisiones del cuatri, reseñas) aterriza con US-045-d. Mientras tanto, este es el destino
-        del click desde el plan grid.
-      </p>
-      <Link
-        href="/mi-carrera"
-        className="inline-flex items-center text-accent-ink hover:text-accent-hover"
-      >
-        ← Volver al plan
-      </Link>
+    <div className="px-6 py-9 max-w-[1200px] mx-auto">
+      <div className="mb-4">
+        <Link
+          href="/mi-carrera?tab=catalogo"
+          className="text-sm text-accent-ink hover:text-accent-hover inline-flex items-center"
+        >
+          ← Volver al catálogo
+        </Link>
+      </div>
+      <SubjectDrawer subject={found} />
     </div>
   );
+}
+
+function findSubject(code: string) {
+  for (const yearBlock of plan) {
+    const found = yearBlock.subjects.find((s) => s.code === code);
+    if (found) return { ...found, year: yearBlock.year };
+  }
+  return null;
 }
