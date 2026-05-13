@@ -1,8 +1,10 @@
 # Estado del proyecto (planb)
 
-Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
+Tracking operativo del avance por sprints. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-05-12 (audit canvas v3 completo: 69 artboards en 4 HTMLs incluyendo el módulo backoffice/admin con 21 artboards y su propio shell tabular).
+**Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
+
+**Última actualización**: 2026-05-12 (apertura de S3 con convención nueva lunes→sábado; carry-over de US-045-b/c/d/e desde S2).
 
 ---
 
@@ -13,15 +15,15 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
-| S3 | próximo | TBD (foco a definir en planning) | ⏳ Pendiente |
-| S4+ | next+ | Backlog post-S3 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074) sin asignación de sprint hasta planning | ⏳ Pendiente |
+| S3 | 2026-05-11 a 2026-05-16 | Carry-over de Mi carrera (US-045-b heatmap + US-045-c correlativas + US-045-d materias/docentes + US-045-e historial). Scope adicional a definir por Lucas. | 🟡 In progress |
+| S4+ | next+ | Backlog post-S3 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074, US-081..087) sin asignación de sprint hasta planning | ⏳ Pendiente |
 
 Convenciones:
 
 - **US como value increment**: una US = un incremento de valor visible al usuario. **En backlog vive como doc parent (`US-NNN`)** con sub-tasks que pre-comprometen la decomposición técnica (Backend / Frontend / Infra). **Cuando entra a sprint el parent se reemplaza por subdivisiones** (`US-NNN-b`, `US-NNN-f`, `US-NNN-i`); el parent doc deja de existir como archivo separado. **No coexisten parent + subdivisiones** al mismo tiempo: o lo uno o lo otro, según el estado del slice.
 - **Sufijo `-i` significa integrated**: `US-029-i`, `US-033-i`. Un solo PR que junta backend + frontend porque el slice es chico y no es usable hasta tener las dos puntas. **Excepciones**: el namespace foundational `US-FNN-x` usa `-i` con sentido "infra" (`US-F03-i`, `US-F04-i`); fuera de F, también se permite `-i` con sentido "infra/scheduling" cuando el slice es backend + DB schema (ej. `US-022-i` para Wolverine ScheduledJob + migrations). Cada doc lo aclara explícito en su header.
 - **Reglas duras**: parent y subdivisiones no coexisten. Si una US ya está en sprint o done, su archivo es la subdivisión correspondiente, NO el parent. Para integrated (`-i`), el doc único es la subdivisión.
-- Sprints: 7 días, identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle.
+- Sprints: identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle. **Cadencia: S1/S2 fueron de 7 días flotantes; desde S3 lunes → sábado (6 días útiles).** El domingo queda como buffer/descanso.
 - Definition of Done por US: [`docs/domain/definition-of-done.md`](domain/definition-of-done.md).
 
 ---
@@ -244,9 +246,24 @@ US existentes con AC nuevas:
 
 ---
 
-## S3 ⏳ Pendiente
+## S3 🟡 In progress
 
-Foco a definir en planning.
+**Rango**: 2026-05-11 a 2026-05-16 (lunes → sábado, 6 días útiles). Primer sprint con la cadencia nueva.
+
+**Foco inicial**: cerrar **Mi carrera** completo. US-045-a (shell + nav de tabs) ya cerró en S2; quedan los 4 tabs de contenido como carry-over.
+
+### Scope acordado
+
+- [US-045-b](domain/user-stories/US-045-b.md) Mi carrera tab Plan (heatmap por año/cuatrimestre). Carry-over de S2.
+- [US-045-c](domain/user-stories/US-045-c.md) Mi carrera tab Correlativas (grafo SVG). Carry-over de S2.
+- [US-045-d](domain/user-stories/US-045-d.md) Mi carrera tabs Materias + Docentes + drawers de detalle. Carry-over de S2.
+- [US-045-e](domain/user-stories/US-045-e.md) Mi carrera tab Historial (tabla + CTA cargar). Carry-over de S2.
+
+Scope adicional queda abierto: Lucas decide qué más entra (de las US frontend del backlog post-canvas) durante el sprint.
+
+### Por qué carry-over y no Done
+
+Las 4 sub-US del rebuild de Mi carrera estaban tagueadas en S2 pero nunca se implementaron (S2 se fue en canvas v3 + admin doc'd, que no estaban en el plan original de S2). Son las únicas US tagueadas Sprint=S2 en Notion sin código en `main`.
 
 ---
 
