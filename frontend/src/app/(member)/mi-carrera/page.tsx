@@ -1,5 +1,6 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
+import { CorrelativasGraph } from '@/features/mi-carrera/components/correlativas-graph';
 import { PlanGrid } from '@/features/mi-carrera/components/plan-grid';
 import { SubjectList } from '@/features/mi-carrera/components/subject-list';
 import { TabStub } from '@/features/mi-carrera/components/tab-stub';
@@ -55,7 +56,7 @@ function TabContent({ tab }: { tab: MiCarreraTabId }) {
     case 'plan':
       return <PlanGrid plan={plan} />;
     case 'correlativas':
-      return <TabStub label="Correlativas" futureUs="US-045-c" />;
+      return <CorrelativasGraph plan={plan} />;
     case 'catalogo':
       return <SubjectList plan={plan} />;
     case 'docentes':
