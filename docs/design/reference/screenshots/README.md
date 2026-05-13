@@ -25,7 +25,7 @@ PLAYWRIGHT_INCLUDE_CAPTURE=1 bunx playwright test e2e/_capture/canvas-screenshot
 El spec levanta un `node:http` static server sobre `docs/design/reference/`, navega a cada uno de los 4 HTMLs, espera el render de React+Babel, y captura cada `.dc-card` por su `[data-dc-section][data-dc-slot]`. Output a `docs/design/reference/screenshots/` con naming:
 
 - `<section>-<id>.png` para los canvases `app`, `landing`, `ds`.
-- `admin-<section>-<id>.png` (reservado) para el canvas `admin/backoffice` cuando aterrice en PR siguiente. El prefix evita colisión con secciones del app que se llaman igual (ej. `onb`).
+- `admin-<section>-<id>.png` para el canvas `admin/backoffice`. El prefix evita colisión con secciones del app que se llaman igual (ej. `onb` existe en ambos).
 
 `manifest.json` se regenera con todos los artboards juntos.
 
@@ -98,16 +98,42 @@ Re-correr cuando:
 | ⑪ Soporte | `v2-ayuda` | `soporte-v2-ayuda.png` | [US-073](../../../domain/user-stories/US-073.md) |
 | ⑪ Soporte | `v2-sobre` | `soporte-v2-sobre.png` | [US-074](../../../domain/user-stories/US-074.md) |
 
-### Admin (21 artboards, en PR siguiente)
+### Admin (21 artboards)
 
-El canvas admin/backoffice (`plan-b-admin.html` + módulo `admin-shell.jsx` + `admin-screens-1/2/3.jsx`) aterriza en un PR separado junto con sus 21 capturas y las US-081, US-082, US-083, US-084, US-086, US-087 + ADR-0042 + actualizaciones a US-050, US-051, US-053, US-060..065, US-068.
+El canvas admin/backoffice (`plan-b-admin.html` + módulo `admin-shell.jsx` + `admin-screens-1/2/3.jsx`) es la fuente visual del panel interno. Viewport 1280x800 (más denso que la app del alumno, registro tabular).
 
-## Resumen del estado por captura (audit 2026-05-09 v3, app/landing/design-system)
+| Sección | Artboard | Imagen | US |
+|---|---|---|---|
+| ⓪ Shell | `adm-shell` | `admin-intro-adm-shell.png` | [US-081](../../../domain/user-stories/US-081.md) (admin shell + dashboard ops) |
+| ① Afiliar uni | `adm-onb-1` | `admin-onb-adm-onb-1.png` | [US-060](../../../domain/user-stories/US-060.md) (gestionar University) |
+| ① Afiliar uni | `adm-onb-2` | `admin-onb-adm-onb-2.png` | [US-061](../../../domain/user-stories/US-061.md) (gestionar Career + CareerPlan) |
+| ① Afiliar uni | `adm-onb-3` | `admin-onb-adm-onb-3.png` | [US-061](../../../domain/user-stories/US-061.md) + [US-082](../../../domain/user-stories/US-082.md) (importador con preview/diff) |
+| ① Afiliar uni | `adm-onb-4` | `admin-onb-adm-onb-4.png` | [US-063](../../../domain/user-stories/US-063.md) (gestionar Teacher, bulk-paste) |
+| ① Afiliar uni | `adm-onb-5` | `admin-onb-adm-onb-5.png` | [US-060](../../../domain/user-stories/US-060.md) (resumen post-onboarding) |
+| ② Datos académicos | `adm-uni-list` | `admin-datos-adm-uni-list.png` | [US-060](../../../domain/user-stories/US-060.md) |
+| ② Datos académicos | `adm-uni-det` | `admin-datos-adm-uni-det.png` | [US-060](../../../domain/user-stories/US-060.md) |
+| ② Datos académicos | `adm-car-det` | `admin-datos-adm-car-det.png` | [US-061](../../../domain/user-stories/US-061.md) |
+| ② Datos académicos | `adm-plan-edit` | `admin-datos-adm-plan-edit.png` | [US-062](../../../domain/user-stories/US-062.md) (editor de materias + dirty state batch) |
+| ② Datos académicos | `adm-corr-edit` | `admin-datos-adm-corr-edit.png` | [US-062](../../../domain/user-stories/US-062.md) (correlativas con salud del grafo) |
+| ② Datos académicos | `adm-imp` | `admin-datos-adm-imp.png` | [US-082](../../../domain/user-stories/US-082.md) (importador CSV/preview, dim 1280×1000) |
+| ② Datos académicos | `adm-mat-list` | `admin-datos-adm-mat-list.png` | [US-062](../../../domain/user-stories/US-062.md) + [US-083](../../../domain/user-stories/US-083.md) (flags + detección duplicados) |
+| ② Datos académicos | `adm-mat-merge` | `admin-datos-adm-mat-merge.png` | [US-083](../../../domain/user-stories/US-083.md) (merge de Subjects duplicados) |
+| ② Datos académicos | `adm-doc-list` | `admin-datos-adm-doc-list.png` | [US-063](../../../domain/user-stories/US-063.md) (catálogo docente con flags) |
+| ② Datos académicos | `adm-com-list` | `admin-datos-adm-com-list.png` | [US-065](../../../domain/user-stories/US-065.md) (Commission + CommissionTeacher) |
+| ③ Moderación | `adm-rep-list` | `admin-mod-adm-rep-list.png` | [US-050](../../../domain/user-stories/US-050.md) (cola de reportes con tone + filter chips) |
+| ③ Moderación | `adm-rep-det` | `admin-mod-adm-rep-det.png` | [US-051](../../../domain/user-stories/US-051.md) + [US-085](../../../domain/user-stories/US-085.md) (detalle con 2 opciones live + 3 placeholder) |
+| ③ Moderación | `adm-usr-list` | `admin-mod-adm-usr-list.png` | [US-068](../../../domain/user-stories/US-068.md) (listado de usuarios con filter chips) |
+| ③ Moderación | `adm-usr-det` | `admin-mod-adm-usr-det.png` | [US-068](../../../domain/user-stories/US-068.md) + [US-086](../../../domain/user-stories/US-086.md) (detalle + tabs Actividad/Reportes/Audit log) |
+| ④ Operación | `adm-mig` | `admin-ops-adm-mig.png` | [US-084](../../../domain/user-stories/US-084.md) (migración asistida de plan, dim 1280×900) |
+
+## Resumen del estado por captura (audit 2026-05-12, full canvas)
 
 - **Implementadas y matchean** (2): `ds-main` (transversal), `home-v2-inicio` (US-044, port literal en S2).
 - **Implementadas con drift visual** (10): los 6 auth + 4 onb. Comportamiento cubierto por US-010-f / US-028-f / US-033-i / US-037-f (Done). Rediseño visual cubierto por [US-059-f](../../../domain/user-stories/US-059-f.md) con AC de banners inline.
 - **Pendientes con US doc creada** (32 capturas del lado app): cada una espera implementación.
+- **Pendientes con US doc creada** (21 capturas del lado admin): toda la sección admin está en backlog; ninguna vista admin implementada todavía. Apuntan a US-050/051/060..065/068/081..087.
 - **US nuevas creadas para la app del alumno**: [US-054-f](../../../domain/user-stories/US-054-f.md), [US-055](../../../domain/user-stories/US-055.md), [US-059-f](../../../domain/user-stories/US-059-f.md), [US-076-f](../../../domain/user-stories/US-076-f.md), [US-077-f](../../../domain/user-stories/US-077-f.md), [US-077-b](../../../domain/user-stories/US-077-b.md) + sub-slices [b-1](../../../domain/user-stories/US-077-b-1.md) / [b-2](../../../domain/user-stories/US-077-b-2.md) / [b-3](../../../domain/user-stories/US-077-b-3.md), [US-078-f](../../../domain/user-stories/US-078-f.md), [US-079-i](../../../domain/user-stories/US-079-i.md), [US-085](../../../domain/user-stories/US-085.md).
+- **US nuevas creadas para el módulo admin**: [US-081](../../../domain/user-stories/US-081.md), [US-082](../../../domain/user-stories/US-082.md), [US-083](../../../domain/user-stories/US-083.md), [US-084](../../../domain/user-stories/US-084.md), [US-086](../../../domain/user-stories/US-086.md), [US-087](../../../domain/user-stories/US-087.md).
 
 ## Decisiones de scope zanjadas en el rediseño app (2026-05-09)
 
@@ -115,7 +141,13 @@ El canvas admin/backoffice (`plan-b-admin.html` + módulo `admin-shell.jsx` + `a
 2. ~~**US-072 modal cambiar contraseña**~~: splitteamos. [US-079-i](../../../domain/user-stories/US-079-i.md) (integrated slice) cubre endpoint `PATCH /api/me/password` + modal con revocación de refresh tokens excepto el actual + notification al user. US-072 queda enfocada al UI de Ajustes y monta el row "Cambiar contraseña →" que dispara el modal de US-079-i. Patrón alineado a US-029-i / US-033-i.
 3. ~~**US-077-b backend de notifications**~~: full Notifications BC siguiendo ADR-0040, splitado en 3 sub-slices desde el inicio. [US-077-b parent](../../../domain/user-stories/US-077-b.md) + [b-1 core](../../../domain/user-stories/US-077-b-1.md) (aggregate + read API + mutations) + [b-2 subscribers](../../../domain/user-stories/US-077-b-2.md) (handlers Wolverine cross-BC) + [b-3 email delivery](../../../domain/user-stories/US-077-b-3.md) (SMTP genérico + Mailpit en dev, vendor de prod queda como config de deploy sin tocar código).
 
-Decisiones pendientes relacionadas al admin (US-050 cola-de-reports mismatch, US-053 audit log scope) se zanjan en el PR siguiente del módulo admin junto con ADR-0042 + US-086 + US-087.
+## Decisiones de scope zanjadas en el rediseño admin (2026-05-12)
+
+1. ~~**US-050 cola-de-reviews vs cola-de-reports**~~: canvas manda. La cola es por **report** (no por review). [US-050](../../../domain/user-stories/US-050.md) reescrita con `GET /api/admin/reports/queue` + tone classifier (urgent/normal/low) + filter chips + AC visual del port de `AdmReportesCola`. El cascade-on-uphold de US-051 sigue aplicando cuando la decisión es "ocultar la review".
+2. ~~**US-053 audit log scope**~~: per-BC, no central. [ADR-0042](../../decisions/0042-audit-log-per-bc-no-central.md) zanja que cada módulo owns su projection (`ReviewAuditLog` en Reviews, `ModerationActionLog` en Moderation, `UserAuditLog` en Identity, `CatalogAuditLog` en Academic). Cross-BC views (tab "Audit log" del detalle de usuario, feed global) son read models Dapper UNION ALL. Pattern siblings: [US-086](../../../domain/user-stories/US-086.md) (per-user) + [US-087](../../../domain/user-stories/US-087.md) (feed global).
+3. **Strike system + ocultar+banear + pedir edición**: out de US-051, all-in en [US-085](../../../domain/user-stories/US-085.md). Los 3 placeholders del panel de decisión se renderean disabled con tooltip "Próximamente · US-085" desde el primer aterrizaje de US-051 para evitar rediseño cuando US-085 entre.
+4. **Importador, merge de duplicados, migración de plan**: US separadas porque cada una es un sub-flujo pesado con UI propia. [US-082](../../../domain/user-stories/US-082.md) (importador CSV con preview/diff), [US-083](../../../domain/user-stories/US-083.md) (merge de Subjects), [US-084](../../../domain/user-stories/US-084.md) (migración asistida cross-plan).
+5. **Admin shell separado de cada feature admin**: [US-081](../../../domain/user-stories/US-081.md) cubre el shell tabular (sidebar + topbar + AdmTable + AdmFilters + page header) como bloqueante de US-050/051/060..065/068/082..087. Sin admin shell aterrizado, ninguna feature admin se puede empezar.
 
 ## Convención
 

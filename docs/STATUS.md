@@ -2,7 +2,7 @@
 
 Tracking operativo del avance por sprints de 7 días. La cadencia real del proyecto es **sprint**, no fase. Las fases del cronograma original del PFI quedan como anexo al final del doc para referencia académica del Ing. Copas.
 
-**Última actualización**: 2026-05-09 (audit canvas v3 app/landing/design-system: 48 artboards en 3 HTMLs; el módulo backoffice admin con sus 21 artboards y módulo propio aterriza en PR siguiente).
+**Última actualización**: 2026-05-12 (audit canvas v3 completo: 69 artboards en 4 HTMLs incluyendo el módulo backoffice/admin con 21 artboards y su propio shell tabular).
 
 ---
 
@@ -12,7 +12,7 @@ Tracking operativo del avance por sprints de 7 días. La cadencia real del proye
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
-| S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 app/landing/design-system + rediseño app (12 US nuevas para la app del alumno) | ✓ Done |
+| S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
 | S3 | próximo | TBD (foco a definir en planning) | ⏳ Pendiente |
 | S4+ | next+ | Backlog post-S3 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074) sin asignación de sprint hasta planning | ⏳ Pendiente |
 
@@ -178,14 +178,22 @@ Todas Done al cierre del sprint.
 - **Design pipeline**: canvas screenshots auto-generados via Playwright sobre `plan-b-direcciones.html`, embed en US frontend como mockup ref, doc canónico [`docs/design/design-system.md`](design/design-system.md). PR #90 merged.
 - **Em-dash audit**: 210 docs sweep + auditoría manual de 73 files (titles, headings, comentarios) post regla absoluta.
 - **Audit canvas v3 app/landing/design-system + rediseño app (día 7, 2026-05-09)**:
-  - Sync del canvas v2 con 3 HTMLs (design-system / landing / app) + 48 artboards totales. Pipeline de screenshots reescrita para iterar multi-HTML. El canvas admin/backoffice + sus 21 artboards aterrizan en PR siguiente.
+  - Sync del canvas v2 con 3 HTMLs (design-system / landing / app) + 48 artboards totales. Pipeline de screenshots reescrita para iterar multi-HTML.
   - **12 US nuevas creadas para la app del alumno**: US-054-f (landing), US-055 (borrar reseña), US-059-f (rediseño Auth+Onb), US-076-f (offline banner), US-077-f (panel notifs frontend), US-077-b + b-1/-b-2/-b-3 (Notifications BC backend splitada), US-078-f (errores 404/5xx), US-079-i (cambio password integrated), US-085 (strike system + pedir edición al autor, extiende US-051).
   - **15 US existentes actualizadas** con mockup refs + AC visual del canvas v3 (auth, onb, home, mi-carrera, planificar, reseñas, rankings, búsqueda, notif, cuenta, soporte).
   - **3 decisiones de scope zanjadas** en el rediseño app: US-051 scope (→ split a US-085 con strike system + pedir edición), US-072 modal cambiar contraseña (→ split a US-079-i integrated siguiendo patrón US-029-i / US-033-i), US-077-b backend de notifications (→ full BC siguiendo ADR-0040, splitado en 3 sub-slices b-1 / b-2 / b-3).
+  - PR `docs/v2-redesign` mergeado como [#94](https://github.com/lucasidev/plan-b/pull/94).
+- **Módulo backoffice/admin doc'd (día 7, 2026-05-12)**:
+  - Sync del 4° canvas (`plan-b-admin.html` + módulo `admin-shell.jsx` + `admin-screens-1/2/3.jsx`) con 21 artboards en 5 secciones (shell, afiliar uni, datos académicos, moderación, ops). Pipeline de screenshots ampliada para incluir el slug `admin` (prefix `admin-<section>-<id>.png` para evitar colisión con `onb` del app).
+  - **6 US nuevas creadas para el módulo admin**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-082 (importador CSV con preview/diff), US-083 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-087 (feed global de actividad reciente).
+  - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-087), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-068 (deshabilitar member + tabs detalle).
+  - **5 decisiones de scope zanjadas en el rediseño admin**: cola es por report (no por review, canvas manda), audit log per-BC (ADR-0042, cada módulo owns su projection con cross-BC views via Dapper UNION ALL), strike system+ocultar+banear all-in en US-085 (out de US-051), importador/merge/migración como US separadas, admin shell separado como bloqueante US-081.
+  - **1 ADR nuevo**: [ADR-0042](decisions/0042-audit-log-per-bc-no-central.md) (audit log per-BC, no central; extiende ADR-0031).
+  - PR `docs/backoffice-module` (este PR).
 
-### Audit del estado del frontend vs canvas (2026-05-09 v3)
+### Audit del estado del frontend vs canvas (2026-05-12 v3 full)
 
-Tercera iteración del canvas: ahora se splitea en HTMLs por área. En este PR aterrizan 3 canvases (app del alumno + landing + design system: 48 artboards en `plan-b-design-system.html`, `plan-b-landing.html`, `plan-b-app.html`). El canvas admin/backoffice (21 artboards en 5 secciones: shell, afiliar uni, datos académicos, moderación, ops) aterriza en PR siguiente con su módulo propio.
+Tercera iteración del canvas: ahora se splitea en HTMLs por área. **69 artboards totales** en 4 canvases (`plan-b-design-system.html` 1 · `plan-b-landing.html` 1 · `plan-b-app.html` 46 · `plan-b-admin.html` 21). PR `docs/v2-redesign` (#94) entrega los 3 primeros; PR `docs/backoffice-module` (este) entrega el admin.
 
 Reorganización del app canvas: ya no hay sección "Modales" ni "Errores globales" como separadas; los modales y errores ahora viven dentro de la sección a la que pertenecen (errores en Inicio, modales en Planificar / Reseñas / Cuenta).
 
@@ -276,8 +284,29 @@ Foco a definir en planning.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes.
 - US-017 / US-018 / US-019 / US-020 (publicar / editar / reportar reseñas backend): pendientes.
 - US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero.
-- US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-068 (admin/mod disable), US-080 (dashboard institucional): backlog open.
+- US-067 (cuentas staff), US-080 (dashboard institucional): backlog open.
 - Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
+
+**Backoffice / Admin (doc'd 2026-05-12, sin sprint asignado)**:
+
+US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se puede empezar (todas reusan AdmShell + AdmTable + AdmFilters).
+
+- [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante de todo el resto del módulo admin.**
+- [US-060](domain/user-stories/US-060.md) Gestionar University (CRUD universidades).
+- [US-061](domain/user-stories/US-061.md) Gestionar Career + CareerPlan.
+- [US-062](domain/user-stories/US-062.md) Gestionar Subject + Prerequisite (editor de materias + correlativas con validación DAG).
+- [US-063](domain/user-stories/US-063.md) Gestionar Teacher (catálogo docente + bulk-paste).
+- [US-065](domain/user-stories/US-065.md) Gestionar Commission + CommissionTeacher.
+- [US-082](domain/user-stories/US-082.md) Importador de plan con preview/diff (CSV).
+- [US-083](domain/user-stories/US-083.md) Merge de Subjects duplicados (detección + merge UI).
+- [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
+- [US-050](domain/user-stories/US-050.md) Cola de reportes (read model + vista del moderator, tone classifier).
+- [US-051](domain/user-stories/US-051.md) Resolver report (uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder).
+- [US-053](domain/user-stories/US-053.md) Audit log per-review (proyección Reviews, ADR-0042).
+- [US-068](domain/user-stories/US-068.md) Deshabilitar member + listado/detalle de usuarios con tabs.
+- [US-086](domain/user-stories/US-086.md) Audit log per-user (tab del detalle de usuario, cross-BC via Dapper UNION ALL).
+- [US-087](domain/user-stories/US-087.md) Feed global de actividad reciente (dashboard ops, cross-BC).
+- [US-085](domain/user-stories/US-085.md) Strike system + pedir edición + ocultar+banear (extiende US-051 con 3 opciones placeholder).
 
 ---
 

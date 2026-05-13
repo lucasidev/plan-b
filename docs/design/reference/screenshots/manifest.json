@@ -1,9 +1,10 @@
 {
-  "generatedAt": "2026-05-12T22:21:43.814Z",
+  "generatedAt": "2026-05-13T00:08:08.979Z",
   "sources": [
     "docs/design/reference/plan-b-design-system.html",
     "docs/design/reference/plan-b-landing.html",
-    "docs/design/reference/plan-b-app.html"
+    "docs/design/reference/plan-b-app.html",
+    "docs/design/reference/plan-b-admin.html"
   ],
   "artboards": [
     {
@@ -484,6 +485,216 @@
       "width": 1200,
       "height": 750,
       "file": "soporte-v2-sobre.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "intro",
+      "id": "adm-shell",
+      "label": "Shell · pantalla por defecto (Dashboard)",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-intro-adm-shell.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "onb",
+      "id": "adm-onb-1",
+      "label": "Paso 1 · Universidad",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-onb-adm-onb-1.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "onb",
+      "id": "adm-onb-2",
+      "label": "Paso 2 · Carrera",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-onb-adm-onb-2.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "onb",
+      "id": "adm-onb-3",
+      "label": "Paso 3 · Plan de estudios",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-onb-adm-onb-3.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "onb",
+      "id": "adm-onb-4",
+      "label": "Paso 4 · Catálogo inicial",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-onb-adm-onb-4.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "onb",
+      "id": "adm-onb-5",
+      "label": "Listo · resumen",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-onb-adm-onb-5.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-uni-list",
+      "label": "Universidades",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-uni-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-uni-det",
+      "label": "Universidad · UNSTA",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-uni-det.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-car-det",
+      "label": "Carrera · Ing. en Sistemas (UNSTA)",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-car-det.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-plan-edit",
+      "label": "Plan · editor de materias",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-plan-edit.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-corr-edit",
+      "label": "Plan · editor de correlativas con validación",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-corr-edit.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-imp",
+      "label": "Importador · pegar CSV / preview",
+      "width": 1280,
+      "height": 1000,
+      "file": "admin-datos-adm-imp.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-mat-list",
+      "label": "Materias · catálogo",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-mat-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-mat-merge",
+      "label": "Materias · merge de duplicados",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-mat-merge.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-doc-list",
+      "label": "Docentes",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-doc-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "datos",
+      "id": "adm-com-list",
+      "label": "Comisiones · oferta 2026·1c",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-datos-adm-com-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "mod",
+      "id": "adm-rep-list",
+      "label": "Reportes · cola",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-mod-adm-rep-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "mod",
+      "id": "adm-rep-det",
+      "label": "Reporte · detalle (decidir)",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-mod-adm-rep-det.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "mod",
+      "id": "adm-usr-list",
+      "label": "Usuarios",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-mod-adm-usr-list.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "mod",
+      "id": "adm-usr-det",
+      "label": "Usuario · detalle / acciones",
+      "width": 1280,
+      "height": 800,
+      "file": "admin-mod-adm-usr-det.png",
+      "ok": true
+    },
+    {
+      "canvas": "admin",
+      "section": "ops",
+      "id": "adm-mig",
+      "label": "Migración de plan · 2008 → 2023",
+      "width": 1280,
+      "height": 900,
+      "file": "admin-ops-adm-mig.png",
       "ok": true
     }
   ]
