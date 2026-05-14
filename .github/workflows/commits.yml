@@ -45,6 +45,19 @@ jobs:
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
 
+          # Si el PR ya cerró + branch borrado, los eventos tardíos
+          # (Rebase/Squash merge reescriben SHAs) llegan acá con un
+          # head.sha que ya no existe en el repo. Skipeo limpio en vez de
+          # fallar con "Invalid revision range".
+          if ! git cat-file -e "$head" 2>/dev/null; then
+            echo "Head commit $head no accesible (probable post-merge con branch borrada). Skipping."
+            exit 0
+          fi
+          if ! git cat-file -e "$base" 2>/dev/null; then
+            echo "Base commit $base no accesible. Skipping."
+            exit 0
+          fi
+
           shas=$(git rev-list --reverse "$base..$head")
           if [ -z "$shas" ]; then
             echo "No commits to validate (PR base == head)."
