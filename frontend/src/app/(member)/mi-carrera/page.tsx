@@ -1,9 +1,9 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { CorrelativasGraph } from '@/features/mi-carrera/components/correlativas-graph';
+import { HistoryTab } from '@/features/mi-carrera/components/history-tab';
 import { PlanGrid } from '@/features/mi-carrera/components/plan-grid';
 import { SubjectList } from '@/features/mi-carrera/components/subject-list';
-import { TabStub } from '@/features/mi-carrera/components/tab-stub';
 import { TabsNav } from '@/features/mi-carrera/components/tabs-nav';
 import { TeacherList } from '@/features/mi-carrera/components/teacher-list';
 import { plan } from '@/features/mi-carrera/data/plan';
@@ -17,11 +17,15 @@ import { cn } from '@/lib/utils';
  *
  * Server component: lee `?tab=` desde `searchParams`, valida con
  * `parseTab()` (cualquier valor inválido cae a `plan`), pasa el activo
- * a `TabsNav` para el highlight + a la sección que renderea el stub
- * correspondiente.
+ * a `TabsNav` para el highlight + a la sección que renderea el componente
+ * real del tab.
  *
- * Cuando los slices US-045-b/c/d/e aterricen, este `switch` reemplaza
- * los `<TabStub />` por los componentes reales (`<PlanGrid />`, etc.).
+ * Los 5 tabs ya tienen sus slices implementados:
+ *   - `plan` → PlanGrid (US-045-b)
+ *   - `correlativas` → CorrelativasGraph (US-045-c)
+ *   - `catalogo` → SubjectList (US-045-d)
+ *   - `docentes` → TeacherList (US-045-d)
+ *   - `historial` → HistoryTab (US-045-e)
  *
  * El guard de `(member)/layout.tsx` ya redirige al onboarding si el
  * user no tiene StudentProfile (US-037-f).
@@ -85,10 +89,7 @@ export default async function MiCarreraPage({
   );
 }
 
-/**
- * Render del tab activo. Por ahora todos son `TabStub`. Cuando aterricen
- * los slices, cada `case` reemplaza el stub por el componente real.
- */
+/** Render del tab activo. */
 function TabContent({ tab }: { tab: MiCarreraTabId }) {
   switch (tab) {
     case 'plan':
@@ -100,6 +101,6 @@ function TabContent({ tab }: { tab: MiCarreraTabId }) {
     case 'docentes':
       return <TeacherList />;
     case 'historial':
-      return <TabStub label="Historial académico" futureUs="US-045-e" />;
+      return <HistoryTab />;
   }
 }
