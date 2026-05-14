@@ -1,108 +1,104 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import type { PlannedSubject, PlanYear } from '@/features/mi-carrera/data/plan';
+import type { GraphEdge, GraphNode } from '@/features/mi-carrera/data/correlativas-mock';
 import { CorrelativasGraph } from './correlativas-graph';
 
-const subject = (
-  code: string,
-  correlativas: string[] = [],
-  state: 'AP' | 'CU' | 'PD' = 'PD',
-): PlannedSubject => ({
-  code,
-  name: `${code} fixture`,
-  modality: '1c',
+const node = (id: string, x: number, y: number, state: GraphNode['state'] = 'AP'): GraphNode => ({
+  id,
+  name: `${id} fixture`,
+  x,
+  y,
   state,
-  grade: state === 'AP' ? 8 : null,
-  correlativas,
 });
 
-const planFixture: PlanYear[] = [
-  {
-    year: 1,
-    subjects: [subject('A', [], 'AP'), subject('B', [], 'AP')],
-  },
-  {
-    year: 2,
-    subjects: [subject('C', ['A']), subject('D', ['B'])],
-  },
-  {
-    year: 3,
-    subjects: [subject('E', ['C', 'D'])],
-  },
+const fixtureNodes: GraphNode[] = [
+  node('A', 0, 0, 'AP'),
+  node('B', 1, 0, 'CU'),
+  node('C', 1, 1, 'AV'),
+  node('D', 2, 0, 'PL'),
+  node('E', 2, 1, 'BL'),
+];
+
+const fixtureEdges: GraphEdge[] = [
+  ['A', 'B'],
+  ['A', 'C'],
+  ['B', 'D'],
+  ['C', 'D'],
+  ['B', 'E'],
 ];
 
 describe('CorrelativasGraph', () => {
-  it('renderea un grupo svg por cada nodo del plan', () => {
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
-    const nodes = container.querySelectorAll('g[data-code]');
-    expect(nodes).toHaveLength(5);
+  it('renderea un grupo SVG por cada nodo del mock', () => {
+    const { container } = render(
+      <CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />,
+    );
+    expect(container.querySelectorAll('g[data-code]')).toHaveLength(5);
   });
 
-  it('aplica data-state al nodo según el plan', () => {
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
+  it('aplica data-state a cada nodo según el mock', () => {
+    const { container } = render(
+      <CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />,
+    );
     expect(container.querySelector('g[data-code="A"]')).toHaveAttribute('data-state', 'AP');
-    expect(container.querySelector('g[data-code="C"]')).toHaveAttribute('data-state', 'PD');
+    expect(container.querySelector('g[data-code="B"]')).toHaveAttribute('data-state', 'CU');
+    expect(container.querySelector('g[data-code="C"]')).toHaveAttribute('data-state', 'AV');
+    expect(container.querySelector('g[data-code="D"]')).toHaveAttribute('data-state', 'PL');
+    expect(container.querySelector('g[data-code="E"]')).toHaveAttribute('data-state', 'BL');
   });
 
-  it('muestra leyenda con los 3 estados', () => {
-    render(<CorrelativasGraph plan={planFixture} />);
+  it('muestra leyenda con los 5 estados visuales', () => {
+    render(<CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />);
     expect(screen.getByText('Leyenda')).toBeInTheDocument();
-    expect(screen.getByText('Aprobada')).toBeInTheDocument();
-    expect(screen.getByText('Cursando')).toBeInTheDocument();
-    expect(screen.getByText('Pendiente')).toBeInTheDocument();
+    for (const label of ['aprobada', 'cursando', 'disponible', 'planeada', 'bloqueada']) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
   });
 
-  it('al hacer click en un nodo, marca data-selected=true y data-ancestor en sus ancestros', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
-    const nodeE = container.querySelector('g[data-code="E"]') as HTMLElement;
-    await user.click(nodeE);
-
-    expect(nodeE).toHaveAttribute('data-selected', 'true');
-    // A, B, C, D son ancestros transitivos de E
-    expect(container.querySelector('g[data-code="A"]')).toHaveAttribute('data-ancestor', 'true');
-    expect(container.querySelector('g[data-code="C"]')).toHaveAttribute('data-ancestor', 'true');
+  it('cada nodo es un link al drawer /mi-carrera/materia/[id]', () => {
+    render(<CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />);
+    expect(screen.getByLabelText(/A fixture, aprobada/).closest('a')).toHaveAttribute(
+      'href',
+      '/mi-carrera/materia/A',
+    );
   });
 
-  it('al click en nodo root, marca descendientes', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
-    const nodeA = container.querySelector('g[data-code="A"]') as HTMLElement;
-    await user.click(nodeA);
-
-    expect(container.querySelector('g[data-code="C"]')).toHaveAttribute('data-descendant', 'true');
-    expect(container.querySelector('g[data-code="E"]')).toHaveAttribute('data-descendant', 'true');
+  it('muestra etiquetas de años (Año 1 hasta Año 5)', () => {
+    render(<CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />);
+    for (const label of ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5']) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
   });
 
-  it('muestra panel de selección con CTA "Ver detalle" cuando hay nodo seleccionado', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
-    await user.click(container.querySelector('g[data-code="E"]') as HTMLElement);
-
-    expect(screen.getByText(/Materia seleccionada/)).toBeInTheDocument();
-    const cta = screen.getByText(/Ver detalle/);
-    expect(cta.closest('a')).toHaveAttribute('href', '/mi-carrera/materia/E');
+  it('renderea un path por cada arista válida', () => {
+    const { container } = render(
+      <CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />,
+    );
+    expect(container.querySelectorAll('svg path')).toHaveLength(5);
   });
 
-  it('click en el mismo nodo dos veces deselecciona', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<CorrelativasGraph plan={planFixture} />);
-    const nodeE = container.querySelector('g[data-code="E"]') as HTMLElement;
-    await user.click(nodeE);
-    expect(nodeE).toHaveAttribute('data-selected', 'true');
-    await user.click(nodeE);
-    expect(nodeE).toHaveAttribute('data-selected', 'false');
+  it('ignora aristas a nodos inexistentes', () => {
+    const edgesConGhost: GraphEdge[] = [
+      ['A', 'B'],
+      ['A', 'GHOST'],
+    ];
+    const { container } = render(
+      <CorrelativasGraph nodes={fixtureNodes} edges={edgesConGhost} focusId={null} />,
+    );
+    expect(container.querySelectorAll('svg path')).toHaveLength(1);
   });
 
-  it('renderea empty state si el plan no tiene correlativas', () => {
-    const planSinCorr: PlanYear[] = [{ year: 1, subjects: [subject('X', []), subject('Y', [])] }];
-    render(<CorrelativasGraph plan={planSinCorr} />);
-    expect(screen.getByText(/Tu plan no tiene correlativas modeladas/)).toBeInTheDocument();
+  it('muestra tip default cuando no hay foco', () => {
+    render(<CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId={null} />);
+    expect(screen.getByText(/Tocá un nodo para ver el detalle/)).toBeInTheDocument();
+    expect(screen.queryByText(/Estás cursando/)).not.toBeInTheDocument();
   });
 
-  it('renderea empty state grande si el plan está vacío', () => {
-    render(<CorrelativasGraph plan={[]} />);
-    expect(screen.getByText(/Tu plan no tiene materias modeladas/)).toBeInTheDocument();
+  it('cuando hay focus, el banner menciona la materia y las que habilita', () => {
+    render(<CorrelativasGraph nodes={fixtureNodes} edges={fixtureEdges} focusId="B" />);
+    const banner = screen.getByText(/Estás cursando/).closest('div');
+    expect(banner).toHaveTextContent('B');
+    // B habilita D + E
+    expect(banner).toHaveTextContent('D');
+    expect(banner).toHaveTextContent('E');
   });
 });

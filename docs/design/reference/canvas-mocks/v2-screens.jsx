@@ -655,16 +655,202 @@ function V2CarreraPlan() {
 }
 
 function V2CarreraGrafo() {
+  // Plan acotado por años, con correlativas reales. Layout: columnas por año, filas por slot.
+  // x,y son coords lógicas dentro de la grilla.
+  const nodes = [
+    // Año 1
+    { id:'MAT101', name:'Análisis Mat. I',     x:0, y:0, st:'AP' },
+    { id:'ALG101', name:'Álgebra',              x:0, y:1, st:'AP' },
+    { id:'PRG101', name:'Programación I',       x:0, y:2, st:'AP' },
+    { id:'MAT102', name:'Análisis Mat. II',     x:0, y:3, st:'AP' },
+    { id:'PRG102', name:'Programación II',      x:0, y:4, st:'AP' },
+    // Año 2
+    { id:'FIS201', name:'Física I',              x:1, y:0, st:'AP' },
+    { id:'BD201',  name:'Bases de Datos',       x:1, y:1, st:'AP' },
+    { id:'EDA201', name:'Estructuras de Datos', x:1, y:2, st:'AP' },
+    { id:'MAT201', name:'Probabilidad',          x:1, y:3, st:'AP' },
+    // Año 3
+    { id:'ISW301', name:'Ing. de Software I',    x:2, y:0, st:'AP' },
+    { id:'COM301', name:'Comunic. de Datos',     x:2, y:2, st:'AP' },
+    { id:'BD301',  name:'BD II',                 x:2, y:1, st:'AP' },
+    // Año 4 (cursando)
+    { id:'ISW302', name:'Ing. de Software II',   x:3, y:0, st:'CU' },
+    { id:'INT302', name:'IA I',                  x:3, y:1, st:'CU' },
+    { id:'SEG302', name:'Seguridad',             x:3, y:2, st:'CU' },
+    { id:'MAT401', name:'Mat. Aplicada',         x:3, y:3, st:'CU' },
+    { id:'MOV302', name:'Apps Móviles',          x:3, y:4, st:'AV' },
+    { id:'QUI201', name:'Química',               x:3, y:5, st:'CU' },
+    // Año 5 (planeadas / bloqueadas)
+    { id:'INT402', name:'IA II',                 x:4, y:0, st:'PL' },
+    { id:'SEG402', name:'Sist. Distribuidos',    x:4, y:1, st:'BL' },
+    { id:'TES501', name:'Trabajo Final',         x:4, y:2, st:'BL' },
+  ];
+  const edges = [
+    ['MAT101','MAT102'],['MAT101','FIS201'],
+    ['ALG101','MAT201'],
+    ['PRG101','PRG102'],
+    ['PRG102','BD201'],['PRG102','EDA201'],
+    ['MAT102','MAT201'],
+    ['BD201','ISW301'],['BD201','BD301'],
+    ['EDA201','ISW301'],['EDA201','INT302'],
+    ['ISW301','ISW302'],
+    ['MAT201','INT302'],
+    ['COM301','SEG302'],
+    ['BD301','ISW302'],
+    ['INT302','INT402'],
+    ['ISW302','SEG402'],['SEG302','SEG402'],
+    ['ISW302','TES501'],
+    ['MAT201','MAT401'],
+  ];
+
+  // Estado tokens (mismos que el plan)
+  const tone = {
+    AP: { bg:'oklch(0.94 0.05 145)', fg:'oklch(0.42 0.09 145)', dot:'oklch(0.55 0.13 145)', label:'aprobada' },
+    CU: { bg:'oklch(0.93 0.06 70)',  fg:'oklch(0.45 0.12 60)',  dot:'oklch(0.62 0.16 60)',  label:'cursando' },
+    AV: { bg:'oklch(0.94 0.012 80)', fg:'oklch(0.35 0.012 80)', dot:'oklch(0.58 0.02 80)',  label:'disponible' },
+    PL: { bg:'oklch(0.92 0.05 290)', fg:'oklch(0.42 0.14 290)', dot:'oklch(0.55 0.14 290)', label:'planeada' },
+    BL: { bg:'#f7efe5',              fg:'var(--ink-4)',         dot:'var(--ink-4)',         label:'bloqueada' },
+  };
+
+  // Coords reales (px)
+  const COL_W = 220, ROW_H = 56, PAD_X = 36, PAD_Y = 40;
+  const NODE_W = 168, NODE_H = 38;
+  const VIEW_W = PAD_X*2 + 5 * COL_W;
+  const VIEW_H = PAD_Y*2 + 6 * ROW_H + 24;
+
+  const xOf = n => PAD_X + n.x * COL_W;
+  const yOf = n => PAD_Y + 24 + n.y * ROW_H;
+
+  // Edge paths (curva horizontal entre nodos)
+  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
+  const edgePath = (a, b) => {
+    const ax = xOf(a) + NODE_W, ay = yOf(a) + NODE_H/2;
+    const bx = xOf(b),          by = yOf(b) + NODE_H/2;
+    const mx = (ax + bx) / 2;
+    return `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
+  };
+
   return (
-    <div className="card" style={{minHeight:380, display:'grid', placeItems:'center', color:'var(--ink-3)', textAlign:'center'}}>
-      <div>
-        <div style={{
-          fontFamily:'var(--font-mono)', fontSize:11, color:'var(--accent-ink)',
-          letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8,
-        }}>placeholder</div>
-        <div style={{fontSize:15, color:'var(--ink-2)'}}>
-          Grafo interactivo de correlativas — reuso del componente del v1.
-        </div>
+    <div style={{display:'flex', flexDirection:'column', gap:14}}>
+      {/* leyenda */}
+      <div style={{
+        display:'flex', alignItems:'center', gap:18,
+        padding:'10px 16px',
+        background:'var(--bg-card)',
+        border:'1px solid var(--line)',
+        borderRadius:10,
+        fontSize:12, color:'var(--ink-3)', flexWrap:'wrap',
+      }}>
+        <span style={{
+          fontFamily:'var(--font-mono)', fontSize:10.5,
+          letterSpacing:'0.08em', textTransform:'uppercase',
+        }}>Leyenda</span>
+        {Object.entries(tone).map(([k, t]) => (
+          <span key={k} style={{display:'inline-flex', alignItems:'center', gap:6}}>
+            <span style={{width:12, height:12, borderRadius:3, background:t.bg, border:`1px solid ${t.dot}`}}/>
+            <span style={{color:'var(--ink-2)'}}>{t.label}</span>
+          </span>
+        ))}
+        <span style={{flex:1}}/>
+        <span style={{fontSize:11.5}}>
+          Las flechas van de <b style={{color:'var(--ink-2)'}}>requisito</b> → <b style={{color:'var(--ink-2)'}}>materia que habilita</b>
+        </span>
+      </div>
+
+      {/* grafo */}
+      <div className="card" style={{padding:0, overflow:'auto'}}>
+        <svg width={VIEW_W} height={VIEW_H} style={{display:'block', minWidth:VIEW_W}}>
+          {/* etiquetas de año */}
+          {['Año 1','Año 2','Año 3','Año 4','Año 5'].map((y, i) => (
+            <g key={y}>
+              <text
+                x={PAD_X + i * COL_W + NODE_W/2} y={PAD_Y + 12}
+                textAnchor="middle"
+                style={{
+                  fontFamily:'var(--font-mono)', fontSize:10.5,
+                  fill:'var(--ink-3)', letterSpacing:'0.08em', textTransform:'uppercase',
+                }}>
+                {y}
+              </text>
+              {i > 0 && (
+                <line
+                  x1={PAD_X + i * COL_W - 26} y1={PAD_Y}
+                  x2={PAD_X + i * COL_W - 26} y2={VIEW_H - PAD_Y}
+                  stroke="var(--line)" strokeDasharray="2 4"/>
+              )}
+            </g>
+          ))}
+
+          {/* aristas */}
+          {edges.map(([fromId, toId], i) => {
+            const a = byId[fromId], b = byId[toId];
+            if (!a || !b) return null;
+            // resaltar las que tocan ISW302 (la materia que está cursando)
+            const highlight = fromId === 'ISW302' || toId === 'ISW302';
+            return (
+              <path
+                key={i}
+                d={edgePath(a, b)}
+                fill="none"
+                stroke={highlight ? 'var(--accent)' : 'var(--line)'}
+                strokeWidth={highlight ? 1.5 : 1}
+                opacity={highlight ? 0.9 : 0.7}
+              />
+            );
+          })}
+
+          {/* nodos */}
+          {nodes.map(n => {
+            const t = tone[n.st];
+            const focused = n.id === 'ISW302';
+            return (
+              <g key={n.id} style={{cursor:'pointer'}}>
+                <rect
+                  x={xOf(n)} y={yOf(n)}
+                  width={NODE_W} height={NODE_H} rx={7} ry={7}
+                  fill={t.bg}
+                  stroke={focused ? 'var(--accent)' : t.dot}
+                  strokeWidth={focused ? 1.5 : 0.8}
+                  opacity={n.st === 'BL' ? 0.55 : 1}
+                />
+                <text
+                  x={xOf(n) + 10} y={yOf(n) + 14}
+                  style={{
+                    fontFamily:'var(--font-mono)', fontSize:9.5,
+                    fill:t.fg, letterSpacing:'0.04em',
+                  }}>
+                  {n.id}
+                </text>
+                <text
+                  x={xOf(n) + 10} y={yOf(n) + 28}
+                  style={{
+                    fontFamily:'var(--font-ui)', fontSize:11.5, fontWeight:500,
+                    fill:'var(--ink)',
+                  }}>
+                  {n.name}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* nota lateral */}
+      <div style={{
+        display:'flex', gap:12, padding:'10px 14px',
+        background:'var(--bg-elev)',
+        border:'1px solid var(--line)', borderRadius:10,
+        fontSize:12, color:'var(--ink-2)',
+      }}>
+        <span style={{
+          flexShrink:0, width:18, height:18, borderRadius:'50%',
+          background:'var(--accent-soft)', color:'var(--accent-ink)',
+          display:'grid', placeItems:'center', fontSize:11, fontWeight:600,
+        }}>i</span>
+        <span>
+          Tocá un nodo para ver detalle de la materia y qué otras se desbloquean al aprobarla.
+          Estás cursando <b>ISW302</b> — al aprobarla habilitás <b>SEG402</b> y <b>TES501</b>.
+        </span>
       </div>
     </div>
   );

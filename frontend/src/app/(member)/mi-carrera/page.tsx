@@ -94,7 +94,7 @@ function TabContent({ tab }: { tab: MiCarreraTabId }) {
     case 'plan':
       return <PlanGrid plan={plan} />;
     case 'correlativas':
-      return <CorrelativasGraph plan={plan} />;
+      return <CorrelativasGraph />;
     case 'catalogo':
       return <SubjectList plan={plan} />;
     case 'docentes':
