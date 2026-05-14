@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - columna izq con En curso + Más adelante (US-044-b) (home) — [`3ac53a4`](https://github.com/lucasidev/plan-b/commit/3ac53a47045bde997cbd8056effbd2ea3e38e092)
 - columna der con Reseñá + Planificar + Movimientos (US-044-c) (home) — [`ce187bd`](https://github.com/lucasidev/plan-b/commit/ce187bd408e6dbd268edbdb74a622a1191395153)
 - port literal del tab Plan con heatmap por año (US-045-b) (mi-carrera) — [`e6507d8`](https://github.com/lucasidev/plan-b/commit/e6507d843260be56d3ad8bb73825c9e68ea7676f)
+- tabs Catalogo + Docentes + drawers de detalle (US-045-d) (mi-carrera) — [`466ad27`](https://github.com/lucasidev/plan-b/commit/466ad278d19c001d209073a97dcb81d37568375b)
+- grafo SVG de correlativas (US-045-c) (mi-carrera) — [`32caad1`](https://github.com/lucasidev/plan-b/commit/32caad1072ac6f0db32ae87136643e1da44e04af)
 
 ### Fixed
 
@@ -56,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sign-up chain espera /onboarding/welcome (no /home) post US-037-f (e2e) — [`1a4fa31`](https://github.com/lucasidev/plan-b/commit/1a4fa31e1068e57d4bf9b8dfed7790357de23a1e)
 - broken links a US/capturas que aterrizan en PR del backoffice (docs) — [`294b604`](https://github.com/lucasidev/plan-b/commit/294b60421753daefd16688e388eed02936e3f0f7)
 - broken link ADR-0042 en screenshots README (path relativo) (docs) — [`357eb83`](https://github.com/lucasidev/plan-b/commit/357eb83c41d5a556925d76c53fddd60bca3a7252)
+- header port literal del canvas en vez de copy inventado (mi-carrera) — [`4fb7ffa`](https://github.com/lucasidev/plan-b/commit/4fb7ffab6e9321f3f2ce8082802c82484df37547)
+- grafo de correlativas siguiendo canvas actualizado (mi-carrera) — [`d74b270`](https://github.com/lucasidev/plan-b/commit/d74b27081daeb9cd586b76095a041bec8eddb826)
 
 ### Changed
 
