@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - shell v2 con greeting + período progress card (US-044-a) (home) — [`c172cb7`](https://github.com/lucasidev/plan-b/commit/c172cb7a4e23765df88ec001a725774f2ab23e28)
 - columna izq con En curso + Más adelante (US-044-b) (home) — [`3ac53a4`](https://github.com/lucasidev/plan-b/commit/3ac53a47045bde997cbd8056effbd2ea3e38e092)
 - columna der con Reseñá + Planificar + Movimientos (US-044-c) (home) — [`ce187bd`](https://github.com/lucasidev/plan-b/commit/ce187bd408e6dbd268edbdb74a622a1191395153)
+- port literal del tab Plan con heatmap por año (US-045-b) (mi-carrera) — [`e6507d8`](https://github.com/lucasidev/plan-b/commit/e6507d843260be56d3ad8bb73825c9e68ea7676f)
 
 ### Fixed
 
