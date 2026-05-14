@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - broken link ADR-0042 en screenshots README (path relativo) (docs) — [`357eb83`](https://github.com/lucasidev/plan-b/commit/357eb83c41d5a556925d76c53fddd60bca3a7252)
 - header port literal del canvas en vez de copy inventado (mi-carrera) — [`4fb7ffa`](https://github.com/lucasidev/plan-b/commit/4fb7ffab6e9321f3f2ce8082802c82484df37547)
 - grafo de correlativas siguiendo canvas actualizado (mi-carrera) — [`d74b270`](https://github.com/lucasidev/plan-b/commit/d74b27081daeb9cd586b76095a041bec8eddb826)
+- skip commits validation cuando head ya no existe (post-merge) (ci) — [`bc43bbd`](https://github.com/lucasidev/plan-b/commit/bc43bbdd7a55754503457f193508337ee2a49f05)
 
 ### Changed
 
