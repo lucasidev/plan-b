@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - port literal del tab Plan con heatmap por año (US-045-b) (mi-carrera) — [`e6507d8`](https://github.com/lucasidev/plan-b/commit/e6507d843260be56d3ad8bb73825c9e68ea7676f)
 - tabs Catalogo + Docentes + drawers de detalle (US-045-d) (mi-carrera) — [`466ad27`](https://github.com/lucasidev/plan-b/commit/466ad278d19c001d209073a97dcb81d37568375b)
 - grafo SVG de correlativas (US-045-c) (mi-carrera) — [`32caad1`](https://github.com/lucasidev/plan-b/commit/32caad1072ac6f0db32ae87136643e1da44e04af)
+- tab Historial timeline por período + KPIs (US-045-e) (mi-carrera) — [`f0c1f3c`](https://github.com/lucasidev/plan-b/commit/f0c1f3c09baefa813f8200f7650ce4e7ec50101b)
 
 ### Fixed
 
