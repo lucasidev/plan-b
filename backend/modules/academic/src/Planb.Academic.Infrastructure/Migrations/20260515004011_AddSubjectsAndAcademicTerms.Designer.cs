@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Planb.Academic.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Planb.Academic.Infrastructure.Persistence;
 namespace Planb.Academic.Infrastructure.Migrations
 {
     [DbContext(typeof(AcademicDbContext))]
-    partial class AcademicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260515004011_AddSubjectsAndAcademicTerms")]
+    partial class AddSubjectsAndAcademicTerms
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

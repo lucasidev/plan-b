@@ -109,4 +109,66 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
         return rows.AsList();
     }
+
+    public async Task<bool> IsSubjectInPlanAsync(
+        Guid subjectId, Guid careerPlanId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT EXISTS (
+                SELECT 1
+                FROM academic.subjects
+                WHERE id = @SubjectId
+                  AND career_plan_id = @CareerPlanId
+            );";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.ExecuteScalarAsync<bool>(
+            new CommandDefinition(
+                sql,
+                new { SubjectId = subjectId, CareerPlanId = careerPlanId },
+                cancellationToken: ct));
+    }
+
+    public async Task<IReadOnlyList<SubjectListItem>> ListSubjectsByCareerPlanAsync(
+        Guid careerPlanId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id             AS Id,
+                career_plan_id AS CareerPlanId,
+                code           AS Code,
+                name           AS Name,
+                year_in_plan   AS YearInPlan,
+                term_in_year   AS TermInYear,
+                term_kind      AS TermKind
+            FROM academic.subjects
+            WHERE career_plan_id = @CareerPlanId
+            ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<SubjectListItem>(
+            new CommandDefinition(sql, new { CareerPlanId = careerPlanId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
+        Guid universityId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id            AS Id,
+                university_id AS UniversityId,
+                year          AS Year,
+                number        AS Number,
+                kind          AS Kind,
+                label         AS Label
+            FROM academic.academic_terms
+            WHERE university_id = @UniversityId
+            ORDER BY year DESC, number DESC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<AcademicTermListItem>(
+            new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
+        return rows.AsList();
+    }
 }

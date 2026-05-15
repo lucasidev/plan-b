@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Universities;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -40,6 +42,8 @@ public sealed class AcademicSeeder
 
         await SeedUniversitiesAsync(now, ct);
         await SeedCareersAndPlansAsync(now, ct);
+        await SeedSubjectsAsync(now, ct);
+        await SeedAcademicTermsAsync(now, ct);
 
         if (_db.ChangeTracker.HasChanges())
         {
@@ -119,6 +123,76 @@ public sealed class AcademicSeeder
             _logger.LogInformation(
                 "AcademicSeeder: inserted {Careers} careers and {Plans} career plans",
                 careersInserted, plansInserted);
+        }
+    }
+
+    private async Task SeedSubjectsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.Subjects
+            .AsNoTracking()
+            .Select(s => s.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.Subjects)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.Subjects.Add(Subject.Hydrate(
+                record.Id,
+                record.CareerPlanId,
+                record.Code,
+                record.Name,
+                record.YearInPlan,
+                record.TermInYear,
+                record.TermKind,
+                record.WeeklyHours,
+                record.TotalHours,
+                description: null,
+                createdAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation(
+                "AcademicSeeder: inserted {Count} subjects", inserted);
+        }
+    }
+
+    private async Task SeedAcademicTermsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.AcademicTerms
+            .AsNoTracking()
+            .Select(t => t.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.AcademicTerms)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.AcademicTerms.Add(AcademicTerm.Hydrate(
+                record.Id,
+                record.UniversityId,
+                record.Year,
+                record.Number,
+                record.Kind,
+                record.StartDate,
+                record.EndDate,
+                record.EnrollmentOpens,
+                record.EnrollmentCloses,
+                record.Label,
+                createdAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation(
+                "AcademicSeeder: inserted {Count} academic terms", inserted);
         }
     }
 }

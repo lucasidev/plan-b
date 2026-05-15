@@ -44,4 +44,29 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<CareerPlanListItem>> ListCareerPlansByCareerAsync(
         Guid careerId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Devuelve true si la materia (<paramref name="subjectId"/>) pertenece al plan
+    /// (<paramref name="careerPlanId"/>). Caller: handler de US-013 (cargar enrollment)
+    /// que necesita validar que el alumno no esté cargando una materia que no está en su
+    /// plan, sin abrir nav properties cross-schema (ADR-0017).
+    /// </summary>
+    Task<bool> IsSubjectInPlanAsync(
+        Guid subjectId, Guid careerPlanId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista las materias de un CareerPlan. Caller: select del form de US-013. Orden por
+    /// (year_in_plan, term_in_year, code) para que el dropdown muestre las materias
+    /// agrupadas por año/cuatrimestre de manera natural.
+    /// </summary>
+    Task<IReadOnlyList<SubjectListItem>> ListSubjectsByCareerPlanAsync(
+        Guid careerPlanId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista los períodos lectivos de una universidad. Caller: select del form de US-013
+    /// para asociar la cursada a un term. Orden DESC por (year, number) para mostrar los
+    /// más recientes primero (el caso más frecuente).
+    /// </summary>
+    Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
+        Guid universityId, CancellationToken ct = default);
 }
