@@ -17,13 +17,31 @@
 #     SOLO cuando: (a) el ecosistema lo fuerza, (b) hay CVE (security advisory
 #     bypass del ignore — Dependabot abre PR igual).
 #
-#   - **Tier 2 (libs cohesivas)**: lucide-react, BCrypt.Net-Next, Carter, Dapper,
-#     iron-session, jose, etc. Política: auto minor+patch agrupados, major queda
+#   - **Tier 2 (libs cohesivas + test harness)**: lucide-react, BCrypt.Net-Next,
+#     Carter, Dapper, iron-session, jose, **vitest**, **@playwright/test**,
+#     **typescript**, etc. Política: auto minor+patch agrupados, major queda
 #     como PR individual con review humano.
+#     Nota: vitest + @playwright/test + typescript movidos del tier 3 al tier 2
+#     después del incident del 2026-05-15 (PR #92): vitest v4 cambió el bundler
+#     a Rolldown y dropeó 87 tests. Si rompe el harness, no podés ni medir el
+#     daño antes de mergear; el "fácil revertir" del tier 3 no aplica a infra
+#     de tests.
 #
-#   - **Tier 3 (devDeps / tooling)**: @biomejs/biome, vitest, @playwright/test,
-#     @types/*, typescript, Shouldly, xunit. Política: auto todo (incluso majors).
+#   - **Tier 3 (devDeps puro / formatters / type stubs)**: @biomejs/biome,
+#     @types/*, Shouldly, xunit. Política: auto todo (incluso majors).
 #     Blast radius chico, fácil revertir.
+#
+# **Incidents conocidos** (informan ajustes futuros):
+#   - **2026-05-15 PR #93**: WolverineFx 5.37.2 → 5.39.0 (minor, "safe" por
+#     política tier 1 ignore-major) introdujo breaking en `WebApplicationFactory`:
+#     `service collection cannot be modified, read-only`. Rompió TODOS los
+#     integration tests. Lección: tier 1 ignore-major no es suficiente para
+#     libs que rompen en minor; cada bump de WolverineFx debe correr CI antes
+#     de merge, aunque sea minor+patch agrupado (lo cual ya pasa con el CI
+#     gate, pero conviene NO auto-merge sin review humano).
+#   - **2026-05-15 PR #92**: vitest 2.1.9 → 4.1.6 (major) rompió parse TSX en
+#     14 component tests (cambio de bundler esbuild → Rolldown). Trigger del
+#     movimiento vitest tier 3 → tier 2.
 #
 # Schedule: lunes temprano. Cap de PRs abiertos por ecosistema para no inundar.
 # Conventional Commits prefix configurado para que cada PR pase pr-title.yml y
@@ -107,6 +125,18 @@ updates:
       - dependency-name: "@types/react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
+      # Tier 2 (test harness + typescript): major manual. Incident 2026-05-15
+      # PR #92: vitest 4 cambió bundler (esbuild → Rolldown) y rompió 14
+      # component tests TSX. Cuando el harness se rompe, no podés ni medir el
+      # daño antes de mergear; los majors necesitan review + migración manual.
+      - dependency-name: "vitest"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@vitest/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@playwright/test"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
     groups:
       frontend-minor-patch:
