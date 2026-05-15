@@ -26,6 +26,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // server-only es un assertion runtime de Next.js que lanza si se importa
+      // desde un client component. Vitest no es ningún component "type" - los
+      // tests que importan código server-side (api-client.server.ts) caerían
+      // en el throw. Aliasamos a un noop para que el harness pase.
+      'server-only': path.resolve(__dirname, './test-shims/server-only.ts'),
     },
   },
 });

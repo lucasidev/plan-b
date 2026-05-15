@@ -11,6 +11,7 @@ using Planb.Enrollments.Infrastructure;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
+using Planb.Identity.Infrastructure.Security;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Abstractions.DomainEvents;
 using Serilog;
@@ -133,6 +134,11 @@ builder.Services.AddAcademicInfrastructure(builder.Configuration);
 builder.Services.AddEnrollmentsApplication();
 builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 
+// JwtBearer middleware (cierre del workaround pre-JWT). Endpoints /api/me/* leen el UserId
+// del claim `sub` validado por este middleware, no del body/query. Token llega desde el
+// header Authorization: Bearer o la cookie planb_session (frontend de Next.js).
+builder.Services.AddIdentityJwtAuthentication(builder.Configuration);
+
 // In Development, apply EF migrations on host startup. Lives as a hosted
 // service so WebApplicationFactory tests get the same treatment as `just dev`.
 // See DevMigrationsHostedService for the why.
@@ -175,6 +181,7 @@ builder.Services.AddHostedService<AcademicSeedHostedService>();
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+app.UseIdentityJwtAuthentication();
 app.MapCarter();
 
 app.MapGet("/health", () => Results.Ok(new

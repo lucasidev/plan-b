@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { apiFetch } from '@/lib/api-client';
+import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import { onboardingCareerSchema } from './schema';
 import type { OnboardingCareerFormState } from './types';
@@ -48,10 +48,9 @@ export async function submitCareerAction(
     };
   }
 
-  const response = await apiFetch('/api/me/student-profiles', {
+  const response = await apiFetchAuthenticated('/api/me/student-profiles', {
     method: 'POST',
     body: JSON.stringify({
-      userId: session.userId,
       careerPlanId: parsed.data.careerPlanId,
       enrollmentYear: parsed.data.enrollmentYear,
     }),
