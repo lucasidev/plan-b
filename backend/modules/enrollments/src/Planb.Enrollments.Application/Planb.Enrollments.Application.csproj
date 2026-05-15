@@ -11,5 +11,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Enrollments.Domain\Planb.Enrollments.Domain.csproj" />
+    <!-- Cross-BC contracts (ADR-0017): solo Application/Contracts/, no Domain ni Infrastructure
+         de los otros módulos. Eso garantiza que Enrollments no se acople al modelo interno. -->
+    <ProjectReference Include="..\..\..\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
+    <ProjectReference Include="..\..\..\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
   </ItemGroup>
 </Project>
