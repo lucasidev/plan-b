@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Planb.Identity.Domain.Users;
+using Planb.Identity.Application.Abstractions.Security;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 
@@ -12,40 +12,21 @@ namespace Planb.Identity.Application.Features.CreateStudentProfile;
 /// <summary>
 /// POST /api/me/student-profiles (US-012).
 ///
-/// **Auth gap (NO production-safe)**: este endpoint recibe el <c>UserId</c> en el body porque
-/// el backend no tiene JwtBearer middleware configurado todavía. Un atacante puede pasar
-/// cualquier UserId. Mitigación operativa: el endpoint solo es alcanzable vía la UI del
-/// frontend que extrae el UserId del cookie de sesión firmada.
-///
-/// Cuando JwtBearer middleware esté disponible, refactorear:
-/// <list type="number">
-///   <item>Reemplazar UserId del body por extracción del claim <c>sub</c> del JWT.</item>
-///   <item>Aplicar <c>.RequireAuthorization()</c> con role policy "member".</item>
-///   <item>Cambiar el body a <see cref="CreateStudentProfileRequest"/> sin UserId.</item>
-/// </list>
+/// Auth: JwtBearer middleware. El <c>UserId</c> se deriva del claim <c>sub</c>; el body solo
+/// lleva los datos del profile (CareerPlanId + EnrollmentYear). <c>.RequireAuthorization()</c>
+/// rechaza con 401 cualquier request sin token válido antes del handler.
 /// </summary>
 public sealed class CreateStudentProfileEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/me/student-profiles", async (
-            CreateStudentProfileRequestWithUser body,
+            CreateStudentProfileRequest body,
+            HttpContext http,
             IMessageBus bus,
             CancellationToken ct) =>
         {
-            UserId userId;
-            try
-            {
-                userId = new UserId(body.UserId);
-            }
-            catch (ArgumentException)
-            {
-                return Results.Problem(
-                    title: "identity.user.invalid_id",
-                    detail: "UserId is invalid.",
-                    statusCode: StatusCodes.Status400BadRequest);
-            }
-
+            var userId = CurrentUser.RequireUserId(http);
             var command = new CreateStudentProfileCommand(
                 userId, body.CareerPlanId, body.EnrollmentYear);
 
@@ -83,20 +64,12 @@ public sealed class CreateStudentProfileEndpoint : ICarterModule
         })
         .WithName("Identity_CreateStudentProfile")
         .WithTags("Identity")
+        .RequireAuthorization()
         .Produces<CreateStudentProfileResponse>(StatusCodes.Status201Created)
         .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict);
     }
 }
-
-/// <summary>
-/// HTTP body con UserId explícito. Variante usada mientras no haya JwtBearer middleware en
-/// el backend. Una vez disponible, este record se elimina y el endpoint pasa a usar
-/// <see cref="CreateStudentProfileRequest"/> derivando el UserId del claim <c>sub</c>.
-/// </summary>
-public sealed record CreateStudentProfileRequestWithUser(
-    Guid UserId,
-    Guid CareerPlanId,
-    int EnrollmentYear);

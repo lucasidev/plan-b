@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { apiFetch } from '@/lib/api-client';
+import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import type { DeleteAccountFormState } from './types';
 
@@ -48,12 +48,12 @@ export async function deleteAccountAction(
 
   let response: Response;
   try {
-    response = await apiFetch(`/api/me/account?userId=${encodeURIComponent(session.userId)}`, {
+    response = await apiFetchAuthenticated('/api/me/account', {
       method: 'DELETE',
-      // Forward the refresh cookie so the backend's sign-out side effect
-      // (revoke refresh tokens) targets the right session even though
-      // the route reads the userId from the query.
-      headers: refreshToken ? { Cookie: `${REFRESH_COOKIE}=${refreshToken}` } : undefined,
+      // apiFetchAuthenticated forwardea planb_session (auth del JwtBearer middleware);
+      // pasamos planb_refresh como extraCookies porque tiene Path=/api/identity y no
+      // se incluiría automáticamente.
+      extraCookies: refreshToken ? { [REFRESH_COOKIE]: refreshToken } : undefined,
     });
   } catch {
     return {

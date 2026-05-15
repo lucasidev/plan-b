@@ -2,27 +2,22 @@ using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Planb.Identity.Domain.Users;
+using Planb.Identity.Application.Abstractions.Security;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 
 namespace Planb.Identity.Application.Features.DeleteAccount;
 
 /// <summary>
-/// DELETE /api/me/account?userId={guid} (UC-038, Ley 25.326 art. 6).
+/// DELETE /api/me/account (UC-038, Ley 25.326 art. 6).
 ///
-/// **Auth gap (NO production-safe)**: el backend no tiene JwtBearer middleware, así que el
-/// userId viaja en query string en lugar de derivarse del claim <c>sub</c> del JWT. Mismo
-/// patrón temporal que <c>CreateStudentProfileEndpoint</c>. Mitigación operativa: solo se
-/// alcanza vía la UI del frontend que extrae el UserId de la sesión firmada por iron-session.
-/// Cuando JwtBearer aterrice, refactorizar para usar el claim y aplicar <c>RequireAuthorization()</c>.
+/// Auth: JwtBearer middleware extrae el UserId del claim <c>sub</c>; el endpoint no acepta
+/// userId como query/body. <c>.RequireAuthorization()</c> garantiza 401 si no hay sesión válida.
 ///
 /// Mapeo de errores:
 /// <list type="bullet">
-///   <item>UserId vacío o inválido (Guid.Empty / formato roto): 400.</item>
-///   <item>User no encontrado (ya borrado, o never existió): 404 idempotent.</item>
-///   <item>Cualquier otro error de dominio: 500 (no hay reglas de negocio que devuelvan 4xx
-///     después del lookup; el delete es incondicional).</item>
+///   <item>Sin sesión válida: 401 (middleware).</item>
+///   <item>User no encontrado (ya borrado): 404 idempotent.</item>
 ///   <item>Happy path: 204 No Content.</item>
 /// </list>
 /// </summary>
@@ -31,32 +26,13 @@ public sealed class DeleteAccountEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapDelete("/api/me/account", async (
-            Guid? userId,
+            HttpContext http,
             IMessageBus bus,
             CancellationToken ct) =>
         {
-            if (userId is null || userId.Value == Guid.Empty)
-            {
-                return Results.Problem(
-                    title: "identity.user.invalid_id",
-                    detail: "userId query parameter is required and must be a non-empty Guid.",
-                    statusCode: StatusCodes.Status400BadRequest);
-            }
+            var userId = CurrentUser.RequireUserId(http);
 
-            UserId typedId;
-            try
-            {
-                typedId = new UserId(userId.Value);
-            }
-            catch (ArgumentException)
-            {
-                return Results.Problem(
-                    title: "identity.user.invalid_id",
-                    detail: "userId is invalid.",
-                    statusCode: StatusCodes.Status400BadRequest);
-            }
-
-            var command = new DeleteAccountCommand(typedId);
+            var command = new DeleteAccountCommand(userId);
             var result = await bus.InvokeAsync<Result>(command, ct);
 
             if (result.IsSuccess)
@@ -82,8 +58,9 @@ public sealed class DeleteAccountEndpoint : ICarterModule
         })
         .WithName("Identity_DeleteAccount")
         .WithTags("Identity")
+        .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
-        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }

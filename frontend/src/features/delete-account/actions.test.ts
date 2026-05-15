@@ -92,7 +92,7 @@ describe('deleteAccountAction', () => {
     );
 
     expect(apiFetchMock).toHaveBeenCalledWith(
-      expect.stringContaining('/api/me/account?userId=00000000-0000-4000-a000-000000000001'),
+      '/api/me/account',
       expect.objectContaining({ method: 'DELETE' }),
     );
     expect(deleted).toContain('planb_session');

@@ -3,25 +3,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Planb.Identity.Application.Abstractions.Reading;
-using Planb.Identity.Domain.Users;
+using Planb.Identity.Application.Abstractions.Security;
 
 namespace Planb.Identity.Application.Features.GetStudentProfile;
 
 /// <summary>
-/// GET /api/me/student-profiles?userId={id} (US-037 onboarding guard "user tiene profile").
+/// GET /api/me/student-profile (US-037 onboarding guard "user tiene profile").
 ///
-/// **Auth gap (NO production-safe)**: este endpoint recibe el <c>UserId</c> en query param
-/// porque el backend no tiene JwtBearer middleware configurado todavía. Mismo gap que
-/// <see cref="CreateStudentProfile.CreateStudentProfileEndpoint"/> (US-012-b). Mitigación
-/// operativa: el endpoint es alcanzable solo vía la UI del frontend, que extrae el UserId
-/// del cookie de sesión firmada server-side antes de llamar.
-///
-/// Cuando JwtBearer middleware esté disponible:
-/// <list type="number">
-///   <item>Reemplazar <c>userId</c> del query por extracción del claim <c>sub</c> del JWT.</item>
-///   <item>Aplicar <c>.RequireAuthorization()</c> con role policy "member".</item>
-///   <item>Cambiar la URL a <c>GET /api/me/student-profile</c> (singular, sin query param).</item>
-/// </list>
+/// Auth: JwtBearer middleware extrae el <c>sub</c> claim del JWT (cookie planb_session o
+/// Authorization Bearer). El handler usa <see cref="CurrentUser.RequireUserId"/>; el
+/// <c>.RequireAuthorization()</c> garantiza que ninguna request sin token válido llegue acá.
 ///
 /// Devuelve 200 con el profile, o 404 si el user no tiene profile aún. El 404 es la señal
 /// que el frontend usa para redirigir a /onboarding/welcome desde el guard del layout (member).
@@ -30,20 +21,14 @@ public sealed class GetStudentProfileEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/me/student-profiles", async (
-            Guid? userId,
+        app.MapGet("/api/me/student-profile", async (
+            HttpContext http,
             IIdentityReadService reads,
             CancellationToken ct) =>
         {
-            if (userId is null || userId == Guid.Empty)
-            {
-                return Results.Problem(
-                    title: "identity.student_profile.missing_user_id",
-                    detail: "userId query parameter is required.",
-                    statusCode: StatusCodes.Status400BadRequest);
-            }
+            var userId = CurrentUser.RequireUserId(http);
 
-            var profile = await reads.GetStudentProfileByUserIdAsync(new UserId(userId.Value), ct);
+            var profile = await reads.GetStudentProfileByUserIdAsync(userId, ct);
             if (profile is null)
             {
                 return Results.Problem(
@@ -56,8 +41,9 @@ public sealed class GetStudentProfileEndpoint : ICarterModule
         })
         .WithName("Identity_GetStudentProfile")
         .WithTags("Identity")
+        .RequireAuthorization()
         .Produces<StudentProfileResponse>(StatusCodes.Status200OK)
-        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status401Unauthorized)
         .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }
