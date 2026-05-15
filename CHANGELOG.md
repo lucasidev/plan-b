@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tabs Catalogo + Docentes + drawers de detalle (US-045-d) (mi-carrera) — [`466ad27`](https://github.com/lucasidev/plan-b/commit/466ad278d19c001d209073a97dcb81d37568375b)
 - grafo SVG de correlativas (US-045-c) (mi-carrera) — [`32caad1`](https://github.com/lucasidev/plan-b/commit/32caad1072ac6f0db32ae87136643e1da44e04af)
 - tab Historial timeline por período + KPIs (US-045-e) (mi-carrera) — [`f0c1f3c`](https://github.com/lucasidev/plan-b/commit/f0c1f3c09baefa813f8200f7650ce4e7ec50101b)
+- subjects + academic terms aggregates + listings + seed (academic) — [`a928da9`](https://github.com/lucasidev/plan-b/commit/a928da9e7cfaaa68faa88ce232fb452fdba4986e)
 
 ### Fixed
 
