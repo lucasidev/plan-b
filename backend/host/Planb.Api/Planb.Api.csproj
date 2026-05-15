@@ -26,6 +26,8 @@
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
     <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Infrastructure\Planb.Academic.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\modules\enrollments\src\Planb.Enrollments.Application\Planb.Enrollments.Application.csproj" />
+    <ProjectReference Include="..\..\modules\enrollments\src\Planb.Enrollments.Infrastructure\Planb.Enrollments.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
