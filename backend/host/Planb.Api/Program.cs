@@ -6,6 +6,8 @@ using JasperFx.Resources;
 using Planb.Academic.Application;
 using Planb.Academic.Infrastructure;
 using Planb.Api.Infrastructure;
+using Planb.Enrollments.Application;
+using Planb.Enrollments.Infrastructure;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
@@ -77,6 +79,10 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Academic.Infrastruct
     Planb.Academic.Infrastructure.DependencyInjection.ConfigureAcademicDbContext(
         opts, connectionString));
 
+builder.Services.AddDbContextWithWolverineIntegration<Planb.Enrollments.Infrastructure.Persistence.EnrollmentsDbContext>(opts =>
+    Planb.Enrollments.Infrastructure.DependencyInjection.ConfigureEnrollmentsDbContext(
+        opts, connectionString));
+
 // ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox + FluentValidation middleware)
 // ------------------------------------------------------------------
@@ -85,6 +91,7 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Identity.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Academic.Application.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Planb.Enrollments.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
@@ -122,6 +129,9 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
 builder.Services.AddAcademicApplication();
 builder.Services.AddAcademicInfrastructure(builder.Configuration);
+
+builder.Services.AddEnrollmentsApplication();
+builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 
 // In Development, apply EF migrations on host startup. Lives as a hosted
 // service so WebApplicationFactory tests get the same treatment as `just dev`.

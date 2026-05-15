@@ -5,6 +5,7 @@ using Planb.Identity.Application.Abstractions.Email;
 using Planb.Identity.Application.Abstractions.Persistence;
 using Planb.Identity.Application.Abstractions.Reading;
 using Planb.Identity.Application.Abstractions.Security;
+using Planb.Identity.Application.Contracts;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Email;
 using Planb.Identity.Infrastructure.Persistence;
@@ -29,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserDeletionLogRepository, UserDeletionLogRepository>();
         services.AddScoped<IIdentityReadService, DapperIdentityReadService>();
+        services.AddScoped<IIdentityQueryService, DapperIdentityQueryService>();
 
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenGenerator, RandomTokenGenerator>();
