@@ -24,7 +24,7 @@ export default async function AgregarHistorialPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  const profile = await fetchStudentProfile(session.userId);
+  const profile = await fetchStudentProfile();
   if (!profile) redirect('/onboarding/welcome');
 
   // Resolve universityId del plan (necesario para listar academic-terms).

@@ -17,7 +17,7 @@ export default async function OnboardingCareerPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  const profile = await fetchStudentProfile(session.userId);
+  const profile = await fetchStudentProfile();
   if (profile) redirect('/home');
 
   return (

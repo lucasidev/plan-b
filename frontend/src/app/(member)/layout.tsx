@@ -25,7 +25,7 @@ export default async function MemberLayout({ children }: { children: React.React
   if (!session) redirect('/sign-in');
   if (session.role !== 'member') redirect('/sign-in');
 
-  const profile = await fetchStudentProfile(session.userId);
+  const profile = await fetchStudentProfile();
   if (!profile) redirect('/onboarding/welcome');
 
   return <AppShell email={session.email}>{children}</AppShell>;

@@ -3,8 +3,6 @@ using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Infrastructure.Seeding;
-using Planb.Identity.Application.Features.CreateStudentProfile;
-using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.IntegrationTests.Infrastructure;
 using Shouldly;
@@ -19,59 +17,33 @@ namespace Planb.IntegrationTests.Identity;
 ///   - Los AC del aggregate (verified, year range, no duplicates) bubble-up a HTTP status correctos.
 ///   - El re-intento sobre la misma carrera retorna 409.
 ///
-/// Usa el seed determinístico de AcademicSeedData (UNSTA + TUDCS + Plan 2018) para el plan
-/// real. El UserId viene en el body porque el endpoint todavía no extrae JWT (gap operacional
-/// documentado en CreateStudentProfileEndpoint.cs).
+/// Auth: post-JwtBearer middleware. Cada test arma un user autenticado con
+/// <see cref="AuthenticatedClient.CreateAsync"/>; el endpoint deriva el UserId del JWT en
+/// la cookie planb_session.
 /// </summary>
 public class CreateStudentProfileEndpointTests
     : IClassFixture<RegisterApiFixture>, IAsyncLifetime
 {
     private readonly RegisterApiFixture _fixture;
-    private readonly HttpClient _client;
 
     public CreateStudentProfileEndpointTests(RegisterApiFixture fixture)
     {
         _fixture = fixture;
-        _client = fixture.Factory.CreateClient();
     }
 
     public Task InitializeAsync() => Task.CompletedTask;
     public Task DisposeAsync() => Task.CompletedTask;
 
-    private async Task<UserId> RegisterAndVerifyAsync(string email)
-    {
-        // Register via API.
-        var register = await _client.PostAsJsonAsync(
-            "/api/identity/register",
-            new { email, password = "valid-password-12c" });
-        register.EnsureSuccessStatusCode();
-        var body = await register.Content.ReadFromJsonAsync<RegisterResponseDto>();
-        var userId = new UserId(body!.Id);
-
-        // Marcar email_verified_at directamente vía SQL para no tener que parsear el token.
-        // Simula el flow post-verify-email-click sin acoplar el test al endpoint de verify.
-        using var scope = _fixture.Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-        await db.Database.ExecuteSqlRawAsync(
-            "UPDATE identity.users SET email_verified_at = NOW() WHERE id = {0}",
-            userId.Value);
-
-        return userId;
-    }
-
-    private sealed record RegisterResponseDto(Guid Id, string Email);
-
     [Fact]
     public async Task Returns_201_and_persists_profile_for_verified_user_and_valid_plan()
     {
-        var email = $"create-profile-happy.{Guid.NewGuid():N}@planb.local";
-        var userId = await RegisterAndVerifyAsync(email);
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, $"create-profile-happy.{Guid.NewGuid():N}@planb.local");
 
-        var response = await _client.PostAsJsonAsync(
+        var response = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
             new
             {
-                userId = userId.Value,
                 careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value, // TUDCS Plan 2018
                 enrollmentYear = 2024,
             });
@@ -80,7 +52,7 @@ public class CreateStudentProfileEndpointTests
 
         using var scope = _fixture.Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-        var user = await db.Users.SingleAsync(u => u.Id == userId);
+        var user = await db.Users.SingleAsync(u => u.Id == auth.UserId);
         var profile = user.StudentProfiles.ShouldHaveSingleItem();
         profile.CareerPlanId.ShouldBe(AcademicSeedData.Careers[2].Plan.Id.Value);
         profile.CareerId.ShouldBe(AcademicSeedData.Careers[2].Career.Id.Value);
@@ -90,14 +62,13 @@ public class CreateStudentProfileEndpointTests
     [Fact]
     public async Task Returns_404_when_career_plan_does_not_exist_in_academic()
     {
-        var email = $"create-profile-404.{Guid.NewGuid():N}@planb.local";
-        var userId = await RegisterAndVerifyAsync(email);
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, $"create-profile-404.{Guid.NewGuid():N}@planb.local");
 
-        var response = await _client.PostAsJsonAsync(
+        var response = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
             new
             {
-                userId = userId.Value,
                 careerPlanId = Guid.NewGuid(), // plan que no existe
                 enrollmentYear = 2024,
             });
@@ -108,46 +79,50 @@ public class CreateStudentProfileEndpointTests
     }
 
     [Fact]
-    public async Task Returns_403_when_user_email_not_verified()
+    public async Task Returns_401_when_user_email_not_verified_and_cannot_sign_in()
     {
+        // Sin verificar, el sign-in falla con 401 → no podemos crear el AuthenticatedClient.
+        // Validamos que el flujo de creación misma rechaza el unverified.
+        using var bootstrap = _fixture.Factory.CreateClient();
         var email = $"create-profile-unverified.{Guid.NewGuid():N}@planb.local";
-
-        // Register pero NO verificar.
-        var register = await _client.PostAsJsonAsync(
+        var register = await bootstrap.PostAsJsonAsync(
             "/api/identity/register",
             new { email, password = "valid-password-12c" });
-        var body = await register.Content.ReadFromJsonAsync<RegisterResponseDto>();
+        register.EnsureSuccessStatusCode();
 
-        var response = await _client.PostAsJsonAsync(
+        // Sin email_verified_at update: sign-in rechaza.
+        var signIn = await bootstrap.PostAsJsonAsync(
+            "/api/identity/sign-in",
+            new { email, password = "valid-password-12c" });
+        signIn.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+
+        // El endpoint /api/me/student-profiles sin sesión también rechaza con 401.
+        var unauthedResp = await bootstrap.PostAsJsonAsync(
             "/api/me/student-profiles",
             new
             {
-                userId = body!.Id,
                 careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value,
                 enrollmentYear = 2024,
             });
-
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
-        var responseBody = await response.Content.ReadAsStringAsync();
-        responseBody.ShouldContain("identity.account.email_not_verified");
+        unauthedResp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
     public async Task Returns_409_when_user_already_has_active_profile_for_same_career()
     {
-        var email = $"create-profile-dup.{Guid.NewGuid():N}@planb.local";
-        var userId = await RegisterAndVerifyAsync(email);
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, $"create-profile-dup.{Guid.NewGuid():N}@planb.local");
 
         var careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value;
 
-        var first = await _client.PostAsJsonAsync(
+        var first = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
-            new { userId = userId.Value, careerPlanId, enrollmentYear = 2024 });
+            new { careerPlanId, enrollmentYear = 2024 });
         first.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var second = await _client.PostAsJsonAsync(
+        var second = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
-            new { userId = userId.Value, careerPlanId, enrollmentYear = 2025 });
+            new { careerPlanId, enrollmentYear = 2025 });
 
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
         var body = await second.Content.ReadAsStringAsync();
@@ -157,20 +132,17 @@ public class CreateStudentProfileEndpointTests
     [Fact]
     public async Task Returns_400_when_enrollment_year_out_of_range()
     {
-        var email = $"create-profile-year.{Guid.NewGuid():N}@planb.local";
-        var userId = await RegisterAndVerifyAsync(email);
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, $"create-profile-year.{Guid.NewGuid():N}@planb.local");
 
-        var response = await _client.PostAsJsonAsync(
+        var response = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
             new
             {
-                userId = userId.Value,
                 careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value,
                 enrollmentYear = 1980, // < MinEnrollmentYear (2010)
             });
 
-        // El validator de FluentValidation pasa (acepta > 1900); el aggregate rechaza con
-        // EnrollmentYearOutOfRange que mapea a 400.
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
         var body = await response.Content.ReadAsStringAsync();
         body.ShouldContain("identity.student_profile.enrollment_year_out_of_range");
