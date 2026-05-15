@@ -134,9 +134,19 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@vitest/*"
         update-types: ["version-update:semver-major"]
+      # @vitejs/plugin-react + ecosistema Vite: misma familia que vitest, los
+      # majors del bundler rompen el harness (PR #108 cerrado por el mismo
+      # `bun install --frozen-lockfile` issue + major×2 jump 4→6).
+      - dependency-name: "@vitejs/*"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "@playwright/test"
         update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # lucide-react: tier 2. El major 0.x → 1.x trae potential renames /
+      # removals de iconos que rompen imports en código (PR #109 cerrado).
+      # Auto-merge minor (mismo namespace 0.x) sigue permitido.
+      - dependency-name: "lucide-react"
         update-types: ["version-update:semver-major"]
     groups:
       frontend-minor-patch:
