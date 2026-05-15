@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - grafo SVG de correlativas (US-045-c) (mi-carrera) — [`32caad1`](https://github.com/lucasidev/plan-b/commit/32caad1072ac6f0db32ae87136643e1da44e04af)
 - tab Historial timeline por período + KPIs (US-045-e) (mi-carrera) — [`f0c1f3c`](https://github.com/lucasidev/plan-b/commit/f0c1f3c09baefa813f8200f7650ce4e7ec50101b)
 - subjects + academic terms aggregates + listings + seed (academic) — [`a928da9`](https://github.com/lucasidev/plan-b/commit/a928da9e7cfaaa68faa88ce232fb452fdba4986e)
+- register enrollment record endpoint + form (US-013) (enrollments) — [`86dc8cc`](https://github.com/lucasidev/plan-b/commit/86dc8cc3e427ba9999a755bfdd2528d5dba0aeff)
 
 ### Fixed
 
