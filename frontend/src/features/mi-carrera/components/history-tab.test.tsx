@@ -73,13 +73,13 @@ describe('HistoryTab', () => {
     expect(agregar.closest('a')).toHaveAttribute('href', '/mi-carrera/historial/agregar');
   });
 
-  it('renderea empty state cuando no hay períodos', () => {
-    render(<HistoryTab periods={[]} />);
+  it('renderea empty state cuando no hay períodos (default sin override)', () => {
+    render(<HistoryTab />);
     expect(screen.getByText(/Tu historial está vacío/)).toBeInTheDocument();
-    // CTAs visibles también en empty state
-    expect(screen.getByText('Importar PDF').closest('a')).toHaveAttribute(
+    // CTA visible también en empty state
+    expect(screen.getByText('+ Materia rendida').closest('a')).toHaveAttribute(
       'href',
-      '/mi-carrera/historial/importar',
+      '/mi-carrera/historial/agregar',
     );
     // No hay KPIs en empty state
     expect(screen.queryByText('materias aprobadas')).not.toBeInTheDocument();

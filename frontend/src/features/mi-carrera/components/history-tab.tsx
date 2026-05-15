@@ -1,15 +1,23 @@
 import Link from 'next/link';
-import {
-  historial as defaultHistorial,
-  type HistorialPeriod,
-} from '@/features/mi-carrera/data/historial';
+import type { HistorialPeriod } from '@/features/mi-carrera/data/historial';
 import { buildSummary } from '@/features/mi-carrera/lib/historial-summary';
 import { cn } from '@/lib/utils';
 import { HistoryKpi } from './history-kpi';
 import { HistoryPeriodCard } from './history-period-card';
 
 type Props = {
-  /** Override del mock para tests. */
+  /**
+   * Historial real del student. Default a `[]` (sin historial) → empty state.
+   *
+   * Cuando aterrice el read (GET /api/me/enrollment-records, próximo sprint),
+   * el server component padre va a pasar los períodos reales acá. Mientras
+   * tanto los tests pueden inyectar fixtures con override.
+   *
+   * **Crítico**: NO defaulteamos al mock `defaultHistorial` (datos de Lucía).
+   * Esto causaba un cross-user data leak donde cualquier user nuevo veía el
+   * historial completo de Lucía aunque no tuviera nada cargado. Detectado en
+   * la demo del 2026-05-16.
+   */
   periods?: HistorialPeriod[];
 };
 
@@ -19,7 +27,7 @@ type Props = {
  *
  *   1. 4 KPI cards arriba (grid 4 cols).
  *   2. Banda de acciones: subtitle + 2 botones (Importar PDF + Materia
- *      rendida) navegan a stubs.
+ *      rendida) navegan a sus flows respectivos.
  *   3. Timeline vertical de cards por período (más reciente primero).
  *
  * Empty state cuando `periods.length === 0`: copy de bienvenida + ambos
@@ -27,7 +35,7 @@ type Props = {
  *
  * Server component.
  */
-export function HistoryTab({ periods = defaultHistorial }: Props) {
+export function HistoryTab({ periods = [] }: Props) {
   if (periods.length === 0) {
     return <EmptyState />;
   }
