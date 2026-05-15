@@ -36,11 +36,10 @@ import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
-const FRONTEND = resolve(ROOT, 'frontend');
 
 // Globs de zona E2E. Mantener sincronizado con .github/labeler.yml.
 // Cualquier file diff que matchee contra alguno → corremos E2E.
-const E2E_ZONE_GLOBS = [
+export const E2E_ZONE_GLOBS = [
   // Frontend rutas / layouts / server actions / guards.
   'frontend/src/app/**',
   'frontend/middleware.ts',
@@ -64,102 +63,107 @@ const E2E_ZONE_GLOBS = [
   '.github/workflows/ci.yml',
 ];
 
-if (process.env.SKIP_E2E_PRECHECK === '1') {
-  console.log('[check-e2e-zone] SKIP_E2E_PRECHECK=1, saltando.');
-  process.exit(0);
+async function main(): Promise<number> {
+  if (process.env.SKIP_E2E_PRECHECK === '1') {
+    console.log('[check-e2e-zone] SKIP_E2E_PRECHECK=1, saltando.');
+    return 0;
+  }
+
+  // 1) Files diff vs origin/main.
+  const diffResult = spawnSync('git', ['diff', '--name-only', 'origin/main...HEAD'], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  });
+
+  if (diffResult.status !== 0) {
+    console.error('[check-e2e-zone] git diff falló:');
+    console.error(diffResult.stderr);
+    // Si el diff no se puede calcular (ej. branch nueva sin upstream), skip
+    // antes que romper push legítimos.
+    console.warn(
+      '[check-e2e-zone] No pudimos calcular el diff vs origin/main, saltando E2E precheck.',
+    );
+    return 0;
+  }
+
+  const changedFiles = diffResult.stdout
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (changedFiles.length === 0) {
+    console.log('[check-e2e-zone] No hay files cambiados vs origin/main, saltando.');
+    return 0;
+  }
+
+  // 2) Match contra zona E2E.
+  const matched = changedFiles.filter((f) => E2E_ZONE_GLOBS.some((g) => globMatch(g, f)));
+  if (matched.length === 0) {
+    console.log('[check-e2e-zone] Ningún file cae en zona E2E. Skip.');
+    return 0;
+  }
+
+  console.log('[check-e2e-zone] Files en zona E2E:');
+  for (const f of matched) console.log(`  - ${f}`);
+
+  // 3) Chequear stack arriba. En paralelo: backend y frontend son
+  // independientes, no hay razón para serializar el ping.
+  const [backendUp, frontendUp] = await Promise.all([
+    isUp('http://localhost:5000/health'),
+    isUp('http://localhost:3000'),
+  ]);
+
+  if (!backendUp || !frontendUp) {
+    console.error('');
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.error('  ✗ E2E precheck: stack no está arriba.');
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.error('');
+    if (!backendUp) console.error('    Backend (:5000) no responde.');
+    if (!frontendUp) console.error('    Frontend (:3000) no responde.');
+    console.error('');
+    console.error('  Tu PR toca zona E2E (lista en `docs/testing/conventions.md`).');
+    console.error('  Antes de pushear necesitamos correr la suite Playwright local.');
+    console.error('');
+    console.error('  Para arreglarlo:');
+    console.error('    1. En otra terminal: just dev   (levanta backend + frontend)');
+    console.error('    2. Esperá que ambos estén ready.');
+    console.error('    3. Reintentá el push.');
+    console.error('');
+    console.error('  Si querés saltarlo (justificadamente, ej. doc-only que casualmente');
+    console.error('  matchea pero no afecta E2E):');
+    console.error('    SKIP_E2E_PRECHECK=1 git push');
+    console.error('  o bien:');
+    console.error('    git push --no-verify');
+    console.error('');
+    return 1;
+  }
+
+  console.log('[check-e2e-zone] Stack arriba (backend + frontend). Corriendo Playwright...');
+  console.log('');
+
+  // 4) Correr Playwright via run-e2e-show (--headed + slowMo). El dev ve el
+  // browser abrirse y los flows correr. Single source of truth con el recipe
+  // `just frontend-test-e2e-show`. Si necesitás headless por algún motivo
+  // (raro local, casi siempre CI que usa otro path), exportá
+  // `SKIP_E2E_PRECHECK=1` y corré explícitamente.
+  const playwrightResult = spawnSync('bun', ['scripts/run-e2e-show.ts'], {
+    cwd: ROOT,
+    stdio: 'inherit',
+  });
+
+  if (playwrightResult.status !== 0) {
+    console.error('');
+    console.error('[check-e2e-zone] ✗ Playwright falló. Fixear specs antes de pushear.');
+    console.error('  Para re-correr aislado (mismo modo headed + slowMo):');
+    console.error('    just frontend-test-e2e-show');
+    return playwrightResult.status ?? 1;
+  }
+
+  console.log('');
+  console.log('[check-e2e-zone] ✓ Playwright verde. Push autorizado.');
+  return 0;
 }
-
-// 1) Files diff vs origin/main.
-const diffResult = spawnSync('git', ['diff', '--name-only', 'origin/main...HEAD'], {
-  cwd: ROOT,
-  encoding: 'utf8',
-});
-
-if (diffResult.status !== 0) {
-  console.error('[check-e2e-zone] git diff falló:');
-  console.error(diffResult.stderr);
-  // Si el diff no se puede calcular (ej. branch nueva sin upstream), skip
-  // antes que romper push legítimos.
-  console.warn(
-    '[check-e2e-zone] No pudimos calcular el diff vs origin/main, saltando E2E precheck.',
-  );
-  process.exit(0);
-}
-
-const changedFiles = diffResult.stdout
-  .split('\n')
-  .map((s) => s.trim())
-  .filter((s) => s.length > 0);
-
-if (changedFiles.length === 0) {
-  console.log('[check-e2e-zone] No hay files cambiados vs origin/main, saltando.');
-  process.exit(0);
-}
-
-// 2) Match contra zona E2E.
-const matched = changedFiles.filter((f) => E2E_ZONE_GLOBS.some((g) => globMatch(g, f)));
-if (matched.length === 0) {
-  console.log('[check-e2e-zone] Ningún file cae en zona E2E. Skip.');
-  process.exit(0);
-}
-
-console.log('[check-e2e-zone] Files en zona E2E:');
-for (const f of matched) console.log(`  - ${f}`);
-
-// 3) Chequear stack arriba.
-const backendUp = isUp('http://localhost:5000/health');
-const frontendUp = isUp('http://localhost:3000');
-
-if (!backendUp || !frontendUp) {
-  console.error('');
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.error('  ✗ E2E precheck: stack no está arriba.');
-  console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.error('');
-  if (!backendUp) console.error('    Backend (:5000) no responde.');
-  if (!frontendUp) console.error('    Frontend (:3000) no responde.');
-  console.error('');
-  console.error('  Tu PR toca zona E2E (lista en `docs/testing/conventions.md`).');
-  console.error('  Antes de pushear necesitamos correr la suite Playwright local.');
-  console.error('');
-  console.error('  Para arreglarlo:');
-  console.error('    1. En otra terminal: just dev   (levanta backend + frontend)');
-  console.error('    2. Esperá que ambos estén ready.');
-  console.error('    3. Reintentá el push.');
-  console.error('');
-  console.error('  Si querés saltarlo (justificadamente, ej. doc-only que casualmente');
-  console.error('  matchea pero no afecta E2E):');
-  console.error('    SKIP_E2E_PRECHECK=1 git push');
-  console.error('  o bien:');
-  console.error('    git push --no-verify');
-  console.error('');
-  process.exit(1);
-}
-
-console.log('[check-e2e-zone] Stack arriba (backend + frontend). Corriendo Playwright...');
-console.log('');
-
-// 4) Correr Playwright via run-e2e-show (--headed + slowMo). El dev ve el
-// browser abrirse y los flows correr. Single source of truth con el recipe
-// `just frontend-test-e2e-show`. Si necesitás headless por algún motivo
-// (raro local, casi siempre CI que usa otro path), exportá
-// `SKIP_E2E_PRECHECK=1` y corré explícitamente.
-const playwrightResult = spawnSync('bun', ['scripts/run-e2e-show.ts'], {
-  cwd: ROOT,
-  stdio: 'inherit',
-});
-
-if (playwrightResult.status !== 0) {
-  console.error('');
-  console.error('[check-e2e-zone] ✗ Playwright falló. Fixear specs antes de pushear.');
-  console.error('  Para re-correr aislado (mismo modo headed + slowMo):');
-  console.error('    just frontend-test-e2e-show');
-  process.exit(playwrightResult.status ?? 1);
-}
-
-console.log('');
-console.log('[check-e2e-zone] ✓ Playwright verde. Push autorizado.');
-process.exit(0);
 
 // ─── helpers ────────────────────────────────────────────────────────────
 
@@ -173,7 +177,7 @@ process.exit(0);
  * patterns más exóticos (negaciones `!`, brace expansion `{a,b}`, etc.),
  * migrar a `picomatch` o equivalente.
  */
-function globMatch(glob: string, path: string): boolean {
+export function globMatch(glob: string, path: string): boolean {
   const pattern = glob
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
     .replace(/\*\*/g, '__GLOBSTAR__')
@@ -184,17 +188,32 @@ function globMatch(glob: string, path: string): boolean {
 
 /**
  * Ping rápido a una URL HTTP. True si responde (cualquier status code,
- * incluido 4xx). False si conexión refused o timeout.
+ * incluido 4xx/5xx). False si connection refused, DNS fail o timeout.
+ *
+ * Usa `fetch` nativo (no `curl`) porque `spawnSync('curl', ...)` no resuelve
+ * el binario en Windows con Bun aunque esté en PATH (probado: el curl manual
+ * responde 200, pero spawnSync devuelve status≠0 → falsa negación → push
+ * bloqueado). fetch nativo es portable y no depende del PATH del shell.
  */
-function isUp(url: string): boolean {
-  const result = spawnSync(
-    'curl',
-    ['-s', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', '2', url],
-    { encoding: 'utf8' },
-  );
-  if (result.status !== 0) return false;
-  const code = result.stdout.trim();
-  // "000" = curl falló (connection refused). Cualquier otro 3 dígitos = el
-  // server respondió, así sea con error HTTP.
-  return code.length === 3 && code !== '000';
+export async function isUp(url: string, timeoutMs = 2000): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    await fetch(url, { signal: controller.signal });
+    return true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Allow `import { ... }` from a test file without auto-running main.
+if (import.meta.main) {
+  main()
+    .then((code) => process.exit(code))
+    .catch((err) => {
+      console.error(`[check-e2e-zone] fail: ${(err as Error).message}`);
+      process.exit(1);
+    });
 }

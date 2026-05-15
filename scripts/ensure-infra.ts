@@ -14,27 +14,31 @@
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { detectContainerRuntime } from './detect-container.ts';
 import { findPort } from './find-port.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const ROOT_ENV = resolve(ROOT, '.env');
 
+// Timeout corto para los `compose exec` del waitForService loop. Si el comando
+// se cuelga (ej. socket de podman colgado porque la VM se apagó mid-vuelo),
+// el catch del loop recibe el error y reintenta. Sin esto, `execSync` espera
+// para siempre y el script queda atrapado aunque el usuario encienda la VM.
+const COMPOSE_EXEC_TIMEOUT_MS = 5000;
+
+// Timeout para `compose ps`. Defensa en profundidad: si por algún motivo el
+// daemon respondió a `info` pero `ps` se cuelga, no queremos colgar el script.
+const COMPOSE_PS_TIMEOUT_MS = 10000;
+
 function detectContainerCmd(): string {
+  // Cuando viene desde `just infra-up`, el cmd ya está resuelto por
+  // detect-container.ts (Justfile lo pasa como argv[2]). Cuando se corre
+  // standalone (`bun scripts/ensure-infra.ts`), detectamos acá.
   const override = process.argv[2] || process.env.CONTAINER_CMD;
-  if (override) return override;
-  for (const candidate of ['podman', 'docker']) {
-    try {
-      execSync(`${candidate} --version`, { stdio: 'ignore' });
-      if (candidate === 'docker') {
-        execSync('docker info', { stdio: 'ignore' });
-      }
-      return candidate;
-    } catch {
-      // try next
-    }
+  if (override) {
+    process.env.CONTAINER_CMD = override;
   }
-  console.error('No container runtime found. Install docker or podman.');
-  process.exit(1);
+  return detectContainerRuntime();
 }
 
 const containerCmd = detectContainerCmd();
@@ -53,6 +57,7 @@ function getRunningPorts(): Partial<ServicePorts> {
     const output = execSync(`${compose} ps --status running --format json`, {
       encoding: 'utf-8',
       stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: COMPOSE_PS_TIMEOUT_MS,
     });
 
     for (const line of output.trim().split('\n')) {
@@ -240,14 +245,17 @@ async function main() {
   updateRootEnv(ports);
 
   await waitForService('postgres', () => {
-    execSync(`${compose} exec postgres pg_isready -U planb -d planb`, { stdio: 'pipe' });
+    execSync(`${compose} exec postgres pg_isready -U planb -d planb`, {
+      stdio: 'pipe',
+      timeout: COMPOSE_EXEC_TIMEOUT_MS,
+    });
   });
 
   await waitForService('redis', () => {
     // -a + --no-auth-warning so the password is checked but the warning doesn't pollute stderr.
     execSync(
       `${compose} exec redis redis-cli -a "${process.env.REDIS_PASSWORD}" --no-auth-warning ping`,
-      { stdio: 'pipe' },
+      { stdio: 'pipe', timeout: COMPOSE_EXEC_TIMEOUT_MS },
     );
   });
 
