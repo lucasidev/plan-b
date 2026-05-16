@@ -31,6 +31,13 @@ namespace Planb.Enrollments.Application.Features.HistorialImports;
 /// </summary>
 public sealed class ProcessHistorialImportCommandHandler
 {
+    /// <summary>
+    /// Tope de tiempo total que damos al procesamiento (extracción PDF + reads cross-BC +
+    /// parser). US-014 pide 60s. Si excedemos, marcamos <c>Failed</c> con error de timeout
+    /// y el alumno reintenta o cae al flujo manual (US-013).
+    /// </summary>
+    public static readonly TimeSpan ProcessingTimeout = TimeSpan.FromSeconds(60);
+
     private readonly IHistorialImportRepository _imports;
     private readonly IEnrollmentsUnitOfWork _unitOfWork;
     private readonly IIdentityQueryService _identity;
@@ -61,6 +68,45 @@ public sealed class ProcessHistorialImportCommandHandler
     }
 
     public async Task Handle(ProcessHistorialImportCommand cmd, CancellationToken ct)
+    {
+        // Linked CTS: timeout 60s O cancelación del host (shutdown). Lo que llegue primero.
+        // Si la operación excede el budget, queda marcada Failed con errorReason='timeout'
+        // (US-014 AC). El catch externo distingue host-shutdown del timeout propio.
+        using var timeoutCts = new CancellationTokenSource(ProcessingTimeout);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct, timeoutCts.Token);
+
+        try
+        {
+            await HandleCore(cmd, linkedCts.Token);
+        }
+        catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !ct.IsCancellationRequested)
+        {
+            _log.LogWarning(
+                "ProcessHistorialImport: import {Id} excedió los {Seconds}s de timeout.",
+                cmd.ImportId, ProcessingTimeout.TotalSeconds);
+
+            // Cargamos de nuevo con el token original (el linked ya canceló) para poder marcar.
+            // Si esto también falla, el aggregate queda en Parsing huérfano; la retry policy
+            // de Wolverine lo redespacha y la transición a Failed la maneja MarkFailed con
+            // defense en profundidad.
+            try
+            {
+                var import = await _imports.FindByIdAsync(new HistorialImportId(cmd.ImportId), ct);
+                if (import is not null)
+                {
+                    await FailAndSaveAsync(import,
+                        "El procesamiento se pasó del tiempo límite (60s). Reintentá o cargá manualmente.",
+                        ct);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "ProcessHistorialImport: no pudimos marcar Failed después del timeout para {Id}", cmd.ImportId);
+            }
+        }
+    }
+
+    private async Task HandleCore(ProcessHistorialImportCommand cmd, CancellationToken ct)
     {
         var import = await _imports.FindByIdAsync(new HistorialImportId(cmd.ImportId), ct);
         if (import is null)

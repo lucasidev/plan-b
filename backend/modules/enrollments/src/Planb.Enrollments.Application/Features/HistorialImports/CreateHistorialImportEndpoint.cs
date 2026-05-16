@@ -120,19 +120,30 @@ public sealed class CreateHistorialImportEndpoint : ICarterModule
         .Produces<CreateHistorialImportResponse>(StatusCodes.Status202Accepted)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
-        .ProducesProblem(StatusCodes.Status404NotFound);
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status413PayloadTooLarge)
+        .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
     }
 
     private static IResult ProblemFromError(Error error)
     {
-        var statusCode = error.Type switch
+        // Mapeo de los errores específicos del domain a los HTTP status codes que pide
+        // la US-014 (413 para payload too large, 422 para PDF encriptado / inválido).
+        // Para el resto, caemos al mapeo genérico por Type.
+        var statusCode = error.Code switch
         {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
-            _ => StatusCodes.Status500InternalServerError,
+            "enrollments.import.payload_too_large" => StatusCodes.Status413PayloadTooLarge,
+            "enrollments.import.encrypted" => StatusCodes.Status422UnprocessableEntity,
+            "enrollments.import.invalid_pdf" => StatusCodes.Status422UnprocessableEntity,
+            _ => error.Type switch
+            {
+                ErrorType.Validation => StatusCodes.Status400BadRequest,
+                ErrorType.NotFound => StatusCodes.Status404NotFound,
+                ErrorType.Conflict => StatusCodes.Status409Conflict,
+                ErrorType.Forbidden => StatusCodes.Status403Forbidden,
+                ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
+                _ => StatusCodes.Status500InternalServerError,
+            },
         };
         return Results.Problem(
             title: error.Code,
