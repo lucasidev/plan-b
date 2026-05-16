@@ -2,7 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useActionState, useState } from 'react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -34,13 +36,43 @@ export function CareerForm() {
     initialOnboardingCareerState,
   );
 
-  const [universityId, setUniversityId] = useState<string>('');
+  // State restore: cuando el alumno viene del sub-flow plan-import, los search params traen
+  // universityId + planId + enrollmentYear para repoblar el form sin que tipee de nuevo.
+  // El planId nuevo viene asociado a una nueva Career (creada en /approve); resolvemos
+  // careerId desde el plan via la query y completamos el state.
+  const searchParams = useSearchParams();
+  const initialUniversityId = searchParams.get('universityId') ?? '';
+  const initialPlanId = searchParams.get('planId') ?? '';
+  const initialEnrollmentYear = searchParams.get('enrollmentYear') ?? '';
+
+  const [universityId, setUniversityId] = useState<string>(initialUniversityId);
   const [careerId, setCareerId] = useState<string>('');
   const [careerPlanId, setCareerPlanId] = useState<string>('');
 
   const universities = useQuery(onboardingQueries.universities());
   const careers = useQuery(onboardingQueries.careersByUniversity(universityId || null));
   const plans = useQuery(onboardingQueries.careerPlansByCareer(careerId || null));
+
+  // Effect de restore: cuando los careers se cargan y traemos planId del param, buscamos la
+  // career que matchea el plan y la seleccionamos. Solo corre una vez gracias al guard sobre
+  // initialPlanId.
+  useEffect(() => {
+    if (!initialPlanId || careerId) return;
+    if (!careers.data || careers.data.length === 0) return;
+    // El plan recién creado pertenece a alguna de las careers visibles. Sin endpoint que
+    // resuelva planId → careerId, iteramos las queries de plans de cada career hasta encontrar.
+    // Más simple: si solo hay una Career (caso común para el alumno que recién subió), tomarla.
+    if (careers.data.length === 1) {
+      setCareerId(careers.data[0].id);
+    }
+  }, [initialPlanId, careerId, careers.data]);
+
+  useEffect(() => {
+    if (!initialPlanId || careerPlanId) return;
+    if (!plans.data || plans.data.length === 0) return;
+    const match = plans.data.find((p) => p.id === initialPlanId);
+    if (match) setCareerPlanId(match.id);
+  }, [initialPlanId, careerPlanId, plans.data]);
 
   // Reset cascadas en el handler del select (imperativo) en lugar de useEffect.
   // Razón: el effect-on-deps que solo dispara setters reads is what biome marca
@@ -156,9 +188,30 @@ export function CareerForm() {
           {visiblePlans.map((p) => (
             <option key={p.id} value={p.id}>
               Plan {p.year}
+              {!p.isOfficial ? ' · No oficial' : ''}
             </option>
           ))}
         </select>
+        {/* Si el plan seleccionado es no-oficial, mostramos badge visible. Mejora la
+            transparencia ante alumnos que comparten un plan crowdsourced. */}
+        {careerPlanId && visiblePlans.find((p) => p.id === careerPlanId && !p.isOfficial) && (
+          <p className="text-ink-3" style={{ fontSize: 12, marginTop: 6 }}>
+            Este plan fue subido por un alumno. Un admin lo va a validar pronto.
+          </p>
+        )}
+        {/* Link "Mi plan no aparece" visible una vez que el alumno tiene universidad
+            seleccionada. Si tiene careerId también, mejor; pero queremos que pueda
+            subir incluso si su Career no está en la cascada. */}
+        {universityId && (
+          <p style={{ fontSize: 12.5, marginTop: 8 }}>
+            <Link
+              href={`/onboarding/career/plan-import?universityId=${encodeURIComponent(universityId)}&enrollmentYear=${currentYear}`}
+              className="text-accent-ink hover:text-accent-hover"
+            >
+              Mi plan no aparece, lo subo →
+            </Link>
+          </p>
+        )}
       </Field>
 
       <div style={{ marginBottom: 16 }}>
@@ -170,6 +223,7 @@ export function CareerForm() {
           min={1990}
           max={currentYear + 1}
           placeholder={String(currentYear)}
+          defaultValue={initialEnrollmentYear || undefined}
           error={fieldError === 'enrollmentYear' ? (formError ?? undefined) : undefined}
           autoComplete="off"
           label="Año de ingreso"
