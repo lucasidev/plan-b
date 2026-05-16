@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - subjects + academic terms aggregates + listings + seed (academic) — [`a928da9`](https://github.com/lucasidev/plan-b/commit/a928da9e7cfaaa68faa88ce232fb452fdba4986e)
 - register enrollment record endpoint + form (US-013) (enrollments) — [`86dc8cc`](https://github.com/lucasidev/plan-b/commit/86dc8cc3e427ba9999a755bfdd2528d5dba0aeff)
 - JwtBearer middleware + cierre del workaround pre-JWT (identity) — [`9e829c3`](https://github.com/lucasidev/plan-b/commit/9e829c360bdb94c39e553802a021777861fa727e)
+- import historial PDF/texto con preview + confirm (US-014) (enrollments) — [`53e9262`](https://github.com/lucasidev/plan-b/commit/53e92624a374b060d919a2aa153c3219c6c54207)
+- cerrar US-014 (timeout, 413/422, tests, doc) (enrollments) — [`3be913b`](https://github.com/lucasidev/plan-b/commit/3be913b4bdc371a7e1ba1605b299e1d9a3dd43c1)
 
 ### Fixed
 
