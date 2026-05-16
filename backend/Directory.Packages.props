@@ -27,6 +27,18 @@
     <PackageVersion Include="MailKit" Version="4.16.0" />
   </ItemGroup>
 
+  <ItemGroup Label="PDF parsing (US-014: historial import)">
+    <!-- UglyToad.PdfPig: parser PDF .NET nativo, MIT, sin native AOT dependencies.
+         Extrae texto plano + posiciones (X,Y) de tokens, suficiente para las
+         heurísticas del HistorialParser (no necesitamos layout reconstruction
+         compleja, ni OCR, ni rendering). -->
+    <!-- PdfPig publica solo con tags pre-release en NuGet (no hay version sin sufijo). La
+         última es 1.7.0-custom-5. Las dependencias transitivas (PdfPig.Tokenization, .Tokens)
+         solo están en 1.7.x, por eso usamos 1.7.x acá también. "custom" tag NO indica
+         inestabilidad: es solo cómo publica el maintainer en NuGet. -->
+    <PackageVersion Include="UglyToad.PdfPig" Version="1.7.0-custom-5" />
+  </ItemGroup>
+
   <ItemGroup Label="Data">
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" />

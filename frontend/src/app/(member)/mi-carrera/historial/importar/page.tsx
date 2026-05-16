@@ -1,30 +1,48 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
+import { ImportHistorialFlow } from '@/features/import-historial';
+import { getSession } from '@/lib/session';
+import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * Stub de importar PDF del historial. Destino del CTA "Importar PDF" del
- * tab Historial (US-045-e). Cuando aterrice US-014 (importar PDF SIU),
- * esta ruta se convierte en el flujo real.
+ * Página `/mi-carrera/historial/importar` (US-014-f).
+ *
+ * Server component: chequea session + profile, renderiza el client component
+ * <see cref="ImportHistorialFlow"/> que maneja upload → polling → preview →
+ * confirm. El backend hace el procesamiento async; el client componente pollea
+ * el GET hasta ver el estado Parsed/Failed.
  */
-export default function ImportarHistorialStub() {
+export default async function ImportarHistorialPage() {
+  const session = await getSession();
+  if (!session) redirect('/sign-in');
+
+  const profile = await fetchStudentProfile();
+  if (!profile) redirect('/onboarding/welcome');
+
   return (
-    <div className="px-6 py-9 max-w-[800px] mx-auto">
+    <div className="px-6 py-9 max-w-[960px] mx-auto">
       <Eyebrow>Mi carrera · Historial · Importar</Eyebrow>
-      <DisplayHeading size={32} className="mt-2 mb-4">
-        Próximamente: importar PDF del SIU.
+      <DisplayHeading size={28} className="mt-2 mb-2">
+        Importá tu historial del SIU.
       </DisplayHeading>
-      <p className="text-ink-2 mb-6">
-        Vas a poder subir el PDF del historial académico que descargás del SIU y plan-b lo va a
-        parsear automáticamente. Por ahora aterriza con US-014. Mientras tanto, cargá las materias
-        desde "+ Materia rendida".
+      <p className="text-ink-3" style={{ fontSize: 14, marginBottom: 24 }}>
+        Subí el PDF que descargás del SIU o pegá el texto. Plan-b detecta materias, notas y
+        cuatrimestres. Después revisás el preview y elegís qué importar.
       </p>
-      <Link
-        href="/mi-carrera?tab=historial"
-        className="inline-flex items-center text-accent-ink hover:text-accent-hover"
-      >
-        ← Volver al historial
-      </Link>
+
+      <ImportHistorialFlow />
+
+      <div style={{ marginTop: 24 }}>
+        <Link
+          href="/mi-carrera?tab=historial"
+          className="inline-flex items-center text-accent-ink hover:text-accent-hover"
+          style={{ fontSize: 13 }}
+        >
+          ← Volver al historial
+        </Link>
+      </div>
     </div>
   );
 }
