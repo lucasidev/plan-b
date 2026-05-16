@@ -69,4 +69,10 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Existe una universidad con ese id en el catálogo Academic? Caller: handler de US-088
+    /// que valida la universidad enviada en el upload antes de crear el aggregate import.
+    /// </summary>
+    Task<bool> UniversityExistsAsync(Guid universityId, CancellationToken ct = default);
 }
