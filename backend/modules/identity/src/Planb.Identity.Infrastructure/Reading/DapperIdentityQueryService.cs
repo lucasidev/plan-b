@@ -46,4 +46,23 @@ internal sealed class DapperIdentityQueryService : IIdentityQueryService
         return await db.QuerySingleOrDefaultAsync<StudentProfileSummary>(
             new CommandDefinition(sql, new { UserId = userId }, cancellationToken: ct));
     }
+
+    public async Task<StudentProfileSummary?> GetStudentProfileByIdAsync(
+        Guid studentProfileId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id               AS Id,
+                user_id          AS UserId,
+                career_id        AS CareerId,
+                career_plan_id   AS CareerPlanId,
+                status = 'Active' AS IsActive
+            FROM identity.student_profiles
+            WHERE id = @Id
+            LIMIT 1;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<StudentProfileSummary>(
+            new CommandDefinition(sql, new { Id = studentProfileId }, cancellationToken: ct));
+    }
 }

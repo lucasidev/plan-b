@@ -24,4 +24,13 @@ public interface IIdentityQueryService
     /// </summary>
     Task<StudentProfileSummary?> GetStudentProfileForUserAsync(
         Guid userId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Devuelve el <see cref="StudentProfileSummary"/> por su id. Caller principal: el worker
+    /// de US-014 (procesar import de historial) que tiene el <c>studentProfileId</c> guardado
+    /// en el aggregate <c>HistorialImport</c> y necesita resolver <c>UserId</c> + <c>CareerPlanId</c>
+    /// sin re-hacer login del user.
+    /// </summary>
+    Task<StudentProfileSummary?> GetStudentProfileByIdAsync(
+        Guid studentProfileId, CancellationToken ct = default);
 }
