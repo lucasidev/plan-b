@@ -12,4 +12,5 @@ public sealed record CareerListItem(
     Guid Id,
     Guid UniversityId,
     string Name,
-    string Slug);
+    string Slug,
+    bool IsOfficial);

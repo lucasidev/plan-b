@@ -17,6 +17,12 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     public CareerId CareerId { get; private set; }
     public int Year { get; private set; }
     public CareerPlanStatus Status { get; private set; }
+    /// <summary>
+    /// True cuando el plan lo creó el backoffice. False cuando lo creó un alumno via
+    /// crowdsourcing (US-088 import PDF en onboarding). Las cascadas del frontend muestran
+    /// badge "No oficial" cuando es false.
+    /// </summary>
+    public bool IsOfficial { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
     private CareerPlan() { }
@@ -24,7 +30,8 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     public static Result<CareerPlan> Create(
         CareerId careerId,
         int year,
-        IDateTimeProvider clock)
+        IDateTimeProvider clock,
+        bool isOfficial = true)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -42,8 +49,18 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             CareerId = careerId,
             Year = year,
             Status = CareerPlanStatus.Active,
+            IsOfficial = isOfficial,
             CreatedAt = clock.UtcNow,
         };
+    }
+
+    /// <summary>
+    /// Promueve un plan no-oficial a oficial. Idempotente. Lo invoca el flujo de backoffice
+    /// cuando un admin valida un plan crowdsourced (post-MVP).
+    /// </summary>
+    public void MarkOfficial()
+    {
+        if (!IsOfficial) IsOfficial = true;
     }
 
     public static CareerPlan Hydrate(
@@ -51,6 +68,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
         CareerId careerId,
         int year,
         CareerPlanStatus status,
+        bool isOfficial,
         DateTimeOffset createdAt) =>
         new()
         {
@@ -58,6 +76,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             CareerId = careerId,
             Year = year,
             Status = status,
+            IsOfficial = isOfficial,
             CreatedAt = createdAt,
         };
 }

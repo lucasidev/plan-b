@@ -80,10 +80,11 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 id            AS Id,
                 university_id AS UniversityId,
                 name          AS Name,
-                slug          AS Slug
+                slug          AS Slug,
+                is_official   AS IsOfficial
             FROM academic.careers
             WHERE university_id = @UniversityId
-            ORDER BY name ASC;";
+            ORDER BY is_official DESC, name ASC;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<CareerListItem>(
@@ -94,15 +95,19 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     public async Task<IReadOnlyList<CareerPlanListItem>> ListCareerPlansByCareerAsync(
         Guid careerId, CancellationToken ct = default)
     {
+        // Ordenamos oficial primero, después por año descendente. La UX espera ver el plan
+        // vigente arriba; entre planes del mismo año, prevalece el oficial sobre el crowdsourced
+        // si conviven.
         const string sql = @"
             SELECT
-                id        AS Id,
-                career_id AS CareerId,
-                year      AS Year,
-                status    AS Status
+                id          AS Id,
+                career_id   AS CareerId,
+                year        AS Year,
+                status      AS Status,
+                is_official AS IsOfficial
             FROM academic.career_plans
             WHERE career_id = @CareerId
-            ORDER BY year DESC;";
+            ORDER BY is_official DESC, year DESC;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<CareerPlanListItem>(
