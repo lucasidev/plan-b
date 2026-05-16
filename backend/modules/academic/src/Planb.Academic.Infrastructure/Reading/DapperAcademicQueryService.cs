@@ -23,6 +23,20 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 "ConnectionStrings:Planb is required for DapperAcademicQueryService.");
     }
 
+    public async Task<bool> UniversityExistsAsync(Guid universityId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT EXISTS (
+                SELECT 1
+                FROM academic.universities
+                WHERE id = @Id
+            );";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.ExecuteScalarAsync<bool>(
+            new CommandDefinition(sql, new { Id = universityId }, cancellationToken: ct));
+    }
+
     public async Task<bool> CareerPlanExistsAsync(Guid careerPlanId, CancellationToken ct = default)
     {
         const string sql = @"
