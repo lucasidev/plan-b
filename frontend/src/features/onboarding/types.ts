@@ -27,6 +27,9 @@ export type Career = {
   universityId: string;
   name: string;
   slug: string;
+  // US-088: las carreras crowdsourced (subidas por alumno) tienen isOfficial=false.
+  // El frontend las muestra con badge "No oficial".
+  isOfficial: boolean;
 };
 
 export type CareerPlan = {
@@ -36,4 +39,6 @@ export type CareerPlan = {
   // Enum CareerPlanStatus serializado por EF como string. Valores: 'Active' o
   // 'Deprecated'. El form filtra 'Active' para no mostrar planes históricos.
   status: 'Active' | 'Deprecated';
+  // US-088: planes crowdsourced isOfficial=false con badge "No oficial".
+  isOfficial: boolean;
 };
