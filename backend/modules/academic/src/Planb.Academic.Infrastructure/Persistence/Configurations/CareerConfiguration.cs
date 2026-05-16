@@ -41,6 +41,13 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .IsUnique()
             .HasDatabaseName("ux_careers_university_slug");
 
+        // True = creada por backoffice (admin/staff). False = crowdsourced por alumno en
+        // onboarding paso 2 (US-088). El frontend muestra badge "No oficial" cuando es false.
+        builder.Property(c => c.IsOfficial)
+            .HasColumnName("is_official")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

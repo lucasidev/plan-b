@@ -102,6 +102,7 @@ public sealed class AcademicSeeder
                     seed.Career.UniversityId,
                     seed.Career.Name,
                     seed.Career.Slug,
+                    isOfficial: true,
                     now));
                 careersInserted++;
             }
@@ -113,6 +114,7 @@ public sealed class AcademicSeeder
                     seed.Career.Id,
                     seed.Plan.Year,
                     CareerPlanStatus.Active,
+                    isOfficial: true,
                     now));
                 plansInserted++;
             }
@@ -150,6 +152,7 @@ public sealed class AcademicSeeder
                 record.WeeklyHours,
                 record.TotalHours,
                 description: null,
+                isOfficial: true,
                 createdAt: now));
             inserted++;
         }

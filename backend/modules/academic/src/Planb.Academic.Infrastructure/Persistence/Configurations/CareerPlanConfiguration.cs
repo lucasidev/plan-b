@@ -41,6 +41,13 @@ internal sealed class CareerPlanConfiguration : IEntityTypeConfiguration<CareerP
             .HasMaxLength(20)
             .IsRequired();
 
+        // True = creado por backoffice. False = crowdsourced por alumno (US-088). Cascadas
+        // del frontend muestran badge "No oficial" cuando es false.
+        builder.Property(cp => cp.IsOfficial)
+            .HasColumnName("is_official")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(cp => cp.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
