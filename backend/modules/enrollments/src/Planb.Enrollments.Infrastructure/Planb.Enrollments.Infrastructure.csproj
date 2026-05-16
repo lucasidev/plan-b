@@ -10,6 +10,7 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />
+    <PackageReference Include="UglyToad.PdfPig" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Enrollments.Application\Planb.Enrollments.Application.csproj" />
