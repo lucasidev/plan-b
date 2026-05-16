@@ -65,6 +65,13 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
         builder.Property(s => s.Description)
             .HasColumnName("description");
 
+        // Hereda del CareerPlan padre al materializarse. True por default para los seeded;
+        // false cuando viene del flujo de import crowdsourced (US-088).
+        builder.Property(s => s.IsOfficial)
+            .HasColumnName("is_official")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(s => s.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

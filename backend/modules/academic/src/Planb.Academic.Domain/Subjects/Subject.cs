@@ -32,6 +32,12 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     public int WeeklyHours { get; private set; }
     public int TotalHours { get; private set; }
     public string? Description { get; private set; }
+    /// <summary>
+    /// True cuando la materia la creó el backoffice. False cuando se materializó al confirmar
+    /// un <c>CareerPlanImport</c> de un alumno (US-088). Heredada del <c>CareerPlan</c> padre
+    /// al crearse: si el plan es no oficial, todas sus materias también lo son.
+    /// </summary>
+    public bool IsOfficial { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
     private Subject() { }
@@ -51,7 +57,8 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
         int weeklyHours,
         int totalHours,
         string? description,
-        IDateTimeProvider clock)
+        IDateTimeProvider clock,
+        bool isOfficial = true)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -120,8 +127,18 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             WeeklyHours = weeklyHours,
             TotalHours = totalHours,
             Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
+            IsOfficial = isOfficial,
             CreatedAt = clock.UtcNow,
         };
+    }
+
+    /// <summary>
+    /// Promueve materia no-oficial a oficial. Idempotente. Lo invoca el flujo de backoffice
+    /// cuando un admin valida en bloque las materias de un plan crowdsourced.
+    /// </summary>
+    public void MarkOfficial()
+    {
+        if (!IsOfficial) IsOfficial = true;
     }
 
     /// <summary>
@@ -140,6 +157,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
         int weeklyHours,
         int totalHours,
         string? description,
+        bool isOfficial,
         DateTimeOffset createdAt) =>
         new()
         {
@@ -153,6 +171,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             WeeklyHours = weeklyHours,
             TotalHours = totalHours,
             Description = description,
+            IsOfficial = isOfficial,
             CreatedAt = createdAt,
         };
 }

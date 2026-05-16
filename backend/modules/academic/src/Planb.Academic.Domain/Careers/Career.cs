@@ -17,6 +17,12 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
     public UniversityId UniversityId { get; private set; }
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
+    /// <summary>
+    /// True cuando la carrera la creó el backoffice (admin/staff). False cuando la creó un
+    /// alumno via crowdsourcing (US-088). El frontend muestra badge "No oficial" cuando es
+    /// false. Cuando un admin acepta la versión crowdsourced, llama <see cref="MarkOfficial"/>.
+    /// </summary>
+    public bool IsOfficial { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
     private Career() { }
@@ -25,7 +31,8 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         UniversityId universityId,
         string name,
         string slug,
-        IDateTimeProvider clock)
+        IDateTimeProvider clock,
+        bool isOfficial = true)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -45,8 +52,19 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
             UniversityId = universityId,
             Name = name.Trim(),
             Slug = slug.Trim().ToLowerInvariant(),
+            IsOfficial = isOfficial,
             CreatedAt = clock.UtcNow,
         };
+    }
+
+    /// <summary>
+    /// Promueve una carrera no-oficial (creada via crowdsourcing) a oficial. Idempotente: si ya
+    /// estaba oficial, no hace nada. Lo usa el flujo de backoffice cuando un admin valida una
+    /// carrera subida por alumno.
+    /// </summary>
+    public void MarkOfficial()
+    {
+        if (!IsOfficial) IsOfficial = true;
     }
 
     public static Career Hydrate(
@@ -54,6 +72,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         UniversityId universityId,
         string name,
         string slug,
+        bool isOfficial,
         DateTimeOffset createdAt) =>
         new()
         {
@@ -61,6 +80,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
             UniversityId = universityId,
             Name = name,
             Slug = slug,
+            IsOfficial = isOfficial,
             CreatedAt = createdAt,
         };
 }
