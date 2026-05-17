@@ -73,6 +73,7 @@ export function CareerPlanImportFlow({
   return (
     <CareerPlanPreviewTable
       importId={data.id}
+      universityId={data.universityId}
       careerName={data.careerName}
       planYear={data.planYear}
       enrollmentYear={data.studentEnrollmentYear}
