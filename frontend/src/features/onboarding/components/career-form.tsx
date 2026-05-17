@@ -36,37 +36,26 @@ export function CareerForm() {
     initialOnboardingCareerState,
   );
 
-  // State restore: cuando el alumno viene del sub-flow plan-import, los search params traen
-  // universityId + planId + enrollmentYear para repoblar el form sin que tipee de nuevo.
-  // El planId nuevo viene asociado a una nueva Career (creada en /approve); resolvemos
-  // careerId desde el plan via la query y completamos el state.
+  // State restore: cuando el alumno viene del sub-flow plan-import (US-088), los search params
+  // traen universityId + careerId + planId + enrollmentYear. Repoblamos los 3 dropdowns sin
+  // que el alumno tenga que volver a elegir. El careerId viene explícito desde el response del
+  // /approve (no necesitamos resolverlo desde planId via lookup).
   const searchParams = useSearchParams();
   const initialUniversityId = searchParams.get('universityId') ?? '';
+  const initialCareerId = searchParams.get('careerId') ?? '';
   const initialPlanId = searchParams.get('planId') ?? '';
   const initialEnrollmentYear = searchParams.get('enrollmentYear') ?? '';
 
   const [universityId, setUniversityId] = useState<string>(initialUniversityId);
-  const [careerId, setCareerId] = useState<string>('');
+  const [careerId, setCareerId] = useState<string>(initialCareerId);
   const [careerPlanId, setCareerPlanId] = useState<string>('');
 
   const universities = useQuery(onboardingQueries.universities());
   const careers = useQuery(onboardingQueries.careersByUniversity(universityId || null));
   const plans = useQuery(onboardingQueries.careerPlansByCareer(careerId || null));
 
-  // Effect de restore: cuando los careers se cargan y traemos planId del param, buscamos la
-  // career que matchea el plan y la seleccionamos. Solo corre una vez gracias al guard sobre
-  // initialPlanId.
-  useEffect(() => {
-    if (!initialPlanId || careerId) return;
-    if (!careers.data || careers.data.length === 0) return;
-    // El plan recién creado pertenece a alguna de las careers visibles. Sin endpoint que
-    // resuelva planId → careerId, iteramos las queries de plans de cada career hasta encontrar.
-    // Más simple: si solo hay una Career (caso común para el alumno que recién subió), tomarla.
-    if (careers.data.length === 1) {
-      setCareerId(careers.data[0].id);
-    }
-  }, [initialPlanId, careerId, careers.data]);
-
+  // Auto-seleccionar el plan recién creado en cuanto se cargan los plans de la career.
+  // Solo dispara una vez (guard sobre careerPlanId ya seteado).
   useEffect(() => {
     if (!initialPlanId || careerPlanId) return;
     if (!plans.data || plans.data.length === 0) return;
