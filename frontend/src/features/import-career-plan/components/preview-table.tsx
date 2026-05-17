@@ -16,6 +16,7 @@ import {
 
 type Props = {
   importId: string;
+  universityId: string;
   careerName: string;
   planYear: number;
   enrollmentYear: number;
@@ -40,6 +41,7 @@ type EditableRow = {
  */
 export function CareerPlanPreviewTable({
   importId,
+  universityId,
   careerName,
   planYear,
   enrollmentYear,
@@ -65,7 +67,7 @@ export function CareerPlanPreviewTable({
   const [rows, setRows] = useState<EditableRow[]>(initialRows);
 
   const [state, formAction] = useActionState<ApproveCareerPlanState, FormData>(
-    handleApproveAction(router, enrollmentYear),
+    handleApproveAction(router, universityId, enrollmentYear),
     initialApproveCareerPlanState,
   );
 
@@ -217,16 +219,25 @@ export function CareerPlanPreviewTable({
 
 function handleApproveAction(
   router: ReturnType<typeof useRouter>,
+  universityId: string,
   enrollmentYear: number,
 ): (prev: ApproveCareerPlanState, formData: FormData) => Promise<ApproveCareerPlanState> {
   return async (prev, formData) => {
     const next = await approveCareerPlanAction(prev, formData);
     if (next.status === 'success') {
-      // Redirect al onboarding/career con el nuevo plan pre-seleccionado.
+      // Redirect al onboarding/career con el nuevo plan pre-seleccionado. Pasamos
+      // universityId + careerId además del planId para que el form pueda restaurar el
+      // state exacto sin tener que adivinar (la career nueva puede convivir con la
+      // oficial cuando ya existía una carrera con el mismo nombre).
       queueMicrotask(() => {
-        router.push(
-          `/onboarding/career?planId=${encodeURIComponent(next.careerPlanId)}&enrollmentYear=${enrollmentYear}`,
-        );
+        const successState = next as Extract<typeof next, { status: 'success' }>;
+        const qs = new URLSearchParams({
+          universityId,
+          careerId: successState.careerId,
+          planId: successState.careerPlanId,
+          enrollmentYear: String(enrollmentYear),
+        });
+        router.push(`/onboarding/career?${qs.toString()}`);
       });
     }
     return next;

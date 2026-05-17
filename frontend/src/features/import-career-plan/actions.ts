@@ -163,6 +163,7 @@ export async function approveCareerPlanAction(
     return {
       status: 'success',
       careerPlanId: body.careerPlanId,
+      careerId: body.careerId,
       subjectCount: body.subjectCount,
     };
   }

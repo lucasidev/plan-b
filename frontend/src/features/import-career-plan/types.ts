@@ -78,7 +78,7 @@ export const initialUploadCareerPlanState: UploadCareerPlanState = { status: 'id
 
 export type ApproveCareerPlanState =
   | { status: 'idle' }
-  | { status: 'success'; careerPlanId: string; subjectCount: number }
+  | { status: 'success'; careerPlanId: string; careerId: string; subjectCount: number }
   | { status: 'error'; message: string };
 
 export const initialApproveCareerPlanState: ApproveCareerPlanState = { status: 'idle' };
