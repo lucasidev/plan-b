@@ -15,10 +15,10 @@
 
   <ItemGroup Label="Endpoints / Messaging">
     <PackageVersion Include="Carter" Version="10.0.0" />
-    <PackageVersion Include="WolverineFx" Version="5.39.1" />
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.39.1" />
-    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.39.1" />
-    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.39.1" />
+    <PackageVersion Include="WolverineFx" Version="5.39.3" />
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.39.3" />
+    <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="5.39.3" />
+    <PackageVersion Include="WolverineFx.FluentValidation" Version="5.39.3" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
   </ItemGroup>
@@ -44,7 +44,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
-    <PackageVersion Include="Dapper" Version="2.1.72" />
+    <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Pgvector" Version="0.3.2" />
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
   </ItemGroup>
