@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           # pull_request_target da el ref del base (main). Para poder modificar
           # el branch del PR (y push back), checkeamos su ref explícito.
