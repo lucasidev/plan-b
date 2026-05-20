@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JwtBearer middleware + cierre del workaround pre-JWT (identity) — [`9e829c3`](https://github.com/lucasidev/plan-b/commit/9e829c360bdb94c39e553802a021777861fa727e)
 - import historial PDF/texto con preview + confirm (US-014) (enrollments) — [`53e9262`](https://github.com/lucasidev/plan-b/commit/53e92624a374b060d919a2aa153c3219c6c54207)
 - cerrar US-014 (timeout, 413/422, tests, doc) (enrollments) — [`3be913b`](https://github.com/lucasidev/plan-b/commit/3be913b4bdc371a7e1ba1605b299e1d9a3dd43c1)
+- foundation US-088 (IsOfficial flag + CareerPlanImport aggregate skeleton (academic) — [`6d56084`](https://github.com/lucasidev/plan-b/commit/6d56084f4ca3ab909ca915b807b83014e00a2083)
+- backend completo del import de plan de estudios (US-088) (academic) — [`9e206a8`](https://github.com/lucasidev/plan-b/commit/9e206a890408d082901c2e06da5a89d8ed5c2cd9)
+- frontend del import de plan de estudios (US-088) (onboarding) — [`0e5f98c`](https://github.com/lucasidev/plan-b/commit/0e5f98c4ef2337c2712fc287866dee91f2cf368f)
 
 ### Fixed
 
