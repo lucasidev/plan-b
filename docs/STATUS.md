@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-05-12 (apertura de S3 con convención nueva lunes→sábado; carry-over de US-045-b/c/d/e desde S2).
+**Última actualización**: 2026-05-16 (cierre de S3 + apertura de S4; US-088 mergeada el último día de S3, se cuenta Done sin carry-over).
 
 ---
 
@@ -15,8 +15,9 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
-| S3 | 2026-05-11 a 2026-05-16 | Carry-over de Mi carrera (US-045-b heatmap + US-045-c correlativas + US-045-d materias/docentes + US-045-e historial). Scope adicional a definir por Lucas. | 🟡 In progress |
-| S4+ | next+ | Backlog post-S3 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074, US-081..087) sin asignación de sprint hasta planning | ⏳ Pendiente |
+| S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
+| S4 | 2026-05-18 a 2026-05-23 | Cerrar shell del alumno: US-047 Mi perfil + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b. | 🟡 Open |
+| S5+ | next+ | Backlog post-S4 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074, US-081..087) sin asignación de sprint hasta planning | ⏳ Pendiente |
 
 Convenciones:
 
@@ -246,24 +247,57 @@ US existentes con AC nuevas:
 
 ---
 
-## S3 🟡 In progress
+## S3 ✓ Done
 
 **Rango**: 2026-05-11 a 2026-05-16 (lunes → sábado, 6 días útiles). Primer sprint con la cadencia nueva.
 
 **Foco inicial**: cerrar **Mi carrera** completo. US-045-a (shell + nav de tabs) ya cerró en S2; quedan los 4 tabs de contenido como carry-over.
 
+### Scope acordado (cerrado)
+
+- [US-045-b](domain/user-stories/US-045-b.md) Mi carrera tab Plan (heatmap por año/cuatrimestre). ✓ Done.
+- [US-045-c](domain/user-stories/US-045-c.md) Mi carrera tab Correlativas (grafo SVG). ✓ Done.
+- [US-045-d](domain/user-stories/US-045-d.md) Mi carrera tabs Materias + Docentes + drawers de detalle. ✓ Done.
+- [US-045-e](domain/user-stories/US-045-e.md) Mi carrera tab Historial (timeline + KPIs). ✓ Done.
+
+### Scope adicional que entró durante el sprint
+
+- US-013 cargar historial manual end-to-end (PR #104 Academic subjects/terms + PR #106 Enrollments BC + form).
+- US-014 importar historial PDF/texto (PR #117): parser heurístico + worker Wolverine async + preview editable + confirm. AC completos, status `Done` en el doc.
+- **US-088 importar plan de estudios desde PDF en onboarding paso 2** (mergeado el último día del sprint, 2026-05-16): backend (3 endpoints + worker + parser + migration + 11 integration tests + flag `IsOfficial` en Career/CareerPlan/Subject) + frontend (feature import-career-plan + página separada con state restore via URL params + integración career-form + 5 component tests). Crowdsourcing del catálogo: el plan creado queda `isOfficial=false` con badge "No oficial".
+- JwtBearer middleware (PR #114): cierre del workaround pre-JWT en los endpoints `/api/me/*`.
+- Workflow GHA auto-regen `bun.lock` para PRs de Dependabot (PR #115).
+- Bug fix post-presentación (PR #116): cross-user data leak en tab Historial + header hardcoded en Mi carrera.
+- Dependabot hardening: política tier 2 extendida a test harness + lucide (PRs #107 + #110); 4 PRs major evaluados/cerrados con notas (BCrypt/Wolverine 5.39, vitest 4, vitejs/plugin-react 6, lucide-react 1).
+- Ops: scripts OS-agnostic (PR #105), CI workflow post-merge skip (PR #103).
+
+---
+
+## S4 🟡 Open
+
+**Rango**: 2026-05-18 a 2026-05-23 (lunes → sábado, 6 días útiles).
+
+**Apertura tardía**: la planificación de S4 se hizo el sábado al cierre de S3, no el lunes al arrancar el sprint nuevo. Próximas aperturas: agendar la sesión de planning en el lunes mismo para no acumular esta deuda.
+
+**Foco**: cerrar **el shell del alumno** después de Mi carrera. Continuidad natural con S3 (alumno ya tiene historial + plan + import + Mi carrera; ahora tiene Mi perfil, Planificar shell, settings, Ayuda, Sobre plan-b). Reseñas como capítulo nuevo grande quedan para S5.
+
 ### Scope acordado
 
-- [US-045-b](domain/user-stories/US-045-b.md) Mi carrera tab Plan (heatmap por año/cuatrimestre). Carry-over de S2.
-- [US-045-c](domain/user-stories/US-045-c.md) Mi carrera tab Correlativas (grafo SVG). Carry-over de S2.
-- [US-045-d](domain/user-stories/US-045-d.md) Mi carrera tabs Materias + Docentes + drawers de detalle. Carry-over de S2.
-- [US-045-e](domain/user-stories/US-045-e.md) Mi carrera tab Historial (tabla + CTA cargar). Carry-over de S2.
+- [US-047](domain/user-stories/US-047.md) Mi perfil (incluye row Seguridad que dispara modal de US-079-i). Effort M.
+- [US-079-i](domain/user-stories/US-079-i.md) cambio de contraseña con sesión activa (endpoint `PATCH /api/me/password` + modal frontend). Mismo pattern que US-029-i / US-033-i. Effort M.
+- [US-046](domain/user-stories/US-046.md) Planificar shell + tabs + empty + modal publicar. Sin storage backend (US-023..027 quedan para sprint posterior). Effort M.
+- [US-073](domain/user-stories/US-073.md) Ayuda (FAQ + contacto soporte). Effort S.
+- [US-074](domain/user-stories/US-074.md) Sobre plan-b (info del producto + créditos). Effort S.
 
-Scope adicional queda abierto: Lucas decide qué más entra (de las US frontend del backlog post-canvas) durante el sprint.
+Suma: 3 M + 2 S. Factible holgado en 6 días útiles. Si entra runway adicional, candidatos a sumar in-sprint (sin compromiso): US-078-f error pages globales, US-076-f estado offline, US-072 Ajustes (UI).
 
-### Por qué carry-over y no Done
+### Por qué este foco (no reseñas todavía)
 
-Las 4 sub-US del rebuild de Mi carrera estaban tagueadas en S2 pero nunca se implementaron (S2 se fue en canvas v3 + admin doc'd, que no estaban en el plan original de S2). Son las únicas US tagueadas Sprint=S2 en Notion sin código en `main`.
+Las reseñas (US-017 backend + US-018 editar + US-019 reportar + US-049 editor 6 campos + US-048 reseñas shell) son un capítulo nuevo grande que merece sprint propio (S5). Cerrar primero el shell del alumno permite:
+
+1. Mostrarle a Elio un producto visualmente completo, no piezas a medias.
+2. Bajar el riesgo de no terminar: las US del shell son independientes (si una se traba, las otras siguen).
+3. Cuando lleguen las reseñas en S5, el editor va a vivir en pantallas que ya existen (Mi carrera tab Historial: "Reseñar esta cursada"). Tener el shell estable primero reduce el rework.
 
 ---
 
