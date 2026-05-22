@@ -63,6 +63,34 @@ public static class UserErrors
             "Password must be at least 12 characters long.");
 
     /// <summary>
+    /// US-079-i: el user logueado intentó cambiar password pero la `currentPassword` no
+    /// matchea el hash persistido. 401, sin enumeration (no distinguir entre "wrong password"
+    /// vs "user no existe" — aunque acá el user ya está autenticado, mantenemos la simetría
+    /// con InvalidCredentials del sign-in).
+    /// </summary>
+    public static readonly Error PasswordCurrentInvalid =
+        Error.Unauthorized(
+            "identity.password.current_invalid",
+            "Current password does not match.");
+
+    /// <summary>
+    /// US-079-i: la nueva password es igual a la actual (sin sentido rotar a la misma).
+    /// </summary>
+    public static readonly Error PasswordSameAsCurrent =
+        Error.Validation(
+            "identity.password.same_as_current",
+            "New password must be different from current password.");
+
+    /// <summary>
+    /// US-079-i: la nueva password supera el upper bound sano de 200 chars. BCrypt trunca a
+    /// 72 bytes igual, pero validamos explícito para no aceptar inputs degenerados.
+    /// </summary>
+    public static readonly Error PasswordTooLong =
+        Error.Validation(
+            "identity.password.too_long",
+            "Password must be at most 200 characters long.");
+
+    /// <summary>
     /// Generic authentication failure. Returned both when the email isn't registered
     /// and when the password doesn't match — anti-enumeration. The frontend never
     /// distinguishes between the two.
