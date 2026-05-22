@@ -4,6 +4,14 @@ name: Changelog auto-append
 # Implementa ADR-0037. Versioning está cubierto por separado en ADR-0038
 # (pre-deploy = no hay versiones), así que este workflow NO bumpea versión,
 # NO crea tags, y NO crea GitHub Releases.
+#
+# IMPORTANTE: este workflow usa GITHUB_TOKEN a propósito, NO la GitHub App
+# planb-ci-bot que sí usa dependabot-bun-lockfile.yml. ADR-0043 documenta los
+# dos casos: el push del CHANGELOG NO debe redisparar ci.yml/e2e.yml (sería
+# doblar el costo de CI/E2E sobre commits docs-only). La restricción de
+# GITHUB_TOKEN (no dispara workflows downstream) es exactamente lo que queremos.
+# NO migrar a App token "por consistencia": leer ADR-0043 sección "Cuándo NO
+# migrar" antes de tocar.
 
 on:
   push:
