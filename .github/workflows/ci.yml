@@ -11,8 +11,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Path-based gate: cambios que solo tocan docs/, .github/workflows/ no-ci,
+  # o configuración periférica no necesitan correr backend ni frontend tests.
+  # Los jobs aguas abajo declaran `needs: changes` + `if: outputs.X == 'true'`
+  # para skipear cuando no aplica. Jobs skipped cuentan como `success` para
+  # required status checks (comportamiento de GitHub desde 2022), así que no
+  # bloquean branch protection.
+  #
+  # Reglas de los filtros:
+  #   - backend: cualquier cosa bajo backend/** o cambios al propio ci.yml.
+  #   - frontend: cualquier cosa bajo frontend/** o cambios al propio ci.yml.
+  # Cambios al ci.yml triggerean ambos: queremos validar que un cambio al
+  # pipeline mismo no rompa ninguno de los dos jobs.
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+
   backend:
     name: Backend (.NET 10)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -101,6 +134,8 @@ jobs:
 
   frontend:
     name: Frontend (Next.js 15 / Bun)
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
