@@ -8,6 +8,23 @@
 # regenera el lockfile con `bun install`, y lo commitea + pushea al branch del
 # PR. El siguiente run del CI ya encuentra el lockfile consistente.
 #
+# IMPORTANTE: el push usa un token generado por una GitHub App (`planb-ci-bot`),
+# no el `GITHUB_TOKEN` default. Razón: GitHub Actions tiene una restricción de
+# seguridad — pushes hechos con GITHUB_TOKEN NO disparan workflows downstream
+# (anti-loop). Eso significaba que el CI no se re-corría después del push del
+# lockfile y los checks quedaban rojos hasta que alguien hiciera @dependabot
+# recreate manual. Los App tokens sí disparan workflows. Decisión documentada
+# en ADR-0043.
+#
+# Setup de la App (ya hecho, documentado para reproducibilidad):
+#   1. Crear GitHub App `planb-ci-bot` en https://github.com/settings/apps/new
+#      con permissions: Contents R/W, Pull requests R/W, Metadata R/O.
+#   2. Generar private key (.pem) y App ID.
+#   3. Instalar la App en el repo plan-b (Only select repositories).
+#   4. Guardar como secrets del repo:
+#        - LOCKFILE_BOT_APP_ID = número del App ID.
+#        - LOCKFILE_BOT_PRIVATE_KEY = contenido completo del .pem.
+#
 # Limitaciones conocidas:
 #   - Solo aplica a Dependabot. Otros bots o pushes humanos con package.json
 #     desincronizado siguen fallando, lo cual es lo que queremos (un dev humano
@@ -25,11 +42,11 @@ on:
       - 'frontend/package.json'
       - 'frontend/bun.lock'
 
-# Limita los permisos al mínimo necesario: write contents para poder pushear
-# al branch del PR. Sin pull_request_target el GITHUB_TOKEN no tiene write
-# en PRs de bots de terceros.
+# Permisos del GITHUB_TOKEN default: pull-requests:read solo para que la
+# condition `if` pueda leer el author del PR. El push se hace con el App token
+# generado en el step `Generate App token`, no con GITHUB_TOKEN.
 permissions:
-  contents: write
+  contents: read
   pull-requests: read
 
 concurrency:
@@ -42,16 +59,22 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.LOCKFILE_BOT_APP_ID }}
+          private-key: ${{ secrets.LOCKFILE_BOT_PRIVATE_KEY }}
+
       - name: Checkout PR branch
         uses: actions/checkout@v6
         with:
           # pull_request_target da el ref del base (main). Para poder modificar
           # el branch del PR (y push back), checkeamos su ref explícito.
           ref: ${{ github.event.pull_request.head.ref }}
-          # Le pedimos el token del bot que tiene permission para pushear al
-          # branch del fork si el PR viene de uno. GITHUB_TOKEN viene OK para
-          # PRs del propio repo (que es el caso de Dependabot).
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # App token: el push lo hace `planb-ci-bot`, y los pushes de Apps SI
+          # disparan workflows downstream (a diferencia del GITHUB_TOKEN).
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -66,14 +89,19 @@ jobs:
           bun install
 
       - name: Commit + push si el lockfile cambió
+        env:
+          APP_ID: ${{ secrets.LOCKFILE_BOT_APP_ID }}
         run: |
           if git diff --quiet -- frontend/bun.lock; then
             echo "Lockfile already in sync with package.json. Nothing to commit."
             exit 0
           fi
 
-          git config user.name "dependabot-lockfile-bot"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Identidad del commit = la App. El email noreply tiene shape estándar
+          # `<id>+<app-name>[bot]@users.noreply.github.com`. Sin ese shape los
+          # commits aparecen como "Unknown" en la UI de GitHub.
+          git config user.name "planb-ci-bot[bot]"
+          git config user.email "${APP_ID}+planb-ci-bot[bot]@users.noreply.github.com"
           git add frontend/bun.lock
           # Mensaje en formato conventional commits para no romper `pr-title.yml`.
           # build(deps): scope espejo de los PRs que Dependabot abre.
