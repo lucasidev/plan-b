@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - foundation US-088 (IsOfficial flag + CareerPlanImport aggregate skeleton (academic) — [`6d56084`](https://github.com/lucasidev/plan-b/commit/6d56084f4ca3ab909ca915b807b83014e00a2083)
 - backend completo del import de plan de estudios (US-088) (academic) — [`9e206a8`](https://github.com/lucasidev/plan-b/commit/9e206a890408d082901c2e06da5a89d8ed5c2cd9)
 - frontend del import de plan de estudios (US-088) (onboarding) — [`0e5f98c`](https://github.com/lucasidev/plan-b/commit/0e5f98c4ef2337c2712fc287866dee91f2cf368f)
+- backend cambio de contraseña con sesión (US-079-i) (identity) — [`2f8458e`](https://github.com/lucasidev/plan-b/commit/2f8458eb86dcce0487fe5191e83408629beb8298)
 
 ### Fixed
 
