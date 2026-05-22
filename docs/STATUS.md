@@ -16,8 +16,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
 | S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
-| S4 | 2026-05-18 a 2026-05-23 | Cerrar shell del alumno: US-047 Mi perfil + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b. | 🟡 Open |
-| S5+ | next+ | Backlog post-S4 (US-054-f, US-059-f, US-046, US-047, US-075, US-017, US-048, US-049, US-070, US-071, US-072, US-073, US-074, US-081..087) sin asignación de sprint hasta planning | ⏳ Pendiente |
+| S4 | 2026-05-18 a 2026-05-23 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b. | 🟡 Open |
+| S5+ | next+ | Reseñas slice (US-017 publicar + US-018 editar + US-019 reportar + US-049 editor 6 campos + US-048 reseñas shell). Después: backlog post-canvas v2 + admin (US-054-f, US-059-f, US-070..074, US-076-f, US-077-f + b/b-1/b-2/b-3, US-078-f, US-081..087) | ⏳ Pendiente |
 
 Convenciones:
 
@@ -283,13 +283,23 @@ US existentes con AC nuevas:
 
 ### Scope acordado
 
-- [US-047](domain/user-stories/US-047.md) Mi perfil (incluye row Seguridad que dispara modal de US-079-i). Effort M.
+- [US-047](domain/user-stories/US-047.md) Mi perfil (identidad académica + zona peligrosa). Effort M.
+- [US-072](domain/user-stories/US-072.md) Ajustes (notificaciones / privacidad / idioma / tema / **Seguridad → row Contraseña que dispara US-079-i**). Effort M. **Sumada al scope tras detectar que US-079-i necesita su trigger UI acá** (la separación canvas-design 2026-05-02 puso la row de Contraseña en Ajustes, no en Mi perfil).
 - [US-079-i](domain/user-stories/US-079-i.md) cambio de contraseña con sesión activa (endpoint `PATCH /api/me/password` + modal frontend). Mismo pattern que US-029-i / US-033-i. Effort M.
 - [US-046](domain/user-stories/US-046.md) Planificar shell + tabs + empty + modal publicar. Sin storage backend (US-023..027 quedan para sprint posterior). Effort M.
 - [US-073](domain/user-stories/US-073.md) Ayuda (FAQ + contacto soporte). Effort S.
 - [US-074](domain/user-stories/US-074.md) Sobre plan-b (info del producto + créditos). Effort S.
 
-Suma: 3 M + 2 S. Factible holgado en 6 días útiles. Si entra runway adicional, candidatos a sumar in-sprint (sin compromiso): US-078-f error pages globales, US-076-f estado offline, US-072 Ajustes (UI).
+Suma: 4 M + 2 S. Factible en 6 días útiles si no aparecen imprevistos. Más ajustado que el plan original (3M + 2S) pero coherente: US-072 destraba US-079-i sin reordenamientos.
+
+### Orden de ataque
+
+1. **US-079-i backend** primero (endpoint Identity chico, base de todo). Tests integration.
+2. **US-072 frontend** (la pantalla Ajustes completa con todas las secciones incluyendo Seguridad).
+3. **US-079-i frontend** (modal Cambiar contraseña). Se enchufa al row de US-072.
+4. **US-047 Mi perfil** (independiente). Backend `GET/PATCH /api/students/me/profile` + frontend.
+5. **US-046 Planificar shell** (independiente, solo frontend con stub data).
+6. **US-073 + US-074** páginas estáticas para cerrar.
 
 ### Por qué este foco (no reseñas todavía)
 
