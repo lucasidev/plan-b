@@ -309,6 +309,74 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         return Result.Success();
     }
 
+    /// <summary>
+    /// Cambia la password de un user con sesión activa (US-079-i). Distinto a <see cref="ResetPassword"/>
+    /// (que consume un token enviado por email): este flow asume que el user ya validó identidad con
+    /// JWT cookie y verifica la password actual antes de rotar.
+    ///
+    /// Failure modes:
+    /// <list type="bullet">
+    ///   <item><see cref="UserErrors.PasswordCurrentInvalid"/> (401) si la current no matchea.</item>
+    ///   <item><see cref="UserErrors.AccountDisabled"/> (403) si el user fue deshabilitado mid-sesión.</item>
+    ///   <item><see cref="UserErrors.PasswordTooWeak"/> (400) si la nueva no llega al mínimo.</item>
+    ///   <item><see cref="UserErrors.PasswordTooLong"/> (400) si supera el upper bound de 200 chars.</item>
+    ///   <item><see cref="UserErrors.PasswordSameAsCurrent"/> (400) si la nueva es igual a la actual.</item>
+    /// </list>
+    /// El check de IsEmailVerified se omite acá porque si llegó autenticado al endpoint significa que
+    /// el flow del JWT ya pasó por <c>Authenticate</c> (que valida verified). Defensive si llegamos
+    /// por path raro: el JwtBearer middleware lo gatea antes.
+    ///
+    /// Revocación de refresh tokens no es responsabilidad del aggregate — el handler la hace contra
+    /// la Redis store después del SaveChanges (mismo patrón que <see cref="ResetPassword"/>).
+    /// </summary>
+    public Result ChangePassword(
+        string currentPlainPassword,
+        string newPlainPassword,
+        Func<string, bool> verifyHash,
+        Func<string, string> hashPassword,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(verifyHash);
+        ArgumentNullException.ThrowIfNull(hashPassword);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrEmpty(currentPlainPassword) || !verifyHash(PasswordHash))
+        {
+            return UserErrors.PasswordCurrentInvalid;
+        }
+
+        if (IsDisabled)
+        {
+            return UserErrors.AccountDisabled;
+        }
+
+        if (string.IsNullOrEmpty(newPlainPassword) || newPlainPassword.Length < MinPasswordLength)
+        {
+            return UserErrors.PasswordTooWeak;
+        }
+
+        if (newPlainPassword.Length > MaxPasswordLength)
+        {
+            return UserErrors.PasswordTooLong;
+        }
+
+        // Same-as-current: comparamos plaintext (más explícito y barato que rehashear y comparar
+        // hashes, que con BCrypt salt-distinto darían diferentes).
+        if (string.Equals(currentPlainPassword, newPlainPassword, StringComparison.Ordinal))
+        {
+            return UserErrors.PasswordSameAsCurrent;
+        }
+
+        var now = clock.UtcNow;
+        PasswordHash = hashPassword(newPlainPassword);
+        UpdatedAt = now;
+        Raise(new UserPasswordChangedDomainEvent(Id, now));
+        return Result.Success();
+    }
+
+    /// <summary>Sane upper bound. BCrypt trunca a 72 bytes igual pero validamos explícito.</summary>
+    public const int MaxPasswordLength = 200;
+
     public Result Disable(Guid disabledBy, string reason, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
