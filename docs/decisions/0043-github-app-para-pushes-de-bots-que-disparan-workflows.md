@@ -94,9 +94,31 @@ Status quo.
 - Operacionalmente costoso (1 vez por semana mientras Dependabot esté activo). Multiplicado por la duración del proyecto (≥ 6 meses al PFI), son ~25 intervenciones manuales.
 - Se olvida. Los PRs quedan abiertos con CI rojo, dificultando ver el estado real del repo.
 
+## Cuándo NO migrar a App token (contra-caso documentado)
+
+**`changelog.yml` se queda en `GITHUB_TOKEN` a propósito.** No es deuda, es decisión correcta. La regla operativa:
+
+> La GitHub App solo entra cuando un workflow cumple LAS DOS condiciones:
+> 1. Hace `git push` (o equivalente que materializa cambios en el repo).
+> 2. **Y** queremos que ese push redispare workflows downstream.
+
+`changelog.yml` cumple la 1 (pushea el CHANGELOG.md actualizado a main después de cada merge) pero **NO** la 2: si migráramos a App token, el commit auto-generado del changelog dispararía `ci.yml` + `e2e.yml` sobre un cambio docs-only. Doblaríamos el costo de CI/E2E por gusto. La restricción de `GITHUB_TOKEN` es exactamente lo que queremos en ese caso.
+
+Audit de todos los workflows al momento de aterrizar este ADR (2026-05-18):
+
+| Workflow | ¿Pushea? | Token | Razón |
+|---|---|---|---|
+| `dependabot-bun-lockfile.yml` | Sí | **App** | Push debe redisparar CI |
+| `changelog.yml` | Sí | **GITHUB_TOKEN** | Push NO debe redisparar CI/E2E (commits docs-only) |
+| `pr-title.yml` | No | GITHUB_TOKEN | Solo read del título |
+| `auto-label.yml`, `ci.yml`, `commits.yml`, `docs-links.yml`, `e2e.yml` | No | Default | No hacen `git push` |
+
+Si en el futuro aparece un workflow nuevo que pushea, aplicar la regla operativa de arriba para decidir qué token usar.
+
 ## Referencias
 
 - GitHub docs sobre el limit del `GITHUB_TOKEN`: [Triggering a workflow from a workflow](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow).
 - `actions/create-github-app-token` README: [github.com/actions/create-github-app-token](https://github.com/actions/create-github-app-token).
 - Workflow afectado: `.github/workflows/dependabot-bun-lockfile.yml`.
+- Contra-caso documentado: `.github/workflows/changelog.yml` (header con comentario explícito apuntando a este ADR).
 - ADR relacionado: ninguno directo. Se enlaza con la política de Dependabot documentada en `.github/dependabot.yml`.
