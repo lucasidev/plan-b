@@ -16,10 +16,15 @@ on:
 permissions:
   pull-requests: read
 
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validate PR title
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     # Dependabot genera PR titles con la primera letra del subject capitalizada
     # ("Bump foo from X to Y") que rompe el subjectPattern de abajo. Sus
     # commits internamente sí siguen Conventional Commits (build(deps): bump...);

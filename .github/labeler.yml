@@ -34,6 +34,10 @@ e2e:
           # Identity entero: auth y session live en este módulo, todos los
           # specs E2E actuales lo tocan transitivamente.
           - 'backend/modules/identity/**'
-          # CI workflows que afectan E2E.
+          # CI workflows que afectan E2E. Solo `e2e.yml` califica: es el
+          # workflow que arma el stack (servicios, build, browsers) sobre el
+          # que corre la suite. `ci.yml` quedó intencionalmente afuera: corre
+          # tests unit/integration pero NO levanta el stack E2E, así que
+          # cambios suyos (timeouts, permissions, paths-filter, env vars de
+          # tests) no ameritan 7 min de Playwright para validar.
           - '.github/workflows/e2e.yml'
-          - '.github/workflows/ci.yml'
