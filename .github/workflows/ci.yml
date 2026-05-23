@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# Default mínimo. Los jobs no escriben al repo: ni push, ni labels, ni
+# comments. Si en el futuro un job necesita más, lo declara local.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -26,6 +31,7 @@ jobs:
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -47,6 +53,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
+    # Local típico: restore+build+test ≈ 4-6 min. 15 min deja headroom para
+    # primer run sin caches (restore largo) sin tolerar un hang real.
+    timeout-minutes: 15
     services:
       postgres:
         image: pgvector/pgvector:pg17
@@ -137,11 +146,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
+    # install+lint+typecheck+build+test local ≈ 3-5 min. 10 min de headroom.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          # Pineado al rango minor estable que matchea el del dev local
+          # (frontend/package.json engines.bun >= 1.3.0). `latest` rompe CI
+          # silenciosamente si Bun publica un breaking release nocturno.
+          bun-version: 1.3.x
       - name: Install
         run: cd frontend && bun install --frozen-lockfile
       - name: Lint
