@@ -23,10 +23,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: commits-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validate every commit message
     runs-on: ubuntu-latest
+    # Validación trivial (~5s). 3 min absorbe checkout largo en runners lentos.
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v6
         with:
@@ -37,7 +43,8 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          # Pineado al rango que matchea el dev local (engines.bun >= 1.3.0).
+          bun-version: 1.3.x
 
       - name: Validate commits
         run: |

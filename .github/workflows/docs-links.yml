@@ -35,6 +35,9 @@ jobs:
   check:
     name: Check links in markdown
     runs-on: ubuntu-latest
+    # ~40 docs, externos cacheados. Run típico ≈ 30s. 5 min absorbe externos
+    # lentos sin tolerar un hang del HTTP client de lychee.
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
 

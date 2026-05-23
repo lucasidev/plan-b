@@ -31,6 +31,10 @@ jobs:
   e2e:
     name: E2E suite
     runs-on: ubuntu-latest
+    # Suite full ≈ 5-7 min según ADR-0036, más setup de servicios+build+
+    # browsers. 25 min absorbe el peor escenario (caches frías) sin tolerar
+    # un hang real del backend o frontend en bg.
+    timeout-minutes: 25
     # Solo corre si el PR tiene label `e2e`, OR push a main, OR dispatch manual.
     # Para PRs sin label: skip (mostrará "Skipped" en el merge UI).
     if: >-
@@ -98,7 +102,7 @@ jobs:
         with: { dotnet-version: '10.0.x' }
 
       - uses: oven-sh/setup-bun@v2
-        with: { bun-version: latest }
+        with: { bun-version: 1.3.x }
 
       - name: Restore + build backend
         working-directory: backend
@@ -119,17 +123,26 @@ jobs:
         # como proxy de "seed listo".
         working-directory: backend
         run: |
+          set -e
           nohup dotnet run --no-build --configuration Release --project host/Planb.Api > /tmp/backend.log 2>&1 &
           echo "BACKEND_PID=$!" >> $GITHUB_ENV
           # 1) Esperar que el host responda al healthcheck.
+          healthy=0
           for i in {1..30}; do
             if curl -sf http://localhost:5000/health > /dev/null; then
-              echo "Host healthy after ${i}s"; break
+              echo "Host healthy after ${i}s"
+              healthy=1; break
             fi
             sleep 1
           done
+          if [ "$healthy" -ne 1 ]; then
+            echo "::error ::Backend nunca respondió /health en 30s. Ver backend-log artifact."
+            tail -50 /tmp/backend.log || true
+            exit 1
+          fi
           # 2) Esperar que el seed haya materializado las personas. Sondeamos
           # con un sign-in de Lucía: 200 = persona creada, 401 = todavía no.
+          seeded=0
           for i in {1..30}; do
             status=$(curl -sf -o /dev/null -w "%{http_code}" \
               -X POST http://localhost:5000/api/identity/sign-in \
@@ -137,11 +150,17 @@ jobs:
               -d '{"email":"lucia.mansilla@gmail.com","password":"lucia.mansilla.12"}' \
               || echo "000")
             if [ "$status" = "200" ]; then
-              echo "Seed ready after ${i}s"; break
+              echo "Seed ready after ${i}s"
+              seeded=1; break
             fi
             echo "Seed not ready yet (status=$status), waiting..."
             sleep 2
           done
+          if [ "$seeded" -ne 1 ]; then
+            echo "::error ::DevSeed nunca terminó en 60s. Ver backend-log artifact."
+            tail -50 /tmp/backend.log || true
+            exit 1
+          fi
 
       - name: Install frontend deps
         working-directory: frontend
@@ -182,14 +201,22 @@ jobs:
       - name: Start frontend in background
         working-directory: frontend
         run: |
+          set -e
           nohup bun next start -p 3000 > /tmp/frontend.log 2>&1 &
           echo "FRONTEND_PID=$!" >> $GITHUB_ENV
+          ready=0
           for i in {1..30}; do
             if curl -sf http://localhost:3000 > /dev/null; then
-              echo "Frontend ready after ${i}s"; break
+              echo "Frontend ready after ${i}s"
+              ready=1; break
             fi
             sleep 1
           done
+          if [ "$ready" -ne 1 ]; then
+            echo "::error ::Frontend nunca respondió en :3000 en 30s. Ver frontend-log artifact."
+            tail -50 /tmp/frontend.log || true
+            exit 1
+          fi
 
       - name: Run Playwright
         working-directory: frontend
