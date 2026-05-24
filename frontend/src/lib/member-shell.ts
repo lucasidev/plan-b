@@ -44,8 +44,8 @@ export const memberRoutes: readonly MemberRoute[] = [
     futureUs: 'US-045',
   },
   {
-    path: '/simulator',
-    label: 'Simulador',
+    path: '/planificar',
+    label: 'Planificar',
     section: 'mi-cuatrimestre',
     shortcut: '⌘3',
     futureUs: 'US-016',
