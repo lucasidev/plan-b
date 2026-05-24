@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - backend completo del import de plan de estudios (US-088) (academic) — [`9e206a8`](https://github.com/lucasidev/plan-b/commit/9e206a890408d082901c2e06da5a89d8ed5c2cd9)
 - frontend del import de plan de estudios (US-088) (onboarding) — [`0e5f98c`](https://github.com/lucasidev/plan-b/commit/0e5f98c4ef2337c2712fc287866dee91f2cf368f)
 - backend cambio de contraseña con sesión (US-079-i) (identity) — [`2f8458e`](https://github.com/lucasidev/plan-b/commit/2f8458eb86dcce0487fe5191e83408629beb8298)
+- pantalla Ajustes con backend y modal de cambio de contraseña (identity) — [`a2b0ccf`](https://github.com/lucasidev/plan-b/commit/a2b0ccff1bb12f02968f23dc4722b6bc5d8ed670)
 
 ### Fixed
 
