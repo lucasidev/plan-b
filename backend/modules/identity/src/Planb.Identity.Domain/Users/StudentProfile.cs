@@ -33,6 +33,15 @@ public sealed class StudentProfile
     public int EnrollmentYear { get; private set; }
     public StudentProfileStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
+
+    // Campos editables desde Mi perfil (US-047). Todos nullable / opcionales: un profile
+    // recién creado en onboarding tiene displayName=null hasta que el user edite el perfil.
+    // El frontend renderea fallback a partir del email (helper displayNameFromEmail).
+    public string? DisplayName { get; private set; }
+    public int? YearOfStudy { get; private set; }
+    public string? Legajo { get; private set; }
+    public bool RegularStudent { get; private set; }
 
     private StudentProfile() { }
 
@@ -49,7 +58,27 @@ public sealed class StudentProfile
         EnrollmentYear = enrollmentYear;
         Status = StudentProfileStatus.Active;
         CreatedAt = createdAt;
+        RegularStudent = true; // Default optimista: un profile recién creado se asume regular.
     }
 
     public bool IsActive => Status == StudentProfileStatus.Active;
+
+    /// <summary>
+    /// Aplica un update parcial desde Mi perfil (US-047). Solo se tocan los campos cuyo
+    /// argumento es no-null. <see cref="UpdatedAt"/> se rebumpea siempre (el caller no llama
+    /// con todos los args null: el validator del command lo garantiza).
+    /// </summary>
+    internal void ApplyEdit(
+        string? displayName,
+        int? yearOfStudy,
+        string? legajo,
+        bool? regularStudent,
+        DateTimeOffset now)
+    {
+        if (displayName is not null) DisplayName = displayName;
+        if (yearOfStudy is not null) YearOfStudy = yearOfStudy.Value;
+        if (legajo is not null) Legajo = legajo;
+        if (regularStudent is not null) RegularStudent = regularStudent.Value;
+        UpdatedAt = now;
+    }
 }
