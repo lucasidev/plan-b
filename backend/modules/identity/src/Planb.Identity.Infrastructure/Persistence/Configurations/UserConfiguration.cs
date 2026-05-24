@@ -24,14 +24,17 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(254)
             .IsRequired();
 
-        // Partial unique index: solo bloqueamos duplicados de email cuando expired_at IS NULL.
-        // Esto permite que un user expirado (US-022) coexista en la DB con un re-registro nuevo
-        // del mismo email. El expired queda para audit, el activo es el operativo. Postgres
-        // específico (HasFilter genera "WHERE ...").
+        // Partial unique index: solo bloqueamos duplicados de email cuando expired_at IS NULL
+        // y deactivated_at IS NULL. Esto permite que:
+        //   - un user expirado (US-022) coexista en DB con un re-registro nuevo del mismo email
+        //   - un user deactivated (ADR-0044) tenga el email anonimizado y NO impida re-registro
+        //     del email original por otra persona
+        // Ambos casos comparten la misma semántica: el row sobrevive para audit, pero NO bloquea
+        // el operativo. Postgres específico (HasFilter genera "WHERE ...").
         builder.HasIndex(u => u.Email)
             .IsUnique()
             .HasDatabaseName("ux_users_email_active")
-            .HasFilter("expired_at IS NULL");
+            .HasFilter("expired_at IS NULL AND deactivated_at IS NULL");
 
         builder.Property(u => u.PasswordHash)
             .HasColumnName("password_hash")
@@ -55,6 +58,9 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.ExpiredAt)
             .HasColumnName("expired_at");
+
+        builder.Property(u => u.DeactivatedAt)
+            .HasColumnName("deactivated_at");
 
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
@@ -164,6 +170,27 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             profiles.Property(p => p.CreatedAt)
                 .HasColumnName("created_at")
                 .IsRequired();
+
+            profiles.Property(p => p.UpdatedAt)
+                .HasColumnName("updated_at");
+
+            // US-047: campos editables desde Mi perfil. Todos nullable salvo regular_student
+            // que tiene default true en el constructor del aggregate.
+            profiles.Property(p => p.DisplayName)
+                .HasColumnName("display_name")
+                .HasMaxLength(80);
+
+            profiles.Property(p => p.YearOfStudy)
+                .HasColumnName("year_of_study");
+
+            profiles.Property(p => p.Legajo)
+                .HasColumnName("legajo")
+                .HasMaxLength(32);
+
+            profiles.Property(p => p.RegularStudent)
+                .HasColumnName("regular_student")
+                .IsRequired()
+                .HasDefaultValue(true);
 
             // Partial unique: un mismo user no puede tener dos profiles activos para la misma
             // carrera. Postgres-specific. El filter "status = 'Active'" garantiza que un perfil

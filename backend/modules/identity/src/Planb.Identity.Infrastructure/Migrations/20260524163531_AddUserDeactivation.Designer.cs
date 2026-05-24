@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Planb.Identity.Domain.Users;
@@ -12,9 +13,11 @@ using Planb.Identity.Infrastructure.Persistence;
 namespace Planb.Identity.Infrastructure.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260524163531_AddUserDeactivation")]
+    partial class AddUserDeactivation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,39 +306,15 @@ namespace Planb.Identity.Infrastructure.Migrations
                                 .HasColumnType("timestamp with time zone")
                                 .HasColumnName("created_at");
 
-                            b1.Property<string>("DisplayName")
-                                .HasMaxLength(80)
-                                .HasColumnType("character varying(80)")
-                                .HasColumnName("display_name");
-
                             b1.Property<int>("EnrollmentYear")
                                 .HasColumnType("integer")
                                 .HasColumnName("enrollment_year");
-
-                            b1.Property<string>("Legajo")
-                                .HasMaxLength(32)
-                                .HasColumnType("character varying(32)")
-                                .HasColumnName("legajo");
-
-                            b1.Property<bool>("RegularStudent")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(true)
-                                .HasColumnName("regular_student");
 
                             b1.Property<string>("Status")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
                                 .HasColumnName("status");
-
-                            b1.Property<DateTimeOffset?>("UpdatedAt")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("updated_at");
-
-                            b1.Property<int?>("YearOfStudy")
-                                .HasColumnType("integer")
-                                .HasColumnName("year_of_study");
 
                             b1.Property<Guid>("user_id")
                                 .HasColumnType("uuid")

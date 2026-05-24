@@ -57,16 +57,29 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
         // career_id, y de hecho enforce 1-a-1 a nivel aggregate en User.AddStudentProfile).
         // Si en algún momento permitimos múltiples (cambio de carrera con histórico), este
         // endpoint cambia a devolver el "current" según un campo nuevo.
+        // US-047: el SELECT trae también los nuevos campos editables del perfil + JOIN con
+        // users para el header de Mi perfil (email + "miembro desde"). Filtramos por user
+        // no-deactivated y profile activo (status='Active') para no devolver basura post-deactivate.
         const string sql = @"
             SELECT
-                id               AS Id,
-                user_id          AS UserId,
-                career_id        AS CareerId,
-                career_plan_id   AS CareerPlanId,
-                enrollment_year  AS EnrollmentYear,
-                status           AS Status
-            FROM identity.student_profiles
-            WHERE user_id = @UserId
+                sp.id                  AS Id,
+                sp.user_id             AS UserId,
+                sp.career_id           AS CareerId,
+                sp.career_plan_id      AS CareerPlanId,
+                sp.enrollment_year     AS EnrollmentYear,
+                sp.status              AS Status,
+                sp.display_name        AS DisplayName,
+                sp.year_of_study       AS YearOfStudy,
+                sp.legajo              AS Legajo,
+                sp.regular_student     AS RegularStudent,
+                sp.updated_at          AS UpdatedAt,
+                u.email                AS Email,
+                u.created_at           AS MemberSince
+            FROM identity.student_profiles sp
+            INNER JOIN identity.users u ON u.id = sp.user_id
+            WHERE sp.user_id = @UserId
+              AND sp.status = 'Active'
+              AND u.deactivated_at IS NULL
             LIMIT 1;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
