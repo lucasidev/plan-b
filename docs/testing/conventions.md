@@ -287,39 +287,17 @@ Reglas:
 - Personas (`LUCIA`, `MATEO`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
 - Cada test es independiente: limpia rate limits, restaura estado al final si modificó datos.
-- E2E corre on-demand en CI (label `e2e` en el PR o push a main). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
+- **E2E corre siempre en CI** en cada PR como gate antes de merge (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
 
-#### Cuándo un PR necesita E2E (zona E2E)
+#### Política E2E: una sola regla
 
-**Regla**: si un PR toca cualquier path de la lista de zona E2E, antes de pushear hay que correr la suite Playwright localmente con verde y aplicar label `e2e` al PR para que CI ejercite la suite pre-merge.
+**E2E corre siempre en CI, en cada PR.** Sin labels, sin detectores custom, sin whitelists. Es el patrón estándar de la industria 2025: shift-left + gate consistente antes de merge. Para PRs 100% docs/config (sin código), aceptamos los ~7 min como costo de simplicidad.
 
-**Enforcement (3 capas)**:
+**Pre-push hook NO corre E2E.** El hook se queda con gates rápidos (lint, typecheck, build, unit). Si el dev tocó código real y quiere validar antes de pushear, corre `just frontend-test-e2e-show` manualmente. La elección queda en el dev, no en el hook.
 
-1. **Pre-push hook lefthook** (`scripts/check-e2e-zone.ts`): cuando hacés `git push`, el hook compara el branch contra `origin/main`, matchea contra los globs de zona E2E, y si matchea exige que el stack esté arriba (backend :5000 + frontend :3000) y que la suite pase. Si el stack está abajo, el push falla con instrucciones para arrancarlo. Si la suite falla, el push falla y mostramos `just frontend-test-e2e-show` para inspección visual.
-2. **Auto-label** (`.github/workflows/auto-label.yml`): aplica el label `e2e` automáticamente cuando los paths del PR matchean la lista en `.github/labeler.yml`.
-3. **CI on-demand** (`.github/workflows/e2e.yml`): el label `e2e` dispara la suite en GitHub Actions como gate pre-merge.
+**Cómo llegamos acá** (2026-05-24): probamos un régimen de zona E2E con detector custom (`check-e2e-zone.ts`), whitelist de paths, auto-labeler, escape hatches, detección de mocks. Funcionaba parcialmente pero acumulaba deuda combinatoria sin resolver el problema real (devs entregando "listo" sin verificar). Filosofía Musk: el peor error es optimizar algo que no debería existir. Reset al estándar industria.
 
-**Escape hatches del pre-push** (usalos sólo cuando sabés exactamente por qué):
-- `SKIP_E2E_PRECHECK=1 git push`: salta solo el hook E2E (sigue corriendo lint/build/typecheck).
-- `git push --no-verify`: salta todos los hooks. Última opción.
-
-**Zona E2E** (paths que disparan el label automático):
-
-| Path glob | Por qué |
-|---|---|
-| `frontend/src/app/**` | Routes, layouts, server actions, guards. Cambios acá afectan redirects / cookies / sesión / render server-side que los specs verifican. |
-| `frontend/middleware.ts` | Si existe, define cross-cutting auth/redirect. |
-| `frontend/src/lib/{session,forward-set-cookies,api-client,env}.ts` | Cross-cutting auth + session + api wiring. Tocar cualquiera puede romper todos los specs de auth. |
-| `frontend/e2e/**` | Suite directa o helpers compartidos. |
-| `frontend/playwright.config.ts` | Config de la suite. |
-| `backend/host/Planb.Api/**` | Host (DI, pipeline auth, seed data, Program.cs). Cualquier cambio afecta startup. |
-| `backend/modules/*/src/**/Migrations/**` | Migrations de cualquier módulo. Pueden romper la inicialización del backend. |
-| `backend/modules/identity/**` | Auth y session viven en Identity, todos los specs E2E actuales lo tocan transitivamente. |
-| `.github/workflows/{e2e,ci}.yml` | Workflow que ejercita la suite o CI estándar. |
-
-**Quedan fuera explícitamente**: cambios docs-only (`docs/**`, `*.md`), `.github/dependabot.yml`, `Justfile` (a menos que cambie comandos de CI), ADRs, lessons-learned, componentes aislados con cobertura vitest, otros módulos backend (academic, reviews, enrollments, moderation) que aún no tienen specs E2E. Si en el futuro un nuevo módulo gana cobertura E2E, agregar su path al `labeler.yml`.
-
-**Si el label se aplica pero no aplica realmente** (false positive): removerlo manualmente del PR. CI no va a forzar la corrida, solo dispara cuando el label está. Documentar el caso si pasa seguido (puede indicar que el path glob es muy laxo).
+**Regla cultural** (vive en la disciplina del dev, no en tooling): cuando termines un slice que toque rutas reales (no mocks/ComingSoon), corré `just frontend-test-e2e-show <spec>` local con browser visible y verificá verde antes de declarar la US "lista" o pedir revisión. Esto vale especialmente para el asistente IA: el OK para commit/push viene después de mostrar el output del spec corrido, no antes.
 
 #### Dominio vs infra: cuándo un helper directo está OK
 

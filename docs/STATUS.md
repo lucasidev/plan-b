@@ -177,7 +177,7 @@ Todas Done al cierre del sprint.
 - [US-037-f](domain/user-stories/US-037-f.md): **Onboarding frontend** 4 pasos (Bienvenida / Carrera / Historial / Listo). **Done.**
 - [US-044](domain/user-stories/US-044.md) + [US-044-a](domain/user-stories/US-044-a.md) + [US-044-b](domain/user-stories/US-044-b.md) + [US-044-c](domain/user-stories/US-044-c.md): **Inicio v2** port literal del mock V2Inicio. **Done.**
 - [US-045-a](domain/user-stories/US-045-a.md): **Mi carrera shell + 5 tabs** con stubs. **Done.**
-- **DevEx**: pre-push hook que enforce E2E local cuando se tocan paths de la "E2E zone" (`scripts/check-e2e-zone.ts` + auto-label workflow). PR #87 merged.
+- **DevEx**: pre-push hook con gates rápidos (lint, typecheck, build, unit). E2E corre en CI siempre en cada PR como gate antes de merge (job `e2e` en `ci.yml`). Régimen del 2026-05-24 tras reset del approach overengineered de "zona E2E" con detector custom + auto-label (PR #87 histórico).
 - **Design pipeline**: canvas screenshots auto-generados via Playwright sobre `plan-b-direcciones.html`, embed en US frontend como mockup ref, doc canónico [`docs/design/design-system.md`](design/design-system.md). PR #90 merged.
 - **Em-dash audit**: 210 docs sweep + auditoría manual de 73 files (titles, headings, comentarios) post regla absoluta.
 - **Audit canvas v3 app/landing/design-system + rediseño app (día 7, 2026-05-09)**:
@@ -232,7 +232,7 @@ US existentes con AC nuevas:
 - ✓ Lucía (verificada en S1) puede entrar a `/onboarding/welcome` y completar los 4 pasos hasta crear su StudentProfile.
 - ✓ Lucía con StudentProfile entra a `/home` y ve el Inicio v2 completo (greeting + período + 2 columnas con todos los bloques).
 - ✓ Lucía entra a `/mi-carrera` y ve el shell + 5 tabs (Plan / Correlativas / Catálogo / Docentes / Historial), todos como `ComingSoon` stubs.
-- ✓ El pre-push hook bloquea push cuando se tocan paths de E2E zone sin haber corrido E2E local; escape `SKIP_E2E_PRECHECK=1`.
+- ✓ E2E corre siempre en CI en cada PR como gate antes de merge (un job más en `ci.yml`). Sin labels, sin detector custom: política simplificada el 2026-05-24 al estándar industria.
 - ✓ Cada US frontend tiene mockup embed con la imagen del canvas correspondiente.
 
 ### Retrospectiva corta
@@ -243,7 +243,7 @@ US existentes con AC nuevas:
 
 **Quedó débil**:
 - Auth + onboarding tienen drift visual con el canvas v2 (que cerró el 2026-05-02, después de implementar US-010-f / US-028-f / US-037-f en S1). Documentado en [US-059-f](domain/user-stories/US-059-f.md). No es bug, es deuda visual conocida.
-- "Regla declarada pero sin enforcement": antes del pre-push hook, hubo merges que pasaron CI gates pero rompieron E2E (caso US-037-f que dejó `sign-up.spec.ts` esperando `/home`). Ahora con el hook + auto-label + docs, las 3 capas del enforcement están alineadas.
+- "Regla declarada pero sin enforcement": antes había merges que pasaban CI gates pero rompían E2E (caso US-037-f que dejó `sign-up.spec.ts` esperando `/home`). Cubierto desde 2026-05-24 por "E2E siempre en CI" como gate antes de merge.
 
 ---
 

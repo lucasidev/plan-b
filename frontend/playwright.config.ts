@@ -19,8 +19,7 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
  *   - Helpers reusables en `frontend/e2e/helpers/`.
  *   - Localmente: requiere `just infra-up` + backend en :5000 + frontend en :3000.
  *     Recipe Justfile: `just frontend-test-e2e`.
- *   - CI: `.github/workflows/e2e.yml` corre on-demand (label `e2e` en el PR
- *     o push a main), no en cada push.
+ *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
  */
 export default defineConfig({
   testDir: './e2e',

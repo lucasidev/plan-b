@@ -12,6 +12,35 @@ Formato de cada entrada:
 
 ---
 
+## 2026-05-24 · Over-engineering del enforcement E2E: detector custom, whitelists, escape hatches
+
+**Síntoma**: en US-072 entregué "feature listo, ¿OK para commit?" sin haber corrido E2E local. Lucas tuvo que pedirme que lo corra (otra vez). Al intentar arreglar el problema con tooling, fui acumulando capas: detector de paths (`check-e2e-zone.ts`) → whitelist de módulos backend con FE consumidor → detección de mocks vs reales → escape hatch selectivo (`SKIP_E2E_PRECHECK=1`) → labels auto-aplicados (`auto-label.yml` + `labeler.yml`). Cada capa estaba justificada en aislamiento, el total era deuda combinatoria.
+
+**Causa raíz** (varias, todas relacionadas):
+
+1. Confundí el problema **cultural** ("el asistente entrega sin verificar") con un problema de **tooling** ("hace falta un mejor detector"). El hook predice; la cultura previene. El primero es paliativo, el segundo es cura.
+2. Cada nuevo caso edge (config no debería disparar E2E, mocks tampoco, fix de backend de feat terminado sí) agregaba una rama al detector. La complejidad creció monotónicamente, sin presupuesto explícito.
+3. Salimos del estándar industria sin notarlo. La práctica común (Maestro, LambdaTest, Playwright docs) es **E2E siempre en CI** + pre-push con gates rápidos. Nuestra heurística custom era un sub-óptimo dressed como innovación.
+
+**Fix** (reset coherente, no parches incrementales):
+
+- `.github/workflows/e2e.yml`, `auto-label.yml`, `labeler.yml`: **borrados**.
+- `scripts/check-e2e-zone.ts` + sus tests: **borrados**.
+- `lefthook.yml`: removido el step `e2e-zone`. Pre-push se queda con lint, typecheck, build, unit tests.
+- `.github/workflows/ci.yml`: gana un job `e2e` que **corre siempre** en cada PR (ports los services + steps que vivían en `e2e.yml`). Sin condicional, sin label, sin paths-filter.
+- Label `e2e` del repo: `gh label delete e2e`.
+- Régimen documentado en `docs/testing/conventions.md` sección "Política E2E: una sola regla".
+
+**Prevención**:
+
+- **Aplicar la heurística Musk**: el peor error de un ingeniero es optimizar algo que ni debería existir. Antes de agregar una rama nueva al detector custom, preguntar "¿esto debería existir?". Si la respuesta del estándar industria es "no", borrar el detector entero, no agregarle una rama.
+- **Distinguir problema cultural de problema de tooling**: si el síntoma es "el dev/asistente no ejecutó X", la cura suele ser cultural (regla + accountability). El tooling es complemento, no sustituto.
+- **Antes de ramificar un detector, verificar el estado del arte**. WebSearch + 2 sources para constatar qué hace la industria. Si nuestro approach diverge significativamente, hay buena chance de que estemos sobre-engineering.
+- **Aceptar costos baratos como costo de simplicidad**. Los ~7 min de E2E en cada PR son menores al costo cognitivo de mantener whitelists, escape hatches y detección de mocks.
+- **La cultura del asistente IA**: cuando termino un slice que toca rutas reales (no mocks), corro `just frontend-test-e2e-show <spec>` con browser visible y muestro el output al usuario **antes** de declarar la feature "lista". Esto es disciplina obligatoria, no opcional. Si la rompo, el usuario tiene derecho a llamar la atención.
+
+---
+
 ## 2026-05-08 · Regla declarada pero sin enforcement: olvidé correr E2E local de nuevo
 
 **Síntoma**: tras mergear los PRs de auto-label + recipe `frontend-test-e2e-show` (zona E2E declarada + UX para correr local cero fricción), arrancó US-044 + US-045-a y empecé a iterar sin correr E2E local. Solo cuando Lucas preguntó "¿requiere E2E?" caí en la cuenta de que correspondía. La regla declarada del lessons-learned anterior (correr local antes de pushear) se quedó otra vez en memoria humana.
@@ -24,7 +53,7 @@ Formato de cada entrada:
 - Si matchea zona E2E: chequea backend `:5000/health` + frontend `:3000`. Si no están arriba, falla con instrucciones (`just dev`). Si están arriba, corre `bunx playwright test`. Si la suite falla, el push se aborta.
 - Si NO matchea: skip transparente.
 
-Escape hatches: `SKIP_E2E_PRECHECK=1 git push` (skip selectivo) y `git push --no-verify` (skip total, último recurso).
+Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El escape selectivo `SKIP_E2E_PRECHECK=1` se removió el 2026-05-23 porque se estaba volviendo rutina del asistente. **Update 2026-05-24**: el hook completo se removió. La política nueva es "E2E siempre en CI" (estándar industria), pre-push hook se queda con gates rápidos (lint/typecheck/build/unit). Detalle del reset en `docs/testing/conventions.md` sección "Política E2E: una sola regla".
 
 **Prevención**:
 
