@@ -121,6 +121,58 @@ public static class UserErrors
             "identity.account.not_eligible_for_expiration",
             "User is not eligible for unverified expiration.");
 
+    /// <summary>
+    /// ADR-0044: el user invocó deactivate sobre una cuenta que ya está deactivated. Idempotency
+    /// explícita por preferencia: si el frontend lo recibe, sabe que la cuenta ya no existe como
+    /// activa y puede limpiar la sesión local sin assumption silenciosa. Mapea a 409.
+    /// </summary>
+    public static readonly Error AlreadyDeactivated =
+        Error.Conflict(
+            "identity.account.already_deactivated",
+            "User is already deactivated.");
+
+    /// <summary>
+    /// US-047: operaciones del perfil requieren user activo (verificado, no disabled/expired/
+    /// deactivated). Mapea a 403.
+    /// </summary>
+    public static readonly Error AccountNotActive =
+        Error.Forbidden(
+            "identity.account.not_active",
+            "Account is not active.");
+
+    /// <summary>
+    /// US-047: el user no tiene un StudentProfile activo. Caso degenerado post-onboarding pero
+    /// el handler chequea defensivo. Mapea a 404.
+    /// </summary>
+    public static readonly Error StudentProfileNotFound =
+        Error.NotFound(
+            "identity.student_profile.not_found",
+            "User has no active student profile.");
+
+    /// <summary>
+    /// US-047: displayName vacío (después de trim) o supera <see cref="User.MaxDisplayNameLength"/>.
+    /// </summary>
+    public static readonly Error DisplayNameInvalid =
+        Error.Validation(
+            "identity.student_profile.display_name_invalid",
+            "Display name must be between 1 and 80 characters after trimming.");
+
+    /// <summary>
+    /// US-047: yearOfStudy fuera del rango [1, <see cref="User.MaxYearOfStudy"/>].
+    /// </summary>
+    public static readonly Error YearOfStudyOutOfRange =
+        Error.Validation(
+            "identity.student_profile.year_of_study_out_of_range",
+            "Year of study must be between 1 and 8.");
+
+    /// <summary>
+    /// US-047: legajo supera <see cref="User.MaxLegajoLength"/> chars.
+    /// </summary>
+    public static readonly Error LegajoInvalid =
+        Error.Validation(
+            "identity.student_profile.legajo_invalid",
+            "Legajo must be at most 32 characters.");
+
     // -- StudentProfile (US-012) --------------------------------------------------
 
     /// <summary>

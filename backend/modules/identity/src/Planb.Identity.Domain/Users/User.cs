@@ -20,6 +20,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public string? DisabledReason { get; private set; }
     public Guid? DisabledBy { get; private set; }
     public DateTimeOffset? ExpiredAt { get; private set; }
+    public DateTimeOffset? DeactivatedAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
 
@@ -32,7 +33,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public bool IsEmailVerified => EmailVerifiedAt is not null;
     public bool IsDisabled => DisabledAt is not null;
     public bool IsExpired => ExpiredAt is not null;
-    public bool IsActive => !IsDisabled && !IsExpired && IsEmailVerified;
+    public bool IsDeactivated => DeactivatedAt is not null;
+    public bool IsActive => !IsDisabled && !IsExpired && !IsDeactivated && IsEmailVerified;
 
     private User() { }
 
@@ -561,4 +563,137 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         Raise(new UserAccountDeletedDomainEvent(Id, Email, now));
         return Result.Success();
     }
+
+    /// <summary>
+    /// Soft delete con anonimización de PII (ADR-0044, US-038-bis). Reemplazó el hard delete
+    /// como flow user-facing. El aggregate sobrevive en la tabla con el email anonimizado, el
+    /// password hash blank y <see cref="DeactivatedAt"/> seteado. Las owned collections con PII
+    /// (verification tokens, student profiles) se borran.
+    ///
+    /// <para>
+    /// El email anonimizado lo computa el handler (formato canónico:
+    /// <c>deleted-&lt;sha256hex16&gt;@anonymized.local</c>) y se pasa acá para que el aggregate
+    /// no dependa de un servicio de hashing — la sintaxis es regular y debe pasar la validación
+    /// del VO <see cref="EmailAddress"/>.
+    /// </para>
+    ///
+    /// <para>
+    /// Precondiciones: el user no debe estar ya deactivated (idempotency explícita: re-llamar
+    /// devuelve <see cref="UserErrors.AlreadyDeactivated"/>, no es no-op). Sí puede estar
+    /// disabled o sin verificar — un user sin verificar también tiene derecho a darse de baja.
+    /// </para>
+    ///
+    /// <para>
+    /// Side effects:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Reemplaza <see cref="Email"/> por el anonimizado.</item>
+    ///   <item><see cref="PasswordHash"/> blank (sentinel <c>"DEACTIVATED"</c> para mantener
+    ///         la columna NOT NULL sin pasar por un hash bcrypt válido).</item>
+    ///   <item><see cref="DeactivatedAt"/> = now.</item>
+    ///   <item>Limpia tokens y student profiles (PII parcial).</item>
+    ///   <item>Levanta <see cref="UserAccountDeactivatedDomainEvent"/>. El translator a
+    ///         integration event notifica a otros BCs para que anonimicen referencias
+    ///         (preserva corpus crowdsourced; ver ADR-0044).</item>
+    /// </list>
+    /// </summary>
+    public Result Deactivate(string anonymizedEmail, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsDeactivated)
+        {
+            return UserErrors.AlreadyDeactivated;
+        }
+
+        var emailResult = EmailAddress.Create(anonymizedEmail);
+        if (emailResult.IsFailure)
+        {
+            return emailResult.Error;
+        }
+
+        var now = clock.UtcNow;
+        Email = emailResult.Value;
+        PasswordHash = DeactivatedPasswordSentinel;
+        DeactivatedAt = now;
+        _tokens.Clear();
+        _studentProfiles.Clear();
+        UpdatedAt = now;
+
+        Raise(new UserAccountDeactivatedDomainEvent(Id, now));
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Aplica un update parcial al StudentProfile activo del user (US-047). Solo se actualiza
+    /// el profile cuyo Status == Active (en MVP hay a lo sumo uno). Los argumentos null se
+    /// ignoran (patch semantics).
+    /// </summary>
+    /// <para>
+    /// Validaciones:
+    /// </para>
+    /// <list type="bullet">
+    ///   <item>Usuario debe estar activo (verificado, no disabled/expired/deactivated).</item>
+    ///   <item>Debe existir al menos un StudentProfile Active.</item>
+    ///   <item>El displayName, si viene no-null, debe estar entre 1 y <see cref="MaxDisplayNameLength"/> chars.</item>
+    ///   <item>El yearOfStudy, si viene no-null, debe estar entre 1 y <see cref="MaxYearOfStudy"/>.</item>
+    ///   <item>El legajo, si viene no-null, debe tener máximo <see cref="MaxLegajoLength"/> chars (blank explícito permitido: limpia el legajo).</item>
+    /// </list>
+    public Result UpdateActiveStudentProfile(
+        string? displayName,
+        int? yearOfStudy,
+        string? legajo,
+        bool? regularStudent,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!IsActive)
+        {
+            return UserErrors.AccountNotActive;
+        }
+
+        var profile = _studentProfiles.FirstOrDefault(p => p.IsActive);
+        if (profile is null)
+        {
+            return UserErrors.StudentProfileNotFound;
+        }
+
+        if (displayName is not null)
+        {
+            var trimmed = displayName.Trim();
+            if (trimmed.Length == 0 || trimmed.Length > MaxDisplayNameLength)
+            {
+                return UserErrors.DisplayNameInvalid;
+            }
+            displayName = trimmed;
+        }
+
+        if (yearOfStudy is not null && (yearOfStudy.Value < 1 || yearOfStudy.Value > MaxYearOfStudy))
+        {
+            return UserErrors.YearOfStudyOutOfRange;
+        }
+
+        if (legajo is not null && legajo.Length > MaxLegajoLength)
+        {
+            return UserErrors.LegajoInvalid;
+        }
+
+        profile.ApplyEdit(displayName, yearOfStudy, legajo, regularStudent, clock.UtcNow);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    public const int MaxDisplayNameLength = 80;
+    public const int MaxYearOfStudy = 8;
+    public const int MaxLegajoLength = 32;
+
+    /// <summary>
+    /// Sentinel del password hash post-deactivation. La columna en DB es NOT NULL y el VO no
+    /// admite null; necesitamos un valor que (a) no sea válido como bcrypt hash (cualquier
+    /// intento de <see cref="Planb.Identity.Application.Abstractions.Security.IPasswordHasher.Verify"/>
+    /// falla naturalmente), y (b) sea reconocible en queries ad-hoc (sysadmin viendo la
+    /// tabla entiende rápido que el user está deactivated).
+    /// </summary>
+    public const string DeactivatedPasswordSentinel = "DEACTIVATED";
 }

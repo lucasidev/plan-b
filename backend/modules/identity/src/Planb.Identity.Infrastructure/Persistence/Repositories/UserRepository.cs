@@ -14,16 +14,19 @@ internal sealed class UserRepository : IUserRepository
 
     public void Remove(User user) => _db.Users.Remove(user);
 
-    // Filtramos expired_at IS NULL en las queries por email porque, post-US-022, un email puede
-    // tener un row expired (sobreviviendo en la DB para audit) y un row nuevo activo. La regla
-    // semántica: para "¿este email está en uso?" y "buscame el user con este email", solo
-    // contamos los activos (no-expired). El partial unique index en DB matchea exactamente
-    // esta semántica (UNIQUE(email) WHERE expired_at IS NULL).
+    // Filtramos expired_at IS NULL AND deactivated_at IS NULL en las queries por email porque
+    // un email puede tener rows expired (US-022) y/o deactivated (ADR-0044) sobreviviendo en DB
+    // para audit, y rows nuevos activos del mismo email. La regla semántica: para
+    // "¿este email está en uso?" y "buscame el user con este email", solo contamos los activos
+    // (no-expired y no-deactivated). El partial unique index en DB matchea exactamente esta
+    // semántica (UNIQUE(email) WHERE expired_at IS NULL AND deactivated_at IS NULL).
     public Task<bool> ExistsByEmailAsync(EmailAddress email, CancellationToken ct = default) =>
-        _db.Users.AsNoTracking().AnyAsync(u => u.Email == email && u.ExpiredAt == null, ct);
+        _db.Users.AsNoTracking().AnyAsync(
+            u => u.Email == email && u.ExpiredAt == null && u.DeactivatedAt == null, ct);
 
     public Task<User?> FindByEmailAsync(EmailAddress email, CancellationToken ct = default) =>
-        _db.Users.FirstOrDefaultAsync(u => u.Email == email && u.ExpiredAt == null, ct);
+        _db.Users.FirstOrDefaultAsync(
+            u => u.Email == email && u.ExpiredAt == null && u.DeactivatedAt == null, ct);
 
     public Task<User?> FindByIdAsync(UserId id, CancellationToken ct = default) =>
         _db.Users.FirstOrDefaultAsync(u => u.Id == id, ct);
