@@ -12,6 +12,8 @@ public sealed class IdentityDbContext : DbContext
 
     public DbSet<UserDeletionLog> UserDeletionLogs => Set<UserDeletionLog>();
 
+    public DbSet<UserSettings> UserSettings => Set<UserSettings>();
+
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,5 +21,6 @@ public sealed class IdentityDbContext : DbContext
         modelBuilder.HasDefaultSchema(SchemaName);
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserDeletionLogConfiguration());
+        modelBuilder.ApplyConfiguration(new UserSettingsConfiguration());
     }
 }
