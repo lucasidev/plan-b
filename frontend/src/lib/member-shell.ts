@@ -55,7 +55,7 @@ export const memberRoutes: readonly MemberRoute[] = [
   { path: '/reviews', label: 'Mis reseñas', section: 'comunidad', futureUs: 'US-020' },
 
   // Cuenta
-  { path: '/settings', label: 'Configuración', section: 'cuenta' },
+  { path: '/ajustes', label: 'Ajustes', section: 'cuenta' },
 ] as const;
 
 export const memberSections: ReadonlyArray<{
