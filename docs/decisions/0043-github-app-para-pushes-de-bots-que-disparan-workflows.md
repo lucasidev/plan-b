@@ -111,7 +111,7 @@ Audit de todos los workflows al momento de aterrizar este ADR (2026-05-18):
 | `dependabot-bun-lockfile.yml` | Sí | **App** | Push debe redisparar CI |
 | `changelog.yml` | Sí | **GITHUB_TOKEN** | Push NO debe redisparar CI/E2E (commits docs-only) |
 | `pr-title.yml` | No | GITHUB_TOKEN | Solo read del título |
-| `auto-label.yml`, `ci.yml`, `commits.yml`, `docs-links.yml`, `e2e.yml` | No | Default | No hacen `git push` |
+| `ci.yml`, `commits.yml`, `docs-links.yml` | No | Default | No hacen `git push` |
 
 Si en el futuro aparece un workflow nuevo que pushea, aplicar la regla operativa de arriba para decidir qué token usar.
 

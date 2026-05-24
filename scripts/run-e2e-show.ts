@@ -4,15 +4,12 @@
  * Convención del repo: scripts en TS (`CLAUDE.md` "Scripts en TypeScript,
  * no en bash. Consistencia."). Antes el recipe `frontend-test-e2e-show`
  * usaba sintaxis bash inline (`PLAYWRIGHT_SLOWMO=300 bunx ...`) que pwsh
- * (default windows-shell del Justfile) no entiende. Esta es la fuente
- * única de verdad para correr E2E local; el pre-push hook
- * `check-e2e-zone.ts` también invoca este script en lugar de spawnear
- * playwright directo.
+ * (default windows-shell del Justfile) no entiende.
  *
  * Defaults:
- * - `--headed` siempre. Headless solo en CI (workflow `e2e.yml` lo invoca
- *   sin pasar por acá), nunca local. La regla del proyecto es validar
- *   visualmente antes de pushear.
+ * - `--headed` siempre. Headless solo en CI (job `e2e` de `ci.yml` invoca
+ *   `bunx playwright test` directo, no pasa por acá). Para validación
+ *   visual local antes de declarar un slice "listo".
  * - `PLAYWRIGHT_SLOWMO`: 1000ms. Override via env var del mismo nombre.
  *
  * Args extra se forwardean a `playwright test` (filtros, `--grep`, specs
