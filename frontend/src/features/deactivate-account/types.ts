@@ -1,14 +1,13 @@
 /**
- * State of the delete-account server action (US-038-f).
+ * State del server action de deactivate-account (ADR-0044, US-038-bis frontend).
  *
- * `idle` while the form hasn't been submitted yet. `error` when the backend
- * returned 4xx/5xx and we want to surface a user-readable message inside
- * the modal without closing it (so the user can retry without losing the
- * already-typed email).
+ * `idle` mientras el form no se submiteó. `error` cuando el backend devolvió 4xx/5xx y
+ * queremos surface un mensaje user-readable en el modal sin cerrarlo (para que el user pueda
+ * reintentar sin perder el email ya tipeado).
  *
- * The happy path is a server-side `redirect()` that throws NEXT_REDIRECT,
- * so it never reaches `useActionState`: there is no `success` variant.
+ * El happy path es un server-side `redirect()` que tira NEXT_REDIRECT, así que nunca llega
+ * a `useActionState`: no hay variant `success`.
  */
-export type DeleteAccountFormState = { status: 'idle' } | { status: 'error'; message: string };
+export type DeactivateAccountFormState = { status: 'idle' } | { status: 'error'; message: string };
 
-export const initialDeleteAccountState: DeleteAccountFormState = { status: 'idle' };
+export const initialDeactivateAccountState: DeactivateAccountFormState = { status: 'idle' };

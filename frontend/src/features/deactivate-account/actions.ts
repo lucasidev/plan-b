@@ -4,37 +4,34 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
-import type { DeleteAccountFormState } from './types';
+import type { DeactivateAccountFormState } from './types';
 
 const ACCESS_COOKIE = 'planb_session';
 const REFRESH_COOKIE = 'planb_refresh';
 
 /**
- * Deletes the authenticated user's account (US-038-f). Steps:
+ * Deactiva la cuenta del user autenticado (ADR-0044, US-038-bis). Reemplazó al hard delete
+ * del flow original (US-038-f). El endpoint backend `/api/me/account` ahora anonimiza la PII
+ * (email hasheado, password blank, deactivated_at = now) y borra owned con PII (StudentProfile,
+ * verification tokens). Las reseñas futuras del user quedan publicadas como "Ex-miembro".
  *
- *   1. Read the session from the JWT cookie. If absent (cookie expired
- *      mid-action), surface a friendly error so the modal can suggest
- *      re-login. We don't redirect here so the user keeps the modal open
- *      and decides what to do.
- *   2. Call DELETE /api/me/account?userId={sub}. The endpoint runs the
- *      cascade (User → owned StudentProfile + verification tokens),
- *      writes the audit log, publishes UserAccountDeleted to the outbox
- *      and revokes the user's refresh tokens server-side.
- *   3. On 4xx/5xx, return the error so the modal renders it inline. We
- *      do NOT clear cookies on failure: the user is still logged in.
- *   4. On 204 (success), clear the auth cookies locally so this device
- *      stops carrying a session that points to a now-non-existent user,
- *      and redirect to /sign-in?deleted=1 so the SignInPage shows the
- *      confirmation banner.
+ * Steps:
+ *   1. Leer sesión del JWT cookie. Si no hay (cookie expirada mid-action), surface error en
+ *      el modal para que el user re-loguee y reintente. No redirigir: que el user decida.
+ *   2. DELETE /api/me/account. El backend invoca el `DeactivateAccountCommand` (no el hard
+ *      delete legacy, que ahora vive sin endpoint user-facing).
+ *   3. Si 4xx/5xx, surface inline. NO clear cookies en falla (el user sigue logueado).
+ *   4. Si 204, clear cookies locales (el backend ya revocó los refresh tokens), redirect a
+ *      `/sign-in?account-deactivated=1` para que el banner explique qué pasó.
  *
- * The form-state shape (`DeleteAccountFormState`) is consumed by the
- * client component via `useActionState`. Per Next.js rules `'use server'`
- * files only export async functions, so the type lives in `types.ts`.
+ * El form-state shape (`DeactivateAccountFormState`) se consume en el componente cliente via
+ * `useActionState`. Por regla de Next.js los `'use server'` files solo exportan funciones
+ * async, así que el tipo vive en `types.ts`.
  */
-export async function deleteAccountAction(
-  _previousState: DeleteAccountFormState,
+export async function deactivateAccountAction(
+  _previousState: DeactivateAccountFormState,
   _formData: FormData,
-): Promise<DeleteAccountFormState> {
+): Promise<DeactivateAccountFormState> {
   const session = await getSession();
   if (!session) {
     return {
@@ -63,13 +60,19 @@ export async function deleteAccountAction(
   }
 
   if (!response.ok) {
-    // Map common backend statuses to copy. 404 means the row is already
-    // gone, así que surface "ya estaba borrada" en lugar de un fallo
-    // genérico: para el user el end-state es el correcto.
     if (response.status === 404) {
+      // Caso degenerado: el JWT apunta a un user que ya no existe en DB (post-hard-delete
+      // admin, o registro borrado manualmente). Limpiamos cookies y mandamos al banner.
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);
-      redirect('/sign-in?deleted=1');
+      redirect('/sign-in?account-deactivated=1');
+    }
+    if (response.status === 409) {
+      // Ya estaba deactivated (idempotency explícita del backend). Trataos como éxito desde
+      // el punto de vista del user: limpiamos cookies y vamos al banner.
+      cookieStore.delete(ACCESS_COOKIE);
+      cookieStore.delete(REFRESH_COOKIE);
+      redirect('/sign-in?account-deactivated=1');
     }
     if (response.status === 401) {
       return {
@@ -79,11 +82,11 @@ export async function deleteAccountAction(
     }
     return {
       status: 'error',
-      message: 'No pudimos eliminar tu cuenta. Probá de nuevo o contactanos.',
+      message: 'No pudimos dar de baja tu cuenta. Probá de nuevo o contactanos.',
     };
   }
 
   cookieStore.delete(ACCESS_COOKIE);
   cookieStore.delete(REFRESH_COOKIE);
-  redirect('/sign-in?deleted=1');
+  redirect('/sign-in?account-deactivated=1');
 }

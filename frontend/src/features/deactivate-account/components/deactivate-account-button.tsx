@@ -5,24 +5,27 @@ import { useActionState, useCallback, useEffect, useId, useRef, useState } from 
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { deleteAccountAction } from '../actions';
-import { initialDeleteAccountState } from '../types';
+import { deactivateAccountAction } from '../actions';
+import { initialDeactivateAccountState } from '../types';
 
 /**
- * Settings card with a destructive "Eliminar mi cuenta" CTA + confirmation
- * modal that asks the user to retype their email (anti-accidental check).
+ * Card destructiva con CTA "Dar de baja mi cuenta" + modal de confirmación que pide retypear
+ * el email (anti-accidental check). Reemplaza al "Eliminar mi cuenta" anterior (US-038-f) tras
+ * el rework de ADR-0044: el flow ahora es soft delete con anonimización (preserva el corpus
+ * crowdsourced; las reseñas del user quedan publicadas como "Ex-miembro").
  *
- * The convention (GitHub, Vercel, Linear) is to ask for the email rather
- * than the password: the password already authenticated this session, so
- * re-prompting it adds friction without adding safety. Asking for the
- * email is distinct enough from the regular flow that it forces the user
- * to engage with the action consciously.
+ * <para>
+ * Convención (GitHub, Vercel, Linear): pedir el email en lugar del password. El password ya
+ * autenticó esta sesión; pedirlo de nuevo agrega fricción sin agregar safety. El email es
+ * distinto del flow regular y obliga al user a engancharse conscientemente con la acción.
+ * </para>
  *
- * Comparison is case-insensitive because RFC 5321 says local-parts may be
- * case-sensitive but virtually no provider honors that, and emails get
- * stored lowercase by the backend.
+ * <para>
+ * La comparación es case-insensitive: RFC 5321 permite case-sensitive en local-parts pero
+ * ningún provider real lo honra, y el backend lowercase-store.
+ * </para>
  */
-export function DeleteAccountButton({ email }: { email: string }) {
+export function DeactivateAccountButton({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,7 +34,10 @@ export function DeleteAccountButton({ email }: { email: string }) {
   const descId = useId();
 
   const [typed, setTyped] = useState('');
-  const [state, formAction] = useActionState(deleteAccountAction, initialDeleteAccountState);
+  const [state, formAction] = useActionState(
+    deactivateAccountAction,
+    initialDeactivateAccountState,
+  );
 
   const matches = typed.trim().toLowerCase() === email.toLowerCase();
 
@@ -75,12 +81,13 @@ export function DeleteAccountButton({ email }: { email: string }) {
           marginBottom: 8,
         }}
       >
-        Eliminar mi cuenta
+        Dar de baja mi cuenta
       </h3>
       <p className="text-ink-2" style={{ fontSize: 13.5, lineHeight: 1.55, marginBottom: 16 }}>
-        Esta acción es <b>irreversible</b>. Borramos tu cuenta, tu perfil académico y todas tus
-        reseñas. No hay período de gracia ni recuperación. Esto cumple con tu derecho de supresión
-        (Ley 25.326).
+        Tu cuenta se cierra y tus datos personales (email, nombre, perfil académico) se{' '}
+        <b>anonimizan</b>. Tus reseñas, si las hay, quedan publicadas como "Ex-miembro" para que
+        sigan siendo útiles a otros alumnos. Esta acción es <b>irreversible</b> y cumple con tu
+        derecho de supresión (Ley 25.326).
       </p>
       <button
         ref={triggerRef}
@@ -94,7 +101,7 @@ export function DeleteAccountButton({ email }: { email: string }) {
         )}
         style={{ padding: '10px 16px', fontSize: 13.5, fontWeight: 500 }}
       >
-        Eliminar mi cuenta
+        Dar de baja mi cuenta
       </button>
 
       {open && (
@@ -140,15 +147,15 @@ export function DeleteAccountButton({ email }: { email: string }) {
                     marginBottom: 6,
                   }}
                 >
-                  Confirmá la eliminación
+                  Confirmá la baja
                 </h2>
                 <p
                   id={descId}
                   className="text-ink-2"
                   style={{ fontSize: 13.5, lineHeight: 1.5, margin: 0 }}
                 >
-                  Para confirmar, escribí tu email <b>{email}</b> abajo. Esta acción no se puede
-                  deshacer.
+                  Para confirmar, escribí tu email <b>{email}</b> abajo. Tus datos personales se
+                  anonimizan ahora; tus reseñas quedan como anónimas.
                 </p>
               </div>
             </div>
@@ -236,7 +243,7 @@ function ConfirmButton({ disabled }: { disabled: boolean }) {
       style={{ padding: '8px 14px', fontSize: 13, fontWeight: 500 }}
     >
       {pending && <Loader2 size={14} className="animate-spin" aria-hidden />}
-      {pending ? 'Eliminando...' : 'Eliminar definitivamente'}
+      {pending ? 'Dando de baja...' : 'Dar de baja la cuenta'}
     </button>
   );
 }

@@ -1,19 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { deleteAccountAction } from './actions';
-import { initialDeleteAccountState } from './types';
+import { deactivateAccountAction } from './actions';
+import { initialDeactivateAccountState } from './types';
 
 /**
- * Tests del server action `deleteAccountAction` (US-038-f).
+ * Tests del server action `deactivateAccountAction` (ADR-0044, US-038-bis frontend).
  * Mocks de borde:
  *   - `next/headers`          → cookie store fake con get/delete trackeable.
  *   - `next/navigation`       → redirect que tira NEXT_REDIRECT atrapable.
  *   - `@/lib/api-client`      → controla la Response que recibe el action.
  *   - `@/lib/session`         → fake de getSession para simular session OK / null.
  *
- * Cubrimos las cinco ramas del action:
+ * Cubrimos las ramas del action:
  *   - sin sesión              → error "tu sesión expiró"
- *   - 204                     → cookies borradas + redirect a /sign-in?deleted=1
- *   - 404 idempotent          → cookies borradas + redirect a /sign-in?deleted=1
+ *   - 204                     → cookies borradas + redirect a /sign-in?account-deactivated=1
+ *   - 404                     → cookies borradas + redirect (caso degenerado, user ya gone)
+ *   - 409 (already deactivated) → cookies borradas + redirect (idempotency desde UX)
  *   - 401                     → error "tu sesión expiró"
  *   - 5xx / network failure   → error genérico, cookies NO se borran
  */
@@ -63,11 +64,11 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('deleteAccountAction', () => {
+describe('deactivateAccountAction', () => {
   it('devuelve error cuando no hay session', async () => {
     getSessionMock.mockResolvedValue(null);
 
-    const result = await deleteAccountAction(initialDeleteAccountState, new FormData());
+    const result = await deactivateAccountAction(initialDeactivateAccountState, new FormData());
 
     expect(result.status).toBe('error');
     if (result.status === 'error') {
@@ -76,7 +77,7 @@ describe('deleteAccountAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('204 borra cookies y redirige a /sign-in?deleted=1', async () => {
+  it('204 borra cookies y redirige a /sign-in?account-deactivated=1', async () => {
     getSessionMock.mockResolvedValue({
       userId: '00000000-0000-4000-a000-000000000001',
       email: 'lucia@unsta.edu.ar',
@@ -87,9 +88,9 @@ describe('deleteAccountAction', () => {
     cookiesMock.mockResolvedValue(store as any);
     apiFetchMock.mockResolvedValue(new Response(null, { status: 204 }));
 
-    await expect(deleteAccountAction(initialDeleteAccountState, new FormData())).rejects.toThrow(
-      /NEXT_REDIRECT:\/sign-in\?deleted=1/,
-    );
+    await expect(
+      deactivateAccountAction(initialDeactivateAccountState, new FormData()),
+    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
 
     expect(apiFetchMock).toHaveBeenCalledWith(
       '/api/me/account',
@@ -100,8 +101,6 @@ describe('deleteAccountAction', () => {
   });
 
   it('404 (user ya borrado) también limpia cookies y redirige', async () => {
-    // 404 idempotent: si el row ya está gone, para el usuario el end-state es
-    // correcto, así que tratamos como happy path silencioso.
     getSessionMock.mockResolvedValue({
       userId: '00000000-0000-4000-a000-000000000002',
       email: 'mateo@unsta.edu.ar',
@@ -112,12 +111,30 @@ describe('deleteAccountAction', () => {
     cookiesMock.mockResolvedValue(store as any);
     apiFetchMock.mockResolvedValue(new Response(null, { status: 404 }));
 
-    await expect(deleteAccountAction(initialDeleteAccountState, new FormData())).rejects.toThrow(
-      /NEXT_REDIRECT:\/sign-in\?deleted=1/,
-    );
+    await expect(
+      deactivateAccountAction(initialDeactivateAccountState, new FormData()),
+    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
 
     expect(deleted).toContain('planb_session');
     expect(deleted).toContain('planb_refresh');
+  });
+
+  it('409 (ya deactivated) trata como éxito: limpia cookies y redirige', async () => {
+    getSessionMock.mockResolvedValue({
+      userId: '00000000-0000-4000-a000-000000000006',
+      email: 'lucia@unsta.edu.ar',
+      role: 'member',
+    });
+    const { store, deleted } = fakeCookieStore();
+    // biome-ignore lint/suspicious/noExplicitAny: minimal cookie shim for the test
+    cookiesMock.mockResolvedValue(store as any);
+    apiFetchMock.mockResolvedValue(new Response(null, { status: 409 }));
+
+    await expect(
+      deactivateAccountAction(initialDeactivateAccountState, new FormData()),
+    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
+
+    expect(deleted).toContain('planb_session');
   });
 
   it('401 surface error pero no toca cookies (la sesión sigue local)', async () => {
@@ -131,7 +148,7 @@ describe('deleteAccountAction', () => {
     cookiesMock.mockResolvedValue(store as any);
     apiFetchMock.mockResolvedValue(new Response(null, { status: 401 }));
 
-    const result = await deleteAccountAction(initialDeleteAccountState, new FormData());
+    const result = await deactivateAccountAction(initialDeactivateAccountState, new FormData());
 
     expect(result.status).toBe('error');
     if (result.status === 'error') {
@@ -152,11 +169,11 @@ describe('deleteAccountAction', () => {
     cookiesMock.mockResolvedValue(store as any);
     apiFetchMock.mockResolvedValue(new Response(null, { status: 500 }));
 
-    const result = await deleteAccountAction(initialDeleteAccountState, new FormData());
+    const result = await deactivateAccountAction(initialDeactivateAccountState, new FormData());
 
     expect(result.status).toBe('error');
     if (result.status === 'error') {
-      expect(result.message).toMatch(/no pudimos eliminar/i);
+      expect(result.message).toMatch(/no pudimos dar de baja/i);
     }
     expect(deleted).not.toContain('planb_session');
   });
@@ -172,7 +189,7 @@ describe('deleteAccountAction', () => {
     cookiesMock.mockResolvedValue(store as any);
     apiFetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
 
-    const result = await deleteAccountAction(initialDeleteAccountState, new FormData());
+    const result = await deactivateAccountAction(initialDeactivateAccountState, new FormData());
 
     expect(result.status).toBe('error');
     if (result.status === 'error') {
