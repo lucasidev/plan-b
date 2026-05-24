@@ -5,12 +5,12 @@ import {
   AuthHeroHeadline,
 } from '@/components/layout/auth-hero';
 import { AuthSplit } from '@/components/layout/auth-split';
-import { AccountDeletedBanner } from '@/features/sign-in/components/account-deleted-banner';
+import { AccountDeactivatedBanner } from '@/features/sign-in/components/account-deactivated-banner';
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 
 type Props = {
-  searchParams: Promise<{ reset?: string; deleted?: string }>;
+  searchParams: Promise<{ reset?: string; 'account-deactivated'?: string }>;
 };
 
 /**
@@ -18,17 +18,17 @@ type Props = {
  * shell (AuthSplit con hero) y delega el form a `<SignInForm>`.
  *
  * `?reset=success` lo setea el flow de reset-password al 204 (US-033-i).
- * `?deleted=1` lo setea el flow de delete-account (US-038-f) tras un
- * borrado exitoso. Ambos renderizan un banner dismissable.
+ * `?account-deactivated=1` lo setea el flow de deactivate-account (ADR-0044, US-038-bis)
+ * tras un soft delete exitoso. Ambos renderizan un banner dismissable.
  * Cualquier otro valor en esos params se ignora.
  *
  * El cross-flow link "¿Sos nuevo? Creá tu cuenta" navega a `/sign-up`
  * desde dentro del form.
  */
 export default async function SignInPage({ searchParams }: Props) {
-  const { reset, deleted } = await searchParams;
-  const resetSuccess = reset === 'success';
-  const accountDeleted = deleted === '1';
+  const params = await searchParams;
+  const resetSuccess = params.reset === 'success';
+  const accountDeactivated = params['account-deactivated'] === '1';
 
   return (
     <AuthSplit
@@ -37,7 +37,7 @@ export default async function SignInPage({ searchParams }: Props) {
       quote={AUTH_HERO_QUOTE}
       stats={AUTH_HERO_STATS}
     >
-      {accountDeleted && <AccountDeletedBanner />}
+      {accountDeactivated && <AccountDeactivatedBanner />}
       {resetSuccess && <ResetSuccessBanner />}
       <h2
         className="text-ink"
