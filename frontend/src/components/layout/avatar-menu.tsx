@@ -158,11 +158,11 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         </div>
       </div>
 
-      <MenuLink href="/profile" onClick={onClose}>
+      <MenuLink href="/mi-perfil" onClick={onClose}>
         Mi perfil
       </MenuLink>
-      <MenuLink href="/settings" onClick={onClose}>
-        Configuración
+      <MenuLink href="/ajustes" onClick={onClose}>
+        Ajustes
       </MenuLink>
       <MenuLink href="/help" onClick={onClose}>
         Ayuda y contacto

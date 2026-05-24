@@ -4,15 +4,15 @@ import { CheckCircle2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 /**
- * Confirmation banner rendered after a successful account deletion (US-038-f).
- * Mounted by `app/(auth)/sign-in/page.tsx` when `?deleted=1` is in the URL,
- * driven by the deleteAccountAction's `redirect('/sign-in?deleted=1')` call.
+ * Banner de confirmación tras dar de baja la cuenta (ADR-0044, US-038-bis frontend).
+ * Montado por `app/(auth)/sign-in/page.tsx` cuando `?account-deactivated=1` está en la URL,
+ * driven por el redirect del `deactivateAccountAction`.
  *
- * Same dismissal model as `ResetSuccessBanner`: 8s auto-dismiss + manual close.
- * The query param stays in the URL after dismissal (harmless, banner ignores
- * stale state on next render).
+ * Mismo dismissal model que `ResetSuccessBanner`: 8s auto-dismiss + close manual.
+ * El query param queda en la URL post-dismissal (inocuo, el banner ignora estado stale en
+ * el próximo render).
  */
-export function AccountDeletedBanner() {
+export function AccountDeactivatedBanner() {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
@@ -36,7 +36,8 @@ export function AccountDeletedBanner() {
     >
       <CheckCircle2 size={16} aria-hidden style={{ marginTop: 1, flexShrink: 0 }} />
       <p className="flex-1" style={{ lineHeight: 1.45 }}>
-        <b style={{ fontWeight: 600 }}>Tu cuenta fue eliminada.</b> Volvé cuando quieras.
+        <b style={{ fontWeight: 600 }}>Tu cuenta fue dada de baja.</b> Tus datos personales se
+        borraron; tus reseñas, si las tuviste, quedan publicadas como "Ex-miembro".
       </p>
       <button
         type="button"
