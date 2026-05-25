@@ -16,6 +16,7 @@ import type { SignInFormState } from './types';
  * can only export async functions. Types and the initial state live in
  * ./types.
  */
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-in is the auth entry point, must be public
 export async function signInAction(
   _prev: SignInFormState,
   formData: FormData,

@@ -60,10 +60,13 @@ describe('TeacherList', () => {
     expect(screen.getByText(/12 reseñas/)).toBeInTheDocument();
   });
 
-  it('renderea una progressbar a11y por docente', () => {
+  it('renderea un meter a11y por docente', () => {
     render(<TeacherList teachers={fixture} />);
-    const bars = screen.getAllByRole('progressbar');
+    // Migrado a <meter> en lugar de <div role="progressbar"> (react-doctor
+    // prefer-tag-over-role). El <meter> nativo tiene role implícito "meter"
+    // y expone min/max como atributos HTML directos.
+    const bars = screen.getAllByRole('meter');
     expect(bars).toHaveLength(3);
-    expect(bars[0]).toHaveAttribute('aria-valuemax', '5');
+    expect(bars[0]).toHaveAttribute('max', '5');
   });
 });

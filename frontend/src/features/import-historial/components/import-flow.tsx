@@ -65,16 +65,16 @@ export function ImportHistorialFlow() {
 }
 
 function Polling({ label }: { label: string }) {
+  // <output> tiene role="status" implícito; idiomático para anunciar progreso del polling.
   return (
-    <div
-      role="status"
+    <output
       aria-busy="true"
       className="flex items-center gap-2 text-ink-3 border border-line rounded bg-bg-card"
       style={{ padding: 16, fontSize: 14 }}
     >
       <Loader2 size={18} className="animate-spin" aria-hidden />
       {label}
-    </div>
+    </output>
   );
 }
 

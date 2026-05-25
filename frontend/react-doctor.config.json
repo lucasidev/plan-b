@@ -1,0 +1,28 @@
+{
+  "$schema": "https://www.react.doctor/schema.json",
+  "ignore": {
+    "rules": [
+      "deslop/unused-file",
+      "deslop/unused-dev-dependency",
+      "react-doctor/no-tiny-text",
+      "react-doctor/no-wide-letter-spacing"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "src/features/onboarding/components/welcome-screen.tsx",
+          "src/features/onboarding/components/done-screen.tsx"
+        ],
+        "rules": ["react-doctor/jsx-no-jsx-as-prop"]
+      },
+      {
+        "files": ["src/features/onboarding/components/career-form.tsx"],
+        "rules": ["react-doctor/no-derived-state", "react-doctor/no-event-handler"]
+      },
+      {
+        "files": ["src/features/deactivate-account/components/deactivate-account-button.tsx"],
+        "rules": ["react-doctor/prefer-use-effect-event"]
+      }
+    ]
+  }
+}

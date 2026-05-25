@@ -60,6 +60,7 @@ export function UploadHistorialForm({ onUploaded }: Props) {
             required={mode === 'pdf'}
             className="text-ink"
             style={{ fontSize: 13 }}
+            aria-label="Archivo PDF del historial"
           />
           <p className="text-ink-3" style={{ fontSize: 12, marginTop: 6 }}>
             Hasta 5 MB. Descargá el historial desde el SIU sin contraseña.
@@ -81,12 +82,13 @@ export function UploadHistorialForm({ onUploaded }: Props) {
             name="rawText"
             rows={10}
             required={mode === 'text'}
-            placeholder="Copiá las líneas del historial (código, materia, nota, periodo)..."
+            placeholder="Copiá las líneas del historial (código, materia, nota, periodo)…"
             className={cn(
               'w-full bg-bg-card text-ink border border-line rounded',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
             )}
             style={{ padding: 12, fontSize: 13, fontFamily: 'inherit', lineHeight: 1.55 }}
+            aria-label="Texto del historial"
           />
           <p className="text-ink-3" style={{ fontSize: 12, marginTop: 6 }}>
             Útil si el PDF no parsea. Una materia por línea.

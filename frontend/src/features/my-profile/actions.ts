@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getSession } from '@/lib/session';
 import { patchMyProfile } from './api';
 import { profileUpdateSchema } from './schema';
 import type { UpdateProfileFormState } from './types';
@@ -9,11 +10,22 @@ import type { UpdateProfileFormState } from './types';
  * Server action del save del edit form (US-047). Recibe el shape parcial validado por Zod
  * (la validación profunda vive en el backend; acá chequeamos lo barato). Después del 204,
  * revalida /mi-perfil para que la próxima carga RSC traiga el snapshot fresco.
+ *
+ * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
+ * PATCH /api/me/student-profile, pero chequear acá ahorra el round-trip si la sesión cayó.
  */
 export async function updateMyProfileAction(
   _prev: UpdateProfileFormState,
   patch: unknown,
 ): Promise<UpdateProfileFormState> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      status: 'error',
+      message: 'Tu sesión expiró. Volvé a ingresar.',
+    };
+  }
+
   const parsed = profileUpdateSchema.safeParse(patch);
   if (!parsed.success) {
     return {

@@ -1,11 +1,15 @@
+import { AuthHeroHeadline } from '@/components/layout/auth-hero';
 import {
   AUTH_HERO_DESCRIPTION,
   AUTH_HERO_QUOTE,
   AUTH_HERO_STATS,
-  AuthHeroHeadline,
-} from '@/components/layout/auth-hero';
+} from '@/components/layout/auth-hero-data';
 import { AuthSplit } from '@/components/layout/auth-split';
 import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
+
+// Hoisted heading element para evitar nueva ref en cada render (regla
+// react-doctor/jsx-no-jsx-as-prop). El headline es estático para esta page.
+const HEADING = <AuthHeroHeadline />;
 
 /**
  * `/sign-up` — pantalla de registro. Server component thin que arma el
@@ -18,7 +22,7 @@ import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 export default function SignUpPage() {
   return (
     <AuthSplit
-      heading={<AuthHeroHeadline />}
+      heading={HEADING}
       description={AUTH_HERO_DESCRIPTION}
       quote={AUTH_HERO_QUOTE}
       stats={AUTH_HERO_STATS}

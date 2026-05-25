@@ -27,7 +27,7 @@ export function SecuritySection() {
               className="flex items-center gap-1 text-sm text-accent hover:underline focus:underline focus:outline-none"
             >
               Cambiar contraseña
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              <ChevronRight className="size-4" aria-hidden="true" />
             </button>
           }
         />

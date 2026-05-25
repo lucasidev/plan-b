@@ -163,6 +163,8 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
 
       {showGrade && (
         <Field id="grade" label="Nota final (0 a 10)">
+          {/* aria-label explícito porque react-doctor no detecta el <label htmlFor> que
+              renderiza el wrapper <Field> en otro componente. */}
           <input
             id="grade"
             name="grade"
@@ -175,6 +177,7 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
             className={selectClass}
             style={selectStyle}
             placeholder="7.5"
+            aria-label="Nota final (0 a 10)"
           />
           {fieldError === 'grade' && <FieldError>{formError}</FieldError>}
         </Field>
@@ -253,16 +256,17 @@ function SubmitButton() {
 }
 
 function LoadingState() {
+  // <output> tiene role="status" implícito + es elemento semántico HTML; reemplaza
+  // <div role="status"> por la versión idiomática.
   return (
-    <div
-      role="status"
+    <output
       aria-busy="true"
       className="flex items-center gap-2 text-ink-3"
       style={{ fontSize: 14, padding: 16 }}
     >
       <Loader2 size={16} className="animate-spin" aria-hidden />
-      Cargando materias y cuatrimestres...
-    </div>
+      Cargando materias y cuatrimestres…
+    </output>
   );
 }
 

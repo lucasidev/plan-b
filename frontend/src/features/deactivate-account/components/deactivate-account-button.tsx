@@ -27,7 +27,7 @@ import { initialDeactivateAccountState } from '../types';
  */
 export function DeactivateAccountButton({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const headingId = useId();
@@ -49,6 +49,13 @@ export function DeactivateAccountButton({ email }: { email: string }) {
 
   // Move focus into the modal when it opens, and close on ESC. Click-outside
   // is wired separately so we can short-circuit when clicking inside.
+  //
+  // La rule `prefer-use-effect-event` sugiere envolver `close` con `useEffectEvent`
+  // así el effect no se re-suscribe en cada parent render. `useEffectEvent` sigue
+  // marcada como API experimental en React 19; cuando salga del experimental,
+  // revisitar. Mientras, `close` es estable (useCallback con [] deps) así que la
+  // re-suscripción no ocurre en práctica. Suppression en
+  // `react-doctor.config.json#ignore.overrides`.
   useEffect(() => {
     if (!open) return;
 
@@ -114,9 +121,17 @@ export function DeactivateAccountButton({ email }: { email: string }) {
             users dismiss with ESC (window keydown listener above).
           */}
           <div aria-hidden="true" onClick={close} className="fixed inset-0 z-40 bg-black/40" />
-          <div
+          {/*
+            Reemplazamos el <div role="dialog"> por el elemento <dialog> nativo (regla
+            react-doctor/prefer-tag-over-role). Usamos el atributo `open` para mostrarlo
+            inline en lugar de invocar showModal() porque ya manejamos backdrop + foco
+            + ESC manualmente; showModal() entraría en conflicto con el state managed.
+            aria-modal sigue siendo necesario porque <dialog open> sin showModal() no
+            lo marca como modal en el AOM.
+          */}
+          <dialog
             ref={dialogRef}
-            role="dialog"
+            open
             aria-modal="true"
             aria-labelledby={headingId}
             aria-describedby={descId}
@@ -219,7 +234,7 @@ export function DeactivateAccountButton({ email }: { email: string }) {
                 <ConfirmButton disabled={!matches} />
               </div>
             </form>
-          </div>
+          </dialog>
         </>
       )}
     </section>

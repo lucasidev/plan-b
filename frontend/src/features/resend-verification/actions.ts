@@ -16,6 +16,7 @@ import type { ResendVerificationFormState } from './types';
  * Per frontend/CLAUDE.md, `'use server'` al tope significa que solo se exportan
  * funciones async. Los tipos del state viven en ./types.
  */
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- resend-verification is public (el user todavía no verificó email, no tiene sesión)
 export async function resendVerificationAction(
   _prev: ResendVerificationFormState,
   formData: FormData,

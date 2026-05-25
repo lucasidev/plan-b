@@ -35,7 +35,12 @@ type Props = {
  *
  * Server component.
  */
-export function HistoryTab({ periods = [] }: Props) {
+// Module-scope empty array para que el default value no cree una nueva ref en cada
+// render (regla react-doctor/rerender-memo-with-default-value). Importante porque
+// downstream pasamos `periods` como dep a otros hooks.
+const EMPTY_PERIODS: HistorialPeriod[] = [];
+
+export function HistoryTab({ periods = EMPTY_PERIODS }: Props) {
   if (periods.length === 0) {
     return <EmptyState />;
   }

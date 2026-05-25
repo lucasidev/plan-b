@@ -80,7 +80,7 @@ function ViewMode({ profile, onEdit }: { profile: MyProfile; onEdit: () => void 
       <div className="flex items-start justify-between gap-4">
         <h3 className="text-base font-semibold text-ink-1">Datos académicos</h3>
         <Button type="button" variant="secondary" size="sm" onClick={onEdit}>
-          <Pencil className="h-4 w-4" aria-hidden />
+          <Pencil className="size-4" aria-hidden />
           Editar
         </Button>
       </div>
@@ -178,12 +178,16 @@ function EditForm({ profile, formAction, state, onCancel, onSuccess }: EditFormP
           maxLength={32}
         />
         <div className="flex items-center gap-2">
+          {/* aria-label además del <Label htmlFor> porque react-doctor no detecta
+              labels que vienen después del input (espera label-then-input o htmlFor
+              que la rule pueda trackear cross-componente). */}
           <input
             id="regularStudent"
             type="checkbox"
             name="regularStudent"
             defaultChecked={profile.regularStudent}
             className="rounded border-line"
+            aria-label="Soy alumno regular"
           />
           <Label htmlFor="regularStudent" className="text-sm cursor-pointer">
             Soy alumno regular

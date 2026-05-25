@@ -16,6 +16,7 @@ import type { SignUpFormState } from './types';
  * Per frontend/CLAUDE.md, this file is `'use server'` at the top so it can
  * only export async functions. Types and the initial state live in ./types.
  */
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-up is the registration entry point, must be public
 export async function signUpAction(
   _prev: SignUpFormState,
   formData: FormData,

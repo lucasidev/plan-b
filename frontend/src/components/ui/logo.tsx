@@ -16,8 +16,11 @@ type Props = {
  */
 export function Logo({ size = 28, className }: Props) {
   const dotSize = Math.max(5, Math.round(size * 0.32));
+  // El wordmark "plan-b" ya es texto legible por screen readers; no necesitamos
+  // role="img" + aria-label. El punto apricot está marcado aria-hidden porque es
+  // ornamento tipográfico (tittle), no contenido semántico.
   return (
-    <span className={cn('inline-block leading-none', className)} role="img" aria-label="plan-b">
+    <span className={cn('inline-block leading-none', className)}>
       <span
         className="font-display font-semibold text-ink"
         style={{ fontSize: `${size}px`, letterSpacing: '-0.01em' }}
