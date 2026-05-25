@@ -22,6 +22,14 @@
       {
         "files": ["src/features/deactivate-account/components/deactivate-account-button.tsx"],
         "rules": ["react-doctor/prefer-use-effect-event"]
+      },
+      {
+        "files": ["src/features/planificar/components/*.tsx"],
+        "rules": ["react-doctor/no-inline-exhaustive-style"]
+      },
+      {
+        "files": ["src/features/planificar/components/planificar-tabs.tsx"],
+        "rules": ["react-doctor/nextjs-no-use-search-params-without-suspense"]
       }
     ]
   }
