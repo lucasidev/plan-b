@@ -77,6 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - skip commits validation cuando head ya no existe (post-merge) (ci) — [`bc43bbd`](https://github.com/lucasidev/plan-b/commit/bc43bbdd7a55754503457f193508337ee2a49f05)
 - precheck E2E y detect-container resilientes a quirks Bun/OS (scripts) — [`f726adc`](https://github.com/lucasidev/plan-b/commit/f726adcace2430dbf72e49dbe258475f744c9670)
 - cross-user data leak + header dinámico (mi-carrera) — [`1ad65f9`](https://github.com/lucasidev/plan-b/commit/1ad65f9718cbe36f30b74ca1d7e155ae12e10ab3)
+- array-index-key estable + Suspense para useSearchParams (planificar) — [`17f3cc9`](https://github.com/lucasidev/plan-b/commit/17f3cc9159f45d6eba94bfe16bf11368683cff7a)
+- restaurar role=img + aria-label en ProfileAvatar (my-profile) — [`01dc9c2`](https://github.com/lucasidev/plan-b/commit/01dc9c21c70578516c12afe401ce666cb3e38a8f)
 
 ### Changed
 
