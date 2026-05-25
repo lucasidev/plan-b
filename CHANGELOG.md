@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pantalla Ajustes con backend y modal de cambio de contraseña (identity) — [`a2b0ccf`](https://github.com/lucasidev/plan-b/commit/a2b0ccff1bb12f02968f23dc4722b6bc5d8ed670)
 - soft delete con anonimización + Mi perfil backend (ADR-0044, US-038-bis, (identity) — [`3df5a7f`](https://github.com/lucasidev/plan-b/commit/3df5a7f30e7a372f4e291cfc6469cc14fdbd5446)
 - pantalla Mi perfil con zona peligrosa funcional (US-047 + US-038-bis fro (my-profile) — [`f054b12`](https://github.com/lucasidev/plan-b/commit/f054b1268c90906c944a55263c288e33734cfb21)
+- shell Planificar con tabs, calendario semanal y publicar (US-046) (planificar) — [`d873351`](https://github.com/lucasidev/plan-b/commit/d8733518c14c9fb122c796aa1024d79814d9749f)
 
 ### Fixed
 
