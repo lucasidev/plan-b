@@ -20,9 +20,10 @@ timeout = 20
 max_concurrency = 8
 max_redirects = 5
 
-# Aceptar 200, 206 (partial), 304 (cached). Algunos sitios devuelven 403/429
+# Aceptar 200, 202 (accepted, lo usan CDNs como Atlassian para protección
+# anti-bot), 206 (partial), 304 (cached). Algunos sitios devuelven 403/429
 # como anti-bot — los marcamos como tolerables para no romper CI.
-accept = [200, 206, 304]
+accept = [200, 202, 206, 304]
 
 # Excluir el directorio node_modules (frontend) y vendored content.
 exclude_path = [
