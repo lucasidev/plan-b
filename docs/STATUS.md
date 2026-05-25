@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-05-16 (cierre de S3 + apertura de S4; US-088 mergeada el último día de S3, se cuenta Done sin carry-over).
+**Última actualización**: 2026-05-25 (cierre de S4 + apertura de S5; las 6 US del scope original de S4 mergeadas + 1 bonus US-038-bis surgida mid-sprint con ADR-0044 + chore técnico de react-doctor cleanup + pre-push hook).
 
 ---
 
@@ -16,8 +16,9 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
 | S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
-| S4 | 2026-05-18 a 2026-05-23 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b. | 🟡 Open |
-| S5+ | next+ | Reseñas slice (US-017 publicar + US-018 editar + US-019 reportar + US-049 editor 6 campos + US-048 reseñas shell). Después: backlog post-canvas v2 + admin (US-054-f, US-059-f, US-070..074, US-076-f, US-077-f + b/b-1/b-2/b-3, US-078-f, US-081..087) | ⏳ Pendiente |
+| S4 | 2026-05-18 a 2026-05-24 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b + **US-038-bis bonus** (soft delete con anonimización, ADR-0044) + chore técnico react-doctor cleanup + pre-push hook. | ✓ Done |
+| S5 | 2026-05-25 a 2026-05-30 | **Slice de Reseñas (feature core del producto crowdsourced)**: US-017 publicar reseña backend + US-049 editor 6 campos frontend + US-048 reseñas shell con 3 tabs (explorar / pendientes / mías) + US-018 editar + US-055 borrar (modal destructivo) + US-019 reportar (diferible a S6 si moderation infra no está lista). | 🟡 Open |
+| S6+ | next+ | Backlog post-canvas v2 + admin (US-054-f, US-059-f, US-070..071, US-076-f, US-077-f + b/b-1/b-2/b-3, US-078-f, US-081..087). Notifications BC (US-077-b-1/2/3) cuando aterrice. Admin module bloqueado por US-081 (shell + dashboard ops) que es prerequisito hard. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -273,65 +274,106 @@ US existentes con AC nuevas:
 
 ---
 
-## S4 🟡 Open
+## S4 ✓ Done
 
-**Rango**: 2026-05-18 a 2026-05-23 (lunes → sábado, 6 días útiles).
-
-**Apertura tardía**: la planificación de S4 se hizo el sábado al cierre de S3, no el lunes al arrancar el sprint nuevo. Próximas aperturas: agendar la sesión de planning en el lunes mismo para no acumular esta deuda.
+**Rango**: 2026-05-18 a 2026-05-24 (lunes → sábado, 7 días útiles — el cierre se corrió un día porque la planificación arrancó el martes; las próximas aperturas se hacen el lunes mismo para no acumular esta deuda).
 
 **Foco**: cerrar **el shell del alumno** después de Mi carrera. Continuidad natural con S3 (alumno ya tiene historial + plan + import + Mi carrera; ahora tiene Mi perfil, Planificar shell, settings, Ayuda, Sobre plan-b). Reseñas como capítulo nuevo grande quedan para S5.
 
+### User stories cerradas (7)
+
+Las 6 del scope original + 1 que surgió mid-sprint:
+
+| US | Título | Effort | PR |
+|---|---|---|---|
+| [US-072](domain/user-stories/US-072.md) | Ajustes (notificaciones / privacidad / idioma / tema / Seguridad) | M | #124 |
+| [US-079-i](domain/user-stories/US-079-i.md) | Cambio de contraseña con sesión activa | M | #124 (junto con US-072) |
+| [US-047](domain/user-stories/US-047.md) | Mi perfil (identidad académica + zona peligrosa) | M | #125 |
+| **US-038-bis** | **Soft delete con anonimización (ADR-0044)** — mid-sprint | M | #125 (junto con US-047) |
+| [US-046](domain/user-stories/US-046.md) | Planificar shell + 2 tabs + modal publicar | M | #126 |
+| [US-073](domain/user-stories/US-073.md) | Ayuda (FAQ + mailto soporte) | S | #128 |
+| [US-074](domain/user-stories/US-074.md) | Sobre plan-b (manifiesto + equipo + stats + open source) | S | #128 |
+
+Suma final: **5 M + 2 S** (vs 4 M + 2 S planificado). El bonus M es US-038-bis, no estaba en el scope original.
+
+### Replan mid-sprint: ADR-0044 + US-038-bis
+
+Al implementar US-047 surgió la pregunta: si el alumno puede dar de baja la cuenta, ¿qué pasa con sus reseñas? La US-038 original definía hard delete (eliminar todo). Pero las reseñas son **corpus crowdsourced**: borrarlas castiga a los lectores futuros por una decisión del autor.
+
+Decisión: redactar [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (soft delete con anonimización del PII, patrón Reddit/Stack Overflow), cancelar US-075 (self-disable, era el paso intermedio que sobraba) y entregar **US-038-bis** end-to-end (backend `User.Deactivate` + anonimización SHA-256 + frontend `feature/deactivate-account` con modal anti-accidental). Las reseñas quedan publicadas como "Ex-miembro".
+
+### Bonus técnico (no es US, pero entró en S4)
+
+- **react-doctor cleanup**: scan inicial del frontend (score 79 → **100/100**, 352 → 0 hallazgos). 11 errores críticos arreglados (server actions con `getSession()` defense in depth, `auth-hero.tsx` split para Fast Refresh, `forwardRef` removido en `Button`/`TextField`/`PasswordField` por React 19, semánticos `<output>`/`<meter>`/`<dialog>`/`<section>` en lugar de `role="..."`). Suppressions documentadas en `frontend/react-doctor.config.json`.
+- **Pre-push hook react-doctor**: `lefthook.yml` agrega `frontend-react-doctor` que corre `react-doctor --diff origin/main --fail-on error` (~2-3s). Bloquea push si la rama introduce un error nuevo (severity=error). Warnings los muestra sin bloquear. PR #127.
+
+### Lecciones / cambios para sprints siguientes
+
+- **Tests E2E pre-existentes flakearon** mid-sprint (3 specs: `my-profile:edit-mode-save`, `my-profile:dar-de-baja-dialog`, `settings:toggle-reload`). Race conditions con `revalidatePath` + optimistic UI. Marcados como `test.fixme` con TODO trazado a cada US-fix correspondiente. Deuda explícita para S5/S6: arreglar con `storageState` o `router.refresh` + guard contra loop infinito.
+- **react-doctor `useEffectEvent` rule** sigue flagging APIs marcadas como experimental en React 19. Suppression con explicación hasta que la API salga del experimental status.
+- **Convención cierre semanal**: el sábado se cierra el sprint con tag narrativo + STATUS.md sync. Domingo libre. Lunes apertura formal del siguiente.
+
+---
+
+## S5 🟡 Open
+
+**Rango**: 2026-05-25 a 2026-05-30 (lunes → sábado, 6 días útiles). Apertura formal el lunes (S4 cerró el sábado 24, domingo 25 buffer; el lunes 26 arranca scope work real).
+
+> **Nota de cadencia**: la apertura del sprint en STATUS.md se hace el sábado al cierre del anterior para que el doc no quede stale, pero el trabajo real arranca el lunes siguiente. El domingo queda como buffer/descanso.
+
+**Foco**: **slice de reseñas — el feature core del producto crowdsourced**. Hasta hoy el alumno puede cargar historial, ver Mi carrera, planificar el próximo cuatrimestre, ajustar settings, ver Ayuda/Sobre. **Pero no puede aportar al corpus** que es la razón de existir del producto. S5 cierra ese loop end-to-end.
+
 ### Scope acordado
 
-- [US-047](domain/user-stories/US-047.md) Mi perfil (identidad académica + zona peligrosa). Effort M.
-- [US-072](domain/user-stories/US-072.md) Ajustes (notificaciones / privacidad / idioma / tema / **Seguridad → row Contraseña que dispara US-079-i**). Effort M. **Sumada al scope tras detectar que US-079-i necesita su trigger UI acá** (la separación canvas-design 2026-05-02 puso la row de Contraseña en Ajustes, no en Mi perfil).
-- [US-079-i](domain/user-stories/US-079-i.md) cambio de contraseña con sesión activa (endpoint `PATCH /api/me/password` + modal frontend). Mismo pattern que US-029-i / US-033-i. Effort M.
-- [US-046](domain/user-stories/US-046.md) Planificar shell + tabs + empty + modal publicar. Sin storage backend (US-023..027 quedan para sprint posterior). Effort M.
-- [US-073](domain/user-stories/US-073.md) Ayuda (FAQ + contacto soporte). Effort S.
-- [US-074](domain/user-stories/US-074.md) Sobre plan-b (info del producto + créditos). Effort S.
+- [US-017](domain/user-stories/US-017.md) Publicar reseña (backend: `POST /api/me/reviews` + filter de contenido clean/triggered + audit log + integration event para embedding async). Effort L.
+- [US-049](domain/user-stories/US-049.md) Editor de reseña 6 campos numerados con preview vivo (frontend, ruta `/reseñas/escribir/[cursadaId]`). Effort L.
+- [US-048](domain/user-stories/US-048.md) Reseñas shell + 3 tabs explorar / pendientes / mías (frontend, ruta `/reseñas`). Effort M.
+- [US-018](domain/user-stories/US-018.md) Editar reseña propia (backend `PATCH` + re-corre filter + `ReviewEdited` event). Effort S.
+- [US-055](domain/user-stories/US-055.md) Borrar reseña propia (integrated: `DELETE` soft + modal destructivo con preview de lo que se pierde). Effort S.
+- [US-019](domain/user-stories/US-019.md) Reportar reseña (backend `POST reports` + threshold → `under_review`). Effort M. **Diferible a S6** si moderation infra no está lista.
 
-Suma: 4 M + 2 S. Factible en 6 días útiles si no aparecen imprevistos. Más ajustado que el plan original (3M + 2S) pero coherente: US-072 destraba US-079-i sin reordenamientos.
+Suma planificada: **2 L + 2 M + 2 S**. Es ambicioso para 6 días útiles. Si surge friction se difiere US-019 (la menos crítica para el loop core: publicar / editar / borrar es lo que cierra el slice MVP).
 
 ### Orden de ataque
 
-1. **US-079-i backend** primero (endpoint Identity chico, base de todo). Tests integration.
-2. **US-072 frontend** (la pantalla Ajustes completa con todas las secciones incluyendo Seguridad).
-3. **US-079-i frontend** (modal Cambiar contraseña). Se enchufa al row de US-072.
-4. **US-047 Mi perfil** (independiente). Backend `GET/PATCH /api/students/me/profile` + frontend.
-5. **US-046 Planificar shell** (independiente, solo frontend con stub data).
-6. **US-073 + US-074** páginas estáticas para cerrar.
+1. **US-017 backend** primero (base de todo). Endpoint + filter + audit + event. Integration tests.
+2. **US-049 frontend** (editor 6 campos con preview vivo). Consume el endpoint POST.
+3. **US-048 frontend** (shell con 3 tabs). Puede arrancar con mock data antes de tener el endpoint GET feed.
+4. **US-018 backend + integration con US-049** (mismo editor renderea el edit reusando state).
+5. **US-055 integrated** (DELETE + modal destructivo).
+6. **US-019 backend** si queda runway. Sino se difiere a S6.
 
-### Por qué este foco (no reseñas todavía)
+### El loop que se cierra
 
-Las reseñas (US-017 backend + US-018 editar + US-019 reportar + US-049 editor 6 campos + US-048 reseñas shell) son un capítulo nuevo grande que merece sprint propio (S5). Cerrar primero el shell del alumno permite:
+1. Alumno termina de cursar (visible en Mi carrera → tab Historial).
+2. Click "Reseñar esta cursada".
+3. Editor 6 campos: rating + dificultad + horas de estudio + texto libre + tags rápidos + recomendaciones sí/no.
+4. Publica → filter de contenido (clean / triggered) + event embedding async.
+5. Aparece en `/reseñas` tab Explorar para el resto.
+6. Autor puede editar o borrar la propia.
+7. Otros pueden reportar si es inapropiada (US-019 si entra; sino S6).
 
-1. Mostrarle a Elio un producto visualmente completo, no piezas a medias.
-2. Bajar el riesgo de no terminar: las US del shell son independientes (si una se traba, las otras siguen).
-3. Cuando lleguen las reseñas en S5, el editor va a vivir en pantallas que ya existen (Mi carrera tab Historial: "Reseñar esta cursada"). Tener el shell estable primero reduce el rework.
+### Por qué este foco ahora
+
+S0-S4 cerraron toda la infraestructura del alumno (auth + onboarding + Mi carrera + Planificar + settings). El producto se ve completo desde lo visual pero el corpus está vacío. **Sin reseñas, plan-b no es plan-b** (es un planificador con un feature de catálogo de reseñas no-funcional). S5 lo convierte en el producto crowdsourced que el manifiesto de `/sobre` promete.
 
 ---
 
 ## Backlog open (sin sprint asignado)
 
+> Las US de S5 (US-017 / US-018 / US-019 / US-048 / US-049 / US-055) no aparecen acá: viven en la sección S5 arriba. Las del backlog ya entregadas (S3, S4) tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
+
 **Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
 - [US-054-f](domain/user-stories/US-054-f.md) landing pública.
-- [US-055](domain/user-stories/US-055.md) borrar reseña propia (action + modal destructivo).
 - [US-059-f](domain/user-stories/US-059-f.md) auth + onboarding migración a AuthShell / OnbShell.
-- [US-045-b](domain/user-stories/US-045-b.md) / [-c](domain/user-stories/US-045-c.md) / [-d](domain/user-stories/US-045-d.md) / [-e](domain/user-stories/US-045-e.md) tabs de Mi carrera.
-- [US-046](domain/user-stories/US-046.md) Planificar shell + tabs + empty + modal publicar.
-- [US-047](domain/user-stories/US-047.md) Mi perfil.
-- [US-048](domain/user-stories/US-048.md) Reseñas shell + empty states.
-- [US-049](domain/user-stories/US-049.md) Editor de reseña 6 campos.
 - [US-070](domain/user-stories/US-070.md) Rankings.
 - [US-071](domain/user-stories/US-071.md) Búsqueda global (Meilisearch).
-- [US-072](domain/user-stories/US-072.md) Ajustes (UI: notificaciones / privacidad / apariencia / datos / row Seguridad que dispara modal de US-079-i).
-- [US-073](domain/user-stories/US-073.md) Ayuda.
-- [US-074](domain/user-stories/US-074.md) Sobre plan-b.
-- [US-075](domain/user-stories/US-075.md) Member self-disable.
 - [US-076-f](domain/user-stories/US-076-f.md) estado offline (banner global).
 - [US-077-f](domain/user-stories/US-077-f.md) panel de notificaciones (dropdown del bell).
 - [US-078-f](domain/user-stories/US-078-f.md) páginas de error globales (404 + 5xx).
-- [US-079-i](domain/user-stories/US-079-i.md) cambio de contraseña con sesión activa (integrated: endpoint `PATCH /api/me/password` + modal frontend). Patrón alineado a US-029-i / US-033-i.
+
+**Cancelled**:
+- ~~[US-075](domain/user-stories/US-075.md) Member self-disable~~ — reemplazada por **US-038-bis** (S4 Done) bajo [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md). El paso intermedio "deshabilitar" desapareció; el flow real es soft delete con anonimización del PII.
 
 **Notifications BC (decisión 2026-05-09 sobre INDEFINIDO #5)**:
 - [US-077-b](domain/user-stories/US-077-b.md) parent: Notifications BC completo siguiendo ADR-0040. Splitada en 3 sub-slices secuenciales:
@@ -342,8 +384,8 @@ Las reseñas (US-017 backend + US-018 editar + US-019 reportar + US-049 editor 6
 **Backend / cross-stack**:
 - US-001 a US-004 (catálogo público): aterrizan cuando Academic CRUD esté listo.
 - US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
-- US-016 + US-023..027 (simulación + planificación-storage backend): pendientes.
-- US-017 / US-018 / US-019 / US-020 (publicar / editar / reportar reseñas backend): pendientes.
+- US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
+- US-020 (publicar reseña anónima vs autenticada — flag opcional): pendiente. US-017/18/19/55 viven en S5.
 - US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero.
 - US-067 (cuentas staff), US-080 (dashboard institucional): backlog open.
 - Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
