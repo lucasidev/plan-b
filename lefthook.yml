@@ -41,3 +41,13 @@ pre-push:
       # local manualmente: `just frontend-test-e2e-show` (browser visible).
       glob: "frontend/**/*.{ts,tsx}"
       run: cd frontend && bun run test
+    frontend-react-doctor:
+      # React Doctor scan acotado a los archivos que tu rama cambió vs main
+      # (`--diff origin/main`). Bloquea el push si introducís un diagnostic
+      # severity=error (server actions sin auth check, only-export-components,
+      # etc). Warnings (a11y, perf, design) los muestra pero NO bloquean.
+      # `--no-score` evita la share URL y el roundtrip al score API.
+      # Suppressions de design system + falsos positivos viven en
+      # `frontend/react-doctor.config.json`.
+      glob: "frontend/**/*.{ts,tsx}"
+      run: cd frontend && bunx react-doctor --diff origin/main --fail-on error --no-score --yes
