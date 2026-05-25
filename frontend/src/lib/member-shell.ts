@@ -22,7 +22,7 @@
 export type MemberRoute = {
   readonly path: string;
   readonly label: string;
-  readonly section: 'mi-cuatrimestre' | 'comunidad' | 'cuenta';
+  readonly section: 'mi-cuatrimestre' | 'comunidad' | 'otros';
   readonly shortcut?: string;
   /** US futura que va a llenar este stub con contenido real. Display only. */
   readonly futureUs?: string;
@@ -54,8 +54,12 @@ export const memberRoutes: readonly MemberRoute[] = [
   // Comunidad
   { path: '/reviews', label: 'Mis reseñas', section: 'comunidad', futureUs: 'US-020' },
 
-  // Cuenta
-  { path: '/ajustes', label: 'Ajustes', section: 'cuenta' },
+  // Otros (Ajustes, Ayuda, Sobre plan-b - per mockup `soporte-v2-ayuda.png` que muestra
+  // los tres ítems agrupados en "OTROS" al pie del sidebar v2). Mi perfil sigue
+  // viviendo en el avatar menu, no en este nav.
+  { path: '/ajustes', label: 'Ajustes', section: 'otros' },
+  { path: '/ayuda', label: 'Ayuda', section: 'otros' },
+  { path: '/sobre', label: 'Sobre plan-b', section: 'otros' },
 ] as const;
 
 export const memberSections: ReadonlyArray<{
@@ -64,7 +68,7 @@ export const memberSections: ReadonlyArray<{
 }> = [
   { key: 'mi-cuatrimestre', label: 'Mi cuatrimestre' },
   { key: 'comunidad', label: 'Comunidad' },
-  { key: 'cuenta', label: 'Cuenta' },
+  { key: 'otros', label: 'Otros' },
 ] as const;
 
 /**
