@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { Simulation } from '../types';
 import { DraftList } from './draft-list';
@@ -97,7 +97,13 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
         </div>
       </header>
 
-      <PlanificarTabs items={tabs} active={activeTab} />
+      {/* Suspense requerida porque PlanificarTabs usa useSearchParams() (regla
+          react-doctor/nextjs-no-use-search-params-without-suspense). Sin la boundary la
+          page entera bailout a client-side rendering. Fallback `null` está OK: los tabs
+          son visualmente livianos y el snapshot inicial se renderea en <50ms. */}
+      <Suspense fallback={null}>
+        <PlanificarTabs items={tabs} active={activeTab} />
+      </Suspense>
 
       {activeTab === 'en-curso' ? (
         active ? (

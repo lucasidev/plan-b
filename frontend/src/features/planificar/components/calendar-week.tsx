@@ -70,12 +70,13 @@ function Row({ h, hi, blocks }: { h: number; hi: number; blocks: CalendarBlock[]
       >
         {h}:00
       </div>
-      {DAYS.map((_, di) => {
+      {DAYS.map((day, di) => {
         const blk = blocks.find((b) => b.day === di && b.h === h);
         return (
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: indexed grid cells, key by position is fine
-            key={di}
+            // Día (stable string del array DAYS) + hora del row componen una key única estable
+            // por celda. Evita la regla react-doctor/no-array-index-key sin sintetizar IDs.
+            key={`${day}-${h}`}
             style={{
               position: 'relative',
               minHeight: 24,
