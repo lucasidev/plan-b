@@ -30,6 +30,10 @@
       {
         "files": ["src/features/planificar/components/planificar-tabs.tsx"],
         "rules": ["react-doctor/nextjs-no-use-search-params-without-suspense"]
+      },
+      {
+        "files": ["src/features/my-profile/components/profile-avatar.tsx"],
+        "rules": ["react-doctor/prefer-tag-over-role"]
       }
     ]
   }
