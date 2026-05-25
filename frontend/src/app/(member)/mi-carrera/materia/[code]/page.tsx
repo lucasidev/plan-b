@@ -36,10 +36,17 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
   );
 }
 
+/**
+ * Map module-scope `code → subject + year` para que el lookup en findSubject sea O(1)
+ * en lugar de O(n*m) con find anidado (regla react-doctor/js-index-maps). El plan es
+ * data estática, así que el Map se construye una sola vez al cargar el módulo.
+ */
+const subjectByCode = new Map(
+  plan.flatMap((yearBlock) =>
+    yearBlock.subjects.map((s) => [s.code, { ...s, year: yearBlock.year }] as const),
+  ),
+);
+
 function findSubject(code: string) {
-  for (const yearBlock of plan) {
-    const found = yearBlock.subjects.find((s) => s.code === code);
-    if (found) return { ...found, year: yearBlock.year };
-  }
-  return null;
+  return subjectByCode.get(code) ?? null;
 }

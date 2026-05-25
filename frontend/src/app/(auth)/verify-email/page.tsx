@@ -7,6 +7,14 @@ type Props = {
   searchParams: Promise<{ token?: string }>;
 };
 
+// Hoisted heading para evitar nueva ref en cada render (regla
+// react-doctor/jsx-no-jsx-as-prop).
+const HEADING = (
+  <DisplayHeading>
+    Verificá tu <em>cuenta</em>
+  </DisplayHeading>
+);
+
 /**
  * Verify-email route (US-011-f). Server component: reads `token` from the
  * URL, calls POST /api/identity/verify-email server-side, and hands the
@@ -28,11 +36,7 @@ export default async function VerifyEmailPage({ searchParams }: Props) {
 
   return (
     <AuthSplit
-      heading={
-        <DisplayHeading>
-          Verificá tu <em>cuenta</em>
-        </DisplayHeading>
-      }
+      heading={HEADING}
       description="Estamos confirmando tu email para activar tu cuenta de plan-b."
     >
       <VerifyEmailResult result={result} />

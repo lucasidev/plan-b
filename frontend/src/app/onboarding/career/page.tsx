@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { CareerForm, OnboardingShell } from '@/features/onboarding';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
@@ -26,7 +27,12 @@ export default async function OnboardingCareerPage() {
       heading="Asociá tu carrera"
       subheading="Elegí tu universidad, carrera y plan vigente. Esto filtra todo lo que ves después en plan-b."
     >
-      <CareerForm />
+      {/* Suspense boundary requerida por useSearchParams() dentro de CareerForm: sin
+          ella la página entera bailout a client-side rendering (regla
+          react-doctor/nextjs-no-use-search-params-without-suspense). */}
+      <Suspense fallback={null}>
+        <CareerForm />
+      </Suspense>
     </OnboardingShell>
   );
 }

@@ -127,12 +127,15 @@ export function CareerPlanPreviewTable({
                   />
                 </Td>
                 <Td>
+                  {/* aria-label porque los headers <th> no se asocian automáticamente
+                      a estos inputs según react-doctor; el index desambigua la fila. */}
                   <input
                     type="text"
                     value={r.code}
                     onChange={(e) => update(r.index, { code: e.target.value })}
                     className={inputClass}
                     style={{ ...inputStyle, width: 90 }}
+                    aria-label={`Código de materia del item ${r.index + 1}`}
                   />
                 </Td>
                 <Td>
@@ -142,6 +145,7 @@ export function CareerPlanPreviewTable({
                     onChange={(e) => update(r.index, { name: e.target.value })}
                     className={inputClass}
                     style={{ ...inputStyle, width: 260 }}
+                    aria-label={`Nombre de la materia del item ${r.index + 1}`}
                   />
                   {r.parsed.issues.length > 0 && (
                     <ul
@@ -163,11 +167,12 @@ export function CareerPlanPreviewTable({
                     max={10}
                     className={inputClass}
                     style={{ ...inputStyle, width: 60 }}
+                    aria-label={`Año en el plan del item ${r.index + 1}`}
                   />
                 </Td>
                 <Td>
                   {r.termKind === 'Anual' ? (
-                    <span className="text-ink-3">—</span>
+                    <span className="text-ink-3">–</span>
                   ) : (
                     <input
                       type="number"
@@ -177,6 +182,7 @@ export function CareerPlanPreviewTable({
                       max={6}
                       className={inputClass}
                       style={{ ...inputStyle, width: 60 }}
+                      aria-label={`Cuatrimestre del item ${r.index + 1}`}
                     />
                   )}
                 </Td>

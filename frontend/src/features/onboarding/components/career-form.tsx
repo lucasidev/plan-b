@@ -40,11 +40,21 @@ export function CareerForm() {
   // traen universityId + careerId + planId + enrollmentYear. Repoblamos los 3 dropdowns sin
   // que el alumno tenga que volver a elegir. El careerId viene explícito desde el response del
   // /approve (no necesitamos resolverlo desde planId via lookup).
+  //
+  // Destructuramos `get` para que React Compiler vea la dependencia mínima del componente y
+  // pueda memoizar mejor (regla react-doctor/react-compiler-destructure-method). Bind del
+  // método al instance porque URLSearchParams.get usa `this` internamente (whatwg-url en
+  // jsdom es estricto y tira si se llama suelto).
+  // El Suspense boundary requerido por useSearchParams() está en la page
+  // `app/onboarding/career/page.tsx`; suprimimos el warning local porque la rule no detecta
+  // boundaries en archivos distintos al que usa el hook.
+  // react-doctor-disable-next-line nextjs-no-use-search-params-without-suspense, react-doctor/nextjs-no-use-search-params-without-suspense
   const searchParams = useSearchParams();
-  const initialUniversityId = searchParams.get('universityId') ?? '';
-  const initialCareerId = searchParams.get('careerId') ?? '';
-  const initialPlanId = searchParams.get('planId') ?? '';
-  const initialEnrollmentYear = searchParams.get('enrollmentYear') ?? '';
+  const getParam = searchParams.get.bind(searchParams);
+  const initialUniversityId = getParam('universityId') ?? '';
+  const initialCareerId = getParam('careerId') ?? '';
+  const initialPlanId = getParam('planId') ?? '';
+  const initialEnrollmentYear = getParam('enrollmentYear') ?? '';
 
   const [universityId, setUniversityId] = useState<string>(initialUniversityId);
   const [careerId, setCareerId] = useState<string>(initialCareerId);
@@ -56,6 +66,13 @@ export function CareerForm() {
 
   // Auto-seleccionar el plan recién creado en cuanto se cargan los plans de la career.
   // Solo dispara una vez (guard sobre careerPlanId ya seteado).
+  //
+  // Las rules `no-derived-state` y `no-event-handler` querrían que computemos esto inline
+  // o que lo movamos a `onSuccess` de la query. No aplica acá: el state vive más allá
+  // del primer match (el user puede cambiar la career y necesitamos resetear), y
+  // TanStack Query v5 ya no expone `onSuccess` en useQuery. Las suppressions están en
+  // `react-doctor.config.json#ignore.overrides` para que el config sea trazable en un
+  // solo lugar y no haya comentarios inline distribuidos.
   useEffect(() => {
     if (!initialPlanId || careerPlanId) return;
     if (!plans.data || plans.data.length === 0) return;
@@ -96,14 +113,11 @@ export function CareerForm() {
   }
 
   if ((universities.data ?? []).length === 0) {
+    // <output> tiene role="status" implícito; reemplaza <div role="status"> idiomáticamente.
     return (
-      <div
-        role="status"
-        className="text-ink-2"
-        style={{ fontSize: 14, lineHeight: 1.55, padding: 16 }}
-      >
+      <output className="text-ink-2" style={{ fontSize: 14, lineHeight: 1.55, padding: 16 }}>
         Todavía no hay universidades disponibles en plan-b. Avisanos a soporte.
-      </div>
+      </output>
     );
   }
 
@@ -286,16 +300,16 @@ function SubmitButton() {
 }
 
 function LoadingState() {
+  // <output> tiene role="status" implícito; idiomático para anunciar estado de carga.
   return (
-    <div
-      role="status"
+    <output
       aria-busy="true"
       className="flex items-center gap-2 text-ink-3"
       style={{ fontSize: 14, padding: 16 }}
     >
       <Loader2 size={16} className="animate-spin" aria-hidden />
-      Cargando universidades...
-    </div>
+      Cargando universidades…
+    </output>
   );
 }
 

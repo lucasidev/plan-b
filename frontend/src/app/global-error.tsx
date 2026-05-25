@@ -26,6 +26,12 @@ export default function GlobalError({ error, reset }: Props) {
 
   return (
     <html lang="es">
+      {/* global-error es la última red de seguridad de Next.js: se renderea cuando
+          algo rompió ANTES de cargar el app shell. No podemos depender de Tailwind
+          ni de tokens CSS variables (puede no haber CSS cargado), por eso usamos
+          inline styles literales aún siendo grandes. Las reglas
+          `no-inline-exhaustive-style` no aplican en este contexto. */}
+      {/* react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style */}
       <body
         style={{
           margin: 0,
@@ -89,6 +95,8 @@ export default function GlobalError({ error, reset }: Props) {
               Ref: {error.digest}
             </p>
           )}
+          {/* Mismo razonamiento que el body: global-error no tiene CSS shell garantizado. */}
+          {/* react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style */}
           <button
             type="button"
             onClick={reset}

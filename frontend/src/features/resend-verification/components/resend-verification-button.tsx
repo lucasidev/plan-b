@@ -56,7 +56,7 @@ export function ResendVerificationButton({ email, variant = 'primary' }: Props) 
   const errorMessage = state.status === 'error' ? state.message : undefined;
   const showSentMessage = state.status === 'sent' && cooldownRemaining > 0;
 
-  function handleClick() {
+  function handleResendClick() {
     if (pending || cooldownRemaining > 0) return;
     const formData = new FormData();
     formData.set('email', email);
@@ -71,7 +71,7 @@ export function ResendVerificationButton({ email, variant = 'primary' }: Props) 
         variant={variant}
         pending={pending}
         cooldownRemaining={cooldownRemaining}
-        onClick={handleClick}
+        onClick={handleResendClick}
       />
 
       {showSentMessage && (

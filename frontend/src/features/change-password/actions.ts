@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { ProblemDetails } from '@/lib/api-problem';
+import { getSession } from '@/lib/session';
 import { changePassword } from './api';
 import { changePasswordSchema } from './schema';
 import type { ChangePasswordFormState } from './types';
@@ -15,11 +16,23 @@ const REFRESH_COOKIE = 'planb_refresh';
  * backend, mapeo de los códigos específicos a kinds del FormState. Si el backend devuelve
  * 204, limpia las cookies de sesión locales (el backend ya revocó los refresh tokens vía
  * Redis) y redirige a /sign-in con un flag para mostrar el banner.
+ *
+ * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
+ * PATCH /api/me/password, pero chequear acá evita el round-trip si la sesión ya se cayó.
  */
 export async function changePasswordAction(
   _prev: ChangePasswordFormState,
   formData: FormData,
 ): Promise<ChangePasswordFormState> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      status: 'error',
+      kind: 'unknown',
+      message: 'Tu sesión expiró. Volvé a ingresar.',
+    };
+  }
+
   const raw = {
     currentPassword: formData.get('currentPassword')?.toString() ?? '',
     newPassword: formData.get('newPassword')?.toString() ?? '',

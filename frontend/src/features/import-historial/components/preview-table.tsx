@@ -156,10 +156,13 @@ export function PreviewTable({ importId, payload }: Props) {
                       <option value="Equivalencia">Equivalencia</option>
                     </select>
                   ) : (
-                    <span className="text-ink-3">—</span>
+                    <span className="text-ink-3">–</span>
                   )}
                 </Td>
                 <Td>
+                  {/* aria-label porque el header de columna ("Nota") no se asocia
+                      automáticamente al input según react-doctor; el index del row
+                      desambigua a qué materia pertenece. */}
                   <input
                     type="number"
                     inputMode="decimal"
@@ -170,6 +173,7 @@ export function PreviewTable({ importId, payload }: Props) {
                     onChange={(e) => update(r.index, { grade: e.target.value })}
                     className={inputClass}
                     style={{ ...inputStyle, width: 80 }}
+                    aria-label={`Nota del item ${r.index + 1}`}
                   />
                 </Td>
                 <Td>

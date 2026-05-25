@@ -95,6 +95,11 @@ function Crumbs({ items }: { items: ReadonlyArray<string> }) {
  */
 function SearchBar() {
   return (
+    // `preventDefault` en lugar de `action` porque la search todavía no tiene
+    // backend (US-004 frontend pendiente). Cuando aterrice, este wrapper se
+    // reemplaza por un `<form action={searchAction}>` que sí progresivamente
+    // mejora sin JS, y la rule `no-prevent-default` deja de aplicar.
+    // react-doctor-disable-next-line no-prevent-default, react-doctor/no-prevent-default
     <form
       onSubmit={(e) => e.preventDefault()}
       className="flex items-center bg-bg-card border border-line rounded-pill shadow-card"

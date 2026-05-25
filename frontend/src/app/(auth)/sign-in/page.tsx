@@ -1,13 +1,18 @@
+import { AuthHeroHeadline } from '@/components/layout/auth-hero';
 import {
   AUTH_HERO_DESCRIPTION,
   AUTH_HERO_QUOTE,
   AUTH_HERO_STATS,
-  AuthHeroHeadline,
-} from '@/components/layout/auth-hero';
+} from '@/components/layout/auth-hero-data';
 import { AuthSplit } from '@/components/layout/auth-split';
 import { AccountDeactivatedBanner } from '@/features/sign-in/components/account-deactivated-banner';
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
+
+// Hoisted heading element: nueva ref en cada render rompe el memo de AuthSplit
+// (regla react-doctor/jsx-no-jsx-as-prop). Como el headline es estático para
+// esta page, lo creamos una vez al cargar el módulo.
+const HEADING = <AuthHeroHeadline />;
 
 type Props = {
   searchParams: Promise<{ reset?: string; 'account-deactivated'?: string }>;
@@ -32,7 +37,7 @@ export default async function SignInPage({ searchParams }: Props) {
 
   return (
     <AuthSplit
-      heading={<AuthHeroHeadline />}
+      heading={HEADING}
       description={AUTH_HERO_DESCRIPTION}
       quote={AUTH_HERO_QUOTE}
       stats={AUTH_HERO_STATS}

@@ -46,6 +46,8 @@ export function UploadCareerPlanForm({
       </div>
 
       <Field id="careerName" label="Nombre de tu carrera">
+        {/* aria-label explícito porque la rule no detecta el <label htmlFor>
+            renderizado por el wrapper <Field> en otro componente. */}
         <input
           id="careerName"
           name="careerName"
@@ -55,6 +57,7 @@ export function UploadCareerPlanForm({
           placeholder="Ej.: Tecnicatura en Desarrollo y Calidad de Software"
           className={inputClass}
           style={inputStyle}
+          aria-label="Nombre de tu carrera"
         />
       </Field>
 
@@ -70,6 +73,7 @@ export function UploadCareerPlanForm({
             defaultValue={currentYear}
             className={inputClass}
             style={inputStyle}
+            aria-label="Año del plan"
           />
         </Field>
         <Field id="studentEnrollmentYear" label="Año de ingreso">
@@ -83,6 +87,7 @@ export function UploadCareerPlanForm({
             defaultValue={defaultEnrollmentYear}
             className={inputClass}
             style={inputStyle}
+            aria-label="Año de ingreso"
           />
         </Field>
       </div>
@@ -116,6 +121,7 @@ export function UploadCareerPlanForm({
             required={mode === 'pdf'}
             className="text-ink"
             style={{ fontSize: 13 }}
+            aria-label="Archivo PDF del plan"
           />
           <p className="text-ink-3" style={{ fontSize: 12, marginTop: 6 }}>
             Hasta 5 MB. Bajá el PDF del plan desde la página oficial de tu universidad.
@@ -137,12 +143,13 @@ export function UploadCareerPlanForm({
             name="rawText"
             rows={12}
             required={mode === 'text'}
-            placeholder="Ej.:&#10;1° AÑO - 1° CUATRIMESTRE&#10;MAT101 Análisis Matemático I&#10;ALG101 Álgebra I&#10;..."
+            placeholder="Ej.:&#10;1° AÑO - 1° CUATRIMESTRE&#10;MAT101 Análisis Matemático I&#10;ALG101 Álgebra I&#10;…"
             className={cn(
               'w-full bg-bg-card text-ink border border-line rounded',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
             )}
             style={{ padding: 12, fontSize: 13, fontFamily: 'inherit', lineHeight: 1.55 }}
+            aria-label="Texto del plan"
           />
         </div>
       )}

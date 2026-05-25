@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { getSession } from '@/lib/session';
 import { patchMySettings } from './api';
 import { settingsPatchSchema } from './schema';
 import type { UpdateSettingsFormState } from './types';
@@ -15,11 +16,25 @@ import type { UpdateSettingsFormState } from './types';
  * actualizada. Mientras tanto el componente usa optimistic UI: el toggle se marca al click
  * y se rollbackea solo si el action devuelve error.
  * </para>
+ *
+ * <para>
+ * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
+ * PATCH /api/me/settings, pero chequear acá ahorra el round-trip si la sesión cayó.
+ * </para>
  */
 export async function updateSettingsAction(
   _prev: UpdateSettingsFormState,
   patch: unknown,
 ): Promise<UpdateSettingsFormState> {
+  const session = await getSession();
+  if (!session) {
+    return {
+      status: 'error',
+      kind: 'auth',
+      message: 'Tu sesión expiró. Volvé a ingresar.',
+    };
+  }
+
   const parsed = settingsPatchSchema.safeParse(patch);
   if (!parsed.success) {
     return {

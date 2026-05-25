@@ -14,6 +14,19 @@ import {
   VerifiedBadge,
 } from '@/components/ui';
 
+// Hoisted heading element para evitar nueva ref en cada render (regla
+// react-doctor/jsx-no-jsx-as-prop). Como esta page es internal-only y estática,
+// el heading puede vivir en module scope.
+const AUTH_SPLIT_DEMO_HEADING = (
+  <DisplayHeading size={48}>
+    Antes de inscribirte,
+    <br />
+    mirá <em>quiénes ya pasaron</em>
+    <br />
+    por esa materia.
+  </DisplayHeading>
+);
+
 /**
  * Internal Storybook-lite for the design system primitives. Hidden behind
  * NEXT_PUBLIC_DESIGN_CHECK=1 so it never ships to a real environment.
@@ -130,15 +143,7 @@ export default function DesignCheckPage() {
       <Section title="AuthSplit">
         <div className="border border-line rounded overflow-hidden h-[600px]">
           <AuthSplit
-            heading={
-              <DisplayHeading size={48}>
-                Antes de inscribirte,
-                <br />
-                mirá <em>quiénes ya pasaron</em>
-                <br />
-                por esa materia.
-              </DisplayHeading>
-            }
+            heading={AUTH_SPLIT_DEMO_HEADING}
             description="plan-b es la app donde alumnos de UNSTA simulan su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
             quote={{
               text: '"Iba a anotarme con el primero que tenía horario libre. Acá vi que había una comisión con 4.1★ vs 3.4★. Esperé un cuatri."',

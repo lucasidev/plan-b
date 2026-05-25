@@ -26,8 +26,9 @@ const REFRESH_COOKIE = 'planb_refresh';
  *
  * Per frontend/CLAUDE.md, this file is `'use server'` so it can only
  * export async functions. State types are not needed for this action
- * because it doesn't surface anything to a form — it just redirects.
+ * because it doesn't surface anything to a form, just redirects.
  */
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-out is defensive cleanup; safe to invoke incluso con sesión ya caída
 export async function signOutAction(): Promise<void> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(REFRESH_COOKIE)?.value;

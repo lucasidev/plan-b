@@ -10,14 +10,19 @@ import { OnboardingShell } from './onboarding-shell';
  * `app/(onboarding)/welcome/page.tsx`.
  */
 export function WelcomeScreen({ displayName }: { displayName: string }) {
+  const heading = (
+    <>
+      Bienvenida a plan-b, <em style={{ fontStyle: 'normal' }}>{displayName}</em>.
+    </>
+  );
   return (
     <OnboardingShell
       step={1}
-      heading={
-        <>
-          Bienvenida a plan-b, <em style={{ fontStyle: 'normal' }}>{displayName}</em>.
-        </>
-      }
+      // El heading depende de la prop `displayName` así que no es hoisteable a
+      // module scope. Asumimos el costo del re-render: el shell se renderea una
+      // sola vez al entrar al onboarding. Suppression en
+      // `react-doctor.config.json#ignore.overrides`.
+      heading={heading}
       subheading="En 30 segundos asociamos tu carrera y ya podés empezar a leer reseñas de tus materias."
     >
       <ul
