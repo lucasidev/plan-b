@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import type { Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'accent';
@@ -14,6 +14,12 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
    */
   variant?: Variant;
   size?: Size;
+  /**
+   * En React 19+ `ref` se pasa como prop normal sobre function components — sin
+   * `forwardRef`. Lo dejamos opcional así los callers que no necesitan el ref
+   * (la mayoría) no tienen que hacer nada distinto.
+   */
+  ref?: Ref<HTMLButtonElement>;
 };
 
 const VARIANTS: Record<Variant, string> = {
@@ -34,13 +40,13 @@ const SIZES: Record<Size, string> = {
  * Pill-shaped button matching `.btn` from the mockup. Active feedback is a
  * 1px translateY (cheap, snappy, doesn't compete with the shadow).
  */
-export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
-  { variant = 'primary', size = 'md', className, ...rest },
-  ref,
-) {
+export function Button({ variant = 'primary', size = 'md', className, ref, type, ...rest }: Props) {
   return (
     <button
       ref={ref}
+      // type default explícito 'button' (regla react-doctor/button-has-type). Los callers
+      // que necesitan submit pasan type="submit" al usar el componente dentro de un <form>.
+      type={type ?? 'button'}
       className={cn(
         'inline-flex items-center justify-center gap-1.5',
         'font-medium rounded-pill',
@@ -54,4 +60,4 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       {...rest}
     />
   );
-});
+}

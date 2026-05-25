@@ -24,9 +24,9 @@ export function ResetSuccessBanner() {
 
   if (!open) return null;
 
+  // <output> tiene role="status" implícito; reemplazo idiomático de <div role="status">.
   return (
-    <div
-      role="status"
+    <output
       aria-live="polite"
       className="flex items-start gap-2 rounded bg-st-approved-bg text-st-approved-fg"
       style={{
@@ -49,6 +49,6 @@ export function ResetSuccessBanner() {
       >
         <X size={14} aria-hidden />
       </button>
-    </div>
+    </output>
   );
 }

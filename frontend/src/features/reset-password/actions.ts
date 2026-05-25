@@ -14,6 +14,7 @@ import type { ResetPasswordFormState } from './types';
  * page reacts to that param and renders a "ya podés ingresar con tu nueva
  * contraseña" banner.
  */
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- reset-password is public; el token del mail es el auth factor
 export async function resetPasswordAction(
   _prev: ResetPasswordFormState,
   formData: FormData,

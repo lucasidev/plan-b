@@ -1,7 +1,7 @@
 'use client';
 
 import { Eye, EyeOff } from 'lucide-react';
-import { forwardRef, useId, useState } from 'react';
+import { type Ref, useId, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & {
@@ -10,6 +10,11 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & 
   error?: string;
   /** Optional helper text below the input. Hidden when an error is shown. */
   hint?: string;
+  /**
+   * En React 19+ `ref` se pasa como prop normal sobre function components, sin
+   * `forwardRef`. Lo dejamos opcional para callers que no necesitan el ref.
+   */
+  ref?: Ref<HTMLInputElement>;
 };
 
 /**
@@ -19,10 +24,7 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & 
  * screen readers; the toggle gets `tabIndex={-1}` so Tab keeps going
  * label → input → next field.
  */
-export const PasswordField = forwardRef<HTMLInputElement, Props>(function PasswordField(
-  { label, error, hint, className, ...rest },
-  ref,
-) {
+export function PasswordField({ label, error, hint, className, ref, ...rest }: Props) {
   const reactId = useId();
   const inputId = `${reactId}-input`;
   const errorId = error ? `${reactId}-error` : undefined;
@@ -81,15 +83,15 @@ export const PasswordField = forwardRef<HTMLInputElement, Props>(function Passwo
         </button>
       </div>
       {hint && !error && (
-        <p id={hintId} className="text-ink-3" style={{ fontSize: 11.5, marginTop: 4 }}>
+        <p id={hintId} className="text-ink-3" style={{ fontSize: 12, marginTop: 4 }}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="text-st-failed-fg" style={{ fontSize: 11.5, marginTop: 4 }}>
+        <p id={errorId} className="text-st-failed-fg" style={{ fontSize: 12, marginTop: 4 }}>
           {error}
         </p>
       )}
     </div>
   );
-});
+}

@@ -23,14 +23,19 @@ type Props = {
  * Server component, sin state.
  */
 export function DoneScreen({ displayName, careerName, planYear }: Props) {
+  const heading = (
+    <>
+      ¡Listo, <em style={{ fontStyle: 'normal' }}>{displayName}</em>!
+    </>
+  );
   return (
     <OnboardingShell
       step={4}
-      heading={
-        <>
-          ¡Listo, <em style={{ fontStyle: 'normal' }}>{displayName}</em>!
-        </>
-      }
+      // El heading depende de la prop `displayName` así que no es hoisteable
+      // a module scope. Asumimos el costo del re-render: el shell se renderea
+      // una sola vez en este flow de onboarding. Suppression en
+      // `react-doctor.config.json#ignore.overrides`.
+      heading={heading}
       subheading="Ya podés entrar y empezar a usar plan-b."
     >
       <div

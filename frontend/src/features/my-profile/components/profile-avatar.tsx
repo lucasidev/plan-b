@@ -9,10 +9,13 @@ import { getInitialsFromEmail } from '@/lib/member-shell';
  */
 export function ProfileAvatar({ email }: { email: string }) {
   const initials = getInitialsFromEmail(email);
+  // Avatar decorativo basado en iniciales (no hay foto real todavía). El email del usuario
+  // ya está expuesto al lado del avatar en el header, así que marcamos esto como
+  // decorativo (aria-hidden) para evitar que screen readers anuncien las iniciales por
+  // duplicado. Cuando aterrice storage de fotos, pasamos a <img alt="">.
   return (
     <div
-      role="img"
-      aria-label={`Avatar de ${email}`}
+      aria-hidden="true"
       className="bg-accent-soft text-accent-ink grid place-items-center font-semibold"
       style={{
         width: 96,

@@ -20,9 +20,10 @@ type Props = {
  */
 export function TeacherDrawer({ teacher, plan = defaultPlan }: Props) {
   const reviews = topReviewsForTeacher(teacher.id, 3);
-  const subjectNames = teacher.subjects
-    .map((code) => findSubjectName(plan, code) ?? code)
-    .filter(Boolean);
+  // `findSubjectName(...) ?? code` siempre devuelve string truthy, así que el
+  // `.filter(Boolean)` previo era noop. Pasamos a single-pass .map (regla
+  // react-doctor/js-flatmap-filter).
+  const subjectNames = teacher.subjects.map((code) => findSubjectName(plan, code) ?? code);
 
   return (
     <div className="flex flex-col gap-4">
@@ -119,21 +120,25 @@ function MetricsCard({ metrics }: { metrics: Teacher['metrics'] }) {
 function MetricRow({ label, value }: { label: string; value: number }) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100));
   const tone = value >= 4 ? 'good' : value >= 3 ? 'neutral' : 'low';
+  // <meter> sr-only para preservar semántica accesible (rating con escala min/max),
+  // mientras renderizamos la barra visual con divs. El <meter> nativo tiene styling
+  // per-browser difícil de overridear consistentemente, así que se mantiene oculto.
   return (
     <div>
       <div className="flex justify-between text-[12px] text-ink-2 mb-1">
         <span>{label}</span>
         <span className="font-mono">{value.toFixed(1)}/5</span>
       </div>
-      <div
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={5}
-        aria-valuenow={value}
-        aria-label={label}
-        className="h-1.5 rounded-full bg-bg-elev overflow-hidden"
-      >
+      <div className="h-1.5 rounded-full bg-bg-elev overflow-hidden">
+        <meter
+          className="sr-only"
+          value={value}
+          min={0}
+          max={5}
+          aria-label={`${label}: ${value.toFixed(1)} de 5`}
+        />
         <div
+          aria-hidden
           className={cn(
             'h-full rounded-full',
             tone === 'good' && 'bg-st-approved-fg',
@@ -240,10 +245,22 @@ function SubjectsCard({ teacher, plan }: { teacher: Teacher; plan: PlanYear[] })
   );
 }
 
-function findSubjectName(plan: PlanYear[], code: string): string | null {
-  for (const yearBlock of plan) {
-    const found = yearBlock.subjects.find((s) => s.code === code);
-    if (found) return found.name;
+/**
+ * Map cache por instancia de plan para evitar find anidado (regla
+ * react-doctor/js-index-maps). WeakMap así no retenemos el plan si los callers
+ * lo recrean (el plan tiende a ser estable per-component-tree).
+ */
+const planIndexCache = new WeakMap<PlanYear[], Map<string, string>>();
+
+function getPlanIndex(plan: PlanYear[]): Map<string, string> {
+  let idx = planIndexCache.get(plan);
+  if (!idx) {
+    idx = new Map(plan.flatMap((yearBlock) => yearBlock.subjects.map((s) => [s.code, s.name])));
+    planIndexCache.set(plan, idx);
   }
-  return null;
+  return idx;
+}
+
+function findSubjectName(plan: PlanYear[], code: string): string | null {
+  return getPlanIndex(plan).get(code) ?? null;
 }

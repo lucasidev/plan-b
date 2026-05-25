@@ -7,6 +7,20 @@ type Props = {
   searchParams: Promise<{ token?: string }>;
 };
 
+// Hoisted headings para evitar nueva ref en cada render (regla
+// react-doctor/jsx-no-jsx-as-prop). Ambos son estáticos.
+const HEADING_MISSING_TOKEN = (
+  <DisplayHeading>
+    Falta el <em>link</em>
+  </DisplayHeading>
+);
+
+const HEADING_NEW_PASSWORD = (
+  <DisplayHeading>
+    Elegí tu <em>nueva contraseña</em>
+  </DisplayHeading>
+);
+
 /**
  * /reset-password?token=... (US-033-f). Server component that reads the
  * raw token from the URL and hands it to the (client) form. If the token
@@ -26,11 +40,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   if (!token) {
     return (
       <AuthSplit
-        heading={
-          <DisplayHeading>
-            Falta el <em>link</em>
-          </DisplayHeading>
-        }
+        heading={HEADING_MISSING_TOKEN}
         description="Llegaste a esta página sin un link válido. Pedí uno nuevo desde la pantalla de recuperación."
       >
         <div className="space-y-6">
@@ -62,11 +72,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
 
   return (
     <AuthSplit
-      heading={
-        <DisplayHeading>
-          Elegí tu <em>nueva contraseña</em>
-        </DisplayHeading>
-      }
+      heading={HEADING_NEW_PASSWORD}
       description="Tiene que tener al menos 12 caracteres. Después de guardar te llevamos al inicio de sesión."
     >
       <ResetPasswordForm token={token} />

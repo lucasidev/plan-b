@@ -38,6 +38,7 @@ function parseSetCookieHeader(raw: string): ParsedCookie {
 
   const options: Partial<ResponseCookie> = {};
   for (const attr of attrs) {
+    // react-doctor-disable-next-line js-set-map-lookups, react-doctor/js-set-map-lookups -- string.indexOf no es array.indexOf; falso positivo de la rule
     const sepIdx = attr.indexOf('=');
     const key = (sepIdx === -1 ? attr : attr.slice(0, sepIdx)).toLowerCase();
     const val = sepIdx === -1 ? '' : attr.slice(sepIdx + 1);

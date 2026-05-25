@@ -51,12 +51,12 @@ export function ReviewCard({ review, isLast }: Props) {
 function Stars({ score }: { score: number }) {
   const filled = '★'.repeat(score);
   const empty = '★'.repeat(5 - score);
+  // Patrón "text equivalent" en lugar de role="img" + aria-label: el span sr-only
+  // anuncia el score textual al screen reader, los caracteres ★ visibles quedan
+  // aria-hidden. Más simple semánticamente y evita el role redundante.
   return (
-    <span
-      role="img"
-      aria-label={`${score} de 5 estrellas`}
-      className="text-[12px] tracking-wider shrink-0"
-    >
+    <span className="text-[12px] tracking-wider shrink-0">
+      <span className="sr-only">{`${score} de 5 estrellas`}</span>
       <span aria-hidden className="text-accent-ink">
         {filled}
       </span>

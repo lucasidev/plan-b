@@ -99,15 +99,21 @@ type RatingBarProps = {
 
 function RatingBar({ value, tone }: RatingBarProps) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100));
+  // Wrapper visual + meter semántico oculto. El <meter> nativo tiene styling
+  // per-browser difícil de overridear consistentemente, así que lo dejamos invisible
+  // (sr-only) para preservar la semántica accesible mientras renderizamos la barra
+  // custom con divs. Resuelve react-doctor/prefer-tag-over-role sin romper el visual.
   return (
-    <div
-      role="progressbar"
-      aria-valuenow={value}
-      aria-valuemin={0}
-      aria-valuemax={5}
-      className="h-1.5 rounded-full bg-bg-elev overflow-hidden"
-    >
+    <div className="h-1.5 rounded-full bg-bg-elev overflow-hidden">
+      <meter
+        className="sr-only"
+        value={value}
+        min={0}
+        max={5}
+        aria-label={`Rating ${value} de 5`}
+      />
       <div
+        aria-hidden
         className={cn('h-full rounded-full', tone === 'good' ? 'bg-st-approved-fg' : 'bg-ink-3')}
         style={{ width: `${pct}%` }}
       />

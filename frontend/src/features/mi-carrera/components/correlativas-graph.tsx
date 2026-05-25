@@ -49,7 +49,9 @@ export function CorrelativasGraph({
 }: Props) {
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
   const focusedNode = focusId != null ? (nodeById.get(focusId) ?? null) : null;
-  const unlocks = focusedNode ? edges.filter((e) => e[0] === focusedNode.id).map((e) => e[1]) : [];
+  // Single-pass: .filter().map() iteraba el array de edges dos veces (regla
+  // react-doctor/js-combine-iterations). flatMap transforma + filtra en un solo loop.
+  const unlocks = focusedNode ? edges.flatMap((e) => (e[0] === focusedNode.id ? [e[1]] : [])) : [];
 
   return (
     <div className="flex flex-col gap-3.5">

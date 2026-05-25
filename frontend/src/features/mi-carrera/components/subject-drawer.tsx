@@ -392,13 +392,29 @@ function SituationCard({
   );
 }
 
+/**
+ * Map cache per-instance del plan para evitar find anidado (regla
+ * react-doctor/js-index-maps). WeakMap así no retenemos el plan si los callers
+ * lo recrean.
+ */
+const planByCodeCache = new WeakMap<PlanYear[], Map<string, PlannedSubject & { year: number }>>();
+
+function getPlanByCodeIndex(plan: PlanYear[]) {
+  let idx = planByCodeCache.get(plan);
+  if (!idx) {
+    idx = new Map(
+      plan.flatMap((yearBlock) =>
+        yearBlock.subjects.map((s) => [s.code, { ...s, year: yearBlock.year }] as const),
+      ),
+    );
+    planByCodeCache.set(plan, idx);
+  }
+  return idx;
+}
+
 function findSubjectByCode(
   plan: PlanYear[],
   code: string,
 ): (PlannedSubject & { year: number }) | null {
-  for (const yearBlock of plan) {
-    const found = yearBlock.subjects.find((s) => s.code === code);
-    if (found) return { ...found, year: yearBlock.year };
-  }
-  return null;
+  return getPlanByCodeIndex(plan).get(code) ?? null;
 }

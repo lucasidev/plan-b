@@ -74,3 +74,25 @@ export async function getSession(): Promise<Session | null> {
     return null;
   }
 }
+
+/**
+ * Guard variante de `getSession()` para server actions autenticadas. Devuelve la sesión
+ * si existe, o lanza `SessionExpiredError` si no hay (cookie ausente, JWT inválido o
+ * expirado). El action que la usa captura el error y devuelve el FormState con copy
+ * "Tu sesión expiró". Defense-in-depth: el backend igual valida JWT en cada request
+ * `/api/me/*`, pero chequear acá ahorra un round-trip y da feedback inmediato.
+ */
+export class SessionExpiredError extends Error {
+  constructor() {
+    super('Session expired');
+    this.name = 'SessionExpiredError';
+  }
+}
+
+export async function requireSession(): Promise<Session> {
+  const session = await getSession();
+  if (!session) {
+    throw new SessionExpiredError();
+  }
+  return session;
+}

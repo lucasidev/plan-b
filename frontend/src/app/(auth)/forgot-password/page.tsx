@@ -2,6 +2,14 @@ import { AuthSplit } from '@/components/layout/auth-split';
 import { DisplayHeading } from '@/components/ui';
 import { ForgotPasswordForm } from '@/features/forgot-password';
 
+// Hoisted heading element para evitar nueva ref en cada render (regla
+// react-doctor/jsx-no-jsx-as-prop).
+const HEADING = (
+  <DisplayHeading>
+    Recuperá tu <em>contraseña</em>
+  </DisplayHeading>
+);
+
 /**
  * /forgot-password (US-033-f). Mirrors the AuthSplit hero layout used by
  * /sign-in, /sign-up and /verify-email so the experience feels continuous:
@@ -15,11 +23,7 @@ import { ForgotPasswordForm } from '@/features/forgot-password';
 export default function ForgotPasswordPage() {
   return (
     <AuthSplit
-      heading={
-        <DisplayHeading>
-          Recuperá tu <em>contraseña</em>
-        </DisplayHeading>
-      }
+      heading={HEADING}
       description="Ingresá el email con el que te registraste y te mandamos un link para elegir una nueva. Si la cuenta existe, te llega el mail."
     >
       <ForgotPasswordForm />
