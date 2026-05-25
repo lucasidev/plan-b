@@ -47,6 +47,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - soft delete con anonimización + Mi perfil backend (ADR-0044, US-038-bis, (identity) — [`3df5a7f`](https://github.com/lucasidev/plan-b/commit/3df5a7f30e7a372f4e291cfc6469cc14fdbd5446)
 - pantalla Mi perfil con zona peligrosa funcional (US-047 + US-038-bis fro (my-profile) — [`f054b12`](https://github.com/lucasidev/plan-b/commit/f054b1268c90906c944a55263c288e33734cfb21)
 - shell Planificar con tabs, calendario semanal y publicar (US-046) (planificar) — [`d873351`](https://github.com/lucasidev/plan-b/commit/d8733518c14c9fb122c796aa1024d79814d9749f)
+- pantalla pública /sobre con manifiesto, equipo y stats (US-074) (about) — [`5bf64df`](https://github.com/lucasidev/plan-b/commit/5bf64df9a70d8b9ef2683df66e15e77c601a9f62)
+- pantalla /ayuda con FAQ y contacto de soporte (US-073) (help) — [`0333174`](https://github.com/lucasidev/plan-b/commit/0333174c3d5bc5126bfcf2c465cdd788c9a32f8a)
+- sección "Otros" con Ajustes + Ayuda + Sobre plan-b (sidebar) — [`135deae`](https://github.com/lucasidev/plan-b/commit/135deae40c5db4098959695d5c80f6bdb0fe0674)
 
 ### Fixed
 
