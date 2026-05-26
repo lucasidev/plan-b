@@ -82,6 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - cross-user data leak + header dinámico (mi-carrera) — [`1ad65f9`](https://github.com/lucasidev/plan-b/commit/1ad65f9718cbe36f30b74ca1d7e155ae12e10ab3)
 - array-index-key estable + Suspense para useSearchParams (planificar) — [`17f3cc9`](https://github.com/lucasidev/plan-b/commit/17f3cc9159f45d6eba94bfe16bf11368683cff7a)
 - restaurar role=img + aria-label en ProfileAvatar (my-profile) — [`01dc9c2`](https://github.com/lucasidev/plan-b/commit/01dc9c21c70578516c12afe401ce666cb3e38a8f)
+- append-changelog tolera rangos invalidos por force push (scripts) — [`aa17f8b`](https://github.com/lucasidev/plan-b/commit/aa17f8bc9c204a62d754b038aa5f998c5188a486)
 
 ### Changed
 
