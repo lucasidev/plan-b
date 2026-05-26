@@ -111,6 +111,14 @@ Contras:
 - El bot que commitea el changelog usa la identidad de GitHub Actions (`github-actions[bot]`). Los commits aparecen como tales en `git log`, lo cual contamina ligeramente la historia. Aceptable.
 - Si el script tiene un bug y commitea un changelog malformado, hay que arreglarlo a mano + push. Mitigación: el script tiene tests (cuando aterrice, US-T05).
 
+### Comportamiento en force pushes
+
+Cuando se reescribe history (rebase + force push a `main`), el `before` que GitHub Actions pasa como `PUSH_BEFORE` apunta al HEAD viejo que ya no es ancestor de `PUSH_AFTER`. El `git log A..B` falla con "Invalid revision range".
+
+**Decisión:** en ese caso el script skipea silently (exit 0, log info). Los commits reescritos ya vivían en el CHANGELOG con sus shas originales; procesarlos de nuevo con shas nuevos causaría duplicación. Si la rewrite introdujo contenido nuevo de verdad, se apendea manual al CHANGELOG.
+
+Alternativa descartada: fallback a `git log -N HEAD`. Es ambiguo (¿cuántos?) y reintroduciría los mismos commits con shas distintos.
+
 ## Implementación
 
 US-T05-i cubre:
