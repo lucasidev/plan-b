@@ -200,9 +200,17 @@ function readCommit(sha: string): CommitInfo {
 
 /**
  * Determine which commits to process. In CI on a push event, GHA exposes
- * `before` and `after` shas of the push range — process every commit in
+ * `before` and `after` shas of the push range, process every commit in
  * `before..after` (chronological order). Locally or when env vars are
  * absent, fall back to processing HEAD only.
+ *
+ * Force-push handling: cuando alguien reescribe history y pushea,
+ * `before` apunta al HEAD viejo que ya no es ancestor del nuevo. El
+ * `git log A..B` falla con "Invalid revision range" y el script abortaba
+ * el workflow entero. Capturamos ese caso y skipeamos silently: los
+ * commits del rewrite ya viven en el CHANGELOG con sus shas originales,
+ * y procesar HEAD-only causaría duplicación con sha nuevo. Si el force
+ * push trajo contenido genuinamente nuevo, apender a mano.
  */
 function commitsToProcess(): string[] {
   const before = process.env.PUSH_BEFORE?.trim();
@@ -213,7 +221,26 @@ function commitsToProcess(): string[] {
     return [execSync('git rev-parse HEAD').toString().trim()];
   }
 
-  const log = execSync(`git log --reverse --format=%H "${before}..${after}"`).toString().trim();
+  let log: string;
+  try {
+    log = execSync(`git log --reverse --format=%H "${before}..${after}"`, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    })
+      .toString()
+      .trim();
+  } catch (err) {
+    const stderr = (err as { stderr?: Buffer | string }).stderr?.toString() ?? '';
+    if (stderr.includes('Invalid revision range')) {
+      console.log(
+        `Skipping: push range ${before.slice(0, 7)}..${after.slice(0, 7)} is not linear ` +
+          '(probable force push or rewritten history). CHANGELOG no se toca; si la rewrite ' +
+          'introdujo contenido nuevo, apender a mano.',
+      );
+      return [];
+    }
+    throw err;
+  }
+
   if (!log) return [];
   return log.split('\n');
 }
