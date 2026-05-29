@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pantalla pública /sobre con manifiesto, equipo y stats (US-074) (about) — [`5bf64df`](https://github.com/lucasidev/plan-b/commit/5bf64df9a70d8b9ef2683df66e15e77c601a9f62)
 - pantalla /ayuda con FAQ y contacto de soporte (US-073) (help) — [`0333174`](https://github.com/lucasidev/plan-b/commit/0333174c3d5bc5126bfcf2c465cdd788c9a32f8a)
 - sección "Otros" con Ajustes + Ayuda + Sobre plan-b (sidebar) — [`135deae`](https://github.com/lucasidev/plan-b/commit/135deae40c5db4098959695d5c80f6bdb0fe0674)
+- publicar reseña backend US-017 (reviews) — [`d0fcff8`](https://github.com/lucasidev/plan-b/commit/d0fcff823a1615b04f9986d3e8f35c4d46674a40)
 
 ### Fixed
 
