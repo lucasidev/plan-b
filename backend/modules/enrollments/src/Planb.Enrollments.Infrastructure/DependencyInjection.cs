@@ -3,11 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Enrollments.Application.Abstractions.Pdf;
 using Planb.Enrollments.Application.Abstractions.Persistence;
+using Planb.Enrollments.Application.Contracts;
 using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Enrollments.Domain.HistorialImports;
 using Planb.Enrollments.Infrastructure.Pdf;
 using Planb.Enrollments.Infrastructure.Persistence;
 using Planb.Enrollments.Infrastructure.Persistence.Repositories;
+using Planb.Enrollments.Infrastructure.Reading;
 
 namespace Planb.Enrollments.Infrastructure;
 
@@ -25,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IEnrollmentsUnitOfWork, EnrollmentsUnitOfWork>();
         services.AddScoped<IEnrollmentRecordRepository, EnrollmentRecordRepository>();
         services.AddScoped<IHistorialImportRepository, HistorialImportRepository>();
+        services.AddScoped<IEnrollmentsQueryService, DapperEnrollmentsQueryService>();
         services.AddSingleton<IPdfTextExtractor, PdfPigPdfTextExtractor>();
         return services;
     }

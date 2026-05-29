@@ -1,0 +1,52 @@
+# Blacklist del filter de contenido de Reviews (US-017).
+#
+# Una palabra/expresión por línea. Lineas vacías y las que arrancan con `#` se ignoran.
+# El matching es case-insensitive y con word boundary (\b...\b), así "boludazo" no matchea
+# "boludo". Los acentos sí importan: "estúpido" no matchea "estupido". Si se quiere matchear
+# ambos, listar las dos formas.
+#
+# Esta lista es conservadora y semilla. La curaduría posterior la hace moderación con
+# evidencia real. NO incluir palabras ambiguas (ej. "malo") porque inflan UnderReview.
+#
+# Insultos personales hacia el docente (no críticas de la materia o la cursada):
+imbécil
+imbecil
+estúpido
+estupido
+estúpida
+estupida
+idiota
+pelotudo
+pelotuda
+boludo
+boluda
+forro
+forra
+sorete
+infeliz
+inútil
+inutil
+
+# Slurs / discriminación:
+puto
+puta
+trolo
+trola
+negro de mierda
+villero
+villera
+
+# Acusaciones graves sin contexto académico (señal para revisión humana):
+ladrón
+ladron
+ladrona
+mafioso
+mafiosa
+corrupto
+corrupta
+estafador
+estafadora
+acosador
+acosadora
+violador
+violadora
