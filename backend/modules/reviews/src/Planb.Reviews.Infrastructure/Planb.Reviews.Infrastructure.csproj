@@ -16,4 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ContentFilter\blacklist.txt" />
+  </ItemGroup>
 </Project>
