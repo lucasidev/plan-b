@@ -88,6 +88,13 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
     return section ? [section.label, route.label] : [route.label];
   }
 
+  // Patterns conocidos para rutas dinámicas que no entran en memberRoutes
+  // (porque tienen [param] o niveles anidados). El topbar muestra el copy
+  // amigable en vez del slug crudo de la URL.
+  if (pathname.startsWith('/resenas/escribir/')) {
+    return ['Comunidad', 'Nueva reseña'];
+  }
+
   // Fallback: split the path into capitalised segments. Better than empty.
   const segment = pathname.split('/').filter(Boolean).pop();
   return segment ? [segment.charAt(0).toUpperCase() + segment.slice(1)] : [];
