@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pantalla /ayuda con FAQ y contacto de soporte (US-073) (help) — [`0333174`](https://github.com/lucasidev/plan-b/commit/0333174c3d5bc5126bfcf2c465cdd788c9a32f8a)
 - sección "Otros" con Ajustes + Ayuda + Sobre plan-b (sidebar) — [`135deae`](https://github.com/lucasidev/plan-b/commit/135deae40c5db4098959695d5c80f6bdb0fe0674)
 - publicar reseña backend US-017 (reviews) — [`d0fcff8`](https://github.com/lucasidev/plan-b/commit/d0fcff823a1615b04f9986d3e8f35c4d46674a40)
+- editor de reseña 6 campos con preview vivo (US-049) (reviews) — [`ea127da`](https://github.com/lucasidev/plan-b/commit/ea127daf3a131a595e960e694a26834d3ce5719e)
 
 ### Fixed
 
@@ -84,6 +85,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - array-index-key estable + Suspense para useSearchParams (planificar) — [`17f3cc9`](https://github.com/lucasidev/plan-b/commit/17f3cc9159f45d6eba94bfe16bf11368683cff7a)
 - restaurar role=img + aria-label en ProfileAvatar (my-profile) — [`01dc9c2`](https://github.com/lucasidev/plan-b/commit/01dc9c21c70578516c12afe401ce666cb3e38a8f)
 - append-changelog tolera rangos invalidos por force push (scripts) — [`aa17f8b`](https://github.com/lucasidev/plan-b/commit/aa17f8bc9c204a62d754b038aa5f998c5188a486)
+- breadcrumb amigable para /resenas/escribir/[cursadaId] (member-shell) — [`d68c15c`](https://github.com/lucasidev/plan-b/commit/d68c15c6b9eed368df3ce39dbab14655379b6f76)
+- selectores robustos en el spec del editor (e2e) — [`5e33eec`](https://github.com/lucasidev/plan-b/commit/5e33eec7a80e23bc3a13af6cb7e1d604efc26c62)
 
 ### Changed
 
