@@ -35,21 +35,24 @@ test.describe('Editor de resena (US-049)', () => {
     await expect(page.getByText(/ingeniería de software i/i)).toBeVisible();
     await expect(page.getByText(/brandt/i)).toBeVisible();
 
-    // Campos numerados 01..06 en orden.
-    await expect(page.getByText('01')).toBeVisible();
+    // Los 6 campos están presentes. Identifico por la pregunta/label, no por el número
+    // "01..06" porque el sidebar también tiene textos cortos similares (ej. ⌘1).
     await expect(page.getByText(/cómo te pareció la cursada/i)).toBeVisible();
-    await expect(page.getByText('02')).toBeVisible();
     await expect(page.getByText(/qué tan difícil/i)).toBeVisible();
-    await expect(page.getByText('06')).toBeVisible();
+    await expect(page.getByText(/cuántas horas estudiabas/i)).toBeVisible();
+    await expect(page.getByText(/etiquetá la cursada/i)).toBeVisible();
+    await expect(page.getByText(/contá tu experiencia/i)).toBeVisible();
+    await expect(page.getByText(/dos preguntas rápidas/i)).toBeVisible();
 
-    // Radio de 1 estrella debe existir.
-    await expect(page.getByRole('radio', { name: /1 estrella$/i })).toBeVisible();
+    // Radio de 1 estrella debe existir (visualmente oculto, accesible via name).
+    await expect(page.getByRole('radio', { name: /1 estrella$/i })).toBeAttached();
 
     // Chip "claro explicando" del set de tags.
-    await expect(page.getByRole('checkbox', { name: /claro explicando/i })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: /claro explicando/i })).toBeAttached();
 
-    // Preview lateral con el badge y el placeholder italic.
-    await expect(page.getByText(/verificado que cursó/i)).toBeVisible();
+    // Preview lateral con el badge y el placeholder italic. "VERIFICADO QUE CURSÓ"
+    // exact-match porque también aparece (en minúscula) en el copy del privacy card.
+    await expect(page.getByText('VERIFICADO QUE CURSÓ', { exact: true })).toBeVisible();
     await expect(page.getByText(/tu texto aparecerá acá/i)).toBeVisible();
 
     // Boton Publicar arranca disabled (rating y difficulty siguen en 0).
@@ -66,11 +69,11 @@ test.describe('Editor de resena (US-049)', () => {
     const publish = page.getByRole('button', { name: /publicar reseña/i });
     await expect(publish).toBeDisabled();
 
-    await page.getByRole('radio', { name: /4 estrellas/i }).check();
+    // Los inputs radio son sr-only; el click va al <label> envolvente.
+    await page.locator('label:has(input[name="field-rating-radio"][value="4"])').click();
     await expect(publish).toBeDisabled(); // todavia falta difficulty
 
-    // Difficulty step 3 = "justa"
-    await page.locator('input[type="radio"][name="field-difficulty-radio"][value="3"]').check();
+    await page.locator('label:has(input[name="field-difficulty-radio"][value="3"])').click();
 
     await expect(publish).toBeEnabled();
   });
