@@ -1,18 +1,17 @@
 import { redirect } from 'next/navigation';
 
 /**
- * Root `/`. Siempre redirige a `/home`.
+ * Root `/`. Always redirects to `/home`.
  *
- * El guard del route group `(member)/layout.tsx` se encarga del caso "no
- * hay sesión" mandando a `/sign-in`, así que esta página no necesita leer
- * la session: una sola decisión, un solo target.
+ * The `(member)/layout.tsx` route group guard handles the "no session" case by
+ * sending to `/sign-in`, so this page does not need to read the session: one
+ * decision, one target.
  *
- * Cuando aterrice el catálogo público (US-001), `/` se va a convertir en
- * la landing real (universidades / carreras / materias browseables sin
- * auth) y el redirect a `/home` para members se mueve al
- * `(public)/layout.tsx` o se gestiona condicionalmente acá según la
- * sesión.
+ * Once the public catalog lands (US-001), `/` will become the real landing
+ * (universities / careers / subjects browsable without auth) and the redirect to
+ * `/home` for members moves to `(public)/layout.tsx` or is handled conditionally here
+ * based on the session.
  */
-export default function HomePage() {
+export default function RootRedirectPage() {
   redirect('/home');
 }

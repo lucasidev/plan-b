@@ -4,12 +4,11 @@ import { TeacherDrawer } from '@/features/my-career/components/teacher-drawer';
 import { teacherById } from '@/features/my-career/data/teachers';
 
 /**
- * Drawer de detalle de docente (US-045-d). Ruta dedicada con el teacher
- * resuelto por id. 404 si no existe.
+ * Teacher-detail drawer (US-045-d). Dedicated route with the teacher resolved by id.
+ * 404 if it does not exist.
  *
- * Patrón paralelo al de `/my-career/subject/[code]`. Página dedicada que
- * monta `<TeacherDrawer />`; eventual migración a `@modal` queda como
- * deuda.
+ * Pattern parallel to `/my-career/subject/[code]`. Dedicated page mounting
+ * `<TeacherDrawer />`; eventual migration to `@modal` stays as debt.
  */
 export default async function TeacherDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

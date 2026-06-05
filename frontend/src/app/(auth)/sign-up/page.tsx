@@ -7,17 +7,17 @@ import {
 import { AuthSplit } from '@/components/layout/auth-split';
 import { SignUpForm } from '@/features/sign-up/components/sign-up-form';
 
-// Hoisted heading element para evitar nueva ref en cada render (regla
-// react-doctor/jsx-no-jsx-as-prop). El headline es estático para esta page.
+// Hoisted heading element to avoid a new ref on every render
+// (react-doctor/jsx-no-jsx-as-prop rule). The headline is static for this page.
 const HEADING = <AuthHeroHeadline />;
 
 /**
- * `/sign-up` — pantalla de registro. Server component thin que arma el
- * shell (AuthSplit con hero) y delega el form a `<SignUpForm>`.
+ * `/sign-up` registration screen. Thin server component that builds the shell
+ * (AuthSplit with hero) and delegates the form to `<SignUpForm>`.
  *
- * El cross-flow link "¿Ya tenés cuenta? Ingresá" navega a `/sign-in`
- * desde dentro del form. El happy-path post-registro es:
- *   POST /api/identity/register → 201 → redirect a `/sign-up/check-inbox?email=`.
+ * The cross-flow "¿Ya tenés cuenta? Ingresá" link navigates to `/sign-in` from inside
+ * the form. The post-registration happy path is:
+ *   POST /api/identity/register → 201 → redirect to `/sign-up/check-inbox?email=`.
  */
 export default function SignUpPage() {
   return (

@@ -5,14 +5,14 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * `/onboarding/career` — paso 02 (US-037-f). Form de cascadas Universidad
- * → Carrera → Plan + año de ingreso.
+ * `/onboarding/career` step 02 (US-037-f). Cascading form University → Career → Plan +
+ * enrollment year.
  *
- * Guard: si el user ya tiene StudentProfile, redirect a /home (no podríamos
- * crear otro profile, el endpoint devolvería 409). Si no, mostramos el form.
+ * Guard: if the user already has a StudentProfile, redirect to /home (we could not
+ * create another profile, the endpoint would return 409). Otherwise, show the form.
  *
- * El form es client component (TanStack Query para las cascadas +
- * `useActionState` para el submit). La página es server component thin.
+ * The form is a client component (TanStack Query for the cascades + `useActionState`
+ * for the submit). The page is a thin server component.
  */
 export default async function OnboardingCareerPage() {
   const session = await getSession();
@@ -27,9 +27,9 @@ export default async function OnboardingCareerPage() {
       heading="Asociá tu carrera"
       subheading="Elegí tu universidad, carrera y plan vigente. Esto filtra todo lo que ves después en plan-b."
     >
-      {/* Suspense boundary requerida por useSearchParams() dentro de CareerForm: sin
-          ella la página entera bailout a client-side rendering (regla
-          react-doctor/nextjs-no-use-search-params-without-suspense). */}
+      {/* Suspense boundary required by useSearchParams() inside CareerForm: without it
+          the entire page bails out to client-side rendering
+          (react-doctor/nextjs-no-use-search-params-without-suspense rule). */}
       <Suspense fallback={null}>
         <CareerForm />
       </Suspense>

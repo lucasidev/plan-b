@@ -1,14 +1,13 @@
 import { ComingSoon } from '@/components/ui';
 
 /**
- * Stub dinámico para `/subjects/[code]`. La home y el listado de materias
- * tienen Links a esta ruta apuntando a códigos específicos (ISW301, MAT201,
- * etc.). Aterriza el contenido real con [US-002](docs/domain/user-stories/US-002.md):
- * detalle de materia con metadata, agregados de reseñas e histograma.
+ * Dynamic stub for `/subjects/[code]`. The home and the subjects listing have Links to
+ * this route pointing to specific codes (ISW301, MAT201, etc.). Real content lands
+ * with [US-002](docs/domain/user-stories/US-002.md): subject detail with metadata,
+ * review aggregates and histogram.
  *
- * Mientras tanto este page renderiza un ComingSoon contextualizado al
- * código, así el evaluador entiende que la ruta está mapeada y no es un
- * 404 genérico.
+ * Meanwhile this page renders a ComingSoon contextualized to the code, so the
+ * evaluator understands the route is mapped and not a generic 404.
  */
 export default async function SubjectDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;

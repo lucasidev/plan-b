@@ -7,14 +7,14 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * Página `/my-career/transcript/import` (US-014-f).
+ * `/my-career/transcript/import` page (US-014-f).
  *
- * Server component: chequea session + profile, renderiza el client component
- * <see cref="ImportHistorialFlow"/> que maneja upload → polling → preview →
- * confirm. El backend hace el procesamiento async; el client componente pollea
- * el GET hasta ver el estado Parsed/Failed.
+ * Server component: checks session + profile, renders the client component
+ * `ImportHistorialFlow` that handles upload → polling → preview → confirm. The
+ * backend processes async; the client component polls the GET until it sees the
+ * Parsed/Failed state.
  */
-export default async function ImportarHistorialPage() {
+export default async function ImportTranscriptPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 

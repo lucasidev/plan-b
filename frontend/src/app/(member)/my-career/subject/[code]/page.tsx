@@ -4,14 +4,14 @@ import { SubjectDrawer } from '@/features/my-career/components/subject-drawer';
 import { plan } from '@/features/my-career/data/plan';
 
 /**
- * Drawer de detalle de materia (US-045-d). Ruta dedicada con la materia
- * resuelta por code. Si el code no existe en el plan del alumno, 404.
+ * Subject-detail drawer (US-045-d). Dedicated route with the subject resolved by
+ * code. If the code does not exist in the student's plan, 404.
  *
- * Visualmente es un panel sobre el shell de la app — no es modal todavía.
- * Cuando aterrice un patrón de parallel routes (`@modal`), evaluar
- * migrar; mientras tanto, página dedicada da sharable URL y simplicidad.
+ * Visually it is a panel over the app shell, not a modal yet. When a parallel-routes
+ * pattern (`@modal`) lands, evaluate migrating; meanwhile a dedicated page gives a
+ * shareable URL and simplicity.
  *
- * Reemplaza el stub de US-045-b que era solo "Próximamente".
+ * Replaces the US-045-b stub that was just "Próximamente".
  */
 export default async function SubjectDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -37,9 +37,9 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
 }
 
 /**
- * Map module-scope `code → subject + year` para que el lookup en findSubject sea O(1)
- * en lugar de O(n*m) con find anidado (regla react-doctor/js-index-maps). El plan es
- * data estática, así que el Map se construye una sola vez al cargar el módulo.
+ * Module-scope `code → subject + year` map so the lookup in findSubject is O(1)
+ * instead of O(n*m) with a nested find (react-doctor/js-index-maps rule). The plan is
+ * static data, so the Map is built once when the module loads.
  */
 const subjectByCode = new Map(
   plan.flatMap((yearBlock) =>

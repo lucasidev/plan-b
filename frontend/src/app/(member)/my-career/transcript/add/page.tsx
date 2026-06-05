@@ -8,28 +8,27 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * Página `/my-career/transcript/add` (US-013-f).
+ * `/my-career/transcript/add` page (US-013-f).
  *
- * Server component: resuelve session → profile → universityId del plan, y
- * pasa todo al <see cref="EnrollmentForm"/> client component. El backend ya
- * gatea con sus checks; este pre-resolve es para evitar flashes y para que
- * el form pueda hacer cascadas (subjects por plan, terms por uni) sin
- * round-trip extra.
+ * Server component: resolves session → profile → the plan's universityId and passes
+ * everything to the `EnrollmentForm` client component. The backend already gates with
+ * its checks; this pre-resolve is to avoid flashes and so the form can do its
+ * cascades (subjects per plan, terms per university) without an extra round-trip.
  *
- * Si el guard del `(member)` ya redirigió a `/onboarding/welcome` cuando
- * faltaba el profile, este re-check es defense en profundidad para el caso
- * de race (profile borrado en el medio).
+ * If the `(member)` guard already redirected to `/onboarding/welcome` when the
+ * profile was missing, this re-check is defense in depth for the race case (profile
+ * deleted in between).
  */
-export default async function AgregarHistorialPage() {
+export default async function AddTranscriptEntryPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
   const profile = await fetchStudentProfile();
   if (!profile) redirect('/onboarding/welcome');
 
-  // Resolve universityId del plan (necesario para listar academic-terms).
-  // Si la lookup falla devolvemos al historial con un mensaje en vez de
-  // crashear: el form sin uni no es usable.
+  // Resolve the plan's universityId (needed to list academic-terms). If the lookup
+  // fails we go back to the transcript with a message instead of crashing: the form
+  // without a university is unusable.
   const planSummary = await fetchCareerPlanSummary(profile.careerPlanId);
   if (!planSummary) {
     return <CatalogUnavailable />;

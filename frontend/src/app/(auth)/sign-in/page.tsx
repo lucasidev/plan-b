@@ -9,9 +9,9 @@ import { AccountDeactivatedBanner } from '@/features/sign-in/components/account-
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 
-// Hoisted heading element: nueva ref en cada render rompe el memo de AuthSplit
-// (regla react-doctor/jsx-no-jsx-as-prop). Como el headline es estático para
-// esta page, lo creamos una vez al cargar el módulo.
+// Hoisted heading element: a new ref every render breaks AuthSplit's memo
+// (react-doctor/jsx-no-jsx-as-prop rule). Since the headline is static for this page,
+// we create it once when the module loads.
 const HEADING = <AuthHeroHeadline />;
 
 type Props = {
@@ -19,16 +19,16 @@ type Props = {
 };
 
 /**
- * `/sign-in`: pantalla de login. Server component thin que arma el
- * shell (AuthSplit con hero) y delega el form a `<SignInForm>`.
+ * `/sign-in` login screen. Thin server component that builds the shell (AuthSplit with
+ * hero) and delegates the form to `<SignInForm>`.
  *
- * `?reset=success` lo setea el flow de reset-password al 204 (US-033-i).
- * `?account-deactivated=1` lo setea el flow de deactivate-account (ADR-0044, US-038-bis)
- * tras un soft delete exitoso. Ambos renderizan un banner dismissable.
- * Cualquier otro valor en esos params se ignora.
+ * `?reset=success` is set by the reset-password flow on 204 (US-033-i).
+ * `?account-deactivated=1` is set by the deactivate-account flow (ADR-0044,
+ * US-038-bis) after a successful soft delete. Both render a dismissable banner. Any
+ * other value in those params is ignored.
  *
- * El cross-flow link "¿Sos nuevo? Creá tu cuenta" navega a `/sign-up`
- * desde dentro del form.
+ * The cross-flow link "¿Sos nuevo? Creá tu cuenta" navigates to `/sign-up` from inside
+ * the form.
  */
 export default async function SignInPage({ searchParams }: Props) {
   const params = await searchParams;

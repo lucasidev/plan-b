@@ -27,10 +27,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
   return (
-    // Theme provider de next-themes. `system` sigue al OS, `light`/`dark` fijan.
-    // El setting del backend (US-072) define el valor inicial; el cliente puede
-    // overridear vía useTheme() y next-themes persiste en localStorage para evitar
-    // flash al recargar (suppressHydrationWarning en <html> ya está seteado).
+    // next-themes theme provider. `system` follows the OS; `light`/`dark` pin it. The
+    // backend setting (US-072) defines the initial value; the client can override via
+    // useTheme() and next-themes persists in localStorage to avoid flash on reload
+    // (suppressHydrationWarning on <html> is already set).
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
         <ReactQueryStreamedHydration>{children}</ReactQueryStreamedHydration>

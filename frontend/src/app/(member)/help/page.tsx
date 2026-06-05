@@ -5,11 +5,12 @@ export const metadata = {
 };
 
 /**
- * /help (US-073). Centro de ayuda con FAQ y canal de contacto. Server component (la única
- * parte cliente es el accordion del FAQ que mantiene state local). Sin backend en MVP: el
- * "chat de soporte" del mockup es un mailto al support email. Cuando aterrice Notifications
- * BC se suma el form con `POST /api/support/contact` y este shell renderea ambos.
+ * /help (US-073). Help center with FAQ and contact channel. Server component (the only
+ * client part is the FAQ accordion that keeps local state). No backend in MVP: the
+ * mockup's "chat de soporte" is a mailto to the support email. When Notifications BC
+ * lands the contact form with `POST /api/support/contact` is added and this shell
+ * renders both.
  */
-export default function AyudaPage() {
+export default function HelpPage() {
   return <HelpShell />;
 }

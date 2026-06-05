@@ -8,19 +8,17 @@ export const metadata = {
   title: 'Mi perfil · planb',
 };
 
-// Per-user, depende de cookies. Dynamic para evitar prerender con backend down.
+// Per-user, depends on cookies. Dynamic to avoid prerendering with backend down.
 export const dynamic = 'force-dynamic';
 
 /**
- * /my-profile (US-047). Server component que fetchea el perfil del user logueado y delega al
- * cliente la view/edit mode. Zona peligrosa al pie con el CTA de dar de baja la cuenta
- * (ADR-0044, US-038-bis frontend).
+ * /my-profile (US-047). Server component that fetches the logged-in user's profile and
+ * delegates view/edit mode to the client. Danger zone at the foot with the deactivate
+ * account CTA (ADR-0044, US-038-bis frontend).
  *
- * <para>
- * Si el user no tiene profile activo (caso degenerado post-onboarding o post-deactivate),
- * redirigimos a /onboarding/welcome. El layout (member) ya hace el guard pero esto es defensa
- * en profundidad.
- * </para>
+ * If the user has no active profile (degenerate case post-onboarding or
+ * post-deactivate), we redirect to /onboarding/welcome. The (member) layout already
+ * guards this, but this is defense in depth.
  */
 export default async function MyProfilePage() {
   const profile = await fetchMyProfile();

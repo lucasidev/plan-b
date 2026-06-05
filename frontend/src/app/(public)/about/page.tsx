@@ -7,17 +7,17 @@ export const metadata = {
 };
 
 /**
- * /about (US-074). Página informacional pública con manifiesto del proyecto, equipo, números
- * y open source. Accesible sin auth desde `(public)` y desde el ítem "Sobre plan-b" del
- * sidebar member (sección Otros, configurada en `lib/member-shell.ts`).
+ * /about (US-074). Public informational page with project manifesto, team, numbers
+ * and open source. Accessible without auth from `(public)` and from the "Sobre plan-b"
+ * item of the member sidebar (Otros section, configured in `lib/member-shell.ts`).
  *
- * Sin shell del área autenticada en MVP: al navegar desde el sidebar member la página queda
- * en la vista pública (sin sidebar). Si más adelante queremos que el shell se mantenga,
- * evaluamos shell condicional o duplicar la ruta en (member). Mientras, esto es honest:
- * la página es semánticamente pública.
+ * No authenticated-area shell in MVP: when navigating from the member sidebar the
+ * page stays in the public view (no sidebar). If later we want the shell to stick,
+ * evaluate conditional shell or duplicating the route in (member). Meanwhile, this is
+ * honest: the page is semantically public.
  *
- * 100% estática: el contenido vive en `features/about/data/content.ts`.
+ * 100% static: content lives in `features/about/data/content.ts`.
  */
-export default function SobrePage() {
+export default function AboutPage() {
   return <AboutShell />;
 }

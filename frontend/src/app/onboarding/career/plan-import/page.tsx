@@ -7,13 +7,14 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * `/onboarding/career/plan-import` — sub-flow del paso 02 cuando el alumno no encuentra su
- * plan en las cascadas (US-088). Recibe via query params la universidad que ya eligió en el
- * paso anterior + el año de ingreso tipeado, para no perder ese state al navegar.
+ * `/onboarding/career/plan-import` sub-flow of step 02 when the student does not find
+ * their plan in the cascades (US-088). Receives via query params the university
+ * already picked in the previous step + the typed enrollment year, so that state is
+ * not lost during navigation.
  *
- * Al confirmar el preview, el feature flow redirige a `/onboarding/career?planId=X` con el
- * plan recién creado, así el alumno completa el StudentProfile en el form principal sin
- * tener que re-seleccionar las cascadas.
+ * When the preview is confirmed, the feature flow redirects to
+ * `/onboarding/career?planId=X` with the freshly created plan, so the student
+ * completes the StudentProfile in the main form without re-selecting the cascades.
  */
 type SearchParams = {
   universityId?: string;
@@ -55,7 +56,7 @@ export default async function OnboardingCareerPlanImportPage({
     );
   }
 
-  // Resolve nombre de la universidad para mostrar en el form. Fallback: el id si la API falla.
+  // Resolve the university name to display in the form. Fallback: the id if the API fails.
   const universityName = await fetchUniversityName(universityId).catch(() => universityId);
 
   return (

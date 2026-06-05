@@ -15,17 +15,15 @@ import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
 
 /**
- * Home v2 (US-044, completa). Port literal del mock
+ * Home v2 (US-044, complete). Literal port of the mock
  * `docs/design/reference/canvas-mocks/v2-screens.jsx::V2Inicio`.
  *
- * Estructura: header (eyebrow + greeting + subtitle stats) + período
- * progress card + grid 2-col (En curso + Más adelante a la izquierda;
- * Reseñá lo que cursaste + Pensando en lo que viene + Movimientos a la
- * derecha).
+ * Structure: header (eyebrow + greeting + subtitle stats) + period progress card +
+ * 2-col grid (En curso + Más adelante on the left; Reseñá lo que cursaste + Pensando
+ * en lo que viene + Movimientos on the right).
  *
- * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user
- * no tiene StudentProfile (US-037-f). Esta página asume sesión + profile
- * activos.
+ * The `(member)/layout.tsx` guard already redirects to onboarding if the user has no
+ * StudentProfile (US-037-f). This page assumes session + active profile.
  */
 export default async function HomePage() {
   const session = await getSession();
