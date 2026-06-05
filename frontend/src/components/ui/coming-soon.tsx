@@ -1,29 +1,27 @@
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Display name de la sección. Aparece como heading del placeholder. */
+  /** Display name of the section. Shown as the placeholder heading. */
   section: string;
   /**
-   * US futura que va a aterrizar acá. Se muestra como hint mono-spaced para
-   * que el evaluador entienda que no es un bug, es deuda técnica con
-   * ticket asignado.
+   * Future US that will land here. Rendered as a mono-spaced hint so the evaluator
+   * understands this is not a bug but technical debt with an assigned ticket.
    */
   futureUs?: string;
-  /** Optional override del copy descriptivo. Default es genérico. */
+  /** Optional override for the descriptive copy. Defaults to a generic one. */
   description?: string;
 };
 
 /**
- * Empty-state honesto para rutas autenticadas que viven dentro del
- * AppShell (US-042-f) pero todavía no tienen contenido real.
+ * Honest empty-state for authenticated routes that live inside the AppShell
+ * (US-042-f) but do not have real content yet.
  *
- * Por qué no un 404: la ruta existe en el sidebar, el usuario llegó acá
- * porque lo clickeó. Mostrarle 404 sería mentirle. Esta pantalla deja
- * claro que la sección está mapeada, viva, y va a tener contenido cuando
- * aterrice la US correspondiente.
+ * Why not a 404: the route exists in the sidebar, the user got here because they
+ * clicked it. Showing 404 would be a lie. This screen makes it clear that the
+ * section is mapped, alive, and will have content when the matching US lands.
  *
- * Por qué no un toast/redirect: el sidebar quiere mostrar item activo
- * cuando el user navega. Si la página redirige, el sidebar se confunde.
+ * Why not a toast/redirect: the sidebar wants to show the active item when the user
+ * navigates. If the page redirects, the sidebar gets confused.
  */
 export function ComingSoon({ section, futureUs, description }: Props) {
   return (

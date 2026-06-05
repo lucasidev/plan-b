@@ -3,24 +3,22 @@ import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 
 type Props = {
-  /** Email del user logueado, viene de la session leída en el layout RSC. */
+  /** Logged-in user email, comes from the session read in the RSC layout. */
   email: string;
   children: React.ReactNode;
 };
 
 /**
- * Chrome del área `(member)`: sidebar (con AvatarMenu en el footer) +
- * topbar + área de contenido scrolleable.
+ * Chrome for the `(member)` area: sidebar (with AvatarMenu in the footer) + topbar +
+ * scrollable content area.
  *
- * Server component (no `'use client'`): solo recibe el email del session y
- * compone los tres bloques. El interactividad vive en los hijos
- * (Sidebar, Topbar, AvatarMenu cada uno marca `'use client'` cuando
- * corresponde).
+ * Server component (no `'use client'`): only receives the session email and composes
+ * the three blocks. Interactivity lives in the children (Sidebar, Topbar, AvatarMenu
+ * each mark `'use client'` where needed).
  *
- * Layout: grid de dos columnas (240px sidebar fijo + 1fr main). Mobile
- * queda con el sidebar visible por ahora; cuando agreguemos drawer
- * collapsable, este componente decide si renderizar el shell desktop o
- * el mobile basado en breakpoint via CSS, no via JS.
+ * Layout: two-column grid (240px fixed sidebar + 1fr main). Mobile keeps the sidebar
+ * visible for now; when we add a collapsable drawer, this component decides whether
+ * to render the desktop or mobile shell based on the breakpoint via CSS, not JS.
  *
  * Per `docs/design/reference/styles.css::.app`.
  */

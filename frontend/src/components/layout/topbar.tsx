@@ -7,16 +7,16 @@ import { Fragment } from 'react';
 import { breadcrumbsForPath } from '@/lib/member-shell';
 
 /**
- * Topbar del área `(member)` per `docs/design/reference/components/shell.jsx::Topbar`.
+ * `(member)` area topbar per `docs/design/reference/components/shell.jsx::Topbar`.
  *
- * Cliente porque deriva los breadcrumbs de `usePathname()`. La search bar
- * está visible per AC pero NO funcional (deuda explícita de US-042-f a una
- * US futura de búsqueda global). Click no hace nada por ahora.
+ * Client because it derives breadcrumbs from `usePathname()`. The search bar is
+ * visible per AC but NOT functional (explicit debt from US-042-f to a future
+ * global-search US). Click does nothing for now.
  *
- * El botón "＋ Escribir reseña" del slot derecho linkea a `/reviews/new`,
- * que hoy es un stub (aterriza con US-017). Per mockup `plan-b.html`
- * líneas 146-156: el botón vive siempre en la topbar, accesible desde
- * cualquier vista del área autenticada.
+ * The "+ Escribir reseña" button in the right slot links to `/reviews/new`, which is
+ * today a stub (lands with US-017). Per the `plan-b.html` mockup lines 146-156: the
+ * button always lives in the topbar, accessible from any view of the authenticated
+ * area.
  */
 export function Topbar() {
   const pathname = usePathname();
@@ -86,19 +86,19 @@ function Crumbs({ items }: { items: ReadonlyArray<string> }) {
 }
 
 /**
- * Visual placeholder para la búsqueda global (`⌘K`). El input no envía
- * a ningún endpoint todavía. El submit del form (Enter) hace
- * `preventDefault` para no recargar la página.
+ * Visual placeholder for global search (`⌘K`). The input does not POST to any
+ * endpoint yet. The form submit (Enter) calls `preventDefault` so the page doesn't
+ * reload.
  *
- * Cuando aterrice US-004 (search backend) + la US frontend de search
- * global, este componente se reemplaza por uno con `Combobox` real.
+ * Once US-004 (search backend) + the global-search frontend US land, this component
+ * is replaced by one with a real `Combobox`.
  */
 function SearchBar() {
   return (
-    // `preventDefault` en lugar de `action` porque la search todavía no tiene
-    // backend (US-004 frontend pendiente). Cuando aterrice, este wrapper se
-    // reemplaza por un `<form action={searchAction}>` que sí progresivamente
-    // mejora sin JS, y la rule `no-prevent-default` deja de aplicar.
+    // `preventDefault` instead of `action` because search has no backend yet (US-004
+    // frontend pending). When it lands, this wrapper is replaced by a
+    // `<form action={searchAction}>` that progressively enhances without JS, and the
+    // `no-prevent-default` rule stops applying.
     // react-doctor-disable-next-line no-prevent-default, react-doctor/no-prevent-default
     <form
       onSubmit={(e) => e.preventDefault()}

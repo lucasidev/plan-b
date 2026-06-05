@@ -12,28 +12,28 @@ type Props = {
 };
 
 /**
- * Avatar + dropdown contextual abajo del sidebar. Per
- * `docs/design/reference/components/shell.jsx::Sidebar` (sección `me`).
+ * Avatar + contextual dropdown at the bottom of the sidebar. Per
+ * `docs/design/reference/components/shell.jsx::Sidebar` (the `me` section).
  *
- * Estados del menú:
- *  - **idle** (cerrado): solo muestra avatar + email + chevron rotado.
- *  - **open**: panel encima del avatar con links a Mi perfil, Configuración,
- *    Onboarding (no implementados, llevan a stubs), Ayuda, y "Cerrar sesión".
+ * Menu states:
+ *  - **idle** (closed): shows only avatar + email + rotated chevron.
+ *  - **open**: panel above the avatar with links to Mi perfil, Configuración,
+ *    Onboarding (not implemented, go to stubs), Ayuda, and "Cerrar sesión".
  *
- * Sign-out usa el server action existente de US-029-i. El form submit
- * dispara la action; el redirect a `/sign-in` que devuelve desmonta este
- * dropdown natural (la nav saca al usuario del area autenticada). No hay
- * onClick={onClose} en el submit button: si lo tuviéramos, el state
- * change podría unmountear el form antes que la action ejecute (race
- * observable en E2E con clicks ultra-rápidos).
+ * Sign-out uses the existing US-029-i server action. The form submit fires the
+ * action; the redirect to `/sign-in` it returns unmounts this dropdown naturally
+ * (navigation pulls the user out of the authenticated area). There is no
+ * onClick={onClose} on the submit button: if there were, the state change could
+ * unmount the form before the action executes (race observable in E2E with very fast
+ * clicks).
  *
- * El click fuera del dropdown lo cierra (event listener en `document`).
+ * Clicking outside the dropdown closes it (event listener on `document`).
  */
 export function AvatarMenu({ email }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Click fuera cierra el menú.
+  // Click outside closes the menu.
   useEffect(() => {
     if (!open) return;
     function onDoc(event: MouseEvent) {
@@ -45,7 +45,7 @@ export function AvatarMenu({ email }: Props) {
     return () => document.removeEventListener('mousedown', onDoc);
   }, [open]);
 
-  // Esc también cierra.
+  // Esc also closes it.
   useEffect(() => {
     if (!open) return;
     function onKey(event: KeyboardEvent) {
@@ -174,11 +174,11 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         <button
           type="submit"
           role="menuitem"
-          // No `onClick={onClose}` acá: el server action hace redirect a
-          // `/sign-in` que desmonta este dropdown natural via navegación.
-          // Si cerrábamos el dropdown manualmente en el mismo evento, React
-          // podía re-renderear antes del submit y descartar el form entero
-          // (race observable en E2E con clicks ultra-rápidos).
+          // No `onClick={onClose}` here: the server action redirects to `/sign-in`,
+          // which unmounts this dropdown naturally via navigation. If we closed the
+          // dropdown manually in the same event, React could re-render before the
+          // submit and discard the whole form (race observable in E2E with very
+          // fast clicks).
           className={cn(
             'w-full text-left cursor-pointer border-0 bg-transparent',
             'text-st-failed-fg hover:bg-bg-elev',
