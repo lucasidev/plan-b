@@ -5,6 +5,7 @@ using Planb.Reviews.Application.Abstractions.ContentFilter;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Infrastructure.ContentFilter;
 using Planb.Reviews.Infrastructure.Persistence;
+using Planb.Reviews.Infrastructure.Persistence.Queries;
 using Planb.Reviews.Infrastructure.Persistence.Repositories;
 
 namespace Planb.Reviews.Infrastructure;
@@ -24,6 +25,10 @@ public static class DependencyInjection
     {
         services.AddScoped<IReviewsUnitOfWork, ReviewsUnitOfWork>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+
+        // Cross-schema read for US-048 tab Pendientes. Scoped to match the request lifetime; the
+        // Dapper service opens its own connection per call so there is no shared state.
+        services.AddScoped<IPendingReviewsQueryService, DapperPendingReviewsQueryService>();
 
         // Singleton: compila los regex una sola vez.
         services.AddSingleton<IReviewContentFilter, RegexReviewContentFilter>();
