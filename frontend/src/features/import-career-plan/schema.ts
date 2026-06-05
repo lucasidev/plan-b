@@ -3,8 +3,9 @@ import { z } from 'zod';
 export const MAX_PAYLOAD_BYTES = 5 * 1024 * 1024;
 
 /**
- * Schema del form de upload. El alumno indica universidad (preseleccionada desde paso 2 del
- * onboarding), nombre de carrera, año del plan, año de ingreso, y sube PDF o pega texto.
+ * Schema for the upload form. The student picks a university (preselected from
+ * onboarding step 2), career name, plan year, enrollment year, and uploads a PDF or
+ * pastes text.
  */
 export const uploadCareerPlanSchema = z.object({
   universityId: z.string().uuid({ message: 'Universidad inválida.' }),
@@ -24,7 +25,8 @@ export const uploadCareerPlanSchema = z.object({
 export type UploadCareerPlanInput = z.infer<typeof uploadCareerPlanSchema>;
 
 /**
- * Schema del item editable del preview. El backend re-valida cada uno; acá frenamos lo grosero.
+ * Schema for the editable preview item. The backend re-validates each one; here we only
+ * gate the obvious cases.
  */
 export const approveSubjectItemSchema = z.object({
   code: z.string().min(1).max(40),

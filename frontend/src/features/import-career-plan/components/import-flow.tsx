@@ -14,8 +14,9 @@ type Props = {
 };
 
 /**
- * Container del flow: upload → polling → preview/approve. Mismo pattern que el flow del
- * import historial. Al confirmar, el preview-table redirige a /onboarding/career?planId=X.
+ * Container for the flow: upload → polling → preview/approve. Same pattern as the
+ * transcript-import flow. On confirm, the preview-table redirects to
+ * /onboarding/career?planId=X.
  */
 export function CareerPlanImportFlow({
   universityId,
@@ -83,7 +84,7 @@ export function CareerPlanImportFlow({
 }
 
 function Polling({ label }: { label: string }) {
-  // <output> tiene role="status" implícito; idiomático para anunciar progreso del polling.
+  // <output> has implicit role="status"; idiomatic for announcing polling progress.
   return (
     <output
       aria-busy="true"
