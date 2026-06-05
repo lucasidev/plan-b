@@ -1,6 +1,6 @@
 /**
- * Shape del response del GET /api/me/student-profile (espeja `StudentProfileResponse` backend).
- * Lo usamos para hidratar la pantalla Mi perfil.
+ * Response shape of GET /api/me/student-profile (mirrors the backend's
+ * `StudentProfileResponse`). Used to hydrate the Mi perfil screen.
  */
 export type MyProfile = {
   id: string;
@@ -19,10 +19,10 @@ export type MyProfile = {
 };
 
 /**
- * Estado del server action de update. Auto-save por campo del edit form:
- * - idle inicial
- * - success cuando 204 (mostramos check inline + revert a view mode)
- * - error con copy si 4xx/5xx
+ * Server-action state for update. Per-field auto-save of the edit form:
+ * - idle initial
+ * - success when 204 (we show an inline check + revert to view mode)
+ * - error with copy on 4xx/5xx
  */
 export type UpdateProfileFormState =
   | { status: 'idle' }
