@@ -2,8 +2,8 @@ import { queryOptions } from '@tanstack/react-query';
 import type { HistorialImportResponse } from './types';
 
 /**
- * Fetcher para el polling del GET /api/me/transcript-imports/{id}. La cookie
- * planb_session viaja por default desde el browser.
+ * Fetcher for polling GET /api/me/transcript-imports/{id}. The planb_session cookie
+ * travels by default from the browser.
  */
 async function fetchHistorialImport(importId: string): Promise<HistorialImportResponse> {
   const response = await fetch(`/api/me/transcript-imports/${encodeURIComponent(importId)}`, {
@@ -22,8 +22,8 @@ export const historialImportQueries = {
       queryFn: () =>
         importId ? fetchHistorialImport(importId) : Promise.reject(new Error('No importId')),
       enabled: !!importId,
-      // Polling cada 2s mientras el aggregate sigue en estado no terminal.
-      // El componente que consume el query lo desactiva una vez en Parsed/Failed/Confirmed.
+      // Poll every 2s while the aggregate is still in a non-terminal state. The
+      // consuming component disables it once it reaches Parsed/Failed/Confirmed.
       refetchInterval: (q) => {
         const data = q.state.data as HistorialImportResponse | undefined;
         if (!data) return 2000;

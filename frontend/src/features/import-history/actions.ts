@@ -12,11 +12,11 @@ import type {
 } from './types';
 
 /**
- * Action del upload: acepta FormData con `file` (PDF) o `rawText`. Despacha al
- * backend según corresponda y devuelve el `importId` para que el client component
- * arranque el polling.
+ * Upload action: accepts FormData with `file` (PDF) or `rawText`. Dispatches to the
+ * backend accordingly and returns the `importId` so the client component can start
+ * polling.
  *
- * El backend hace todo el trabajo pesado async; este action solo enrouta.
+ * The backend does all the heavy lifting async; this action just routes.
  */
 export async function uploadHistorialAction(
   _prev: UploadHistorialState,
@@ -39,8 +39,8 @@ export async function uploadHistorialAction(
     if (!file.name.toLowerCase().endsWith('.pdf')) {
       return { status: 'error', message: 'Subí un archivo PDF.' };
     }
-    // Re-armado del FormData: el form original puede tener fields que no nos
-    // interesan, mandamos solo el file.
+    // Rebuild the FormData: the original form may have fields we don't care about;
+    // send only the file.
     const upload = new FormData();
     upload.append('file', file);
     response = await apiFetchAuthenticated('/api/me/transcript-imports', {
@@ -73,7 +73,7 @@ export async function uploadHistorialAction(
   }
 
   if (response.status === 400) {
-    // ProblemDetails con detail. Si no podemos parsear, fallback genérico.
+    // ProblemDetails with detail. If we can't parse, fall back to generic.
     try {
       const problem = (await response.json()) as { detail?: string };
       return {
@@ -95,12 +95,12 @@ export async function uploadHistorialAction(
 }
 
 /**
- * Action del confirm: recibe los items editados como JSON en un hidden field
- * "items" del FormData. Devuelve al historial al éxito.
+ * Confirm action: receives the edited items as JSON in a hidden "items" field of the
+ * FormData. Goes back to the transcript view on success.
  *
- * Decisión: en vez de gritar 400 si algún item no parsea, ignoramos el inválido
- * y mandamos los válidos al backend (el aggregate los re-valida igual). Pero
- * a nivel UX el form ya frena los obvios.
+ * Decision: instead of throwing a 400 if some item fails to parse, we ignore the
+ * invalid one and ship the valid ones to the backend (the aggregate re-validates them
+ * anyway). At the UX level the form already stops the obvious cases.
  */
 export async function confirmHistorialAction(
   _prev: ConfirmHistorialState,

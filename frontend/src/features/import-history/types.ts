@@ -1,6 +1,6 @@
 /**
- * DTOs del backend US-014 (POST/GET/POST confirm de /api/me/transcript-imports).
- * Reflejan exactamente el shape que serializa el backend (camelCase via JsonOptions).
+ * DTOs for the US-014 backend (POST/GET/POST confirm of /api/me/transcript-imports).
+ * Mirror exactly the shape the backend serializes (camelCase via JsonOptions).
  */
 
 export type HistorialImportStatus = 'Pending' | 'Parsing' | 'Parsed' | 'Failed' | 'Confirmed';
@@ -59,8 +59,7 @@ export type ConfirmHistorialImportResponse = {
 };
 
 /**
- * Item editable que el user envía al confirm. Mismo shape que el ConfirmedItem
- * del backend.
+ * Editable item the user sends on confirm. Same shape as the backend's ConfirmedItem.
  */
 export type ConfirmedItem = {
   subjectId: string;
@@ -71,7 +70,7 @@ export type ConfirmedItem = {
 };
 
 /**
- * Estado del action de upload. Sigue el contrato de otros features.
+ * State of the upload action. Follows the contract from other features.
  */
 export type UploadHistorialState =
   | { status: 'idle' }

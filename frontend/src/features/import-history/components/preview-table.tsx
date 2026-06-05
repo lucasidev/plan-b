@@ -21,7 +21,7 @@ type Props = {
 type EditableRow = {
   index: number;
   selected: boolean;
-  /** Solo los items con subjectId resuelto pueden importarse. */
+  /** Only items with a resolved subjectId can be imported. */
   parsed: ParsedItem;
   status: string;
   approvalMethod: string;
@@ -30,21 +30,21 @@ type EditableRow = {
 };
 
 /**
- * Tabla editable del preview. Cada fila parseada se renderiza con:
- *  - checkbox de selección (default: marcado si confidence != Low y hay subjectId resuelto)
+ * Editable preview table. Each parsed row renders with:
+ *  - selection checkbox (default: checked when confidence != Low and subjectId is resolved)
  *  - status (select)
- *  - approvalMethod (select, opcional)
+ *  - approvalMethod (select, optional)
  *  - grade (input)
  *  - confidence badge + issues
  *
- * Al confirmar, solo se envían filas seleccionadas con subjectId no-null.
+ * On confirm, only selected rows with a non-null subjectId are sent.
  */
 export function PreviewTable({ importId, payload }: Props) {
   const initialRows = useMemo<EditableRow[]>(
     () =>
       payload.items.map((p) => ({
         index: p.index,
-        // Default: seleccionado si lo pudimos resolver y la confianza no es baja.
+        // Default: selected when we could resolve it and confidence is not low.
         selected: !!p.subjectId && p.confidence !== 'Low',
         parsed: p,
         status: normalizeStatus(p.detectedStatus),
@@ -160,9 +160,9 @@ export function PreviewTable({ importId, payload }: Props) {
                   )}
                 </Td>
                 <Td>
-                  {/* aria-label porque el header de columna ("Nota") no se asocia
-                      automáticamente al input según react-doctor; el index del row
-                      desambigua a qué materia pertenece. */}
+                  {/* aria-label because the column header ("Nota") is not associated
+                      with the input automatically per react-doctor; the row index
+                      disambiguates which subject it belongs to. */}
                   <input
                     type="number"
                     inputMode="decimal"
@@ -298,7 +298,7 @@ function SubmitButton({ disabled, count }: { disabled: boolean; count: number })
   );
 }
 
-/** Normaliza al enum del backend si el detectado es válido; sino default a Aprobada. */
+/** Normalize to the backend enum if the detected value is valid; otherwise default to Aprobada. */
 function normalizeStatus(detected: string | null): string {
   const allowed = ['Aprobada', 'Regular', 'Cursando', 'Reprobada', 'Abandonada'];
   if (detected && allowed.includes(detected)) return detected;
@@ -308,7 +308,7 @@ function normalizeStatus(detected: string | null): string {
 function normalizeApprovalMethod(detected: string | null): string {
   const allowed = ['Cursada', 'Promocion', 'Final', 'FinalLibre', 'Equivalencia'];
   if (detected && allowed.includes(detected)) return detected;
-  // Default conservador: Cursada (regular + final). Si el alumno aprobó por algo
-  // distinto puede cambiarlo.
+  // Conservative default: Cursada (regular + final). The student can change it if
+  // they approved through a different path.
   return 'Cursada';
 }

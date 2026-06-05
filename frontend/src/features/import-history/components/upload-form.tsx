@@ -8,17 +8,17 @@ import { uploadHistorialAction } from '../actions';
 import { initialUploadHistorialState, type UploadHistorialState } from '../types';
 
 type Props = {
-  /** Callback al éxito del upload. Permite al parent arrancar el polling. */
+  /** Callback fired on upload success. Lets the parent start polling. */
   onUploaded: (importId: string) => void;
 };
 
 /**
- * Form de upload del historial. Dos modos mutuamente excluyentes:
- *  - PDF: file input que envía multipart al backend.
- *  - Texto: textarea que envía JSON.
+ * Transcript upload form. Two mutually exclusive modes:
+ *  - PDF: file input that sends multipart to the backend.
+ *  - Text: textarea that sends JSON.
  *
- * El user elige uno con un toggle. El action discrimina por la presencia del
- * file o el rawText.
+ * The user picks one with a toggle. The action discriminates by whether `file` or
+ * `rawText` is present.
  */
 export function UploadHistorialForm({ onUploaded }: Props) {
   const [state, formAction] = useActionState<UploadHistorialState, FormData>(
@@ -112,8 +112,8 @@ export function UploadHistorialForm({ onUploaded }: Props) {
 }
 
 /**
- * El action ya devuelve el nuevo state; este wrapper dispara el callback al
- * parent cuando vemos status=success por primera vez.
+ * The action already returns the new state; this wrapper fires the parent callback
+ * the first time status=success is observed.
  */
 function handleUploadAction(
   onUploaded: (importId: string) => void,
@@ -121,7 +121,7 @@ function handleUploadAction(
   return async (prev, formData) => {
     const next = await uploadHistorialAction(prev, formData);
     if (next.status === 'success') {
-      // Defer al microtask para no setState durante el render del parent.
+      // Defer to a microtask so we don't setState during the parent's render.
       queueMicrotask(() => onUploaded(next.importId));
     }
     return next;

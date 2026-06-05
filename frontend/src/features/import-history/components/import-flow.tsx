@@ -8,15 +8,13 @@ import { PreviewTable } from './preview-table';
 import { UploadHistorialForm } from './upload-form';
 
 /**
- * Container del flow completo: upload → polling → preview → confirm.
+ * Container for the full flow: upload → polling → preview → confirm.
  *
- * <list type="number">
- *   <item>Si no hay <c>importId</c>, mostrar form de upload.</item>
- *   <item>Si hay id pero status es Pending/Parsing, mostrar spinner + poll.</item>
- *   <item>Si Parsed, mostrar tabla editable + botón confirmar.</item>
- *   <item>Si Failed, mostrar error + opción de reintentar (limpia el id).</item>
- *   <item>Si Confirmed, el action redirige al historial, así que este branch es raro.</item>
- * </list>
+ *   1. No `importId` yet → show the upload form.
+ *   2. Have an id but status is Pending/Parsing → show spinner + poll.
+ *   3. Parsed → show the editable table + confirm button.
+ *   4. Failed → show error + retry option (clears the id).
+ *   5. Confirmed → the action redirected to the transcript, so this branch is rare.
  */
 export function ImportHistorialFlow() {
   const [importId, setImportId] = useState<string | null>(null);
@@ -65,7 +63,7 @@ export function ImportHistorialFlow() {
 }
 
 function Polling({ label }: { label: string }) {
-  // <output> tiene role="status" implícito; idiomático para anunciar progreso del polling.
+  // <output> has implicit role="status"; idiomatic for announcing polling progress.
   return (
     <output
       aria-busy="true"

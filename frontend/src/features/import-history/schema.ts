@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * Schema del confirm form. Los items se editan en una tabla; al confirmar se
- * envían como JSON al backend. Las invariantes status/grade/method/term las
- * re-valida el aggregate EnrollmentRecord en el backend; acá solo gateamos los
- * obvios para no mandar requests inválidos.
+ * Schema for the confirm form. Items are edited in a table; on confirm they are sent
+ * to the backend as JSON. The status/grade/method/term invariants are re-validated by
+ * the EnrollmentRecord aggregate in the backend; here we only gate the obvious cases
+ * to avoid invalid requests.
  */
 export const confirmedItemSchema = z
   .object({
@@ -24,4 +24,4 @@ export const confirmedItemSchema = z
 
 export type ConfirmedItemInput = z.infer<typeof confirmedItemSchema>;
 
-export const MAX_PAYLOAD_BYTES = 5 * 1024 * 1024; // 5MB, mismo que backend
+export const MAX_PAYLOAD_BYTES = 5 * 1024 * 1024; // 5MB, same as backend
