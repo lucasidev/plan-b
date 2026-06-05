@@ -2,19 +2,19 @@ import { expect, test } from '@playwright/test';
 import { LUCIA } from '../helpers/personas';
 
 /**
- * E2E de Planificar (US-046). Frontend con mocks (sin backend de simulación todavía;
- * US-016 + US-023 pendientes).
+ * Plan E2E (US-046). Frontend with mocks (no simulation backend yet; US-016 + US-023
+ * pending).
  *
- * Cubre:
- *  - Login Lucía + navegar a /plan desde el sidebar.
- *  - Render del header + tabs.
- *  - Tab "En curso" default: lista de materias del año + stats + calendario semanal.
- *  - Tab "Borrador": cambio vía URL ?tab=draft, renderea drafts mock.
- *  - Modal "Publicar plan" abre con checklist al click "Publicar".
- *  - Drawer "Agregar materia" abre con catálogo filtrable.
+ * Covers:
+ *  - Login Lucía + navigate to /plan from the sidebar.
+ *  - Header + tabs render.
+ *  - Default "En curso" tab: subject list for the year + stats + weekly calendar.
+ *  - "Borrador" tab: switch via URL ?tab=draft, renders mock drafts.
+ *  - "Publicar plan" modal opens with checklist on click "Publicar".
+ *  - "Agregar materia" drawer opens with filterable catalog.
  *
- * No ejercitamos publicar real ni mutaciones (no hay backend); el spec verifica el armado
- * visual + interacciones cliente puras.
+ * We do not exercise real publish nor mutations (no backend); the spec only checks the
+ * visual layout + pure client interactions.
  */
 
 test.describe('Planificar (US-046)', () => {
@@ -53,7 +53,7 @@ test.describe('Planificar (US-046)', () => {
 
   test('cambio a tab "Borradores" via click URL', async ({ page }) => {
     await page.getByRole('link', { name: /borradores/i }).click();
-    await expect(page).toHaveURL(/tab=borrador/);
+    await expect(page).toHaveURL(/tab=draft/);
     await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
   });
 
@@ -83,7 +83,7 @@ test.describe('Planificar (US-046)', () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('heading', { name: /publicar este borrador/i })).toBeVisible();
     await expect(dialog.getByText(/sin choques de horario/i)).toBeVisible();
-    await expect(dialog.getByText(/prerequisites/i)).toBeVisible();
+    await expect(dialog.getByText(/correlativas/i)).toBeVisible();
 
     await dialog.getByRole('button', { name: /cancelar/i }).click();
     await expect(dialog).not.toBeVisible();
