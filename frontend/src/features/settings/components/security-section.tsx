@@ -7,9 +7,9 @@ import { SectionCard } from './section-card';
 import { SettingRow } from './setting-row';
 
 /**
- * Sección Seguridad de Ajustes (US-072). Por ahora solo monta la fila "Contraseña" que
- * dispara el modal de cambio (US-079-i frontend). Si más adelante aterrizan otros toggles
- * de seguridad (MFA, sessions activas, etc.) se suman acá.
+ * Security section of Ajustes (US-072). For now only mounts the "Contraseña" row that
+ * triggers the change modal (US-079-i frontend). If more security toggles land later
+ * (MFA, active sessions, etc.) they join here.
  */
 export function SecuritySection() {
   const [open, setOpen] = useState(false);

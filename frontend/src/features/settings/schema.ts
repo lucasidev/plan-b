@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * Espeja el shape del backend (GetMySettingsResponse / UpdateMySettingsRequest).
- * `language` y `theme` son enums string para no acoplar nuestro UI al integer del enum del
- * dominio; el backend los parsea y devuelve 400 con catálogo de valores válidos si el cliente
- * manda algo inesperado.
+ * Mirrors the backend shape (GetMySettingsResponse / UpdateMySettingsRequest).
+ * `language` and `theme` are string enums so the UI does not couple to the domain enum's
+ * integer value; the backend parses them and returns 400 with a catalog of valid values
+ * if the client sends something unexpected.
  */
 
 export const LANGUAGES = ['EsRioplatense', 'EsNeutro', 'En'] as const;
@@ -29,8 +29,9 @@ export const settingsSchema = z.object({
 export type Settings = z.infer<typeof settingsSchema>;
 
 /**
- * PATCH parcial: todo nullable. El UI manda solo el field que el user cambió (semántica
- * auto-save). El backend valida que al menos un field venga no-null (400 si todo vacío).
+ * Partial PATCH: every field nullable. The UI sends only the one the user touched
+ * (auto-save semantics). The backend validates that at least one field is non-null
+ * (400 if everything is empty).
  */
 export const settingsPatchSchema = settingsSchema.partial();
 

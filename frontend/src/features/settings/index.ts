@@ -1,5 +1,5 @@
 export { fetchMySettings } from './api';
-export { AjustesForm } from './components/settings-form';
+export { SettingsForm } from './components/settings-form';
 export {
   LANGUAGES,
   type LanguageOption,

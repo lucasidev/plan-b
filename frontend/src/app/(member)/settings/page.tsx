@@ -1,27 +1,27 @@
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Lede } from '@/components/ui/lede';
-import { AjustesForm, fetchMySettings } from '@/features/settings';
+import { fetchMySettings, SettingsForm } from '@/features/settings';
 
 export const metadata = {
   title: 'Ajustes · planb',
 };
 
-// La página depende de la sesión del request (cookies via apiFetchAuthenticated).
-// Forzamos dynamic para que Next no intente prerender en build (donde no hay backend up,
-// y el contenido es per-user igual).
+// The page depends on the request's session (cookies via apiFetchAuthenticated). We
+// force dynamic so Next does not try to prerender at build time (where no backend is
+// up, and the content is per-user anyway).
 export const dynamic = 'force-dynamic';
 
 /**
- * /settings (US-072). Fetcheo server-side de los settings actuales (o defaults si el user
- * todavía no personalizó nada) y los pasamos al shell client-side que monta las secciones.
+ * /settings (US-072). Server-side fetch of the current settings (or defaults if the
+ * user has not customized anything yet) and they are passed to the client shell that
+ * mounts the sections.
  *
- * <para>
- * Sin TanStack Query acá porque el caso de uso no necesita re-fetch ni cache compartida con
- * otras vistas: el componente cliente mantiene su propio state local y los auto-save invocan
- * server actions que revalidan la ruta. Una RSC + props es más simple y suficiente.
- * </para>
+ * No TanStack Query here because the use case does not need re-fetch or shared cache
+ * with other views: the client component keeps its own local state and the auto-saves
+ * invoke server actions that revalidate the route. An RSC + props is simpler and
+ * enough.
  */
-export default async function AjustesPage() {
+export default async function SettingsPage() {
   const settings = await fetchMySettings();
 
   return (
@@ -30,7 +30,7 @@ export default async function AjustesPage() {
         <DisplayHeading>Ajustes</DisplayHeading>
         <Lede>Configurá notificaciones, privacidad, idioma y tema visual.</Lede>
       </header>
-      <AjustesForm initialSettings={settings} />
+      <SettingsForm initialSettings={settings} />
     </div>
   );
 }

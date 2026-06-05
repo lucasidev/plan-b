@@ -12,11 +12,11 @@ type Props = {
 };
 
 /**
- * Shell de /settings. Cada sección es independiente y maneja su propio auto-save; este
- * componente solo orquesta el layout vertical. Recibe el snapshot inicial desde la RSC
- * (server-side fetch) para hidratar sin loading state.
+ * Shell of /settings. Each section is independent and owns its own auto-save; this
+ * component just orchestrates the vertical layout. It receives the initial snapshot
+ * from the RSC (server-side fetch) to hydrate without a loading state.
  */
-export function AjustesForm({ initialSettings }: Props) {
+export function SettingsForm({ initialSettings }: Props) {
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
       <NotificationsSection settings={initialSettings} />

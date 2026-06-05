@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
 /**
- * Card de sección de Ajustes. Header con título + descripción opcional, body que renderiza
- * las filas con un divisor entre cada una.
+ * Section card of Ajustes. Header with title + optional description, body that
+ * renders the rows with a divider between each.
  */
 type Props = {
   title: string;

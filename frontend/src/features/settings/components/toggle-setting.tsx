@@ -7,10 +7,11 @@ import type { SettingsPatch } from '../schema';
 import { SettingRow } from './setting-row';
 
 /**
- * Toggle individual con auto-save + optimistic UI. El toggle se marca al click; si el server
- * action devuelve error, se rollbackea y mostramos un copy al pie. No hay debouncing porque
- * el caso de tocar el mismo toggle dos veces seguidas es marginal — si pasa, el primer
- * action gana o pierde según el orden de respuesta, lo cual es OK semántica-mente.
+ * Single toggle with auto-save + optimistic UI. The toggle flips on click; if the
+ * server action returns an error, it rolls back and we show a copy at the foot. There
+ * is no debouncing because tapping the same toggle twice in a row is a marginal case:
+ * if it happens, the first action wins or loses depending on response order, which is
+ * semantically fine.
  */
 type Props = {
   field: keyof Pick<
@@ -49,7 +50,7 @@ export function ToggleSetting({ field, initialValue, label, description }: Props
         setPersistedValue(next);
       } else if (result.status === 'error') {
         setErrorMessage(result.message);
-        // useOptimistic se resetea solo al rerender con el persistedValue sin cambio.
+        // useOptimistic resets itself on rerender with the unchanged persistedValue.
       }
     });
   };
