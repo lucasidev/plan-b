@@ -11,7 +11,7 @@ import { SubjectListCard } from './subject-list-card';
  * Tab "En curso" de Planificar (US-046). Layout grid: lista de materias 320px + main con
  * stats + calendario + comparador opcional. Espejo de `v2-screens.jsx::V2PlanificarEnCurso`.
  */
-export function EnCursoTab({ simulation }: { simulation: Simulation }) {
+export function ActiveTab({ simulation }: { simulation: Simulation }) {
   const [compareOpen, setCompareOpen] = useState(false);
 
   return (

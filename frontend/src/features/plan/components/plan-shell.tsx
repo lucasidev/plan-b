@@ -3,9 +3,9 @@
 import { Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import type { Simulation } from '../types';
+import { ActiveTab } from './active-tab';
 import { DraftList } from './draft-list';
 import { PlanificarEmpty } from './empty-state';
-import { EnCursoTab } from './en-curso-tab';
 import { PlanificarTabs, type TabId } from './plan-tabs';
 
 /**
@@ -107,7 +107,7 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
 
       {activeTab === 'en-curso' ? (
         active ? (
-          <EnCursoTab simulation={active} />
+          <ActiveTab simulation={active} />
         ) : (
           <p className="text-ink-3" style={{ padding: 24 }}>
             No tenés período activo. Pasá a la tab Borradores y publicá uno.
