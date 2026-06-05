@@ -1,19 +1,19 @@
 import type { PlannedSubject, SubjectModality, SubjectState } from '@/features/my-career/data/plan';
 
 /**
- * Filtros aplicables al listado del tab "Catálogo" (US-045-d). MVP usa
- * `useState` local en el componente; si en el futuro se persisten en URL,
- * se migra a `nuqs` sin tocar esta lib (los helpers solo trabajan sobre la
- * shape de filtros, no sobre el storage).
+ * Filters applicable to the "Catálogo" tab listing (US-045-d). MVP uses local `useState`
+ * in the component; if filters get persisted in the URL in the future, migrate to
+ * `nuqs` without touching this lib (helpers only work on the filter shape, not the
+ * storage).
  */
 export type SubjectFilters = {
-  /** Texto libre matcheado contra nombre + código (case-insensitive). */
+  /** Free text matched against name + code (case-insensitive). */
   query: string;
-  /** Año específico o null para "todos". */
+  /** Specific year or null for "all". */
   year: number | null;
-  /** Modalidad específica o null para "todas". */
+  /** Specific modality or null for "all". */
   modality: SubjectModality | null;
-  /** Estado específico o null para "todos". */
+  /** Specific state or null for "all". */
   state: SubjectState | null;
 };
 
@@ -27,9 +27,8 @@ export const emptyFilters: SubjectFilters = {
 type SubjectWithYear = PlannedSubject & { year: number };
 
 /**
- * Aplica filtros y devuelve un nuevo array. No muta el input.
- * El año se inyecta por el caller porque vive en el container (PlanYear),
- * no en el subject.
+ * Applies filters and returns a new array. Does not mutate the input. The year is
+ * injected by the caller because it lives on the container (PlanYear), not the subject.
  */
 export function filterSubjects(
   subjects: SubjectWithYear[],
@@ -49,8 +48,8 @@ export function filterSubjects(
 }
 
 /**
- * Devuelve los años únicos presentes en el array de subjects, ordenados
- * ascendentes. Útil para construir el selector del filtro de año.
+ * Returns the unique years present in the subjects array, sorted ascending. Useful for
+ * building the year-filter selector.
  */
 export function distinctYears(subjects: SubjectWithYear[]): number[] {
   return [...new Set(subjects.map((s) => s.year))].toSorted((a, b) => a - b);

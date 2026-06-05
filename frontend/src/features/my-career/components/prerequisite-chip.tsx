@@ -5,17 +5,17 @@ type Props = {
   code: string;
   name: string;
   /**
-   * `ok` se usa para correlativas ya aprobadas (verde, check).
-   * `next` se usa para materias que esta materia habilita (gris, flecha).
+   * `ok` is used for already-approved prerequisites (green, check).
+   * `next` is used for subjects this one unlocks (gray, arrow).
    */
   tone: 'ok' | 'next';
 };
 
 /**
- * Chip de correlativa para el drawer de materia (US-045-d). Port del
- * `V2CorrChip` del mock canvas. Linkea a `/my-career/subject/[code]` para
- * permitir navegación entre detalles de materia (correlativa de B abre
- * drawer de B, browser back vuelve al drawer original).
+ * Prerequisite chip for the subject drawer (US-045-d). Port of the canvas mock's
+ * `V2CorrChip`. Links to `/my-career/subject/[code]` to allow navigation between
+ * subject detail views (a prerequisite of B opens B's drawer; browser back returns to
+ * the original drawer).
  */
 export function PrerequisiteChip({ code, name, tone }: Props) {
   return (

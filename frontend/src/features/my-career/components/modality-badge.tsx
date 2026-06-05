@@ -7,9 +7,9 @@ const label: Record<SubjectModality, string> = {
 };
 
 /**
- * Badge mono de la modalidad de cursada. Aparece en la esquina superior
- * derecha de cada celda del plan grid. Es la SOURCE OF TRUTH de cómo se
- * cursa la materia (la cátedra la define). Variantes: anual / 1c / 2c.
+ * Mono badge for the course modality. Appears in the top-right corner of each
+ * plan-grid cell. It is the SOURCE OF TRUTH for how the subject is taken (the cátedra
+ * defines it). Variants: anual / 1c / 2c.
  */
 export function ModalityBadge({ modality }: { modality: SubjectModality }) {
   return (

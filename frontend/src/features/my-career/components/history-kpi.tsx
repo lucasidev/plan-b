@@ -1,16 +1,15 @@
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Valor grande (string para soportar `"—"` o `"Mar 2024"`). */
+  /** Big value (string to support em-dash placeholder or `"Mar 2024"`). */
   value: string | number;
-  /** Label descriptivo abajo. */
+  /** Descriptive label below. */
   label: string;
 };
 
 /**
- * Card de KPI individual para el tab Historial (US-045-e). Port literal
- * del `V2HistKpi` del canvas: número mono grande arriba, label `ink-3`
- * abajo.
+ * Single KPI card for the Historial tab (US-045-e). Literal port of the canvas
+ * `V2HistKpi`: big mono number on top, `ink-3` label below.
  */
 export function HistoryKpi({ value, label }: Props) {
   return (

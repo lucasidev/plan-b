@@ -14,23 +14,21 @@ type Props = {
 };
 
 /**
- * Tab "Plan" de Mi carrera (US-045-b). Port literal del mock
+ * "Plan" tab of Mi carrera (US-045-b). Literal port of the mock
  * `canvas-mocks/v2-screens.jsx::V2CarreraPlan`.
  *
- * Layout: una card por año (vertical), cada una con un grid de 3 cols con
- * las materias. Cada celda muestra código + modalidad + nombre + nota
- * (cuando aplica). Estados visuales del mockup: AP (verde) / CU (naranja)
- * / PD (transparente con border).
+ * Layout: one card per year (vertical), each with a 3-column grid of subjects. Each
+ * cell shows code + modality + name + grade (when applicable). Mockup visual states:
+ * AP (green) / CU (orange) / PD (transparent with border).
  *
- * Drift intencional vs spec original de US-045-b: el AC hablaba de 4
- * estados visuales (AP / CU / Disponible / Bloqueada), separando las
- * pendientes según correlativas. El mockup canónico de v2 unifica todo
- * lo no-AP/CU en "PD". El visual manda; el cálculo de unlocked vs
- * bloqueada queda disponible vía `isUnlocked()` para tooltips y para el
- * drawer de US-045-d que sí va a distinguir los dos casos.
+ * Intentional drift vs the original US-045-b spec: the AC mentioned 4 visual states
+ * (AP / CU / Available / Blocked), separating pending subjects by their prerequisites.
+ * The canonical v2 mockup unifies everything non-AP/CU into "PD". The visual wins; the
+ * unlocked vs blocked computation remains available via `isUnlocked()` for tooltips
+ * and for the US-045-d drawer, which DOES distinguish both cases.
  *
- * Click en cada celda navega a `/my-career/subject/[code]` (stub hasta
- * que aterrice US-045-d con el drawer real).
+ * Clicking each cell navigates to `/my-career/subject/[code]` (stub until US-045-d
+ * lands with the real drawer).
  */
 export function PlanGrid({ plan }: Props) {
   if (plan.length === 0) {

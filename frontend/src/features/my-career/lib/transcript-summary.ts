@@ -1,15 +1,15 @@
 import type { HistorialPeriod } from '@/features/my-career/data/transcript';
 
 /**
- * KPIs computados sobre el historial. Port literal de los 4 valores que
- * el canvas `V2CarreraHistorial` muestra arriba del timeline:
+ * KPIs computed over the transcript. Literal port of the 4 values the
+ * `V2CarreraHistorial` canvas shows above the timeline:
  *
- *   - materias aprobadas (count)
- *   - promedio general (avg de notas, 1 decimal)
- *   - períodos cursados (count de períodos)
- *   - primer cuatri (label del período más antiguo)
+ *   - approved subjects (count)
+ *   - overall average (avg of grades, 1 decimal)
+ *   - periods taken (period count)
+ *   - first term (label of the oldest period)
  *
- * Helpers puros. Sin side effects. Testeables aisladamente.
+ * Pure helpers. No side effects. Testable in isolation.
  */
 
 export type HistorialSummary = {
@@ -19,7 +19,7 @@ export type HistorialSummary = {
   firstPeriodLabel: string;
 };
 
-/** Total de materias con `state === 'aprob'` cross-períodos. */
+/** Total subjects with `state === 'aprob'` across periods. */
 export function totalApproved(periods: HistorialPeriod[]): number {
   let count = 0;
   for (const p of periods) {
@@ -31,8 +31,8 @@ export function totalApproved(periods: HistorialPeriod[]): number {
 }
 
 /**
- * Promedio simple de las notas no-null. Devuelve string con 1 decimal,
- * o `"—"` si no hay notas (evita NaN visible).
+ * Simple average of the non-null grades. Returns a string with 1 decimal, or the
+ * em-dash placeholder when there are no grades (avoids a visible NaN).
  */
 export function overallAverage(periods: HistorialPeriod[]): string {
   let sum = 0;
@@ -48,18 +48,18 @@ export function overallAverage(periods: HistorialPeriod[]): string {
   return n === 0 ? '—' : (sum / n).toFixed(1);
 }
 
-/** Count de períodos cursados. */
+/** Count of periods taken. */
 export function periodsCount(periods: HistorialPeriod[]): number {
   return periods.length;
 }
 
 /**
- * Label legible del primer período cursado (el más antiguo del array,
- * asumiendo orden descendente por defecto del mock).
+ * Readable label of the first period taken (the oldest in the array, assuming the
+ * mock's default descending order).
  *
- * El canvas usa formato `"Mar 2024"` (mes + año). El mock tiene formato
- * `"2024·1c"`. Hacemos un mapping simple: `1c` → `Mar`, `2c` → `Ago`.
- * Si el período no matchea el formato, se muestra raw.
+ * The canvas uses the `"Mar 2024"` (month + year) format. The mock uses the
+ * `"2024·1c"` format. We do a simple mapping: `1c` to `Mar`, `2c` to `Ago`. If the
+ * period does not match the format, it's rendered raw.
  */
 export function firstPeriodLabel(periods: HistorialPeriod[]): string {
   if (periods.length === 0) return '—';
@@ -72,7 +72,7 @@ export function firstPeriodLabel(periods: HistorialPeriod[]): string {
   return `${year} anual`;
 }
 
-/** One-shot helper que arma el `HistorialSummary` completo. */
+/** One-shot helper that assembles the full `HistorialSummary`. */
 export function buildSummary(periods: HistorialPeriod[]): HistorialSummary {
   return {
     totalApproved: totalApproved(periods),

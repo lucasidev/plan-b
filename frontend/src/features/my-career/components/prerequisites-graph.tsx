@@ -13,34 +13,34 @@ import {
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Override del mock para tests. */
+  /** Mock override for tests. */
   nodes?: GraphNode[];
   edges?: GraphEdge[];
   focusId?: string | null;
 };
 
 /**
- * Tab "Correlativas" de Mi carrera (US-045-c). Port literal del mock
+ * "Correlativas" tab of Mi carrera (US-045-c). Literal port of the mock
  * `canvas-mocks/v2-screens.jsx::V2CarreraGrafo`.
  *
- * Layout: columnas por año, filas por slot dentro del año. Coords
- * lógicas (`x`, `y`) explícitas por nodo, traducidas a pixels con
- * `nodeOrigin()`. Aristas como curvas bezier horizontales entre nodos.
+ * Layout: columns by year, rows by slot within the year. Logical coords (`x`, `y`)
+ * explicit per node, translated to pixels with `nodeOrigin()`. Edges as horizontal
+ * bezier curves between nodes.
  *
- * Estados del grafo (más expandidos que los del PlanGrid):
- *   - AP aprobada (verde)
- *   - CU cursando (naranja)
- *   - AV disponible (correlativas cumplidas, no inscripta)
- *   - PL planeada (en borrador del próximo cuatri)
- *   - BL bloqueada (correlativas incompletas)
+ * Graph states (more expanded than the PlanGrid ones):
+ *   - AP approved (green)
+ *   - CU taking (orange)
+ *   - AV available (prerequisites met, not enrolled)
+ *   - PL planned (in next-term draft)
+ *   - BL blocked (prerequisites incomplete)
  *
- * Foco visual: la materia que el alumno está cursando ahora (`focusId`
- * default = ISW302 del mock) tiene stroke accent + las aristas que la
- * tocan se realzan.
+ * Visual focus: the subject the student is currently taking (`focusId` defaults to
+ * ISW302 from the mock) gets an accent stroke + the edges touching it get
+ * highlighted.
  *
- * Server component (sin interacción JS). El click en nodos navega al
- * drawer real (US-045-d) via `<Link>`. No hay highlight on click; el
- * foco está dado por el contexto del alumno, no por interacción.
+ * Server component (no JS interaction). Clicking nodes navigates to the real drawer
+ * (US-045-d) via `<Link>`. No highlight on click; the focus comes from the student
+ * context, not from interaction.
  */
 export function PrerequisitesGraph({
   nodes = graphNodes,
@@ -49,8 +49,8 @@ export function PrerequisitesGraph({
 }: Props) {
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
   const focusedNode = focusId != null ? (nodeById.get(focusId) ?? null) : null;
-  // Single-pass: .filter().map() iteraba el array de edges dos veces (regla
-  // react-doctor/js-combine-iterations). flatMap transforma + filtra en un solo loop.
+  // Single-pass: .filter().map() iterated the edges array twice
+  // (react-doctor/js-combine-iterations rule). flatMap transforms + filters in one loop.
   const unlocks = focusedNode ? edges.flatMap((e) => (e[0] === focusedNode.id ? [e[1]] : [])) : [];
 
   return (

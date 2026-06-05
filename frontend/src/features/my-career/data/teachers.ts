@@ -1,13 +1,13 @@
 /**
- * Mock de docentes que dictan materias del plan (US-045-d).
+ * Mock of teachers who deliver plan subjects (US-045-d).
  *
- * Cuando aterrice el backend real:
- *   - `GET /api/teachers?planId=...` (US-063 + US-061) para la lista.
- *   - `GET /api/teachers/{id}/metrics` para rating + counters.
+ * Once the real backend lands:
+ *   - `GET /api/teachers?planId=...` (US-063 + US-061) for the list.
+ *   - `GET /api/teachers/{id}/metrics` for rating + counters.
  *
- * Mock con 6 teachers que cubren las materias mock de `plan.ts`. Cada
- * docente dicta 1-2 materias del plan inventado. El `subjects` array tiene
- * los códigos de materia (no nombres) para keep linking consistente.
+ * Mock with 6 teachers covering the `plan.ts` mock subjects. Each teacher delivers
+ * 1-2 subjects from the invented plan. The `subjects` array carries the subject codes
+ * (not names) to keep linking consistent.
  */
 
 export type TeacherRating = {
@@ -16,7 +16,7 @@ export type TeacherRating = {
 };
 
 export type TeacherMetrics = {
-  /** Sub-dimensiones 0-5. */
+  /** Sub-dimensions 0-5. */
   claridad: number;
   exigencia: number;
   buenaonda: number;
@@ -30,13 +30,13 @@ export type TeacherTag = {
 
 export type Teacher = {
   id: string;
-  /** Nombre completo "Apellido, Nombre". */
+  /** Full name "Surname, FirstName". */
   name: string;
-  /** Códigos de materias del plan que dicta. */
+  /** Codes of plan subjects they deliver. */
   subjects: string[];
   rating: TeacherRating;
   metrics: TeacherMetrics;
-  /** Tags top + cuántas reseñas las mencionan. */
+  /** Top tags + how many reviews mention them. */
   tags: TeacherTag[];
 };
 
@@ -116,15 +116,15 @@ export const teachers: Teacher[] = [
 ];
 
 /**
- * Devuelve los docentes que dictan una materia específica.
- * O(N) sobre el array de teachers; para 6 docentes es trivial.
+ * Returns the teachers who deliver a specific subject. O(N) over the teachers array;
+ * for 6 teachers it is trivial.
  */
 export function teachersForSubject(subjectCode: string): Teacher[] {
   return teachers.filter((t) => t.subjects.includes(subjectCode));
 }
 
 /**
- * Lookup por id.
+ * Lookup by id.
  */
 export function teacherById(id: string): Teacher | undefined {
   return teachers.find((t) => t.id === id);

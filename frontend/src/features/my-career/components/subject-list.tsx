@@ -22,16 +22,16 @@ type Props = {
 type SubjectWithYear = PlannedSubject & { year: number };
 
 /**
- * Tab "Catálogo" (Materias) de Mi carrera (US-045-d). Port literal del mock
- * `canvas-mocks/v2-screens.jsx::V2CarreraCatalogo`. Lista filtrable de las
- * materias del plan con CTA "Ver detalle" → drawer (US-045-d).
+ * "Catálogo" (Materias) tab of Mi carrera (US-045-d). Literal port of the mock
+ * `canvas-mocks/v2-screens.jsx::V2CarreraCatalogo`. Filterable list of plan subjects
+ * with a "Ver detalle" CTA opening the drawer (US-045-d).
  *
- * Estado local con useState (MVP). Si hace falta sharable filters via URL
- * en el futuro, migrar a `nuqs` sin tocar `lib/filters.ts`.
+ * Local state with useState (MVP). If shareable filters via URL are needed later,
+ * migrate to `nuqs` without touching `lib/filters.ts`.
  *
- * Performance: <50 items, filter local sin debounce. No hace falta useMemo
- * pesado pero envuelvo el filtrado igual para evitar recomputar en cada
- * render de eventos no-filter (ej. hover).
+ * Performance: under 50 items, local filter without debounce. A heavy useMemo is not
+ * required but the filtering is wrapped anyway to avoid recomputing on every render
+ * from non-filter events (e.g. hover).
  */
 export function SubjectList({ plan }: Props) {
   const allSubjects: SubjectWithYear[] = useMemo(

@@ -4,14 +4,14 @@ import { cn } from '@/lib/utils';
 
 type Props = {
   review: ReviewMock;
-  /** Si es la última de la lista, omite el border-bottom. */
+  /** If it is the last in the list, omit the bottom border. */
   isLast: boolean;
 };
 
 /**
- * Card de una reseña individual para mostrar en drawers (US-045-d). Port
- * del `V2ResenaCard` del mock canvas. Muestra: autor anónimo + score
- * estrellas + body + chip de dificultad + "útil" counter.
+ * Card of a single review to display in drawers (US-045-d). Port of the canvas mock's
+ * `V2ResenaCard`. Shows: anonymous author + star score + body + difficulty chip +
+ * "useful" counter.
  */
 export function ReviewCard({ review, isLast }: Props) {
   const teacher = teacherById(review.teacherId);
@@ -51,9 +51,9 @@ export function ReviewCard({ review, isLast }: Props) {
 function Stars({ score }: { score: number }) {
   const filled = '★'.repeat(score);
   const empty = '★'.repeat(5 - score);
-  // Patrón "text equivalent" en lugar de role="img" + aria-label: el span sr-only
-  // anuncia el score textual al screen reader, los caracteres ★ visibles quedan
-  // aria-hidden. Más simple semánticamente y evita el role redundante.
+  // "Text equivalent" pattern instead of role="img" + aria-label: the sr-only span
+  // announces the textual score to the screen reader; the visible ★ characters stay
+  // aria-hidden. Semantically simpler and avoids the redundant role.
   return (
     <span className="text-[12px] tracking-wider shrink-0">
       <span className="sr-only">{`${score} de 5 estrellas`}</span>

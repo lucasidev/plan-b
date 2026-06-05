@@ -6,18 +6,18 @@ import { type Teacher, teachers } from '@/features/my-career/data/teachers';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Lista a renderear. Por default usa el mock global de teachers.ts. */
+  /** List to render. Defaults to the global mock from teachers.ts. */
   teachers?: Teacher[];
 };
 
 /**
- * Tab "Docentes" de Mi carrera (US-045-d). Port literal del mock
- * `canvas-mocks/v2-screens.jsx::V2CarreraDocentes`. Lista de docentes que
- * dictan materias del plan del alumno con buscador local y CTA "Ver
- * detalle" → drawer.
+ * "Docentes" tab of Mi carrera (US-045-d). Literal port of the mock
+ * `canvas-mocks/v2-screens.jsx::V2CarreraDocentes`. List of teachers who deliver
+ * subjects of the student's plan with a local search and a "Ver detalle" CTA opening
+ * the drawer.
  *
- * Performance: pocos docentes (≤ 30 en plan típico), filter local
- * instantáneo sin debounce.
+ * Performance: few teachers (<=30 in a typical plan), instant local filter without
+ * debounce.
  */
 export function TeacherList({ teachers: input = teachers }: Props) {
   const [query, setQuery] = useState('');
@@ -99,10 +99,10 @@ type RatingBarProps = {
 
 function RatingBar({ value, tone }: RatingBarProps) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100));
-  // Wrapper visual + meter semántico oculto. El <meter> nativo tiene styling
-  // per-browser difícil de overridear consistentemente, así que lo dejamos invisible
-  // (sr-only) para preservar la semántica accesible mientras renderizamos la barra
-  // custom con divs. Resuelve react-doctor/prefer-tag-over-role sin romper el visual.
+  // Visual wrapper + hidden semantic meter. The native <meter> has per-browser styling
+  // that is hard to override consistently, so we leave it invisible (sr-only) to keep
+  // the accessible semantics while rendering the custom bar with divs. Resolves
+  // react-doctor/prefer-tag-over-role without breaking the visual.
   return (
     <div className="h-1.5 rounded-full bg-bg-elev overflow-hidden">
       <meter

@@ -1,24 +1,23 @@
 /**
- * Mock de comisiones del cuatri vigente (US-045-d).
+ * Mock commissions for the current term (US-045-d).
  *
- * Cuando aterrice backend: `GET /api/subjects/{code}/commissions?termId=...`
- * (US-065).
+ * When the backend lands: `GET /api/subjects/{code}/commissions?termId=...` (US-065).
  *
- * Cada comisión vincula un subject con un teacher en un horario específico.
- * Mock con 2-3 comisiones por materia del cuatri 2026·1c (las que el
- * alumno mock está cursando o podría cursar).
+ * Each commission links a subject with a teacher in a specific schedule. Mock with 2-3
+ * commissions per subject of the 2026·1c term (the ones the mock student is taking or
+ * could take).
  */
 
 export type Comision = {
   id: string;
   subjectCode: string;
   teacherId: string;
-  /** Identificador local de la comisión (A, B, C, ...). */
+  /** Local commission identifier (A, B, C, ...). */
   label: string;
-  /** Días + bloque horario para display. */
+  /** Days + schedule block for display. */
   schedule: string;
   modalityDelivery: 'presencial' | 'híbrida' | 'virtual';
-  /** Capacidad total / inscriptos actuales (display). */
+  /** Total capacity / currently enrolled (display). */
   capacity: number;
   enrolled: number;
 };
@@ -78,7 +77,7 @@ export const comisiones: Comision[] = [
     capacity: 30,
     enrolled: 18,
   },
-  // ISW301 (materia aprobada, comisión histórica)
+  // ISW301 (approved subject, historic commission)
   {
     id: 'isw301-a',
     subjectCode: 'ISW301',
@@ -89,7 +88,7 @@ export const comisiones: Comision[] = [
     capacity: 35,
     enrolled: 33,
   },
-  // MOV302 (pendiente, oferta del cuatri siguiente)
+  // MOV302 (pending, offering for the next term)
   {
     id: 'mov302-a',
     subjectCode: 'MOV302',
@@ -100,7 +99,7 @@ export const comisiones: Comision[] = [
     capacity: 30,
     enrolled: 0,
   },
-  // BD201 (aprobada, histórica)
+  // BD201 (approved, historic)
   {
     id: 'bd201-a',
     subjectCode: 'BD201',
@@ -111,7 +110,7 @@ export const comisiones: Comision[] = [
     capacity: 35,
     enrolled: 30,
   },
-  // BD301 (aprobada, histórica)
+  // BD301 (approved, historic)
   {
     id: 'bd301-a',
     subjectCode: 'BD301',
@@ -122,7 +121,7 @@ export const comisiones: Comision[] = [
     capacity: 30,
     enrolled: 26,
   },
-  // COM301 (aprobada)
+  // COM301 (approved)
   {
     id: 'com301-a',
     subjectCode: 'COM301',
@@ -133,7 +132,7 @@ export const comisiones: Comision[] = [
     capacity: 40,
     enrolled: 35,
   },
-  // MAT201 + MAT202 (aprobadas)
+  // MAT201 + MAT202 (approved)
   {
     id: 'mat201-a',
     subjectCode: 'MAT201',
@@ -156,7 +155,7 @@ export const comisiones: Comision[] = [
   },
 ];
 
-/** Devuelve comisiones para un subject específico. */
+/** Returns commissions for a specific subject. */
 export function comisionesForSubject(subjectCode: string): Comision[] {
   return comisiones.filter((c) => c.subjectCode === subjectCode);
 }

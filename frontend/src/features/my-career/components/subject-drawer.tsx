@@ -19,22 +19,21 @@ import { ReviewCard } from './review-card';
 import { StatCell } from './stat-cell';
 
 type Props = {
-  /** Materia a renderear en el drawer. */
+  /** Subject to render in the drawer. */
   subject: PlannedSubject & { year: number };
-  /** Plan completo (para resolver correlativas + habilita). Opcional para testing. */
+  /** Full plan (used to resolve prerequisites + unlocks). Optional for testing. */
   plan?: PlanYear[];
 };
 
 /**
- * Drawer de detalle de materia (US-045-d). Port literal del mock
- * `canvas-mocks/v2-screens-3.jsx::V2MateriaDetalle`. Renderea: header
- * (eyebrow breadcrumb + título + subtitle stats) + grid 2-col con reseñas
- * top 3 + correlativas a la izquierda, números + docentes + situación del
- * alumno a la derecha.
+ * Subject-detail drawer (US-045-d). Literal port of the mock
+ * `canvas-mocks/v2-screens-3.jsx::V2MateriaDetalle`. Renders: header (eyebrow
+ * breadcrumb + title + subtitle stats) + 2-col grid with top-3 reviews +
+ * prerequisites on the left, numbers + teachers + student situation on the right.
  *
- * "Drawer" en MVP es una página dedicada (no modal), por simplicidad y
- * sharable URLs. Visualmente se trata como panel sobre la app. Cuando
- * aterrice parallel routes (`@modal`), se evalúa migrar.
+ * "Drawer" in MVP is a dedicated page (not a modal) for simplicity and shareable
+ * URLs. Visually it is treated as a panel over the app. Once parallel routes
+ * (`@modal`) land, evaluate migrating.
  */
 export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
   const approved = approvedCodes(plan);
@@ -49,14 +48,14 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
       ? activeTeachers.reduce((acc, t) => acc + t.rating.overall, 0) / activeTeachers.length
       : null;
 
-  // Correlativas que esta materia "necesita" (sus correlativas declaradas).
+  // Prerequisites this subject "needs" (its declared correlativas).
   const needsCodes = subject.correlativas;
   const needs = needsCodes
     .map((code) => findSubjectByCode(plan, code))
     .filter((s): s is PlannedSubject & { year: number } => s != null);
 
-  // Correlativas que esta materia "habilita" (otras materias del plan que la
-  // tienen en su correlativas array).
+  // Subjects this one "unlocks" (other plan subjects that have it in their
+  // correlativas array).
   const allSubjects = plan.flatMap((y) => y.subjects.map((s) => ({ ...s, year: y.year })));
   const unlocks = allSubjects.filter((s) => s.correlativas.includes(subject.code));
 
@@ -68,13 +67,13 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
       <Header subject={subject} totalTeachers={activeTeachers.length} totalReviews={totalReviews} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4">
-        {/* Col izq: reseñas + correlativas */}
+        {/* Left col: reviews + prerequisites */}
         <div className="flex flex-col gap-3.5">
           <ReviewsCard subjectCode={subject.code} reviews={reviews} totalReviews={totalReviews} />
           <CorrelativasCard needs={needs} unlocks={unlocks} />
         </div>
 
-        {/* Col der: stats + docentes + situación */}
+        {/* Right col: stats + teachers + student situation */}
         <div className="flex flex-col gap-3.5">
           <StatsCard
             rating={rating}
@@ -393,9 +392,8 @@ function SituationCard({
 }
 
 /**
- * Map cache per-instance del plan para evitar find anidado (regla
- * react-doctor/js-index-maps). WeakMap así no retenemos el plan si los callers
- * lo recrean.
+ * Per-instance plan map cache to avoid nested find (react-doctor/js-index-maps rule).
+ * WeakMap so we do not retain the plan if callers recreate it.
  */
 const planByCodeCache = new WeakMap<PlanYear[], Map<string, PlannedSubject & { year: number }>>();
 

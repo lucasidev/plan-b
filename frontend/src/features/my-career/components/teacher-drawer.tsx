@@ -8,21 +8,21 @@ import { StatCell } from './stat-cell';
 
 type Props = {
   teacher: Teacher;
-  /** Plan completo para resolver nombre de subjects que dicta. Opcional para testing. */
+  /** Full plan to resolve names of subjects they deliver. Optional for testing. */
   plan?: PlanYear[];
 };
 
 /**
- * Drawer de detalle de docente (US-045-d). Port literal del mock
- * `canvas-mocks/v2-screens-3.jsx::V2DocenteDetalle`. Header + grid 2-col
- * con reseñas top + tags a la izquierda; números, métricas sub-dim y
- * resumen a la derecha.
+ * Teacher-detail drawer (US-045-d). Literal port of the mock
+ * `canvas-mocks/v2-screens-3.jsx::V2DocenteDetalle`. Header + 2-col grid with top
+ * reviews + tags on the left; numbers, sub-dimension metrics and summary on the
+ * right.
  */
 export function TeacherDrawer({ teacher, plan = defaultPlan }: Props) {
   const reviews = topReviewsForTeacher(teacher.id, 3);
-  // `findSubjectName(...) ?? code` siempre devuelve string truthy, así que el
-  // `.filter(Boolean)` previo era noop. Pasamos a single-pass .map (regla
-  // react-doctor/js-flatmap-filter).
+  // `findSubjectName(...) ?? code` always returns a truthy string, so the previous
+  // `.filter(Boolean)` was a noop. Switched to a single-pass .map
+  // (react-doctor/js-flatmap-filter rule).
   const subjectNames = teacher.subjects.map((code) => findSubjectName(plan, code) ?? code);
 
   return (
@@ -30,7 +30,7 @@ export function TeacherDrawer({ teacher, plan = defaultPlan }: Props) {
       <Header teacher={teacher} subjectNames={subjectNames} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4">
-        {/* Col izq: reseñas + tags */}
+        {/* Left col: reviews + tags */}
         <div className="flex flex-col gap-3.5">
           <ReviewsCard
             reviews={reviews}
@@ -40,7 +40,7 @@ export function TeacherDrawer({ teacher, plan = defaultPlan }: Props) {
           <TagsCard tags={teacher.tags} />
         </div>
 
-        {/* Col der: stats + metrics + subjects que dicta */}
+        {/* Right col: stats + metrics + delivered subjects */}
         <div className="flex flex-col gap-3.5">
           <StatsCard teacher={teacher} />
           <MetricsCard metrics={teacher.metrics} />
@@ -120,9 +120,9 @@ function MetricsCard({ metrics }: { metrics: Teacher['metrics'] }) {
 function MetricRow({ label, value }: { label: string; value: number }) {
   const pct = Math.max(0, Math.min(100, (value / 5) * 100));
   const tone = value >= 4 ? 'good' : value >= 3 ? 'neutral' : 'low';
-  // <meter> sr-only para preservar semántica accesible (rating con escala min/max),
-  // mientras renderizamos la barra visual con divs. El <meter> nativo tiene styling
-  // per-browser difícil de overridear consistentemente, así que se mantiene oculto.
+  // <meter> sr-only to keep the accessible semantics (rating with min/max scale)
+  // while rendering the visual bar with divs. The native <meter> has per-browser
+  // styling that is hard to override consistently, so it stays hidden.
   return (
     <div>
       <div className="flex justify-between text-[12px] text-ink-2 mb-1">
@@ -246,9 +246,9 @@ function SubjectsCard({ teacher, plan }: { teacher: Teacher; plan: PlanYear[] })
 }
 
 /**
- * Map cache por instancia de plan para evitar find anidado (regla
- * react-doctor/js-index-maps). WeakMap así no retenemos el plan si los callers
- * lo recrean (el plan tiende a ser estable per-component-tree).
+ * Per-instance plan map cache to avoid nested find (react-doctor/js-index-maps rule).
+ * WeakMap so we do not retain the plan if callers recreate it (the plan tends to be
+ * stable per-component-tree).
  */
 const planIndexCache = new WeakMap<PlanYear[], Map<string, string>>();
 

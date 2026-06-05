@@ -7,37 +7,36 @@ import { HistoryPeriodCard } from './history-period-card';
 
 type Props = {
   /**
-   * Historial real del student. Default a `[]` (sin historial) → empty state.
+   * Real student transcript. Defaults to `[]` (no transcript) → empty state.
    *
-   * Cuando aterrice el read (GET /api/me/enrollment-records, próximo sprint),
-   * el server component padre va a pasar los períodos reales acá. Mientras
-   * tanto los tests pueden inyectar fixtures con override.
+   * Once the read lands (GET /api/me/enrollment-records, next sprint), the parent
+   * server component will pass the real periods here. Meanwhile tests can inject
+   * fixtures via override.
    *
-   * **Crítico**: NO defaulteamos al mock `defaultHistorial` (datos de Lucía).
-   * Esto causaba un cross-user data leak donde cualquier user nuevo veía el
-   * historial completo de Lucía aunque no tuviera nada cargado. Detectado en
-   * la demo del 2026-05-16.
+   * **Critical**: do NOT default to the `defaultHistorial` mock (Lucía's data). That
+   * caused a cross-user data leak where any new user saw Lucía's full transcript even
+   * though they had nothing loaded. Spotted in the 2026-05-16 demo.
    */
   periods?: HistorialPeriod[];
 };
 
 /**
- * Tab "Historial" de Mi carrera (US-045-e). Port literal del mock
+ * "Historial" tab of Mi carrera (US-045-e). Literal port of the mock
  * `canvas-mocks/v2-screens-3.jsx::V2CarreraHistorial`. Layout:
  *
- *   1. 4 KPI cards arriba (grid 4 cols).
- *   2. Banda de acciones: subtitle + 2 botones (Importar PDF + Materia
- *      rendida) navegan a sus flows respectivos.
- *   3. Timeline vertical de cards por período (más reciente primero).
+ *   1. 4 KPI cards on top (4-col grid).
+ *   2. Action band: subtitle + 2 buttons (Importar PDF + Materia rendida) navigate to
+ *      their respective flows.
+ *   3. Vertical timeline of period cards (most recent first).
  *
- * Empty state cuando `periods.length === 0`: copy de bienvenida + ambos
- * CTAs destacados, sin KPIs (no hay data).
+ * Empty state when `periods.length === 0`: welcome copy + both CTAs highlighted, no
+ * KPIs (no data).
  *
  * Server component.
  */
-// Module-scope empty array para que el default value no cree una nueva ref en cada
-// render (regla react-doctor/rerender-memo-with-default-value). Importante porque
-// downstream pasamos `periods` como dep a otros hooks.
+// Module-scope empty array so the default value does not create a new ref on every
+// render (react-doctor/rerender-memo-with-default-value rule). Important because we
+// pass `periods` as a dep to other hooks downstream.
 const EMPTY_PERIODS: HistorialPeriod[] = [];
 
 export function HistoryTab({ periods = EMPTY_PERIODS }: Props) {

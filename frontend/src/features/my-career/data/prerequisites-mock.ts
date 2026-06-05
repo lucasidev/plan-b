@@ -1,19 +1,19 @@
 /**
- * Mock del grafo de correlativas (US-045-c). Port literal del canvas
+ * Mock of the prerequisites graph (US-045-c). Literal port of the canvas
  * `canvas-mocks/v2-screens.jsx::V2CarreraGrafo`.
  *
- * Importante: usa códigos + estados DISTINTOS al `plan.ts` del PlanGrid
- * (US-045-b). El canvas mismo tiene esa inconsistencia (ej. en PlanGrid
- * "PRG201" es Estructuras de Datos, en el grafo es "EDA201"; estados
- * expandidos AP/CU/AV/PL/BL en lugar de AP/CU/PD). Cuando aterrice el
- * backend real, ambas vistas se unifican en `GET /api/me/career-plan`.
+ * Note: uses DIFFERENT codes + states from the PlanGrid `plan.ts` (US-045-b). The
+ * canvas itself has that inconsistency (e.g. in PlanGrid "PRG201" is Estructuras de
+ * Datos, in the graph it is "EDA201"; expanded states AP/CU/AV/PL/BL instead of
+ * AP/CU/PD). When the real backend lands, both views unify in
+ * `GET /api/me/career-plan`.
  *
- * Estados del grafo:
- *   - AP: aprobada (verde)
- *   - CU: cursando (naranja)
- *   - AV: disponible (gris cálido, correlativas cumplidas, no inscripta)
- *   - PL: planeada (violeta, agregada al borrador del próximo cuatri)
- *   - BL: bloqueada (gris desaturado, correlativas incompletas)
+ * Graph states:
+ *   - AP: approved (green)
+ *   - CU: taking (orange)
+ *   - AV: available (warm gray, prerequisites met, not enrolled)
+ *   - PL: planned (violet, added to the next-term draft)
+ *   - BL: blocked (desaturated gray, prerequisites incomplete)
  */
 
 export type GraphSubjectState = 'AP' | 'CU' | 'AV' | 'PL' | 'BL';
@@ -21,9 +21,9 @@ export type GraphSubjectState = 'AP' | 'CU' | 'AV' | 'PL' | 'BL';
 export type GraphNode = {
   id: string;
   name: string;
-  /** Columna lógica (0-indexed). Cada columna = un año del plan. */
+  /** Logical column (0-indexed). Each column = one plan year. */
   x: number;
-  /** Fila lógica dentro de la columna (0-indexed). */
+  /** Logical row within the column (0-indexed). */
   y: number;
   state: GraphSubjectState;
 };
@@ -31,29 +31,29 @@ export type GraphNode = {
 export type GraphEdge = readonly [from: string, to: string];
 
 export const graphNodes: GraphNode[] = [
-  // Año 1
+  // Year 1
   { id: 'MAT101', name: 'Análisis Mat. I', x: 0, y: 0, state: 'AP' },
   { id: 'ALG101', name: 'Álgebra', x: 0, y: 1, state: 'AP' },
   { id: 'PRG101', name: 'Programación I', x: 0, y: 2, state: 'AP' },
   { id: 'MAT102', name: 'Análisis Mat. II', x: 0, y: 3, state: 'AP' },
   { id: 'PRG102', name: 'Programación II', x: 0, y: 4, state: 'AP' },
-  // Año 2
+  // Year 2
   { id: 'FIS201', name: 'Física I', x: 1, y: 0, state: 'AP' },
   { id: 'BD201', name: 'Bases de Datos', x: 1, y: 1, state: 'AP' },
   { id: 'EDA201', name: 'Estructuras de Datos', x: 1, y: 2, state: 'AP' },
   { id: 'MAT201', name: 'Probabilidad', x: 1, y: 3, state: 'AP' },
-  // Año 3
+  // Year 3
   { id: 'ISW301', name: 'Ing. de Software I', x: 2, y: 0, state: 'AP' },
   { id: 'BD301', name: 'BD II', x: 2, y: 1, state: 'AP' },
   { id: 'COM301', name: 'Comunic. de Datos', x: 2, y: 2, state: 'AP' },
-  // Año 4 (cursando)
+  // Year 4 (taking)
   { id: 'ISW302', name: 'Ing. de Software II', x: 3, y: 0, state: 'CU' },
   { id: 'INT302', name: 'IA I', x: 3, y: 1, state: 'CU' },
   { id: 'SEG302', name: 'Seguridad', x: 3, y: 2, state: 'CU' },
   { id: 'MAT401', name: 'Mat. Aplicada', x: 3, y: 3, state: 'CU' },
   { id: 'MOV302', name: 'Apps Móviles', x: 3, y: 4, state: 'AV' },
   { id: 'QUI201', name: 'Química', x: 3, y: 5, state: 'CU' },
-  // Año 5 (planeadas / bloqueadas)
+  // Year 5 (planned / blocked)
   { id: 'INT402', name: 'IA II', x: 4, y: 0, state: 'PL' },
   { id: 'SEG402', name: 'Sist. Distribuidos', x: 4, y: 1, state: 'BL' },
   { id: 'TES501', name: 'Trabajo Final', x: 4, y: 2, state: 'BL' },
@@ -82,10 +82,10 @@ export const graphEdges: GraphEdge[] = [
   ['MAT201', 'MAT401'],
 ];
 
-/** Materia "en foco" del grafo: la que el alumno está cursando ahora. */
+/** Graph "focused" subject: the one the student is currently taking. */
 export const focusedNodeId = 'ISW302';
 
-/** Tokens visuales por estado (en sync con el canvas `tone` map). */
+/** Visual tokens per state (in sync with the canvas `tone` map). */
 export const stateTokens: Record<
   GraphSubjectState,
   { bg: string; fg: string; dot: string; label: string }
@@ -122,7 +122,7 @@ export const stateTokens: Record<
   },
 };
 
-/** Coords del layout (en sync con el canvas). */
+/** Layout coords (in sync with the canvas). */
 export const LAYOUT = {
   COL_W: 220,
   ROW_H: 56,
@@ -132,17 +132,17 @@ export const LAYOUT = {
   NODE_H: 38,
   YEAR_LABEL_OFFSET: 24,
   YEAR_COUNT: 5,
-  /** Máximo de filas por columna (la mayor altura entre todas las cols). */
+  /** Max rows per column (the tallest of all columns). */
   MAX_ROWS: 6,
 } as const;
 
-/** Width/height totales del viewport SVG (computados de LAYOUT). */
+/** Total width/height of the SVG viewport (computed from LAYOUT). */
 export const VIEWPORT = {
   width: LAYOUT.PAD_X * 2 + LAYOUT.YEAR_COUNT * LAYOUT.COL_W,
   height: LAYOUT.PAD_Y * 2 + LAYOUT.MAX_ROWS * LAYOUT.ROW_H + LAYOUT.YEAR_LABEL_OFFSET,
 };
 
-/** Coordenadas en pixels de un node. */
+/** Pixel coordinates of a node. */
 export function nodeOrigin(node: GraphNode): { x: number; y: number } {
   return {
     x: LAYOUT.PAD_X + node.x * LAYOUT.COL_W,
@@ -150,7 +150,7 @@ export function nodeOrigin(node: GraphNode): { x: number; y: number } {
   };
 }
 
-/** SVG path de la curva bezier entre dos nodos (`a` requisito, `b` habilita). */
+/** SVG path of the bezier curve between two nodes (`a` is the prerequisite, `b` is the dependent). */
 export function edgePath(a: GraphNode, b: GraphNode): string {
   const aOrigin = nodeOrigin(a);
   const bOrigin = nodeOrigin(b);
@@ -162,7 +162,7 @@ export function edgePath(a: GraphNode, b: GraphNode): string {
   return `M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`;
 }
 
-/** Lookup por id. */
+/** Lookup by id. */
 export function findGraphNode(id: string): GraphNode | undefined {
   return graphNodes.find((n) => n.id === id);
 }

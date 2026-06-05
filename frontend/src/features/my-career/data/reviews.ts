@@ -1,29 +1,29 @@
 /**
- * Mock de reseñas para drawers de materia y docente (US-045-d).
+ * Mock reviews for the subject and teacher drawers (US-045-d).
  *
- * Cuando aterrice backend: `GET /api/reviews?subjectCode=...&top=3` (US-005,
- * a doc'arse). Esto solo necesita las top reseñas, no toda la lista; el
- * full listing va a `/reseñas?subjectId=...`.
+ * When the backend lands: `GET /api/reviews?subjectCode=...&top=3` (US-005, to be
+ * documented). This only needs the top reviews, not the full list; the full listing
+ * goes to `/reviews?subjectId=...`.
  *
- * Shape pensada para mostrar en la card V2ResenaCard del canvas: who +
- * score + diff + text + useful + prof.
+ * Shape designed to render in the canvas's V2ResenaCard: who + score + diff + text +
+ * useful + prof.
  */
 
 export type ReviewMock = {
   id: string;
-  /** Subject code que reseña esta entrada. */
+  /** Subject code this entry reviews. */
   subjectCode: string;
-  /** Teacher id (string id de teachers.ts). */
+  /** Teacher id (string id from teachers.ts). */
   teacherId: string;
-  /** Display anónimo del autor: año + período cursado. */
+  /** Anonymous author display: year + period taken. */
   who: string;
-  /** Score 1-5 del docente. */
+  /** Teacher score 1-5. */
   score: number;
-  /** Dificultad percibida 1-5. */
+  /** Perceived difficulty 1-5. */
   difficulty: number;
-  /** Cuerpo de la reseña. */
+  /** Review body. */
   text: string;
-  /** Conteo de "útil" votes. */
+  /** "Useful" vote count. */
   useful: number;
 };
 
@@ -126,7 +126,7 @@ export const reviews: ReviewMock[] = [
   },
 ];
 
-/** Top N reseñas para un subject específico, ordenadas por `useful` desc. */
+/** Top N reviews for a specific subject, sorted by `useful` desc. */
 export function topReviewsForSubject(subjectCode: string, limit = 3): ReviewMock[] {
   return reviews
     .filter((r) => r.subjectCode === subjectCode)
@@ -134,12 +134,12 @@ export function topReviewsForSubject(subjectCode: string, limit = 3): ReviewMock
     .slice(0, limit);
 }
 
-/** Total de reseñas para un subject (display "Ver las N reseñas"). */
+/** Total review count for a subject (display "Ver las N reseñas"). */
 export function reviewCountForSubject(subjectCode: string): number {
   return reviews.filter((r) => r.subjectCode === subjectCode).length;
 }
 
-/** Top N reseñas para un docente, ordenadas por `useful` desc. */
+/** Top N reviews for a teacher, sorted by `useful` desc. */
 export function topReviewsForTeacher(teacherId: string, limit = 3): ReviewMock[] {
   return reviews
     .filter((r) => r.teacherId === teacherId)

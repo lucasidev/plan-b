@@ -1,29 +1,28 @@
 /**
- * Mock del plan de estudios para el tab "Plan" de Mi carrera (US-045-b).
+ * Career-plan mock for the "Plan" tab of Mi carrera (US-045-b).
  *
- * Cuando aterrice el backend real, este mock se reemplaza por:
- *   - `GET /api/career-plans/{id}/subjects` (US-061) para la lista del plan.
- *   - `GET /api/me/enrollments` (Enrollments BC, futuro) para el estado
- *     real del alumno (AP / CU / PD) y la nota final.
+ * Once the real backend lands, this mock is replaced by:
+ *   - `GET /api/career-plans/{id}/subjects` (US-061) for the plan list.
+ *   - `GET /api/me/enrollments` (Enrollments BC, future) for the student's real state
+ *     (AP / CU / PD) and the final grade.
  *
- * Mientras tanto, el state ya viene pre-cocido en cada subject del mock para
- * simular "lo que ve el alumno" sin tener que cruzar dos sources.
+ * Meanwhile, the state is pre-baked into each mock subject to simulate "what the
+ * student sees" without having to cross two sources.
  *
- * Datos basados en una Tecnicatura en IT genérica de 5 años. La intención
- * NO es ser fiel a ninguna carrera real de UNSTA — los códigos y créditos
- * son ilustrativos.
+ * Data based on a generic 5-year IT technicatura. The intent is NOT to be faithful to
+ * any real UNSTA career: the codes and credits are illustrative.
  */
 
-/** Estado de la materia para el alumno. */
+/** Student-facing subject state. */
 export type SubjectState =
-  /** Aprobada con nota final. */
+  /** Approved with a final grade. */
   | 'AP'
-  /** Cursando este período. */
+  /** Currently being taken this period. */
   | 'CU'
-  /** Pendiente: todavía no se cursó. */
+  /** Pending: not yet taken. */
   | 'PD';
 
-/** Modalidad de cursada definida por la cátedra. Source of truth del plan. */
+/** Course modality defined by the cátedra. Plan source of truth. */
 export type SubjectModality = 'anual' | '1c' | '2c';
 
 export type PlannedSubject = {
@@ -31,9 +30,9 @@ export type PlannedSubject = {
   name: string;
   modality: SubjectModality;
   state: SubjectState;
-  /** Nota final 1-10 cuando state === 'AP'. null en CU/PD. */
+  /** Final grade 1-10 when state === 'AP'. null on CU/PD. */
   grade: number | null;
-  /** Códigos de materias correlativas para cursar. Vacío si no tiene. */
+  /** Codes of prerequisite subjects to take. Empty if none. */
   correlativas: string[];
 };
 

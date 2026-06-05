@@ -1,15 +1,15 @@
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Valor numérico o texto corto a mostrar grande. */
+  /** Numeric value or short text rendered big. */
   value: string;
-  /** Label descriptivo abajo del valor. */
+  /** Descriptive label below the value. */
   label: string;
 };
 
 /**
- * Stat cell usado en cards "En números" de drawers (US-045-d). Port del
- * `V2Stat` del mock canvas.
+ * Stat cell used in "En números" cards inside drawers (US-045-d). Port of the canvas
+ * mock's `V2Stat`.
  */
 export function StatCell({ value, label }: Props) {
   return (

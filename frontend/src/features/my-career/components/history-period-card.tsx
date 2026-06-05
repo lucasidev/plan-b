@@ -2,14 +2,14 @@ import type { HistorialPeriod } from '@/features/my-career/data/transcript';
 import { cn } from '@/lib/utils';
 
 /**
- * Card de un período del historial (US-045-e). Port literal del bloque
- * que el canvas renderea para cada `c` del array `V2_HIST`.
+ * Card for a transcript period (US-045-e). Literal port of the block the canvas
+ * renders for each `c` in the `V2_HIST` array.
  *
- * Header del card: período mono bold + subtitle `"N materias · promedio
- * X.X"`. Body: mini-grid 6 cols con una fila por entrada del período.
+ * Card header: bold mono period + `"N materias · promedio X.X"` subtitle. Body:
+ * 6-column mini-grid with one row per period entry.
  *
- * Server component (sin interacción). El `⋯` action menu es visual
- * placeholder; cuando aterrice US-015 (editar/eliminar), se reemplaza.
+ * Server component (no interaction). The `⋯` action menu is a visual placeholder;
+ * when US-015 (edit/delete) lands, it gets replaced.
  */
 export function HistoryPeriodCard({ period }: { period: HistorialPeriod }) {
   return (

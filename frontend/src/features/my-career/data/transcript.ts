@@ -1,16 +1,14 @@
 /**
- * Mock del historial académico para el tab "Historial" de Mi carrera
- * (US-045-e). Port literal del canvas
- * `canvas-mocks/v2-screens-3.jsx::V2_HIST`.
+ * Academic-history mock for the "Historial" tab of Mi carrera (US-045-e). Literal port
+ * of the canvas `canvas-mocks/v2-screens-3.jsx::V2_HIST`.
  *
- * Cuando aterrice el backend real, esto se reemplaza por:
- *   - `GET /api/me/enrollments?grouped=true` (Enrollments BC, futuro).
+ * When the real backend lands, this is replaced by:
+ *   - `GET /api/me/enrollments?grouped=true` (Enrollments BC, future).
  *
- * Estructura por período (más reciente primero). Cada entrada tiene 2
- * estados visuales: `aprob` (verde) o `recurso` (naranja). Mas tipos
- * del lifecycle (libre, regular, pendiente) no se modelan acá porque
- * el canvas no los muestra; cuando Enrollments exponga más estados,
- * evaluar mapping visual.
+ * Structure per period (most recent first). Each entry has 2 visual states: `aprob`
+ * (green) or `recurso` (orange). More lifecycle states (libre, regular, pendiente) are
+ * not modeled here because the canvas does not show them; once Enrollments exposes
+ * more states, evaluate the visual mapping.
  */
 
 export type HistorialState = 'aprob' | 'recurso';
@@ -19,16 +17,16 @@ export type HistorialEntry = {
   code: string;
   name: string;
   state: HistorialState;
-  /** Nota final 1-10. null si state='recurso'. */
+  /** Final grade 1-10. null when state='recurso'. */
   grade: number | null;
-  /** Apellido del docente (display). */
+  /** Teacher's surname (display). */
   teacher: string;
 };
 
 export type HistorialPeriod = {
-  /** Etiqueta human-readable del período (ej. `2025·2c`). */
+  /** Human-readable period label (e.g. `2025·2c`). */
   period: string;
-  /** Promedio del período (precomputado en el mock). */
+  /** Period average (precomputed in the mock). */
   avg: number;
   items: HistorialEntry[];
 };

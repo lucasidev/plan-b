@@ -7,13 +7,12 @@ type Props = {
 };
 
 /**
- * Nav horizontal de los 5 tabs del shell `/my-career`. Cada tab es un
- * `<Link>` con `?tab={id}` para que el browser back/forward navegue entre
- * tabs (compartible por URL).
+ * Horizontal nav for the 5 tabs of the `/my-career` shell. Each tab is a `<Link>` with
+ * `?tab={id}` so browser back/forward navigates between tabs (URL-shareable).
  *
- * Server component porque los `Link` de Next manejan el highlight de
- * "tab activo" via prop `active` (computado server-side desde `searchParams`).
- * El cambio entre tabs es client-side; Next intercepta los Link.
+ * Server component because Next's `Link`s handle the "active tab" highlight via the
+ * `active` prop (computed server-side from `searchParams`). The tab change is
+ * client-side; Next intercepts the Links.
  */
 export function TabsNav({ active }: Props) {
   return (
