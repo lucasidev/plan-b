@@ -11,10 +11,10 @@ import type { ResetPasswordFormState } from './types';
  * the form (the page reads it from the search params and injects it),
  * so the action signature stays the same uniform shape `useActionState`
  * expects. On 204 it redirects to `/sign-in?reset=success`; the sign-in
- * page reacts to that param and renders a "ya podés ingresar con tu nueva
- * contraseña" banner.
+ * page reacts to that param and renders a "ya podés ingresar con tu nueva contraseña"
+ * banner.
  */
-// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- reset-password is public; el token del mail es el auth factor
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- reset-password is public; the emailed token is the auth factor
 export async function resetPasswordAction(
   _prev: ResetPasswordFormState,
   formData: FormData,

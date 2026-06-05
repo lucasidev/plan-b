@@ -28,7 +28,7 @@ const REFRESH_COOKIE = 'planb_refresh';
  * export async functions. State types are not needed for this action
  * because it doesn't surface anything to a form, just redirects.
  */
-// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-out is defensive cleanup; safe to invoke incluso con sesión ya caída
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-out is defensive cleanup; safe to invoke even when the session is already gone
 export async function signOutAction(): Promise<void> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(REFRESH_COOKIE)?.value;

@@ -7,30 +7,30 @@ import { resendVerificationAction } from '../actions';
 import { initialResendVerificationState, type ResendVerificationFormState } from '../types';
 
 type Props = {
-  /** Email para reenviar el link. Puede venir de un searchParam (`/sign-up/check-inbox?email=`)
-   *  o de un error previo de sign-in (`email_not_verified`). */
+  /** Email to resend the link to. Can come from a searchParam
+   *  (`/sign-up/check-inbox?email=`) or from a previous sign-in error
+   *  (`email_not_verified`). */
   email: string;
-  /** Variante visual:
-   *  - `primary`: full-width, look de botón principal (uso en check-inbox).
-   *  - `inline`: compacto, ideal para banners de error en formularios. */
+  /** Visual variant:
+   *  - `primary`: full-width, primary-button look (used in check-inbox).
+   *  - `inline`: compact, ideal for error banners inside forms. */
   variant?: 'primary' | 'inline';
 };
 
-/** Cooldown post-envío: 60 segundos durante los cuales el botón queda deshabilitado
- *  con un contador. Evita que el usuario haga spam contra el rate limiter. */
+/** Post-send cooldown: 60 seconds during which the button stays disabled with a
+ *  countdown. Prevents the user from spamming the rate limiter. */
 const COOLDOWN_SECONDS = 60;
 
 /**
- * Botón reusable que dispara `POST /api/identity/resend-verification`. Maneja
- * 4 estados visibles (idle / pending / sent / error) + un cooldown local de 60s
- * tras un envío exitoso.
+ * Reusable button that triggers `POST /api/identity/resend-verification`. Handles four
+ * visible states (idle / pending / sent / error) plus a 60s local cooldown after a
+ * successful send.
  *
- * Implementación: usa `useActionState` con un trigger programático en `onClick`
- * en lugar de envolver el botón en un `<form>`. Esa elección es deliberada:
- * el botón se inserta a veces dentro del sign-in form (que ya es `<form>`),
- * y un form anidado es HTML inválido. El action sigue siendo el mismo server
- * action ('use server'), simplemente lo invocamos vía `formAction(formData)`
- * sin un wrapper form.
+ * Implementation: uses `useActionState` with a programmatic trigger on `onClick`
+ * instead of wrapping the button in a `<form>`. That choice is deliberate: the button
+ * is sometimes inserted inside the sign-in form (already a `<form>`) and a nested form
+ * is invalid HTML. The action is still the same server action ('use server'), we just
+ * invoke it via `formAction(formData)` without a wrapping form.
  */
 export function ResendVerificationButton({ email, variant = 'primary' }: Props) {
   const [state, formAction] = useActionState<ResendVerificationFormState, FormData>(

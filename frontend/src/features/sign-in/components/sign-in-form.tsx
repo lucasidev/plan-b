@@ -105,10 +105,10 @@ function SubmitButton() {
 }
 
 function GoogleButton() {
-  // OAuth con Google no está implementado todavía. El botón queda visible
-  // para mantener la UI del mockup pero deshabilitado para no llevar a una
-  // ruta inexistente. Cuando exista el flow OAuth, este botón se convierte
-  // en un <Link href="/oauth/google"> (path TBD según el callback OAuth).
+  // Google OAuth is not implemented yet. The button stays visible to keep the mockup
+  // UI but is disabled to avoid leading to a non-existent route. When the OAuth flow
+  // exists, this button becomes a <Link href="/oauth/google"> (path TBD by the OAuth
+  // callback).
   return (
     <button
       type="button"

@@ -4,17 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SignInForm } from './sign-in-form';
 
 /**
- * Sample tests para la rama "Components" de la pirámide (ADR-0036).
- * Cubrimos:
- *   - render inicial (campos visibles, submit disabled? No, sólo durante pending)
- *   - happy path: typing + submit dispara el action con los valores correctos
- *   - error: el component renderiza alert + mensaje cuando el action devuelve
+ * Sample tests for the "Components" tier of the pyramid (ADR-0036). We cover:
+ *   - initial render (fields visible, submit disabled? no, only while pending)
+ *   - happy path: typing + submit fires the action with the right values
+ *   - error: the component renders alert + message when the action returns
  *     status: 'error'
- *   - footer link: "Creá tu cuenta" navega a /sign-up (post US-036)
+ *   - footer link: "Creá tu cuenta" navigates to /sign-up (post US-036)
  *
- * El action está mockeado al nivel del módulo (`./actions`) para no acoplar
- * el component test al server-side. El detalle del action vive en
- * `actions.test.ts`.
+ * The action is mocked at the module level (`./actions`) so the component test does
+ * not couple to server-side logic. Action details are covered in `actions.test.ts`.
  */
 
 vi.mock('../actions', () => ({
@@ -99,7 +97,7 @@ describe('SignInForm', () => {
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
     expect(await screen.findByText(/no llegó el mail/i)).toBeInTheDocument();
-    // El botón de resend debe estar presente después del error.
+    // The resend button must be present after the error.
     expect(screen.getByRole('button', { name: /reenviar el link/i })).toBeInTheDocument();
   });
 });

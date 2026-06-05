@@ -24,7 +24,7 @@ export function ResetSuccessBanner() {
 
   if (!open) return null;
 
-  // <output> tiene role="status" implícito; reemplazo idiomático de <div role="status">.
+  // <output> has implicit role="status"; idiomatic replacement for <div role="status">.
   return (
     <output
       aria-live="polite"

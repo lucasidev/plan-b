@@ -3,13 +3,13 @@ import { resendVerificationAction } from './actions';
 import { initialResendVerificationState } from './types';
 
 /**
- * Tests para la rama "Server Actions" de la pirámide (ADR-0036).
+ * Tests for the "Server Actions" tier of the pyramid (ADR-0036).
  *
- * Cubre las 4 ramas que el action expone vía ResendVerificationFormState:
- *   - input inválido (Zod) → error.kind=validation
- *   - 204                  → status=sent
- *   - 429                  → error.kind=rate_limit
- *   - 5xx / otros          → error.kind=unknown
+ * Covers the four branches the action exposes through ResendVerificationFormState:
+ *   - invalid input (Zod) -> error.kind=validation
+ *   - 204                 -> status=sent
+ *   - 429                 -> error.kind=rate_limit
+ *   - 5xx / other         -> error.kind=unknown
  */
 
 vi.mock('./api', () => ({

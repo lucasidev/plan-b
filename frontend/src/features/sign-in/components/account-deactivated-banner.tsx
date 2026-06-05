@@ -4,13 +4,13 @@ import { CheckCircle2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 /**
- * Banner de confirmación tras dar de baja la cuenta (ADR-0044, US-038-bis frontend).
- * Montado por `app/(auth)/sign-in/page.tsx` cuando `?account-deactivated=1` está en la URL,
- * driven por el redirect del `deactivateAccountAction`.
+ * Confirmation banner shown after deactivating an account (ADR-0044, US-038-bis
+ * frontend). Mounted by `app/(auth)/sign-in/page.tsx` when `?account-deactivated=1` is
+ * in the URL, driven by the redirect from `deactivateAccountAction`.
  *
- * Mismo dismissal model que `ResetSuccessBanner`: 8s auto-dismiss + close manual.
- * El query param queda en la URL post-dismissal (inocuo, el banner ignora estado stale en
- * el próximo render).
+ * Same dismissal model as `ResetSuccessBanner`: 8s auto-dismiss + manual close. The
+ * query param stays in the URL after dismissal (harmless, the banner ignores stale
+ * state on the next render).
  */
 export function AccountDeactivatedBanner() {
   const [open, setOpen] = useState(true);
@@ -22,7 +22,7 @@ export function AccountDeactivatedBanner() {
 
   if (!open) return null;
 
-  // <output> tiene role="status" implícito; reemplazo idiomático de <div role="status">.
+  // <output> has implicit role="status"; idiomatic replacement for <div role="status">.
   return (
     <output
       aria-live="polite"
