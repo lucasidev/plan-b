@@ -12,13 +12,14 @@ const ACCESS_COOKIE = 'planb_session';
 const REFRESH_COOKIE = 'planb_refresh';
 
 /**
- * Server action del cambio de contraseña (US-079-i). Validación cliente con Zod, PATCH al
- * backend, mapeo de los códigos específicos a kinds del FormState. Si el backend devuelve
- * 204, limpia las cookies de sesión locales (el backend ya revocó los refresh tokens vía
- * Redis) y redirige a /sign-in con un flag para mostrar el banner.
+ * Change-password server action (US-079-i). Client validation with Zod, PATCH to the
+ * backend, mapping of the specific codes to FormState kinds. If the backend returns 204,
+ * clears the local session cookies (the backend already revoked the refresh tokens via
+ * Redis) and redirects to /sign-in with a flag to show the banner.
  *
- * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
- * PATCH /api/me/password, pero chequear acá evita el round-trip si la sesión ya se cayó.
+ * The `getSession()` check at the top is defense-in-depth: the backend still validates
+ * the JWT on every PATCH /api/me/password, but checking here avoids the round-trip if
+ * the session is already gone.
  */
 export async function changePasswordAction(
   _prev: ChangePasswordFormState,

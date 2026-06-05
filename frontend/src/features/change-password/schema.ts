@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 /**
- * Espeja el contrato del PATCH /api/me/password (US-079-i). El backend tiene la verdad sobre
- * "current vs new vs same" y devuelve 401/400 con los códigos específicos; acá pre-validamos
- * solo presencia + length floor para evitar round-trips obvios.
+ * Mirrors the PATCH /api/me/password contract (US-079-i). The backend owns the truth on
+ * "current vs new vs same" and returns 401/400 with the specific codes; here we only
+ * pre-validate presence + length floor to avoid obvious round-trips.
  */
 export const changePasswordSchema = z
   .object({

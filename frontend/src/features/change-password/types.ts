@@ -1,14 +1,14 @@
 /**
- * Estado del action de cambio de contraseña. El modal renderiza distinto según el `kind`:
- * - <c>wrong_current</c>: highlightea el campo "Contraseña actual".
- * - <c>too_weak</c>: highlightea el campo "Nueva contraseña" (longitud).
- * - <c>same_as_current</c>: highlightea "Nueva contraseña" con copy distinto.
- * - <c>validation</c>: errores del Zod schema (mismatch, vacíos, demasiado larga).
- * - <c>unknown</c>: red caída o 500.
+ * Change-password action state. The modal renders differently per `kind`:
+ * - `wrong_current`: highlights the "Contraseña actual" field.
+ * - `too_weak`: highlights the "Nueva contraseña" field (length).
+ * - `same_as_current`: highlights "Nueva contraseña" with a distinct copy.
+ * - `validation`: Zod schema errors (mismatch, empty, too long).
+ * - `unknown`: network down or 500.
  *
- * Success no es un estado terminal del modal: cuando el backend devuelve 204, el action
- * dispara <c>signOutEverywhere()</c> que cierra la sesión local (la revocación de refresh
- * tokens server-side fuerza el re-login) y redirige a <c>/sign-in?password-changed=1</c>.
+ * Success is not a terminal state of the modal: when the backend returns 204, the action
+ * clears the local session (server-side refresh-token revocation forces re-login) and
+ * redirects to `/sign-in?password-changed=1`.
  */
 export type ChangePasswordFormState =
   | { status: 'idle' }
