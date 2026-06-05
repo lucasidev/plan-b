@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * E2E de /sobre (US-074). Página pública, no requiere auth. Verifica que el contenido
+ * E2E de /about (US-074). Página pública, no requiere auth. Verifica que el contenido
  * estático (hero + cards de manifiesto, equipo, números, universidades, open source) renderea
  * sin errores y los links externos apuntan donde corresponde.
  */
@@ -11,8 +11,8 @@ test.describe('Sobre plan-b (US-074)', () => {
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/sobre');
-    await expect(page).toHaveURL(/\/sobre$/);
+    await page.goto('/about');
+    await expect(page).toHaveURL(/\/about$/);
   });
 
   test('hero renderea headline y lede', async ({ page }) => {

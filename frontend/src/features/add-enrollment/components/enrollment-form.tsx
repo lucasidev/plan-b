@@ -16,7 +16,7 @@ type Props = {
 
 /**
  * Form de carga de entrada del historial (US-013-f). Reemplaza el stub
- * de `(member)/mi-carrera/historial/agregar/page.tsx`.
+ * de `(member)/my-career/transcript/add/page.tsx`.
  *
  * <para>
  * Cargas: subjects (filtradas por <c>careerPlanId</c> del student) y

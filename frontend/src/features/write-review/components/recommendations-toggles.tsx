@@ -1,15 +1,15 @@
 'use client';
 
 /**
- * Campo 6 del editor (US-049): dos preguntas Sí/No. Espejo de `V2YesNo`. Cada par es un
- * radiogroup con 2 opciones. Implementado con fieldset + radios nativos + label envolvente
- * para que el screen reader anuncie "Sí, 1 of 2" / "No, 2 of 2" sin ARIA forzada.
+ * Editor field 6 (US-049): two Yes/No questions. Mirrors `V2YesNo`. Each pair is a
+ * radiogroup with two options. Built with fieldset + native radios + enclosing label so
+ * screen readers announce "Sí, 1 of 2" / "No, 2 of 2" without forced ARIA.
  *
  *  - "Recomendarías esta cursada (materia + comisión)" → wouldRecommendCourse.
  *  - "Volverías a tomar clases con este docente" → wouldRetakeTeacher.
  *
- * Default true (happy path); el alumno tiene que tocar "No" si la cursada/docente le fue
- * mal.
+ * Default true (happy path); the student has to tap "No" when the course or teacher
+ * went poorly.
  */
 function YesNoToggle({
   question,

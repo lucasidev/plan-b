@@ -3,16 +3,16 @@
 import { DIFFICULTY_LABELS } from '../data/mocks';
 
 /**
- * Campo 2 del editor (US-049): dificultad 1..5 steps. Espejo de `V2Steps` del canvas.
+ * Editor field 2 (US-049): difficulty, 1..5 steps. Mirrors `V2Steps` in the canvas.
  *
- *  - 5 cards en grid columns. Cada una: número grande arriba (mono), label corta abajo.
- *  - Estados visuales:
- *    - Step seleccionado: borde accent + bg accent-soft + ink fuerte + 600.
- *    - Steps "llenos" hasta el seleccionado: bg-bg-elev (visualmente "consumidos"), ink.
- *    - Steps siguientes: bg-bg-card + ink-3 (apagados).
- *  - Implementación: fieldset + 5 inputs radio visualmente ocultos + label envolvente.
+ *  - 5 grid columns. Each cell: large number on top (mono), short label below.
+ *  - Visual states:
+ *    - Selected step: accent border + accent-soft bg + strong ink + 600.
+ *    - "Filled" steps up to the selected one: bg-bg-elev ("consumed"), ink.
+ *    - Following steps: bg-bg-card + ink-3 (muted).
+ *  - Implementation: fieldset + 5 visually hidden radio inputs + enclosing labels.
  *
- * Valor 0 = "no elegido"; el schema bloquea el submit con difficulty < 1.
+ * Value 0 means "unset"; the schema blocks the submit when difficulty < 1.
  */
 export function DifficultySteps({
   value,

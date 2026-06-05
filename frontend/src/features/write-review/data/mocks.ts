@@ -1,13 +1,13 @@
-import type { CursadaContext, ReviewAnonymousIdentity } from '../types';
+import type { EnrollmentContext, ReviewAnonymousIdentity } from '../types';
 
 /**
- * Mock del contexto de la cursada que se está reseñando (`V2_EDITOR_CTX` del canvas).
- * Mientras el endpoint `GET /api/me/pending-reviews/:cursadaId` no exista (US-048 backend
- * + US futura del rework de Review), el editor lo levanta desde acá. Cuando aterrice la
- * data real, se resuelve por `[cursadaId]` y este mock queda como fallback de demo.
+ * Mock of the enrollment context being reviewed (`V2_EDITOR_CTX` in the canvas).
+ * Until the `GET /api/me/pending-reviews/:enrollmentId` endpoint exists (US-048 backend
+ * + the upcoming Review rework US), the editor reads this. Once the real data lands, it
+ * is resolved by `[enrollmentId]` and this mock stays as a demo fallback.
  */
-export const MOCK_CURSADA_CONTEXT: CursadaContext = {
-  id: 'cursada-mock-isw301-brandt-2025-2c',
+export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
+  id: 'enrollment-mock-isw301-brandt-2025-2c',
   matCode: 'ISW301',
   matName: 'Ingeniería de Software I',
   prof: 'Brandt, Carlos',
@@ -17,9 +17,9 @@ export const MOCK_CURSADA_CONTEXT: CursadaContext = {
 };
 
 /**
- * Identidad pseudónima que se muestra en el preview lateral. Alineada al ADR-0009: solo
- * año en carrera + carrera + período cursado. Cuando aterrice StudentProfile real con el
- * año del alumno, se lee de session.
+ * Pseudonymous identity rendered in the side preview. Aligned with ADR-0009: only
+ * year in career + career + period attended. When the real StudentProfile carries the
+ * student year, it is read from the session instead.
  */
 export const MOCK_ANONYMOUS_IDENTITY: ReviewAnonymousIdentity = {
   year: 4,
@@ -28,9 +28,9 @@ export const MOCK_ANONYMOUS_IDENTITY: ReviewAnonymousIdentity = {
 };
 
 /**
- * Set de tags pre-seleccionables del canvas (`V2_TAGS` en `v2-screens-4.jsx`). Marcado
- * como ejemplo en ADR-0041: el set definitivo se decide en una US separada. Mantener
- * tipado readonly para que el chip selector valide contra esto.
+ * Pre-selectable tag set from the canvas (`V2_TAGS` in `v2-screens-4.jsx`). Marked as
+ * an example in ADR-0041: the definitive set is decided in a separate US. Kept readonly
+ * so the chip selector type-checks against it.
  */
 export const REVIEW_TAGS = [
   'claro explicando',
@@ -49,10 +49,10 @@ export const REVIEW_TAGS = [
 
 export type ReviewTag = (typeof REVIEW_TAGS)[number];
 
-/** Labels semánticas que acompañan al rating 1..5 (al lado de las estrellas). */
+/** Semantic labels rendered next to the rating stars (1..5). */
 export const RATING_LABELS = ['', 'mala', 'regular', 'aceptable', 'buena', 'excelente'] as const;
 
-/** Labels semánticas que acompañan a difficulty 1..5 (debajo de cada step). */
+/** Semantic labels rendered below each difficulty step (1..5). */
 export const DIFFICULTY_LABELS = [
   'muy fácil',
   'fácil',

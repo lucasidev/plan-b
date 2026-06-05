@@ -6,8 +6,8 @@ import { OnboardingShell } from './onboarding-shell';
 /**
  * Paso 03 del onboarding (US-037-f). Tres opciones para cargar historial:
  *
- *   1. Cargar PDF / captura del SIU (US-014): lleva a `/mi-carrera/historial/importar`.
- *   2. Cargarlo manualmente (US-013): lleva a `/mi-carrera/historial/agregar`.
+ *   1. Cargar PDF / captura del SIU (US-014): lleva a `/my-career/transcript/import`.
+ *   2. Cargarlo manualmente (US-013): lleva a `/my-career/transcript/add`.
  *   3. Lo cargo después: avanza a `/onboarding/done`.
  *
  * Server component (no usa state). Los tres caminos son no-destructivos: el
@@ -25,13 +25,13 @@ export function HistoryOptions() {
           icon={<FileText size={18} aria-hidden />}
           title="Subir PDF o captura del SIU"
           subtitle="Lo procesamos automáticamente."
-          href="/mi-carrera/historial/importar"
+          href="/my-career/transcript/import"
         />
         <ActiveOption
           icon={<Pencil size={18} aria-hidden />}
           title="Cargarlo manualmente"
           subtitle="Una materia a la vez, con su nota y cuatri."
-          href="/mi-carrera/historial/agregar"
+          href="/my-career/transcript/add"
         />
         <ActiveOption
           icon={<SkipForward size={18} aria-hidden />}

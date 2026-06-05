@@ -12,7 +12,7 @@ import type { UpdateSettingsFormState } from './types';
  * componente cliente usa para reflejar éxito o mostrar copy de error.
  *
  * <para>
- * Invalida la cache de /ajustes para que un refresh server-rendered traiga la versión
+ * Invalida la cache de /settings para que un refresh server-rendered traiga la versión
  * actualizada. Mientras tanto el componente usa optimistic UI: el toggle se marca al click
  * y se rollbackea solo si el action devuelve error.
  * </para>
@@ -56,7 +56,7 @@ export async function updateSettingsAction(
   }
 
   if (response.status === 204) {
-    revalidatePath('/ajustes');
+    revalidatePath('/settings');
     return { status: 'success', patch: parsed.data };
   }
 

@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { RATING_LABELS } from '../data/mocks';
 
 /**
- * Campo 1 del editor (US-049): rating general 1..5 estrellas. Espejo del mockup.
+ * Editor field 1 (US-049): overall rating, 1..5 stars. Mirrors the mockup.
  *
- *  - 5 estrellas que llenan accent al pasar el mouse o al elegir.
- *  - Label semántica al lado (mala/regular/aceptable/buena/excelente) en mono.
- *  - Hover state preview; al salir vuelve al valor seleccionado.
- *  - Implementación: `<fieldset>` con 5 `<input type="radio">` visualmente ocultos +
- *    `<label>` envolvente. Da semántica radio real (screen readers anuncian "1 of 5
- *    selected"), teclado nativo (flechas / Tab), sin role+aria-checked manual.
+ *  - 5 stars filled with accent on hover or selection.
+ *  - Semantic mono label next to them (mala/regular/aceptable/buena/excelente).
+ *  - Hover state preview; on leave we go back to the selected value.
+ *  - Implementation: a `<fieldset>` with 5 visually hidden `<input type="radio">` plus an
+ *    enclosing `<label>`. Gives true radio semantics (screen readers announce "1 of 5
+ *    selected"), native keyboard support (arrows / Tab), no manual role+aria-checked.
  *
- * Valor 0 = "no elegido" (sentinel); el schema bloquea el submit con rating < 1.
+ * Value 0 means "unset" (sentinel); the schema blocks the submit when rating < 1.
  */
 export function StarRatingInput({
   value,

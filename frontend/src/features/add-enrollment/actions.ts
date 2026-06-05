@@ -8,7 +8,7 @@ import type { AddEnrollmentFormState } from './types';
 
 /**
  * Server action del form de US-013-f. Hace POST /api/me/enrollment-records
- * (US-013 backend) y al éxito (201) redirige a `/mi-carrera?tab=historial`.
+ * (US-013 backend) y al éxito (201) redirige a `/my-career?tab=historial`.
  *
  * El UserId se extrae del session JWT del lado server (no del client) por
  * la misma razón que onboarding/career: el endpoint backend lo acepta en
@@ -66,7 +66,7 @@ export async function submitAddEnrollmentAction(
   });
 
   if (response.status === 201) {
-    redirect('/mi-carrera?tab=historial');
+    redirect('/my-career?tab=historial');
   }
 
   if (response.status === 409) {

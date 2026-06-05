@@ -1,13 +1,13 @@
 /**
- * Header de cada campo numerado del editor (US-049). Espejo de `V2FieldHead` del canvas.
+ * Header for each numbered editor field (US-049). Mirrors `V2FieldHead` in the canvas.
  *
- *  - Número de paso (mono, ink-3, 01..06).
- *  - Label principal (ink-1, semibold).
- *  - Asterisco accent si es required.
- *  - Hint opcional debajo (ink-3, alineada al margen del label).
+ *  - Step number (mono, ink-3, 01..06).
+ *  - Main label (ink-1, semibold).
+ *  - Accent asterisk when required.
+ *  - Optional hint below (ink-3, aligned with the label's left margin).
  *
- * No es un H tag fuerte: es un row con número + label dentro de una card. La página tiene
- * un `<h1>` aparte ("Reseñá tu cursada"); los 6 campos son labels visuales del form.
+ * Not a strong H tag: a row with number + label inside a card. The page has its own
+ * `<h1>` ("Reseñá tu cursada"); the six field heads are visual form labels.
  */
 export function FieldHead({
   n,

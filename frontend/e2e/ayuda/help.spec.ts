@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { LUCIA } from '../helpers/personas';
 
 /**
- * E2E de /ayuda (US-073). Página authenticated, requiere login. Verifica:
+ * E2E de /help (US-073). Página authenticated, requiere login. Verifica:
  *  - Sidebar muestra "Ayuda" en sección "Otros" y navega.
  *  - FAQ accordions abren/cierran y muestran respuesta.
  *  - Card "Hablá con nosotros" tiene mailto al support email.
@@ -25,7 +25,7 @@ test.describe('Ayuda (US-073)', () => {
 
     // El sidebar v2 tiene "Ayuda" en sección "Otros" (config en lib/member-shell.ts).
     await page.getByRole('link', { name: /^ayuda$/i }).click();
-    await expect(page).toHaveURL(/\/ayuda$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/help$/, { timeout: 30_000 });
     await expect(
       page.getByRole('heading', { name: /^¿cómo te ayudamos\?$/i, level: 1 }),
     ).toBeVisible({ timeout: 15_000 });

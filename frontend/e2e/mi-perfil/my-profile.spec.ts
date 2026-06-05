@@ -5,7 +5,7 @@ import { LUCIA } from '../helpers/personas';
  * E2E de Mi perfil (US-047) + zona peligrosa con deactivate-account modal (US-038-bis frontend).
  *
  * Cubre:
- *  - Login Lucía + navegar a /mi-perfil desde el AvatarMenu (footer del sidebar).
+ *  - Login Lucía + navegar a /my-profile desde el AvatarMenu (footer del sidebar).
  *  - Render del header con avatar de iniciales + email + "miembro desde".
  *  - Edit mode: cambiar displayName + yearOfStudy + regularStudent y verificar persistencia.
  *  - Click "Dar de baja mi cuenta" abre el modal de deactivate con copy correcto.
@@ -18,7 +18,7 @@ import { LUCIA } from '../helpers/personas';
  */
 
 test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
-  // En CI dev frontend (turbopack JIT) compila /mi-perfil la primera vez (~10s) y el
+  // En CI dev frontend (turbopack JIT) compila /my-profile la primera vez (~10s) y el
   // sign-in dev tarda ~4s. Bumpeamos el budget para que el beforeEach + el body de cada
   // test tengan margen real.
   test.setTimeout(180_000);
@@ -30,12 +30,12 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
-    // Navegar directo a /mi-perfil en lugar de via AvatarMenu. La interacción con el dropdown
+    // Navegar directo a /my-profile en lugar de via AvatarMenu. La interacción con el dropdown
     // era flaky en CI: el menuitem se clickea antes de que el menú termine de abrir y la
-    // navegación nunca dispara. La cobertura "el menuitem lleva a /mi-perfil" la testea otro
+    // navegación nunca dispara. La cobertura "el menuitem lleva a /my-profile" la testea otro
     // spec dedicado al AvatarMenu cuando aterrice.
-    await page.goto('/mi-perfil');
-    await expect(page).toHaveURL(/\/mi-perfil$/, { timeout: 30_000 });
+    await page.goto('/my-profile');
+    await expect(page).toHaveURL(/\/my-profile$/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /^mi perfil$/i, level: 1 })).toBeVisible({
       timeout: 15_000,
     });

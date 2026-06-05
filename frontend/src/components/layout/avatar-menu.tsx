@@ -158,10 +158,10 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
         </div>
       </div>
 
-      <MenuLink href="/mi-perfil" onClick={onClose}>
+      <MenuLink href="/my-profile" onClick={onClose}>
         Mi perfil
       </MenuLink>
-      <MenuLink href="/ajustes" onClick={onClose}>
+      <MenuLink href="/settings" onClick={onClose}>
         Ajustes
       </MenuLink>
       <MenuLink href="/help" onClick={onClose}>

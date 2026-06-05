@@ -5,14 +5,16 @@ import { reviewFormSchema } from './schema';
 import type { PublishReviewResult } from './types';
 
 /**
- * Server action stub para publicar reseña (US-049). NO llama al backend real: el `POST
- * /api/reviews` actual (US-017) sigue un modelo viejo (subjectText/teacherText/finalGrade)
- * que no acepta los campos nuevos (rating, hoursPerWeek, tags, recommendations). Hasta que
- * aterrice el backend rework, este action simula 700ms de latencia y devuelve un id
- * sintético para que el flujo end-to-end del editor sea visible.
+ * Stub server action to publish a review (US-049). Does NOT call the real backend: the
+ * current `POST /api/reviews` (US-017) follows a legacy model
+ * (subjectText/teacherText/finalGrade) that does not accept the new fields (rating,
+ * hoursPerWeek, tags, recommendations). Until the backend rework lands, this action
+ * simulates 700ms of latency and returns a synthetic id so the editor's end-to-end flow
+ * is visible.
  *
- * Cuando aterrice el endpoint real, esta función se acopla a `apiFetchAuthenticated('POST',
- * '/api/reviews', body)` y deja de redirigir manualmente: el caller maneja la respuesta.
+ * When the real endpoint lands, this function will attach to
+ * `apiFetchAuthenticated('POST', '/api/reviews', body)` and stop redirecting manually:
+ * the caller will handle the response.
  */
 export async function publishReviewAction(
   _prev: PublishReviewResult,
@@ -32,20 +34,21 @@ export async function publishReviewAction(
 
   const validated = reviewFormSchema.safeParse(parsed);
   if (!validated.success) {
-    // El client ya tiene Zod validando; si llega acá, es payload manipulado o bug.
+    // The client already runs Zod validation; reaching here means a tampered payload or
+    // a bug.
     return {
       status: 'error',
       message: validated.error.issues[0]?.message ?? 'Datos inválidos.',
     };
   }
 
-  // Mock de latencia. El id sintético es estable por sesión para que demos sean
-  // reproducibles; en producción viene del backend.
+  // Latency mock. The synthetic id is stable per session so demos stay reproducible; in
+  // production it comes from the backend.
   await new Promise((r) => setTimeout(r, 700));
   const reviewId = `mock-${Date.now().toString(36)}`;
 
-  // Después de publicar, US-048 manda a `/reseñas?tab=mias`. Ese shell no existe todavía,
-  // así que por ahora redirigimos a `/inicio` con un searchParam que la home puede leer
-  // para mostrar un toast "reseña publicada" cuando aterrice esa pieza (TODO).
-  redirect(`/inicio?published-review=${reviewId}`);
+  // After publishing, US-048 will send to `/reviews?tab=mine`. That shell does not exist
+  // yet, so for now we redirect to `/home` with a searchParam the home page can read to
+  // show a "review published" toast once that piece lands (TODO).
+  redirect(`/home?published-review=${reviewId}`);
 }

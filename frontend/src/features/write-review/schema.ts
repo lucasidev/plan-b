@@ -1,20 +1,20 @@
 import { z } from 'zod';
 
 /**
- * Schema del editor de reseña (US-049). Modelo de ADR-0041 (post-claude-design):
+ * Review editor schema (US-049). ADR-0041 model (post-claude-design):
  *
- *  - Rating general 1..5 estrellas (requerido).
- *  - Dificultad 1..5 steps (requerido).
- *  - Horas/semana 0..20 (opcional). El mockup limita a 20 (no 30 como dice el doc),
- *    porque pasar de 20 hs/sem fuera de clase es outlier y el slider se mantiene legible.
- *  - Texto libre (opcional, sin mínimo, max 4000 chars).
- *  - Tags (opcional, subset de los allowed). El set inicial está en `mocks.ts` y es ejemplo;
- *    la taxonomy definitiva aterriza en otra US.
- *  - wouldRecommendCourse / wouldRetakeTeacher (requeridos, default true para empujar al
- *    happy path; el alumno tiene que tocar para decir "No").
+ *  - Overall rating 1..5 stars (required).
+ *  - Difficulty 1..5 steps (required).
+ *  - Hours/week 0..20 (optional). The mockup caps at 20 (not 30 as the doc states),
+ *    because going over 20 hs/week outside class is an outlier and the slider stays legible.
+ *  - Free text (optional, no minimum, max 4000 chars).
+ *  - Tags (optional, subset of the allowed set). The initial set lives in `mocks.ts` and is
+ *    only an example; the definitive taxonomy lands in a separate US.
+ *  - wouldRecommendCourse / wouldRetakeTeacher (required, default true to nudge the
+ *    happy path; the student has to tap to say "No").
  *
- * Backend rework pendiente: el `POST /api/reviews` actual (US-017) NO acepta varios de
- * estos campos. Esta UI funciona contra mock hasta que la US del backend rework aterrice.
+ * Pending backend rework: the current `POST /api/reviews` (US-017) does NOT accept several
+ * of these fields. This UI works against a mock until the backend rework US lands.
  */
 export const reviewFormSchema = z.object({
   rating: z
@@ -47,12 +47,12 @@ export const reviewFormSchema = z.object({
 export type ReviewFormInput = z.infer<typeof reviewFormSchema>;
 
 /**
- * Valor inicial del form. Rating y difficulty arrancan en 0 (no seleccionados, fuerzan al
- * usuario a tocar). hoursPerWeek arranca en 8 (mediano del mockup). Recomendaciones en
- * true por default (happy path).
+ * Form initial value. Rating and difficulty start at 0 (unselected, force the user to
+ * tap). hoursPerWeek starts at 8 (median in the mockup). Recommendations default to
+ * true (happy path).
  */
 export const REVIEW_FORM_DEFAULTS: ReviewFormInput = {
-  rating: 0 as unknown as 1, // Sentinel "no elegido"; la validación bloquea el submit.
+  rating: 0 as unknown as 1, // "Unset" sentinel; validation blocks the submit.
   difficulty: 0 as unknown as 1,
   hoursPerWeek: 8,
   text: undefined,

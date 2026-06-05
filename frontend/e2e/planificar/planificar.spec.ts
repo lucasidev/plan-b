@@ -6,7 +6,7 @@ import { LUCIA } from '../helpers/personas';
  * US-016 + US-023 pendientes).
  *
  * Cubre:
- *  - Login Lucía + navegar a /planificar desde el sidebar.
+ *  - Login Lucía + navegar a /plan desde el sidebar.
  *  - Render del header + tabs.
  *  - Tab "En curso" default: lista de materias del año + stats + calendario semanal.
  *  - Tab "Borrador": cambio vía URL ?tab=borrador, renderea drafts mock.
@@ -18,7 +18,7 @@ import { LUCIA } from '../helpers/personas';
  */
 
 test.describe('Planificar (US-046)', () => {
-  // En dev frontend (turbopack JIT) el primer hit a /planificar compila ~10s; sumado a sign-in
+  // En dev frontend (turbopack JIT) el primer hit a /plan compila ~10s; sumado a sign-in
   // lento en dev (~4s) el beforeEach se acerca al 60s default. Subimos el budget del test
   // para que tenga margen real. En CI (build estático) no aplica.
   test.setTimeout(120_000);
@@ -34,11 +34,8 @@ test.describe('Planificar (US-046)', () => {
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
     // Sidebar link es "Planificar ⌘3" (incluye shortcut); usamos substring match.
-    await page
-      .getByRole('link', { name: /planificar/i })
-      .first()
-      .click();
-    await expect(page).toHaveURL(/\/planificar/, { timeout: 30_000 });
+    await page.getByRole('link', { name: /plan/i }).first().click();
+    await expect(page).toHaveURL(/\/plan/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /tu período, ajustable/i })).toBeVisible({
       timeout: 15_000,
     });
@@ -74,7 +71,7 @@ test.describe('Planificar (US-046)', () => {
   });
 
   test('publicar un borrador abre modal con checklist de validaciones', async ({ page }) => {
-    await page.goto('/planificar?tab=borrador');
+    await page.goto('/plan?tab=borrador');
     await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
 
     // Click en el primer botón "Publicar" disponible (puede haber drafts vencidos con Activar
@@ -86,7 +83,7 @@ test.describe('Planificar (US-046)', () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('heading', { name: /publicar este borrador/i })).toBeVisible();
     await expect(dialog.getByText(/sin choques de horario/i)).toBeVisible();
-    await expect(dialog.getByText(/correlativas/i)).toBeVisible();
+    await expect(dialog.getByText(/prerequisites/i)).toBeVisible();
 
     await dialog.getByRole('button', { name: /cancelar/i }).click();
     await expect(dialog).not.toBeVisible();

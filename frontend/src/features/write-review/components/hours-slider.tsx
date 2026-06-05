@@ -1,14 +1,15 @@
 'use client';
 
 /**
- * Campo 3 del editor (US-049): horas de estudio fuera de clase por semana, opcional.
- * Slider 0..20 con valor monoespaciado al lado y ticks visuales (0 / 10 / 20+).
+ * Editor field 3 (US-049): optional weekly study hours outside class.
+ * Range slider 0..20 with a monospaced live value next to it and visual ticks (0 / 10 / 20+).
  *
- * El mockup usa accent-color sobre el input nativo (`accent-accent`). El número grande
- * usa font-mono y se actualiza on-change. Sin onBlur, sin debounce.
+ * The mockup uses accent-color on the native input (`accent-accent`). The large number
+ * uses font-mono and updates on-change. No onBlur, no debounce.
  *
- * El doc de US-049 dice 0..30, pero el mockup zanjó 0..20 porque > 20 hs/sem fuera de
- * clase es outlier y el slider pierde legibilidad. Mantenemos el mockup como fuente.
+ * The US-049 doc says 0..30, but the mockup settled on 0..20 because more than 20 hs/week
+ * outside class is an outlier and the slider loses legibility. We keep the mockup as the
+ * source of truth.
  */
 export function HoursSlider({
   value,

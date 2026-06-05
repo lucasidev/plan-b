@@ -9,10 +9,10 @@ import { Lede } from '@/components/ui/lede';
 import { publishReviewAction } from '../actions';
 import { MOCK_ANONYMOUS_IDENTITY } from '../data/mocks';
 import { REVIEW_FORM_DEFAULTS, reviewFormSchema } from '../schema';
-import type { CursadaContext, ReviewDraft } from '../types';
+import type { EnrollmentContext, ReviewDraft } from '../types';
 import { PUBLISH_REVIEW_INITIAL_STATE } from '../types';
-import { CursadaContextCard } from './cursada-context-card';
 import { DifficultySteps } from './difficulty-steps';
+import { EnrollmentContextCard } from './enrollment-context-card';
 import { FieldHead } from './field-head';
 import { HoursSlider } from './hours-slider';
 import { PreviewCard } from './preview-card';
@@ -22,25 +22,25 @@ import { StarRatingInput } from './star-rating-input';
 import { TagsPicker } from './tags-picker';
 
 /**
- * Editor de resena, orchestrator del feature (US-049). Monta el header con CTAs, las
- * dos columnas (form + preview/privacy) y maneja el estado del form.
+ * Review editor, feature orchestrator (US-049). Mounts the header with CTAs, the two
+ * columns (form + preview/privacy) and owns the form state.
  *
- * Decisiones internas:
- *  - Estado: un unico useState con el draft completo. Para 6 campos no necesitamos
- *    TanStack Form, el costo de boilerplate supera el beneficio. Si en US-018 (editar)
- *    aparece field-level validation reactiva, migramos a TanStack Form.
- *  - Validacion: zod al submit (en el server action). El client solo deshabilita el
- *    boton Publicar hasta que rating, difficulty y las recomendaciones estan OK.
- *  - Server action: ver actions.ts. Hoy es stub (no toca backend); cuando aterrice el
- *    rework backend se acopla sin tocar este componente.
- *  - Boton Guardar borrador: queda visible para coherencia con el mockup, pero abre un
- *    alert temporal. El backend no soporta drafts todavia (US futura).
+ * Internal decisions:
+ *  - State: a single useState with the full draft. For six fields we do not need
+ *    TanStack Form: boilerplate cost outweighs the benefit. If US-018 (edit) introduces
+ *    reactive field-level validation, we migrate to TanStack Form.
+ *  - Validation: Zod at submit (in the server action). The client only disables the
+ *    Publish button until rating, difficulty and the two toggles are valid.
+ *  - Server action: see actions.ts. Today it is a stub (no backend); when the backend
+ *    rework lands it can be wired in without touching this component.
+ *  - Save-draft button: kept visible for parity with the mockup, but it opens a
+ *    temporary alert. The backend does not support drafts yet (upcoming US).
  */
-export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
+export function ReviewEditor({ ctx }: { ctx: EnrollmentContext }) {
   const [draft, setDraft] = useState<ReviewDraft>(REVIEW_FORM_DEFAULTS);
   const [state, formAction] = useActionState(publishReviewAction, PUBLISH_REVIEW_INITIAL_STATE);
 
-  // Helper tipado para setear un solo campo manteniendo el resto.
+  // Typed helper to set a single field while keeping the rest of the draft.
   const updateField = <K extends keyof ReviewDraft>(key: K, value: ReviewDraft[K]) =>
     setDraft((prev) => ({ ...prev, [key]: value }));
 
@@ -50,8 +50,9 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
       tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
 
-  // Habilita Publicar solo cuando los obligatorios estan: rating y difficulty no son 0,
-  // y las dos toggles tienen valor (true/false ambos validos). Sanity check zod tambien.
+  // Enable Publish only when the required fields are set: rating and difficulty are not
+  // zero, and both toggles have a value (true/false are both valid). Plus a Zod sanity
+  // check on the whole shape.
   const canPublish =
     draft.rating >= 1 &&
     draft.difficulty >= 1 &&
@@ -63,11 +64,11 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
 
   return (
     <div className="py-6">
-      {/* Header: eyebrow breadcrumb + titulo + subtitulo + acciones */}
+      {/* Header: eyebrow breadcrumb + title + subtitle + actions */}
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="mb-2 text-[12px] text-ink-3">
-            {/* TODO US-048: estos links van a /reseñas?tab=pendientes cuando exista. */}
+            {/* TODO US-048: these links will point to /reviews?tab=pending once it exists. */}
             <span className="hover:text-ink-2">Reseñas</span>
             <span className="px-1 text-ink-4">{'>'}</span>
             <span className="hover:text-ink-2">Pendientes</span>
@@ -95,11 +96,11 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
       )}
 
       <div className="grid gap-4" style={{ gridTemplateColumns: 'minmax(0, 1fr) 320px' }}>
-        {/* COL FORM */}
+        {/* FORM COL */}
         <div className="flex flex-col gap-3.5">
-          <CursadaContextCard ctx={ctx} />
+          <EnrollmentContextCard ctx={ctx} />
 
-          {/* Campo 1: Rating */}
+          {/* Field 1: Rating */}
           <Card>
             <FieldHead
               n={1}
@@ -114,7 +115,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             />
           </Card>
 
-          {/* Campo 2: Dificultad */}
+          {/* Field 2: Difficulty */}
           <Card>
             <FieldHead
               n={2}
@@ -129,7 +130,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             />
           </Card>
 
-          {/* Campo 3: Horas */}
+          {/* Field 3: Hours */}
           <Card>
             <FieldHead
               n={3}
@@ -143,7 +144,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             />
           </Card>
 
-          {/* Campo 4: Tags */}
+          {/* Field 4: Tags */}
           <Card>
             <FieldHead
               n={4}
@@ -154,7 +155,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             <TagsPicker fieldId="field-tags" selected={draft.tags} onToggle={toggleTag} />
           </Card>
 
-          {/* Campo 5: Texto */}
+          {/* Field 5: Free text */}
           <Card>
             <FieldHead
               n={5}
@@ -176,7 +177,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             </div>
           </Card>
 
-          {/* Campo 6: Recomendaciones */}
+          {/* Field 6: Recommendations */}
           <Card>
             <FieldHead n={6} label="Dos preguntas rápidas" htmlFor="field-recommendations" />
             <RecommendationsToggles
@@ -188,11 +189,11 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
             />
           </Card>
 
-          {/* Footer del form: Cancelar */}
+          {/* Form footer: Cancel */}
           <div className="mt-1 flex justify-start">
-            {/* TODO US-048: a /reseñas?tab=pendientes cuando exista; por ahora /inicio. */}
+            {/* TODO US-048: point to /reviews?tab=pending once it lands; /home for now. */}
             <Link
-              href="/inicio"
+              href="/home"
               className="text-[12px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
             >
               Cancelar y volver al inicio
@@ -200,7 +201,7 @@ export function ReviewEditor({ ctx }: { ctx: CursadaContext }) {
           </div>
         </div>
 
-        {/* COL ASIDE */}
+        {/* ASIDE COL */}
         <aside className="flex flex-col gap-3.5 self-start">
           <PreviewCard
             rating={draft.rating}
@@ -236,9 +237,9 @@ function PublishButton({ disabled }: { disabled: boolean }) {
 }
 
 /**
- * Boton Guardar borrador stub. El backend no soporta drafts todavia (US futura).
- * Mantenemos el boton visible para coherencia con el mockup pero abre un alert temporal.
- * Cuando aterrice la US del backend, se enchufa una server action separada.
+ * Save-draft button stub. The backend does not support drafts yet (upcoming US). We keep
+ * the button visible to match the mockup but it opens a temporary alert. When the
+ * backend US lands, a dedicated server action will be wired in.
  */
 function DraftButton() {
   return (

@@ -22,7 +22,7 @@ type Props = {
 
 /**
  * Modal de cambio de contraseña (US-079-i, slice frontend del integrated). Triggereado desde
- * la sección Seguridad de /ajustes (US-072). Tres campos: contraseña actual + nueva +
+ * la sección Seguridad de /settings (US-072). Tres campos: contraseña actual + nueva +
  * confirmación. Pre-validación cliente con Zod (mismatch, longitud, mismo valor); errores
  * específicos del backend (wrong current, same as current, too weak, too long) se ruteán a
  * inline errors en el campo correspondiente.

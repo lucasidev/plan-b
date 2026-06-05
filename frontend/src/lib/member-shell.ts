@@ -22,7 +22,7 @@
 export type MemberRoute = {
   readonly path: string;
   readonly label: string;
-  readonly section: 'mi-cuatrimestre' | 'comunidad' | 'otros';
+  readonly section: 'my-term' | 'community' | 'otros';
   readonly shortcut?: string;
   /** US futura que va a llenar este stub con contenido real. Display only. */
   readonly futureUs?: string;
@@ -33,41 +33,41 @@ export const memberRoutes: readonly MemberRoute[] = [
   {
     path: '/home',
     label: 'Inicio',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘1',
   },
   {
-    path: '/mi-carrera',
+    path: '/my-career',
     label: 'Mi carrera',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘2',
     futureUs: 'US-045',
   },
   {
-    path: '/planificar',
+    path: '/plan',
     label: 'Planificar',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘3',
     futureUs: 'US-016',
   },
 
   // Comunidad
-  { path: '/reviews', label: 'Mis reseñas', section: 'comunidad', futureUs: 'US-020' },
+  { path: '/reviews', label: 'Mis reseñas', section: 'community', futureUs: 'US-020' },
 
   // Otros (Ajustes, Ayuda, Sobre plan-b - per mockup `soporte-v2-ayuda.png` que muestra
   // los tres ítems agrupados en "OTROS" al pie del sidebar v2). Mi perfil sigue
   // viviendo en el avatar menu, no en este nav.
-  { path: '/ajustes', label: 'Ajustes', section: 'otros' },
-  { path: '/ayuda', label: 'Ayuda', section: 'otros' },
-  { path: '/sobre', label: 'Sobre plan-b', section: 'otros' },
+  { path: '/settings', label: 'Ajustes', section: 'otros' },
+  { path: '/help', label: 'Ayuda', section: 'otros' },
+  { path: '/about', label: 'Sobre plan-b', section: 'otros' },
 ] as const;
 
 export const memberSections: ReadonlyArray<{
   readonly key: MemberRoute['section'];
   readonly label: string;
 }> = [
-  { key: 'mi-cuatrimestre', label: 'Mi cuatrimestre' },
-  { key: 'comunidad', label: 'Comunidad' },
+  { key: 'my-term', label: 'Mi cuatrimestre' },
+  { key: 'community', label: 'Comunidad' },
   { key: 'otros', label: 'Otros' },
 ] as const;
 
@@ -91,7 +91,7 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   // Patterns conocidos para rutas dinámicas que no entran en memberRoutes
   // (porque tienen [param] o niveles anidados). El topbar muestra el copy
   // amigable en vez del slug crudo de la URL.
-  if (pathname.startsWith('/resenas/escribir/')) {
+  if (pathname.startsWith('/reviews/write/')) {
     return ['Comunidad', 'Nueva reseña'];
   }
 

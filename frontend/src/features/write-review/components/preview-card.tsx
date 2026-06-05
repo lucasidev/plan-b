@@ -3,16 +3,16 @@
 import type { ReviewAnonymousIdentity } from '../types';
 
 /**
- * Preview vivo del editor (US-049, columna derecha). Espejo del aside del mockup.
+ * Live editor preview (US-049, right column). Mirrors the aside in the mockup.
  *
- * Muestra cómo va a verse la reseña en el feed (US-048) con la identidad anónima del
- * autor (ADR-0009: año + carrera + período, sin nombre / email / legajo). El componente
- * es la fuente única visual del card de feed; cuando US-048 aterrice, esta misma pieza
- * se reusa con un prop extra para acciones (editar / borrar).
+ * Shows how the review will appear in the feed (US-048) using the author's anonymous
+ * identity (ADR-0009: year + career + period, no name / email / student id). This
+ * component is the single visual source for the feed card; when US-048 lands, the same
+ * piece is reused with an extra prop for actions (edit / delete).
  *
- * Inputs reactivos: rating, text, tags. Se actualiza on-change sin debounce (render
- * normal de React). difficulty y hoursPerWeek no entran al preview porque el card del
- * feed no los muestra (decisión del canvas).
+ * Reactive inputs: rating, text, tags. Updates on-change with no debounce (normal React
+ * render). difficulty and hoursPerWeek are not in the preview because the feed card does
+ * not show them (canvas decision).
  */
 export function PreviewCard({
   rating,
@@ -49,7 +49,7 @@ export function PreviewCard({
       <h2 className="mb-1.5 text-base font-semibold text-ink">Así se va a ver</h2>
 
       <div className="rounded border border-line bg-bg-card px-3.5 py-3">
-        {/* header avatar + identidad anónima + estrellas */}
+        {/* header: avatar + anonymous identity + stars */}
         <div className="mb-2 flex items-center gap-2.5">
           <div className="grid h-6 w-6 place-items-center rounded-full bg-bg-elev text-[12px] text-ink-3">
             ?
@@ -69,7 +69,7 @@ export function PreviewCard({
           </output>
         </div>
 
-        {/* texto del review (placeholder si vacío) */}
+        {/* review body (placeholder when empty) */}
         <p className="mb-2 min-h-[2rem] text-[12px] leading-snug text-ink">
           {text.trim().length > 0 ? (
             text

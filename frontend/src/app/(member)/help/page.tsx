@@ -1,10 +1,15 @@
-import { ComingSoon } from '@/components/ui';
+import { HelpShell } from '@/features/help';
 
-export default function HelpPage() {
-  return (
-    <ComingSoon
-      section="Ayuda y contacto"
-      description="Por ahora si tenés problemas con tu cuenta o querés reportar un bug, escribinos a contacto@plan-b.app. La sección de ayuda con FAQ y documentación aterriza más adelante."
-    />
-  );
+export const metadata = {
+  title: 'Ayuda · planb',
+};
+
+/**
+ * /help (US-073). Centro de ayuda con FAQ y canal de contacto. Server component (la única
+ * parte cliente es el accordion del FAQ que mantiene state local). Sin backend en MVP: el
+ * "chat de soporte" del mockup es un mailto al support email. Cuando aterrice Notifications
+ * BC se suma el form con `POST /api/support/contact` y este shell renderea ambos.
+ */
+export default function AyudaPage() {
+  return <HelpShell />;
 }

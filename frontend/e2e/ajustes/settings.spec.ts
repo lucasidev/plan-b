@@ -5,7 +5,7 @@ import { LUCIA } from '../helpers/personas';
  * E2E de Ajustes (US-072) + modal de cambiar contraseña (US-079-i frontend).
  *
  * Cubre:
- *  - Login Lucía → navegar a /ajustes desde sidebar.
+ *  - Login Lucía → navegar a /settings desde sidebar.
  *  - Toggle notificación por email: cambio se persiste (reload trae el nuevo valor).
  *  - Cambio de tema: select Dark → la clase `dark` aparece en <html>.
  *  - Click "Cambiar contraseña" abre el modal con los 3 PasswordField.
@@ -17,7 +17,7 @@ import { LUCIA } from '../helpers/personas';
  */
 
 test.describe('Ajustes (US-072 + US-079-i modal)', () => {
-  // En CI dev frontend (turbopack JIT) compila /ajustes la primera vez (~10s) y el
+  // En CI dev frontend (turbopack JIT) compila /settings la primera vez (~10s) y el
   // sign-in dev tarda ~4s. Bumpeamos el budget para que el beforeEach + el body de cada
   // test tengan margen real.
   test.setTimeout(180_000);
@@ -30,7 +30,7 @@ test.describe('Ajustes (US-072 + US-079-i modal)', () => {
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
     await page.getByRole('link', { name: /^ajustes$/i }).click();
-    await expect(page).toHaveURL(/\/ajustes$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/settings$/, { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /^ajustes$/i, level: 1 })).toBeVisible({
       timeout: 15_000,
     });

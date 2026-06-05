@@ -1,0 +1,52 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { SubjectDrawer } from '@/features/my-career/components/subject-drawer';
+import { plan } from '@/features/my-career/data/plan';
+
+/**
+ * Drawer de detalle de materia (US-045-d). Ruta dedicada con la materia
+ * resuelta por code. Si el code no existe en el plan del alumno, 404.
+ *
+ * Visualmente es un panel sobre el shell de la app — no es modal todavía.
+ * Cuando aterrice un patrón de parallel routes (`@modal`), evaluar
+ * migrar; mientras tanto, página dedicada da sharable URL y simplicidad.
+ *
+ * Reemplaza el stub de US-045-b que era solo "Próximamente".
+ */
+export default async function SubjectDetailPage({ params }: { params: Promise<{ code: string }> }) {
+  const { code } = await params;
+  const found = findSubject(code);
+
+  if (!found) {
+    notFound();
+  }
+
+  return (
+    <div className="px-6 py-9 max-w-[1200px] mx-auto">
+      <div className="mb-4">
+        <Link
+          href="/my-career?tab=catalogo"
+          className="text-sm text-accent-ink hover:text-accent-hover inline-flex items-center"
+        >
+          ← Volver al catálogo
+        </Link>
+      </div>
+      <SubjectDrawer subject={found} />
+    </div>
+  );
+}
+
+/**
+ * Map module-scope `code → subject + year` para que el lookup en findSubject sea O(1)
+ * en lugar de O(n*m) con find anidado (regla react-doctor/js-index-maps). El plan es
+ * data estática, así que el Map se construye una sola vez al cargar el módulo.
+ */
+const subjectByCode = new Map(
+  plan.flatMap((yearBlock) =>
+    yearBlock.subjects.map((s) => [s.code, { ...s, year: yearBlock.year }] as const),
+  ),
+);
+
+function findSubject(code: string) {
+  return subjectByCode.get(code) ?? null;
+}
