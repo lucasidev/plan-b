@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Step actual (1 a 4). Manda el dot indicator + accessibility label. */
+  /** Current step (1 to 4). Drives the dot indicator + accessibility label. */
   step: 1 | 2 | 3 | 4;
-  /** Heading display-size del step. */
+  /** Display-size heading for the step. */
   heading: React.ReactNode;
-  /** Subheading / lede en gris. Opcional. */
+  /** Subheading / lede in grey. Optional. */
   subheading?: React.ReactNode;
-  /** Form / card / cualquier contenido del step. */
+  /** Form / card / any content for the step. */
   children: React.ReactNode;
 };
 

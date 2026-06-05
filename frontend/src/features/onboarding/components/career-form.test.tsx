@@ -144,17 +144,17 @@ describe('CareerForm state restore', () => {
       expect(screen.getByLabelText(/universidad/i)).toHaveValue(UNI_ID);
     });
 
-    // Career también (no necesitamos esperar a que cargue careers; viene del param).
+    // Career too (no need to wait for careers to load; it comes from the param).
     await waitFor(() => {
       expect(screen.getByLabelText(/carrera/i)).toHaveValue(CROWD_CAREER);
     });
 
-    // Plan se selecciona cuando plans.data carga (effect).
+    // Plan is selected when plans.data loads (effect).
     await waitFor(() => {
       expect(screen.getByLabelText(/plan de estudios/i)).toHaveValue(CROWD_PLAN);
     });
 
-    // El año de ingreso del param popula el input.
+    // The enrollment year from the param populates the input.
     expect(screen.getByLabelText(/año de ingreso/i)).toHaveValue(2024);
   });
 

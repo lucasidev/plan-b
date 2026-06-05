@@ -4,14 +4,14 @@ import { cn } from '@/lib/utils';
 import { OnboardingShell } from './onboarding-shell';
 
 /**
- * Paso 03 del onboarding (US-037-f). Tres opciones para cargar historial:
+ * Onboarding step 03 (US-037-f). Three options to load the transcript:
  *
- *   1. Cargar PDF / captura del SIU (US-014): lleva a `/my-career/transcript/import`.
- *   2. Cargarlo manualmente (US-013): lleva a `/my-career/transcript/add`.
- *   3. Lo cargo después: avanza a `/onboarding/done`.
+ *   1. Upload a SIU PDF / screenshot (US-014): routes to `/my-career/transcript/import`.
+ *   2. Load it manually (US-013): routes to `/my-career/transcript/add`.
+ *   3. Skip for now: advances to `/onboarding/done`.
  *
- * Server component (no usa state). Los tres caminos son no-destructivos: el
- * user puede volver al historial cuando quiera.
+ * Server component (no state). All three paths are non-destructive: the user can come
+ * back to the transcript at any time.
  */
 export function HistoryOptions() {
   return (

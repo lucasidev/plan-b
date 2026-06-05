@@ -15,20 +15,18 @@ import { initialOnboardingCareerState, type OnboardingCareerFormState } from '..
 const currentYear = new Date().getFullYear();
 
 /**
- * Paso 02 del onboarding (US-037-f). Form con cascadas University → Career →
- * Plan + año de ingreso. Submit dispara el server action que crea el
- * StudentProfile y redirige a `/onboarding/history`.
+ * Onboarding step 02 (US-037-f). Form with cascading dropdowns University, Career, Plan
+ * plus enrollment year. Submit triggers the server action that creates the
+ * StudentProfile and redirects to `/onboarding/history`.
  *
- * **Cascadas**: cada query de TanStack arranca con `enabled: !!parentId`
- * (configurado en queryOptions). Cuando cambia la University, el state local
- * resetea Career y Plan; cuando cambia Career, resetea Plan. El backend
- * devuelve listas vacías para parents inválidos, no errores — así que la UI
- * solo necesita manejar loading + empty + happy.
+ * **Cascades**: every TanStack query starts with `enabled: !!parentId` (configured in
+ * queryOptions). When University changes, local state resets Career and Plan; when
+ * Career changes, it resets Plan. The backend returns empty lists for invalid parents
+ * instead of errors, so the UI only needs to handle loading + empty + happy.
  *
- * **A11y**: cada `<select>` tiene `<label>` asociado por id explícito. Los
- * dropdowns dependientes están deshabilitados hasta que el parent tenga
- * valor, para que screen readers anuncien estado correcto. El estado de
- * loading se anuncia con `aria-busy`.
+ * **A11y**: each `<select>` has a `<label>` associated by explicit id. Dependent
+ * dropdowns stay disabled until the parent has a value so screen readers announce the
+ * correct state. Loading state is exposed via `aria-busy`.
  */
 export function CareerForm() {
   const [state, formAction] = useActionState<OnboardingCareerFormState, FormData>(
@@ -36,18 +34,19 @@ export function CareerForm() {
     initialOnboardingCareerState,
   );
 
-  // State restore: cuando el alumno viene del sub-flow plan-import (US-088), los search params
-  // traen universityId + careerId + planId + enrollmentYear. Repoblamos los 3 dropdowns sin
-  // que el alumno tenga que volver a elegir. El careerId viene explícito desde el response del
-  // /approve (no necesitamos resolverlo desde planId via lookup).
+  // State restore: when the student comes from the plan-import sub-flow (US-088), the
+  // search params carry universityId + careerId + planId + enrollmentYear. We repopulate
+  // the three dropdowns so the student doesn't have to choose again. `careerId` comes
+  // straight from the /approve response (we don't have to resolve it from planId via a
+  // lookup).
   //
-  // Destructuramos `get` para que React Compiler vea la dependencia mínima del componente y
-  // pueda memoizar mejor (regla react-doctor/react-compiler-destructure-method). Bind del
-  // método al instance porque URLSearchParams.get usa `this` internamente (whatwg-url en
-  // jsdom es estricto y tira si se llama suelto).
-  // El Suspense boundary requerido por useSearchParams() está en la page
-  // `app/onboarding/career/page.tsx`; suprimimos el warning local porque la rule no detecta
-  // boundaries en archivos distintos al que usa el hook.
+  // We destructure `get` so React Compiler sees the minimal component dependency and can
+  // memoise better (react-doctor/react-compiler-destructure-method rule). We bind the
+  // method to the instance because URLSearchParams.get uses `this` internally (whatwg-url
+  // in jsdom is strict and throws if called detached).
+  // The Suspense boundary required by useSearchParams() lives in
+  // `app/onboarding/career/page.tsx`; we suppress the local warning because the rule
+  // does not detect boundaries declared in a different file than the hook.
   // react-doctor-disable-next-line nextjs-no-use-search-params-without-suspense, react-doctor/nextjs-no-use-search-params-without-suspense
   const searchParams = useSearchParams();
   const getParam = searchParams.get.bind(searchParams);
@@ -64,15 +63,15 @@ export function CareerForm() {
   const careers = useQuery(onboardingQueries.careersByUniversity(universityId || null));
   const plans = useQuery(onboardingQueries.careerPlansByCareer(careerId || null));
 
-  // Auto-seleccionar el plan recién creado en cuanto se cargan los plans de la career.
-  // Solo dispara una vez (guard sobre careerPlanId ya seteado).
+  // Auto-select the just-created plan as soon as the career plans load. Fires only once
+  // (guarded by careerPlanId already being set).
   //
-  // Las rules `no-derived-state` y `no-event-handler` querrían que computemos esto inline
-  // o que lo movamos a `onSuccess` de la query. No aplica acá: el state vive más allá
-  // del primer match (el user puede cambiar la career y necesitamos resetear), y
-  // TanStack Query v5 ya no expone `onSuccess` en useQuery. Las suppressions están en
-  // `react-doctor.config.json#ignore.overrides` para que el config sea trazable en un
-  // solo lugar y no haya comentarios inline distribuidos.
+  // The `no-derived-state` and `no-event-handler` rules would prefer this computed
+  // inline or moved into the query's `onSuccess`. That does not apply here: the state
+  // outlives the first match (the user can change the career and we need to reset),
+  // and TanStack Query v5 no longer exposes `onSuccess` on useQuery. The suppressions
+  // live in `react-doctor.config.json#ignore.overrides` so the config is traceable in
+  // one place instead of scattered inline comments.
   useEffect(() => {
     if (!initialPlanId || careerPlanId) return;
     if (!plans.data || plans.data.length === 0) return;
@@ -80,10 +79,10 @@ export function CareerForm() {
     if (match) setCareerPlanId(match.id);
   }, [initialPlanId, careerPlanId, plans.data]);
 
-  // Reset cascadas en el handler del select (imperativo) en lugar de useEffect.
-  // Razón: el effect-on-deps que solo dispara setters reads is what biome marca
-  // como "more dependencies than necessary" — el body no usa las deps. Más
-  // claro escribir el reset al lado del setter del parent.
+  // Reset the cascade in the select handler (imperative) instead of with a useEffect.
+  // Reason: an effect-on-deps that only fires setter reads is what biome flags as
+  // "more dependencies than necessary": the body does not use the deps. It is also
+  // clearer to write the reset right next to the parent setter.
   const handleUniversityChange = (next: string) => {
     setUniversityId(next);
     setCareerId('');
@@ -95,10 +94,10 @@ export function CareerForm() {
     setCareerPlanId('');
   };
 
-  // Filtrar planes para mostrar solo los vigentes. El cliente decide, el
-  // backend devuelve todos (decisión documentada en ListCareerPlansEndpoint).
-  // El status viene como el enum CareerPlanStatus serializado a string por EF
-  // (HasConversion<string>): valores `Active` (vigente) o `Deprecated`.
+  // Filter the plans down to the active ones. The client decides; the backend returns
+  // all of them (decision documented in ListCareerPlansEndpoint). `status` comes as the
+  // CareerPlanStatus enum serialised to string by EF (HasConversion<string>): values
+  // `Active` (current) or `Deprecated`.
   const visiblePlans = (plans.data ?? []).filter((p) => p.status === 'Active');
 
   const formError = state.status === 'error' ? state.message : null;
@@ -113,7 +112,7 @@ export function CareerForm() {
   }
 
   if ((universities.data ?? []).length === 0) {
-    // <output> tiene role="status" implícito; reemplaza <div role="status"> idiomáticamente.
+    // <output> has implicit role="status"; idiomatic replacement for <div role="status">.
     return (
       <output className="text-ink-2" style={{ fontSize: 14, lineHeight: 1.55, padding: 16 }}>
         Todavía no hay universidades disponibles en plan-b. Avisanos a soporte.
@@ -300,7 +299,7 @@ function SubmitButton() {
 }
 
 function LoadingState() {
-  // <output> tiene role="status" implícito; idiomático para anunciar estado de carga.
+  // <output> has implicit role="status"; idiomatic way to announce loading state.
   return (
     <output
       aria-busy="true"
