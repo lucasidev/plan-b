@@ -1,6 +1,6 @@
 /**
- * Card de open source: invitación a contribuir + link al repo. Estática hasta que existan
- * issues / discussions formales en el repo.
+ * Open-source card: invitation to contribute + link to the repo. Static until formal
+ * issues / discussions show up in the repo.
  */
 
 import Link from 'next/link';

@@ -1,12 +1,12 @@
 /**
- * Contenido estático de la página "Sobre plan-b" (US-074). Hardcoded en frontend porque es
- * copy del producto, no datos del dominio. Si crece, evaluar pasar a CMS o MD servido del
- * repo (decisión para cuando exista la US del CMS).
+ * Static content for the "About plan-b" page (US-074). Hardcoded in the frontend
+ * because it is product copy, not domain data. If it grows, consider moving to a CMS or
+ * to Markdown served from the repo (a call for when the CMS US exists).
  *
- * Disclaimer académico: Lucas Iriarte es el único autor. UNSTA + Ing. Elio Copas son
- * contexto académico (proyecto final), no co-authors. Los nombres del mockup
- * (Juan Manuel R., Sofía C., Matías V.) eran placeholders del canvas; los reemplazamos
- * por la realidad del proyecto.
+ * Academic disclaimer: Lucas Iriarte is the sole author. UNSTA + Ing. Elio Copas are
+ * academic context (final project), not co-authors. The names from the mockup (Juan
+ * Manuel R., Sofía C., Matías V.) were canvas placeholders; we replaced them with the
+ * project's reality.
  */
 
 export const ABOUT_HEADLINE = 'Estamos haciendo la app que nos hubiera gustado tener.';
@@ -15,8 +15,8 @@ export const ABOUT_LEDE =
   'plan-b es una herramienta de planificación académica hecha por estudiantes, para estudiantes.';
 
 /**
- * Manifiesto en bloques. Cada elemento es un párrafo. El último lleva el disclaimer en
- * itálica (lo marcamos con `kind: 'disclaimer'`).
+ * Manifesto as blocks. Each item is a paragraph. The last one carries the disclaimer in
+ * italics (marked with `kind: 'disclaimer'`).
  */
 export type ManifestoBlock = {
   kind: 'paragraph' | 'disclaimer';
@@ -39,8 +39,9 @@ export const ABOUT_MANIFESTO: readonly ManifestoBlock[] = [
 ] as const;
 
 /**
- * "Lo que viene" — roadmap a alto nivel. Cuando el roadmap esté maduro y exista CMS, esto
- * sale de ahí. Por ahora alineado a la cartera de US del MVP (US-016, US-017, US-018, etc).
+ * "Lo que viene": a high-level roadmap. When the roadmap is mature and a CMS exists,
+ * this will come from there. For now it is aligned with the MVP US backlog (US-016,
+ * US-017, US-018, etc).
  */
 export type RoadmapItem = {
   when: string;
@@ -63,8 +64,8 @@ export const ABOUT_ROADMAP: readonly RoadmapItem[] = [
 ] as const;
 
 /**
- * Equipo: Lucas como autor. UNSTA + Ing. Copas como contexto académico (no team members).
- * Cuando sumemos colaboradores externos (open source contributors), entran acá.
+ * Team: Lucas as author. UNSTA + Ing. Copas as academic context (not team members).
+ * When external collaborators (open-source contributors) join, they go here.
  */
 export type TeamMember = {
   initials: string;
@@ -84,8 +85,8 @@ export const ABOUT_ACADEMIC_CONTEXT =
   'Proyecto Final 2026 · Tutor: Ing. Elio Copas · Universidad del Norte Santo Tomás de Aquino (UNSTA), Tucumán.';
 
 /**
- * Stats hardcoded. Cuando aterrice `GET /api/stats/public` (US separada cross-module),
- * estos valores salen del backend y la card pasa a ser RSC con fetch.
+ * Hardcoded stats. When `GET /api/stats/public` lands (separate cross-module US), these
+ * values come from the backend and the card switches to RSC with fetch.
  */
 export const ABOUT_STATS = {
   students: '340',
@@ -97,10 +98,10 @@ export const ABOUT_STATS = {
 export const ABOUT_REPO_URL = 'https://github.com/lucasidev/plan-b';
 
 /**
- * Universidades soportadas. Mientras no exista `GET /api/universities/public` (deuda
- * documentada en US-074), la lista vive hardcoded acá. La fuente real es la tabla
- * `universities` de Academic; cuando aterrice el endpoint este array se reemplaza por
- * un fetch RSC cacheado 24h.
+ * Supported universities. Until `GET /api/universities/public` exists (debt documented
+ * in US-074), the list lives hardcoded here. The real source is the `universities`
+ * table from Academic; once the endpoint lands, this array is replaced by an RSC fetch
+ * cached for 24h.
  */
 export const ABOUT_UNIVERSITIES: readonly string[] = [
   'Universidad del Norte Santo Tomás de Aquino (UNSTA)',

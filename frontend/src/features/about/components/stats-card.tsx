@@ -1,6 +1,7 @@
 /**
- * Stats card en grid 2x2. Hardcoded en MVP (alumnos, reseñas, docentes, versión). Cuando
- * aterrice `GET /api/stats/public` (US separada), este componente pasa a RSC con fetch.
+ * Stats card in a 2x2 grid. Hardcoded in MVP (students, reviews, teachers, version).
+ * When `GET /api/stats/public` (separate US) lands, this component moves to RSC with
+ * fetch.
  */
 
 import { ABOUT_STATS } from '../data/content';
