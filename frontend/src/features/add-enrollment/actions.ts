@@ -7,20 +7,20 @@ import { addEnrollmentSchema } from './schema';
 import type { AddEnrollmentFormState } from './types';
 
 /**
- * Server action del form de US-013-f. Hace POST /api/me/enrollment-records
- * (US-013 backend) y al éxito (201) redirige a `/mi-carrera?tab=historial`.
+ * Server action for the US-013-f form. POSTs /api/me/enrollment-records (US-013 backend)
+ * and on success (201) redirects to `/my-career?tab=transcript`.
  *
- * El UserId se extrae del session JWT del lado server (no del client) por
- * la misma razón que onboarding/career: el endpoint backend lo acepta en
- * body por el gap de JwtBearer middleware, pero acá bloqueamos inputs
- * adversariales antes de que lleguen.
+ * The UserId is taken from the session JWT on the server (not from the client) for the
+ * same reason as onboarding/career: the backend endpoint accepts it in the body because
+ * of the JwtBearer middleware gap, but we block adversarial inputs here before they
+ * reach the backend.
  *
- * Mapeo de errores del backend:
- *   - 400 validación → mensaje específico en el state (re-valida el aggregate
- *     las invariantes status/grade/method/commission/term).
- *   - 404 student_profile_required → el guard del layout debería evitarlo;
- *     si llega acá es un edge case (profile fue eliminado durante la sesión).
- *   - 409 duplicate → mensaje contextual.
+ * Backend error mapping:
+ *   - 400 validation → specific message in the state (the aggregate re-validates the
+ *     status/grade/method/commission/term invariants).
+ *   - 404 student_profile_required → the layout guard should prevent this; if it lands
+ *     here it is an edge case (profile was deleted during the session).
+ *   - 409 duplicate → contextual message.
  */
 export async function submitAddEnrollmentAction(
   _prev: AddEnrollmentFormState,
@@ -66,7 +66,7 @@ export async function submitAddEnrollmentAction(
   });
 
   if (response.status === 201) {
-    redirect('/mi-carrera?tab=historial');
+    redirect('/my-career?tab=transcript');
   }
 
   if (response.status === 409) {
@@ -84,8 +84,8 @@ export async function submitAddEnrollmentAction(
   }
 
   if (response.status === 400) {
-    // Backend pasó ProblemDetails con title. Lo mostramos genérico — los casos
-    // específicos los frena la validación client-side de zod.
+    // Backend returned ProblemDetails with a title. We surface a generic message:
+    // the specific cases are already caught by client-side zod validation.
     return {
       status: 'error',
       message: 'No pudimos guardar la entrada. Revisá los datos y reintentá.',

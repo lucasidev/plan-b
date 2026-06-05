@@ -1,10 +1,10 @@
 /**
- * Estado del server action `submitCareerAction` (US-037-f paso 02).
+ * State of the `submitCareerAction` server action (US-037-f step 02).
  *
- * `idle` mientras el form no se submitió todavía. `error` cuando el backend
- * devolvió 4xx que el action mapeó a copy en español. El happy path es un
- * `redirect()` server-side que tira NEXT_REDIRECT (no llega de vuelta al
- * useActionState con `success`, por eso no hay variant `success`).
+ * `idle` while the form has not been submitted yet. `error` when the backend returns a
+ * 4xx that the action maps to user-facing copy. The happy path is a server-side
+ * `redirect()` that throws NEXT_REDIRECT (it never returns to useActionState with
+ * `success`, which is why there is no `success` variant).
  */
 export type OnboardingCareerFormState =
   | { status: 'idle' }
@@ -12,9 +12,9 @@ export type OnboardingCareerFormState =
 
 export const initialOnboardingCareerState: OnboardingCareerFormState = { status: 'idle' };
 
-// Shapes de respuesta de los endpoints públicos del catálogo (US-037-b).
-// Se replican acá del shape del backend para que el cliente los consuma sin
-// tener que importar tipos del backend (cross-language boundary).
+// Response shapes for the public catalog endpoints (US-037-b). Replicated here from the
+// backend shape so the client can consume them without importing backend types
+// (cross-language boundary).
 
 export type University = {
   id: string;
@@ -27,8 +27,8 @@ export type Career = {
   universityId: string;
   name: string;
   slug: string;
-  // US-088: las carreras crowdsourced (subidas por alumno) tienen isOfficial=false.
-  // El frontend las muestra con badge "No oficial".
+  // US-088: crowdsourced careers (uploaded by students) have isOfficial=false.
+  // The frontend displays them with a "No oficial" badge.
   isOfficial: boolean;
 };
 
@@ -36,9 +36,9 @@ export type CareerPlan = {
   id: string;
   careerId: string;
   year: number;
-  // Enum CareerPlanStatus serializado por EF como string. Valores: 'Active' o
-  // 'Deprecated'. El form filtra 'Active' para no mostrar planes históricos.
+  // The CareerPlanStatus enum is serialised by EF as a string. Values: 'Active' or
+  // 'Deprecated'. The form filters for 'Active' so historical plans do not show up.
   status: 'Active' | 'Deprecated';
-  // US-088: planes crowdsourced isOfficial=false con badge "No oficial".
+  // US-088: crowdsourced plans have isOfficial=false with the "No oficial" badge.
   isOfficial: boolean;
 };

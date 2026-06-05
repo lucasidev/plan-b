@@ -1,17 +1,17 @@
 import { Card } from '@/components/ui/card';
 
 type Props = {
-  /** Año a planificar (típicamente `currentPeriod.year + 1`). */
+  /** Year to plan (typically `currentPeriod.year + 1`). */
   nextYear: number;
 };
 
 /**
- * Bloque "Pensando en lo que viene" del Inicio v2. Card con CTA
- * "Planificar {nextYear} →" que invita a armar un borrador del próximo
- * año académico. Port directo de las líneas 234-246 del mock V2Inicio.
+ * "Pensando en lo que viene" block of the v2 Home. Card with a "Planificar {nextYear}
+ * →" CTA that invites the student to draft the next academic year. Direct port of
+ * lines 234-246 of the V2Inicio mock.
  *
- * El destino real (`/planificar?tab=borrador`) aterriza con US-016 / US-R-Planificar.
- * Mientras tanto, el botón queda disabled con tooltip "Próximamente".
+ * The real destination (`/plan?tab=draft`) lands with US-016 / US-R-Planificar.
+ * Meanwhile the button stays disabled with the "Próximamente" tooltip.
  */
 export function NextPeriodCard({ nextYear }: Props) {
   return (
@@ -22,7 +22,7 @@ export function NextPeriodCard({ nextYear }: Props) {
       <p className="text-sm text-ink-2 leading-relaxed mb-3">
         Armá un borrador de {nextYear} y comparalo con vos antes de inscribirte.
       </p>
-      {/* TODO(US-016 + US-R-Planificar): enchufar link real a /planificar?tab=borrador */}
+      {/* TODO(US-016 + US-R-Planificar): wire up the real link to /plan?tab=draft */}
       <button
         type="button"
         disabled

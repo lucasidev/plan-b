@@ -1,6 +1,6 @@
 /**
- * Roadmap card: 3 bloques temporales (ahora / próximo mes / más adelante). El "when" va en
- * mono uppercase a la izquierda; el "what" en texto regular a la derecha.
+ * Roadmap card: 3 time-frame blocks (now / next month / later). The "when" goes in mono
+ * uppercase on the left; the "what" in regular text on the right.
  */
 
 import { ABOUT_ROADMAP } from '../data/content';

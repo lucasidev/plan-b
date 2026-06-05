@@ -11,13 +11,13 @@ import type { ForgotPasswordFormState } from './types';
  * (which is what the backend returns for every legitimate input regardless
  * of whether the email actually exists, per anti-enumeration AC of US-033).
  *
- * 429 returns the form to the page with a `rate_limit` error so the user
- * sees "esperá unos minutos antes de pedir otro link" without a redirect.
+ * 429 returns the form to the page with a `rate_limit` error so the user sees
+ * "esperá unos minutos antes de pedir otro link" without a redirect.
  *
  * Per frontend/CLAUDE.md, `'use server'` at the top means only async
  * functions can be exported here. Types and initial state live in ./types.
  */
-// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- forgot-password is public; user can't be authenticated cuando reclama el reset
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- forgot-password is public; user can't be authenticated when requesting the reset
 export async function forgotPasswordAction(
   _prev: ForgotPasswordFormState,
   formData: FormData,

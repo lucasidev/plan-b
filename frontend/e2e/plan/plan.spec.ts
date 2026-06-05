@@ -1,0 +1,104 @@
+import { expect, test } from '@playwright/test';
+import { LUCIA } from '../helpers/personas';
+
+/**
+ * Plan E2E (US-046). Frontend with mocks (no simulation backend yet; US-016 + US-023
+ * pending).
+ *
+ * Covers:
+ *  - Login Lucía + navigate to /plan from the sidebar.
+ *  - Header + tabs render.
+ *  - Default "En curso" tab: subject list for the year + stats + weekly calendar.
+ *  - "Borrador" tab: switch via URL ?tab=draft, renders mock drafts.
+ *  - "Publicar plan" modal opens with checklist on click "Publicar".
+ *  - "Agregar materia" drawer opens with filterable catalog.
+ *
+ * We do not exercise real publish nor mutations (no backend); the spec only checks the
+ * visual layout + pure client interactions.
+ */
+
+test.describe('Planificar (US-046)', () => {
+  // En dev frontend (turbopack JIT) el primer hit a /plan compila ~10s; sumado a sign-in
+  // lento en dev (~4s) el beforeEach se acerca al 60s default. Subimos el budget del test
+  // para que tenga margen real. En CI (build estático) no aplica.
+  test.setTimeout(120_000);
+
+  test.beforeEach(async ({ page, context }) => {
+    // Limpiamos cookies para evitar herencia entre tests cuando el dev frontend cachea sesión.
+    await context.clearCookies();
+
+    await page.goto('/sign-in');
+    await page.getByLabel(/tu email/i).fill(LUCIA.email);
+    await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
+    await page.getByRole('button', { name: /^entrar$/i }).click();
+    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+
+    // Sidebar link es "Planificar ⌘3" (incluye shortcut); usamos substring match.
+    await page.getByRole('link', { name: /plan/i }).first().click();
+    await expect(page).toHaveURL(/\/plan/, { timeout: 30_000 });
+    await expect(page.getByRole('heading', { name: /tu período, ajustable/i })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+
+  test('tab "En curso" muestra materias del año, stats y calendario', async ({ page }) => {
+    await expect(page.getByRole('heading', { name: /materias del año/i })).toBeVisible();
+    // ISW302 aparece tanto en la lista de materias (sidebar) como en bloques del calendario
+    // (varios días). Verificamos que esté visible al menos una vez sin imponer strict mode.
+    await expect(page.getByText('ISW302').first()).toBeVisible();
+    await expect(page.getByText('INT302').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: /distribución semanal/i })).toBeVisible();
+    await expect(page.getByText(/semanales/i).first()).toBeVisible();
+  });
+
+  test('cambio a tab "Borradores" via click URL', async ({ page }) => {
+    await page.getByRole('link', { name: /borradores/i }).click();
+    await expect(page).toHaveURL(/tab=draft/);
+    await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
+  });
+
+  test('drawer "Agregar materia" abre con catálogo filtrable', async ({ page }) => {
+    await page.getByRole('button', { name: /\+ agregar materia/i }).click();
+
+    const drawer = page.getByRole('dialog', { name: /agregar materia/i });
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole('heading', { name: /agregar materia/i })).toBeVisible();
+    await expect(drawer.getByPlaceholder(/buscar/i)).toBeVisible();
+    await expect(drawer.getByText('ISW401')).toBeVisible();
+
+    await drawer.getByPlaceholder(/buscar/i).fill('xyz999');
+    await expect(drawer.getByText(/no encontramos/i)).toBeVisible();
+  });
+
+  test('publicar un borrador abre modal con checklist de validaciones', async ({ page }) => {
+    await page.goto('/plan?tab=draft');
+    await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
+
+    // Click en el primer botón "Publicar" disponible (puede haber drafts vencidos con Activar
+    // en lugar de Publicar; el primer borrador 2027 todavía no venció).
+    const publishButtons = page.getByRole('button', { name: /^publicar$/i });
+    await publishButtons.first().click();
+
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading', { name: /publicar este borrador/i })).toBeVisible();
+    await expect(dialog.getByText(/sin choques de horario/i)).toBeVisible();
+    await expect(dialog.getByText(/correlativas/i)).toBeVisible();
+
+    await dialog.getByRole('button', { name: /cancelar/i }).click();
+    await expect(dialog).not.toBeVisible();
+  });
+
+  test('compare commissions toggle muestra y oculta el comparador', async ({ page }) => {
+    const compareBtn = page.getByRole('button', { name: /^comparar comisiones$/i });
+    await compareBtn.click();
+    await expect(
+      page.getByRole('heading', { name: /comparar comisiones · INT302/i }),
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: /^ocultar comparador$/i }).click();
+    await expect(
+      page.getByRole('heading', { name: /comparar comisiones · INT302/i }),
+    ).not.toBeVisible();
+  });
+});

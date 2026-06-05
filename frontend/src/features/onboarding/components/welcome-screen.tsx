@@ -3,10 +3,10 @@ import { cn } from '@/lib/utils';
 import { OnboardingShell } from './onboarding-shell';
 
 /**
- * Paso 01 del onboarding (US-037-f). Pantalla sin form: solo bienvenida +
- * CTA "Empecemos" que avanza a paso 02 (`/onboarding/career`).
+ * Onboarding step 01 (US-037-f). Form-less screen: only the welcome message + the
+ * "Empecemos" CTA that advances to step 02 (`/onboarding/career`).
  *
- * Server component (no usa state ni handlers). Usado por
+ * Server component (no state, no handlers). Used by
  * `app/(onboarding)/welcome/page.tsx`.
  */
 export function WelcomeScreen({ displayName }: { displayName: string }) {
@@ -18,9 +18,9 @@ export function WelcomeScreen({ displayName }: { displayName: string }) {
   return (
     <OnboardingShell
       step={1}
-      // El heading depende de la prop `displayName` así que no es hoisteable a
-      // module scope. Asumimos el costo del re-render: el shell se renderea una
-      // sola vez al entrar al onboarding. Suppression en
+      // The heading depends on the `displayName` prop, so it cannot be hoisted to module
+      // scope. We accept the re-render cost: the shell renders only once when the user
+      // enters the onboarding. Suppression lives in
       // `react-doctor.config.json#ignore.overrides`.
       heading={heading}
       subheading="En 30 segundos asociamos tu carrera y ya podés empezar a leer reseñas de tus materias."

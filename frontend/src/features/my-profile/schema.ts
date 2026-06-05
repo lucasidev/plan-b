@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * Shape del request del PATCH /api/me/student-profile (US-047). Todos nullable: el form
- * envía solo los campos cambiados. El backend tiene la verdad sobre rangos y longitudes
- * (errores específicos vienen como 400 con title `identity.student_profile.*`); acá
- * pre-validamos lo barato para evitar round-trips.
+ * Request shape of PATCH /api/me/student-profile (US-047). Everything nullable: the
+ * form only sends the changed fields. The backend owns the truth on ranges and lengths
+ * (specific errors come as 400 with title `identity.student_profile.*`); here we
+ * pre-validate the cheap stuff to avoid round-trips.
  */
 export const profileUpdateSchema = z.object({
   displayName: z

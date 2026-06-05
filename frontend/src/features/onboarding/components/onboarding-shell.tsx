@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Step actual (1 a 4). Manda el dot indicator + accessibility label. */
+  /** Current step (1 to 4). Drives the dot indicator + accessibility label. */
   step: 1 | 2 | 3 | 4;
-  /** Heading display-size del step. */
+  /** Display-size heading for the step. */
   heading: React.ReactNode;
-  /** Subheading / lede en gris. Opcional. */
+  /** Subheading / lede in grey. Optional. */
   subheading?: React.ReactNode;
-  /** Form / card / cualquier contenido del step. */
+  /** Form / card / any content for the step. */
   children: React.ReactNode;
 };
 
@@ -83,9 +83,9 @@ export function OnboardingShell({ step, heading, subheading, children }: Props) 
 }
 
 function Stepper({ step }: { step: 1 | 2 | 3 | 4 }) {
-  // El nav lleva el aria-label del progreso y un texto sr-only describe el
-  // estado actual ("Paso X de Y"). Los dots individuales son decorativos
-  // (aria-hidden); poner aria-label en cada <span> sin role no aplica
+  // The nav carries the progress aria-label and an sr-only text describes the current
+  // state ("Paso X de Y"). The individual dots are decorative (aria-hidden); placing
+  // aria-label on each <span> without role does not apply
   // (biome lint a11y/useAriaPropsSupportedByRole).
   return (
     <nav aria-label="Progreso del onboarding" className="flex items-center" style={{ gap: 8 }}>

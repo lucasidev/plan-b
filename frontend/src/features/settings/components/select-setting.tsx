@@ -13,9 +13,9 @@ import type { SettingsPatch } from '../schema';
 import { SettingRow } from './setting-row';
 
 /**
- * Select con auto-save + optimistic UI. Mismo pattern que ToggleSetting pero para enums
- * string (Language, Theme). El field name + las opciones llegan por props para que el
- * componente sirva para los dos casos sin código duplicado.
+ * Select with auto-save + optimistic UI. Same pattern as ToggleSetting but for string
+ * enums (Language, Theme). The field name + options arrive as props so the component
+ * serves both cases without duplicated code.
  */
 type Option<T extends string> = { value: T; label: string };
 

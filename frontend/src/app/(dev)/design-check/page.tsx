@@ -14,9 +14,9 @@ import {
   VerifiedBadge,
 } from '@/components/ui';
 
-// Hoisted heading element para evitar nueva ref en cada render (regla
-// react-doctor/jsx-no-jsx-as-prop). Como esta page es internal-only y estática,
-// el heading puede vivir en module scope.
+// Hoisted heading element to avoid a new ref on every render
+// (react-doctor/jsx-no-jsx-as-prop rule). Since this page is internal-only and
+// static, the heading can live in module scope.
 const AUTH_SPLIT_DEMO_HEADING = (
   <DisplayHeading size={48}>
     Antes de inscribirte,

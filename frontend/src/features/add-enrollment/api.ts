@@ -2,12 +2,12 @@ import { queryOptions } from '@tanstack/react-query';
 import type { AcademicTerm, Subject } from './types';
 
 /**
- * Fetchers para los endpoints del catálogo Academic shipped en PR1:
+ * Fetchers for the Academic catalog endpoints shipped in PR1:
  *   - GET /api/academic/subjects?careerPlanId=
  *   - GET /api/academic/academic-terms?universityId=
  *
- * Los path son relativos (`/api/...`) porque corren client-side y van por el
- * rewrite de Next, evitando CORS. Mismo patrón que <c>onboarding/api.ts</c>.
+ * Paths are relative (`/api/...`) because they run client-side and go through the
+ * Next.js rewrite, avoiding CORS. Same pattern as `onboarding/api.ts`.
  */
 
 async function fetchSubjects(careerPlanId: string): Promise<Subject[]> {

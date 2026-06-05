@@ -15,28 +15,21 @@ type Props = {
 };
 
 /**
- * Form de carga de entrada del historial (US-013-f). Reemplaza el stub
- * de `(member)/mi-carrera/historial/agregar/page.tsx`.
+ * Form to load a transcript entry (US-013-f). Replaces the stub of
+ * `(member)/my-career/transcript/add/page.tsx`.
  *
- * <para>
- * Cargas: subjects (filtradas por <c>careerPlanId</c> del student) y
- * academic terms (filtradas por <c>universityId</c>). Ambas se piden a los
- * endpoints públicos del catálogo Academic shipped en PR1.
- * </para>
+ * Loads: subjects (filtered by the student's `careerPlanId`) and academic terms
+ * (filtered by `universityId`). Both come from the public Academic catalog endpoints
+ * shipped in PR1.
  *
- * <para>
- * Conditional rendering del form:
- * <list type="bullet">
- *   <item>Status=Aprobada: muestra select <c>approvalMethod</c> + input
- *         <c>grade</c>. Si method=Equivalencia, oculta term + commission. Si
- *         method=FinalLibre, oculta commission.</item>
- *   <item>Status=Regular: muestra input <c>grade</c>, oculta
- *         <c>approvalMethod</c>.</item>
- *   <item>Status ∈ {Cursando, Reprobada, Abandonada}: oculta grade +
- *         approvalMethod.</item>
- * </list>
- * El backend re-valida cada invariante: el form solo guía al usuario.
- * </para>
+ * Conditional rendering of the form:
+ *   - Status=Aprobada: shows the `approvalMethod` select + `grade` input. If
+ *     method=Equivalencia, hides term + commission. If method=FinalLibre, hides
+ *     commission.
+ *   - Status=Regular: shows the `grade` input, hides `approvalMethod`.
+ *   - Status in {Cursando, Reprobada, Abandonada}: hides grade + approvalMethod.
+ *
+ * The backend re-validates every invariant: this form only guides the user.
  */
 export function EnrollmentForm({ careerPlanId, universityId }: Props) {
   const [state, formAction] = useActionState<AddEnrollmentFormState, FormData>(
@@ -52,9 +45,9 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
 
   const showApprovalMethod = status === 'Aprobada';
   const showGrade = status === 'Aprobada' || status === 'Regular';
-  // commission/term opcionales según method (cuando applies). Para simplicidad
-  // del MVP no exponemos commission picker (no hay endpoint commissions todavía);
-  // el alumno solo elige term, commissionId queda siempre null en este form.
+  // commission/term are optional depending on the method (when applicable). For MVP
+  // simplicity we don't expose a commission picker (no commissions endpoint yet); the
+  // student only picks the term, commissionId stays null in this form.
   const showTerm = !showApprovalMethod || approvalMethod !== 'Equivalencia';
 
   const formError = state.status === 'error' ? state.message : null;
@@ -163,8 +156,8 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
 
       {showGrade && (
         <Field id="grade" label="Nota final (0 a 10)">
-          {/* aria-label explícito porque react-doctor no detecta el <label htmlFor> que
-              renderiza el wrapper <Field> en otro componente. */}
+          {/* Explicit aria-label: react-doctor does not detect the <label htmlFor>
+              rendered by the <Field> wrapper from a different component. */}
           <input
             id="grade"
             name="grade"
@@ -256,8 +249,8 @@ function SubmitButton() {
 }
 
 function LoadingState() {
-  // <output> tiene role="status" implícito + es elemento semántico HTML; reemplaza
-  // <div role="status"> por la versión idiomática.
+  // <output> has implicit role="status" and is a semantic HTML element; replaces
+  // <div role="status"> with the idiomatic version.
   return (
     <output
       aria-busy="true"

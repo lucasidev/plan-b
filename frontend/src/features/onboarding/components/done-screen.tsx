@@ -13,14 +13,14 @@ type Props = {
 };
 
 /**
- * Paso 04 del onboarding (US-037-f). Confirmación final + CTA "Ir a Inicio".
+ * Onboarding step 04 (US-037-f). Final confirmation + the "Ir a Inicio" CTA.
  *
- * Si el caller pasa `careerName` y `planYear`, se muestra un resumen del
- * profile recién creado. Si no (caso "lo cargo después" sin haber pasado
- * por paso 02 — no debería ocurrir por el guard, pero lo cubrimos), solo
- * se muestra el saludo.
+ * If the caller passes `careerName` and `planYear`, we render a summary of the
+ * just-created profile. If not (the "skip for now" case without having gone through
+ * step 02, which should not happen because of the guard but we cover it), we only show
+ * the greeting.
  *
- * Server component, sin state.
+ * Server component, no state.
  */
 export function DoneScreen({ displayName, careerName, planYear }: Props) {
   const heading = (

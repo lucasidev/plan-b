@@ -12,8 +12,8 @@ import type {
 } from './types';
 
 /**
- * Upload del PDF o texto del plan. Acepta multipart o JSON según haya file o solo rawText.
- * Mismo patrón que el upload del historial (US-014).
+ * Upload of the plan PDF or text. Accepts multipart or JSON depending on whether `file`
+ * is present or only `rawText`. Same pattern as the transcript upload (US-014).
  */
 export async function uploadCareerPlanAction(
   _prev: UploadCareerPlanState,
@@ -119,9 +119,9 @@ export async function uploadCareerPlanAction(
 }
 
 /**
- * Approve del preview. El frontend manda los items (con eventuales overrides). Al éxito
- * devuelve careerPlanId que el caller usa para redirigir al onboarding/career con
- * `?planId=X` y autocompletar.
+ * Approve from the preview. The frontend sends the items (with eventual overrides). On
+ * success it returns the careerPlanId that the caller uses to redirect to
+ * onboarding/career with `?planId=X` and autofill.
  */
 export async function approveCareerPlanAction(
   _prev: ApproveCareerPlanState,

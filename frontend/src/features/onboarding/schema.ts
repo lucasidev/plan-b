@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 /**
- * Zod schema del form del paso 02 del onboarding (US-037-f). Se comparte
- * entre validación client-side (TanStack Form) y el server action que llama
- * a `POST /api/me/student-profiles`.
+ * Zod schema for the onboarding step 02 form (US-037-f). Shared between client-side
+ * validation (TanStack Form) and the server action that calls
+ * `POST /api/me/student-profiles`.
  *
- * El año de ingreso se acota a [1990, current_year + 1] para evitar inputs
- * absurdos. El +1 cubre el caso "estoy planeando ingresar el año que viene"
- * sin abrir todo el futuro.
+ * Enrollment year is bounded to [1990, current_year + 1] to keep out absurd inputs.
+ * The +1 covers the "I am planning to enroll next year" case without opening the door
+ * to the whole future.
  */
 const currentYear = new Date().getFullYear();
 

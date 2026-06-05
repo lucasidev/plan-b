@@ -1,5 +1,5 @@
 /**
- * DTOs del backend de US-088. Reflejan exactamente el shape que serializa Academic.
+ * DTOs for the US-088 backend. Mirror exactly the shape Academic serializes.
  */
 
 export type CareerPlanImportStatus = 'Pending' | 'Parsing' | 'Parsed' | 'Failed' | 'Approved';
@@ -58,8 +58,8 @@ export type ApproveCareerPlanImportResponse = {
 };
 
 /**
- * Item que el alumno envía al confirmar el preview. Mismo shape que ApproveSubjectItem
- * del backend.
+ * Item the student sends when confirming the preview. Same shape as the backend's
+ * ApproveSubjectItem.
  */
 export type ApproveSubjectItem = {
   code: string;

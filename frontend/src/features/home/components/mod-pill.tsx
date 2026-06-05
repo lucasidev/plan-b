@@ -1,9 +1,9 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Modalidades soportadas, alineadas al mock `v2-shell.jsx::V2_MOD_LABEL`.
- * Cuando el plan académico use una modalidad nueva (ej. trimestral), agregar
- * acá + extender `MOD_LABEL` y `MOD_PALETTE`.
+ * Supported modalities, aligned with the `v2-shell.jsx::V2_MOD_LABEL` mock. When the
+ * academic plan uses a new modality (e.g. trimestral), add it here and extend
+ * `MOD_LABEL` and `MOD_PALETTE`.
  */
 export type Modality = 'anual' | '1c' | '2c' | '1s' | '2s' | 'bim1' | 'bim2' | 'bim3' | 'bim4';
 
@@ -20,9 +20,9 @@ const MOD_LABEL: Record<Modality, string> = {
 };
 
 /**
- * Tailwind classes per modality. Mantiene el espíritu del mock (warm para
- * cuatri 1, cool para cuatri 2, green para anual, ámbar para bims) usando
- * tokens del design system existentes en lugar de OKLCH literal del mock.
+ * Tailwind classes per modality. Keeps the spirit of the mock (warm for term 1, cool
+ * for term 2, green for anual, amber for bims) using existing design-system tokens
+ * instead of the literal OKLCH from the mock.
  */
 const MOD_PALETTE: Record<Modality, string> = {
   '1c': 'bg-st-coursing-bg text-st-coursing-fg',
@@ -42,9 +42,9 @@ type Props = {
 };
 
 /**
- * Pill compacta de modalidad. Port de `V2Mod` del mock `v2-screens.jsx`.
- * Si recibe un valor fuera de `Modality` (ej. mock mal armado con
- * `'trimestral'`), cae al fallback neutral con label literal.
+ * Compact modality pill. Port of `V2Mod` from the `v2-screens.jsx` mock. If it
+ * receives a value outside `Modality` (e.g. a mock built wrong with `'trimestral'`),
+ * it falls back to the neutral palette with the literal label.
  */
 export function ModPill({ mod, className }: Props) {
   const isKnown = (Object.keys(MOD_LABEL) as Modality[]).includes(mod as Modality);

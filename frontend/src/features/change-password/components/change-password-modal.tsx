@@ -21,25 +21,24 @@ type Props = {
 };
 
 /**
- * Modal de cambio de contraseña (US-079-i, slice frontend del integrated). Triggereado desde
- * la sección Seguridad de /ajustes (US-072). Tres campos: contraseña actual + nueva +
- * confirmación. Pre-validación cliente con Zod (mismatch, longitud, mismo valor); errores
- * específicos del backend (wrong current, same as current, too weak, too long) se ruteán a
- * inline errors en el campo correspondiente.
+ * Change-password modal (US-079-i, frontend slice of the integrated US). Triggered from
+ * the Security section of /settings (US-072). Three fields: current password + new +
+ * confirmation. Client pre-validation with Zod (mismatch, length, same value);
+ * backend-specific errors (wrong current, same as current, too weak, too long) are
+ * routed to inline errors on the matching field.
  *
- * <para>
- * Success no devuelve un estado al modal: el server action limpia las cookies de sesión y
- * redirige a <c>/sign-in?password-changed=1</c> (el backend revocó los refresh tokens, por
- * lo que el user tiene que re-loguearse en cada device).
- * </para>
+ * Success returns no state to the modal: the server action clears the session cookies
+ * and redirects to `/sign-in?password-changed=1` (the backend revoked the refresh
+ * tokens, so the user has to re-login on every device).
  */
 export function ChangePasswordModal({ open, onOpenChange }: Props) {
   const formId = useId();
   const [state, formAction] = useActionState(changePasswordAction, initialChangePasswordState);
 
-  // Cuando el modal cierra (cancel o overlay click), resetear errores del próximo open.
-  // useActionState no expone un reset así que el state vive en el componente; al re-open
-  // queda el último error visible hasta que el user toque algo. Aceptable trade-off.
+  // When the modal closes (cancel or overlay click) we would reset the errors of the
+  // next open. useActionState does not expose a reset, so the state lives in the
+  // component; on re-open the last error stays visible until the user touches
+  // anything. Acceptable trade-off.
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

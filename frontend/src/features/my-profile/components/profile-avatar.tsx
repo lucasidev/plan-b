@@ -3,14 +3,15 @@
 import { getInitialsFromEmail } from '@/lib/member-shell';
 
 /**
- * Avatar grande del header de Mi perfil. Genera iniciales del email mientras no haya storage
- * de fotos (ADR pendiente). Cuando aterrice, este componente acepta una `photoUrl` opcional
- * y renderea `<img>` con fallback a las iniciales.
+ * Large avatar of the Mi perfil header. Generates initials from the email while there is
+ * no photo storage (ADR pending). When that lands, this component accepts an optional
+ * `photoUrl` and renders `<img>` with a fallback to the initials.
  *
- * El elemento usa `role="img"` + `aria-label` aunque la rule react-doctor/prefer-tag-over-role
- * sugiera <img>: acá no hay raster real, son iniciales generadas en CSS. El role lo hace
- * descubrible para screen readers como "Avatar de <email>" en lugar de leerse como las dos
- * letras sueltas. Suppression queda en react-doctor.config.json para mantenerla trazable.
+ * The element uses `role="img"` + `aria-label` even though
+ * react-doctor/prefer-tag-over-role suggests <img>: there is no real raster here, just
+ * initials generated in CSS. The role makes it discoverable for screen readers as
+ * "Avatar de <email>" instead of being read as the two loose letters. The suppression
+ * stays in react-doctor.config.json so it is traceable.
  */
 export function ProfileAvatar({ email }: { email: string }) {
   const initials = getInitialsFromEmail(email);

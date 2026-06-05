@@ -7,20 +7,17 @@ import { settingsPatchSchema } from './schema';
 import type { UpdateSettingsFormState } from './types';
 
 /**
- * Server action del auto-save por toggle. Recibe un patch parcial (cualquier subset de
- * settings), lo valida con Zod y pega PATCH al backend. Devuelve un FormState que el
- * componente cliente usa para reflejar éxito o mostrar copy de error.
+ * Per-toggle auto-save server action. Receives a partial patch (any subset of
+ * settings), validates it with Zod and PATCHes the backend. Returns a FormState the
+ * client component uses to reflect success or show error copy.
  *
- * <para>
- * Invalida la cache de /ajustes para que un refresh server-rendered traiga la versión
- * actualizada. Mientras tanto el componente usa optimistic UI: el toggle se marca al click
- * y se rollbackea solo si el action devuelve error.
- * </para>
+ * Invalidates the /settings cache so a server-rendered refresh brings the updated
+ * version. Meanwhile the component uses optimistic UI: the toggle flips on click and
+ * only rolls back if the action returns an error.
  *
- * <para>
- * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
- * PATCH /api/me/settings, pero chequear acá ahorra el round-trip si la sesión cayó.
- * </para>
+ * The getSession check at the top is defense-in-depth: the backend still validates the
+ * JWT on every PATCH /api/me/settings, but checking here saves the round-trip if the
+ * session is already gone.
  */
 export async function updateSettingsAction(
   _prev: UpdateSettingsFormState,
@@ -56,7 +53,7 @@ export async function updateSettingsAction(
   }
 
   if (response.status === 204) {
-    revalidatePath('/ajustes');
+    revalidatePath('/settings');
     return { status: 'success', patch: parsed.data };
   }
 

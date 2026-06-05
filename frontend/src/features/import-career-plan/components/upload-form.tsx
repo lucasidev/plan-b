@@ -15,9 +15,9 @@ type Props = {
 };
 
 /**
- * Form de upload del plan de estudios. Recibe la universidad ya elegida en paso 2 del
- * onboarding (hidden). El alumno tipea nombre de carrera + año del plan + año de ingreso,
- * y sube PDF o pega texto.
+ * Career-plan upload form. Receives the university already chosen in onboarding step 2
+ * (hidden). The student types the career name + plan year + enrollment year and uploads
+ * a PDF or pastes text.
  */
 export function UploadCareerPlanForm({
   universityId,
@@ -46,8 +46,8 @@ export function UploadCareerPlanForm({
       </div>
 
       <Field id="careerName" label="Nombre de tu carrera">
-        {/* aria-label explícito porque la rule no detecta el <label htmlFor>
-            renderizado por el wrapper <Field> en otro componente. */}
+        {/* Explicit aria-label: the rule does not detect the <label htmlFor> rendered
+            by the <Field> wrapper from a different component. */}
         <input
           id="careerName"
           name="careerName"

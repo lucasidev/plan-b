@@ -7,8 +7,8 @@ type Props = {
   searchParams: Promise<{ token?: string }>;
 };
 
-// Hoisted heading para evitar nueva ref en cada render (regla
-// react-doctor/jsx-no-jsx-as-prop).
+// Hoisted heading to avoid a new ref on every render
+// (react-doctor/jsx-no-jsx-as-prop rule).
 const HEADING = (
   <DisplayHeading>
     Verificá tu <em>cuenta</em>

@@ -5,18 +5,18 @@ import { resendVerificationSchema } from './schema';
 import type { ResendVerificationFormState } from './types';
 
 /**
- * Resend-verification server action (US-021). Valida el email, llama al backend,
- * y retorna estado para que el botón cliente muestre cooldown/error/sent sin
- * navegar (a diferencia de forgot-password que redirige a /forgot-password/check-inbox).
+ * Resend-verification server action (US-021). Validates the email, calls the backend,
+ * and returns state so the client button can show cooldown/error/sent without
+ * navigating (unlike forgot-password, which redirects to /forgot-password/check-inbox).
  *
- * Anti-enumeración: el backend devuelve 204 sin importar si el email existe o si
- * el usuario ya está verificado. Por eso el status `sent` se setea en cualquier
- * 204, y el cooldown del botón (60s) aplica igual.
+ * Anti-enumeration: the backend returns 204 regardless of whether the email exists or
+ * the user is already verified. That is why `sent` is set on every 204, and the 60s
+ * button cooldown applies uniformly.
  *
- * Per frontend/CLAUDE.md, `'use server'` al tope significa que solo se exportan
- * funciones async. Los tipos del state viven en ./types.
+ * Per frontend/CLAUDE.md, `'use server'` at the top means only async functions can be
+ * exported. The state types live in ./types.
  */
-// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- resend-verification is public (el user todavía no verificó email, no tiene sesión)
+// react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- resend-verification is public (user has not verified email yet, no session)
 export async function resendVerificationAction(
   _prev: ResendVerificationFormState,
   formData: FormData,

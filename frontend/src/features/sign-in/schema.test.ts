@@ -2,9 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { signInSchema } from './schema';
 
 /**
- * Sample test para la rama "Schemas" de la pirámide (ADR-0036).
- * Zod schemas son data validators puros: testeables sin DOM ni network,
- * la base más rápida del feedback loop.
+ * Sample test for the "Schemas" tier of the pyramid (ADR-0036). Zod schemas are pure
+ * data validators: testable without DOM or network, the fastest feedback loop tier.
  */
 describe('signInSchema', () => {
   it('acepta un input válido', () => {
@@ -47,7 +46,7 @@ describe('signInSchema', () => {
   });
 
   it('infiere SignInInput correctamente del schema', () => {
-    // Type-level test: si esto compila, el tipo está sano. No assert en runtime.
+    // Type-level test: if this compiles, the type is sound. No runtime assertion.
     const valid = { email: 'lucia@test.com', password: 'doce-chars-12' };
     const parsed = signInSchema.parse(valid);
     expect(parsed.email).toBe('lucia@test.com');

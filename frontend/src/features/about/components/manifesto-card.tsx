@@ -1,7 +1,7 @@
 /**
- * Manifiesto: bloque principal de copy en la página Sobre. Render diferenciado por kind:
- * los párrafos normales van en texto ink-2 default, el último (disclaimer) en itálica + ink-3
- * para suavizar la voz autoritaria del proyecto sobre algo que es voluntario.
+ * Manifesto: main copy block in the About page. Differentiated rendering by `kind`:
+ * regular paragraphs use ink-2 (default), and the last one (disclaimer) uses italic +
+ * ink-3 to soften the project's authoritative voice about something that is voluntary.
  */
 
 import { ABOUT_MANIFESTO } from '../data/content';

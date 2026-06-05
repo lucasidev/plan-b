@@ -8,16 +8,15 @@ type Props = {
 };
 
 /**
- * Global error boundary. Next.js renders this when an error happens inside
- * the root layout itself (so the regular `error.tsx` boundary can't render
- * because the layout is broken). Must include `<html>` and `<body>` because
- * it replaces the root entirely.
+ * Global error boundary. Next.js renders this when an error happens inside the root
+ * layout itself (so the regular `error.tsx` boundary can't render because the layout
+ * is broken). Must include `<html>` and `<body>` because it replaces the root
+ * entirely.
  *
- * Uses inline styles only — no Tailwind classes, no design tokens — because
- * those depend on the root layout/CSS that just failed. Visual lead is the
- * "500" in accent ink, matching the tone of error.tsx and not-found.tsx
- * for consistency. If something fundamental is wrong, this surface still
- * has to render.
+ * Uses inline styles only: no Tailwind classes, no design tokens, because those
+ * depend on the root layout/CSS that just failed. Visual lead is the "500" in accent
+ * ink, matching the tone of error.tsx and not-found.tsx for consistency. If something
+ * fundamental is wrong, this surface still has to render.
  */
 export default function GlobalError({ error, reset }: Props) {
   useEffect(() => {
@@ -26,11 +25,11 @@ export default function GlobalError({ error, reset }: Props) {
 
   return (
     <html lang="es">
-      {/* global-error es la última red de seguridad de Next.js: se renderea cuando
-          algo rompió ANTES de cargar el app shell. No podemos depender de Tailwind
-          ni de tokens CSS variables (puede no haber CSS cargado), por eso usamos
-          inline styles literales aún siendo grandes. Las reglas
-          `no-inline-exhaustive-style` no aplican en este contexto. */}
+      {/* global-error is Next.js's last safety net: it renders when something broke
+          BEFORE the app shell loaded. We cannot depend on Tailwind or CSS variable
+          tokens (no CSS may be loaded), so we use literal inline styles even when
+          they are large. The `no-inline-exhaustive-style` rules do not apply in this
+          context. */}
       {/* react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style */}
       <body
         style={{
@@ -95,7 +94,7 @@ export default function GlobalError({ error, reset }: Props) {
               Ref: {error.digest}
             </p>
           )}
-          {/* Mismo razonamiento que el body: global-error no tiene CSS shell garantizado. */}
+          {/* Same reasoning as the body: global-error has no guaranteed CSS shell. */}
           {/* react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style */}
           <button
             type="button"

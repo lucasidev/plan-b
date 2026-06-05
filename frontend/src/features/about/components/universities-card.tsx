@@ -1,6 +1,7 @@
 /**
- * Lista de universidades soportadas. Hardcoded en MVP. Cuando aterrice
- * `GET /api/universities/public` (deuda US-074), la lista sale del backend con cache 24h.
+ * List of supported universities. Hardcoded in MVP. When
+ * `GET /api/universities/public` lands (US-074 debt), the list comes from the backend
+ * with a 24h cache.
  */
 
 import { ABOUT_UNIVERSITIES } from '../data/content';

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /**
- * Resend-verification form input. El backend acepta cualquier string y devuelve 204
- * regardless (anti-enumeración, igual que forgot-password). La validación cliente es
- * UX pura: cazamos typos obvios antes del round-trip sin filtrar qué emails están
- * registrados.
+ * Resend-verification form input. The backend accepts any string and returns 204
+ * regardless (anti-enumeration, same as forgot-password). Client-side validation is
+ * purely UX: we catch obvious typos before the round-trip without leaking which emails
+ * are registered.
  */
 export const resendVerificationSchema = z.object({
   email: z.string().min(1, 'Necesitamos tu email').email('Email inválido'),

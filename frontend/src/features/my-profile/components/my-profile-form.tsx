@@ -12,18 +12,16 @@ import { initialUpdateProfileState, type MyProfile, type UpdateProfileFormState 
 import { ProfileAvatar } from './profile-avatar';
 
 /**
- * Shell de Mi perfil (US-047). Toggle entre view mode (default) y edit mode. View mode lista
- * los datos académicos + identidad; edit mode habilita displayName, yearOfStudy, legajo y
- * regularStudent. Universidad / Carrera / Plan / Email NO se editan acá (cambios mayores
- * que requieren flows propios post-MVP).
+ * Mi perfil shell (US-047). Toggle between view mode (default) and edit mode. View mode
+ * lists the academic + identity data; edit mode enables displayName, yearOfStudy, legajo
+ * and regularStudent. University / Career / Plan / Email are NOT edited here (major
+ * changes that need their own post-MVP flows).
  *
- * <para>
- * Implementación con React 19 primitives (useActionState + useFormStatus) en lugar de
- * TanStack Form. ADR-0022 sugiere TanStack a partir de 4+ campos pero acá los 4 campos son
- * planos sin lógica cross-field compleja; el costo de setup de TanStack supera el beneficio.
- * Deuda explícita: si aterrizan validaciones cross-field (legajo válido por universidad),
- * migrar.
- * </para>
+ * Implementation with React 19 primitives (useActionState + useFormStatus) instead of
+ * TanStack Form. ADR-0022 suggests TanStack from 4+ fields onward, but here the 4
+ * fields are flat with no complex cross-field logic; the TanStack setup cost outweighs
+ * the benefit. Explicit debt: if cross-field validations land (legajo valid per
+ * university), migrate.
  */
 type Props = {
   profile: MyProfile;
@@ -120,7 +118,7 @@ type EditFormProps = {
 function EditForm({ profile, formAction, state, onCancel, onSuccess }: EditFormProps) {
   const formId = useId();
 
-  // Wrapper que parsea el FormData a JSON payload + invoca el action.
+  // Wrapper that parses the FormData into a JSON payload + invokes the action.
   const handleSubmit = (formData: FormData) => {
     const displayName = formData.get('displayName')?.toString().trim() ?? '';
     const yearOfStudy = formData.get('yearOfStudy')?.toString();
@@ -137,7 +135,7 @@ function EditForm({ profile, formAction, state, onCancel, onSuccess }: EditFormP
     formAction(patch);
   };
 
-  // Si el último submit fue success, ejecutamos onSuccess para volver a view mode.
+  // If the last submit was a success, run onSuccess to go back to view mode.
   if (state.status === 'success') {
     onSuccess();
   }
@@ -178,9 +176,9 @@ function EditForm({ profile, formAction, state, onCancel, onSuccess }: EditFormP
           maxLength={32}
         />
         <div className="flex items-center gap-2">
-          {/* aria-label además del <Label htmlFor> porque react-doctor no detecta
-              labels que vienen después del input (espera label-then-input o htmlFor
-              que la rule pueda trackear cross-componente). */}
+          {/* aria-label in addition to the <Label htmlFor> because react-doctor does
+              not detect labels that come after the input (it expects label-then-input
+              or an htmlFor the rule can track cross-component). */}
           <input
             id="regularStudent"
             type="checkbox"

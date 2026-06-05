@@ -5,13 +5,13 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * `/onboarding/welcome` — paso 01 (US-037-f).
+ * `/onboarding/welcome` step 01 (US-037-f).
  *
- * Guard: si el user ya tiene StudentProfile, no tiene sentido que vea welcome
- * (el onboarding está completo) → redirect a /home. Si no, mostramos welcome.
+ * Guard: if the user already has a StudentProfile, there's no point in showing welcome
+ * (onboarding is complete) → redirect to /home. Otherwise, show welcome.
  *
- * Cuando el JWT empiece a cargar `firstName`/`lastName` (US-047), el
- * displayNameFromEmail se reemplaza por leer del session directo.
+ * Once the JWT starts loading `firstName`/`lastName` (US-047), displayNameFromEmail
+ * is replaced with a direct session read.
  */
 export default async function OnboardingWelcomePage() {
   const session = await getSession();

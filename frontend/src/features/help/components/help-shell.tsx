@@ -1,7 +1,7 @@
 /**
- * Shell layout de la página Ayuda (US-073). Hero arriba + grid 2 col con FAQ (izq) y sidebar
- * de contacto + recursos (der). Server component: la única parte cliente es el FAQ accordion
- * que mantiene state local del item abierto.
+ * Shell layout of the Help page (US-073). Hero on top + 2-col grid with FAQ (left) and
+ * a sidebar with contact + resources (right). Server component: the only client part is
+ * the FAQ accordion that keeps the open-item state locally.
  */
 
 import { ContactCard } from './contact-card';

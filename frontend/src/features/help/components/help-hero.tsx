@@ -1,6 +1,6 @@
 /**
- * Header de la página Ayuda (US-073). Eyebrow + h1 + lede. Sin imagen ni acciones; el
- * contenido principal (FAQ + sidebar de contacto/recursos) va abajo.
+ * Header of the Help page (US-073). Eyebrow + h1 + lede. No image, no actions; the
+ * main content (FAQ + sidebar with contact/resources) goes below.
  */
 
 export function HelpHero() {

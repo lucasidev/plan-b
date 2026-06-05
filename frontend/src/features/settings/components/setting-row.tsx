@@ -3,9 +3,9 @@
 import type { ReactNode } from 'react';
 
 /**
- * Layout primitive para cada fila de Ajustes. El label + descripción a la izquierda, el
- * control (toggle, select, trigger) a la derecha. Separadores van entre filas, no acá: cada
- * sección los aplica.
+ * Layout primitive for each Ajustes row. Label + description on the left, the control
+ * (toggle, select, trigger) on the right. Separators go between rows, not here: each
+ * section applies them.
  */
 type Props = {
   label: string;

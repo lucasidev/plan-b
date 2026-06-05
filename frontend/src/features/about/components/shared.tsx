@@ -1,7 +1,7 @@
 /**
- * Primitivas compartidas entre cards de la página Sobre (US-074). Card box + eyebrow uppercase
- * mono. Centralizado para que todas las cards tengan el mismo padding/border/radius sin
- * duplicar tokens en cada componente.
+ * Shared primitives across the About page cards (US-074). Card box + mono uppercase
+ * eyebrow. Centralised so every card has the same padding/border/radius without
+ * duplicating tokens in each component.
  */
 
 import type { ReactNode } from 'react';

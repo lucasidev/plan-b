@@ -2,18 +2,18 @@ import { queryOptions } from '@tanstack/react-query';
 import type { Career, CareerPlan, University } from './types';
 
 /**
- * Fetchers + queryOptions co-localizados para el onboarding (US-037-f).
- * Consumen los 3 endpoints públicos Academic shipped en US-037-b.
+ * Co-located fetchers + queryOptions for onboarding (US-037-f). They consume the three
+ * public Academic endpoints shipped in US-037-b.
  *
- * **Paths relativos**: los fetchers usan `/api/...` directo (no `apiFetch`
- * con NEXT_PUBLIC_API_URL absoluto) porque corren client-side desde el
- * browser. El rewrite de Next (next.config.ts) proxy las requests al
- * backend, así son same-origin y evitamos CORS sin tocar el backend.
+ * **Relative paths**: fetchers use `/api/...` directly (not `apiFetch` with the
+ * absolute NEXT_PUBLIC_API_URL) because they run client-side from the browser. The
+ * Next rewrite (next.config.ts) proxies the requests to the backend, so they end up
+ * same-origin and we sidestep CORS without touching the backend.
  *
- * Convenciones (frontend/CLAUDE.md):
- *   - Cada queryKey arranca con el namespace de la feature (`['onboarding', ...]`).
- *   - Errores con throw para que TanStack Query los exponga via `error`.
- *   - `enabled: !!parentId` se setea en el queryOptions, no en el consumer.
+ * Conventions (frontend/CLAUDE.md):
+ *   - Every queryKey starts with the feature namespace (`['onboarding', ...]`).
+ *   - Errors are thrown so TanStack Query surfaces them through `error`.
+ *   - `enabled: !!parentId` is set in queryOptions, not at the consumer site.
  */
 
 async function fetchUniversities(): Promise<University[]> {
@@ -49,8 +49,8 @@ export const onboardingQueries = {
     queryOptions({
       queryKey: ['onboarding', 'universities'],
       queryFn: fetchUniversities,
-      // El catálogo cambia raramente; cache razonable para evitar refetches
-      // entre paso 02 y vuelta atrás del browser.
+      // The catalog rarely changes; a reasonable cache avoids refetches between step
+      // 02 and a browser back-navigation.
       staleTime: 5 * 60 * 1000, // 5 min
     }),
 

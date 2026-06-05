@@ -1,9 +1,9 @@
 /**
- * Card "Privacidad" del aside del editor (US-049). Espejo del mockup. Texto fijo: las 4
- * promesas de anonimato/derechos que el alumno tiene que ver antes de publicar.
+ * Privacy card in the editor aside (US-049). Mirrors the mockup. Fixed copy: the four
+ * anonymity/rights promises the student has to see before publishing.
  *
- * Es un componente puro sin estado. Si cambian las promesas (ej. ADR-0009 evoluciona o
- * llega un legal review), se actualiza el copy acá.
+ * Pure stateless component. When the promises change (e.g. ADR-0009 evolves or a legal
+ * review comes in), the copy is updated here.
  */
 export function PrivacyCard() {
   return (

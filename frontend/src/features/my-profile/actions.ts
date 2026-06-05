@@ -7,12 +7,13 @@ import { profileUpdateSchema } from './schema';
 import type { UpdateProfileFormState } from './types';
 
 /**
- * Server action del save del edit form (US-047). Recibe el shape parcial validado por Zod
- * (la validación profunda vive en el backend; acá chequeamos lo barato). Después del 204,
- * revalida /mi-perfil para que la próxima carga RSC traiga el snapshot fresco.
+ * Server action for the edit form save (US-047). Receives the partial shape validated
+ * by Zod (deep validation lives in the backend; we only check the cheap stuff here).
+ * After 204 it revalidates /my-profile so the next RSC load brings the fresh snapshot.
  *
- * `requireSession()` al tope es defense-in-depth: el backend igual valida JWT en cada
- * PATCH /api/me/student-profile, pero chequear acá ahorra el round-trip si la sesión cayó.
+ * The getSession check at the top is defense-in-depth: the backend still validates the
+ * JWT on every PATCH /api/me/student-profile, but checking here saves the round-trip if
+ * the session is already gone.
  */
 export async function updateMyProfileAction(
   _prev: UpdateProfileFormState,
@@ -45,7 +46,7 @@ export async function updateMyProfileAction(
   }
 
   if (response.status === 204) {
-    revalidatePath('/mi-perfil');
+    revalidatePath('/my-profile');
     return { status: 'success' };
   }
 

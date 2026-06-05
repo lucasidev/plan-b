@@ -35,9 +35,10 @@ type EditableRow = {
 };
 
 /**
- * Tabla editable del preview del plan. Cada fila parseada se renderiza con campos editables;
- * al confirmar se materializa el plan (Career + CareerPlan + Subjects). Al éxito redirige a
- * /onboarding/career?planId={nuevo} para que el alumno complete el paso 2.
+ * Editable preview table for the career plan. Each parsed row renders with editable
+ * fields; on confirm the plan is materialized (Career + CareerPlan + Subjects). On
+ * success it redirects to /onboarding/career?planId={new} so the student can complete
+ * step 2.
  */
 export function CareerPlanPreviewTable({
   importId,
@@ -127,8 +128,8 @@ export function CareerPlanPreviewTable({
                   />
                 </Td>
                 <Td>
-                  {/* aria-label porque los headers <th> no se asocian automáticamente
-                      a estos inputs según react-doctor; el index desambigua la fila. */}
+                  {/* aria-label because <th> headers are not associated with these
+                      inputs automatically per react-doctor; the index disambiguates the row. */}
                   <input
                     type="text"
                     value={r.code}
@@ -231,10 +232,10 @@ function handleApproveAction(
   return async (prev, formData) => {
     const next = await approveCareerPlanAction(prev, formData);
     if (next.status === 'success') {
-      // Redirect al onboarding/career con el nuevo plan pre-seleccionado. Pasamos
-      // universityId + careerId además del planId para que el form pueda restaurar el
-      // state exacto sin tener que adivinar (la career nueva puede convivir con la
-      // oficial cuando ya existía una carrera con el mismo nombre).
+      // Redirect to onboarding/career with the new plan pre-selected. We send
+      // universityId + careerId on top of planId so the form can restore the exact
+      // state without guessing (the new career can coexist with the official one
+      // when a career with the same name already existed).
       queueMicrotask(() => {
         const successState = next as Extract<typeof next, { status: 'success' }>;
         const qs = new URLSearchParams({

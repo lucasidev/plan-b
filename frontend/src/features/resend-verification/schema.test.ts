@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { resendVerificationSchema } from './schema';
 
 /**
- * Tests del schema (rama "Utils / Schemas" de la pirámide). El schema es la
- * única validación lado-cliente; el backend acepta cualquier string y responde
- * 204 para no filtrar enumerable info. Estos tests existen para evitar que un
- * cambio del schema rompa la UX silenciosamente.
+ * Schema tests (the "Utils / Schemas" tier of the pyramid). The schema is the only
+ * client-side validation; the backend accepts any string and responds 204 so it does
+ * not leak enumerable info. These tests exist so a schema change cannot silently
+ * break the UX.
  */
 describe('resendVerificationSchema', () => {
   it('acepta un email válido', () => {

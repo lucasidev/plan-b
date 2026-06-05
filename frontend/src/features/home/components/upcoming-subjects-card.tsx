@@ -7,14 +7,14 @@ type Props = {
 };
 
 /**
- * Bloque "Más adelante" del Inicio v2. Port de las líneas 161-185 del mock
- * `v2-screens.jsx::V2Inicio`. Lista compacta de materias que arrancan
- * después en el período (típicamente las del 2° cuatri vistas desde el 1°).
+ * "Más adelante" block of the v2 Home. Port of lines 161-185 of the
+ * `v2-screens.jsx::V2Inicio` mock. Compact list of subjects that start later in the
+ * period (typically the 2nd-term ones seen from the 1st).
  *
- * Renderiza solo si recibe items (`subjects.length > 0`). El responsable
- * de filtrar `s.week === 0` y decidir si renderearlo es la página padre,
- * no el componente. El componente aplica una guard adicional por
- * defensividad: si llega array vacío por error, devuelve null.
+ * Renders only when it receives items (`subjects.length > 0`). Filtering
+ * `s.week === 0` and deciding whether to render is the parent page's
+ * responsibility, not the component's. The component still keeps a defensive guard:
+ * if an empty array arrives by mistake, it returns null.
  */
 export function UpcomingSubjectsCard({ subjects }: Props) {
   if (subjects.length === 0) return null;

@@ -4,21 +4,20 @@ import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 /**
- * Layout del route group `(member)`. Hace tres cosas:
+ * Layout of the `(member)` route group. Does three things:
  *
- *  1. **Guard de sesión**: redirige a `/sign-in` si no hay session válida o
- *     el role no es `member`. La autorización real igual la hace el backend
- *     (ADR-0023); este guard es UX para evitar request rechazados y flashes.
+ *  1. **Session guard**: redirects to `/sign-in` if there is no valid session or the
+ *     role is not `member`. Real authorization still happens in the backend
+ *     (ADR-0023); this guard is UX to avoid rejected requests and flashes.
  *
- *  2. **Guard de onboarding (US-037-f)**: si el user no tiene StudentProfile
- *     todavía, redirige a `/onboarding/welcome` para que complete el flow.
- *     Sin profile, las pantallas de `(member)` (Inicio, Mi carrera, etc.) no
- *     tienen sentido porque no hay carrera asociada.
+ *  2. **Onboarding guard (US-037-f)**: if the user does not have a StudentProfile yet,
+ *     redirects to `/onboarding/welcome` to complete the flow. Without a profile, the
+ *     `(member)` screens (Inicio, Mi carrera, etc.) don't make sense because there is
+ *     no associated career.
  *
- *  3. **AppShell**: envuelve cada página del route group con el chrome
- *     (sidebar + topbar + avatar dropdown). Cualquier ruta que cuelgue de
- *     `app/(member)/` hereda el shell. Las páginas solo escriben su
- *     contenido principal.
+ *  3. **AppShell**: wraps every page in the route group with the chrome (sidebar +
+ *     topbar + avatar dropdown). Any route under `app/(member)/` inherits the shell.
+ *     The pages only write their main content.
  */
 export default async function MemberLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();

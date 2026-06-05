@@ -1,7 +1,7 @@
 /**
- * Shell layout de la página Sobre plan-b (US-074). Hero arriba + grid 2 col con manifiesto
- * + roadmap a la izquierda, team + stats + universidades + open source a la derecha.
- * Server component (todo el contenido es estático).
+ * Layout shell of the About plan-b page (US-074). Hero on top + 2-column grid with the
+ * manifesto + roadmap on the left and team + stats + universities + open source on the
+ * right. Server component (all content is static).
  */
 
 import { AboutHero } from './about-hero';

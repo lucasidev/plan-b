@@ -1,15 +1,16 @@
 /**
- * Stats card en grid 2x2. Hardcoded en MVP (alumnos, reseñas, docentes, versión). Cuando
- * aterrice `GET /api/stats/public` (US separada), este componente pasa a RSC con fetch.
+ * Stats card in a 2x2 grid. Hardcoded in MVP (students, reviews, teachers, version).
+ * When `GET /api/stats/public` (separate US) lands, this component moves to RSC with
+ * fetch.
  */
 
 import { ABOUT_STATS } from '../data/content';
 import { Card, EyebrowLabel } from './shared';
 
 const STATS: ReadonlyArray<{ key: keyof typeof ABOUT_STATS; label: string }> = [
-  { key: 'alumnos', label: 'alumnos' },
-  { key: 'reseñas', label: 'reseñas' },
-  { key: 'docentes', label: 'docentes' },
+  { key: 'students', label: 'alumnos' },
+  { key: 'reviews', label: 'reseñas' },
+  { key: 'teachers', label: 'docentes' },
   { key: 'version', label: 'versión' },
 ];
 

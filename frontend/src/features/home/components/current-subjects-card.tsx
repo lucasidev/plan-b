@@ -8,17 +8,16 @@ type Props = {
 };
 
 /**
- * Bloque "En curso" del Inicio v2. Port literal de las líneas 96-158 del
- * mock `v2-screens.jsx::V2Inicio`. Cada fila tiene grid 1fr/auto/100px:
- * info principal a la izquierda (code + mod + com + name + prof + next),
- * nota parcial al centro, progreso de cursado a la derecha.
+ * "En curso" block of the v2 Home. Literal port of lines 96-158 of the
+ * `v2-screens.jsx::V2Inicio` mock. Each row uses a 1fr/auto/100px grid: main info on
+ * the left (code + mod + com + name + prof + next), partial grade in the middle,
+ * progress through the term on the right.
  *
- * Tone de la progress bar pasa a "warm" cuando faltan pocas semanas
- * (`week/weeks > 0.8`), heurística directa del mock.
+ * Progress-bar tone flips to "warm" when only a few weeks are left
+ * (`week/weeks > 0.8`), heuristic taken directly from the mock.
  *
- * Empty state mantiene la grilla estable (no se oculta el bloque) para no
- * sumar saltos de layout cuando un alumno arranca el período sin
- * inscripciones.
+ * Empty state keeps the grid stable (the block is not hidden) to avoid layout shifts
+ * when a student starts the period without enrollments.
  */
 export function CurrentSubjectsCard({ subjects }: Props) {
   return (

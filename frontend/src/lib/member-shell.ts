@@ -1,85 +1,84 @@
 /**
- * Helpers para el AppShell del área autenticada (US-042-f).
+ * Helpers for the authenticated-area AppShell (US-042-f).
  *
- * Viven en `lib/` (no en `components/layout/`) porque son funciones puras
- * sin JSX que se reusan entre Sidebar (item activo), Topbar (breadcrumbs)
- * y AvatarMenu (iniciales). Si alguna otra ruta del producto las necesita
- * en el futuro (ej. la home), están a un import de distancia.
+ * They live under `lib/` (not `components/layout/`) because they are pure functions with
+ * no JSX, reused across Sidebar (active item), Topbar (breadcrumbs), and AvatarMenu
+ * (initials). If any other product route needs them later (e.g. the home), they are an
+ * import away.
  */
 
 /**
- * Catálogo de las rutas del área `(member)` con el copy display + opcional
- * shortcut hint del mockup.
+ * Catalog of `(member)` routes with the display copy and an optional mockup-style
+ * shortcut hint.
  *
- * El path es la fuente de verdad: lo usamos tanto para el `Link href` del
- * sidebar como para el match de "item activo" basado en `usePathname()`,
- * y para derivar el label del breadcrumb actual.
+ * The path is the source of truth: we use it for both the `Link href` in the sidebar
+ * and for the "active item" match based on `usePathname()`, and to derive the current
+ * breadcrumb label.
  *
- * Cuando una ruta nueva del catálogo aterrice, se suma acá. Cuando deje
- * de ser stub, no hay que tocar nada del shell — la página decide
- * si renderiza ComingSoon o el contenido real.
+ * When a new catalog route lands, add it here. When a stub gets real content, nothing
+ * in the shell has to change: the page decides whether to render ComingSoon or the real
+ * content.
  */
 export type MemberRoute = {
   readonly path: string;
   readonly label: string;
-  readonly section: 'mi-cuatrimestre' | 'comunidad' | 'otros';
+  readonly section: 'my-term' | 'community' | 'other';
   readonly shortcut?: string;
-  /** US futura que va a llenar este stub con contenido real. Display only. */
+  /** Future US that will replace this stub with real content. Display only. */
   readonly futureUs?: string;
 };
 
 export const memberRoutes: readonly MemberRoute[] = [
-  // Mi cuatrimestre
+  // My term
   {
     path: '/home',
     label: 'Inicio',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘1',
   },
   {
-    path: '/mi-carrera',
+    path: '/my-career',
     label: 'Mi carrera',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘2',
     futureUs: 'US-045',
   },
   {
-    path: '/planificar',
+    path: '/plan',
     label: 'Planificar',
-    section: 'mi-cuatrimestre',
+    section: 'my-term',
     shortcut: '⌘3',
     futureUs: 'US-016',
   },
 
-  // Comunidad
-  { path: '/reviews', label: 'Mis reseñas', section: 'comunidad', futureUs: 'US-020' },
+  // Community
+  { path: '/reviews', label: 'Mis reseñas', section: 'community', futureUs: 'US-020' },
 
-  // Otros (Ajustes, Ayuda, Sobre plan-b - per mockup `soporte-v2-ayuda.png` que muestra
-  // los tres ítems agrupados en "OTROS" al pie del sidebar v2). Mi perfil sigue
-  // viviendo en el avatar menu, no en este nav.
-  { path: '/ajustes', label: 'Ajustes', section: 'otros' },
-  { path: '/ayuda', label: 'Ayuda', section: 'otros' },
-  { path: '/sobre', label: 'Sobre plan-b', section: 'otros' },
+  // Other (Settings, Help, About plan-b, per the `soporte-v2-ayuda.png` mockup that
+  // groups the three items under "OTROS" at the bottom of the v2 sidebar). My profile
+  // still lives in the avatar menu, not in this nav.
+  { path: '/settings', label: 'Ajustes', section: 'other' },
+  { path: '/help', label: 'Ayuda', section: 'other' },
+  { path: '/about', label: 'Sobre plan-b', section: 'other' },
 ] as const;
 
 export const memberSections: ReadonlyArray<{
   readonly key: MemberRoute['section'];
   readonly label: string;
 }> = [
-  { key: 'mi-cuatrimestre', label: 'Mi cuatrimestre' },
-  { key: 'comunidad', label: 'Comunidad' },
-  { key: 'otros', label: 'Otros' },
+  { key: 'my-term', label: 'Mi cuatrimestre' },
+  { key: 'community', label: 'Comunidad' },
+  { key: 'other', label: 'Otros' },
 ] as const;
 
 /**
- * Derives breadcrumbs from `usePathname()`. The shell currently only
- * shows up to two levels (root section + active page); the topbar
- * doesn't have visual room for nested crumbs and none of the member
- * routes are nested deeper than one level, so this is enough.
+ * Derives breadcrumbs from `usePathname()`. The shell currently only shows up to two
+ * levels (root section + active page); the topbar doesn't have visual room for nested
+ * crumbs and none of the member routes are nested deeper than one level, so this is
+ * enough.
  *
- * Returns an empty array for unknown paths (the topbar then renders
- * just the bare last segment, which is honest while a route is being
- * built out).
+ * Returns an empty array for unknown paths (the topbar then renders just the bare last
+ * segment, which is honest while a route is being built out).
  */
 export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   const route = memberRoutes.find((r) => r.path === pathname);
@@ -88,10 +87,10 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
     return section ? [section.label, route.label] : [route.label];
   }
 
-  // Patterns conocidos para rutas dinámicas que no entran en memberRoutes
-  // (porque tienen [param] o niveles anidados). El topbar muestra el copy
-  // amigable en vez del slug crudo de la URL.
-  if (pathname.startsWith('/resenas/escribir/')) {
+  // Known patterns for dynamic routes that do not fit into memberRoutes (because they
+  // have [param] or nested levels). The topbar shows a friendly copy instead of the raw
+  // URL slug.
+  if (pathname.startsWith('/reviews/write/')) {
     return ['Comunidad', 'Nueva reseña'];
   }
 
@@ -101,15 +100,14 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
 }
 
 /**
- * Two letters from the email's local part. We grab the first letter and
- * the letter after the first dot (so "lucia.mansilla@gmail.com" -> "LM"
- * and "lucia@gmail.com" -> "LU"). Falls back to the first two letters of
- * the local part if there's no dot.
+ * Two letters from the email's local part. We grab the first letter and the letter
+ * after the first dot (so "lucia.mansilla@gmail.com" -> "LM" and "lucia@gmail.com" ->
+ * "LU"). Falls back to the first two letters of the local part if there's no dot.
  *
- * Why not first + last name? Because session doesn't carry a display
- * name yet — the StudentProfile aggregate that owns it lands in US-012.
- * When that ships, this helper gets a sibling that prefers `firstName`
- * + `lastName` initials and the AppShell switches over.
+ * Why not first + last name? Because the session does not carry a display name yet: the
+ * StudentProfile aggregate that owns it lands in US-012. When that ships, this helper
+ * gets a sibling that prefers `firstName` + `lastName` initials and the AppShell
+ * switches over.
  */
 export function getInitialsFromEmail(email: string): string {
   const local = email.split('@')[0] ?? '';
@@ -124,10 +122,10 @@ export function getInitialsFromEmail(email: string): string {
 }
 
 /**
- * Display name temporal: "lucia.mansilla@gmail.com" → "Lucia Mansilla".
- * Mismo motivo que getInitialsFromEmail: el StudentProfile no carga
- * todavía el firstName/lastName en el JWT. Cuando aterrice, este helper
- * se reemplaza por leer eso directo desde la sesión (US-047 Mi perfil).
+ * Temporary display name: "lucia.mansilla@gmail.com" goes to "Lucia Mansilla". Same
+ * reason as getInitialsFromEmail: the StudentProfile does not yet carry
+ * firstName/lastName in the JWT. When it lands, this helper is replaced by reading
+ * those directly from the session (US-047 Mi perfil).
  */
 export function displayNameFromEmail(email: string): string {
   const local = email.split('@')[0] ?? '';

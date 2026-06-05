@@ -4,9 +4,9 @@ import { ChevronRight } from 'lucide-react';
 import { type CSSProperties, useState } from 'react';
 import { FAQ, type FaqEntry } from '../data/faq';
 
-// Style del trigger del accordion. Module-scope para evitar nueva ref por render y
-// para que la regla `no-inline-exhaustive-style` no se dispare por las 13 props (es un
-// botón pill clickeable, no tenemos clases Tailwind compactas que cubran este shape).
+// Style of the accordion trigger. Module-scope to avoid a new ref per render and so
+// the `no-inline-exhaustive-style` rule does not fire for the 13 props (it is a
+// clickable pill button; no compact Tailwind classes cover this shape).
 const TRIGGER_STYLE: CSSProperties = {
   appearance: 'none',
   background: 'transparent',
@@ -24,12 +24,12 @@ const TRIGGER_STYLE: CSSProperties = {
 };
 
 /**
- * Lista de FAQ con accordions (US-073). Cada item es un `<button>` que abre/cierra el panel
- * con la respuesta. Solo se mantiene abierto uno a la vez (toggle): así el scroll vertical
- * no se vuelve impredecible cuando el user explora varios.
+ * FAQ list with accordions (US-073). Each item is a `<button>` that opens/closes the
+ * panel with the answer. Only one stays open at a time (toggle): that way the vertical
+ * scroll does not become unpredictable when the user explores several.
  *
- * Cliente porque mantiene el estado del item abierto. Idiomatic Next: server por default,
- * cliente solo donde el interactivity lo exige.
+ * Client because it keeps the open-item state. Idiomatic Next: server by default,
+ * client only where interactivity requires it.
  */
 export function FaqList() {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -93,9 +93,9 @@ function FaqItem({
         />
       </button>
       {open && (
-        // `<section>` con aria-labelledby es el equivalente semántico de
-        // `<div role="region">`, prefiere el elemento por sobre el role (regla
-        // react-doctor/prefer-tag-over-role).
+        // `<section>` with aria-labelledby is the semantic equivalent of
+        // `<div role="region">`; prefer the element over the role
+        // (react-doctor/prefer-tag-over-role rule).
         <section
           id={panelId}
           aria-labelledby={buttonId}

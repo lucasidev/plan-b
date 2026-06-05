@@ -7,11 +7,10 @@ type Props = {
 };
 
 /**
- * Renders the outcome of /api/identity/verify-email. Server component:
- * the page hands a VerifyEmailOutcome and we map kind → copy + CTA. For
- * error cases we nudge the user back to `/sign-up` to receive a fresh
- * link (or, when ResendVerificationButton aterrice como CTA acá, podemos
- * reusar el mismo email sin re-registrar).
+ * Renders the outcome of /api/identity/verify-email. Server component: the page hands
+ * us a VerifyEmailOutcome and we map kind to copy + CTA. For error cases we nudge the
+ * user back to `/sign-up` to get a fresh link (or, once ResendVerificationButton lands
+ * as a CTA here, we can reuse the same email without re-registering).
  */
 export function VerifyEmailResult({ result }: Props) {
   if (result.kind === 'success') {
@@ -33,8 +32,8 @@ export function VerifyEmailResult({ result }: Props) {
   }
 
   if (result.kind === 'already_consumed') {
-    // Tratamos esto como cuasi-éxito: la cuenta ya está verificada, simplemente el link
-    // se reusó. El call-to-action es ir directo a iniciar sesión.
+    // We treat this as quasi-success: the account is already verified, the link was
+    // just reused. The call-to-action is to go straight to sign in.
     return (
       <div className="space-y-6">
         <header className="space-y-2">

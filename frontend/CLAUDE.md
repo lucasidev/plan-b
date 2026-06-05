@@ -197,6 +197,32 @@ UX strings en español (la app es en español). Descriptores técnicos de `descr
 
 - **Imports con alias `@/`**. Nunca `../../../foo`.
 - **Strings de UI en español rioplatense**. Error messages y logs en inglés.
+
+### Code/UI split (regla dura, no negociable)
+
+**El código va en inglés. Solo lo que ve el usuario va en español rioplatense.**
+
+| En inglés (código) | En español (UI/UX) |
+|---|---|
+| Rutas: `/my-career`, `/reviews/write/[enrollmentId]` | Labels visibles: "Mi carrera", "Escribir reseña" |
+| Carpetas de `app/` y `features/` | Texto en `<h1>`, `<p>`, `<button>`, placeholders |
+| Filenames: `transcript-summary.ts`, `prerequisite-chip.tsx` | Strings hardcoded en JSX renderizado |
+| Identificadores: `MyCareerTabId`, `MOCK_ENROLLMENT_CONTEXT`, `parseTab()` | Mensajes de error que ve el alumno |
+| Type literals usados como código: `'prerequisites' \| 'catalog' \| 'teachers'` | Aria-labels que el screen reader le lee al alumno |
+| Object keys: `{ students: '340', reviews: '1.247' }` | Email subjects, notification copy |
+| Query param values (son código): `?tab=transcript`, `?tab=draft` | Toast / banner / modal messages |
+| JSDoc + inline comments (`/** ... */`, `// ...`) | Test descriptions de `describe()` / `it()` (excepción documentada del frontend CLAUDE.md) |
+| Error codes / log messages internos | |
+
+**Test que tenés que poder pasar antes de mergear**: si grepeás `src` con palabras castellanas técnicas típicas (`está`, `cuando`, `función`, `también`, `cursada`, `reseña`, `materia`, `comisión`), los matches deben caer **solo** en strings de UI dentro de JSX, copy hardcoded de `data/content.ts`, labels de tabs o aria-labels. Si caen en docstrings, identificadores o type literals, lo arreglás antes de mergear.
+
+```bash
+# Quick check (corre en frontend/):
+grep -rn "está\|cuando\|función\|también\|cursada\|reseña\|materia" src/features/<feature> \
+  | grep -vE "(label|placeholder|aria-label|children|>\s*[A-ZÁ]|\".*[ñáéíóú])"
+```
+
+**Cómo me cagué con esto** (deuda histórica documentada para no repetir): durante S2-S5 mergué 7 USs con rutas, features, identifiers y docstrings en castellano. El PR de refactor pertinente vuelve todo a inglés y deja esta tabla como referencia.
 - **Zod schemas** en `features/<feature>/schemas/`, compartidos entre client (TanStack Form) y server actions.
 - **`'use client'` solo donde hace falta**. Default es Server Component.
 - **`'use server'` al tope del archivo** para Server Actions (no por función suelta).

@@ -1,6 +1,6 @@
 /**
- * Hero de la página Sobre plan-b (US-074). Eyebrow + headline display + lede. Sin imagen ni
- * stats: estos viven en cards del grid principal.
+ * Hero of the About plan-b page (US-074). Eyebrow + display headline + lede. No image
+ * or stats: those live in cards inside the main grid.
  */
 
 import { ABOUT_HEADLINE, ABOUT_LEDE } from '../data/content';

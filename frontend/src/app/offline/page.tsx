@@ -3,12 +3,11 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * Offline fallback. Plain route at /offline. Shown by the service worker
- * when the user navigates while offline (the SW catches the failed fetch
- * and serves this cached page). Mientras no exista un service worker
- * registrado, esta ruta queda como placeholder que la capa de ops puede
- * redirigir desde el proxy ante problemas de red, o que se puede pre-cachear
- * para uso futuro.
+ * Offline fallback. Plain route at /offline. Shown by the service worker when the
+ * user navigates while offline (the SW catches the failed fetch and serves this
+ * cached page). While no service worker is registered, this route stays as a
+ * placeholder that ops can redirect to from the proxy on network issues, or that can
+ * be pre-cached for future use.
  */
 export default function OfflinePage() {
   return (

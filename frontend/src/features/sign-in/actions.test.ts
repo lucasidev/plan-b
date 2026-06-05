@@ -3,20 +3,20 @@ import { signInAction } from './actions';
 import { initialSignInState } from './types';
 
 /**
- * Sample tests para la rama "Server Actions" de la pirámide (ADR-0036).
- * El action es lógica pura mockeable en sus deps externas:
- *   - `./api`              → controlamos el Response del backend.
- *   - `next/navigation`    → capturamos el redirect sin navegar.
- *   - `@/lib/forward-set-cookies` → no-op; testeamos el flow del action,
- *     no el parseo de cookies (esa lógica tiene su propio módulo).
+ * Sample tests for the "Server Actions" tier of the pyramid (ADR-0036). The action is
+ * pure logic and its external deps are mockable:
+ *   - `./api`              -> we control the backend Response.
+ *   - `next/navigation`    -> we capture the redirect without navigating.
+ *   - `@/lib/forward-set-cookies` -> no-op; we test the action flow, not the cookie
+ *     parsing (that has its own module).
  *
- * Cubrimos las 5 ramas que el action expone vía SignInFormState.kind:
- *   - input inválido (Zod) → invalid_credentials con mensaje del schema
- *   - 200                  → redirect a /home (NEXT_REDIRECT)
- *   - 401                  → invalid_credentials
- *   - 403 + email_not_verified → email_not_verified
- *   - 403 + account_disabled   → account_disabled
- *   - 500 / otros          → unknown
+ * We cover the five branches the action exposes through SignInFormState.kind:
+ *   - invalid input (Zod) -> invalid_credentials with the schema's message
+ *   - 200                 -> redirect to /home (NEXT_REDIRECT)
+ *   - 401                 -> invalid_credentials
+ *   - 403 + email_not_verified -> email_not_verified
+ *   - 403 + account_disabled   -> account_disabled
+ *   - 500 / others        -> unknown
  */
 
 vi.mock('./api', () => ({
@@ -61,7 +61,7 @@ describe('signInAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.kind).toBe('invalid_credentials');
-      // El primer issue de Zod es el de email vacío.
+      // Zod's first issue is the empty-email one.
       expect(result.message).toMatch(/email/i);
     }
     expect(signInMock).not.toHaveBeenCalled();
@@ -157,7 +157,7 @@ describe('signInAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.kind).toBe('unknown');
-      // detail del backend filtra al UI cuando no matcheamos un kind conocido.
+      // The backend `detail` leaks through to the UI when we do not match a known kind.
       expect(result.message).toBe('soy nuevo');
     }
   });

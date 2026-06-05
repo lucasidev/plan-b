@@ -6,13 +6,12 @@ type Props = {
 };
 
 /**
- * Bloque "Movimientos" del Inicio v2. Feed compacto de notifs / eventos
- * recientes del entorno del alumno. Port literal de las líneas 248-272
- * del mock V2Inicio. Cada item es un grid 56px/1fr (timestamp izquierda,
- * body derecha).
+ * "Movimientos" block of the v2 Home. Compact feed of recent notifs / events from the
+ * student's environment. Literal port of lines 248-272 of the V2Inicio mock. Each
+ * item is a 56px/1fr grid (timestamp on the left, body on the right).
  *
- * Empty state mantiene la card visible para no saltar el layout cuando
- * el alumno está al día.
+ * Empty state keeps the card visible so the layout does not jump when the student is
+ * caught up.
  */
 export function MovementsCard({ movements }: Props) {
   return (

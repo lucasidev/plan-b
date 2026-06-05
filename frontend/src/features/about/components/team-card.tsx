@@ -1,7 +1,8 @@
 /**
- * Card de equipo. Para MVP: Lucas como único autor, contexto académico UNSTA + Ing. Copas
- * como footnote separada (no co-author). El mockup mostraba 3 ejemplos del canvas; acá la
- * realidad es uno solo. Cuando entren contributors externos, se suman al array.
+ * Team card. MVP: Lucas as the sole author, with the UNSTA + Ing. Copas academic
+ * context as a separate footnote (not co-author). The mockup showed 3 canvas examples;
+ * the reality here is just one. When external contributors join, they are added to the
+ * array.
  */
 
 import { ABOUT_ACADEMIC_CONTEXT, ABOUT_TEAM } from '../data/content';

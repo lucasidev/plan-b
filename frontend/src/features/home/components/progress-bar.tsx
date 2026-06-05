@@ -4,23 +4,23 @@ type Props = {
   value: number;
   max: number;
   /**
-   * `neutral` rellena con `--color-ink` (uso default).
-   * `warm` rellena con `--color-accent` (estados con urgencia visual,
-   * ej. cuatri llegando al final, materias > 80% del cursado).
+   * `neutral` fills with `--color-ink` (default use).
+   * `warm` fills with `--color-accent` (states with visual urgency, e.g. term coming
+   * to an end, subjects past 80% of the cursado).
    */
   tone?: 'neutral' | 'warm';
   className?: string;
 };
 
 /**
- * Bar visual sin etiquetas. Port del helper `V2Progress` del mock
- * (`v2-screens.jsx`). Difiere del componente `Meter` de la design system
- * en que `Meter` requiere una etiqueta arriba; este se usa cuando las
- * etiquetas viven aparte (ej. en grids de 3 columnas como el período card,
- * donde las labels están a los costados de la barra).
+ * Visual bar without labels. Port of the `V2Progress` helper from the mock
+ * (`v2-screens.jsx`). Differs from the design system's `Meter` component in that
+ * `Meter` requires a label above; this one is used when the labels live elsewhere
+ * (e.g. inside 3-column grids like the period card, where the labels sit beside the
+ * bar).
  *
- * Si `max` es 0 o el valor cae fuera de rango, clampa a 0% / 100% sin
- * crash. `Math.max(0, ...)` y `Math.min(100, ...)` garantizan invariantes.
+ * If `max` is 0 or the value falls out of range, it clamps to 0% / 100% without
+ * crashing. `Math.max(0, ...)` and `Math.min(100, ...)` keep the invariants.
  */
 export function ProgressBar({ value, max, tone = 'neutral', className }: Props) {
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;

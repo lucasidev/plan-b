@@ -22,10 +22,11 @@ type Props = {
 };
 
 /**
- * Theme select integrado con next-themes. El cambio se persiste al backend y además se aplica
- * inmediato en el cliente vía <c>useTheme().setTheme</c>. Auto-save por toggle: el side effect
- * de aplicar al cliente corre solo cuando el server action devolvió success (para no aplicar
- * un tema que después se rollbackea por error de red).
+ * Theme select integrated with next-themes. The change is persisted to the backend and
+ * also applied immediately on the client via `useTheme().setTheme`. Per-toggle
+ * auto-save: the side effect that applies the theme on the client runs only after the
+ * server action returns success (so we don't apply a theme that later rolls back due
+ * to a network error).
  */
 export function ThemeSection({ settings }: Props) {
   const { setTheme } = useTheme();

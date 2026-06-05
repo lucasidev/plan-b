@@ -2,22 +2,21 @@ import type { PendingReview } from '../data/to-review';
 
 type Props = {
   reviews: PendingReview[];
-  /** Año del período actual (típicamente `currentPeriod.year`). Se usa para el copy del header. */
+  /** Year of the current period (typically `currentPeriod.year`). Used for the header copy. */
   year: number;
 };
 
 /**
- * Bloque "Reseñá lo que cursaste" del Inicio v2. Card acent (gradient
- * desde accent-soft hacia bg-card) con materias cerradas pendientes de
- * reseña. Port literal de las líneas 191-232 del mock V2Inicio.
+ * "Reseñá lo que cursaste" block of the v2 Home. Accent card (gradient from
+ * accent-soft to bg-card) with closed subjects awaiting a review. Literal port of
+ * lines 191-232 of the V2Inicio mock.
  *
- * Cada item es una sub-card con código + cuatri cerrado + nombre +
- * profesor + nota, con CTA "Reseñar →" deshabilitado hasta que aterrice
- * US-017 (escribir reseña).
+ * Each item is a sub-card with code + closed term + name + teacher + grade, with a
+ * "Reseñar →" CTA disabled until US-017 (write review) lands.
  *
- * El año del header viene del `currentPeriod` (el cuatri pasado a
- * reseñar es el del año anterior). Hardcodear ese cálculo en el
- * componente sería un acoplamiento innecesario al período.
+ * The header year comes from `currentPeriod` (the past term to review belongs to the
+ * previous year). Hardcoding that calculation inside the component would be needless
+ * coupling to the period.
  */
 export function PendingReviewsCard({ reviews, year }: Props) {
   return (

@@ -8,20 +8,19 @@ type Props = {
 };
 
 /**
- * Post-registration screen. The sign-up server action redirects here on 201,
- * passing the email via query string so we can echo "te mandamos un mail a
- * X". No backend call from here; the verification email is dispatched by
- * the backend's UserRegistered domain event handler asynchronously.
+ * Post-registration screen. The sign-up server action redirects here on 201, passing
+ * the email via query string so we can echo "te mandamos un mail a X". No backend call
+ * from here; the verification email is dispatched by the backend's UserRegistered
+ * domain event handler asynchronously.
  *
- * Centered single-card layout (no AuthSplit). This is a transition screen,
- * not a marketing surface — the user already converted, we're just telling
- * them what to do next. The cream background + sutil radial glow keeps it
- * tonally aligned con `/sign-in` y `/sign-up` sin reusar el split layout
- * heavier.
+ * Centered single-card layout (no AuthSplit). This is a transition screen, not a
+ * marketing surface: the user already converted, we are just telling them what to do
+ * next. The cream background + subtle radial glow keeps it tonally aligned with
+ * `/sign-in` and `/sign-up` without reusing the heavier split layout.
  *
- * Path: `/sign-up/check-inbox`. Vive como sub-ruta de sign-up porque es
- * la continuación natural del flow: registro → "revisá tu inbox" →
- * (clic en el mail) → /verify-email → /sign-in.
+ * Path: `/sign-up/check-inbox`. Lives as a sub-route of sign-up because it is the
+ * natural continuation of the flow: registration → "check your inbox" → (click on the
+ * mail) → /verify-email → /sign-in.
  */
 export default async function CheckInboxPage({ searchParams }: Props) {
   const { email } = await searchParams;

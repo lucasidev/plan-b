@@ -7,8 +7,8 @@ type Props = {
   searchParams: Promise<{ token?: string }>;
 };
 
-// Hoisted headings para evitar nueva ref en cada render (regla
-// react-doctor/jsx-no-jsx-as-prop). Ambos son estáticos.
+// Hoisted headings to avoid a new ref on every render
+// (react-doctor/jsx-no-jsx-as-prop rule). Both are static.
 const HEADING_MISSING_TOKEN = (
   <DisplayHeading>
     Falta el <em>link</em>

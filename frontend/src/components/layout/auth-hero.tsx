@@ -1,21 +1,19 @@
 /**
- * Hero copy compartido entre las páginas del route group `(auth)` que
- * usan `<AuthSplit>` (sign-in, sign-up). El componente Headline vive solo
- * en este archivo; las constantes de copy (stats, quote, description)
- * viven en `auth-hero-data.ts` para no romper Fast Refresh por mezclar
- * exports de componente con exports de constantes (regla
- * `react-doctor/only-export-components`).
+ * Hero copy shared across the `(auth)` route group pages that use `<AuthSplit>`
+ * (sign-in, sign-up). The Headline component lives only in this file; copy constants
+ * (stats, quote, description) live in `auth-hero-data.ts` to avoid breaking Fast
+ * Refresh by mixing component exports with constant exports
+ * (`react-doctor/only-export-components` rule).
  *
- * Cuando el rediseño v2 termine de aterrizar, sign-in puede tener su
- * propio panel lateral con stats personalizadas (insights crowd-sourced,
- * "última actividad de tu carrera"). En ese momento, sign-in se separa
- * de este module y cada flow define su propio hero. Por ahora, las dos
- * páginas comparten el mismo hero porque la US-036 solo cambia el shell
- * (de tabs a 4 rutas), no el contenido del hero.
+ * Once the v2 redesign finishes landing, sign-in may get its own side panel with
+ * personalized stats (crowd-sourced insights, "última actividad de tu carrera"). At
+ * that point, sign-in splits off from this module and each flow defines its own hero.
+ * For now, both pages share the same hero because US-036 only changes the shell
+ * (tabs → 4 routes), not the hero content.
  *
- * El heading queda en cada page porque ahí está el verbo dominante
- * ("Empezá en 30 segundos" para sign-up, "Buenas de nuevo" para sign-in).
- * Esa diferencia es semánticamente la página, no el hero.
+ * The heading stays in each page because that's where the dominant verb lives
+ * ("Empezá en 30 segundos" for sign-up, "Buenas de nuevo" for sign-in). That
+ * difference is semantically the page, not the hero.
  */
 
 export function AuthHeroHeadline() {

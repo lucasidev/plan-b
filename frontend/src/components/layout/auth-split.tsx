@@ -71,9 +71,9 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
         </div>
 
         {quote && (
-          // Bloque visual del quote del hero, con valores transparentes específicos
-          // que no caben en utilities Tailwind sin custom plugin. Cuando aterrice
-          // ADR-005x sobre extending Tailwind theme, migrar a clases.
+          // Visual block of the hero quote, with specific transparent values that
+          // don't fit Tailwind utilities without a custom plugin. Once ADR-005x on
+          // extending the Tailwind theme lands, migrate to classes.
           // react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style
           <div
             className="relative z-10 backdrop-blur-[6px]"

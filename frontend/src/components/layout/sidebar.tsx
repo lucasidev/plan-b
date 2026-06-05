@@ -7,27 +7,26 @@ import { memberRoutes, memberSections } from '@/lib/member-shell';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  /** Slot que va abajo del nav (ver `<AvatarMenu />`). */
+  /** Slot rendered below the nav (see `<AvatarMenu />`). */
   footer?: React.ReactNode;
   /**
-   * Texto chico debajo del logo. Hoy hardcoded a "UNSTA · Lic. Sistemas"
-   * porque la session todavía no carga universidad/carrera (US-012). Cuando
-   * StudentProfile aterrice, este prop se llena desde la session.
+   * Small text below the logo. Today hardcoded to "UNSTA · Lic. Sistemas" because the
+   * session does not load university/career yet (US-012). When StudentProfile lands,
+   * this prop is fed from the session.
    */
   contextLabel?: string;
 };
 
 /**
- * Sidebar del área `(member)` per `docs/design/reference/components/shell.jsx::Sidebar`.
+ * `(member)` area sidebar per `docs/design/reference/components/shell.jsx::Sidebar`.
  *
- * Agrupa los links de navegación en tres secciones (Mi cuatrimestre,
- * Comunidad, Cuenta). El item activo se resalta basado en `usePathname()`,
- * con fallback a startsWith para sub-rutas futuras (`/subjects/[id]`
- * mantiene "Materias" activo).
+ * Groups navigation links in three sections (Mi cuatrimestre, Comunidad, Cuenta). The
+ * active item is highlighted based on `usePathname()`, with a startsWith fallback for
+ * future sub-routes (`/subjects/[id]` keeps "Materias" lit).
  *
- * Cliente porque necesita `usePathname`. Si en el futuro nos importa el
- * RSC streaming acá, se split en un componente shell server + un
- * sub-componente cliente que solo lee pathname para el highlight.
+ * Client because it needs `usePathname`. If RSC streaming matters here in the future,
+ * split into a server shell component + a client sub-component that only reads
+ * pathname for the highlight.
  */
 export function Sidebar({ footer, contextLabel = 'UNSTA · Lic. Sistemas' }: Props) {
   const pathname = usePathname();
@@ -154,10 +153,9 @@ function NavItem({
 }
 
 /**
- * Active when pathname matches exactly. For non-home routes also matches
- * `/route/...` so a future `/subjects/[id]` keeps "Materias" lit. Home is
- * exact-only so `/home/foo` (si alguna sub-ruta apareciera) no encienda
- * Inicio incorrectamente.
+ * Active when pathname matches exactly. For non-home routes it also matches
+ * `/route/...` so a future `/subjects/[id]` keeps "Materias" lit. Home is exact-only
+ * so `/home/foo` (if a sub-route ever appeared) does not light Inicio incorrectly.
  */
 function isActive(pathname: string, path: string): boolean {
   if (path === '/home') return pathname === '/home';

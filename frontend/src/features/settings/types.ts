@@ -1,9 +1,9 @@
 import type { Settings, SettingsPatch } from './schema';
 
 /**
- * Estado del server action de update. El UI hace auto-save por toggle: cada toggle dispara
- * el action con un patch chico, y el componente refleja el resultado (success silencioso, o
- * error con copy).
+ * Server-action state for update. The UI auto-saves per toggle: each toggle fires the
+ * action with a small patch and the component reflects the result (silent success or
+ * error with copy).
  */
 export type UpdateSettingsFormState =
   | { status: 'idle' }
