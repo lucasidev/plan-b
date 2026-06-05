@@ -10,23 +10,26 @@ const ACCESS_COOKIE = 'planb_session';
 const REFRESH_COOKIE = 'planb_refresh';
 
 /**
- * Deactiva la cuenta del user autenticado (ADR-0044, US-038-bis). Reemplazó al hard delete
- * del flow original (US-038-f). El endpoint backend `/api/me/account` ahora anonimiza la PII
- * (email hasheado, password blank, deactivated_at = now) y borra owned con PII (StudentProfile,
- * verification tokens). Las reseñas futuras del user quedan publicadas como "Ex-miembro".
+ * Deactivates the authenticated user's account (ADR-0044, US-038-bis). Replaced the hard
+ * delete of the original flow (US-038-f). The backend endpoint `/api/me/account` now
+ * anonymizes PII (hashed email, blank password, deactivated_at = now) and deletes owned
+ * data with PII (StudentProfile, verification tokens). The user's existing reviews stay
+ * published as "Ex-miembro".
  *
  * Steps:
- *   1. Leer sesión del JWT cookie. Si no hay (cookie expirada mid-action), surface error en
- *      el modal para que el user re-loguee y reintente. No redirigir: que el user decida.
- *   2. DELETE /api/me/account. El backend invoca el `DeactivateAccountCommand` (no el hard
- *      delete legacy, que ahora vive sin endpoint user-facing).
- *   3. Si 4xx/5xx, surface inline. NO clear cookies en falla (el user sigue logueado).
- *   4. Si 204, clear cookies locales (el backend ya revocó los refresh tokens), redirect a
- *      `/sign-in?account-deactivated=1` para que el banner explique qué pasó.
+ *   1. Read the session from the JWT cookie. If absent (cookie expired mid-action),
+ *      surface the error in the modal so the user can re-login and retry. Don't
+ *      redirect: let the user decide.
+ *   2. DELETE /api/me/account. The backend invokes `DeactivateAccountCommand` (not the
+ *      legacy hard delete, which no longer has a user-facing endpoint).
+ *   3. On 4xx/5xx, surface inline. Do NOT clear cookies on failure (the user stays
+ *      logged in).
+ *   4. On 204, clear local cookies (the backend already revoked the refresh tokens),
+ *      redirect to `/sign-in?account-deactivated=1` so the banner explains what happened.
  *
- * El form-state shape (`DeactivateAccountFormState`) se consume en el componente cliente via
- * `useActionState`. Por regla de Next.js los `'use server'` files solo exportan funciones
- * async, así que el tipo vive en `types.ts`.
+ * The form-state shape (`DeactivateAccountFormState`) is consumed in the client
+ * component via `useActionState`. Per the Next.js rule, `'use server'` files only export
+ * async functions, so the type lives in `types.ts`.
  */
 export async function deactivateAccountAction(
   _previousState: DeactivateAccountFormState,
@@ -47,9 +50,9 @@ export async function deactivateAccountAction(
   try {
     response = await apiFetchAuthenticated('/api/me/account', {
       method: 'DELETE',
-      // apiFetchAuthenticated forwardea planb_session (auth del JwtBearer middleware);
-      // pasamos planb_refresh como extraCookies porque tiene Path=/api/identity y no
-      // se incluiría automáticamente.
+      // apiFetchAuthenticated forwards planb_session (JwtBearer middleware auth); we
+      // pass planb_refresh via extraCookies because it has Path=/api/identity and
+      // would not be included automatically.
       extraCookies: refreshToken ? { [REFRESH_COOKIE]: refreshToken } : undefined,
     });
   } catch {
@@ -61,15 +64,16 @@ export async function deactivateAccountAction(
 
   if (!response.ok) {
     if (response.status === 404) {
-      // Caso degenerado: el JWT apunta a un user que ya no existe en DB (post-hard-delete
-      // admin, o registro borrado manualmente). Limpiamos cookies y mandamos al banner.
+      // Degenerate case: the JWT points to a user that no longer exists in DB
+      // (admin-side hard delete, or row deleted manually). Clear cookies and send
+      // to the banner.
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);
       redirect('/sign-in?account-deactivated=1');
     }
     if (response.status === 409) {
-      // Ya estaba deactivated (idempotency explícita del backend). Trataos como éxito desde
-      // el punto de vista del user: limpiamos cookies y vamos al banner.
+      // Already deactivated (explicit backend idempotency). Treat as success from the
+      // user's point of view: clear cookies and head to the banner.
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);
       redirect('/sign-in?account-deactivated=1');

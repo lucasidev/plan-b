@@ -9,21 +9,19 @@ import { deactivateAccountAction } from '../actions';
 import { initialDeactivateAccountState } from '../types';
 
 /**
- * Card destructiva con CTA "Dar de baja mi cuenta" + modal de confirmación que pide retypear
- * el email (anti-accidental check). Reemplaza al "Eliminar mi cuenta" anterior (US-038-f) tras
- * el rework de ADR-0044: el flow ahora es soft delete con anonimización (preserva el corpus
- * crowdsourced; las reseñas del user quedan publicadas como "Ex-miembro").
+ * Destructive card with a "Dar de baja mi cuenta" CTA + confirmation modal that asks the
+ * user to retype their email (anti-accidental check). Replaces the previous "Eliminar mi
+ * cuenta" (US-038-f) after the ADR-0044 rework: the flow is now soft delete with
+ * anonymization (preserves the crowdsourced corpus; the user's reviews stay published as
+ * "Ex-miembro").
  *
- * <para>
- * Convención (GitHub, Vercel, Linear): pedir el email en lugar del password. El password ya
- * autenticó esta sesión; pedirlo de nuevo agrega fricción sin agregar safety. El email es
- * distinto del flow regular y obliga al user a engancharse conscientemente con la acción.
- * </para>
+ * Convention (GitHub, Vercel, Linear): ask for the email instead of the password. The
+ * password already authenticated this session; asking for it again adds friction without
+ * adding safety. The email is different from the regular flow and forces the user to
+ * engage with the action consciously.
  *
- * <para>
- * La comparación es case-insensitive: RFC 5321 permite case-sensitive en local-parts pero
- * ningún provider real lo honra, y el backend lowercase-store.
- * </para>
+ * The comparison is case-insensitive: RFC 5321 allows case-sensitive local-parts but no
+ * real provider honors it, and the backend lowercases on store.
  */
 export function DeactivateAccountButton({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
@@ -47,15 +45,14 @@ export function DeactivateAccountButton({ email }: { email: string }) {
     triggerRef.current?.focus();
   }, []);
 
-  // Move focus into the modal when it opens, and close on ESC. Click-outside
-  // is wired separately so we can short-circuit when clicking inside.
+  // Move focus into the modal when it opens, and close on ESC. Click-outside is wired
+  // separately so we can short-circuit when clicking inside.
   //
-  // La rule `prefer-use-effect-event` sugiere envolver `close` con `useEffectEvent`
-  // así el effect no se re-suscribe en cada parent render. `useEffectEvent` sigue
-  // marcada como API experimental en React 19; cuando salga del experimental,
-  // revisitar. Mientras, `close` es estable (useCallback con [] deps) así que la
-  // re-suscripción no ocurre en práctica. Suppression en
-  // `react-doctor.config.json#ignore.overrides`.
+  // The `prefer-use-effect-event` rule suggests wrapping `close` with `useEffectEvent`
+  // so the effect doesn't resubscribe on every parent render. `useEffectEvent` is still
+  // an experimental API in React 19; revisit once it ships. Meanwhile, `close` is stable
+  // (useCallback with [] deps) so the resubscription does not occur in practice.
+  // Suppression in `react-doctor.config.json#ignore.overrides`.
   useEffect(() => {
     if (!open) return;
 
@@ -122,12 +119,12 @@ export function DeactivateAccountButton({ email }: { email: string }) {
           */}
           <div aria-hidden="true" onClick={close} className="fixed inset-0 z-40 bg-black/40" />
           {/*
-            Reemplazamos el <div role="dialog"> por el elemento <dialog> nativo (regla
-            react-doctor/prefer-tag-over-role). Usamos el atributo `open` para mostrarlo
-            inline en lugar de invocar showModal() porque ya manejamos backdrop + foco
-            + ESC manualmente; showModal() entraría en conflicto con el state managed.
-            aria-modal sigue siendo necesario porque <dialog open> sin showModal() no
-            lo marca como modal en el AOM.
+            We replace the <div role="dialog"> with the native <dialog> element
+            (react-doctor/prefer-tag-over-role rule). The `open` attribute is used to
+            show it inline instead of calling showModal() because we already manage
+            backdrop + focus + ESC manually; showModal() would conflict with the
+            managed state. aria-modal is still required because <dialog open> without
+            showModal() is not marked as modal in the AOM.
           */}
           <dialog
             ref={dialogRef}
