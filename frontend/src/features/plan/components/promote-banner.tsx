@@ -4,12 +4,13 @@ import { daysSinceDraftStart } from '../hooks/use-active-academic-period';
 import type { AcademicPeriod, Simulation } from '../types';
 
 /**
- * Nudge banner cuando un borrador refiere a un período cuya fecha de inicio ya pasó (US-046).
- * Sale en el tab "Borrador" del estilo: "Tu borrador para 2026/2c empezó hace 3 días.
- * ¿Lo activás como en-curso?".
+ * Nudge banner shown when a draft references a period whose start date is already past
+ * (US-046). Appears in the "Borrador" tab with copy like: "Tu borrador para 2026/2c
+ * empezó hace 3 días. ¿Lo activás como en-curso?".
  *
- * El backend no decide automáticamente: el alumno puede haber cambiado de plan, abandonado
- * materias, pospuesto inscripción. Promoción manual con nudge (ver doc US-046).
+ * The backend does not decide automatically: the student may have changed plan,
+ * dropped subjects, or postponed enrollment. Manual promotion with nudge (see US-046
+ * doc).
  */
 type Props = {
   draft: Simulation;

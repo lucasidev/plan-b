@@ -1,9 +1,9 @@
 /**
- * Tipos del dominio mock de Planificar (US-046). Alineados al canvas v2 mock data
+ * Mock domain types for Planificar (US-046). Aligned with the v2 canvas mock data
  * (`v2-shell.jsx::V2_ACTIVE`, `v2-screens.jsx::V2MiniCalendar`).
  *
- * Cuando aterrice el backend real (US-016 simulación + US-023 storage), estos tipos van a
- * acoplarse a los DTOs del API. Por ahora son mocks puros con shape estable.
+ * Once the real backend lands (US-016 simulation + US-023 storage), these types will
+ * couple to the API DTOs. For now they are pure mocks with a stable shape.
  */
 
 export type Modality = '1c' | '2c' | 'anual' | 'bim1' | 'bim2' | 'bim3' | 'bim4';
@@ -11,13 +11,13 @@ export type Modality = '1c' | '2c' | 'anual' | 'bim1' | 'bim2' | 'bim3' | 'bim4'
 export type DiffLevel = 1 | 2 | 3 | 4 | 5;
 
 /**
- * Período académico (año + cuatri). El "período en curso" es uno solo; los borradores
- * referencian periods futuros.
+ * Academic period (year + term). The "current period" is a single one; drafts
+ * reference future periods.
  */
 export type AcademicPeriod = {
   year: number;
   term: '1c' | '2c';
-  /** ISO date (YYYY-MM-DD). Mockeado; vendrá del backoffice AcademicTerm (US-064) cuando exista. */
+  /** ISO date (YYYY-MM-DD). Mocked; will come from the AcademicTerm backoffice (US-064) when it exists. */
   startsAt: string;
   endsAt: string;
 };
@@ -26,19 +26,19 @@ export type Subject = {
   code: string;
   name: string;
   mod: Modality;
-  /** Comisión asignada. */
+  /** Assigned commission. */
   com: string;
-  /** Docente principal mostrable. */
+  /** Main teacher to display. */
   prof: string;
   diff: DiffLevel;
-  /** "8 de 16" en el mockup; semana en curso / total. */
+  /** "8 of 16" in the mockup; current week / total. */
   week?: number;
   weeks?: number;
 };
 
 /**
- * Bloque en el calendario semanal. Day 0=Lun, 4=Vie. `h` es hora de inicio (24h). `dur` en
- * horas. `warn` resalta choques.
+ * Block in the weekly calendar. Day 0=Mon, 4=Fri. `h` is the start hour (24h). `dur`
+ * in hours. `warn` highlights clashes.
  */
 export type CalendarBlock = {
   day: 0 | 1 | 2 | 3 | 4;
@@ -50,28 +50,28 @@ export type CalendarBlock = {
 };
 
 /**
- * Comisión alternativa para el comparador. Insights son derivados del corpus crowdsourced
- * cuando aterrice (US-024); por ahora mock.
+ * Alternative commission for the comparator. Insights are derived from the
+ * crowdsourced corpus when it lands (US-024); mock for now.
  */
 export type CommissionOption = {
   com: string;
   prof: string;
   schedule: string;
   insights: {
-    /** Dificultad promedio según reseñas (0-5). */
+    /** Average difficulty per reviews (0-5). */
     diff: number;
-    /** Carga semanal estimada en horas. */
+    /** Estimated weekly workload in hours. */
     workload: number;
-    /** % de aprobación esperada. */
+    /** % expected approval. */
     approval: number;
-    /** Cantidad de reseñas que respaldan los insights. */
+    /** Number of reviews backing the insights. */
     reviewsCount: number;
   };
 };
 
 /**
- * Simulación (borrador o activo). Una sola entidad con `status`: el "promote" es un flip,
- * no copia (ADR pendiente; spec en doc de US-046).
+ * Simulation (draft or active). A single entity with `status`: the "promote" is a
+ * flip, not a copy (ADR pending; spec in the US-046 doc).
  */
 export type Simulation = {
   id: string;
@@ -80,7 +80,7 @@ export type Simulation = {
   label: string;
   subjects: Subject[];
   blocks: CalendarBlock[];
-  /** Stats agregados precomputados para el header del tab en curso. */
+  /** Precomputed aggregate stats for the active tab header. */
   stats: {
     weeklyHours: number;
     clashes: number;

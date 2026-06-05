@@ -7,12 +7,12 @@ import type { Subject } from '../types';
 import { ModalityPill } from './modality-pill';
 
 /**
- * Drawer "Agregar materia" (US-046). Catálogo filtrable de materias cursables según historial
- * + plan. Mock por ahora; cuando aterrice US-014 historial + US-023 storage, el filtrado
- * sale del backend.
+ * "Agregar materia" drawer (US-046). Filterable catalog of subjects the student can
+ * take per their transcript + plan. Mock for now; when US-014 transcript + US-023
+ * storage land, the filtering comes from the backend.
  *
- * Visual simple alineado a las cards de subjects del canvas v2. El click en una materia la
- * "agrega" (mock: cierra el drawer; en producción dispara la mutation).
+ * Simple visual aligned with the subject cards of the v2 canvas. Clicking a subject
+ * "adds" it (mock: closes the drawer; in production it fires the mutation).
  */
 type Props = {
   open: boolean;

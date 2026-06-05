@@ -12,10 +12,11 @@ import {
 import type { Simulation } from '../types';
 
 /**
- * Modal "Publicar este borrador como plan del cuatri" (US-046, `v2-modals.jsx::V2ModalPublicarPlan`).
- * Checklist visual de validaciones pre-publicación (sin choques, correlativas, carga, comisión).
- * Si el alumno acepta, el borrador se promociona a en-curso (flip de flag, no copia; el activo
- * anterior queda archivado por 24h para rollback). Hoy sin backend: el onConfirm es no-op.
+ * "Publicar este borrador como plan del cuatri" modal (US-046,
+ * `v2-modals.jsx::V2ModalPublicarPlan`). Visual checklist of pre-publish validations
+ * (no clashes, prerequisites, load, commission). If the student accepts, the draft is
+ * promoted to active (flag flip, not a copy; the previous active stays archived for
+ * 24h for rollback). No backend today: onConfirm is a no-op.
  */
 type Props = {
   open: boolean;

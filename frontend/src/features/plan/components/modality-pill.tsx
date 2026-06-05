@@ -1,7 +1,7 @@
 import type { Modality } from '../types';
 
 /**
- * Pill compacta de modalidad (1c/2c/anual/bim). Color por tipo. Espejo de
+ * Compact modality pill (1c/2c/anual/bim). Color per type. Mirrors
  * `v2-screens.jsx::V2Mod`.
  */
 const PALETTE: Record<Modality, [string, string]> = {

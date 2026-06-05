@@ -4,22 +4,22 @@ import { PERIOD_2026_1C, PERIOD_2026_2C, PERIOD_2027_1C } from '../data/mocks';
 import type { AcademicPeriod } from '../types';
 
 /**
- * Mock del período académico activo (US-046). Cuando aterrice US-064 (AcademicTerm
- * backoffice) y el calendario académico real exista en backend, este hook se conecta al
- * cliente que consulta los terms vigentes según la universidad del user.
+ * Mock of the active academic period (US-046). When US-064 (AcademicTerm backoffice)
+ * lands and the real academic calendar exists in the backend, this hook hooks into
+ * the client that queries the active terms based on the user's university.
  *
- * Por ahora: heurística sobre `new Date()`: si estamos antes del 1 de julio, es 1c; sino 2c.
- * Cubre el 99% de los casos para la maqueta.
+ * For now: heuristic over `new Date()`: if we are before July 1st, it is 1c; else 2c.
+ * Covers 99% of cases for the mockup.
  */
 export function useActiveAcademicPeriod(now: Date = new Date()): AcademicPeriod {
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const day = now.getDate();
 
-  // 2026 está hardcoded en los mocks de subjects/blocks. Para que el calendario semanal
-  // mockeado siga teniendo sentido cuando se vea desde 2027+, devolvemos siempre el 2026·1c
-  // como "activo" mientras los mocks estén pegados ahí. Cuando aterrice el backend real, este
-  // bloque desaparece y se calcula honestamente.
+  // 2026 is hardcoded in the subjects/blocks mocks. So that the mocked weekly
+  // calendar still makes sense when viewed from 2027+, we always return 2026·1c as
+  // "active" while the mocks stay pinned. Once the real backend lands, this block
+  // disappears and it is computed honestly.
   if (year >= 2027) {
     return PERIOD_2027_1C;
   }
@@ -32,16 +32,16 @@ export function useActiveAcademicPeriod(now: Date = new Date()): AcademicPeriod 
 }
 
 /**
- * True cuando la fecha de inicio del período del borrador ya pasó: dispara el nudge "tu
- * borrador empezó hace X días, ¿lo activás?".
+ * True when the draft period's start date is already in the past: triggers the "tu
+ * borrador empezó hace X días" nudge.
  */
 export function isDraftStale(draftPeriod: AcademicPeriod, now: Date = new Date()): boolean {
   return new Date(draftPeriod.startsAt) < now;
 }
 
 /**
- * Cantidad de días transcurridos desde que arrancó el período del borrador. Negativo si todavía
- * no empezó (no se renderea el nudge en ese caso).
+ * Number of days elapsed since the draft period started. Negative if it has not
+ * started yet (the nudge does not render in that case).
  */
 export function daysSinceDraftStart(draftPeriod: AcademicPeriod, now: Date = new Date()): number {
   const start = new Date(draftPeriod.startsAt);

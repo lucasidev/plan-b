@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
 
 /**
- * Empty state global de Planificar (US-046, `v2-empty.jsx::V2PlanificarVacio`). Se muestra
- * cuando el alumno no tiene período activo ni borradores. Card central con eyebrow, heading,
- * body y CTA primary "Crear primer borrador".
+ * Plan global empty state (US-046, `v2-empty.jsx::V2PlanificarVacio`). Shown when the
+ * student has neither an active period nor any drafts. Centered card with eyebrow,
+ * heading, body and primary CTA "Crear primer borrador".
  */
-export function PlanificarEmpty({ onCreateDraft }: { onCreateDraft: () => void }) {
+export function PlanEmpty({ onCreateDraft }: { onCreateDraft: () => void }) {
   return (
     <div
       className="bg-bg-card border border-line rounded-lg"

@@ -11,9 +11,9 @@ import { StatsGrid } from './stats-grid';
 import { SubjectListCard } from './subject-list-card';
 
 /**
- * Tab "Borrador" de Planificar (US-046). Lista de borradores con preview + acciones por
- * borrador (Editar, Borrar, Compartir). El borrador "vencido" (período ya empezó) muestra el
- * PromoteBanner. Al activar, abre el PublishPlanModal con checklist de validaciones.
+ * "Borrador" tab of Plan (US-046). List of drafts with preview + per-draft actions
+ * (Editar, Borrar, Compartir). The "stale" draft (period already started) shows the
+ * PromoteBanner. On activate, opens the PublishPlanModal with a validation checklist.
  */
 type Props = {
   drafts: Simulation[];
@@ -124,8 +124,8 @@ export function DraftList({ drafts, onCreate }: Props) {
         draft={publishingDraft}
         onClose={() => setPublishingDraft(null)}
         onConfirm={() => {
-          // Mock: el flip de status (draft → active) lo hace el backend (US-023). Acá solo
-          // cerramos el modal; cuando aterrice, este callback dispara la mutation.
+          // Mock: the status flip (draft -> active) is the backend's job (US-023). Here
+          // we just close the modal; when that lands, this callback fires the mutation.
           setPublishingDraft(null);
         }}
       />

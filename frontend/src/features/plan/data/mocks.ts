@@ -7,11 +7,12 @@ import type {
 } from '../types';
 
 /**
- * Mock data alineado al canvas v2 (`v2-shell.jsx::V2_ACTIVE`, `v2-screens.jsx::V2MiniCalendar`).
- * Cuando aterrice US-016 + US-023, esto se reemplaza por fetch real al backend.
+ * Mock data aligned with the v2 canvas (`v2-shell.jsx::V2_ACTIVE`,
+ * `v2-screens.jsx::V2MiniCalendar`). When US-016 + US-023 land, this is replaced by a
+ * real fetch to the backend.
  *
- * Todo este archivo es **placeholder data, no del dominio real**. No se usa en producción
- * cuando el backend exista; vive solo para la maqueta visual de la US-046.
+ * The whole file is **placeholder data, not real domain**. It is not used in
+ * production when the backend exists; it only lives for the US-046 visual mockup.
  */
 
 const PERIOD_2026_1C: AcademicPeriod = {
@@ -169,9 +170,9 @@ export const MOCK_DRAFTS: Simulation[] = [
 ];
 
 /**
- * Catálogo de materias agregables al borrador. Mock simple: 8 materias cursables según el
- * plan del alumno (filtro real sale del backend US-014 + US-023). Subset del catálogo del
- * canvas v2.
+ * Catalog of subjects that can be added to the draft. Simple mock: 8 subjects the
+ * student can take per their plan (the real filter comes from US-014 + US-023
+ * backend). Subset of the v2 canvas catalog.
  */
 export const MOCK_AVAILABLE_SUBJECTS: Subject[] = [
   {
@@ -213,8 +214,8 @@ export const MOCK_AVAILABLE_SUBJECTS: Subject[] = [
 ];
 
 /**
- * Opciones de comisión para el comparador. Hoy hardcoded; cuando aterricen reseñas + crowd
- * insights, el cálculo viene del backend.
+ * Commission options for the comparator. Hardcoded today; once reviews + crowd
+ * insights land, the calculation comes from the backend.
  */
 export const MOCK_COMMISSION_OPTIONS_INT302: CommissionOption[] = [
   {

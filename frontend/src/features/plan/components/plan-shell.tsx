@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import type { Simulation } from '../types';
 import { ActiveTab } from './active-tab';
 import { DraftList } from './draft-list';
-import { PlanificarEmpty } from './empty-state';
-import { PlanificarTabs, type TabId } from './plan-tabs';
+import { PlanEmpty } from './empty-state';
+import { PlanTabs, type TabId } from './plan-tabs';
 
 /**
- * Shell del Planificar (US-046). Renderea el header + tabs + contenido del tab activo.
- * Empty state global si no hay ni activo ni borradores. Mock data por ahora (US-016 + US-023
- * pendientes); cuando aterrice el backend, este shell consume queries reales con el mismo
- * contrato.
+ * Plan shell (US-046). Renders the header + tabs + active-tab content. Global empty
+ * state if there is no active simulation nor drafts. Mock data for now (US-016 +
+ * US-023 pending); when the backend lands, this shell consumes real queries with the
+ * same contract.
  */
 type Props = {
   active: Simulation | null;
@@ -20,7 +20,7 @@ type Props = {
   activeTab: TabId;
 };
 
-export function PlanificarShell({ active, drafts, activeTab }: Props) {
+export function PlanShell({ active, drafts, activeTab }: Props) {
   const [_createDraftRequested, setCreateDraftRequested] = useState(false);
 
   const isEmpty = !active && drafts.length === 0;
@@ -28,7 +28,7 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
   if (isEmpty) {
     return (
       <div>
-        <PlanificarEmpty onCreateDraft={() => setCreateDraftRequested(true)} />
+        <PlanEmpty onCreateDraft={() => setCreateDraftRequested(true)} />
       </div>
     );
   }
@@ -97,12 +97,13 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
         </div>
       </header>
 
-      {/* Suspense requerida porque PlanificarTabs usa useSearchParams() (regla
-          react-doctor/nextjs-no-use-search-params-without-suspense). Sin la boundary la
-          page entera bailout a client-side rendering. Fallback `null` está OK: los tabs
-          son visualmente livianos y el snapshot inicial se renderea en <50ms. */}
+      {/* Suspense required because PlanTabs uses useSearchParams()
+          (react-doctor/nextjs-no-use-search-params-without-suspense rule). Without the
+          boundary the entire page bails out to client-side rendering. Fallback `null`
+          is OK: the tabs are visually light and the initial snapshot renders in
+          under 50ms. */}
       <Suspense fallback={null}>
-        <PlanificarTabs items={tabs} active={activeTab} />
+        <PlanTabs items={tabs} active={activeTab} />
       </Suspense>
 
       {activeTab === 'active' ? (

@@ -8,8 +8,8 @@ import { StatsGrid } from './stats-grid';
 import { SubjectListCard } from './subject-list-card';
 
 /**
- * Tab "En curso" de Planificar (US-046). Layout grid: lista de materias 320px + main con
- * stats + calendario + comparador opcional. Espejo de `v2-screens.jsx::V2PlanificarEnCurso`.
+ * "En curso" tab of Plan (US-046). Grid layout: 320px subject list + main with stats +
+ * calendar + optional comparator. Mirrors `v2-screens.jsx::V2PlanificarEnCurso`.
  */
 export function ActiveTab({ simulation }: { simulation: Simulation }) {
   const [compareOpen, setCompareOpen] = useState(false);

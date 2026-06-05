@@ -1,8 +1,9 @@
 import type { Simulation } from '../types';
 
 /**
- * Grid de 4 stats agregados del período (US-046). Espejo del canvas v2: weekly hours, choques,
- * dificultad promedio, % aprob esperada. El choque > 0 se renderea con color de warn.
+ * 4-stat aggregate grid for the period (US-046). Mirrors the v2 canvas: weekly hours,
+ * clashes, average difficulty, expected approval %. A clash > 0 renders with the warn
+ * color.
  */
 export function StatsGrid({ stats }: { stats: Simulation['stats'] }) {
   const items: Array<{ value: string; label: string; warn?: boolean }> = [

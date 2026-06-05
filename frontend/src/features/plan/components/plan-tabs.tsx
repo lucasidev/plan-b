@@ -12,10 +12,11 @@ type TabItem = {
 };
 
 /**
- * Tabs URL-driven de Planificar (US-046). Estado canónico en `?tab=active|borrador`. Si
- * falta el query param, el default es "en-curso". Visual alineado al canvas v2 (V2Tabs).
+ * URL-driven Plan tabs (US-046). Canonical state in `?tab=active|draft`. If the query
+ * param is missing, the default is "active". Visual aligned with the v2 canvas
+ * (V2Tabs).
  */
-export function PlanificarTabs({ items, active }: { items: TabItem[]; active: TabId }) {
+export function PlanTabs({ items, active }: { items: TabItem[]; active: TabId }) {
   const searchParams = useSearchParams();
 
   return (

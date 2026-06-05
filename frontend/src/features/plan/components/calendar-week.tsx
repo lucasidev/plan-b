@@ -1,11 +1,11 @@
 import type { CalendarBlock } from '../types';
 
 /**
- * Calendario semanal mock con bloques de materias. 5 días (Lun-Vie) × 9 horas (13:00-21:00).
- * Espejo de `v2-screens.jsx::V2MiniCalendar`. Visual derivado del canvas v2.
+ * Mock weekly calendar with subject blocks. 5 days (Mon-Fri) x 9 hours (13:00-21:00).
+ * Mirrors `v2-screens.jsx::V2MiniCalendar`. Visual derived from the v2 canvas.
  *
- * Cuando aterrice US-016 (simulación backend), los blocks vienen del API; este componente
- * sigue siendo el mismo visualmente.
+ * When US-016 (backend simulation) lands, the blocks come from the API; this
+ * component stays the same visually.
  */
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'];
 const START_HOUR = 13;
@@ -74,8 +74,9 @@ function Row({ h, hi, blocks }: { h: number; hi: number; blocks: CalendarBlock[]
         const blk = blocks.find((b) => b.day === di && b.h === h);
         return (
           <div
-            // Día (stable string del array DAYS) + hora del row componen una key única estable
-            // por celda. Evita la regla react-doctor/no-array-index-key sin sintetizar IDs.
+            // Day (stable string from the DAYS array) + the row hour make a unique
+            // stable key per cell. Avoids react-doctor/no-array-index-key without
+            // synthesizing IDs.
             key={`${day}-${h}`}
             style={{
               position: 'relative',

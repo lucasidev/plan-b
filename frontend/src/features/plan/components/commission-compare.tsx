@@ -1,16 +1,16 @@
 import { MOCK_COMMISSION_OPTIONS_INT302 } from '../data/mocks';
 
 /**
- * Comparador de comisiones (US-046). Para una materia dada, muestra las comisiones disponibles
- * con sus insights crowd-sourced (diff, workload, approval, count). Mock que usa el dataset de
- * INT302 como ejemplo; cuando aterrice US-024 (compartir simulación), los insights vienen del
- * corpus real.
+ * Commission comparator (US-046). For a given subject, shows the available commissions
+ * with their crowd-sourced insights (diff, workload, approval, count). Mock using the
+ * INT302 dataset as an example; when US-024 (share simulation) lands, insights come
+ * from the real corpus.
  *
- * Renderizado inline en la página (no modal): para la maqueta es más visible y matchea el
- * "Comparar" button del header.
+ * Rendered inline in the page (not modal): more visible for the mockup and matches the
+ * "Comparar" button in the header.
  */
 export function CommissionCompare({ subjectCode = 'INT302' }: { subjectCode?: string }) {
-  const options = MOCK_COMMISSION_OPTIONS_INT302; // hardcoded a INT302 hasta que aterrice el corpus
+  const options = MOCK_COMMISSION_OPTIONS_INT302; // hardcoded to INT302 until the corpus lands
 
   return (
     <div className="bg-bg-card border border-line rounded-lg" style={{ padding: 16 }}>

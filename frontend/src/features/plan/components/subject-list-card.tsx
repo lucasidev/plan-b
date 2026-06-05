@@ -16,9 +16,9 @@ function diffBucket(d: number): 'hi' | 'mid' | 'lo' {
 }
 
 /**
- * Lista lateral de materias del período (US-046). Header con título + count, filas con código
- * + nombre + pills (modalidad, comisión, dificultad), botón "× sacar" por materia, CTA
- * "+ Agregar materia" al final que abre el drawer.
+ * Side list of subjects in the period (US-046). Header with title + count, rows with
+ * code + name + pills (modality, commission, difficulty), per-subject "× sacar"
+ * button, and a final "+ Agregar materia" CTA that opens the drawer.
  */
 export function SubjectListCard({ subjects }: { subjects: Subject[] }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
