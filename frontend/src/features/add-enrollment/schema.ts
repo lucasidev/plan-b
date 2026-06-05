@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 /**
- * Zod schema del form de cargar entrada de historial (US-013-f). Compartido
- * entre client validation (TanStack Form / inline) y server action.
+ * Zod schema for the load-transcript-entry form (US-013-f). Shared between client
+ * validation (TanStack Form / inline) and the server action.
  *
- * Las invariantes status/grade/approvalMethod/commission/term las re-valida
- * el aggregate en el backend; acá frenamos los casos más groseros para no
- * mandar requests imposibles. El backend es la fuente de verdad.
+ * The status/grade/approvalMethod/commission/term invariants are re-validated by the
+ * aggregate in the backend; here we just stop the obvious cases so we don't fire
+ * impossible requests. The backend is the source of truth.
  */
 export const addEnrollmentSchema = z
   .object({
