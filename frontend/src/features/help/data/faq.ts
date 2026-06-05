@@ -1,11 +1,11 @@
 /**
- * FAQ estática del centro de ayuda (US-073). Hardcoded en frontend hasta que aparezca un
- * caso de uso para CMS (no antes de tener varias decenas de preguntas o necesitar edición
- * sin deploy). Cada entry tiene un id estable para deep-linkear con `#`.
+ * Static FAQ of the help center (US-073). Hardcoded in frontend until a CMS use case
+ * shows up (not before having several dozens of questions or needing edits without a
+ * deploy). Each entry has a stable id so it can be deep-linked with `#`.
  *
- * Selección inicial (5 entries): las del mockup `soporte-v2-ayuda.png` que cubren las
- * preguntas más frecuentes del flow MVP. Cuando aterricen reseñas reales y historial real,
- * actualizar el copy para reflejar el estado actual del producto.
+ * Initial selection (5 entries): the ones from the `soporte-v2-ayuda.png` mockup that
+ * cover the most frequent questions of the MVP flow. Once real reviews and real
+ * transcripts land, update the copy to reflect the current product state.
  */
 
 export type FaqEntry = {

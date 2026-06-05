@@ -1,12 +1,12 @@
 /**
- * Card "Hablá con nosotros" del sidebar derecho (US-073). El mockup mostraba botón "Abrir
- * chat de soporte" + link mailto al pie. Como no tenemos chat real todavía, ambos abren un
- * mailto al support email; cuando aterrice Notifications BC + un widget de chat, el botón
- * pasa a abrirlo y el mailto queda como fallback.
+ * "Hablá con nosotros" card on the right sidebar (US-073). The mockup showed an "Abrir
+ * chat de soporte" button + a mailto link at the foot. Since there is no real chat yet,
+ * both open a mailto to the support email; once Notifications BC + a chat widget land,
+ * the button starts opening it and the mailto becomes a fallback.
  *
- * Deuda explícita: el form de contacto descrito en el doc US-073 (subject + message +
- * screenshot) NO se implementa hasta que el backend tenga `POST /api/support/contact`.
- * En MVP el mailto cubre el caso sin scope creep.
+ * Explicit debt: the contact form described in the US-073 doc (subject + message +
+ * screenshot) is NOT implemented until the backend has `POST /api/support/contact`. In
+ * MVP the mailto covers the case without scope creep.
  */
 
 import { SUPPORT_EMAIL } from '../data/resources';

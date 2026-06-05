@@ -1,7 +1,8 @@
 /**
- * Card Recursos (US-073). 4 ítems del mockup; los 3 primeros son placeholders sin destino
- * real (deuda documentada en `data/resources.ts`). El último ("Estado del servicio") muestra
- * un ✓ inline para indicar "todo OK" mientras no exista status page real.
+ * Resources card (US-073). Four items from the mockup; the first three are placeholders
+ * with no real destination (debt documented in `data/resources.ts`). The last one
+ * ("Estado del servicio") shows an inline ✓ to mean "all OK" while there is no real
+ * status page.
  */
 
 import { ArrowUpRight, Check } from 'lucide-react';

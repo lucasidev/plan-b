@@ -1,12 +1,12 @@
 /**
- * Recursos linkeados desde la página Ayuda (US-073). En MVP los 3 primeros son placeholders
- * (sin destino real) porque dependen de US separadas:
- *  - Guía rápida (PDF) requiere editorial + diseño de un PDF onboarding.
- *  - Política de moderación se redacta cuando aterrice US-019 (reportar reseña).
- *  - Términos y privacidad necesita revisión legal real.
+ * Resources linked from the Help page (US-073). In MVP the first three are placeholders
+ * (no real destination) because they depend on separate USs:
+ *  - "Guía rápida" (PDF) needs editorial + design for an onboarding PDF.
+ *  - "Política de moderación" gets drafted when US-019 (report review) lands.
+ *  - "Términos y privacidad" needs an actual legal review.
  *
- * El cuarto ("Estado del servicio") podría linkear a un futuro status page; mientras no
- * exista mostramos el ✓ inline del mockup.
+ * The fourth ("Estado del servicio") could link to a future status page; while it does
+ * not exist we render the inline ✓ from the mockup.
  */
 
 export type ResourceLink = {
