@@ -1,8 +1,8 @@
 /**
- * DTOs de los endpoints catálogo Academic (PR1 destrabante de US-013):
+ * DTOs for the Academic catalog endpoints (US-013 unblocker PR1):
  *   - GET /api/academic/subjects?careerPlanId=
  *   - GET /api/academic/academic-terms?universityId=
- * Sólo los fields que el form realmente consume.
+ * Only the fields the form actually consumes.
  */
 export type Subject = {
   id: string;
@@ -24,8 +24,8 @@ export type AcademicTerm = {
 };
 
 /**
- * Estado del server action del form de US-013-f. Sigue el contrato `idle |
- * error` que ya usan otros features (sign-in, onboarding/career).
+ * Server-action state for the US-013-f form. Follows the `idle | error` contract
+ * already used by other features (sign-in, onboarding/career).
  */
 export type AddEnrollmentFormState =
   | { status: 'idle' }
