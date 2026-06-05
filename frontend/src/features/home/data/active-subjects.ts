@@ -1,41 +1,40 @@
 import type { Modality } from '../components/mod-pill';
 
 /**
- * Materia que el alumno está cursando o que arranca pronto en el período
- * actual. Shape espejada del mock `v2-shell.jsx::V2_ACTIVE`. `week=0`
- * significa "no arrancó todavía" (futura). Diff y attendance son
- * porcentajes / valores entre 0 y 1.
+ * Subject the student is currently taking or that starts soon in the current period.
+ * Shape mirrored from the `v2-shell.jsx::V2_ACTIVE` mock. `week=0` means "not started
+ * yet" (future). Diff and attendance are percentages / values between 0 and 1.
  *
- * Cuando aterricen US-013 (cargar historial) + US-016 (simular inscripción)
- * + el catálogo Academic con comisiones reales, este file reemplaza su mock
- * por un fetch a `EnrollmentRecord` (Enrollments BC) joineado con `Subject`
- * y `Commission` (Academic BC). El shape no cambia.
+ * Once US-013 (transcript load) + US-016 (simulate enrollment) + the Academic catalog
+ * with real commissions land, this file swaps its mock for a fetch to
+ * `EnrollmentRecord` (Enrollments BC) joined with `Subject` and `Commission` (Academic
+ * BC). The shape stays the same.
  */
 export type ActiveSubject = {
   code: string;
   name: string;
   mod: Modality;
-  /** Letra de comisión (ej. "A", "B", "C"). */
+  /** Commission letter (e.g. "A", "B", "C"). */
   com: string;
-  /** Apellido del docente principal. */
+  /** Surname of the main teacher. */
   prof: string;
-  /** Dificultad percibida del 1 al 5 (cuando aterrice tracking de UX, se enchufa fuente real). */
+  /** Perceived difficulty from 1 to 5 (once UX tracking lands, real source is plugged in). */
   diff: 1 | 2 | 3 | 4 | 5;
-  /** Semana actual del cuatri/anual. 0 indica que la materia arranca después. */
+  /** Current week of the term/anual. 0 means the subject starts later. */
   week: number;
-  /** Duración total del cursado en semanas (16 cuatri / 32 anual). */
+  /** Total length of the cursado in weeks (16 term / 32 anual). */
   weeks: number;
-  /** Próximo evento relevante en string ya formateado (ej. "Parcial · 12 may", "arranca el 5 ago"). */
+  /** Next relevant event as a pre-formatted string (e.g. "Parcial · 12 may", "arranca el 5 ago"). */
   next: string;
-  /** Asistencia acumulada como fracción 0-1. `null` si la materia no arrancó o no se tracquea. */
+  /** Accumulated attendance as a 0-1 fraction. `null` if the subject has not started or attendance is not tracked. */
   attendance: number | null;
-  /** Última nota parcial registrada. `null` cuando todavía no hay nota. */
+  /** Latest partial grade on record. `null` when there is no grade yet. */
   note: number | null;
 };
 
-// TODO: cuando aterricen US-013 + US-016 + endpoint del catálogo Academic
-// (US-061 y siguientes), reemplazar este mock por fetch real a
-// `GET /api/me/period-subjects` (o equivalente). El shape se mantiene.
+// TODO: once US-013 + US-016 + the Academic catalog endpoint (US-061 and onward) land,
+// swap this mock for a real fetch to `GET /api/me/period-subjects` (or equivalent).
+// The shape stays the same.
 export const activeSubjects: ActiveSubject[] = [
   {
     code: 'ISW302',

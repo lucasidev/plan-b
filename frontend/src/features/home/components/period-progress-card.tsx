@@ -6,18 +6,17 @@ type Props = {
 };
 
 /**
- * Card de período académico. Port literal de la sección "PROGRESO DEL AÑO"
- * del mock `v2-screens.jsx::V2Inicio` (líneas 58-90).
+ * Academic-period card. Literal port of the "PROGRESO DEL AÑO" section of the
+ * `v2-screens.jsx::V2Inicio` mock (lines 58-90).
  *
- * Layout: grid 3 columnas (`auto 1fr auto`). Izquierda muestra eyebrow del año
- * + heading mono `sem N/M`. Centro la barra warm con 3 labels equiespaciadas
- * (mes inicio, marker del 2° cuatri, mes fin). Derecha el botón "Editar
- * período" (no funcional en MVP — TODO cuando aterrice flow de cambio de
- * período manual).
+ * Layout: 3-column grid (`auto 1fr auto`). The left shows the year eyebrow + mono
+ * heading `sem N/M`. The center has the warm bar with 3 evenly spaced labels (start
+ * month, 2nd-term marker, end month). The right has the "Editar período" button (not
+ * functional in MVP, TODO once a manual period-change flow lands).
  *
- * Como la barra es solo visual sin labels arriba, no podemos reusar `Meter`
- * (que fuerza label-above) y va el componente `ProgressBar` slim de este
- * feature.
+ * Since the bar is purely visual without labels above, `Meter` (which forces a label
+ * above) can't be reused and this feature's slim `ProgressBar` component is used
+ * instead.
  */
 export function PeriodProgressCard({ period }: Props) {
   return (
@@ -41,8 +40,8 @@ export function PeriodProgressCard({ period }: Props) {
         </div>
       </div>
 
-      {/* TODO: cuando aterrice flow de cambio de período (US futura), enchufar
-          link real. Hoy renderea como botón disabled con tooltip "Próximamente". */}
+      {/* TODO: once a period-change flow lands (future US), wire up the real link.
+          For now this renders as a disabled button with the "Próximamente" tooltip. */}
       <button
         type="button"
         disabled
