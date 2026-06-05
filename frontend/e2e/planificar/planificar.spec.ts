@@ -9,7 +9,7 @@ import { LUCIA } from '../helpers/personas';
  *  - Login Lucía + navegar a /plan desde el sidebar.
  *  - Render del header + tabs.
  *  - Tab "En curso" default: lista de materias del año + stats + calendario semanal.
- *  - Tab "Borrador": cambio vía URL ?tab=borrador, renderea drafts mock.
+ *  - Tab "Borrador": cambio vía URL ?tab=draft, renderea drafts mock.
  *  - Modal "Publicar plan" abre con checklist al click "Publicar".
  *  - Drawer "Agregar materia" abre con catálogo filtrable.
  *
@@ -71,7 +71,7 @@ test.describe('Planificar (US-046)', () => {
   });
 
   test('publicar un borrador abre modal con checklist de validaciones', async ({ page }) => {
-    await page.goto('/plan?tab=borrador');
+    await page.goto('/plan?tab=draft');
     await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
 
     // Click en el primer botón "Publicar" disponible (puede haber drafts vencidos con Activar

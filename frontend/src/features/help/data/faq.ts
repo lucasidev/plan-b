@@ -16,25 +16,25 @@ export type FaqEntry = {
 
 export const FAQ: readonly FaqEntry[] = [
   {
-    id: 'periodo',
+    id: 'term',
     question: 'Cómo funciona el período',
     answer:
       'El período es el cuatrimestre académico actual de tu universidad: lo que estás cursando ahora. plan-b lo arma con las materias que marcaste en "Planificar" (tab En curso). Si todavía no cargaste ninguna, lo armás desde ahí.',
   },
   {
-    id: 'borrador',
+    id: 'draft',
     question: 'Cómo armar un borrador',
     answer:
       'En "Planificar" → tab "Borradores" → "+ Nuevo borrador". Elegís año y cuatrimestre, sumás materias del catálogo de tu carrera, comparás comisiones y publicás cuando estés listo. El borrador NO te inscribe a nada: es una simulación para ver choques, carga semanal y dificultad esperada antes de inscribirte en serio.',
   },
   {
-    id: 'dificultad',
+    id: 'difficulty',
     question: 'Cómo se calcula la dificultad',
     answer:
       'La dificultad sale del promedio de reseñas verificadas de alumnos que cursaron esa materia con esa cátedra. Si una materia todavía no tiene reseñas, mostramos "Sin datos" y no la promediamos. No es un cálculo automático ni IA: son personas reales puntuando.',
   },
   {
-    id: 'anonimo',
+    id: 'anonymity',
     question: 'Por qué tus reseñas son anónimas',
     answer:
       'Para que digas lo que pensás sin miedo a represalias del docente o tu universidad. plan-b verifica que cursaste la materia (vía importación de historial) pero NO publica tu nombre junto a la reseña: solo el contenido. La verificación es nuestra, no del docente.',

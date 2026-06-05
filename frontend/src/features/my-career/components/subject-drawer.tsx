@@ -14,7 +14,7 @@ import {
   stateLabel,
 } from '@/features/my-career/lib/subject-status';
 import { cn } from '@/lib/utils';
-import { CorrelativaChip } from './correlativa-chip';
+import { PrerequisiteChip } from './prerequisite-chip';
 import { ReviewCard } from './review-card';
 import { StatCell } from './stat-cell';
 
@@ -106,7 +106,7 @@ function Header({
           Mi carrera
         </Link>
         <span className="mx-1.5 text-ink-4">›</span>
-        <Link href="/my-career?tab=catalogo" className="hover:text-ink-2">
+        <Link href="/my-career?tab=catalog" className="hover:text-ink-2">
           Catálogo
         </Link>
         <span className="mx-1.5 text-ink-4">›</span>
@@ -187,7 +187,7 @@ function CorrelativasCard({
               <p className="text-xs text-ink-3">Sin correlativas.</p>
             ) : (
               needs.map((c) => (
-                <CorrelativaChip key={c.code} code={c.code} name={c.name} tone="ok" />
+                <PrerequisiteChip key={c.code} code={c.code} name={c.name} tone="ok" />
               ))
             )}
           </div>
@@ -201,7 +201,7 @@ function CorrelativasCard({
               <p className="text-xs text-ink-3">No habilita otras materias.</p>
             ) : (
               unlocks.map((c) => (
-                <CorrelativaChip key={c.code} code={c.code} name={c.name} tone="next" />
+                <PrerequisiteChip key={c.code} code={c.code} name={c.name} tone="next" />
               ))
             )}
           </div>

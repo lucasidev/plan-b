@@ -36,7 +36,7 @@ export default async function ImportarHistorialPage() {
 
       <div style={{ marginTop: 24 }}>
         <Link
-          href="/my-career?tab=historial"
+          href="/my-career?tab=transcript"
           className="inline-flex items-center text-accent-ink hover:text-accent-hover"
           style={{ fontSize: 13 }}
         >

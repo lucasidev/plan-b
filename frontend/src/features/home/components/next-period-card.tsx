@@ -10,7 +10,7 @@ type Props = {
  * "Planificar {nextYear} →" que invita a armar un borrador del próximo
  * año académico. Port directo de las líneas 234-246 del mock V2Inicio.
  *
- * El destino real (`/plan?tab=borrador`) aterriza con US-016 / US-R-Planificar.
+ * El destino real (`/plan?tab=draft`) aterriza con US-016 / US-R-Planificar.
  * Mientras tanto, el botón queda disabled con tooltip "Próximamente".
  */
 export function NextPeriodCard({ nextYear }: Props) {
@@ -22,7 +22,7 @@ export function NextPeriodCard({ nextYear }: Props) {
       <p className="text-sm text-ink-2 leading-relaxed mb-3">
         Armá un borrador de {nextYear} y comparalo con vos antes de inscribirte.
       </p>
-      {/* TODO(US-016 + US-R-Planificar): enchufar link real a /plan?tab=borrador */}
+      {/* TODO(US-016 + US-R-Planificar): enchufar link real a /plan?tab=draft */}
       <button
         type="button"
         disabled

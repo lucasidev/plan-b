@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MI_CARRERA_TABS, parseTab } from './tabs';
+import { MY_CAREER_TABS, parseTab } from './tabs';
 
 describe('parseTab', () => {
   it('cae al default "plan" cuando value es undefined', () => {
@@ -15,15 +15,15 @@ describe('parseTab', () => {
   });
 
   it('devuelve el id tal cual cuando es válido', () => {
-    expect(parseTab('correlativas')).toBe('correlativas');
-    expect(parseTab('catalogo')).toBe('catalogo');
-    expect(parseTab('docentes')).toBe('docentes');
-    expect(parseTab('historial')).toBe('historial');
+    expect(parseTab('prerequisites')).toBe('prerequisites');
+    expect(parseTab('catalog')).toBe('catalog');
+    expect(parseTab('teachers')).toBe('teachers');
+    expect(parseTab('transcript')).toBe('transcript');
   });
 
   it('cubre los 5 ids del catálogo', () => {
-    expect(MI_CARRERA_TABS).toHaveLength(5);
-    for (const t of MI_CARRERA_TABS) {
+    expect(MY_CAREER_TABS).toHaveLength(5);
+    for (const t of MY_CAREER_TABS) {
       expect(parseTab(t.id)).toBe(t.id);
     }
   });

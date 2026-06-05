@@ -42,7 +42,7 @@ type Props = {
  * drawer real (US-045-d) via `<Link>`. No hay highlight on click; el
  * foco está dado por el contexto del alumno, no por interacción.
  */
-export function CorrelativasGraph({
+export function PrerequisitesGraph({
   nodes = graphNodes,
   edges = graphEdges,
   focusId = focusedNodeId,

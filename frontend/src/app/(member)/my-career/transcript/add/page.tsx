@@ -50,7 +50,7 @@ export default async function AgregarHistorialPage() {
 
       <div className="mt-6">
         <Link
-          href="/my-career?tab=historial"
+          href="/my-career?tab=transcript"
           className="inline-flex items-center text-accent-ink hover:text-accent-hover"
           style={{ fontSize: 13 }}
         >
@@ -93,7 +93,7 @@ function CatalogUnavailable() {
         No pudimos resolver tu plan de estudios para cargar materias. Intentá de nuevo en un rato.
       </p>
       <Link
-        href="/my-career?tab=historial"
+        href="/my-career?tab=transcript"
         className="inline-flex items-center text-accent-ink hover:text-accent-hover"
         style={{ fontSize: 13 }}
       >

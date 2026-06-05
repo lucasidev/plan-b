@@ -3,50 +3,49 @@ import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { HistoryTab } from '@/features/my-career/components/history-tab';
 import { PlanGrid } from '@/features/my-career/components/plan-grid';
-import { CorrelativasGraph } from '@/features/my-career/components/prerequisites-graph';
+import { PrerequisitesGraph } from '@/features/my-career/components/prerequisites-graph';
 import { SubjectList } from '@/features/my-career/components/subject-list';
 import { TabsNav } from '@/features/my-career/components/tabs-nav';
 import { TeacherList } from '@/features/my-career/components/teacher-list';
 import { plan } from '@/features/my-career/data/plan';
-import { type MiCarreraTabId, parseTab } from '@/features/my-career/lib/tabs';
+import { type MyCareerTabId, parseTab } from '@/features/my-career/lib/tabs';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 import { cn } from '@/lib/utils';
 
 /**
- * Mi carrera: shell + nav de 5 tabs (US-045-a). Consolida lo que antes
- * vivía en 4 entries del sidebar en una sola ruta con tabs como query param.
+ * Mi carrera: shell + nav with 5 tabs (US-045-a). Consolidates what used to live as 4
+ * separate sidebar entries into a single route with tabs as a query param.
  *
- * Server component: lee `?tab=` desde `searchParams`, valida con `parseTab()`
- * (cualquier valor inválido cae a `plan`), pasa el activo a `TabsNav` para
- * el highlight + a la sección que renderea el componente real del tab.
+ * Server component: reads `?tab=` from `searchParams`, coerces it with `parseTab()`
+ * (any invalid value falls back to `plan`), passes the active id to `TabsNav` for the
+ * highlight + to the section that renders the active tab component.
  *
- * Los 5 tabs:
+ * The five tabs:
  *   - `plan` → PlanGrid (US-045-b)
- *   - `correlativas` → CorrelativasGraph (US-045-c)
- *   - `catalogo` → SubjectList (US-045-d)
- *   - `docentes` → TeacherList (US-045-d)
- *   - `historial` → HistoryTab (US-045-e). Por default empty hasta que aterrice
- *     el read (GET /api/me/enrollment-records).
+ *   - `prerequisites` → PrerequisitesGraph (US-045-c)
+ *   - `catalog` → SubjectList (US-045-d)
+ *   - `teachers` → TeacherList (US-045-d)
+ *   - `transcript` → HistoryTab (US-045-e). Empty by default until the read endpoint
+ *     lands (GET /api/me/enrollment-records).
  *
- * El guard de `(member)/layout.tsx` ya redirige al onboarding si el user no
- * tiene StudentProfile (US-037-f); igual re-fetcheamos acá para mostrar el
- * año de ingreso en el header.
+ * The `(member)/layout.tsx` guard already redirects to onboarding if the user has no
+ * StudentProfile (US-037-f); we re-fetch here anyway to display the enrollment year in
+ * the header.
  *
- * **Deuda conocida** (lo arreglamos en sprints próximos):
- *   - El nombre de la carrera + name de la uni necesitan un endpoint
- *     `/api/academic/careers/{id}` que devuelva `{name, slug, universityId}`.
- *     Mientras tanto el header muestra "Mi carrera · plan {year}" sin
- *     el nombre específico, en lugar de mentir con "Ing. en Sistemas" o
- *     mostrar el dato hardcodeado de la persona seedeada.
- *   - Las stats (aprobadas / cursando / pendientes) salen de Enrollments BC.
- *     Hasta que aterrice el read del historial real, mostramos un copy
- *     honesto en lugar de números inventados.
- *   - Los tabs Plan / Catálogo / Correlativas / Docentes consumen un mock
- *     del plan TUDCS UNSTA. Cuando el user tenga otro plan, ese contenido
- *     no aplica. US-061 va a resolver el plan dinámicamente desde Academic.
+ * **Known debt** (we will fix it in upcoming sprints):
+ *   - The career name + university name need an
+ *     `/api/academic/careers/{id}` endpoint returning `{name, slug, universityId}`.
+ *     Meanwhile the header reads "Mi carrera · plan {year}" without the specific name,
+ *     rather than lying with "Ing. en Sistemas" or hard-coding the seeded persona's
+ *     data.
+ *   - The stats (approved / coursing / pending) come from the Enrollments BC. Until the
+ *     real transcript read lands, we show an honest copy instead of made-up numbers.
+ *   - The Plan / Catalog / Prerequisites / Teachers tabs consume a mock of the UNSTA
+ *     TUDCS plan. When the user has a different plan, that content does not apply.
+ *     US-061 will resolve the plan dynamically from Academic.
  */
-export default async function MiCarreraPage({
+export default async function MyCareerPage({
   searchParams,
 }: {
   searchParams: Promise<{ tab?: string }>;
@@ -54,8 +53,8 @@ export default async function MiCarreraPage({
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  // Defense en profundidad: si el layout falló al detectar la falta de profile,
-  // acá también redirigimos. Sin profile no hay nada que mostrar.
+  // Defense in depth: if the layout failed to detect the missing profile, we redirect
+  // here too. Without a profile there is nothing to display.
   const profile = await fetchStudentProfile();
   if (!profile) redirect('/onboarding/welcome');
 
@@ -97,18 +96,18 @@ export default async function MiCarreraPage({
   );
 }
 
-/** Render del tab activo. */
-function TabContent({ tab }: { tab: MiCarreraTabId }) {
+/** Renders the active tab. */
+function TabContent({ tab }: { tab: MyCareerTabId }) {
   switch (tab) {
     case 'plan':
       return <PlanGrid plan={plan} />;
-    case 'correlativas':
-      return <CorrelativasGraph />;
-    case 'catalogo':
+    case 'prerequisites':
+      return <PrerequisitesGraph />;
+    case 'catalog':
       return <SubjectList plan={plan} />;
-    case 'docentes':
+    case 'teachers':
       return <TeacherList />;
-    case 'historial':
+    case 'transcript':
       return <HistoryTab />;
   }
 }

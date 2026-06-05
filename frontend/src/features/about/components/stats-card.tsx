@@ -7,9 +7,9 @@ import { ABOUT_STATS } from '../data/content';
 import { Card, EyebrowLabel } from './shared';
 
 const STATS: ReadonlyArray<{ key: keyof typeof ABOUT_STATS; label: string }> = [
-  { key: 'alumnos', label: 'alumnos' },
-  { key: 'reseñas', label: 'reseñas' },
-  { key: 'docentes', label: 'docentes' },
+  { key: 'students', label: 'alumnos' },
+  { key: 'reviews', label: 'reseñas' },
+  { key: 'teachers', label: 'docentes' },
   { key: 'version', label: 'versión' },
 ];
 

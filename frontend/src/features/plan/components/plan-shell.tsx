@@ -35,12 +35,12 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
 
   const tabs = [
     {
-      id: 'en-curso' as TabId,
+      id: 'active' as TabId,
       label: active ? `En curso · ${active.period.year}` : 'En curso',
       tag: active ? `${active.subjects.length}` : undefined,
     },
     {
-      id: 'borrador' as TabId,
+      id: 'draft' as TabId,
       label: 'Borradores',
       tag: `${drafts.length}`,
     },
@@ -105,7 +105,7 @@ export function PlanificarShell({ active, drafts, activeTab }: Props) {
         <PlanificarTabs items={tabs} active={activeTab} />
       </Suspense>
 
-      {activeTab === 'en-curso' ? (
+      {activeTab === 'active' ? (
         active ? (
           <ActiveTab simulation={active} />
         ) : (

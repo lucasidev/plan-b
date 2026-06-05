@@ -17,7 +17,7 @@ type Props = {
  * permitir navegación entre detalles de materia (correlativa de B abre
  * drawer de B, browser back vuelve al drawer original).
  */
-export function CorrelativaChip({ code, name, tone }: Props) {
+export function PrerequisiteChip({ code, name, tone }: Props) {
   return (
     <Link
       href={`/my-career/subject/${code}`}

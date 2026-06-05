@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export type TabId = 'en-curso' | 'borrador';
+export type TabId = 'active' | 'draft';
 
 type TabItem = {
   id: TabId;
@@ -12,7 +12,7 @@ type TabItem = {
 };
 
 /**
- * Tabs URL-driven de Planificar (US-046). Estado canónico en `?tab=en-curso|borrador`. Si
+ * Tabs URL-driven de Planificar (US-046). Estado canónico en `?tab=active|borrador`. Si
  * falta el query param, el default es "en-curso". Visual alineado al canvas v2 (V2Tabs).
  */
 export function PlanificarTabs({ items, active }: { items: TabItem[]; active: TabId }) {

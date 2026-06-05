@@ -88,9 +88,9 @@ export const ABOUT_ACADEMIC_CONTEXT =
  * estos valores salen del backend y la card pasa a ser RSC con fetch.
  */
 export const ABOUT_STATS = {
-  alumnos: '340',
-  reseñas: '1.247',
-  docentes: '87',
+  students: '340',
+  reviews: '1.247',
+  teachers: '87',
   version: 'v0.2',
 } as const;
 

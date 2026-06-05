@@ -69,7 +69,7 @@ function Header({ teacher, subjectNames }: { teacher: Teacher; subjectNames: str
             Mi carrera
           </Link>
           <span className="mx-1.5 text-ink-4">›</span>
-          <Link href="/my-career?tab=docentes" className="hover:text-ink-2">
+          <Link href="/my-career?tab=teachers" className="hover:text-ink-2">
             Docentes
           </Link>
         </div>

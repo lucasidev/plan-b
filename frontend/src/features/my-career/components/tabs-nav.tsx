@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { MI_CARRERA_TABS, type MiCarreraTabId } from '../lib/tabs';
+import { MY_CAREER_TABS, type MyCareerTabId } from '../lib/tabs';
 
 type Props = {
-  active: MiCarreraTabId;
+  active: MyCareerTabId;
 };
 
 /**
@@ -22,7 +22,7 @@ export function TabsNav({ active }: Props) {
       aria-label="Vistas de mi carrera"
       className="flex gap-1 border-b border-line mb-6"
     >
-      {MI_CARRERA_TABS.map((tab) => {
+      {MY_CAREER_TABS.map((tab) => {
         const isActive = tab.id === active;
         return (
           <Link

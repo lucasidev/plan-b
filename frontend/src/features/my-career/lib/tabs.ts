@@ -1,29 +1,32 @@
 /**
- * IDs de los 5 tabs del shell `/my-career`. Source of truth para la nav,
- * los stubs y las páginas reales cuando aterricen los slices US-045-b/c/d/e.
+ * IDs for the five `/my-career` shell tabs. Source of truth for the nav, the stubs and
+ * the real pages once the US-045-b/c/d/e slices land.
+ *
+ * `id` is the URL query-param value (code, English); `label` is the visible tab name
+ * (UI string, Spanish).
  */
-export const MI_CARRERA_TABS = [
+export const MY_CAREER_TABS = [
   { id: 'plan', label: 'Plan' },
-  { id: 'correlativas', label: 'Correlativas' },
-  { id: 'catalogo', label: 'Materias' },
-  { id: 'docentes', label: 'Docentes' },
-  { id: 'historial', label: 'Historial' },
+  { id: 'prerequisites', label: 'Correlativas' },
+  { id: 'catalog', label: 'Materias' },
+  { id: 'teachers', label: 'Docentes' },
+  { id: 'transcript', label: 'Historial' },
 ] as const;
 
-export type MiCarreraTabId = (typeof MI_CARRERA_TABS)[number]['id'];
+export type MyCareerTabId = (typeof MY_CAREER_TABS)[number]['id'];
 
-const VALID_IDS = new Set<string>(MI_CARRERA_TABS.map((t) => t.id));
+const VALID_IDS = new Set<string>(MY_CAREER_TABS.map((t) => t.id));
 
 /**
- * Convierte un valor arbitrario del query param `?tab=` en un `MiCarreraTabId`
- * válido. Cualquier valor no listado (vacío, undefined, typo, valor de un
- * tab futuro removido) cae al default `plan`.
+ * Coerce an arbitrary `?tab=` query-param value into a valid `MyCareerTabId`. Any value
+ * not in the list (empty, undefined, typo, a value from a removed future tab) falls back
+ * to the default `plan`.
  *
- * Devuelve siempre un id válido para que el componente downstream no tenga
- * que defenderse contra valores invalidos. Vale como guard de URL.
+ * Always returns a valid id so downstream components do not have to defend against bad
+ * values. Doubles as a URL guard.
  */
-export function parseTab(value: string | string[] | undefined): MiCarreraTabId {
+export function parseTab(value: string | string[] | undefined): MyCareerTabId {
   if (typeof value !== 'string') return 'plan';
   if (!VALID_IDS.has(value)) return 'plan';
-  return value as MiCarreraTabId;
+  return value as MyCareerTabId;
 }

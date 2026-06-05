@@ -25,7 +25,7 @@ export default async function SubjectDetailPage({ params }: { params: Promise<{ 
     <div className="px-6 py-9 max-w-[1200px] mx-auto">
       <div className="mb-4">
         <Link
-          href="/my-career?tab=catalogo"
+          href="/my-career?tab=catalog"
           className="text-sm text-accent-ink hover:text-accent-hover inline-flex items-center"
         >
           ← Volver al catálogo

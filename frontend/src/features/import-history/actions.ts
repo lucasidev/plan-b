@@ -137,7 +137,7 @@ export async function confirmHistorialAction(
   );
 
   if (response.status === 200) {
-    redirect('/my-career?tab=historial');
+    redirect('/my-career?tab=transcript');
   }
 
   if (response.status === 404) {

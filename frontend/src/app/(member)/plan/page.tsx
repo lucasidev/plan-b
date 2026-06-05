@@ -18,7 +18,7 @@ type SearchParams = Promise<{ tab?: string }>;
  */
 export default async function PlanificarPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const activeTab = params.tab === 'borrador' ? 'borrador' : 'en-curso';
+  const activeTab = params.tab === 'draft' ? 'draft' : 'active';
 
   // Mock data por ahora. Cuando aterrice el backend, se reemplaza por fetchMyActiveSimulation()
   // y fetchMyDrafts() con apiFetchAuthenticated.
