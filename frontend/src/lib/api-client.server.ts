@@ -6,19 +6,18 @@ import { apiFetch } from './api-client';
 const ACCESS_COOKIE = 'planb_session';
 
 /**
- * Variante server-only de <see cref="apiFetch"/> que forwardea automáticamente
- * la cookie <c>planb_session</c> del request del browser al backend. Necesaria
- * porque desde el JwtBearer middleware (US-T05), todos los endpoints
- * <c>/api/me/*</c> requieren la cookie de sesión para identificar al caller.
+ * Server-only variant of `apiFetch` that automatically forwards the browser's
+ * `planb_session` cookie to the backend. Required because, since the JwtBearer
+ * middleware (US-T05), every `/api/me/*` endpoint needs the session cookie to identify
+ * the caller.
  *
- * Por qué un archivo separado: importar <c>next/headers</c> desde un módulo que
- * client components consumen rompe la build (\"only works in Server Component\").
- * El <c>'server-only'</c> bombea un error temprano si alguien lo importa
- * accidentalmente desde un client component.
+ * Why a separate file: importing `next/headers` from a module consumed by client
+ * components breaks the build ("only works in Server Component"). The `'server-only'`
+ * marker throws an early error if a client component imports it by accident.
  *
- * Si el caller necesita forwardear cookies adicionales (ej. delete-account que
- * forwardea <c>planb_refresh</c> con Path=/api/identity), puede pasar
- * <c>extraCookies</c>; se mergean con planb_session en el header Cookie.
+ * If the caller needs to forward extra cookies (e.g. delete-account, which forwards
+ * `planb_refresh` with `Path=/api/identity`), they can pass `extraCookies`; the entries
+ * are merged with planb_session in the `Cookie` header.
  */
 export async function apiFetchAuthenticated(
   path: string,
@@ -26,9 +25,9 @@ export async function apiFetchAuthenticated(
 ) {
   const { extraCookies, ...rest } = init ?? {};
 
-  // Read del access cookie del request actual. Si no hay request scope (background
-  // job), cookies() lanza; degradamos a request sin cookie → backend devuelve 401
-  // y el caller lo maneja.
+  // Read the access cookie from the current request. If there's no request scope
+  // (background job), cookies() throws; we degrade to a request without the cookie:
+  // the backend returns 401 and the caller deals with it.
   let access: string | undefined;
   try {
     const store = await cookies();
