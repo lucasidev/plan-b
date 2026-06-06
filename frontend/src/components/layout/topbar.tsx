@@ -1,9 +1,11 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
+import { pendingReviewsQueries } from '@/features/pending-reviews';
 import { breadcrumbsForPath } from '@/lib/member-shell';
 
 /**
@@ -35,10 +37,27 @@ export function Topbar() {
   );
 }
 
+/**
+ * Topbar CTA "Escribir reseña". Per the US-048 AC, when the student has pending
+ * cursadas the button shows an accent badge with the count. Lookup is a background
+ * `useQuery` so the topbar mounts immediately and the badge fades in once the data
+ * arrives. We don't suspend: blocking the whole shell on this read would be a
+ * regression every page.
+ *
+ * The link points to `/reviews?tab=pending`: that is the natural source ("pick the
+ * cursada to review"). When there are no pendings the user lands on the empty state
+ * and the badge disappears.
+ */
 function WriteReviewButton() {
+  const { data } = useQuery({
+    ...pendingReviewsQueries.list(),
+    staleTime: 30 * 1000,
+  });
+  const count = data?.items.length ?? 0;
+
   return (
     <Link
-      href="/reviews/new"
+      href="/reviews?tab=pending"
       prefetch
       className={
         'inline-flex items-center gap-1.5 bg-ink text-white border border-ink rounded-pill shadow-card transition-colors hover:bg-[#1a110a] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft'
@@ -47,6 +66,24 @@ function WriteReviewButton() {
     >
       <Plus size={13} aria-hidden />
       Escribir reseña
+      {count > 0 && (
+        <>
+          <span className="sr-only">{`${count} cursadas pendientes`}</span>
+          <span
+            aria-hidden
+            className="bg-accent text-white"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10.5,
+              padding: '1px 6px',
+              borderRadius: 999,
+              marginLeft: 2,
+            }}
+          >
+            {count}
+          </span>
+        </>
+      )}
     </Link>
   );
 }

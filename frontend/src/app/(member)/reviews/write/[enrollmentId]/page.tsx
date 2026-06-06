@@ -7,20 +7,21 @@ export const metadata = {
 type Params = Promise<{ enrollmentId: string }>;
 
 /**
- * /reviews/write/[enrollmentId] (US-049). Six-numbered-field review editor with a live
- * preview. The URL stays in English per the code/UI split rule (paths in English, UI in
- * Spanish).
+ * /reviews/write/[enrollmentId] (US-049 editor + US-048 e2e wiring).
  *
- * The [enrollmentId] route param identifies the EnrollmentRecord being reviewed. Today
- * it is ignored (the whole editor runs against `MOCK_ENROLLMENT_CONTEXT`) because the
- * `GET /api/me/pending-reviews/:enrollmentId` endpoint that returns subject + teacher +
- * commission + grade does not exist yet (US-048 backend + Review-model rework). Once it
- * lands, the page will prefetch and pass the real context to the editor.
+ * The `[enrollmentId]` route param is now the real id of the EnrollmentRecord being
+ * reviewed. The editor's submit action sends it to `POST /api/reviews` (US-017). The
+ * display context (subject, teacher, period, grade) still comes from
+ * `MOCK_ENROLLMENT_CONTEXT` because the detail endpoint (`GET /api/reviews/me/pending/:id`
+ * or similar) does not exist yet; landing it is scope for a future US.
+ *
+ * Practical consequence: the editor's HEADER may show the canned ISW301/Brandt context
+ * while the SUBMIT publishes a row for the cursada the user actually came from. The
+ * publish itself is correct (real enrollmentId, real student, real backend constraint);
+ * only the display does not match yet.
  */
 export default async function WriteReviewPage({ params }: { params: Params }) {
-  // Resolve the id so Next.js does not warn; intentionally dropped until the real wiring
-  // lands.
-  await params;
+  const { enrollmentId } = await params;
 
-  return <ReviewEditor ctx={MOCK_ENROLLMENT_CONTEXT} />;
+  return <ReviewEditor ctx={MOCK_ENROLLMENT_CONTEXT} enrollmentId={enrollmentId} />;
 }

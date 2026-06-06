@@ -52,7 +52,7 @@ export const memberRoutes: readonly MemberRoute[] = [
   },
 
   // Community
-  { path: '/reviews', label: 'Mis reseñas', section: 'community', futureUs: 'US-020' },
+  { path: '/reviews', label: 'Reseñas', section: 'community', shortcut: '⌘4', futureUs: 'US-048' },
 
   // Other (Settings, Help, About plan-b, per the `soporte-v2-ayuda.png` mockup that
   // groups the three items under "OTROS" at the bottom of the v2 sidebar). My profile
