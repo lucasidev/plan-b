@@ -1,28 +1,49 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { apiFetchAuthenticated } from '@/lib/api-client.server';
+import { getSession } from '@/lib/session';
 import { reviewFormSchema } from './schema';
 import type { PublishReviewResult } from './types';
 
 /**
- * Stub server action to publish a review (US-049). Does NOT call the real backend: the
- * current `POST /api/reviews` (US-017) follows a legacy model
- * (subjectText/teacherText/finalGrade) that does not accept the new fields (rating,
- * hoursPerWeek, tags, recommendations). Until the backend rework lands, this action
- * simulates 700ms of latency and returns a synthetic id so the editor's end-to-end flow
- * is visible.
+ * Placeholder teacher id. The Teacher aggregate does not exist yet in Academic; once
+ * US-063 lands the editor will receive the real teacherId from the enrollment context
+ * and we can drop this.
+ */
+const PLACEHOLDER_TEACHER_ID = '00000000-0000-0000-0000-000000000000';
+
+/**
+ * Publish-review server action (US-049 editor + US-048 e2e wiring).
  *
- * When the real endpoint lands, this function will attach to
- * `apiFetchAuthenticated('POST', '/api/reviews', body)` and stop redirecting manually:
- * the caller will handle the response.
+ * Maps the v2 editor draft (rating, difficulty, hoursPerWeek, tags, text, recommendations)
+ * onto the legacy US-017 publish payload (difficultyRating, subjectText, teacherText,
+ * finalGrade). This is **lossy**: rating, hoursPerWeek, tags, wouldRecommendCourse and
+ * wouldRetakeTeacher are NOT persisted today. They will be once the backend rework US
+ * extends the `Review` aggregate + table; until then the editor stores them in browser
+ * state only.
+ *
+ * The lossy decision is intentional for PR-A of US-048: the goal of this slice is to
+ * close the e2e flow (see pending → click → write → publish → cursada disappears from
+ * pending). Persisting every editor field is scope for a separate US.
+ *
+ * After a 201 we revalidate `/reviews` (the pending list is server-rendered) and
+ * redirect to the Pendientes tab so the student observes the cursada disappearing.
  */
 export async function publishReviewAction(
   _prev: PublishReviewResult,
   formData: FormData,
 ): Promise<PublishReviewResult> {
+  const session = await getSession();
+  if (!session) {
+    return { status: 'error', message: 'Tu sesión expiró. Volvé a iniciar sesión.' };
+  }
+
+  const enrollmentId = formData.get('enrollmentId')?.toString();
   const raw = formData.get('payload');
-  if (typeof raw !== 'string') {
-    return { status: 'error', message: 'Payload inválido.' };
+  if (!enrollmentId || typeof raw !== 'string') {
+    return { status: 'error', message: 'Faltan datos del formulario.' };
   }
 
   let parsed: unknown;
@@ -34,21 +55,54 @@ export async function publishReviewAction(
 
   const validated = reviewFormSchema.safeParse(parsed);
   if (!validated.success) {
-    // The client already runs Zod validation; reaching here means a tampered payload or
-    // a bug.
     return {
       status: 'error',
       message: validated.error.issues[0]?.message ?? 'Datos inválidos.',
     };
   }
 
-  // Latency mock. The synthetic id is stable per session so demos stay reproducible; in
-  // production it comes from the backend.
-  await new Promise((r) => setTimeout(r, 700));
-  const reviewId = `mock-${Date.now().toString(36)}`;
+  const body = {
+    enrollmentId,
+    docenteResenadoId: PLACEHOLDER_TEACHER_ID,
+    difficultyRating: validated.data.difficulty,
+    subjectText: validated.data.text ?? null,
+    teacherText: null,
+    finalGrade: null,
+  };
 
-  // After publishing, US-048 will send to `/reviews?tab=mine`. That shell does not exist
-  // yet, so for now we redirect to `/home` with a searchParam the home page can read to
-  // show a "review published" toast once that piece lands (TODO).
-  redirect(`/home?published-review=${reviewId}`);
+  let response: Response;
+  try {
+    response = await apiFetchAuthenticated('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return {
+      status: 'error',
+      message: 'No pudimos conectarnos al servidor. Probá de nuevo.',
+    };
+  }
+
+  if (response.status === 201) {
+    revalidatePath('/reviews');
+    redirect('/reviews?tab=pending');
+  }
+
+  if (response.status === 401) {
+    return { status: 'error', message: 'Tu sesión expiró. Volvé a iniciar sesión.' };
+  }
+  if (response.status === 404) {
+    return { status: 'error', message: 'No encontramos la cursada.' };
+  }
+  if (response.status === 409) {
+    return { status: 'error', message: 'Ya escribiste una reseña para esta cursada.' };
+  }
+  if (response.status === 400) {
+    return { status: 'error', message: 'Los datos no son válidos. Revisá los campos.' };
+  }
+  return {
+    status: 'error',
+    message: 'No pudimos publicar la reseña. Probá de nuevo en un rato.',
+  };
 }

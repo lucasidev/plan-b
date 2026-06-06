@@ -36,7 +36,18 @@ import { TagsPicker } from './tags-picker';
  *  - Save-draft button: kept visible for parity with the mockup, but it opens a
  *    temporary alert. The backend does not support drafts yet (upcoming US).
  */
-export function ReviewEditor({ ctx }: { ctx: EnrollmentContext }) {
+/**
+ * The page resolves the route param (`enrollmentId`) and passes it to the editor as a
+ * dedicated prop. The display-only context (subject, teacher, period) keeps coming from
+ * the mock until a backend endpoint resolves the full enrollment detail. The id is what
+ * the publish action sends to the backend, so this is the field that *must* be real.
+ */
+type Props = {
+  ctx: EnrollmentContext;
+  enrollmentId: string;
+};
+
+export function ReviewEditor({ ctx, enrollmentId }: Props) {
   const [draft, setDraft] = useState<ReviewDraft>(REVIEW_FORM_DEFAULTS);
   const [state, formAction] = useActionState(publishReviewAction, PUBLISH_REVIEW_INITIAL_STATE);
 
@@ -68,10 +79,13 @@ export function ReviewEditor({ ctx }: { ctx: EnrollmentContext }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="mb-2 text-[12px] text-ink-3">
-            {/* TODO US-048: these links will point to /reviews?tab=pending once it exists. */}
-            <span className="hover:text-ink-2">Reseñas</span>
+            <Link href="/reviews" className="hover:text-ink-2">
+              Reseñas
+            </Link>
             <span className="px-1 text-ink-4">{'>'}</span>
-            <span className="hover:text-ink-2">Pendientes</span>
+            <Link href="/reviews?tab=pending" className="hover:text-ink-2">
+              Pendientes
+            </Link>
             <span className="px-1 text-ink-4">{'>'}</span>
             <span className="text-ink-2">Nueva reseña</span>
           </div>
@@ -83,6 +97,7 @@ export function ReviewEditor({ ctx }: { ctx: EnrollmentContext }) {
         </div>
 
         <form action={formAction} className="flex items-center gap-2">
+          <input type="hidden" name="enrollmentId" value={enrollmentId} />
           <input type="hidden" name="payload" value={JSON.stringify(draft)} />
           <DraftButton />
           <PublishButton disabled={!canPublish || !isValidShape} />
@@ -191,12 +206,11 @@ export function ReviewEditor({ ctx }: { ctx: EnrollmentContext }) {
 
           {/* Form footer: Cancel */}
           <div className="mt-1 flex justify-start">
-            {/* TODO US-048: point to /reviews?tab=pending once it lands; /home for now. */}
             <Link
-              href="/home"
+              href="/reviews?tab=pending"
               className="text-[12px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
             >
-              Cancelar y volver al inicio
+              Cancelar y volver a pendientes
             </Link>
           </div>
         </div>
