@@ -20,17 +20,33 @@ import { LUCIA } from '../helpers/personas';
  * (cursada disappears from pending), not the persistence of the lossy fields.
  */
 
-// Seeded subjects on the TUDCS plan. We rotate over them per run so the spec stays robust
-// against pre-existing pending rows in the shared dev DB.
+// Seeded subjects of the TUDCS plan + seeded academic terms. We try every (subject, term)
+// pair until one succeeds: the shared dev DB accumulates rows across runs and
+// `EnrollmentRecords` has UNIQUE(student, subject, term), so once we've reviewed enough
+// of these the first random pick may collide. The cartesian product gives us 60+ pairs,
+// enough headroom for the foreseeable future. When DELETE /api/me/enrollment-records lands
+// we can replace this with a real cleanup.
 const SUBJECTS = [
+  '00000004-0000-4000-a000-000000000001',
+  '00000004-0000-4000-a000-000000000002',
+  '00000004-0000-4000-a000-000000000003',
+  '00000004-0000-4000-a000-000000000004',
   '00000004-0000-4000-a000-000000000005',
   '00000004-0000-4000-a000-000000000006',
   '00000004-0000-4000-a000-000000000007',
   '00000004-0000-4000-a000-000000000008',
   '00000004-0000-4000-a000-000000000009',
+  '00000004-0000-4000-a000-00000000000a',
+  '00000004-0000-4000-a000-00000000000b',
+  '00000004-0000-4000-a000-00000000000c',
+  '00000004-0000-4000-a000-00000000000d',
+  '00000004-0000-4000-a000-00000000000e',
+  '00000004-0000-4000-a000-00000000000f',
 ];
 
 const TERMS = [
+  '00000005-0000-4000-a000-000000000001',
+  '00000005-0000-4000-a000-000000000002',
   '00000005-0000-4000-a000-000000000003',
   '00000005-0000-4000-a000-000000000004',
   '00000005-0000-4000-a000-000000000005',
@@ -51,34 +67,40 @@ test.describe('Reseñas · tab Pendientes (US-048)', () => {
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
     // Idempotent seed: pick the first pending review if Lucía already has one (left over
-    // from a previous run or hand-loaded transcript). Otherwise create a fresh enrollment.
-    // The dev DB is shared across runs and `EnrollmentRecords` has a UNIQUE
-    // `(student, subject, term)`, so blindly creating a new row per run drifts state until
-    // the suite breaks. Reusing the first pending stays robust without cleanup.
-    let enrollmentId: string;
+    // from a previous run or hand-loaded transcript). Otherwise try (subject, term) pairs
+    // until one succeeds; the dev DB has a UNIQUE(student, subject, term) constraint and
+    // earlier runs may already occupy specific pairs.
+    let enrollmentId: string | undefined;
     const existing = await page.request.get('/api/reviews/me/pending');
     expect(existing.ok(), `failed to fetch existing pending: ${existing.status()}`).toBe(true);
     const existingBody = (await existing.json()) as { items: { enrollmentId: string }[] };
     if (existingBody.items.length > 0) {
       enrollmentId = existingBody.items[0].enrollmentId;
     } else {
-      const subjectId = SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)];
-      const termId = TERMS[Math.floor(Math.random() * TERMS.length)];
-      const enrollmentResp = await page.request.post('/api/me/enrollment-records', {
-        data: {
-          subjectId,
-          commissionId: crypto.randomUUID(),
-          termId,
-          status: 'Aprobada',
-          approvalMethod: 'Final',
-          grade: 7,
-        },
-      });
-      expect(enrollmentResp.ok(), `failed to seed enrollment: ${enrollmentResp.status()}`).toBe(
-        true,
-      );
-      const created = (await enrollmentResp.json()) as { id: string };
-      enrollmentId = created.id;
+      for (const subjectId of SUBJECTS) {
+        for (const termId of TERMS) {
+          const resp = await page.request.post('/api/me/enrollment-records', {
+            data: {
+              subjectId,
+              commissionId: crypto.randomUUID(),
+              termId,
+              status: 'Aprobada',
+              approvalMethod: 'Final',
+              grade: 7,
+            },
+          });
+          if (resp.ok()) {
+            const created = (await resp.json()) as { id: string };
+            enrollmentId = created.id;
+            break;
+          }
+        }
+        if (enrollmentId) break;
+      }
+      expect(
+        enrollmentId,
+        'could not seed an enrollment: every (subject, term) pair already used',
+      ).toBeDefined();
     }
 
     // Navigate to /reviews?tab=pending.
