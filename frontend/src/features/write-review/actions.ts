@@ -11,8 +11,13 @@ import type { PublishReviewResult } from './types';
  * Placeholder teacher id. The Teacher aggregate does not exist yet in Academic; once
  * US-063 lands the editor will receive the real teacherId from the enrollment context
  * and we can drop this.
+ *
+ * Has to be a non-empty Guid so the backend's `NotEmpty()` validator on
+ * `DocenteResenadoId` passes (the empty UUID would 400). The Reviews backend does NOT
+ * verify against an existing Teacher row yet (per US-017 doc), so any well-formed Guid
+ * is accepted.
  */
-const PLACEHOLDER_TEACHER_ID = '00000000-0000-0000-0000-000000000000';
+const PLACEHOLDER_TEACHER_ID = '11111111-1111-1111-1111-111111111111';
 
 /**
  * Publish-review server action (US-049 editor + US-048 e2e wiring).
