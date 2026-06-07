@@ -3,6 +3,13 @@ import { Suspense } from 'react';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Lede } from '@/components/ui/lede';
+import {
+  type BrowseReviewsFilters,
+  browseReviewsQueries,
+  ExploreFeed,
+  parseBrowseFilters,
+} from '@/features/browse-reviews';
+import { fetchBrowseReviewsServer } from '@/features/browse-reviews/api.server';
 import { MyReviewsList, myReviewsQueries } from '@/features/my-reviews';
 import { fetchMyReviewsServer } from '@/features/my-reviews/api.server';
 import {
@@ -13,7 +20,6 @@ import {
   ReviewsTabsNav,
 } from '@/features/pending-reviews';
 import { fetchPendingReviewsServer } from '@/features/pending-reviews/api.server';
-import { cn } from '@/lib/utils';
 
 export const metadata = {
   title: 'Reseñas · planb',
@@ -24,23 +30,20 @@ export const dynamic = 'force-dynamic';
 
 /**
  * /reviews (US-048). Shell with three tabs: Explorar (default), Pendientes, Mis reseñas.
+ * All three are functional end-to-end against the backend.
  *
- * As of US-048 PR-B both Pendientes and Mías are functional end-to-end against the
- * backend. Explorar still renders a "coming soon" placeholder while its endpoint + slice
- * lands in PR-C.
- *
- * The page prefetches the queries for the tabs that have backend support. Tabs the
- * student does not visit do not prefetch (we only hydrate what we render); the
- * Pendientes badge in the nav is the exception because it needs the count regardless of
- * the active tab.
+ * The page prefetches the active tab's query plus the Pendientes count (the nav badge
+ * needs it regardless of the active tab). Tabs the student does not visit do not get
+ * their data prefetched: we only hydrate what we render.
  */
 export default async function ReviewsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; difficulty?: string; page?: string }>;
 }) {
-  const { tab: rawTab } = await searchParams;
-  const tab = parseReviewsTab(rawTab);
+  const params = await searchParams;
+  const tab = parseReviewsTab(params.tab);
+  const browseFilters = parseBrowseFiltersFromSearchParams(params);
 
   // Always prefetch pending: the nav badge needs the count regardless of the active tab.
   const queryClient = new QueryClient();
@@ -56,6 +59,12 @@ export default async function ReviewsPage({
     await queryClient.prefetchQuery({
       queryKey: myOptions.queryKey,
       queryFn: fetchMyReviewsServer,
+    });
+  } else if (tab === 'explore') {
+    const browseOptions = browseReviewsQueries.list(browseFilters);
+    await queryClient.prefetchQuery({
+      queryKey: browseOptions.queryKey,
+      queryFn: () => fetchBrowseReviewsServer(browseFilters),
     });
   }
 
@@ -75,13 +84,19 @@ export default async function ReviewsPage({
       <ReviewsTabsNav active={tab} pendingCount={pendingCount} />
 
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <TabContent tab={tab} />
+        <TabContent tab={tab} browseFilters={browseFilters} />
       </HydrationBoundary>
     </div>
   );
 }
 
-function TabContent({ tab }: { tab: ReviewsTabId }) {
+function TabContent({
+  tab,
+  browseFilters,
+}: {
+  tab: ReviewsTabId;
+  browseFilters: BrowseReviewsFilters;
+}) {
   if (tab === 'pending') {
     return (
       <Suspense fallback={<TabLoadingPlaceholder />}>
@@ -96,35 +111,25 @@ function TabContent({ tab }: { tab: ReviewsTabId }) {
       </Suspense>
     );
   }
-  return <ComingSoonCard title="Explorar la comunidad" us="próximo slice (PR-C)" />;
+  return (
+    <Suspense fallback={<TabLoadingPlaceholder />}>
+      <ExploreFeed filters={browseFilters} />
+    </Suspense>
+  );
 }
 
-function ComingSoonCard({ title, us }: { title: string; us: string }) {
-  return (
-    <div
-      className={cn(
-        'bg-bg-card border border-line rounded-lg shadow-card',
-        'p-10 text-center flex flex-col items-center gap-3',
-      )}
-    >
-      <p
-        className="text-ink-4"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 11,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-        }}
-      >
-        Próximamente
-      </p>
-      <h2 className="font-display font-semibold text-lg text-ink m-0">{title}</h2>
-      <p className="text-sm text-ink-3 max-w-md">
-        Esta vista aterriza en el {us} de US-048. La tab está lista en el shell para que la URL sea
-        estable.
-      </p>
-    </div>
-  );
+/**
+ * Converts the page's resolved `searchParams` object into the `BrowseReviewsFilters`
+ * shape via a URLSearchParams trip. Keeps the parsing logic colocated with the feature.
+ */
+function parseBrowseFiltersFromSearchParams(params: {
+  difficulty?: string;
+  page?: string;
+}): BrowseReviewsFilters {
+  const search = new URLSearchParams();
+  if (params.difficulty !== undefined) search.set('difficulty', params.difficulty);
+  if (params.page !== undefined) search.set('page', params.page);
+  return parseBrowseFilters(search);
 }
 
 function TabLoadingPlaceholder() {
