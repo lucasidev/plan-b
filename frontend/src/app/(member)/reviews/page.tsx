@@ -3,6 +3,8 @@ import { Suspense } from 'react';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Lede } from '@/components/ui/lede';
+import { MyReviewsList, myReviewsQueries } from '@/features/my-reviews';
+import { fetchMyReviewsServer } from '@/features/my-reviews/api.server';
 import {
   PendingList,
   parseReviewsTab,
@@ -23,13 +25,14 @@ export const dynamic = 'force-dynamic';
 /**
  * /reviews (US-048). Shell with three tabs: Explorar (default), Pendientes, Mis reseñas.
  *
- * PR-A scope: only Pendientes is functional end-to-end. Explorar and Mías render a
- * "coming soon" placeholder while their respective backend endpoints + frontend slices
- * land in PR-B / PR-C. The shell + nav already accept the three tabs so navigating
- * `?tab=mine` from inside the empty state of Pendientes (per AC) does not 404.
+ * As of US-048 PR-B both Pendientes and Mías are functional end-to-end against the
+ * backend. Explorar still renders a "coming soon" placeholder while its endpoint + slice
+ * lands in PR-C.
  *
- * The Pendientes count fed into the nav badge is resolved server-side from the same
- * query the tab consumes, so first paint is accurate without a client roundtrip.
+ * The page prefetches the queries for the tabs that have backend support. Tabs the
+ * student does not visit do not prefetch (we only hydrate what we render); the
+ * Pendientes badge in the nav is the exception because it needs the count regardless of
+ * the active tab.
  */
 export default async function ReviewsPage({
   searchParams,
@@ -39,17 +42,24 @@ export default async function ReviewsPage({
   const { tab: rawTab } = await searchParams;
   const tab = parseReviewsTab(rawTab);
 
-  // Prefetch pending into the RSC's QueryClient so <PendingList> can `useSuspenseQuery`
-  // without a client-side roundtrip. We override queryFn to the server-only fetcher
-  // (the client fetcher hits `/api/...` directly, which has no cookie-forwarding in RSC).
-  // The same queryKey is reused so the client cache deduplicates on hydration.
+  // Always prefetch pending: the nav badge needs the count regardless of the active tab.
   const queryClient = new QueryClient();
-  const options = pendingReviewsQueries.list();
+  const pendingOptions = pendingReviewsQueries.list();
   await queryClient.prefetchQuery({
-    queryKey: options.queryKey,
+    queryKey: pendingOptions.queryKey,
     queryFn: fetchPendingReviewsServer,
   });
-  const pendingData = queryClient.getQueryData(options.queryKey);
+
+  // Prefetch the active tab's data when there's a backend slice for it.
+  if (tab === 'mine') {
+    const myOptions = myReviewsQueries.list();
+    await queryClient.prefetchQuery({
+      queryKey: myOptions.queryKey,
+      queryFn: fetchMyReviewsServer,
+    });
+  }
+
+  const pendingData = queryClient.getQueryData(pendingOptions.queryKey);
   const pendingCount = pendingData?.items.length ?? 0;
 
   return (
@@ -79,10 +89,14 @@ function TabContent({ tab }: { tab: ReviewsTabId }) {
       </Suspense>
     );
   }
-  if (tab === 'explore') {
-    return <ComingSoonCard title="Explorar la comunidad" us="próximo slice (PR-B)" />;
+  if (tab === 'mine') {
+    return (
+      <Suspense fallback={<TabLoadingPlaceholder />}>
+        <MyReviewsList />
+      </Suspense>
+    );
   }
-  return <ComingSoonCard title="Tus reseñas publicadas" us="próximo slice (PR-C)" />;
+  return <ComingSoonCard title="Explorar la comunidad" us="próximo slice (PR-C)" />;
 }
 
 function ComingSoonCard({ title, us }: { title: string; us: string }) {
