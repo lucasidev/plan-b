@@ -57,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - E2E spec del flow Pendientes → editor → publish + non-empty teacher plac (reviews) — [`baaa41b`](https://github.com/lucasidev/plan-b/commit/baaa41b053f0e1dd285bb9a6333930e32753df92)
 - GET /api/reviews/me endpoint (US-048 tab Mías) (reviews) — [`8551b9e`](https://github.com/lucasidev/plan-b/commit/8551b9e0e01c3f2171fd129f841cd30a8e3210e3)
 - tab Mías funcional + features/my-reviews + E2E (US-048 PR-B) (reviews) — [`c05ee17`](https://github.com/lucasidev/plan-b/commit/c05ee170e6f063799a27dd87ef754ad1f60fedb3)
+- GET /api/reviews público con filtros + paginado (US-048 tab Explorar) (reviews) — [`fd3fc31`](https://github.com/lucasidev/plan-b/commit/fd3fc317575ca94633b4fd9f25b2912e7f21ae9a)
+- tab Explorar funcional + features/browse-reviews + E2E (US-048 PR-C) (reviews) — [`7c15722`](https://github.com/lucasidev/plan-b/commit/7c1572200e2419e26212686b7048aa9fe980060c)
 
 ### Fixed
 
