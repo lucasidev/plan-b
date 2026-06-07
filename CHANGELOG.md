@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tab Mías funcional + features/my-reviews + E2E (US-048 PR-B) (reviews) — [`c05ee17`](https://github.com/lucasidev/plan-b/commit/c05ee170e6f063799a27dd87ef754ad1f60fedb3)
 - GET /api/reviews público con filtros + paginado (US-048 tab Explorar) (reviews) — [`fd3fc31`](https://github.com/lucasidev/plan-b/commit/fd3fc317575ca94633b4fd9f25b2912e7f21ae9a)
 - tab Explorar funcional + features/browse-reviews + E2E (US-048 PR-C) (reviews) — [`7c15722`](https://github.com/lucasidev/plan-b/commit/7c1572200e2419e26212686b7048aa9fe980060c)
+- PATCH /api/me/reviews/{id} con audit log + cooldown + filter re-run (US- (reviews) — [`df8b44b`](https://github.com/lucasidev/plan-b/commit/df8b44bfd0d702a2ee21d87ed85158c64c84bda9)
+- editor en /reviews/edit/[reviewId] + acción PATCH lossy (US-018) (reviews) — [`e042eae`](https://github.com/lucasidev/plan-b/commit/e042eae90cd9eb3ab78afddbb26348b248b05b9b)
 
 ### Fixed
 
