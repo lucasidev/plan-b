@@ -68,12 +68,27 @@ function MyReviewCard({ review }: { review: MyReview }) {
           </p>
         )}
 
-        <div className="flex justify-end">
-          <span
-            className={cn('text-[12px] text-ink-3', 'inline-flex items-center gap-1')}
-            title="Editar y borrar llegan en próximas USs (US-018 + US-055)"
-          >
-            Editar y borrar próximamente
+        <div className="flex items-center justify-end gap-3">
+          {review.status === 'Published' ? (
+            <Link
+              href={`/reviews/edit/${review.id}`}
+              className={cn(
+                'text-[12px] font-medium underline-offset-2 hover:underline',
+                'text-accent-ink',
+              )}
+            >
+              Editar
+            </Link>
+          ) : (
+            <span
+              className="text-[12px] text-ink-4"
+              title="Solo podés editar reseñas publicadas (ADR-0012)."
+            >
+              No editable
+            </span>
+          )}
+          <span className="text-[12px] text-ink-4" title="Borrar llega con US-055">
+            Borrar próximamente
           </span>
         </div>
       </article>

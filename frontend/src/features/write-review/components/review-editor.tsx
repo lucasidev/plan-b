@@ -9,7 +9,7 @@ import { Lede } from '@/components/ui/lede';
 import { publishReviewAction } from '../actions';
 import { MOCK_ANONYMOUS_IDENTITY } from '../data/mocks';
 import { REVIEW_FORM_DEFAULTS, reviewFormSchema } from '../schema';
-import type { EnrollmentContext, ReviewDraft } from '../types';
+import type { EnrollmentContext, PublishReviewResult, ReviewDraft } from '../types';
 import { PUBLISH_REVIEW_INITIAL_STATE } from '../types';
 import { DifficultySteps } from './difficulty-steps';
 import { EnrollmentContextCard } from './enrollment-context-card';
@@ -20,6 +20,18 @@ import { PrivacyCard } from './privacy-card';
 import { RecommendationsToggles } from './recommendations-toggles';
 import { StarRatingInput } from './star-rating-input';
 import { TagsPicker } from './tags-picker';
+
+/**
+ * Editor mode. <c>write</c> calls the publish action and posts a new review;
+ * <c>edit</c> calls a caller-provided action that PATCHes the existing review (US-018).
+ *
+ * The two modes share 100% of the layout and most of the form state. The differences
+ * (header copy, CTA label, the id field name in the hidden input, the action that the
+ * form submits to) are passed in as props so this component stays the single editor.
+ */
+export type ReviewEditorMode = 'write' | 'edit';
+
+type ServerAction = (prev: PublishReviewResult, formData: FormData) => Promise<PublishReviewResult>;
 
 /**
  * Review editor, feature orchestrator (US-049). Mounts the header with CTAs, the two
@@ -45,11 +57,50 @@ import { TagsPicker } from './tags-picker';
 type Props = {
   ctx: EnrollmentContext;
   enrollmentId: string;
+  /**
+   * Editor mode. Defaults to <c>write</c> for backwards compatibility with the existing
+   * US-049 publish flow.
+   */
+  mode?: ReviewEditorMode;
+  /**
+   * Optional initial draft. <c>edit</c> mode passes the persisted review's fields. The
+   * defaults are merged in for any field the backend does not surface yet (rating,
+   * hoursPerWeek, tags, recommendations), keeping the editor render-stable across the
+   * lossy mapping.
+   */
+  initialDraft?: Partial<ReviewDraft>;
+  /**
+   * Server action that consumes the form's <c>FormData</c>. Defaults to the publish
+   * action; <c>edit</c> mode passes the PATCH action from <c>features/edit-review</c>.
+   */
+  submitAction?: ServerAction;
+  /**
+   * Initial value for the action state. Same shape across modes (<c>PublishReviewResult</c>:
+   * <c>idle | success | error</c>).
+   */
+  submitInitialState?: PublishReviewResult;
+  /**
+   * Name of the hidden input that carries the target id (the form's resource id). In
+   * <c>write</c> mode it is the enrollment id (the new review will be anchored to it);
+   * in <c>edit</c> mode it is the review id. The default keeps the publish flow intact.
+   */
+  idFieldName?: 'enrollmentId' | 'reviewId';
 };
 
-export function ReviewEditor({ ctx, enrollmentId }: Props) {
-  const [draft, setDraft] = useState<ReviewDraft>(REVIEW_FORM_DEFAULTS);
-  const [state, formAction] = useActionState(publishReviewAction, PUBLISH_REVIEW_INITIAL_STATE);
+export function ReviewEditor({
+  ctx,
+  enrollmentId,
+  mode = 'write',
+  initialDraft,
+  submitAction = publishReviewAction,
+  submitInitialState = PUBLISH_REVIEW_INITIAL_STATE,
+  idFieldName = 'enrollmentId',
+}: Props) {
+  const [draft, setDraft] = useState<ReviewDraft>({
+    ...REVIEW_FORM_DEFAULTS,
+    ...(initialDraft ?? {}),
+  });
+  const [state, formAction] = useActionState(submitAction, submitInitialState);
 
   // Typed helper to set a single field while keeping the rest of the draft.
   const updateField = <K extends keyof ReviewDraft>(key: K, value: ReviewDraft[K]) =>
@@ -61,17 +112,22 @@ export function ReviewEditor({ ctx, enrollmentId }: Props) {
       tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
 
-  // Enable Publish only when the required fields are set: rating and difficulty are not
-  // zero, and both toggles have a value (true/false are both valid). Plus a Zod sanity
-  // check on the whole shape.
+  // Enable the CTA when required fields are set. In write mode the v2 layout asks for
+  // rating + difficulty + both toggles; in edit mode only the backend-mappable fields
+  // (difficulty + subject text) are mandatory because the lossy mapping never sends
+  // rating / tags / hoursPerWeek / recommendations to the server.
   const canPublish =
-    draft.rating >= 1 &&
-    draft.difficulty >= 1 &&
-    typeof draft.wouldRecommendCourse === 'boolean' &&
-    typeof draft.wouldRetakeTeacher === 'boolean';
+    mode === 'edit'
+      ? draft.difficulty >= 1
+      : draft.rating >= 1 &&
+        draft.difficulty >= 1 &&
+        typeof draft.wouldRecommendCourse === 'boolean' &&
+        typeof draft.wouldRetakeTeacher === 'boolean';
 
   const parsed = reviewFormSchema.safeParse(draft);
-  const isValidShape = parsed.success;
+  // Zod requires rating >= 1 even in edit, so we skip the shape check there: the lossy
+  // mapping makes the rating field meaningless for the backend until the rework lands.
+  const isValidShape = mode === 'edit' ? true : parsed.success;
 
   return (
     <div className="py-6">
@@ -83,24 +139,34 @@ export function ReviewEditor({ ctx, enrollmentId }: Props) {
               Reseñas
             </Link>
             <span className="px-1 text-ink-4">{'>'}</span>
-            <Link href="/reviews?tab=pending" className="hover:text-ink-2">
-              Pendientes
+            <Link
+              href={mode === 'edit' ? '/reviews?tab=mine' : '/reviews?tab=pending'}
+              className="hover:text-ink-2"
+            >
+              {mode === 'edit' ? 'Mis reseñas' : 'Pendientes'}
             </Link>
             <span className="px-1 text-ink-4">{'>'}</span>
-            <span className="text-ink-2">Nueva reseña</span>
+            <span className="text-ink-2">{mode === 'edit' ? 'Editar reseña' : 'Nueva reseña'}</span>
           </div>
-          <DisplayHeading>Reseñá tu cursada</DisplayHeading>
+          <DisplayHeading>
+            {mode === 'edit' ? 'Editá tu reseña' : 'Reseñá tu cursada'}
+          </DisplayHeading>
           <Lede className="mt-2">
-            Una sola reseña por cursada: califica materia, docente, comisión y cuatri juntos. Es
-            anónima para el resto.
+            {mode === 'edit'
+              ? 'Cambiá lo que quieras corregir o ampliar. Se vuelve a chequear el contenido al publicar.'
+              : 'Una sola reseña por cursada: califica materia, docente, comisión y cuatri juntos. Es anónima para el resto.'}
           </Lede>
         </div>
 
         <form action={formAction} className="flex items-center gap-2">
-          <input type="hidden" name="enrollmentId" value={enrollmentId} />
+          <input type="hidden" name={idFieldName} value={enrollmentId} />
           <input type="hidden" name="payload" value={JSON.stringify(draft)} />
-          <DraftButton />
-          <PublishButton disabled={!canPublish || !isValidShape} />
+          {mode === 'write' && <DraftButton />}
+          <PublishButton
+            disabled={!canPublish || !isValidShape}
+            label={mode === 'edit' ? 'Guardar cambios' : 'Publicar reseña'}
+            pendingLabel={mode === 'edit' ? 'Guardando...' : 'Publicando...'}
+          />
         </form>
       </div>
 
@@ -207,10 +273,12 @@ export function ReviewEditor({ ctx, enrollmentId }: Props) {
           {/* Form footer: Cancel */}
           <div className="mt-1 flex justify-start">
             <Link
-              href="/reviews?tab=pending"
+              href={mode === 'edit' ? '/reviews?tab=mine' : '/reviews?tab=pending'}
               className="text-[12px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
             >
-              Cancelar y volver a pendientes
+              {mode === 'edit'
+                ? 'Cancelar y volver a Mis reseñas'
+                : 'Cancelar y volver a pendientes'}
             </Link>
           </div>
         </div>
@@ -234,7 +302,15 @@ function Card({ children }: { children: React.ReactNode }) {
   return <div className="rounded-lg border border-line bg-bg-card p-4">{children}</div>;
 }
 
-function PublishButton({ disabled }: { disabled: boolean }) {
+function PublishButton({
+  disabled,
+  label,
+  pendingLabel,
+}: {
+  disabled: boolean;
+  label: string;
+  pendingLabel: string;
+}) {
   const { pending } = useFormStatus();
   return (
     <button
@@ -245,7 +321,7 @@ function PublishButton({ disabled }: { disabled: boolean }) {
         background: 'var(--color-accent)',
       }}
     >
-      {pending ? 'Publicando...' : 'Publicar reseña'}
+      {pending ? pendingLabel : label}
     </button>
   );
 }
