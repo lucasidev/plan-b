@@ -25,6 +25,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IReviewsUnitOfWork, ReviewsUnitOfWork>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IReviewAuditLogRepository, ReviewAuditLogRepository>();
 
         // Cross-schema reads for US-048 (tabs Pendientes, Mías and Explorar). Scoped to
         // match the request lifetime; the Dapper services open their own connection per

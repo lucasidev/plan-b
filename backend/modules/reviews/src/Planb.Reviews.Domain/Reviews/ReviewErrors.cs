@@ -108,4 +108,20 @@ public static class ReviewErrors
         Error.Conflict(
             "reviews.review.invalid_status_transition",
             "Review is not in a state that allows this transition.");
+
+    /// <summary>
+    /// US-018 cooldown: máximo 5 edits por review en 24h por author. 429.
+    /// </summary>
+    public static readonly Error EditCooldownExceeded =
+        Error.Conflict(
+            "reviews.edit.cooldown_exceeded",
+            "Maximum number of edits per 24h reached for this review.");
+
+    /// <summary>
+    /// US-018: el body del PATCH no trajo ningún campo modificable. 400.
+    /// </summary>
+    public static readonly Error NothingToUpdate =
+        Error.Validation(
+            "reviews.edit.nothing_to_update",
+            "Provide at least one field to update.");
 }
