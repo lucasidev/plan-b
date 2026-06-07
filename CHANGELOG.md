@@ -52,6 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sección "Otros" con Ajustes + Ayuda + Sobre plan-b (sidebar) — [`135deae`](https://github.com/lucasidev/plan-b/commit/135deae40c5db4098959695d5c80f6bdb0fe0674)
 - publicar reseña backend US-017 (reviews) — [`d0fcff8`](https://github.com/lucasidev/plan-b/commit/d0fcff823a1615b04f9986d3e8f35c4d46674a40)
 - editor de reseña 6 campos con preview vivo (US-049) (reviews) — [`ea127da`](https://github.com/lucasidev/plan-b/commit/ea127daf3a131a595e960e694a26834d3ce5719e)
+- GET /api/reviews/me/pending endpoint (US-048 tab Pendientes) (reviews) — [`16a1a88`](https://github.com/lucasidev/plan-b/commit/16a1a8867fc06237a54a12d63def5ed326698c0c)
+- shell con 3 tabs + tab Pendientes e2e contra backend real (US-048 PR-A) (reviews) — [`ec3e3da`](https://github.com/lucasidev/plan-b/commit/ec3e3da34aa6fd82656c48e0a87ea1d81e092b62)
+- E2E spec del flow Pendientes → editor → publish + non-empty teacher plac (reviews) — [`baaa41b`](https://github.com/lucasidev/plan-b/commit/baaa41b053f0e1dd285bb9a6333930e32753df92)
 
 ### Fixed
 
@@ -87,6 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - append-changelog tolera rangos invalidos por force push (scripts) — [`aa17f8b`](https://github.com/lucasidev/plan-b/commit/aa17f8bc9c204a62d754b038aa5f998c5188a486)
 - breadcrumb amigable para /resenas/escribir/[cursadaId] (member-shell) — [`d68c15c`](https://github.com/lucasidev/plan-b/commit/d68c15c6b9eed368df3ce39dbab14655379b6f76)
 - selectores robustos en el spec del editor (e2e) — [`5e33eec`](https://github.com/lucasidev/plan-b/commit/5e33eec7a80e23bc3a13af6cb7e1d604efc26c62)
+- pending spec retries (subject, term) pairs hasta encontrar uno libre (e2e) — [`f36479c`](https://github.com/lucasidev/plan-b/commit/f36479cce5bf33b5f5552fcd61892a29adddf59c)
 
 ### Changed
 
