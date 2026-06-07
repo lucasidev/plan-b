@@ -55,6 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GET /api/reviews/me/pending endpoint (US-048 tab Pendientes) (reviews) — [`16a1a88`](https://github.com/lucasidev/plan-b/commit/16a1a8867fc06237a54a12d63def5ed326698c0c)
 - shell con 3 tabs + tab Pendientes e2e contra backend real (US-048 PR-A) (reviews) — [`ec3e3da`](https://github.com/lucasidev/plan-b/commit/ec3e3da34aa6fd82656c48e0a87ea1d81e092b62)
 - E2E spec del flow Pendientes → editor → publish + non-empty teacher plac (reviews) — [`baaa41b`](https://github.com/lucasidev/plan-b/commit/baaa41b053f0e1dd285bb9a6333930e32753df92)
+- GET /api/reviews/me endpoint (US-048 tab Mías) (reviews) — [`8551b9e`](https://github.com/lucasidev/plan-b/commit/8551b9e0e01c3f2171fd129f841cd30a8e3210e3)
+- tab Mías funcional + features/my-reviews + E2E (US-048 PR-B) (reviews) — [`c05ee17`](https://github.com/lucasidev/plan-b/commit/c05ee170e6f063799a27dd87ef754ad1f60fedb3)
 
 ### Fixed
 
