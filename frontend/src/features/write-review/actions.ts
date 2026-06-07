@@ -90,6 +90,8 @@ export async function publishReviewAction(
   }
 
   if (response.status === 201) {
+    // Invalidates BOTH the Pendientes list (the cursada must disappear) and the Mías
+    // list (the new review must appear) via the shared /reviews layout cache.
     revalidatePath('/reviews');
     redirect('/reviews?tab=pending');
   }
