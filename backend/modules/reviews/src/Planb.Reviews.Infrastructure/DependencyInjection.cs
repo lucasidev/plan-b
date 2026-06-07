@@ -26,11 +26,12 @@ public static class DependencyInjection
         services.AddScoped<IReviewsUnitOfWork, ReviewsUnitOfWork>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
-        // Cross-schema reads for US-048 (tab Pendientes + tab Mías). Scoped to match the
-        // request lifetime; the Dapper services open their own connection per call so there
-        // is no shared state to leak across calls.
+        // Cross-schema reads for US-048 (tabs Pendientes, Mías and Explorar). Scoped to
+        // match the request lifetime; the Dapper services open their own connection per
+        // call so there is no shared state to leak across calls.
         services.AddScoped<IPendingReviewsQueryService, DapperPendingReviewsQueryService>();
         services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
+        services.AddScoped<IBrowseReviewsQueryService, DapperBrowseReviewsQueryService>();
 
         // Singleton: compila los regex una sola vez.
         services.AddSingleton<IReviewContentFilter, RegexReviewContentFilter>();
