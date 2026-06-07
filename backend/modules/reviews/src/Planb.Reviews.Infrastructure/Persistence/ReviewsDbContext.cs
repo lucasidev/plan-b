@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Planb.Reviews.Domain.AuditLog;
 using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Infrastructure.Persistence.Configurations;
 
@@ -9,6 +10,7 @@ public sealed class ReviewsDbContext : DbContext
     public const string SchemaName = "reviews";
 
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<ReviewAuditLog> AuditLog => Set<ReviewAuditLog>();
 
     public ReviewsDbContext(DbContextOptions<ReviewsDbContext> options) : base(options) { }
 
@@ -17,5 +19,6 @@ public sealed class ReviewsDbContext : DbContext
         modelBuilder.HasDefaultSchema(SchemaName);
         modelBuilder.HasPostgresExtension("vector");
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewAuditLogConfiguration());
     }
 }

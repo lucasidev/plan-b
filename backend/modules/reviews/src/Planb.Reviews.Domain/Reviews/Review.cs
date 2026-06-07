@@ -103,4 +103,87 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
         return Result.Success(review);
     }
+
+    /// <summary>
+    /// Mutates the aggregate state for US-018 (edit). The caller (handler) is responsible
+    /// for:
+    /// <list type="bullet">
+    ///   <item>Authoritative ownership check (StudentProfile of the enrollment matches the
+    ///         current user).</item>
+    ///   <item>Cooldown enforcement (max 5 edits per 24h).</item>
+    ///   <item>Re-running the content filter on the new texts and passing the resulting
+    ///         status as <paramref name="statusAfter"/>.</item>
+    ///   <item>Writing the audit log entry with the diff.</item>
+    /// </list>
+    ///
+    /// <para>
+    /// This method enforces only the domain rule: edits are allowed exclusively from
+    /// <see cref="ReviewStatus.Published"/> (ADR-0012). UnderReview reviews wait for the
+    /// moderator; Removed reviews are sealed; Deleted reviews are gone for the author.
+    /// </para>
+    ///
+    /// <para>
+    /// All field parameters are nullable to support partial updates. A <c>null</c> field
+    /// means "leave it as is"; a non-null field overwrites the current value (passing the
+    /// existing value as-is is a no-op, the diff in the audit log will be empty for that
+    /// field). The "at least one text" invariant is re-checked after the patch is applied.
+    /// </para>
+    /// </summary>
+    public Result Edit(
+        DifficultyRating? newDifficultyRating,
+        ReviewText? newSubjectText,
+        bool subjectTextProvided,
+        ReviewText? newTeacherText,
+        bool teacherTextProvided,
+        FinalGrade? newFinalGrade,
+        bool finalGradeProvided,
+        ReviewStatus statusAfter,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewStatus.Published)
+        {
+            return Result.Failure(ReviewErrors.InvalidStatusTransition);
+        }
+
+        if (statusAfter is not (ReviewStatus.Published or ReviewStatus.UnderReview))
+        {
+            throw new ArgumentException(
+                $"Status after edit must be Published or UnderReview, got {statusAfter}.",
+                nameof(statusAfter));
+        }
+
+        // Apply the patch tentatively to local snapshots so we can validate the post-patch
+        // state before mutating the aggregate.
+        var nextDifficulty = newDifficultyRating ?? DifficultyRating;
+        var nextSubjectText = subjectTextProvided ? newSubjectText : SubjectText;
+        var nextTeacherText = teacherTextProvided ? newTeacherText : TeacherText;
+        var nextFinalGrade = finalGradeProvided ? newFinalGrade : FinalGrade;
+
+        if (nextSubjectText is null && nextTeacherText is null)
+        {
+            return Result.Failure(ReviewErrors.AtLeastOneTextRequired);
+        }
+
+        var statusBefore = Status;
+        var now = clock.UtcNow;
+
+        DifficultyRating = nextDifficulty;
+        SubjectText = nextSubjectText;
+        TeacherText = nextTeacherText;
+        FinalGrade = nextFinalGrade;
+        Status = statusAfter;
+        UpdatedAt = now;
+
+        Raise(new ReviewEditedDomainEvent(
+            Id,
+            EnrollmentId,
+            DocenteResenadoId,
+            statusBefore,
+            statusAfter,
+            now));
+
+        return Result.Success();
+    }
 }
