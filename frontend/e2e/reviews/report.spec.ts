@@ -37,12 +37,17 @@ const TERMS = [
   '00000005-0000-4000-a000-000000000006',
 ];
 
+/**
+ * Sign in and wait to leave /sign-in. Does NOT assert a specific landing page: a member
+ * with a profile lands on /home, one without (Mateo on a clean DB) is bounced to
+ * /onboarding. Callers that need the member shell create a profile via API afterwards.
+ */
 async function signIn(page: import('@playwright/test').Page, persona: typeof LUCIA) {
   await page.goto('/sign-in');
   await page.getByLabel(/tu email/i).fill(persona.email);
   await page.getByLabel(/^contraseña$/i).fill(persona.password);
   await page.getByRole('button', { name: /^entrar$/i }).click();
-  await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+  await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
 test.describe('Reseñas · reportar (US-019)', () => {

@@ -99,7 +99,11 @@ test.describe('Reseñas · borrar (US-055)', () => {
     await expect(dialog.getByText(/acción permanente/i)).toBeVisible();
     await dialog.getByRole('button', { name: /^borrar reseña$/i }).click();
 
-    // The review disappears from the list.
-    await expect(list.getByText(reviewText)).toHaveCount(0, { timeout: 15_000 });
+    // Success path: the modal closes first (proves the delete resolved), then the card's
+    // <li> detaches once the list refetches. We assert the specific card, not any text in
+    // the list, because the modal preview also contains the review text (the <dialog> lives
+    // inside the <li>) and would double-count mid-transition.
+    await expect(dialog).toHaveCount(0, { timeout: 20_000 });
+    await expect(card).toHaveCount(0, { timeout: 15_000 });
   });
 });
