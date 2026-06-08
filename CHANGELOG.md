@@ -63,6 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - editor en /reviews/edit/[reviewId] + acción PATCH lossy (US-018) (reviews) — [`e042eae`](https://github.com/lucasidev/plan-b/commit/e042eae90cd9eb3ab78afddbb26348b248b05b9b)
 - DELETE /api/me/reviews/{id} soft delete + re-proyección de reads (US-055 (reviews) — [`1be47f9`](https://github.com/lucasidev/plan-b/commit/1be47f9005133c9ef3eb97a24457b68236b77044)
 - modal de borrado + trigger en Mías y editor (US-055) (reviews) — [`246e82a`](https://github.com/lucasidev/plan-b/commit/246e82a7576a323ddf91a3268da216c811f55230)
+- POST /api/reviews/{id}/reports + auto-quarantine cross-module (US-019) (moderation) — [`fb311e2`](https://github.com/lucasidev/plan-b/commit/fb311e2ba99b80afbc926373c202b973b7d0fe50)
+- modal de reporte en feed Explorar + features/report-review (US-019) (reviews) — [`fc5d6c3`](https://github.com/lucasidev/plan-b/commit/fc5d6c358bc5436940e9e93719fe1de36897b170)
 
 ### Fixed
 
@@ -99,6 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - breadcrumb amigable para /resenas/escribir/[cursadaId] (member-shell) — [`d68c15c`](https://github.com/lucasidev/plan-b/commit/d68c15c6b9eed368df3ce39dbab14655379b6f76)
 - selectores robustos en el spec del editor (e2e) — [`5e33eec`](https://github.com/lucasidev/plan-b/commit/5e33eec7a80e23bc3a13af6cb7e1d604efc26c62)
 - pending spec retries (subject, term) pairs hasta encontrar uno libre (e2e) — [`f36479c`](https://github.com/lucasidev/plan-b/commit/f36479cce5bf33b5f5552fcd61892a29adddf59c)
+- report spec maneja onboarding de Mateo + delete spec asserta detach del  (e2e) — [`0d3b5df`](https://github.com/lucasidev/plan-b/commit/0d3b5df45acfa550a94c246c6115dc327464c2b6)
+- badge de pendientes solo fetchea client-side (evita crash SSR de URL rel (reviews) — [`46177b2`](https://github.com/lucasidev/plan-b/commit/46177b283ea655a11316a0aa059def4bc716349c)
 
 ### Changed
 
