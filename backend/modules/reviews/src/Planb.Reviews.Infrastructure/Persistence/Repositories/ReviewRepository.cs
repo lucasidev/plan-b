@@ -16,10 +16,15 @@ internal sealed class ReviewRepository : IReviewRepository
         _db.Reviews.FirstOrDefaultAsync(r => r.Id == id, ct);
 
     /// <summary>
-    /// Idempotency soft del handler de publicar: si ya hay reseña para este enrollment,
+    /// Idempotency soft del handler de publicar: si ya hay reseña viva para este enrollment,
     /// el handler devuelve <c>ReviewErrors.AlreadyExistsForEnrollment</c> sin tocar nada.
-    /// El UNIQUE index en DB es el cinturón de seguridad para casos de race.
+    /// El UNIQUE index parcial en DB es el cinturón de seguridad para casos de race.
+    ///
+    /// Excluye reseñas soft-deleted (US-055): si el autor borró su reseña, la cursada
+    /// reaparece en Pendientes y puede reseñarla de nuevo. Una review <c>Deleted</c> no
+    /// bloquea la creación de una nueva para el mismo enrollment.
     /// </summary>
     public Task<Review?> FindByEnrollmentIdAsync(Guid enrollmentId, CancellationToken ct = default) =>
-        _db.Reviews.FirstOrDefaultAsync(r => r.EnrollmentId == enrollmentId, ct);
+        _db.Reviews.FirstOrDefaultAsync(
+            r => r.EnrollmentId == enrollmentId && r.Status != ReviewStatus.Deleted, ct);
 }

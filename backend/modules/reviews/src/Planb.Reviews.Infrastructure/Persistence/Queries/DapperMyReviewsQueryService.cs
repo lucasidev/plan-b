@@ -56,6 +56,7 @@ internal sealed class DapperMyReviewsQueryService : IMyReviewsQueryService
             JOIN academic.subjects s
               ON s.id = er.subject_id
             WHERE er.student_profile_id = @StudentProfileId
+              AND r.status <> 'Deleted'
             ORDER BY r.created_at DESC;";
 
         const string statsSql = @"
@@ -66,6 +67,7 @@ internal sealed class DapperMyReviewsQueryService : IMyReviewsQueryService
             JOIN enrollments.enrollment_records er
               ON er.id = r.enrollment_id
             WHERE er.student_profile_id = @StudentProfileId
+              AND r.status <> 'Deleted'
             GROUP BY r.status;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
