@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Reviews.Application.Abstractions.ContentFilter;
 using Planb.Reviews.Application.Abstractions.Persistence;
+using Planb.Reviews.Application.Contracts;
 using Planb.Reviews.Infrastructure.ContentFilter;
 using Planb.Reviews.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence.Queries;
@@ -33,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<IPendingReviewsQueryService, DapperPendingReviewsQueryService>();
         services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
         services.AddScoped<IBrowseReviewsQueryService, DapperBrowseReviewsQueryService>();
+
+        // Cross-BC contract consumed by Moderation (US-019) to resolve a review's author.
+        services.AddScoped<IReviewQueryService, DapperReviewQueryService>();
 
         // Singleton: compila los regex una sola vez.
         services.AddSingleton<IReviewContentFilter, RegexReviewContentFilter>();

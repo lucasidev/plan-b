@@ -11,5 +11,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Moderation.Domain\Planb.Moderation.Domain.csproj" />
+    <!-- Cross-BC (US-019): IReviewQueryService for author lookup + the Reviews-owned
+         ReviewQuarantineRequested event to publish. Moderation -> Reviews only; Reviews
+         never references Moderation, so the assembly graph stays acyclic. -->
+    <ProjectReference Include="..\..\..\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
+    <!-- IRateLimiter (per-reporter throttle) + IIdentityQueryService if needed. -->
+    <ProjectReference Include="..\..\..\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
   </ItemGroup>
 </Project>
