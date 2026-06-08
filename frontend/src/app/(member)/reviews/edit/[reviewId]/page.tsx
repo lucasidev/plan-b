@@ -47,6 +47,13 @@ export default async function EditReviewPage({ params }: { params: Params }) {
         difficulty: review.difficultyRating,
         text: review.subjectText ?? undefined,
       }}
+      deleteTarget={{
+        id: review.id,
+        subjectCode: review.subjectCode,
+        subjectName: review.subjectName,
+        difficultyRating: review.difficultyRating,
+        subjectText: review.subjectText,
+      }}
     />
   );
 }

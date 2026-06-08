@@ -2,6 +2,7 @@
 
 import { useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { DeleteReviewModal } from '@/features/delete-review';
 import { cn } from '@/lib/utils';
 import { myReviewsQueries } from '../api';
 import type { MyReview, ReviewStatus } from '../types';
@@ -87,9 +88,17 @@ function MyReviewCard({ review }: { review: MyReview }) {
               No editable
             </span>
           )}
-          <span className="text-[12px] text-ink-4" title="Borrar llega con US-055">
-            Borrar próximamente
-          </span>
+          {review.status !== 'Removed' && (
+            <DeleteReviewModal
+              review={{
+                id: review.id,
+                subjectCode: review.subjectCode,
+                subjectName: review.subjectName,
+                difficultyRating: review.difficultyRating,
+                subjectText: review.subjectText,
+              }}
+            />
+          )}
         </div>
       </article>
     </li>

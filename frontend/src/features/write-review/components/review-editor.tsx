@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom';
 
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Lede } from '@/components/ui/lede';
+import { type DeletableReview, DeleteReviewModal } from '@/features/delete-review';
 import { publishReviewAction } from '../actions';
 import { MOCK_ANONYMOUS_IDENTITY } from '../data/mocks';
 import { REVIEW_FORM_DEFAULTS, reviewFormSchema } from '../schema';
@@ -85,6 +86,12 @@ type Props = {
    * in <c>edit</c> mode it is the review id. The default keeps the publish flow intact.
    */
   idFieldName?: 'enrollmentId' | 'reviewId';
+  /**
+   * When set (edit mode), renders a "Borrar" trigger in the header that opens the
+   * delete-review modal (US-055). Carries the real review data for the modal preview, so
+   * it is the edit page (which fetched the review) that supplies it, not the mock context.
+   */
+  deleteTarget?: DeletableReview;
 };
 
 export function ReviewEditor({
@@ -95,6 +102,7 @@ export function ReviewEditor({
   submitAction = publishReviewAction,
   submitInitialState = PUBLISH_REVIEW_INITIAL_STATE,
   idFieldName = 'enrollmentId',
+  deleteTarget,
 }: Props) {
   const [draft, setDraft] = useState<ReviewDraft>({
     ...REVIEW_FORM_DEFAULTS,
@@ -158,16 +166,19 @@ export function ReviewEditor({
           </Lede>
         </div>
 
-        <form action={formAction} className="flex items-center gap-2">
-          <input type="hidden" name={idFieldName} value={enrollmentId} />
-          <input type="hidden" name="payload" value={JSON.stringify(draft)} />
-          {mode === 'write' && <DraftButton />}
-          <PublishButton
-            disabled={!canPublish || !isValidShape}
-            label={mode === 'edit' ? 'Guardar cambios' : 'Publicar reseña'}
-            pendingLabel={mode === 'edit' ? 'Guardando...' : 'Publicando...'}
-          />
-        </form>
+        <div className="flex items-center gap-2">
+          {mode === 'edit' && deleteTarget && <DeleteReviewModal review={deleteTarget} />}
+          <form action={formAction} className="flex items-center gap-2">
+            <input type="hidden" name={idFieldName} value={enrollmentId} />
+            <input type="hidden" name="payload" value={JSON.stringify(draft)} />
+            {mode === 'write' && <DraftButton />}
+            <PublishButton
+              disabled={!canPublish || !isValidShape}
+              label={mode === 'edit' ? 'Guardar cambios' : 'Publicar reseña'}
+              pendingLabel={mode === 'edit' ? 'Guardando...' : 'Publicando...'}
+            />
+          </form>
+        </div>
       </div>
 
       {state.status === 'error' && (
