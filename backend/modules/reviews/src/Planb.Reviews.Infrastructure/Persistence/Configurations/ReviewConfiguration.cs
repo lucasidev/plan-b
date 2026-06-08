@@ -82,11 +82,23 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasColumnName("updated_at")
             .IsRequired();
 
-        // Una reseña por cursada (idempotency hard a nivel DB). Si el handler no atrapa el
-        // duplicado vía FindByEnrollmentIdAsync, Postgres rebota la INSERT y el caller recibe
-        // un 409. Defensive belt + suspenders.
+        // US-055 soft delete metadata. Nullable while the review is live.
+        builder.Property(r => r.DeletedAt)
+            .HasColumnName("deleted_at");
+
+        builder.Property(r => r.DeletedReason)
+            .HasColumnName("deleted_reason")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        // Una reseña VIVA por cursada (idempotency hard a nivel DB). Índice parcial: solo
+        // aplica a reseñas no-borradas. Así, tras un soft delete (US-055), la cursada puede
+        // reseñarse de nuevo sin chocar con el row borrado que queda para audit. Si el
+        // handler no atrapa el duplicado vía FindByEnrollmentIdAsync, Postgres rebota la
+        // INSERT y el caller recibe un 409. Defensive belt + suspenders.
         builder.HasIndex(r => r.EnrollmentId)
             .IsUnique()
+            .HasFilter("status <> 'Deleted'")
             .HasDatabaseName("ux_reviews_enrollment");
 
         // Read path principal: ver reseñas de un docente (US-052 / US-053).

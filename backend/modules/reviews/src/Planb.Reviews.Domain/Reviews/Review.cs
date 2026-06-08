@@ -36,6 +36,18 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
 
+    /// <summary>
+    /// US-055 soft delete. Null while the review is live. When the author deletes it the
+    /// row is kept (for audit + orphan TeacherResponse handling) and these are stamped.
+    /// </summary>
+    public DateTimeOffset? DeletedAt { get; private set; }
+
+    /// <summary>
+    /// Who/why the review was deleted. <c>self</c> for the author (US-055); future values
+    /// (e.g. <c>moderator</c>) land with US-051. Stored as text.
+    /// </summary>
+    public ReviewDeletedReason? DeletedReason { get; private set; }
+
     private Review() { }
 
     /// <summary>
@@ -185,5 +197,50 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             now));
 
         return Result.Success();
+    }
+
+    /// <summary>
+    /// Soft delete by the author (US-055). Idempotent: deleting an already-deleted review
+    /// returns success without re-stamping (so a retry does not move the timestamp). The
+    /// row is preserved; only the status + delete metadata change, which removes the review
+    /// from every public read (feed, rankings) and from the author's own listing.
+    ///
+    /// <para>
+    /// Allowed from <see cref="ReviewStatus.Published"/> and <see cref="ReviewStatus.UnderReview"/>
+    /// per the US-055 AC. A <see cref="ReviewStatus.Removed"/> review was taken down by a
+    /// moderator, so the author self-delete does not apply (the caller maps that to a
+    /// no-op-style conflict if it ever reaches here).
+    /// </para>
+    ///
+    /// Returns <c>true</c> when this call performed the deletion, <c>false</c> when it was
+    /// already deleted (idempotent path). The handler uses this to decide whether to write
+    /// an audit log entry + raise the integration event.
+    /// </summary>
+    public bool Delete(ReviewDeletedReason reason, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status == ReviewStatus.Deleted)
+        {
+            return false;
+        }
+
+        var now = clock.UtcNow;
+        var statusBefore = Status;
+
+        Status = ReviewStatus.Deleted;
+        DeletedAt = now;
+        DeletedReason = reason;
+        UpdatedAt = now;
+
+        Raise(new ReviewDeletedDomainEvent(
+            Id,
+            EnrollmentId,
+            DocenteResenadoId,
+            statusBefore,
+            reason,
+            now));
+
+        return true;
     }
 }

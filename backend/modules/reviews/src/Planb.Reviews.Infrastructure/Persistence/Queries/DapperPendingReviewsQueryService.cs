@@ -16,7 +16,9 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 ///
 /// Definition of "pending":
 ///   - enrollment.status != 'Cursando' (terminal states: Aprobada, Regular, Reprobada, Abandonada)
-///   - AND no row in reviews.reviews for that enrollment_id
+///   - AND no LIVE review for that enrollment_id. A review soft-deleted by its author
+///     (US-055, status 'Deleted') does not count: the cursada reappears in Pendientes so the
+///     student can review it again.
 ///
 /// Sorting: most recently created enrollment first, so the most recently closed cursadas surface
 /// at the top of the list. Frontend can re-sort later if needed.
@@ -58,6 +60,7 @@ internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQuerySer
               ON t.id = er.term_id
             LEFT JOIN reviews.reviews r
               ON r.enrollment_id = er.id
+             AND r.status <> 'Deleted'
             WHERE er.student_profile_id = @StudentProfileId
               AND er.status <> 'Cursando'
               AND r.id IS NULL
