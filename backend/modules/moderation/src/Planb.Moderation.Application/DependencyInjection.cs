@@ -6,7 +6,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddModerationApplication(this IServiceCollection services)
     {
-        // TODO: Register validators, application services, auto-hide threshold policy (ADR-0010).
+        // Validators are picked up by Wolverine's FluentValidation middleware (assembly
+        // scan in the host); handlers are static + Wolverine-discovered. The auto-hide
+        // threshold is read from configuration per-request (Moderation:AutoHideThreshold),
+        // so nothing to register here yet beyond keeping the entry point.
         return services;
     }
 }

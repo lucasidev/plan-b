@@ -243,4 +243,30 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
         return true;
     }
+
+    /// <summary>
+    /// Auto-quarantine driven by crowd reports (US-019). When the open report count for a
+    /// review crosses the configurable threshold (ADR-0010), Moderation publishes a
+    /// quarantine request that the Reviews consumer applies through this method.
+    ///
+    /// Idempotent and narrow: only a <see cref="ReviewStatus.Published"/> review moves to
+    /// <see cref="ReviewStatus.UnderReview"/>. A review already UnderReview, Removed, or
+    /// Deleted is left untouched (returns <c>false</c>) so repeated threshold events or a
+    /// race do not thrash the status. No domain event is raised: the consumer writes the
+    /// audit-log entry, and re-raising the publish-time ReviewQuarantined event would risk
+    /// a feedback loop.
+    /// </summary>
+    public bool QuarantineByReports(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewStatus.Published)
+        {
+            return false;
+        }
+
+        Status = ReviewStatus.UnderReview;
+        UpdatedAt = clock.UtcNow;
+        return true;
+    }
 }

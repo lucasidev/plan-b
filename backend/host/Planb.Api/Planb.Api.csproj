@@ -30,6 +30,8 @@
     <ProjectReference Include="..\..\modules\enrollments\src\Planb.Enrollments.Infrastructure\Planb.Enrollments.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
     <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Infrastructure\Planb.Reviews.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Application\Planb.Moderation.Application.csproj" />
+    <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Infrastructure\Planb.Moderation.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

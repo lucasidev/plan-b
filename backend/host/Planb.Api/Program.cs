@@ -12,6 +12,8 @@ using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Security;
+using Planb.Moderation.Application;
+using Planb.Moderation.Infrastructure;
 using Planb.Reviews.Application;
 using Planb.Reviews.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -90,6 +92,10 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Reviews.Infrastructu
     Planb.Reviews.Infrastructure.DependencyInjection.ConfigureReviewsDbContext(
         opts, connectionString));
 
+builder.Services.AddDbContextWithWolverineIntegration<Planb.Moderation.Infrastructure.Persistence.ModerationDbContext>(opts =>
+    Planb.Moderation.Infrastructure.DependencyInjection.ConfigureModerationDbContext(
+        opts, connectionString));
+
 // ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox + FluentValidation middleware)
 // ------------------------------------------------------------------
@@ -100,6 +106,7 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Planb.Academic.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Enrollments.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Reviews.Application.DependencyInjection).Assembly);
+    opts.Discovery.IncludeAssembly(typeof(Planb.Moderation.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
@@ -143,6 +150,9 @@ builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 
 builder.Services.AddReviewsApplication(builder.Configuration);
 builder.Services.AddReviewsInfrastructure(builder.Configuration);
+
+builder.Services.AddModerationApplication();
+builder.Services.AddModerationInfrastructure(builder.Configuration);
 
 // JwtBearer middleware (cierre del workaround pre-JWT). Endpoints /api/me/* leen el UserId
 // del claim `sub` validado por este middleware, no del body/query. Token llega desde el
