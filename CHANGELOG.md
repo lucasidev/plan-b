@@ -61,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - tab Explorar funcional + features/browse-reviews + E2E (US-048 PR-C) (reviews) — [`7c15722`](https://github.com/lucasidev/plan-b/commit/7c1572200e2419e26212686b7048aa9fe980060c)
 - PATCH /api/me/reviews/{id} con audit log + cooldown + filter re-run (US- (reviews) — [`df8b44b`](https://github.com/lucasidev/plan-b/commit/df8b44bfd0d702a2ee21d87ed85158c64c84bda9)
 - editor en /reviews/edit/[reviewId] + acción PATCH lossy (US-018) (reviews) — [`e042eae`](https://github.com/lucasidev/plan-b/commit/e042eae90cd9eb3ab78afddbb26348b248b05b9b)
+- DELETE /api/me/reviews/{id} soft delete + re-proyección de reads (US-055 (reviews) — [`1be47f9`](https://github.com/lucasidev/plan-b/commit/1be47f9005133c9ef3eb97a24457b68236b77044)
+- modal de borrado + trigger en Mías y editor (US-055) (reviews) — [`246e82a`](https://github.com/lucasidev/plan-b/commit/246e82a7576a323ddf91a3268da216c811f55230)
 
 ### Fixed
 
