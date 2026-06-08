@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { pendingReviewsQueries } from '@/features/pending-reviews';
 import { breadcrumbsForPath } from '@/lib/member-shell';
 
@@ -47,11 +47,24 @@ export function Topbar() {
  * The link points to `/reviews?tab=pending`: that is the natural source ("pick the
  * cursada to review"). When there are no pendings the user lands on the empty state
  * and the badge disappears.
+ *
+ * Client-only fetch: the topbar lives in the member layout, outside any page's RSC
+ * prefetch + HydrationBoundary, so this query is never hydrated. The queryFn uses a
+ * relative URL (`/api/...`) that only resolves in the browser. Under
+ * ReactQueryStreamedHydration a plain useQuery would otherwise execute server-side during
+ * SSR and throw "Failed to parse URL" (no base, no cookie), which intermittently broke the
+ * RSC render of the page being navigated to. Gating on a mounted flag keeps the fetch on
+ * the client. Hydration-safe: server and the first client render both see enabled=false
+ * (no badge); the effect flips it after mount.
  */
 function WriteReviewButton() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const { data } = useQuery({
     ...pendingReviewsQueries.list(),
     staleTime: 30 * 1000,
+    enabled: mounted,
   });
   const count = data?.items.length ?? 0;
 
