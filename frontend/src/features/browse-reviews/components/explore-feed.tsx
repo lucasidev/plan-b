@@ -1,6 +1,7 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { ReportReviewModal } from '@/features/report-review';
 import { cn } from '@/lib/utils';
 import { browseReviewsQueries } from '../api';
 import type { BrowseReview, BrowseReviewsFilters } from '../types';
@@ -96,6 +97,10 @@ function BrowseCard({ review }: { review: BrowseReview }) {
             {review.subjectText}
           </p>
         )}
+
+        <div className="flex justify-end">
+          <ReportReviewModal review={{ id: review.id }} />
+        </div>
       </article>
     </li>
   );
