@@ -148,6 +148,23 @@ O desde el action con `revalidatePath`/`revalidateTag`.
 
 Ver [ADR-0021](../docs/decisions/0021-data-fetching-rsc-tanstack-query.md).
 
+### Client fetcher vs server fetcher (regla dura)
+
+Hay dos caminos para pegarle al backend y **no se cruzan**:
+
+| | Path | Cookie | Dónde corre |
+|---|---|---|---|
+| **`api.ts`** (client fetcher) | relativo `/api/...` via `clientApiFetch` | la pega el browser (same-origin, Next rewrite) | **solo browser** |
+| **`api.server.ts`** (server fetcher) | absoluto via `apiFetchAuthenticated` | forward de `planb_session` con `next/headers` | **solo server** (RSC prefetch / Server Actions) |
+
+**Invariante: los `queryFn` de `api.ts` NUNCA corren server-side.** Un path relativo no tiene origin en Node, así que un `fetch('/api/...')` crudo durante SSR tira `TypeError: Failed to parse URL from /api/...` y rompe la RSC de la página. Esto pasa cuando un `useQuery`/`useSuspenseQuery` ejecuta su `queryFn` server-side bajo `ReactQueryStreamedHydration` porque su data **no** quedó prefetcheada+hidratada.
+
+Cómo lo respetamos:
+
+- **Todo fetcher client va por `clientApiFetch`** (`lib/api-client.ts`), nunca `fetch('/api...')` crudo. Si llega a correr server-side, falla rápido con un error que nombra el path y el fix, en vez del críptico Invalid URL.
+- **Para leer la misma data en el server**, prefetcheá en la página con el `fetchXServer` de `api.server.ts` (seedeando el mismo `queryKey`) y envolvé en `<HydrationBoundary>`. Patrón en `app/(member)/reviews/page.tsx`.
+- **Si la query vive fuera de cualquier `HydrationBoundary`** (ej. en un layout, como el badge del topbar), gateala con un flag `mounted` (`enabled: mounted`) para que solo corra en el cliente. Ver `components/layout/topbar.tsx`.
+
 ## Forms
 
 - **Simples (1-3 fields)**: React 19 primitives. `<form action={serverAction}>` + `useActionState` + `useFormStatus` + `useOptimistic`.

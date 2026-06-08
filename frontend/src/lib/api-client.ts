@@ -23,3 +23,31 @@ export async function apiFetch(path: string, init?: RequestInit) {
   });
   return response;
 }
+
+/**
+ * Browser-only fetch against a **relative** `/api/...` path. The user-agent resolves the
+ * path against the page origin and the Next.js rewrite proxies it to the backend, so the
+ * session cookie rides along automatically (no forwarding needed).
+ *
+ * Use this for the client fetchers in `features/<feature>/api.ts` (the `queryFn` of a
+ * `useQuery` / `useSuspenseQuery`). Those modules are imported by `'use client'`
+ * components, which Next.js still renders on the server during SSR. Under
+ * `ReactQueryStreamedHydration`, a query whose data was NOT prefetched + hydrated runs its
+ * `queryFn` server-side. A relative URL has no origin in Node, so a raw `fetch('/api/...')`
+ * throws the cryptic `TypeError: Failed to parse URL from /api/...`, which intermittently
+ * broke the RSC render of the page being navigated to.
+ *
+ * This wrapper guards the implicit invariant (client fetchers must never run on the server)
+ * by failing fast with an actionable message instead. To read the same data server-side,
+ * prefetch + hydrate through the feature's `api.server.ts` (`apiFetchAuthenticated`), or
+ * gate the consuming query with a mounted flag so it stays on the client (see
+ * `components/layout/topbar.tsx`).
+ */
+export function clientApiFetch(path: string, init?: RequestInit): Promise<Response> {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      `clientApiFetch ran on the server (path "${path}"). Relative /api paths only resolve in the browser: prefetch + hydrate via the feature api.server.ts (apiFetchAuthenticated), or gate the query with a mounted flag so it runs client-only.`,
+    );
+  }
+  return fetch(path, init);
+}

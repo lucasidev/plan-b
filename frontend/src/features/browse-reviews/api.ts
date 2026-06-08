@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { BrowseReviewsFilters, BrowseReviewsResponse } from './types';
 
 const PAGE_SIZE = 20;
@@ -13,7 +14,7 @@ function buildSearchParams(filters: BrowseReviewsFilters): string {
 
 async function fetchBrowseReviews(filters: BrowseReviewsFilters): Promise<BrowseReviewsResponse> {
   const qs = buildSearchParams(filters);
-  const response = await fetch(`/api/reviews?${qs}`, { cache: 'no-store' });
+  const response = await clientApiFetch(`/api/reviews?${qs}`, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Browse reviews fetch failed: ${response.status}`);
   }
