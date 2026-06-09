@@ -161,7 +161,7 @@ Hay dos caminos para pegarle al backend y **no se cruzan**:
 
 Cómo lo respetamos:
 
-- **Todo fetcher client va por `clientApiFetch`** (`lib/api-client.ts`), nunca `fetch('/api...')` crudo. Si llega a correr server-side, falla rápido con un error que nombra el path y el fix, en vez del críptico Invalid URL.
+- **Todo fetcher client va por `clientApiFetch`** (`lib/api-client.ts`), nunca `fetch('/api...')` crudo. Si llega a correr server-side, **loguea** un error descriptivo que nombra el path y el fix, y deja que el fetch falle como siempre. No tira: ese rechazo server-side lo tolera el framework (React Query refetchea en el cliente vía `fetchOptimistic`), así que un `throw` lo escalaría a un error fatal de RSC en vez de arreglar nada.
 - **Para leer la misma data en el server**, prefetcheá en la página con el `fetchXServer` de `api.server.ts` (seedeando el mismo `queryKey`) y envolvé en `<HydrationBoundary>`. Patrón en `app/(member)/reviews/page.tsx`.
 - **Si la query vive fuera de cualquier `HydrationBoundary`** (ej. en un layout, como el badge del topbar), gateala con un flag `mounted` (`enabled: mounted`) para que solo corra en el cliente. Ver `components/layout/topbar.tsx`.
 

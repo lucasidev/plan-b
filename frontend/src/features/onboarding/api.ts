@@ -10,8 +10,8 @@ import type { Career, CareerPlan, University } from './types';
  * `apiFetch` with the absolute NEXT_PUBLIC_API_URL) because they run client-side from the
  * browser. The Next rewrite (next.config.ts) proxies the requests to the backend, so they
  * end up same-origin and we sidestep CORS without touching the backend. `clientApiFetch`
- * also fails fast if one of these ever runs server-side (relative URLs have no origin in
- * Node); see its doc in `lib/api-client.ts`.
+ * also logs a descriptive error (without crashing the render) if one of these ever runs
+ * server-side (relative URLs have no origin in Node); see its doc in `lib/api-client.ts`.
  *
  * Conventions (frontend/CLAUDE.md):
  *   - Every queryKey starts with the feature namespace (`['onboarding', ...]`).
