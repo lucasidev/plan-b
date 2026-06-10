@@ -18,7 +18,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
 | S4 | 2026-05-18 a 2026-05-24 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b + **US-038-bis bonus** (soft delete con anonimización, ADR-0044) + chore técnico react-doctor cleanup + pre-push hook. | ✓ Done |
 | S5 | 2026-05-25 a 2026-06-08 (extendido) | **Slice de Reseñas (feature core del producto crowdsourced)**: US-017 publicar backend + US-049 editor 6 campos + US-048 shell 3 tabs + US-018 editar + US-055 borrar + US-019 reportar con módulo Moderation + auto-quarantine. Entraron las 6, incluida US-019 que era la diferible. | ✓ Done |
-| S6 | 2026-06-09 a 2026-06-13 | **Corpus consumible + moderación**: páginas públicas de materia/docente con reseñas + crowd insights (US-002/US-003, requiere rework del mapping lossy) + búsqueda de catálogo (US-004) + resolver cuarentenas de US-019 (US-051/US-052). Arranca con audit de malas prácticas + triage de deuda a US. | 🟡 Open |
+| S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda. Más US-T07-b (architecture tests a todos los módulos). US-003 (bloqueada por Teacher US-063) y la cola de moderación diferidas a S7. | 🟡 Open |
 | S7+ | next+ | Backlog post-canvas v2 + admin (US-054-f, US-059-f, US-070..071, US-076-f, US-077-f + b/b-1/b-2/b-3, US-078-f, US-081..087). Notifications BC (US-077-b-1/2/3) cuando aterrice. Admin module bloqueado por US-081 (shell + dashboard ops) que es prerequisito hard. | ⏳ Pendiente |
 
 Convenciones:
@@ -318,7 +318,7 @@ Decisión: redactar [ADR-0044](decisions/0044-soft-delete-del-user-con-preservac
 
 ## S5 ✓ Done
 
-**Rango**: 2026-05-25 a 2026-06-08 (planificado a 2026-05-30; US-017/049 cerraron en la semana planificada, el resto del slice entre el 2026-06-05 y el 2026-06-08, con una pausa sin commits del 2026-05-31 al 2026-06-04). El refactor de cierre #147 mergeó el 2026-06-09.
+**Rango**: 2026-05-25 a 2026-06-08 (planificado a 2026-05-30; US-017/049 cerraron en la semana planificada, el resto del slice entre el 2026-06-05 y el 2026-06-08, con una pausa sin commits del 2026-05-31 al 2026-06-04). El PR de cierre #147 (guarda `clientApiFetch` + fix de server actions en prod) mergeó el 2026-06-09.
 
 **Foco**: **slice de reseñas, el feature core del producto crowdsourced**. S0-S4 cerraron toda la infraestructura del alumno pero el corpus estaba vacío. S5 cerró el loop end-to-end: publicar / explorar / editar / borrar / reportar.
 
@@ -338,7 +338,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 ### Extras que entraron en el sprint
 
 - **PR #137**: refactor frontend de rutas + features + identifiers a inglés (cleanup S2-S5). Cierra la deuda de rutas en español (`/resenas` → `/reviews`).
-- **PR #147**: guarda en `clientApiFetch` que falla explícito si un fetcher client-side corre en SSR. Generaliza el hotfix del badge de pendientes (crash SSR por URL relativa, hotfix dentro de #143).
+- **PR #147**: dos fixes. (1) Guarda en `clientApiFetch` que falla explícito si un fetcher client-side corre en SSR; generaliza el hotfix del badge de pendientes (crash SSR por URL relativa, hotfix dentro de #143) e incluye el caso add-enrollment que faltaba. (2) Fix del cuelgue intermitente de server actions en build de prod: el render inline que metían `revalidatePath`/`redirect` en la respuesta del action estancaba el stream; los actions de publish/edit/delete pasaron a mutaciones puras y el cliente invalida + navega. Verificado con repro estadístico en build de prod local: 10/10 contra baseline de 81% de falla.
 - **PR #133**: `append-changelog` tolera force pushes.
 - **PR #136**: Dependabot backend minor/patch.
 
@@ -357,9 +357,9 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 
 **Quedó débil**:
 - **Cadencia**: el sprint de 6 días útiles tomó 2 semanas calendario. La pausa fue externa al proyecto, pero el cierre formal quedó stale: este doc decía "Open" con el slice ya mergeado.
-- **Bug que llegó a main**: el badge de pendientes crasheaba el SSR (URL relativa en fetcher client-side). Hotfix dentro de #143 + guarda generalizada en #147.
-- **Mapping lossy del editor**: publish/edit solo persisten dificultad + texto; rating, horas semanales, tags y recomendaciones se descartan (decisión intencional de US-048 para cerrar el flow E2E). Bloquea los crowd insights de S6: el rework convierte esa deuda en valor.
-- **Deuda menor anotada para el triage de S6**: badge "editada tras respuesta docente", conteos reales en el modal de borrar, ADR del patrón cross-module Reviews↔Moderation (auto-quarantine), visual review de modales.
+- **Bugs que llegaron a main**: el badge de pendientes crasheaba el SSR (URL relativa en fetcher client-side; hotfix dentro de #143 + guarda generalizada en #147) y el cuelgue intermitente de server actions en build de prod (fix en #147).
+- **Mapping lossy del editor**: publish/edit solo persisten dificultad + texto; rating, horas semanales, tags y recomendaciones se descartan (decisión intencional de US-048 para cerrar el flow E2E). Bloquea los crowd insights: el triage de arranque de S6 lo convirtió en US-089.
+- **Deuda anotada al cierre**, triageada en el arranque de S6 (ver tabla de salida del audit en S6): badge "editada tras respuesta docente", conteos reales en el modal de borrar, ADR del patrón cross-module Reviews↔Moderation (auto-quarantine), visual review de modales.
 
 **Salió como esperado**:
 - El orden de ataque (backend base primero, shell después, integraciones al final) funcionó sin bloqueos entre US.
@@ -368,28 +368,45 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 
 ## S6 🟡 Open
 
-**Rango**: 2026-06-09 a 2026-06-13 (martes → sábado; la apertura se corrió un día porque el cierre de S5 terminó el lunes con #143 y el martes con #147).
+**Rango**: 2026-06-15 a 2026-06-20 (lunes → sábado). La semana del 2026-06-10 al 2026-06-13 corre como pre-sprint: housekeeping del audit + docs de las US nuevas.
 
-**Foco**: dos frentes que convierten el corpus de S5 en producto:
+**Foco**: **corpus consumible, lado materia**. El corpus de S5 solo se lee desde el feed Explorar autenticado; S6 lo vuelve consumible del lado lector. Scope core, en orden:
 
-1. **Corpus consumible**: hoy las reseñas solo se leen desde el feed Explorar autenticado. Este frente las hace consumibles donde valen: página pública de materia con sus reseñas + crowd insights agregados ([US-002](domain/user-stories/US-002.md)), página pública de docente ([US-003](domain/user-stories/US-003.md)), búsqueda de materia/docente ([US-004](domain/user-stories/US-004.md)). **Crowd insights requiere el rework del mapping lossy** (persistir rating / horas / tags / recomendaciones que hoy se descartan): la deuda se convierte en valor.
-2. **Cola de moderación**: US-019 genera cuarentenas que hoy nadie puede resolver. [US-051](domain/user-stories/US-051.md) resolver report (uphold / dismiss) + [US-052](domain/user-stories/US-052.md) restaurar reseña removida.
+1. **US-089** (enabler, nueva del triage; doc pendiente): persistir el modelo completo de reseña (rating 1-5, horas/semana, tags, recomendaría cursada / retomaría docente) que hoy el editor descarta por el mapping lossy contra el modelo de US-017. Extiende el aggregate Review + migración; saca el mapping lossy de write-review / edit-review. Va primero: sin esto US-002 no puede mostrar rating promedio. Effort M.
+2. **[US-002](domain/user-stories/US-002.md)**: página de materia con reseñas + agregados (rating promedio, histograma). Effort M.
+3. **[US-004](domain/user-stories/US-004.md)**: buscar materia o docente (Postgres full-text + trigram). Effort M.
 
-### Arranque (día 1)
+Más **US-T07-b** (nueva del triage; doc pendiente): extender architecture tests a los 5 módulos. Red de seguridad barata antes de meter código nuevo.
 
-**Audit de malas prácticas + triage de deuda a US** antes de tocar features: el slice de S5 entró rápido y dejó deuda anotada (ver retro de S5). El triage convierte cada item en US o lo descarta explícito, y define el corte final del sprint.
+### Decisión de scope (anula el plan de dos frentes del cierre de S5, con razón explícita)
 
-### Decisiones abiertas para el triage
+Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audit de arranque lo anuló:
 
-- **Dónde vive la vista de moderación**: el módulo admin está bloqueado por US-081 (shell, prerequisito hard). El triage decide si US-051/052 entran con una vista mínima sin el shell completo o si US-081 se adelanta.
-- **US-050 (cola de reportes, read model + vista)**: prerequisito natural de US-051; el triage define si entra al frente o se recorta.
-- **Alcance del rework lossy**: solo persistir los campos hoy descartados vs. también re-proyectar las reseñas existentes.
+- **US-003 (docente con reseñas) está bloqueada** por el Teacher aggregate (US-063): hoy toda reseña apunta a `PLACEHOLDER_TEACHER_ID`, no hay docentes reales que mostrar. Diferida a S7.
+- **El lado materia ya llena el sprint**: US-089 + US-002 + US-004.
+- **La cola de moderación entera va a S7** (US-050 + US-051 + persona moderador + auth staff): es cabo de US-019 pero no urgente sin usuarios reales generando cuarentenas. Si el jurado UNSTA necesita el demo de moderación como hito institucional, sube de prioridad y se recorta el lado materia.
+- **US-001 (catálogo completo)** también diferida a S7.
+
+### Salida del audit + triage (2026-06-09)
+
+| Item de deuda | Resolución |
+|---|---|
+| Mapping lossy del editor | → US-089 (enabler de S6) |
+| Architecture tests parciales | → US-T07-b (S6) |
+| Fetchers client-side en SSR | → guarda `clientApiFetch` (#147, mergeado) |
+| Badge "editada tras respuesta docente" | → US-040 (responder reseña) |
+| Conteos reales del modal de borrar | → votes + US-040 |
+| ADR del patrón cross-module de auto-quarantine | Pendiente de escribir |
+
+**Housekeeping restante del audit (pre-sprint)**: dedup de `formatRelativeDate`, identifiers castellanos en `commissions.ts`, `OccurredAt` con doble reloj en `CareerPlanImported`, `write.spec` a component test.
+
+**Docs pendientes**: US-089 y US-T07-b existen como tasks en Notion pero todavía no tienen doc en `docs/domain/user-stories/`.
 
 ---
 
 ## Backlog open (sin sprint asignado)
 
-> Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-002 / US-003 / US-004 / US-051 / US-052). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
+> Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-089 / US-002 / US-004 / US-T07-b). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
 
 **Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
 - [US-054-f](domain/user-stories/US-054-f.md) landing pública.
@@ -410,7 +427,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
   - [US-077-b-3](domain/user-stories/US-077-b-3.md): email delivery con SMTP genérico (Mailpit en dev/CI, vendor de prod por env vars en deploy).
 
 **Backend / cross-stack**:
-- US-001 (explorar catálogo de universidades y carreras): aterriza cuando Academic CRUD esté listo. US-002/003/004 viven en S6.
+- US-001 (explorar catálogo de universidades y carreras): diferida a S7 en la apertura de S6. US-002/004 viven en S6; US-003 bloqueada por el Teacher aggregate (US-063), diferida a S7.
 - US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
@@ -431,7 +448,8 @@ US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se 
 - [US-082](domain/user-stories/US-082.md) Importador de plan con preview/diff (CSV).
 - [US-083](domain/user-stories/US-083.md) Merge de Subjects duplicados (detección + merge UI).
 - [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
-- [US-050](domain/user-stories/US-050.md) Cola de reportes (read model + vista del moderator, tone classifier). Candidata a adelantarse: prerequisito natural de US-051, que vive en S6.
+- [US-050](domain/user-stories/US-050.md) Cola de reportes (read model + vista del moderator, tone classifier). Diferida explícitamente a S7 en la apertura de S6, junto con US-051 + persona moderador + auth staff.
+- [US-051](domain/user-stories/US-051.md) Resolver report (uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder). Diferida a S7.
 - [US-053](domain/user-stories/US-053.md) Audit log per-review (proyección Reviews, ADR-0042).
 - [US-068](domain/user-stories/US-068.md) Deshabilitar member + listado/detalle de usuarios con tabs.
 - [US-086](domain/user-stories/US-086.md) Audit log per-user (tab del detalle de usuario, cross-BC via Dapper UNION ALL).
