@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { HistorialImportResponse } from './types';
 
 /**
@@ -6,9 +7,10 @@ import type { HistorialImportResponse } from './types';
  * travels by default from the browser.
  */
 async function fetchHistorialImport(importId: string): Promise<HistorialImportResponse> {
-  const response = await fetch(`/api/me/transcript-imports/${encodeURIComponent(importId)}`, {
-    cache: 'no-store',
-  });
+  const response = await clientApiFetch(
+    `/api/me/transcript-imports/${encodeURIComponent(importId)}`,
+    { cache: 'no-store' },
+  );
   if (!response.ok) {
     throw new Error(`Historial import fetch failed: ${response.status}`);
   }

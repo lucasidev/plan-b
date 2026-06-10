@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { MyReviewsResponse } from './types';
 
 /**
@@ -7,7 +8,7 @@ import type { MyReviewsResponse } from './types';
  * the latest state.
  */
 async function fetchMyReviews(): Promise<MyReviewsResponse> {
-  const response = await fetch('/api/reviews/me', { cache: 'no-store' });
+  const response = await clientApiFetch('/api/reviews/me', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`My reviews fetch failed: ${response.status}`);
   }

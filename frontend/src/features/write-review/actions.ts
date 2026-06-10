@@ -1,7 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import { reviewFormSchema } from './schema';
@@ -29,12 +27,14 @@ const PLACEHOLDER_TEACHER_ID = '11111111-1111-1111-1111-111111111111';
  * extends the `Review` aggregate + table; until then the editor stores them in browser
  * state only.
  *
- * The lossy decision is intentional for PR-A of US-048: the goal of this slice is to
- * close the e2e flow (see pending → click → write → publish → cursada disappears from
- * pending). Persisting every editor field is scope for a separate US.
+ * The lossy decision is intentional (US-048): the goal was to close the e2e flow
+ * (pending → click → write → publish → cursada disappears from pending). Persisting
+ * every editor field is US-089.
  *
- * After a 201 we revalidate `/reviews` (the pending list is server-rendered) and
- * redirect to the Pendientes tab so the student observes the cursada disappearing.
+ * On a 201 this returns `{ status: 'success' }` and nothing else: no `revalidatePath`,
+ * no `redirect()`. The editor reacts client-side (invalidate + router.push). See the
+ * comment at the 201 branch for why inlining a re-render into the action response is
+ * not safe in this app.
  */
 export async function publishReviewAction(
   _prev: PublishReviewResult,
@@ -90,10 +90,17 @@ export async function publishReviewAction(
   }
 
   if (response.status === 201) {
-    // Invalidates BOTH the Pendientes list (the cursada must disappear) and the Mías
-    // list (the new review must appear) via the shared /reviews layout cache.
-    revalidatePath('/reviews');
-    redirect('/reviews?tab=pending');
+    // Pure mutation: no revalidatePath / redirect here. Inlining the re-render of
+    // /reviews into the action response intermittently stalls the response stream in
+    // prod (`next start`): the client gets the 303 headers and a chunked body that
+    // never terminates, leaving the form transition pending forever (verified against
+    // Next 15.5.15 with a statistical repro; plain flight GETs to the same page never
+    // stall). /reviews is force-dynamic, so revalidatePath bought nothing anyway.
+    // The editor component reacts to this success result: it invalidates the affected
+    // TanStack queries and router.push()es, which re-fetches the page as a normal
+    // flight request.
+    const created = (await response.json().catch(() => null)) as { id?: string } | null;
+    return { status: 'success', reviewId: created?.id ?? '' };
   }
 
   if (response.status === 401) {

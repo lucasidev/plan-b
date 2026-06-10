@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { AcademicTerm, Subject } from './types';
 
 /**
@@ -6,12 +7,16 @@ import type { AcademicTerm, Subject } from './types';
  *   - GET /api/academic/subjects?careerPlanId=
  *   - GET /api/academic/academic-terms?universityId=
  *
- * Paths are relative (`/api/...`) because they run client-side and go through the
- * Next.js rewrite, avoiding CORS. Same pattern as `onboarding/api.ts`.
+ * Paths are relative (`/api/...`) and go through the Next.js rewrite (avoiding CORS).
+ * They go through `clientApiFetch` so the client-only invariant is enforced: the consumer
+ * `EnrollmentForm` is `'use client'` with `useQuery` and the page does not prefetch+hydrate
+ * these keys, so under ReactQueryStreamedHydration the queryFn could SSR-execute. A raw
+ * relative `fetch` would then throw "Failed to parse URL" (no origin in Node);
+ * `clientApiFetch` logs the misuse instead so the render degrades rather than crashing.
  */
 
 async function fetchSubjects(careerPlanId: string): Promise<Subject[]> {
-  const response = await fetch(
+  const response = await clientApiFetch(
     `/api/academic/subjects?careerPlanId=${encodeURIComponent(careerPlanId)}`,
   );
   if (!response.ok) {
@@ -21,7 +26,7 @@ async function fetchSubjects(careerPlanId: string): Promise<Subject[]> {
 }
 
 async function fetchAcademicTerms(universityId: string): Promise<AcademicTerm[]> {
-  const response = await fetch(
+  const response = await clientApiFetch(
     `/api/academic/academic-terms?universityId=${encodeURIComponent(universityId)}`,
   );
   if (!response.ok) {

@@ -1,4 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { PendingReviewsResponse } from './types';
 
 /**
@@ -11,7 +12,7 @@ import type { PendingReviewsResponse } from './types';
  * propagates the new count + list to both consumers in a single network call.
  */
 async function fetchPendingReviews(): Promise<PendingReviewsResponse> {
-  const response = await fetch('/api/reviews/me/pending', { cache: 'no-store' });
+  const response = await clientApiFetch('/api/reviews/me/pending', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Pending reviews fetch failed: ${response.status}`);
   }

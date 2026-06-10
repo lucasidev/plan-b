@@ -1,10 +1,12 @@
 import { queryOptions } from '@tanstack/react-query';
+import { clientApiFetch } from '@/lib/api-client';
 import type { CareerPlanImportResponse } from './types';
 
 async function fetchCareerPlanImport(importId: string): Promise<CareerPlanImportResponse> {
-  const response = await fetch(`/api/me/career-plan-imports/${encodeURIComponent(importId)}`, {
-    cache: 'no-store',
-  });
+  const response = await clientApiFetch(
+    `/api/me/career-plan-imports/${encodeURIComponent(importId)}`,
+    { cache: 'no-store' },
+  );
   if (!response.ok) {
     throw new Error(`CareerPlanImport fetch failed: ${response.status}`);
   }
