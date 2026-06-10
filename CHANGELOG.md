@@ -108,3 +108,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - leer JWT_ISSUER/JWT_AUDIENCE del env, no hardcoded (auth) — [`a3228a3`](https://github.com/lucasidev/plan-b/commit/a3228a3a4612285f5986d85c625d85bd55803005)
 - rutas + features + identifiers a inglés (cleanup S2-S5) (#137) (frontend) — [`9f63405`](https://github.com/lucasidev/plan-b/commit/9f6340557d373c40f977ae48dadd4e8aeb7758ab)
+- guarda clientApiFetch para fetchers client-side (#147) (frontend) — [`7272689`](https://github.com/lucasidev/plan-b/commit/727268979cd2f3377c2a3319fc48f85cbd44f4aa)
