@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import type { DeleteReviewResult } from './types';
@@ -10,10 +9,10 @@ import type { DeleteReviewResult } from './types';
  * DELETE /api/me/reviews/{id}. The backend is idempotent, so a retry after a flaky
  * network is safe.
  *
- * Unlike publish/edit, this action does NOT redirect: the modal stays mounted so it can
- * show an inline error on failure. On success it revalidates /reviews (Mías is
- * server-rendered) and returns success; the client component handles the navigation +
- * closing the modal.
+ * Pure mutation: no `revalidatePath` (it made the action response inline a re-render of
+ * /reviews, which intermittently stalls the response stream in prod; see
+ * `write-review/actions.ts` for the rationale, and /reviews is force-dynamic anyway).
+ * The modal handles the rest client-side: invalidate the TanStack queries + navigate.
  */
 export async function deleteReviewAction(
   _prev: DeleteReviewResult,
@@ -42,7 +41,6 @@ export async function deleteReviewAction(
   }
 
   if (response.status === 200) {
-    revalidatePath('/reviews');
     return { status: 'success' };
   }
 

@@ -1,7 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import type { PublishReviewResult } from '@/features/write-review/types';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
@@ -38,8 +36,10 @@ const editPayloadSchema = z.object({
  * still uses the US-017 model. They survive in the browser state during the editing
  * session but the backend never sees them. Lifting that ceiling is the backend-rework US.
  *
- * After a 200 we revalidate <c>/reviews</c> (Mías is server-rendered) and redirect to
- * the Mías tab so the student sees the updated card.
+ * On a 200 this returns `{ status: 'success' }` and nothing else: no `revalidatePath`,
+ * no `redirect()`. The editor reacts client-side (invalidate + router.push). Inlining a
+ * re-render of /reviews into the action response intermittently stalls the response
+ * stream in prod; see `write-review/actions.ts` for the full rationale.
  */
 export async function editReviewAction(
   _prev: PublishReviewResult,
@@ -94,8 +94,7 @@ export async function editReviewAction(
   }
 
   if (response.status === 200) {
-    revalidatePath('/reviews');
-    redirect('/reviews?tab=mine');
+    return { status: 'success', reviewId };
   }
 
   if (response.status === 401) {

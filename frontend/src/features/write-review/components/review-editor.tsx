@@ -1,7 +1,9 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useActionState, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 
 import { DisplayHeading } from '@/components/ui/display-heading';
@@ -109,6 +111,18 @@ export function ReviewEditor({
     ...(initialDraft ?? {}),
   });
   const [state, formAction] = useActionState(submitAction, submitInitialState);
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  // The actions are pure mutations (no server-side revalidatePath/redirect; see
+  // write-review/actions.ts for why). On success, the client owns the consequences:
+  // invalidate the lists the mutation touched and navigate via a plain flight request.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    queryClient.invalidateQueries({ queryKey: ['pending-reviews'] });
+    queryClient.invalidateQueries({ queryKey: ['my-reviews'] });
+    router.push(mode === 'edit' ? '/reviews?tab=mine' : '/reviews?tab=pending');
+  }, [state.status, queryClient, router, mode]);
 
   // Typed helper to set a single field while keeping the rest of the draft.
   const updateField = <K extends keyof ReviewDraft>(key: K, value: ReviewDraft[K]) =>
