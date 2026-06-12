@@ -314,7 +314,14 @@ export function ReviewEditor({
             rating={draft.rating}
             text={draft.text ?? ''}
             tags={draft.tags}
-            identity={MOCK_ANONYMOUS_IDENTITY}
+            identity={{
+              // Period is real (from the enrollment). Year + career stay placeholders until
+              // the session carries them (US-012); the sidebar hardcodes them for the same
+              // reason. Wiring real values here is part of that US, not this one.
+              year: MOCK_ANONYMOUS_IDENTITY.year,
+              career: MOCK_ANONYMOUS_IDENTITY.career,
+              period: ctx.period ?? MOCK_ANONYMOUS_IDENTITY.period,
+            }}
           />
           <PrivacyCard />
         </aside>
