@@ -3,6 +3,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { DeleteReviewModal } from '@/features/delete-review';
+import { formatRelativeDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import { myReviewsQueries } from '../api';
 import type { MyReview, ReviewStatus } from '../types';
@@ -171,25 +172,4 @@ function EmptyState() {
       </div>
     </div>
   );
-}
-
-/**
- * Date formatter that returns short relative copy ("hoy", "ayer", "hace 3 días", "hace 2
- * meses"). Server gives ISO 8601; we compare against the user's current time on the client.
- */
-function formatRelativeDate(iso: string): string {
-  const then = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - then.getTime();
-  const day = 24 * 60 * 60 * 1000;
-  const days = Math.floor(diffMs / day);
-  if (days <= 0) return 'hoy';
-  if (days === 1) return 'ayer';
-  if (days < 30) return `hace ${days} días`;
-  const months = Math.floor(days / 30);
-  if (months === 1) return 'hace 1 mes';
-  if (months < 12) return `hace ${months} meses`;
-  const years = Math.floor(days / 365);
-  if (years === 1) return 'hace 1 año';
-  return `hace ${years} años`;
 }

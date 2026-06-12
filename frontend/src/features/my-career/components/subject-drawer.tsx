@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { comisionesForSubject } from '@/features/my-career/data/commissions';
+import { commissionsForSubject } from '@/features/my-career/data/commissions';
 import {
   plan as defaultPlan,
   type PlannedSubject,
@@ -41,7 +41,7 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
   const activeTeachers = teachers.filter((t) => t.subjects.includes(subject.code));
   const totalReviews = reviewCountForSubject(subject.code);
   const reviews = topReviewsForSubject(subject.code, 3);
-  const comisiones = comisionesForSubject(subject.code);
+  const subjectCommissions = commissionsForSubject(subject.code);
 
   const rating =
     activeTeachers.length > 0
@@ -78,7 +78,7 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
           <StatsCard
             rating={rating}
             totalReviews={totalReviews}
-            comisionesCount={comisiones.length}
+            commissionCount={subjectCommissions.length}
             modality={subject.modality}
           />
           <TeachersCard teachers={teachers} subjectCode={subject.code} />
@@ -213,12 +213,12 @@ function CorrelativasCard({
 function StatsCard({
   rating,
   totalReviews,
-  comisionesCount,
+  commissionCount,
   modality,
 }: {
   rating: number | null;
   totalReviews: number;
-  comisionesCount: number;
+  commissionCount: number;
   modality: PlannedSubject['modality'];
 }) {
   return (
@@ -230,7 +230,7 @@ function StatsCard({
           label="rating promedio"
         />
         <StatCell value={String(totalReviews)} label="reseñas" />
-        <StatCell value={String(comisionesCount)} label="comisiones" />
+        <StatCell value={String(commissionCount)} label="comisiones" />
         <StatCell value={modalityLabel(modality)} label="modalidad" />
       </div>
     </div>
@@ -244,7 +244,7 @@ function TeachersCard({
   teachers: ReturnType<typeof teachersForSubject>;
   subjectCode: string;
 }) {
-  const comisiones = comisionesForSubject(subjectCode);
+  const teacherList = commissionsForSubject(subjectCode);
   return (
     <div className="bg-bg-card border border-line rounded-lg p-5 shadow-card">
       <h2 className="font-display font-semibold text-base text-ink mb-2">Docentes</h2>
@@ -253,7 +253,7 @@ function TeachersCard({
       ) : (
         <div className="flex flex-col">
           {teachers.map((t, i) => {
-            const teacherCommissions = comisiones.filter((c) => c.teacherId === t.id);
+            const teacherCommissions = teacherList.filter((c) => c.teacherId === t.id);
             return (
               <Link
                 key={t.id}

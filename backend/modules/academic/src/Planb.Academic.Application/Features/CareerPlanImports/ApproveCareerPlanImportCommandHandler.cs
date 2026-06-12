@@ -148,6 +148,7 @@ public static class ApproveCareerPlanImportCommandHandler
         }
 
         // ── Audit log integration event ────────────────────────────────────
+        var now = clock.UtcNow;
         await bus.PublishAsync(new CareerPlanImported(
             CareerPlanImportId: import.Id.Value,
             CareerPlanId: careerPlan.Id.Value,
@@ -155,7 +156,9 @@ public static class ApproveCareerPlanImportCommandHandler
             UniversityId: import.UniversityId.Value,
             UploadedByUserId: import.UploadedByUserId,
             SubjectCount: subjectsToAdd.Count,
-            ApprovedAt: clock.UtcNow));
+            ApprovedAt: now,
+            EventId: Guid.NewGuid(),
+            OccurredAt: now));
 
         await unitOfWork.SaveChangesAsync(ct);
 

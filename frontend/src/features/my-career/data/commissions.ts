@@ -8,7 +8,7 @@
  * could take).
  */
 
-export type Comision = {
+export type Commission = {
   id: string;
   subjectCode: string;
   teacherId: string;
@@ -22,7 +22,7 @@ export type Comision = {
   enrolled: number;
 };
 
-export const comisiones: Comision[] = [
+export const commissions: Commission[] = [
   // ISW302
   {
     id: 'isw302-a',
@@ -156,6 +156,6 @@ export const comisiones: Comision[] = [
 ];
 
 /** Returns commissions for a specific subject. */
-export function comisionesForSubject(subjectCode: string): Comision[] {
-  return comisiones.filter((c) => c.subjectCode === subjectCode);
+export function commissionsForSubject(subjectCode: string): Commission[] {
+  return commissions.filter((c) => c.subjectCode === subjectCode);
 }
