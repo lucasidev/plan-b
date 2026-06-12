@@ -21,8 +21,22 @@ export function EnrollmentContextCard({ ctx }: { ctx: EnrollmentContext }) {
       <div className="min-w-0 flex-1">
         <div className="text-[13.5px] font-medium text-ink">{ctx.matName}</div>
         <div className="mt-0.5 text-[11.5px] text-ink-3">
-          con <b className="font-medium text-ink-2">{ctx.prof}</b> · Com {ctx.com} · {ctx.period} ·
-          nota final {ctx.finalNote}
+          {/* Teacher + commission stay hidden until the Teacher/Commission aggregates land
+              (US-063): the pending listing cannot resolve them. We show the real bits we have
+              (period + grade) instead of faking a docente. */}
+          {ctx.prof ? (
+            <>
+              con <b className="font-medium text-ink-2">{ctx.prof}</b>
+              {ctx.com && <> · Com {ctx.com}</>}
+              {ctx.period && <> · {ctx.period}</>}
+            </>
+          ) : (
+            <>
+              <span className="text-ink-4">docente a confirmar</span>
+              {ctx.period && <> · {ctx.period}</>}
+            </>
+          )}
+          {ctx.finalNote !== null && <> · nota final {ctx.finalNote}</>}
         </div>
       </div>
       {/* TODO: once US-048 lands, this button will navigate to /reviews?tab=pending. */}

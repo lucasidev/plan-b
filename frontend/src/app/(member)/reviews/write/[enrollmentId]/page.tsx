@@ -1,27 +1,47 @@
-import { MOCK_ENROLLMENT_CONTEXT, ReviewEditor } from '@/features/write-review';
+import { notFound } from 'next/navigation';
+import { fetchPendingReviewServer } from '@/features/pending-reviews/api.server';
+import { type EnrollmentContext, ReviewEditor } from '@/features/write-review';
 
 export const metadata = {
   title: 'Escribir reseña · planb',
 };
 
+// Per-user, cookie-bound, dynamic. Same reasoning as /reviews and the edit page.
+export const dynamic = 'force-dynamic';
+
 type Params = Promise<{ enrollmentId: string }>;
 
 /**
- * /reviews/write/[enrollmentId] (US-049 editor + US-048 e2e wiring).
+ * /reviews/write/[enrollmentId] (US-049 editor).
  *
- * The `[enrollmentId]` route param is now the real id of the EnrollmentRecord being
- * reviewed. The editor's submit action sends it to `POST /api/reviews` (US-017). The
- * display context (subject, teacher, period, grade) still comes from
- * `MOCK_ENROLLMENT_CONTEXT` because the detail endpoint (`GET /api/reviews/me/pending/:id`
- * or similar) does not exist yet; landing it is scope for a future US.
+ * Resolves the route enrollment id against the student's pending listing
+ * (`GET /api/reviews/me/pending`) and fills the editor context with the real subject,
+ * period and grade. If the enrollment is not in the pending set (already reviewed, not
+ * the student's, or not reviewable) the page returns 404 instead of leaking the
+ * distinction.
  *
- * Practical consequence: the editor's HEADER may show the canned ISW301/Brandt context
- * while the SUBMIT publishes a row for the cursada the user actually came from. The
- * publish itself is correct (real enrollmentId, real student, real backend constraint);
- * only the display does not match yet.
+ * Teacher and commission are not resolved here: those aggregates do not exist yet
+ * (US-063), so the listing cannot surface them. The context card degrades to "docente a
+ * confirmar" rather than showing a fabricated name. The submit still anchors to the real
+ * enrollment id via `POST /api/reviews` (US-017 / US-089).
  */
 export default async function WriteReviewPage({ params }: { params: Params }) {
   const { enrollmentId } = await params;
 
-  return <ReviewEditor ctx={MOCK_ENROLLMENT_CONTEXT} enrollmentId={enrollmentId} />;
+  const pending = await fetchPendingReviewServer(enrollmentId);
+  if (!pending) {
+    notFound();
+  }
+
+  const ctx: EnrollmentContext = {
+    id: pending.enrollmentId,
+    matCode: pending.subjectCode,
+    matName: pending.subjectName,
+    prof: null,
+    com: null,
+    period: pending.termLabel,
+    finalNote: pending.grade,
+  };
+
+  return <ReviewEditor ctx={ctx} enrollmentId={enrollmentId} />;
 }

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { editReviewAction, fetchEditableReviewServer } from '@/features/edit-review';
-import { MOCK_ENROLLMENT_CONTEXT, ReviewEditor } from '@/features/write-review';
+import { type EnrollmentContext, ReviewEditor } from '@/features/write-review';
 
 export const metadata = {
   title: 'Editar reseña · planb',
@@ -22,11 +22,10 @@ type Params = Promise<{ reviewId: string }>;
  * student gets to see the editor pre-loaded and the error surface comes through the
  * action's response, with the matching UX message.
  *
- * The display context (subject code, teacher, period, grade) still comes from
- * <c>MOCK_ENROLLMENT_CONTEXT</c> for the same reason as <c>/reviews/write</c>: there is
- * no detail endpoint yet that resolves the enrollment into its display strings. The
- * submit is correct (the real reviewId rides the form); only the header may show the
- * canned ISW301/Brandt context until the detail endpoint lands.
+ * The display context (subject code, name, grade) comes from the listing itself. Period,
+ * teacher and commission are not in the my-reviews listing (and the latter two need the
+ * Teacher/Commission aggregates, US-063), so the context card degrades to what is real
+ * rather than showing a fabricated docente. The submit rides the real reviewId.
  */
 export default async function EditReviewPage({ params }: { params: Params }) {
   const { reviewId } = await params;
@@ -36,9 +35,19 @@ export default async function EditReviewPage({ params }: { params: Params }) {
     notFound();
   }
 
+  const ctx: EnrollmentContext = {
+    id: review.id,
+    matCode: review.subjectCode,
+    matName: review.subjectName,
+    prof: null,
+    com: null,
+    period: null,
+    finalNote: review.finalGrade,
+  };
+
   return (
     <ReviewEditor
-      ctx={MOCK_ENROLLMENT_CONTEXT}
+      ctx={ctx}
       enrollmentId={review.id}
       mode="edit"
       idFieldName="reviewId"

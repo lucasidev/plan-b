@@ -12,24 +12,28 @@ import type { ReviewFormInput } from './schema';
 /**
  * Context for the enrollment under review. Rendered in the editor header and the
  * side preview. The student lands here from a chosen pending enrollment (US-048
- * Pending tab); once that flow lands, the URL id is resolved against the API.
- * For now it is mocked (`MOCK_ENROLLMENT_CONTEXT`).
+ * Pending tab); the page resolves the URL enrollment id against the pending listing
+ * (`GET /api/reviews/me/pending`) and fills in the real values.
+ *
+ * `prof` and `com` are nullable because the Teacher and Commission aggregates do not
+ * exist yet (US-063): the pending listing cannot surface them. `period` and `finalNote`
+ * are nullable for older enrollments without a linked term or a loaded grade.
  */
 export type EnrollmentContext = {
-  /** Enrollment id (EnrollmentRecord.id) in the backend. Mocked for now. */
+  /** Enrollment id (EnrollmentRecord.id) in the backend. */
   id: string;
   /** Subject short code (e.g. ISW301). */
   matCode: string;
   /** Subject full name. */
   matName: string;
-  /** Teacher display name (last name + first name). */
-  prof: string;
-  /** Commission. */
-  com: string;
-  /** Human-readable academic period (e.g. "2025·2c"). */
-  period: string;
-  /** Final grade the student loaded in their transcript. */
-  finalNote: number;
+  /** Teacher display name. Null until the Teacher aggregate lands (US-063). */
+  prof?: string | null;
+  /** Commission label. Null until the Commission aggregate lands (US-063). */
+  com?: string | null;
+  /** Human-readable academic period (e.g. "2025·2c"). Null for enrollments without a term. */
+  period: string | null;
+  /** Final grade the student loaded in their transcript. Null if not loaded. */
+  finalNote: number | null;
 };
 
 /**

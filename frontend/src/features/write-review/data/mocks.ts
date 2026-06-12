@@ -1,10 +1,11 @@
 import type { EnrollmentContext, ReviewAnonymousIdentity } from '../types';
 
 /**
- * Mock of the enrollment context being reviewed (`V2_EDITOR_CTX` in the canvas).
- * Until the `GET /api/me/pending-reviews/:enrollmentId` endpoint exists (US-048 backend
- * + the upcoming Review rework US), the editor reads this. Once the real data lands, it
- * is resolved by `[enrollmentId]` and this mock stays as a demo fallback.
+ * Test fixture for the enrollment context (`V2_EDITOR_CTX` in the canvas). The pages now
+ * resolve the real context from the pending listing (`/reviews/write`) or the my-reviews
+ * listing (`/reviews/edit`); this object is only used by the editor component test as a
+ * stable, fully-populated sample (with teacher + commission, which the real listing can
+ * not surface until US-063). Not exported from the feature barrel.
  */
 export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
   id: 'enrollment-mock-isw301-brandt-2025-2c',
@@ -17,9 +18,11 @@ export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
 };
 
 /**
- * Pseudonymous identity rendered in the side preview. Aligned with ADR-0009: only
- * year in career + career + period attended. When the real StudentProfile carries the
- * student year, it is read from the session instead.
+ * Fallback for the pseudonymous identity rendered in the side preview (ADR-0009: year in
+ * career + career + period). The editor fills `period` with the real enrollment period; the
+ * `year` and `career` stay placeholders until the session carries them (US-012). The sidebar
+ * hardcodes the career name for the same reason, so this stays consistent with the rest of
+ * the chrome until that US lands.
  */
 export const MOCK_ANONYMOUS_IDENTITY: ReviewAnonymousIdentity = {
   year: 4,
