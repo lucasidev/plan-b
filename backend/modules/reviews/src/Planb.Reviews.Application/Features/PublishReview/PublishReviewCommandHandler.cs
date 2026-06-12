@@ -74,6 +74,12 @@ public static class PublishReviewCommandHandler
             return difficultyResult.Error;
         }
 
+        var overallResult = OverallRating.Create(command.OverallRating);
+        if (overallResult.IsFailure)
+        {
+            return overallResult.Error;
+        }
+
         var subjectTextResult = ReviewText.CreateOptional(command.SubjectText);
         if (subjectTextResult.IsFailure)
         {
@@ -109,6 +115,11 @@ public static class PublishReviewCommandHandler
             command.EnrollmentId,
             command.DocenteResenadoId,
             difficultyResult.Value,
+            overallResult.Value,
+            command.HoursPerWeek,
+            command.Tags,
+            command.WouldRecommendCourse,
+            command.WouldRetakeTeacher,
             subjectTextResult.Value,
             teacherTextResult.Value,
             finalGrade,
@@ -129,6 +140,11 @@ public static class PublishReviewCommandHandler
             review.EnrollmentId,
             review.DocenteResenadoId,
             review.DifficultyRating.Value,
+            review.OverallRating.Value,
+            review.HoursPerWeek,
+            review.Tags,
+            review.WouldRecommendCourse,
+            review.WouldRetakeTeacher,
             review.SubjectText?.Value,
             review.TeacherText?.Value,
             review.FinalGrade?.Value,

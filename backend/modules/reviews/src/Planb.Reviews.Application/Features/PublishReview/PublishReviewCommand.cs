@@ -24,6 +24,11 @@ public sealed record PublishReviewCommand(
     Guid EnrollmentId,
     Guid DocenteResenadoId,
     int DifficultyRating,
+    int OverallRating,
+    int? HoursPerWeek,
+    IReadOnlyList<string> Tags,
+    bool WouldRecommendCourse,
+    bool WouldRetakeTeacher,
     string? SubjectText,
     string? TeacherText,
     decimal? FinalGrade);

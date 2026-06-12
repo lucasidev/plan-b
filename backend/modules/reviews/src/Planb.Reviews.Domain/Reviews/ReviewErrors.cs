@@ -11,6 +11,21 @@ public static class ReviewErrors
             "reviews.review.difficulty_rating_out_of_range",
             "Difficulty rating must be between 1 and 5.");
 
+    public static readonly Error OverallRatingOutOfRange =
+        Error.Validation(
+            "reviews.review.overall_rating_out_of_range",
+            "Overall rating must be between 1 and 5.");
+
+    public static readonly Error HoursPerWeekOutOfRange =
+        Error.Validation(
+            "reviews.review.hours_per_week_out_of_range",
+            "Hours per week must be between 0 and 30.");
+
+    public static readonly Error TagNotAllowed =
+        Error.Validation(
+            "reviews.review.tag_not_allowed",
+            "One or more tags are not in the allowed set.");
+
     public static readonly Error FinalGradeOutOfRange =
         Error.Validation(
             "reviews.review.final_grade_out_of_range",

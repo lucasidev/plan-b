@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planb.Reviews.Domain.Reviews;
@@ -21,6 +22,24 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
     private static readonly ValueConverter<FinalGrade?, decimal?> FinalGradeConverter = new(
         vo => vo.HasValue ? vo.Value.Value : (decimal?)null,
         raw => raw == null ? (FinalGrade?)null : FinalGrade.Create(raw.Value).Value);
+
+    // HoursPerWeek es un int? plano (no VO). Lo guardamos como smallint para alinearnos al
+    // data-model; el converter desempaqueta el Nullable<int> al Nullable<short> de la columna.
+    private static readonly ValueConverter<int?, short?> HoursPerWeekConverter = new(
+        v => v.HasValue ? (short)v.Value : (short?)null,
+        v => v.HasValue ? v.Value : (int?)null);
+
+    // Tags: IReadOnlyList<string> ↔ text[]. Npgsql mapea string[] nativamente; el comparer es
+    // obligatorio para que EF trackee cambios sobre la colección (sin él, una edición de tags no
+    // se detecta como modificación del aggregate).
+    private static readonly ValueConverter<IReadOnlyList<string>, string[]> TagsConverter = new(
+        list => list.ToArray(),
+        array => array);
+
+    private static readonly ValueComparer<IReadOnlyList<string>> TagsComparer = new(
+        (a, b) => (a == null && b == null) || (a != null && b != null && a.SequenceEqual(b)),
+        list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+        list => list.ToList());
 
     public void Configure(EntityTypeBuilder<Review> builder)
     {
@@ -50,6 +69,34 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasConversion(
                 vo => (short)vo.Value,
                 raw => DifficultyRating.Create(raw).Value)
+            .IsRequired();
+
+        // OverallRating: mismo patrón que DifficultyRating (VO 1-5 → smallint).
+        builder.Property(r => r.OverallRating)
+            .HasColumnName("overall_rating")
+            .HasColumnType("smallint")
+            .HasConversion(
+                vo => (short)vo.Value,
+                raw => OverallRating.Create(raw).Value)
+            .IsRequired();
+
+        builder.Property(r => r.HoursPerWeek)
+            .HasColumnName("hours_per_week")
+            .HasColumnType("smallint")
+            .HasConversion(HoursPerWeekConverter);
+
+        builder.Property(r => r.Tags)
+            .HasColumnName("tags")
+            .HasColumnType("text[]")
+            .HasConversion(TagsConverter, TagsComparer)
+            .IsRequired();
+
+        builder.Property(r => r.WouldRecommendCourse)
+            .HasColumnName("would_recommend_course")
+            .IsRequired();
+
+        builder.Property(r => r.WouldRetakeTeacher)
+            .HasColumnName("would_retake_teacher")
             .IsRequired();
 
         // Los dos texts opcionales. El VO ReviewText.CreateOptional sanitiza trim.
@@ -116,6 +163,14 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             t.HasCheckConstraint(
                 "ck_reviews_difficulty_rating_range",
                 "difficulty_rating BETWEEN 1 AND 5");
+
+            t.HasCheckConstraint(
+                "ck_reviews_overall_rating_range",
+                "overall_rating BETWEEN 1 AND 5");
+
+            t.HasCheckConstraint(
+                "ck_reviews_hours_per_week_range",
+                "hours_per_week IS NULL OR (hours_per_week >= 0 AND hours_per_week <= 30)");
 
             t.HasCheckConstraint(
                 "ck_reviews_final_grade_range",

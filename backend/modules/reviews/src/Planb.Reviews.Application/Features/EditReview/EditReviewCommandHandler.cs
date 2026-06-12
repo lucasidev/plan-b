@@ -48,7 +48,12 @@ public static class EditReviewCommandHandler
         if (!command.SubjectTextProvided
             && !command.TeacherTextProvided
             && !command.FinalGradeProvided
-            && command.DifficultyRating is null)
+            && !command.HoursPerWeekProvided
+            && command.DifficultyRating is null
+            && command.OverallRating is null
+            && command.Tags is null
+            && command.WouldRecommendCourse is null
+            && command.WouldRetakeTeacher is null)
         {
             return Result.Failure<EditReviewResponse>(ReviewErrors.NothingToUpdate);
         }
@@ -101,6 +106,14 @@ public static class EditReviewCommandHandler
             newDifficulty = dr.Value;
         }
 
+        OverallRating? newOverall = null;
+        if (command.OverallRating is not null)
+        {
+            var or = OverallRating.Create(command.OverallRating.Value);
+            if (or.IsFailure) return Result.Failure<EditReviewResponse>(or.Error);
+            newOverall = or.Value;
+        }
+
         ReviewText? newSubjectText = null;
         if (command.SubjectTextProvided)
         {
@@ -142,6 +155,11 @@ public static class EditReviewCommandHandler
         var before = new
         {
             difficultyRating = review.DifficultyRating.Value,
+            overallRating = review.OverallRating.Value,
+            hoursPerWeek = review.HoursPerWeek,
+            tags = review.Tags,
+            wouldRecommendCourse = review.WouldRecommendCourse,
+            wouldRetakeTeacher = review.WouldRetakeTeacher,
             subjectText = review.SubjectText?.Value,
             teacherText = review.TeacherText?.Value,
             finalGrade = review.FinalGrade?.Value,
@@ -150,6 +168,12 @@ public static class EditReviewCommandHandler
 
         var editResult = review.Edit(
             newDifficulty,
+            newOverall,
+            command.HoursPerWeek,
+            command.HoursPerWeekProvided,
+            command.Tags,
+            command.WouldRecommendCourse,
+            command.WouldRetakeTeacher,
             newSubjectText,
             command.SubjectTextProvided,
             newTeacherText,
@@ -168,6 +192,11 @@ public static class EditReviewCommandHandler
         var after = new
         {
             difficultyRating = review.DifficultyRating.Value,
+            overallRating = review.OverallRating.Value,
+            hoursPerWeek = review.HoursPerWeek,
+            tags = review.Tags,
+            wouldRecommendCourse = review.WouldRecommendCourse,
+            wouldRetakeTeacher = review.WouldRetakeTeacher,
             subjectText = review.SubjectText?.Value,
             teacherText = review.TeacherText?.Value,
             finalGrade = review.FinalGrade?.Value,
@@ -190,6 +219,11 @@ public static class EditReviewCommandHandler
             review.EnrollmentId,
             review.DocenteResenadoId,
             review.DifficultyRating.Value,
+            review.OverallRating.Value,
+            review.HoursPerWeek,
+            review.Tags,
+            review.WouldRecommendCourse,
+            review.WouldRetakeTeacher,
             review.SubjectText?.Value,
             review.TeacherText?.Value,
             review.FinalGrade?.Value,

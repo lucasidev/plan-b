@@ -20,16 +20,10 @@ const PLACEHOLDER_TEACHER_ID = '11111111-1111-1111-1111-111111111111';
 /**
  * Publish-review server action (US-049 editor + US-048 e2e wiring).
  *
- * Maps the v2 editor draft (rating, difficulty, hoursPerWeek, tags, text, recommendations)
- * onto the legacy US-017 publish payload (difficultyRating, subjectText, teacherText,
- * finalGrade). This is **lossy**: rating, hoursPerWeek, tags, wouldRecommendCourse and
- * wouldRetakeTeacher are NOT persisted today. They will be once the backend rework US
- * extends the `Review` aggregate + table; until then the editor stores them in browser
- * state only.
- *
- * The lossy decision is intentional (US-048): the goal was to close the e2e flow
- * (pending → click → write → publish → cursada disappears from pending). Persisting
- * every editor field is US-089.
+ * Maps the full v2 editor draft (rating, difficulty, hoursPerWeek, tags, text, recommendations)
+ * onto the `POST /api/reviews` body. US-089 extended the `Review` aggregate + table so every
+ * editor field now persists; the previously lossy mapping (only difficulty + text reached the
+ * backend) is gone.
  *
  * On a 201 this returns `{ status: 'success' }` and nothing else: no `revalidatePath`,
  * no `redirect()`. The editor reacts client-side (invalidate + router.push). See the
@@ -70,6 +64,11 @@ export async function publishReviewAction(
     enrollmentId,
     docenteResenadoId: PLACEHOLDER_TEACHER_ID,
     difficultyRating: validated.data.difficulty,
+    overallRating: validated.data.rating,
+    hoursPerWeek: validated.data.hoursPerWeek ?? null,
+    tags: validated.data.tags,
+    wouldRecommendCourse: validated.data.wouldRecommendCourse,
+    wouldRetakeTeacher: validated.data.wouldRetakeTeacher,
     subjectText: validated.data.text ?? null,
     teacherText: null,
     finalGrade: null,

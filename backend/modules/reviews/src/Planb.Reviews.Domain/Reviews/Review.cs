@@ -29,6 +29,32 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public Guid EnrollmentId { get; private set; }
     public Guid DocenteResenadoId { get; private set; }
     public DifficultyRating DifficultyRating { get; private set; }
+
+    /// <summary>
+    /// Overall quality the student gave the course (US-089). Distinct axis from
+    /// <see cref="DifficultyRating"/>: how good vs how hard. Required, set at publish time.
+    /// </summary>
+    public OverallRating OverallRating { get; private set; }
+
+    /// <summary>
+    /// Self-reported hours of study per week outside of class (US-089). Optional (the editor
+    /// lets the student skip it); range 0-30 when present. Feeds the US-002 crowd insights.
+    /// </summary>
+    public int? HoursPerWeek { get; private set; }
+
+    /// <summary>
+    /// Quick descriptive tags from the fixed taxonomy (US-089). Required but may be empty.
+    /// Stored as a Postgres <c>text[]</c>. The allowed set is centralised in the application
+    /// layer (<c>AllowedTags</c>); the aggregate keeps the list as-is once validated upstream.
+    /// </summary>
+    public IReadOnlyList<string> Tags { get; private set; } = [];
+
+    /// <summary>Whether the student would recommend taking this course (US-089). Required.</summary>
+    public bool WouldRecommendCourse { get; private set; }
+
+    /// <summary>Whether the student would take this teacher again (US-089). Required.</summary>
+    public bool WouldRetakeTeacher { get; private set; }
+
     public ReviewText? SubjectText { get; private set; }
     public ReviewText? TeacherText { get; private set; }
     public FinalGrade? FinalGrade { get; private set; }
@@ -69,6 +95,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         Guid enrollmentId,
         Guid docenteResenadoId,
         DifficultyRating difficultyRating,
+        OverallRating overallRating,
+        int? hoursPerWeek,
+        IReadOnlyList<string>? tags,
+        bool wouldRecommendCourse,
+        bool wouldRetakeTeacher,
         ReviewText? subjectText,
         ReviewText? teacherText,
         FinalGrade? finalGrade,
@@ -96,6 +127,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             EnrollmentId = enrollmentId,
             DocenteResenadoId = docenteResenadoId,
             DifficultyRating = difficultyRating,
+            OverallRating = overallRating,
+            HoursPerWeek = hoursPerWeek,
+            Tags = tags ?? [],
+            WouldRecommendCourse = wouldRecommendCourse,
+            WouldRetakeTeacher = wouldRetakeTeacher,
             SubjectText = subjectText,
             TeacherText = teacherText,
             FinalGrade = finalGrade,
@@ -143,6 +179,12 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </summary>
     public Result Edit(
         DifficultyRating? newDifficultyRating,
+        OverallRating? newOverallRating,
+        int? newHoursPerWeek,
+        bool hoursPerWeekProvided,
+        IReadOnlyList<string>? newTags,
+        bool? newWouldRecommendCourse,
+        bool? newWouldRetakeTeacher,
         ReviewText? newSubjectText,
         bool subjectTextProvided,
         ReviewText? newTeacherText,
@@ -167,8 +209,15 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         }
 
         // Apply the patch tentatively to local snapshots so we can validate the post-patch
-        // state before mutating the aggregate.
+        // state before mutating the aggregate. Each field keeps its current value unless the
+        // caller signalled a change: a null VO / null bool means "not provided"; hours uses an
+        // explicit flag because null is itself a valid value (the student cleared the field).
         var nextDifficulty = newDifficultyRating ?? DifficultyRating;
+        var nextOverallRating = newOverallRating ?? OverallRating;
+        var nextHoursPerWeek = hoursPerWeekProvided ? newHoursPerWeek : HoursPerWeek;
+        var nextTags = newTags ?? Tags;
+        var nextWouldRecommendCourse = newWouldRecommendCourse ?? WouldRecommendCourse;
+        var nextWouldRetakeTeacher = newWouldRetakeTeacher ?? WouldRetakeTeacher;
         var nextSubjectText = subjectTextProvided ? newSubjectText : SubjectText;
         var nextTeacherText = teacherTextProvided ? newTeacherText : TeacherText;
         var nextFinalGrade = finalGradeProvided ? newFinalGrade : FinalGrade;
@@ -182,6 +231,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         var now = clock.UtcNow;
 
         DifficultyRating = nextDifficulty;
+        OverallRating = nextOverallRating;
+        HoursPerWeek = nextHoursPerWeek;
+        Tags = nextTags;
+        WouldRecommendCourse = nextWouldRecommendCourse;
+        WouldRetakeTeacher = nextWouldRetakeTeacher;
         SubjectText = nextSubjectText;
         TeacherText = nextTeacherText;
         FinalGrade = nextFinalGrade;

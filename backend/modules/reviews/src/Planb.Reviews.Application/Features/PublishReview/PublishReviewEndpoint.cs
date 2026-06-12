@@ -31,6 +31,11 @@ public sealed class PublishReviewEndpoint : ICarterModule
                 body.EnrollmentId,
                 body.DocenteResenadoId,
                 body.DifficultyRating,
+                body.OverallRating,
+                body.HoursPerWeek,
+                body.Tags ?? [],
+                body.WouldRecommendCourse,
+                body.WouldRetakeTeacher,
                 body.SubjectText,
                 body.TeacherText,
                 body.FinalGrade);
