@@ -6,10 +6,11 @@ import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 
 /**
- * Schema for the edit payload. Looser than <c>reviewFormSchema</c>: rating and the
- * recommend / retake toggles are not required because the lossy backend mapping ignores
- * them anyway. Only the fields the backend persists today (difficulty + text) are
- * validated strictly.
+ * Schema for the edit payload. <c>difficulty</c> and <c>text</c> map straight to the PATCH;
+ * <c>rating</c> is parsed but optional because in edit mode the editor starts it at the 0
+ * "unset" sentinel (the persisted rating is not loaded into the editor yet, that is the read
+ * side US-002 wires). The recommend/retake toggles and hoursPerWeek/tags are intentionally NOT
+ * parsed here: see the body-construction comment for why sending them on edit would clobber.
  */
 const editPayloadSchema = z.object({
   difficulty: z
@@ -17,6 +18,7 @@ const editPayloadSchema = z.object({
     .int('Tiene que ser un número entero')
     .min(1, 'Elegí una dificultad')
     .max(5, 'Máximo 5'),
+  rating: z.number().int().min(0).max(5).optional(),
   text: z
     .string()
     .trim()
@@ -31,10 +33,13 @@ const editPayloadSchema = z.object({
  * configurable), validates the draft with the shared Zod schema, and PATCHes the legacy
  * US-017 fields onto the backend.
  *
- * Carries the same lossy mapping as the publish action: rating, hoursPerWeek, tags,
- * wouldRecommendCourse and wouldRetakeTeacher are NOT persisted because the backend
- * still uses the US-017 model. They survive in the browser state during the editing
- * session but the backend never sees them. Lifting that ceiling is the backend-rework US.
+ * US-089 added full-model persistence on the backend, but edit only sends what it can
+ * represent faithfully: difficulty, text, and overallRating (the latter only when the user
+ * actually picked a rating). hoursPerWeek, tags and the recommend/retake toggles are NOT sent
+ * on edit yet: the editor does not load their persisted values (read side is US-002), so the
+ * draft holds editor defaults, and PATCHing those would silently overwrite the real stored
+ * values. The backend partial-update semantics leave any omitted field untouched. Once the
+ * read side hydrates the editor with the persisted review, this action can send them all.
  *
  * On a 200 this returns `{ status: 'success' }` and nothing else: no `revalidatePath`,
  * no `redirect()`. The editor reacts client-side (invalidate + router.push). Inlining a
@@ -71,13 +76,17 @@ export async function editReviewAction(
     };
   }
 
-  // Only the backend-mappable fields go in the patch. The "provided" semantics on the
-  // backend (US-018) treat any present key as "set this value": we always send the same
-  // shape here so the diff is computed from the full editor state.
-  const body = {
+  // The backend partial-update treats any present key as "set this value", so we only include
+  // the fields the editor can represent without clobbering: difficulty + text always, and
+  // overallRating only when the user actually picked one (rating >= 1; the 0 sentinel means
+  // "untouched in edit mode", so we omit it and the backend keeps the stored value).
+  const body: Record<string, unknown> = {
     difficultyRating: validated.data.difficulty,
     subjectText: validated.data.text ?? '',
   };
+  if (typeof validated.data.rating === 'number' && validated.data.rating >= 1) {
+    body.overallRating = validated.data.rating;
+  }
 
   let response: Response;
   try {

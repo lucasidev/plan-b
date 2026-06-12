@@ -91,6 +91,42 @@ public sealed class EditReviewEndpoint : ICarterModule
             difficulty = dr.GetInt32();
         }
 
+        int? overallRating = null;
+        if (TryGetProperty(body, "overallRating", out var or) && or.ValueKind == JsonValueKind.Number)
+        {
+            overallRating = or.GetInt32();
+        }
+
+        // Hours uses an explicit "provided" flag: null is a valid value (the student cleared the
+        // field), so presence of the key, not nullness, decides whether it is part of the patch.
+        var hoursProvided = TryGetProperty(body, "hoursPerWeek", out var hpw);
+        int? hoursPerWeek = hoursProvided && hpw.ValueKind == JsonValueKind.Number ? hpw.GetInt32() : null;
+
+        // Tags: a present array sets the list (including empty = clear); a missing key (or a null)
+        // leaves the existing tags untouched (null command value = not provided).
+        IReadOnlyList<string>? tags = null;
+        if (TryGetProperty(body, "tags", out var tg) && tg.ValueKind == JsonValueKind.Array)
+        {
+            tags = tg.EnumerateArray()
+                .Where(e => e.ValueKind == JsonValueKind.String)
+                .Select(e => e.GetString()!)
+                .ToList();
+        }
+
+        bool? wouldRecommendCourse = null;
+        if (TryGetProperty(body, "wouldRecommendCourse", out var wrc)
+            && wrc.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            wouldRecommendCourse = wrc.GetBoolean();
+        }
+
+        bool? wouldRetakeTeacher = null;
+        if (TryGetProperty(body, "wouldRetakeTeacher", out var wrt)
+            && wrt.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            wouldRetakeTeacher = wrt.GetBoolean();
+        }
+
         var subjectTextProvided = TryGetProperty(body, "subjectText", out var st);
         var subjectText = subjectTextProvided && st.ValueKind != JsonValueKind.Null ? st.GetString() : null;
 
@@ -108,6 +144,12 @@ public sealed class EditReviewEndpoint : ICarterModule
             reviewId,
             userId,
             difficulty,
+            overallRating,
+            hoursPerWeek,
+            hoursProvided,
+            tags,
+            wouldRecommendCourse,
+            wouldRetakeTeacher,
             subjectText,
             subjectTextProvided,
             teacherText,

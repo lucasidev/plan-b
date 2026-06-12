@@ -90,6 +90,11 @@ public class PublishReviewEndpointTests
                 enrollmentId,
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 4,
+                overallRating = 5,
+                hoursPerWeek = 10,
+                tags = new[] { "claro explicando", "TPs bien armados" },
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = false,
                 subjectText = "Materia exigente con buen material de lectura y prácticas claras. Vale la pena.",
                 teacherText = (string?)null,
                 finalGrade = 8.5m,
@@ -101,6 +106,11 @@ public class PublishReviewEndpointTests
         body.ShouldNotBeNull();
         body!.Status.ShouldBe("Published");
         body.DifficultyRating.ShouldBe(4);
+        body.OverallRating.ShouldBe(5);
+        body.HoursPerWeek.ShouldBe(10);
+        body.Tags.ShouldBe(new[] { "claro explicando", "TPs bien armados" });
+        body.WouldRecommendCourse.ShouldBeTrue();
+        body.WouldRetakeTeacher.ShouldBeFalse();
         body.FinalGrade.ShouldBe(8.5m);
         body.EnrollmentId.ShouldBe(enrollmentId);
     }
@@ -118,6 +128,9 @@ public class PublishReviewEndpointTests
                 enrollmentId,
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 3,
+                overallRating = 2,
+                wouldRecommendCourse = false,
+                wouldRetakeTeacher = false,
                 // "idiota" está en la blacklist embebida, dispara el filter.
                 subjectText = "La materia tiene su contenido pero el profe es un idiota total y no se preocupa.",
                 teacherText = (string?)null,
@@ -143,6 +156,9 @@ public class PublishReviewEndpointTests
                 enrollmentId = Guid.NewGuid(),
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 3,
+                overallRating = 3,
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
                 subjectText = "contenido suficientemente largo para pasar la validación mínima.",
                 teacherText = (string?)null,
                 finalGrade = (decimal?)null,
@@ -167,6 +183,9 @@ public class PublishReviewEndpointTests
                 enrollmentId,
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 3,
+                overallRating = 3,
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
                 subjectText = "Intento de reseñar la cursada de otro usuario, debe fallar con 404.",
                 teacherText = (string?)null,
                 finalGrade = (decimal?)null,
@@ -202,6 +221,9 @@ public class PublishReviewEndpointTests
                 enrollmentId = enrollBody!.Id,
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 3,
+                overallRating = 3,
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
                 subjectText = "Intento de reseñar una cursada en curso, debe fallar con 409.",
                 teacherText = (string?)null,
                 finalGrade = (decimal?)null,
@@ -221,6 +243,9 @@ public class PublishReviewEndpointTests
             enrollmentId,
             docenteResenadoId = Guid.NewGuid(),
             difficultyRating = 3,
+            overallRating = 3,
+            wouldRecommendCourse = true,
+            wouldRetakeTeacher = true,
             subjectText = "Una primera reseña ya publicada para esta cursada, suficientemente larga.",
             teacherText = (string?)null,
             finalGrade = (decimal?)null,
@@ -231,6 +256,55 @@ public class PublishReviewEndpointTests
 
         var second = await auth.Client.PostAsJsonAsync("/api/reviews", payload);
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Returns_400_when_overall_rating_out_of_range()
+    {
+        var auth = await SetupUserWithProfileAsync("bad-rating");
+        var enrollmentId = await CreateReviewableEnrollmentAsync(auth);
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/reviews",
+            new
+            {
+                enrollmentId,
+                docenteResenadoId = Guid.NewGuid(),
+                difficultyRating = 3,
+                overallRating = 7,
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
+                subjectText = "Reseña con overall rating fuera del rango permitido, debe rebotar 400.",
+                teacherText = (string?)null,
+                finalGrade = (decimal?)null,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Returns_400_when_tag_not_in_allowed_set()
+    {
+        var auth = await SetupUserWithProfileAsync("bad-tag");
+        var enrollmentId = await CreateReviewableEnrollmentAsync(auth);
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/reviews",
+            new
+            {
+                enrollmentId,
+                docenteResenadoId = Guid.NewGuid(),
+                difficultyRating = 3,
+                overallRating = 4,
+                tags = new[] { "etiqueta inventada que no existe" },
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
+                subjectText = "Reseña con un tag fuera del set permitido, debe rebotar con 400.",
+                teacherText = (string?)null,
+                finalGrade = (decimal?)null,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     // Mínima view del response de Enrollments para extraer el Id sin acoplar al record completo.

@@ -8,6 +8,11 @@ namespace Planb.Reviews.Application.Features.EditReview;
 /// </summary>
 public sealed record EditReviewRequest(
     int? DifficultyRating,
+    int? OverallRating,
+    int? HoursPerWeek,
+    IReadOnlyList<string>? Tags,
+    bool? WouldRecommendCourse,
+    bool? WouldRetakeTeacher,
     string? SubjectText,
     string? TeacherText,
     decimal? FinalGrade);

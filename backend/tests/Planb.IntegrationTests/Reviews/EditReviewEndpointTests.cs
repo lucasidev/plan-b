@@ -83,6 +83,11 @@ public class EditReviewEndpointTests
                 enrollmentId,
                 docenteResenadoId = Guid.NewGuid(),
                 difficultyRating = 4,
+                overallRating = 4,
+                hoursPerWeek = 6,
+                tags = new[] { "claro explicando" },
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
                 subjectText = "Materia bien armada, recomendable. Buen ritmo de evaluaciones.",
                 teacherText = (string?)null,
                 finalGrade = 8m,
@@ -147,6 +152,37 @@ public class EditReviewEndpointTests
         var body = await resp.Content.ReadFromJsonAsync<EditReviewResponse>();
         body!.SubjectText.ShouldBe(newText);
         body.DifficultyRating.ShouldBe(3);
+        body.Status.ShouldBe("Published");
+    }
+
+    [Fact]
+    public async Task Updates_full_model_fields_and_returns_them()
+    {
+        var auth = await SetupUserAsync("full-model");
+        await SetupProfileAsync(auth);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
+        var reviewId = await PublishCleanReviewAsync(auth, enrollment);
+
+        var resp = await auth.Client.PatchAsJsonAsync(
+            $"/api/me/reviews/{reviewId}",
+            new
+            {
+                overallRating = 2,
+                hoursPerWeek = 12,
+                tags = new[] { "pide mucho", "parciales difíciles" },
+                wouldRecommendCourse = false,
+                wouldRetakeTeacher = false,
+            });
+
+        resp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await resp.Content.ReadFromJsonAsync<EditReviewResponse>();
+        body!.OverallRating.ShouldBe(2);
+        body.HoursPerWeek.ShouldBe(12);
+        body.Tags.ShouldBe(new[] { "pide mucho", "parciales difíciles" });
+        body.WouldRecommendCourse.ShouldBeFalse();
+        body.WouldRetakeTeacher.ShouldBeFalse();
+        // Text/difficulty untouched: partial update leaves them as the seed published them.
+        body.DifficultyRating.ShouldBe(4);
         body.Status.ShouldBe("Published");
     }
 
