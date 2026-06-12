@@ -17,8 +17,6 @@ public sealed record CareerPlanImported(
     Guid UniversityId,
     Guid UploadedByUserId,
     int SubjectCount,
-    DateTimeOffset ApprovedAt) : IIntegrationEvent
-{
-    public Guid EventId { get; init; } = Guid.NewGuid();
-    public DateTimeOffset OccurredAt { get; init; } = DateTimeOffset.UtcNow;
-}
+    DateTimeOffset ApprovedAt,
+    Guid EventId,
+    DateTimeOffset OccurredAt) : IIntegrationEvent;
