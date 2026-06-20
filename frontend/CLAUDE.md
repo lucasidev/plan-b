@@ -140,11 +140,15 @@ export const reviewQueries = {
 
 4. **`ReactQueryStreamedHydration`** en `providers.tsx` para streaming de suspense.
 
-5. **Mutations via Server Actions**. Después del action, invalidar desde el cliente:
+5. **Mutations via Server Actions = mutaciones puras** (regla dura, [ADR-0046](../docs/decisions/0046-server-actions-como-mutaciones-puras.md)). El action hace el write y devuelve `{ status }`; **NO** llama `revalidatePath`/`redirect()` adentro (eso embebe el re-render en el stream de la respuesta y cuelga intermitente en prod). El **cliente** reacciona al `status: 'success'` invalidando queries + `router.push`:
 ```tsx
-await queryClient.invalidateQueries({ queryKey: ['reviews', 'subject', subjectId] });
+useEffect(() => {
+  if (state.status !== 'success') return;
+  queryClient.invalidateQueries({ queryKey: ['reviews', 'subject', subjectId] });
+  router.push('/destino'); // flight GET normal, nunca se cuelga
+}, [state.status]);
 ```
-O desde el action con `revalidatePath`/`revalidateTag`.
+Si alguien "arregla" un action agregándole `revalidatePath`, reintroduce el bug. Ver [ADR-0046](../docs/decisions/0046-server-actions-como-mutaciones-puras.md).
 
 Ver [ADR-0021](../docs/decisions/0021-data-fetching-rsc-tanstack-query.md).
 
