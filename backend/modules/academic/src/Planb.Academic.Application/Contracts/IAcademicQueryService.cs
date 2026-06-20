@@ -63,6 +63,14 @@ public interface IAcademicQueryService
         Guid careerPlanId, CancellationToken ct = default);
 
     /// <summary>
+    /// Devuelve la metadata completa de una materia por id, o <c>null</c> si no existe. Caller:
+    /// la página pública de materia (US-002). A diferencia de
+    /// <see cref="ListSubjectsByCareerPlanAsync"/>, resuelve por id de materia (no por plan) y
+    /// trae los campos de detalle (carga horaria, descripción).
+    /// </summary>
+    Task<SubjectDetailItem?> GetSubjectByIdAsync(Guid subjectId, CancellationToken ct = default);
+
+    /// <summary>
     /// Lista los períodos lectivos de una universidad. Caller: select del form de US-013
     /// para asociar la cursada a un term. Orden DESC por (year, number) para mostrar los
     /// más recientes primero (el caso más frecuente).
