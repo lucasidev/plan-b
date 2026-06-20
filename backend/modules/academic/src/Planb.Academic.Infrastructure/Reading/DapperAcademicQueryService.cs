@@ -170,6 +170,30 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return rows.AsList();
     }
 
+    public async Task<SubjectDetailItem?> GetSubjectByIdAsync(
+        Guid subjectId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT
+                id             AS Id,
+                career_plan_id AS CareerPlanId,
+                code           AS Code,
+                name           AS Name,
+                year_in_plan   AS YearInPlan,
+                term_in_year   AS TermInYear,
+                term_kind      AS TermKind,
+                weekly_hours   AS WeeklyHours,
+                total_hours    AS TotalHours,
+                description    AS Description,
+                is_official    AS IsOfficial
+            FROM academic.subjects
+            WHERE id = @SubjectId;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<SubjectDetailItem>(
+            new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
+    }
+
     public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {

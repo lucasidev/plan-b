@@ -41,6 +41,11 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 s.code                                     AS SubjectCode,
                 s.name                                     AS SubjectName,
                 r.difficulty_rating::int                   AS DifficultyRating,
+                r.overall_rating::int                      AS OverallRating,
+                r.hours_per_week::int                      AS HoursPerWeek,
+                r.tags                                     AS Tags,
+                r.would_recommend_course                   AS WouldRecommendCourse,
+                r.would_retake_teacher                     AS WouldRetakeTeacher,
                 r.subject_text                             AS SubjectText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt,
@@ -81,6 +86,11 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 SubjectCode: r.SubjectCode,
                 SubjectName: r.SubjectName,
                 DifficultyRating: r.DifficultyRating,
+                OverallRating: r.OverallRating,
+                HoursPerWeek: r.HoursPerWeek,
+                Tags: r.Tags ?? [],
+                WouldRecommendCourse: r.WouldRecommendCourse,
+                WouldRetakeTeacher: r.WouldRetakeTeacher,
                 SubjectText: r.SubjectText,
                 FinalGrade: r.FinalGrade,
                 CreatedAt: r.CreatedAt));
@@ -89,16 +99,30 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         return new BrowseReviewsResponse(items, query.Page, query.PageSize, total);
     }
 
-    // Internal row mirrors the SELECT shape (item fields + TotalCount window). Splitting
-    // the projection here keeps the public DTO free of the COUNT-OVER plumbing.
-    private sealed record Row(
-        Guid Id,
-        Guid SubjectId,
-        string SubjectCode,
-        string SubjectName,
-        int DifficultyRating,
-        string? SubjectText,
-        decimal? FinalGrade,
-        DateTime CreatedAt,
-        int TotalCount);
+    // Internal row mirrors the SELECT shape (item fields + TotalCount window). Splitting the
+    // projection here keeps the public DTO free of the COUNT-OVER plumbing.
+    //
+    // This is a class with settable properties (not a positional record) on purpose: the `tags`
+    // column comes back as a Postgres text[] which the reader exposes as System.Array. Dapper's
+    // constructor-matching path cannot bind System.Array to a `string[]` constructor parameter
+    // and throws ("a parameterless default constructor ... is required"), even on an empty result
+    // (it inspects the schema before reading rows). The parameterless-ctor + property-setter path
+    // assigns each column by name and handles the array fine.
+    private sealed class Row
+    {
+        public Guid Id { get; set; }
+        public Guid SubjectId { get; set; }
+        public string SubjectCode { get; set; } = "";
+        public string SubjectName { get; set; } = "";
+        public int DifficultyRating { get; set; }
+        public int OverallRating { get; set; }
+        public int? HoursPerWeek { get; set; }
+        public string[]? Tags { get; set; }
+        public bool WouldRecommendCourse { get; set; }
+        public bool WouldRetakeTeacher { get; set; }
+        public string? SubjectText { get; set; }
+        public decimal? FinalGrade { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int TotalCount { get; set; }
+    }
 }
