@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - modal de reporte en feed Explorar + features/report-review (US-019) (reviews) — [`fc5d6c3`](https://github.com/lucasidev/plan-b/commit/fc5d6c358bc5436940e9e93719fe1de36897b170)
 - persistir modelo completo de reseña (US-089) (reviews) — [`86b0396`](https://github.com/lucasidev/plan-b/commit/86b03962b34e96575166d381fce9a9c554b1e522)
 - el editor resuelve la cursada real en vez del mock (reviews) — [`cf143d5`](https://github.com/lucasidev/plan-b/commit/cf143d5abbbad9dde06ab4d6e863cadbeb256d6a)
+- página pública de materia con reseñas + crowd insights (US-002) (reviews) — [`189b745`](https://github.com/lucasidev/plan-b/commit/189b74547a40aa7a8219ea1d94730a824dbe30c0)
 
 ### Fixed
 
