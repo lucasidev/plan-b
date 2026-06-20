@@ -65,6 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - modal de borrado + trigger en Mías y editor (US-055) (reviews) — [`246e82a`](https://github.com/lucasidev/plan-b/commit/246e82a7576a323ddf91a3268da216c811f55230)
 - POST /api/reviews/{id}/reports + auto-quarantine cross-module (US-019) (moderation) — [`fb311e2`](https://github.com/lucasidev/plan-b/commit/fb311e2ba99b80afbc926373c202b973b7d0fe50)
 - modal de reporte en feed Explorar + features/report-review (US-019) (reviews) — [`fc5d6c3`](https://github.com/lucasidev/plan-b/commit/fc5d6c358bc5436940e9e93719fe1de36897b170)
+- persistir modelo completo de reseña (US-089) (reviews) — [`86b0396`](https://github.com/lucasidev/plan-b/commit/86b03962b34e96575166d381fce9a9c554b1e522)
+- el editor resuelve la cursada real en vez del mock (reviews) — [`cf143d5`](https://github.com/lucasidev/plan-b/commit/cf143d5abbbad9dde06ab4d6e863cadbeb256d6a)
 
 ### Fixed
 
