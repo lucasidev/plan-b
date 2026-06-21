@@ -44,10 +44,16 @@ export function Sidebar({ footer, contextLabel = '' }: Props) {
       </div>
       {contextLabel && (
         <small
-          className="text-ink-3"
+          // line-clamp-2 + title: los nombres reales de carrera son largos (ej. "Tecnicatura
+          // Universitaria en Desarrollo y Calidad de Software"); sin cap, en uppercase 10px
+          // wrapean a 3+ líneas densas y rompen el header (pensado para 1 línea). Cap a 2 líneas
+          // legibles, full text en hover.
+          className="line-clamp-2 text-ink-3"
+          title={contextLabel}
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 10,
+            lineHeight: 1.5,
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
             padding: '0 6px',
