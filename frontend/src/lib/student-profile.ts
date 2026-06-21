@@ -2,8 +2,8 @@ import { apiFetchAuthenticated } from './api-client.server';
 
 /**
  * StudentProfile shape exposed by the backend's GET /api/me/student-profile
- * endpoint (US-037-b). The frontend uses this only to gate the (member) /
- * (onboarding) layouts.
+ * endpoint (US-037-b). The frontend uses this to gate the (member) / (onboarding)
+ * layouts and to label the chrome with the real university + career.
  */
 export type StudentProfile = {
   id: string;
@@ -12,6 +12,10 @@ export type StudentProfile = {
   careerPlanId: string;
   enrollmentYear: number;
   status: string;
+  /** Display labels resueltos cross-schema en el backend. Nullable defensivo (LEFT JOIN). La
+   * universidad es el slug/acrónimo ("unsta"); la carrera es el nombre completo. */
+  careerName: string | null;
+  universityShortName: string | null;
 };
 
 /**

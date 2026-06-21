@@ -29,4 +29,10 @@ public sealed record StudentProfileResponse
     // US-047: header del perfil (no editables desde acá).
     public string Email { get; init; } = null!;
     public DateTimeOffset MemberSince { get; init; }
+    // Display labels resueltos cross-schema desde academic, para el chrome del alumno (sidebar)
+    // en vez del hardcode "UNSTA · Lic. Sistemas". La universidad usa el slug (acrónimo: "unsta",
+    // "utn-frt"), que es la forma corta que el mockup espera; la carrera usa el nombre completo
+    // (no hay forma corta). Nullable: el LEFT JOIN puede no resolver si la career quedó colgada.
+    public string? CareerName { get; init; }
+    public string? UniversityShortName { get; init; }
 }

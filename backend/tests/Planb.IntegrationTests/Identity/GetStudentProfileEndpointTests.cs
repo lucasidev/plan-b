@@ -53,6 +53,10 @@ public class GetStudentProfileEndpointTests
         profile.CareerPlanId.ShouldBe(planId);
         profile.CareerId.ShouldBe(careerId);
         profile.EnrollmentYear.ShouldBe(2024);
+        // US-012 debt: el read resuelve los nombres cross-schema desde academic (para el chrome,
+        // en vez del hardcode "UNSTA · Lic. Sistemas"). El LEFT JOIN matchea la career/uni seedeada.
+        profile.CareerName.ShouldNotBeNullOrWhiteSpace();
+        profile.UniversityShortName.ShouldNotBeNullOrWhiteSpace();
     }
 
     [Fact]

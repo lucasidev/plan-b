@@ -60,6 +60,12 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
         // US-047: el SELECT trae también los nuevos campos editables del perfil + JOIN con
         // users para el header de Mi perfil (email + "miembro desde"). Filtramos por user
         // no-deactivated y profile activo (status='Active') para no devolver basura post-deactivate.
+        // Cross-schema read-projection JOIN a academic para resolver los nombres de display
+        // (universidad + carrera) que el chrome del alumno necesita, en vez de hardcodear
+        // "UNSTA · Lic. Sistemas". Mismo patrón que el browse de reviews (que joinea
+        // academic.subjects): un read service puede joinear cross-schema para display, sin pasar
+        // por el contract (que es para handlers / business reads). LEFT JOIN defensivo: un
+        // profile con career colgado igual devuelve el resto.
         const string sql = @"
             SELECT
                 sp.id                  AS Id,
@@ -74,9 +80,13 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
                 sp.regular_student     AS RegularStudent,
                 sp.updated_at          AS UpdatedAt,
                 u.email                AS Email,
-                u.created_at           AS MemberSince
+                u.created_at           AS MemberSince,
+                c.name                 AS CareerName,
+                un.slug                AS UniversityShortName
             FROM identity.student_profiles sp
             INNER JOIN identity.users u ON u.id = sp.user_id
+            LEFT JOIN academic.careers c ON c.id = sp.career_id
+            LEFT JOIN academic.universities un ON un.id = c.university_id
             WHERE sp.user_id = @UserId
               AND sp.status = 'Active'
               AND u.deactivated_at IS NULL

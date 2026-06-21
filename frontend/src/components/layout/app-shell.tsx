@@ -5,6 +5,8 @@ import { Topbar } from './topbar';
 type Props = {
   /** Logged-in user email, comes from the session read in the RSC layout. */
   email: string;
+  /** "Universidad · Carrera" del student profile, resuelto en el layout RSC. */
+  contextLabel?: string;
   children: React.ReactNode;
 };
 
@@ -22,7 +24,7 @@ type Props = {
  *
  * Per `docs/design/reference/styles.css::.app`.
  */
-export function AppShell({ email, children }: Props) {
+export function AppShell({ email, contextLabel, children }: Props) {
   return (
     <div
       className="grid"
@@ -32,7 +34,7 @@ export function AppShell({ email, children }: Props) {
         overflow: 'hidden',
       }}
     >
-      <Sidebar footer={<AvatarMenu email={email} />} />
+      <Sidebar footer={<AvatarMenu email={email} />} contextLabel={contextLabel} />
       <div className="flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto bg-bg">{children}</main>

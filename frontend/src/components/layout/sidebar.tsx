@@ -10,9 +10,9 @@ type Props = {
   /** Slot rendered below the nav (see `<AvatarMenu />`). */
   footer?: React.ReactNode;
   /**
-   * Small text below the logo. Today hardcoded to "UNSTA · Lic. Sistemas" because the
-   * session does not load university/career yet (US-012). When StudentProfile lands,
-   * this prop is fed from the session.
+   * Small text below the logo: "Universidad · Carrera" del student profile, resuelto en el
+   * layout RSC (member) desde GET /api/me/student-profile. Si viene vacío (career colgada), la
+   * línea simplemente no se renderiza, en vez de mostrar un valor hardcodeado falso.
    */
   contextLabel?: string;
 };
@@ -28,7 +28,7 @@ type Props = {
  * split into a server shell component + a client sub-component that only reads
  * pathname for the highlight.
  */
-export function Sidebar({ footer, contextLabel = 'UNSTA · Lic. Sistemas' }: Props) {
+export function Sidebar({ footer, contextLabel = '' }: Props) {
   const pathname = usePathname();
 
   return (
