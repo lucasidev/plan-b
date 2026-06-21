@@ -27,5 +27,16 @@ export default async function MemberLayout({ children }: { children: React.React
   const profile = await fetchStudentProfile();
   if (!profile) redirect('/onboarding/welcome');
 
-  return <AppShell email={session.email}>{children}</AppShell>;
+  // Real chrome label (US-012 debt): "UNSTA · Carrera" del profile, en vez del hardcode. La uni
+  // es el slug/acrónimo; el CSS del sidebar ya hace uppercase. filter(Boolean) cubre el caso
+  // defensivo de labels null (career colgada): muestra lo que haya.
+  const contextLabel = [profile.universityShortName, profile.careerName]
+    .filter(Boolean)
+    .join(' · ');
+
+  return (
+    <AppShell email={session.email} contextLabel={contextLabel}>
+      {children}
+    </AppShell>
+  );
 }
