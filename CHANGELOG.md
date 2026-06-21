@@ -68,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - persistir modelo completo de reseña (US-089) (reviews) — [`86b0396`](https://github.com/lucasidev/plan-b/commit/86b03962b34e96575166d381fce9a9c554b1e522)
 - el editor resuelve la cursada real en vez del mock (reviews) — [`cf143d5`](https://github.com/lucasidev/plan-b/commit/cf143d5abbbad9dde06ab4d6e863cadbeb256d6a)
 - página pública de materia con reseñas + crowd insights (US-002) (reviews) — [`189b745`](https://github.com/lucasidev/plan-b/commit/189b74547a40aa7a8219ea1d94730a824dbe30c0)
+- universidad + carrera reales en el chrome (saca el hardcode) (identity) — [`be00a10`](https://github.com/lucasidev/plan-b/commit/be00a101d1c345fc2b819ff64856120e43a164fd)
 
 ### Fixed
 
@@ -106,6 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pending spec retries (subject, term) pairs hasta encontrar uno libre (e2e) — [`f36479c`](https://github.com/lucasidev/plan-b/commit/f36479cce5bf33b5f5552fcd61892a29adddf59c)
 - report spec maneja onboarding de Mateo + delete spec asserta detach del  (e2e) — [`0d3b5df`](https://github.com/lucasidev/plan-b/commit/0d3b5df45acfa550a94c246c6115dc327464c2b6)
 - badge de pendientes solo fetchea client-side (evita crash SSR de URL rel (reviews) — [`46177b2`](https://github.com/lucasidev/plan-b/commit/46177b283ea655a11316a0aa059def4bc716349c)
+- el label de carrera del sidebar rompía el header con nombres largos (layout) — [`5b384b2`](https://github.com/lucasidev/plan-b/commit/5b384b263ae24cd08be74948ec41a8459a02e80f)
 
 ### Changed
 
