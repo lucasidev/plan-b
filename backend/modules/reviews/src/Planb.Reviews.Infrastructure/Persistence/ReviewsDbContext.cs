@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Planb.Reviews.Domain.AuditLog;
 using Planb.Reviews.Domain.Reviews;
+using Planb.Reviews.Domain.Votes;
 using Planb.Reviews.Infrastructure.Persistence.Configurations;
 
 namespace Planb.Reviews.Infrastructure.Persistence;
@@ -11,6 +12,7 @@ public sealed class ReviewsDbContext : DbContext
 
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<ReviewAuditLog> AuditLog => Set<ReviewAuditLog>();
+    public DbSet<ReviewVote> ReviewVotes => Set<ReviewVote>();
 
     public ReviewsDbContext(DbContextOptions<ReviewsDbContext> options) : base(options) { }
 
@@ -20,5 +22,6 @@ public sealed class ReviewsDbContext : DbContext
         modelBuilder.HasPostgresExtension("vector");
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewAuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewVoteConfiguration());
     }
 }

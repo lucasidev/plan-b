@@ -49,6 +49,13 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 r.subject_text                             AS SubjectText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt,
+                (SELECT COUNT(*)::int FROM reviews.review_votes rv
+                   WHERE rv.review_id = r.id AND rv.is_helpful)        AS HelpfulCount,
+                (SELECT COUNT(*)::int FROM reviews.review_votes rv
+                   WHERE rv.review_id = r.id AND NOT rv.is_helpful)    AS NotHelpfulCount,
+                (SELECT rv.is_helpful FROM reviews.review_votes rv
+                   WHERE rv.review_id = r.id
+                     AND rv.voter_user_id = @CurrentUserId LIMIT 1)    AS MyVoteIsHelpful,
                 COUNT(*) OVER ()::int                      AS TotalCount
             FROM reviews.reviews r
             JOIN enrollments.enrollment_records er
@@ -68,6 +75,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
             query.SubjectId,
             query.CareerPlanId,
             query.DifficultyRating,
+            query.CurrentUserId,
             Offset = offset,
             Limit = query.PageSize,
         };
@@ -93,7 +101,10 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 WouldRetakeTeacher: r.WouldRetakeTeacher,
                 SubjectText: r.SubjectText,
                 FinalGrade: r.FinalGrade,
-                CreatedAt: r.CreatedAt));
+                CreatedAt: r.CreatedAt,
+                HelpfulCount: r.HelpfulCount,
+                NotHelpfulCount: r.NotHelpfulCount,
+                MyVoteIsHelpful: r.MyVoteIsHelpful));
         }
 
         return new BrowseReviewsResponse(items, query.Page, query.PageSize, total);
@@ -123,6 +134,9 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public string? SubjectText { get; set; }
         public decimal? FinalGrade { get; set; }
         public DateTime CreatedAt { get; set; }
+        public int HelpfulCount { get; set; }
+        public int NotHelpfulCount { get; set; }
+        public bool? MyVoteIsHelpful { get; set; }
         public int TotalCount { get; set; }
     }
 }

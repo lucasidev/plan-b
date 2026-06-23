@@ -6,6 +6,7 @@ import {
   fetchSubjectReviewsServer,
   fetchSubjectServer,
 } from '@/features/view-subject/api.server';
+import { getSession } from '@/lib/session';
 
 // Public, per-request (reads ?page and the live review corpus). Anonymous visitors welcome.
 export const dynamic = 'force-dynamic';
@@ -45,10 +46,13 @@ export default async function SubjectPage({
     notFound();
   }
 
-  const [insights, reviews] = await Promise.all([
+  const [insights, reviews, session] = await Promise.all([
     fetchSubjectInsightsServer(id),
     fetchSubjectReviewsServer(id, page),
+    getSession(),
   ]);
+  // Votar requiere sesión. Un visitante anónimo ve los conteos; los botones lo mandan a /sign-in.
+  const canVote = session !== null;
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
@@ -60,7 +64,7 @@ export default async function SubjectPage({
       </Link>
       <SubjectHeader subject={subject} insights={insights} />
       {insights.totalCount > 0 && <InsightsPanel insights={insights} />}
-      <ReviewsSection reviews={reviews} />
+      <ReviewsSection reviews={reviews} canVote={canVote} />
     </main>
   );
 }

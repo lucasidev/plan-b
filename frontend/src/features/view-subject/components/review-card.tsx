@@ -1,6 +1,7 @@
 import { formatRelativeDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import type { SubjectReview } from '../types';
+import { ReviewVoteButtons } from './review-vote-buttons';
 
 /**
  * One published review on the subject page (US-002). Surfaces the full US-089 model: overall
@@ -9,7 +10,7 @@ import type { SubjectReview } from '../types';
  * "verificado que cursó" because it is anchored to a finished enrollment. Teacher name is
  * omitted until the Teacher aggregate lands (US-063).
  */
-export function ReviewCard({ review }: { review: SubjectReview }) {
+export function ReviewCard({ review, canVote }: { review: SubjectReview; canVote: boolean }) {
   return (
     <li>
       <article className="flex flex-col gap-2.5 border-b border-line px-1 py-4 last:border-b-0">
@@ -36,19 +37,6 @@ export function ReviewCard({ review }: { review: SubjectReview }) {
           <p className="text-[13.5px] leading-relaxed text-ink-2 m-0">{review.subjectText}</p>
         )}
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-ink-3">
-          <span>
-            dificultad{' '}
-            <b className="font-medium text-ink-2 tabular-nums">{review.difficultyRating}/5</b>
-          </span>
-          {review.hoursPerWeek !== null && (
-            <span>
-              · <b className="font-medium text-ink-2 tabular-nums">{review.hoursPerWeek}</b> hs/sem
-            </span>
-          )}
-          <span>· {formatRelativeDate(review.createdAt)}</span>
-        </div>
-
         {review.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {review.tags.map((tag) => (
@@ -61,6 +49,29 @@ export function ReviewCard({ review }: { review: SubjectReview }) {
             ))}
           </div>
         )}
+
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-ink-3">
+            <span>
+              dificultad{' '}
+              <b className="font-medium text-ink-2 tabular-nums">{review.difficultyRating}/5</b>
+            </span>
+            {review.hoursPerWeek !== null && (
+              <span>
+                · <b className="font-medium text-ink-2 tabular-nums">{review.hoursPerWeek}</b>{' '}
+                hs/sem
+              </span>
+            )}
+            <span>· {formatRelativeDate(review.createdAt)}</span>
+          </div>
+          <ReviewVoteButtons
+            reviewId={review.id}
+            helpfulCount={review.helpfulCount}
+            notHelpfulCount={review.notHelpfulCount}
+            myVoteIsHelpful={review.myVoteIsHelpful}
+            canVote={canVote}
+          />
+        </div>
       </article>
     </li>
   );

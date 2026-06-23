@@ -16,4 +16,7 @@ public sealed record BrowseReviewsQuery(
     Guid? CareerPlanId,
     int? DifficultyRating,
     int Page,
-    int PageSize);
+    int PageSize,
+    // Caller autenticado (o null si anónimo). Solo se usa para resolver "mi voto" por reseña;
+    // no filtra el listado (el feed es el mismo para todos).
+    Guid? CurrentUserId);
