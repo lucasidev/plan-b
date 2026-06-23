@@ -21,6 +21,8 @@ type Service = {
   cwd: string;
   command: string;
   args: string[];
+  /** Extra env vars merged over process.env for this service only. */
+  env?: Record<string, string>;
 };
 
 const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
@@ -35,6 +37,9 @@ const services: Service[] = [
     cwd: resolve(ROOT, 'backend/host/Planb.Api'),
     command: 'dotnet',
     args: ['watch', 'run'],
+    // Demo corpus seed: solo en `just dev` (no en `dotnet test`), así los integration tests
+    // quedan con DB limpia. El backend lo gatea además por IsDevelopment(). Ver DemoCorpusHostedService.
+    env: { PLANB_SEED_DEMO: '1' },
   },
   {
     name: 'frontend',
@@ -77,6 +82,7 @@ function start(service: Service): ChildProcess {
       // typically writes plain when stdout is piped so this is a frontend-only
       // win, but it also doesn't hurt the backend.
       FORCE_COLOR: '1',
+      ...service.env,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
