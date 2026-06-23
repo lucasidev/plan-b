@@ -46,6 +46,10 @@ export type SubjectReview = {
   subjectText: string | null;
   finalGrade: number | null;
   createdAt: string;
+  /** Votos de utilidad (helpfulness). myVoteIsHelpful: null si el caller no votó / es anónimo. */
+  helpfulCount: number;
+  notHelpfulCount: number;
+  myVoteIsHelpful: boolean | null;
 };
 
 export type SubjectReviewsPage = {

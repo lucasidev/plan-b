@@ -25,4 +25,9 @@ public sealed record BrowseReviewItem(
     bool WouldRetakeTeacher,
     string? SubjectText,
     decimal? FinalGrade,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    // Votos de utilidad (helpfulness). MyVoteIsHelpful: null si el caller no votó (o es
+    // anónimo), true = votó útil, false = votó no útil. Sirve para resaltar el botón activo.
+    int HelpfulCount,
+    int NotHelpfulCount,
+    bool? MyVoteIsHelpful);

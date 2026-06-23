@@ -2,6 +2,7 @@ using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Planb.Identity.Application.Abstractions.Security;
 using Planb.Reviews.Application.Abstractions.Persistence;
 
 namespace Planb.Reviews.Application.Features.BrowseReviews;
@@ -28,15 +29,21 @@ public sealed class BrowseReviewsEndpoint : ICarterModule
             int? difficulty,
             int? page,
             int? pageSize,
+            HttpContext http,
             IBrowseReviewsQueryService browse,
             CancellationToken ct) =>
         {
+            // Endpoint público: el caller puede ser anónimo. Si trae sesión, resolvemos su id
+            // solo para marcar "mi voto" por reseña (no filtra el feed).
+            var currentUserId = CurrentUser.GetUserId(http)?.Value;
+
             var query = new BrowseReviewsQuery(
                 SubjectId: subjectId,
                 CareerPlanId: careerPlanId,
                 DifficultyRating: difficulty is >= 1 and <= 5 ? difficulty : null,
                 Page: Math.Max(1, page ?? 1),
-                PageSize: Math.Clamp(pageSize ?? DefaultPageSize, 1, MaxPageSize));
+                PageSize: Math.Clamp(pageSize ?? DefaultPageSize, 1, MaxPageSize),
+                CurrentUserId: currentUserId);
 
             var response = await browse.BrowseAsync(query, ct);
             return Results.Ok(response);

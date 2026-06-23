@@ -139,4 +139,23 @@ public static class ReviewErrors
         Error.Validation(
             "reviews.edit.nothing_to_update",
             "Provide at least one field to update.");
+
+    // -- Votos de utilidad (helpfulness) ------------------------------------
+
+    /// <summary>
+    /// El votante es el autor de la reseña. No se puede votar la propia. 403.
+    /// </summary>
+    public static readonly Error CannotVoteOwnReview =
+        Error.Forbidden(
+            "reviews.vote.cannot_vote_own_review",
+            "You cannot vote on your own review.");
+
+    /// <summary>
+    /// Solo se vota una reseña <c>Published</c>. UnderReview / Removed / Deleted no son
+    /// votables. 409.
+    /// </summary>
+    public static readonly Error ReviewNotVotable =
+        Error.Conflict(
+            "reviews.vote.review_not_votable",
+            "Only published reviews can be voted on.");
 }

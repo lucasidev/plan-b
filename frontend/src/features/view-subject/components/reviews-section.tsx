@@ -8,7 +8,13 @@ import { ReviewCard } from './review-card';
  * link-based pager (server-driven pagination via `?page=N`, SEO-friendly for a public page).
  * Empty state per the US-002 AC copy.
  */
-export function ReviewsSection({ reviews }: { reviews: SubjectReviewsPage }) {
+export function ReviewsSection({
+  reviews,
+  canVote,
+}: {
+  reviews: SubjectReviewsPage;
+  canVote: boolean;
+}) {
   if (reviews.totalCount === 0) {
     return (
       <section className="rounded-lg border border-line bg-bg-card p-10 text-center">
@@ -29,7 +35,7 @@ export function ReviewsSection({ reviews }: { reviews: SubjectReviewsPage }) {
       </h2>
       <ul className="flex flex-col" aria-label="Reseñas de la materia">
         {reviews.items.map((review) => (
-          <ReviewCard key={review.id} review={review} />
+          <ReviewCard key={review.id} review={review} canVote={canVote} />
         ))}
       </ul>
       {pageCount > 1 && <Pager page={reviews.page} pageCount={pageCount} />}
