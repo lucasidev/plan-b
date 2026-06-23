@@ -1,10 +1,11 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment, useEffect, useState } from 'react';
+import { GlobalSearch } from '@/features/global-search';
 import { pendingReviewsQueries } from '@/features/pending-reviews';
 import { breadcrumbsForPath } from '@/lib/member-shell';
 
@@ -31,7 +32,7 @@ export function Topbar() {
     >
       <Crumbs items={crumbs} />
       <div className="flex-1" />
-      <SearchBar />
+      <GlobalSearch />
       <WriteReviewButton />
     </div>
   );
@@ -132,48 +133,5 @@ function Crumbs({ items }: { items: ReadonlyArray<string> }) {
         );
       })}
     </div>
-  );
-}
-
-/**
- * Visual placeholder for global search (`⌘K`). The input does not POST to any
- * endpoint yet. The form submit (Enter) calls `preventDefault` so the page doesn't
- * reload.
- *
- * Once US-004 (search backend) + the global-search frontend US land, this component
- * is replaced by one with a real `Combobox`.
- */
-function SearchBar() {
-  return (
-    // `preventDefault` instead of `action` because search has no backend yet (US-004
-    // frontend pending). When it lands, this wrapper is replaced by a
-    // `<form action={searchAction}>` that progressively enhances without JS, and the
-    // `no-prevent-default` rule stops applying.
-    // react-doctor-disable-next-line no-prevent-default, react-doctor/no-prevent-default
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="flex items-center bg-bg-card border border-line rounded-pill shadow-card"
-      style={{ padding: '7px 14px', gap: 6, width: 320 }}
-    >
-      <Search size={13} className="text-ink-3" aria-hidden />
-      <input
-        type="search"
-        placeholder="Buscar materia, docente, código..."
-        aria-label="Buscar"
-        className="flex-1 bg-transparent border-0 outline-none text-ink"
-        style={{ font: 'inherit', fontSize: 13 }}
-      />
-      <kbd
-        className="text-ink-3 bg-bg-card border border-line"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          padding: '1px 5px',
-          borderRadius: 3,
-        }}
-      >
-        ⌘K
-      </kbd>
-    </form>
   );
 }
