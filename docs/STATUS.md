@@ -374,7 +374,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 
 1. **US-089** (enabler, nueva del triage; doc pendiente): persistir el modelo completo de reseña (rating 1-5, horas/semana, tags, recomendaría cursada / retomaría docente) que hoy el editor descarta por el mapping lossy contra el modelo de US-017. Extiende el aggregate Review + migración; saca el mapping lossy de write-review / edit-review. Va primero: sin esto US-002 no puede mostrar rating promedio. Effort M.
 2. **[US-002](domain/user-stories/US-002.md)**: página de materia con reseñas + agregados (rating promedio, histograma). Effort M.
-3. **[US-004](domain/user-stories/US-004.md)**: buscar materia o docente (Postgres full-text + trigram). Effort M.
+3. **[US-004](domain/user-stories/US-004.md)**: buscar materia o docente (Postgres full-text + trigram). Effort M. **Entregado materia-only** (2026-06-23): la rama docente queda diferida a US-063 (no hay entidad Teacher); el contrato del endpoint ya viene discriminado por `type` para injertarla aditivamente.
 
 Más **US-T07-b** (nueva del triage; doc pendiente): extender architecture tests a los 5 módulos. Red de seguridad barata antes de meter código nuevo.
 
@@ -382,7 +382,7 @@ Más **US-T07-b** (nueva del triage; doc pendiente): extender architecture tests
 
 Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audit de arranque lo anuló:
 
-- **US-003 (docente con reseñas) está bloqueada** por el Teacher aggregate (US-063): hoy toda reseña apunta a `PLACEHOLDER_TEACHER_ID`, no hay docentes reales que mostrar. Diferida a S7.
+- **US-063 (Teacher) es el keystone del vertical docente**: hoy toda reseña apunta a `PLACEHOLDER_TEACHER_ID`, no existe entidad Teacher. Gatea todo lo docente, que converge en S7: US-003 (docente con reseñas), US-040 (responder reseña), la rama docente de US-004 (búsqueda), docente real por reseña y los badges. Por eso el roadmap (redefinido 2026-06-23) abre S7 con US-063 como sprint dedicado y el resto se injerta. S8 = moderación.
 - **El lado materia ya llena el sprint**: US-089 + US-002 + US-004.
 - **La cola de moderación entera va a S7** (US-050 + US-051 + persona moderador + auth staff): es cabo de US-019 pero no urgente sin usuarios reales generando cuarentenas. Si el jurado UNSTA necesita el demo de moderación como hito institucional, sube de prioridad y se recorta el lado materia.
 - **US-001 (catálogo completo)** también diferida a S7.

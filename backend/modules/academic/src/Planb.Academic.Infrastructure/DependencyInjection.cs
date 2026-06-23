@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.Search;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
@@ -27,6 +28,7 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IAcademicQueryService, DapperAcademicQueryService>();
+        services.AddScoped<ISubjectSearchReader, DapperSubjectSearchReader>();
         services.AddScoped<AcademicSeeder>();
 
         // US-088: writes al catálogo cross-aggregate
