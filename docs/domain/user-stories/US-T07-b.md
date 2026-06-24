@@ -1,6 +1,6 @@
 # US-T07-b: Architecture tests para los 5 modulos del monolito (Academic, Reviews, Moderation, Enrollments)
 
-**Status**: Sprint Backlog
+**Status**: Done
 **Sprint**: S6
 **Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
 **Priority**: Medium
@@ -49,6 +49,14 @@ El costo de replicar las 7 reglas por modulo es bajo (NetArchTest es declarativo
 - **Forward-looking test ya existente**: el test `Identity_Assemblies_do_not_reference_other_module_internals` ya itera los prefixes de todos los modulos (aunque no tengan codigo aun cuando se escribio en S1). Los tests nuevos agregan el test en la perspectiva del modulo nuevo como emisor de dependencias cruzadas, no solo como receptor.
 - **Carter + AspNetCore en Application**: la excepcion conocida de Identity aplica igual: los endpoints Carter referencian `Microsoft.AspNetCore.Routing`. La regla correcta es `Endpoints_do_not_reference_EntityFrameworkCore`, no `Application_does_not_reference_AspNetCore`. Esto esta documentado en US-T04-b y aplica a todos los modulos.
 - **Sealed aggregates en Reviews**: el aggregate `Review` usa EF Core con private constructor, properties `private set`, y el patron factory. Deberia ser `sealed`. Si no lo esta al momento de implementar este US, es la violacion a registrar como deuda (trivial de corregir).
+
+## Estado de implementación (S6, 2026-06-23)
+
+Done. Se hizo **parametrizado** (la opción de organización 2 del US): las 8 reglas son `[Theory]` sobre los 5 módulos en `ModuleBoundariesTests.cs`, no replicadas por módulo. **40 tests en verde** (8 reglas × 5 módulos).
+
+- **Sin violaciones**: los 5 módulos ya respetaban todos los boundaries (incluido el `Review` aggregate, que está sealed). No hubo deuda que registrar ni `Skip` que poner.
+- **ProjectReferences**: se agregaron Domain + Application de los 4 módulos nuevos (8 refs, no 12). Las reglas solo inspeccionan Domain + Application; la regla cross-module chequea el string de la dependencia (no carga el assembly de Infra), y el ProjectReference al Host ya trae Infra transitivamente.
+- **8 reglas, no 7**: se separó "no depende de otros módulos" en dos (Domain vs Application) por claridad, de ahí 40 tests en vez de los 35 estimados.
 
 ## Refs
 

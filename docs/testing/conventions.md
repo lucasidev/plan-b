@@ -158,12 +158,13 @@ public class ModuleBoundariesTests
 }
 ```
 
-Aterriza con US-T04. Reglas iniciales planeadas:
-- Endpoints no referencian `DbContext`.
-- Nadie usa `DateTime.UtcNow` directo (todos vía `IDateTimeProvider`).
-- Domain no referencia EF Core.
-- Application no referencia `Microsoft.AspNetCore.*`.
-- Aggregates ↔ aggregates entre módulos viaja sólo por integration events (Wolverine).
+Aterrizó con US-T04-b (Identity); **US-T07-b generalizó las reglas a los 5 módulos** (8 reglas × 5 = 40 tests, parametrizadas con `[Theory]` en `ModuleBoundariesTests.cs`). Reglas enforced hoy:
+- Domain no referencia EF Core, AspNetCore ni Wolverine.
+- Handlers (`*CommandHandler` / `*QueryHandler`) y endpoints (`*Endpoint`) no referencian EF Core directo.
+- Domain no depende de NINGÚN otro módulo (ni de Contracts); Application no depende del Domain ni Infrastructure de otros (solo `Contracts` reads / `IntegrationEvents` writes).
+- Aggregates y VOs del Domain son sealed.
+
+No expresables en NetArchTest (requieren body inspection), quedan en review: `DateTime.UtcNow` directo (usar `IDateTimeProvider`), `throw` para fallas de negocio (usar `Result<T>`).
 
 ## Frontend
 

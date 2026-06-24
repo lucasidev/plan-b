@@ -376,7 +376,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 2. **[US-002](domain/user-stories/US-002.md)**: página de materia con reseñas + agregados (rating promedio, histograma). Effort M.
 3. **[US-004](domain/user-stories/US-004.md)**: buscar materia o docente (Postgres full-text + trigram). Effort M. **Entregado materia-only** (2026-06-23): la rama docente queda diferida a US-063 (no hay entidad Teacher); el contrato del endpoint ya viene discriminado por `type` para injertarla aditivamente.
 
-Más **US-T07-b** (nueva del triage; doc pendiente): extender architecture tests a los 5 módulos. Red de seguridad barata antes de meter código nuevo.
+Más **US-T07-b** (DONE 2026-06-23): architecture tests extendidos a los 5 módulos (8 reglas × 5 = 40 tests, parametrizadas con `[Theory]` en `ModuleBoundariesTests.cs`). Hallazgo: los 5 módulos ya respetaban todos los boundaries, sin violaciones. La red de seguridad queda enforced en CI.
 
 ### Decisión de scope (anula el plan de dos frentes del cierre de S5, con razón explícita)
 
@@ -400,7 +400,7 @@ Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audi
 
 **Housekeeping restante del audit (pre-sprint)**: dedup de `formatRelativeDate`, identifiers castellanos en `commissions.ts`, `OccurredAt` con doble reloj en `CareerPlanImported`, `write.spec` a component test.
 
-**Docs pendientes**: US-089 y US-T07-b existen como tasks en Notion pero todavía no tienen doc en `docs/domain/user-stories/`.
+**Docs**: US-089 y US-T07-b ya tienen doc en `docs/domain/user-stories/` (ambos Done).
 
 ---
 
