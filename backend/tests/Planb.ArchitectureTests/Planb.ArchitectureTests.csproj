@@ -20,5 +20,13 @@
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Domain\Planb.Identity.Domain.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
     <ProjectReference Include="..\..\modules\identity\src\Planb.Identity.Infrastructure\Planb.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Domain\Planb.Academic.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
+    <ProjectReference Include="..\..\modules\enrollments\src\Planb.Enrollments.Domain\Planb.Enrollments.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\enrollments\src\Planb.Enrollments.Application\Planb.Enrollments.Application.csproj" />
+    <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Domain\Planb.Reviews.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
+    <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Domain\Planb.Moderation.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Application\Planb.Moderation.Application.csproj" />
   </ItemGroup>
 </Project>

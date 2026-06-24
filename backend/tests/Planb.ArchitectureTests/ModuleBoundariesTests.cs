@@ -6,89 +6,87 @@ using Xunit;
 namespace Planb.ArchitectureTests;
 
 /// <summary>
-/// Architecture tests que enforcean los boundaries del modular monolith
-/// (ADR-0014, ADR-0017). Estos tests reemplazan reglas que antes vivían
-/// sólo en CLAUDE.md y dependían de memoria humana / code review.
+/// Architecture tests que enforcean los boundaries del modular monolith (ADR-0014, ADR-0017) en
+/// LOS 5 bounded contexts. US-T07-b generaliza las reglas que US-T04-b había hardcodeado a Identity:
+/// cada regla es ahora un <see cref="TheoryAttribute"/> sobre los 5 módulos. Reemplazan reglas que
+/// antes vivían solo en CLAUDE.md y dependían de review humano.
 ///
-/// Si una regla es difícil de testear con NetArchTest (e.g. inspección de
-/// method bodies para `DateTime.UtcNow` directo), queda como nota en
-/// docs/testing/conventions.md y se chequea en review hasta que tengamos
-/// un Roslyn analyzer custom.
+/// El módulo se pasa por nombre (string, serializable para xUnit) y las assemblies se resuelven con
+/// <see cref="Assembly.Load(string)"/>; el test project referencia Domain + Application de cada
+/// módulo (ver csproj) para que estén en el output y carguen.
 ///
-/// Excepciones legítimas: si una regla tiene un caso válido que la rompe
-/// (raro), documentar en este archivo con [Trait("Exception", "...")] o
-/// agregar un attribute custom + whitelist en el test correspondiente.
+/// Si una regla es difícil de testear con NetArchTest (e.g. inspección de method bodies para
+/// <c>DateTime.UtcNow</c> directo), queda como nota en docs/testing/conventions.md y se chequea en
+/// review hasta que tengamos un Roslyn analyzer custom.
 /// </summary>
 public class ModuleBoundariesTests
 {
-    // Los assemblies del backend que referenciamos via ProjectReference quedan
-    // cargables al runtime via Assembly.Load por nombre. El test project tiene
-    // que tener una ProjectReference a cada uno (ver Planb.ArchitectureTests.csproj).
-    private static Assembly IdentityDomain =>
-        typeof(Planb.Identity.Domain.Users.User).Assembly;
+    private static readonly string[] AllModules =
+        ["Identity", "Academic", "Enrollments", "Reviews", "Moderation"];
 
-    private static Assembly IdentityApplication =>
-        Assembly.Load("Planb.Identity.Application");
+    /// <summary>Los 5 bounded contexts. Cada uno tiene <c>Planb.{Name}.Domain</c> y <c>.Application</c>.</summary>
+    public static TheoryData<string> Modules => [.. AllModules];
 
-    private static Assembly IdentityInfrastructure =>
-        Assembly.Load("Planb.Identity.Infrastructure");
+    private static Assembly DomainOf(string module) => Assembly.Load($"Planb.{module}.Domain");
+
+    private static Assembly ApplicationOf(string module) => Assembly.Load($"Planb.{module}.Application");
 
     // ─────────────────────────────────────────────────────────────────
-    // Domain layer: pure, no infrastructure
+    // Domain layer: puro, sin infraestructura
     // ─────────────────────────────────────────────────────────────────
 
-    [Fact]
-    public void Identity_Domain_does_not_reference_EntityFrameworkCore()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_does_not_reference_EntityFrameworkCore(string module)
     {
-        var result = Types.InAssembly(IdentityDomain)
+        var result = Types.InAssembly(DomainOf(module))
             .Should()
             .NotHaveDependencyOn("Microsoft.EntityFrameworkCore")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result, "Domain debería ser persistence-ignorant (ADR-0017)"));
+            FailureMessage(module, result, "Domain debería ser persistence-ignorant (ADR-0017)"));
     }
 
-    [Fact]
-    public void Identity_Domain_does_not_reference_AspNetCore()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_does_not_reference_AspNetCore(string module)
     {
-        var result = Types.InAssembly(IdentityDomain)
+        var result = Types.InAssembly(DomainOf(module))
             .Should()
             .NotHaveDependencyOn("Microsoft.AspNetCore")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result, "Domain no sabe nada de HTTP (ADR-0014)"));
+            FailureMessage(module, result, "Domain no sabe nada de HTTP (ADR-0014)"));
     }
 
-    [Fact]
-    public void Identity_Domain_does_not_reference_Wolverine()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_does_not_reference_Wolverine(string module)
     {
-        // Wolverine es el messaging stack (capa Application/Host). Domain levanta
-        // domain events vía la abstracción `Raise(IDomainEvent)` de SharedKernel;
-        // el dispatching a Wolverine pasa por la capa Application. Domain no
-        // debería conocer Wolverine.
-        var result = Types.InAssembly(IdentityDomain)
+        // Wolverine es el messaging stack (Application/Host). Domain levanta domain events vía la
+        // abstracción Raise(IDomainEvent) de SharedKernel; el dispatching pasa por Application.
+        var result = Types.InAssembly(DomainOf(module))
             .Should()
             .NotHaveDependencyOn("Wolverine")
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result, "Domain no debería referenciar Wolverine"));
+            FailureMessage(module, result, "Domain no debería referenciar Wolverine"));
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // Application layer: handlers + endpoints, sin EF
+    // Application layer: handlers + endpoints, sin EF directo
     // ─────────────────────────────────────────────────────────────────
 
-    [Fact]
-    public void Identity_handlers_do_not_reference_EntityFrameworkCore()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Handlers_do_not_reference_EntityFrameworkCore(string module)
     {
-        // Los Wolverine handlers (Static classes con `*CommandHandler` o
-        // `*QueryHandler` por convención) viven en Application y deben usar
-        // las abstracciones de persistence (`IUserRepository`, `IIdentityUnitOfWork`),
-        // nunca el DbContext concreto.
-        var result = Types.InAssembly(IdentityApplication)
+        // Los Wolverine handlers (`*CommandHandler` / `*QueryHandler` por convención) deben usar
+        // las abstracciones de persistence (IRepository, IUnitOfWork), nunca el DbContext concreto.
+        var result = Types.InAssembly(ApplicationOf(module))
             .That()
             .HaveNameEndingWith("CommandHandler")
             .Or()
@@ -98,16 +96,17 @@ public class ModuleBoundariesTests
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result,
+            FailureMessage(module, result,
                 "Handlers deberían usar IRepository / IUnitOfWork, no DbContext directo"));
     }
 
-    [Fact]
-    public void Identity_endpoints_do_not_reference_EntityFrameworkCore()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Endpoints_do_not_reference_EntityFrameworkCore(string module)
     {
-        // Los endpoints Carter son thin: parsean HTTP, despachan al handler vía
-        // IMessageBus, devuelven la response. No deberían tener noción de EF.
-        var result = Types.InAssembly(IdentityApplication)
+        // Los endpoints Carter son thin: parsean HTTP, despachan al handler vía IMessageBus (o
+        // llaman un read service), devuelven la response. No deberían tener noción de EF.
+        var result = Types.InAssembly(ApplicationOf(module))
             .That()
             .HaveNameEndingWith("Endpoint")
             .Should()
@@ -115,81 +114,70 @@ public class ModuleBoundariesTests
             .GetResult();
 
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result, "Endpoints son thin: HTTP in/out, sin EF (ADR-0016)"));
+            FailureMessage(module, result, "Endpoints son thin: HTTP in/out, sin EF (ADR-0016)"));
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // Cross-module isolation
+    // Aislamiento cross-module
     // ─────────────────────────────────────────────────────────────────
 
-    [Fact]
-    public void Identity_assemblies_do_not_reference_other_module_internals()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_does_not_depend_on_other_modules(string module)
     {
-        // Cross-module reads van por Contracts/ (interfaces sync). Cross-module writes van por
-        // IntegrationEvents/ (Wolverine outbox). Identity NO debe acoplarse al Domain ni al
-        // Infrastructure de otros bounded contexts. Sí puede consumir el namespace público
-        // (Application/Contracts y Application/IntegrationEvents).
-        //
-        // El Identity Domain no debe depender de NINGUNA capa de otros módulos, ni siquiera
-        // Contracts: el dominio es puro.
-        var otherModules = new[] { "Academic", "Reviews", "Moderation", "Enrollments" };
-
-        foreach (var module in otherModules)
+        // El Domain es puro: no depende de NINGUNA capa de otros módulos, ni siquiera Contracts.
+        foreach (var other in AllModules.Where(m => m != module))
         {
-            // Domain: prohibido todo cross-module (incluso Contracts).
-            var domainResult = Types.InAssembly(IdentityDomain)
+            var result = Types.InAssembly(DomainOf(module))
                 .Should()
-                .NotHaveDependencyOn($"Planb.{module}")
+                .NotHaveDependencyOn($"Planb.{other}")
                 .GetResult();
 
-            domainResult.IsSuccessful.ShouldBeTrue(
-                FailureMessage(domainResult,
-                    $"Identity Domain no debería depender de Planb.{module}.* (el dominio es puro)"));
+            result.IsSuccessful.ShouldBeTrue(
+                FailureMessage(module, result,
+                    $"el Domain es puro, no debería depender de Planb.{other}.*"));
+        }
+    }
 
-            // Application: prohibido Domain + Infrastructure de otros módulos. Contracts y
-            // IntegrationEvents son superficie pública y SI están permitidos.
-            var forbiddenAppPrefixes = new[]
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Application_does_not_depend_on_other_modules_internals(string module)
+    {
+        // Cross-module reads van por Contracts/ (interfaces sync); writes por IntegrationEvents/
+        // (Wolverine outbox). El Domain y el Infrastructure de otros módulos están prohibidos.
+        foreach (var other in AllModules.Where(m => m != module))
+        {
+            foreach (var prefix in new[] { $"Planb.{other}.Domain", $"Planb.{other}.Infrastructure" })
             {
-                $"Planb.{module}.Domain",
-                $"Planb.{module}.Infrastructure",
-            };
-
-            foreach (var prefix in forbiddenAppPrefixes)
-            {
-                var appResult = Types.InAssembly(IdentityApplication)
+                var result = Types.InAssembly(ApplicationOf(module))
                     .Should()
                     .NotHaveDependencyOn(prefix)
                     .GetResult();
 
-                appResult.IsSuccessful.ShouldBeTrue(
-                    FailureMessage(appResult,
-                        $"Identity Application no debería depender de {prefix}.* — usá " +
-                        $"Planb.{module}.Application.Contracts (reads sync) o " +
-                        $"Planb.{module}.Application.IntegrationEvents (writes async)"));
+                result.IsSuccessful.ShouldBeTrue(
+                    FailureMessage(module, result,
+                        $"Application no debería depender de {prefix}.*; usá " +
+                        $"Planb.{other}.Application.Contracts (reads sync) o " +
+                        $"Planb.{other}.Application.IntegrationEvents (writes async)"));
             }
         }
     }
 
     // ─────────────────────────────────────────────────────────────────
-    // Domain primitives convention
+    // Convención de primitivas del dominio
     // ─────────────────────────────────────────────────────────────────
 
-    [Fact]
-    public void Identity_Domain_aggregates_and_VOs_are_sealed()
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_classes_are_sealed(string module)
     {
-        // Convención del modular monolith: aggregates y value objects son
-        // sealed. Permitir herencia abre la puerta a partial-correctness
-        // (subclases que rompen invariantes). Si genuinely necesitamos
-        // herencia, abstract base + sealed concretes.
-        //
-        // Filtro: types públicos en namespaces que terminan en .Users,
-        // excluyendo abstractas + records que ya son sealed implícitos en
-        // ciertas configuraciones. Los records tipo `public record` son
-        // por definición sealed-by-default en C#11+ but treating them as
-        // an exception is fine.
-        var result = Types.InAssembly(IdentityDomain)
+        // Aggregates y value objects son sealed: permitir herencia abre la puerta a
+        // partial-correctness (subclases que rompen invariantes). Si genuinely hace falta herencia:
+        // abstract base + sealed concretes. Filtro: clases públicas no-abstractas del Domain. Las
+        // static (abstract+sealed en IL, e.g. los *Errors) quedan afuera por AreNotAbstract().
+        var result = Types.InAssembly(DomainOf(module))
             .That()
-            .ResideInNamespace("Planb.Identity.Domain.Users")
+            .ResideInNamespaceStartingWith($"Planb.{module}.Domain")
             .And()
             .ArePublic()
             .And()
@@ -200,27 +188,20 @@ public class ModuleBoundariesTests
             .BeSealed()
             .GetResult();
 
-        // Si esta regla resulta restrictiva (genuinamente necesitamos un
-        // class no-sealed en Domain), considerar:
-        //   1) ¿La herencia es real, o es leak de implementation detail?
-        //   2) Si es real, cambiar a sealed con interfaces / abstract base.
-        //   3) Si después de pensarlo sigue siendo necesario, agregar
-        //      un attribute custom [DomainInheritanceException("razón")]
-        //      y filtrarlo acá.
         result.IsSuccessful.ShouldBeTrue(
-            FailureMessage(result,
-                "Domain classes deberían ser sealed (sin herencia accidental)"));
+            FailureMessage(module, result,
+                "las clases de Domain deberían ser sealed (sin herencia accidental)"));
     }
 
     // ─────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────
 
-    private static string FailureMessage(TestResult result, string explanation)
+    private static string FailureMessage(string module, TestResult result, string explanation)
     {
         var failing = result.FailingTypeNames is null or { Count: 0 }
             ? "(no failing types reported)"
             : string.Join(", ", result.FailingTypeNames);
-        return $"{explanation}. Tipos infractores: {failing}";
+        return $"[{module}] {explanation}. Tipos infractores: {failing}";
     }
 }
