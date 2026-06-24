@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
-import type { SubjectDetail, SubjectInsights, SubjectReviewsPage } from './types';
+import type { SubjectDetail, SubjectInsights, SubjectPassRate, SubjectReviewsPage } from './types';
 import { SUBJECT_REVIEWS_PAGE_SIZE } from './types';
 
 /**
@@ -51,4 +51,19 @@ export async function fetchSubjectReviewsServer(
     throw new Error(`Subject reviews fetch failed: ${response.status}`);
   }
   return (await response.json()) as SubjectReviewsPage;
+}
+
+/**
+ * Aprobación histórica de la materia (ADR-0047). Agrega el historial de enrollments; el backend
+ * aplica el gate de muestra mínima (devuelve passRate null si N es bajo). Materia sin cursadas =
+ * sampleSize 0 + passRate null.
+ */
+export async function fetchSubjectPassRateServer(subjectId: string): Promise<SubjectPassRate> {
+  const response = await apiFetchAuthenticated(`/api/enrollments/subjects/${subjectId}/pass-rate`, {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(`Subject pass-rate fetch failed: ${response.status}`);
+  }
+  return (await response.json()) as SubjectPassRate;
 }

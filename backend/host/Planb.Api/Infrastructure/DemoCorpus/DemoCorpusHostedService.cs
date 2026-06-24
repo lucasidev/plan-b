@@ -87,8 +87,10 @@ public sealed class DemoCorpusHostedService : IHostedService
         var enrollmentsSeeder = sp.GetRequiredService<EnrollmentsDemoSeeder>();
         var reviewsSeeder = sp.GetRequiredService<ReviewsDemoSeeder>();
 
-        // 1) Autores -> profileIds.
+        // 1) Autores -> profileIds. Incluye los autores de fallas (solo Reprobada/Abandonada, sin
+        // reseña), que alimentan el denominador del pass-rate; perfiles distintos de los de reseñas.
         var authorSpecs = DemoCorpusData.Authors
+            .Concat(DemoCorpusData.FailureAuthors)
             .Select(a => new DemoAuthorSpec(
                 a.Key,
                 a.Email,
@@ -114,7 +116,23 @@ public sealed class DemoCorpusHostedService : IHostedService
                 ApprovalMethod.Final,
                 r.Grade))
             .ToList();
-        var enrollments = await enrollmentsSeeder.SeedAsync(enrollmentSpecs, ct);
+
+        // Cursadas sin aprobar (Reprobada/Abandonada, sin reseña): denominador del pass-rate
+        // (ADR-0047). approval_method y grade van null (lo exige el CHECK del aggregate).
+        var failureSpecs = DemoCorpusData.Failures
+            .Where(f => authors.ContainsKey(f.AuthorKey))
+            .Select(f => new DemoEnrollmentSpec(
+                f.Key,
+                authors[f.AuthorKey].ProfileId,
+                f.SubjectId,
+                DemoCorpusData.DemoCommissionId,
+                f.TermId,
+                f.IsAbandoned ? EnrollmentStatus.Abandonada : EnrollmentStatus.Reprobada,
+                null,
+                null))
+            .ToList();
+
+        var enrollments = await enrollmentsSeeder.SeedAsync([.. enrollmentSpecs, .. failureSpecs], ct);
 
         // 3) Reseñas (ancladas a las cursadas) + votos entre autores.
         var reviewSpecs = seedableReviews
@@ -140,7 +158,7 @@ public sealed class DemoCorpusHostedService : IHostedService
         await reviewsSeeder.SeedAsync(reviewSpecs, voteSpecs, ct);
 
         _log.LogInformation(
-            "Demo corpus seeded: {Authors} authors, {Reviews} reviews, {Votes} votes.",
-            authors.Count, reviewSpecs.Count, voteSpecs.Count);
+            "Demo corpus seeded: {Authors} authors, {Reviews} reviews, {Votes} votes, {Failures} failed enrollments.",
+            authors.Count, reviewSpecs.Count, voteSpecs.Count, failureSpecs.Count);
     }
 }

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { InsightsPanel, ReviewsSection, SubjectHeader } from '@/features/view-subject';
 import {
   fetchSubjectInsightsServer,
+  fetchSubjectPassRateServer,
   fetchSubjectReviewsServer,
   fetchSubjectServer,
 } from '@/features/view-subject/api.server';
@@ -46,10 +47,11 @@ export default async function SubjectPage({
     notFound();
   }
 
-  const [insights, reviews, session] = await Promise.all([
+  const [insights, reviews, session, passRate] = await Promise.all([
     fetchSubjectInsightsServer(id),
     fetchSubjectReviewsServer(id, page),
     getSession(),
+    fetchSubjectPassRateServer(id),
   ]);
   // Votar requiere sesión. Un visitante anónimo ve los conteos; los botones lo mandan a /sign-in.
   const canVote = session !== null;
@@ -62,7 +64,7 @@ export default async function SubjectPage({
       >
         ← plan-b
       </Link>
-      <SubjectHeader subject={subject} insights={insights} />
+      <SubjectHeader subject={subject} insights={insights} passRate={passRate} />
       {insights.totalCount > 0 && <InsightsPanel insights={insights} />}
       <ReviewsSection reviews={reviews} canVote={canVote} />
     </main>

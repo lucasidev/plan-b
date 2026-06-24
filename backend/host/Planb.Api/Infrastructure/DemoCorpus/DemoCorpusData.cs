@@ -55,6 +55,24 @@ public static class DemoCorpusData
     ];
 
     /// <summary>
+    /// Autores fantasma que solo reprobaron/abandonaron (sin reseña). Existen para alimentar el
+    /// denominador del pass-rate (ADR-0047) y que la aprobación histórica no de 100% en todo.
+    /// Perfiles distintos de los autores de reseñas, así no hay colisión en el UNIQUE
+    /// (profile, subject, term).
+    /// </summary>
+    public static IReadOnlyList<AuthorDef> FailureAuthors { get; } =
+    [
+        new("b01", "demo.b01@planb.local", 2020),
+        new("b02", "demo.b02@planb.local", 2021),
+        new("b03", "demo.b03@planb.local", 2021),
+        new("b04", "demo.b04@planb.local", 2022),
+        new("b05", "demo.b05@planb.local", 2020),
+        new("b06", "demo.b06@planb.local", 2022),
+        new("b07", "demo.b07@planb.local", 2023),
+        new("b08", "demo.b08@planb.local", 2021),
+    ];
+
+    /// <summary>
     /// Reseñas curadas. El <c>TermId</c> se asigna por índice más abajo (no afecta la UI, solo el
     /// UNIQUE (profile, subject, term), que se respeta porque cada autor reseña cada materia una vez).
     /// </summary>
@@ -266,6 +284,51 @@ public static class DemoCorpusData
 
         return votes;
     }
+
+    /// <summary>
+    /// Cursadas sin aprobar (Reprobada/Abandonada), sin reseña, por <see cref="FailureAuthors"/>.
+    /// Alimentan el denominador del pass-rate (ADR-0047). Curado para un spread realista: MAT102
+    /// (el filtro del primer año) queda bajo, PRG101 alto, y ALG101 queda bajo el gate de muestra
+    /// (demuestra el estado "datos insuficientes"). Cada (autor, materia) es único.
+    /// </summary>
+    public static IReadOnlyList<FailureDef> Failures { get; } = BuildFailures();
+
+    private static IReadOnlyList<FailureDef> BuildFailures()
+    {
+        var raw = new List<FailureDef>
+        {
+            // MAT102 (9 aprob): 6 reprobadas + 1 abandonada -> 9/(9+6) = 60%.
+            F("fail-mat102-b01", "b01", Mat102, false),
+            F("fail-mat102-b02", "b02", Mat102, false),
+            F("fail-mat102-b03", "b03", Mat102, false),
+            F("fail-mat102-b04", "b04", Mat102, false),
+            F("fail-mat102-b05", "b05", Mat102, false),
+            F("fail-mat102-b06", "b06", Mat102, false),
+            F("fail-mat102-b07", "b07", Mat102, true),
+            // PRG101 (9 aprob): 2 reprobadas -> 9/11 = 82%.
+            F("fail-prg101-b01", "b01", Prg101, false),
+            F("fail-prg101-b02", "b02", Prg101, false),
+            // BD201 (7 aprob): 3 reprobadas -> 7/10 = 70%.
+            F("fail-bd201-b03", "b03", Bd201, false),
+            F("fail-bd201-b04", "b04", Bd201, false),
+            F("fail-bd201-b05", "b05", Bd201, false),
+            // INT101 (4 aprob): 1 reprobada -> 4/5 = 80% (N=5, justo el gate).
+            F("fail-int101-b06", "b06", Int101, false),
+            // PRG201 (4 aprob): 2 reprobadas -> 4/6 = 67%.
+            F("fail-prg201-b07", "b07", Prg201, false),
+            F("fail-prg201-b08", "b08", Prg201, false),
+            // SO201 (3 aprob): 2 reprobadas -> 3/5 = 60% (N=5).
+            F("fail-so201-b01", "b01", So201, false),
+            F("fail-so201-b02", "b02", So201, false),
+            // ALG101 (2 aprob): 1 reprobada -> N=3 < 5, GATED ("datos insuficientes").
+            F("fail-alg101-b03", "b03", Alg101, false),
+        };
+
+        return raw.Select((f, i) => f with { TermId = Terms[i % Terms.Length] }).ToList();
+    }
+
+    private static FailureDef F(string key, string author, Guid subject, bool abandoned) =>
+        new(key, author, subject, Guid.Empty, abandoned);
 }
 
 /// <summary>Autor fantasma del corpus demo.</summary>
@@ -289,3 +352,6 @@ public sealed record ReviewDef(
 
 /// <summary>Voto demo: un autor vota la reseña de otro.</summary>
 public sealed record VoteDef(string VoterKey, string ReviewKey, bool IsHelpful);
+
+/// <summary>Cursada sin aprobar del corpus demo (Reprobada/Abandonada), sin reseña. Para el pass-rate.</summary>
+public sealed record FailureDef(string Key, string AuthorKey, Guid SubjectId, Guid TermId, bool IsAbandoned);
