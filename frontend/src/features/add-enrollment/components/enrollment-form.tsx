@@ -187,6 +187,12 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
       )}
 
       <SubmitButton />
+
+      <p className="text-ink-4" style={{ fontSize: 11, lineHeight: 1.5, marginTop: 12 }}>
+        Tus cursadas pueden usarse de forma anonimizada y agregada para estadísticas de comunidad
+        (por ejemplo, la aprobación histórica de una materia). Nunca se muestran tus datos
+        individuales.
+      </p>
     </form>
   );
 }

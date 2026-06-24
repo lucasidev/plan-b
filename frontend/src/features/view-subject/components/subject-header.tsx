@@ -1,18 +1,22 @@
-import type { SubjectDetail, SubjectInsights } from '../types';
+import type { SubjectDetail, SubjectInsights, SubjectPassRate } from '../types';
 
 /**
  * Subject detail header (US-002): eyebrow (code, year, term) + title + description + the stats
- * row (reseñas, dificultad, carga, recomiendan). Mirrors the top of the mockup `SubjectDetail`.
+ * row (reseñas, dificultad, carga, recomiendan, aprobación histórica). Mirrors the top of the
+ * mockup `SubjectDetail`.
  *
- * The "Aprobación histórica" stat from the mockup is intentionally omitted: there is no
- * pass-rate read model yet (it would need enrollment outcomes aggregated, a separate concern).
+ * "Aprobación histórica" (ADR-0047) agrega el historial de enrollments. El backend aplica el gate
+ * de muestra mínima: con pocos datos `passRate` viene null y se muestra "pocos datos" en vez del
+ * número. El disclaimer es obligatorio: el dato es self-reported y direccional, no autoritativo.
  */
 export function SubjectHeader({
   subject,
   insights,
+  passRate,
 }: {
   subject: SubjectDetail;
   insights: SubjectInsights;
+  passRate: SubjectPassRate;
 }) {
   const reviewCount = insights.totalCount;
   return (
@@ -36,34 +40,50 @@ export function SubjectHeader({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-4">
-        <Stat
-          label="Reseñas"
-          value={String(reviewCount)}
-          sub={reviewCount === 1 ? 'publicada' : 'publicadas'}
-        />
-        <Stat
-          label="Dificultad"
-          value={
-            insights.averageDifficulty !== null ? insights.averageDifficulty.toFixed(1) : 's/d'
-          }
-          suffix={insights.averageDifficulty !== null ? '/5' : undefined}
-          sub="promedio"
-        />
-        <Stat
-          label="Carga"
-          value={String(subject.totalHours)}
-          suffix="h"
-          sub={`${subject.weeklyHours} hs/sem`}
-        />
-        <Stat
-          label="Recomiendan"
-          value={
-            insights.recommendPercentage !== null ? insights.recommendPercentage.toFixed(0) : 's/d'
-          }
-          suffix={insights.recommendPercentage !== null ? '%' : undefined}
-          sub="de la cursada"
-        />
+      <div className="flex flex-col gap-1.5">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-5">
+          <Stat
+            label="Reseñas"
+            value={String(reviewCount)}
+            sub={reviewCount === 1 ? 'publicada' : 'publicadas'}
+          />
+          <Stat
+            label="Dificultad"
+            value={
+              insights.averageDifficulty !== null ? insights.averageDifficulty.toFixed(1) : 's/d'
+            }
+            suffix={insights.averageDifficulty !== null ? '/5' : undefined}
+            sub="promedio"
+          />
+          <Stat
+            label="Carga"
+            value={String(subject.totalHours)}
+            suffix="h"
+            sub={`${subject.weeklyHours} hs/sem`}
+          />
+          <Stat
+            label="Recomiendan"
+            value={
+              insights.recommendPercentage !== null
+                ? insights.recommendPercentage.toFixed(0)
+                : 's/d'
+            }
+            suffix={insights.recommendPercentage !== null ? '%' : undefined}
+            sub="de la cursada"
+          />
+          <Stat
+            label="Aprobación"
+            value={passRate.passRate !== null ? Math.round(passRate.passRate).toString() : 's/d'}
+            suffix={passRate.passRate !== null ? '%' : undefined}
+            sub={passRate.passRate !== null ? 'histórica' : 'pocos datos'}
+          />
+        </div>
+        {passRate.passRate !== null && (
+          <p className="text-[10.5px] leading-snug text-ink-4">
+            Aprobación histórica orientativa, calculada sobre {passRate.sampleSize} cursadas
+            cargadas por alumnos.
+          </p>
+        )}
       </div>
     </header>
   );

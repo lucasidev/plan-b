@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Enrollments.Application.Abstractions.Pdf;
 using Planb.Enrollments.Application.Abstractions.Persistence;
 using Planb.Enrollments.Application.Contracts;
+using Planb.Enrollments.Application.Features.SubjectPassRate;
 using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Enrollments.Domain.HistorialImports;
 using Planb.Enrollments.Infrastructure.Pdf;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IEnrollmentRecordRepository, EnrollmentRecordRepository>();
         services.AddScoped<IHistorialImportRepository, HistorialImportRepository>();
         services.AddScoped<IEnrollmentsQueryService, DapperEnrollmentsQueryService>();
+        services.AddScoped<ISubjectPassRateReader, DapperSubjectPassRateReader>();
         services.AddSingleton<IPdfTextExtractor, PdfPigPdfTextExtractor>();
         return services;
     }

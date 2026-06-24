@@ -59,4 +59,14 @@ export type SubjectReviewsPage = {
   totalCount: number;
 };
 
+/**
+ * Aprobación histórica de la materia (ADR-0047). `passRate` es el porcentaje (0-100) o `null`
+ * cuando la muestra es menor al gate mínimo (anti re-identificación): la UI muestra "pocos datos".
+ * `sampleSize` es el denominador (cursadas con verdicto), para el disclaimer.
+ */
+export type SubjectPassRate = {
+  passRate: number | null;
+  sampleSize: number;
+};
+
 export const SUBJECT_REVIEWS_PAGE_SIZE = 20;
