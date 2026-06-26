@@ -34,7 +34,7 @@ jobs:
     # Validación trivial (~5s). 3 min absorbe checkout largo en runners lentos.
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # Necesitamos el commit base del PR para hacer git log <base>..<head>.
           # fetch-depth: 0 hace clone completo. PR.s grandes (raros) podrían
