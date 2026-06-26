@@ -31,10 +31,19 @@ public class ReportReviewEndpointTests
 
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
-    private static readonly Guid MAT102 =
-        Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid Term2024_1c =
-        Guid.Parse("00000005-0000-4000-a000-000000000001");
+
+    // Triple sembrado reseñable (PRG101 · 2026·1c · comisión "A" Cid01, titular Brandt). Cada author
+    // es un user fresco que publica una sola reseña: anclar todas a este triple no choca con
+    // UNIQUE(student, subject, term). El handler de publish exige que el docente reseñado pertenezca
+    // a la comisión de la cursada, por eso la reseña apunta a Brandt.
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid CommissionA =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
 
     public ReportReviewEndpointTests(RegisterApiFixture fixture)
     {
@@ -66,9 +75,9 @@ public class ReportReviewEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                subjectId = PRG101,
+                commissionId = (Guid?)CommissionA,
+                termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
@@ -81,7 +90,7 @@ public class ReportReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 4,
                 wouldRecommendCourse = true,

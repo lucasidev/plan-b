@@ -6,18 +6,6 @@ import { reviewFormSchema } from './schema';
 import type { PublishReviewResult } from './types';
 
 /**
- * Placeholder teacher id. The Teacher aggregate does not exist yet in Academic; once
- * US-063 lands the editor will receive the real teacherId from the enrollment context
- * and we can drop this.
- *
- * Has to be a non-empty Guid so the backend's `NotEmpty()` validator on
- * `DocenteResenadoId` passes (the empty UUID would 400). The Reviews backend does NOT
- * verify against an existing Teacher row yet (per US-017 doc), so any well-formed Guid
- * is accepted.
- */
-const PLACEHOLDER_TEACHER_ID = '11111111-1111-1111-1111-111111111111';
-
-/**
  * Publish-review server action (US-049 editor + US-048 e2e wiring).
  *
  * Maps the full v2 editor draft (rating, difficulty, hoursPerWeek, tags, text, recommendations)
@@ -45,6 +33,13 @@ export async function publishReviewAction(
     return { status: 'error', message: 'Faltan datos del formulario.' };
   }
 
+  // Docente real elegido en el picker (US-065): la reseña se ancla a un docente de la comisión de
+  // la cursada, no a un placeholder. El backend valida que pertenezca a la comisión.
+  const docenteResenadoId = formData.get('docenteResenadoId')?.toString();
+  if (!docenteResenadoId) {
+    return { status: 'error', message: 'Elegí el docente que te dio la cursada.' };
+  }
+
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
@@ -62,7 +57,7 @@ export async function publishReviewAction(
 
   const body = {
     enrollmentId,
-    docenteResenadoId: PLACEHOLDER_TEACHER_ID,
+    docenteResenadoId,
     difficultyRating: validated.data.difficulty,
     overallRating: validated.data.rating,
     hoursPerWeek: validated.data.hoursPerWeek ?? null,

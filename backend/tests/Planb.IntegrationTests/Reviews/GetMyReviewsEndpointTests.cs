@@ -25,12 +25,33 @@ public class GetMyReviewsEndpointTests
 
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
+
+    // Dos materias sembradas con comisión real, para que un mismo user pueda tener dos cursadas
+    // reseñables distintas (UNIQUE student+subject+term exige que difieran). Cada una ancla a su
+    // comisión/docente sembrado (el handler de publish valida docente-en-comisión):
+    //   MAT102 → comisión Cid03 (iturralde) · 2026·1c
+    //   PRG101 → comisión Cid01 (Brandt)    · 2026·1c
     private static readonly Guid MAT102 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid AlgebraI =
-        Guid.Parse("00000004-0000-4000-a000-000000000002");
-    private static readonly Guid Term2024_1c =
-        Guid.Parse("00000005-0000-4000-a000-000000000001");
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+
+    private static readonly Guid CommissionMat102 =
+        Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid TeacherIturralde =
+        Guid.Parse("00000006-0000-4000-a000-000000000002");
+    private static readonly Guid CommissionPrg101 =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
+
+    // Comisión + docente sembrados que corresponden a cada materia reseñable de arriba.
+    private static (Guid CommissionId, Guid TeacherId) SeededFor(Guid subjectId) =>
+        subjectId == MAT102
+            ? (CommissionMat102, TeacherIturralde)
+            : (CommissionPrg101, TeacherBrandt);
 
     public GetMyReviewsEndpointTests(RegisterApiFixture fixture)
     {
@@ -55,13 +76,14 @@ public class GetMyReviewsEndpointTests
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
     {
+        var (commissionId, _) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
                 subjectId,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                commissionId = (Guid?)commissionId,
+                termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
@@ -71,14 +93,16 @@ public class GetMyReviewsEndpointTests
         return body!.Id;
     }
 
-    private static async Task PublishCleanReviewAsync(AuthenticatedClient auth, Guid enrollmentId)
+    private static async Task PublishCleanReviewAsync(
+        AuthenticatedClient auth, Guid enrollmentId, Guid subjectId)
     {
+        var (_, teacherId) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/reviews",
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = teacherId,
                 difficultyRating = 4,
                 overallRating = 5,
                 wouldRecommendCourse = true,
@@ -90,15 +114,17 @@ public class GetMyReviewsEndpointTests
         resp.EnsureSuccessStatusCode();
     }
 
-    private static async Task PublishDirtyReviewAsync(AuthenticatedClient auth, Guid enrollmentId)
+    private static async Task PublishDirtyReviewAsync(
+        AuthenticatedClient auth, Guid enrollmentId, Guid subjectId)
     {
+        var (_, teacherId) = SeededFor(subjectId);
         // "idiota" is on the embedded blacklist → the content filter quarantines the review.
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/reviews",
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = teacherId,
                 difficultyRating = 3,
                 overallRating = 2,
                 wouldRecommendCourse = false,
@@ -158,10 +184,10 @@ public class GetMyReviewsEndpointTests
         await SetupProfileAsync(auth);
 
         var cleanEnrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishCleanReviewAsync(auth, cleanEnrollment);
+        await PublishCleanReviewAsync(auth, cleanEnrollment, MAT102);
 
-        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, AlgebraI);
-        await PublishDirtyReviewAsync(auth, dirtyEnrollment);
+        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        await PublishDirtyReviewAsync(auth, dirtyEnrollment, PRG101);
 
         var response = await auth.Client.GetAsync("/api/reviews/me");
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -174,7 +200,7 @@ public class GetMyReviewsEndpointTests
         var first = body.Items[0];
         first.EnrollmentId.ShouldBe(dirtyEnrollment);
         first.Status.ShouldBe("UnderReview");
-        first.SubjectId.ShouldBe(AlgebraI);
+        first.SubjectId.ShouldBe(PRG101);
         first.SubjectCode.ShouldNotBeNullOrWhiteSpace();
         first.SubjectName.ShouldNotBeNullOrWhiteSpace();
 
@@ -196,7 +222,7 @@ public class GetMyReviewsEndpointTests
         var alice = await SetupUserAsync("alice");
         await SetupProfileAsync(alice);
         var aliceEnrollment = await CreateApprovedEnrollmentAsync(alice, MAT102);
-        await PublishCleanReviewAsync(alice, aliceEnrollment);
+        await PublishCleanReviewAsync(alice, aliceEnrollment, MAT102);
 
         var bob = await SetupUserAsync("bob");
         await SetupProfileAsync(bob);

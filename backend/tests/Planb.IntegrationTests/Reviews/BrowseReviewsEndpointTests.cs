@@ -24,12 +24,32 @@ public class BrowseReviewsEndpointTests
 
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
+
+    // Dos materias sembradas con comisión real, para que un mismo user pueda tener dos cursadas
+    // reseñables distintas (UNIQUE student+subject+term). Cada una ancla a su comisión/docente
+    // sembrado (el handler de publish valida docente-en-comisión):
+    //   MAT102 → comisión Cid03 (iturralde) · 2026·1c
+    //   PRG101 → comisión Cid01 (Brandt)    · 2026·1c
     private static readonly Guid MAT102 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid AlgebraI =
-        Guid.Parse("00000004-0000-4000-a000-000000000002");
-    private static readonly Guid Term2024_1c =
-        Guid.Parse("00000005-0000-4000-a000-000000000001");
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+
+    private static readonly Guid CommissionMat102 =
+        Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid TeacherIturralde =
+        Guid.Parse("00000006-0000-4000-a000-000000000002");
+    private static readonly Guid CommissionPrg101 =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
+
+    private static (Guid CommissionId, Guid TeacherId) SeededFor(Guid subjectId) =>
+        subjectId == MAT102
+            ? (CommissionMat102, TeacherIturralde)
+            : (CommissionPrg101, TeacherBrandt);
 
     public BrowseReviewsEndpointTests(RegisterApiFixture fixture)
     {
@@ -54,13 +74,14 @@ public class BrowseReviewsEndpointTests
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
     {
+        var (commissionId, _) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
                 subjectId,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                commissionId = (Guid?)commissionId,
+                termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
@@ -71,14 +92,15 @@ public class BrowseReviewsEndpointTests
     }
 
     private static async Task PublishCleanReviewAsync(
-        AuthenticatedClient auth, Guid enrollmentId, int difficulty)
+        AuthenticatedClient auth, Guid enrollmentId, int difficulty, Guid subjectId)
     {
+        var (_, teacherId) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/reviews",
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = teacherId,
                 difficultyRating = difficulty,
                 overallRating = 4,
                 wouldRecommendCourse = true,
@@ -90,14 +112,16 @@ public class BrowseReviewsEndpointTests
         resp.EnsureSuccessStatusCode();
     }
 
-    private static async Task PublishDirtyReviewAsync(AuthenticatedClient auth, Guid enrollmentId)
+    private static async Task PublishDirtyReviewAsync(
+        AuthenticatedClient auth, Guid enrollmentId, Guid subjectId)
     {
+        var (_, teacherId) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/reviews",
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = teacherId,
                 difficultyRating = 3,
                 overallRating = 2,
                 wouldRecommendCourse = false,
@@ -131,10 +155,10 @@ public class BrowseReviewsEndpointTests
         await SetupProfileAsync(auth);
 
         var cleanEnrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishCleanReviewAsync(auth, cleanEnrollment, 4);
+        await PublishCleanReviewAsync(auth, cleanEnrollment, 4, MAT102);
 
-        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, AlgebraI);
-        await PublishDirtyReviewAsync(auth, dirtyEnrollment);
+        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        await PublishDirtyReviewAsync(auth, dirtyEnrollment, PRG101);
 
         using var anon = _fixture.Factory.CreateClient();
 
@@ -143,9 +167,9 @@ public class BrowseReviewsEndpointTests
         var cleanBody = await cleanResp.Content.ReadFromJsonAsync<BrowseReviewsResponse>();
         cleanBody!.Items.ShouldContain(i => i.SubjectId == MAT102);
 
-        var dirtyResp = await anon.GetAsync($"/api/reviews?subjectId={AlgebraI}");
+        var dirtyResp = await anon.GetAsync($"/api/reviews?subjectId={PRG101}");
         var dirtyBody = await dirtyResp.Content.ReadFromJsonAsync<BrowseReviewsResponse>();
-        dirtyBody!.Items.ShouldNotContain(i => i.SubjectId == AlgebraI);
+        dirtyBody!.Items.ShouldNotContain(i => i.SubjectId == PRG101);
     }
 
     [Fact]
@@ -155,7 +179,7 @@ public class BrowseReviewsEndpointTests
         await SetupProfileAsync(auth);
 
         var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishCleanReviewAsync(auth, enrollment, 5);
+        await PublishCleanReviewAsync(auth, enrollment, 5, MAT102);
 
         using var anon = _fixture.Factory.CreateClient();
         var resp = await anon.GetAsync($"/api/reviews?subjectId={MAT102}&difficulty=5");
@@ -178,7 +202,7 @@ public class BrowseReviewsEndpointTests
         await SetupProfileAsync(auth);
 
         var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishCleanReviewAsync(auth, enrollment, 3);
+        await PublishCleanReviewAsync(auth, enrollment, 3, MAT102);
 
         using var anon = _fixture.Factory.CreateClient();
         var resp = await anon.GetAsync($"/api/reviews?careerPlanId={TudcsPlanId}");

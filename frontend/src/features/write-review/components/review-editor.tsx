@@ -12,7 +12,12 @@ import { type DeletableReview, DeleteReviewModal } from '@/features/delete-revie
 import { publishReviewAction } from '../actions';
 import { MOCK_ANONYMOUS_IDENTITY } from '../data/mocks';
 import { REVIEW_FORM_DEFAULTS, reviewFormSchema } from '../schema';
-import type { EnrollmentContext, PublishReviewResult, ReviewDraft } from '../types';
+import type {
+  CommissionTeacherOption,
+  EnrollmentContext,
+  PublishReviewResult,
+  ReviewDraft,
+} from '../types';
 import { PUBLISH_REVIEW_INITIAL_STATE } from '../types';
 import { DifficultySteps } from './difficulty-steps';
 import { EnrollmentContextCard } from './enrollment-context-card';
@@ -23,6 +28,7 @@ import { PrivacyCard } from './privacy-card';
 import { RecommendationsToggles } from './recommendations-toggles';
 import { StarRatingInput } from './star-rating-input';
 import { TagsPicker } from './tags-picker';
+import { TeacherPicker } from './teacher-picker';
 
 /**
  * Editor mode. <c>write</c> calls the publish action and posts a new review;
@@ -60,6 +66,12 @@ type ServerAction = (prev: PublishReviewResult, formData: FormData) => Promise<P
 type Props = {
   ctx: EnrollmentContext;
   enrollmentId: string;
+  /**
+   * Teachers of the enrollment's commission, for the "who taught you" picker (write mode, US-065).
+   * The selected one is sent as <c>docenteResenadoId</c>. Omitted in edit mode (the reviewed teacher
+   * does not change on edit).
+   */
+  teachers?: CommissionTeacherOption[];
   /**
    * Editor mode. Defaults to <c>write</c> for backwards compatibility with the existing
    * US-049 publish flow.
@@ -99,6 +111,7 @@ type Props = {
 export function ReviewEditor({
   ctx,
   enrollmentId,
+  teachers,
   mode = 'write',
   initialDraft,
   submitAction = publishReviewAction,
@@ -110,6 +123,11 @@ export function ReviewEditor({
     ...REVIEW_FORM_DEFAULTS,
     ...(initialDraft ?? {}),
   });
+  // Selected teacher (write mode only): preselect when the commission has exactly one, so the
+  // common single-titular case needs no extra tap.
+  const [docenteResenadoId, setDocenteResenadoId] = useState<string | null>(
+    teachers?.length === 1 ? teachers[0].teacherId : null,
+  );
   const [state, formAction] = useActionState(submitAction, submitInitialState);
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -143,6 +161,7 @@ export function ReviewEditor({
       ? draft.difficulty >= 1
       : draft.rating >= 1 &&
         draft.difficulty >= 1 &&
+        docenteResenadoId !== null &&
         typeof draft.wouldRecommendCourse === 'boolean' &&
         typeof draft.wouldRetakeTeacher === 'boolean';
 
@@ -185,6 +204,9 @@ export function ReviewEditor({
           <form action={formAction} className="flex items-center gap-2">
             <input type="hidden" name={idFieldName} value={enrollmentId} />
             <input type="hidden" name="payload" value={JSON.stringify(draft)} />
+            {mode === 'write' && (
+              <input type="hidden" name="docenteResenadoId" value={docenteResenadoId ?? ''} />
+            )}
             {mode === 'write' && <DraftButton />}
             <PublishButton
               disabled={!canPublish || !isValidShape}
@@ -205,6 +227,26 @@ export function ReviewEditor({
         {/* FORM COL */}
         <div className="flex flex-col gap-3.5">
           <EnrollmentContextCard ctx={ctx} />
+
+          {/* Docente picker (write mode): a quién reseñás de la comisión (US-065). */}
+          {mode === 'write' && teachers && (
+            <Card>
+              <div className="flex items-baseline gap-1">
+                <span className="text-[13px] font-medium text-ink">¿Quién te dio la cursada?</span>
+                <span className="text-accent-ink" aria-hidden="true">
+                  *
+                </span>
+              </div>
+              <p className="mt-0.5 text-[12px] text-ink-3">
+                Tu reseña queda asociada a este docente de la comisión.
+              </p>
+              <TeacherPicker
+                teachers={teachers}
+                selected={docenteResenadoId}
+                onSelect={setDocenteResenadoId}
+              />
+            </Card>
+          )}
 
           {/* Field 1: Rating */}
           <Card>

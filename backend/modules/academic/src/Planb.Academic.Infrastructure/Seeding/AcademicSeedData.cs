@@ -529,6 +529,18 @@ public static class AcademicSeedData
                 new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular), // ledesma
                 new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Adjunto), // brandt
             }),
+
+        // Comisiones adicionales (una por materia) en 2026·1c, coherentes con el mapeo docente del
+        // demo corpus. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
+        // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
+        new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular) }), // álgebra: reynoso
+        new CommissionRecord(Cid("08"), Sid("03"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular) }), // intro sistemas: ledesma
+        new CommissionRecord(Cid("09"), Sid("14"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
+            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Titular) }), // sistemas operativos: páez
+        new CommissionRecord(Cid("0a"), Sid("11"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
+            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Titular) }), // análisis II: quiroga
     };
 
     private static SubjectId Sid(string nn) =>

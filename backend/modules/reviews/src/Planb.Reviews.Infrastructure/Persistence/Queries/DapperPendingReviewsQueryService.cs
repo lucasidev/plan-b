@@ -23,9 +23,9 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// Sorting: most recently created enrollment first, so the most recently closed cursadas surface
 /// at the top of the list. Frontend can re-sort later if needed.
 ///
-/// Teacher and commission are intentionally not joined: the Teacher and Commission aggregates do
-/// not exist in Academic yet (will land with US-063 / US-065 per the US-048 doc). When they do,
-/// extend the query and the <see cref="PendingReviewItem"/> shape together.
+/// Only reviewable enrollments surface: <c>commission_id IS NOT NULL</c>. An enrollment without a
+/// commission cannot be reviewed (the publish handler rejects it), so it would be a dead-end CTA.
+/// The commission_id is returned so the editor can fetch its teachers (docente real por reseña).
 /// </summary>
 internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQueryService
 {
@@ -47,6 +47,7 @@ internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQuerySer
                 er.subject_id                                               AS SubjectId,
                 s.code                                                      AS SubjectCode,
                 s.name                                                      AS SubjectName,
+                er.commission_id                                            AS CommissionId,
                 er.status                                                   AS Status,
                 er.grade                                                    AS Grade,
                 CASE
@@ -63,6 +64,7 @@ internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQuerySer
              AND r.status <> 'Deleted'
             WHERE er.student_profile_id = @StudentProfileId
               AND er.status <> 'Cursando'
+              AND er.commission_id IS NOT NULL
               AND r.id IS NULL
             ORDER BY er.created_at DESC;";
 

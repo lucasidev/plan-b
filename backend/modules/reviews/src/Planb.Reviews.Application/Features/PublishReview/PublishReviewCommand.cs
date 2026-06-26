@@ -12,11 +12,9 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 ///   5) construye el aggregate <c>Review.Publish</c> y persiste.
 ///
 /// <para>
-/// Validar "el docente reseñado estaba en la commission del enrollment" requiere los
-/// aggregates <c>Commission</c> + <c>Teacher</c> + <c>CommissionTeacher</c> en Academic, que
-/// todavía no aterrizaron. Mientras tanto se acepta el <see cref="DocenteResenadoId"/> tal
-/// cual viene del request; cuando aterrice ese contract, se agrega la validación acá sin
-/// cambiar la firma del command.
+/// El handler valida que el <see cref="DocenteResenadoId"/> esté asignado a la commission de la
+/// cursada (cross-BC vía <c>IAcademicQueryService.GetCommissionTeachersAsync</c>), invariante del
+/// data-model: no se reseña a un docente que no dictó esa comisión.
 /// </para>
 /// </summary>
 public sealed record PublishReviewCommand(

@@ -18,6 +18,16 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 const noop = vi.fn().mockResolvedValue(PUBLISH_REVIEW_INITIAL_STATE);
 
+// Un solo docente: el editor lo preselecciona, así el gate del picker no estorba a los tests que
+// validan los otros campos. Los tests del picker en sí usan dos docentes.
+const ONE_TEACHER = [
+  { teacherId: 'tid-brandt', firstName: 'Carlos', lastName: 'Brandt', role: 'Titular' },
+];
+const TWO_TEACHERS = [
+  ...ONE_TEACHER,
+  { teacherId: 'tid-sosa', firstName: 'Diego', lastName: 'Sosa', role: 'Jtp' },
+];
+
 describe('ReviewEditor (US-049)', () => {
   it('renderea los 6 campos numerados y el preview lateral', () => {
     render(
@@ -62,6 +72,7 @@ describe('ReviewEditor (US-049)', () => {
       <ReviewEditor
         ctx={MOCK_ENROLLMENT_CONTEXT}
         enrollmentId="enrollment-test-001"
+        teachers={ONE_TEACHER}
         submitAction={noop}
         submitInitialState={PUBLISH_REVIEW_INITIAL_STATE}
       />,
@@ -81,6 +92,37 @@ describe('ReviewEditor (US-049)', () => {
         'label:has(input[name="field-difficulty-radio"][value="3"])',
       ) as Element,
     );
+    expect(publish).toBeEnabled();
+  });
+
+  it('con varios docentes, el boton queda disabled hasta elegir uno', async () => {
+    const user = userEvent.setup();
+    render(
+      <ReviewEditor
+        ctx={MOCK_ENROLLMENT_CONTEXT}
+        enrollmentId="enrollment-test-001"
+        teachers={TWO_TEACHERS}
+        submitAction={noop}
+        submitInitialState={PUBLISH_REVIEW_INITIAL_STATE}
+      />,
+      { wrapper },
+    );
+
+    const publish = screen.getByRole('button', { name: /publicar reseña/i });
+
+    // Rating + difficulty listos, pero sin docente elegido el boton sigue disabled.
+    await user.click(
+      document.querySelector('label:has(input[name="field-rating-radio"][value="4"])') as Element,
+    );
+    await user.click(
+      document.querySelector(
+        'label:has(input[name="field-difficulty-radio"][value="3"])',
+      ) as Element,
+    );
+    expect(publish).toBeDisabled();
+
+    // Elegir el docente lo habilita.
+    await user.click(screen.getByRole('radio', { name: /Diego Sosa/i }));
     expect(publish).toBeEnabled();
   });
 });

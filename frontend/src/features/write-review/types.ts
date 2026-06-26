@@ -37,6 +37,18 @@ export type EnrollmentContext = {
 };
 
 /**
+ * One teacher of the enrollment's commission, offered in the editor's "who taught you" picker
+ * (US-065 docente real por reseña). Mirrors the backend `CommissionTeacherItem`. Names come title
+ * cased; `role` is the PascalCase enum value (Titular / Adjunto / Jtp / Ayudante / Invitado).
+ */
+export type CommissionTeacherOption = {
+  teacherId: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+};
+
+/**
  * Pseudonymous identity rendered in the preview, aligned with the presentation
  * rule from ADR-0009 (anonymity): year in career + career name + period. Never
  * expose name, email, or student id number.
