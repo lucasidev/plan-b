@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { fetchPendingReviewServer } from '@/features/pending-reviews/api.server';
 import { type EnrollmentContext, ReviewEditor } from '@/features/write-review';
+import { fetchCommissionTeachersServer } from '@/features/write-review/api.server';
 
 export const metadata = {
   title: 'Escribir reseña · planb',
@@ -20,10 +21,10 @@ type Params = Promise<{ enrollmentId: string }>;
  * the student's, or not reviewable) the page returns 404 instead of leaking the
  * distinction.
  *
- * Teacher and commission are not resolved here: those aggregates do not exist yet
- * (US-063), so the listing cannot surface them. The context card degrades to "docente a
- * confirmar" rather than showing a fabricated name. The submit still anchors to the real
- * enrollment id via `POST /api/reviews` (US-017 / US-089).
+ * The pending item carries the enrollment's `commissionId` (only reviewable enrollments surface),
+ * so the page fetches that commission's teachers and hands them to the editor: the student picks the
+ * real docente they had, which the publish action sends as `docenteResenadoId` (US-065 docente real
+ * por reseña). The backend validates that the picked teacher belongs to the commission.
  */
 export default async function WriteReviewPage({ params }: { params: Params }) {
   const { enrollmentId } = await params;
@@ -32,6 +33,8 @@ export default async function WriteReviewPage({ params }: { params: Params }) {
   if (!pending) {
     notFound();
   }
+
+  const teachers = await fetchCommissionTeachersServer(pending.commissionId);
 
   const ctx: EnrollmentContext = {
     id: pending.enrollmentId,
@@ -43,5 +46,5 @@ export default async function WriteReviewPage({ params }: { params: Params }) {
     finalNote: pending.grade,
   };
 
-  return <ReviewEditor ctx={ctx} enrollmentId={enrollmentId} />;
+  return <ReviewEditor ctx={ctx} enrollmentId={enrollmentId} teachers={teachers} />;
 }

@@ -7,36 +7,61 @@ import { LUCIA } from '../helpers/personas';
  * Setup pattern mirrors the PR-A spec (`pending.spec.ts`):
  *  1. Sign Lucía in.
  *  2. Make sure she has at least one review: if `GET /api/reviews/me` is empty we go
- *     through the publish flow to create one (rotate (subject, term) pairs because the
- *     dev DB has UNIQUE(student, subject, term) and accumulates state across runs).
+ *     through the publish flow to create one (walk the seeded commission offerings because
+ *     the dev DB has UNIQUE(student, subject, term) and accumulates state across runs).
  *  3. Navigate to /reviews?tab=mine and assert the chip + stats render.
  */
 
-const SUBJECTS = [
-  '00000004-0000-4000-a000-000000000001',
-  '00000004-0000-4000-a000-000000000002',
-  '00000004-0000-4000-a000-000000000003',
-  '00000004-0000-4000-a000-000000000004',
-  '00000004-0000-4000-a000-000000000005',
-  '00000004-0000-4000-a000-000000000006',
-  '00000004-0000-4000-a000-000000000007',
-  '00000004-0000-4000-a000-000000000008',
-  '00000004-0000-4000-a000-000000000009',
-  '00000004-0000-4000-a000-00000000000a',
-  '00000004-0000-4000-a000-00000000000b',
-  '00000004-0000-4000-a000-00000000000c',
-  '00000004-0000-4000-a000-00000000000d',
-  '00000004-0000-4000-a000-00000000000e',
-  '00000004-0000-4000-a000-00000000000f',
-];
-
-const TERMS = [
-  '00000005-0000-4000-a000-000000000001',
-  '00000005-0000-4000-a000-000000000002',
-  '00000005-0000-4000-a000-000000000003',
-  '00000005-0000-4000-a000-000000000004',
-  '00000005-0000-4000-a000-000000000005',
-  '00000005-0000-4000-a000-000000000006',
+// Comisiones sembradas (US-065): solo estas combinaciones (materia, term, comisión) tienen una
+// comisión real con docentes, condición para que la cursada sea reseñable (docente real por reseña).
+// Probamos cada una hasta que un POST entre: la dev DB comparte estado entre runs y
+// EnrollmentRecords tiene UNIQUE(student, subject, term), así que estas nueve dan headroom.
+const COMMISSION_OFFERINGS = [
+  {
+    subjectId: '00000004-0000-4000-a000-000000000004', // PRG101
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000001', // Cid01 (brandt, sosa)
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000001', // MAT102
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000003', // Cid03 (iturralde)
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000020', // ISW301
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000006', // Cid06 (ledesma, brandt)
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000010', // PRG201
+    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
+    commissionId: '00000007-0000-4000-a000-000000000004', // Cid04 (castro, castellanos)
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000013', // BD201
+    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
+    commissionId: '00000007-0000-4000-a000-000000000005', // Cid05 (méndez, páez)
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000002', // ALG101
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000007', // Cid07
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000003', // INT101
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000008', // Cid08
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000014', // SO201
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-000000000009', // Cid09
+  },
+  {
+    subjectId: '00000004-0000-4000-a000-000000000011', // MAT201
+    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
+    commissionId: '00000007-0000-4000-a000-00000000000a', // Cid0a
+  },
 ];
 
 test.describe('Reseñas · tab Mías (US-048)', () => {
@@ -60,31 +85,34 @@ test.describe('Reseñas · tab Mías (US-048)', () => {
     if (existingBody.items.length === 0) {
       // Need to seed an enrollment + publish through the editor so the review row exists.
       let enrollmentId: string | undefined;
-      for (const subjectId of SUBJECTS) {
-        for (const termId of TERMS) {
-          const resp = await page.request.post('/api/me/enrollment-records', {
-            data: {
-              subjectId,
-              commissionId: crypto.randomUUID(),
-              termId,
-              status: 'Aprobada',
-              approvalMethod: 'Final',
-              grade: 7,
-            },
-          });
-          if (resp.ok()) {
-            enrollmentId = ((await resp.json()) as { id: string }).id;
-            break;
-          }
+      for (const offering of COMMISSION_OFFERINGS) {
+        const resp = await page.request.post('/api/me/enrollment-records', {
+          data: {
+            subjectId: offering.subjectId,
+            commissionId: offering.commissionId,
+            termId: offering.termId,
+            status: 'Aprobada',
+            approvalMethod: 'Final',
+            grade: 7,
+          },
+        });
+        if (resp.ok()) {
+          enrollmentId = ((await resp.json()) as { id: string }).id;
+          break;
         }
-        if (enrollmentId) break;
       }
-      expect(enrollmentId, 'no free (subject, term) pair to seed enrollment').toBeDefined();
+      expect(
+        enrollmentId,
+        'could not seed an enrollment: every seeded commission offering already used',
+      ).toBeDefined();
 
       await page.goto(`/reviews/write/${enrollmentId}`);
       await expect(page.getByRole('heading', { name: /reseñá tu cursada/i })).toBeVisible({
         timeout: 30_000,
       });
+      // Elegir el docente real de la comisión (US-065). Si hay uno solo viene preseleccionado;
+      // check() es idempotente, así que sirve igual.
+      await page.locator('input[name="docente-picker"]').first().check();
       await page.locator('label:has(input[name="field-rating-radio"][value="5"])').click();
       await page.locator('label:has(input[name="field-difficulty-radio"][value="2"])').click();
       await page

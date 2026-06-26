@@ -27,12 +27,19 @@ public class EditReviewEndpointTests
 
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
-    private static readonly Guid MAT102 =
-        Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid AlgebraI =
-        Guid.Parse("00000004-0000-4000-a000-000000000002");
-    private static readonly Guid Term2024_1c =
-        Guid.Parse("00000005-0000-4000-a000-000000000001");
+
+    // Triple sembrado reseñable (PRG101 · 2026·1c · comisión "A" Cid01, titular Brandt). Cada test
+    // arma un user fresco con una sola cursada/reseña, así anclar todas al mismo triple no choca con
+    // UNIQUE(student, subject, term). El handler de publish exige que el docente reseñado pertenezca
+    // a la comisión de la cursada: por eso la reseña apunta a Brandt.
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid CommissionA =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
 
     public EditReviewEndpointTests(RegisterApiFixture fixture)
     {
@@ -54,6 +61,8 @@ public class EditReviewEndpointTests
         profile.EnsureSuccessStatusCode();
     }
 
+    // Crea una cursada aprobada anclada a la comisión sembrada Cid01 (PRG101 · 2026·1c), reseñable
+    // por Brandt. El subjectId se ignora para mantener estable la firma de los call sites.
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
     {
@@ -61,9 +70,9 @@ public class EditReviewEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                subjectId = PRG101,
+                commissionId = (Guid?)CommissionA,
+                termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
@@ -81,7 +90,7 @@ public class EditReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 4,
                 hoursPerWeek = 6,
@@ -126,7 +135,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("empty");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         var resp = await auth.Client.PatchAsJsonAsync(
@@ -140,7 +149,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("happy");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         var newText = "Edit clean: ampliando el detalle sobre la dinámica de cursada y bibliografía sugerida.";
@@ -160,7 +169,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("full-model");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         var resp = await auth.Client.PatchAsJsonAsync(
@@ -191,7 +200,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("dirty-edit");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, AlgebraI);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         // "idiota" está en la blacklist del RegexReviewContentFilter (US-017).
@@ -209,7 +218,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("locked");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         // Primer edit con contenido sucio para meterla en UnderReview.
@@ -231,7 +240,7 @@ public class EditReviewEndpointTests
     {
         var owner = await SetupUserAsync("owner");
         await SetupProfileAsync(owner);
-        var enrollment = await CreateApprovedEnrollmentAsync(owner, MAT102);
+        var enrollment = await CreateApprovedEnrollmentAsync(owner, PRG101);
         var reviewId = await PublishCleanReviewAsync(owner, enrollment);
 
         var other = await SetupUserAsync("other");
@@ -249,7 +258,7 @@ public class EditReviewEndpointTests
     {
         var auth = await SetupUserAsync("cooldown");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, AlgebraI);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         for (var i = 1; i <= 5; i++)

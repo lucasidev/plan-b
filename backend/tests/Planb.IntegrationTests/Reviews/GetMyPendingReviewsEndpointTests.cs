@@ -23,17 +23,53 @@ public class GetMyPendingReviewsEndpointTests
 {
     private readonly RegisterApiFixture _fixture;
 
-    // Seed IDs alineados con los demás integration tests (Academic seed determinístico).
+    // Seed IDs alineados con los demás integration tests (Academic seed determinístico). Sólo las
+    // cursadas con comisión sembrada real son reseñables/pendientes: el endpoint de pendientes filtra
+    // commission_id IS NOT NULL (una cursada sin comisión no se puede reseñar, así que no se ofrece).
+    // Por eso cada materia ancla a una comisión + docente sembrados:
+    //   PRG101 → Cid01 (Brandt)    · 2026·1c
+    //   MAT102 → Cid03 (iturralde) · 2026·1c
+    //   PRG201 → Cid04 (castro)    · 2025·2c
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
     private static readonly Guid MAT102 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid AlgebraI =
-        Guid.Parse("00000004-0000-4000-a000-000000000002");
-    private static readonly Guid AnalisisI =
-        Guid.Parse("00000004-0000-4000-a000-000000000003");
-    private static readonly Guid Term2024_1c =
-        Guid.Parse("00000005-0000-4000-a000-000000000001");
+    private static readonly Guid PRG201 =
+        Guid.Parse("00000004-0000-4000-a000-000000000010");
+
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid Term2025_2c =
+        Guid.Parse("00000005-0000-4000-a000-000000000004");
+
+    private static readonly Guid CommissionPrg101 =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
+    private static readonly Guid CommissionMat102 =
+        Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid TeacherIturralde =
+        Guid.Parse("00000006-0000-4000-a000-000000000002");
+    private static readonly Guid CommissionPrg201 =
+        Guid.Parse("00000007-0000-4000-a000-000000000004");
+    private static readonly Guid TeacherCastro =
+        Guid.Parse("00000006-0000-4000-a000-000000000006");
+
+    // Comisión + docente + term sembrados que corresponden a cada materia reseñable de arriba.
+    private static (Guid CommissionId, Guid TeacherId, Guid TermId) SeededFor(Guid subjectId)
+    {
+        if (subjectId == PRG101)
+        {
+            return (CommissionPrg101, TeacherBrandt, Term2026_1c);
+        }
+        if (subjectId == PRG201)
+        {
+            return (CommissionPrg201, TeacherCastro, Term2025_2c);
+        }
+        return (CommissionMat102, TeacherIturralde, Term2026_1c);
+    }
 
     public GetMyPendingReviewsEndpointTests(RegisterApiFixture fixture)
     {
@@ -58,13 +94,15 @@ public class GetMyPendingReviewsEndpointTests
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid? subjectId = null)
     {
+        var subject = subjectId ?? MAT102;
+        var (commissionId, _, termId) = SeededFor(subject);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
-                subjectId = subjectId ?? MAT102,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                subjectId = subject,
+                commissionId = (Guid?)commissionId,
+                termId = (Guid?)termId,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
@@ -77,13 +115,15 @@ public class GetMyPendingReviewsEndpointTests
     private static async Task<Guid> CreateCursandoEnrollmentAsync(
         AuthenticatedClient auth, Guid? subjectId = null)
     {
+        var subject = subjectId ?? MAT102;
+        var (commissionId, _, termId) = SeededFor(subject);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
-                subjectId = subjectId ?? MAT102,
-                commissionId = (Guid?)Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                subjectId = subject,
+                commissionId = (Guid?)commissionId,
+                termId = (Guid?)termId,
                 status = "Cursando",
                 approvalMethod = (string?)null,
                 grade = (decimal?)null,
@@ -93,14 +133,16 @@ public class GetMyPendingReviewsEndpointTests
         return body!.Id;
     }
 
-    private static async Task PublishReviewAsync(AuthenticatedClient auth, Guid enrollmentId)
+    private static async Task PublishReviewAsync(
+        AuthenticatedClient auth, Guid enrollmentId, Guid subjectId)
     {
+        var (_, teacherId, _) = SeededFor(subjectId);
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/reviews",
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = teacherId,
                 difficultyRating = 3,
                 overallRating = 4,
                 wouldRecommendCourse = true,
@@ -154,15 +196,16 @@ public class GetMyPendingReviewsEndpointTests
         var auth = await SetupUserAsync("happy");
         await SetupProfileAsync(auth);
 
-        // Three enrollments: one Aprobada with review, one Aprobada without review, one Cursando.
-        // We use different subjects to avoid the UNIQUE(student, subject, term) constraint
-        // colliding when we create two terminal enrollments for the same period.
-        var reviewedId = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishReviewAsync(auth, reviewedId);
+        // Three enrollments anchored to comisiones sembradas distintas: una Aprobada con reseña, una
+        // Aprobada sin reseña (la única que debe aparecer en pendientes) y una Cursando. Materias
+        // distintas para no chocar con UNIQUE(student, subject, term). Sólo las cursadas con
+        // commission_id no-null afloran en pendientes (las tres lo tienen vía su comisión sembrada).
+        var reviewedId = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        await PublishReviewAsync(auth, reviewedId, PRG101);
 
-        var pendingId = await CreateApprovedEnrollmentAsync(auth, AlgebraI);
+        var pendingId = await CreateApprovedEnrollmentAsync(auth, MAT102);
 
-        var cursandoId = await CreateCursandoEnrollmentAsync(auth, AnalisisI);
+        var cursandoId = await CreateCursandoEnrollmentAsync(auth, PRG201);
 
         var response = await auth.Client.GetAsync("/api/reviews/me/pending");
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -172,7 +215,8 @@ public class GetMyPendingReviewsEndpointTests
 
         items.ShouldHaveSingleItem();
         items[0].EnrollmentId.ShouldBe(pendingId);
-        items[0].SubjectId.ShouldBe(AlgebraI);
+        items[0].SubjectId.ShouldBe(MAT102);
+        items[0].CommissionId.ShouldBe(CommissionMat102);
         items[0].Status.ShouldBe("Aprobada");
         items[0].Grade.ShouldBe(8m);
         items[0].SubjectCode.ShouldNotBeNullOrWhiteSpace();

@@ -16,9 +16,10 @@ namespace Planb.IntegrationTests.Reviews;
 ///   - 409 cuando el enrollment está en status Cursando.
 ///   - 409 cuando ya hay reseña para el enrollment (idempotency).
 ///
-/// Set-up: cada test arma un user autenticado, un profile, y un enrollment "Aprobada" con
-/// commission_id válido. El commission_id es un UUID arbitrario (Reviews no valida hoy contra
-/// Commission/Teacher porque esos aggregates llegan en una US posterior, ver doc US-017).
+/// Set-up: cada test arma un user autenticado, un profile, y un enrollment "Aprobada" anclado a
+/// una comisión sembrada real (PRG101 · 2026·1c · comisión "A"). El handler valida que el docente
+/// reseñado pertenezca a esa comisión (cross-BC vía Academic), así que la review apunta a Brandt,
+/// titular de la comisión. Usar un commission_id random ya no sirve: la validación lo rechaza con 400.
 /// </summary>
 public class PublishReviewEndpointTests
     : IClassFixture<RegisterApiFixture>, IAsyncLifetime
@@ -30,6 +31,16 @@ public class PublishReviewEndpointTests
         Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid MAT102 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
+    // PRG101 + 2026·1c + comisión "A" (Cid01) con docente Brandt: triple sembrado y coherente,
+    // exigido por la validación docente-en-comisión del handler de publish (US-017 reforzada).
+    private static readonly Guid PRG101 =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid CommissionA =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid TeacherBrandt =
+        Guid.Parse("00000006-0000-4000-a000-000000000001");
     private static readonly Guid Term2024_1c =
         Guid.Parse("00000005-0000-4000-a000-000000000001");
 
@@ -55,19 +66,19 @@ public class PublishReviewEndpointTests
     }
 
     /// <summary>
-    /// Crea un enrollment "Aprobada" con commission_id válido para que sirva de ancla a una
-    /// review. Devuelve el id del enrollment recién creado.
+    /// Crea un enrollment "Aprobada" anclado a la comisión sembrada PRG101 · 2026·1c · "A" (Cid01),
+    /// cuyo titular es Brandt. Eso lo hace reseñable: la review puede apuntar a un docente real de la
+    /// comisión y pasar la validación docente-en-comisión. Devuelve el id del enrollment creado.
     /// </summary>
-    private static async Task<Guid> CreateReviewableEnrollmentAsync(
-        AuthenticatedClient auth, Guid? commissionId = null)
+    private static async Task<Guid> CreateReviewableEnrollmentAsync(AuthenticatedClient auth)
     {
         var resp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
-                commissionId = commissionId ?? Guid.NewGuid(),
-                termId = (Guid?)Term2024_1c,
+                subjectId = PRG101,
+                commissionId = (Guid?)CommissionA,
+                termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8.5m,
@@ -75,6 +86,33 @@ public class PublishReviewEndpointTests
         resp.EnsureSuccessStatusCode();
         var body = await resp.Content.ReadFromJsonAsync<EnrollmentIdDto>();
         return body!.Id;
+    }
+
+    [Fact]
+    public async Task Returns_400_when_docente_not_in_enrollment_commission()
+    {
+        var auth = await SetupUserWithProfileAsync("wrong-docente");
+        var enrollmentId = await CreateReviewableEnrollmentAsync(auth);
+
+        // Castro (Tid06) es un docente real, pero de OTRA comisión (Cid04, PRG201): no dictó la
+        // comisión "A" de PRG101 del enrollment, así que la review tiene que rebotar 400.
+        var castro = Guid.Parse("00000006-0000-4000-a000-000000000006");
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/reviews",
+            new
+            {
+                enrollmentId,
+                docenteResenadoId = castro,
+                difficultyRating = 3,
+                overallRating = 4,
+                wouldRecommendCourse = true,
+                wouldRetakeTeacher = true,
+                subjectText = "Intento de reseñar a un docente que no dictó esta comisión, debe rebotar.",
+                teacherText = (string?)null,
+                finalGrade = (decimal?)null,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -88,7 +126,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 5,
                 hoursPerWeek = 10,
@@ -126,7 +164,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 2,
                 wouldRecommendCourse = false,
@@ -181,7 +219,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 3,
                 wouldRecommendCourse = true,
@@ -241,7 +279,7 @@ public class PublishReviewEndpointTests
         var payload = new
         {
             enrollmentId,
-            docenteResenadoId = Guid.NewGuid(),
+            docenteResenadoId = TeacherBrandt,
             difficultyRating = 3,
             overallRating = 3,
             wouldRecommendCourse = true,
@@ -269,7 +307,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 7,
                 wouldRecommendCourse = true,
@@ -293,7 +331,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = Guid.NewGuid(),
+                docenteResenadoId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 4,
                 tags = new[] { "etiqueta inventada que no existe" },

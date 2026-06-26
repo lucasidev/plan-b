@@ -280,6 +280,36 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         string? LastName,
         string? Role);
 
+    public async Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
+        Guid commissionId, CancellationToken ct = default)
+    {
+        // Mismos join + initcap + orden (titular primero) que ListCommissions, pero acotado a una
+        // comisión por id. Sin LEFT JOIN: una comisión sin docentes devuelve lista vacía.
+        const string sql = @"
+            SELECT
+                ct.teacher_id       AS TeacherId,
+                initcap(t.first_name) AS FirstName,
+                initcap(t.last_name)  AS LastName,
+                ct.role             AS Role
+            FROM academic.commission_teachers ct
+            JOIN academic.teachers t ON t.id = ct.teacher_id
+            WHERE ct.commission_id = @CommissionId
+            ORDER BY
+                CASE ct.role
+                    WHEN 'Titular'  THEN 0
+                    WHEN 'Adjunto'  THEN 1
+                    WHEN 'Jtp'      THEN 2
+                    WHEN 'Ayudante' THEN 3
+                    WHEN 'Invitado' THEN 4
+                    ELSE 5
+                END;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<CommissionTeacherItem>(
+            new CommandDefinition(sql, new { CommissionId = commissionId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
     public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {

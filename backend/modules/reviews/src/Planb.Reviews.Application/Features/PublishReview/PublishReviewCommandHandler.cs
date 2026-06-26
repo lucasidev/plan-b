@@ -1,3 +1,4 @@
+using Planb.Academic.Application.Contracts;
 using Planb.Enrollments.Application.Contracts;
 using Planb.Identity.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.ContentFilter;
@@ -32,6 +33,7 @@ public static class PublishReviewCommandHandler
         IReviewsUnitOfWork unitOfWork,
         IIdentityQueryService identity,
         IEnrollmentsQueryService enrollments,
+        IAcademicQueryService academic,
         IReviewContentFilter contentFilter,
         IDateTimeProvider clock,
         CancellationToken ct)
@@ -58,6 +60,16 @@ public static class PublishReviewCommandHandler
         if (enrollment.CommissionId is null)
         {
             return ReviewErrors.EnrollmentWithoutCommission;
+        }
+
+        // 2.5) El docente reseñado tiene que estar asignado a la comisión de la cursada
+        // (invariante data-model). Cross-BC vía Academic. Si la comisión no existe o no tiene
+        // al docente, se rechaza: no se reseña a alguien que no dictó esa comisión.
+        var commissionTeachers = await academic.GetCommissionTeachersAsync(
+            enrollment.CommissionId.Value, ct);
+        if (commissionTeachers.All(t => t.TeacherId != command.DocenteResenadoId))
+        {
+            return ReviewErrors.TeacherNotInEnrollmentCommission;
         }
 
         // 3) Idempotency.

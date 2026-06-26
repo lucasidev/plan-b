@@ -1,6 +1,7 @@
 using Planb.Enrollments.Application.Seeding;
 using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Identity.Application.Abstractions.Persistence;
+using Planb.Identity.Application.Contracts;
 using Planb.Identity.Application.Seeding;
 using Planb.Identity.Domain.Users;
 using Planb.Reviews.Application.Seeding;
@@ -132,7 +133,14 @@ public sealed class DemoCorpusHostedService : IHostedService
                 null))
             .ToList();
 
-        var enrollments = await enrollmentsSeeder.SeedAsync([.. enrollmentSpecs, .. failureSpecs], ct);
+        // Cursada reseñable interactiva de Lucía (sin reseña): se le ancla a la comisión real Cid01
+        // para que pueda elegir un docente real al reseñar. Lucía la siembra el IdentitySeeder antes
+        // que este hosted service; si no tiene profile (caso raro), se saltea sin romper.
+        var identityQuery = sp.GetRequiredService<IIdentityQueryService>();
+        var luciaSpecs = await BuildLuciaPendingSpecAsync(users, identityQuery, ct);
+
+        var enrollments = await enrollmentsSeeder.SeedAsync(
+            [.. enrollmentSpecs, .. failureSpecs, .. luciaSpecs], ct);
 
         // 3) Reseñas (ancladas a las cursadas) + votos entre autores.
         var reviewSpecs = seedableReviews
@@ -160,5 +168,40 @@ public sealed class DemoCorpusHostedService : IHostedService
         _log.LogInformation(
             "Demo corpus seeded: {Authors} authors, {Reviews} reviews, {Votes} votes, {Failures} failed enrollments.",
             authors.Count, reviewSpecs.Count, voteSpecs.Count, failureSpecs.Count);
+    }
+
+    private static async Task<IReadOnlyList<DemoEnrollmentSpec>> BuildLuciaPendingSpecAsync(
+        IUserRepository users, IIdentityQueryService identity, CancellationToken ct)
+    {
+        var email = EmailAddress.Create(DemoCorpusData.LuciaEmail);
+        if (email.IsFailure)
+        {
+            return [];
+        }
+
+        var user = await users.FindByEmailAsync(email.Value, ct);
+        if (user is null)
+        {
+            return [];
+        }
+
+        var profile = await identity.GetStudentProfileForUserAsync(user.Id.Value, ct);
+        if (profile is null)
+        {
+            return [];
+        }
+
+        return
+        [
+            new DemoEnrollmentSpec(
+                DemoCorpusData.LuciaPendingKey,
+                profile.Id,
+                DemoCorpusData.LuciaPendingSubjectId,
+                DemoCorpusData.LuciaPendingCommissionId,
+                DemoCorpusData.LuciaPendingTermId,
+                EnrollmentStatus.Aprobada,
+                ApprovalMethod.Final,
+                9m),
+        ];
     }
 }

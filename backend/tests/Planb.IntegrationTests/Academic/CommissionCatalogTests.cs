@@ -100,4 +100,39 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
+
+    // Comisión "A" de PRG101 (Cid01): brandt (Titular) + sosa (Jtp). Caller del endpoint:
+    // el picker de docente del editor de reseña (US-065 docente real por reseña).
+    private static readonly Guid Prg101CommissionAId =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
+
+    [Fact]
+    public async Task GetCommissionTeachers_returns_titular_first_title_cased()
+    {
+        var response = await _client.GetAsync(
+            $"/api/academic/commissions/{Prg101CommissionAId}/teachers");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var teachers = await response.Content.ReadFromJsonAsync<List<CommissionTeacherItem>>();
+        teachers.ShouldNotBeNull();
+        teachers!.Count.ShouldBe(2);
+        teachers[0].FirstName.ShouldBe("Carlos");
+        teachers[0].LastName.ShouldBe("Brandt");
+        teachers[0].Role.ShouldBe("Titular");
+        teachers[1].LastName.ShouldBe("Sosa");
+        teachers[1].Role.ShouldBe("Jtp");
+    }
+
+    [Fact]
+    public async Task GetCommissionTeachers_returns_empty_for_unknown_commission()
+    {
+        var response = await _client.GetAsync(
+            $"/api/academic/commissions/{Guid.NewGuid()}/teachers");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var teachers = await response.Content.ReadFromJsonAsync<List<CommissionTeacherItem>>();
+        teachers.ShouldBeEmpty();
+    }
 }

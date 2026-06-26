@@ -99,4 +99,13 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<CommissionListItem>> ListCommissionsBySubjectAndTermAsync(
         Guid subjectId, Guid termId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista los docentes asignados a una comisión por id (US-065). Devuelve lista vacía si la
+    /// comisión no existe o no tiene docentes. Callers: el handler de publicar reseña (valida que el
+    /// <c>docente_reseñado_id</c> esté en la comisión de la cursada, data-model) y el picker de
+    /// docente del editor de reseña (elegir a quién reseñar). Nombres en title case para display.
+    /// </summary>
+    Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
+        Guid commissionId, CancellationToken ct = default);
 }
