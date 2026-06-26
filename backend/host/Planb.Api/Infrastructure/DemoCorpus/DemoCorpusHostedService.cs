@@ -140,7 +140,7 @@ public sealed class DemoCorpusHostedService : IHostedService
             .Select(r => new DemoReviewSpec(
                 r.Key,
                 enrollments[r.Key],
-                DemoCorpusData.PlaceholderTeacherId,
+                DemoCorpusData.TeacherForSubject(r.SubjectId),
                 r.Difficulty,
                 r.Overall,
                 r.Hours,
