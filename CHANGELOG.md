@@ -75,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - catálogo de docentes consumible (US-063) (academic) — [`76fe967`](https://github.com/lucasidev/plan-b/commit/76fe96705153122dcf1f3fece643781c19fbb37a)
 - comisiones + asignación de docentes (US-065) (academic) — [`d1ad949`](https://github.com/lucasidev/plan-b/commit/d1ad9491f00655798ed5803a03f8d2cf6425d8b5)
 - reads para la pagina de docente (US-003, backend) (reviews) — [`edc04f1`](https://github.com/lucasidev/plan-b/commit/edc04f125c021a93cd931c381fe4a376d148e2c4)
+- página pública de docente con reseñas (US-003, frontend) (reviews) — [`4c85eaa`](https://github.com/lucasidev/plan-b/commit/4c85eaaadee3a201d364ef0c05fc73c911361467)
 
 ### Fixed
 
