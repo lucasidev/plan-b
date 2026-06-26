@@ -3,6 +3,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Subjects;
+using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
 
 namespace Planb.Academic.Infrastructure.Seeding;
@@ -445,6 +446,31 @@ public static class AcademicSeedData
             EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero),
             Label: "2026·2c"),
     };
+
+    // ====================================================================
+    // Teachers (UNSTA): catálogo docente demo (US-063). Nombres en lowercase
+    // (storage); el display los pasa a title case. Sin claim/verificación: son
+    // del catálogo, no perfiles reclamados (eso es US-030/031, otro vertical).
+    //
+    // Convención de UUIDs:
+    //   - Teachers: 00000006-0000-4000-a000-0000000000NN
+    // ====================================================================
+    public static IReadOnlyList<TeacherRecord> Teachers { get; } = new[]
+    {
+        new TeacherRecord(Tid("01"), Unsta.Id, "carlos", "brandt", "Profesor Titular"),
+        new TeacherRecord(Tid("02"), Unsta.Id, "ana", "iturralde", "Profesora Adjunta"),
+        new TeacherRecord(Tid("03"), Unsta.Id, "marta", "reynoso", "Profesora Titular"),
+        new TeacherRecord(Tid("04"), Unsta.Id, "diego", "sosa", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("05"), Unsta.Id, "laura", "castellanos", "Profesora Adjunta"),
+        new TeacherRecord(Tid("06"), Unsta.Id, "jorge", "castro", "Profesor Titular"),
+        new TeacherRecord(Tid("07"), Unsta.Id, "silvia", "méndez", "Profesora Adjunta"),
+        new TeacherRecord(Tid("08"), Unsta.Id, "roberto", "páez", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("09"), Unsta.Id, "verónica", "ledesma", "Profesora Titular"),
+        new TeacherRecord(Tid("0a"), Unsta.Id, "hernán", "quiroga", "Profesor Adjunto"),
+    };
+
+    private static TeacherId Tid(string nn) =>
+        new(Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}"));
 }
 
 /// <summary>Datos planos de una University del seed.</summary>
@@ -490,3 +516,10 @@ public sealed record AcademicTermRecord(
     DateTimeOffset EnrollmentOpens,
     DateTimeOffset EnrollmentCloses,
     string Label);
+
+/// <summary>
+/// Docente del seed. Nombres en lowercase (storage). UUIDs determinísticos para referencias
+/// estables (las reseñas demo van a apuntar a estos ids cuando aterrice "docente real por reseña").
+/// </summary>
+public sealed record TeacherRecord(
+    TeacherId Id, UniversityId UniversityId, string FirstName, string LastName, string? Title);
