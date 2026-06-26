@@ -8,13 +8,14 @@ import { cn } from '@/lib/utils';
 type VoteState = { helpful: number; notHelpful: number; my: boolean | null };
 
 /**
- * Botones de utilidad de una reseña ("útil" / "no útil") con sus conteos, del mockup
- * `SubjectDetail`. Optimista: el click actualiza el estado local al toque y después reconcilia
- * con la respuesta autoritativa del backend (que devuelve los conteos + el voto resultante);
- * si falla, revierte. Toggle: tocar el botón activo saca el voto.
+ * Botones de utilidad de una reseña ("útil" / "no útil") con sus conteos. Optimista: el click
+ * actualiza el estado local al toque y después reconcilia con la respuesta autoritativa del backend
+ * (que devuelve los conteos + el voto resultante); si falla, revierte. Toggle: tocar el botón activo
+ * saca el voto.
  *
  * Para un visitante anónimo (`canVote` false, página pública) los botones son links a /sign-in:
- * votar requiere sesión.
+ * votar requiere sesión. Compartido entre la página de materia (US-002) y la de docente (US-003):
+ * el voto es por reseña, igual en ambos contextos.
  */
 export function ReviewVoteButtons({
   reviewId,

@@ -1,12 +1,13 @@
 import { RatingHistogram } from '@/components/reviews/rating-histogram';
-import type { SubjectInsights } from '../types';
+import type { TeacherInsights } from '../types';
 
 /**
- * Crowd insights panel (US-002): the "Distribución" histogram next to the meters card
- * (Dificultad, Carga real, Recomendarían), mirroring the mockup `SubjectDetail`. Only rendered
- * when the subject has at least one published review (the caller checks `totalCount`).
+ * Crowd insights panel for the teacher page (US-003): the rating distribution histogram next to the
+ * meters card (Dificultad, Carga real, Recomendarían). Same shape as the subject insights panel
+ * (US-002), computed over the reviews where this teacher was the reviewed one. Only rendered when
+ * the teacher has at least one published review (the caller checks `totalCount`).
  */
-export function InsightsPanel({ insights }: { insights: SubjectInsights }) {
+export function TeacherInsightsPanel({ insights }: { insights: TeacherInsights }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="rounded-lg border border-line bg-bg-card p-4">
