@@ -83,4 +83,11 @@ public interface IAcademicQueryService
     /// que valida la universidad enviada en el upload antes de crear el aggregate import.
     /// </summary>
     Task<bool> UniversityExistsAsync(Guid universityId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Devuelve la metadata completa de un docente por id, o <c>null</c> si no existe. Caller: la
+    /// página pública de docente (US-003). Los nombres vienen en title case listos para display
+    /// (el storage es lowercase normalizado).
+    /// </summary>
+    Task<TeacherDetailItem?> GetTeacherByIdAsync(Guid teacherId, CancellationToken ct = default);
 }

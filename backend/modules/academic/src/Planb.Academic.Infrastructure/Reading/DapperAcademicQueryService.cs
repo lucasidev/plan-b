@@ -194,6 +194,30 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
     }
 
+    public async Task<TeacherDetailItem?> GetTeacherByIdAsync(
+        Guid teacherId, CancellationToken ct = default)
+    {
+        // initcap() capitaliza la primera letra de cada palabra (unicode-aware en Postgres:
+        // "verónica ledesma" -> "Verónica Ledesma"). El storage queda en lowercase normalizado
+        // para dedup/búsqueda; la capitalización es responsabilidad del read, no del dominio.
+        const string sql = @"
+            SELECT
+                id                 AS Id,
+                university_id       AS UniversityId,
+                initcap(first_name) AS FirstName,
+                initcap(last_name)  AS LastName,
+                title              AS Title,
+                bio                AS Bio,
+                photo_url          AS PhotoUrl,
+                is_active          AS IsActive
+            FROM academic.teachers
+            WHERE id = @TeacherId;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<TeacherDetailItem>(
+            new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
+    }
+
     public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {

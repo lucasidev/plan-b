@@ -4,6 +4,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Subjects;
+using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -11,9 +12,9 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Academic.Infrastructure.Seeding;
 
 /// <summary>
-/// Seed idempotente del catálogo IT: 4 universidades + 18 carreras + 18 planes vigentes.
-/// Corre en cada startup en Development (gateado por HostedService) y verifica si los rows
-/// ya están antes de insertar (re-ejecutar es seguro, no duplica ni rompe).
+/// Seed idempotente del catálogo académico: universidades, carreras, planes vigentes, materias,
+/// períodos lectivos y docentes. Corre en cada startup en Development (gateado por HostedService)
+/// y verifica si los rows ya están antes de insertar (re-ejecutar es seguro, no duplica ni rompe).
 ///
 /// Responsabilidad acotada: mantener los datos mínimos para que un dev fresh pueda registrarse,
 /// elegir universidad+carrera y crear un StudentProfile sin invocar APIs externas. La ingesta
@@ -44,6 +45,7 @@ public sealed class AcademicSeeder
         await SeedCareersAndPlansAsync(now, ct);
         await SeedSubjectsAsync(now, ct);
         await SeedAcademicTermsAsync(now, ct);
+        await SeedTeachersAsync(now, ct);
 
         if (_db.ChangeTracker.HasChanges())
         {
@@ -196,6 +198,39 @@ public sealed class AcademicSeeder
         {
             _logger.LogInformation(
                 "AcademicSeeder: inserted {Count} academic terms", inserted);
+        }
+    }
+
+    private async Task SeedTeachersAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.Teachers
+            .AsNoTracking()
+            .Select(t => t.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.Teachers)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.Teachers.Add(Teacher.Hydrate(
+                record.Id,
+                record.UniversityId,
+                record.FirstName,
+                record.LastName,
+                record.Title,
+                bio: null,
+                photoUrl: null,
+                isActive: true,
+                createdAt: now,
+                updatedAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: inserted {Count} teachers", inserted);
         }
     }
 }
