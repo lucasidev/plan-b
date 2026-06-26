@@ -17,10 +17,8 @@ public static class DemoCorpusData
     public static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     public static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
 
-    // Docente reseñado: placeholder hasta el Teacher aggregate (US-063). Mismo valor que el front.
-    public static readonly Guid PlaceholderTeacherId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-
-    // Comisión demo: hoy commission_id es un Guid libre (no hay catálogo de comisiones hasta US-063).
+    // Comisión demo: hoy commission_id es un Guid libre. Repuntar las cursadas demo a las comisiones
+    // reales de US-065 + validar docente-en-comisión es la slice de "docente real por reseña".
     public static readonly Guid DemoCommissionId = Guid.Parse("0000000c-0000-4000-a000-000000000001");
 
     private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Análisis Matemático I
@@ -30,6 +28,27 @@ public static class DemoCorpusData
     private static readonly Guid Prg201 = Guid.Parse("00000004-0000-4000-a000-000000000010"); // Programación II
     private static readonly Guid Bd201 = Guid.Parse("00000004-0000-4000-a000-000000000013"); // Bases de Datos I
     private static readonly Guid So201 = Guid.Parse("00000004-0000-4000-a000-000000000014"); // Sistemas Operativos
+
+    // Docente reseñado por materia: ids reales del catálogo docente (US-063). El titular de la
+    // comisión sembrada (US-065) cuando la materia tiene una; un docente coherente de UNSTA para las
+    // que no. Reemplaza el placeholder anterior: cada reseña demo apunta a un docente real, así la
+    // página de docente (US-003) muestra contenido. El write-flow de producción sigue usando el
+    // placeholder hasta la slice de "docente real por reseña".
+    private static readonly IReadOnlyDictionary<Guid, Guid> SubjectTeacher = new Dictionary<Guid, Guid>
+    {
+        [Mat102] = Teacher("02"), // iturralde (titular comisión Mañana)
+        [Prg101] = Teacher("01"), // brandt (titular comisión A)
+        [Prg201] = Teacher("06"), // castro (titular comisión Noche)
+        [Bd201] = Teacher("07"),  // méndez (titular comisión U1)
+        [Alg101] = Teacher("03"), // reynoso
+        [Int101] = Teacher("09"), // ledesma
+        [So201] = Teacher("08"),  // páez
+    };
+
+    private static Guid Teacher(string nn) => Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}");
+
+    /// <summary>Docente reseñado real para una materia demo (id del catálogo, US-063).</summary>
+    public static Guid TeacherForSubject(Guid subjectId) => SubjectTeacher[subjectId];
 
     private static readonly Guid[] Terms =
     [

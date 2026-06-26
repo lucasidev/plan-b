@@ -27,6 +27,7 @@ public sealed class BrowseReviewsEndpoint : ICarterModule
             Guid? subjectId,
             Guid? careerPlanId,
             int? difficulty,
+            Guid? teacherId,
             int? page,
             int? pageSize,
             HttpContext http,
@@ -41,6 +42,7 @@ public sealed class BrowseReviewsEndpoint : ICarterModule
                 SubjectId: subjectId,
                 CareerPlanId: careerPlanId,
                 DifficultyRating: difficulty is >= 1 and <= 5 ? difficulty : null,
+                TeacherId: teacherId,
                 Page: Math.Max(1, page ?? 1),
                 PageSize: Math.Clamp(pageSize ?? DefaultPageSize, 1, MaxPageSize),
                 CurrentUserId: currentUserId);

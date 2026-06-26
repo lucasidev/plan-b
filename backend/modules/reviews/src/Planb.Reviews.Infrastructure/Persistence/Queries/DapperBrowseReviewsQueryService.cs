@@ -66,6 +66,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
               AND (@SubjectId       IS NULL OR er.subject_id    = @SubjectId)
               AND (@CareerPlanId    IS NULL OR s.career_plan_id = @CareerPlanId)
               AND (@DifficultyRating IS NULL OR r.difficulty_rating = @DifficultyRating)
+              AND (@TeacherId       IS NULL OR r.docente_resenado_id = @TeacherId)
             ORDER BY r.created_at DESC
             OFFSET @Offset LIMIT @Limit;";
 
@@ -75,6 +76,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
             query.SubjectId,
             query.CareerPlanId,
             query.DifficultyRating,
+            query.TeacherId,
             query.CurrentUserId,
             Offset = offset,
             Limit = query.PageSize,

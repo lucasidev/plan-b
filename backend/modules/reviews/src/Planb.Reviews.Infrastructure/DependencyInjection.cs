@@ -39,6 +39,9 @@ public static class DependencyInjection
         // Crowd insights agregados de una materia (US-002).
         services.AddScoped<ISubjectInsightsQueryService, DapperSubjectInsightsQueryService>();
 
+        // Crowd insights agregados de un docente (US-003).
+        services.AddScoped<ITeacherInsightsQueryService, DapperTeacherInsightsQueryService>();
+
         // Cross-BC contract consumed by Moderation (US-019) to resolve a review's author.
         services.AddScoped<IReviewQueryService, DapperReviewQueryService>();
 

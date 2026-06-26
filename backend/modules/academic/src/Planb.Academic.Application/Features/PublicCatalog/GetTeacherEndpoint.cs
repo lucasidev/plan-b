@@ -11,7 +11,9 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 ///
 /// Caller: la página pública de docente. Sin auth, el catálogo es público. Docente inexistente
 /// devuelve 404 (mismo criterio que GetSubject: el id apunta a un recurso concreto, su ausencia
-/// es un 404 honesto).
+/// es un 404 honesto). Docente dado de baja (soft delete, <c>is_active=false</c>) devuelve 410 Gone
+/// con title <c>academic.teacher.removed</c>: el recurso existió pero ya no figura en el catálogo
+/// (las reseñas históricas se conservan, ver US-063). El frontend muestra el aviso correspondiente.
 /// </summary>
 public sealed class GetTeacherEndpoint : ICarterModule
 {
@@ -23,17 +25,29 @@ public sealed class GetTeacherEndpoint : ICarterModule
             CancellationToken ct) =>
         {
             var teacher = await queries.GetTeacherByIdAsync(id, ct);
-            return teacher is null
-                ? Results.Problem(
+            if (teacher is null)
+            {
+                return Results.Problem(
                     title: "academic.teacher.not_found",
                     detail: "Teacher not found.",
-                    statusCode: StatusCodes.Status404NotFound)
-                : Results.Ok(teacher);
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+
+            if (!teacher.IsActive)
+            {
+                return Results.Problem(
+                    title: "academic.teacher.removed",
+                    detail: "Teacher is no longer in the catalog.",
+                    statusCode: StatusCodes.Status410Gone);
+            }
+
+            return Results.Ok(teacher);
         })
         .WithName("Academic_GetTeacher")
         .WithTags("Academic")
         .Produces<TeacherDetailItem>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status410Gone)
         .AllowAnonymous();
     }
 }
