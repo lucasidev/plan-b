@@ -2,6 +2,7 @@ using Planb.Academic.Domain;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
@@ -471,6 +472,73 @@ public static class AcademicSeedData
 
     private static TeacherId Tid(string nn) =>
         new(Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}"));
+
+    // ====================================================================
+    // Commissions + CommissionTeachers (UNSTA): oferta demo (US-065). Cada comisión cuelga de un
+    // Subject TUDCS + un AcademicTerm UNSTA, con docentes del catálogo asignados por rol. Todo
+    // UNSTA, así la coherencia universitaria total y term_kind (Cuatrimestral) se sostienen.
+    // Habilita "docente real por reseña": las reseñas demo van a anclar su docente a uno de estos.
+    //
+    // Convención de UUIDs:
+    //   - Commissions: 00000007-0000-4000-a000-0000000000NN
+    //   - CommissionTeachers: sin id propio (PK compuesta commission_id + teacher_id).
+    // ====================================================================
+    public static IReadOnlyList<CommissionRecord> Commissions { get; } = new[]
+    {
+        // Programación I (PRG101) · 2026·1c: dos comisiones, distinta modalidad.
+        new CommissionRecord(Cid("01"), Sid("04"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Titular), // brandt
+                new CommissionTeacherRecord(Tid("04"), CommissionTeacherRole.Jtp),     // sosa
+            }),
+        new CommissionRecord(Cid("02"), Sid("04"), Atid("05"), "B (Virtual)", CommissionModality.Virtual, 60, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular),  // reynoso
+                new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Ayudante), // quiroga
+            }),
+
+        // Análisis Matemático I (MAT102) · 2026·1c.
+        new CommissionRecord(Cid("03"), Sid("01"), Atid("05"), "Mañana", CommissionModality.Presencial, 35, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Titular), // iturralde
+            }),
+
+        // Programación II (PRG201) · 2025·2c.
+        new CommissionRecord(Cid("04"), Sid("10"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Titular), // castro
+                new CommissionTeacherRecord(Tid("05"), CommissionTeacherRole.Adjunto), // castellanos
+            }),
+
+        // Bases de Datos I (BD201) · 2025·2c.
+        new CommissionRecord(Cid("05"), Sid("13"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Titular), // méndez
+                new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Jtp),     // páez
+            }),
+
+        // Ingeniería de Software I (ISW301) · 2026·1c. brandt acá es adjunto (mismo docente, otra comisión).
+        new CommissionRecord(Cid("06"), Sid("20"), Atid("05"), "A", CommissionModality.Presencial, 25, null,
+            new[]
+            {
+                new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular), // ledesma
+                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Adjunto), // brandt
+            }),
+    };
+
+    private static SubjectId Sid(string nn) =>
+        new(Guid.Parse($"00000004-0000-4000-a000-0000000000{nn}"));
+
+    private static AcademicTermId Atid(string nn) =>
+        new(Guid.Parse($"00000005-0000-4000-a000-0000000000{nn}"));
+
+    private static CommissionId Cid(string nn) =>
+        new(Guid.Parse($"00000007-0000-4000-a000-0000000000{nn}"));
 }
 
 /// <summary>Datos planos de una University del seed.</summary>
@@ -523,3 +591,20 @@ public sealed record AcademicTermRecord(
 /// </summary>
 public sealed record TeacherRecord(
     TeacherId Id, UniversityId UniversityId, string FirstName, string LastName, string? Title);
+
+/// <summary>
+/// Comisión del seed con sus docentes embebidos. UUIDs determinísticos. <see cref="SubjectId"/> y
+/// <see cref="TermId"/> son las refs cross-aggregate (el aggregate las guarda como Guid plano).
+/// </summary>
+public sealed record CommissionRecord(
+    CommissionId Id,
+    SubjectId SubjectId,
+    AcademicTermId TermId,
+    string Name,
+    CommissionModality Modality,
+    int? Capacity,
+    string? Notes,
+    IReadOnlyList<CommissionTeacherRecord> Teachers);
+
+/// <summary>Asignación docente del seed (par teacher + rol dentro de una comisión).</summary>
+public sealed record CommissionTeacherRecord(TeacherId TeacherId, CommissionTeacherRole Role);

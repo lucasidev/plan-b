@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
@@ -46,6 +47,7 @@ public sealed class AcademicSeeder
         await SeedSubjectsAsync(now, ct);
         await SeedAcademicTermsAsync(now, ct);
         await SeedTeachersAsync(now, ct);
+        await SeedCommissionsAsync(now, ct);
 
         if (_db.ChangeTracker.HasChanges())
         {
@@ -231,6 +233,39 @@ public sealed class AcademicSeeder
         if (inserted > 0)
         {
             _logger.LogInformation("AcademicSeeder: inserted {Count} teachers", inserted);
+        }
+    }
+
+    private async Task SeedCommissionsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.Commissions
+            .AsNoTracking()
+            .Select(c => c.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.Commissions)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.Commissions.Add(Commission.Hydrate(
+                record.Id,
+                record.SubjectId.Value,
+                record.TermId.Value,
+                record.Name,
+                record.Modality,
+                record.Capacity,
+                record.Notes,
+                record.Teachers.Select(t => (t.TeacherId, t.Role)),
+                createdAt: now,
+                updatedAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: inserted {Count} commissions", inserted);
         }
     }
 }

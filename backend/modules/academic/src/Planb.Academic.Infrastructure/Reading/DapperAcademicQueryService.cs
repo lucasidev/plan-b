@@ -218,6 +218,68 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
     }
 
+    public async Task<IReadOnlyList<CommissionListItem>> ListCommissionsBySubjectAndTermAsync(
+        Guid subjectId, Guid termId, CancellationToken ct = default)
+    {
+        // Join plano comisión + asignaciones + docente. Una fila por (comisión, docente); las
+        // comisiones sin docente igual aparecen (LEFT JOIN, teacher fields null). initcap pasa el
+        // nombre lowercase del storage a title case. El CASE ordena titular primero para display.
+        const string sql = @"
+            SELECT
+                c.id                AS CommissionId,
+                c.name              AS CommissionName,
+                c.modality          AS Modality,
+                c.capacity          AS Capacity,
+                ct.teacher_id       AS TeacherId,
+                initcap(t.first_name) AS FirstName,
+                initcap(t.last_name)  AS LastName,
+                ct.role             AS Role
+            FROM academic.commissions c
+            LEFT JOIN academic.commission_teachers ct ON ct.commission_id = c.id
+            LEFT JOIN academic.teachers t ON t.id = ct.teacher_id
+            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId
+            ORDER BY
+                c.name,
+                CASE ct.role
+                    WHEN 'Titular'  THEN 0
+                    WHEN 'Adjunto'  THEN 1
+                    WHEN 'Jtp'      THEN 2
+                    WHEN 'Ayudante' THEN 3
+                    WHEN 'Invitado' THEN 4
+                    ELSE 5
+                END;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<CommissionTeacherRow>(
+            new CommandDefinition(
+                sql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
+
+        // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
+        // nombre desde el SQL), así que el listado sale ordenado sin re-sort.
+        return rows
+            .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity))
+            .Select(g => new CommissionListItem(
+                g.Key.CommissionId,
+                g.Key.CommissionName,
+                g.Key.Modality,
+                g.Key.Capacity,
+                g.Where(r => r.TeacherId.HasValue)
+                    .Select(r => new CommissionTeacherItem(
+                        r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
+                    .ToList()))
+            .ToList();
+    }
+
+    private sealed record CommissionTeacherRow(
+        Guid CommissionId,
+        string CommissionName,
+        string Modality,
+        int? Capacity,
+        Guid? TeacherId,
+        string? FirstName,
+        string? LastName,
+        string? Role);
+
     public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {

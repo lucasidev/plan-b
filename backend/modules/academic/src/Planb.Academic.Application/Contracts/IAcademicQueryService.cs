@@ -90,4 +90,13 @@ public interface IAcademicQueryService
     /// (el storage es lowercase normalizado).
     /// </summary>
     Task<TeacherDetailItem?> GetTeacherByIdAsync(Guid teacherId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista las comisiones de una materia en un cuatrimestre, cada una con sus docentes (US-065).
+    /// Caller: el listado público de comisiones (picker de la cursada al reseñar, página de
+    /// materia). Devuelve lista vacía si no hay comisiones para ese par (materia/term inexistente o
+    /// sin oferta cargada). Orden: por nombre de comisión; dentro de cada una, titular primero.
+    /// </summary>
+    Task<IReadOnlyList<CommissionListItem>> ListCommissionsBySubjectAndTermAsync(
+        Guid subjectId, Guid termId, CancellationToken ct = default);
 }
