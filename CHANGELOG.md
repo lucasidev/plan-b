@@ -72,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - votos de utilidad en reseñas (útil / no útil) (reviews) — [`4f3a9d7`](https://github.com/lucasidev/plan-b/commit/4f3a9d7e530c243d12e52137d79a1667d6ede815)
 - búsqueda de materias en el topbar (US-004, materia-only) (academic) — [`083e706`](https://github.com/lucasidev/plan-b/commit/083e706a7aa01c47ce5fe8a0a94934f111e9e81a)
 - aprobación histórica de materia (pass-rate, ADR-0047) (enrollments) — [`4216277`](https://github.com/lucasidev/plan-b/commit/421627799fc10e3b3f251bf5f63bdc4fef60b88d)
+- catálogo de docentes consumible (US-063) (academic) — [`76fe967`](https://github.com/lucasidev/plan-b/commit/76fe96705153122dcf1f3fece643781c19fbb37a)
 
 ### Fixed
 
