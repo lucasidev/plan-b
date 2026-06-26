@@ -1,7 +1,7 @@
 /**
- * Overall-rating distribution (US-002, "Distribución" card in the mockup `SubjectDetail`).
- * Five bars, index 0 = rating 1 ... index 4 = rating 5. Heights are relative to the busiest
- * bucket so the shape reads even with low counts.
+ * Overall-rating distribution histogram. Five bars, index 0 = rating 1 ... index 4 = rating 5.
+ * Heights are relative to the busiest bucket so the shape reads even with low counts. Shared by the
+ * subject page (US-002) and the teacher page (US-003): both render the same 5-bucket distribution.
  */
 export function RatingHistogram({ histogram }: { histogram: number[] }) {
   const max = Math.max(1, ...histogram);

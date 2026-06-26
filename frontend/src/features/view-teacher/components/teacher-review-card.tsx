@@ -1,16 +1,23 @@
+import Link from 'next/link';
 import { ReviewVoteButtons } from '@/components/reviews/review-vote-buttons';
 import { formatRelativeDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
-import type { SubjectReview } from '../types';
+import type { TeacherReview } from '../types';
 
 /**
- * One published review on the subject page (US-002). Surfaces the full US-089 model: overall
- * rating (stars), would-recommend pill, difficulty, hours/week and tags, plus the free text and
- * a relative date. No author identity (ADR-0009): every published review carries the implicit
- * "verificado que cursó" because it is anchored to a finished enrollment. Teacher name is
- * omitted until the Teacher aggregate lands (US-063).
+ * One published review on the teacher page (US-003). Same layout as the subject review card, plus a
+ * subject label: a teacher's reviews span several courses, so each card says which subject it is
+ * about (and links to that subject page). No author identity (ADR-0009); the implicit "verificado
+ * que cursó" comes from being anchored to a finished enrollment. Teacher responses (US-040) land
+ * later, so no reply block yet.
  */
-export function ReviewCard({ review, canVote }: { review: SubjectReview; canVote: boolean }) {
+export function TeacherReviewCard({
+  review,
+  canVote,
+}: {
+  review: TeacherReview;
+  canVote: boolean;
+}) {
   return (
     <li>
       <article className="flex flex-col gap-2.5 border-b border-line px-1 py-4 last:border-b-0">
@@ -32,6 +39,13 @@ export function ReviewCard({ review, canVote }: { review: SubjectReview; canVote
             <RecommendPill recommends={review.wouldRecommendCourse} />
           </div>
         </div>
+
+        <Link
+          href={`/subjects/${review.subjectId}`}
+          className="font-mono text-[11px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
+        >
+          {review.subjectCode} · {review.subjectName}
+        </Link>
 
         {review.subjectText && (
           <p className="text-[13.5px] leading-relaxed text-ink-2 m-0">{review.subjectText}</p>
