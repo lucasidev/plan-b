@@ -48,6 +48,10 @@ export type TeacherReview = {
   helpfulCount: number;
   notHelpfulCount: number;
   myVoteIsHelpful: boolean | null;
+  /** Respuesta del docente (US-040). Null si nadie respondió. El autor aparece con su nombre. */
+  responseText: string | null;
+  responseAuthorName: string | null;
+  responseCreatedAt: string | null;
 };
 
 export type TeacherReviewsPage = {
@@ -58,3 +62,11 @@ export type TeacherReviewsPage = {
 };
 
 export const TEACHER_REVIEWS_PAGE_SIZE = 20;
+
+/** Estado del server action de responder reseña (US-040). Vive en types (actions.ts solo exporta async). */
+export type RespondFormState =
+  | { status: 'idle' }
+  | { status: 'success' }
+  | { status: 'error'; message: string };
+
+export const initialRespondState: RespondFormState = { status: 'idle' };

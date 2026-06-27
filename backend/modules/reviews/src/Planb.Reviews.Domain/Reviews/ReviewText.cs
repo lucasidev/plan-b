@@ -46,5 +46,30 @@ public readonly record struct ReviewText : IValueObject
         return Result.Success<ReviewText?>(new ReviewText(trimmed));
     }
 
+    /// <summary>
+    /// Variante requerida: el texto no puede faltar. Mismos bounds (50..2000) que
+    /// <see cref="CreateOptional"/>. Caller: la respuesta del docente (US-040), donde el texto es
+    /// obligatorio (a diferencia de los dos texts opcionales de una reseña).
+    /// </summary>
+    public static Result<ReviewText> Create(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return Result.Failure<ReviewText>(ReviewErrors.ResponseTextRequired);
+        }
+
+        var trimmed = raw.Trim();
+        if (trimmed.Length < MinLength)
+        {
+            return Result.Failure<ReviewText>(ReviewErrors.ReviewTextTooShort);
+        }
+        if (trimmed.Length > MaxLength)
+        {
+            return Result.Failure<ReviewText>(ReviewErrors.ReviewTextTooLong);
+        }
+
+        return Result.Success(new ReviewText(trimmed));
+    }
+
     public override string ToString() => Value;
 }

@@ -177,6 +177,56 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
                 "final_grade IS NULL OR (final_grade >= 0 AND final_grade <= 10)");
         });
 
+        // US-040: respuesta del docente. Owned 1:1 en su propia tabla. El aggregate genera el Id
+        // (ValueGeneratedNever). El UNIQUE sobre review_id garantiza una sola respuesta por reseña.
+        builder.OwnsOne(r => r.Response, response =>
+        {
+            response.ToTable("teacher_responses");
+
+            response.WithOwner().HasForeignKey("review_id");
+
+            response.HasKey(tr => tr.Id);
+
+            response.Property(tr => tr.Id)
+                .HasColumnName("id")
+                .HasConversion(id => id.Value, value => new TeacherResponseId(value))
+                .ValueGeneratedNever();
+
+            response.Property<ReviewId>("review_id")
+                .HasColumnName("review_id")
+                .HasConversion(id => id.Value, value => new ReviewId(value));
+
+            response.HasIndex("review_id")
+                .IsUnique()
+                .HasDatabaseName("ux_teacher_responses_review");
+
+            response.Property(tr => tr.TeacherId)
+                .HasColumnName("teacher_id")
+                .IsRequired();
+
+            response.Property(tr => tr.Text)
+                .HasColumnName("text")
+                .HasColumnType("text")
+                .HasConversion(text => text.Value, raw => ReviewText.Create(raw).Value)
+                .IsRequired();
+
+            response.Property(tr => tr.Status)
+                .HasColumnName("status")
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
+            response.Property(tr => tr.CreatedAt)
+                .HasColumnName("created_at")
+                .IsRequired();
+
+            response.Property(tr => tr.UpdatedAt)
+                .HasColumnName("updated_at")
+                .IsRequired();
+        });
+
+        builder.Navigation(r => r.Response).AutoInclude();
+
         builder.Ignore(r => r.DomainEvents);
     }
 }

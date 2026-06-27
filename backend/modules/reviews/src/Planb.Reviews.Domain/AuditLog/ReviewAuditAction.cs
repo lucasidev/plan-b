@@ -20,4 +20,7 @@ public enum ReviewAuditAction
     Deleted,
     Reported,
     ModeratorDecision,
+
+    /// <summary>US-040: un docente verificado publicó su respuesta a la reseña.</summary>
+    ResponsePublished,
 }

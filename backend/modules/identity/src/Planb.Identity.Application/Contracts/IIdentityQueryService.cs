@@ -33,4 +33,13 @@ public interface IIdentityQueryService
     /// </summary>
     Task<StudentProfileSummary?> GetStudentProfileByIdAsync(
         Guid studentProfileId, CancellationToken ct = default);
+
+    /// <summary>
+    /// ¿El user tiene un <c>TeacherProfile</c> verificado para este docente (US-040)? Caller: el
+    /// handler de responder reseña, que solo deja responder a quien es el docente reseñado y está
+    /// verificado (claim US-030 + verificación US-031). False si no hay claim, o lo hay pero sin
+    /// verificar, o es de otro docente.
+    /// </summary>
+    Task<bool> HasVerifiedTeacherProfileAsync(
+        Guid userId, Guid teacherId, CancellationToken ct = default);
 }

@@ -11,9 +11,11 @@ import { TeacherReviewCard } from './teacher-review-card';
 export function TeacherReviewsSection({
   reviews,
   canVote,
+  canRespond,
 }: {
   reviews: TeacherReviewsPage;
   canVote: boolean;
+  canRespond: boolean;
 }) {
   if (reviews.totalCount === 0) {
     return (
@@ -37,7 +39,12 @@ export function TeacherReviewsSection({
       </h2>
       <ul className="flex flex-col" aria-label="Reseñas del docente">
         {reviews.items.map((review) => (
-          <TeacherReviewCard key={review.id} review={review} canVote={canVote} />
+          <TeacherReviewCard
+            key={review.id}
+            review={review}
+            canVote={canVote}
+            canRespond={canRespond}
+          />
         ))}
       </ul>
       {pageCount > 1 && <Pager page={reviews.page} pageCount={pageCount} />}

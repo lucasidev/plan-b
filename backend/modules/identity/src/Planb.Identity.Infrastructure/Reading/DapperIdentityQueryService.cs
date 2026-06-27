@@ -65,4 +65,22 @@ internal sealed class DapperIdentityQueryService : IIdentityQueryService
         return await db.QuerySingleOrDefaultAsync<StudentProfileSummary>(
             new CommandDefinition(sql, new { Id = studentProfileId }, cancellationToken: ct));
     }
+
+    public async Task<bool> HasVerifiedTeacherProfileAsync(
+        Guid userId, Guid teacherId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT EXISTS (
+                SELECT 1
+                FROM identity.teacher_profiles
+                WHERE user_id = @UserId
+                  AND teacher_id = @TeacherId
+                  AND verified_at IS NOT NULL
+            );";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.ExecuteScalarAsync<bool>(
+            new CommandDefinition(
+                sql, new { UserId = userId, TeacherId = teacherId }, cancellationToken: ct));
+    }
 }

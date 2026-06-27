@@ -1,22 +1,29 @@
 import Link from 'next/link';
 import { ReviewVoteButtons } from '@/components/reviews/review-vote-buttons';
+import { VerifiedBadge } from '@/components/ui/verified-badge';
 import { formatRelativeDate } from '@/lib/format-date';
 import { cn } from '@/lib/utils';
 import type { TeacherReview } from '../types';
+import { TeacherResponseForm } from './teacher-response-form';
 
 /**
  * One published review on the teacher page (US-003). Same layout as the subject review card, plus a
  * subject label: a teacher's reviews span several courses, so each card says which subject it is
  * about (and links to that subject page). No author identity (ADR-0009); the implicit "verificado
- * que cursó" comes from being anchored to a finished enrollment. Teacher responses (US-040) land
- * later, so no reply block yet.
+ * que cursó" comes from being anchored to a finished enrollment.
+ *
+ * US-040: si ya hay respuesta del docente, se muestra (con su nombre, públicamente). Si el viewer es
+ * el docente verificado de esta reseña y todavía no respondió (<paramref name="canRespond"/>), se le
+ * ofrece el form de respuesta.
  */
 export function TeacherReviewCard({
   review,
   canVote,
+  canRespond,
 }: {
   review: TeacherReview;
   canVote: boolean;
+  canRespond: boolean;
 }) {
   return (
     <li>
@@ -86,6 +93,25 @@ export function TeacherReviewCard({
             canVote={canVote}
           />
         </div>
+
+        {review.responseText ? (
+          <div className="mt-1 rounded-md border-l-2 border-accent bg-bg-elev px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] font-semibold text-ink">
+                {review.responseAuthorName}
+              </span>
+              <VerifiedBadge kind="teacher" />
+              {review.responseCreatedAt && (
+                <span className="font-mono text-[10.5px] text-ink-3">
+                  · {formatRelativeDate(review.responseCreatedAt)}
+                </span>
+              )}
+            </div>
+            <p className="m-0 mt-1 text-[13px] leading-relaxed text-ink-2">{review.responseText}</p>
+          </div>
+        ) : (
+          canRespond && <TeacherResponseForm reviewId={review.id} />
+        )}
       </article>
     </li>
   );

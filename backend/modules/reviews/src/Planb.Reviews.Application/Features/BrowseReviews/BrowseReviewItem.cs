@@ -30,4 +30,9 @@ public sealed record BrowseReviewItem(
     // anónimo), true = votó útil, false = votó no útil. Sirve para resaltar el botón activo.
     int HelpfulCount,
     int NotHelpfulCount,
-    bool? MyVoteIsHelpful);
+    bool? MyVoteIsHelpful,
+    // US-040: respuesta del docente. Null si nadie respondió. A diferencia del autor de la
+    // reseña (anónimo, ADR-0009), el docente que responde aparece con su nombre.
+    string? ResponseText,
+    string? ResponseAuthorName,
+    DateTime? ResponseCreatedAt);
