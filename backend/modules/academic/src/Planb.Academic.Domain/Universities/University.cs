@@ -16,6 +16,17 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
 {
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
+
+    /// <summary>
+    /// Dominios de email institucional de la universidad (ej. <c>unsta.edu.ar</c>), en lowercase.
+    /// Un docente verifica su identidad (US-031) mostrando que controla un email cuyo dominio está
+    /// en esta lista. Vacío = la universidad no habilita verificación por email institucional (solo
+    /// queda la manual, UC-066). La validación del dominio de un email contra esta lista vive en el
+    /// flow de claim (Identity, <c>TeacherProfile.SubmitInstitutionalEmail</c>): la University solo
+    /// es la fuente de verdad de qué dominios son válidos.
+    /// </summary>
+    public IReadOnlyList<string> InstitutionalEmailDomains { get; private set; } = [];
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     private University() { }
@@ -23,9 +34,14 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
     /// <summary>
     /// Crea una nueva University. Validaciones mínimas (Name y Slug no blank). El detalle
     /// (length máximo, chars permitidos, formato del slug) se refina cuando un caller con
-    /// requerimientos concretos lo justifique; hoy frena inputs degenerados.
+    /// requerimientos concretos lo justifique; hoy frena inputs degenerados. Los dominios se
+    /// normalizan a lowercase y se deduplican.
     /// </summary>
-    public static Result<University> Create(string name, string slug, IDateTimeProvider clock)
+    public static Result<University> Create(
+        string name,
+        string slug,
+        IReadOnlyList<string>? institutionalEmailDomains,
+        IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -44,6 +60,7 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
             Id = UniversityId.New(),
             Name = name.Trim(),
             Slug = slug.Trim().ToLowerInvariant(),
+            InstitutionalEmailDomains = NormalizeDomains(institutionalEmailDomains),
             CreatedAt = clock.UtcNow,
         };
     }
@@ -55,12 +72,31 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
     /// consistentes (typically un seed cerrado o un repo cargando un row existente).
     /// </summary>
     public static University Hydrate(
-        UniversityId id, string name, string slug, DateTimeOffset createdAt) =>
+        UniversityId id,
+        string name,
+        string slug,
+        IReadOnlyList<string> institutionalEmailDomains,
+        DateTimeOffset createdAt) =>
         new()
         {
             Id = id,
             Name = name,
             Slug = slug,
+            InstitutionalEmailDomains = institutionalEmailDomains,
             CreatedAt = createdAt,
         };
+
+    private static IReadOnlyList<string> NormalizeDomains(IReadOnlyList<string>? domains)
+    {
+        if (domains is null)
+        {
+            return [];
+        }
+
+        return domains
+            .Where(d => !string.IsNullOrWhiteSpace(d))
+            .Select(d => d.Trim().ToLowerInvariant())
+            .Distinct()
+            .ToList();
+    }
 }

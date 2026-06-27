@@ -21,17 +21,20 @@ public sealed class SmtpVerificationEmailSender : IVerificationEmailSender
     private readonly SmtpOptions _smtp;
     private readonly VerificationEmailOptions _verification;
     private readonly PasswordResetEmailOptions _passwordReset;
+    private readonly TeacherVerificationEmailOptions _teacherVerification;
     private readonly ILogger<SmtpVerificationEmailSender> _logger;
 
     public SmtpVerificationEmailSender(
         IOptions<SmtpOptions> smtp,
         IOptions<VerificationEmailOptions> verification,
         IOptions<PasswordResetEmailOptions> passwordReset,
+        IOptions<TeacherVerificationEmailOptions> teacherVerification,
         ILogger<SmtpVerificationEmailSender> logger)
     {
         _smtp = smtp.Value;
         _verification = verification.Value;
         _passwordReset = passwordReset.Value;
+        _teacherVerification = teacherVerification.Value;
         _logger = logger;
     }
 
@@ -89,6 +92,37 @@ public sealed class SmtpVerificationEmailSender : IVerificationEmailSender
 
         await SendMessageAsync(message, ct);
         _logger.LogInformation("Password-reset email sent to {Recipient}", recipient.Value);
+    }
+
+    public async Task SendTeacherVerificationAsync(
+        EmailAddress recipient, string token, CancellationToken ct = default)
+    {
+        var link = $"{_teacherVerification.LinkBaseUrl}?token={Uri.EscapeDataString(token)}";
+
+        var message = BuildMessage(
+            recipient,
+            subject: "Verificá tu cuenta como docente en planb",
+            htmlBody: $"""
+                <p>Hola,</p>
+                <p>Pediste verificar tu identidad como docente en <strong>planb</strong> con este email institucional. Hacé click acá para confirmarlo:</p>
+                <p><a href="{link}">Verificar mi cuenta docente</a></p>
+                <p>Una vez verificado vas a poder responder las reseñas sobre tus materias.</p>
+                <p>El link expira en 24 horas. Si no fuiste vos, ignorá este mensaje.</p>
+                """,
+            textBody: $"""
+                Hola,
+
+                Pediste verificar tu identidad como docente en planb con este email institucional.
+                Abrí este link para confirmarlo:
+                {link}
+
+                Una vez verificado vas a poder responder las reseñas sobre tus materias.
+
+                El link expira en 24 horas. Si no fuiste vos, ignorá este mensaje.
+                """);
+
+        await SendMessageAsync(message, ct);
+        _logger.LogInformation("Teacher verification email sent to {Recipient}", recipient.Value);
     }
 
     private MimeMessage BuildMessage(EmailAddress recipient, string subject, string htmlBody, string textBody)

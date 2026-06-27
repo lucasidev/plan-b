@@ -31,9 +31,22 @@ public sealed class TeacherProfile : Entity<TeacherProfileId>, IAggregateRoot
 {
     public UserId UserId { get; private set; }
     public Guid TeacherId { get; private set; }
+
+    /// <summary>Email institucional ingresado para verificación (US-031). Null hasta el submit.</summary>
+    public string? InstitutionalEmail { get; private set; }
+
+    /// <summary>Cómo se verificó / se está verificando (US-031). Null en un claim recién creado.</summary>
+    public TeacherVerificationMethod? VerificationMethod { get; private set; }
+
     public DateTimeOffset? VerifiedAt { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
+
+    // Tokens de verificación institucional (ADR-0033, reuso del child entity de Users). El aggregate
+    // mantiene a lo sumo uno activo por purpose (issuing invalida el anterior). Para este profile el
+    // único purpose es TeacherInstitutionalVerification.
+    private readonly List<VerificationToken> _tokens = new();
+    public IReadOnlyCollection<VerificationToken> Tokens => _tokens.AsReadOnly();
 
     /// <summary>
     /// El profile está verificado (habilita US-040). Estado derivado: no hay enum dedicado, el
@@ -75,6 +88,8 @@ public sealed class TeacherProfile : Entity<TeacherProfileId>, IAggregateRoot
         TeacherProfileId id,
         UserId userId,
         Guid teacherId,
+        string? institutionalEmail,
+        TeacherVerificationMethod? verificationMethod,
         DateTimeOffset? verifiedAt,
         DateTimeOffset createdAt,
         DateTimeOffset updatedAt) =>
@@ -83,8 +98,117 @@ public sealed class TeacherProfile : Entity<TeacherProfileId>, IAggregateRoot
             Id = id,
             UserId = userId,
             TeacherId = teacherId,
+            InstitutionalEmail = institutionalEmail,
+            VerificationMethod = verificationMethod,
             VerifiedAt = verifiedAt,
             CreatedAt = createdAt,
             UpdatedAt = updatedAt,
         };
+
+    /// <summary>
+    /// Paso 1 de la verificación institucional (US-031): el owner ingresa su email institucional. El
+    /// caller (handler) ya validó la propiedad del claim y trae los <paramref name="allowedDomains"/>
+    /// de la universidad del docente (cross-BC). Acá se valida la forma del email + que su dominio
+    /// pertenezca a la universidad, se setea el email + método, y se emite un token (invalidando el
+    /// activo anterior, ADR-0033 one-active-per-purpose). El <paramref name="rawToken"/> lo genera el
+    /// handler; este método lo guarda y el handler lo manda por mail. Idempotencia: re-submitear con
+    /// el profile ya verificado devuelve <see cref="TeacherProfileErrors.AlreadyVerified"/>.
+    /// </summary>
+    public Result SubmitInstitutionalEmail(
+        string email,
+        IReadOnlyList<string> allowedDomains,
+        string rawToken,
+        TimeSpan ttl,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(allowedDomains);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsVerified)
+        {
+            return TeacherProfileErrors.AlreadyVerified;
+        }
+
+        var emailResult = EmailAddress.Create(email);
+        if (emailResult.IsFailure)
+        {
+            return emailResult.Error;
+        }
+
+        var address = emailResult.Value;
+        if (!allowedDomains.Contains(address.Domain))
+        {
+            return TeacherProfileErrors.InstitutionalEmailDomainNotAllowed;
+        }
+
+        var now = clock.UtcNow;
+        foreach (var active in _tokens.Where(t =>
+            t.Purpose == TokenPurpose.TeacherInstitutionalVerification && t.IsActive))
+        {
+            active.Invalidate(now);
+        }
+
+        _tokens.Add(new VerificationToken(
+            Guid.NewGuid(), TokenPurpose.TeacherInstitutionalVerification, rawToken, now, now.Add(ttl)));
+
+        InstitutionalEmail = address.Value;
+        VerificationMethod = TeacherVerificationMethod.InstitutionalEmail;
+        UpdatedAt = now;
+
+        Raise(new TeacherProfileInstitutionalEmailSubmittedDomainEvent(
+            Id, UserId, TeacherId, address.Value, now));
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Paso 2 de la verificación institucional (US-031): consume el token del link de mail y marca el
+    /// profile como verificado. Idempotente: si ya está verificado (doble click), devuelve éxito sin
+    /// re-stampar. El caller (handler) valida ANTES que no haya otro profile verificado para el mismo
+    /// docente (partial UNIQUE teacher WHERE verified); este método no puede chequearlo porque ese
+    /// invariante abarca otros aggregates.
+    /// </summary>
+    public Result VerifyByInstitutionalEmail(string rawToken, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsVerified)
+        {
+            return Result.Success();
+        }
+
+        if (string.IsNullOrWhiteSpace(rawToken))
+        {
+            return TeacherProfileErrors.VerificationTokenInvalid;
+        }
+
+        var token = _tokens.FirstOrDefault(t =>
+            t.Purpose == TokenPurpose.TeacherInstitutionalVerification && t.Token == rawToken);
+
+        if (token is null)
+        {
+            return TeacherProfileErrors.VerificationTokenInvalid;
+        }
+        if (token.IsInvalidated)
+        {
+            return TeacherProfileErrors.VerificationTokenInvalidated;
+        }
+        if (token.IsConsumed)
+        {
+            return TeacherProfileErrors.VerificationTokenAlreadyConsumed;
+        }
+
+        var now = clock.UtcNow;
+        if (token.IsExpired(now))
+        {
+            return TeacherProfileErrors.VerificationTokenExpired;
+        }
+
+        token.Consume(now);
+        VerifiedAt = now;
+        VerificationMethod = TeacherVerificationMethod.InstitutionalEmail;
+        UpdatedAt = now;
+
+        Raise(new TeacherProfileVerifiedDomainEvent(Id, UserId, TeacherId, now));
+        return Result.Success();
+    }
 }

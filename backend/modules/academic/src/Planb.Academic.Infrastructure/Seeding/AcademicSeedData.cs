@@ -33,22 +33,26 @@ public static class AcademicSeedData
     public static readonly UniversityRecord Unsta = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000001")),
         Name: "Universidad del Norte Santo Tomás de Aquino",
-        Slug: "unsta");
+        Slug: "unsta",
+        InstitutionalEmailDomains: new[] { "unsta.edu.ar" });
 
     public static readonly UniversityRecord Siglo21 = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000002")),
         Name: "Universidad Siglo 21",
-        Slug: "siglo21");
+        Slug: "siglo21",
+        InstitutionalEmailDomains: new[] { "ues21.edu.ar" });
 
     public static readonly UniversityRecord Unt = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000003")),
         Name: "Universidad Nacional de Tucumán",
-        Slug: "unt");
+        Slug: "unt",
+        InstitutionalEmailDomains: new[] { "unt.edu.ar" });
 
     public static readonly UniversityRecord UtnFrt = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000004")),
         Name: "Universidad Tecnológica Nacional - Facultad Regional Tucumán",
-        Slug: "utn-frt");
+        Slug: "utn-frt",
+        InstitutionalEmailDomains: new[] { "frt.utn.edu.ar" });
 
     public static IReadOnlyList<UniversityRecord> Universities { get; } = new[]
     {
@@ -554,7 +558,8 @@ public static class AcademicSeedData
 }
 
 /// <summary>Datos planos de una University del seed.</summary>
-public sealed record UniversityRecord(UniversityId Id, string Name, string Slug);
+public sealed record UniversityRecord(
+    UniversityId Id, string Name, string Slug, IReadOnlyList<string> InstitutionalEmailDomains);
 
 /// <summary>Datos planos de una Career del seed.</summary>
 public sealed record CareerRecord(CareerId Id, UniversityId UniversityId, string Name, string Slug);

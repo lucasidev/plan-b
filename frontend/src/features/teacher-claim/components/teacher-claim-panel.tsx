@@ -5,12 +5,11 @@ import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Pill } from '@/components/ui/pill';
-import { VerifiedBadge } from '@/components/ui/verified-badge';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { initiateTeacherClaimAction } from '../actions';
 import { MIN_TEACHER_SEARCH_LENGTH, searchTeachers } from '../api';
 import { initialClaimState, type TeacherClaim } from '../types';
+import { TeacherClaimCard } from './teacher-claim-card';
 
 /**
  * Panel del flow de claim docente (US-030). Dos secciones:
@@ -62,30 +61,7 @@ export function TeacherClaimPanel({ claims }: { claims: TeacherClaim[] }) {
           <h2 className="m-0 font-display text-sm font-semibold text-ink-2">Mis reclamos</h2>
           <ul className="flex flex-col gap-2 p-0">
             {claims.map((claim) => (
-              <li
-                key={claim.claimId}
-                className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3"
-              >
-                <div className="min-w-0">
-                  <p className="m-0 truncate text-[13.5px] font-medium text-ink">
-                    {claim.teacherName}
-                  </p>
-                  {claim.teacherTitle && (
-                    <p className="m-0 truncate text-[12px] text-ink-3">{claim.teacherTitle}</p>
-                  )}
-                </div>
-                {claim.isVerified ? (
-                  <VerifiedBadge kind="teacher" />
-                ) : (
-                  <div className="flex shrink-0 items-center gap-2">
-                    <Pill tone="warm">Pendiente de verificación</Pill>
-                    {/* US-031 cablea la verificación por email institucional; hoy stub deshabilitado. */}
-                    <Button variant="secondary" size="sm" disabled title="Disponible pronto">
-                      Verificar identidad
-                    </Button>
-                  </div>
-                )}
-              </li>
+              <TeacherClaimCard key={claim.claimId} claim={claim} />
             ))}
           </ul>
         </section>

@@ -49,6 +49,10 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(PasswordResetEmailOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+        services.AddOptions<TeacherVerificationEmailOptions>()
+            .Bind(configuration.GetSection(TeacherVerificationEmailOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddScoped<IVerificationEmailSender, SmtpVerificationEmailSender>();
 
         services.AddOptions<JwtOptions>()

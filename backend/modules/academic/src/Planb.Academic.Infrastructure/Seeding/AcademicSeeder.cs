@@ -69,7 +69,7 @@ public sealed class AcademicSeeder
             if (existingIds.Contains(record.Id)) continue;
 
             _db.Universities.Add(University.Hydrate(
-                record.Id, record.Name, record.Slug, now));
+                record.Id, record.Name, record.Slug, record.InstitutionalEmailDomains, now));
             inserted++;
         }
 
