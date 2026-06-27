@@ -76,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - comisiones + asignación de docentes (US-065) (academic) — [`d1ad949`](https://github.com/lucasidev/plan-b/commit/d1ad9491f00655798ed5803a03f8d2cf6425d8b5)
 - reads para la pagina de docente (US-003, backend) (reviews) — [`edc04f1`](https://github.com/lucasidev/plan-b/commit/edc04f125c021a93cd931c381fe4a376d148e2c4)
 - página pública de docente con reseñas (US-003, frontend) (reviews) — [`4c85eaa`](https://github.com/lucasidev/plan-b/commit/4c85eaaadee3a201d364ef0c05fc73c911361467)
+- docente real por reseña (US-065) (reviews) — [`2af04da`](https://github.com/lucasidev/plan-b/commit/2af04dafb0da874d51bce42979df14bb68709a08)
 
 ### Fixed
 
@@ -115,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - report spec maneja onboarding de Mateo + delete spec asserta detach del  (e2e) — [`0d3b5df`](https://github.com/lucasidev/plan-b/commit/0d3b5df45acfa550a94c246c6115dc327464c2b6)
 - badge de pendientes solo fetchea client-side (evita crash SSR de URL rel (reviews) — [`46177b2`](https://github.com/lucasidev/plan-b/commit/46177b283ea655a11316a0aa059def4bc716349c)
 - el label de carrera del sidebar rompía el header con nombres largos (layout) — [`5b384b2`](https://github.com/lucasidev/plan-b/commit/5b384b263ae24cd08be74948ec41a8459a02e80f)
+- exigir texto en el editor antes de publicar (reviews) — [`a3c2f0e`](https://github.com/lucasidev/plan-b/commit/a3c2f0e7071c515adf92c86ee0c9dbe8414dadf8)
 
 ### Changed
 
