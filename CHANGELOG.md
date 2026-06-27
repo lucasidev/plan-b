@@ -77,6 +77,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - reads para la pagina de docente (US-003, backend) (reviews) — [`edc04f1`](https://github.com/lucasidev/plan-b/commit/edc04f125c021a93cd931c381fe4a376d148e2c4)
 - página pública de docente con reseñas (US-003, frontend) (reviews) — [`4c85eaa`](https://github.com/lucasidev/plan-b/commit/4c85eaaadee3a201d364ef0c05fc73c911361467)
 - docente real por reseña (US-065) (reviews) — [`2af04da`](https://github.com/lucasidev/plan-b/commit/2af04dafb0da874d51bce42979df14bb68709a08)
+- rama docente en la búsqueda global (US-004) (academic) — [`512fdfc`](https://github.com/lucasidev/plan-b/commit/512fdfca080c15a01cae97f198ce5910a58f07e6)
 
 ### Fixed
 
