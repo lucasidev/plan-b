@@ -93,6 +93,9 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   if (pathname.startsWith('/reviews/write/')) {
     return ['Comunidad', 'Nueva reseña'];
   }
+  if (pathname === '/teacher-claim') {
+    return ['Comunidad', 'Soy docente'];
+  }
 
   // Fallback: split the path into capitalised segments. Better than empty.
   const segment = pathname.split('/').filter(Boolean).pop();
