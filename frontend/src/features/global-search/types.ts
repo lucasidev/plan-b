@@ -1,11 +1,10 @@
 /**
  * DTOs de la búsqueda global de catálogo (US-004). Espejan el body de GET /api/search.
  *
- * `type` discrimina el tipo de resultado: hoy solo `subject`. La rama `teacher` se injerta cuando
- * aterrice US-063 (no hay entidad Teacher todavía); sumarla acá es additiva (un literal más en la
- * unión + su rama en `hrefFor`).
+ * `type` discrimina el tipo de resultado: `subject` (materia) o `teacher` (docente). El front deriva
+ * el href y el label del badge del par (type, id).
  */
-export type SearchResultType = 'subject';
+export type SearchResultType = 'subject' | 'teacher';
 
 export type SearchResultItem = {
   type: SearchResultType;

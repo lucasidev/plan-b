@@ -14,18 +14,19 @@ import type { SearchResultItem } from '../types';
  * liviano sobre las primitivas del design system (sin cmdk): input + dropdown de resultados live,
  * debounce 250ms, navegación por teclado y atajo ⌘K. Pega a `GET /api/search` vía TanStack Query.
  *
- * Hoy solo materias (`type: 'subject'`); cuando US-063 sume docentes, alcanza con extender
- * `hrefFor` + `TYPE_LABEL` (el contrato ya viene discriminado por `type`).
+ * Materias (`type: 'subject'`) y docentes (`type: 'teacher'`) en una sola lista rankeada; el href y
+ * el badge salen del `type`.
  *
  * Gate `mounted`: la búsqueda vive en el topbar, fuera de cualquier HydrationBoundary; sin el flag
  * la query correría server-side bajo ReactQueryStreamedHydration y el fetch relativo fallaría.
  */
 function hrefFor(item: SearchResultItem): string {
-  return `/subjects/${item.id}`;
+  return item.type === 'teacher' ? `/teachers/${item.id}` : `/subjects/${item.id}`;
 }
 
 const TYPE_LABEL: Record<SearchResultItem['type'], string> = {
   subject: 'Materia',
+  teacher: 'Docente',
 };
 
 export function GlobalSearch() {
@@ -108,8 +109,8 @@ export function GlobalSearch() {
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={showDropdown && items.length > 0 ? optionId(active) : undefined}
-          placeholder="Buscar materia, código..."
-          aria-label="Buscar materia"
+          placeholder="Buscar materia o docente..."
+          aria-label="Buscar materia o docente"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
