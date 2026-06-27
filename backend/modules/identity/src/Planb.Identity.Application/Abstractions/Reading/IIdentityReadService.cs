@@ -1,3 +1,4 @@
+using Planb.Identity.Application.Features.GetMyTeacherClaims;
 using Planb.Identity.Application.Features.GetStudentProfile;
 using Planb.Identity.Domain.Users;
 
@@ -27,6 +28,16 @@ public interface IIdentityReadService
     /// y /onboarding/welcome.
     /// </summary>
     Task<StudentProfileResponse?> GetStudentProfileByUserIdAsync(
+        UserId userId,
+        CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista los claims docentes del user (US-030), cada uno cruzado con el docente del catálogo
+    /// (nombre en title case + título) y su estado de verificación. Orden: más reciente primero.
+    /// Caller: GET /api/me/teacher-claims (página /teacher-claim). Lista vacía si el user no
+    /// reclamó ningún docente.
+    /// </summary>
+    Task<IReadOnlyList<TeacherClaimItem>> GetTeacherClaimsByUserAsync(
         UserId userId,
         CancellationToken ct = default);
 }

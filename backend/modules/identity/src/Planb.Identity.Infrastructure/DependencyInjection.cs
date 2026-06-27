@@ -28,6 +28,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITeacherProfileRepository, TeacherProfileRepository>();
         services.AddScoped<IUserDeletionLogRepository, UserDeletionLogRepository>();
         services.AddScoped<IUserSettingsRepository, UserSettingsRepository>();
         services.AddScoped<IIdentityReadService, DapperIdentityReadService>();
