@@ -28,6 +28,10 @@ const TWO_TEACHERS = [
   { teacherId: 'tid-sosa', firstName: 'Diego', lastName: 'Sosa', role: 'Jtp' },
 ];
 
+// El texto es obligatorio al publicar (mínimo 50 chars, alineado con ReviewText del backend).
+const VALID_TEXT =
+  'Cursada muy buena, el material es claro y los parciales fueron justos. La recomiendo.';
+
 describe('ReviewEditor (US-049)', () => {
   it('renderea los 6 campos numerados y el preview lateral', () => {
     render(
@@ -92,6 +96,10 @@ describe('ReviewEditor (US-049)', () => {
         'label:has(input[name="field-difficulty-radio"][value="3"])',
       ) as Element,
     );
+    // Falta el texto: el botón sigue disabled hasta cargarlo.
+    expect(publish).toBeDisabled();
+
+    await user.type(screen.getByLabelText(/contá tu experiencia/i), VALID_TEXT);
     expect(publish).toBeEnabled();
   });
 
@@ -110,7 +118,7 @@ describe('ReviewEditor (US-049)', () => {
 
     const publish = screen.getByRole('button', { name: /publicar reseña/i });
 
-    // Rating + difficulty listos, pero sin docente elegido el boton sigue disabled.
+    // Rating + difficulty + texto listos, pero sin docente elegido el boton sigue disabled.
     await user.click(
       document.querySelector('label:has(input[name="field-rating-radio"][value="4"])') as Element,
     );
@@ -119,6 +127,7 @@ describe('ReviewEditor (US-049)', () => {
         'label:has(input[name="field-difficulty-radio"][value="3"])',
       ) as Element,
     );
+    await user.type(screen.getByLabelText(/contá tu experiencia/i), VALID_TEXT);
     expect(publish).toBeDisabled();
 
     // Elegir el docente lo habilita.

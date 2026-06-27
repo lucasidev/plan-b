@@ -7,14 +7,15 @@ import { z } from 'zod';
  *  - Difficulty 1..5 steps (required).
  *  - Hours/week 0..20 (optional). The mockup caps at 20 (not 30 as the doc states),
  *    because going over 20 hs/week outside class is an outlier and the slider stays legible.
- *  - Free text (optional, no minimum, max 4000 chars).
+ *  - Free text: 50..2000 chars when present, mirroring the backend `ReviewText` value object.
+ *    The aggregate requires at least one text and the editor only collects this one (teacherText
+ *    is always null on publish), so in write mode it is effectively required; the editor gates the
+ *    Publish button on it. Kept optional in the schema so edit mode (which loads the persisted
+ *    text) and partial drafts type-check without a sentinel.
  *  - Tags (optional, subset of the allowed set). The initial set lives in `mocks.ts` and is
  *    only an example; the definitive taxonomy lands in a separate US.
  *  - wouldRecommendCourse / wouldRetakeTeacher (required, default true to nudge the
  *    happy path; the student has to tap to say "No").
- *
- * Pending backend rework: the current `POST /api/reviews` (US-017) does NOT accept several
- * of these fields. This UI works against a mock until the backend rework US lands.
  */
 export const reviewFormSchema = z.object({
   rating: z
@@ -33,12 +34,16 @@ export const reviewFormSchema = z.object({
     .min(0, 'Mínimo 0')
     .max(20, 'Máximo 20')
     .optional(),
+  // Min/max alineados con el ReviewText del backend (50..2000). Optional para que un draft vacío
+  // o el modo edit type-cheen; el mínimo de 50 se valida sólo cuando hay texto (refine), y el botón
+  // de publicar exige el texto en write mode (ver review-editor + actions).
   text: z
     .string()
     .trim()
-    .max(4000, 'Máximo 4000 caracteres')
+    .max(2000, 'Máximo 2000 caracteres')
     .optional()
-    .transform((v) => (v === '' ? undefined : v)),
+    .transform((v) => (v === '' ? undefined : v))
+    .refine((v) => v === undefined || v.length >= 50, { message: 'Mínimo 50 caracteres' }),
   tags: z.array(z.string().min(1)).max(12, 'Máximo 12 etiquetas').default([]),
   wouldRecommendCourse: z.boolean(),
   wouldRetakeTeacher: z.boolean(),

@@ -156,12 +156,17 @@ export function ReviewEditor({
   // rating + difficulty + both toggles; in edit mode only the backend-mappable fields
   // (difficulty + subject text) are mandatory because the lossy mapping never sends
   // rating / tags / hoursPerWeek / recommendations to the server.
+  // El texto es obligatorio al publicar: el aggregate Review exige al menos un texto y el editor
+  // sólo recolecta este (50..2000 chars, ReviewText). Sin esto el botón se habilitaba y el publish
+  // rebotaba 400 con un mensaje genérico.
+  const hasValidText = !!draft.text && draft.text.trim().length >= 50;
   const canPublish =
     mode === 'edit'
       ? draft.difficulty >= 1
       : draft.rating >= 1 &&
         draft.difficulty >= 1 &&
         docenteResenadoId !== null &&
+        hasValidText &&
         typeof draft.wouldRecommendCourse === 'boolean' &&
         typeof draft.wouldRetakeTeacher === 'boolean';
 
@@ -308,6 +313,7 @@ export function ReviewEditor({
             <FieldHead
               n={5}
               label="Contá tu experiencia"
+              required={mode === 'write'}
               hint="Lo que te hubiera gustado leer antes de inscribirte. Se publica anónimo."
               htmlFor="field-text"
             />
@@ -316,12 +322,12 @@ export function ReviewEditor({
               value={draft.text ?? ''}
               onChange={(e) => updateField('text', e.target.value || undefined)}
               placeholder="¿Cómo era la dinámica de clase? ¿Cómo eran los parciales / TPs? ¿Algo que te sorprendió? ¿Recomendarías la cursada?"
-              maxLength={4000}
+              maxLength={2000}
               className="mt-3 min-h-[140px] w-full resize-y rounded border border-line bg-bg-card px-3.5 py-3 font-sans text-[13px] leading-relaxed text-ink outline-none focus:border-accent"
             />
             <div className="mt-1.5 flex justify-between text-[11px] text-ink-3">
-              <span>Mínimo libre, sé respetuoso</span>
-              <span className="font-mono">{(draft.text ?? '').length} caracteres</span>
+              <span>Mínimo 50 caracteres, sé respetuoso</span>
+              <span className="font-mono">{(draft.text ?? '').length} / 2000</span>
             </div>
           </Card>
 
