@@ -120,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - badge de pendientes solo fetchea client-side (evita crash SSR de URL rel (reviews) — [`46177b2`](https://github.com/lucasidev/plan-b/commit/46177b283ea655a11316a0aa059def4bc716349c)
 - el label de carrera del sidebar rompía el header con nombres largos (layout) — [`5b384b2`](https://github.com/lucasidev/plan-b/commit/5b384b263ae24cd08be74948ec41a8459a02e80f)
 - exigir texto en el editor antes de publicar (reviews) — [`a3c2f0e`](https://github.com/lucasidev/plan-b/commit/a3c2f0e7071c515adf92c86ee0c9dbe8414dadf8)
+- escala visible del histograma de distribución de calificaciones (reviews) — [`152000d`](https://github.com/lucasidev/plan-b/commit/152000dd9117b76667e81b0775a17c4c871ec230)
 
 ### Changed
 
