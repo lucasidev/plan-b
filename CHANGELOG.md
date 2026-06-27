@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rama docente en la búsqueda global (US-004) (academic) — [`512fdfc`](https://github.com/lucasidev/plan-b/commit/512fdfca080c15a01cae97f198ce5910a58f07e6)
 - claim de identidad docente (US-030) (identity) — [`6672303`](https://github.com/lucasidev/plan-b/commit/6672303cf6c901a9d5c8c6eedbfb4c56f9851825)
 - verificación docente por email institucional (US-031) (identity) — [`af8aa6a`](https://github.com/lucasidev/plan-b/commit/af8aa6a9e8c0a9927dd1c30f05a946aaf3d7ceeb)
+- responder reseña como docente verificado (US-040) (reviews) — [`c8e95c6`](https://github.com/lucasidev/plan-b/commit/c8e95c6904ebb52f0b5abdea928696df3b042080)
 
 ### Fixed
 
