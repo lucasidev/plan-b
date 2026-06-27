@@ -158,4 +158,37 @@ public static class ReviewErrors
         Error.Conflict(
             "reviews.vote.review_not_votable",
             "Only published reviews can be voted on.");
+
+    // -- Responder reseña (US-040) ------------------------------------------
+
+    /// <summary>El texto de la respuesta es obligatorio (a diferencia de los texts de la reseña). 400.</summary>
+    public static readonly Error ResponseTextRequired =
+        Error.Validation(
+            "reviews.response.text_required", "The response text is required.");
+
+    /// <summary>
+    /// Solo se responde una reseña <c>Published</c> (no UnderReview / Removed / Deleted). 409.
+    /// </summary>
+    public static readonly Error CannotRespondToNonPublished =
+        Error.Conflict(
+            "reviews.response.review_not_published",
+            "Only published reviews can be responded to.");
+
+    /// <summary>
+    /// Quien responde no es un docente verificado del docente reseñado por esta reseña (US-040).
+    /// Cross-BC vía <c>IIdentityQueryService.HasVerifiedTeacherProfile</c>. 403.
+    /// </summary>
+    public static readonly Error NotVerifiedTeacherForReview =
+        Error.Forbidden(
+            "reviews.response.not_verified_teacher",
+            "Only the verified teacher reviewed here can respond to this review.");
+
+    /// <summary>
+    /// Ya existe una respuesta para esta reseña (una sola por review). El handler lo trata como
+    /// idempotencia (devuelve la existente con 200); este error es defensa del aggregate. 409.
+    /// </summary>
+    public static readonly Error ResponseAlreadyExists =
+        Error.Conflict(
+            "reviews.response.already_exists",
+            "This review already has a teacher response.");
 }

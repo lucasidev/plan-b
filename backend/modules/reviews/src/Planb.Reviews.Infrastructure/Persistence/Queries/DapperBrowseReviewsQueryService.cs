@@ -56,12 +56,19 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 (SELECT rv.is_helpful FROM reviews.review_votes rv
                    WHERE rv.review_id = r.id
                      AND rv.voter_user_id = @CurrentUserId LIMIT 1)    AS MyVoteIsHelpful,
+                tr.text                                    AS ResponseText,
+                initcap(rt.first_name || ' ' || rt.last_name) AS ResponseAuthorName,
+                tr.created_at                              AS ResponseCreatedAt,
                 COUNT(*) OVER ()::int                      AS TotalCount
             FROM reviews.reviews r
             JOIN enrollments.enrollment_records er
               ON er.id = r.enrollment_id
             JOIN academic.subjects s
               ON s.id = er.subject_id
+            LEFT JOIN reviews.teacher_responses tr
+              ON tr.review_id = r.id AND tr.status = 'Published'
+            LEFT JOIN academic.teachers rt
+              ON rt.id = tr.teacher_id
             WHERE r.status = 'Published'
               AND (@SubjectId       IS NULL OR er.subject_id    = @SubjectId)
               AND (@CareerPlanId    IS NULL OR s.career_plan_id = @CareerPlanId)
@@ -106,7 +113,10 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 CreatedAt: r.CreatedAt,
                 HelpfulCount: r.HelpfulCount,
                 NotHelpfulCount: r.NotHelpfulCount,
-                MyVoteIsHelpful: r.MyVoteIsHelpful));
+                MyVoteIsHelpful: r.MyVoteIsHelpful,
+                ResponseText: r.ResponseText,
+                ResponseAuthorName: r.ResponseAuthorName,
+                ResponseCreatedAt: r.ResponseCreatedAt));
         }
 
         return new BrowseReviewsResponse(items, query.Page, query.PageSize, total);
@@ -139,6 +149,9 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public int HelpfulCount { get; set; }
         public int NotHelpfulCount { get; set; }
         public bool? MyVoteIsHelpful { get; set; }
+        public string? ResponseText { get; set; }
+        public string? ResponseAuthorName { get; set; }
+        public DateTime? ResponseCreatedAt { get; set; }
         public int TotalCount { get; set; }
     }
 }

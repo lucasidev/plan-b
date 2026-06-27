@@ -74,6 +74,12 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </summary>
     public ReviewDeletedReason? DeletedReason { get; private set; }
 
+    /// <summary>
+    /// US-040: la respuesta del docente verificado a esta reseña. Null mientras nadie respondió;
+    /// una sola por reseña (child entity owned). Se hidrata con la reseña (AutoInclude).
+    /// </summary>
+    public TeacherResponse? Response { get; private set; }
+
     private Review() { }
 
     /// <summary>
@@ -322,5 +328,40 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         Status = ReviewStatus.UnderReview;
         UpdatedAt = clock.UtcNow;
         return true;
+    }
+
+    /// <summary>
+    /// Responde la reseña como el docente reseñado (US-040). El caller (handler) ya validó que el
+    /// user es un <c>TeacherProfile</c> verificado para <see cref="DocenteResenadoId"/> (cross-BC) y
+    /// que la reseña no tiene respuesta todavía (idempotencia: si la tiene, el handler devuelve la
+    /// existente sin re-invocar esto).
+    ///
+    /// <para>
+    /// Reglas del aggregate: solo se responde una reseña <see cref="ReviewStatus.Published"/>; una
+    /// sola respuesta por reseña; y <paramref name="teacherId"/> debe ser el docente reseñado (la
+    /// respuesta es del docente sobre el que se opinó, no de un tercero).
+    /// </para>
+    /// </summary>
+    public Result Respond(Guid teacherId, ReviewText text, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewStatus.Published)
+        {
+            return ReviewErrors.CannotRespondToNonPublished;
+        }
+        if (Response is not null)
+        {
+            return ReviewErrors.ResponseAlreadyExists;
+        }
+        if (teacherId != DocenteResenadoId)
+        {
+            return ReviewErrors.NotVerifiedTeacherForReview;
+        }
+
+        var now = clock.UtcNow;
+        Response = new TeacherResponse(TeacherResponseId.New(), teacherId, text, now);
+        UpdatedAt = now;
+        return Result.Success();
     }
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { fetchMyTeacherClaimsServer } from '@/features/teacher-claim/api.server';
 import {
   TeacherHeader,
   TeacherInsightsPanel,
@@ -64,12 +65,20 @@ export default async function TeacherPage({
   // Votar requiere sesión. Un visitante anónimo ve los conteos; los botones lo mandan a /sign-in.
   const canVote = session !== null;
 
+  // Responder (US-040) lo habilita ser el docente verificado de esta página. Reusamos los claims del
+  // viewer (GET /api/me/teacher-claims) en vez de un endpoint nuevo: la authz real la hace el backend.
+  let canRespond = false;
+  if (session) {
+    const claims = await fetchMyTeacherClaimsServer();
+    canRespond = claims.some((claim) => claim.teacherId === id && claim.isVerified);
+  }
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
       <BackLink />
       <TeacherHeader teacher={teacher} insights={insights} />
       {insights.totalCount > 0 && <TeacherInsightsPanel insights={insights} />}
-      <TeacherReviewsSection reviews={reviews} canVote={canVote} />
+      <TeacherReviewsSection reviews={reviews} canVote={canVote} canRespond={canRespond} />
     </main>
   );
 }
