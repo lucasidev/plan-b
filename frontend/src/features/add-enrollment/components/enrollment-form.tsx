@@ -7,7 +7,7 @@ import { useFormStatus } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { submitAddEnrollmentAction } from '../actions';
 import { addEnrollmentQueries } from '../api';
-import { type AddEnrollmentFormState, initialAddEnrollmentState } from '../types';
+import { type AddEnrollmentFormState, type Commission, initialAddEnrollmentState } from '../types';
 
 type Props = {
   careerPlanId: string;
@@ -39,16 +39,31 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
 
   const [status, setStatus] = useState<string>('Aprobada');
   const [approvalMethod, setApprovalMethod] = useState<string>('FinalLibre');
+  const [subjectId, setSubjectId] = useState<string>('');
+  const [termId, setTermId] = useState<string>('');
 
   const subjects = useQuery(addEnrollmentQueries.subjects(careerPlanId));
   const terms = useQuery(addEnrollmentQueries.academicTerms(universityId));
 
   const showApprovalMethod = status === 'Aprobada';
   const showGrade = status === 'Aprobada' || status === 'Regular';
-  // commission/term are optional depending on the method (when applicable). For MVP
-  // simplicity we don't expose a commission picker (no commissions endpoint yet); the
-  // student only picks the term, commissionId stays null in this form.
   const showTerm = !showApprovalMethod || approvalMethod !== 'Equivalencia';
+
+  // El picker de comisión aparece cuando la cursada tuvo cátedra real (no equivalencia ni final
+  // libre): elegir la comisión es lo que después hace la cursada reseñable (la reseña ancla al
+  // docente de la comisión, US-065/US-040). Se identifica por (materia, cuatrimestre), así que
+  // necesita ambos elegidos.
+  const attendedCommission =
+    (status === 'Aprobada' && ['Cursada', 'Promocion', 'Final'].includes(approvalMethod)) ||
+    ['Regular', 'Cursando', 'Reprobada', 'Abandonada'].includes(status);
+  const showCommission = attendedCommission && !!subjectId && !!termId;
+
+  const commissions = useQuery(
+    addEnrollmentQueries.commissions(
+      showCommission ? subjectId : null,
+      showCommission ? termId : null,
+    ),
+  );
 
   const formError = state.status === 'error' ? state.message : null;
   const fieldError = state.status === 'error' ? state.field : undefined;
@@ -77,7 +92,8 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
           required
           className={selectClass}
           style={selectStyle}
-          defaultValue=""
+          value={subjectId}
+          onChange={(e) => setSubjectId(e.target.value)}
         >
           <option value="">Elegí una materia</option>
           {(subjects.data ?? []).map((s) => (
@@ -137,7 +153,8 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
             required={status === 'Cursando' || approvalMethod === 'FinalLibre'}
             className={selectClass}
             style={selectStyle}
-            defaultValue=""
+            value={termId}
+            onChange={(e) => setTermId(e.target.value)}
           >
             <option value="">
               {showApprovalMethod && approvalMethod === 'FinalLibre'
@@ -151,6 +168,39 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
             ))}
           </select>
           {fieldError === 'termId' && <FieldError>{formError}</FieldError>}
+        </Field>
+      )}
+
+      {showCommission && (
+        <Field id="commission" label="Comisión / cátedra">
+          {commissions.isLoading ? (
+            <p className="text-ink-3" style={{ fontSize: 13, padding: '2px 0' }}>
+              Buscando comisiones…
+            </p>
+          ) : (commissions.data ?? []).length === 0 ? (
+            <p className="text-ink-3" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+              No hay comisiones cargadas para esta materia y cuatrimestre. Podés guardar igual; vas
+              a poder reseñarla cuando se cargue la comisión.
+            </p>
+          ) : (
+            <select
+              // Remonta (resetea la selección) si cambia la materia o el cuatrimestre.
+              key={`${subjectId}-${termId}`}
+              id="commission"
+              name="commissionId"
+              className={selectClass}
+              style={selectStyle}
+              defaultValue=""
+            >
+              <option value="">Elegí tu comisión</option>
+              {(commissions.data ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {commissionLabel(c)}
+                </option>
+              ))}
+            </select>
+          )}
+          {fieldError === 'commissionId' && <FieldError>{formError}</FieldError>}
         </Field>
       )}
 
@@ -195,6 +245,12 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
       </p>
     </form>
   );
+}
+
+/** "Comisión A · Brandt, Sosa": nombre de la comisión + apellidos de sus docentes (ya en title case). */
+function commissionLabel(commission: Commission): string {
+  const teachers = commission.teachers.map((t) => t.lastName).join(', ');
+  return teachers ? `${commission.name} · ${teachers}` : commission.name;
 }
 
 function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {

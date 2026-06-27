@@ -24,6 +24,26 @@ export type AcademicTerm = {
 };
 
 /**
+ * Comisión de una materia en un cuatrimestre (US-065). Espeja `CommissionListItem` del backend.
+ * Elegir una comisión al cargar la cursada es lo que la hace reseñable después (el docente reseñado
+ * tiene que pertenecer a la comisión de la cursada).
+ */
+export type CommissionTeacher = {
+  teacherId: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+};
+
+export type Commission = {
+  id: string;
+  name: string;
+  modality: string;
+  capacity: number | null;
+  teachers: CommissionTeacher[];
+};
+
+/**
  * Server-action state for the US-013-f form. Follows the `idle | error` contract
  * already used by other features (sign-in, onboarding/career).
  */
