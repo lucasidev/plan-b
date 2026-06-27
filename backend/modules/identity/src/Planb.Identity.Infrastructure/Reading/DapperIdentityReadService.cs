@@ -113,6 +113,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
                 initcap(t.first_name || ' ' || t.last_name) AS TeacherName,
                 t.title        AS TeacherTitle,
                 (tp.verified_at IS NOT NULL) AS IsVerified,
+                tp.institutional_email AS InstitutionalEmail,
                 tp.created_at  AS CreatedAt
             FROM identity.teacher_profiles tp
             LEFT JOIN academic.teachers t ON t.id = tp.teacher_id

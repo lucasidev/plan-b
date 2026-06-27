@@ -17,4 +17,19 @@ internal sealed class TeacherProfileRepository : ITeacherProfileRepository
         UserId userId, Guid teacherId, CancellationToken ct = default) =>
         _db.TeacherProfiles.AsNoTracking()
             .AnyAsync(p => p.UserId == userId && p.TeacherId == teacherId, ct);
+
+    // Tracked (el handler muta + persiste). Los tokens vienen por AutoInclude.
+    public Task<TeacherProfile?> FindByIdAsync(TeacherProfileId id, CancellationToken ct = default) =>
+        _db.TeacherProfiles.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+    public Task<TeacherProfile?> FindByVerificationTokenAsync(
+        string rawToken, CancellationToken ct = default) =>
+        _db.TeacherProfiles.FirstOrDefaultAsync(
+            p => p.Tokens.Any(t =>
+                t.Token == rawToken && t.Purpose == TokenPurpose.TeacherInstitutionalVerification),
+            ct);
+
+    public Task<bool> AnyVerifiedForTeacherAsync(Guid teacherId, CancellationToken ct = default) =>
+        _db.TeacherProfiles.AsNoTracking()
+            .AnyAsync(p => p.TeacherId == teacherId && p.VerifiedAt != null, ct);
 }

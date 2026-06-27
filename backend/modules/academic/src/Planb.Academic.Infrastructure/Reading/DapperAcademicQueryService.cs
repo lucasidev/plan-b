@@ -330,4 +330,22 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
         return rows.AsList();
     }
+
+    public async Task<IReadOnlyList<string>> GetInstitutionalEmailDomainsForTeacherAsync(
+        Guid teacherId, CancellationToken ct = default)
+    {
+        // text[] de Postgres → string[] de Npgsql en una sola columna. Sin row (docente inexistente)
+        // devuelve null, que mapeamos a lista vacía.
+        const string sql = @"
+            SELECT u.institutional_email_domains
+            FROM academic.teachers t
+            JOIN academic.universities u ON u.id = t.university_id
+            WHERE t.id = @TeacherId;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var domains = await db.QuerySingleOrDefaultAsync<string[]?>(
+            new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
+
+        return domains ?? [];
+    }
 }

@@ -108,4 +108,13 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
         Guid commissionId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Devuelve los dominios de email institucional de la universidad a la que pertenece el docente
+    /// (US-031). Caller: el flow de verificación de claim docente (Identity) valida que el dominio
+    /// del email institucional ingresado esté en esta lista antes de generar el token. Lista vacía
+    /// si el docente no existe o su universidad no habilita verificación por email institucional.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetInstitutionalEmailDomainsForTeacherAsync(
+        Guid teacherId, CancellationToken ct = default);
 }

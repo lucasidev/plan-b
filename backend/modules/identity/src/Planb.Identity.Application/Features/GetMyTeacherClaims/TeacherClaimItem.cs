@@ -20,5 +20,13 @@ public sealed record TeacherClaimItem
     public string TeacherName { get; init; } = null!;
     public string? TeacherTitle { get; init; }
     public bool IsVerified { get; init; }
+
+    /// <summary>
+    /// Email institucional ingresado (US-031). Null = el claim está pending y todavía no arrancó la
+    /// verificación; no-null + <see cref="IsVerified"/> false = email enviado, esperando el click.
+    /// El frontend deriva el estado (pendiente / email enviado / verificado) de este par.
+    /// </summary>
+    public string? InstitutionalEmail { get; init; }
+
     public DateTimeOffset CreatedAt { get; init; }
 }

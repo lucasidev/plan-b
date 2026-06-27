@@ -56,11 +56,21 @@ public class TeacherProfileTests
         var teacherId = Guid.NewGuid();
         var verifiedAt = T0.AddDays(1);
 
-        var profile = TeacherProfile.Hydrate(id, userId, teacherId, verifiedAt, T0, verifiedAt);
+        var profile = TeacherProfile.Hydrate(
+            id,
+            userId,
+            teacherId,
+            "docente@unsta.edu.ar",
+            TeacherVerificationMethod.InstitutionalEmail,
+            verifiedAt,
+            T0,
+            verifiedAt);
 
         profile.Id.ShouldBe(id);
         profile.UserId.ShouldBe(userId);
         profile.TeacherId.ShouldBe(teacherId);
+        profile.InstitutionalEmail.ShouldBe("docente@unsta.edu.ar");
+        profile.VerificationMethod.ShouldBe(TeacherVerificationMethod.InstitutionalEmail);
         profile.VerifiedAt.ShouldBe(verifiedAt);
         profile.IsVerified.ShouldBeTrue();
         profile.DomainEvents.ShouldBeEmpty();

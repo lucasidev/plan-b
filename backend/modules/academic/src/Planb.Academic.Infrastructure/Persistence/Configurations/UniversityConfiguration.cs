@@ -1,11 +1,24 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planb.Academic.Domain.Universities;
 
 namespace Planb.Academic.Infrastructure.Persistence.Configurations;
 
 internal sealed class UniversityConfiguration : IEntityTypeConfiguration<University>
 {
+    // institutional_email_domains: IReadOnlyList<string> ↔ text[]. Npgsql mapea string[]
+    // nativamente; el comparer es obligatorio para que EF trackee cambios sobre la colección.
+    private static readonly ValueConverter<IReadOnlyList<string>, string[]> DomainsConverter = new(
+        list => list.ToArray(),
+        array => array);
+
+    private static readonly ValueComparer<IReadOnlyList<string>> DomainsComparer = new(
+        (a, b) => (a == null && b == null) || (a != null && b != null && a.SequenceEqual(b)),
+        list => list.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+        list => list.ToList());
+
     public void Configure(EntityTypeBuilder<University> builder)
     {
         builder.ToTable("universities");
@@ -29,6 +42,12 @@ internal sealed class UniversityConfiguration : IEntityTypeConfiguration<Univers
         builder.HasIndex(u => u.Slug)
             .IsUnique()
             .HasDatabaseName("ux_universities_slug");
+
+        builder.Property(u => u.InstitutionalEmailDomains)
+            .HasColumnName("institutional_email_domains")
+            .HasColumnType("text[]")
+            .HasConversion(DomainsConverter, DomainsComparer)
+            .IsRequired();
 
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
