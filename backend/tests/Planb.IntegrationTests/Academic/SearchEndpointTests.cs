@@ -8,16 +8,17 @@ using Xunit;
 namespace Planb.IntegrationTests.Academic;
 
 /// <summary>
-/// Tests de GET /api/search (US-004): búsqueda léxica de catálogo. Público. Corre contra el seed
-/// determinístico de Academic (las mismas materias TUDCS) y la migración AddSubjectSearchTrigram
-/// (pg_trgm + unaccent), que el host aplica en Development también en el factory de tests.
-///
-/// Hoy solo materias (type=subject); la rama docente se injerta en US-063.
+/// Tests de GET /api/search (US-004): búsqueda léxica de catálogo (materias + docentes). Público.
+/// Corre contra el seed determinístico de Academic (materias TUDCS + docentes US-063) y la migración
+/// AddSubjectSearchTrigram (pg_trgm + unaccent), que el host aplica en Development también en el
+/// factory de tests.
 /// </summary>
 public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid MAT102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
     private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Brandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
+    private static readonly Guid Ledesma = Guid.Parse("00000006-0000-4000-a000-000000000009");
 
     private readonly RegisterApiFixture _fixture;
 
@@ -66,6 +67,35 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
         body!.Items.ShouldContain(i => i.Id == PRG101);
+    }
+
+    [Fact]
+    public async Task Finds_teacher_by_last_name()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        var response = await client.GetAsync("/api/search?q=brandt");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+        body.ShouldNotBeNull();
+        var teacher = body!.Items.FirstOrDefault(i => i.Id == Brandt);
+        teacher.ShouldNotBeNull();
+        teacher!.Type.ShouldBe("teacher");
+        teacher.Label.ShouldBe("Carlos Brandt"); // title case desde el storage lowercase
+    }
+
+    [Fact]
+    public async Task Teacher_search_is_accent_insensitive()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        // "veronica" sin acento debe encontrar a "Verónica Ledesma".
+        var response = await client.GetAsync("/api/search?q=veronica");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+        body!.Items.ShouldContain(i => i.Id == Ledesma && i.Type == "teacher");
     }
 
     [Fact]

@@ -7,13 +7,12 @@ namespace Planb.Academic.Application.Features.Search;
 
 /// <summary>
 /// GET /api/search?q=&amp;limit= : búsqueda léxica global de catálogo (US-004). Ruta global (no
-/// <c>/api/academic/...</c>) porque es un surface de UX transversal (el ⌘K del topbar); el
-/// endpoint vive en Academic porque hoy solo busca materias. Sin auth (catálogo público).
+/// <c>/api/academic/...</c>) porque es un surface de UX transversal (el ⌘K del topbar); el endpoint
+/// vive en Academic porque busca el catálogo (materias + docentes). Sin auth (catálogo público).
 ///
 /// <para>
-/// Hoy devuelve solo resultados <c>type=subject</c>. La rama docente (<c>type=teacher</c>) se
-/// injerta en US-063 (no hay entidad Teacher todavía); el contrato ya está discriminado por
-/// <c>type</c>, así que sumarla es aditivo, no rework.
+/// Devuelve resultados <c>type=subject</c> y <c>type=teacher</c> en una sola lista rankeada por
+/// relevancia (el contrato discrimina por <c>type</c>; el front deriva el href del par type+id).
 /// </para>
 ///
 /// <para>
@@ -32,7 +31,7 @@ public sealed class SearchEndpoint : ICarterModule
         app.MapGet("/api/search", async (
             string? q,
             int? limit,
-            ISubjectSearchReader reader,
+            ICatalogSearchReader reader,
             CancellationToken ct) =>
         {
             var term = q?.Trim() ?? string.Empty;

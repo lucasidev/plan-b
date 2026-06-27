@@ -28,7 +28,7 @@ public static class DependencyInjection
         this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IAcademicQueryService, DapperAcademicQueryService>();
-        services.AddScoped<ISubjectSearchReader, DapperSubjectSearchReader>();
+        services.AddScoped<ICatalogSearchReader, DapperCatalogSearchReader>();
         services.AddScoped<AcademicSeeder>();
 
         // US-088: writes al catálogo cross-aggregate
