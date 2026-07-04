@@ -1,3 +1,4 @@
+using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Domain.Reviews;
@@ -34,5 +35,16 @@ public sealed class TeacherResponse : Entity<TeacherResponseId>
         Status = TeacherResponseStatus.Published;
         CreatedAt = now;
         UpdatedAt = now;
+    }
+
+    /// <summary>
+    /// Edita el texto (US-041). La autorización (que el user sea el docente verificado que respondió)
+    /// y el cooldown viven en el handler; el aggregate solo aplica el cambio + rebumpea UpdatedAt.
+    /// </summary>
+    internal void Edit(ReviewText text, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+        Text = text;
+        UpdatedAt = clock.UtcNow;
     }
 }
