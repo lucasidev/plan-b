@@ -191,4 +191,17 @@ public static class ReviewErrors
         Error.Conflict(
             "reviews.response.already_exists",
             "This review already has a teacher response.");
+
+    /// <summary>La reseña no tiene respuesta que editar (US-041). 404.</summary>
+    public static readonly Error ResponseNotFound =
+        Error.NotFound(
+            "reviews.response.not_found", "This review has no teacher response to edit.");
+
+    /// <summary>
+    /// US-041 cooldown: máximo 3 edits de la respuesta en 24h. El endpoint mapea este código a 429.
+    /// </summary>
+    public static readonly Error ResponseEditCooldownExceeded =
+        Error.Conflict(
+            "reviews.response.edit_cooldown_exceeded",
+            "Maximum number of response edits per 24h reached.");
 }

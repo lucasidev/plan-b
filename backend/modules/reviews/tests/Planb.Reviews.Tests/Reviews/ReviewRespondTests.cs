@@ -94,4 +94,32 @@ public class ReviewRespondTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(ReviewErrors.CannotRespondToNonPublished);
     }
+
+    [Fact]
+    public void EditResponse_updates_the_text_and_bumps_updated_at()
+    {
+        var review = Published(Teacher);
+        review.Respond(Teacher, Text(), new FixedClock(T0));
+
+        var newText = ReviewText.Create(
+            "Actualizo: reorganicé los prácticos y agregué una consulta semanal fija para el arranque.").Value;
+        var editAt = T0.AddHours(3);
+        var result = review.EditResponse(newText, new FixedClock(editAt));
+
+        result.IsSuccess.ShouldBeTrue();
+        review.Response!.Text.Value.ShouldBe(newText.Value);
+        review.Response.UpdatedAt.ShouldBe(editAt);
+        review.Response.CreatedAt.ShouldBe(T0); // el created no se mueve
+    }
+
+    [Fact]
+    public void EditResponse_rejects_when_there_is_no_response()
+    {
+        var review = Published(Teacher);
+
+        var result = review.EditResponse(Text(), new FixedClock(T0));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ReviewErrors.ResponseNotFound);
+    }
 }

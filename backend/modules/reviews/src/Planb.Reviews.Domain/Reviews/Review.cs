@@ -364,4 +364,23 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         UpdatedAt = now;
         return Result.Success();
     }
+
+    /// <summary>
+    /// Edita la respuesta del docente (US-041). El caller (handler) ya validó que el user sea el
+    /// docente verificado del reseñado (cross-BC) y el cooldown. Acá solo se exige que exista una
+    /// respuesta; el resto (autoría, verificación vigente) es responsabilidad del handler.
+    /// </summary>
+    public Result EditResponse(ReviewText text, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Response is null)
+        {
+            return ReviewErrors.ResponseNotFound;
+        }
+
+        Response.Edit(text, clock);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
 }

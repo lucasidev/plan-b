@@ -23,4 +23,7 @@ public enum ReviewAuditAction
 
     /// <summary>US-040: un docente verificado publicó su respuesta a la reseña.</summary>
     ResponsePublished,
+
+    /// <summary>US-041: el docente editó su respuesta. Changes JSON: { before, after }.</summary>
+    ResponseEdited,
 }

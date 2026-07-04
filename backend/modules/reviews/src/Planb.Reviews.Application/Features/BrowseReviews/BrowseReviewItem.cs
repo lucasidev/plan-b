@@ -32,7 +32,9 @@ public sealed record BrowseReviewItem(
     int NotHelpfulCount,
     bool? MyVoteIsHelpful,
     // US-040: respuesta del docente. Null si nadie respondió. A diferencia del autor de la
-    // reseña (anónimo, ADR-0009), el docente que responde aparece con su nombre.
+    // reseña (anónimo, ADR-0009), el docente que responde aparece con su nombre. ResponseUpdatedAt
+    // > ResponseCreatedAt marca que fue editada (US-041).
     string? ResponseText,
     string? ResponseAuthorName,
-    DateTime? ResponseCreatedAt);
+    DateTime? ResponseCreatedAt,
+    DateTime? ResponseUpdatedAt);

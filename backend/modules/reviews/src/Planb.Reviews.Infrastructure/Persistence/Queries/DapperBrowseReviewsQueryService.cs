@@ -59,6 +59,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 tr.text                                    AS ResponseText,
                 initcap(rt.first_name || ' ' || rt.last_name) AS ResponseAuthorName,
                 tr.created_at                              AS ResponseCreatedAt,
+                tr.updated_at                              AS ResponseUpdatedAt,
                 COUNT(*) OVER ()::int                      AS TotalCount
             FROM reviews.reviews r
             JOIN enrollments.enrollment_records er
@@ -116,7 +117,8 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 MyVoteIsHelpful: r.MyVoteIsHelpful,
                 ResponseText: r.ResponseText,
                 ResponseAuthorName: r.ResponseAuthorName,
-                ResponseCreatedAt: r.ResponseCreatedAt));
+                ResponseCreatedAt: r.ResponseCreatedAt,
+                ResponseUpdatedAt: r.ResponseUpdatedAt));
         }
 
         return new BrowseReviewsResponse(items, query.Page, query.PageSize, total);
@@ -152,6 +154,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public string? ResponseText { get; set; }
         public string? ResponseAuthorName { get; set; }
         public DateTime? ResponseCreatedAt { get; set; }
+        public DateTime? ResponseUpdatedAt { get; set; }
         public int TotalCount { get; set; }
     }
 }

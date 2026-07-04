@@ -52,6 +52,8 @@ export type TeacherReview = {
   responseText: string | null;
   responseAuthorName: string | null;
   responseCreatedAt: string | null;
+  /** US-041: si es > responseCreatedAt, la respuesta fue editada. */
+  responseUpdatedAt: string | null;
 };
 
 export type TeacherReviewsPage = {
