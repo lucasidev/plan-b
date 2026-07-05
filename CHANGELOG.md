@@ -83,6 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - responder reseña como docente verificado (US-040) (reviews) — [`c8e95c6`](https://github.com/lucasidev/plan-b/commit/c8e95c6904ebb52f0b5abdea928696df3b042080)
 - elegir comisión al cargar la cursada (enrollments) — [`53b0eb9`](https://github.com/lucasidev/plan-b/commit/53b0eb9711eb7426f380927828a40717c2b83787)
 - editar respuesta docente (US-041) (reviews) — [`9cfe44d`](https://github.com/lucasidev/plan-b/commit/9cfe44d3607d120f01867164fb9863af96836f64)
+- provisioning de cuentas staff (US-067) (identity) — [`8a1da6a`](https://github.com/lucasidev/plan-b/commit/8a1da6ab80fb996419169d2551688abaef4d4946)
+- admin CRUD de docentes gateado a rol admin (US-063) (academic) — [`3c1d3a1`](https://github.com/lucasidev/plan-b/commit/3c1d3a1f74f0323580a27193dfc5b0e7ac80b678)
 
 ### Fixed
 
