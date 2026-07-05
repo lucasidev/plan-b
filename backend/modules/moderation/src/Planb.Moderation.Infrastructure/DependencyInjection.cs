@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Moderation.Application.Abstractions.Persistence;
+using Planb.Moderation.Application.Features.ReportDetail;
 using Planb.Moderation.Application.Features.ReportQueue;
 using Planb.Moderation.Infrastructure.Persistence;
 using Planb.Moderation.Infrastructure.Persistence.Repositories;
@@ -25,6 +26,9 @@ public static class DependencyInjection
 
         // US-050: cola de reportes (read model Dapper cross-schema).
         services.AddScoped<IReportQueueReader, DapperReportQueueReader>();
+
+        // US-051: detalle del report (read model Dapper cross-schema).
+        services.AddScoped<IReportDetailReader, DapperReportDetailReader>();
 
         return services;
     }

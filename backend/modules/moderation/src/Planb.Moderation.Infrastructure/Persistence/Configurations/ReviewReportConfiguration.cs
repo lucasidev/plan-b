@@ -47,6 +47,17 @@ internal sealed class ReviewReportConfiguration : IEntityTypeConfiguration<Revie
             .HasColumnName("created_at")
             .IsRequired();
 
+        // Resolución del moderador (US-051). Todo nullable: se estampan al pasar a Upheld/Dismissed.
+        builder.Property(r => r.ModeratorUserId)
+            .HasColumnName("moderator_user_id");
+
+        builder.Property(r => r.ResolutionNote)
+            .HasColumnName("resolution_note")
+            .HasColumnType("text");
+
+        builder.Property(r => r.ResolvedAt)
+            .HasColumnName("resolved_at");
+
         // One report per reviewer per review. The handler pre-checks via ExistsAsync to
         // return a clean 409; this UNIQUE index is the race-safe backstop.
         builder.HasIndex(r => new { r.ReviewId, r.ReporterUserId })

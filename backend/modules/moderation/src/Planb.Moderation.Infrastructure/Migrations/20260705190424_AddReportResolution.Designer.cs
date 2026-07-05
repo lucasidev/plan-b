@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Planb.Moderation.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Planb.Moderation.Infrastructure.Persistence;
 namespace Planb.Moderation.Infrastructure.Migrations
 {
     [DbContext(typeof(ModerationDbContext))]
-    partial class ModerationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705190424_AddReportResolution")]
+    partial class AddReportResolution
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

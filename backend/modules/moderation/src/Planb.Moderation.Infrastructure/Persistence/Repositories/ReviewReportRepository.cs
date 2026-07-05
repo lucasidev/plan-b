@@ -25,4 +25,13 @@ internal sealed class ReviewReportRepository : IReviewReportRepository
     public Task<int> CountOpenForReviewAsync(Guid reviewId, CancellationToken ct = default) =>
         _db.ReviewReports.CountAsync(
             r => r.ReviewId == reviewId && r.Status == ReviewReportStatus.Open, ct);
+
+    public Task<ReviewReport?> FindByIdAsync(ReviewReportId id, CancellationToken ct = default) =>
+        _db.ReviewReports.FirstOrDefaultAsync(r => r.Id == id, ct);
+
+    public async Task<IReadOnlyList<ReviewReport>> GetOpenByReviewAsync(
+        Guid reviewId, CancellationToken ct = default) =>
+        await _db.ReviewReports
+            .Where(r => r.ReviewId == reviewId && r.Status == ReviewReportStatus.Open)
+            .ToListAsync(ct);
 }

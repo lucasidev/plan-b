@@ -43,4 +43,29 @@ public static class ReviewReportErrors
         Error.Conflict(
             "moderation.report.rate_limit_exceeded",
             "Too many reports. Try again later.");
+
+    /// <summary>
+    /// The report id passed to the resolve flow (uphold/dismiss/detail) does not exist. 404. US-051.
+    /// </summary>
+    public static readonly Error ReportNotFound =
+        Error.NotFound(
+            "moderation.report.not_found",
+            "Report not found.");
+
+    /// <summary>
+    /// Uphold/dismiss on a report that is no longer Open (another moderator resolved it first). 409,
+    /// idempotencia explícita (US-051): el frontend sabe que la decisión ya la tomó otro moderador.
+    /// </summary>
+    public static readonly Error AlreadyResolved =
+        Error.Conflict(
+            "moderation.report.already_resolved",
+            "This report has already been resolved.");
+
+    /// <summary>
+    /// The moderator resolution note exceeded the maximum length. 400. US-051.
+    /// </summary>
+    public static readonly Error ResolutionNoteTooLong =
+        Error.Validation(
+            "moderation.report.resolution_note_too_long",
+            $"Resolution note must be at most {ReviewReport.MaxResolutionNoteLength} characters.");
 }
