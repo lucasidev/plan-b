@@ -85,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - editar respuesta docente (US-041) (reviews) — [`9cfe44d`](https://github.com/lucasidev/plan-b/commit/9cfe44d3607d120f01867164fb9863af96836f64)
 - provisioning de cuentas staff (US-067) (identity) — [`8a1da6a`](https://github.com/lucasidev/plan-b/commit/8a1da6ab80fb996419169d2551688abaef4d4946)
 - admin CRUD de docentes gateado a rol admin (US-063) (academic) — [`3c1d3a1`](https://github.com/lucasidev/plan-b/commit/3c1d3a1f74f0323580a27193dfc5b0e7ac80b678)
+- backoffice de docentes + admin shell (US-063) (admin) — [`800c1aa`](https://github.com/lucasidev/plan-b/commit/800c1aac1ec9b62d47c21a76d31258e7015c0644)
 
 ### Fixed
 
