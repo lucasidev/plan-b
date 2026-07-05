@@ -331,6 +331,56 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     }
 
     /// <summary>
+    /// Remoción por decisión del moderador (US-051, uphold). El caller (consumer del evento de
+    /// moderación) ya validó que un moderador resolvió el/los report(s). Idempotente: solo una reseña
+    /// <see cref="ReviewStatus.Published"/> o <see cref="ReviewStatus.UnderReview"/> pasa a
+    /// <see cref="ReviewStatus.Removed"/>; una ya Removed/Deleted queda igual (devuelve <c>false</c>).
+    /// No levanta evento de dominio: el consumer escribe el audit-log (mismo patrón que
+    /// <see cref="QuarantineByReports"/>).
+    /// </summary>
+    public bool Remove(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status is not (ReviewStatus.Published or ReviewStatus.UnderReview))
+        {
+            return false;
+        }
+
+        Status = ReviewStatus.Removed;
+        UpdatedAt = clock.UtcNow;
+        return true;
+    }
+
+    /// <summary>
+    /// Restauración tras resolverse (dismiss) el último report abierto de una reseña bajo revisión
+    /// (US-051). Solo una reseña <see cref="ReviewStatus.UnderReview"/> vuelve a
+    /// <see cref="ReviewStatus.Published"/> (devuelve <c>false</c> si no lo está). El consumer solo
+    /// invoca esto cuando la moderación cerró el último report abierto.
+    ///
+    /// <para>
+    /// Simplificación de MVP: no distingue si el UnderReview vino por threshold de reports o por el
+    /// filtro automático (US-017). En la práctica las reseñas ocultas por filtro no están en el feed
+    /// público y no acumulan reports (y una UnderReview no se puede editar para re-disparar el filtro),
+    /// así que este path lo dispara casi siempre el threshold. Endurecer la distinción
+    /// filter-vs-threshold queda para una US aparte si aparece la necesidad.
+    /// </para>
+    /// </summary>
+    public bool RestoreFromReports(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewStatus.UnderReview)
+        {
+            return false;
+        }
+
+        Status = ReviewStatus.Published;
+        UpdatedAt = clock.UtcNow;
+        return true;
+    }
+
+    /// <summary>
     /// Responde la reseña como el docente reseñado (US-040). El caller (handler) ya validó que el
     /// user es un <c>TeacherProfile</c> verificado para <see cref="DocenteResenadoId"/> (cross-BC) y
     /// que la reseña no tiene respuesta todavía (idempotencia: si la tiene, el handler devuelve la

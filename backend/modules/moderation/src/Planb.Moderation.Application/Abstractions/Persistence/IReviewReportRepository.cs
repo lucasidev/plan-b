@@ -14,4 +14,14 @@ public interface IReviewReportRepository
     Task<bool> ExistsAsync(Guid reviewId, Guid reporterUserId, CancellationToken ct = default);
 
     Task<int> CountOpenForReviewAsync(Guid reviewId, CancellationToken ct = default);
+
+    /// <summary>Carga un report por id para resolverlo (US-051). Null si no existe.</summary>
+    Task<ReviewReport?> FindByIdAsync(ReviewReportId id, CancellationToken ct = default);
+
+    /// <summary>
+    /// Todos los reports <see cref="ReviewReportStatus.Open"/> de una reseña (US-051). El uphold los
+    /// cascadea a Upheld juntos (ADR-0011); el dismiss lo usa para saber si queda alguno abierto.
+    /// </summary>
+    Task<IReadOnlyList<ReviewReport>> GetOpenByReviewAsync(
+        Guid reviewId, CancellationToken ct = default);
 }

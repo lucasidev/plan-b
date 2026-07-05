@@ -23,6 +23,7 @@ namespace Planb.Moderation.Domain.Reports;
 public sealed class ReviewReport : Entity<ReviewReportId>, IAggregateRoot
 {
     public const int MaxDetailsLength = 2000;
+    public const int MaxResolutionNoteLength = 1000;
 
     public Guid ReviewId { get; private set; }
     public Guid ReporterUserId { get; private set; }
@@ -30,6 +31,15 @@ public sealed class ReviewReport : Entity<ReviewReportId>, IAggregateRoot
     public string? Details { get; private set; }
     public ReviewReportStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
+
+    /// <summary>Moderador que resolvió el report (US-051). Null mientras el report está Open.</summary>
+    public Guid? ModeratorUserId { get; private set; }
+
+    /// <summary>Nota interna del moderador al resolver (US-051). Opcional, máx 1000 chars.</summary>
+    public string? ResolutionNote { get; private set; }
+
+    /// <summary>Cuándo se resolvió (US-051). Null mientras Open.</summary>
+    public DateTimeOffset? ResolvedAt { get; private set; }
 
     private ReviewReport() { }
 
@@ -63,5 +73,47 @@ public sealed class ReviewReport : Entity<ReviewReportId>, IAggregateRoot
             Status = ReviewReportStatus.Open,
             CreatedAt = clock.UtcNow,
         });
+    }
+
+    /// <summary>
+    /// El moderador da lugar al report (US-051, uphold): decisión de que la reseña viola la política.
+    /// Transición terminal desde <see cref="ReviewReportStatus.Open"/>; si ya está resuelto devuelve
+    /// <see cref="ReviewReportErrors.AlreadyResolved"/> (409, otro moderador ganó la race). La remoción
+    /// de la reseña la aplica el contexto Reviews vía integration event; acá solo se marca el report.
+    /// </summary>
+    public Result Uphold(Guid moderatorUserId, string? resolutionNote, IDateTimeProvider clock) =>
+        Resolve(ReviewReportStatus.Upheld, moderatorUserId, resolutionNote, clock);
+
+    /// <summary>
+    /// El moderador desestima el report (US-051, dismiss): la crítica es legítima, la reseña se queda.
+    /// Transición terminal desde <see cref="ReviewReportStatus.Open"/>.
+    /// </summary>
+    public Result Dismiss(Guid moderatorUserId, string? resolutionNote, IDateTimeProvider clock) =>
+        Resolve(ReviewReportStatus.Dismissed, moderatorUserId, resolutionNote, clock);
+
+    private Result Resolve(
+        ReviewReportStatus terminal,
+        Guid moderatorUserId,
+        string? resolutionNote,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewReportStatus.Open)
+        {
+            return ReviewReportErrors.AlreadyResolved;
+        }
+
+        var trimmed = string.IsNullOrWhiteSpace(resolutionNote) ? null : resolutionNote.Trim();
+        if (trimmed is { Length: > MaxResolutionNoteLength })
+        {
+            return ReviewReportErrors.ResolutionNoteTooLong;
+        }
+
+        Status = terminal;
+        ModeratorUserId = moderatorUserId;
+        ResolutionNote = trimmed;
+        ResolvedAt = clock.UtcNow;
+        return Result.Success();
     }
 }
