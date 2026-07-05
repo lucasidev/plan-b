@@ -32,7 +32,8 @@ public sealed record AuthenticatedClient(
     string RefreshCookie)
 {
     public static async Task<AuthenticatedClient> CreateAsync(
-        RegisterApiFixture fixture, string email, string password = "valid-password-12c")
+        RegisterApiFixture fixture, string email, string password = "valid-password-12c",
+        UserRole? role = null)
     {
         // 1) Register.
         using (var bootstrap = fixture.Factory.CreateClient())
@@ -52,6 +53,16 @@ public sealed record AuthenticatedClient(
                 await db.Database.ExecuteSqlRawAsync(
                     "UPDATE identity.users SET email_verified_at = NOW() WHERE id = {0}",
                     userId.Value);
+
+                // Mint a staff role when asked (para testear endpoints gateados por rol). Vía EF,
+                // no SQL crudo: así queda agnóstico a si el enum se persiste como int o string. El
+                // sign-in de abajo lee el rol ya actualizado y lo mete en el JWT.
+                if (role is not null)
+                {
+                    var user = await db.Users.FirstAsync(u => u.Id == userId);
+                    db.Entry(user).Property(u => u.Role).CurrentValue = role.Value;
+                    await db.SaveChangesAsync();
+                }
             }
 
             // 3) Sign-in real (vía API) para capturar las cookies que el endpoint genera.
@@ -80,6 +91,44 @@ public sealed record AuthenticatedClient(
 
             return new AuthenticatedClient(client, userId, access, refresh);
         }
+    }
+
+    /// <summary>
+    /// Sign-in-only variant para cuentas que YA existen (ej. personas de staff seedeadas). Saltea el
+    /// register; asume la cuenta verificada. Captura las mismas cookies de sesión que CreateAsync.
+    /// </summary>
+    public static async Task<AuthenticatedClient> SignInAsync(
+        RegisterApiFixture fixture, string email, string password)
+    {
+        UserId userId;
+        using (var scope = fixture.Factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+            var emailVo = EmailAddress.Create(email).Value;
+            var user = await db.Users.AsNoTracking().FirstAsync(u => u.Email == emailVo);
+            userId = user.Id;
+        }
+
+        using var signInClient = fixture.Factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            HandleCookies = false,
+        });
+        var signIn = await signInClient.PostAsJsonAsync(
+            "/api/identity/sign-in", new { email, password });
+        signIn.EnsureSuccessStatusCode();
+
+        var setCookies = signIn.Headers.GetValues("Set-Cookie").ToList();
+        var access = ExtractCookieValue(setCookies, "planb_session");
+        var refresh = ExtractCookieValue(setCookies, "planb_refresh");
+
+        var client = fixture.Factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            HandleCookies = false,
+        });
+        client.DefaultRequestHeaders.Add(
+            "Cookie", $"planb_session={access}; planb_refresh={refresh}");
+
+        return new AuthenticatedClient(client, userId, access, refresh);
     }
 
     private static string ExtractCookieValue(IEnumerable<string> setCookieHeaders, string name)

@@ -65,6 +65,24 @@ public sealed class IdentitySeeder
                 continue;
             }
 
+            // Staff personas (Admin / Moderator / UniversityStaff) take a distinct provisioning
+            // path: created verified via RegisterStaff, no state transitions, no academic profile.
+            if (TryParseStaffRole(persona.Role, out var staffRole))
+            {
+                var staffResult = User.RegisterStaff(
+                    email, _passwords.Hash(persona.Password), staffRole, _clock);
+                if (staffResult.IsFailure)
+                {
+                    _log.LogWarning(
+                        "Persona staff register failed for {Email}: {Error}",
+                        persona.Email, staffResult.Error.Code);
+                    continue;
+                }
+                _users.Add(staffResult.Value);
+                created++;
+                continue;
+            }
+
             var registerResult = User.Register(
                 email, _passwords.Hash(persona.Password), _clock);
             if (registerResult.IsFailure)
@@ -89,6 +107,25 @@ public sealed class IdentitySeeder
                 "Seeded {Count} dev personas (out of {Total} configured).",
                 created, personas.Count);
         }
+    }
+
+    /// <summary>
+    /// Parses a persona's optional role string into a non-member <see cref="UserRole"/>. Returns
+    /// false for null/empty/"Member"/unrecognized values so those fall through to the normal
+    /// member-registration path.
+    /// </summary>
+    private static bool TryParseStaffRole(string? role, out UserRole staffRole)
+    {
+        staffRole = UserRole.Member;
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return false;
+        }
+        if (!Enum.TryParse(role, ignoreCase: true, out staffRole))
+        {
+            return false;
+        }
+        return staffRole != UserRole.Member;
     }
 
     private void ApplyState(User user, PersonaConfig persona)

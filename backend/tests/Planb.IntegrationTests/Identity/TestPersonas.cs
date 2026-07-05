@@ -18,4 +18,9 @@ internal static class TestPersonas
 
     public const string MartinEmail = "martin.pendiente@planb.local";
     public const string MartinPassword = "martin.pendiente.12";
+
+    // Staff persona provisionada vía RegisterStaff (rol Admin, sin StudentProfile). El backoffice la
+    // usa para el admin CRUD (US-063).
+    public const string AdminEmail = "admin@planb.local";
+    public const string AdminPassword = "admin.planb.local.12";
 }
