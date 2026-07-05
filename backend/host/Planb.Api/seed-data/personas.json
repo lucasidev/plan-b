@@ -36,6 +36,13 @@
         "State": "VerifiedActive",
         "DisplayName": "Lautaro Maza",
         "Role": "Admin"
+      },
+      {
+        "Email": "moderador@planb.local",
+        "Password": "moderador.planb.local.12",
+        "State": "VerifiedActive",
+        "DisplayName": "Elena Ferro",
+        "Role": "Moderator"
       }
     ]
   }
