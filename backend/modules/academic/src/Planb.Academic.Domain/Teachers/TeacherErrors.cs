@@ -33,6 +33,15 @@ public static class TeacherErrors
     public static readonly Error NotFound =
         Error.NotFound("academic.teacher.not_found", "Teacher not found.");
 
+    /// <summary>
+    /// El alta (admin) referenció una universidad que no existe en el catálogo. Evita docentes
+    /// colgados de una uni inexistente (no hay FK cross-schema, ADR-0017: se valida en app layer).
+    /// </summary>
+    public static readonly Error UniversityNotFound =
+        Error.NotFound(
+            "academic.teacher.university_not_found",
+            "The university referenced by the teacher does not exist.");
+
     public static readonly Error AlreadyInactive =
         Error.Conflict("academic.teacher.already_inactive", "Teacher is already inactive.");
 

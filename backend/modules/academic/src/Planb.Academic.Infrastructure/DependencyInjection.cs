@@ -4,11 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.Search;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Subjects;
+using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Infrastructure.Pdf;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.Academic.Infrastructure.Persistence.Repositories;
@@ -29,6 +31,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IAcademicQueryService, DapperAcademicQueryService>();
         services.AddScoped<ICatalogSearchReader, DapperCatalogSearchReader>();
+        services.AddScoped<IAdminTeacherReader, DapperAdminTeacherReader>();
         services.AddScoped<AcademicSeeder>();
 
         // US-088: writes al catálogo cross-aggregate
@@ -37,6 +40,9 @@ public static class DependencyInjection
         services.AddScoped<ICareerPlanRepository, CareerPlanRepository>();
         services.AddScoped<ISubjectRepository, SubjectRepository>();
         services.AddScoped<ICareerPlanImportRepository, CareerPlanImportRepository>();
+
+        // US-063: admin CRUD de docentes
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddSingleton<IPdfTextExtractor, PdfPigPdfTextExtractor>();
         return services;
     }
