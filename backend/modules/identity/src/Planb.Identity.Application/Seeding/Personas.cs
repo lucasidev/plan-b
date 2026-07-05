@@ -25,6 +25,15 @@ public sealed class PersonaConfig
     public string DisplayName { get; init; } = string.Empty;
 
     /// <summary>
+    /// Optional role. Absent (or "Member") seeds a regular self-registration member. Any other
+    /// value (Admin / Moderator / UniversityStaff) provisions a staff account via
+    /// <c>User.RegisterStaff</c> (ADR-0008: staff cannot self-register). Staff personas ignore
+    /// <see cref="State"/> and <see cref="StudentProfile"/>: they are created verified and carry no
+    /// academic profile. Bound as a string to keep the JSON decoupled from the domain enum.
+    /// </summary>
+    public string? Role { get; init; }
+
+    /// <summary>
     /// Optional StudentProfile to attach at seed time. Si está presente, después de aplicar el
     /// estado (verified / disabled / unverified) el seeder le agrega el profile. Sirve para
     /// que personas como Lucía aterricen directo en /home tras el sign-in (el guard del

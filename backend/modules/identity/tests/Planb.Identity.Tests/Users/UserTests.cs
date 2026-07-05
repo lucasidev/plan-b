@@ -58,6 +58,45 @@ public class UserTests
         result.Error.ShouldBe(UserErrors.PasswordHashRequired);
     }
 
+    [Fact]
+    public void RegisterStaff_creates_verified_active_account_with_the_given_role()
+    {
+        var clock = new FixedClock(T0);
+
+        var result = User.RegisterStaff(Email(), "hashed", UserRole.Admin, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var user = result.Value;
+        user.Role.ShouldBe(UserRole.Admin);
+        // Provisioned staff no tiene inbox que confirmar: nace verificado y sign-in-able.
+        user.IsEmailVerified.ShouldBeTrue();
+        user.EmailVerifiedAt.ShouldBe(T0);
+        user.IsActive.ShouldBeTrue();
+        user.CreatedAt.ShouldBe(T0);
+        user.UpdatedAt.ShouldBe(T0);
+    }
+
+    [Fact]
+    public void RegisterStaff_rejects_member_role()
+    {
+        var result = User.RegisterStaff(Email(), "hashed", UserRole.Member, new FixedClock(T0));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.StaffRoleRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void RegisterStaff_fails_when_password_hash_is_blank(string? hash)
+    {
+        var result = User.RegisterStaff(Email(), hash!, UserRole.Admin, new FixedClock(T0));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.PasswordHashRequired);
+    }
+
     private static User RegisteredUserWithToken(
         FixedClock clock, string rawToken = "raw-token", TimeSpan? ttl = null)
     {

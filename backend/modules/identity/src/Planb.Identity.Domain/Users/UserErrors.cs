@@ -19,6 +19,16 @@ public static class UserErrors
     public static readonly Error PasswordHashRequired =
         Error.Validation("identity.password_hash.required", "Password hash is required.");
 
+    /// <summary>
+    /// <see cref="User.RegisterStaff"/> was called with <see cref="UserRole.Member"/>. Staff
+    /// provisioning is only for moderator/admin/university_staff (ADR-0008); members self-register
+    /// through <see cref="User.Register"/>.
+    /// </summary>
+    public static readonly Error StaffRoleRequired =
+        Error.Validation(
+            "identity.register_staff.role_required",
+            "Staff provisioning requires a non-member role.");
+
     public static readonly Error DisableReasonRequired =
         Error.Validation("identity.disable.reason_required", "A reason is required to disable a user.");
 

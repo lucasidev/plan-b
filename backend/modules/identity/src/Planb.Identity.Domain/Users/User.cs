@@ -71,6 +71,46 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     }
 
     /// <summary>
+    /// Provisions a staff account (moderator / admin / university_staff). Per ADR-0008 staff
+    /// cannot self-register: this is the backoffice/seed provisioning path. Rejects
+    /// <see cref="UserRole.Member"/> (members go through <see cref="Register"/> and pick up their
+    /// academic identity via profiles). The account is created already email-verified: a
+    /// provisioned staff account has no inbox to confirm, so it is sign-in-able immediately.
+    /// </summary>
+    public static Result<User> RegisterStaff(
+        EmailAddress email,
+        string passwordHash,
+        UserRole role,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrWhiteSpace(passwordHash))
+        {
+            return UserErrors.PasswordHashRequired;
+        }
+
+        if (role == UserRole.Member)
+        {
+            return UserErrors.StaffRoleRequired;
+        }
+
+        var now = clock.UtcNow;
+        var user = new User
+        {
+            Id = UserId.New(),
+            Email = email,
+            PasswordHash = passwordHash,
+            Role = role,
+            EmailVerifiedAt = now,
+            CreatedAt = now,
+            UpdatedAt = now,
+        };
+        user.Raise(new UserRegisteredDomainEvent(user.Id, email, now));
+        return user;
+    }
+
+    /// <summary>
     /// Issues a new <see cref="VerificationToken"/> for the given purpose. Any existing active
     /// token of the same purpose is invalidated (one active token per purpose, per ADR-0033).
     /// </summary>
