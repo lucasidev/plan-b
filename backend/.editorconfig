@@ -1,0 +1,9 @@
+# Sin esto, `dotnet format` usa el end_of_line default de la plataforma (CRLF en Windows, LF en
+# Linux). Eso hace que `dotnet format --verify-no-changes` marque como mal-formateados archivos que
+# están en LF cuando se corre en Windows, aunque CI (Linux) los acepte: falsos positivos de linteo
+# solo en máquinas Windows. Fijar LF explícito lo hace determinista cross-plataforma. El repo ya
+# normaliza a LF en el blob vía .gitattributes (* text=auto eol=lf); esto alinea al formatter.
+root = true
+
+[*]
+end_of_line = lf
