@@ -23,4 +23,8 @@ internal static class TestPersonas
     // usa para el admin CRUD (US-063).
     public const string AdminEmail = "admin@planb.local";
     public const string AdminPassword = "admin.planb.local.12";
+
+    // Staff persona rol Moderator (US-050/051). Opera la cola de reportes.
+    public const string ModeratorEmail = "moderador@planb.local";
+    public const string ModeratorPassword = "moderador.planb.local.12";
 }

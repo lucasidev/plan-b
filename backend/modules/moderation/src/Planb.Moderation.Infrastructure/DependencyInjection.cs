@@ -2,8 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Moderation.Application.Abstractions.Persistence;
+using Planb.Moderation.Application.Features.ReportQueue;
 using Planb.Moderation.Infrastructure.Persistence;
 using Planb.Moderation.Infrastructure.Persistence.Repositories;
+using Planb.Moderation.Infrastructure.Reading;
 
 namespace Planb.Moderation.Infrastructure;
 
@@ -20,6 +22,9 @@ public static class DependencyInjection
     {
         services.AddScoped<IModerationUnitOfWork, ModerationUnitOfWork>();
         services.AddScoped<IReviewReportRepository, ReviewReportRepository>();
+
+        // US-050: cola de reportes (read model Dapper cross-schema).
+        services.AddScoped<IReportQueueReader, DapperReportQueueReader>();
 
         return services;
     }
