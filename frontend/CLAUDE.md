@@ -31,7 +31,7 @@ frontend/
     │   ├── sign-in/          (US-028-f)
     │   ├── verify-email/     (US-011-f)
     │   ├── sign-out/         (US-029-i)
-    │   └── ...               browse-subjects, write-review, etc. al aterrizar
+    │   └── ...               write-review, browse-subjects, manage-teachers, etc.
     ├── components/
     │   ├── ui/               primitivas (Button, DisplayHeading, Lede, ...)
     │   └── layout/           AuthSplit + auth-hero (copy del split), sidebar, header, footer
@@ -211,7 +211,7 @@ UX strings en español (la app es en español). Descriptores técnicos de `descr
 | URL state | `nuqs` |
 | UI | shadcn/ui (no package, se instalan con `bunx shadcn@latest add <x>`), `lucide-react`, `class-variance-authority`, `tailwind-merge`, `clsx` |
 | Auth | `jose`, `iron-session` |
-| Tests | `vitest`, `jsdom`, `@testing-library/react` + `user-event` + `dom` + `jest-dom`, `@playwright/test` (E2E pendiente US-T02) |
+| Tests | `vitest`, `jsdom`, `@testing-library/react` + `user-event` + `dom` + `jest-dom`, `@playwright/test` (E2E) |
 | Tooling | `@biomejs/biome`, `typescript`, `bun` |
 
 ## Convenciones

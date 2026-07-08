@@ -8,7 +8,7 @@ Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/de
 
 ```
 backend/
-├── Planb.sln                              24 csprojs
+├── Planb.sln                              solución del monolito
 ├── Directory.Build.props                  target net10.0, nullable, Minimal analysis
 ├── Directory.Packages.props               Central Package Management
 ├── global.json                            SDK 10.0.201
@@ -84,7 +84,7 @@ Convenciones detalladas en [`docs/testing/conventions.md`](../docs/testing/conve
 - **Domain unit** (xUnit + Shouldly): entidades / VOs / errors. Sin mocks, sin I/O. Vive en `modules/<m>/tests/Planb.<M>.Tests/Domain/`.
 - **Handler unit** (xUnit + NSubstitute + Shouldly): Wolverine handler + FluentValidation, deps mockeadas. Vive en `modules/<m>/tests/Planb.<M>.Tests/Features/<UseCase>/`.
 - **Integration** (xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales): endpoints, repos EF, Dapper queries. `Planb.IntegrationTests` corre contra el Postgres compartido que levanta `just infra-up`. Cada test class crea un database propio con nombre random (`planb_<label>_<guid>`) y lo dropea al terminar: isolation real sin el costo de un container por test. Ver [ADR-0027](../docs/decisions/0027-integration-tests-shared-postgres.md).
-- **Architecture** (NetArchTest, llega con US-T04): reglas de boundary cross-módulo. Falla en CI si alguien rompe la convención (e.g. endpoint inyectando `DbContext`).
+- **Architecture** (NetArchTest, aterrizó con US-T04): reglas de boundary cross-módulo. Falla en CI si alguien rompe la convención (e.g. endpoint inyectando `DbContext`).
 
 Pirámide formal: [ADR-0036](../docs/decisions/0036-testing-pyramid-cross-stack.md). Regla dura: **subir un nivel sólo si el inferior no alcanza**. Una regla del dominio que se puede testear sin EF va al unit del dominio, no a integration.
 
@@ -104,7 +104,7 @@ Naming: archivo `<TypeUnderTest>Tests.cs`, método `Method_Scenario_ExpectedOutc
 | Logging | `Serilog.AspNetCore`, `Serilog.Sinks.Console` |
 | Testing | `xunit`, `xunit.runner.visualstudio`, `Shouldly`, `NSubstitute`, `Microsoft.AspNetCore.Mvc.Testing`, `NetArchTest.Rules` (US-T04) |
 
-Bumps importantes: Wolverine **5.32+** (compatible con .NET 10), `System.Security.Cryptography.Xml` pinned a **10.0.7** por CVE transitivo.
+Bumps importantes: Wolverine **5.39+** (compatible con .NET 10), `System.Security.Cryptography.Xml` pinned a **10.0.7** por CVE transitivo.
 
 ## Comandos backend-specific
 

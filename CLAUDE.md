@@ -62,7 +62,7 @@ plan-b/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
 ├── docs/
-│   ├── decisions/           38 ADRs (MADR), fuente de verdad de decisiones
+│   ├── decisions/           ADRs (MADR), fuente de verdad de decisiones
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   ├── architecture/        ERD, data model
 │   ├── testing/             Convenciones cross-stack de testing (ADR-0036)
@@ -106,7 +106,7 @@ Las cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md). ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/). 38 ADRs. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+3. [`docs/decisions/`](docs/decisions/). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 4. [`docs/testing/conventions.md`](docs/testing/conventions.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 5. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 6. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
