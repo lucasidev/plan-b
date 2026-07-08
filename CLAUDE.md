@@ -4,6 +4,31 @@ Plataforma web de planificación de cuatrimestre y reseñas crowdsourced de mate
 
 Detalle del dominio: [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md).
 
+## Cultura de ingeniería
+
+Cómo pensamos y decidimos en este proyecto. No son procesos a cumplir: son lentes para tomar mejores decisiones. Todos los defaults se anulan con razonamiento explícito, nunca por dogma.
+
+**Pragmatismo (gobierna todo): las reglas son defaults fuertes, no mandamientos.** DDD, clean architecture, el outbox, Metz, el algoritmo de Musk, y estos mismos mindsets son sugerencias ponderadas por contexto. Se anulan argumentando, nunca por vibra ni por dogma, ni el de construir ni el de borrar.
+
+**El orden de Musk: no optimices lo que no debería existir.** El error más caro de un ingeniero es optimizar o automatizar algo que no debería existir. La secuencia va en un solo sentido: (1) cuestionar el requisito, (2) borrar la parte o el proceso (si después no devolvés ~10% de lo que borraste, no borraste suficiente), (3) simplificar lo que sobrevive, (4) acelerar el ciclo, (5) automatizar. Antes de hacer algo más rápido o automático, preguntá si debería existir. Saltar a 3-5 sobre algo que había que cuestionar o borrar (1-2) es el error que más caro sale.
+
+### Los mindsets
+
+1. **Cuestionar el requisito.** Todo lo que construís desciende de un requisito: trazalo a una persona, una suposición y un resultado de negocio (cliente, plata, objetivo). Si no traza a eso, o se justifica o se va. Los requisitos de gente inteligente son los más peligrosos porque nadie los cuestiona.
+2. **Quitar la paja.** Remové lo que está por mal planteamiento, decisión caducada o patrón aplicado porque sí. El discriminador no es tamaño ni minimalismo: son **procedencia** (por qué está) y **encaje** (sirve hoy). Removés el artefacto de un error, no lo que simplemente es "de más". Las decisiones caducan: re-evaluá.
+3. **Romperlo a propósito.** Frente a tu propia arquitectura, sos revisor hostil buscando la falla fatal, con evidencia, no defensa. Antes de mergear un diseño, un pase activo intentando romperlo; concedé solo lo que sobrevive el asalto.
+4. **El código es la verdad.** Los docs mienten. Citá código real (`file:line`), no memoria ni documentación. Validá contra el contrato o el código real antes de afirmar. Si no lo miraste, no lo sabés.
+5. **Abstracción just-in-time (duplicar es más barato que la abstracción equivocada).** No extraigas una abstracción compartida hasta que la duplicación pruebe su forma con consumidores reales. Un bloque nace compartido cuando el **segundo consumidor real** lo necesita, a la altura donde es invariante; lo específico de cada vertical se compone en el producto. Composición sobre herencia, nunca un `if (vertical)`. (Conway: las fronteras siguen al equipo y a los consumidores reales, no al organigrama.)
+6. **Sustancia sobre ceremonia.** Los hooks señalan, no bloquean. Se documentan decisiones con alternativas reales, no cada tweak. El CLAUDE.md espeja el código, no lo duplica. Todo artefacto se gana su lugar; si es ceremonia que driftea, se borra.
+7. **Sin azúcar.** Corregir directo, con contraejemplo del código. La meta es software de calidad, no comodidad. Si está mal, se dice, con evidencia. Aplica también a corregirte a vos mismo.
+8. **La reversibilidad calibra el rigor.** Puerta de dos vías (reversible barato): decidí rápido, sin ceremonia. Puerta de una vía (cara de revertir): ahí gastás el #1 y el #3 a fondo. Aplicar escepticismo uniforme a todo es su propia paja.
+9. **Acortá el lazo.** El juicio a-priori es falible; la forma más rápida de saber si algo es paja es shippear chico y mirar. Ante incertidumbre que el debate no cierra, construí el experimento más chico que te da la señal. Y antes de arrancar, escribí cómo vas a saber que está bien (test, repro, output esperado): un criterio de éxito verificable, y looped hasta cumplirlo.
+10. **Calibra la confianza.** La falla más cara entre humano y agente es la afirmación confiada que en realidad es una suposición. Toda afirmación carga su nivel: verificado / supuesto / no sé. El "no sé" es información, no debilidad.
+11. **YAGNI.** No construyas para un futuro hipotético (ancla nombrada del instinto que comparten #1, #2 y #5). Si la única justificación es "lo vamos a necesitar", no va hasta que lo necesites de verdad.
+12. **Cambios quirúrgicos.** El diff hace lo que se pidió y nada más: no "mejores" código, comentarios ni formato adyacente de pasada. Remové solo la paja que tu propio cambio creó; el dead code preexistente que no tocaste no se borra como daño colateral (removerlo es tarea consciente, #2, no un side-effect). Antes de agregar tooling o "arreglar" algo, verificá que el problema sea real y que no exista ya una defensa (chequeá el código, no la memoria).
+
+**Nota final:** estos mindsets son ellos mismos defaults, no mandamientos. Si en un caso concreto uno no aplica, lo anulás con una razón explícita. El único pecado es seguir o romper una regla por dogma en vez de por juicio.
+
 ## Stack
 
 | Capa | Tecnología |
