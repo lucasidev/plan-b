@@ -48,4 +48,4 @@ exclude = [
 
 # Excluir ancla-only (ej `#section`) — lychee a veces falla en heading IDs
 # que no resuelve bien. Las secciones internas se mantienen humanamente.
-include_fragments = false
+# fragments (anclas) no se chequean: es el default de lychee, no hace falta setearlo.
