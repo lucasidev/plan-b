@@ -132,6 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - escala visible del histograma de distribución de calificaciones (reviews) — [`152000d`](https://github.com/lucasidev/plan-b/commit/152000dd9117b76667e81b0775a17c4c871ec230)
 - topbar no wrappea botón ni breadcrumbs en viewports angostos (layout) — [`02c4498`](https://github.com/lucasidev/plan-b/commit/02c4498155c5288c6f3ecf6bedc6c8a409d6713d)
 - sacar include_fragments no soportado por la version actual de lychee (ci) — [`f6751b9`](https://github.com/lucasidev/plan-b/commit/f6751b9c31edcc1a9725df666b5278ab0e71acaf)
+- sacar router.refresh() que raceaba con el push tras resolver (moderation) — [`4cdc512`](https://github.com/lucasidev/plan-b/commit/4cdc512e0176eb9584c463cc6ffc6171e681de83)
 
 ### Changed
 
