@@ -5,12 +5,17 @@ import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 
+/** Roles que operan el backoffice: admin (todo) o moderador (solo moderación). */
+export type BackofficeRole = 'admin' | 'moderator';
+
 /**
- * Nav del backoffice (port de `admin-shell.jsx::ADM_NAV`). Solo "Docentes" apunta a una página real
- * (US-063); el resto se muestra para fidelidad del shell pero queda inerte (no navega a rutas que no
- * existen). A medida que aterricen las otras vistas del backoffice se les cablea el `href`.
+ * Nav del backoffice (port de `admin-shell.jsx::ADM_NAV`). Los items con `href` navegan a páginas
+ * reales; `roles` restringe qué rol ve el link vivo (Docentes es admin-only, Reportes lo ve también el
+ * moderador). El resto se muestra inerte para fidelidad del shell, hasta que aterrice cada vista.
  */
-const NAV: { group: string; items: { label: string; href?: string }[] }[] = [
+type NavItem = { label: string; href?: string; roles?: BackofficeRole[] };
+
+const NAV: { group: string; items: NavItem[] }[] = [
   { group: 'General', items: [{ label: 'Dashboard' }] },
   {
     group: 'Datos académicos',
@@ -18,16 +23,22 @@ const NAV: { group: string; items: { label: string; href?: string }[] }[] = [
       { label: 'Universidades' },
       { label: 'Carreras' },
       { label: 'Materias' },
-      { label: 'Docentes', href: '/admin/teachers' },
+      { label: 'Docentes', href: '/admin/teachers', roles: ['admin'] },
       { label: 'Comisiones' },
       { label: 'Importador' },
     ],
   },
-  { group: 'Moderación', items: [{ label: 'Reportes' }, { label: 'Usuarios' }] },
+  {
+    group: 'Moderación',
+    items: [
+      { label: 'Reportes', href: '/admin/moderacion/reportes', roles: ['admin', 'moderator'] },
+      { label: 'Usuarios' },
+    ],
+  },
   { group: 'Operación', items: [{ label: 'Migraciones' }, { label: 'Audit log' }] },
 ];
 
-export function AdminSidebar({ email }: { email: string }) {
+export function AdminSidebar({ email, role }: { email: string; role: BackofficeRole }) {
   const pathname = usePathname();
   const initials = email.slice(0, 2).toUpperCase();
 
@@ -50,15 +61,16 @@ export function AdminSidebar({ email }: { email: string }) {
               {g.group}
             </div>
             {g.items.map((it) => {
-              const active = it.href ? pathname.startsWith(it.href) : false;
+              const live = Boolean(it.href && (!it.roles || it.roles.includes(role)));
+              const active = live && pathname.startsWith(it.href as string);
               const className = cn(
                 'flex items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px]',
                 active && 'bg-bg-card text-ink shadow-card',
-                !active && it.href && 'text-ink-2 hover:bg-white/50 hover:text-ink',
-                !it.href && 'cursor-default text-ink-4',
+                !active && live && 'text-ink-2 hover:bg-white/50 hover:text-ink',
+                !live && 'cursor-default text-ink-4',
               );
-              return it.href ? (
-                <Link key={it.label} href={it.href} className={className}>
+              return live ? (
+                <Link key={it.label} href={it.href as string} className={className}>
                   {it.label}
                 </Link>
               ) : (

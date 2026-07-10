@@ -47,4 +47,20 @@ export const MARTIN: Persona = {
   state: 'Unverified',
 };
 
-export const ALL_PERSONAS = [LUCIA, MATEO, PAULA, MARTIN] as const;
+/** Cuenta staff rol Admin (US-067): backoffice completo. */
+export const ADMIN: Persona = {
+  email: 'admin@planb.local',
+  password: 'admin.planb.local.12',
+  displayName: 'Lautaro Maza',
+  state: 'VerifiedActive',
+};
+
+/** Cuenta staff rol Moderator (US-067): solo la sección de moderación del backoffice. */
+export const MODERADOR: Persona = {
+  email: 'moderador@planb.local',
+  password: 'moderador.planb.local.12',
+  displayName: 'Elena Ferro',
+  state: 'VerifiedActive',
+};
+
+export const ALL_PERSONAS = [LUCIA, MATEO, PAULA, MARTIN, ADMIN, MODERADOR] as const;
