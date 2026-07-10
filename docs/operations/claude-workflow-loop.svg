@@ -1,0 +1,86 @@
+<svg viewBox="0 0 960 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ttl desc" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+  <title id="ttl">El loop de trabajo en planb</title>
+  <desc id="desc">La conversacion (Lucas decide, Opus orquesta) es la capa de juicio. Cada fase Explore, Plan, Implement, Verify, Review y Ship se despacha a un subagente con el modelo de su tier: Haiku 4.5, Sonnet 5 u Opus 4.8. Verify y Review reenvian al Implement hasta pasar. Lucas aprueba el plan y antes del push.</desc>
+
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arU" markerWidth="10" markerHeight="10" refX="4" refY="2" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M4,0 L8,8 L0,8 Z" fill="#b45309"/>
+    </marker>
+  </defs>
+
+  <rect x="4" y="4" width="952" height="502" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+
+  <text x="28" y="34" font-size="17" font-weight="700" fill="#0f172a">El loop de trabajo en planb</text>
+  <text x="28" y="52" font-size="12" fill="#64748b">Conversacion = juicio  ·  subagentes tierados = ejecucion</text>
+
+  <rect x="28" y="66" width="904" height="84" rx="12" fill="#1e293b"/>
+  <text x="480" y="97" text-anchor="middle" font-size="16" font-weight="700" fill="#f8fafc" letter-spacing="0.5">CONVERSACION = JUICIO</text>
+  <text x="480" y="118" text-anchor="middle" font-size="13.5" fill="#e2e8f0">Lucas decide  ·  Opus orquesta</text>
+  <text x="480" y="137" text-anchor="middle" font-size="11.5" fill="#94a3b8">planear · decidir el approach · juzgar lo que vuelve · verificar · aprobar</text>
+
+  <text x="480" y="170" text-anchor="middle" font-size="11.5" fill="#475569">el orquestador despacha cada fase al subagente con el modelo que corresponde</text>
+  <line x1="480" y1="176" x2="480" y2="193" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar)"/>
+
+  <rect x="36" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="105" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">EXPLORE</text>
+  <text x="105" y="246" text-anchor="middle" font-size="11.5" fill="#475569">scout</text>
+  <rect x="71" y="258" width="68" height="18" rx="9" fill="#ccfbf1"/>
+  <text x="105" y="271" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0f766e">Haiku 4.5</text>
+
+  <rect x="186" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="255" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">PLAN</text>
+  <text x="255" y="246" text-anchor="middle" font-size="11.5" fill="#475569">planner</text>
+  <rect x="221" y="258" width="68" height="18" rx="9" fill="#ede9fe"/>
+  <text x="255" y="271" text-anchor="middle" font-size="10.5" font-weight="600" fill="#6d28d9">Opus 4.8</text>
+
+  <rect x="336" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="405" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">IMPLEMENT</text>
+  <text x="405" y="246" text-anchor="middle" font-size="11" fill="#475569">implementer · batch</text>
+  <rect x="343" y="258" width="59" height="18" rx="9" fill="#dbeafe"/>
+  <text x="372" y="271" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">Sonnet 5</text>
+  <rect x="408" y="258" width="59" height="18" rx="9" fill="#ccfbf1"/>
+  <text x="437" y="271" text-anchor="middle" font-size="10" font-weight="600" fill="#0f766e">Haiku 4.5</text>
+
+  <rect x="486" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="555" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">VERIFY</text>
+  <text x="555" y="246" text-anchor="middle" font-size="11.5" fill="#475569">test-runner</text>
+  <rect x="521" y="258" width="68" height="18" rx="9" fill="#ccfbf1"/>
+  <text x="555" y="271" text-anchor="middle" font-size="10.5" font-weight="600" fill="#0f766e">Haiku 4.5</text>
+
+  <rect x="636" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="705" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">REVIEW</text>
+  <text x="705" y="246" text-anchor="middle" font-size="11.5" fill="#475569">reviewer</text>
+  <rect x="671" y="258" width="68" height="18" rx="9" fill="#ede9fe"/>
+  <text x="705" y="271" text-anchor="middle" font-size="10.5" font-weight="600" fill="#6d28d9">Opus 4.8</text>
+
+  <rect x="786" y="196" width="138" height="92" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="855" y="224" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">SHIP</text>
+  <text x="855" y="246" text-anchor="middle" font-size="11.5" fill="#475569">skills</text>
+  <rect x="824" y="258" width="62" height="18" rx="9" fill="#e2e8f0"/>
+  <text x="855" y="271" text-anchor="middle" font-size="10.5" font-weight="600" fill="#334155">sesion</text>
+
+  <path d="M176,237 L183,242 L176,247 Z" fill="#94a3b8"/>
+  <path d="M326,237 L333,242 L326,247 Z" fill="#94a3b8"/>
+  <path d="M476,237 L483,242 L476,247 Z" fill="#94a3b8"/>
+  <path d="M626,237 L633,242 L626,247 Z" fill="#94a3b8"/>
+  <path d="M776,237 L783,242 L776,247 Z" fill="#94a3b8"/>
+
+  <line x1="555" y1="288" x2="555" y2="303" stroke="#b45309" stroke-width="2"/>
+  <line x1="705" y1="288" x2="705" y2="303" stroke="#b45309" stroke-width="2"/>
+  <line x1="555" y1="303" x2="705" y2="303" stroke="#b45309" stroke-width="2"/>
+  <path d="M630,303 C630,356 405,356 405,300" fill="none" stroke="#b45309" stroke-width="2" marker-end="url(#arU)"/>
+  <text x="517" y="378" text-anchor="middle" font-size="11.5" fill="#b45309">falla o hallazgo real: itera hasta verde</text>
+
+  <text x="480" y="400" text-anchor="middle" font-size="11" fill="#475569">Gates de Lucas: aprueba el plan  ·  aprueba antes del push (no push sin OK)</text>
+
+  <text x="28" y="432" font-size="12" font-weight="700" fill="#334155">Modelo por tier</text>
+  <rect x="30" y="440" width="12" height="12" rx="2" fill="#ccfbf1" stroke="#0f766e"/>
+  <text x="50" y="450" font-size="11.5" fill="#334155">Haiku 4.5: grunt barato (buscar, batch, correr los checks que ya existen)</text>
+  <rect x="30" y="460" width="12" height="12" rx="2" fill="#dbeafe" stroke="#1d4ed8"/>
+  <text x="50" y="470" font-size="11.5" fill="#334155">Sonnet 5: implementar una pieza nueva desde un spec preciso</text>
+  <rect x="30" y="480" width="12" height="12" rx="2" fill="#ede9fe" stroke="#6d28d9"/>
+  <text x="50" y="490" font-size="11.5" fill="#334155">Opus 4.8: juicio (planear, revisar) y orquestar la sesion</text>
+</svg>
