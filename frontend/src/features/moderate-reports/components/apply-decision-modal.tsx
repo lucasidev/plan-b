@@ -38,8 +38,11 @@ export function ApplyDecisionModal({
       : '';
 
   function backToQueue() {
+    // Sin router.refresh(): la cola es force-dynamic + no-store, ya rinde fresca al navegar. El refresh
+    // acá refrescaba la ruta actual (el detalle, del que todavia no saliste) y raceaba con el push,
+    // dejando la URL en el detalle de forma intermitente. Mismo espiritu que ADR-0046: el cliente navega,
+    // no fuerza un re-render que interfiera con la navegacion.
     router.push(QUEUE);
-    router.refresh();
   }
 
   function apply() {
