@@ -15,12 +15,15 @@ Thumbs.db
 *.swo
 
 # Claude Code workspace: config per-dev ignorada, salvo lo compartido inhouse
-# (settings.json = hooks; agents = subagentes tierados; skills = workflows). Ver
+# (settings.json = hooks; agents = subagentes; skills = procedimientos;
+# rules = reglas path-scoped; workflows = orquestaciones multi-agente). Ver
 # docs/operations/claude-workflow.md.
 .claude/*
 !.claude/settings.json
 !.claude/agents/
 !.claude/skills/
+!.claude/rules/
+!.claude/workflows/
 
 # Playwright MCP scratch (snapshots, console logs from interactive debugging)
 .playwright-mcp/
