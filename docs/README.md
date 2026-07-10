@@ -4,16 +4,19 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 
 ## Estructura
 
-| Directorio | Contiene | Estado |
-|---|---|---|
-| [`decisions/`](decisions/) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. | 34 ADRs |
-| [`domain/`](domain/) | Modelo conceptual del negocio independiente de la tecnología: lenguaje, lifecycles, casos de uso. | 5 docs ([ubiquitous-language](domain/ubiquitous-language.md), [actors-and-use-cases](domain/actors-and-use-cases.md), [review-lifecycle](domain/review-lifecycle.md), [enrollment-lifecycle](domain/enrollment-lifecycle.md), [verification-flows](domain/verification-flows.md)) |
-| [`architecture/`](architecture/) | Diseño técnico: ERD, capas del backend, estructura del frontend, API, deploy. | 2 docs ([data-model](architecture/data-model.md), [redis-key-patterns](architecture/redis-key-patterns.md)) |
-| [`design/`](design/) | Source-of-truth visual: paleta, tipografía, primitivas, layouts macro. El mockup original vendoreado + README explicando cómo se mapea a `frontend/`. | [reference/](design/reference/) |
-| `reference/` | Especificaciones externas o modelos archivados que conviene preservar. | Vacío |
+| Directorio / doc | Contiene |
+|---|---|
+| [`decisions/`](decisions/) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
+| [`domain/`](domain/) | Modelo del negocio, independiente de la tecnología: [ubiquitous-language](domain/ubiquitous-language.md), actores + casos de uso ([use-cases/](domain/use-cases/)), **user stories** ([user-stories.md](domain/user-stories.md) + [user-stories/](domain/user-stories/), [plantilla](domain/us-template.md), [Definition of Done](domain/definition-of-done.md)), **epics** ([epics.md](domain/epics.md) + [epics/](domain/epics/)), modelo táctico ([tactical/](domain/tactical/): aggregates + projections), lifecycles y [personas](domain/personas.md). |
+| [`architecture/`](architecture/) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
+| [`design/`](design/) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference/). |
+| [`testing/`](testing/) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
+| [`operations/`](operations/) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
+| [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). El backlog vivo + status se trackean en Notion; este doc es la narrativa. |
 
 ## Cuándo va cada cosa
 
+- **Nueva user story / epic** → `domain/user-stories/US-NNN.md` (plantilla: `us-template.md`); trackear también en Notion (DB `plan-b: Tasks`) y linkear vía `Doc link`. Convenciones de numeración + sprint en `domain/user-stories.md` y `STATUS.md`.
 - **Decisión con alternativas reales** → `decisions/NNNN-titulo.md`.
 - **Definición de término del dominio** → `domain/ubiquitous-language.md`.
 - **Flow de negocio** (ciclo de vida de una entidad, flujo de moderación, etc.) → `domain/<nombre-del-flow>.md`.
