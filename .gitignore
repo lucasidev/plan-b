@@ -14,12 +14,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Claude Code workspace: config per-dev ignorada, salvo lo compartido inhouse
-# (settings.json = hooks; agents = subagentes; skills = procedimientos;
-# rules = reglas path-scoped; workflows = orquestaciones multi-agente). Ver
-# docs/operations/claude-workflow.md.
+# Claude Code workspace: config per-dev ignorada, salvo el tooling inhouse del
+# proyecto (agents = subagentes; skills = procedimientos; rules = reglas
+# path-scoped; workflows = orquestaciones multi-agente). La higiene de IA
+# (em-dash, atribución) es user-level, no del repo.
 .claude/*
-!.claude/settings.json
 !.claude/agents/
 !.claude/skills/
 !.claude/rules/
