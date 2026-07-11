@@ -35,5 +35,5 @@ Ejemplo canónico que el ADR bendice: `frontend/src/features/write-review/action
 
 ## Al terminar
 
-- Verificá con `bun run lint` + `bunx tsc --noEmit` (o delegá al subagente `test-runner`). Si tocaste rutas reales, aplicá la regla de zona E2E antes de pedir OK (ver skill `e2e-zone`).
+- Verificá con `bun run lint` + `bunx tsc --noEmit` (o delegá al subagente `test-runner`). Si tocaste rutas reales, verificá el flujo end-to-end antes de pedir OK (spec headless o recorrido en browser); la suite E2E corre en CI en cada PR y gatea el merge.
 - No commitees vos: el commit lo hace el flujo de `ship`.

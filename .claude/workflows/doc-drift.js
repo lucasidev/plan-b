@@ -33,6 +33,16 @@ const DOCS = [
     against:
       'la estructura real del repo: los modulos que lista, el stack, y los comandos del Justfile. Un comando o modulo que el CLAUDE.md menciona y no existe, o existe distinto.',
   },
+  {
+    doc: 'frontend/CLAUDE.md',
+    against:
+      'el frontend real: rutas y route groups en frontend/src/app/, estructura de features/, scripts de package.json, y los workflows de CI (.github/workflows/). Un claim operativo que el codigo o el CI contradice (ej. cuando corre el E2E).',
+  },
+  {
+    doc: 'backend/CLAUDE.md',
+    against:
+      'el backend real: modulos y su estructura, el patron de slice, los comandos. Un claim que el codigo contradice.',
+  },
 ]
 
 const FINDINGS_SCHEMA = {
