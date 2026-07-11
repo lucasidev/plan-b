@@ -150,8 +150,8 @@ Los hooks son shell scripts determinísticos: **lo que debe pasar siempre, sin e
 diferencia de las reglas del CLAUDE.md, que son advisory). No consumen tokens de modelo.
 
 Ya tenemos [`lefthook.yml`](../../lefthook.yml) (git hooks: format en pre-commit, conventional
-commits en commit-msg, y build/lint/typecheck/tests/vulns en pre-push; NO tiene gate de em-dashes,
-ese chequeo es manual en el skill `ship`). Los **hooks de Claude Code** viven en `.claude/settings.json`, que **está commiteado**
+commits en commit-msg, y build/lint/typecheck/tests/vulns en pre-push; el ban de em-dashes NO es un gate del repo:
+es una regla de output de la IA, enforced en el harness y las instrucciones de Claude, no acá). Los **hooks de Claude Code** viven en `.claude/settings.json`, que **está commiteado**
 (el `.gitignore` ignora `.claude/*` pero des-ignora `settings.json`, `agents/` y `skills/`), así que
 son compartibles inhouse sin tocar nada más.
 
@@ -190,7 +190,7 @@ Dos modos de trigger:
 | `dapper-read` | auto | Read con Dapper cross-schema (ej. `ListUniversitiesAsync`). |
 | `new-adr` | explícito | ADR MADR: las 3 preguntas de "amerita" + el formato. |
 | `new-us` | explícito | Doc de US desde la plantilla + page en Notion, cross-linkeados. |
-| `ship` | explícito | Verify → chequeo em-dash → commit conventional → frena antes del push. |
+| `ship` | explícito | Verify → commit conventional → frena antes del push. |
 | `sync-notion` | explícito | Gate post-merge: US a `Done` en todas las vistas, sin romper options. |
 | `regen-screenshots` | explícito | Pipeline canvas HTML → PNG de referencia del design system. |
 
