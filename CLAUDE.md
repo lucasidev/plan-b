@@ -84,7 +84,6 @@ plan-b/
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
 - **Scripts en TypeScript** (`bun`), no en bash. Consistencia.
 - **No referenciar paths locales, proyectos privados externos, ni secrets en código/docs.**
-- **Orquestación (cómo trabajamos)**: la conversación es la capa de juicio (planear, decidir, revisar, verificar); el grunt (búsqueda, inventario, batch, correr checks, implementar desde spec) va a **subagentes tierados** que despacha el agente (`haiku` mecánico, `sonnet` implementación, `opus` review adversarial). El agente es el orquestador (no hace falta uno aparte): no cambia su propio modelo pero sí el de cada subagente, y **siempre verifica** lo que el subagente devuelve. Detalle en [`docs/operations/claude-workflow.md`](docs/operations/claude-workflow.md).
 
 ## Comandos frecuentes
 
