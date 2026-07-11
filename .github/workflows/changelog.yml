@@ -5,21 +5,23 @@ name: Changelog auto-append
 # (pre-deploy = no hay versiones), así que este workflow NO bumpea versión,
 # NO crea tags, y NO crea GitHub Releases.
 #
-# IMPORTANTE: este workflow usa GITHUB_TOKEN a propósito, NO la GitHub App
-# planb-ci-bot que sí usa dependabot-bun-lockfile.yml. ADR-0043 documenta los
-# dos casos: el push del CHANGELOG NO debe redisparar ci.yml/e2e.yml (sería
-# doblar el costo de CI/E2E sobre commits docs-only). La restricción de
-# GITHUB_TOKEN (no dispara workflows downstream) es exactamente lo que queremos.
-# NO migrar a App token "por consistencia": leer ADR-0043 sección "Cuándo NO
-# migrar" antes de tocar.
+# IMPORTANTE (token, ADR-0043 re-evaluado 2026-07-10): este workflow usaba
+# GITHUB_TOKEN porque sus pushes no disparan workflows downstream (no re-corre
+# CI/E2E sobre un commit docs-only). El ruleset de `main` bloquea los pushes
+# directos, y GitHub no permite dar bypass a la app "GitHub Actions" en repos
+# personales (ni por API ni por UI), así que el push migró al token de la App
+# `planb-ci-bot` (bypass actor del ruleset, la misma App de
+# dependabot-bun-lockfile.yml). La propiedad anti-retrigger que daba
+# GITHUB_TOKEN ahora la da el `[skip ci]` en el mensaje del commit.
 
 on:
   push:
     branches: [main]
 
+# El push lo hace el App token generado en `Generate App token`; el
+# GITHUB_TOKEN default solo lee.
 permissions:
-  # Necesario para que git-auto-commit-action pueda commitear y pushear.
-  contents: write
+  contents: read
 
 # Evita runs paralelos pisándose entre sí en el mismo CHANGELOG.md.
 concurrency:
@@ -33,12 +35,18 @@ jobs:
     # Append + commit + push. Run típico < 30s. 5 min para cortar si algo se
     # cuelga (push back se traba, git auto-commit reintenta, etc.).
     timeout-minutes: 5
-    # No procesar nuestros propios commits (evita loop). El default GITHUB_TOKEN
-    # ya tiene una protección a nivel de plataforma (commits hechos con él no
-    # disparan workflows), pero este filtro también previene runs accidentales
-    # de un push manual con el mismo prefix.
+    # No procesar nuestros propios commits (evita loop). El [skip ci] del
+    # commit ya evita el retrigger a nivel plataforma, pero este filtro
+    # también previene runs accidentales de un push manual con el mismo prefix.
     if: ${{ !startsWith(github.event.head_commit.message, 'docs(changelog):') }}
     steps:
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.LOCKFILE_BOT_APP_ID }}
+          private-key: ${{ secrets.LOCKFILE_BOT_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v7
         with:
@@ -47,8 +55,9 @@ jobs:
           # planb es chico, así que el costo es bajo. Si llegara a doler,
           # usar `fetch-depth: ${{ github.event.commits.length + 1 }}`.
           fetch-depth: 0
-          # Token con permisos para pushear back al repo.
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # App token: `planb-ci-bot` es bypass actor del ruleset de main; el
+          # GITHUB_TOKEN ya no puede pushear directo a main.
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -71,7 +80,18 @@ jobs:
       - name: Commit changes back
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
-          commit_message: 'docs(changelog): auto-update from ${{ github.event.head_commit.id }}'
+          # [skip ci] en el body: los pushes con App token SÍ disparan
+          # workflows (a diferencia de GITHUB_TOKEN); el marker le dice a
+          # GitHub que no corra CI/E2E sobre este commit docs-only.
+          commit_message: |
+            docs(changelog): auto-update from ${{ github.event.head_commit.id }}
+
+            [skip ci]
+          # Identidad del commit = la App (mismo shape de email que
+          # dependabot-bun-lockfile.yml; sin ese shape los commits aparecen
+          # como "Unknown" en la UI de GitHub).
+          commit_user_name: 'planb-ci-bot[bot]'
+          commit_user_email: '${{ secrets.LOCKFILE_BOT_APP_ID }}+planb-ci-bot[bot]@users.noreply.github.com'
           file_pattern: CHANGELOG.md
           # Si el script no modificó nada (todos los commits del rango son
           # skip-by-default, o todos ya están en el CHANGELOG, o todos tienen
