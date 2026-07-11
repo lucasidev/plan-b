@@ -23,15 +23,16 @@ son la misma cosa: menos contexto ruidoso = menos tokens = mejores respuestas.
 ## El modelo: conversación (juicio) + subagentes tierados (ejecución)
 
 Fijo, no negociable. **La conversación (Lucas + orquestador) es la capa de juicio; los subagentes
-ejecutan el grunt, en el modelo que el orquestador les asigna.** El orquestador corre en Opus, **es**
-el orquestador (no hace falta uno aparte): decide cuándo explorar, planear, ejecutar y revisar, y
-despacha cada tarea a un subagente con el tier correcto. **Lucas nunca toca `/model`**: el orquestador
-no cambia su propio modelo, pero sí el de cada subagente al despacharlo.
+ejecutan el grunt, en el modelo que el orquestador les asigna.** El orquestador corre en el modelo de la
+sesión (esa perilla es de Lucas: Opus 4.8 o superior), **es** el orquestador (no hace falta uno
+aparte): decide cuándo explorar, planear, ejecutar y revisar, y despacha cada tarea a un subagente con
+el tier correcto. **Lucas no necesita tocar `/model` para el tiering**: el orquestador no cambia su
+propio modelo, pero sí el de cada subagente al despacharlo.
 
 ![El loop de trabajo en planb](claude-workflow-loop.svg)
 
-- **En la conversación (Opus):** entender la intención, decidir el approach, **juzgar** lo que
-  devuelven los subagentes, decidir qué se shippea, aprobar.
+- **En la conversación (el modelo de sesión):** entender la intención, decidir el approach, **juzgar**
+  lo que devuelven los subagentes, decidir qué se shippea, aprobar.
 - **En subagentes (tier según la tarea):** búsqueda, inventario, leer muchos archivos, batches,
   correr checks + resumir, implementar desde spec, primer pase de review.
 
@@ -53,7 +54,7 @@ el diff se describe en una frase.
 | **Explore** | Entender antes de tocar. Sin editar. | Subagente `scout` (Haiku 4.5) para research ruidoso: lee 100 archivos y devuelve `file:line`, tu contexto no se ensucia. Plan mode (`Shift+Tab`) para explorar en la conversación. |
 | **Plan** | Diseño antes de código. | Para algo grande: `planner` (Opus 4.8) entrevista (`AskUserQuestion`) y escribe un `SPEC.md`, después sesión fresca para ejecutar. Trazar a una US ([`../STATUS.md`](../STATUS.md)). |
 | **Implement** | Código con verificación incorporada. | `implementer` (Sonnet 5) una pieza nueva desde el spec, o `batch` (Haiku 4.5) el mismo cambio sobre N archivos. Diseño primero (mockup del canvas para UI), server actions puras (ADR-0046). |
-| **Verify** | Evidencia, no aserción. | `test-runner` (Haiku 4.5) corre los checks que YA existen (unit/integration/E2E) y devuelve pass/fail. Regla nuestra: si toca rutas reales, correr el spec E2E visible antes de pedir OK (skill `e2e-zone`). |
+| **Verify** | Evidencia, no aserción. | `test-runner` (Haiku 4.5) corre los checks que YA existen (unit/integration/E2E) y devuelve pass/fail. La suite E2E corre en CI en cada PR como gate de merge; antes de pedir OK, mostrar el flujo tocado andando (spec headless o recorrido en browser). |
 | **Review** | Revisor adversarial en contexto fresco. | `reviewer` (Opus 4.8) razona sobre la correctness que los tests NO cubren. Un modelo fresco que no vio el razonamiento juzga mejor. |
 | **Ship** | Commit + PR + merge + tracker. | Skills `ship` (verify + commit conventional, frena antes del push) y `sync-notion` (US a `Done` en todas las vistas). PR-only, merge **Rebase** por default. |
 
@@ -107,9 +108,10 @@ Discriminador: **¿cada unidad necesita su propio razonamiento?**
 ## Model tiering (el lever barato): "Advisor Strategy"
 
 Separar el juicio (caro) de la ejecución (barata): Opus como adviser (planear, decidir, revisar),
-Sonnet para implementar, Haiku para el grunt. En planb **no cambiamos el modelo de la sesión a mano**:
-el orquestador se queda en Opus y baja de tier despachando subagentes. El `/model` manual y el
-`--model` de headless existen como features de Claude Code, pero nuestro default es el dispatch tierado.
+Sonnet para implementar, Haiku para el grunt. En planb el tiering **no pasa por cambiar el modelo de la
+sesión a mano**: el orquestador se queda en el modelo de sesión y baja de tier despachando subagentes.
+El `/model` manual y el `--model` de headless existen como features de Claude Code, pero nuestro
+default es el dispatch tierado.
 
 Anthropic recomienda: Sonnet para la mayoría del coding, Opus reservado para decisiones arquitectónicas
 o razonamiento multi-paso, Haiku para tareas simples de subagente. La familia actual es Opus 4.8, Sonnet 5 y Haiku 4.5;
@@ -128,14 +130,17 @@ verifica. El **verification loop** vive acá: implementá → corré el check (t
 hasta verde. El loop se cierra cuando el check pasa **y** Lucas aprueba. Barato porque el grueso corre
 en subagentes de tier bajo y la conversación cara solo juzga.
 
-**2. Loop desatendido (Ralph / `/loop`).** Modelo fijo, te vas, con una condición de "done" medible
-y un check automático. Para tareas mecánicas con "done" inequívoco (refactor grande, batch, cobertura
-de tests, greenfield). `/goal` define el "done", `/loop` mantiene a Claude hasta cumplirlo; Ralph
-Wiggum (plugin oficial) es el loop overnight con `--max-iterations`.
+**2. Loop desatendido (`/goal`).** Modelo fijo, te vas, con una condición de "done" medible y un
+check automático. Para tareas mecánicas con "done" inequívoco (refactor grande, batch, cobertura de
+tests, greenfield). `/goal` fija la condición y Claude sigue trabajando entre turnos hasta cumplirla.
+`/loop` es OTRA cosa (verificado contra la doc oficial, no confundir): corre un prompt recurrente por
+intervalo (`/loop 5m ...`) o auto-paced, para polling y mantenimiento, no "hasta cumplir el goal". El
+plugin ralph-wiggum (loop overnight con `--max-iterations`) no viene incluido: verificar que esté
+instalado antes de contar con él.
 
 **Cuándo NO** el desatendido: juicio, diseño subjetivo, debugging puntual. **Costo/riesgo**: siempre
-`--max-iterations` (un loop de 50 en un codebase grande cuesta `$50-100+`). El loop es tan bueno como
-su check: sin verificación real, itera sobre basura.
+con tope de iteraciones o presupuesto. El loop es tan bueno como su check: sin verificación real,
+itera sobre basura.
 
 ---
 
@@ -144,8 +149,9 @@ su check: sin verificación real, itera sobre basura.
 Los hooks son shell scripts determinísticos: **lo que debe pasar siempre, sin excepción** (a
 diferencia de las reglas del CLAUDE.md, que son advisory). No consumen tokens de modelo.
 
-Ya tenemos [`lefthook.yml`](../../lefthook.yml) (git hooks: format, conventional-commits, em-dash,
-pre-push tests). Los **hooks de Claude Code** viven en `.claude/settings.json`, que **está commiteado**
+Ya tenemos [`lefthook.yml`](../../lefthook.yml) (git hooks: format en pre-commit, conventional
+commits en commit-msg, y build/lint/typecheck/tests/vulns en pre-push; NO tiene gate de em-dashes,
+ese chequeo es manual en el skill `ship`). Los **hooks de Claude Code** viven en `.claude/settings.json`, que **está commiteado**
 (el `.gitignore` ignora `.claude/*` pero des-ignora `settings.json`, `agents/` y `skills/`), así que
 son compartibles inhouse sin tocar nada más.
 
@@ -182,7 +188,6 @@ Dos modos de trigger:
 | `slice-frontend` | auto | Feature flat, server actions puras ADR-0046 (ej. `sign-in`, `write-review`). |
 | `integration-event` | auto | Evento cross-módulo owned-by-receiver, ADR-0045 (ej. `ReviewRemovalRequested`). |
 | `dapper-read` | auto | Read con Dapper cross-schema (ej. `ListUniversitiesAsync`). |
-| `e2e-zone` | auto | Regla cultural: tocás rutas reales → E2E visible antes de pedir OK. |
 | `new-adr` | explícito | ADR MADR: las 3 preguntas de "amerita" + el formato. |
 | `new-us` | explícito | Doc de US desde la plantilla + page en Notion, cross-linkeados. |
 | `ship` | explícito | Verify → chequeo em-dash → commit conventional → frena antes del push. |
@@ -216,11 +221,9 @@ Esc Esc / /rewind  Menú de rewind (restaurar código/conversación a un checkpo
 
 **Loops / verificación / review**
 ```
-/goal           Definir la condición de "done" de un loop
-/loop           Loopear hasta cumplir el /goal
+/goal           Condición de "done": Claude sigue entre turnos hasta cumplirla
+/loop           Prompt recurrente por intervalo o self-paced (/loop 5m ...)
 /code-review    Review del diff por bugs en subagente fresco
-/ralph-loop "..." --completion-promise "X" --max-iterations N   (plugin ralph-wiggum)
-/cancel-ralph   Cortar un loop de Ralph
 ```
 
 **Config / extensión**
