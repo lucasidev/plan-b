@@ -28,10 +28,9 @@ lo que debe pasar siempre va a enforcement determinístico, no a disciplina.
   explícito en el chat antes de cada push/merge, y GitHub no permite aprobar el propio PR, así que
   exigir 1 review con un solo dev bloquea todo merge. Se evaluó y descartó el esquema de dos cuentas.
   **Cuando entre un segundo dev, subir a 1** (el review pasa a ser real).
-- **Pendiente manual (UI)**: agregar la app "GitHub Actions" a la bypass list del ruleset
-  (Settings → Rules → Rulesets → main), porque el bot del changelog (ADR-0037) pushea directo a main
-  con `GITHUB_TOKEN` y sin bypass ese push falla. La API rechaza agregar ese bypass en repos
-  personales; por UI se puede.
+- **Bypass: solo la App `planb-ci-bot`** (para el push del changelog, ADR-0037). GitHub no permite
+  dar bypass a su app "GitHub Actions" en repos personales (ni API ni UI), así que `changelog.yml`
+  pushea con el App token + `[skip ci]`. Re-evaluación documentada en ADR-0043.
 
 ## Conventional Commits: todos los detalles
 
