@@ -94,26 +94,35 @@ Status quo.
 - Operacionalmente costoso (1 vez por semana mientras Dependabot esté activo). Multiplicado por la duración del proyecto (≥ 6 meses al PFI), son ~25 intervenciones manuales.
 - Se olvida. Los PRs quedan abiertos con CI rojo, dificultando ver el estado real del repo.
 
-## Cuándo NO migrar a App token (contra-caso documentado)
+## Cuándo NO migrar a App token (contra-caso documentado, re-evaluado)
 
-**`changelog.yml` se queda en `GITHUB_TOKEN` a propósito.** No es deuda, es decisión correcta. La regla operativa:
+> **Re-evaluación 2026-07-10: el contra-caso caducó.** El ruleset de `main` (ver
+> [`git-workflow.md`](../operations/git-workflow.md)) bloquea todos los pushes directos a main, y
+> GitHub no permite dar bypass a su app "GitHub Actions" en repos personales (ni por API, que devuelve
+> 422 "must be part of the ruleset source or owner organization", ni por UI, donde no aparece en el
+> picker). O sea: el push con `GITHUB_TOKEN` de `changelog.yml` quedó bloqueado sin excepción posible.
+> `changelog.yml` migró al App token (`planb-ci-bot` es bypass actor del ruleset), y la propiedad
+> anti-retrigger que daba `GITHUB_TOKEN` la conserva con `[skip ci]` en el mensaje del commit.
 
-> La GitHub App solo entra cuando un workflow cumple LAS DOS condiciones:
-> 1. Hace `git push` (o equivalente que materializa cambios en el repo).
-> 2. **Y** queremos que ese push redispare workflows downstream.
+La regla operativa original ("App token solo si el push debe redisparar workflows") gana una tercera
+fuerza: **si un ruleset bloquea el push, el workflow necesita una identidad bypasseable (la App),
+aunque no quiera redisparar nada; el no-retrigger se recupera con `[skip ci]`**.
 
-`changelog.yml` cumple la 1 (pushea el CHANGELOG.md actualizado a main después de cada merge) pero **NO** la 2: si migráramos a App token, el commit auto-generado del changelog dispararía `ci.yml` + `e2e.yml` sobre un cambio docs-only. Doblaríamos el costo de CI/E2E por gusto. La restricción de `GITHUB_TOKEN` es exactamente lo que queremos en ese caso.
+El razonamiento original (histórico, pre-ruleset): `changelog.yml` pushea pero NO quiere redisparar
+`ci.yml`/E2E sobre un commit docs-only, y la restricción del `GITHUB_TOKEN` (sus pushes no disparan
+workflows) daba eso gratis. Correcto mientras los pushes directos a main estuvieron permitidos.
 
-Audit de todos los workflows al momento de aterrizar este ADR (2026-05-18):
+Audit de los workflows (actualizado 2026-07-10):
 
 | Workflow | ¿Pushea? | Token | Razón |
 |---|---|---|---|
 | `dependabot-bun-lockfile.yml` | Sí | **App** | Push debe redisparar CI |
-| `changelog.yml` | Sí | **GITHUB_TOKEN** | Push NO debe redisparar CI/E2E (commits docs-only) |
+| `changelog.yml` | Sí | **App** + `[skip ci]` | Ruleset bloquea `GITHUB_TOKEN`; `[skip ci]` mantiene el no-retrigger |
 | `pr-title.yml` | No | GITHUB_TOKEN | Solo read del título |
 | `ci.yml`, `commits.yml`, `docs-links.yml` | No | Default | No hacen `git push` |
 
-Si en el futuro aparece un workflow nuevo que pushea, aplicar la regla operativa de arriba para decidir qué token usar.
+Si en el futuro aparece un workflow nuevo que pushea: aplicar la regla operativa + la tercera fuerza
+de arriba para decidir token y marker.
 
 ## Referencias
 
