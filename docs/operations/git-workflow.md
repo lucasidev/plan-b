@@ -24,10 +24,10 @@ lo que debe pasar siempre va a enforcement determinístico, no a disciplina.
 - **PRs-only** (no push directo a main), no force-push, no borrar la branch.
 - **Merge solo Squash o Rebase** (el "Create a merge commit" de ADR-0026 queda bloqueado por plataforma).
 - **Required checks**: Backend, Frontend, **E2E (Playwright)**, commit messages, PR title. CI rojo = merge imposible.
-- **1 approving review requerido**. Decisión de Lucas (2026-07-10): la config se prepara para el equipo
-  futuro, no para la comodidad del solo-dev de hoy ("el caballo se prepara para la pista"). Consecuencia
-  conocida: el autor no puede aprobar su propio PR, así que sin un segundo reviewer los merges quedan
-  gateados por esa aprobación.
+- **0 approving reviews requeridos** (decisión de Lucas, 2026-07-10): el flujo real es solo-dev con OK
+  explícito en el chat antes de cada push/merge, y GitHub no permite aprobar el propio PR, así que
+  exigir 1 review con un solo dev bloquea todo merge. Se evaluó y descartó el esquema de dos cuentas.
+  **Cuando entre un segundo dev, subir a 1** (el review pasa a ser real).
 - **Pendiente manual (UI)**: agregar la app "GitHub Actions" a la bypass list del ruleset
   (Settings → Rules → Rulesets → main), porque el bot del changelog (ADR-0037) pushea directo a main
   con `GITHUB_TOKEN` y sin bypass ese push falla. La API rechaza agregar ese bypass en repos
