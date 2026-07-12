@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-06-09 (cierre de S5 + apertura de S6; las 6 US del slice de reseñas mergeadas, incluida US-019 que era la diferible, + refactor rutas a inglés #137 + guarda `clientApiFetch` #147).
+**Última actualización**: 2026-07-11 (cierre de S6, S7 y S8: materia consumible, el vertical docente entero con US-063 Teacher como keystone, y el backoffice de moderación + hardening de proceso e infra). S9 en planificación.
 
 ---
 
@@ -18,8 +18,10 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
 | S4 | 2026-05-18 a 2026-05-24 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b + **US-038-bis bonus** (soft delete con anonimización, ADR-0044) + chore técnico react-doctor cleanup + pre-push hook. | ✓ Done |
 | S5 | 2026-05-25 a 2026-06-08 (extendido) | **Slice de Reseñas (feature core del producto crowdsourced)**: US-017 publicar backend + US-049 editor 6 campos + US-048 shell 3 tabs + US-018 editar + US-055 borrar + US-019 reportar con módulo Moderation + auto-quarantine. Entraron las 6, incluida US-019 que era la diferible. | ✓ Done |
-| S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda. Más US-T07-b (architecture tests a todos los módulos). US-003 (bloqueada por Teacher US-063) y la cola de moderación diferidas a S7. | 🟡 Open |
-| S7+ | next+ | Backlog post-canvas v2 + admin (US-054-f, US-059-f, US-070..071, US-076-f, US-077-f + b/b-1/b-2/b-3, US-078-f, US-081..087). Notifications BC (US-077-b-1/2/3) cuando aterrice. Admin module bloqueado por US-081 (shell + dashboard ops) que es prerequisito hard. | ⏳ Pendiente |
+| S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda materia-only. Más US-T07-b (architecture tests a todos los módulos). | ✓ Done |
+| S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
+| S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
+| S9+ | next+ | Backlog planificado (7 stories en product backlog + 2 comprometidas a sprint). Rankings, búsqueda global (Meilisearch), Notifications BC, resto del admin (US-081 shell bloqueante, importadores, merge/migración), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -366,7 +368,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 
 ---
 
-## S6 🟡 Open
+## S6 ✓ Done
 
 **Rango**: 2026-06-15 a 2026-06-20 (lunes → sábado). La semana del 2026-06-10 al 2026-06-13 corre como pre-sprint: housekeeping del audit + docs de las US nuevas.
 
@@ -384,7 +386,7 @@ Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audi
 
 - **US-063 (Teacher) es el keystone del vertical docente**: hoy toda reseña apunta a `PLACEHOLDER_TEACHER_ID`, no existe entidad Teacher. Gatea todo lo docente, que converge en S7: US-003 (docente con reseñas), US-040 (responder reseña), la rama docente de US-004 (búsqueda), docente real por reseña y los badges. Por eso el roadmap (redefinido 2026-06-23) abre S7 con US-063 como sprint dedicado y el resto se injerta. S8 = moderación.
 - **El lado materia ya llena el sprint**: US-089 + US-002 + US-004.
-- **La cola de moderación entera va a S7** (US-050 + US-051 + persona moderador + auth staff): es cabo de US-019 pero no urgente sin usuarios reales generando cuarentenas. Si el jurado UNSTA necesita el demo de moderación como hito institucional, sube de prioridad y se recorta el lado materia.
+- **La cola de moderación entera va a S8** (US-050 + US-051 + persona moderador + auth staff): es cabo de US-019 pero no urgente sin usuarios reales generando cuarentenas. Si el jurado UNSTA necesita el demo de moderación como hito institucional, sube de prioridad y se recorta el lado materia.
 - **US-001 (catálogo completo)** también diferida a S7.
 
 ### Salida del audit + triage (2026-06-09)
@@ -401,6 +403,52 @@ Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audi
 **Housekeeping restante del audit (pre-sprint)**: dedup de `formatRelativeDate`, identifiers castellanos en `commissions.ts`, `OccurredAt` con doble reloj en `CareerPlanImported`, `write.spec` a component test.
 
 **Docs**: US-089 y US-T07-b ya tienen doc en `docs/domain/user-stories/` (ambos Done).
+
+---
+
+## S7 ✓ Done
+
+**Rango**: 2026-06-23 a 2026-07-05 (lunes → sábado, extendido: el núcleo docente cerró la primera semana, el backoffice admin de docentes entró en la extensión, patrón de S5).
+
+**Foco**: **el vertical docente entero, con US-063 (Teacher) como keystone.** Hasta S6 toda reseña apuntaba a `PLACEHOLDER_TEACHER_ID` y no existía la entidad Teacher; S7 la aterrizó y cerró todo lo que la necesitaba, tal como el audit de arranque de S6 lo había secuenciado.
+
+### User stories cerradas
+
+| US | Título | PR |
+|---|---|---|
+| US-063 | Catálogo de docentes consumible + admin CRUD gateado + backoffice + admin shell | #163, #180, #181 |
+| US-065 | Comisiones + asignación de docentes; docente real por reseña (saca el placeholder) | #164, #167 |
+| US-003 | Página pública de docente con reseñas (reads backend + frontend) | #165, #166 |
+| US-030 | Claim de identidad docente | #169 |
+| US-031 | Verificación docente por email institucional | #170 |
+| US-040 | Responder reseña como docente verificado | #172 |
+| US-041 | Editar respuesta docente | #179 |
+| US-004 | Rama docente en la búsqueda global (completa la materia-only de S6) | #168 |
+| US-067 | Provisioning de cuentas staff | S7 |
+
+Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de calificaciones y de topbar en viewports angostos.
+
+---
+
+## S8 ✓ Done
+
+**Rango**: 2026-07-07 a 2026-07-11.
+
+**Foco**: **moderación (cabo de US-019) + hardening de proceso e infra.** El slice de reseñas generaba cuarentenas desde S5 pero no había forma de resolverlas; S8 cerró la cola de moderación. En paralelo entró un bloque grande de hardening de proceso, disparado por un merge que se coló con CI en rojo.
+
+### User stories cerradas
+
+| US | Título | PR |
+|---|---|---|
+| US-050 | Cola de reportes gateada a moderador (read model + vista con tone classifier) | #184 |
+| US-051 | Resolver reporte (uphold/dismiss + detalle + cascade a reports de la misma reseña) | #184 |
+
+### Hardening de proceso e infra (no son US)
+
+- **Ruleset de `main` por plataforma**: required checks (Backend, Frontend, E2E, commit-msg, PR-title), PRs-only y no-force-push enforced por GitHub, no solo por disciplina. Motivación: un merge entró con E2E en rojo por un bug de proceso. Detalle en [`operations/git-workflow.md`](operations/git-workflow.md).
+- **Bot del changelog migrado al App token** (`planb-ci-bot`) + marker skip-ci, para sobrevivir el ruleset sin re-disparar CI sobre commits docs-only (ADR-0043 re-evaluado, #189).
+- **Fix del race de `router.refresh()`** en el resolve de moderación que dejaba la URL en el detalle (#187).
+- **Higiene de docs y config del repo**: auditoría de los tres CLAUDE.md, corrección de claims no verificados, y separación de lo personal/config vs lo del proyecto.
 
 ---
 
@@ -427,12 +475,12 @@ Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audi
   - [US-077-b-3](domain/user-stories/US-077-b-3.md): email delivery con SMTP genérico (Mailpit en dev/CI, vendor de prod por env vars en deploy).
 
 **Backend / cross-stack**:
-- US-001 (explorar catálogo de universidades y carreras): diferida a S7 en la apertura de S6. US-002/004 viven en S6; US-003 bloqueada por el Teacher aggregate (US-063), diferida a S7.
+- US-001 (explorar catálogo de universidades y carreras): pendiente (backlog). US-002 vive en S6; US-003 (página pública de docente) y US-004 (rama docente de la búsqueda) cerradas en el vertical docente de S7.
 - US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
-- US-030 a US-032, US-040/041, US-066 (claim docente + respuesta docente): epic 06 entero.
-- US-067 (cuentas staff), US-080 (dashboard institucional): backlog open.
+- US-032 + US-066 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.
+- US-080 (dashboard institucional): backlog open. US-067 (cuentas staff) cerrada en S7.
 - Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
 
 **Backoffice / Admin (doc'd 2026-05-12, sin sprint asignado)**:
@@ -443,13 +491,9 @@ US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se 
 - [US-060](domain/user-stories/US-060.md) Gestionar University (CRUD universidades).
 - [US-061](domain/user-stories/US-061.md) Gestionar Career + CareerPlan.
 - [US-062](domain/user-stories/US-062.md) Gestionar Subject + Prerequisite (editor de materias + correlativas con validación DAG).
-- [US-063](domain/user-stories/US-063.md) Gestionar Teacher (catálogo docente + bulk-paste).
-- [US-065](domain/user-stories/US-065.md) Gestionar Commission + CommissionTeacher.
 - [US-082](domain/user-stories/US-082.md) Importador de plan con preview/diff (CSV).
 - [US-083](domain/user-stories/US-083.md) Merge de Subjects duplicados (detección + merge UI).
 - [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
-- [US-050](domain/user-stories/US-050.md) Cola de reportes (read model + vista del moderator, tone classifier). Diferida explícitamente a S7 en la apertura de S6, junto con US-051 + persona moderador + auth staff.
-- [US-051](domain/user-stories/US-051.md) Resolver report (uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder). Diferida a S7.
 - [US-053](domain/user-stories/US-053.md) Audit log per-review (proyección Reviews, ADR-0042).
 - [US-068](domain/user-stories/US-068.md) Deshabilitar member + listado/detalle de usuarios con tabs.
 - [US-086](domain/user-stories/US-086.md) Audit log per-user (tab del detalle de usuario, cross-BC via Dapper UNION ALL).
