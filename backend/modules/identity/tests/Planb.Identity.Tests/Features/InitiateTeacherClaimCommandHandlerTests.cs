@@ -183,7 +183,7 @@ public class InitiateTeacherClaimCommandHandlerTests
         result.Value.ClaimId.ShouldNotBe(Guid.Empty);
 
         deps.Profiles.Received(1).Add(Arg.Is<TeacherProfile>(p =>
-            p.UserId == user.Id && p.TeacherId == teacherId && !p.IsVerified));
+            p!.UserId == user.Id && p.TeacherId == teacherId && !p.IsVerified));
         await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }
