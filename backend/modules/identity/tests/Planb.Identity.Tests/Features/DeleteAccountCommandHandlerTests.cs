@@ -99,7 +99,7 @@ public class DeleteAccountCommandHandlerTests
 
         // Deletion log written with the user's id and a hashed email.
         deps.DeletionLogs.Received(1).Add(Arg.Is<UserDeletionLog>(log =>
-            log.UserId == user.Id &&
+            log!.UserId == user.Id &&
             log.EmailHash == UserDeletionLog.HashEmail(user.Email) &&
             log.DeletedAt == T0));
 
@@ -107,7 +107,7 @@ public class DeleteAccountCommandHandlerTests
         // outbox; this test verifies only the dispatch happened, integration coverage handles
         // the actual outbox enqueue).
         await deps.Publisher.Received().PublishAsync(
-            Arg.Is<UserAccountDeletedDomainEvent>(e => e.UserId == user.Id),
+            Arg.Is<UserAccountDeletedDomainEvent>(e => e!.UserId == user.Id),
             Arg.Any<CancellationToken>());
 
         await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
