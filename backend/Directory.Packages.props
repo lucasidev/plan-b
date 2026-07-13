@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Cache / Ephemeral state (ADR-0034)">
-    <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.0.17" />
   </ItemGroup>
 
   <ItemGroup Label="Auth / Crypto">
