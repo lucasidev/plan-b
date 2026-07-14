@@ -141,7 +141,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         result.IsSuccess.ShouldBeTrue();
         result.Value.SubjectCount.ShouldBe(1);
         await deps.Subjects.Received(1).AddRangeAsync(
-            Arg.Is<IEnumerable<Subject>>(list => list!.Count() == 1 && list.Single().Code == "MAT101"),
+            Arg.Is<IEnumerable<Subject>>(list => list!.Count() == 1 && list!.Single().Code == "MAT101"),
             Arg.Any<CancellationToken>());
     }
 
@@ -200,7 +200,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
             Arg.Is<CareerPlan>(p => p!.CareerId == existingCareer.Id && !p.IsOfficial && p.Year == import.PlanYear),
             Arg.Any<CancellationToken>());
         await deps.Subjects.Received(1).AddRangeAsync(
-            Arg.Is<IEnumerable<Subject>>(list => list!.Count() == 2 && list.All(s => !s.IsOfficial)),
+            Arg.Is<IEnumerable<Subject>>(list => list!.Count() == 2 && list!.All(s => !s.IsOfficial)),
             Arg.Any<CancellationToken>());
 
         import.Status.ShouldBe(CareerPlanImportStatus.Approved);
