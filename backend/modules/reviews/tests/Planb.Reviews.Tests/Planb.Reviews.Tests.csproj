@@ -14,5 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Planb.Reviews.Domain\Planb.Reviews.Domain.csproj" />
     <ProjectReference Include="..\..\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
+    <ProjectReference Include="..\..\src\Planb.Reviews.Infrastructure\Planb.Reviews.Infrastructure.csproj" />
   </ItemGroup>
 </Project>
