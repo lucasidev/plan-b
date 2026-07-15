@@ -1,8 +1,8 @@
 namespace Planb.SharedKernel.Abstractions.Messaging;
 
 /// <summary>
-/// Marker for events that cross module boundaries via Wolverine's durable outbox.
-/// See ADR-0014 (modular monolith) and ADR-0015 (Wolverine + outbox).
+/// Marker para eventos que cruzan fronteras de módulo vía el outbox durable de Wolverine.
+/// Ver ADR-0014 (modular monolith) y ADR-0015 (Wolverine + outbox).
 /// </summary>
 public interface IIntegrationEvent
 {

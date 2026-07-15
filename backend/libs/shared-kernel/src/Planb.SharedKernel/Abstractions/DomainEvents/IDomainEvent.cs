@@ -1,10 +1,10 @@
 namespace Planb.SharedKernel.Abstractions.DomainEvents;
 
 /// <summary>
-/// Marker for in-process events raised by aggregates when their state transitions.
-/// Domain events are dispatched within the same bounded context (e.g. updating a local read
-/// model). Cross-context propagation uses <see cref="Messaging.IIntegrationEvent"/> via Wolverine
-/// outbox; a domain handler bridges the two when needed.
+/// Marker para eventos in-process que las entidades levantan cuando su estado transiciona.
+/// Los domain events se despachan dentro del mismo bounded context (ej. actualizar un read model
+/// local). La propagación cross-context usa <see cref="Messaging.IIntegrationEvent"/> vía el outbox
+/// de Wolverine; un domain handler puentea los dos cuando hace falta.
 /// </summary>
 public interface IDomainEvent
 {

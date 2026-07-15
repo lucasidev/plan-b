@@ -232,10 +232,10 @@ UX strings en español (la app es en español). Descriptores técnicos de `descr
 | Type literals usados como código: `'prerequisites' \| 'catalog' \| 'teachers'` | Aria-labels que el screen reader le lee al alumno |
 | Object keys: `{ students: '340', reviews: '1.247' }` | Email subjects, notification copy |
 | Query param values (son código): `?tab=transcript`, `?tab=draft` | Toast / banner / modal messages |
-| JSDoc + inline comments (`/** ... */`, `// ...`) | Test descriptions de `describe()` / `it()` (excepción documentada del frontend CLAUDE.md) |
+| Type parameters / generics | **Comentarios, docstrings, JSDoc, inline comments y test descriptions** (así razona el equipo) |
 | Error codes / log messages internos | |
 
-**Test que tenés que poder pasar antes de mergear**: si grepeás `src` con palabras castellanas técnicas típicas (`está`, `cuando`, `función`, `también`, `cursada`, `reseña`, `materia`, `comisión`), los matches deben caer **solo** en strings de UI dentro de JSX, copy hardcoded de `data/content.ts`, labels de tabs o aria-labels. Si caen en docstrings, identificadores o type literals, lo arreglás antes de mergear.
+**Test que tenés que poder pasar antes de mergear**: si grepeás `src` con palabras castellanas técnicas típicas (`está`, `cuando`, `función`, `también`, `cursada`, `reseña`, `materia`, `comisión`), los matches deben caer en strings de UI dentro de JSX, copy hardcoded de `data/content.ts`, labels de tabs, aria-labels, **o en comentarios/docstrings** (que van en español). Si caen en **identificadores o type literals**, lo arreglás antes de mergear.
 
 ```bash
 # Quick check (corre en frontend/):
@@ -243,7 +243,7 @@ grep -rn "está\|cuando\|función\|también\|cursada\|reseña\|materia" src/feat
   | grep -vE "(label|placeholder|aria-label|children|>\s*[A-ZÁ]|\".*[ñáéíóú])"
 ```
 
-**Cómo me cagué con esto** (deuda histórica documentada para no repetir): durante S2-S5 mergué 7 USs con rutas, features, identifiers y docstrings en castellano. El PR de refactor pertinente vuelve todo a inglés y deja esta tabla como referencia.
+**Cómo me cagué con esto** (deuda histórica documentada para no repetir): durante S2-S5 mergué 7 USs con rutas, features e identifiers en castellano. El PR de refactor pertinente vuelve **los identificadores** a inglés; los **comentarios y docstrings van en español** (ver la tabla), y esto queda como referencia.
 - **Zod schemas** en `features/<feature>/schemas/`, compartidos entre client (TanStack Form) y server actions.
 - **`'use client'` solo donde hace falta**. Default es Server Component.
 - **`'use server'` al tope del archivo** para Server Actions (no por función suelta).

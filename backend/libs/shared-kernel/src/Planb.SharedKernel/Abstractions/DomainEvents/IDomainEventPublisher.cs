@@ -1,8 +1,9 @@
 namespace Planb.SharedKernel.Abstractions.DomainEvents;
 
 /// <summary>
-/// Port for publishing domain events to the messaging infrastructure (Wolverine in this app).
-/// Keeps the shared kernel and module application layers free of any specific bus dependency.
+/// Port para publicar domain events a la infraestructura de mensajería (Wolverine en esta app).
+/// Mantiene el shared kernel y las capas de aplicación de los módulos libres de cualquier
+/// dependencia específica del bus.
 /// </summary>
 public interface IDomainEventPublisher
 {
