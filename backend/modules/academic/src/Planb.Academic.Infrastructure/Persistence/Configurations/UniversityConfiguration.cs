@@ -49,8 +49,17 @@ internal sealed class UniversityConfiguration : IEntityTypeConfiguration<Univers
             .HasConversion(DomainsConverter, DomainsComparer)
             .IsRequired();
 
+        builder.Property(u => u.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
+            .IsRequired();
+
+        builder.Property(u => u.UpdatedAt)
+            .HasColumnName("updated_at")
             .IsRequired();
 
         builder.Ignore(u => u.DomainEvents);
