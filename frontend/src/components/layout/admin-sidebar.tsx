@@ -20,7 +20,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: 'Datos académicos',
     items: [
-      { label: 'Universidades' },
+      { label: 'Universidades', href: '/admin/universities', roles: ['admin'] },
       { label: 'Carreras' },
       { label: 'Materias' },
       { label: 'Docentes', href: '/admin/teachers', roles: ['admin'] },
