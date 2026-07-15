@@ -1,8 +1,8 @@
 namespace Planb.SharedKernel.Abstractions.Clock;
 
 /// <summary>
-/// Abstracts the current time so handlers are testable and time-independent.
-/// Never use DateTime.UtcNow directly in domain/application code.
+/// Abstrae la hora actual para que los handlers sean testeables e independientes del tiempo.
+/// Nunca usar DateTime.UtcNow directo en código de dominio/aplicación.
 /// </summary>
 public interface IDateTimeProvider
 {

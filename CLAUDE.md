@@ -75,7 +75,7 @@ plan-b/
 
 ## Reglas cross-cutting
 
-- **Código en inglés** (clases, métodos, tablas, rutas). **UI en español rioplatense**. Error messages internos en inglés.
+- **Código en inglés** (clases, métodos, tablas, rutas, identificadores). **Comentarios y docstrings en español rioplatense** (así razona el equipo; el código no). **UI en español rioplatense**. Error messages internos en inglés.
 - **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Los commits alimentan `CHANGELOG.md` automáticamente vía un workflow GHA que appendea bullets a `[Unreleased]` en cada merge a main ([ADR-0037](docs/decisions/0037-changelog-automation-auto-append.md)). **No editar `CHANGELOG.md` a mano.**
 - **Versioning**: pre-deploy no hay versiones ni releases. Tags narrativos manuales (`presentacion-fase-2-...`) permitidos para hitos. Política completa en [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md); revisar cuando aterrice primer deploy.
 - **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). **Sin US numbers en el branch name** (las US van en commit body o PR body). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md) (decisión) y [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md) (bitácora operacional con anti-patterns).

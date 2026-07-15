@@ -1,8 +1,8 @@
 namespace Planb.SharedKernel.Abstractions.DomainEvents;
 
 /// <summary>
-/// Anything that accumulates <see cref="IDomainEvent"/> instances during state mutations and
-/// can be drained once they've been dispatched. Implemented by <c>Entity&lt;TId&gt;</c>.
+/// Cualquier cosa que acumula instancias de <see cref="IDomainEvent"/> durante sus mutaciones de
+/// estado y se puede drenar una vez despachadas. Lo implementa <c>Entity&lt;TId&gt;</c>.
 /// </summary>
 public interface IDomainEventSource
 {

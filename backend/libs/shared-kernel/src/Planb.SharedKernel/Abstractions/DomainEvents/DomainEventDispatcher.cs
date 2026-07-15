@@ -3,13 +3,13 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.SharedKernel.Abstractions.DomainEvents;
 
 /// <summary>
-/// Walks the supplied aggregate roots, publishes their queued domain events through
-/// <see cref="IDomainEventPublisher"/>, and clears the per-aggregate event lists.
+/// Recorre los aggregate roots que recibe, publica sus domain events encolados a través de
+/// <see cref="IDomainEventPublisher"/>, y limpia las listas de eventos por aggregate.
 ///
-/// Call this from a command handler before returning, while still inside the Wolverine
-/// <c>[Transactional]</c> middleware. The Wolverine outbox enrolls each publish in the same
-/// transaction as the EF SaveChanges, so events become durable atomically with the aggregate
-/// state that produced them.
+/// Se llama desde un command handler antes de devolver, todavía dentro del middleware
+/// <c>[Transactional]</c> de Wolverine. El outbox de Wolverine inscribe cada publish en la misma
+/// transacción que el SaveChanges de EF, así los eventos se vuelven durables atómicamente con el
+/// estado del aggregate que los produjo.
 /// </summary>
 public static class DomainEventDispatcher
 {

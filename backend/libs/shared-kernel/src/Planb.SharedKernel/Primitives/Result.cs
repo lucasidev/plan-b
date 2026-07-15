@@ -1,8 +1,8 @@
 namespace Planb.SharedKernel.Primitives;
 
 /// <summary>
-/// Result pattern for operations that can fail. Use instead of exceptions for expected failures.
-/// See ADR-0015 for rationale on using this in command handlers.
+/// Patrón Result para operaciones que pueden fallar. Se usa en vez de excepciones para las fallas
+/// esperadas. Ver ADR-0015 para el fundamento de usarlo en los command handlers.
 /// </summary>
 public class Result
 {

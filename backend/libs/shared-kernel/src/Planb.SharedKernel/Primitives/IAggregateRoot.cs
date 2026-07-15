@@ -3,8 +3,8 @@ using Planb.SharedKernel.Abstractions.DomainEvents;
 namespace Planb.SharedKernel.Primitives;
 
 /// <summary>
-/// Marker for the root of a DDD aggregate. Repositories should constrain their type parameter
-/// to this interface so non-roots can't be loaded as standalone units. Inherits from
-/// <see cref="IDomainEventSource"/> because every aggregate root accumulates events as it mutates.
+/// Marker de la raíz de un aggregate DDD. Los repositorios deberían restringir su type parameter
+/// a esta interface para que los no-roots no se puedan cargar como unidades sueltas. Hereda de
+/// <see cref="IDomainEventSource"/> porque toda raíz de aggregate acumula eventos a medida que muta.
 /// </summary>
 public interface IAggregateRoot : IDomainEventSource;

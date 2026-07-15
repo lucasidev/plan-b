@@ -12,9 +12,9 @@ public enum ErrorType
 }
 
 /// <summary>
-/// Represents a business error with a stable code, human-readable message, and a categorical type.
-/// The HTTP layer maps <see cref="ErrorType"/> to a status code without parsing <see cref="Code"/>.
-/// Use exceptions only for programmer errors.
+/// Representa un error de negocio con un code estable, un mensaje legible, y un tipo categórico.
+/// La capa HTTP mapea <see cref="ErrorType"/> a un status sin parsear <see cref="Code"/>.
+/// Las excepciones se reservan para errores de programación.
 /// </summary>
 public sealed record Error(string Code, string Message, ErrorType Type)
 {

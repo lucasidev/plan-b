@@ -3,9 +3,10 @@ using Planb.SharedKernel.Abstractions.DomainEvents;
 namespace Planb.SharedKernel.Primitives;
 
 /// <summary>
-/// Base class for DDD entities. Identity is by <see cref="Id"/>, so two entities of the same
-/// type with the same Id are considered equal regardless of in-memory state. Domain events are
-/// collected as the aggregate mutates and dispatched after persistence (see SaveChangesInterceptor).
+/// Clase base para entidades DDD. La identidad es por <see cref="Id"/>, así que dos entidades del
+/// mismo tipo con el mismo Id se consideran iguales sin importar su estado en memoria. Los domain
+/// events se acumulan a medida que el aggregate muta y se despachan después de persistir (ver
+/// SaveChangesInterceptor).
 /// </summary>
 public abstract class Entity<TId> : IDomainEventSource, IEquatable<Entity<TId>>
     where TId : notnull
