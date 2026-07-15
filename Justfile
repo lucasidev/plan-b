@@ -107,10 +107,10 @@ backend-test:
     cd backend && dotnet test
 
 backend-test-unit:
-    cd backend && dotnet test --filter Category=Unit
+    cd backend && dotnet test --filter "FullyQualifiedName!~Planb.IntegrationTests"
 
 backend-test-integration:
-    cd backend && dotnet test --filter Category=Integration
+    cd backend && dotnet test tests/Planb.IntegrationTests
 
 frontend-test:
     cd frontend && bun run test
