@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-11 (cierre de S6, S7 y S8: materia consumible, el vertical docente entero con US-063 Teacher como keystone, y el backoffice de moderación + hardening de proceso e infra). S9 en planificación.
+**Última actualización**: 2026-07-14 (apertura de S9: gestión del catálogo académico desde el admin). Entre S8 y S9 entró un bloque de calidad: backfill de cobertura US-T08 (228 tests), migración a NSubstitute 6 y limpieza de Dependabot.
 
 ---
 
@@ -21,7 +21,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda materia-only. Más US-T07-b (architecture tests a todos los módulos). | ✓ Done |
 | S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
-| S9+ | next+ | Backlog planificado (7 stories en product backlog + 2 comprometidas a sprint). Rankings, búsqueda global (Meilisearch), Notifications BC, resto del admin (US-081 shell bloqueante, importadores, merge/migración), audit logs, strike system. | ⏳ Pendiente |
+| S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | 🟡 Open |
+| S10+ | next+ | Backlog planificado: importadores (US-082/083) + wizard/comisión (US-090/091), planificación (US-016/023-027), búsqueda global (Meilisearch US-071), rankings (US-070), Notifications BC (US-077), resto del admin, audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -452,6 +453,32 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 
 ---
 
+## S9 🟡 Open
+
+**Rango**: 2026-07-14 a 2026-07-19 (lunes → sábado).
+
+**Foco**: **gestión del catálogo académico desde el admin.** Hasta ahora el catálogo (universidades, carreras, planes, materias) se seedea o importa; S9 aterriza el CRUD administrativo para gestionarlo, más el lado explorar del alumno.
+
+### Scope
+
+| US | Título | Pri | Effort |
+|---|---|---|---|
+| US-060 | Gestionar University | High | M |
+| US-061 | Gestionar Career + CareerPlan | High | M |
+| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | M |
+| US-064 | Gestionar AcademicTerm | Med | S |
+| US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M |
+
+Diferido a S10: importadores (US-082 CSV, US-083 merge de duplicados), wizard de alta de universidad (US-091), gestión de comisión por cuatri (US-090).
+
+### Bloque de calidad previo (entre S8 y S9, Done)
+
+- **US-T08**: backfill de cobertura de lógica de valor y dominio puro. 228 tests (152 backend unit + 76 frontend vitest) sobre gaps que dejó un audit; los caminos de error ya estaban cubiertos por integration, faltaba el nivel unit (parsers, máquinas de estado, confirm loop, PII, schemas/actions). Dos gaps diferidos (filtro SQL de la cola de moderación, timeout de 60s de los workers).
+- **NSubstitute 6.0**: migración del mocking lib de los handler unit tests (major), con fix de los matchers nullable.
+- **Dependabot**: limpieza del backlog (StackExchange.Redis 3.0, @types/node, actions/cache, backend-minor-patch, react-doctor).
+
+---
+
 ## Backlog open (sin sprint asignado)
 
 > Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-089 / US-002 / US-004 / US-T07-b). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
@@ -475,7 +502,7 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
   - [US-077-b-3](domain/user-stories/US-077-b-3.md): email delivery con SMTP genérico (Mailpit en dev/CI, vendor de prod por env vars en deploy).
 
 **Backend / cross-stack**:
-- US-001 (explorar catálogo de universidades y carreras): pendiente (backlog). US-002 vive en S6; US-003 (página pública de docente) y US-004 (rama docente de la búsqueda) cerradas en el vertical docente de S7.
+- US-001 (explorar catálogo de universidades y carreras): en S9. US-002 vive en S6; US-003 (página pública de docente) y US-004 (rama docente de la búsqueda) cerradas en el vertical docente de S7.
 - US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
@@ -487,10 +514,7 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 
 US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se puede empezar (todas reusan AdmShell + AdmTable + AdmFilters).
 
-- [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante de todo el resto del módulo admin.**
-- [US-060](domain/user-stories/US-060.md) Gestionar University (CRUD universidades).
-- [US-061](domain/user-stories/US-061.md) Gestionar Career + CareerPlan.
-- [US-062](domain/user-stories/US-062.md) Gestionar Subject + Prerequisite (editor de materias + correlativas con validación DAG).
+- [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante de todo el resto del módulo admin.** (Parte del shell aterrizó con US-063 en S7; revisar qué queda antes de arrancar S9.)
 - [US-082](domain/user-stories/US-082.md) Importador de plan con preview/diff (CSV).
 - [US-083](domain/user-stories/US-083.md) Merge de Subjects duplicados (detección + merge UI).
 - [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
