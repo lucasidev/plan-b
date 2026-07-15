@@ -4,13 +4,18 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Academic.Domain.Universities;
 
 /// <summary>
-/// Aggregate root para una universidad del catálogo (UNSTA, SIGLO 21, etc). Hoy expone Name +
-/// Slug + timestamps. Branding, contacto y settings de moderación se agregan cuando un caller
-/// real los requiera.
+/// Aggregate root para una universidad del catálogo (UNSTA, SIGLO 21, etc). Expone Name + Slug +
+/// InstitutionalEmailDomains + IsActive + timestamps. Branding, contacto y settings de moderación
+/// se agregan cuando un caller real los requiera.
 ///
 /// El aggregate vive en el bounded context Academic. Cross-BC references (StudentProfile.CareerId,
 /// Review.SubjectId, etc.) son UUIDs sin FK Postgres, validados via IAcademicQueryService al
 /// nivel application (ADR-0017).
+///
+/// <para>Soft delete vía <see cref="IsActive"/> (US-060, admin CRUD): careers/teachers referencian
+/// la universidad por id sin FK cross-schema, así que hard-deletear dejaría filas colgadas.
+/// Desactivar preserva la integridad histórica. No implementa un lifecycle rico
+/// draft/beta/live/archived: eso es scope de US-091.</para>
 /// </summary>
 public sealed class University : Entity<UniversityId>, IAggregateRoot
 {
@@ -27,7 +32,9 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
     /// </summary>
     public IReadOnlyList<string> InstitutionalEmailDomains { get; private set; } = [];
 
+    public bool IsActive { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset UpdatedAt { get; private set; }
 
     private University() { }
 
@@ -35,7 +42,7 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
     /// Crea una nueva University. Validaciones mínimas (Name y Slug no blank). El detalle
     /// (length máximo, chars permitidos, formato del slug) se refina cuando un caller con
     /// requerimientos concretos lo justifique; hoy frena inputs degenerados. Los dominios se
-    /// normalizan a lowercase y se deduplican.
+    /// normalizan a lowercase y se deduplican. Arranca activa.
     /// </summary>
     public static Result<University> Create(
         string name,
@@ -55,13 +62,16 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
             return UniversityErrors.SlugRequired;
         }
 
+        var now = clock.UtcNow;
         return new University
         {
             Id = UniversityId.New(),
             Name = name.Trim(),
             Slug = slug.Trim().ToLowerInvariant(),
             InstitutionalEmailDomains = NormalizeDomains(institutionalEmailDomains),
-            CreatedAt = clock.UtcNow,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now,
         };
     }
 
@@ -76,15 +86,77 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
         string name,
         string slug,
         IReadOnlyList<string> institutionalEmailDomains,
-        DateTimeOffset createdAt) =>
+        bool isActive,
+        DateTimeOffset createdAt,
+        DateTimeOffset updatedAt) =>
         new()
         {
             Id = id,
             Name = name,
             Slug = slug,
             InstitutionalEmailDomains = institutionalEmailDomains,
+            IsActive = isActive,
             CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
         };
+
+    /// <summary>
+    /// Edición del catálogo (US-060, admin). Replace del form completo: re-valida Name/Slug
+    /// (mismas reglas que <see cref="Create"/>) y re-normaliza los dominios institucionales.
+    /// </summary>
+    public Result Update(
+        string name,
+        string slug,
+        IReadOnlyList<string>? institutionalEmailDomains,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return UniversityErrors.NameRequired;
+        }
+
+        if (string.IsNullOrWhiteSpace(slug))
+        {
+            return UniversityErrors.SlugRequired;
+        }
+
+        Name = name.Trim();
+        Slug = slug.Trim().ToLowerInvariant();
+        InstitutionalEmailDomains = NormalizeDomains(institutionalEmailDomains);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>Soft delete (US-060). Idempotencia explícita: re-desactivar devuelve error.</summary>
+    public Result Deactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!IsActive)
+        {
+            return UniversityErrors.AlreadyInactive;
+        }
+
+        IsActive = false;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    public Result Reactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsActive)
+        {
+            return UniversityErrors.AlreadyActive;
+        }
+
+        IsActive = true;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
 
     private static IReadOnlyList<string> NormalizeDomains(IReadOnlyList<string>? domains)
     {
