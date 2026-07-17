@@ -3,8 +3,9 @@ import { cn } from '@/lib/utils';
 type Props = {
   /**
    * `student` = "verificado que cursó" badge over a review (apricot bg).
-   * `teacher` = "docente UNSTA" badge for institutionally-verified
-   * teacher accounts, same visual but distinct copy.
+   * `teacher` = "docente verificado" badge for institutionally-verified
+   * teacher accounts, same visual but distinct copy. Copy agnóstico a la
+   * universidad (multi-universidad, US-059-f): no nombra ninguna institución.
    */
   kind?: 'student' | 'teacher';
   className?: string;
@@ -12,7 +13,7 @@ type Props = {
 
 const COPY: Record<NonNullable<Props['kind']>, string> = {
   student: 'verificado que cursó',
-  teacher: 'docente UNSTA',
+  teacher: 'docente verificado',
 };
 
 /**

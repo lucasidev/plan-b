@@ -1,10 +1,9 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { PasswordField, TextField } from '@/components/ui';
+import { AuthErrorBanner, PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
 import { cn } from '@/lib/utils';
 import { signUpAction } from '../actions';
@@ -76,21 +75,9 @@ export function SignUpForm() {
         />
       </div>
 
-      {formError && (
-        <p
-          role="alert"
-          className="text-sm rounded border border-line bg-bg-card text-st-failed-fg"
-          style={{ padding: 12, marginBottom: 14 }}
-        >
-          {formError}
-        </p>
-      )}
+      {formError && <AuthErrorBanner>{formError}</AuthErrorBanner>}
 
       <SubmitButton />
-
-      <FooterLinks />
-
-      <LegalText />
     </form>
   );
 }
@@ -168,27 +155,5 @@ function Divider({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterLinks() {
-  return (
-    <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
-      ¿Ya tenés cuenta?{' '}
-      <Link
-        href="/sign-in"
-        prefetch
-        className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
-        style={{ fontWeight: 500 }}
-      >
-        Ingresá
-      </Link>
-    </div>
-  );
-}
-
-function LegalText() {
-  return (
-    <p className="text-ink-4" style={{ fontSize: 11.5, lineHeight: 1.55, marginTop: 20 }}>
-      Al continuar entendés que plan-b no está afiliada oficialmente con UNSTA. Tu email se usa solo
-      para verificar que sos alumno; nunca aparece en tus reseñas.
-    </p>
-  );
-}
+// El link cross-flow "¿Ya tenés cuenta? Ingresá" y el disclaimer viven ahora en
+// el `AuthShell` (foot + footer del panel), no en el form (US-059-f).

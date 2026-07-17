@@ -9,7 +9,10 @@ import { SignInForm } from './sign-in-form';
  *   - happy path: typing + submit fires the action with the right values
  *   - error: the component renders alert + message when the action returns
  *     status: 'error'
- *   - footer link: "Creá tu cuenta" navigates to /sign-up (post US-036)
+ *   - "¿Olvidaste tu contraseña?" es un link inline al lado del label de password
+ *
+ * El link cross-flow "Creá tu cuenta" se movió al footer del AuthShell (a la página,
+ * US-059-f), así que ya no se testea a nivel del form; lo cubre el E2E de sign-up.
  *
  * The action is mocked at the module level (`./actions`) so the component test does
  * not couple to server-side logic. Action details are covered in `actions.test.ts`.
@@ -36,16 +39,9 @@ describe('SignInForm', () => {
     expect(screen.getByRole('button', { name: /entrar/i })).toBeInTheDocument();
   });
 
-  it('muestra el link "¿Olvidaste tu contraseña?" en el footer', () => {
+  it('muestra el link "¿Olvidaste tu contraseña?" inline con el label de password', () => {
     render(<SignInForm />);
     expect(screen.getByRole('link', { name: /olvidaste tu contraseña/i })).toBeInTheDocument();
-  });
-
-  it('"Creá tu cuenta" es un link a /sign-up (post US-036)', () => {
-    render(<SignInForm />);
-
-    const link = screen.getByRole('link', { name: /creá tu cuenta/i });
-    expect(link).toHaveAttribute('href', '/sign-up');
   });
 
   it('dispara el action con los valores del form al hacer submit', async () => {

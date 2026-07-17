@@ -52,6 +52,7 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           required
           error={fieldError}
+          hint="Tiene que ser el email con el que te registraste."
         />
       </div>
 
@@ -94,16 +95,18 @@ function SubmitButton() {
 }
 
 function FooterLinks() {
+  // El link "← Volver a ingresar" vive en el foot del AuthShell (US-059-f); acá
+  // queda solo el cross-flow a registro, como en el mock.
   return (
-    <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
-      ¿Te acordaste?{' '}
+    <div className="text-ink-3" style={{ marginTop: 18, fontSize: 12, textAlign: 'center' }}>
+      ¿No te registraste todavía?{' '}
       <Link
-        href="/sign-in"
+        href="/sign-up"
         prefetch
         className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
         style={{ fontWeight: 500 }}
       >
-        Volvé a iniciar sesión
+        Crear cuenta
       </Link>
     </div>
   );

@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { PasswordField, TextField } from '@/components/ui';
+import { AuthErrorBanner, PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
 import { ResendVerificationButton } from '@/features/resend-verification';
 import { cn } from '@/lib/utils';
@@ -48,22 +48,31 @@ export function SignInForm() {
           required
         />
       </div>
-      <div style={{ marginBottom: 18 }}>
+      <div style={{ marginBottom: 14 }}>
         <PasswordField
           name="password"
           label="Contraseña"
-          placeholder="Mínimo 12 caracteres"
+          labelAction={
+            <Link
+              href="/forgot-password"
+              prefetch
+              className="text-accent-ink hover:underline"
+              style={{ fontSize: 11.5, fontWeight: 500 }}
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
+          }
           autoComplete="current-password"
           required
         />
       </div>
 
+      {/* Visual per US-059-f (rediseño sin cambio de comportamiento): el checkbox
+          está en el mock pero todavía no se cablea a la duración de sesión. */}
+      <RememberMe />
+
       {state.status === 'error' && (
-        <div
-          role="alert"
-          className="text-sm rounded border border-line bg-bg-card text-st-failed-fg"
-          style={{ padding: 12, marginBottom: 14 }}
-        >
+        <AuthErrorBanner>
           <p>{state.message}</p>
           {state.kind === 'email_not_verified' && (
             <div className="text-ink-2" style={{ marginTop: 8 }}>
@@ -71,14 +80,10 @@ export function SignInForm() {
               <ResendVerificationButton email={state.email} variant="inline" />
             </div>
           )}
-        </div>
+        </AuthErrorBanner>
       )}
 
       <SubmitButton />
-
-      <FooterLinks />
-
-      <LegalText />
     </form>
   );
 }
@@ -156,39 +161,20 @@ function Divider({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterLinks() {
+function RememberMe() {
   return (
-    <>
-      <div className="text-ink-3" style={{ marginTop: 22, fontSize: 13 }}>
-        <Link
-          href="/forgot-password"
-          prefetch
-          className="text-accent-ink hover:underline"
-          style={{ fontWeight: 500 }}
-        >
-          ¿Olvidaste tu contraseña?
-        </Link>
-      </div>
-      <div className="text-ink-3" style={{ marginTop: 14, fontSize: 13 }}>
-        ¿Sos nuevo?{' '}
-        <Link
-          href="/sign-up"
-          prefetch
-          className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
-          style={{ fontWeight: 500 }}
-        >
-          Creá tu cuenta
-        </Link>
-      </div>
-    </>
-  );
-}
-
-function LegalText() {
-  return (
-    <p className="text-ink-4" style={{ fontSize: 11.5, lineHeight: 1.55, marginTop: 20 }}>
-      Al continuar entendés que plan-b no está afiliada oficialmente con UNSTA. Tu email se usa solo
-      para verificar que sos alumno; nunca aparece en tus reseñas.
-    </p>
+    <label
+      className="flex items-start cursor-pointer text-ink-2"
+      style={{ gap: 9, marginBottom: 18, fontSize: 13, lineHeight: 1.4 }}
+    >
+      <input
+        type="checkbox"
+        name="remember"
+        defaultChecked
+        aria-label="Mantenerme conectado en este dispositivo"
+        style={{ accentColor: 'var(--color-accent)', marginTop: 1, width: 15, height: 15 }}
+      />
+      <span>Mantenerme conectado en este dispositivo</span>
+    </label>
   );
 }
