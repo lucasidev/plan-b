@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-14 (apertura de S9: gestión del catálogo académico desde el admin). Entre S8 y S9 entró un bloque de calidad: backfill de cobertura US-T08 (228 tests), migración a NSubstitute 6 y limpieza de Dependabot.
+**Última actualización**: 2026-07-15 (S9 suma US-054-f landing pública + US-059-f rediseño auth/onboarding con generalización de copy multi-universidad). Apertura de S9 el 2026-07-14 (gestión del catálogo académico desde el admin); entre S8 y S9 entró un bloque de calidad: backfill de cobertura US-T08 (228 tests), migración a NSubstitute 6 y limpieza de Dependabot.
 
 ---
 
@@ -21,7 +21,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda materia-only. Más US-T07-b (architecture tests a todos los módulos). | ✓ Done |
 | S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
-| S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | 🟡 Open |
+| S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | 🟡 Open |
 | S10+ | next+ | Backlog planificado: importadores (US-082/083) + wizard/comisión (US-090/091), planificación (US-016/023-027), búsqueda global (Meilisearch US-071), rankings (US-070), Notifications BC (US-077), resto del admin, audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
@@ -468,8 +468,17 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 | US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | M |
 | US-064 | Gestionar AcademicTerm | Med | S |
 | US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M |
+| US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M |
+| US-059-f | Rediseño auth + onboarding (AuthShell/OnbShell) + generalización de copy UNSTA→multi-universidad | High | M |
 
 Diferido a S10: importadores (US-082 CSV, US-083 merge de duplicados), wizard de alta de universidad (US-091), gestión de comisión por cuatri (US-090).
+
+### Añadido durante el sprint (2026-07-15)
+
+Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
+
+- **US-054-f** (landing pública): hoy `app/(public)/page.tsx` hace `redirect('/home')` incondicional, así que un visitante deslogueado cae directo en `/sign-in` sin ver landing. US-054-f reemplaza ese redirect por la landing real.
+- **US-059-f** absorbe la **generalización de copy UNSTA→multi-universidad**: el hero de auth (`auth-hero-data.ts`) dice "alumnos de UNSTA" con stats viejos ("3 universidades" y el catálogo tiene 4), el badge dice "docente UNSTA" y el chrome del alumno hardcodea "UNSTA · Carrera" (deuda US-012). El data model ya es multi-uni (US-060); el copy quedó atrás y se generaliza entero (el mock es UNSTA-first, pero el producto es multi-universidad; hasta el disclaimer legal se vuelve genérico).
 
 ### Bloque de calidad previo (entre S8 y S9, Done)
 
@@ -484,8 +493,6 @@ Diferido a S10: importadores (US-082 CSV, US-083 merge de duplicados), wizard de
 > Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-089 / US-002 / US-004 / US-T07-b). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
 
 **Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
-- [US-054-f](domain/user-stories/US-054-f.md) landing pública.
-- [US-059-f](domain/user-stories/US-059-f.md) auth + onboarding migración a AuthShell / OnbShell.
 - [US-070](domain/user-stories/US-070.md) Rankings.
 - [US-071](domain/user-stories/US-071.md) Búsqueda global (Meilisearch).
 - [US-076-f](domain/user-stories/US-076-f.md) estado offline (banner global).
