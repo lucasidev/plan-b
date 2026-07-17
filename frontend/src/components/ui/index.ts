@@ -1,5 +1,6 @@
 // Brand vocabulary for plan-b. Import primitives from here, not from individual
 // files, so the surface stays one path: `import { Button, Pill } from '@/components/ui'`.
+export { AuthErrorBanner } from './auth-error-banner';
 export { Button } from './button';
 export { Card } from './card';
 export { ComingSoon } from './coming-soon';

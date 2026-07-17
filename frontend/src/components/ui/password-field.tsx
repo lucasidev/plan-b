@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & {
   label: string;
+  /** Nodo opcional a la derecha del label (ej. link "¿Olvidaste tu contraseña?"). */
+  labelAction?: React.ReactNode;
   /** Inline error message rendered below the input. */
   error?: string;
   /** Optional helper text below the input. Hidden when an error is shown. */
@@ -24,7 +26,7 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> & 
  * screen readers; the toggle gets `tabIndex={-1}` so Tab keeps going
  * label → input → next field.
  */
-export function PasswordField({ label, error, hint, className, ref, ...rest }: Props) {
+export function PasswordField({ label, labelAction, error, hint, className, ref, ...rest }: Props) {
   const reactId = useId();
   const inputId = `${reactId}-input`;
   const errorId = error ? `${reactId}-error` : undefined;
@@ -33,17 +35,20 @@ export function PasswordField({ label, error, hint, className, ref, ...rest }: P
 
   return (
     <div className="flex flex-col" style={{ gap: 5 }}>
-      <label
-        htmlFor={inputId}
-        className="text-ink-3"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 12,
-          letterSpacing: '0.04em',
-        }}
-      >
-        {label}
-      </label>
+      <div className="flex items-baseline justify-between" style={{ gap: 8 }}>
+        <label
+          htmlFor={inputId}
+          className="text-ink-3"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 12,
+            letterSpacing: '0.04em',
+          }}
+        >
+          {label}
+        </label>
+        {labelAction}
+      </div>
       <div className="relative">
         <input
           ref={ref}

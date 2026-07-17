@@ -1,125 +1,75 @@
-import { MailCheck } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { AuthShell } from '@/components/layout/auth-shell';
+import { FlowSteps } from '@/features/forgot-password/components/flow-steps';
 
 type Props = {
   searchParams: Promise<{ email?: string }>;
 };
 
+// Hoisted para no crear refs nuevas por render (regla react-doctor/jsx-no-jsx-as-prop).
+const LEFT_PANEL = <FlowSteps active={2} />;
+const FOOT = (
+  <Link
+    href="/sign-in"
+    prefetch
+    className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+    style={{ fontWeight: 500 }}
+  >
+    ← Volver a ingresar
+  </Link>
+);
+
 /**
- * Post-forgot-password screen. The forgot-password server action redirects
- * here on the silent-success 204 (per US-033 anti-enumeration AC: same
- * outcome whether the email exists or not).
+ * Post-forgot-password screen (`/forgot-password/check-inbox`). La server action
+ * redirige acá en el 204 silent-success (anti-enumeración de US-033: mismo
+ * resultado exista o no la cuenta).
  *
- * Visually identical to /sign-up/check-inbox to reinforce the "we sent
- * something to your inbox, go look at it" pattern. The copy differs because
- * the user came from forgot-password (not registration) and the link
- * lifetime is 30 minutes (not 24 hours).
+ * Migrada al `AuthShell` v2 (eyebrow "04 · Mail enviado" + `FlowSteps active={2}`)
+ * en US-059-f. El copy anti-enumeración se conserva a propósito: no se afirma que
+ * el mail salió a una cuenta puntual, solo "si tenés una cuenta con...".
  */
 export default async function CheckInboxPage({ searchParams }: Props) {
   const { email } = await searchParams;
 
+  const sub = email
+    ? `Si tenés una cuenta con ${email}, te mandamos un link para elegir una contraseña nueva.`
+    : 'Si tenés una cuenta con ese email, te mandamos un link para elegir una nueva.';
+
   return (
-    <main
-      className="relative min-h-screen overflow-hidden flex items-center justify-center"
-      style={{
-        background: 'linear-gradient(160deg,#fbe5d6_0%,#fbf3ec_60%)',
-        padding: '48px 24px',
-      }}
+    <AuthShell
+      stepCode="04"
+      stepName="Mail enviado"
+      leftPanel={LEFT_PANEL}
+      title="Revisá tu casilla"
+      sub={sub}
+      foot={FOOT}
     >
       <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
+        className="text-ink-2"
         style={{
-          backgroundImage:
-            'radial-gradient(circle at 80% 20%, rgb(224 122 77 / 18%) 0, transparent 40%), radial-gradient(circle at 20% 90%, rgb(224 122 77 / 12%) 0, transparent 35%)',
-        }}
-      />
-
-      <div
-        className="relative z-10 flex flex-col items-center text-center bg-bg-card border border-line shadow-card"
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          padding: '48px 40px',
-          borderRadius: 18,
+          fontSize: 13,
+          lineHeight: 1.6,
+          background: 'var(--color-bg-elev)',
+          border: '1px solid var(--color-line)',
+          borderRadius: 12,
+          padding: '14px 16px',
+          marginBottom: 18,
         }}
       >
-        <div
-          className="inline-flex items-center justify-center bg-accent-soft text-accent-ink"
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: 999,
-            marginBottom: 28,
-          }}
-          aria-hidden
-        >
-          <MailCheck size={28} />
-        </div>
-
-        <h1
-          className="text-ink"
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 32,
-            lineHeight: 1.1,
-            letterSpacing: '-0.02em',
-            fontWeight: 600,
-            margin: 0,
-          }}
-        >
-          Revisá tu casilla
-        </h1>
-
-        <p
-          className="text-ink-2"
-          style={{ fontSize: 15, lineHeight: 1.55, marginTop: 14, maxWidth: '34ch' }}
-        >
-          {email ? (
-            <>
-              Si tenés una cuenta con <b className="text-ink">{email}</b>, te mandamos un link para
-              elegir una contraseña nueva.
-            </>
-          ) : (
-            <>Si tenés una cuenta con ese email, te mandamos un link para elegir una nueva.</>
-          )}
-        </p>
-
-        <p
-          className="text-ink-3"
-          style={{ fontSize: 13, lineHeight: 1.55, marginTop: 18, maxWidth: '36ch' }}
-        >
-          Si no llega, mirá la carpeta de spam o promociones. El link expira en 30 minutos y se
-          puede usar una sola vez.
-        </p>
-
-        <Link
-          href="/sign-in"
-          prefetch
-          className={cn(
-            'inline-flex items-center justify-center w-full',
-            'bg-accent text-white border border-accent rounded-pill shadow-card',
-            'transition-colors hover:bg-accent-hover',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
-          )}
-          style={{ padding: '12px 18px', fontSize: 13.5, fontWeight: 500, marginTop: 32 }}
-        >
-          Volver a iniciar sesión
-        </Link>
-
-        <p className="text-ink-3" style={{ fontSize: 13, marginTop: 18 }}>
-          ¿Te equivocaste de email?{' '}
-          <Link
-            href="/forgot-password"
-            prefetch
-            className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
-            style={{ fontWeight: 500 }}
-          >
-            Pedí otro link
-          </Link>
-        </p>
+        Si no llega, mirá la carpeta de spam o promociones. El link expira en 30 minutos y se puede
+        usar una sola vez.
       </div>
-    </main>
+      <p className="text-ink-3" style={{ fontSize: 13 }}>
+        ¿Te equivocaste de email?{' '}
+        <Link
+          href="/forgot-password"
+          prefetch
+          className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+          style={{ fontWeight: 500 }}
+        >
+          Pedí otro link
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

@@ -1,34 +1,38 @@
-import { AuthHeroHeadline } from '@/components/layout/auth-hero';
-import {
-  AUTH_HERO_DESCRIPTION,
-  AUTH_HERO_QUOTE,
-  AUTH_HERO_STATS,
-} from '@/components/layout/auth-hero-data';
-import { AuthSplit } from '@/components/layout/auth-split';
+import Link from 'next/link';
+import { AuthShell } from '@/components/layout/auth-shell';
 import { AccountDeactivatedBanner } from '@/features/sign-in/components/account-deactivated-banner';
+import { LastActivityPanel } from '@/features/sign-in/components/last-activity-panel';
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
-
-// Hoisted heading element: a new ref every render breaks AuthSplit's memo
-// (react-doctor/jsx-no-jsx-as-prop rule). Since the headline is static for this page,
-// we create it once when the module loads.
-const HEADING = <AuthHeroHeadline />;
 
 type Props = {
   searchParams: Promise<{ reset?: string; 'account-deactivated'?: string }>;
 };
 
+// Hoisted para no crear refs nuevas por render (regla react-doctor/jsx-no-jsx-as-prop).
+const LEFT_PANEL = <LastActivityPanel />;
+const FOOT = (
+  <>
+    ¿Sos nuevo?{' '}
+    <Link
+      href="/sign-up"
+      prefetch
+      className="text-accent-ink hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft rounded-sm"
+      style={{ fontWeight: 500 }}
+    >
+      Creá tu cuenta
+    </Link>
+  </>
+);
+
 /**
- * `/sign-in` login screen. Thin server component that builds the shell (AuthSplit with
- * hero) and delegates the form to `<SignInForm>`.
+ * `/sign-in` login screen. Server component que arma el `AuthShell` v2 (eyebrow
+ * "02 · Ingresar" + `LastActivityPanel` a la izquierda) y delega el form a
+ * `<SignInForm>`.
  *
- * `?reset=success` is set by the reset-password flow on 204 (US-033-i).
- * `?account-deactivated=1` is set by the deactivate-account flow (ADR-0044,
- * US-038-bis) after a successful soft delete. Both render a dismissable banner. Any
- * other value in those params is ignored.
- *
- * The cross-flow link "¿Sos nuevo? Creá tu cuenta" navigates to `/sign-up` from inside
- * the form.
+ * `?reset=success` (US-033-i) y `?account-deactivated=1` (ADR-0044, US-038-bis)
+ * renderean un banner dismissable arriba del form. La migración al canvas v2 es
+ * US-059-f; el comportamiento (endpoint, validación, banners) no cambia.
  */
 export default async function SignInPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -36,30 +40,17 @@ export default async function SignInPage({ searchParams }: Props) {
   const accountDeactivated = params['account-deactivated'] === '1';
 
   return (
-    <AuthSplit
-      heading={HEADING}
-      description={AUTH_HERO_DESCRIPTION}
-      quote={AUTH_HERO_QUOTE}
-      stats={AUTH_HERO_STATS}
+    <AuthShell
+      stepCode="02"
+      stepName="Ingresar"
+      leftPanel={LEFT_PANEL}
+      title="Buenas de nuevo"
+      sub="Ingresá con la cuenta que usaste para registrarte."
+      foot={FOOT}
     >
       {accountDeactivated && <AccountDeactivatedBanner />}
       {resetSuccess && <ResetSuccessBanner />}
-      <h2
-        className="text-ink"
-        style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 32,
-          letterSpacing: '-0.02em',
-          fontWeight: 600,
-          margin: '0 0 8px',
-        }}
-      >
-        Buenas de nuevo
-      </h2>
-      <p className="text-ink-3" style={{ fontSize: 14, marginBottom: 28 }}>
-        Ingresá con la cuenta que usaste para registrarte.
-      </p>
       <SignInForm />
-    </AuthSplit>
+    </AuthShell>
   );
 }
