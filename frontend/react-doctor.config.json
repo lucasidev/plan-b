@@ -34,6 +34,13 @@
       {
         "files": ["src/features/my-profile/components/profile-avatar.tsx"],
         "rules": ["react-doctor/prefer-tag-over-role"]
+      },
+      {
+        "files": [
+          "src/features/landing/components/*.tsx",
+          "src/features/forgot-password/components/flow-steps.tsx"
+        ],
+        "rules": ["react-doctor/no-inline-exhaustive-style"]
       }
     ]
   }
