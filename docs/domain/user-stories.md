@@ -76,11 +76,18 @@ Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por
 - US-013/14/15 (cargar / importar / editar historial) son tabs internos de Mi carrera (S2). El backend de cargar manual puede aterrizar en S2 o quedar deuda diferida igual que el resto de Academic CRUD.
 - US-068 (admin/mod deshabilita member) sigue backlog open: es flow de moderación, no MVP.
 
-### Backlog (50)
+### Backlog (64)
 
 > El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
 
 Agrupado por epic.
+
+#### EPIC-00: Foundations & DevEx (transversales de producto)
+
+| ID | Título | Priority | Effort |
+|---|---|---|---|
+| [US-076-f](user-stories/US-076-f.md) | Estado offline (banner global + acciones en pausa) | Medium | S |
+| [US-078-f](user-stories/US-078-f.md) | Páginas de error globales (404 + 5xx) | Medium | S |
 
 #### EPIC-01: Catálogo público y exploración
 
@@ -91,6 +98,7 @@ Agrupado por epic.
 | [US-003](user-stories/US-003.md) | Ver docente con sus reseñas | High | M |
 | [US-004](user-stories/US-004.md) | Buscar materia o docente | Medium | S |
 | [US-071](user-stories/US-071.md) | Búsqueda global (topbar dropdown con Meilisearch) | High | L |
+| [US-090-f](user-stories/US-090-f.md) | El copy no promete verificación de alumno que no hacemos (ADR-0048) | High | S |
 
 #### EPIC-02: Identidad y autenticación
 
@@ -104,6 +112,8 @@ Agrupado por epic.
 | [US-073](user-stories/US-073.md) | Ayuda (FAQ + contacto soporte) | Low | S |
 | [US-074](user-stories/US-074.md) | Sobre plan-b (página informacional + créditos) | Low | S |
 | [US-075](user-stories/US-075.md) | Member deshabilita su propia cuenta (self-disable) | Medium | S |
+| [US-079-i](user-stories/US-079-i.md) | Cambiar contraseña con sesión activa (integrated) | Medium | S |
+| [US-091](user-stories/US-091.md) | Oficialización de condición por evidencia (parent -b/-f/-i, ADR-0048) | Medium | L |
 
 #### EPIC-03: Historial académico
 
@@ -140,6 +150,9 @@ Agrupado por epic.
 | [US-048](user-stories/US-048.md) | Reseñas shell + 3 tabs (explorar / pendientes / mías) | High | M |
 | [US-049](user-stories/US-049.md) | Editor de reseña 6 campos numerados con preview vivo | High | L |
 | [US-070](user-stories/US-070.md) | Rankings (top 10 paginado: docentes / materias / comisiones) | Medium | M |
+| [US-077-b](user-stories/US-077-b.md) | Backend de Notificaciones (parent, splitada b-1/b-2/b-3) | Medium | L |
+| [US-077-f](user-stories/US-077-f.md) | Panel de notificaciones (dropdown del bell del topbar) | Medium | M |
+| [US-089](user-stories/US-089.md) | Persistir modelo completo de reseña (rating, horas, tags), en S6 | High | M |
 
 #### EPIC-06: Claim e identidad docente
 
@@ -151,6 +164,7 @@ Agrupado por epic.
 | [US-040](user-stories/US-040.md) | Responder reseña | Medium | S |
 | [US-041](user-stories/US-041.md) | Editar respuesta docente | Low | S |
 | [US-066](user-stories/US-066.md) | Verificar TeacherProfile manual (admin) | Low | M |
+| [US-092](user-stories/US-092.md) | Migrar verificación de docente a oficialización por evidencia (parent, ADR-0048) | Medium | M |
 
 #### EPIC-07: Moderación
 
@@ -160,6 +174,8 @@ Agrupado por epic.
 | [US-051](user-stories/US-051.md) | Resolver report | High | M |
 | [US-052](user-stories/US-052.md) | Restaurar reseña removida | Medium | S |
 | [US-053](user-stories/US-053.md) | Ver audit log | Medium | S |
+| [US-085](user-stories/US-085.md) | Strike system + pedir edición al autor + ocultar/banear | Medium | L-XL |
+| [US-086](user-stories/US-086.md) | Audit log per-user (tab del detalle de usuario en backoffice) | Medium | M |
 
 #### EPIC-08: Backoffice de catálogo
 
@@ -171,12 +187,18 @@ Agrupado por epic.
 | [US-063](user-stories/US-063.md) | Gestionar Teacher | Medium | S |
 | [US-064](user-stories/US-064.md) | Gestionar AcademicTerm | Medium | S |
 | [US-065](user-stories/US-065.md) | Gestionar Commission + CommissionTeacher | Medium | M |
+| [US-082](user-stories/US-082.md) | Importador de plan con preview/diff (CSV a catálogo) | Medium | L |
+| [US-083](user-stories/US-083.md) | Merge de Subjects duplicados (admin) | Medium | L |
+| [US-084](user-stories/US-084.md) | Migración asistida de plan de estudios (mapping de materias) | Medium | XL |
+| [US-088](user-stories/US-088.md) | Importar plan de estudios desde PDF en onboarding (Done, S3) | Medium | L |
 
 #### EPIC-09: Backoffice de cuentas staff
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
 | [US-067](user-stories/US-067.md) | Crear cuentas staff | Medium | S |
+| [US-081](user-stories/US-081.md) | Dashboard ops del admin (KPIs + cola) (En curso) | High | M |
+| [US-087](user-stories/US-087.md) | Feed global de actividad reciente (dashboard ops admin) | Medium | M |
 
 #### EPIC-10: Dashboard institucional
 
