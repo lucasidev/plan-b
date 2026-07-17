@@ -10,7 +10,7 @@ import { claimState, initialEmailState, type TeacherClaim } from '../types';
 
 /**
  * Una fila de "Mis reclamos" (US-030/031). Según el estado del claim muestra:
- *   - verified: badge "docente UNSTA".
+ *   - verified: badge de docente verificado.
  *   - email_pending: "te enviamos un mail a X".
  *   - pending: botón "Verificar identidad" que despliega el form de email institucional (US-031).
  *
@@ -18,7 +18,7 @@ import { claimState, initialEmailState, type TeacherClaim } from '../types';
  * página server re-fetchee y el claim pase a email_pending.
  */
 export function TeacherClaimCard({ claim }: { claim: TeacherClaim }) {
-  const router = useRouter();
+  const { refresh } = useRouter();
   const emailFieldId = useId();
   const [showForm, setShowForm] = useState(false);
   const [state, formAction, isPending] = useActionState(
@@ -26,12 +26,11 @@ export function TeacherClaimCard({ claim }: { claim: TeacherClaim }) {
     initialEmailState,
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reaccionamos al cambio de status.
   useEffect(() => {
     if (state.status !== 'success') return;
     setShowForm(false);
-    router.refresh();
-  }, [state]);
+    refresh();
+  }, [state, refresh]);
 
   const status = claimState(claim);
 
