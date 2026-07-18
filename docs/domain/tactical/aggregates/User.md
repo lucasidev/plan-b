@@ -67,4 +67,4 @@
 
 - BC: [Identity](../../strategic/bounded-contexts.md#identity)
 - ADRs: [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0033](../../../decisions/0033-verification-token-como-child-entity.md)
-- User Stories: [US-010-b](../../user-stories/US-010-b.md), [US-011-b](../../user-stories/US-011-b.md), [US-013](../../user-stories/US-013.md), [US-014](../../user-stories/US-014.md), [US-080](../../user-stories/US-080.md)
+- User Stories: [US-010-b](../../user-stories/US-010-b.md), [US-011-b](../../user-stories/US-011-b.md), [US-013](../../user-stories/US-013.md), [US-014](../../user-stories/US-014.md), [US-008](../../user-stories/US-008.md)

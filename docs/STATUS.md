@@ -22,7 +22,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | 🟡 Open |
-| S10+ | next+ | Backlog planificado: importadores (US-082/083) + wizard/comisión (US-090/091), planificación (US-016/023-027), búsqueda global (Meilisearch US-071), rankings (US-070), Notifications BC (US-077), resto del admin, audit logs, strike system. | ⏳ Pendiente |
+| S10+ | next+ | Backlog planificado: importadores (US-007/083) + wizard/comisión (US-090/091), planificación (US-016/023-027), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), resto del admin, audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -187,14 +187,14 @@ Todas Done al cierre del sprint.
 - **Em-dash audit**: 210 docs sweep + auditoría manual de 73 files (titles, headings, comentarios) post regla absoluta.
 - **Audit canvas v3 app/landing/design-system + rediseño app (día 7, 2026-05-09)**:
   - Sync del canvas v2 con 3 HTMLs (design-system / landing / app) + 48 artboards totales. Pipeline de screenshots reescrita para iterar multi-HTML.
-  - **12 US nuevas creadas para la app del alumno**: US-054-f (landing), US-055 (borrar reseña), US-059-f (rediseño Auth+Onb), US-076-f (offline banner), US-077-f (panel notifs frontend), US-077-b + b-1/-b-2/-b-3 (Notifications BC backend splitada), US-078-f (errores 404/5xx), US-079-i (cambio password integrated), US-085 (strike system + pedir edición al autor, extiende US-051).
+  - **12 US nuevas creadas para la app del alumno**: US-054-f (landing), US-055 (borrar reseña), US-059-f (rediseño Auth+Onb), US-039-f (offline banner), US-077-f (panel notifs frontend), US-077-b + b-1/-b-2/-b-3 (Notifications BC backend splitada), US-009-f (errores 404/5xx), US-079-i (cambio password integrated), US-085 (strike system + pedir edición al autor, extiende US-051).
   - **15 US existentes actualizadas** con mockup refs + AC visual del canvas v3 (auth, onb, home, mi-carrera, planificar, reseñas, rankings, búsqueda, notif, cuenta, soporte).
   - **3 decisiones de scope zanjadas** en el rediseño app: US-051 scope (→ split a US-085 con strike system + pedir edición), US-072 modal cambiar contraseña (→ split a US-079-i integrated siguiendo patrón US-029-i / US-033-i), US-077-b backend de notifications (→ full BC siguiendo ADR-0040, splitado en 3 sub-slices b-1 / b-2 / b-3).
   - PR `docs/v2-redesign` mergeado como [#94](https://github.com/lucasidev/plan-b/pull/94).
 - **Módulo backoffice/admin doc'd (día 7, 2026-05-12)**:
   - Sync del 4° canvas (`plan-b-admin.html` + módulo `admin-shell.jsx` + `admin-screens-1/2/3.jsx`) con 21 artboards en 5 secciones (shell, afiliar uni, datos académicos, moderación, ops). Pipeline de screenshots ampliada para incluir el slug `admin` (prefix `admin-<section>-<id>.png` para evitar colisión con `onb` del app).
-  - **6 US nuevas creadas para el módulo admin**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-082 (importador CSV con preview/diff), US-083 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-087 (feed global de actividad reciente).
-  - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-087), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-068 (deshabilitar member + tabs detalle).
+  - **6 US nuevas creadas para el módulo admin**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-007 (importador CSV con preview/diff), US-006 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-005 (feed global de actividad reciente).
+  - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-005), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-058 (deshabilitar member + tabs detalle).
   - **5 decisiones de scope zanjadas en el rediseño admin**: cola es por report (no por review, canvas manda), audit log per-BC (ADR-0042, cada módulo owns su projection con cross-BC views via Dapper UNION ALL), strike system+ocultar+banear all-in en US-085 (out de US-051), importador/merge/migración como US separadas, admin shell separado como bloqueante US-081.
   - **1 ADR nuevo**: [ADR-0042](decisions/0042-audit-log-per-bc-no-central.md) (audit log per-BC, no central; extiende ADR-0031).
   - PR `docs/backoffice-module` (este PR).
@@ -211,16 +211,16 @@ Audit 1-a-1 contra el código actual:
 |---|---|---|---|
 | `IMPL_OK` (matchea) | 2 | 1 (US-044) + DS transversal | Nada. |
 | `IMPL_DRIFT` (rediseño visual + estados de error) | 10 | 4 (US-010-f, US-028-f, US-033-i, US-037-f) | Cubierto por [US-059-f](domain/user-stories/US-059-f.md) (incluye AC nuevos para banners inline `AuthErrorBanner` en signup-err / login-err). |
-| `PENDIENTE_US_DOC` | 32 | 16 (mi-carrera b/c/d/e + US-046 + US-047 + US-048 + US-049 + US-054-f + US-059-f + US-070..074 + US-019) | Implementar; docs ya existen + AC nuevas de empty states / modales agregadas. |
+| `PENDIENTE_US_DOC` | 32 | 16 (mi-carrera b/c/d/e + US-046 + US-047 + US-048 + US-049 + US-054-f + US-059-f + US-057..074 + US-019) | Implementar; docs ya existen + AC nuevas de empty states / modales agregadas. |
 | `SIN_US` resuelto con US nuevas | 4 | 4 nuevas | Ver lista abajo. |
 
 **Total US a agregar al backlog post-audit (2026-05-09 v2)**: 4 nuevas + 7 existentes con AC nuevas + las 2 doc'd antes (US-054-f, US-059-f). 
 
 US nuevas creadas:
 - [US-055](domain/user-stories/US-055.md): Borrar reseña propia (action + modal destructivo). Cubre `modales-v2-modal-borrar`.
-- [US-076-f](domain/user-stories/US-076-f.md): Estado offline (banner global + acciones en pausa). Cubre `home-v2-inicio-offline`.
+- [US-039-f](domain/user-stories/US-039-f.md): Estado offline (banner global + acciones en pausa). Cubre `home-v2-inicio-offline`.
 - [US-077-f](domain/user-stories/US-077-f.md): Panel de notificaciones (dropdown del bell). Cubre `notificaciones-v2-notif` + `notificaciones-v2-notif-empty`. Pendiente crear US-077-b para el backend.
-- [US-078-f](domain/user-stories/US-078-f.md): Páginas de error globales (404 + 5xx). Cubre `errores-v2-err-404` + `errores-v2-err-5xx`.
+- [US-009-f](domain/user-stories/US-009-f.md): Páginas de error globales (404 + 5xx). Cubre `errores-v2-err-404` + `errores-v2-err-5xx`.
 
 US existentes con AC nuevas:
 - [US-019](domain/user-stories/US-019.md): mockup ref del modal de reportar agregado.
@@ -471,7 +471,7 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 | US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M |
 | US-059-f | Rediseño auth + onboarding (AuthShell/OnbShell) + generalización de copy UNSTA→multi-universidad | High | M |
 
-Diferido a S10: importadores (US-082 CSV, US-083 merge de duplicados), wizard de alta de universidad (US-091), gestión de comisión por cuatri (US-090).
+Diferido a S10: importadores (US-007 CSV, US-006 merge de duplicados), wizard de alta de universidad (US-091), gestión de comisión por cuatri (US-090).
 
 ### Añadido durante el sprint (2026-07-15)
 
@@ -493,11 +493,11 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 > Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-089 / US-002 / US-004 / US-T07-b). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
 
 **Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
-- [US-070](domain/user-stories/US-070.md) Rankings.
-- [US-071](domain/user-stories/US-071.md) Búsqueda global (Meilisearch).
-- [US-076-f](domain/user-stories/US-076-f.md) estado offline (banner global).
+- [US-057](domain/user-stories/US-057.md) Rankings.
+- [US-056](domain/user-stories/US-056.md) Búsqueda global (Meilisearch).
+- [US-039-f](domain/user-stories/US-039-f.md) estado offline (banner global).
 - [US-077-f](domain/user-stories/US-077-f.md) panel de notificaciones (dropdown del bell).
-- [US-078-f](domain/user-stories/US-078-f.md) páginas de error globales (404 + 5xx).
+- [US-009-f](domain/user-stories/US-009-f.md) páginas de error globales (404 + 5xx).
 
 **Cancelled**:
 - ~~[US-075](domain/user-stories/US-075.md) Member self-disable~~ — reemplazada por **US-038-bis** (S4 Done) bajo [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md). El paso intermedio "deshabilitar" desapareció; el flow real es soft delete con anonimización del PII.
@@ -513,8 +513,8 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 - US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
-- US-032 + US-066 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.
-- US-080 (dashboard institucional): backlog open. US-067 (cuentas staff) cerrada en S7.
+- US-032 + US-069 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.
+- US-008 (dashboard institucional): backlog open. US-067 (cuentas staff) cerrada en S7.
 - Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
 
 **Backoffice / Admin (doc'd 2026-05-12, sin sprint asignado)**:
@@ -522,13 +522,13 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se puede empezar (todas reusan AdmShell + AdmTable + AdmFilters).
 
 - [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante de todo el resto del módulo admin.** (Parte del shell aterrizó con US-063 en S7; revisar qué queda antes de arrancar S9.)
-- [US-082](domain/user-stories/US-082.md) Importador de plan con preview/diff (CSV).
-- [US-083](domain/user-stories/US-083.md) Merge de Subjects duplicados (detección + merge UI).
+- [US-007](domain/user-stories/US-007.md) Importador de plan con preview/diff (CSV).
+- [US-006](domain/user-stories/US-006.md) Merge de Subjects duplicados (detección + merge UI).
 - [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
 - [US-053](domain/user-stories/US-053.md) Audit log per-review (proyección Reviews, ADR-0042).
-- [US-068](domain/user-stories/US-068.md) Deshabilitar member + listado/detalle de usuarios con tabs.
+- [US-058](domain/user-stories/US-058.md) Deshabilitar member + listado/detalle de usuarios con tabs.
 - [US-086](domain/user-stories/US-086.md) Audit log per-user (tab del detalle de usuario, cross-BC via Dapper UNION ALL).
-- [US-087](domain/user-stories/US-087.md) Feed global de actividad reciente (dashboard ops, cross-BC).
+- [US-005](domain/user-stories/US-005.md) Feed global de actividad reciente (dashboard ops, cross-BC).
 - [US-085](domain/user-stories/US-085.md) Strike system + pedir edición + ocultar+banear (extiende US-051 con 3 opciones placeholder).
 
 ---
@@ -612,7 +612,7 @@ El loop core del producto.
 ### Fase 5: Dashboard institucional + verificación de docentes ⏳
 
 **Backend**:
-- TeacherProfile aggregate con flow de claim (UC-030 a UC-032, UC-066, UC-040, UC-041).
+- TeacherProfile aggregate con flow de claim (UC-030 a UC-032, UC-069, UC-040, UC-041).
 - VerificationToken purpose=TeacherInstitutionalVerification.
 - Backoffice de staff users (UC-067).
 - Dashboard institucional: queries agregadas scoped a University del staff.

@@ -49,4 +49,4 @@ Ninguno específico.
 
 - BC: [Academic](../../strategic/bounded-contexts.md#academic)
 - ADRs: [ADR-0002](../../../decisions/0002-versionado-de-planes-de-estudio.md)
-- User Stories: [US-001](../../user-stories/US-001.md), [US-080](../../user-stories/US-080.md)
+- User Stories: [US-001](../../user-stories/US-001.md), [US-008](../../user-stories/US-008.md)

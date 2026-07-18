@@ -33,7 +33,7 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 
 ### Backlog
 - [US-035](../user-stories/US-035.md): Sign-in con Google (OAuth)
-- [US-068](../user-stories/US-068.md): Deshabilitar cuenta member
+- [US-058](../user-stories/US-058.md): Deshabilitar cuenta member
 
 ## Decisiones que la condicionan
 

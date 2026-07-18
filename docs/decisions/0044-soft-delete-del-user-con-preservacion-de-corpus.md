@@ -46,7 +46,7 @@ Casos legítimos para el hard delete:
 
 - **Tests de integración** que necesitan limpiar usuarios creados ad-hoc (aunque hoy los tests usan DB efímera per-class, mantener el handler es prudente).
 - **Scripts de mantenimiento** (cleanup de cuentas duplicadas detectadas manualmente, fraude, dev cleanup).
-- **Endpoint admin futuro** (`DELETE /api/admin/users/{id}`, no en MVP). Cuando aterrice el módulo de admin (US-068+), el endpoint admin podrá invocar el comando directamente, con permisos elevados y audit propio.
+- **Endpoint admin futuro** (`DELETE /api/admin/users/{id}`, no en MVP). Cuando aterrice el módulo de admin (US-058+), el endpoint admin podrá invocar el comando directamente, con permisos elevados y audit propio.
 
 Operación **no se expone al user**. Si se llega a exponer en admin, el copy y la confirmación deben ser explícitos sobre la irreversibilidad y la pérdida del corpus aportado.
 

@@ -203,16 +203,16 @@ El alcance por sprint está cerrado; el orden interno de cada sprint se afina al
 - [US-017](../domain/user-stories/US-017.md), [US-018](../domain/user-stories/US-018.md), [US-019](../domain/user-stories/US-019.md), [US-020](../domain/user-stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
 - [US-048](../domain/user-stories/US-048.md): Reseñas shell + 3 tabs.
 - [US-049](../domain/user-stories/US-049.md): Editor de reseña 6 campos numerados con preview vivo.
-- [US-070](../domain/user-stories/US-070.md): Rankings top 10 paginado.
+- [US-057](../domain/user-stories/US-057.md): Rankings top 10 paginado.
 
 **S5: Búsqueda global + Ajustes + Soporte**
-- [US-071](../domain/user-stories/US-071.md): Búsqueda global topbar dropdown (Meilisearch).
+- [US-056](../domain/user-stories/US-056.md): Búsqueda global topbar dropdown (Meilisearch).
 - [US-072](../domain/user-stories/US-072.md): Ajustes (notificaciones / privacidad / idioma / tema).
 - [US-073](../domain/user-stories/US-073.md): Ayuda (FAQ + contacto soporte).
 - [US-074](../domain/user-stories/US-074.md): Sobre plan-b (página informacional + créditos).
 
 **Backlog open (sin sprint asignado)**:
-- US-001 a US-004 (catálogo público), US-013/14/15 (historial backend), US-016 + US-023..027 (simulación + planning storage backend), US-030 a US-032 + US-040/041 + US-066 (claim docente), US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-068 (admin/mod disable), US-080 (dashboard institucional).
+- US-001 a US-004 (catálogo público), US-013/14/15 (historial backend), US-016 + US-023..027 (simulación + planning storage backend), US-030 a US-032 + US-040/041 + US-069 (claim docente), US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-058 (admin/mod disable), US-008 (dashboard institucional).
 - Estados de error (404 / 500 / network down / expired session), modales de confirmación, mobile completo: pendientes de diseño en próxima ronda.
 
 ### Lo que NO migra (deuda explícita aceptada)

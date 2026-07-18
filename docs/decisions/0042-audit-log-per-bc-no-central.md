@@ -12,7 +12,7 @@ El canvas v2 (2026-05-09, post-zip-admin) introduce dos vistas nuevas que extien
 1. **Tab "Audit log" en el detalle de usuario** (`AdmUsuarioDetalle`): timeline de eventos del usuario específico cross-BC (signup, login, reviews escritas, reports recibidos, strikes emitidos, bans, password changes, etc.).
 2. **Feed de actividad reciente del dashboard ops** ([US-081](../domain/user-stories/US-081.md)): mix global de eventos del sistema en orden cronológico (último admin que decidió un report, última uni afiliada, último merge de duplicados, último user baneado, etc.).
 
-Sumado a lo anterior, las US-055, US-068, US-072, US-082, US-083, US-084, US-085 introducen entre 15 y 20 nuevas acciones que necesitan audit log (`review.deleted_by_self`, `plan.imported`, `subject.merged`, `plan.migration.applied`, `strike.issued`, `strike.decayed`, `strike.cancelled`, `review.edit_requested`, `review.edit_completed`, `review.edit_deadline_expired`, `review.upheld_with_ban`, `user.banned_from_moderation`, `user.password_changed`, `user.self_disabled`, `university.created`, `university.archived`, `careerplan.created`, `subject.edited`, `teacher.created`, `commission.created`, etc.).
+Sumado a lo anterior, las US-055, US-058, US-072, US-007, US-006, US-084, US-085 introducen entre 15 y 20 nuevas acciones que necesitan audit log (`review.deleted_by_self`, `plan.imported`, `subject.merged`, `plan.migration.applied`, `strike.issued`, `strike.decayed`, `strike.cancelled`, `review.edit_requested`, `review.edit_completed`, `review.edit_deadline_expired`, `review.upheld_with_ban`, `user.banned_from_moderation`, `user.password_changed`, `user.self_disabled`, `university.created`, `university.archived`, `careerplan.created`, `subject.edited`, `teacher.created`, `commission.created`, etc.).
 
 La pregunta arquitectónica: ¿se mantiene el patrón per-BC de ADR-0031 (cada módulo tiene su propia projection local) o se crea un módulo central `Audit` que consuma events de todos los BCs y persista todo en una sola tabla `audit_log`?
 
@@ -52,7 +52,7 @@ Naming consistente entre BCs (`actor_id`, `target_id`, `at`, `action`, `context`
 Las dos vistas nuevas del canvas se sirven con Dapper queries que cruzan schemas:
 
 - **Tab "Audit log" del usuario** ([US-086](../domain/user-stories/US-086.md)): `SELECT * FROM ... UNION ALL ...` sobre los audit logs de cada BC filtrados por `actor_id = X OR target_id = X` + ORDER BY `at DESC` + paginación.
-- **Feed global del dashboard admin** ([US-087](../domain/user-stories/US-087.md)): UNION ALL sin filter de user + ORDER BY `at DESC` + LIMIT N + paginación.
+- **Feed global del dashboard admin** ([US-005](../domain/user-stories/US-005.md)): UNION ALL sin filter de user + ORDER BY `at DESC` + LIMIT N + paginación.
 
 Las queries cross-schema son legítimas por [ADR-0017](0017-persistence-ignorance.md) cuando son **read-only de presentación**. No FK cross-schema, no navegación EF cross-module, no escritura cross-schema.
 
@@ -136,4 +136,4 @@ Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event 
 - [ADR-0017](0017-persistence-ignorance.md): persistence ignorance. Permite read models con Dapper cross-schema.
 - [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md): integration events vía Wolverine outbox. Mecanismo por el cual cada BC publica sus events para que sus propios projectors (y otros BCs interesados) los consuman.
 - [ADR-0031](0031-review-audit-log-como-projection.md): primer audit log per-BC. Este ADR formaliza y extiende el patrón a otros BCs.
-- US relacionadas: [US-053](../domain/user-stories/US-053.md), [US-086](../domain/user-stories/US-086.md), [US-087](../domain/user-stories/US-087.md), [US-068](../domain/user-stories/US-068.md), [US-081](../domain/user-stories/US-081.md).
+- US relacionadas: [US-053](../domain/user-stories/US-053.md), [US-086](../domain/user-stories/US-086.md), [US-005](../domain/user-stories/US-005.md), [US-058](../domain/user-stories/US-058.md), [US-081](../domain/user-stories/US-081.md).

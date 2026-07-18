@@ -170,7 +170,7 @@ Vistas materializadas o computadas on-demand alimentadas por events de uno o má
 | `ReviewAggregatesForSubject(subjectId)` | `ReviewPublished` + `ReviewRemoved` + `ReviewRestored` + `ReviewInvalidated` | UC-002 página de Subject | EF projection con triggers en events |
 | `ReviewAggregatesForTeacher(teacherId)` | idem scoped por docente reseñado | UC-003 página de Teacher | idem |
 | `PublicSimulationDrafts(careerPlanId, termId)` | `SimulationDraftShared` / `SimulationDraftUnshared` | UC-027 ver simulaciones públicas | EF projection event-driven |
-| `InstitutionalDashboard(universityId)` | múltiples aggregates (Reviews, Enrollments) scoped por University | UC-080 dashboard staff | Dapper query on-demand |
+| `InstitutionalDashboard(universityId)` | múltiples aggregates (Reviews, Enrollments) scoped por University | UC-008 dashboard staff | Dapper query on-demand |
 | `ReviewAuditLog(reviewId)` | events de Review (Published/Edited/Quarantined/Invalidated/Removed/Restored) + TeacherResponse (Published/Edited) + ReviewReport (Reported/Upheld/Dismissed) | UC-053 audit log | append-only projection (Moderation BC, ADR-0031) |
 | `ModeratorQueue` | reviews `status=under_review` ordenadas por `count(reports open por reviewId)` | UC-050 cola del moderador | Dapper query on-demand (filtrable por `reason`) |
 | `ReviewEmbedding` | `ReviewPublished` + `ReviewEdited` (text-changed) + `ReviewRestored` | búsqueda semántica (UI gated off, ADR-0007) | pgvector (Postgres extensión); pipeline async via job worker |

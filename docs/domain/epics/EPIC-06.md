@@ -14,7 +14,7 @@ Un member que también es docente puede reclamar su identidad docente, verificar
 - [US-032](../user-stories/US-032.md): Solicitar verificación manual
 - [US-040](../user-stories/US-040.md): Responder reseña
 - [US-041](../user-stories/US-041.md): Editar respuesta docente
-- [US-066](../user-stories/US-066.md): Verificar TeacherProfile manual (admin)
+- [US-069](../user-stories/US-069.md): Verificar TeacherProfile manual (admin)
 
 ## Decisiones que la condicionan
 
