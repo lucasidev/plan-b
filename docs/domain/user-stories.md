@@ -76,7 +76,7 @@ Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por
 - US-013/14/15 (cargar / importar / editar historial) son tabs internos de Mi carrera (S2). El backend de cargar manual puede aterrizar en S2 o quedar deuda diferida igual que el resto de Academic CRUD.
 - US-068 (admin/mod deshabilita member) sigue backlog open: es flow de moderación, no MVP.
 
-### Backlog (64)
+### Backlog (70)
 
 > El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
 
@@ -88,6 +88,8 @@ Agrupado por epic.
 |---|---|---|---|
 | [US-076-f](user-stories/US-076-f.md) | Estado offline (banner global + acciones en pausa) | Medium | S |
 | [US-078-f](user-stories/US-078-f.md) | Páginas de error globales (404 + 5xx) | Medium | S |
+| [US-T07-b](user-stories/US-T07-b.md) | Architecture tests para los 5 módulos (Done, S6) | Medium | S |
+| [US-T08](user-stories/US-T08.md) | Backfill de cobertura de lógica de valor y dominio (En curso, S9) | High | L |
 
 #### EPIC-01: Catálogo público y exploración
 
@@ -99,6 +101,8 @@ Agrupado por epic.
 | [US-004](user-stories/US-004.md) | Buscar materia o docente | Medium | S |
 | [US-071](user-stories/US-071.md) | Búsqueda global (topbar dropdown con Meilisearch) | High | L |
 | [US-090-f](user-stories/US-090-f.md) | El copy no promete verificación de alumno que no hacemos (ADR-0048) | High | S |
+| [US-034](user-stories/US-034.md) | Stats públicas agregadas en hero | Low | S |
+| [US-054-f](user-stories/US-054-f.md) | Landing pública en / (Done, S9) | Medium | M |
 
 #### EPIC-02: Identidad y autenticación
 
@@ -114,6 +118,8 @@ Agrupado por epic.
 | [US-075](user-stories/US-075.md) | Member deshabilita su propia cuenta (self-disable) | Medium | S |
 | [US-079-i](user-stories/US-079-i.md) | Cambiar contraseña con sesión activa (integrated) | Medium | S |
 | [US-091](user-stories/US-091.md) | Oficialización de condición por evidencia (parent -b/-f/-i, ADR-0048) | Medium | L |
+| [US-035](user-stories/US-035.md) | Sign-in con Google (OAuth) | Low | M |
+| [US-059-f](user-stories/US-059-f.md) | Auth + Onboarding al AuthShell/OnbShell v2 (Done, S9) | High | M |
 
 #### EPIC-03: Historial académico
 
@@ -153,6 +159,7 @@ Agrupado por epic.
 | [US-077-b](user-stories/US-077-b.md) | Backend de Notificaciones (parent, splitada b-1/b-2/b-3) | Medium | L |
 | [US-077-f](user-stories/US-077-f.md) | Panel de notificaciones (dropdown del bell del topbar) | Medium | M |
 | [US-089](user-stories/US-089.md) | Persistir modelo completo de reseña (rating, horas, tags), en S6 | High | M |
+| [US-055](user-stories/US-055.md) | Borrar reseña propia (action + modal destructivo) | Medium | S |
 
 #### EPIC-06: Claim e identidad docente
 
@@ -176,6 +183,7 @@ Agrupado por epic.
 | [US-053](user-stories/US-053.md) | Ver audit log | Medium | S |
 | [US-085](user-stories/US-085.md) | Strike system + pedir edición al autor + ocultar/banear | Medium | L-XL |
 | [US-086](user-stories/US-086.md) | Audit log per-user (tab del detalle de usuario en backoffice) | Medium | M |
+| [US-095](user-stories/US-095.md) | Lista de usuarios del backoffice | Medium | M |
 
 #### EPIC-08: Backoffice de catálogo
 
@@ -191,6 +199,8 @@ Agrupado por epic.
 | [US-083](user-stories/US-083.md) | Merge de Subjects duplicados (admin) | Medium | L |
 | [US-084](user-stories/US-084.md) | Migración asistida de plan de estudios (mapping de materias) | Medium | XL |
 | [US-088](user-stories/US-088.md) | Importar plan de estudios desde PDF en onboarding (Done, S3) | Medium | L |
+| [US-093](user-stories/US-093.md) | Gestionar Comisión (CRUD de oferta por cuatrimestre) | Medium | M |
+| [US-094](user-stories/US-094.md) | Wizard de alta de universidad (onboarding admin) | Medium | L |
 
 #### EPIC-09: Backoffice de cuentas staff
 
