@@ -10,7 +10,7 @@ Cubre:
 - Invariantes del modelo y reglas de unicidad.
 - Política de retry después de rechazo.
 
-Este documento expande UC-030, UC-031, UC-032, UC-066. Ver también [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) para la separación entre rol y profile.
+Este documento expande UC-030, UC-031, UC-032, UC-069. Ver también [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) para la separación entre rol y profile.
 
 ## States (conceptuales)
 
@@ -42,8 +42,8 @@ stateDiagram-v2
     email_pending --> verified : click en link (token válido)
     email_pending --> claim_pending : token expirado, retry
 
-    manual_pending --> verified : UC-066 admin aprueba
-    manual_pending --> rejected : UC-066 admin rechaza
+    manual_pending --> verified : UC-069 admin aprueba
+    manual_pending --> rejected : UC-069 admin rechaza
 
     verified --> claim_pending : admin de-verifica (edge case)
 
@@ -68,8 +68,8 @@ stateDiagram-v2
 | `claim_pending` → `manual_pending` | Alumno sube evidencia              | UC-032              | Evidencia persistida (referencia en storage, no en tabla). Claim pasa a cola del admin.                                                      |
 | `email_pending` → `verified`       | Click en link con token válido     | UC-031              | Setea `verified_at=now()`. Capacidad `review:respond` activa.                                                                                |
 | `email_pending` → `claim_pending`  | Token expirado y alumno reinicia   | UC-031              | Reseteo de `institutional_email` y `verification_method` a NULL. Nuevo token al retry.                                                       |
-| `manual_pending` → `verified`      | Admin aprueba                      | UC-066              | Setea `verified_at=now()`, `verification_method='manual'`, `verified_by=admin.id`.                                                           |
-| `manual_pending` → `rejected`      | Admin rechaza                      | UC-066              | Setea `rejection_reason`. `verified_at` sigue NULL.                                                                                          |
+| `manual_pending` → `verified`      | Admin aprueba                      | UC-069              | Setea `verified_at=now()`, `verification_method='manual'`, `verified_by=admin.id`.                                                           |
+| `manual_pending` → `rejected`      | Admin rechaza                      | UC-069              | Setea `rejection_reason`. `verified_at` sigue NULL.                                                                                          |
 | `verified` → `claim_pending`       | Admin de-verifica                  | Manual admin action | Setea `verified_at=NULL`. Capacidad pierde. Libera el `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL` para que otro user pueda verificar. |
 
 ## Sequence diagrams
@@ -119,7 +119,7 @@ sequenceDiagram
     API-->>Alumno: 400 Bad Request: "dominio no pertenece a UNSTA,<br/>elegí verificación manual (UC-032)"
 ```
 
-### 3. Verificación manual aprobada (UC-032 + UC-066)
+### 3. Verificación manual aprobada (UC-032 + UC-069)
 
 ```mermaid
 sequenceDiagram
@@ -146,7 +146,7 @@ sequenceDiagram
     Note over API,DB: Capacidad review:respond desbloqueada
 ```
 
-### 4. Verificación manual rechazada (UC-032 + UC-066 reject)
+### 4. Verificación manual rechazada (UC-032 + UC-069 reject)
 
 ```mermaid
 sequenceDiagram
@@ -208,6 +208,6 @@ Esta migración está documentada pero no implementada.
 
 | Tipo       | Referencias                                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UCs        | UC-030 (iniciar claim), UC-031 (email institucional), UC-032 (evidencia manual), UC-040 (habilitado tras verified), UC-066 (admin resuelve manual). |
+| UCs        | UC-030 (iniciar claim), UC-031 (email institucional), UC-032 (evidencia manual), UC-040 (habilitado tras verified), UC-069 (admin resuelve manual). |
 | ADRs       | [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md).                                                                        |
 | Data model | [TeacherProfile + Teacher + University.institutional_email_domains](../architecture/data-model.md#context-identity).                                |

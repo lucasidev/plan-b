@@ -66,19 +66,19 @@ Plan acordado el 2026-05-03 después del rediseño UX (ADR-0041). El alcance por
 |---|---|---|
 | **S2** | Auth + Onboarding + Inicio + Mi carrera (shell, stub data) | [US-036](user-stories/US-036.md), [US-037](user-stories/US-037.md), [US-044](user-stories/US-044.md), [US-045](user-stories/US-045.md) |
 | **S3** | Planificar (shell + tabs) + Mi perfil + self-disable | [US-046](user-stories/US-046.md), [US-047](user-stories/US-047.md), [US-075](user-stories/US-075.md) |
-| **S4** | Reseñas (shell + editor) + Rankings | [US-017](user-stories/US-017.md), [US-018](user-stories/US-018.md), [US-019](user-stories/US-019.md), [US-020](user-stories/US-020.md), [US-048](user-stories/US-048.md), [US-049](user-stories/US-049.md), [US-070](user-stories/US-070.md) |
-| **S5** | Búsqueda global + Ajustes + Soporte (Ayuda + Sobre plan-b) | [US-071](user-stories/US-071.md), [US-072](user-stories/US-072.md), [US-073](user-stories/US-073.md), [US-074](user-stories/US-074.md) |
+| **S4** | Reseñas (shell + editor) + Rankings | [US-017](user-stories/US-017.md), [US-018](user-stories/US-018.md), [US-019](user-stories/US-019.md), [US-020](user-stories/US-020.md), [US-048](user-stories/US-048.md), [US-049](user-stories/US-049.md), [US-057](user-stories/US-057.md) |
+| **S5** | Búsqueda global + Ajustes + Soporte (Ayuda + Sobre plan-b) | [US-056](user-stories/US-056.md), [US-072](user-stories/US-072.md), [US-073](user-stories/US-073.md), [US-074](user-stories/US-074.md) |
 
 **Notas del roadmap:**
 
 - El backend de Mi carrera (catálogo + plan + correlativas) queda como deuda diferida en S2 con stub data (decisión Lucas 2026-05-03). Se decide en planning si entra en S2 o S3 cuando llegue el momento, según cómo venga el sprint.
 - US-016 (simular inscripción backend) puede entrar en S3 si Planificar lo necesita, sino queda backlog hasta S4.
 - US-013/14/15 (cargar / importar / editar historial) son tabs internos de Mi carrera (S2). El backend de cargar manual puede aterrizar en S2 o quedar deuda diferida igual que el resto de Academic CRUD.
-- US-068 (admin/mod deshabilita member) sigue backlog open: es flow de moderación, no MVP.
+- US-058 (admin/mod deshabilita member) sigue backlog open: es flow de moderación, no MVP.
 
 ### Backlog (70)
 
-> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-070 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
+> El rediseño UX del 2026-05-02 ([ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) introdujo las US-045 a US-049 + US-057 a US-075 (Mi carrera shell, Planificar shell, Mi perfil, Reseñas shell + editor, Rankings, Búsqueda global, Ajustes, Ayuda, Sobre plan-b, self-disable). Las del rango canónico previo (US-001 a US-033) que cambien scope referencian el ADR cuando aterricen a sprint.
 
 Agrupado por epic.
 
@@ -86,8 +86,8 @@ Agrupado por epic.
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
-| [US-076-f](user-stories/US-076-f.md) | Estado offline (banner global + acciones en pausa) | Medium | S |
-| [US-078-f](user-stories/US-078-f.md) | Páginas de error globales (404 + 5xx) | Medium | S |
+| [US-039-f](user-stories/US-039-f.md) | Estado offline (banner global + acciones en pausa) | Medium | S |
+| [US-009-f](user-stories/US-009-f.md) | Páginas de error globales (404 + 5xx) | Medium | S |
 | [US-T07-b](user-stories/US-T07-b.md) | Architecture tests para los 5 módulos (Done, S6) | Medium | S |
 | [US-T08](user-stories/US-T08.md) | Backfill de cobertura de lógica de valor y dominio (En curso, S9) | High | L |
 
@@ -99,7 +99,7 @@ Agrupado por epic.
 | [US-002](user-stories/US-002.md) | Ver materia con sus reseñas | High | M |
 | [US-003](user-stories/US-003.md) | Ver docente con sus reseñas | High | M |
 | [US-004](user-stories/US-004.md) | Buscar materia o docente | Medium | S |
-| [US-071](user-stories/US-071.md) | Búsqueda global (topbar dropdown con Meilisearch) | High | L |
+| [US-056](user-stories/US-056.md) | Búsqueda global (topbar dropdown con Meilisearch) | High | L |
 | [US-090-f](user-stories/US-090-f.md) | El copy no promete verificación de alumno que no hacemos (ADR-0048) | High | S |
 | [US-034](user-stories/US-034.md) | Stats públicas agregadas en hero | Low | S |
 | [US-054-f](user-stories/US-054-f.md) | Landing pública en / (Done, S9) | Medium | M |
@@ -111,7 +111,7 @@ Agrupado por epic.
 | [US-036](user-stories/US-036.md) | Auth rebuild: 4 rutas separadas (Signup / Login / Forgot / ForgotSent) | Medium | M |
 | [US-037](user-stories/US-037.md) | Onboarding 4 pasos (Bienvenida / Carrera / Historial / Listo) | High | M |
 | [US-047](user-stories/US-047.md) | Mi perfil (view + edit datos académicos + foto) | High | M |
-| [US-068](user-stories/US-068.md) | Deshabilitar cuenta member (admin/mod) | Medium | S |
+| [US-058](user-stories/US-058.md) | Deshabilitar cuenta member (admin/mod) | Medium | S |
 | [US-072](user-stories/US-072.md) | Ajustes (notificaciones / privacidad / idioma / tema) | Medium | M |
 | [US-073](user-stories/US-073.md) | Ayuda (FAQ + contacto soporte) | Low | S |
 | [US-074](user-stories/US-074.md) | Sobre plan-b (página informacional + créditos) | Low | S |
@@ -155,7 +155,7 @@ Agrupado por epic.
 | [US-020](user-stories/US-020.md) | Ver mis reports | Low | S |
 | [US-048](user-stories/US-048.md) | Reseñas shell + 3 tabs (explorar / pendientes / mías) | High | M |
 | [US-049](user-stories/US-049.md) | Editor de reseña 6 campos numerados con preview vivo | High | L |
-| [US-070](user-stories/US-070.md) | Rankings (top 10 paginado: docentes / materias / comisiones) | Medium | M |
+| [US-057](user-stories/US-057.md) | Rankings (top 10 paginado: docentes / materias / comisiones) | Medium | M |
 | [US-077-b](user-stories/US-077-b.md) | Backend de Notificaciones (parent, splitada b-1/b-2/b-3) | Medium | L |
 | [US-077-f](user-stories/US-077-f.md) | Panel de notificaciones (dropdown del bell del topbar) | Medium | M |
 | [US-089](user-stories/US-089.md) | Persistir modelo completo de reseña (rating, horas, tags), en S6 | High | M |
@@ -170,7 +170,7 @@ Agrupado por epic.
 | [US-032](user-stories/US-032.md) | Solicitar verificación manual | Low | M |
 | [US-040](user-stories/US-040.md) | Responder reseña | Medium | S |
 | [US-041](user-stories/US-041.md) | Editar respuesta docente | Low | S |
-| [US-066](user-stories/US-066.md) | Verificar TeacherProfile manual (admin) | Low | M |
+| [US-069](user-stories/US-069.md) | Verificar TeacherProfile manual (admin) | Low | M |
 | [US-092](user-stories/US-092.md) | Migrar verificación de docente a oficialización por evidencia (parent, ADR-0048) | Medium | M |
 
 #### EPIC-07: Moderación
@@ -195,8 +195,8 @@ Agrupado por epic.
 | [US-063](user-stories/US-063.md) | Gestionar Teacher | Medium | S |
 | [US-064](user-stories/US-064.md) | Gestionar AcademicTerm | Medium | S |
 | [US-065](user-stories/US-065.md) | Gestionar Commission + CommissionTeacher | Medium | M |
-| [US-082](user-stories/US-082.md) | Importador de plan con preview/diff (CSV a catálogo) | Medium | L |
-| [US-083](user-stories/US-083.md) | Merge de Subjects duplicados (admin) | Medium | L |
+| [US-007](user-stories/US-007.md) | Importador de plan con preview/diff (CSV a catálogo) | Medium | L |
+| [US-006](user-stories/US-006.md) | Merge de Subjects duplicados (admin) | Medium | L |
 | [US-084](user-stories/US-084.md) | Migración asistida de plan de estudios (mapping de materias) | Medium | XL |
 | [US-088](user-stories/US-088.md) | Importar plan de estudios desde PDF en onboarding (Done, S3) | Medium | L |
 | [US-093](user-stories/US-093.md) | Gestionar Comisión (CRUD de oferta por cuatrimestre) | Medium | M |
@@ -208,13 +208,13 @@ Agrupado por epic.
 |---|---|---|---|
 | [US-067](user-stories/US-067.md) | Crear cuentas staff | Medium | S |
 | [US-081](user-stories/US-081.md) | Dashboard ops del admin (KPIs + cola) (En curso) | High | M |
-| [US-087](user-stories/US-087.md) | Feed global de actividad reciente (dashboard ops admin) | Medium | M |
+| [US-005](user-stories/US-005.md) | Feed global de actividad reciente (dashboard ops admin) | Medium | M |
 
 #### EPIC-10: Dashboard institucional
 
 | ID | Título | Priority | Effort |
 |---|---|---|---|
-| [US-080](user-stories/US-080.md) | Ver dashboard institucional | Low | L |
+| [US-008](user-stories/US-008.md) | Ver dashboard institucional | Low | L |
 
 #### Tooling post-S0 (T-series)
 
