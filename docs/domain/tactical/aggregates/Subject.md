@@ -61,4 +61,4 @@ Ninguno específico (los prerequisites usan enums de tipo).
 
 - BC: [Academic](../../strategic/bounded-contexts.md#academic)
 - ADRs: [ADR-0001](../../../decisions/0001-multi-universidad-desde-dia-1.md), [ADR-0002](../../../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../../../decisions/0003-correlativas-con-dos-tipos.md)
-- User Stories: [US-001](../../user-stories/US-001.md), [US-002](../../user-stories/US-002.md), [US-080](../../user-stories/US-080.md)
+- User Stories: [US-001](../../user-stories/US-001.md), [US-002](../../user-stories/US-002.md), [US-008](../../user-stories/US-008.md)

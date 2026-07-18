@@ -31,7 +31,7 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 | Docente verificado | UC-040 a UC-049 |
 | Moderador | UC-050 a UC-059 |
 | Admin | UC-060 a UC-079 |
-| University staff | UC-080 a UC-089 |
+| University staff | UC-008 a UC-089 |
 
 ---
 
@@ -105,22 +105,22 @@ La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 
 | [UC-063](use-cases/UC-063.md) | Gestionar Teacher | [US-063](user-stories/US-063.md) | [EPIC-08](epics/EPIC-08.md) |
 | [UC-064](use-cases/UC-064.md) | Gestionar AcademicTerm | [US-064](user-stories/US-064.md) | [EPIC-08](epics/EPIC-08.md) |
 | [UC-065](use-cases/UC-065.md) | Gestionar Commission + CommissionTeacher | [US-065](user-stories/US-065.md) | [EPIC-08](epics/EPIC-08.md) |
-| [UC-066](use-cases/UC-066.md) | Verificar TeacherProfile manualmente | [US-066](user-stories/US-066.md) | [EPIC-06](epics/EPIC-06.md) |
+| [UC-069](use-cases/UC-069.md) | Verificar TeacherProfile manualmente | [US-069](user-stories/US-069.md) | [EPIC-06](epics/EPIC-06.md) |
 | [UC-067](use-cases/UC-067.md) | Crear/deshabilitar cuentas staff | [US-067](user-stories/US-067.md) | [EPIC-09](epics/EPIC-09.md) |
-| [UC-068](use-cases/UC-068.md) | Deshabilitar cuenta member | [US-068](user-stories/US-068.md) | [EPIC-02](epics/EPIC-02.md), [EPIC-09](epics/EPIC-09.md) |
+| [UC-058](use-cases/UC-058.md) | Deshabilitar cuenta member | [US-058](user-stories/US-058.md) | [EPIC-02](epics/EPIC-02.md), [EPIC-09](epics/EPIC-09.md) |
 
 ### University staff (1 UC)
 
 | UC | Título | User Story | Epic |
 |---|---|---|---|
-| [UC-080](use-cases/UC-080.md) | Ver dashboard institucional | [US-080](user-stories/US-080.md) | [EPIC-10](epics/EPIC-10.md) |
+| [UC-008](use-cases/UC-008.md) | Ver dashboard institucional | [US-008](user-stories/US-008.md) | [EPIC-10](epics/EPIC-10.md) |
 
 ---
 
 ## Totales
 
 - **43 casos de uso** cubren el MVP completo (34 originales + 9 nuevos: UC-021 a UC-029).
-- **7 en full form** (flujos con ramas significativas): UC-014, UC-016, UC-017, UC-019, UC-031, UC-051, UC-066.
+- **7 en full form** (flujos con ramas significativas): UC-014, UC-016, UC-017, UC-019, UC-031, UC-051, UC-069.
 - **34 en short form** (CRUDs y flujos triviales).
 
 **UCs nuevos del discovery DDD** (ver `eventstorming.md` para captura del proceso):

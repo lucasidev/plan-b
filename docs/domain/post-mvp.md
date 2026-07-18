@@ -26,7 +26,7 @@ Mantener acá evita ensuciar la lista de US ejecutables con placeholders que nad
 
 ## Re-habilitar cuenta member (enable)
 
-**Idea**: contraparte de US-068 (deshabilitar cuenta). Endpoint que el admin puede usar para revertir un disable.
+**Idea**: contraparte de US-058 (deshabilitar cuenta). Endpoint que el admin puede usar para revertir un disable.
 
 **Decisiones pendientes**:
 - ¿Reset automático del flag `must_change_password=true` o no?
@@ -37,7 +37,7 @@ Mantener acá evita ensuciar la lista de US ejecutables con placeholders que nad
 
 ---
 
-## Migrar StudentProfile entre planes (US-070 referenciada)
+## Migrar StudentProfile entre planes (US-057 referenciada)
 
 **Idea**: cuando un CareerPlan se cierra (ver US-061), los StudentProfile asociados quedan en el plan viejo. Eventualmente algún flow tendría que permitir al alumno (o al staff) migrar al plan nuevo con mapeo de equivalencias.
 
@@ -50,16 +50,16 @@ Mantener acá evita ensuciar la lista de US ejecutables con placeholders que nad
 
 ---
 
-## Combinaciones de cursada con peores tasas (split de US-080)
+## Combinaciones de cursada con peores tasas (split de US-008)
 
-**Idea**: en el dashboard institucional (US-080), ranking de combinaciones de materias en la misma cuatrimestre que históricamente correlacionan con peores tasas de aprobación / mayor abandonment.
+**Idea**: en el dashboard institucional (US-008), ranking de combinaciones de materias en la misma cuatrimestre que históricamente correlacionan con peores tasas de aprobación / mayor abandonment.
 
 **Decisiones pendientes**:
 - Heurística de scoring: ¿peso de pass_rate vs abandonment_rate vs sample_size?
 - Threshold mínimo de samples para ser considerado.
 - Privacy: ¿cómo evitar inferir alumnos individuales si el sample size es chico?
 
-**Por qué no está en el catálogo activo**: el dashboard base (US-080) tiene que aterrizar primero con métricas simples para ver si hay volumen suficiente.
+**Por qué no está en el catálogo activo**: el dashboard base (US-008) tiene que aterrizar primero con métricas simples para ver si hay volumen suficiente.
 
 ---
 
