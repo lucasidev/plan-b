@@ -110,12 +110,13 @@ Agrupado por epic.
 |---|---|---|---|
 | [US-036](user-stories/US-036.md) | Auth rebuild: 4 rutas separadas (Signup / Login / Forgot / ForgotSent) | Medium | M |
 | [US-037](user-stories/US-037.md) | Onboarding 4 pasos (Bienvenida / Carrera / Historial / Listo) | High | M |
+| [US-038-bis](user-stories/US-038-bis.md) | Soft delete con anonimización de cuenta (Done, S4, ADR-0044) | High | M |
 | [US-047](user-stories/US-047.md) | Mi perfil (view + edit datos académicos + foto) | High | M |
 | [US-058](user-stories/US-058.md) | Deshabilitar cuenta member (admin/mod) | Medium | S |
 | [US-072](user-stories/US-072.md) | Ajustes (notificaciones / privacidad / idioma / tema) | Medium | M |
 | [US-073](user-stories/US-073.md) | Ayuda (FAQ + contacto soporte) | Low | S |
 | [US-074](user-stories/US-074.md) | Sobre plan-b (página informacional + créditos) | Low | S |
-| [US-075](user-stories/US-075.md) | Member deshabilita su propia cuenta (self-disable) | Medium | S |
+| [US-075](user-stories/US-075.md) | Member deshabilita su propia cuenta (self-disable) (Cancelada, ADR-0044) | Medium | S |
 | [US-079-i](user-stories/US-079-i.md) | Cambiar contraseña con sesión activa (integrated) | Medium | S |
 | [US-091](user-stories/US-091.md) | Oficialización de condición por evidencia (parent -b/-f/-i, ADR-0048) | Medium | L |
 | [US-035](user-stories/US-035.md) | Sign-in con Google (OAuth) | Low | M |
