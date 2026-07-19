@@ -9,8 +9,13 @@ import { Fragment } from 'react';
  * (llegan con US-081 / US-087).
  */
 const SEGMENT_LABELS: Record<string, string> = {
+  universities: 'Universidades',
   teachers: 'Docentes',
-  new: 'Nuevo docente',
+  careers: 'Carreras',
+  // `new`/`edit` son genéricos: el mismo breadcrumb sirve para todos los recursos del backoffice
+  // (docentes, universidades, carreras). No hardcodear el recurso acá (antes decía "Nuevo docente",
+  // que se filtraba mal a las otras secciones).
+  new: 'Nuevo',
   edit: 'Editar',
   moderacion: 'Moderación',
   reportes: 'Reportes',
