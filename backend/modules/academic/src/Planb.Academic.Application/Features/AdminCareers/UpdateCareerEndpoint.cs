@@ -35,25 +35,27 @@ public sealed class UpdateCareerEndpoint : ICarterModule
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            // DegreeType/Modality son metadata opcional (US-061): un string vacío o que no
-            // matchea el enum se guarda como null en vez de rechazar el request entero.
-            CareerDegreeType? degreeType = null;
-            if (!string.IsNullOrWhiteSpace(body.DegreeType)
-                && Enum.TryParse<CareerDegreeType>(body.DegreeType, ignoreCase: true, out var parsedDegreeType))
+            // DegreeType/Cadence son metadata opcional (US-061), pero un string no-vacío inválido
+            // se rechaza con 400 (no null silencioso): un typo del admin no se traga.
+            var degreeType = CareerEnumParsing.ParseDegreeType(body.DegreeType);
+            if (degreeType.IsFailure)
             {
-                degreeType = parsedDegreeType;
+                return Results.Problem(
+                    title: degreeType.Error.Code, detail: degreeType.Error.Message,
+                    statusCode: StatusCodes.Status400BadRequest);
             }
 
-            TermKind? modality = null;
-            if (!string.IsNullOrWhiteSpace(body.Modality)
-                && Enum.TryParse<TermKind>(body.Modality, ignoreCase: true, out var parsedModality))
+            var cadence = CareerEnumParsing.ParseCadence(body.Cadence);
+            if (cadence.IsFailure)
             {
-                modality = parsedModality;
+                return Results.Problem(
+                    title: cadence.Error.Code, detail: cadence.Error.Message,
+                    statusCode: StatusCodes.Status400BadRequest);
             }
 
             var command = new UpdateCareerCommand(
                 id, body.Name, body.Slug, body.ShortName, body.Code,
-                degreeType, body.DurationYears, modality, body.Description);
+                degreeType.Value, body.DurationYears, cadence.Value, body.Description);
 
             try
             {
@@ -96,8 +98,8 @@ public sealed class UpdateCareerEndpoint : ICarterModule
 }
 
 /// <summary>
-/// Body del PATCH. Name + slug requeridos; shortName/code/degreeType/durationYears/modality/
-/// description opcionales. DegreeType y Modality viajan como string (el endpoint los parsea).
+/// Body del PATCH. Name + slug requeridos; shortName/code/degreeType/durationYears/cadence/
+/// description opcionales. DegreeType y Cadence viajan como string (el endpoint los parsea).
 /// </summary>
 public sealed record UpdateCareerRequest(
     string Name,
@@ -106,5 +108,5 @@ public sealed record UpdateCareerRequest(
     string? Code,
     string? DegreeType,
     int? DurationYears,
-    string? Modality,
+    string? Cadence,
     string? Description);

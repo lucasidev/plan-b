@@ -88,7 +88,7 @@ public class CareerTests
         career.Code.ShouldBe("COD");
         career.DegreeType.ShouldBe(CareerDegreeType.Grado);
         career.DurationYears.ShouldBe(5);
-        career.Modality.ShouldBe(TermKind.Cuatrimestral);
+        career.Cadence.ShouldBe(TermKind.Cuatrimestral);
         career.Description.ShouldBe("Descripción");
         career.UpdatedAt.ShouldBe(laterClock.UtcNow);
     }

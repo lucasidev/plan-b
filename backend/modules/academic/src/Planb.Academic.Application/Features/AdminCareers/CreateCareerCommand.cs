@@ -6,7 +6,7 @@ namespace Planb.Academic.Application.Features.AdminCareers;
 /// <summary>
 /// Alta de una carrera oficial del catálogo, anclada a una universidad (US-061, admin). El
 /// aggregate normaliza slug/shortName/code (trim; el slug además a lowercase). DegreeType y
-/// Modality llegan ya parseados a enum: el endpoint hace el <c>Enum.TryParse</c> desde el string
+/// Cadence llegan ya parseados a enum: el endpoint hace el <c>Enum.TryParse</c> desde el string
 /// del body.
 /// </summary>
 public sealed record CreateCareerCommand(
@@ -17,5 +17,5 @@ public sealed record CreateCareerCommand(
     string? Code,
     CareerDegreeType? DegreeType,
     int? DurationYears,
-    TermKind? Modality,
+    TermKind? Cadence,
     string? Description);

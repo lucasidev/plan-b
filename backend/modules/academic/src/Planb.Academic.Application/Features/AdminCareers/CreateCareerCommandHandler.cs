@@ -23,8 +23,8 @@ public static class CreateCareerCommandHandler
         IDateTimeProvider clock,
         CancellationToken ct)
     {
-        // No hay FK cross-schema (ADR-0017): el application layer valida que la University exista
-        // antes de crear la carrera, igual que CreateTeacher. Sin esto quedan Careers huérfanas.
+        // University y Career viven en el mismo schema academic (sin FK declarada): validamos la
+        // existencia en el app-layer, igual que CreateTeacher (ADR-0017). Sin esto quedan Careers huérfanas.
         if (!await academic.UniversityExistsAsync(command.UniversityId, ct))
         {
             return CareerErrors.UniversityNotFound;
@@ -55,7 +55,7 @@ public static class CreateCareerCommandHandler
             command.Code,
             command.DegreeType,
             command.DurationYears,
-            command.Modality,
+            command.Cadence,
             command.Description);
         if (result.IsFailure)
         {

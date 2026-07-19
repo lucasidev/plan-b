@@ -58,6 +58,10 @@ internal sealed class CareerPlanConfiguration : IEntityTypeConfiguration<CareerP
             .HasColumnName("created_at")
             .IsRequired();
 
+        builder.Property(cp => cp.UpdatedAt)
+            .HasColumnName("updated_at")
+            .IsRequired();
+
         builder.Ignore(cp => cp.DomainEvents);
     }
 }

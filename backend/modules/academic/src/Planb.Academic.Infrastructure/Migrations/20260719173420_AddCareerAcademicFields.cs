@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,6 +11,14 @@ namespace Planb.Academic.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "cadence",
+                schema: "academic",
+                table: "careers",
+                type: "character varying(20)",
+                maxLength: 20,
+                nullable: true);
+
             migrationBuilder.AddColumn<string>(
                 name: "degree_type",
                 schema: "academic",
@@ -34,25 +43,30 @@ namespace Planb.Academic.Infrastructure.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "modality",
-                schema: "academic",
-                table: "careers",
-                type: "character varying(20)",
-                maxLength: 20,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
                 name: "label",
                 schema: "academic",
                 table: "career_plans",
                 type: "character varying(60)",
                 maxLength: 60,
                 nullable: true);
+
+            migrationBuilder.AddColumn<DateTimeOffset>(
+                name: "updated_at",
+                schema: "academic",
+                table: "career_plans",
+                type: "timestamp with time zone",
+                nullable: false,
+                defaultValue: new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "cadence",
+                schema: "academic",
+                table: "careers");
+
             migrationBuilder.DropColumn(
                 name: "degree_type",
                 schema: "academic",
@@ -69,12 +83,12 @@ namespace Planb.Academic.Infrastructure.Migrations
                 table: "careers");
 
             migrationBuilder.DropColumn(
-                name: "modality",
+                name: "label",
                 schema: "academic",
-                table: "careers");
+                table: "career_plans");
 
             migrationBuilder.DropColumn(
-                name: "label",
+                name: "updated_at",
                 schema: "academic",
                 table: "career_plans");
         }

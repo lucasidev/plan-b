@@ -30,7 +30,7 @@ public static class GetCareerQueryHandler
             career.Code,
             career.DegreeType?.ToString(),
             career.DurationYears,
-            career.Modality?.ToString(),
+            career.Cadence?.ToString(),
             career.Description,
             career.IsOfficial,
             career.IsActive);

@@ -6,17 +6,20 @@ namespace Planb.Academic.Domain.CareerPlans;
 
 /// <summary>
 /// Plan de estudios de una Career para un año particular (ej. TUDCS Plan 2024). Hoy expone solo
-/// metadata (Year, Status); Subjects, Prerequisites y créditos viven en aggregates paralelos.
+/// metadata (Year, Status, Label); Subjects, Prerequisites y créditos viven en aggregates paralelos.
 ///
 /// Por qué separado de Career: la misma Career puede tener planes paralelos vigentes (caso
 /// típico "Plan 2018" para alumnos viejos + "Plan 2024" para nuevos). Modelarlos como aggregate
-/// distinto evita inflar Career y permite que cada plan tenga su propio lifecycle.
+/// distinto evita inflar Career y permite que cada plan tenga su propio lifecycle. Como sus
+/// hermanos mutables (Career, University, Teacher), sella <see cref="UpdatedAt"/> en cada
+/// transición.
 /// </summary>
 public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
 {
     public CareerId CareerId { get; private set; }
     public int Year { get; private set; }
     public CareerPlanStatus Status { get; private set; }
+
     /// <summary>
     /// True cuando el plan lo creó el backoffice. False cuando lo creó un alumno via
     /// crowdsourcing (US-088 import PDF en onboarding). Las cascadas del frontend muestran
@@ -32,6 +35,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     public string? Label { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset UpdatedAt { get; private set; }
 
     private CareerPlan() { }
 
@@ -52,6 +56,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             return CareerPlanErrors.YearOutOfRange;
         }
 
+        var now = clock.UtcNow;
         return new CareerPlan
         {
             Id = CareerPlanId.New(),
@@ -60,7 +65,8 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             Status = CareerPlanStatus.Active,
             IsOfficial = isOfficial,
             Label = string.IsNullOrWhiteSpace(label) ? null : label.Trim(),
-            CreatedAt = clock.UtcNow,
+            CreatedAt = now,
+            UpdatedAt = now,
         };
     }
 
@@ -68,9 +74,14 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     /// Promueve un plan no-oficial a oficial. Idempotente. Lo invoca el flujo de backoffice
     /// cuando un admin valida un plan crowdsourced (post-MVP).
     /// </summary>
-    public void MarkOfficial()
+    public void MarkOfficial(IDateTimeProvider clock)
     {
-        if (!IsOfficial) IsOfficial = true;
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsOfficial) return;
+
+        IsOfficial = true;
+        UpdatedAt = clock.UtcNow;
     }
 
     /// <summary>
@@ -78,26 +89,32 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     /// alumnos asociados quedan en él; solo deja de ser el vigente para nuevos ingresos.
     /// Idempotencia explícita: deprecar un plan ya deprecated devuelve error.
     /// </summary>
-    public Result Deprecate()
+    public Result Deprecate(IDateTimeProvider clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         if (Status == CareerPlanStatus.Deprecated)
         {
             return CareerPlanErrors.AlreadyDeprecated;
         }
 
         Status = CareerPlanStatus.Deprecated;
+        UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
 
     /// <summary>Reactiva un plan archivado (US-061, admin): Deprecated a Active. Idempotencia explícita.</summary>
-    public Result Reactivate()
+    public Result Reactivate(IDateTimeProvider clock)
     {
+        ArgumentNullException.ThrowIfNull(clock);
+
         if (Status == CareerPlanStatus.Active)
         {
             return CareerPlanErrors.AlreadyActive;
         }
 
         Status = CareerPlanStatus.Active;
+        UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
 
@@ -108,7 +125,8 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
         CareerPlanStatus status,
         bool isOfficial,
         string? label,
-        DateTimeOffset createdAt) =>
+        DateTimeOffset createdAt,
+        DateTimeOffset updatedAt) =>
         new()
         {
             Id = id,
@@ -118,5 +136,6 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             IsOfficial = isOfficial,
             Label = label,
             CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
         };
 }
