@@ -3,6 +3,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Planb.Academic.Domain;
+using Planb.Academic.Domain.Careers;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 
@@ -33,8 +35,25 @@ public sealed class CreateCareerEndpoint : ICarterModule
                     statusCode: StatusCodes.Status404NotFound);
             }
 
+            // DegreeType/Modality son metadata opcional (US-061): un string vacío o que no
+            // matchea el enum se guarda como null en vez de rechazar el request entero.
+            CareerDegreeType? degreeType = null;
+            if (!string.IsNullOrWhiteSpace(body.DegreeType)
+                && Enum.TryParse<CareerDegreeType>(body.DegreeType, ignoreCase: true, out var parsedDegreeType))
+            {
+                degreeType = parsedDegreeType;
+            }
+
+            TermKind? modality = null;
+            if (!string.IsNullOrWhiteSpace(body.Modality)
+                && Enum.TryParse<TermKind>(body.Modality, ignoreCase: true, out var parsedModality))
+            {
+                modality = parsedModality;
+            }
+
             var command = new CreateCareerCommand(
-                universityId, body.Name, body.Slug, body.ShortName, body.Code);
+                universityId, body.Name, body.Slug, body.ShortName, body.Code,
+                degreeType, body.DurationYears, modality, body.Description);
 
             try
             {
@@ -77,9 +96,16 @@ public sealed class CreateCareerEndpoint : ICarterModule
     }
 }
 
-/// <summary>Body del POST. Name + slug requeridos; shortName/code opcionales.</summary>
+/// <summary>
+/// Body del POST. Name + slug requeridos; shortName/code/degreeType/durationYears/modality/
+/// description opcionales. DegreeType y Modality viajan como string (el endpoint los parsea).
+/// </summary>
 public sealed record CreateCareerRequest(
     string Name,
     string Slug,
     string? ShortName,
-    string? Code);
+    string? Code,
+    string? DegreeType,
+    int? DurationYears,
+    string? Modality,
+    string? Description);

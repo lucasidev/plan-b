@@ -109,6 +109,10 @@ public sealed class AcademicSeeder
                     seed.Career.Slug,
                     shortName: null,
                     code: null,
+                    degreeType: null,
+                    durationYears: null,
+                    modality: null,
+                    description: null,
                     isOfficial: true,
                     isActive: true,
                     createdAt: now,
@@ -124,6 +128,7 @@ public sealed class AcademicSeeder
                     seed.Plan.Year,
                     CareerPlanStatus.Active,
                     isOfficial: true,
+                    label: null,
                     now));
                 plansInserted++;
             }

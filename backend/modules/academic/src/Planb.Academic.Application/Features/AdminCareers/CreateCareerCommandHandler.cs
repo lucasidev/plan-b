@@ -52,7 +52,11 @@ public static class CreateCareerCommandHandler
             clock,
             isOfficial: true,
             command.ShortName,
-            command.Code);
+            command.Code,
+            command.DegreeType,
+            command.DurationYears,
+            command.Modality,
+            command.Description);
         if (result.IsFailure)
         {
             return result.Error;

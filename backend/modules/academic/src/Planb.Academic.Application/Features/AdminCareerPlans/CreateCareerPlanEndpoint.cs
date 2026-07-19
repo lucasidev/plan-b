@@ -33,7 +33,7 @@ public sealed class CreateCareerPlanEndpoint : ICarterModule
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            var command = new CreateCareerPlanCommand(careerId, body.Year);
+            var command = new CreateCareerPlanCommand(careerId, body.Year, body.Label);
 
             var result = await bus.InvokeAsync<Result<CreateCareerPlanResponse>>(command, ct);
             if (result.IsSuccess)
@@ -67,5 +67,8 @@ public sealed class CreateCareerPlanEndpoint : ICarterModule
     }
 }
 
-/// <summary>Body del POST. Year requerido (el dominio valida rango: positivo y no futuro).</summary>
-public sealed record CreateCareerPlanRequest(int Year);
+/// <summary>
+/// Body del POST. Year requerido (el dominio valida rango: positivo y no futuro). Label es una
+/// etiqueta editorial opcional (US-061, ej. "plan-2023").
+/// </summary>
+public sealed record CreateCareerPlanRequest(int Year, string? Label);

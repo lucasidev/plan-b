@@ -30,7 +30,8 @@ internal sealed class DapperAdminCareerPlanReader : IAdminCareerPlanReader
                 cp.id          AS Id,
                 cp.year        AS Year,
                 cp.status      AS Status,
-                cp.is_official AS IsOfficial
+                cp.is_official AS IsOfficial,
+                cp.label       AS Label
             FROM academic.career_plans cp
             WHERE cp.career_id = @CareerId
             ORDER BY cp.year DESC;";

@@ -38,7 +38,16 @@ public static class UpdateCareerCommandHandler
             return CareerErrors.CodeAlreadyTaken;
         }
 
-        var result = career.Update(command.Name, command.Slug, command.ShortName, command.Code, clock);
+        var result = career.Update(
+            command.Name,
+            command.Slug,
+            command.ShortName,
+            command.Code,
+            command.DegreeType,
+            command.DurationYears,
+            command.Modality,
+            command.Description,
+            clock);
         if (result.IsFailure)
         {
             return result.Error;

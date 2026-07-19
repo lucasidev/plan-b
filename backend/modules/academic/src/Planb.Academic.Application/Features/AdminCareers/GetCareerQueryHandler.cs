@@ -28,6 +28,10 @@ public static class GetCareerQueryHandler
             career.Slug,
             career.ShortName,
             career.Code,
+            career.DegreeType?.ToString(),
+            career.DurationYears,
+            career.Modality?.ToString(),
+            career.Description,
             career.IsOfficial,
             career.IsActive);
     }

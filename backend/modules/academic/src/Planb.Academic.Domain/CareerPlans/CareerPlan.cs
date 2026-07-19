@@ -23,6 +23,14 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
     /// badge "No oficial" cuando es false.
     /// </summary>
     public bool IsOfficial { get; private set; }
+
+    /// <summary>
+    /// Identificador humano del plan (US-061, ej. "plan-2023"; el alumno ve "Plan 2023"). Opcional:
+    /// el crowdsourcing no lo carga. El year sigue siendo la clave de unicidad; el label es una
+    /// etiqueta editorial.
+    /// </summary>
+    public string? Label { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     private CareerPlan() { }
@@ -31,7 +39,8 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
         CareerId careerId,
         int year,
         IDateTimeProvider clock,
-        bool isOfficial = true)
+        bool isOfficial = true,
+        string? label = null)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -50,6 +59,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             Year = year,
             Status = CareerPlanStatus.Active,
             IsOfficial = isOfficial,
+            Label = string.IsNullOrWhiteSpace(label) ? null : label.Trim(),
             CreatedAt = clock.UtcNow,
         };
     }
@@ -97,6 +107,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
         int year,
         CareerPlanStatus status,
         bool isOfficial,
+        string? label,
         DateTimeOffset createdAt) =>
         new()
         {
@@ -105,6 +116,7 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
             Year = year,
             Status = status,
             IsOfficial = isOfficial,
+            Label = label,
             CreatedAt = createdAt,
         };
 }

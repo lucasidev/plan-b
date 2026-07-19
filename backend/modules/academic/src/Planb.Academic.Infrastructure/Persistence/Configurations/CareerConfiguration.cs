@@ -57,6 +57,25 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .HasFilter("code IS NOT NULL")
             .HasDatabaseName("ux_careers_university_code");
 
+        // Atributos académicos (US-061). Todos nullable: el crowdsourcing crea carreras solo con
+        // name/slug, el form de admin los completa.
+        builder.Property(c => c.DegreeType)
+            .HasColumnName("degree_type")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(c => c.DurationYears)
+            .HasColumnName("duration_years");
+
+        builder.Property(c => c.Modality)
+            .HasColumnName("modality")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(c => c.Description)
+            .HasColumnName("description")
+            .HasMaxLength(500);
+
         // True = creada por backoffice (admin/staff). False = crowdsourced por alumno en
         // onboarding paso 2 (US-088). El frontend muestra badge "No oficial" cuando es false.
         builder.Property(c => c.IsOfficial)
