@@ -94,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - migrar auth al AuthShell v2 + generalizar copy (auth) — [`122f2a5`](https://github.com/lucasidev/plan-b/commit/122f2a51ce80c39d12ac6074eb7f6532f30fe685)
 - migrar al OnbShell v2 con topbar de progreso (onboarding) — [`56ab6f4`](https://github.com/lucasidev/plan-b/commit/56ab6f419fc41716716c858c42d93204ffa47a25)
 - landing publica en / (reemplaza el redirect a /home) (landing) — [`051f00b`](https://github.com/lucasidev/plan-b/commit/051f00bda446e79c2a2df29ccbeaf540d6bf22cf)
+- admin de carreras y planes de estudio (US-061-b) (#206) (academic) — [`fa43b24`](https://github.com/lucasidev/plan-b/commit/fa43b24c80f87f23f1a14e46fc462a028a11a391)
 
 ### Fixed
 
