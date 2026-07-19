@@ -4,23 +4,29 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
-import { deactivateUniversityAction, reactivateUniversityAction } from '../actions';
-import type { AdminUniversityRow } from '../types';
+import { deactivateCareerAction, reactivateCareerAction } from '../actions';
+import type { AdminCareerRow } from '../types';
 
-const GRID = 'minmax(0,1.5fr) minmax(0,1.3fr) 90px 96px 168px';
+const GRID = 'minmax(0,1.6fr) minmax(0,1fr) 74px 96px 190px';
 
 /**
- * Tabla del backoffice de universidades (US-060 admin). Densa, mono para metadatos, tablas sobre
- * cards (registro admin del design system; mismo patrón que TeacherTable de US-063). Trae activas +
- * inactivas; cada fila ofrece Editar + Desactivar (activas) o Reactivar (inactivas). Mutación pura
- * (ADR-0046): los toggles refrescan la RSC.
+ * Tabla del backoffice de carreras de una universidad (US-061 admin). Mismo registro visual que
+ * UniversityTable (tabla densa, mono para metadatos). Trae activas + inactivas; el nombre linkea al
+ * detalle (donde viven los planes). Cada fila ofrece Detalle + Editar (activas) o Reactivar
+ * (inactivas). Mutación pura (ADR-0046): los toggles refrescan la RSC.
  */
-export function UniversityTable({ universities }: { universities: AdminUniversityRow[] }) {
-  if (universities.length === 0) {
+export function CareerTable({
+  universityId,
+  careers,
+}: {
+  universityId: string;
+  careers: AdminCareerRow[];
+}) {
+  if (careers.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-line bg-bg-card px-6 py-12 text-center">
         <p className="m-0 text-[13px] text-ink-3">
-          Todavía no hay universidades cargadas. Afiliá la primera con "Afiliar universidad".
+          Todavía no hay carreras en esta universidad. Cargá la primera con "Nueva carrera".
         </p>
       </div>
     );
@@ -32,33 +38,35 @@ export function UniversityTable({ universities }: { universities: AdminUniversit
         className="grid items-center gap-3.5 border-b border-line bg-bg-elev px-3.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-3"
         style={{ gridTemplateColumns: GRID, height: 32 }}
       >
-        <div>Universidad</div>
-        <div>Dominios institucionales</div>
-        <div className="text-right">Carreras</div>
+        <div>Carrera</div>
+        <div>Código</div>
+        <div className="text-right">Planes</div>
         <div>Estado</div>
         <div className="text-right">Acciones</div>
       </div>
-      {universities.map((u) => (
-        <UniversityRow key={u.id} university={u} />
+      {careers.map((c) => (
+        <CareerRow key={c.id} universityId={universityId} career={c} />
       ))}
     </div>
   );
 }
 
-function UniversityRow({ university }: { university: AdminUniversityRow }) {
+function CareerRow({ universityId, career }: { universityId: string; career: AdminCareerRow }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  const detailHref = `/admin/universities/${universityId}/careers/${career.id}`;
+
   function runToggle() {
-    if (university.isActive && !window.confirm(`¿Desactivar ${university.name}?`)) {
+    if (career.isActive && !window.confirm(`¿Desactivar ${career.name}?`)) {
       return;
     }
     setError(null);
     startTransition(async () => {
-      const result = university.isActive
-        ? await deactivateUniversityAction(university.id)
-        : await reactivateUniversityAction(university.id);
+      const result = career.isActive
+        ? await deactivateCareerAction(career.id)
+        : await reactivateCareerAction(career.id);
       if (result.ok) {
         router.refresh();
       } else {
@@ -70,39 +78,32 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
   return (
     <div className="border-b border-line-2 last:border-b-0">
       <div
-        className={cn(
-          'grid items-center gap-3.5 px-3.5 py-2',
-          !university.isActive && 'opacity-60',
-        )}
+        className={cn('grid items-center gap-3.5 px-3.5 py-2', !career.isActive && 'opacity-60')}
         style={{ gridTemplateColumns: GRID }}
       >
         <div className="min-w-0">
-          <div className="truncate font-medium text-ink">{university.name}</div>
-          <div className="truncate font-mono text-[10px] text-ink-4">{university.slug}</div>
-        </div>
-        <div className="truncate text-ink-2">
-          {university.institutionalEmailDomains.length > 0 ? (
-            university.institutionalEmailDomains.join(', ')
-          ) : (
-            <span className="text-ink-4">sin dominios</span>
-          )}
-        </div>
-        <div className="text-right font-mono">
-          <Link
-            href={`/admin/universities/${university.id}/careers`}
-            className="text-ink-2 underline decoration-dotted underline-offset-2 hover:text-ink"
-            aria-label={`Ver carreras de ${university.name}`}
-          >
-            {university.careerCount}
+          <Link href={detailHref} className="block truncate font-medium text-ink hover:underline">
+            {career.name}
           </Link>
+          <div className="truncate font-mono text-[10px] text-ink-4">{career.slug}</div>
         </div>
+        <div className="truncate font-mono text-[11px] text-ink-2">
+          {career.code ?? <span className="text-ink-4">sin código</span>}
+        </div>
+        <div className="text-right font-mono text-ink-2">{career.planCount}</div>
         <div>
-          <StatusBadge active={university.isActive} />
+          <StatusBadge active={career.isActive} />
         </div>
         <div className="flex items-center justify-end gap-1">
-          {university.isActive && (
+          <Link
+            href={detailHref}
+            className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
+          >
+            Detalle
+          </Link>
+          {career.isActive && (
             <Link
-              href={`/admin/universities/${university.id}/edit`}
+              href={`${detailHref}/edit`}
               className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
             >
               Editar
@@ -114,12 +115,12 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
             disabled={isPending}
             className={cn(
               'rounded-md px-2 py-1 text-[11.5px] disabled:opacity-50',
-              university.isActive
+              career.isActive
                 ? 'text-accent-ink hover:bg-accent-soft'
                 : 'text-ink-2 hover:bg-bg-elev hover:text-ink',
             )}
           >
-            {isPending ? '...' : university.isActive ? 'Desactivar' : 'Reactivar'}
+            {isPending ? '...' : career.isActive ? 'Desactivar' : 'Reactivar'}
           </button>
         </div>
       </div>
