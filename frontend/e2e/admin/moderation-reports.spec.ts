@@ -163,6 +163,11 @@ test.describe('Moderación · cola + decisión (US-050, US-051)', () => {
     await expect(page.getByRole('heading', { name: /^decisión$/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /contexto del autor/i })).toBeVisible();
 
+    // Esperar la hidratación antes de aplicar la decisión: si el submit pega antes, el server action
+    // corre (POST nativo) pero el redirect a la cola vive en un useEffect client que todavía no está
+    // activo, así que la decisión se aplica pero la página no vuelve a la cola (flake de S8).
+    await page.waitForLoadState('networkidle');
+
     // Selecciona "Aprobar" (dismiss, siempre disponible) y aplica.
     await page.locator('label').filter({ hasText: 'Aprobar' }).click();
     await page.getByRole('button', { name: /aplicar decisión/i }).click();
