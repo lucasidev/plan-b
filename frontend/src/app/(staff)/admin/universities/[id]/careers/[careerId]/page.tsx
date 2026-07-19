@@ -1,7 +1,10 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { AdminPageHeader } from '@/components/layout/admin-page-header';
 import { CareerPlansPanel } from '@/features/manage-careers';
+import { careerPlanQueries } from '@/features/manage-careers/api';
 import {
   fetchCareerDetailServer,
   fetchCareerPlansServer,
@@ -12,8 +15,9 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Detalle de una carrera (US-061 admin): resumen de metadata + panel de planes de estudio. RSC:
- * fetch server-side de la carrera, sus planes y la uni (para el header). El panel gestiona el alta y
- * la transición de estado de los planes; refresca esta RSC vía router.refresh() (ADR-0046).
+ * fetch server-side de la carrera y la uni (para el header) + prefetch de los planes en el
+ * QueryClient (mismo queryKey que consume el panel con useSuspenseQuery). El panel gestiona el alta
+ * y la transición de estado de los planes invalidando ese query (ADR-0046).
  */
 export default async function CareerDetailPage({
   params,
@@ -21,19 +25,23 @@ export default async function CareerDetailPage({
   params: Promise<{ id: string; careerId: string }>;
 }) {
   const { id: universityId, careerId } = await params;
-  // La carrera es el gate: la buscamos primero (maneja 404 → null) y cortamos antes de pedir los
-  // planes. Con un careerId que no es GUID el list de planes respondería 404 y tiraría, rechazando el
-  // Promise.all y degradando el 404 a un 500; con el gate primero eso no pasa. Además tiene que
-  // pertenecer a la uni de la ruta: el GET por id no valida el parent, así que sin este chequeo una
-  // URL cruzada mostraría la carrera con los links de "volver" a la uni errada.
+  // La carrera es el gate: la buscamos primero (maneja 404 → null) y cortamos antes de prefetchear
+  // los planes. Con un careerId que no es GUID el list de planes respondería 404 y tiraría; con el
+  // gate primero eso no pasa. Además tiene que pertenecer a la uni de la ruta: el GET por id no
+  // valida el parent, así que sin este chequeo una URL cruzada mostraría la carrera con los links de
+  // "volver" a la uni errada.
   const career = await fetchCareerDetailServer(careerId);
   if (!career || career.universityId !== universityId) {
     notFound();
   }
-  const [plans, university] = await Promise.all([
-    fetchCareerPlansServer(careerId),
-    fetchUniversityDetailServer(universityId),
-  ]);
+  const university = await fetchUniversityDetailServer(universityId);
+
+  const queryClient = new QueryClient();
+  const plansOptions = careerPlanQueries.forCareer(careerId);
+  await queryClient.prefetchQuery({
+    queryKey: plansOptions.queryKey,
+    queryFn: () => fetchCareerPlansServer(careerId),
+  });
 
   // Resumen con la metadata que sí tenemos cargada (materias/alumnos son US-062/US-093).
   const summaryParts = [
@@ -72,7 +80,22 @@ export default async function CareerDetailPage({
           Esta carrera está desactivada. Reactivala desde el listado para que vuelva al catálogo.
         </p>
       )}
-      <CareerPlansPanel careerId={careerId} plans={plans} />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <Suspense fallback={<PlansPanelSkeleton />}>
+          <CareerPlansPanel careerId={careerId} />
+        </Suspense>
+      </HydrationBoundary>
+    </div>
+  );
+}
+
+function PlansPanelSkeleton() {
+  return (
+    <div
+      className="rounded-lg border border-line bg-bg-card px-4 py-8 text-center text-[12.5px] text-ink-3"
+      aria-busy="true"
+    >
+      Cargando planes…
     </div>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useActionState, useEffect, useId, useRef, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { createPlanAction, deprecatePlanAction, reactivatePlanAction } from '../actions';
+import { careerPlanQueries } from '../api';
 import { type CareerPlanRow, initialManagePlanState } from '../types';
 
 const inputClass =
@@ -13,20 +14,17 @@ const inputClass =
 /**
  * Panel de planes de estudio de una carrera (US-061 admin), en el detalle. Alta inline (año + label)
  * + tabla de planes con transición de estado. El modelo es year + status (ADR-0049): un plan por
- * año, Active (vigente) o Deprecated. Mutación pura (ADR-0046): tras el alta o un toggle se refetchea
- * la RSC del detalle con router.refresh().
+ * año, Active (vigente) o Deprecated. Los planes son una TanStack Query (prefetcheada en la RSC del
+ * detalle); las mutaciones invalidan ese query para refrescar client-side (ADR-0046): router.refresh()
+ * no reflejaba de forma confiable una mutación en la misma página en prod build.
  *
  * Del mock de detalle quedan afuera, por no tener backend todavía: columnas Materias/Alumnos
  * (US-062/US-093), "Editar plan" (no hay PATCH de plan: el plan solo muta de estado) y "Migrar" +
  * el estado intermedio "transición" (US-084). Acá los estados son los dos reales: vigente/deprecado.
  */
-export function CareerPlansPanel({
-  careerId,
-  plans,
-}: {
-  careerId: string;
-  plans: CareerPlanRow[];
-}) {
+export function CareerPlansPanel({ careerId }: { careerId: string }) {
+  const { data: plans } = useSuspenseQuery(careerPlanQueries.forCareer(careerId));
+
   return (
     <div className="rounded-lg border border-line bg-bg-card">
       <div className="flex items-center justify-between border-b border-line px-4 py-3">
@@ -43,14 +41,14 @@ export function CareerPlansPanel({
           Todavía no hay planes cargados. Agregá el primero con el formulario de arriba.
         </p>
       ) : (
-        <PlansTable plans={plans} />
+        <PlansTable careerId={careerId} plans={plans} />
       )}
     </div>
   );
 }
 
 function AddPlanForm({ careerId }: { careerId: string }) {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(createPlanAction, initialManagePlanState);
   const ids = { year: useId(), label: useId() };
@@ -58,8 +56,8 @@ function AddPlanForm({ careerId }: { careerId: string }) {
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
-    router.refresh();
-  }, [state, router]);
+    queryClient.invalidateQueries({ queryKey: careerPlanQueries.forCareer(careerId).queryKey });
+  }, [state, queryClient, careerId]);
 
   return (
     <form
@@ -108,7 +106,7 @@ function AddPlanForm({ careerId }: { careerId: string }) {
 
 const GRID = 'minmax(0,90px) minmax(0,1fr) 110px 130px';
 
-function PlansTable({ plans }: { plans: CareerPlanRow[] }) {
+function PlansTable({ careerId, plans }: { careerId: string; plans: CareerPlanRow[] }) {
   return (
     <div className="text-[12.5px]">
       <div
@@ -121,14 +119,14 @@ function PlansTable({ plans }: { plans: CareerPlanRow[] }) {
         <div className="text-right">Acciones</div>
       </div>
       {plans.map((plan) => (
-        <PlanRow key={plan.id} plan={plan} />
+        <PlanRow key={plan.id} careerId={careerId} plan={plan} />
       ))}
     </div>
   );
 }
 
-function PlanRow({ plan }: { plan: CareerPlanRow }) {
-  const router = useRouter();
+function PlanRow({ careerId, plan }: { careerId: string; plan: CareerPlanRow }) {
+  const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const isActive = plan.status === 'Active';
@@ -140,7 +138,9 @@ function PlanRow({ plan }: { plan: CareerPlanRow }) {
         ? await deprecatePlanAction(plan.id)
         : await reactivatePlanAction(plan.id);
       if (result.ok) {
-        router.refresh();
+        await queryClient.invalidateQueries({
+          queryKey: careerPlanQueries.forCareer(careerId).queryKey,
+        });
       } else {
         setError(result.message);
       }

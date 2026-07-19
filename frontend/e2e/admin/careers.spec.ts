@@ -4,10 +4,16 @@ import { ADMIN } from '../helpers/personas';
 /**
  * E2E para US-061 (backoffice de carreras y planes de estudio de una universidad).
  *
- * Flujo determinístico sobre la universidad seed (UNSTA): el admin entra al listado de carreras, da
- * de alta una carrera nueva, entra a su detalle, le agrega un plan de estudios y ejercita la
- * transición de estado del plan (deprecar/reactivar). Usa un tag random para el nombre/slug de la
- * carrera y el identificador del plan, así corridas repetidas no chocan en la DB compartida.
+ * Flujo determinístico sobre la universidad seed (UNSTA): el admin da de alta una carrera, entra a
+ * su detalle, le agrega un plan de estudios y ejercita la transición de estado del plan
+ * (deprecar/reactivar). Usa un tag random para el nombre/slug de la carrera y el identificador del
+ * plan, así corridas repetidas no chocan en la DB compartida.
+ *
+ * Navegación por `goto` en los pasos de setup (ir al form, ir al detalle) en vez de click en el
+ * `<Link>`: un click justo durante la hidratación de Next puede quedar sin navegar (React ya
+ * cancela el default del ancla pero todavía no montó la soft-navigation). Los `click` se reservan
+ * para lo que este test SÍ ejercita: el alta y la gestión de estado, que corren client-side ya
+ * hidratado. Que el `<Link>` navegue es responsabilidad del framework, no de esta US.
  */
 
 const UNSTA_ID = '00000001-0000-4000-a000-000000000001';
@@ -28,14 +34,16 @@ test.describe('Backoffice de carreras y planes de estudio (US-061)', () => {
   }) => {
     await signIn(page, ADMIN);
 
-    await page.goto(`/admin/universities/${UNSTA_ID}/careers`);
-    await expect(page.getByRole('heading', { name: /carreras/i })).toBeVisible({
+    // Alta de la carrera.
+    await page.goto(`/admin/universities/${UNSTA_ID}/careers/new`);
+    await expect(page.getByRole('heading', { name: /nueva carrera/i })).toBeVisible({
       timeout: 30_000,
     });
-
-    // Alta de la carrera.
-    await page.getByRole('link', { name: /nueva carrera/i }).click();
-    await expect(page).toHaveURL(/\/careers\/new$/, { timeout: 30_000 });
+    // Esperar la hidratación antes de submitear: si el click pega antes, el form hace un POST nativo
+    // (el server action corre igual) pero el redirect vive en un useEffect client que todavía no
+    // está activo, así que la carrera se crea pero la página no navega. networkidle marca que los
+    // chunks cargaron y React hidrató.
+    await page.waitForLoadState('networkidle');
 
     const tag = Math.random().toString(36).slice(2, 8);
     const careerName = `Carrera E2E ${tag}`;
@@ -46,17 +54,21 @@ test.describe('Backoffice de carreras y planes de estudio (US-061)', () => {
     await page.getByLabel(/modalidad/i).selectOption('Cuatrimestral');
     await page.getByRole('button', { name: /crear carrera/i }).click();
 
-    // Vuelve al listado y la carrera recién creada aparece.
+    // El alta (server action + redirect) vuelve al listado y la carrera recién creada aparece.
     await expect(page).toHaveURL(/\/careers$/, { timeout: 30_000 });
-    await expect(page.getByText(careerName)).toBeVisible({ timeout: 15_000 });
+    const careerLink = page.getByRole('link', { name: careerName });
+    await expect(careerLink).toBeVisible({ timeout: 15_000 });
 
-    // Entra al detalle desde el link del nombre.
-    await page.getByRole('link', { name: careerName }).click();
+    // Entra al detalle por su URL (tomada del listado), sin depender del click del <Link>.
+    const detailHref = await careerLink.getAttribute('href');
+    expect(detailHref).toBeTruthy();
+    await page.goto(detailHref as string);
     await expect(page.getByRole('heading', { name: careerName })).toBeVisible({
       timeout: 30_000,
     });
-
-    // Alta de un plan de estudios en el detalle.
+    // Igual que en el alta de la carrera: esperar hidratación antes de submitear el plan, así el
+    // invalidateQueries (useEffect client) que refresca la tabla está activo cuando el alta completa.
+    await page.waitForLoadState('networkidle');
     const planYear = String(new Date().getFullYear());
     const planLabel = `plan-e2e-${tag}`;
     await page.getByLabel(/^año$/i).fill(planYear);
