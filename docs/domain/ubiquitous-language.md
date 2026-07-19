@@ -33,8 +33,8 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 | **University** | Universidad. Entidad raíz del catálogo académico. Ej: UNSTA, SIGLO 21, USPT. |
 | **institutional_email_domains** | Array de dominios de email válidos para verificación automática de docentes de la universidad. Ej: `['unsta.edu.ar']`. |
 | **Career** | Carrera como concepto institucional estable. Ej: "Tecnicatura Universitaria en Desarrollo y Calidad de Software". |
-| **CareerPlan** | Versión específica del plan de estudios de una carrera, con fechas de vigencia y materias propias. Ej: "Plan 2019", "Plan 2024". |
-| **plan vigente** | `CareerPlan` con `effective_to IS NULL`. Es el que se le ofrece a nuevos ingresantes. |
+| **CareerPlan** | Plan de estudios de una carrera para un año particular (`year`), con materias propias y un `label` editorial opcional. Ej: "Plan 2019", "Plan 2024". |
+| **plan vigente** | `CareerPlan` con `status = Active`. Es el que se le ofrece a nuevos ingresantes; el plan anterior pasa a `Deprecated` pero sigue existiendo para los alumnos que ya lo cursan. |
 | **Subject** | Materia. Pertenece a un `CareerPlan`. Tiene `year_in_plan` (año del plan), `term_kind` y `term_in_year`. |
 | **Prerequisite** | Correlativa. Relación entre dos `Subject` del mismo plan con un `type`. |
 | **para_cursar** | Tipo de correlativa: requiere que la materia requerida esté **regularizada** para inscribirse a la dependiente. |

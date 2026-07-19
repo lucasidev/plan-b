@@ -1,9 +1,11 @@
 # ADR-0002: Versionado explícito de planes de estudio
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0049](0049-careerplan-year-status-en-vez-de-rango-de-vigencia.md)
 - **Fecha**: 2026-04-22
 
 ## Contexto
+
+> Superado por [ADR-0049](0049-careerplan-year-status-en-vez-de-rango-de-vigencia.md): el modelo de rangos (`version_label` + `effective_from`/`effective_to`) descripto acá no se implementó tal cual. `CareerPlan` versiona con `year` + `status` (Active/Deprecated). El contenido de abajo queda como registro histórico de la decisión original.
 
 Los planes de estudios universitarios cambian con el tiempo. UNSTA puede lanzar "Plan 2024" para reemplazar "Plan 2019": cambian materias, correlativas, cargas horarias. Los alumnos ingresados bajo el plan viejo siguen regidos por el plan viejo hasta recibirse.
 

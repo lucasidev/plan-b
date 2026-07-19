@@ -41,7 +41,8 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .IsUnique()
             .HasDatabaseName("ux_careers_university_slug");
 
-        // Nombre corto (US-061, opcional). El crowdsourcing lo deja null; el form admin lo exige.
+        // Nombre corto (US-061, opcional). Ni el crowdsourcing ni el validator del admin lo
+        // exigen; el admin lo completa si quiere.
         builder.Property(c => c.ShortName)
             .HasColumnName("short_name")
             .HasMaxLength(100);
