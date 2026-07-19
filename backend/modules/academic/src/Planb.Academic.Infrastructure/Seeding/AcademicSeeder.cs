@@ -111,7 +111,7 @@ public sealed class AcademicSeeder
                     code: null,
                     degreeType: null,
                     durationYears: null,
-                    modality: null,
+                    cadence: null,
                     description: null,
                     isOfficial: true,
                     isActive: true,
@@ -129,7 +129,8 @@ public sealed class AcademicSeeder
                     CareerPlanStatus.Active,
                     isOfficial: true,
                     label: null,
-                    now));
+                    createdAt: now,
+                    updatedAt: now));
                 plansInserted++;
             }
         }

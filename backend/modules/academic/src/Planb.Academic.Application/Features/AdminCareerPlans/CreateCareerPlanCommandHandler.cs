@@ -24,8 +24,8 @@ public static class CreateCareerPlanCommandHandler
     {
         var careerId = new CareerId(command.CareerId);
 
-        // No hay FK cross-schema (ADR-0017): validar que la Career exista antes de colgarle un plan.
-        // Sin esto queda un CareerPlan huérfano que ni siquiera aparece en los reads con JOIN.
+        // Career y CareerPlan viven en el mismo schema academic (sin FK declarada): validamos la
+        // existencia en el app-layer. Sin esto queda un CareerPlan huérfano que ni aparece en los reads con JOIN.
         if (await careers.FindByIdAsync(careerId, ct) is null)
         {
             return CareerErrors.NotFound;

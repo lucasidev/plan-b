@@ -67,8 +67,8 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
         builder.Property(c => c.DurationYears)
             .HasColumnName("duration_years");
 
-        builder.Property(c => c.Modality)
-            .HasColumnName("modality")
+        builder.Property(c => c.Cadence)
+            .HasColumnName("cadence")
             .HasConversion<string>()
             .HasMaxLength(20);
 

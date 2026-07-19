@@ -6,7 +6,7 @@ namespace Planb.Academic.Application.Features.AdminCareers;
 /// <summary>
 /// Edición de una carrera del catálogo (US-061, admin). Replace del form completo: name, slug,
 /// shortName, code y los atributos académicos se re-validan y re-normalizan como en el alta.
-/// DegreeType y Modality llegan ya parseados a enum: el endpoint hace el <c>Enum.TryParse</c>
+/// DegreeType y Cadence llegan ya parseados a enum: el endpoint hace el <c>Enum.TryParse</c>
 /// desde el string del body.
 /// </summary>
 public sealed record UpdateCareerCommand(
@@ -17,5 +17,5 @@ public sealed record UpdateCareerCommand(
     string? Code,
     CareerDegreeType? DegreeType,
     int? DurationYears,
-    TermKind? Modality,
+    TermKind? Cadence,
     string? Description);

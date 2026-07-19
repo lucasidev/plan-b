@@ -13,7 +13,7 @@ namespace Planb.Academic.Domain.Careers;
 /// plano, sin sub-entities. Subject + Prerequisite se diseñan como aggregates separados.
 ///
 /// <para>Atributos académicos (US-061, mock AdmOnbCarrera): <see cref="DegreeType"/>,
-/// <see cref="DurationYears"/>, <see cref="Modality"/> (reusa <see cref="TermKind"/>) y
+/// <see cref="DurationYears"/>, <see cref="Cadence"/> (reusa <see cref="TermKind"/>) y
 /// <see cref="Description"/>. Todos nullable: el crowdsourcing (US-088) crea carreras solo con
 /// name/slug, el form de admin los completa. El lifecycle draft/beta/live NO va acá (es US-091);
 /// el soft delete es <see cref="IsActive"/>.</para>
@@ -25,8 +25,8 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
     public string Slug { get; private set; } = null!;
 
     /// <summary>
-    /// Nombre corto (ej. "Ing. Sistemas"). Opcional: el crowdsourcing lo deja null, el form admin
-    /// lo exige vía su validator.
+    /// Nombre corto (ej. "Ing. Sistemas"). Opcional en todos lados: ni el crowdsourcing ni el
+    /// validator del admin lo exigen (el admin lo completa si quiere).
     /// </summary>
     public string? ShortName { get; private set; }
 
@@ -47,7 +47,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
     /// <see cref="AcademicTerms.AcademicTerm.Kind"/> y <see cref="Subjects.Subject"/>. Nullable en
     /// crowdsourcing.
     /// </summary>
-    public TermKind? Modality { get; private set; }
+    public TermKind? Cadence { get; private set; }
 
     /// <summary>Descripción corta visible al alumno (US-061). Opcional.</summary>
     public string? Description { get; private set; }
@@ -76,7 +76,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         string? code = null,
         CareerDegreeType? degreeType = null,
         int? durationYears = null,
-        TermKind? modality = null,
+        TermKind? cadence = null,
         string? description = null)
     {
         ArgumentNullException.ThrowIfNull(clock);
@@ -108,7 +108,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
             Code = NormalizeOptional(code),
             DegreeType = degreeType,
             DurationYears = durationYears,
-            Modality = modality,
+            Cadence = cadence,
             Description = NormalizeOptional(description),
             IsOfficial = isOfficial,
             IsActive = true,
@@ -136,7 +136,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         string? code,
         CareerDegreeType? degreeType,
         int? durationYears,
-        TermKind? modality,
+        TermKind? cadence,
         string? description,
         IDateTimeProvider clock)
     {
@@ -164,7 +164,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         Code = NormalizeOptional(code);
         DegreeType = degreeType;
         DurationYears = durationYears;
-        Modality = modality;
+        Cadence = cadence;
         Description = NormalizeOptional(description);
         UpdatedAt = clock.UtcNow;
         return Result.Success();
@@ -208,7 +208,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         string? code,
         CareerDegreeType? degreeType,
         int? durationYears,
-        TermKind? modality,
+        TermKind? cadence,
         string? description,
         bool isOfficial,
         bool isActive,
@@ -224,7 +224,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
             Code = code,
             DegreeType = degreeType,
             DurationYears = durationYears,
-            Modality = modality,
+            Cadence = cadence,
             Description = description,
             IsOfficial = isOfficial,
             IsActive = isActive,

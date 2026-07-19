@@ -1,5 +1,6 @@
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Domain.CareerPlans;
+using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Academic.Application.Features.AdminCareerPlans;
@@ -14,6 +15,7 @@ public static class DeprecateCareerPlanCommandHandler
         DeprecateCareerPlanCommand command,
         ICareerPlanRepository plans,
         IAcademicUnitOfWork unitOfWork,
+        IDateTimeProvider clock,
         CancellationToken ct)
     {
         var plan = await plans.FindByIdAsync(new CareerPlanId(command.CareerPlanId), ct);
@@ -22,7 +24,7 @@ public static class DeprecateCareerPlanCommandHandler
             return CareerPlanErrors.NotFound;
         }
 
-        var result = plan.Deprecate();
+        var result = plan.Deprecate(clock);
         if (result.IsFailure)
         {
             return result.Error;

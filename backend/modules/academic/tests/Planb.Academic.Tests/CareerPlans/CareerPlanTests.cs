@@ -49,7 +49,7 @@ public class CareerPlanTests
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock, isOfficial: false).Value;
 
-        plan.MarkOfficial();
+        plan.MarkOfficial(Clock);
 
         plan.IsOfficial.ShouldBeTrue();
     }
@@ -59,7 +59,7 @@ public class CareerPlanTests
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock, isOfficial: true).Value;
 
-        plan.MarkOfficial();
+        plan.MarkOfficial(Clock);
 
         plan.IsOfficial.ShouldBeTrue();
     }
@@ -69,7 +69,7 @@ public class CareerPlanTests
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
 
-        var result = plan.Deprecate();
+        var result = plan.Deprecate(Clock);
 
         result.IsSuccess.ShouldBeTrue();
         plan.Status.ShouldBe(CareerPlanStatus.Deprecated);
@@ -79,9 +79,9 @@ public class CareerPlanTests
     public void Deprecate_WhenAlreadyDeprecated_ReturnsAlreadyDeprecated()
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
-        plan.Deprecate();
+        plan.Deprecate(Clock);
 
-        var result = plan.Deprecate();
+        var result = plan.Deprecate(Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CareerPlanErrors.AlreadyDeprecated);
@@ -91,9 +91,9 @@ public class CareerPlanTests
     public void Reactivate_WhenDeprecated_SetsActive()
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
-        plan.Deprecate();
+        plan.Deprecate(Clock);
 
-        var result = plan.Reactivate();
+        var result = plan.Reactivate(Clock);
 
         result.IsSuccess.ShouldBeTrue();
         plan.Status.ShouldBe(CareerPlanStatus.Active);
@@ -104,7 +104,7 @@ public class CareerPlanTests
     {
         var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
 
-        var result = plan.Reactivate();
+        var result = plan.Reactivate(Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CareerPlanErrors.AlreadyActive);

@@ -45,7 +45,7 @@ public static class UpdateCareerCommandHandler
             command.Code,
             command.DegreeType,
             command.DurationYears,
-            command.Modality,
+            command.Cadence,
             command.Description,
             clock);
         if (result.IsFailure)
