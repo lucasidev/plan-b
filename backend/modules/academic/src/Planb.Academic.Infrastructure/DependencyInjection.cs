@@ -4,11 +4,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.AdminAcademicTerms;
 using Planb.Academic.Application.Features.AdminCareerPlans;
 using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
 using Planb.Academic.Application.Features.Search;
+using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
@@ -41,6 +43,10 @@ public static class DependencyInjection
         // US-061: admin CRUD de carreras + planes de estudio
         services.AddScoped<IAdminCareerReader, DapperAdminCareerReader>();
         services.AddScoped<IAdminCareerPlanReader, DapperAdminCareerPlanReader>();
+
+        // US-064: admin CRUD de períodos lectivos
+        services.AddScoped<IAdminAcademicTermReader, DapperAdminAcademicTermReader>();
+        services.AddScoped<IAcademicTermRepository, AcademicTermRepository>();
 
         services.AddScoped<AcademicSeeder>();
 

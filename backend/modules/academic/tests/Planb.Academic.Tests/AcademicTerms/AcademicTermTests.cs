@@ -185,4 +185,86 @@ public class AcademicTermTests
         term.Year.ShouldBe(1900);
         term.Number.ShouldBe(9);
     }
+
+    // ------------------------------------------------------------------
+    // ComputeLabel (US-064, admin): un formato por cadencia.
+    // ------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(TermKind.Anual, 1, "2026")]
+    [InlineData(TermKind.Cuatrimestral, 1, "2026-C1")]
+    [InlineData(TermKind.Cuatrimestral, 2, "2026-C2")]
+    [InlineData(TermKind.Semestral, 1, "2026-S1")]
+    [InlineData(TermKind.Bimestral, 3, "2026-B3")]
+    public void ComputeLabel_PerKind_ReturnsExpectedFormat(TermKind kind, int number, string expected)
+    {
+        var label = AcademicTerm.ComputeLabel(2026, number, kind);
+
+        label.ShouldBe(expected);
+    }
+
+    // ------------------------------------------------------------------
+    // Update (US-064, admin): mismas reglas que Create, re-normaliza label.
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public void Update_HappyPath_ReplacesFieldsAndKeepsIdentity()
+    {
+        var term = AcademicTerm.Create(
+            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
+        var originalId = term.Id;
+
+        var newStart = new DateOnly(2026, 8, 3);
+        var newEnd = new DateOnly(2026, 11, 28);
+        var newOpen = new DateTimeOffset(2026, 7, 10, 0, 0, 0, TimeSpan.Zero);
+        var newClose = new DateTimeOffset(2026, 7, 25, 23, 59, 0, TimeSpan.Zero);
+
+        var result = term.Update(
+            2026, 2, TermKind.Cuatrimestral, newStart, newEnd, newOpen, newClose, "2026-C2", Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        term.Id.ShouldBe(originalId);
+        term.UniversityId.ShouldBe(AnyUni); // Update no cambia de universidad
+        term.Number.ShouldBe(2);
+        term.Label.ShouldBe("2026-C2");
+        term.StartDate.ShouldBe(newStart);
+        term.EndDate.ShouldBe(newEnd);
+        term.EnrollmentOpens.ShouldBe(newOpen);
+        term.EnrollmentCloses.ShouldBe(newClose);
+    }
+
+    [Fact]
+    public void Update_EndDateBeforeStart_ReturnsErrorAndLeavesTermUnchanged()
+    {
+        var term = AcademicTerm.Create(
+            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
+
+        var result = term.Update(
+            2026, 1, TermKind.Cuatrimestral,
+            startDate: new DateOnly(2026, 7, 1),
+            endDate: new DateOnly(2026, 3, 1), // invertida
+            DefaultOpen, DefaultClose, "2026-C1", Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(AcademicTermErrors.DatesInverted);
+        term.StartDate.ShouldBe(DefaultStart); // no se tocó el aggregate
+    }
+
+    [Fact]
+    public void Update_AnualWithNumberOtherThan1_ReturnsError()
+    {
+        var term = AcademicTerm.Create(
+            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
+
+        var result = term.Update(
+            2026, 2, TermKind.Anual,
+            new DateOnly(2026, 3, 1), new DateOnly(2026, 12, 1),
+            DefaultOpen, DefaultClose, "2026", Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(AcademicTermErrors.NumberInconsistentWithKind);
+    }
 }

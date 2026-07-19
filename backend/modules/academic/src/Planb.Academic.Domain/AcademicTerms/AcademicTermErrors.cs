@@ -38,4 +38,27 @@ public static class AcademicTermErrors
         Error.NotFound(
             "academic.term.not_found",
             "AcademicTerm not found.");
+
+    /// <summary>
+    /// El university_id de la ruta no corresponde a ninguna University del catálogo. No hay FK
+    /// cross-schema (ADR-0017), así que el application layer valida la existencia antes de crear.
+    /// </summary>
+    public static readonly Error UniversityNotFound =
+        Error.NotFound(
+            "academic.term.university_not_found",
+            "The university for this academic term does not exist.");
+
+    /// <summary>
+    /// El (university_id, year, number, kind) ya lo usa otro AcademicTerm de la misma universidad.
+    /// Se chequea en el handler vía el repo antes de crear/actualizar. Intra-schema, así que también
+    /// hay UNIQUE en DB (<c>ux_academic_terms_uni_year_number_kind</c>).
+    /// </summary>
+    public static readonly Error AlreadyExists =
+        Error.Conflict(
+            "academic.term.already_exists",
+            "An academic term with that year, number and kind already exists for this university.");
+
+    /// <summary>Kind es obligatorio en el aggregate (a diferencia de Career.Cadence, opcional).</summary>
+    public static readonly Error KindRequired =
+        Error.Validation("academic.term.kind_required", "AcademicTerm kind is required.");
 }
