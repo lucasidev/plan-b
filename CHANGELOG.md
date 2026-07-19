@@ -95,6 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - migrar al OnbShell v2 con topbar de progreso (onboarding) — [`56ab6f4`](https://github.com/lucasidev/plan-b/commit/56ab6f419fc41716716c858c42d93204ffa47a25)
 - landing publica en / (reemplaza el redirect a /home) (landing) — [`051f00b`](https://github.com/lucasidev/plan-b/commit/051f00bda446e79c2a2df29ccbeaf540d6bf22cf)
 - admin de carreras y planes de estudio (US-061-b) (#206) (academic) — [`fa43b24`](https://github.com/lucasidev/plan-b/commit/fa43b24c80f87f23f1a14e46fc462a028a11a391)
+- campos academicos de Career + label de CareerPlan (US-061) (academic) — [`9c110bc`](https://github.com/lucasidev/plan-b/commit/9c110bc1b021cdbee7fc8502984f03dfca1e0255)
+- backoffice de carreras y planes en el admin (US-061) (academic) — [`3586d4a`](https://github.com/lucasidev/plan-b/commit/3586d4a6cbaee31e60ac52187bec50c644dcc8cd)
 
 ### Fixed
 
@@ -140,6 +142,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sacar include_fragments no soportado por la version actual de lychee (ci) — [`f6751b9`](https://github.com/lucasidev/plan-b/commit/f6751b9c31edcc1a9725df666b5278ab0e71acaf)
 - sacar router.refresh() que raceaba con el push tras resolver (moderation) — [`4cdc512`](https://github.com/lucasidev/plan-b/commit/4cdc512e0176eb9584c463cc6ffc6171e681de83)
 - suprimir falso positivo a11y de react-doctor (teacher-claim) — [`ac5c266`](https://github.com/lucasidev/plan-b/commit/ac5c26688b832b46543391ec09038c4e9abf02f3)
+- breadcrumb del backoffice sin recurso hardcodeado (US-061) (frontend) — [`44a9b6d`](https://github.com/lucasidev/plan-b/commit/44a9b6db77e093cc9cfd38b424d06c74f437c68f)
+- panel de planes via TanStack Query, no router.refresh (US-061) (academic) — [`b468223`](https://github.com/lucasidev/plan-b/commit/b468223e74104a8e975f25a436f411b7b1cc5abd)
 
 ### Changed
 
@@ -147,3 +151,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rutas + features + identifiers a inglés (cleanup S2-S5) (#137) (frontend) — [`9f63405`](https://github.com/lucasidev/plan-b/commit/9f6340557d373c40f977ae48dadd4e8aeb7758ab)
 - guarda clientApiFetch para fetchers client-side (#147) (frontend) — [`7272689`](https://github.com/lucasidev/plan-b/commit/727268979cd2f3377c2a3319fc48f85cbd44f4aa)
 - destructurar useRouter y corregir docstring (teacher-claim) — [`7fb9f1d`](https://github.com/lucasidev/plan-b/commit/7fb9f1db97b8f44a580b6506b7f2de5e4560bb3f)
+- remediar auditoria de US-061 (Cadence, UpdatedAt, parse estricto) (academic) — [`6c8c69a`](https://github.com/lucasidev/plan-b/commit/6c8c69a7027c077d802889ecc185e4dc50e7545f)
