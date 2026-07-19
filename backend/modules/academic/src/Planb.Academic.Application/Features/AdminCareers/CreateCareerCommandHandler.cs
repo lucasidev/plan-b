@@ -1,4 +1,5 @@
 using Planb.Academic.Application.Abstractions.Persistence;
+using Planb.Academic.Application.Contracts;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -17,10 +18,18 @@ public static class CreateCareerCommandHandler
     public static async Task<Result<CreateCareerResponse>> Handle(
         CreateCareerCommand command,
         ICareerRepository careers,
+        IAcademicQueryService academic,
         IAcademicUnitOfWork unitOfWork,
         IDateTimeProvider clock,
         CancellationToken ct)
     {
+        // No hay FK cross-schema (ADR-0017): el application layer valida que la University exista
+        // antes de crear la carrera, igual que CreateTeacher. Sin esto quedan Careers huérfanas.
+        if (!await academic.UniversityExistsAsync(command.UniversityId, ct))
+        {
+            return CareerErrors.UniversityNotFound;
+        }
+
         var universityId = new UniversityId(command.UniversityId);
 
         var normalizedSlug = command.Slug.Trim().ToLowerInvariant();

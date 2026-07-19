@@ -17,11 +17,19 @@ public static class CreateCareerPlanCommandHandler
     public static async Task<Result<CreateCareerPlanResponse>> Handle(
         CreateCareerPlanCommand command,
         ICareerPlanRepository plans,
+        ICareerRepository careers,
         IAcademicUnitOfWork unitOfWork,
         IDateTimeProvider clock,
         CancellationToken ct)
     {
         var careerId = new CareerId(command.CareerId);
+
+        // No hay FK cross-schema (ADR-0017): validar que la Career exista antes de colgarle un plan.
+        // Sin esto queda un CareerPlan huérfano que ni siquiera aparece en los reads con JOIN.
+        if (await careers.FindByIdAsync(careerId, ct) is null)
+        {
+            return CareerErrors.NotFound;
+        }
 
         var existing = await plans.FindByCareerAndYearAsync(careerId, command.Year, ct);
         if (existing is not null)

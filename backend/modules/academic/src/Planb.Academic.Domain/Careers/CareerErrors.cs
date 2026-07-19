@@ -36,4 +36,13 @@ public static class CareerErrors
 
     public static readonly Error AlreadyActive =
         Error.Conflict("academic.career.already_active", "Career is already active.");
+
+    /// <summary>
+    /// El university_id de la ruta no corresponde a ninguna University del catálogo. No hay FK
+    /// cross-schema (ADR-0017), así que el application layer valida la existencia antes de crear.
+    /// </summary>
+    public static readonly Error UniversityNotFound =
+        Error.NotFound(
+            "academic.career.university_not_found",
+            "The university for this career does not exist.");
 }
