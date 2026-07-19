@@ -206,41 +206,47 @@ erDiagram
 
 ### Entity: Career
 
-| Campo           | Tipo        | Constraints               |
-| --------------- | ----------- | ------------------------- |
-| `id`            | UUID        | PK                        |
-| `university_id` | UUID        | FK → University, NOT NULL |
-| `name`          | TEXT        | NOT NULL                  |
-| `short_name`    | TEXT        | NOT NULL                  |
-| `code`          | TEXT        | NULL                      |
-| `created_at`    | TIMESTAMPTZ | NOT NULL                  |
-| `updated_at`    | TIMESTAMPTZ | NOT NULL                  |
+| Campo            | Tipo                      | Constraints               | Notas                                         |
+| ----------------- | ------------------------- | -------------------------- | ----------------------------------------------- |
+| `id`              | UUID                      | PK                          |                                                 |
+| `university_id`   | UUID                      | FK → University, NOT NULL   |                                                 |
+| `name`            | TEXT                      | NOT NULL                    |                                                 |
+| `slug`            | TEXT                      | NOT NULL                    | Único por universidad                          |
+| `short_name`      | TEXT                      | NULL                        | Ej "Ing. Sistemas"                             |
+| `code`            | TEXT                      | NULL                        | Código institucional, ej "TUDCS"               |
+| `degree_type`     | ENUM `career_degree_type` | NULL                        | Grado, posgrado o tecnicatura                  |
+| `duration_years`  | INT                       | NULL                        | Duración nominal en años (rango 1-15)          |
+| `cadence`         | ENUM `term_kind`          | NULL                        | Cadencia mayoritaria de la carrera              |
+| `description`     | TEXT                      | NULL                        | Descripción corta visible al alumno            |
+| `is_official`     | BOOLEAN                   | NOT NULL, DEFAULT `true`    | False cuando la creó un alumno via crowdsourcing |
+| `is_active`       | BOOLEAN                   | NOT NULL, DEFAULT `true`    | Soft delete                                    |
+| `created_at`      | TIMESTAMPTZ               | NOT NULL                    |                                                 |
+| `updated_at`      | TIMESTAMPTZ               | NOT NULL                    |                                                 |
 
 Constraints:
 
-- `UNIQUE(university_id, code)`: código único por universidad cuando se provee.
+- `UNIQUE(university_id, slug)`: slug único por universidad.
+- `UNIQUE(university_id, code) WHERE code IS NOT NULL`: código único por universidad cuando se provee (índice parcial).
+- `duration_years` (cuando no NULL): rango 1-15.
 
 ### Entity: CareerPlan
 
-Versión específica del plan de estudios de una carrera.
+Plan de estudios de una Career para un año particular (ej. "TUDCS Plan 2024").
 
-| Campo               | Tipo             | Constraints           | Notas                          |
-| ------------------- | ---------------- | --------------------- | ------------------------------ |
-| `id`                | UUID             | PK                    |                                |
-| `career_id`         | UUID             | FK → Career, NOT NULL |                                |
-| `version_label`     | TEXT             | NOT NULL              | Ej "Plan 2024"                 |
-| `duration_terms`    | INT              | NOT NULL              | En unidades del kind principal |
-| `default_term_kind` | ENUM `term_kind` | NOT NULL              | La cadencia principal del plan |
-| `effective_from`    | DATE             | NOT NULL              |                                |
-| `effective_to`      | DATE             | NULL                  | Null = vigente                 |
-| `notes`             | TEXT             | NULL                  |                                |
-| `created_at`        | TIMESTAMPTZ      | NOT NULL              |                                |
-| `updated_at`        | TIMESTAMPTZ      | NOT NULL              |                                |
+| Campo         | Tipo                       | Constraints              | Notas                                             |
+| ------------- | -------------------------- | -------------------------- | --------------------------------------------------- |
+| `id`          | UUID                       | PK                          |                                                     |
+| `career_id`   | UUID                       | FK → Career, NOT NULL       |                                                     |
+| `year`        | INT                        | NOT NULL                    | Año del plan, ej 2024                              |
+| `status`      | ENUM `career_plan_status`  | NOT NULL                    | `active` = vigente; `deprecated` = histórico       |
+| `label`       | TEXT                       | NULL                         | Identificador editorial opcional, ej "plan-2023"   |
+| `is_official` | BOOLEAN                    | NOT NULL, DEFAULT `true`    | False cuando lo creó un alumno via crowdsourcing   |
+| `created_at`  | TIMESTAMPTZ                | NOT NULL                    |                                                     |
+| `updated_at`  | TIMESTAMPTZ                | NOT NULL                    |                                                     |
 
 Constraints:
 
-- `UNIQUE(career_id, version_label)`.
-- CHECK: `effective_to IS NULL OR effective_to >= effective_from`.
+- `UNIQUE(career_id, year)`: un plan por año por carrera.
 
 ### Entity: Subject
 
@@ -601,6 +607,8 @@ Nombres y valores de todos los enums del modelo.
 | `user_role`                   | `member`, `moderator`, `admin`, `university_staff`                                    |
 | `student_status`              | `active`, `graduated`, `abandoned`                                                    |
 | `teacher_verification_method` | `institutional_email`, `manual`                                                       |
+| `career_degree_type`          | `grado`, `posgrado`, `tecnicatura`                                                    |
+| `career_plan_status`          | `active`, `deprecated`                                                                |
 | `term_kind`                   | `bimestral`, `cuatrimestral`, `semestral`, `anual`                                    |
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
 | `commission_modality`         | `presencial`, `virtual`, `hibrida`                                                    |
