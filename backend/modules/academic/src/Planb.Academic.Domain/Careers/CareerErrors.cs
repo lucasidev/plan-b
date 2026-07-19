@@ -37,6 +37,11 @@ public static class CareerErrors
     public static readonly Error AlreadyActive =
         Error.Conflict("academic.career.already_active", "Career is already active.");
 
+    public static readonly Error DurationYearsOutOfRange =
+        Error.Validation(
+            "academic.career.duration_years_out_of_range",
+            "Career duration in years must be between 1 and 15.");
+
     /// <summary>
     /// El university_id de la ruta no corresponde a ninguna University del catálogo. No hay FK
     /// cross-schema (ADR-0017), así que el application layer valida la existencia antes de crear.

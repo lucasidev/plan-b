@@ -1,3 +1,4 @@
+using Planb.Academic.Domain;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
 using Shouldly;
@@ -75,13 +76,20 @@ public class CareerTests
         var career = Career.Create(AnyUniversity, "Old", "old", Clock).Value;
         var laterClock = new FixedClock(Clock.UtcNow.AddDays(1));
 
-        var result = career.Update("  New Name  ", "  NEW-SLUG  ", "Short", "COD", laterClock);
+        var result = career.Update(
+            "  New Name  ", "  NEW-SLUG  ", "Short", "COD",
+            CareerDegreeType.Grado, 5, TermKind.Cuatrimestral, "  Descripción  ",
+            laterClock);
 
         result.IsSuccess.ShouldBeTrue();
         career.Name.ShouldBe("New Name");
         career.Slug.ShouldBe("new-slug");
         career.ShortName.ShouldBe("Short");
         career.Code.ShouldBe("COD");
+        career.DegreeType.ShouldBe(CareerDegreeType.Grado);
+        career.DurationYears.ShouldBe(5);
+        career.Modality.ShouldBe(TermKind.Cuatrimestral);
+        career.Description.ShouldBe("Descripción");
         career.UpdatedAt.ShouldBe(laterClock.UtcNow);
     }
 
@@ -91,7 +99,7 @@ public class CareerTests
         var career = Career.Create(
             AnyUniversity, "Name", "slug", Clock, shortName: "Short", code: "COD").Value;
 
-        career.Update("Name", "slug", shortName: null, code: "   ", Clock);
+        career.Update("Name", "slug", shortName: null, code: "   ", null, null, null, null, Clock);
 
         career.ShortName.ShouldBeNull();
         career.Code.ShouldBeNull();
@@ -102,7 +110,7 @@ public class CareerTests
     {
         var career = Career.Create(AnyUniversity, "Name", "slug", Clock).Value;
 
-        var result = career.Update("  ", "slug", null, null, Clock);
+        var result = career.Update("  ", "slug", null, null, null, null, null, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CareerErrors.NameRequired);

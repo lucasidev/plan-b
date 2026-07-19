@@ -11,4 +11,7 @@ public sealed record AdminCareerPlanListItem
     public int Year { get; init; }
     public string Status { get; init; } = string.Empty;
     public bool IsOfficial { get; init; }
+
+    /// <summary>Etiqueta editorial opcional (US-061, ej. "plan-2023").</summary>
+    public string? Label { get; init; }
 }

@@ -48,7 +48,8 @@ public class CreateCareerCommandHandlerTests
             command, deps.Careers, deps.Academic, deps.UnitOfWork, deps.Clock, CancellationToken.None);
 
     private static CreateCareerCommand Cmd(Guid universityId) =>
-        new(universityId, "Ingeniería en Sistemas", "ing-sis", "Ing. Sistemas", "ISI");
+        new(universityId, "Ingeniería en Sistemas", "ing-sis", "Ing. Sistemas", "ISI",
+            null, null, null, null);
 
     [Fact]
     public async Task Handle_HappyPath_CreatesCareerAndSaves()
@@ -109,7 +110,8 @@ public class CreateCareerCommandHandlerTests
     public async Task Handle_BlankCode_SkipsCodeUniquenessCheck()
     {
         var deps = NewDeps();
-        var command = new CreateCareerCommand(Guid.NewGuid(), "Carrera", "carrera", null, "   ");
+        var command = new CreateCareerCommand(
+            Guid.NewGuid(), "Carrera", "carrera", null, "   ", null, null, null, null);
 
         var result = await Invoke(deps, command);
 

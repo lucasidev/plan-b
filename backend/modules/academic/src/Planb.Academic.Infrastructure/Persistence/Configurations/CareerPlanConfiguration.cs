@@ -48,6 +48,12 @@ internal sealed class CareerPlanConfiguration : IEntityTypeConfiguration<CareerP
             .HasDefaultValue(true)
             .IsRequired();
 
+        // Identificador humano del plan (US-061, ej. "plan-2023"). Opcional: el crowdsourcing
+        // no lo carga.
+        builder.Property(cp => cp.Label)
+            .HasColumnName("label")
+            .HasMaxLength(60);
+
         builder.Property(cp => cp.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

@@ -36,7 +36,9 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
 
     private static object NewCareerBody(
         string? name = null, string? slug = null,
-        string? shortName = "Ing. Sistemas", string? code = null)
+        string? shortName = "Ing. Sistemas", string? code = null,
+        string? degreeType = null, int? durationYears = null,
+        string? modality = null, string? description = null)
     {
         var unique = Guid.NewGuid().ToString("N")[..8];
         return new
@@ -45,6 +47,10 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
             slug = slug ?? $"carrera-prueba-{unique}",
             shortName,
             code,
+            degreeType,
+            durationYears,
+            modality,
+            description,
         };
     }
 
@@ -54,7 +60,10 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
 
         var create = await admin.Client.PostAsJsonAsync(
-            $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+            $"/api/academic/universities/{Unsta}/careers",
+            NewCareerBody(
+                degreeType: "Grado", durationYears: 5, modality: "Cuatrimestral",
+                description: "Carrera de prueba"));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
@@ -74,6 +83,10 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         detail.ShortName.ShouldBe(row.ShortName);
         detail.UniversityId.ShouldBe(Unsta);
         detail.IsActive.ShouldBeTrue();
+        detail.DegreeType.ShouldBe("Grado");
+        detail.DurationYears.ShouldBe(5);
+        detail.Modality.ShouldBe("Cuatrimestral");
+        detail.Description.ShouldBe("Carrera de prueba");
     }
 
     [Fact]
@@ -245,5 +258,6 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         bool IsOfficial, bool IsActive, int PlanCount);
     private sealed record DetailDto(
         Guid Id, Guid UniversityId, string Name, string Slug,
-        string? ShortName, string? Code, bool IsOfficial, bool IsActive);
+        string? ShortName, string? Code, string? DegreeType, int? DurationYears,
+        string? Modality, string? Description, bool IsOfficial, bool IsActive);
 }

@@ -37,7 +37,7 @@ public static class CreateCareerPlanCommandHandler
             return CareerPlanErrors.YearAlreadyTaken;
         }
 
-        var result = CareerPlan.Create(careerId, command.Year, clock, isOfficial: true);
+        var result = CareerPlan.Create(careerId, command.Year, clock, isOfficial: true, command.Label);
         if (result.IsFailure)
         {
             return result.Error;
