@@ -107,8 +107,12 @@ public sealed class AcademicSeeder
                     seed.Career.UniversityId,
                     seed.Career.Name,
                     seed.Career.Slug,
+                    shortName: null,
+                    code: null,
                     isOfficial: true,
-                    now));
+                    isActive: true,
+                    createdAt: now,
+                    updatedAt: now));
                 careersInserted++;
             }
 

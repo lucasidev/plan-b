@@ -19,4 +19,7 @@ internal sealed class CareerPlanRepository : ICareerPlanRepository
         CareerId careerId, int year, CancellationToken ct = default) =>
         _db.CareerPlans.FirstOrDefaultAsync(
             cp => cp.CareerId == careerId && cp.Year == year, ct);
+
+    public Task<CareerPlan?> FindByIdAsync(CareerPlanId id, CancellationToken ct = default) =>
+        _db.CareerPlans.FirstOrDefaultAsync(cp => cp.Id == id, ct);
 }

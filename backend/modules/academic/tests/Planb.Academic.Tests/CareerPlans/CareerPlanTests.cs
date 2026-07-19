@@ -63,4 +63,50 @@ public class CareerPlanTests
 
         plan.IsOfficial.ShouldBeTrue();
     }
+
+    [Fact]
+    public void Deprecate_WhenActive_SetsDeprecated()
+    {
+        var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
+
+        var result = plan.Deprecate();
+
+        result.IsSuccess.ShouldBeTrue();
+        plan.Status.ShouldBe(CareerPlanStatus.Deprecated);
+    }
+
+    [Fact]
+    public void Deprecate_WhenAlreadyDeprecated_ReturnsAlreadyDeprecated()
+    {
+        var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
+        plan.Deprecate();
+
+        var result = plan.Deprecate();
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CareerPlanErrors.AlreadyDeprecated);
+    }
+
+    [Fact]
+    public void Reactivate_WhenDeprecated_SetsActive()
+    {
+        var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
+        plan.Deprecate();
+
+        var result = plan.Reactivate();
+
+        result.IsSuccess.ShouldBeTrue();
+        plan.Status.ShouldBe(CareerPlanStatus.Active);
+    }
+
+    [Fact]
+    public void Reactivate_WhenAlreadyActive_ReturnsAlreadyActive()
+    {
+        var plan = CareerPlan.Create(AnyCareer, 2024, Clock).Value;
+
+        var result = plan.Reactivate();
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CareerPlanErrors.AlreadyActive);
+    }
 }

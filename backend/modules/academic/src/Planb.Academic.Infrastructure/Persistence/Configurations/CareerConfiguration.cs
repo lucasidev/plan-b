@@ -41,6 +41,22 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .IsUnique()
             .HasDatabaseName("ux_careers_university_slug");
 
+        // Nombre corto (US-061, opcional). El crowdsourcing lo deja null; el form admin lo exige.
+        builder.Property(c => c.ShortName)
+            .HasColumnName("short_name")
+            .HasMaxLength(100);
+
+        // Código institucional (US-061, opcional). Único por university cuando se provee: índice
+        // parcial (solo filas con code no-null) para no colisionar entre las muchas carreras sin code.
+        builder.Property(c => c.Code)
+            .HasColumnName("code")
+            .HasMaxLength(40);
+
+        builder.HasIndex(c => new { c.UniversityId, c.Code })
+            .IsUnique()
+            .HasFilter("code IS NOT NULL")
+            .HasDatabaseName("ux_careers_university_code");
+
         // True = creada por backoffice (admin/staff). False = crowdsourced por alumno en
         // onboarding paso 2 (US-088). El frontend muestra badge "No oficial" cuando es false.
         builder.Property(c => c.IsOfficial)
@@ -48,8 +64,18 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .HasDefaultValue(true)
             .IsRequired();
 
+        // Soft delete (US-061). Default true: las carreras existentes quedan activas.
+        builder.Property(c => c.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at")
+            .IsRequired();
+
+        builder.Property(c => c.UpdatedAt)
+            .HasColumnName("updated_at")
             .IsRequired();
 
         builder.Ignore(c => c.DomainEvents);

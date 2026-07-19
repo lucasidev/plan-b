@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.AdminCareerPlans;
+using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
 using Planb.Academic.Application.Features.Search;
@@ -35,6 +37,11 @@ public static class DependencyInjection
         services.AddScoped<ICatalogSearchReader, DapperCatalogSearchReader>();
         services.AddScoped<IAdminTeacherReader, DapperAdminTeacherReader>();
         services.AddScoped<IAdminUniversityReader, DapperAdminUniversityReader>();
+
+        // US-061: admin CRUD de carreras + planes de estudio
+        services.AddScoped<IAdminCareerReader, DapperAdminCareerReader>();
+        services.AddScoped<IAdminCareerPlanReader, DapperAdminCareerPlanReader>();
+
         services.AddScoped<AcademicSeeder>();
 
         // US-088: writes al catálogo cross-aggregate
