@@ -63,6 +63,34 @@ public sealed class CareerPlan : Entity<CareerPlanId>, IAggregateRoot
         if (!IsOfficial) IsOfficial = true;
     }
 
+    /// <summary>
+    /// Archiva el plan (US-061, admin): pasa de Active a Deprecated. El plan sigue existiendo y los
+    /// alumnos asociados quedan en él; solo deja de ser el vigente para nuevos ingresos.
+    /// Idempotencia explícita: deprecar un plan ya deprecated devuelve error.
+    /// </summary>
+    public Result Deprecate()
+    {
+        if (Status == CareerPlanStatus.Deprecated)
+        {
+            return CareerPlanErrors.AlreadyDeprecated;
+        }
+
+        Status = CareerPlanStatus.Deprecated;
+        return Result.Success();
+    }
+
+    /// <summary>Reactiva un plan archivado (US-061, admin): Deprecated a Active. Idempotencia explícita.</summary>
+    public Result Reactivate()
+    {
+        if (Status == CareerPlanStatus.Active)
+        {
+            return CareerPlanErrors.AlreadyActive;
+        }
+
+        Status = CareerPlanStatus.Active;
+        return Result.Success();
+    }
+
     public static CareerPlan Hydrate(
         CareerPlanId id,
         CareerId careerId,
