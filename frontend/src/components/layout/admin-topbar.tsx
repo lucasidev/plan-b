@@ -12,6 +12,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   universities: 'Universidades',
   teachers: 'Docentes',
   careers: 'Carreras',
+  terms: 'Períodos',
   // `new`/`edit` son genéricos: el mismo breadcrumb sirve para todos los recursos del backoffice
   // (docentes, universidades, carreras). No hardcodear el recurso acá (antes decía "Nuevo docente",
   // que se filtraba mal a las otras secciones).

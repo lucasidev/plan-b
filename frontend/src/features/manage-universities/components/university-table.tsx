@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { deactivateUniversityAction, reactivateUniversityAction } from '../actions';
 import type { AdminUniversityRow } from '../types';
 
-const GRID = 'minmax(0,1.5fr) minmax(0,1.3fr) 90px 96px 168px';
+const GRID = 'minmax(0,1.5fr) minmax(0,1.3fr) 90px 96px 190px';
 
 /**
  * Tabla del backoffice de universidades (US-060 admin). Densa, mono para metadatos, tablas sobre
@@ -100,6 +100,12 @@ function UniversityRow({ university }: { university: AdminUniversityRow }) {
           <StatusBadge active={university.isActive} />
         </div>
         <div className="flex items-center justify-end gap-1">
+          <Link
+            href={`/admin/universities/${university.id}/terms`}
+            className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
+          >
+            Períodos
+          </Link>
           {university.isActive && (
             <Link
               href={`/admin/universities/${university.id}/edit`}
