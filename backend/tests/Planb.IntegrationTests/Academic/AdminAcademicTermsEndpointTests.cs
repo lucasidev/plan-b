@@ -97,6 +97,25 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
+    public async Task Create_accepts_enrollment_window_with_non_utc_offset()
+    {
+        // El datetime-local del form admin llega sin offset y System.Text.Json le pega el huso local
+        // del proceso (ej. -03:00 en Argentina). Postgres timestamptz solo acepta offset 0: el
+        // endpoint reinterpreta la hora como UTC (AsUtc) para no reventar con "Cannot write
+        // DateTimeOffset with Offset=-03:00 to timestamp with time zone". Sin el fix, esto da 500.
+        var admin = await AdminAsync();
+
+        var create = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{Unsta}/terms",
+            NewTermBody(
+                year: 2043,
+                enrollmentOpens: new DateTimeOffset(2043, 2, 1, 0, 0, 0, TimeSpan.FromHours(-3)),
+                enrollmentCloses: new DateTimeOffset(2043, 2, 20, 0, 0, 0, TimeSpan.FromHours(-3))));
+
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+    }
+
+    [Fact]
     public async Task Create_with_duplicate_university_year_number_kind_returns_409()
     {
         var admin = await AdminAsync();

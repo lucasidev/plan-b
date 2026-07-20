@@ -43,7 +43,8 @@ public sealed class CreateAcademicTermEndpoint : ICarterModule
 
             var command = new CreateAcademicTermCommand(
                 universityId, body.Year, body.Number, kind.Value,
-                body.StartDate, body.EndDate, body.EnrollmentOpens, body.EnrollmentCloses);
+                body.StartDate, body.EndDate,
+                AsUtc(body.EnrollmentOpens), AsUtc(body.EnrollmentCloses));
 
             try
             {
@@ -84,6 +85,15 @@ public sealed class CreateAcademicTermEndpoint : ICarterModule
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict);
     }
+
+    /// <summary>
+    /// Reinterpreta la hora local que llegó del <c>datetime-local</c> (sin offset, a la que
+    /// System.Text.Json le pegó el offset local del proceso) como esa misma hora en UTC. Postgres
+    /// <c>timestamp with time zone</c> solo acepta offset 0, y así el instante guardado no depende
+    /// del huso donde corra el server. El enrollment window todavía no se consume en el dominio
+    /// (US-064): la semántica fina de huso se refina cuando se use.
+    /// </summary>
+    private static DateTimeOffset AsUtc(DateTimeOffset value) => new(value.DateTime, TimeSpan.Zero);
 }
 
 /// <summary>

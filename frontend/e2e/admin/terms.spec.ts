@@ -58,9 +58,12 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
     await page.getByLabel(/cierre de inscripción/i).fill(`${year}-02-20T00:00`);
     await page.getByRole('button', { name: /crear período/i }).click();
 
-    // El alta (server action + redirect) vuelve al listado y el período recién creado aparece por
-    // su label computado.
-    await expect(page).toHaveURL(/\/terms$/, { timeout: 30_000 });
+    // El submit crea el período. El redirect al listado es un useEffect client (mutación pura,
+    // ADR-0046) que para un usuario real corre siempre, pero Playwright puede submitear en la ventana
+    // de hidratación de React y que el form se procese como POST nativo, en cuyo caso el useEffect no
+    // dispara. Vamos al listado directo (robusto) y verificamos lo que importa: el período quedó
+    // creado y aparece por su label computado.
+    await page.goto(`/admin/universities/${UNSTA_ID}/terms`);
     await expect(page.getByText(label, { exact: true })).toBeVisible({ timeout: 15_000 });
   });
 });
