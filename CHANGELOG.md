@@ -97,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - admin de carreras y planes de estudio (US-061-b) (#206) (academic) — [`fa43b24`](https://github.com/lucasidev/plan-b/commit/fa43b24c80f87f23f1a14e46fc462a028a11a391)
 - campos academicos de Career + label de CareerPlan (US-061) (academic) — [`9c110bc`](https://github.com/lucasidev/plan-b/commit/9c110bc1b021cdbee7fc8502984f03dfca1e0255)
 - backoffice de carreras y planes en el admin (US-061) (academic) — [`3586d4a`](https://github.com/lucasidev/plan-b/commit/3586d4a6cbaee31e60ac52187bec50c644dcc8cd)
+- CRUD admin de AcademicTerm (US-064) (academic) — [`6517bee`](https://github.com/lucasidev/plan-b/commit/6517bee66682671425361d7280144bfd41541592)
+- admin UI de periodos lectivos (US-064-f) (academic) — [`afb7495`](https://github.com/lucasidev/plan-b/commit/afb7495ea5fc164b65852fed9f667fb561437899)
 
 ### Fixed
 
@@ -144,6 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - suprimir falso positivo a11y de react-doctor (teacher-claim) — [`ac5c266`](https://github.com/lucasidev/plan-b/commit/ac5c26688b832b46543391ec09038c4e9abf02f3)
 - breadcrumb del backoffice sin recurso hardcodeado (US-061) (frontend) — [`44a9b6d`](https://github.com/lucasidev/plan-b/commit/44a9b6db77e093cc9cfd38b424d06c74f437c68f)
 - panel de planes via TanStack Query, no router.refresh (US-061) (academic) — [`b468223`](https://github.com/lucasidev/plan-b/commit/b468223e74104a8e975f25a436f411b7b1cc5abd)
+- guardar el enrollment window del AcademicTerm en UTC (US-064) (academic) — [`0ebf9dd`](https://github.com/lucasidev/plan-b/commit/0ebf9ddfc52bf93246797c82e3a331933022e063)
 
 ### Changed
 
