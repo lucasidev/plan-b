@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-15 (S9 suma US-054-f landing pública + US-059-f rediseño auth/onboarding con generalización de copy multi-universidad). Apertura de S9 el 2026-07-14 (gestión del catálogo académico desde el admin); entre S8 y S9 entró un bloque de calidad: backfill de cobertura US-T08 (228 tests), migración a NSubstitute 6 y limpieza de Dependabot.
+**Última actualización**: 2026-07-20 (cierre de S9 con US-062 y apertura de S10, cuyo foco es el simulador de cuatrimestre). Ese mismo día, una auditoría de documentación corrigió un error conceptual que venía arrastrándose: el backoffice no es un módulo ni tiene namespace de API propio ([ADR-0050](decisions/0050-backoffice-como-corte-transversal.md)). De paso salieron a la luz US-065, US-067 y US-081, que figuraban Done sin tener implementada la funcionalidad que declaran, y ahora están como **Parcial**.
 
 ---
 
@@ -21,8 +21,9 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda materia-only. Más US-T07-b (architecture tests a todos los módulos). | ✓ Done |
 | S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
-| S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | 🟡 Open |
-| S10+ | next+ | Backlog planificado: importadores (US-007/083) + wizard/comisión (US-090/091), planificación (US-016/023-027), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), resto del admin, audit logs, strike system. | ⏳ Pendiente |
+| S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
+| S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). | ⏳ Planificado |
+| S11+ | next+ | Backlog planificado: backoffice restante (US-065/067/081 parciales + importadores US-006/007 + wizard US-091 + comisión por cuatri US-090), planificación premium (US-023-027), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -453,9 +454,9 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 
 ---
 
-## S9 🟡 Open
+## S9 ✓ Done
 
-**Rango**: 2026-07-14 a 2026-07-19 (lunes → sábado).
+**Rango**: 2026-07-14 a 2026-07-19 (lunes → sábado; US-062 cerró el 2026-07-20, un día después del rango).
 
 **Foco**: **gestión del catálogo académico desde el admin.** Hasta ahora el catálogo (universidades, carreras, planes, materias) se seedea o importa; S9 aterriza el CRUD administrativo para gestionarlo, más el lado explorar del alumno.
 
@@ -465,7 +466,7 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 |---|---|---|---|---|
 | US-060 | Gestionar University | High | M | ✓ Done |
 | US-061 | Gestionar Career + CareerPlan | High | M | ✓ Done |
-| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | L | 🟡 En progreso |
+| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | L | ✓ Done |
 | US-064 | Gestionar AcademicTerm | Med | S | ✓ Done |
 | US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M | ✓ Done |
 | US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M | ✓ Done |
@@ -487,6 +488,32 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 - **Dependabot**: limpieza del backlog (StackExchange.Redis 3.0, @types/node, actions/cache, backend-minor-patch, react-doctor).
 
 ---
+
+## S10 ⏳ Planificado
+
+**Rango**: 2026-07-21 a 2026-07-26 (lunes → sábado).
+
+**Foco**: **el simulador de cuatrimestre**. Es la mitad del producto que todavía no existe: `features/plan/` es un shell visual alimentado por `data/mocks.ts` desde S4 (US-046), y el módulo `Planning` ni siquiera está creado.
+
+La razón de que vaya ahora es que **todo lo construido en los sprints anteriores es insumo suyo y hoy está desconectado**: las correlativas de US-062 (S9) no tienen ningún consumidor real, el historial que el alumno carga con esfuerzo (US-013/US-014, S3) solo se muestra en una lista, y el rating por materia (US-089 + US-002, S6) se lee de a una. El simulador es lo que convierte esas piezas sueltas en la decisión que el alumno necesita tomar: qué cursa el cuatrimestre que viene.
+
+También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada incluye "simular un cuatrimestre real".
+
+### Scope
+
+| US | Título | Pri | Effort | Estado |
+|---|---|---|---|---|
+| US-016 | Simular inscripción (disponibles/bloqueadas + métricas de la combinación) | High | L | ⚪ No empezada |
+| US-009-f | Páginas de error globales (404 + 5xx) | Med | S | ⚪ No empezada |
+| US-039-f | Estado offline (banner global + acciones en pausa) | Med | S | ⚪ No empezada |
+
+### Decisiones de scope tomadas al planificar (2026-07-20)
+
+- **US-016 no necesita todavía el BC `Planning`**: su propio AC dice "no persiste nada: solo computación de read models" ([ADR-0029](decisions/0029-planning-bc-separado.md)). El aggregate `SimulationDraft` recién hace falta para guardar simulaciones (US-023), que [ADR-0028](decisions/0028-resenas-opcionales-y-premium-features-como-reward.md) define como premium. S10 es read models Dapper cross-schema, un domain service de cumplimiento de correlativas, y conectar el shell que ya existe.
+- **El histograma de combinaciones similares entra completo**, con un riesgo asumido explícito: el AC lo define como exact match del subject set agrupando alumnos que cursaron la misma combinación, y con el corpus actual cada combinación va a tener muestras de 0 o 1 alumnos. Es una limitación de **volumen de datos, no de implementación**: el panel se va a ver vacío hasta que haya corpus real. Si se lo necesita poblado para una demo, sembrar enrollments realistas es trabajo aparte, a decidir por separado.
+- **Las premium de planificación quedan fuera**: US-023 (guardar draft), US-024 (compartir), US-025 (editar), US-026 (borrar), US-027 (ver públicas). Entran cuando el simulador base esté validado con usuarios reales, no antes.
+- **El backoffice restante se difiere a S11**: US-065 y US-067 quedaron **parciales** en S7 y US-081 nunca aterrizó su dashboard (los tres detectados en la auditoría de docs del 2026-07-20). Es valor para el operador, no para el alumno, así que va después del simulador.
+- **Descubrimiento (US-056 Meilisearch + US-057 rankings) se difiere a S12**: gana valor cuando ya haya corpus y catálogo completos, y US-056 además suma infraestructura nueva.
 
 ## Backlog open (sin sprint asignado)
 
