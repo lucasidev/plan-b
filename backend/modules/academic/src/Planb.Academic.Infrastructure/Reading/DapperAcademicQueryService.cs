@@ -149,8 +149,11 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     }
 
     public async Task<IReadOnlyList<SubjectListItem>> ListSubjectsByCareerPlanAsync(
-        Guid careerPlanId, CancellationToken ct = default)
+        Guid careerPlanId, bool includeArchived = false, CancellationToken ct = default)
     {
+        // US-062: por default se ocultan las materias archivadas (soft delete), que es lo que
+        // necesita el catálogo público. El historial del alumno pide includeArchived=true: si
+        // cursó una materia que después se archivó, tiene que poder cargarla igual.
         const string sql = @"
             SELECT
                 id             AS Id,
@@ -161,18 +164,22 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 term_in_year   AS TermInYear,
                 term_kind      AS TermKind
             FROM academic.subjects
-            WHERE career_plan_id = @CareerPlanId
+            WHERE career_plan_id = @CareerPlanId AND (@IncludeArchived OR is_active)
             ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<SubjectListItem>(
-            new CommandDefinition(sql, new { CareerPlanId = careerPlanId }, cancellationToken: ct));
+            new CommandDefinition(
+                sql,
+                new { CareerPlanId = careerPlanId, IncludeArchived = includeArchived },
+                cancellationToken: ct));
         return rows.AsList();
     }
 
     public async Task<SubjectDetailItem?> GetSubjectByIdAsync(
         Guid subjectId, CancellationToken ct = default)
     {
+        // US-062: la página pública de materia no muestra materias archivadas (soft delete).
         const string sql = @"
             SELECT
                 id             AS Id,
@@ -187,7 +194,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 description    AS Description,
                 is_official    AS IsOfficial
             FROM academic.subjects
-            WHERE id = @SubjectId;";
+            WHERE id = @SubjectId AND is_active = true;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         return await db.QuerySingleOrDefaultAsync<SubjectDetailItem>(

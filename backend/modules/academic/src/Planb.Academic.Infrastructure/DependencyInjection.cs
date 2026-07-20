@@ -7,6 +7,7 @@ using Planb.Academic.Application.Contracts;
 using Planb.Academic.Application.Features.AdminAcademicTerms;
 using Planb.Academic.Application.Features.AdminCareerPlans;
 using Planb.Academic.Application.Features.AdminCareers;
+using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
 using Planb.Academic.Application.Features.Search;
@@ -14,6 +15,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
@@ -56,6 +58,11 @@ public static class DependencyInjection
         services.AddScoped<ICareerPlanRepository, CareerPlanRepository>();
         services.AddScoped<ISubjectRepository, SubjectRepository>();
         services.AddScoped<ICareerPlanImportRepository, CareerPlanImportRepository>();
+
+        // US-062: correlativas + soft delete de materias + admin CRUD de materias
+        services.AddScoped<IPrerequisiteRepository, PrerequisiteRepository>();
+        services.AddSingleton<IPrerequisiteGraphValidator, PrerequisiteGraphValidator>();
+        services.AddScoped<IAdminSubjectReader, DapperAdminSubjectReader>();
 
         // US-063: admin CRUD de docentes
         services.AddScoped<ITeacherRepository, TeacherRepository>();

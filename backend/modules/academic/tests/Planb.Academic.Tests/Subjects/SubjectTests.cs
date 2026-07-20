@@ -199,7 +199,7 @@ public class SubjectTests
         // confiable (seeder o EF rehydration).
         var subject = Subject.Hydrate(
             id, AnyPlan, "X", "Y", 99, 99, TermKind.Bimestral, 99, 99, "raw desc",
-            isOfficial: true, Clock.UtcNow);
+            isOfficial: true, isActive: true, Clock.UtcNow, Clock.UtcNow);
 
         subject.Id.ShouldBe(id);
         subject.YearInPlan.ShouldBe(99);
