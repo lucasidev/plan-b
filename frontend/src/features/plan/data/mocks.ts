@@ -170,50 +170,6 @@ export const MOCK_DRAFTS: Simulation[] = [
 ];
 
 /**
- * Catalog of subjects that can be added to the draft. Simple mock: 8 subjects the
- * student can take per their plan (the real filter comes from US-014 + US-023
- * backend). Subset of the v2 canvas catalog.
- */
-export const MOCK_AVAILABLE_SUBJECTS: Subject[] = [
-  {
-    code: 'ISW401',
-    name: 'Arquitectura de Software',
-    mod: '1c',
-    com: 'A',
-    prof: 'Brandt',
-    diff: 4,
-  },
-  {
-    code: 'ARQ301',
-    name: 'Arquitectura de Computadoras',
-    mod: '1c',
-    com: 'B',
-    prof: 'Reynoso',
-    diff: 4,
-  },
-  { code: 'ALG402', name: 'Algoritmos Avanzados', mod: '1c', com: 'A', prof: 'Iturralde', diff: 5 },
-  { code: 'PRO402', name: 'Project Management', mod: '1c', com: 'A', prof: 'López', diff: 2 },
-  {
-    code: 'BD402',
-    name: 'Bases de Datos Distribuidas',
-    mod: '1c',
-    com: 'A',
-    prof: 'Castellanos',
-    diff: 4,
-  },
-  { code: 'REI401', name: 'Redes Inalámbricas', mod: '2c', com: 'A', prof: 'Sosa', diff: 3 },
-  {
-    code: 'IOT401',
-    name: 'IoT y Sistemas Embebidos',
-    mod: '2c',
-    com: 'A',
-    prof: 'Castro',
-    diff: 4,
-  },
-  { code: 'OPT401', name: 'Optativa Humanística', mod: 'anual', com: 'A', prof: 'Méndez', diff: 1 },
-];
-
-/**
  * Commission options for the comparator. Hardcoded today; once reviews + crowd
  * insights land, the calculation comes from the backend.
  */

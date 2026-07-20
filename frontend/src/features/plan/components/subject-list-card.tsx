@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import type { Subject } from '../types';
 import { ModalityPill } from './modality-pill';
 import { SubjectPickerDrawer } from './subject-picker-drawer';
@@ -142,11 +142,17 @@ export function SubjectListCard({ subjects }: { subjects: Subject[] }) {
         </button>
       </div>
 
-      <SubjectPickerDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        onPick={() => setDrawerOpen(false)}
-      />
+      {/* Suspense porque el drawer lee useSuspenseQuery: normalmente resuelve al toque desde el
+          cache hidratado por la RSC de /plan, pero el boundary es la red de contención si algún
+          día suspende de verdad (invalidación, navegación sin SSR fresco). Fallback null: cerrado
+          no muestra nada igual, y abierto resuelve sin parpadeo en el camino feliz. */}
+      <Suspense fallback={null}>
+        <SubjectPickerDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onPick={() => setDrawerOpen(false)}
+        />
+      </Suspense>
     </>
   );
 }
