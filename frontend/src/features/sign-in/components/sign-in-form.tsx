@@ -7,6 +7,7 @@ import { useFormStatus } from 'react-dom';
 import { AuthErrorBanner, PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
 import { ResendVerificationButton } from '@/features/resend-verification';
+import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
@@ -90,10 +91,13 @@ export function SignInForm() {
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  // Un submit pre-hidratación se procesa como POST nativo: el login ocurre, pero el redirect vive
+  // en el estado del cliente y no dispara. Ver lib/use-hydrated.
+  const hydrated = useHydrated();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !hydrated}
       className={cn(
         'w-full inline-flex items-center justify-center gap-2',
         'bg-accent text-white border border-accent rounded-pill shadow-card',

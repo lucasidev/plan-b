@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { PasswordField } from '@/components/ui';
+import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { resetPasswordAction } from '../actions';
 import { initialResetPasswordState, type ResetPasswordFormState } from '../types';
@@ -116,10 +117,13 @@ export function ResetPasswordForm({ token }: Props) {
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  // Un submit pre-hidratación se procesa como POST nativo: la contraseña se cambia, pero el
+  // redirect vive en el estado del cliente y no dispara. Ver lib/use-hydrated.
+  const hydrated = useHydrated();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !hydrated}
       className={cn(
         'w-full inline-flex items-center justify-center gap-2',
         'bg-accent text-white border border-accent rounded-pill shadow-card',
