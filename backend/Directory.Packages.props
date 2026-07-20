@@ -67,6 +67,12 @@
     <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup Label="Local dev">
+    <!-- Carga el .env de la raíz al arrancar en desarrollo: `just` lo inyecta con dotenv-load, pero
+         un `dotnet run` directo o el F5 del IDE no, y el backend moría sin decir que faltaba. -->
+    <PackageVersion Include="DotNetEnv" Version="3.1.1" />
+  </ItemGroup>
+
   <ItemGroup Label="Testing">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageVersion Include="xunit" Version="2.9.3" />

@@ -25,6 +25,23 @@ using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
 using Wolverine.Postgresql;
 
+// ------------------------------------------------------------------
+// .env local (antes de construir el builder, que ya lee el entorno)
+// ------------------------------------------------------------------
+// El Justfile inyecta el .env de la raíz con `set dotenv-load := true`, así que `just dev-backend`
+// arranca bien. Cualquier otro camino (un `dotnet run` directo, el F5 del IDE, un debugger
+// adjunto) se quedaba sin esas variables y el host moría con "Connection string 'Redis' is not
+// configured", un mensaje que no menciona el .env por ningún lado. Cargarlo acá empareja todos los
+// caminos de arranque. `TraversePath` sube hasta la raíz del repo porque el proceso corre desde
+// host/Planb.Api. En producción no se toca: ahí las variables vienen del entorno real.
+if (!string.Equals(
+        Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+        "Production",
+        StringComparison.OrdinalIgnoreCase))
+{
+    DotNetEnv.Env.TraversePath().Load();
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------------------------------------------------------
