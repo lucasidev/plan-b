@@ -53,7 +53,10 @@ test.describe('Planificar (US-046)', () => {
 
   test('cambio a tab "Borradores" via click URL', async ({ page }) => {
     await page.getByRole('link', { name: /borradores/i }).click();
-    await expect(page).toHaveURL(/tab=draft/);
+    // Timeout explícito: desde US-016 la página es `force-dynamic` y hace un fetch autenticado al
+    // simulador en cada render, así que el round-trip del RSC al cambiar de tab tarda mas que el
+    // default de 5s cuando el backend viene cargado.
+    await expect(page).toHaveURL(/tab=draft/, { timeout: 20_000 });
     await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
   });
 
@@ -64,7 +67,16 @@ test.describe('Planificar (US-046)', () => {
     await expect(drawer).toBeVisible();
     await expect(drawer.getByRole('heading', { name: /agregar materia/i })).toBeVisible();
     await expect(drawer.getByPlaceholder(/buscar/i)).toBeVisible();
-    await expect(drawer.getByText('ISW401')).toBeVisible();
+
+    // Desde US-016 el drawer consume GET /api/me/simulator/available en vez del mock. No afirmamos
+    // una materia puntual a propósito: casi todas las del plan seedeado las consume algún otro spec
+    // de la suite (los de reseñas crean enrollments de MAT102, ALG101, INT101... para poder
+    // reseñar), y una materia ya cursada correctamente deja de ofrecerse en el simulador. Afirmar
+    // un código concreto hace que este test dependa del orden de la suite. Afirmamos el
+    // comportamiento: hay materias disponibles, con su carga horaria, dato que solo viene del
+    // backend real.
+    await expect(drawer.getByText(/hs\/sem/).first()).toBeVisible();
+    await expect(drawer.getByText('+ Sumar').first()).toBeVisible();
 
     await drawer.getByPlaceholder(/buscar/i).fill('xyz999');
     await expect(drawer.getByText(/no encontramos/i)).toBeVisible();

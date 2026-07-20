@@ -5,10 +5,19 @@
  * se cambie el seed, este archivo tiene que actualizarse (ojalá pronto
  * tengamos un test de paridad que lo valide automáticamente).
  *
- * Las E2E NO crean usuarios: reusan estos. Eso evita pollution de la DB
- * compartida y mantiene los tests hermeticos respecto a su estado inicial.
+ * Estas personas son compartidas por TODA la suite: úsalas solo para flujos que no le mutan
+ * datos al alumno (login, recuperar password, gating de roles/permisos). Si un spec necesita
+ * crearle datos al alumno (enrollments, reseñas), usa `createStudent` / `deleteStudent` de
+ * `students.ts` en vez de una de estas personas.
  *
- * Si un test modifica la persona (cambia password, etc.), debe restaurarla
+ * Por qué: probamos exactamente eso con los specs de reseñas. Todos creaban enrollments para
+ * LUCIA tomando de un pool fijo de comisiones sembradas (`enrollment_records` tiene
+ * UNIQUE(student_profile_id, subject_id, term_id), así que cada test consumía una comisión del
+ * pool y nadie las liberaba). Una corrida agotaba casi todo el pool y la siguiente, sin
+ * resetear la infra, fallaba. Un alumno descartable por test evita el problema de raíz: cada
+ * `student_profile_id` es un UUID fresco, así que el UNIQUE nunca colisiona entre corridas.
+ *
+ * Si un test SÍ modifica una de estas personas (cambia password, etc.), debe restaurarla
  * al estado original al final. Ver `forgot-password.spec.ts` como ejemplo.
  */
 

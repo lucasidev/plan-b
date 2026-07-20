@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { extractTokenFromLatestMail } from '../helpers/mailpit';
+import { deleteStudent } from '../helpers/students';
 
 /**
  * E2E happy chain de sign-up + verify + first sign-in (US-010 + US-011 + US-028).
@@ -9,39 +10,39 @@ import { extractTokenFromLatestMail } from '../helpers/mailpit';
  *
  * El flujo no usa personas pre-seedeadas: cada test crea un email único
  * con timestamp para evitar choques con runs anteriores y con la DB
- * compartida. No restauramos al final porque el user queda como verified
- * orphan; el cleanup natural llega vía US-022 (expirar no verificados)
- * para usuarios que NUNCA verificaron, que no es este caso.
+ * compartida.
+ *
+ * El registro, la verificación y el primer sign-in quedan por UI (es el flujo bajo prueba). El
+ * cleanup reusa `deleteStudent` de `e2e/helpers/students.ts`, que pega a un endpoint real
+ * (`DELETE /api/me/account`, self-service, ADR-0044). Antes este spec llamaba a
+ * `DELETE /api/identity/users/by-email/:email`, una ruta que nunca existió en el backend (404
+ * siempre, verificado); el propio comentario viejo ya dudaba ("endpoint puede no existir,
+ * ignorar"). Con eso el user de esta prueba quedaba activo para siempre en cada corrida.
  *
  * Errores in-form (password corta, email inválido) se cubren a nivel
  * vitest en `features/sign-up/components/sign-up-form.test.tsx`. Acá nos
  * concentramos en el flow cross-stack (DB + mail + redirects).
  */
 
-const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
-
 function uniqueEmail(prefix: string): string {
   return `${prefix}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@planb.local`;
 }
 
-async function disableUserByEmail(email: string): Promise<void> {
-  // Cleanup defensivo: si una corrida anterior dejó este email, lo
-  // ignoramos. La DB del dev stack no se resetea entre tests; usamos
-  // emails únicos para evitar la colisión, pero si por alguna razón
-  // un test reuso el mismo email, esto no rompe.
-  try {
-    await fetch(`${BACKEND_URL}/api/identity/users/by-email/${encodeURIComponent(email)}`, {
-      method: 'DELETE',
-    });
-  } catch {
-    // Endpoint puede no existir; ignorar.
-  }
-}
-
 test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)', () => {
+  // Solo el primer test crea un user nuevo; los otros dos no llegan a registrar nada (409 por
+  // email duplicado / token inválido), así que quedan en null y el cleanup skippea para ellos.
+  let createdStudent: { email: string; password: string } | null = null;
+
+  test.afterEach(async ({ request }) => {
+    if (!createdStudent) return;
+    await deleteStudent(request, createdStudent);
+    createdStudent = null;
+  });
+
   test('alumno nuevo se registra, verifica el mail y aterriza en onboarding', async ({ page }) => {
     const email = uniqueEmail('e2e-signup');
     const password = 'e2e-test-pw-1234';
+    createdStudent = { email, password };
 
     // 1. /sign-up → form de registro visible
     await page.goto('/sign-up');
@@ -80,9 +81,6 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/onboarding\/welcome$/, { timeout: 15_000 });
-
-    // Cleanup defensivo. No rompe si el endpoint de delete no existe.
-    await disableUserByEmail(email);
   });
 
   test('email duplicado en sign-up muestra error in-form', async ({ page }) => {

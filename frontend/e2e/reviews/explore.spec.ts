@@ -1,80 +1,48 @@
 import { expect, test } from '@playwright/test';
-import { LUCIA } from '../helpers/personas';
+import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
  * E2E for US-048 PR-C: tab Explorar shows the public feed of Published reviews.
  *
- * The endpoint itself is public (AllowAnonymous), but the `/reviews` shell lives in
- * `(member)` so the page requires authentication. We sign Lucía in to enter the shell,
- * then navigate to ?tab=explore.
+ * El endpoint es público (AllowAnonymous), pero el shell de `/reviews` vive en `(member)`, así
+ * que la página requiere sesión. Creamos un alumno descartable (`createStudent`, ver
+ * `e2e/helpers/students.ts`) solo para entrar al shell autenticado.
  *
- * Seed pattern mirrors the PR-B spec: if there is no Published review yet (CI runs
- * against a clean DB), we publish one through the editor flow so the feed has at least
- * one item to render. We walk the seeded commission offerings because UNIQUE(student,
- * subject, term) collides across runs in the dev DB.
+ * Semilla condicional: si el feed público ya tiene alguna reseña Published (lo normal después
+ * de que corrieron otros specs de reseñas, o en una DB con datos previos) no publicamos nada
+ * nuevo; si está vacío (DB recién reseteada) el alumno publica una para que el feed tenga algo
+ * que mostrar. A diferencia de `mine.spec.ts` / `pending.spec.ts`, acá el chequeo es sobre el
+ * feed público completo, no sobre "mis reseñas": no depende de quién la haya publicado.
  */
 
-// Comisiones sembradas (US-065): solo estas combinaciones (materia, term, comisión) tienen una
-// comisión real con docentes, condición para que la cursada sea reseñable (docente real por reseña).
-// Probamos cada una hasta que un POST entre: la dev DB comparte estado entre runs y
-// EnrollmentRecords tiene UNIQUE(student, subject, term), así que estas nueve dan headroom.
-const COMMISSION_OFFERINGS = [
-  {
-    subjectId: '00000004-0000-4000-a000-000000000004', // PRG101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000001', // Cid01 (brandt, sosa)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000001', // MAT102
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000003', // Cid03 (iturralde)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000020', // ISW301
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000006', // Cid06 (ledesma, brandt)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000010', // PRG201
-    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
-    commissionId: '00000007-0000-4000-a000-000000000004', // Cid04 (castro, castellanos)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000013', // BD201
-    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
-    commissionId: '00000007-0000-4000-a000-000000000005', // Cid05 (méndez, páez)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000002', // ALG101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000007', // Cid07
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000003', // INT101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000008', // Cid08
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000014', // SO201
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000009', // Cid09
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000011', // MAT201
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-00000000000a', // Cid0a
-  },
-];
+// Comisión sembrada (US-065): materia+term+comisión con docente real, condición para que la
+// cursada sea reseñable.
+const SUBJECT_ID = '00000004-0000-4000-a000-000000000004'; // PRG101
+const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
 
 test.describe('Reseñas · tab Explorar (US-048)', () => {
   test.setTimeout(120_000);
 
-  test('lista las reseñas públicas y permite filtrar por dificultad', async ({ page, context }) => {
-    await context.clearCookies();
+  let student: CreatedStudent | null = null;
 
+  test.afterEach(async ({ request }) => {
+    if (!student) return;
+    await deleteStudent(request, student);
+    student = null;
+  });
+
+  test('lista las reseñas públicas y permite filtrar por dificultad', async ({
+    page,
+    context,
+    request,
+  }) => {
+    student = await createStudent(request, { emailPrefix: 'e2e-explore' });
+
+    await context.clearCookies();
     await page.goto('/sign-in');
-    await page.getByLabel(/tu email/i).fill(LUCIA.email);
-    await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
+    await page.getByLabel(/tu email/i).fill(student.email);
+    await page.getByLabel(/^contraseña$/i).fill(student.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
@@ -85,27 +53,18 @@ test.describe('Reseñas · tab Explorar (US-048)', () => {
     const existingBody = (await existing.json()) as { items: unknown[] };
 
     if (existingBody.items.length === 0) {
-      let enrollmentId: string | undefined;
-      for (const offering of COMMISSION_OFFERINGS) {
-        const resp = await page.request.post('/api/me/enrollment-records', {
-          data: {
-            subjectId: offering.subjectId,
-            commissionId: offering.commissionId,
-            termId: offering.termId,
-            status: 'Aprobada',
-            approvalMethod: 'Final',
-            grade: 7,
-          },
-        });
-        if (resp.ok()) {
-          enrollmentId = ((await resp.json()) as { id: string }).id;
-          break;
-        }
-      }
-      expect(
-        enrollmentId,
-        'could not seed an enrollment: every seeded commission offering already used',
-      ).toBeDefined();
+      const enrollResp = await page.request.post('/api/me/enrollment-records', {
+        data: {
+          subjectId: SUBJECT_ID,
+          commissionId: COMMISSION_ID,
+          termId: TERM_ID,
+          status: 'Aprobada',
+          approvalMethod: 'Final',
+          grade: 7,
+        },
+      });
+      expect(enrollResp.ok(), `failed to seed enrollment: ${enrollResp.status()}`).toBe(true);
+      const enrollmentId = ((await enrollResp.json()) as { id: string }).id;
 
       await page.goto(`/reviews/write/${enrollmentId}`);
       await expect(page.getByRole('heading', { name: /reseñá tu cursada/i })).toBeVisible({

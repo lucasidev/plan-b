@@ -4,26 +4,21 @@ import { ADMIN } from '../helpers/personas';
 /**
  * E2E para US-062 (backoffice de materias de un plan + correlativas).
  *
- * Corre sobre el plan seedeado de la TUDCS (UNSTA), pero **crea sus propias materias** con códigos
- * random en vez de reusar las 15 del seed. Dos razones: la unicidad es (career_plan, code), y sobre
- * todo las correlativas son una tripla única, así que reusar materias fijas haría que la segunda
- * corrida choque con `already_exists` en vez de probar lo que quiere probar.
+ * Cada corrida trabaja sobre **su propio plan descartable**, no sobre el plan seedeado de la TUDCS.
+ * La primera versión de este spec creaba materias en el plan real y las dejaba ahí: aparecían
+ * después en el catálogo público y en el simulador de cualquier alumno (US-016), como datos
+ * fantasma tipo "Ciclo A CYA83IXI". Un spec no puede ensuciar los datos que otros consumen.
  *
- * El segundo test es el que justifica la US: que el rechazo de ciclos del domain service llegue
- * hasta la UI. El unit test cubre el DFS; esto cubre que el 409 viaje y se muestre entendible.
+ * La carrera se archiva al final (soft delete), así que el plan y sus materias dejan de ofrecerse.
  *
  * No hace falta esperar la hidratación a mano: los botones de submit arrancan deshabilitados y se
  * habilitan al hidratar (`useHydrated`), así que el `click` de Playwright ya espera por ser
- * accionable. Antes esto necesitaba `networkidle` y reintentos.
+ * accionable.
  */
 
 const UNSTA_ID = '00000001-0000-4000-a000-000000000001';
-const TUDCS_CAREER_ID = '00000002-0000-4000-a000-000000000003';
-const TUDCS_PLAN_2018_ID = '00000003-0000-4000-a000-000000000003';
 
-const SUBJECTS_URL = `/admin/universities/${UNSTA_ID}/careers/${TUDCS_CAREER_ID}/plans/${TUDCS_PLAN_2018_ID}/subjects`;
-
-/** Sufijo random para que las materias de cada corrida no choquen entre sí ni con el seed. */
+/** Sufijo random para que las materias y el slug de cada corrida no choquen entre sí. */
 function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7).toUpperCase();
 }
@@ -36,9 +31,48 @@ async function signIn(page: Page, persona: typeof ADMIN) {
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
-/** Da de alta una materia y la deja verificada en el listado del plan. */
-async function createSubject(page: Page, name: string, code: string) {
-  await page.goto(`${SUBJECTS_URL}/new`);
+type DisposablePlan = { careerId: string; planId: string; subjectsUrl: string };
+
+/**
+ * Crea una carrera + plan propios de esta corrida vía API (es setup, no el flujo bajo prueba).
+ * Requiere sesión de admin ya iniciada en la page.
+ */
+async function createDisposablePlan(page: Page): Promise<DisposablePlan> {
+  const tag = randomSuffix();
+
+  const careerResp = await page.request.post(`/api/academic/universities/${UNSTA_ID}/careers`, {
+    data: { name: `E2E Materias ${tag}`, slug: `e2e-materias-${tag.toLowerCase()}` },
+  });
+  expect(careerResp.ok(), 'no se pudo crear la carrera descartable').toBeTruthy();
+  const careerId = ((await careerResp.json()) as { id: string }).id;
+
+  // El año del plan no puede ser futuro (`CareerPlan.Create` lo rechaza con year_out_of_range: un
+  // plan de estudios que todavía no empezó a regir no existe), así que usamos el año actual.
+  const planResp = await page.request.post(`/api/academic/careers/${careerId}/plans`, {
+    data: { year: new Date().getFullYear(), label: `plan-e2e-${tag.toLowerCase()}` },
+  });
+  expect(planResp.ok(), 'no se pudo crear el plan descartable').toBeTruthy();
+  const planId = ((await planResp.json()) as { id: string }).id;
+
+  return {
+    careerId,
+    planId,
+    subjectsUrl: `/admin/universities/${UNSTA_ID}/careers/${careerId}/plans/${planId}/subjects`,
+  };
+}
+
+/** Archiva la carrera creada. Idempotente: si ya no está, el error no importa. */
+async function discardPlan(page: Page, careerId: string) {
+  try {
+    await page.request.delete(`/api/academic/careers/${careerId}`);
+  } catch {
+    // El cleanup no debe tumbar el test.
+  }
+}
+
+/** Da de alta una materia en el plan de la corrida y la deja verificada en el listado. */
+async function createSubject(page: Page, plan: DisposablePlan, name: string, code: string) {
+  await page.goto(`${plan.subjectsUrl}/new`);
   await expect(page.getByRole('heading', { name: /nueva materia/i })).toBeVisible({
     timeout: 30_000,
   });
@@ -53,7 +87,7 @@ async function createSubject(page: Page, name: string, code: string) {
   await page.getByRole('button', { name: /crear materia/i }).click();
 
   // El alta redirige al listado (useEffect sobre el success del action, ADR-0046).
-  await expect(page).toHaveURL(new RegExp(`${SUBJECTS_URL}$`), { timeout: 30_000 });
+  await expect(page).toHaveURL(new RegExp(`${plan.subjectsUrl}$`), { timeout: 30_000 });
   await expect(page.getByText(code, { exact: true })).toBeVisible({ timeout: 30_000 });
 }
 
@@ -78,19 +112,29 @@ async function selectEdge(page: Page, subjectOption: string, requiredOption: str
 test.describe('Backoffice de materias y correlativas (US-062)', () => {
   test.setTimeout(180_000);
 
+  let plan: DisposablePlan | null = null;
+
+  test.afterEach(async ({ page }) => {
+    if (!plan) return;
+    await discardPlan(page, plan.careerId);
+    plan = null;
+  });
+
   test('el admin da de alta una materia y la ve en el listado del plan', async ({ page }) => {
     await signIn(page, ADMIN);
+    plan = await createDisposablePlan(page);
 
     const code = `TST${randomSuffix()}`;
-    await createSubject(page, `Materia de prueba ${code}`, code);
+    await createSubject(page, plan, `Materia de prueba ${code}`, code);
 
     await expect(page.getByText(code, { exact: true })).toBeVisible();
   });
 
   test('el sistema rechaza una correlativa que cerraría un ciclo', async ({ page }) => {
     await signIn(page, ADMIN);
+    plan = await createDisposablePlan(page);
 
-    // Dos materias nuevas del mismo plan: A y B. El option del select se arma como
+    // Dos materias del plan de esta corrida: A y B. El option del select se arma como
     // `{code} · {name}` (ver prerequisites-panel), así que lo reconstruimos para elegirlo exacto.
     const codeA = `CYA${randomSuffix()}`;
     const codeB = `CYB${randomSuffix()}`;
@@ -98,10 +142,10 @@ test.describe('Backoffice de materias y correlativas (US-062)', () => {
     const nameB = `Ciclo B ${codeB}`;
     const optionA = `${codeA} · ${nameA}`;
     const optionB = `${codeB} · ${nameB}`;
-    await createSubject(page, nameA, codeA);
-    await createSubject(page, nameB, codeB);
+    await createSubject(page, plan, nameA, codeA);
+    await createSubject(page, plan, nameB, codeB);
 
-    await page.goto(SUBJECTS_URL);
+    await page.goto(plan.subjectsUrl);
     await expect(page.getByRole('heading', { name: /^correlativas$/i })).toBeVisible({
       timeout: 30_000,
     });

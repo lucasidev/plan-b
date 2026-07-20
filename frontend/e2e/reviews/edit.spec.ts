@@ -1,105 +1,60 @@
 import { expect, test } from '@playwright/test';
-import { LUCIA } from '../helpers/personas';
+import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
  * E2E for US-018: edit own review.
  *
- * Same setup pattern as <c>mine.spec.ts</c>: log Lucía in, make sure she has a Published
- * review (publish one through the editor if not), click Edit in the Mías tab, modify the
- * text, save, and assert the new text shows up in the Mías card.
+ * Cada corrida crea su propio alumno descartable (`createStudent`, ver
+ * `e2e/helpers/students.ts`) en lugar de compartir la persona LUCIA: publica una reseña sobre
+ * una cursada propia, la edita desde el tab Mías, y verifica que el texto nuevo aparezca en la
+ * card. Con un alumno nuevo por corrida el UNIQUE(student_profile_id, subject_id, term_id) de
+ * enrollment_records nunca colisiona, así que alcanza con una sola oferta sembrada (sin rotar
+ * entre comisiones ni depender de que alguna esté libre).
  */
 
-// Comisiones sembradas (US-065): solo estas combinaciones (materia, term, comisión) tienen una
-// comisión real con docentes, condición para que la cursada sea reseñable (docente real por reseña).
-// Probamos cada una hasta que un POST entre: la dev DB comparte estado entre runs y
-// EnrollmentRecords tiene UNIQUE(student, subject, term), así que estas nueve dan headroom.
-const COMMISSION_OFFERINGS = [
-  {
-    subjectId: '00000004-0000-4000-a000-000000000004', // PRG101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000001', // Cid01 (brandt, sosa)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000001', // MAT102
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000003', // Cid03 (iturralde)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000020', // ISW301
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000006', // Cid06 (ledesma, brandt)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000010', // PRG201
-    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
-    commissionId: '00000007-0000-4000-a000-000000000004', // Cid04 (castro, castellanos)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000013', // BD201
-    termId: '00000005-0000-4000-a000-000000000004', // 2025·2c
-    commissionId: '00000007-0000-4000-a000-000000000005', // Cid05 (méndez, páez)
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000002', // ALG101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000007', // Cid07
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000003', // INT101
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000008', // Cid08
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000014', // SO201
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-000000000009', // Cid09
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000011', // MAT201
-    termId: '00000005-0000-4000-a000-000000000005', // 2026·1c
-    commissionId: '00000007-0000-4000-a000-00000000000a', // Cid0a
-  },
-];
+// Comisión sembrada (US-065): materia+term+comisión con docente real, condición para que la
+// cursada sea reseñable.
+const SUBJECT_ID = '00000004-0000-4000-a000-000000000004'; // PRG101
+const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
 
 test.describe('Reseñas · editar (US-018)', () => {
   test.setTimeout(120_000);
 
+  let student: CreatedStudent | null = null;
+
+  test.afterEach(async ({ request }) => {
+    if (!student) return;
+    await deleteStudent(request, student);
+    student = null;
+  });
+
   test('editar una reseña publicada y ver el texto actualizado en Mías', async ({
     page,
     context,
+    request,
   }) => {
-    await context.clearCookies();
+    student = await createStudent(request, { emailPrefix: 'e2e-edit' });
 
+    await context.clearCookies();
     await page.goto('/sign-in');
-    await page.getByLabel(/tu email/i).fill(LUCIA.email);
-    await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
+    await page.getByLabel(/tu email/i).fill(student.email);
+    await page.getByLabel(/^contraseña$/i).fill(student.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
-    // Always seed a fresh enrollment + review so the test owns the row it edits. Going
-    // through previously-created reviews is brittle: prior runs of the cooldown / filter
-    // specs can leave the first "Editar" link pointing at a non-editable row.
-    let enrollmentId: string | undefined;
-    for (const offering of COMMISSION_OFFERINGS) {
-      const resp = await page.request.post('/api/me/enrollment-records', {
-        data: {
-          subjectId: offering.subjectId,
-          commissionId: offering.commissionId,
-          termId: offering.termId,
-          status: 'Aprobada',
-          approvalMethod: 'Final',
-          grade: 7,
-        },
-      });
-      if (resp.ok()) {
-        enrollmentId = ((await resp.json()) as { id: string }).id;
-        break;
-      }
-    }
-    expect(
-      enrollmentId,
-      'could not seed an enrollment: every seeded commission offering already used',
-    ).toBeDefined();
+    const enrollResp = await page.request.post('/api/me/enrollment-records', {
+      data: {
+        subjectId: SUBJECT_ID,
+        commissionId: COMMISSION_ID,
+        termId: TERM_ID,
+        status: 'Aprobada',
+        approvalMethod: 'Final',
+        grade: 7,
+      },
+    });
+    expect(enrollResp.ok(), `failed to seed enrollment: ${enrollResp.status()}`).toBe(true);
+    const enrollmentId = ((await enrollResp.json()) as { id: string }).id;
 
     // Use a short non-digit suffix: long digit sequences (Date.now is 13 digits) match the
     // backend's PII phone regex and push the review to UnderReview, which would 409 the

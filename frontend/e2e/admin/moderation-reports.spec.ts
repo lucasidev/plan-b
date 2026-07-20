@@ -1,69 +1,33 @@
 import { expect, test } from '@playwright/test';
-import { LUCIA, MATEO, MODERADOR } from '../helpers/personas';
+import { MODERADOR } from '../helpers/personas';
+import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
  * E2E para US-050 (cola de reportes) + US-051 (detalle + decisión).
  *
- * Setup: reusa el flujo probado de report.spec (Lucía escribe una reseña, Mateo la reporta) para
- * generar un report `open`, y después el moderador entra al backoffice, ve la cola, abre un detalle y
- * aplica una decisión (Aprobar = dismiss). Verifica el camino completo por rutas reales.
+ * Setup: dos alumnos descartables (`createStudent`, ver `e2e/helpers/students.ts`), uno escribe
+ * una reseña y el otro la reporta, para generar un report `open`. El MODERADOR sí sigue siendo
+ * la persona fija de `personas.ts`: este flujo no le muta estado (solo lee la cola y decide
+ * sobre reports ajenos), que es exactamente el caso donde una persona compartida está bien (ver
+ * el docstring de `personas.ts`).
  *
- * No pinpointea el report propio en la cola (la DB dev es compartida y acumula reports entre runs):
- * verifica que el report creado aparezca por su motivo, y resuelve el primero de la cola para ejercitar
- * el flujo de decisión de punta a punta.
+ * No pinpointea el report propio en la cola (la DB dev es compartida y acumula reports entre
+ * runs): verifica que el report creado aparezca por su motivo, y resuelve el primero de la cola
+ * para ejercitar el flujo de decisión de punta a punta. Con alumnos descartables por corrida el
+ * UNIQUE(student_profile_id, subject_id, term_id) nunca colisiona, así que alcanza con una sola
+ * oferta sembrada (sin pool ni rotación).
  */
 
-// Mismas comisiones sembradas que report.spec (US-065): solo estas (materia, term, comisión) son
-// reseñables. Se prueba cada una hasta que un enrollment entre (UNIQUE por student/subject/term).
-const COMMISSION_OFFERINGS = [
-  {
-    subjectId: '00000004-0000-4000-a000-000000000004',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000001',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000001',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000003',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000020',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000006',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000010',
-    termId: '00000005-0000-4000-a000-000000000004',
-    commissionId: '00000007-0000-4000-a000-000000000004',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000013',
-    termId: '00000005-0000-4000-a000-000000000004',
-    commissionId: '00000007-0000-4000-a000-000000000005',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000002',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000007',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000003',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000008',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000014',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-000000000009',
-  },
-  {
-    subjectId: '00000004-0000-4000-a000-000000000011',
-    termId: '00000005-0000-4000-a000-000000000005',
-    commissionId: '00000007-0000-4000-a000-00000000000a',
-  },
-];
+// Comisión sembrada (US-065): materia+term+comisión con docente real, condición para que la
+// cursada sea reseñable.
+const SUBJECT_ID = '00000004-0000-4000-a000-000000000004'; // PRG101
+const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
 
-async function signIn(page: import('@playwright/test').Page, persona: typeof LUCIA) {
+async function signIn(
+  page: import('@playwright/test').Page,
+  persona: Pick<CreatedStudent, 'email' | 'password'>,
+): Promise<void> {
   await page.goto('/sign-in');
   await page.getByLabel(/tu email/i).fill(persona.email);
   await page.getByLabel(/^contraseña$/i).fill(persona.password);
@@ -71,32 +35,28 @@ async function signIn(page: import('@playwright/test').Page, persona: typeof LUC
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
-/** Lucía escribe una reseña y Mateo la reporta. Devuelve el texto único de la reseña. */
+/** Un alumno escribe una reseña y otro la reporta. Devuelve el texto único de la reseña. */
 async function seedOpenReport(
   page: import('@playwright/test').Page,
   context: import('@playwright/test').BrowserContext,
+  author: CreatedStudent,
+  reporter: CreatedStudent,
 ): Promise<string> {
   await context.clearCookies();
-  await signIn(page, LUCIA);
+  await signIn(page, author);
 
-  let enrollmentId: string | undefined;
-  for (const offering of COMMISSION_OFFERINGS) {
-    const resp = await page.request.post('/api/me/enrollment-records', {
-      data: {
-        subjectId: offering.subjectId,
-        commissionId: offering.commissionId,
-        termId: offering.termId,
-        status: 'Aprobada',
-        approvalMethod: 'Final',
-        grade: 7,
-      },
-    });
-    if (resp.ok()) {
-      enrollmentId = ((await resp.json()) as { id: string }).id;
-      break;
-    }
-  }
-  expect(enrollmentId, 'no se pudo sembrar un enrollment reseñable').toBeDefined();
+  const enrollResp = await page.request.post('/api/me/enrollment-records', {
+    data: {
+      subjectId: SUBJECT_ID,
+      commissionId: COMMISSION_ID,
+      termId: TERM_ID,
+      status: 'Aprobada',
+      approvalMethod: 'Final',
+      grade: 7,
+    },
+  });
+  expect(enrollResp.ok(), `failed to seed enrollment: ${enrollResp.status()}`).toBe(true);
+  const enrollmentId = ((await enrollResp.json()) as { id: string }).id;
 
   const tag = Math.random().toString(36).slice(2, 8);
   const reviewText = `Reseña a moderar e2e ${tag}, contenido limpio y suficientemente largo para publicar.`;
@@ -112,10 +72,7 @@ async function seedOpenReport(
   await expect(page).toHaveURL(/\/reviews\?tab=pending$/, { timeout: 30_000 });
 
   await context.clearCookies();
-  await signIn(page, MATEO);
-  await page.request.post('/api/me/student-profiles', {
-    data: { careerPlanId: '00000003-0000-4000-a000-000000000003', enrollmentYear: 2024 },
-  });
+  await signIn(page, reporter);
 
   await page.goto('/reviews?tab=explore');
   const card = page.getByLabel(/reseñas de la comunidad/i).locator('li', { hasText: reviewText });
@@ -134,11 +91,24 @@ async function seedOpenReport(
 test.describe('Moderación · cola + decisión (US-050, US-051)', () => {
   test.setTimeout(180_000);
 
+  let author: CreatedStudent | null = null;
+  let reporter: CreatedStudent | null = null;
+
+  test.afterEach(async ({ request }) => {
+    if (author) await deleteStudent(request, author);
+    if (reporter) await deleteStudent(request, reporter);
+    author = null;
+    reporter = null;
+  });
+
   test('el moderador ve la cola, abre un reporte y aplica una decisión', async ({
     page,
     context,
+    request,
   }) => {
-    await seedOpenReport(page, context);
+    author = await createStudent(request, { emailPrefix: 'e2e-moderation-author' });
+    reporter = await createStudent(request, { emailPrefix: 'e2e-moderation-reporter' });
+    await seedOpenReport(page, context, author, reporter);
 
     // El moderador entra al backoffice de moderación.
     await context.clearCookies();
