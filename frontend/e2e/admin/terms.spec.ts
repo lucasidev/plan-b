@@ -13,9 +13,9 @@ import { ADMIN } from '../helpers/personas';
  * así que un año fijo (ej. "el año actual") chocaría con el seed; el offset random evita esa
  * colisión y las de corridas concurrentes en la DB compartida.
  *
- * Navegación por `goto` (no click en `<Link>`) + `waitForLoadState('networkidle')` antes de
- * submitear: mismo anti-flake que careers.spec (el redirect del server action vive en un useEffect
- * client que todavía no está activo si el click pega antes de que React hidrate).
+ * Navegación por `goto` (no click en `<Link>`) para llegar derecho al form. Ya no hace falta
+ * esperar la hidratación a mano: el botón de submit arranca deshabilitado y se habilita al hidratar
+ * (`useHydrated`), así que el `click` de Playwright espera solo.
  */
 
 const UNSTA_ID = '00000001-0000-4000-a000-000000000001';
@@ -40,11 +40,6 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
     await expect(page.getByRole('heading', { name: /nuevo período lectivo/i })).toBeVisible({
       timeout: 30_000,
     });
-    // Esperar la hidratación antes de submitear: si el click pega antes, el form hace un POST
-    // nativo (el server action corre igual) pero el redirect vive en un useEffect client que
-    // todavía no está activo, así que el período se crea pero la página no navega.
-    await page.waitForLoadState('networkidle');
-
     const currentYear = new Date().getFullYear();
     const year = currentYear + 1 + Math.floor(Math.random() * 20);
     const label = `${year}-C1`;
@@ -64,9 +59,9 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
     // persistir. Reintentamos ir al listado hasta que el período aparezca por su label computado:
     // robusto contra el flake de hidratación y contra el race del submit async (en CI, más lento, un
     // solo goto pegaba antes de que el período estuviera persistido).
-    await expect(async () => {
-      await page.goto(`/admin/universities/${UNSTA_ID}/terms`);
-      await expect(page.getByText(label, { exact: true })).toBeVisible({ timeout: 3_000 });
-    }).toPass({ timeout: 30_000 });
+    await expect(page).toHaveURL(new RegExp(`/admin/universities/${UNSTA_ID}/terms$`), {
+      timeout: 30_000,
+    });
+    await expect(page.getByText(label, { exact: true })).toBeVisible({ timeout: 30_000 });
   });
 });

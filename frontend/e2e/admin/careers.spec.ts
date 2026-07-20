@@ -39,12 +39,6 @@ test.describe('Backoffice de carreras y planes de estudio (US-061)', () => {
     await expect(page.getByRole('heading', { name: /nueva carrera/i })).toBeVisible({
       timeout: 30_000,
     });
-    // Esperar la hidratación antes de submitear: si el click pega antes, el form hace un POST nativo
-    // (el server action corre igual) pero el redirect vive en un useEffect client que todavía no
-    // está activo, así que la carrera se crea pero la página no navega. networkidle marca que los
-    // chunks cargaron y React hidrató.
-    await page.waitForLoadState('networkidle');
-
     const tag = Math.random().toString(36).slice(2, 8);
     const careerName = `Carrera E2E ${tag}`;
     await page.getByLabel(/nombre de la carrera/i).fill(careerName);
@@ -66,9 +60,6 @@ test.describe('Backoffice de carreras y planes de estudio (US-061)', () => {
     await expect(page.getByRole('heading', { name: careerName })).toBeVisible({
       timeout: 30_000,
     });
-    // Igual que en el alta de la carrera: esperar hidratación antes de submitear el plan, así el
-    // invalidateQueries (useEffect client) que refresca la tabla está activo cuando el alta completa.
-    await page.waitForLoadState('networkidle');
     const planYear = String(new Date().getFullYear());
     const planLabel = `plan-e2e-${tag}`;
     await page.getByLabel(/^año$/i).fill(planYear);

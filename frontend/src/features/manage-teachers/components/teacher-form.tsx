@@ -44,8 +44,9 @@ export function TeacherForm({ mode, universities, teacher }: Props) {
 
   useEffect(() => {
     if (state.status !== 'success') return;
+    // Solo `push`: el `refresh()` apuntaba a la ruta actual y competía con la navegación, comiéndose
+    // el redirect a veces. El listado es `force-dynamic`, así que no hace falta.
     router.push('/admin/teachers');
-    router.refresh();
   }, [state, router]);
 
   const universityName =

@@ -3,6 +3,7 @@
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { useActionState, useEffect, useId, useRef, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
+import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { addPrerequisiteAction, removePrerequisiteAction } from '../actions';
 import { prerequisiteQueries } from '../api';
@@ -79,17 +80,24 @@ function AddPrerequisiteForm({
 }) {
   const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
+  // Antes de hidratar el submit viaja como POST nativo: la mutación pasa pero el error nunca se ve.
+  const hydrated = useHydrated();
   const [state, formAction, isPending] = useActionState(
     addPrerequisiteAction,
     initialManagePrerequisiteState,
   );
   const [subjectId, setSubjectId] = useState('');
+  // La correlativa es estado controlado, no un select con `key` que se remonta al cambiar la
+  // materia: remontar descarta el nodo del DOM y cualquier interacción que estuviera en curso sobre
+  // él se pierde. Resetear el valor a mano hace lo mismo sin desmontar nada.
+  const [requiredSubjectId, setRequiredSubjectId] = useState('');
   const ids = { subjectId: useId(), requiredSubjectId: useId(), type: useId() };
 
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
     setSubjectId('');
+    setRequiredSubjectId('');
     queryClient.invalidateQueries({ queryKey: prerequisiteQueries.forPlan(planId).queryKey });
   }, [state, queryClient, planId]);
 
@@ -110,7 +118,12 @@ function AddPrerequisiteForm({
           name="subjectId"
           required
           value={subjectId}
-          onChange={(e) => setSubjectId(e.target.value)}
+          onChange={(e) => {
+            setSubjectId(e.target.value);
+            // La correlativa elegida deja de ser candidata (no puede ser la materia misma), así
+            // que se limpia junto con el cambio.
+            setRequiredSubjectId('');
+          }}
           className={inputClass}
         >
           <option value="">Elegí una materia</option>
@@ -126,12 +139,12 @@ function AddPrerequisiteForm({
           Correlativa
         </label>
         <select
-          key={subjectId}
           id={ids.requiredSubjectId}
           name="requiredSubjectId"
           required
           disabled={!subjectId}
-          defaultValue=""
+          value={requiredSubjectId}
+          onChange={(e) => setRequiredSubjectId(e.target.value)}
           className={inputClass}
         >
           <option value="">Elegí la materia correlativa</option>
@@ -158,7 +171,7 @@ function AddPrerequisiteForm({
           <option value="ParaRendir">{TYPE_LABELS.ParaRendir}</option>
         </select>
       </div>
-      <Button type="submit" size="sm" disabled={isPending}>
+      <Button type="submit" size="sm" disabled={isPending || !hydrated}>
         {isPending ? 'Agregando...' : 'Agregar correlativa'}
       </Button>
       {state.status === 'error' && (
