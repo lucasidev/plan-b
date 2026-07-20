@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
+import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { forgotPasswordAction } from '../actions';
 import { type ForgotPasswordFormState, initialForgotPasswordState } from '../types';
@@ -75,10 +76,14 @@ export function ForgotPasswordForm() {
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  // Sin la guarda, un submit antes de que React hidrate se procesa como POST nativo: el mail se
+  // manda igual, pero el redirect a check-inbox vive en el estado del cliente y nunca ocurre, así
+  // que el usuario se queda en el form creyendo que no pasó nada.
+  const hydrated = useHydrated();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || !hydrated}
       className={cn(
         'w-full inline-flex items-center justify-center gap-2',
         'bg-accent text-white border border-accent rounded-pill shadow-card',
