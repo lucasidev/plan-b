@@ -44,6 +44,11 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <!-- Driver ADO.NET puro (sin EF): lo usa Planning.Infrastructure para abrir
+         conexiones Dapper contra los read models cross-schema (ADR-0029), sin
+         necesitar un DbContext propio todavía. Misma versión que resuelve
+         Npgsql.EntityFrameworkCore.PostgreSQL de forma transitiva. -->
+    <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="Pgvector" Version="0.3.2" />
     <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />

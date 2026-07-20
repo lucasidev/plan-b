@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Planning.Infrastructure</RootNamespace>
+    <AssemblyName>Planb.Planning.Infrastructure</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Npgsql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Planb.Planning.Application\Planb.Planning.Application.csproj" />
+  </ItemGroup>
+</Project>

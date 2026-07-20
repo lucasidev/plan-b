@@ -28,5 +28,7 @@
     <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
     <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Domain\Planb.Moderation.Domain.csproj" />
     <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Application\Planb.Moderation.Application.csproj" />
+    <ProjectReference Include="..\..\modules\planning\src\Planb.Planning.Domain\Planb.Planning.Domain.csproj" />
+    <ProjectReference Include="..\..\modules\planning\src\Planb.Planning.Application\Planb.Planning.Application.csproj" />
   </ItemGroup>
 </Project>

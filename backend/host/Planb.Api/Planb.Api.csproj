@@ -33,6 +33,8 @@
     <ProjectReference Include="..\..\modules\reviews\src\Planb.Reviews.Infrastructure\Planb.Reviews.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Application\Planb.Moderation.Application.csproj" />
     <ProjectReference Include="..\..\modules\moderation\src\Planb.Moderation.Infrastructure\Planb.Moderation.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\modules\planning\src\Planb.Planning.Application\Planb.Planning.Application.csproj" />
+    <ProjectReference Include="..\..\modules\planning\src\Planb.Planning.Infrastructure\Planb.Planning.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

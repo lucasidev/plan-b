@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Planb.Planning.Application</RootNamespace>
+    <AssemblyName>Planb.Planning.Application</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Carter" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Planb.Planning.Domain\Planb.Planning.Domain.csproj" />
+    <!-- Cross-BC (ADR-0029): el simulador de cuatrimestre (US-016) combina el plan de
+         estudios (Academic), el historial cursado (Enrollments), los crowd insights
+         (Reviews) y el perfil del alumno logueado (Identity). Planning consume estos
+         cuatro módulos solo vía sus read APIs sync (Contracts/); ninguno de los cuatro
+         referencia a Planning, así el grafo de assemblies del monolito queda acíclico. -->
+    <ProjectReference Include="..\..\..\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
+    <ProjectReference Include="..\..\..\enrollments\src\Planb.Enrollments.Application\Planb.Enrollments.Application.csproj" />
+    <ProjectReference Include="..\..\..\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
+    <ProjectReference Include="..\..\..\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
+  </ItemGroup>
+</Project>
