@@ -1,6 +1,7 @@
 'use client';
 
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useActionState, useEffect, useId, useRef, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -18,11 +19,18 @@ const inputClass =
  * detalle); las mutaciones invalidan ese query para refrescar client-side (ADR-0046): router.refresh()
  * no reflejaba de forma confiable una mutación en la misma página en prod build.
  *
- * Del mock de detalle quedan afuera, por no tener backend todavía: columnas Materias/Alumnos
- * (US-062/US-093), "Editar plan" (no hay PATCH de plan: el plan solo muta de estado) y "Migrar" +
- * el estado intermedio "transición" (US-084). Acá los estados son los dos reales: vigente/deprecado.
+ * Cada plan linkea a su backoffice de materias (US-062, `/plans/{id}/subjects`). Del mock de detalle
+ * queda afuera, por no tener backend todavía: la columna Alumnos (US-093), "Editar plan" (no hay
+ * PATCH de plan: el plan solo muta de estado) y "Migrar" + el estado intermedio "transición"
+ * (US-084). Acá los estados son los dos reales: vigente/deprecado.
  */
-export function CareerPlansPanel({ careerId }: { careerId: string }) {
+export function CareerPlansPanel({
+  careerId,
+  universityId,
+}: {
+  careerId: string;
+  universityId: string;
+}) {
   const { data: plans } = useSuspenseQuery(careerPlanQueries.forCareer(careerId));
 
   return (
@@ -41,7 +49,7 @@ export function CareerPlansPanel({ careerId }: { careerId: string }) {
           Todavía no hay planes cargados. Agregá el primero con el formulario de arriba.
         </p>
       ) : (
-        <PlansTable careerId={careerId} plans={plans} />
+        <PlansTable careerId={careerId} universityId={universityId} plans={plans} />
       )}
     </div>
   );
@@ -104,9 +112,17 @@ function AddPlanForm({ careerId }: { careerId: string }) {
   );
 }
 
-const GRID = 'minmax(0,90px) minmax(0,1fr) 110px 130px';
+const GRID = 'minmax(0,90px) minmax(0,1fr) 110px 190px';
 
-function PlansTable({ careerId, plans }: { careerId: string; plans: CareerPlanRow[] }) {
+function PlansTable({
+  careerId,
+  universityId,
+  plans,
+}: {
+  careerId: string;
+  universityId: string;
+  plans: CareerPlanRow[];
+}) {
   return (
     <div className="text-[12.5px]">
       <div
@@ -119,13 +135,21 @@ function PlansTable({ careerId, plans }: { careerId: string; plans: CareerPlanRo
         <div className="text-right">Acciones</div>
       </div>
       {plans.map((plan) => (
-        <PlanRow key={plan.id} careerId={careerId} plan={plan} />
+        <PlanRow key={plan.id} careerId={careerId} universityId={universityId} plan={plan} />
       ))}
     </div>
   );
 }
 
-function PlanRow({ careerId, plan }: { careerId: string; plan: CareerPlanRow }) {
+function PlanRow({
+  careerId,
+  universityId,
+  plan,
+}: {
+  careerId: string;
+  universityId: string;
+  plan: CareerPlanRow;
+}) {
   const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +184,13 @@ function PlanRow({ careerId, plan }: { careerId: string; plan: CareerPlanRow }) 
         <div>
           <PlanStatusBadge active={isActive} />
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-1">
+          <Link
+            href={`/admin/universities/${universityId}/careers/${careerId}/plans/${plan.id}/subjects`}
+            className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
+          >
+            Materias
+          </Link>
           <button
             type="button"
             onClick={runToggle}

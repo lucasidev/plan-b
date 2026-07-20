@@ -82,7 +82,7 @@ export default async function CareerDetailPage({
       )}
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<PlansPanelSkeleton />}>
-          <CareerPlansPanel careerId={careerId} />
+          <CareerPlansPanel careerId={careerId} universityId={universityId} />
         </Suspense>
       </HydrationBoundary>
     </div>
