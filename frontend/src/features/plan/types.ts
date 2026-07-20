@@ -88,3 +88,50 @@ export type Simulation = {
     expectedApproval: number;
   };
 };
+
+/**
+ * Real backend types for the "Agregar materia" drawer (US-016). Unlike the mock types above,
+ * these mirror actual DTOs from `GET /api/me/simulator/available` (Planb.Planning.Application).
+ */
+
+/**
+ * Why a subject can or cannot be taken next term. Same names as the enum the backend serializes
+ * (`AvailabilityStatus`): translating to student-facing text is the frontend's job.
+ */
+export type AvailabilityStatus =
+  | 'Available'
+  | 'Blocked'
+  | 'AlreadyPassed'
+  | 'AlreadyRegularized'
+  | 'InProgress';
+
+/** A `para_cursar` prerequisite the student has not fulfilled yet. Mirrors `BlockedBySubjectItem`. */
+export type BlockedBySubject = {
+  id: string;
+  code: string;
+  name: string;
+};
+
+/**
+ * A plan subject evaluated by the simulator (US-016). Mirrors `AvailableSubjectItem`. No `mod`
+ * (modality) nor teacher: those belong to Commission (a term's actual offering), not Subject. The
+ * backend does not expose them here on purpose; they come back once the commission backoffice
+ * (US-093) exists.
+ */
+export type AvailableSubject = {
+  id: string;
+  code: string;
+  name: string;
+  yearInPlan: number;
+  termInYear: number | null;
+  termKind: string;
+  weeklyHours: number;
+  totalHours: number;
+  status: AvailabilityStatus;
+  blockedBy: BlockedBySubject[];
+};
+
+/** Wrapper of the `GET /api/me/simulator/available` response. */
+export type AvailableSubjectsResponse = {
+  items: AvailableSubject[];
+};
