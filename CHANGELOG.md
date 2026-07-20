@@ -100,6 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CRUD admin de AcademicTerm (US-064) (academic) — [`6517bee`](https://github.com/lucasidev/plan-b/commit/6517bee66682671425361d7280144bfd41541592)
 - admin UI de periodos lectivos (US-064-f) (academic) — [`afb7495`](https://github.com/lucasidev/plan-b/commit/afb7495ea5fc164b65852fed9f667fb561437899)
 - catalogo publico de universidades, carreras, planes y materias (US-001) (academic) — [`2e5eb75`](https://github.com/lucasidev/plan-b/commit/2e5eb75f7b1510748eb91a5c414d83a08e087c8a)
+- CRUD admin de Subject y correlativas con validacion DAG (US-062) (academic) — [`efac9f5`](https://github.com/lucasidev/plan-b/commit/efac9f51c97762ad96de3d19cc7fbb5aa9bbe9fe)
+- backoffice de materias y correlativas en el admin (US-062-f) (academic) — [`2bffa70`](https://github.com/lucasidev/plan-b/commit/2bffa70154481a3326cb896dbf10b187e32bb21c)
 
 ### Fixed
 
@@ -148,6 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - breadcrumb del backoffice sin recurso hardcodeado (US-061) (frontend) — [`44a9b6d`](https://github.com/lucasidev/plan-b/commit/44a9b6db77e093cc9cfd38b424d06c74f437c68f)
 - panel de planes via TanStack Query, no router.refresh (US-061) (academic) — [`b468223`](https://github.com/lucasidev/plan-b/commit/b468223e74104a8e975f25a436f411b7b1cc5abd)
 - guardar el enrollment window del AcademicTerm en UTC (US-064) (academic) — [`0ebf9dd`](https://github.com/lucasidev/plan-b/commit/0ebf9ddfc52bf93246797c82e3a331933022e063)
+- el backoffice perdia el feedback de sus formularios (frontend) — [`246ab9c`](https://github.com/lucasidev/plan-b/commit/246ab9cc06d2187f19a536a901275b49b885efe7)
 
 ### Changed
 
