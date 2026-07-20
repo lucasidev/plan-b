@@ -7,9 +7,15 @@ namespace Planb.ArchitectureTests;
 
 /// <summary>
 /// Architecture tests que enforcean los boundaries del modular monolith (ADR-0014, ADR-0017) en
-/// LOS 5 bounded contexts. US-T07-b generaliza las reglas que US-T04-b había hardcodeado a Identity:
-/// cada regla es ahora un <see cref="TheoryAttribute"/> sobre los 5 módulos. Reemplazan reglas que
+/// LOS 6 bounded contexts. US-T07-b generaliza las reglas que US-T04-b había hardcodeado a Identity:
+/// cada regla es ahora un <see cref="TheoryAttribute"/> sobre los módulos. Reemplazan reglas que
 /// antes vivían solo en CLAUDE.md y dependían de review humano.
+///
+/// <para>
+/// Planning entró con US-016 (ADR-0029). Se suma acá el mismo día que se crea el módulo, y no
+/// después: un BC sin sus reglas de boundary enforced es exactamente donde se cuela la dependencia
+/// cruzada que después cuesta desarmar.
+/// </para>
 ///
 /// El módulo se pasa por nombre (string, serializable para xUnit) y las assemblies se resuelven con
 /// <see cref="Assembly.Load(string)"/>; el test project referencia Domain + Application de cada
@@ -22,9 +28,9 @@ namespace Planb.ArchitectureTests;
 public class ModuleBoundariesTests
 {
     private static readonly string[] AllModules =
-        ["Identity", "Academic", "Enrollments", "Reviews", "Moderation"];
+        ["Identity", "Academic", "Enrollments", "Reviews", "Moderation", "Planning"];
 
-    /// <summary>Los 5 bounded contexts. Cada uno tiene <c>Planb.{Name}.Domain</c> y <c>.Application</c>.</summary>
+    /// <summary>Los 6 bounded contexts. Cada uno tiene <c>Planb.{Name}.Domain</c> y <c>.Application</c>.</summary>
     public static TheoryData<string> Modules => [.. AllModules];
 
     private static Assembly DomainOf(string module) => Assembly.Load($"Planb.{module}.Domain");
