@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId } from 'react';
 import { Button } from '@/components/ui/button';
+import { useHydrated } from '@/lib/use-hydrated';
 import { createTermAction, updateTermAction } from '../actions';
 import { initialManageTermState, type TermDetail } from '../types';
 
@@ -28,6 +29,8 @@ const TERM_KINDS = ['Bimestral', 'Cuatrimestral', 'Semestral', 'Anual'] as const
 export function TermForm({ mode, universityId, term }: Props) {
   const router = useRouter();
   const isEdit = mode === 'edit';
+  // Antes de hidratar el submit viaja como POST nativo: la mutación pasa pero el error nunca se ve.
+  const hydrated = useHydrated();
   const [state, formAction, isPending] = useActionState(
     isEdit ? updateTermAction : createTermAction,
     initialManageTermState,
@@ -47,8 +50,9 @@ export function TermForm({ mode, universityId, term }: Props) {
 
   useEffect(() => {
     if (state.status !== 'success') return;
+    // Solo `push`: el `refresh()` apuntaba a la ruta actual y competía con la navegación, comiéndose
+    // el redirect a veces. El listado es `force-dynamic`, así que no hace falta.
     router.push(listHref);
-    router.refresh();
   }, [state, router, listHref]);
 
   return (
@@ -175,7 +179,7 @@ export function TermForm({ mode, universityId, term }: Props) {
         >
           Cancelar
         </Button>
-        <Button type="submit" size="sm" disabled={isPending}>
+        <Button type="submit" size="sm" disabled={isPending || !hydrated}>
           {isPending ? 'Guardando...' : isEdit ? 'Guardar cambios' : 'Crear período'}
         </Button>
       </div>

@@ -163,9 +163,10 @@ test.describe('Moderación · cola + decisión (US-050, US-051)', () => {
     await expect(page.getByRole('heading', { name: /^decisión$/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /contexto del autor/i })).toBeVisible();
 
-    // Esperar la hidratación antes de aplicar la decisión: si el submit pega antes, el server action
-    // corre (POST nativo) pero el redirect a la cola vive en un useEffect client que todavía no está
-    // activo, así que la decisión se aplica pero la página no vuelve a la cola (flake de S8).
+    // Acá la decisión se dispara con `onClick` + `useTransition`, no con `<form action>`: un click
+    // pre-hidratación no ejecuta nada (se pierde), así que hay que esperar a que React hidrate o
+    // Playwright clickea al vacío. No es el caso de los forms del backoffice, donde el submit
+    // pre-hidratación sí ejecutaba la mutación y se comía el mensaje; eso ya lo cierra `useHydrated`.
     await page.waitForLoadState('networkidle');
 
     // Selecciona "Aprobar" (dismiss, siempre disponible) y aplica.

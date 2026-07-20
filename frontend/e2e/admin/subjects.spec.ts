@@ -12,9 +12,9 @@ import { ADMIN } from '../helpers/personas';
  * El segundo test es el que justifica la US: que el rechazo de ciclos del domain service llegue
  * hasta la UI. El unit test cubre el DFS; esto cubre que el 409 viaje y se muestre entendible.
  *
- * Navegación por `goto` + `networkidle` antes de submitear (mismo anti-flake que terms.spec: si el
- * click pega antes de que React hidrate, el form se procesa como POST nativo y el redirect, que
- * vive en un useEffect client por ADR-0046, no dispara).
+ * No hace falta esperar la hidratación a mano: los botones de submit arrancan deshabilitados y se
+ * habilitan al hidratar (`useHydrated`), así que el `click` de Playwright ya espera por ser
+ * accionable. Antes esto necesitaba `networkidle` y reintentos.
  */
 
 const UNSTA_ID = '00000001-0000-4000-a000-000000000001';
@@ -36,13 +36,12 @@ async function signIn(page: Page, persona: typeof ADMIN) {
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
-/** Da de alta una materia y devuelve su código, ya verificada en el listado del plan. */
+/** Da de alta una materia y la deja verificada en el listado del plan. */
 async function createSubject(page: Page, name: string, code: string) {
   await page.goto(`${SUBJECTS_URL}/new`);
   await expect(page.getByRole('heading', { name: /nueva materia/i })).toBeVisible({
     timeout: 30_000,
   });
-  await page.waitForLoadState('networkidle');
 
   await page.getByLabel(/nombre de la materia/i).fill(name);
   await page.getByLabel(/^código$/i).fill(code);
@@ -53,33 +52,23 @@ async function createSubject(page: Page, name: string, code: string) {
   await page.getByLabel(/carga horaria total/i).fill('96');
   await page.getByRole('button', { name: /crear materia/i }).click();
 
-  // Reintentamos el listado hasta que la materia aparezca: cubre el flake de hidratación (el
-  // redirect puede no dispararse) y el race del alta async.
-  await expect(async () => {
-    await page.goto(SUBJECTS_URL);
-    await expect(page.getByText(code, { exact: true })).toBeVisible({ timeout: 3_000 });
-  }).toPass({ timeout: 30_000 });
+  // El alta redirige al listado (useEffect sobre el success del action, ADR-0046).
+  await expect(page).toHaveURL(new RegExp(`${SUBJECTS_URL}$`), { timeout: 30_000 });
+  await expect(page.getByText(code, { exact: true })).toBeVisible({ timeout: 30_000 });
 }
 
 /**
  * Elige la arista (materia requiere correlativa) en el panel, siempre en tipo "para cursar".
- *
- * El select de correlativa tiene `key={subjectId}`, así que React lo **remonta** cada vez que
- * cambia la materia. Si se elige la correlativa sin esperar ese remount, la selección cae sobre el
- * select viejo y termina enviándose una arista distinta de la que pide el test (así se me colaba un
- * `already_exists` en vez del rechazo de ciclo que quiero verificar).
+ * Afirma la selección efectiva de cada select: los tres son controlados por estado, y una selección
+ * que no cuajara mandaría una arista distinta de la que pide el test, fallando con un error
+ * engañoso en vez de con el motivo real.
  */
 async function selectEdge(page: Page, subjectOption: string, requiredOption: string) {
   const subject = page.getByLabel(/^materia$/i);
   await subject.selectOption({ label: subjectOption });
-  // Afirmamos la selección efectiva antes de seguir: el select es controlado por estado de React,
-  // así que un selectOption que no cuaja dejaría el valor viejo y el test terminaría enviando una
-  // arista distinta de la que cree (y fallando con un error engañoso).
   await expect(subject.locator('option:checked')).toHaveText(subjectOption);
 
   const required = page.getByLabel(/^correlativa$/i);
-  await expect(required).toBeEnabled();
-  await expect(required.locator('option', { hasText: requiredOption })).toHaveCount(1);
   await required.selectOption({ label: requiredOption });
   await expect(required.locator('option:checked')).toHaveText(requiredOption);
 
@@ -113,21 +102,15 @@ test.describe('Backoffice de materias y correlativas (US-062)', () => {
     await createSubject(page, nameB, codeB);
 
     await page.goto(SUBJECTS_URL);
-    await page.waitForLoadState('networkidle');
     await expect(page.getByRole('heading', { name: /^correlativas$/i })).toBeVisible({
       timeout: 30_000,
     });
-
-    // Los dos intentos van sobre la MISMA página, sin recargar en el medio: el panel refresca la
-    // lista solo (invalidateQueries en el success del action). Si recargáramos entre uno y otro, el
-    // segundo submit podría pegar en la ventana de hidratación y procesarse como POST nativo, y
-    // entonces el mensaje de error, que vive en el estado del cliente, nunca se pintaría.
 
     // A requiere B (para cursar): arista válida, el grafo sigue acíclico.
     await selectEdge(page, optionA, optionB);
     await page.getByRole('button', { name: /agregar correlativa/i }).click();
 
-    // Esperamos a que la arista aparezca en la lista, que es la señal de que el alta terminó.
+    // La arista aparece en la lista sin recargar (invalidateQueries en el success del action).
     await expect(
       page.getByRole('button', { name: new RegExp(`quitar correlativa.*${codeA}.*${codeB}`, 'i') }),
     ).toBeVisible({ timeout: 30_000 });
