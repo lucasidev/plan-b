@@ -43,7 +43,8 @@ public sealed class UpdateAcademicTermEndpoint : ICarterModule
 
             var command = new UpdateAcademicTermCommand(
                 id, body.Year, body.Number, kind.Value,
-                body.StartDate, body.EndDate, body.EnrollmentOpens, body.EnrollmentCloses);
+                body.StartDate, body.EndDate,
+                AsUtc(body.EnrollmentOpens), AsUtc(body.EnrollmentCloses));
 
             try
             {
@@ -83,6 +84,13 @@ public sealed class UpdateAcademicTermEndpoint : ICarterModule
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict);
     }
+
+    /// <summary>
+    /// Reinterpreta la hora local del <c>datetime-local</c> como UTC (mismo motivo que en el POST de
+    /// alta: Postgres <c>timestamp with time zone</c> solo acepta offset 0 y el instante no debe
+    /// depender del huso donde corra el server).
+    /// </summary>
+    private static DateTimeOffset AsUtc(DateTimeOffset value) => new(value.DateTime, TimeSpan.Zero);
 }
 
 /// <summary>
