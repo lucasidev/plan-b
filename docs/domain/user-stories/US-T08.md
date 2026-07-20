@@ -1,6 +1,6 @@
 # US-T08: backfill de cobertura de lógica de valor y dominio puro
 
-**Status**: Sprint actual
+**Status**: Done
 **Sprint**: S9
 **Epic**: [EPIC-00](../epics/EPIC-00.md)
 **Priority**: High
@@ -20,44 +20,44 @@ Cada ítem = un test (o set de casos) en su capa, verde en CI. Agrupados por mó
 ### Backend (domain unit / handler unit)
 
 **academic**
-- [ ] `CareerPlanParser` (unit): headers `año X`/`cuatrimestre Y`, override `anual` (termKind=Anual, termInYear=null), detección de nombre, scoring de confidence. Casos: `Primer año`→year=1, materia `anual`, materia sin año→Low+issue, texto sin código→Items vacío.
-- [ ] `ProcessCareerPlanImportCommandHandler` (handler unit): PDF vacío/encriptado/sin-texto/rawText-blanco→MarkFailed, excepción de extractor/parser→MarkFailed, timeout 60s→FailAndSave, import inexistente→drop, MarkParsing sobre no-Pending→drop.
-- [ ] `CareerPlanImport` aggregate (domain unit): guardas Create (CareerNameRequired, PlanYearOutOfRange) + transiciones (MarkParsing/Parsed/Failed/Approved).
-- [ ] `ApproveCareerPlanImportCommandHandler` (handler unit): reuse-or-create Career, skip materias inválidas, todas inválidas→NoItemsSelected, materialización + publica CareerPlanImported.
-- [ ] `CareerPlan` aggregate (domain unit): Create valida año (YearOutOfRange); MarkOfficial idempotente.
+- [x] `CareerPlanParser` (unit): headers `año X`/`cuatrimestre Y`, override `anual` (termKind=Anual, termInYear=null), detección de nombre, scoring de confidence. Casos: `Primer año`→year=1, materia `anual`, materia sin año→Low+issue, texto sin código→Items vacío.
+- [x] `ProcessCareerPlanImportCommandHandler` (handler unit): PDF vacío/encriptado/sin-texto/rawText-blanco→MarkFailed, excepción de extractor/parser→MarkFailed, timeout 60s→FailAndSave, import inexistente→drop, MarkParsing sobre no-Pending→drop.
+- [x] `CareerPlanImport` aggregate (domain unit): guardas Create (CareerNameRequired, PlanYearOutOfRange) + transiciones (MarkParsing/Parsed/Failed/Approved).
+- [x] `ApproveCareerPlanImportCommandHandler` (handler unit): reuse-or-create Career, skip materias inválidas, todas inválidas→NoItemsSelected, materialización + publica CareerPlanImported.
+- [x] `CareerPlan` aggregate (domain unit): Create valida año (YearOutOfRange); MarkOfficial idempotente.
 
 **enrollments**
-- [ ] `HistorialImport` aggregate (domain unit): máquina de estados (MarkParsing/Parsed/Failed/Confirmed) con guardas de transición.
-- [ ] `ConfirmHistorialImportCommandHandler` (handler unit): camino feliz, create-por-item + skip de (student,subject,term) existente → CreatedCount/SkippedCount (valor central de US-014).
-- [ ] `ProcessHistorialImportCommandHandler` (handler unit): ramas de fallo (encriptado, vacío, excepción de extracción/parser, profile/plan inexistente, timeout)→Failed.
+- [x] `HistorialImport` aggregate (domain unit): máquina de estados (MarkParsing/Parsed/Failed/Confirmed) con guardas de transición.
+- [x] `ConfirmHistorialImportCommandHandler` (handler unit): camino feliz, create-por-item + skip de (student,subject,term) existente → CreatedCount/SkippedCount (valor central de US-014).
+- [x] `ProcessHistorialImportCommandHandler` (handler unit): ramas de fallo (encriptado, vacío, excepción de extracción/parser, profile/plan inexistente, timeout)→Failed.
 
 **reviews**
-- [ ] `RegexReviewContentFilter` (unit): reglas PII (email, teléfono AR, DNI), Clean vs Triggered por patrón.
-- [ ] `Review.Edit` (domain unit): invariante post-patch (vaciar ambos textos→AtLeastOneTextRequired) + semántica de patch parcial (`*Provided` vs null).
-- [ ] `FinalGrade.Create` (domain unit): redondeo 2 decimales AwayFromZero + cotas [0,10].
+- [x] `RegexReviewContentFilter` (unit): reglas PII (email, teléfono AR, DNI), Clean vs Triggered por patrón.
+- [x] `Review.Edit` (domain unit): invariante post-patch (vaciar ambos textos→AtLeastOneTextRequired) + semántica de patch parcial (`*Provided` vs null).
+- [x] `FinalGrade.Create` (domain unit): redondeo 2 decimales AwayFromZero + cotas [0,10].
 
 **moderation**
-- [ ] `ReportReviewCommandHandler` (handler unit): rama rate-limit (`!Allowed`→RateLimitExceeded 429) con IRateLimiter mockeado.
-- [ ] `ReviewReport.Create` (domain unit): trim de details + MaxDetailsLength→DetailsTooLong.
-- [ ] `UpholdReport`/`DismissReportCommandHandler` (handler unit): report null→ReportNotFound (404).
+- [x] `ReportReviewCommandHandler` (handler unit): rama rate-limit (`!Allowed`→RateLimitExceeded 429) con IRateLimiter mockeado.
+- [x] `ReviewReport.Create` (domain unit): trim de details + MaxDetailsLength→DetailsTooLong.
+- [x] `UpholdReport`/`DismissReportCommandHandler` (handler unit): report null→ReportNotFound (404).
 
 **identity**
-- [ ] `User.Deactivate` (domain unit): swap de email anonimizado, PasswordHash sentinel, limpieza de owned collections, raise del domain event, guarda AlreadyDeactivated.
-- [ ] `User.UpdateActiveStudentProfile` (domain unit): AccountNotActive, StudentProfileNotFound, DisplayNameInvalid (trim), YearOfStudyOutOfRange, LegajoInvalid.
-- [ ] `User.ChangePassword` (domain unit): PasswordTooLong (>200), same-as-current ordinal, orden de guardas.
-- [ ] `SignInCommandHandler` (handler unit): anti-enumeration, email malformado→InvalidCredentials (no 400).
+- [x] `User.Deactivate` (domain unit): swap de email anonimizado, PasswordHash sentinel, limpieza de owned collections, raise del domain event, guarda AlreadyDeactivated.
+- [x] `User.UpdateActiveStudentProfile` (domain unit): AccountNotActive, StudentProfileNotFound, DisplayNameInvalid (trim), YearOfStudyOutOfRange, LegajoInvalid.
+- [x] `User.ChangePassword` (domain unit): PasswordTooLong (>200), same-as-current ordinal, orden de guardas.
+- [x] `SignInCommandHandler` (handler unit): anti-enumeration, email malformado→InvalidCredentials (no 400).
 
 ### Frontend (vitest)
 
-- [ ] `add-enrollment/schema` (Zod): 5 refines cross-field (Aprobada, Regular, Cursando, Equivalencia, FinalLibre).
-- [ ] `change-password/actions`: map ProblemDetails.title→kind + limpieza de cookies en 204.
-- [ ] `import-career-plan/actions`: branch multipart (File) vs JSON (rawText), gates de tamaño + `.pdf`.
-- [ ] `write-review/schema` (Zod): transform ''→undefined + refine condicional (min 50 solo si hay texto), rangos.
-- [ ] `write-review/actions`: guardas pre-fetch (docenteResenadoId faltante, JSON.parse con catch, gate text requerido).
-- [ ] `moderate-reports/actions`: gate isStaff(), gate MAX_NOTE, flag conflict en 409.
-- [ ] `change-password/schema` (Zod): refines newPassword===confirm y currentPassword!==newPassword.
-- [ ] `import-career-plan/components/preview-table`: selección inicial por confianza + armado del payload.
-- [ ] `settings/components/toggle-setting`: update optimista + rollback-on-error.
+- [x] `add-enrollment/schema` (Zod): 5 refines cross-field (Aprobada, Regular, Cursando, Equivalencia, FinalLibre).
+- [x] `change-password/actions`: map ProblemDetails.title→kind + limpieza de cookies en 204.
+- [x] `import-career-plan/actions`: branch multipart (File) vs JSON (rawText), gates de tamaño + `.pdf`.
+- [x] `write-review/schema` (Zod): transform ''→undefined + refine condicional (min 50 solo si hay texto), rangos.
+- [x] `write-review/actions`: guardas pre-fetch (docenteResenadoId faltante, JSON.parse con catch, gate text requerido).
+- [x] `moderate-reports/actions`: gate isStaff(), gate MAX_NOTE, flag conflict en 409.
+- [x] `change-password/schema` (Zod): refines newPassword===confirm y currentPassword!==newPassword.
+- [x] `import-career-plan/components/preview-table`: selección inicial por confianza + armado del payload.
+- [x] `settings/components/toggle-setting`: update optimista + rollback-on-error.
 
 ## Out of scope
 

@@ -25,7 +25,7 @@ El flow original de US-038 hacía hard delete del `User`. Al aterrizar Reviews (
 
 ## Out of scope
 
-- **Endpoint admin de hard delete** (`DELETE /api/admin/users/{id}`): diferido a cuando aterrice el módulo admin.
+- **Endpoint de backoffice para hard delete** (`DELETE /api/identity/users/{id}`, dueño del aggregate `User`): diferido. No hay "módulo admin" donde aterrizarlo: las features de backoffice viven en su módulo dueño ([ADR-0050](../../decisions/0050-backoffice-como-corte-transversal.md)).
 - **Rutina de hard delete batch** post-N-años para los rows anonimizados que sobreviven en la tabla: no en MVP (para la escala de plan-b es ruido).
 
 ## Refs

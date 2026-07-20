@@ -14,7 +14,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 |---|---|---|---|
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
-| S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + módulo admin doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
+| S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + backoffice doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
 | S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
 | S4 | 2026-05-18 a 2026-05-24 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b + **US-038-bis bonus** (soft delete con anonimización, ADR-0044) + chore técnico react-doctor cleanup + pre-push hook. | ✓ Done |
 | S5 | 2026-05-25 a 2026-06-08 (extendido) | **Slice de Reseñas (feature core del producto crowdsourced)**: US-017 publicar backend + US-049 editor 6 campos + US-048 shell 3 tabs + US-018 editar + US-055 borrar + US-019 reportar con módulo Moderation + auto-quarantine. Entraron las 6, incluida US-019 que era la diferible. | ✓ Done |
@@ -191,9 +191,9 @@ Todas Done al cierre del sprint.
   - **15 US existentes actualizadas** con mockup refs + AC visual del canvas v3 (auth, onb, home, mi-carrera, planificar, reseñas, rankings, búsqueda, notif, cuenta, soporte).
   - **3 decisiones de scope zanjadas** en el rediseño app: US-051 scope (→ split a US-085 con strike system + pedir edición), US-072 modal cambiar contraseña (→ split a US-079-i integrated siguiendo patrón US-029-i / US-033-i), US-077-b backend de notifications (→ full BC siguiendo ADR-0040, splitado en 3 sub-slices b-1 / b-2 / b-3).
   - PR `docs/v2-redesign` mergeado como [#94](https://github.com/lucasidev/plan-b/pull/94).
-- **Módulo backoffice/admin doc'd (día 7, 2026-05-12)**:
+- **Backoffice doc'd (día 7, 2026-05-12)**:
   - Sync del 4° canvas (`plan-b-admin.html` + módulo `admin-shell.jsx` + `admin-screens-1/2/3.jsx`) con 21 artboards en 5 secciones (shell, afiliar uni, datos académicos, moderación, ops). Pipeline de screenshots ampliada para incluir el slug `admin` (prefix `admin-<section>-<id>.png` para evitar colisión con `onb` del app).
-  - **6 US nuevas creadas para el módulo admin**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-007 (importador CSV con preview/diff), US-006 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-005 (feed global de actividad reciente).
+  - **6 US nuevas creadas para el backoffice**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-007 (importador CSV con preview/diff), US-006 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-005 (feed global de actividad reciente).
   - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-005), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-058 (deshabilitar member + tabs detalle).
   - **5 decisiones de scope zanjadas en el rediseño admin**: cola es por report (no por review, canvas manda), audit log per-BC (ADR-0042, cada módulo owns su projection con cross-BC views via Dapper UNION ALL), strike system+ocultar+banear all-in en US-085 (out de US-051), importador/merge/migración como US separadas, admin shell separado como bloqueante US-081.
   - **1 ADR nuevo**: [ADR-0042](decisions/0042-audit-log-per-bc-no-central.md) (audit log per-BC, no central; extiende ADR-0031).
@@ -280,7 +280,7 @@ US existentes con AC nuevas:
 
 ## S4 ✓ Done
 
-**Rango**: 2026-05-18 a 2026-05-24 (lunes → sábado, 7 días útiles — el cierre se corrió un día porque la planificación arrancó el martes; las próximas aperturas se hacen el lunes mismo para no acumular esta deuda).
+**Rango**: 2026-05-18 a 2026-05-24 (lunes → sábado, 7 días útiles: el cierre se corrió un día porque la planificación arrancó el martes; las próximas aperturas se hacen el lunes mismo para no acumular esta deuda).
 
 **Foco**: cerrar **el shell del alumno** después de Mi carrera. Continuidad natural con S3 (alumno ya tiene historial + plan + import + Mi carrera; ahora tiene Mi perfil, Planificar shell, settings, Ayuda, Sobre plan-b). Reseñas como capítulo nuevo grande quedan para S5.
 
@@ -293,7 +293,7 @@ Las 6 del scope original + 1 que surgió mid-sprint:
 | [US-072](domain/user-stories/US-072.md) | Ajustes (notificaciones / privacidad / idioma / tema / Seguridad) | M | #124 |
 | [US-079-i](domain/user-stories/US-079-i.md) | Cambio de contraseña con sesión activa | M | #124 (junto con US-072) |
 | [US-047](domain/user-stories/US-047.md) | Mi perfil (identidad académica + zona peligrosa) | M | #125 |
-| **US-038-bis** | **Soft delete con anonimización (ADR-0044)** — mid-sprint | M | #125 (junto con US-047) |
+| **US-038-bis** | **Soft delete con anonimización (ADR-0044)**, mid-sprint | M | #125 (junto con US-047) |
 | [US-046](domain/user-stories/US-046.md) | Planificar shell + 2 tabs + modal publicar | M | #126 |
 | [US-073](domain/user-stories/US-073.md) | Ayuda (FAQ + mailto soporte) | S | #128 |
 | [US-074](domain/user-stories/US-074.md) | Sobre plan-b (manifiesto + equipo + stats + open source) | S | #128 |
@@ -418,14 +418,14 @@ Al cerrar S5 el plan era doble: corpus consumible + cola de moderación. El audi
 | US | Título | PR |
 |---|---|---|
 | US-063 | Catálogo de docentes consumible + admin CRUD gateado + backoffice + admin shell | #163, #180, #181 |
-| US-065 | Comisiones + asignación de docentes; docente real por reseña (saca el placeholder) | #164, #167 |
+| US-065 | Comisiones + asignación de docentes; docente real por reseña (saca el placeholder). **Parcial**: entregado el aggregate + seed + lectura; el CRUD de backoffice y su UI quedan pendientes | #164, #167 |
 | US-003 | Página pública de docente con reseñas (reads backend + frontend) | #165, #166 |
 | US-030 | Claim de identidad docente | #169 |
 | US-031 | Verificación docente por email institucional | #170 |
 | US-040 | Responder reseña como docente verificado | #172 |
 | US-041 | Editar respuesta docente | #179 |
 | US-004 | Rama docente en la búsqueda global (completa la materia-only de S6) | #168 |
-| US-067 | Provisioning de cuentas staff | S7 |
+| US-067 | Provisioning de cuentas staff. **Parcial**: entregado `User.RegisterStaff` + seed desde `personas.json`; el endpoint, `must_change_password` y la UI quedan pendientes | S7 |
 
 Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de calificaciones y de topbar en viewports angostos.
 
@@ -465,9 +465,9 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 |---|---|---|---|---|
 | US-060 | Gestionar University | High | M | ✓ Done |
 | US-061 | Gestionar Career + CareerPlan | High | M | ✓ Done |
-| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | M | ⚪ No empezada |
+| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | L | 🟡 En progreso |
 | US-064 | Gestionar AcademicTerm | Med | S | ✓ Done |
-| US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M | 🟡 En progreso |
+| US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M | ✓ Done |
 | US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M | ✓ Done |
 | US-059-f | Rediseño auth + onboarding (AuthShell/OnbShell) + generalización de copy UNSTA→multi-universidad | High | M | ✓ Done |
 
@@ -500,7 +500,7 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 - [US-009-f](domain/user-stories/US-009-f.md) páginas de error globales (404 + 5xx).
 
 **Cancelled**:
-- ~~[US-075](domain/user-stories/US-075.md) Member self-disable~~ — reemplazada por **US-038-bis** (S4 Done) bajo [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md). El paso intermedio "deshabilitar" desapareció; el flow real es soft delete con anonimización del PII.
+- ~~[US-075](domain/user-stories/US-075.md) Member self-disable~~: reemplazada por **US-038-bis** (S4 Done) bajo [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md). El paso intermedio "deshabilitar" desapareció; el flow real es soft delete con anonimización del PII.
 
 **Notifications BC (decisión 2026-05-09 sobre INDEFINIDO #5)**:
 - [US-077-b](domain/user-stories/US-077-b.md) parent: Notifications BC completo siguiendo ADR-0040. Splitada en 3 sub-slices secuenciales:
@@ -514,14 +514,16 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
 - US-032 + US-069 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.
-- US-008 (dashboard institucional): backlog open. US-067 (cuentas staff) cerrada en S7.
+- US-008 (dashboard institucional): backlog open. US-067 (cuentas staff) quedó **parcial** en S7: falta el endpoint de alta y la UI (hoy solo se provisiona por seed).
 - Frontend "agregar carrera" + JwtBearer middleware backend: cierra US-012 entera.
 
-**Backoffice / Admin (doc'd 2026-05-12, sin sprint asignado)**:
+**Backoffice (doc'd 2026-05-12, sin sprint asignado)**:
 
-US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature admin se puede empezar (todas reusan AdmShell + AdmTable + AdmFilters).
+> **Nota terminológica** ([ADR-0050](decisions/0050-backoffice-como-corte-transversal.md)): el backoffice **no es un módulo**. Es la unión de las features no-públicas de cada agregado, repartidas en los módulos que ya existen (academic, identity, moderation). Cada una expone la API de su módulo dueño (`/api/academic/...`, `/api/moderation/...`); **no existe ni existió `/api/admin/...`**. "Admin" es un rol de `User` y, en el frontend, una sección de UI.
 
-- [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante de todo el resto del módulo admin.** (Parte del shell aterrizó con US-063 en S7; revisar qué queda antes de arrancar S9.)
+US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature de backoffice se puede empezar (todas reusan AdmShell + AdmTable + AdmFilters).
+
+- [US-081](domain/user-stories/US-081.md) Admin shell + dashboard ops (componentes base: AdmShell sidebar+topbar, AdmTable, AdmFilters, page header). **Bloqueante del resto del backoffice.** (Parte del shell aterrizó con US-063 en S7; revisar qué queda antes de arrancar S9.)
 - [US-007](domain/user-stories/US-007.md) Importador de plan con preview/diff (CSV).
 - [US-006](domain/user-stories/US-006.md) Merge de Subjects duplicados (detección + merge UI).
 - [US-084](domain/user-stories/US-084.md) Migración asistida de plan de estudios (cross-plan).
