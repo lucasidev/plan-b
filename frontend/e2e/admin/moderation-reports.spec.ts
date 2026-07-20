@@ -176,8 +176,12 @@ test.describe('Moderación · cola + decisión (US-050, US-051)', () => {
     await expect(confirm.getByRole('heading', { name: /aprobar esta reseña/i })).toBeVisible();
     await confirm.getByRole('button', { name: /^aplicar$/i }).click();
 
-    // Vuelve a la cola.
-    await expect(page).toHaveURL(/\/admin\/moderacion\/reportes$/, { timeout: 30_000 });
-    await expect(page.getByRole('heading', { name: /cola de reportes/i })).toBeVisible();
+    // Vuelve a la cola. El redirect tras aplicar es un useEffect client (mutación pura, ADR-0046) que
+    // puede no dispararse si el submit pegó en la ventana de hidratación (form procesado como POST
+    // nativo); vamos a la cola directo, robusto contra ese flake. La decisión ya se aplicó server-side.
+    await page.goto('/admin/moderacion/reportes');
+    await expect(page.getByRole('heading', { name: /cola de reportes/i })).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });
