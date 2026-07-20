@@ -461,15 +461,15 @@ Extras: elegir comisión al cargar la cursada (#173), fixes de histograma de cal
 
 ### Scope
 
-| US | Título | Pri | Effort |
-|---|---|---|---|
-| US-060 | Gestionar University | High | M |
-| US-061 | Gestionar Career + CareerPlan | High | M |
-| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | M |
-| US-064 | Gestionar AcademicTerm | Med | S |
-| US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M |
-| US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M |
-| US-059-f | Rediseño auth + onboarding (AuthShell/OnbShell) + generalización de copy UNSTA→multi-universidad | High | M |
+| US | Título | Pri | Effort | Estado |
+|---|---|---|---|---|
+| US-060 | Gestionar University | High | M | ✓ Done |
+| US-061 | Gestionar Career + CareerPlan | High | M | ✓ Done |
+| US-062 | Gestionar Subject + Prerequisite (editor + correlativas con validación DAG) | High | M | ⚪ No empezada |
+| US-064 | Gestionar AcademicTerm | Med | S | ✓ Done |
+| US-001 | Explorar catálogo de universidades y carreras (lado alumno) | High | M | 🟡 En progreso |
+| US-054-f | Landing pública en `/` (reemplaza el redirect a `/home`) | Med | M | ✓ Done |
+| US-059-f | Rediseño auth + onboarding (AuthShell/OnbShell) + generalización de copy UNSTA→multi-universidad | High | M | ✓ Done |
 
 Diferido a S10: importadores (US-007 CSV, US-006 merge de duplicados), wizard de alta de universidad (US-091), gestión de comisión por cuatri (US-090).
 
