@@ -20,6 +20,12 @@ namespace Planb.Academic.Domain.Subjects;
 /// <see cref="Planb.Academic.Domain.TermKind.Anual"/>, <c>TermInYear</c> debe ser null. Para
 /// cualquier otra cadencia, <c>TermInYear</c> es obligatorio (1-N según la cadencia).
 /// </para>
+///
+/// <para>
+/// Las correlativas (<see cref="Prerequisites.Prerequisite"/>) NO cuelgan de acá: son un aggregate
+/// aparte, porque validar aciclicidad necesita el grafo del plan entero y no las aristas de una
+/// materia sola (ADR-0003).
+/// </para>
 /// </summary>
 public sealed class Subject : Entity<SubjectId>, IAggregateRoot
 {
@@ -38,7 +44,16 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     /// al crearse: si el plan es no oficial, todas sus materias también lo son.
     /// </summary>
     public bool IsOfficial { get; private set; }
+
+    /// <summary>
+    /// Soft delete (US-062). No hay hard delete: EnrollmentRecord, Review y Commission referencian
+    /// la materia por id sin FK cross-schema, así que borrarla de verdad dejaría filas colgadas
+    /// (mismo criterio que <c>Career.IsActive</c>).
+    /// </summary>
+    public bool IsActive { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset UpdatedAt { get; private set; }
 
     private Subject() { }
 
@@ -62,6 +77,161 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     {
         ArgumentNullException.ThrowIfNull(clock);
 
+        var validation = Validate(code, name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+
+        var now = clock.UtcNow;
+        return new Subject
+        {
+            Id = SubjectId.New(),
+            CareerPlanId = careerPlanId,
+            Code = code.Trim(),
+            Name = name.Trim(),
+            YearInPlan = yearInPlan,
+            TermInYear = termInYear,
+            TermKind = termKind,
+            WeeklyHours = weeklyHours,
+            TotalHours = totalHours,
+            Description = NormalizeOptional(description),
+            IsOfficial = isOfficial,
+            IsActive = true,
+            CreatedAt = now,
+            UpdatedAt = now,
+        };
+    }
+
+    /// <summary>
+    /// Edición del catálogo (US-062, admin). Replace del form completo, mismas reglas que
+    /// <see cref="Create"/>. El plan NO se puede mover: cambiar de plan rompería las correlativas
+    /// ya cargadas (que asumen mismo plan) y los EnrollmentRecord que apuntan a esta materia; para
+    /// eso está la migración asistida de plan (US-084).
+    /// </summary>
+    public Result Update(
+        string code,
+        string name,
+        int yearInPlan,
+        int? termInYear,
+        TermKind termKind,
+        int weeklyHours,
+        int totalHours,
+        string? description,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        var validation = Validate(code, name, yearInPlan, termInYear, termKind, weeklyHours, totalHours);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+
+        Code = code.Trim();
+        Name = name.Trim();
+        YearInPlan = yearInPlan;
+        TermInYear = termInYear;
+        TermKind = termKind;
+        WeeklyHours = weeklyHours;
+        TotalHours = totalHours;
+        Description = NormalizeOptional(description);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Promueve materia no-oficial a oficial. Idempotente. Lo invoca el flujo de backoffice
+    /// cuando un admin valida en bloque las materias de un plan crowdsourced.
+    /// </summary>
+    public void MarkOfficial()
+    {
+        if (!IsOfficial) IsOfficial = true;
+    }
+
+    /// <summary>
+    /// Soft delete (US-062). El chequeo de "otras materias la tienen como correlativa" NO va acá:
+    /// necesita el grafo del plan, así que lo hace el handler antes de llamar (409 has_dependents).
+    /// </summary>
+    public Result Deactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!IsActive)
+        {
+            return SubjectErrors.AlreadyInactive;
+        }
+
+        IsActive = false;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    public Result Reactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsActive)
+        {
+            return SubjectErrors.AlreadyActive;
+        }
+
+        IsActive = true;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Reconstitución con Id pre-asignado para seeder + eventual EF rehydration. Saltea las
+    /// validaciones; el caller se hace responsable de pasar datos coherentes (mismo contract
+    /// que <see cref="University.Hydrate"/>).
+    /// </summary>
+    public static Subject Hydrate(
+        SubjectId id,
+        CareerPlanId careerPlanId,
+        string code,
+        string name,
+        int yearInPlan,
+        int? termInYear,
+        TermKind termKind,
+        int weeklyHours,
+        int totalHours,
+        string? description,
+        bool isOfficial,
+        bool isActive,
+        DateTimeOffset createdAt,
+        DateTimeOffset updatedAt) =>
+        new()
+        {
+            Id = id,
+            CareerPlanId = careerPlanId,
+            Code = code,
+            Name = name,
+            YearInPlan = yearInPlan,
+            TermInYear = termInYear,
+            TermKind = termKind,
+            WeeklyHours = weeklyHours,
+            TotalHours = totalHours,
+            Description = description,
+            IsOfficial = isOfficial,
+            IsActive = isActive,
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt,
+        };
+
+    /// <summary>
+    /// Reglas compartidas por <see cref="Create"/> y <see cref="Update"/>. Los rangos son límites
+    /// defensivos, no reglas académicas finas.
+    /// </summary>
+    private static Result Validate(
+        string code,
+        string name,
+        int yearInPlan,
+        int? termInYear,
+        TermKind termKind,
+        int weeklyHours,
+        int totalHours)
+    {
         if (string.IsNullOrWhiteSpace(code))
         {
             return SubjectErrors.CodeRequired;
@@ -115,63 +285,9 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             return SubjectErrors.TotalHoursOutOfRange;
         }
 
-        return new Subject
-        {
-            Id = SubjectId.New(),
-            CareerPlanId = careerPlanId,
-            Code = code.Trim(),
-            Name = name.Trim(),
-            YearInPlan = yearInPlan,
-            TermInYear = termInYear,
-            TermKind = termKind,
-            WeeklyHours = weeklyHours,
-            TotalHours = totalHours,
-            Description = string.IsNullOrWhiteSpace(description) ? null : description.Trim(),
-            IsOfficial = isOfficial,
-            CreatedAt = clock.UtcNow,
-        };
+        return Result.Success();
     }
 
-    /// <summary>
-    /// Promueve materia no-oficial a oficial. Idempotente. Lo invoca el flujo de backoffice
-    /// cuando un admin valida en bloque las materias de un plan crowdsourced.
-    /// </summary>
-    public void MarkOfficial()
-    {
-        if (!IsOfficial) IsOfficial = true;
-    }
-
-    /// <summary>
-    /// Reconstitución con Id pre-asignado para seeder + eventual EF rehydration. Saltea las
-    /// validaciones; el caller se hace responsable de pasar datos coherentes (mismo contract
-    /// que <see cref="University.Hydrate"/>).
-    /// </summary>
-    public static Subject Hydrate(
-        SubjectId id,
-        CareerPlanId careerPlanId,
-        string code,
-        string name,
-        int yearInPlan,
-        int? termInYear,
-        TermKind termKind,
-        int weeklyHours,
-        int totalHours,
-        string? description,
-        bool isOfficial,
-        DateTimeOffset createdAt) =>
-        new()
-        {
-            Id = id,
-            CareerPlanId = careerPlanId,
-            Code = code,
-            Name = name,
-            YearInPlan = yearInPlan,
-            TermInYear = termInYear,
-            TermKind = termKind,
-            WeeklyHours = weeklyHours,
-            TotalHours = totalHours,
-            Description = description,
-            IsOfficial = isOfficial,
-            CreatedAt = createdAt,
-        };
+    private static string? NormalizeOptional(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

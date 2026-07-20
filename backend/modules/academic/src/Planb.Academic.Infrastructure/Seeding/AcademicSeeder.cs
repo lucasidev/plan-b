@@ -168,7 +168,9 @@ public sealed class AcademicSeeder
                 record.TotalHours,
                 description: null,
                 isOfficial: true,
-                createdAt: now));
+                isActive: true,
+                createdAt: now,
+                updatedAt: now));
             inserted++;
         }
 

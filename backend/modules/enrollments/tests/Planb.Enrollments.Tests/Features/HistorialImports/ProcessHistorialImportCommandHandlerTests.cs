@@ -259,7 +259,8 @@ public class ProcessHistorialImportCommandHandlerTests
             .Returns(ActiveProfile());
         deps.Academic.GetCareerPlanByIdAsync(CareerPlanId, Arg.Any<CancellationToken>())
             .Returns(new CareerPlanSummary(CareerPlanId, Guid.NewGuid(), UniversityId, 2024));
-        deps.Academic.ListSubjectsByCareerPlanAsync(CareerPlanId, Arg.Any<CancellationToken>())
+        deps.Academic.ListSubjectsByCareerPlanAsync(
+            CareerPlanId, Arg.Any<bool>(), Arg.Any<CancellationToken>())
             .Returns(Array.Empty<SubjectListItem>());
         deps.Academic.ListAcademicTermsByUniversityAsync(UniversityId, Arg.Any<CancellationToken>())
             .Returns(Array.Empty<AcademicTermListItem>());
@@ -274,5 +275,39 @@ public class ProcessHistorialImportCommandHandlerTests
         import.Status.ShouldBe(HistorialImportStatus.Failed);
         import.Error!.ShouldContain("error procesando el contenido");
         await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    // ── Materias archivadas (US-062) ─────────────────────────────────────
+
+    [Fact]
+    public async Task Handle_AsksCatalogIncludingArchivedSubjects()
+    {
+        // El historial es pasado: si el backoffice archivó una materia (soft delete de US-062)
+        // después de que el alumno la cursó, el parser igual tiene que poder matchearla por
+        // código. Pedirle al catálogo solo las activas la volvería inimportable en silencio.
+        var deps = NewDeps();
+        var import = NewPendingImport(deps.Clock, HistorialImportSourceType.Text);
+        GivenImport(deps, import);
+        deps.Identity.GetStudentProfileByIdAsync(StudentProfileId, Arg.Any<CancellationToken>())
+            .Returns(ActiveProfile());
+        deps.Academic.GetCareerPlanByIdAsync(CareerPlanId, Arg.Any<CancellationToken>())
+            .Returns(new CareerPlanSummary(CareerPlanId, Guid.NewGuid(), UniversityId, 2024));
+        deps.Academic.ListSubjectsByCareerPlanAsync(
+            CareerPlanId, Arg.Any<bool>(), Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<SubjectListItem>());
+        deps.Academic.ListAcademicTermsByUniversityAsync(UniversityId, Arg.Any<CancellationToken>())
+            .Returns(Array.Empty<AcademicTermListItem>());
+        // El parser corre después de leer el catálogo, así que su resultado no importa acá: lo
+        // que se afirma es con qué argumentos se pidió el catálogo.
+        deps.Parser.Parse(Arg.Any<string>(), Arg.Any<HistorialParserInputs>())
+            .Returns(_ => throw new InvalidOperationException("irrelevante para este test"));
+
+        var cmd = new ProcessHistorialImportCommand(
+            import.Id.Value, HistorialImportSourceType.Text, PdfBytes: null, RawText: "MAT101 8 Aprobada");
+
+        await NewHandler(deps).Handle(cmd, CancellationToken.None);
+
+        await deps.Academic.Received(1).ListSubjectsByCareerPlanAsync(
+            CareerPlanId, true, Arg.Any<CancellationToken>());
     }
 }

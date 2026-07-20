@@ -55,12 +55,19 @@ public interface IAcademicQueryService
         Guid subjectId, Guid careerPlanId, CancellationToken ct = default);
 
     /// <summary>
-    /// Lista las materias de un CareerPlan. Caller: select del form de US-013. Orden por
-    /// (year_in_plan, term_in_year, code) para que el dropdown muestre las materias
-    /// agrupadas por año/cuatrimestre de manera natural.
+    /// Lista las materias de un CareerPlan. Orden por (year_in_plan, term_in_year, code) para que
+    /// el dropdown muestre las materias agrupadas por año/cuatrimestre de manera natural.
+    ///
+    /// <para>
+    /// Dos callers con necesidades opuestas frente al soft delete de US-062, por eso el flag:
+    /// el catálogo público (US-001) NO debe mostrar materias archivadas, pero el historial del
+    /// alumno (form de US-013 e import de PDF) SÍ tiene que verlas, porque el alumno pudo cursar
+    /// una materia que después se archivó y necesita poder registrarla igual. Default `false`
+    /// (el caso público, que es el que no debe filtrarse por olvido).
+    /// </para>
     /// </summary>
     Task<IReadOnlyList<SubjectListItem>> ListSubjectsByCareerPlanAsync(
-        Guid careerPlanId, CancellationToken ct = default);
+        Guid careerPlanId, bool includeArchived = false, CancellationToken ct = default);
 
     /// <summary>
     /// Devuelve la metadata completa de una materia por id, o <c>null</c> si no existe. Caller:

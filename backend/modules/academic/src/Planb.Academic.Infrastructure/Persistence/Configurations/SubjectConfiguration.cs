@@ -72,8 +72,18 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
             .HasDefaultValue(true)
             .IsRequired();
 
+        // Soft delete (US-062). Default true: las materias existentes quedan activas al migrar.
+        builder.Property(s => s.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true)
+            .IsRequired();
+
         builder.Property(s => s.CreatedAt)
             .HasColumnName("created_at")
+            .IsRequired();
+
+        builder.Property(s => s.UpdatedAt)
+            .HasColumnName("updated_at")
             .IsRequired();
 
         // CHECK app-level del data-model: term_kind='anual' ↔ term_in_year IS NULL. Lo replicamos

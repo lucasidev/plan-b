@@ -45,10 +45,11 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                     GREATEST(similarity(unaccent(s.name), unaccent(@Term)),
                              similarity(unaccent(s.code), unaccent(@Term)))    AS sim
                 FROM academic.subjects s
-                WHERE unaccent(lower(s.code)) LIKE unaccent(lower(@Term)) || '%'
+                WHERE s.is_active
+                  AND (unaccent(lower(s.code)) LIKE unaccent(lower(@Term)) || '%'
                    OR unaccent(s.name) ILIKE '%' || unaccent(@Term) || '%'
                    OR similarity(unaccent(s.name), unaccent(@Term)) > 0.2
-                   OR similarity(unaccent(s.code), unaccent(@Term)) > 0.2
+                   OR similarity(unaccent(s.code), unaccent(@Term)) > 0.2)
 
                 UNION ALL
 

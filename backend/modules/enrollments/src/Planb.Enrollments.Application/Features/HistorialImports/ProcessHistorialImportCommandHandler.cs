@@ -197,7 +197,10 @@ public sealed class ProcessHistorialImportCommandHandler
             return;
         }
 
-        var subjects = await _academic.ListSubjectsByCareerPlanAsync(profile.CareerPlanId, ct);
+        // includeArchived: el historial es pasado. Si el alumno cursó una materia que el backoffice
+        // archivó después (US-062), el parser igual tiene que poder matchearla por código.
+        var subjects = await _academic.ListSubjectsByCareerPlanAsync(
+            profile.CareerPlanId, includeArchived: true, ct);
         var terms = await _academic.ListAcademicTermsByUniversityAsync(planSummary.UniversityId, ct);
 
         var subjectsByCode = subjects.ToDictionary(s => s.Code, StringComparer.OrdinalIgnoreCase);

@@ -20,8 +20,12 @@ public sealed class ListSubjectsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
+        // `includeArchived` lo usa el historial del alumno (US-013): si cursó una materia que
+        // después se archivó, tiene que poder elegirla igual. El catálogo público omite el flag y
+        // recibe solo las activas (US-062).
         app.MapGet("/api/academic/subjects", async (
             Guid? careerPlanId,
+            bool? includeArchived,
             IAcademicQueryService queries,
             CancellationToken ct) =>
         {
@@ -33,7 +37,8 @@ public sealed class ListSubjectsEndpoint : ICarterModule
                     statusCode: StatusCodes.Status400BadRequest);
             }
 
-            var subjects = await queries.ListSubjectsByCareerPlanAsync(careerPlanId.Value, ct);
+            var subjects = await queries.ListSubjectsByCareerPlanAsync(
+                careerPlanId.Value, includeArchived ?? false, ct);
             return Results.Ok(subjects);
         })
         .WithName("Academic_ListSubjects")
