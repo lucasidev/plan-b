@@ -15,9 +15,12 @@ import type { AcademicTerm, Commission, Subject } from './types';
  * `clientApiFetch` logs the misuse instead so the render degrades rather than crashing.
  */
 
+// includeArchived: el historial es pasado. Si el alumno cursó una materia que el backoffice
+// archivó después (US-062), tiene que poder seguir eligiéndola en el select; el catálogo
+// público, en cambio, omite el flag y solo ve las activas.
 async function fetchSubjects(careerPlanId: string): Promise<Subject[]> {
   const response = await clientApiFetch(
-    `/api/academic/subjects?careerPlanId=${encodeURIComponent(careerPlanId)}`,
+    `/api/academic/subjects?careerPlanId=${encodeURIComponent(careerPlanId)}&includeArchived=true`,
   );
   if (!response.ok) {
     throw new Error(`Subjects fetch failed: ${response.status}`);
