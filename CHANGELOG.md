@@ -99,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - backoffice de carreras y planes en el admin (US-061) (academic) — [`3586d4a`](https://github.com/lucasidev/plan-b/commit/3586d4a6cbaee31e60ac52187bec50c644dcc8cd)
 - CRUD admin de AcademicTerm (US-064) (academic) — [`6517bee`](https://github.com/lucasidev/plan-b/commit/6517bee66682671425361d7280144bfd41541592)
 - admin UI de periodos lectivos (US-064-f) (academic) — [`afb7495`](https://github.com/lucasidev/plan-b/commit/afb7495ea5fc164b65852fed9f667fb561437899)
+- catalogo publico de universidades, carreras, planes y materias (US-001) (academic) — [`2e5eb75`](https://github.com/lucasidev/plan-b/commit/2e5eb75f7b1510748eb91a5c414d83a08e087c8a)
 
 ### Fixed
 
