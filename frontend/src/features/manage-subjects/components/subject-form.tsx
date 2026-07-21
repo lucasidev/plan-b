@@ -5,6 +5,7 @@ import { useActionState, useEffect, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createSubjectAction, updateSubjectAction } from '../actions';
+import { SUBJECT_LIMITS } from '../schema';
 import { initialManageSubjectState, type SubjectDetail } from '../types';
 
 type Props = {
@@ -75,17 +76,23 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             id={ids.name}
             name="name"
             required
-            maxLength={200}
+            maxLength={SUBJECT_LIMITS.name.maxLength}
             defaultValue={subject?.name ?? ''}
             className={inputClass}
           />
         </Field>
-        <Field label="Código" htmlFor={ids.code} hint="Único dentro del plan. Ej: MAT101.">
+        {/* Sin ejemplo de código: cada plan usa su propia nomenclatura (la TUDCS numera 101, 111,
+            213; otras carreras usan prefijos) y un ejemplo inventado se lee como formato exigido. */}
+        <Field
+          label="Código"
+          htmlFor={ids.code}
+          hint="Único dentro del plan. El que figura en el plan de estudios."
+        >
           <input
             id={ids.code}
             name="code"
             required
-            maxLength={40}
+            maxLength={SUBJECT_LIMITS.code.maxLength}
             defaultValue={subject?.code ?? ''}
             className={inputClass}
           />
@@ -99,8 +106,8 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             name="yearInPlan"
             type="number"
             required
-            min={1}
-            max={10}
+            min={SUBJECT_LIMITS.yearInPlan.min}
+            max={SUBJECT_LIMITS.yearInPlan.max}
             defaultValue={subject?.yearInPlan ?? ''}
             className={inputClass}
           />
@@ -125,14 +132,18 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
         <Field
           label="Cuatrimestre / bimestre"
           htmlFor={ids.termInYear}
-          hint={isAnnual ? 'No aplica: la materia es anual.' : 'Entre 1 y 6, según la cadencia.'}
+          hint={
+            isAnnual
+              ? 'No aplica: la materia es anual.'
+              : `Entre ${SUBJECT_LIMITS.termInYear.min} y ${SUBJECT_LIMITS.termInYear.max}, según la cadencia.`
+          }
         >
           <input
             id={ids.termInYear}
             name="termInYear"
             type="number"
-            min={1}
-            max={6}
+            min={SUBJECT_LIMITS.termInYear.min}
+            max={SUBJECT_LIMITS.termInYear.max}
             required={!isAnnual}
             disabled={isAnnual}
             defaultValue={subject?.termInYear ?? ''}
@@ -145,15 +156,15 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
         <Field
           label="Carga horaria semanal"
           htmlFor={ids.weeklyHours}
-          hint="En horas. Entre 1 y 40."
+          hint={`En horas. Entre ${SUBJECT_LIMITS.weeklyHours.min} y ${SUBJECT_LIMITS.weeklyHours.max}; 0 si no tiene horario semanal fijo.`}
         >
           <input
             id={ids.weeklyHours}
             name="weeklyHours"
             type="number"
             required
-            min={1}
-            max={40}
+            min={SUBJECT_LIMITS.weeklyHours.min}
+            max={SUBJECT_LIMITS.weeklyHours.max}
             defaultValue={subject?.weeklyHours ?? ''}
             className={inputClass}
           />
@@ -168,7 +179,7 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             name="totalHours"
             type="number"
             required
-            min={1}
+            min={SUBJECT_LIMITS.totalHours.min}
             defaultValue={subject?.totalHours ?? ''}
             className={inputClass}
           />
@@ -184,7 +195,7 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
           id={ids.description}
           name="description"
           rows={3}
-          maxLength={500}
+          maxLength={SUBJECT_LIMITS.description.maxLength}
           defaultValue={subject?.description ?? ''}
           className={`${inputClass} resize-y`}
         />

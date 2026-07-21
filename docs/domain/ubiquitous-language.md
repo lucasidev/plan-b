@@ -36,6 +36,8 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 | **CareerPlan** | Plan de estudios de una carrera para un año particular (`year`), con materias propias y un `label` editorial opcional. Ej: "Plan 2019", "Plan 2024". |
 | **plan vigente** | `CareerPlan` con `status = Active`. Es el que se le ofrece a nuevos ingresantes; el plan anterior pasa a `Deprecated` pero sigue existiendo para los alumnos que ya lo cursan. |
 | **Subject** | Materia. Pertenece a un `CareerPlan`. Tiene `year_in_plan` (año del plan), `term_kind` y `term_in_year`. |
+| **carga horaria semanal** | `weekly_hours`: horas de cursada por semana. Rango 0 a 40. **0 no significa "sin trabajo"**: significa que la materia no tiene horario semanal fijo, como Proyecto Final (0 hs/sem y 350 totales en la TUDCS), una práctica profesional o una tesis. El techo de 40 es una jornada laboral completa; más que eso es un dato cargado mal. |
+| **carga horaria total** | `total_hours`: horas de la materia en todo su período. Siempre positiva (una materia sin horas no existe) y nunca menor que la semanal. Es el número que el plan de estudios publica al lado de cada materia. |
 | **Prerequisite** | Correlativa. Relación entre dos `Subject` del mismo plan con un `type`. |
 | **para_cursar** | Tipo de correlativa: requiere que la materia requerida esté **regularizada** para inscribirse a la dependiente. |
 | **para_rendir** | Tipo de correlativa: requiere que la materia requerida esté **aprobada** para rendir el final de la dependiente. |

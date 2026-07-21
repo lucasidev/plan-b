@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { prerequisiteFieldsSchema, subjectFieldsSchema } from './schema';
+import { prerequisiteFieldsSchema, SUBJECT_LIMITS, subjectFieldsSchema } from './schema';
 
 /**
  * Schema tests (tier "Utils / Schemas", ADR-0036). Cubre los rangos que espejan `Subject.Validate`
- * del backend (US-062): code/name obligatorios, yearInPlan 1-10, weeklyHours 1-40, totalHours
+ * del backend (US-062): code/name obligatorios, yearInPlan 1-10, weeklyHours 0-40, totalHours
  * positivo y al menos la semanal, el invariante term_kind/term_in_year (anual sin número, el resto
  * con número 1-6), y el schema de correlativas (requiredSubjectId + type).
  */
@@ -193,7 +193,7 @@ describe('subjectFieldsSchema', () => {
   });
 
   describe('weeklyHours', () => {
-    it('acepta el mínimo (1)', () => {
+    it('acepta una carga semanal típica', () => {
       const result = subjectFieldsSchema.safeParse({ ...base, weeklyHours: '1', totalHours: '1' });
       expect(result.success).toBe(true);
     });
@@ -267,6 +267,62 @@ describe('subjectFieldsSchema', () => {
         totalHours: '0',
       });
       expect(result.success).toBe(false);
+    });
+  });
+
+  /**
+   * `SUBJECT_LIMITS` es lo que el form le muestra al admin en sus hints ("Entre 0 y 40"), así que
+   * tiene que ser lo que el schema realmente aplica. Sin este test, cambiar un `.min()` del schema
+   * sin tocar la constante deja al form declarando un rango que no es el que valida, que es
+   * exactamente cómo el hint quedó diciendo "Entre 1 y 40" después de permitir 0 hs semanales.
+   */
+  describe('los rangos declarados en SUBJECT_LIMITS son los que el schema aplica', () => {
+    const ranged = [
+      { field: 'yearInPlan', ...SUBJECT_LIMITS.yearInPlan },
+      { field: 'termInYear', ...SUBJECT_LIMITS.termInYear },
+      { field: 'weeklyHours', ...SUBJECT_LIMITS.weeklyHours },
+    ] as const;
+
+    it.each(ranged)('$field acepta su mínimo declarado ($min)', ({ field, min }) => {
+      const result = subjectFieldsSchema.safeParse({ ...base, [field]: String(min) });
+      expect(result.success).toBe(true);
+    });
+
+    it.each(ranged)('$field acepta su máximo declarado ($max)', ({ field, max }) => {
+      const result = subjectFieldsSchema.safeParse({ ...base, [field]: String(max) });
+      expect(result.success).toBe(true);
+    });
+
+    it.each(ranged)('$field rechaza por debajo del mínimo declarado', ({ field, min }) => {
+      const result = subjectFieldsSchema.safeParse({ ...base, [field]: String(min - 1) });
+      expect(result.success).toBe(false);
+    });
+
+    it.each(ranged)('$field rechaza por encima del máximo declarado', ({ field, max }) => {
+      const result = subjectFieldsSchema.safeParse({ ...base, [field]: String(max + 1) });
+      expect(result.success).toBe(false);
+    });
+
+    it('totalHours acepta su mínimo declarado', () => {
+      const result = subjectFieldsSchema.safeParse({
+        ...base,
+        weeklyHours: '0',
+        totalHours: String(SUBJECT_LIMITS.totalHours.min),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it.each([
+      { field: 'code', maxLength: SUBJECT_LIMITS.code.maxLength },
+      { field: 'name', maxLength: SUBJECT_LIMITS.name.maxLength },
+      { field: 'description', maxLength: SUBJECT_LIMITS.description.maxLength },
+    ] as const)('$field corta en su maxLength declarado ($maxLength)', ({ field, maxLength }) => {
+      expect(
+        subjectFieldsSchema.safeParse({ ...base, [field]: 'x'.repeat(maxLength) }).success,
+      ).toBe(true);
+      expect(
+        subjectFieldsSchema.safeParse({ ...base, [field]: 'x'.repeat(maxLength + 1) }).success,
+      ).toBe(false);
     });
   });
 
