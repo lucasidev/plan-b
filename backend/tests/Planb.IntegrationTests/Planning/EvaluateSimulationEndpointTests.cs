@@ -22,10 +22,12 @@ namespace Planb.IntegrationTests.Planning;
 /// través de los endpoints reales, no tocando la DB de Enrollments ni Reviews directo.
 ///
 /// <para>
-/// Las materias de la seed de Academic (TUDCS, <c>TudcsPlanId</c>) no tienen correlativas, así
-/// que se reusan para el test de dificultad ponderada (evita tener que armar Commission + Teacher
-/// propios solo para poder publicar una reseña: <c>PublishReview</c> exige que el docente
-/// reseñado esté asignado a la comisión de la cursada).
+/// El plan real de TUDCS (seed de Academic) sí tiene correlativas (32, ver
+/// <c>AcademicSeedData.Prerequisites</c>), así que el test de dificultad ponderada usa dos
+/// materias puntuales sin correlativas propias (101 Algoritmos y Paradigmas, 121 Base de datos)
+/// que además ya tienen Commission + Teacher sembrados (evita armar eso a mano solo para poder
+/// publicar una reseña: <c>PublishReview</c> exige que el docente reseñado esté asignado a la
+/// comisión de la cursada).
 /// </para>
 /// </summary>
 public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
@@ -33,18 +35,18 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // MAT102 y PRG101 (TUDCS, sin correlativas en la seed): comisión + docente + term sembrados,
-    // necesarios para poder publicar una reseña sobre la cursada (PublishReview valida que el
-    // docente esté en la comisión).
-    private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid CommissionMat102 = Guid.Parse("00000007-0000-4000-a000-000000000003");
-    private static readonly Guid TeacherIturralde = Guid.Parse("00000006-0000-4000-a000-000000000002");
+    // 101 Algoritmos y Paradigmas (TUDCS, sin correlativas propias): comisión + docente + term
+    // sembrados en AcademicSeedData, necesarios para poder publicar una reseña sobre la cursada.
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
+    private static readonly Guid Commission101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid Teacher101 = Guid.Parse("00000006-0000-4000-a000-000000000002"); // iturralde
+    private static readonly Guid Term101 = Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
 
-    private static readonly Guid Prg101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
-    private static readonly Guid CommissionPrg101 = Guid.Parse("00000007-0000-4000-a000-000000000001");
-    private static readonly Guid TeacherBrandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
-
-    private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
+    // 121 Base de datos (TUDCS, sin correlativas propias): idem, otra comisión/term de la seed.
+    private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000007");
+    private static readonly Guid Commission121 = Guid.Parse("00000007-0000-4000-a000-000000000005");
+    private static readonly Guid Teacher121 = Guid.Parse("00000006-0000-4000-a000-000000000007"); // méndez
+    private static readonly Guid Term121 = Guid.Parse("00000005-0000-4000-a000-000000000004"); // 2025·2c
 
     private readonly RegisterApiFixture _fixture;
 
@@ -195,21 +197,22 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task Weights_difficulty_by_review_count_not_by_simple_subject_average()
     {
-        // MAT102: 3 reseñas con dificultad 2. PRG101: 1 reseña con dificultad 5. Ponderado por
-        // cantidad: (2+2+2+5)/4 = 2.75. Un promedio simple de promedios por materia daria
-        // (2+5)/2 = 3.5: si el test da 3.5 en vez de 2.75, la ponderación esta mal.
+        // 101 (Algoritmos y Paradigmas): 3 reseñas con dificultad 2. 121 (Base de datos): 1 reseña
+        // con dificultad 5. Ponderado por cantidad: (2+2+2+5)/4 = 2.75. Un promedio simple de
+        // promedios por materia daría (2+5)/2 = 3.5: si el test da 3.5 en vez de 2.75, la
+        // ponderación está mal.
         await PublishReviewOnSeededSubjectAsync(
-            Mat102, CommissionMat102, TeacherIturralde, difficulty: 2, label: "mat-a");
+            Subject101, Commission101, Teacher101, Term101, difficulty: 2, label: "s101-a");
         await PublishReviewOnSeededSubjectAsync(
-            Mat102, CommissionMat102, TeacherIturralde, difficulty: 2, label: "mat-b");
+            Subject101, Commission101, Teacher101, Term101, difficulty: 2, label: "s101-b");
         await PublishReviewOnSeededSubjectAsync(
-            Mat102, CommissionMat102, TeacherIturralde, difficulty: 2, label: "mat-c");
+            Subject101, Commission101, Teacher101, Term101, difficulty: 2, label: "s101-c");
         await PublishReviewOnSeededSubjectAsync(
-            Prg101, CommissionPrg101, TeacherBrandt, difficulty: 5, label: "prg-a");
+            Subject121, Commission121, Teacher121, Term121, difficulty: 5, label: "s121-a");
 
         var student = await StudentAsync(TudcsPlanId, "difficulty");
 
-        var response = await EvaluateAsync(student, Mat102, Prg101);
+        var response = await EvaluateAsync(student, Subject101, Subject121);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
@@ -250,44 +253,93 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
-    public async Task Counts_other_students_with_the_exact_same_combination_and_excludes_the_caller()
+    public async Task Hides_rates_when_sample_size_is_four_students()
     {
+        // ADR-0047 extendido a /evaluate (decisión explícita del dueño del proyecto, no una
+        // "optimización" mía): con menos de 5 alumnos en la cohorte, las tasas van null aunque
+        // haya muestra. 4 < 5: sampleSize se ve, las tasas no.
         var (planId, subjects) = await CreatePlanWithSubjectsAsync(2);
         var s1 = subjects[0];
         var s2 = subjects[1];
 
-        // Alumno A: aprobó ambas en su propio período.
-        var studentA = await StudentAsync(planId, "cohort-a");
-        var termA = Guid.NewGuid();
-        await EnrollAsync(studentA, s1.Id, "Aprobada", "Final", Guid.NewGuid(), termA, 8m);
-        await EnrollAsync(studentA, s2.Id, "Aprobada", "Final", Guid.NewGuid(), termA, 7m);
+        for (var i = 0; i < 4; i++)
+        {
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"four-{i}", "Aprobada", "Aprobada");
+        }
 
-        // Alumno B: aprobó una y abandonó la otra, en OTRO período (el término no tiene que
-        // coincidir entre alumnos, solo dentro del propio combo de cada uno).
-        var studentB = await StudentAsync(planId, "cohort-b");
-        var termB = Guid.NewGuid();
-        await EnrollAsync(studentB, s1.Id, "Aprobada", "Final", Guid.NewGuid(), termB, 6m);
-        await EnrollAsync(studentB, s2.Id, "Abandonada", null, Guid.NewGuid(), termB, null);
+        var caller = await StudentAsync(planId, "four-caller");
+        var response = await EvaluateAsync(caller, s1.Id, s2.Id);
 
-        // El alumno que simula ya cursó el mismo combo antes (recursando el análisis): si no se
-        // excluyera a si mismo, el sample size daria 3 en vez de 2.
-        var caller = await StudentAsync(planId, "cohort-caller");
-        var termCaller = Guid.NewGuid();
-        await EnrollAsync(caller, s1.Id, "Aprobada", "Final", Guid.NewGuid(), termCaller, 9m);
-        await EnrollAsync(caller, s2.Id, "Aprobada", "Final", Guid.NewGuid(), termCaller, 9m);
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
+        body.ShouldNotBeNull();
+        body!.CombinationStats.SampleSize.ShouldBe(4);
+        body.CombinationStats.PassRate.ShouldBeNull();
+        body.CombinationStats.DropoutRate.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Shows_rates_when_sample_size_reaches_five_students()
+    {
+        // Mismo combo que el test de "4 estudiantes", una muestra más: cruza el piso de ADR-0047
+        // y las tasas dejan de ser null. 4 de los 5 aprobaron ambas, 1 aprobó una y abandonó la
+        // otra: 9 Aprobada + 1 Abandonada de 10 cursadas → 90% / 10%.
+        var (planId, subjects) = await CreatePlanWithSubjectsAsync(2);
+        var s1 = subjects[0];
+        var s2 = subjects[1];
+
+        for (var i = 0; i < 4; i++)
+        {
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"five-{i}", "Aprobada", "Aprobada");
+        }
+        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "five-dropout", "Aprobada", "Abandonada");
+
+        var caller = await StudentAsync(planId, "five-caller");
+        var response = await EvaluateAsync(caller, s1.Id, s2.Id);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
+        body.ShouldNotBeNull();
+        body!.CombinationStats.SampleSize.ShouldBe(5);
+        body.CombinationStats.PassRate.ShouldNotBeNull();
+        body.CombinationStats.PassRate!.Value.ShouldBe(90.0, 0.001);
+        body.CombinationStats.DropoutRate.ShouldNotBeNull();
+        body.CombinationStats.DropoutRate!.Value.ShouldBe(10.0, 0.001);
+    }
+
+    [Fact]
+    public async Task Counts_other_students_with_the_exact_same_combination_and_excludes_the_caller()
+    {
+        // Misma cohorte de 5 que "Shows_rates_when_sample_size_reaches_five_students" (para que
+        // las tasas no queden gateadas por ADR-0047), más el propio alumno que simula habiendo
+        // cursado el mismo combo antes (recursando). Sin la exclusión, sampleSize daría 6 y las
+        // tasas saldrían distintas (11 Aprobada + 1 Abandonada de 12 = 91.67% / 8.33%): que el
+        // test dé 5 / 90% / 10% prueba que la auto-exclusión funciona, no solo que "existe".
+        var (planId, subjects) = await CreatePlanWithSubjectsAsync(2);
+        var s1 = subjects[0];
+        var s2 = subjects[1];
+
+        for (var i = 0; i < 4; i++)
+        {
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"excl-{i}", "Aprobada", "Aprobada");
+        }
+        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "excl-dropout", "Aprobada", "Abandonada");
+
+        var caller = await StudentAsync(planId, "excl-caller");
+        var callerTerm = Guid.NewGuid();
+        await EnrollAsync(caller, s1.Id, "Aprobada", "Final", Guid.NewGuid(), callerTerm, 9m);
+        await EnrollAsync(caller, s2.Id, "Aprobada", "Final", Guid.NewGuid(), callerTerm, 9m);
 
         var response = await EvaluateAsync(caller, s1.Id, s2.Id);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
         body.ShouldNotBeNull();
-        body!.CombinationStats.SampleSize.ShouldBe(2);
-        // 3 Aprobada de 4 enrollment records en la cohorte (A: 2 Aprobada, B: 1 Aprobada + 1 Abandonada).
-        // Escala 0-100, mismo criterio que SubjectPassRate (Enrollments) y RecommendPercentage (Reviews).
+        body!.CombinationStats.SampleSize.ShouldBe(5);
         body.CombinationStats.PassRate.ShouldNotBeNull();
-        body.CombinationStats.PassRate!.Value.ShouldBe(75.0, 0.001);
+        body.CombinationStats.PassRate!.Value.ShouldBe(90.0, 0.001);
         body.CombinationStats.DropoutRate.ShouldNotBeNull();
-        body.CombinationStats.DropoutRate!.Value.ShouldBe(25.0, 0.001);
+        body.CombinationStats.DropoutRate!.Value.ShouldBe(10.0, 0.001);
     }
 
     [Fact]
@@ -325,12 +377,32 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     /// <summary>
+    /// Crea un alumno nuevo en <paramref name="planId"/> y lo inscribe en exactamente
+    /// <paramref name="s1"/> + <paramref name="s2"/> en un mismo período propio (un term_id
+    /// arbitrario, distinto por alumno): un alumno más que "cursó" ese combo exacto para la
+    /// cohorte de US-016 punto 4. Solo soporta los dos status que ejercitan estos tests
+    /// (Aprobada/Abandonada); no hace falta más.
+    /// </summary>
+    private async Task EnrollOtherStudentInComboAsync(
+        Guid planId, Guid s1, Guid s2, string label, string s1Status, string s2Status)
+    {
+        var student = await StudentAsync(planId, label);
+        var term = Guid.NewGuid();
+        await EnrollAsync(student, s1, s1Status, ApprovalMethodFor(s1Status), Guid.NewGuid(), term, GradeFor(s1Status));
+        await EnrollAsync(student, s2, s2Status, ApprovalMethodFor(s2Status), Guid.NewGuid(), term, GradeFor(s2Status));
+    }
+
+    private static string? ApprovalMethodFor(string status) => status == "Aprobada" ? "Final" : null;
+
+    private static decimal? GradeFor(string status) => status == "Aprobada" ? 8m : null;
+
+    /// <summary>
     /// Publica una reseña Published sobre una materia sembrada (TUDCS), creando un alumno +
     /// cursada Aprobada nuevos para cada llamada. Mismo idiom que
     /// <c>SubjectInsightsEndpointTests.PublishReviewAsync</c>.
     /// </summary>
     private async Task PublishReviewOnSeededSubjectAsync(
-        Guid subjectId, Guid commissionId, Guid teacherId, int difficulty, string label)
+        Guid subjectId, Guid commissionId, Guid teacherId, Guid termId, int difficulty, string label)
     {
         var auth = await StudentAsync(TudcsPlanId, $"reviewer-{label}");
 
@@ -340,7 +412,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
             {
                 subjectId,
                 commissionId = (Guid?)commissionId,
-                termId = (Guid?)Term2026_1c,
+                termId = (Guid?)termId,
                 status = "Aprobada",
                 approvalMethod = "Final",
                 grade = 8m,
