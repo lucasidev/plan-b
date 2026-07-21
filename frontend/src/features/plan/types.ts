@@ -135,3 +135,47 @@ export type AvailableSubject = {
 export type AvailableSubjectsResponse = {
   items: AvailableSubject[];
 };
+
+/**
+ * Real backend types for the metrics panel (US-016). Mirror `POST /api/me/simulator/evaluate`
+ * (`Planb.Planning.Application.Features.EvaluateSimulation`).
+ */
+
+/**
+ * Result of evaluating a subject combination. Mirrors `EvaluateSimulationResponse`. When
+ * `isValid` is false no metric was computed: they travel at their default (0 hours, null
+ * difficulty, cohort at 0/null); what matters to show in that case is `blockedSubjects`.
+ */
+export type SimulationEvaluation = {
+  isValid: boolean;
+  blockedSubjects: BlockedSubjectEvaluation[];
+  totalWeeklyHours: number;
+  totalHours: number;
+  weightedDifficulty: number | null;
+  combinationStats: CombinationCohortStats;
+};
+
+/**
+ * A blocked subject from the evaluated subset, with the `para_cursar` prerequisite it is still
+ * missing. Mirrors `BlockedSubjectItem`. `blockedBy` reuses `BlockedBySubject`: same shape
+ * (`id`, `code`, `name`) as the drawer's prerequisite list.
+ */
+export type BlockedSubjectEvaluation = {
+  id: string;
+  code: string;
+  name: string;
+  blockedBy: BlockedBySubject[];
+};
+
+/**
+ * How many other students took exactly this combination and how it went for them (US-016).
+ * Mirrors `CombinationCohortStats`. `passRate`/`dropoutRate` travel null when `sampleSize` is
+ * under the anti-reidentification floor (ADR-0047, N < 5): in that case the UI still shows the
+ * sample size, never the rate (same policy as `SubjectPassRate` in view-subject, but surfacing
+ * the N instead of hiding it entirely).
+ */
+export type CombinationCohortStats = {
+  sampleSize: number;
+  passRate: number | null;
+  dropoutRate: number | null;
+};
