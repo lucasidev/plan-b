@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import type { Subject } from '../types';
+import type { AvailableSubject, Subject } from '../types';
 import { ModalityPill } from './modality-pill';
 import { SubjectPickerDrawer } from './subject-picker-drawer';
 
@@ -19,8 +19,19 @@ function diffBucket(d: number): 'hi' | 'mid' | 'lo' {
  * Side list of subjects in the period (US-046). Header with title + count, rows with
  * code + name + pills (modality, commission, difficulty), per-subject "× sacar"
  * button, and a final "+ Agregar materia" CTA that opens the drawer.
+ *
+ * `onAddSubject` (US-016) is optional: `ActiveTab` lo pasa para acumular los ids reales elegidos
+ * (que alimentan `SimulatorEvaluationPanel`); `DraftList` no lo pasa todavía porque los borradores
+ * no tienen materias con id real contra las que evaluar (US-023 pendiente), así que ahí elegir
+ * del drawer sigue sin efecto, igual que antes.
  */
-export function SubjectListCard({ subjects }: { subjects: Subject[] }) {
+export function SubjectListCard({
+  subjects,
+  onAddSubject,
+}: {
+  subjects: Subject[];
+  onAddSubject?: (subject: AvailableSubject) => void;
+}) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -150,7 +161,10 @@ export function SubjectListCard({ subjects }: { subjects: Subject[] }) {
         <SubjectPickerDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          onPick={() => setDrawerOpen(false)}
+          onPick={(subject) => {
+            onAddSubject?.(subject);
+            setDrawerOpen(false);
+          }}
         />
       </Suspense>
     </>

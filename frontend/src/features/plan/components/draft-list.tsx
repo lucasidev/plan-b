@@ -7,7 +7,7 @@ import type { Simulation } from '../types';
 import { CalendarWeek } from './calendar-week';
 import { PromoteBanner } from './promote-banner';
 import { PublishPlanModal } from './publish-plan-modal';
-import { StatsGrid } from './stats-grid';
+import { type StatGridItem, StatsGrid } from './stats-grid';
 import { SubjectListCard } from './subject-list-card';
 
 /**
@@ -19,6 +19,26 @@ type Props = {
   drafts: Simulation[];
   onCreate: () => void;
 };
+
+/**
+ * Arma los tiles del mock de un borrador. Sin cambio de comportamiento: es la misma lógica que
+ * antes vivía adentro de `StatsGrid`, relocalizada acá porque ese componente pasó a ser puramente
+ * presentacional (US-016: el tab activo ahora arma los suyos desde datos reales del simulador,
+ * ver `SimulatorEvaluationPanel`). Los borradores siguen sin materias con id real que evaluar
+ * (US-023 pendiente), así que siguen mostrando el mock tal cual.
+ */
+function buildDraftStatsItems(stats: Simulation['stats']): StatGridItem[] {
+  return [
+    { value: `${stats.weeklyHours}h`, label: 'semanales' },
+    {
+      value: `${stats.clashes}`,
+      label: stats.clashes === 1 ? 'choque' : 'choques',
+      warn: stats.clashes > 0,
+    },
+    { value: stats.avgDiff.toFixed(1), label: 'dificultad' },
+    { value: `${Math.round(stats.expectedApproval * 100)}%`, label: 'aprob. esperada' },
+  ];
+}
 
 export function DraftList({ drafts, onCreate }: Props) {
   const [publishingDraft, setPublishingDraft] = useState<Simulation | null>(null);
@@ -109,7 +129,7 @@ export function DraftList({ drafts, onCreate }: Props) {
             >
               <SubjectListCard subjects={draft.subjects} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <StatsGrid stats={draft.stats} />
+                <StatsGrid items={buildDraftStatsItems(draft.stats)} />
                 <div className="border border-line rounded" style={{ padding: 16 }}>
                   <CalendarWeek blocks={draft.blocks} />
                 </div>

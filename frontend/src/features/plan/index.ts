@@ -7,7 +7,10 @@ export type {
   AvailableSubject,
   AvailableSubjectsResponse,
   BlockedBySubject,
+  BlockedSubjectEvaluation,
   CalendarBlock,
+  CombinationCohortStats,
   Simulation,
+  SimulationEvaluation,
   Subject,
 } from './types';
