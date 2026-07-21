@@ -28,7 +28,7 @@ public class PrerequisiteGraphValidatorTests
     [Fact]
     public void ValidateNewEdge_EmptyGraph_Succeeds()
     {
-        var result = _validator.ValidateNewEdge(A, B, PrerequisiteType.ParaCursar, []);
+        var result = _validator.ValidateNewEdge(A, B, PrerequisiteType.ToEnroll, []);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -36,7 +36,7 @@ public class PrerequisiteGraphValidatorTests
     [Fact]
     public void ValidateNewEdge_SelfReference_Fails()
     {
-        var result = _validator.ValidateNewEdge(A, A, PrerequisiteType.ParaCursar, []);
+        var result = _validator.ValidateNewEdge(A, A, PrerequisiteType.ToEnroll, []);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(PrerequisiteErrors.SelfReference);
@@ -46,9 +46,9 @@ public class PrerequisiteGraphValidatorTests
     public void ValidateNewEdge_DirectCycle_Fails()
     {
         // Ya existe "A requiere B"; agregar "B requiere A" cierra el ciclo más corto posible.
-        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ParaCursar)];
+        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ToEnroll)];
 
-        var result = _validator.ValidateNewEdge(B, A, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(B, A, PrerequisiteType.ToEnroll, existing);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(PrerequisiteErrors.CycleDetected);
@@ -61,11 +61,11 @@ public class PrerequisiteGraphValidatorTests
         // atajar y que motiva el DFS.
         Prerequisite[] existing =
         [
-            Edge(A, B, PrerequisiteType.ParaCursar),
-            Edge(B, C, PrerequisiteType.ParaCursar),
+            Edge(A, B, PrerequisiteType.ToEnroll),
+            Edge(B, C, PrerequisiteType.ToEnroll),
         ];
 
-        var result = _validator.ValidateNewEdge(C, A, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(C, A, PrerequisiteType.ToEnroll, existing);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(PrerequisiteErrors.CycleDetected);
@@ -77,12 +77,12 @@ public class PrerequisiteGraphValidatorTests
         // Cadena de 4 saltos: el ciclo se detecta igual con el nodo de cierre lejos del arranque.
         Prerequisite[] existing =
         [
-            Edge(A, B, PrerequisiteType.ParaCursar),
-            Edge(B, C, PrerequisiteType.ParaCursar),
-            Edge(C, D, PrerequisiteType.ParaCursar),
+            Edge(A, B, PrerequisiteType.ToEnroll),
+            Edge(B, C, PrerequisiteType.ToEnroll),
+            Edge(C, D, PrerequisiteType.ToEnroll),
         ];
 
-        var result = _validator.ValidateNewEdge(D, A, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(D, A, PrerequisiteType.ToEnroll, existing);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(PrerequisiteErrors.CycleDetected);
@@ -93,9 +93,9 @@ public class PrerequisiteGraphValidatorTests
     {
         // El corazón de ADR-0003: para_cursar y para_rendir son grafos separados. Que A requiera a B
         // para cursar no impide que B requiera a A para rendir; no es un ciclo, son dos grafos.
-        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ParaCursar)];
+        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ToEnroll)];
 
-        var result = _validator.ValidateNewEdge(B, A, PrerequisiteType.ParaRendir, existing);
+        var result = _validator.ValidateNewEdge(B, A, PrerequisiteType.ToTakeFinal, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -106,11 +106,11 @@ public class PrerequisiteGraphValidatorTests
         // Espejo del anterior: el ciclo existe entero en para_rendir, y no contamina para_cursar.
         Prerequisite[] existing =
         [
-            Edge(A, B, PrerequisiteType.ParaRendir),
-            Edge(B, C, PrerequisiteType.ParaRendir),
+            Edge(A, B, PrerequisiteType.ToTakeFinal),
+            Edge(B, C, PrerequisiteType.ToTakeFinal),
         ];
 
-        var result = _validator.ValidateNewEdge(C, A, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(C, A, PrerequisiteType.ToEnroll, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -122,12 +122,12 @@ public class PrerequisiteGraphValidatorTests
         // vuelve sobre sí mismo. Un rombo es un DAG perfectamente válido.
         Prerequisite[] existing =
         [
-            Edge(A, B, PrerequisiteType.ParaCursar),
-            Edge(A, C, PrerequisiteType.ParaCursar),
-            Edge(B, D, PrerequisiteType.ParaCursar),
+            Edge(A, B, PrerequisiteType.ToEnroll),
+            Edge(A, C, PrerequisiteType.ToEnroll),
+            Edge(B, D, PrerequisiteType.ToEnroll),
         ];
 
-        var result = _validator.ValidateNewEdge(C, D, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(C, D, PrerequisiteType.ToEnroll, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -137,9 +137,9 @@ public class PrerequisiteGraphValidatorTests
     {
         // Dos materias distintas pueden requerir la misma correlativa (caso común: varias materias
         // de 2do año piden Análisis I).
-        Prerequisite[] existing = [Edge(A, C, PrerequisiteType.ParaCursar)];
+        Prerequisite[] existing = [Edge(A, C, PrerequisiteType.ToEnroll)];
 
-        var result = _validator.ValidateNewEdge(B, C, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(B, C, PrerequisiteType.ToEnroll, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -148,9 +148,9 @@ public class PrerequisiteGraphValidatorTests
     public void ValidateNewEdge_DisconnectedSubgraph_Succeeds()
     {
         // Una arista entre nodos que no tocan el componente existente no puede cerrar nada.
-        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ParaCursar)];
+        Prerequisite[] existing = [Edge(A, B, PrerequisiteType.ToEnroll)];
 
-        var result = _validator.ValidateNewEdge(C, D, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(C, D, PrerequisiteType.ToEnroll, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -162,11 +162,11 @@ public class PrerequisiteGraphValidatorTests
         // normal al cargar un plan; solo el sentido inverso cierra ciclo.
         Prerequisite[] existing =
         [
-            Edge(A, B, PrerequisiteType.ParaCursar),
-            Edge(B, C, PrerequisiteType.ParaCursar),
+            Edge(A, B, PrerequisiteType.ToEnroll),
+            Edge(B, C, PrerequisiteType.ToEnroll),
         ];
 
-        var result = _validator.ValidateNewEdge(D, C, PrerequisiteType.ParaCursar, existing);
+        var result = _validator.ValidateNewEdge(D, C, PrerequisiteType.ToEnroll, existing);
 
         result.IsSuccess.ShouldBeTrue();
     }

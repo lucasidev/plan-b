@@ -18,11 +18,11 @@ public class SubjectAvailabilityEvaluatorTests
     private static readonly Guid Algebra = Guid.NewGuid();
     private static readonly Guid Fisica = Guid.NewGuid();
 
-    private static PrerequisiteEdge ParaCursar(Guid subject, Guid required) =>
-        new(subject, required, PrerequisiteKind.ParaCursar);
+    private static PrerequisiteEdge ToEnroll(Guid subject, Guid required) =>
+        new(subject, required, PrerequisiteKind.ToEnroll);
 
-    private static PrerequisiteEdge ParaRendir(Guid subject, Guid required) =>
-        new(subject, required, PrerequisiteKind.ParaRendir);
+    private static PrerequisiteEdge ToTakeFinal(Guid subject, Guid required) =>
+        new(subject, required, PrerequisiteKind.ToTakeFinal);
 
     private SubjectAvailability EvaluateOne(
         Guid subjectId,
@@ -45,7 +45,7 @@ public class SubjectAvailabilityEvaluatorTests
     {
         var result = EvaluateOne(
             Analisis2,
-            [ParaCursar(Analisis2, Analisis1)],
+            [ToEnroll(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress> { [Analisis1] = SubjectProgress.Approved });
 
         result.Status.ShouldBe(AvailabilityStatus.Available);
@@ -58,7 +58,7 @@ public class SubjectAvailabilityEvaluatorTests
         // para inscribirse a la siguiente, aunque el final siga pendiente.
         var result = EvaluateOne(
             Analisis2,
-            [ParaCursar(Analisis2, Analisis1)],
+            [ToEnroll(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress> { [Analisis1] = SubjectProgress.Regular });
 
         result.Status.ShouldBe(AvailabilityStatus.Available);
@@ -69,7 +69,7 @@ public class SubjectAvailabilityEvaluatorTests
     {
         var result = EvaluateOne(
             Analisis2,
-            [ParaCursar(Analisis2, Analisis1)],
+            [ToEnroll(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress>());
 
         result.Status.ShouldBe(AvailabilityStatus.Blocked);
@@ -85,7 +85,7 @@ public class SubjectAvailabilityEvaluatorTests
         // Cursarla no alcanza: hasta que no la regularice, la siguiente sigue bloqueada.
         var result = EvaluateOne(
             Analisis2,
-            [ParaCursar(Analisis2, Analisis1)],
+            [ToEnroll(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress> { [Analisis1] = progresoDeLaCorrelativa });
 
         result.Status.ShouldBe(AvailabilityStatus.Blocked);
@@ -97,7 +97,7 @@ public class SubjectAvailabilityEvaluatorTests
     {
         var result = EvaluateOne(
             Fisica,
-            [ParaCursar(Fisica, Analisis1), ParaCursar(Fisica, Algebra)],
+            [ToEnroll(Fisica, Analisis1), ToEnroll(Fisica, Algebra)],
             new Dictionary<Guid, SubjectProgress> { [Analisis1] = SubjectProgress.Approved });
 
         result.Status.ShouldBe(AvailabilityStatus.Blocked);
@@ -111,7 +111,7 @@ public class SubjectAvailabilityEvaluatorTests
         // el simulador le esconderia al alumno materias que si puede cursar.
         var result = EvaluateOne(
             Analisis2,
-            [ParaRendir(Analisis2, Analisis1)],
+            [ToTakeFinal(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress>());
 
         result.Status.ShouldBe(AvailabilityStatus.Available);
@@ -173,7 +173,7 @@ public class SubjectAvailabilityEvaluatorTests
         // dependen de ninguna otra (tipicamente las de primer año).
         var results = _evaluator.Evaluate(
             [Analisis1, Analisis2, Algebra],
-            [ParaCursar(Analisis2, Analisis1)],
+            [ToEnroll(Analisis2, Analisis1)],
             new Dictionary<Guid, SubjectProgress>());
 
         results.Single(r => r.SubjectId == Analisis1).Status.ShouldBe(AvailabilityStatus.Available);
@@ -189,7 +189,7 @@ public class SubjectAvailabilityEvaluatorTests
         // que cursar B antes de C).
         var results = _evaluator.Evaluate(
             [Analisis1, Analisis2, Fisica],
-            [ParaCursar(Analisis2, Analisis1), ParaCursar(Fisica, Analisis2)],
+            [ToEnroll(Analisis2, Analisis1), ToEnroll(Fisica, Analisis2)],
             new Dictionary<Guid, SubjectProgress> { [Analisis1] = SubjectProgress.Approved });
 
         results.Single(r => r.SubjectId == Analisis2).Status.ShouldBe(AvailabilityStatus.Available);

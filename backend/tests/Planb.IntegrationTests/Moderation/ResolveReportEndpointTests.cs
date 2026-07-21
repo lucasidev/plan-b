@@ -55,8 +55,8 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
                 subjectId = Subject111,
                 commissionId = (Guid?)CommissionA,
                 termId = (Guid?)Term2026_1c,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8m,
             });
         enrollResp.EnsureSuccessStatusCode();

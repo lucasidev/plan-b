@@ -68,7 +68,7 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
         ArgumentNullException.ThrowIfNull(clock);
 
         // ── Status vs Grade ──────────────────────────────────────────────
-        var statusRequiresGrade = status is EnrollmentStatus.Aprobada or EnrollmentStatus.Regular;
+        var statusRequiresGrade = status is EnrollmentStatus.Passed or EnrollmentStatus.Regularized;
         if (statusRequiresGrade && grade is null)
         {
             return EnrollmentRecordErrors.GradeRequiredForStatus;
@@ -89,11 +89,11 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
         }
 
         // ── Status vs ApprovalMethod ─────────────────────────────────────
-        if (status == EnrollmentStatus.Aprobada && approvalMethod is null)
+        if (status == EnrollmentStatus.Passed && approvalMethod is null)
         {
             return EnrollmentRecordErrors.ApprovalMethodRequiredForAprobada;
         }
-        if (status != EnrollmentStatus.Aprobada && approvalMethod is not null)
+        if (status != EnrollmentStatus.Passed && approvalMethod is not null)
         {
             return EnrollmentRecordErrors.ApprovalMethodNotAllowedForStatus;
         }
@@ -101,23 +101,23 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
         // ── ApprovalMethod vs Commission/Term ────────────────────────────
         // Solo se evalúan si hay method (status=Aprobada). Para los otros status, el caller
         // puede mandar commission/term o no según haya cursado realmente.
-        if (approvalMethod is EnrollmentRecords.ApprovalMethod.Equivalencia)
+        if (approvalMethod is EnrollmentRecords.ApprovalMethod.CreditTransfer)
         {
             if (commissionId is not null || termId is not null)
             {
                 return EnrollmentRecordErrors.EquivalenciaRequiresNoCommissionNorTerm;
             }
         }
-        else if (approvalMethod is EnrollmentRecords.ApprovalMethod.FinalLibre)
+        else if (approvalMethod is EnrollmentRecords.ApprovalMethod.IndependentFinalExam)
         {
             if (commissionId is not null || termId is null)
             {
                 return EnrollmentRecordErrors.FinalLibreRequiresTermWithoutCommission;
             }
         }
-        else if (approvalMethod is EnrollmentRecords.ApprovalMethod.Cursada
-                                  or EnrollmentRecords.ApprovalMethod.Promocion
-                                  or EnrollmentRecords.ApprovalMethod.Final)
+        else if (approvalMethod is EnrollmentRecords.ApprovalMethod.Coursework
+                                  or EnrollmentRecords.ApprovalMethod.Promotion
+                                  or EnrollmentRecords.ApprovalMethod.FinalExam)
         {
             if (commissionId is null || termId is null)
             {
@@ -128,7 +128,7 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
         // ── Status=Cursando exige term ──────────────────────────────────
         // No tiene sentido "cursando" sin saber en qué cuatri. commission opcional (ej. está
         // anotado pero todavía no asignaron comisión, raro pero permitido en el MVP).
-        if (status == EnrollmentStatus.Cursando && termId is null)
+        if (status == EnrollmentStatus.InProgress && termId is null)
         {
             return EnrollmentRecordErrors.CursandoRequiresTerm;
         }

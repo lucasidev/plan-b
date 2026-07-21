@@ -36,9 +36,9 @@ internal sealed class DapperSubjectPassRateReader : ISubjectPassRateReader
         const string sql = @"
             SELECT
                 COUNT(*) FILTER (
-                    WHERE status = 'Aprobada' AND approval_method <> 'Equivalencia'
+                    WHERE status = 'Passed' AND approval_method <> 'CreditTransfer'
                 )::int AS Approved,
-                COUNT(*) FILTER (WHERE status = 'Reprobada')::int AS Failed
+                COUNT(*) FILTER (WHERE status = 'Failed')::int AS Failed
             FROM enrollments.enrollment_records
             WHERE subject_id = @SubjectId;";
 

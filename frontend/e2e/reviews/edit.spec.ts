@@ -48,8 +48,8 @@ test.describe('Reseñas · editar (US-018)', () => {
         subjectId: SUBJECT_ID,
         commissionId: COMMISSION_ID,
         termId: TERM_ID,
-        status: 'Aprobada',
-        approvalMethod: 'Final',
+        status: 'Passed',
+        approvalMethod: 'FinalExam',
         grade: 7,
       },
     });

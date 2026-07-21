@@ -77,7 +77,7 @@ namespace Planb.Enrollments.Infrastructure.Migrations
                     b.HasIndex("StudentProfileId", "SubjectId")
                         .IsUnique()
                         .HasDatabaseName("ux_enrollment_records_student_subject_equivalencia")
-                        .HasFilter("approval_method = 'Equivalencia'");
+                        .HasFilter("approval_method = 'CreditTransfer'");
 
                     b.HasIndex("StudentProfileId", "SubjectId", "TermId")
                         .IsUnique()
@@ -85,17 +85,17 @@ namespace Planb.Enrollments.Infrastructure.Migrations
 
                     b.ToTable("enrollment_records", "enrollments", t =>
                         {
-                            t.HasCheckConstraint("ck_enrollment_records_cursada_requires_commission_and_term", "approval_method NOT IN ('Cursada','Promocion','Final') OR (commission_id IS NOT NULL AND term_id IS NOT NULL)");
+                            t.HasCheckConstraint("ck_enrollment_records_cursada_requires_commission_and_term", "approval_method NOT IN ('Coursework','Promotion','FinalExam') OR (commission_id IS NOT NULL AND term_id IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_enrollment_records_equivalencia_no_commission_no_term", "approval_method IS DISTINCT FROM 'Equivalencia' OR (commission_id IS NULL AND term_id IS NULL)");
+                            t.HasCheckConstraint("ck_enrollment_records_equivalencia_no_commission_no_term", "approval_method IS DISTINCT FROM 'CreditTransfer' OR (commission_id IS NULL AND term_id IS NULL)");
 
-                            t.HasCheckConstraint("ck_enrollment_records_final_libre_term_only", "approval_method IS DISTINCT FROM 'FinalLibre' OR (commission_id IS NULL AND term_id IS NOT NULL)");
+                            t.HasCheckConstraint("ck_enrollment_records_final_libre_term_only", "approval_method IS DISTINCT FROM 'IndependentFinalExam' OR (commission_id IS NULL AND term_id IS NOT NULL)");
 
                             t.HasCheckConstraint("ck_enrollment_records_grade_range", "grade IS NULL OR (grade >= 0 AND grade <= 10)");
 
-                            t.HasCheckConstraint("ck_enrollment_records_status_approval_method_consistency", "(status = 'Aprobada' AND approval_method IS NOT NULL) OR (status <> 'Aprobada' AND approval_method IS NULL)");
+                            t.HasCheckConstraint("ck_enrollment_records_status_approval_method_consistency", "(status = 'Passed' AND approval_method IS NOT NULL) OR (status <> 'Passed' AND approval_method IS NULL)");
 
-                            t.HasCheckConstraint("ck_enrollment_records_status_grade_consistency", "(status IN ('Aprobada','Regular') AND grade IS NOT NULL) OR (status IN ('Cursando','Reprobada','Abandonada') AND grade IS NULL)");
+                            t.HasCheckConstraint("ck_enrollment_records_status_grade_consistency", "(status IN ('Passed','Regularized') AND grade IS NOT NULL) OR (status IN ('InProgress','Failed','Dropped') AND grade IS NULL)");
                         });
                 });
 

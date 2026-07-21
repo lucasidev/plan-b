@@ -183,7 +183,7 @@ public class HistorialImportEndpointTests
 
         var response = await auth.Client.PostAsJsonAsync(
             $"/api/me/historial-imports/{Guid.NewGuid()}/confirm",
-            new { items = new[] { new { subjectId = Guid.NewGuid(), status = "Aprobada", grade = 8m } } });
+            new { items = new[] { new { subjectId = Guid.NewGuid(), status = "Passed", grade = 8m } } });
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }

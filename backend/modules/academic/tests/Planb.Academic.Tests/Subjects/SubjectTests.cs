@@ -21,7 +21,7 @@ public class SubjectTests
             name: "  Análisis Matemático I  ",
             yearInPlan: 1,
             termInYear: 1,
-            termKind: TermKind.Cuatrimestral,
+            termKind: TermKind.FourMonth,
             weeklyHours: 6,
             totalHours: 96,
             description: null,
@@ -33,7 +33,7 @@ public class SubjectTests
         subject.Name.ShouldBe("Análisis Matemático I");
         subject.YearInPlan.ShouldBe(1);
         subject.TermInYear.ShouldBe(1);
-        subject.TermKind.ShouldBe(TermKind.Cuatrimestral);
+        subject.TermKind.ShouldBe(TermKind.FourMonth);
         subject.WeeklyHours.ShouldBe(6);
         subject.TotalHours.ShouldBe(96);
         subject.Description.ShouldBeNull();
@@ -47,7 +47,7 @@ public class SubjectTests
     public void Create_BlankCode_ReturnsCodeRequired(string? code)
     {
         var result = Subject.Create(
-            AnyPlan, code!, "Mat", 1, 1, TermKind.Cuatrimestral, 5, 80, null, Clock);
+            AnyPlan, code!, "Mat", 1, 1, TermKind.FourMonth, 5, 80, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SubjectErrors.CodeRequired);
@@ -60,7 +60,7 @@ public class SubjectTests
     public void Create_BlankName_ReturnsNameRequired(string? name)
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", name!, 1, 1, TermKind.Cuatrimestral, 5, 80, null, Clock);
+            AnyPlan, "MAT101", name!, 1, 1, TermKind.FourMonth, 5, 80, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SubjectErrors.NameRequired);
@@ -74,7 +74,7 @@ public class SubjectTests
     public void Create_YearInPlanOutOfBounds_ReturnsError(int year)
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", year, 1, TermKind.Cuatrimestral, 5, 80, null, Clock);
+            AnyPlan, "MAT101", "Mat", year, 1, TermKind.FourMonth, 5, 80, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SubjectErrors.YearInPlanOutOfRange);
@@ -86,8 +86,8 @@ public class SubjectTests
         var result = Subject.Create(
             AnyPlan, "MAT101", "Mat",
             yearInPlan: 1,
-            termInYear: 1, // inconsistente con Anual
-            termKind: TermKind.Anual,
+            termInYear: 1, // inconsistente con FullYear
+            termKind: TermKind.FullYear,
             weeklyHours: 4, totalHours: 128,
             description: null, clock: Clock);
 
@@ -102,19 +102,19 @@ public class SubjectTests
             AnyPlan, "MAT101", "Mat",
             yearInPlan: 1,
             termInYear: null,
-            termKind: TermKind.Anual,
+            termKind: TermKind.FullYear,
             weeklyHours: 4, totalHours: 128,
             description: null, clock: Clock);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.TermKind.ShouldBe(TermKind.Anual);
+        result.Value.TermKind.ShouldBe(TermKind.FullYear);
         result.Value.TermInYear.ShouldBeNull();
     }
 
     [Theory]
-    [InlineData(TermKind.Bimestral)]
-    [InlineData(TermKind.Cuatrimestral)]
-    [InlineData(TermKind.Semestral)]
+    [InlineData(TermKind.TwoMonth)]
+    [InlineData(TermKind.FourMonth)]
+    [InlineData(TermKind.SixMonth)]
     public void Create_NonAnualWithoutTermInYear_ReturnsInconsistent(TermKind kind)
     {
         var result = Subject.Create(
@@ -136,7 +136,7 @@ public class SubjectTests
     public void Create_TermInYearOutOfRange_ReturnsError(int termInYear)
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", 1, termInYear, TermKind.Cuatrimestral, 5, 80, null, Clock);
+            AnyPlan, "MAT101", "Mat", 1, termInYear, TermKind.FourMonth, 5, 80, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SubjectErrors.TermInYearOutOfRange);
@@ -149,7 +149,7 @@ public class SubjectTests
         // porque no es una cursada con horario, y lo mismo pasa con prácticas profesionales y
         // tesis. Rechazarlo dejaba planes de estudio reales fuera del modelo.
         var result = Subject.Create(
-            AnyPlan, "314", "Proyecto Final", 3, 1, TermKind.Cuatrimestral, 0, 350, null, Clock);
+            AnyPlan, "314", "Proyecto Final", 3, 1, TermKind.FourMonth, 0, 350, null, Clock);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.WeeklyHours.ShouldBe(0);
@@ -162,7 +162,7 @@ public class SubjectTests
     public void Create_WeeklyHoursOutOfRange_ReturnsError(int weeklyHours)
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.Cuatrimestral, weeklyHours, 80, null, Clock);
+            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.FourMonth, weeklyHours, 80, null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SubjectErrors.WeeklyHoursOutOfRange);
@@ -172,7 +172,7 @@ public class SubjectTests
     public void Create_TotalHoursBelowWeekly_ReturnsError()
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.Cuatrimestral,
+            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.FourMonth,
             weeklyHours: 6, totalHours: 4, // 4 < 6
             description: null, clock: Clock);
 
@@ -184,7 +184,7 @@ public class SubjectTests
     public void Create_TotalHoursZero_ReturnsError()
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.Cuatrimestral,
+            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.FourMonth,
             weeklyHours: 6, totalHours: 0,
             description: null, clock: Clock);
 
@@ -196,7 +196,7 @@ public class SubjectTests
     public void Create_DescriptionWhitespace_NormalizedToNull()
     {
         var result = Subject.Create(
-            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.Cuatrimestral, 5, 80,
+            AnyPlan, "MAT101", "Mat", 1, 1, TermKind.FourMonth, 5, 80,
             description: "   ",
             clock: Clock);
 
@@ -211,7 +211,7 @@ public class SubjectTests
         // Datos que Create rechazaría (yearInPlan=99) pero Hydrate acepta porque asume caller
         // confiable (seeder o EF rehydration).
         var subject = Subject.Hydrate(
-            id, AnyPlan, "X", "Y", 99, 99, TermKind.Bimestral, 99, 99, "raw desc",
+            id, AnyPlan, "X", "Y", 99, 99, TermKind.TwoMonth, 99, 99, "raw desc",
             isOfficial: true, isActive: true, Clock.UtcNow, Clock.UtcNow);
 
         subject.Id.ShouldBe(id);

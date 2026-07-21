@@ -80,7 +80,7 @@ async function createSubject(page: Page, plan: DisposablePlan, name: string, cod
   await page.getByLabel(/nombre de la materia/i).fill(name);
   await page.getByLabel(/^código$/i).fill(code);
   await page.getByLabel(/año del plan/i).fill('1');
-  await page.getByLabel(/^cadencia$/i).selectOption('Cuatrimestral');
+  await page.getByLabel(/^cadencia$/i).selectOption('FourMonth');
   await page.getByLabel(/cuatrimestre \/ bimestre/i).fill('1');
   await page.getByLabel(/carga horaria semanal/i).fill('6');
   await page.getByLabel(/carga horaria total/i).fill('96');
@@ -106,7 +106,7 @@ async function selectEdge(page: Page, subjectOption: string, requiredOption: str
   await required.selectOption({ label: requiredOption });
   await expect(required.locator('option:checked')).toHaveText(requiredOption);
 
-  await page.getByLabel(/^tipo$/i).selectOption('ParaCursar');
+  await page.getByLabel(/^tipo$/i).selectOption('ToEnroll');
 }
 
 test.describe('Backoffice de materias y correlativas (US-062)', () => {

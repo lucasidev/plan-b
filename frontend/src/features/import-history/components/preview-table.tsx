@@ -13,6 +13,24 @@ import type {
 } from '../types';
 import { initialConfirmHistorialState } from '../types';
 
+// El wire lleva el valor canónico del enum (inglés), la UI muestra el label español: mismo patrón
+// que el StatusChip de reseñas. El status detectado por el parser ya viene en estos valores.
+const STATUS_LABELS: Record<string, string> = {
+  Passed: 'Aprobada',
+  Regularized: 'Regular',
+  InProgress: 'Cursando',
+  Failed: 'Reprobada',
+  Dropped: 'Abandonada',
+};
+
+const APPROVAL_METHOD_LABELS: Record<string, string> = {
+  Coursework: 'Cursada',
+  Promotion: 'Promoción',
+  FinalExam: 'Final',
+  IndependentFinalExam: 'Final libre',
+  CreditTransfer: 'Equivalencia',
+};
+
 type Props = {
   importId: string;
   payload: HistorialImportPayload;
@@ -73,7 +91,7 @@ export function PreviewTable({ importId, payload }: Props) {
     subjectId: r.parsed.subjectId as string,
     termId: r.termId || null,
     status: r.status,
-    approvalMethod: r.status === 'Aprobada' ? r.approvalMethod : null,
+    approvalMethod: r.status === 'Passed' ? r.approvalMethod : null,
     grade: r.grade.trim() !== '' ? Number.parseFloat(r.grade) : null,
   }));
 
@@ -134,26 +152,26 @@ export function PreviewTable({ importId, payload }: Props) {
                     className={inputClass}
                     style={inputStyle}
                   >
-                    <option value="Aprobada">Aprobada</option>
-                    <option value="Regular">Regular</option>
-                    <option value="Cursando">Cursando</option>
-                    <option value="Reprobada">Reprobada</option>
-                    <option value="Abandonada">Abandonada</option>
+                    {Object.entries(STATUS_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                 </Td>
                 <Td>
-                  {r.status === 'Aprobada' ? (
+                  {r.status === 'Passed' ? (
                     <select
                       value={r.approvalMethod}
                       onChange={(e) => update(r.index, { approvalMethod: e.target.value })}
                       className={inputClass}
                       style={inputStyle}
                     >
-                      <option value="Cursada">Cursada</option>
-                      <option value="Promocion">Promoción</option>
-                      <option value="Final">Final</option>
-                      <option value="FinalLibre">Final libre</option>
-                      <option value="Equivalencia">Equivalencia</option>
+                      {Object.entries(APPROVAL_METHOD_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   ) : (
                     <span className="text-ink-3">–</span>
@@ -298,17 +316,15 @@ function SubmitButton({ disabled, count }: { disabled: boolean; count: number })
   );
 }
 
-/** Normalize to the backend enum if the detected value is valid; otherwise default to Aprobada. */
+/** Normaliza al valor del enum del backend si el detectado es válido; si no, default a Passed. */
 function normalizeStatus(detected: string | null): string {
-  const allowed = ['Aprobada', 'Regular', 'Cursando', 'Reprobada', 'Abandonada'];
-  if (detected && allowed.includes(detected)) return detected;
-  return 'Aprobada';
+  if (detected && detected in STATUS_LABELS) return detected;
+  return 'Passed';
 }
 
 function normalizeApprovalMethod(detected: string | null): string {
-  const allowed = ['Cursada', 'Promocion', 'Final', 'FinalLibre', 'Equivalencia'];
-  if (detected && allowed.includes(detected)) return detected;
-  // Conservative default: Cursada (regular + final). The student can change it if
-  // they approved through a different path.
-  return 'Cursada';
+  if (detected && detected in APPROVAL_METHOD_LABELS) return detected;
+  // Default conservador: Coursework (cursada regular + final). El alumno lo cambia si aprobó por
+  // otra vía.
+  return 'Coursework';
 }

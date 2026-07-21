@@ -109,7 +109,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
                 name: name,
                 yearInPlan: 1,
                 termInYear: 1,
-                termKind: TermKind.Cuatrimestral,
+                termKind: TermKind.FourMonth,
                 weeklyHours: weeklyHours,
                 totalHours: totalHours,
                 description: null,
@@ -155,7 +155,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
         // queda Blocked.
         (await admin.Client.PostAsJsonAsync(
                 $"/api/academic/subjects/{b.Id}/prerequisites",
-                new { requiredSubjectId = a.Id, type = "ParaCursar" }))
+                new { requiredSubjectId = a.Id, type = "ToEnroll" }))
             .EnsureSuccessStatusCode();
 
         var student = await StudentAsync(planId, "blocked");
@@ -264,7 +264,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
 
         for (var i = 0; i < 4; i++)
         {
-            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"four-{i}", "Aprobada", "Aprobada");
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"four-{i}", "Passed", "Passed");
         }
 
         var caller = await StudentAsync(planId, "four-caller");
@@ -290,9 +290,9 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
 
         for (var i = 0; i < 4; i++)
         {
-            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"five-{i}", "Aprobada", "Aprobada");
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"five-{i}", "Passed", "Passed");
         }
-        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "five-dropout", "Aprobada", "Abandonada");
+        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "five-dropout", "Passed", "Dropped");
 
         var caller = await StudentAsync(planId, "five-caller");
         var response = await EvaluateAsync(caller, s1.Id, s2.Id);
@@ -321,14 +321,14 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
 
         for (var i = 0; i < 4; i++)
         {
-            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"excl-{i}", "Aprobada", "Aprobada");
+            await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, $"excl-{i}", "Passed", "Passed");
         }
-        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "excl-dropout", "Aprobada", "Abandonada");
+        await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "excl-dropout", "Passed", "Dropped");
 
         var caller = await StudentAsync(planId, "excl-caller");
         var callerTerm = Guid.NewGuid();
-        await EnrollAsync(caller, s1.Id, "Aprobada", "Final", Guid.NewGuid(), callerTerm, 9m);
-        await EnrollAsync(caller, s2.Id, "Aprobada", "Final", Guid.NewGuid(), callerTerm, 9m);
+        await EnrollAsync(caller, s1.Id, "Passed", "FinalExam", Guid.NewGuid(), callerTerm, 9m);
+        await EnrollAsync(caller, s2.Id, "Passed", "FinalExam", Guid.NewGuid(), callerTerm, 9m);
 
         var response = await EvaluateAsync(caller, s1.Id, s2.Id);
 
@@ -392,9 +392,9 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
         await EnrollAsync(student, s2, s2Status, ApprovalMethodFor(s2Status), Guid.NewGuid(), term, GradeFor(s2Status));
     }
 
-    private static string? ApprovalMethodFor(string status) => status == "Aprobada" ? "Final" : null;
+    private static string? ApprovalMethodFor(string status) => status == "Passed" ? "FinalExam" : null;
 
-    private static decimal? GradeFor(string status) => status == "Aprobada" ? 8m : null;
+    private static decimal? GradeFor(string status) => status == "Passed" ? 8m : null;
 
     /// <summary>
     /// Publica una reseña Published sobre una materia sembrada (TUDCS), creando un alumno +
@@ -413,8 +413,8 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
                 subjectId,
                 commissionId = (Guid?)commissionId,
                 termId = (Guid?)termId,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8m,
             });
         enrollResp.EnsureSuccessStatusCode();

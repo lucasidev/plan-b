@@ -103,8 +103,8 @@ public class GetMyPendingReviewsEndpointTests
                 subjectId = subject,
                 commissionId = (Guid?)commissionId,
                 termId = (Guid?)termId,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8m,
             });
         resp.EnsureSuccessStatusCode();
@@ -124,7 +124,7 @@ public class GetMyPendingReviewsEndpointTests
                 subjectId = subject,
                 commissionId = (Guid?)commissionId,
                 termId = (Guid?)termId,
-                status = "Cursando",
+                status = "InProgress",
                 approvalMethod = (string?)null,
                 grade = (decimal?)null,
             });
@@ -217,7 +217,7 @@ public class GetMyPendingReviewsEndpointTests
         items[0].EnrollmentId.ShouldBe(pendingId);
         items[0].SubjectId.ShouldBe(Subject101);
         items[0].CommissionId.ShouldBe(CommissionSubject101);
-        items[0].Status.ShouldBe("Aprobada");
+        items[0].Status.ShouldBe("Passed");
         items[0].Grade.ShouldBe(8m);
         items[0].SubjectCode.ShouldNotBeNullOrWhiteSpace();
         items[0].SubjectName.ShouldNotBeNullOrWhiteSpace();

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId } from 'react';
 import { Button } from '@/components/ui/button';
+import { TERM_KIND_LABELS } from '@/lib/academic-terms';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createTermAction, updateTermAction } from '../actions';
 import { initialManageTermState, type TermDetail } from '../types';
@@ -17,8 +18,6 @@ type Props = {
 
 const inputClass =
   'w-full rounded-md border border-line bg-bg-card px-3 py-2 text-[13px] text-ink outline-none focus:border-ink-3';
-
-const TERM_KINDS = ['Bimestral', 'Cuatrimestral', 'Semestral', 'Anual'] as const;
 
 /**
  * Form de alta/edición de período lectivo (US-064 admin). React 19 primitives + Zod en el action,
@@ -100,9 +99,9 @@ export function TermForm({ mode, universityId, term }: Props) {
             className={inputClass}
           >
             <option value="">Elegí una cadencia</option>
-            {TERM_KINDS.map((k) => (
-              <option key={k} value={k}>
-                {k}
+            {Object.entries(TERM_KIND_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>

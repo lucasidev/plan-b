@@ -124,11 +124,11 @@ public sealed class CareerPlanParser : ICareerPlanParser
         }
 
         // Término en año: idem. Override por keyword "anual" en la línea.
-        var termKind = "Cuatrimestral";
+        var termKind = "FourMonth";
         var termInYear = contextTerm;
         if (AnualHintRegex.IsMatch(rawRow))
         {
-            termKind = "Anual";
+            termKind = "FullYear";
             termInYear = null;
         }
         else if (termInYear is null && year is not null)
@@ -142,7 +142,7 @@ public sealed class CareerPlanParser : ICareerPlanParser
         var detected = 0;
         if (!string.IsNullOrWhiteSpace(name)) detected++;
         if (year is not null) detected++;
-        if (termInYear is not null || termKind == "Anual") detected++;
+        if (termInYear is not null || termKind == "FullYear") detected++;
 
         var confidence = detected switch
         {

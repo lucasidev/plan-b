@@ -83,5 +83,5 @@ public sealed class CreatePrerequisiteEndpoint : ICarterModule
     }
 }
 
-/// <summary>Body del POST. RequiredSubjectId + type (string, "ParaCursar"/"ParaRendir") requeridos.</summary>
+/// <summary>Body del POST. RequiredSubjectId + type (string, "ToEnroll"/"ToTakeFinal") requeridos.</summary>
 public sealed record CreatePrerequisiteRequest(Guid RequiredSubjectId, string? Type);

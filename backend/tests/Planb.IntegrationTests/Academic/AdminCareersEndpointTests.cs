@@ -62,7 +62,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers",
             NewCareerBody(
-                degreeType: "Grado", durationYears: 5, cadence: "Cuatrimestral",
+                degreeType: "Grado", durationYears: 5, cadence: "FourMonth",
                 description: "Carrera de prueba"));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
@@ -85,7 +85,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         detail.IsActive.ShouldBeTrue();
         detail.DegreeType.ShouldBe("Grado");
         detail.DurationYears.ShouldBe(5);
-        detail.Cadence.ShouldBe("Cuatrimestral");
+        detail.Cadence.ShouldBe("FourMonth");
         detail.Description.ShouldBe("Carrera de prueba");
     }
 

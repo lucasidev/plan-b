@@ -45,7 +45,7 @@ export const careerFieldsSchema = z.object({
   ),
   cadence: z.preprocess(
     (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
-    z.enum(['Anual', 'Cuatrimestral', 'Semestral']).optional(),
+    z.enum(['FullYear', 'FourMonth', 'SixMonth']).optional(),
   ),
   description: optionalTrimmed(500, 'Máximo 500 caracteres.'),
 });

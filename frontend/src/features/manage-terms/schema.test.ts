@@ -11,7 +11,7 @@ describe('termFieldsSchema', () => {
   const base = {
     year: '2026',
     number: '1',
-    kind: 'Cuatrimestral',
+    kind: 'FourMonth',
     startDate: '2026-03-01',
     endDate: '2026-07-01',
     enrollmentOpens: '2026-02-01T00:00',
@@ -92,22 +92,22 @@ describe('termFieldsSchema', () => {
 
   describe('kind', () => {
     it('acepta Bimestral', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Bimestral' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'TwoMonth' });
       expect(result.success).toBe(true);
     });
 
     it('acepta Cuatrimestral', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Cuatrimestral' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'FourMonth' });
       expect(result.success).toBe(true);
     });
 
     it('acepta Semestral', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Semestral' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'SixMonth' });
       expect(result.success).toBe(true);
     });
 
     it('acepta Anual con number 1', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Anual', number: '1' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'FullYear', number: '1' });
       expect(result.success).toBe(true);
     });
 
@@ -124,7 +124,7 @@ describe('termFieldsSchema', () => {
 
   describe('cross-field: anual siempre es número 1', () => {
     it('rechaza Anual con number distinto de 1', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Anual', number: '2' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'FullYear', number: '2' });
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toMatch(/anual.*siempre.*número 1/i);
@@ -132,7 +132,7 @@ describe('termFieldsSchema', () => {
     });
 
     it('acepta una cadencia no anual con number distinto de 1', () => {
-      const result = termFieldsSchema.safeParse({ ...base, kind: 'Cuatrimestral', number: '2' });
+      const result = termFieldsSchema.safeParse({ ...base, kind: 'FourMonth', number: '2' });
       expect(result.success).toBe(true);
     });
   });

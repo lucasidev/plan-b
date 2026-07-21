@@ -55,7 +55,7 @@ namespace Planb.Academic.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_subjects", x => x.id);
-                    table.CheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind = 'Anual' AND term_in_year IS NULL) OR (term_kind <> 'Anual' AND term_in_year IS NOT NULL)");
+                    table.CheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind <> 'FullYear' AND term_in_year IS NOT NULL)");
                 });
 
             migrationBuilder.CreateIndex(

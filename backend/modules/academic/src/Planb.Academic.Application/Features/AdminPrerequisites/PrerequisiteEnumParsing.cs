@@ -4,8 +4,8 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Academic.Application.Features.AdminPrerequisites;
 
 /// <summary>
-/// Parseo del type que viaja como string en los requests de Prerequisite (US-062, ej. "ParaCursar",
-/// "ParaRendir"). Igual que <see cref="PrerequisiteType"/> es obligatorio en el aggregate (no hay
+/// Parseo del type que viaja como string en los requests de Prerequisite (US-062, ej. "ToEnroll",
+/// "ToTakeFinal"). Igual que <see cref="PrerequisiteType"/> es obligatorio en el aggregate (no hay
 /// default): un valor vacío/null y un string no-vacío que no matchea un valor DEFINIDO del enum son
 /// los dos error de validación (400). Mismo criterio que AcademicTermEnumParsing.ParseKind.
 /// </summary>

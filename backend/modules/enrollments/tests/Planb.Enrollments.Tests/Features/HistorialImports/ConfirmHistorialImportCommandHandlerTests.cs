@@ -145,8 +145,8 @@ public class ConfirmHistorialImportCommandHandlerTests
 
         var items = new ConfirmedItem[]
         {
-            new(SubjectIdCreated, TermId, "Aprobada", "FinalLibre", 7m),
-            new(SubjectIdSkipped, null, "Aprobada", "Equivalencia", 8m),
+            new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 7m),
+            new(SubjectIdSkipped, null, "Passed", "CreditTransfer", 8m),
         };
 
         var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
@@ -182,7 +182,7 @@ public class ConfirmHistorialImportCommandHandlerTests
         deps.Records.ExistsAsync(profile.Id, SubjectIdSkipped, TermId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        var items = new ConfirmedItem[] { new(SubjectIdSkipped, TermId, "Aprobada", "Cursada", 7m) };
+        var items = new ConfirmedItem[] { new(SubjectIdSkipped, TermId, "Passed", "Coursework", 7m) };
 
         var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
 
@@ -210,7 +210,7 @@ public class ConfirmHistorialImportCommandHandlerTests
 
         // Aprobada + Cursada exige commission_id, que el import nunca propaga: el aggregate
         // rechaza el invariante y el handler debe devolver el error, sin confirmar el import.
-        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Aprobada", "Cursada", 7m) };
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", "Coursework", 7m) };
 
         var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
 

@@ -117,16 +117,16 @@ public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     private static Task PassFinalLibre(AuthenticatedClient auth, Guid subject, Guid term) =>
-        Post(auth, subject, term, "Aprobada", "FinalLibre", 8m);
+        Post(auth, subject, term, "Passed", "IndependentFinalExam", 8m);
 
     private static Task PassEquivalencia(AuthenticatedClient auth, Guid subject) =>
-        Post(auth, subject, null, "Aprobada", "Equivalencia", 8m);
+        Post(auth, subject, null, "Passed", "CreditTransfer", 8m);
 
     private static Task Fail(AuthenticatedClient auth, Guid subject, Guid term) =>
-        Post(auth, subject, term, "Reprobada", null, null);
+        Post(auth, subject, term, "Failed", null, null);
 
     private static Task Abandon(AuthenticatedClient auth, Guid subject, Guid term) =>
-        Post(auth, subject, term, "Abandonada", null, null);
+        Post(auth, subject, term, "Dropped", null, null);
 
     private static async Task Post(
         AuthenticatedClient auth, Guid subject, Guid? term, string status, string? method, decimal? grade)

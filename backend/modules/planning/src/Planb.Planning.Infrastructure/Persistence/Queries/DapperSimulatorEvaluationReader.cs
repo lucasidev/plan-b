@@ -111,8 +111,8 @@ internal sealed class DapperSimulatorEvaluationReader : ISimulatorEvaluationRead
             )
             SELECT
                 (SELECT COUNT(*) FROM matching)::int                                                              AS SampleSize,
-                (COUNT(*) FILTER (WHERE er.status = 'Aprobada'))::float8 * 100.0 / NULLIF(COUNT(*), 0)::float8    AS PassRate,
-                (COUNT(*) FILTER (WHERE er.status = 'Abandonada'))::float8 * 100.0 / NULLIF(COUNT(*), 0)::float8  AS DropoutRate
+                (COUNT(*) FILTER (WHERE er.status = 'Passed'))::float8 * 100.0 / NULLIF(COUNT(*), 0)::float8     AS PassRate,
+                (COUNT(*) FILTER (WHERE er.status = 'Dropped'))::float8 * 100.0 / NULLIF(COUNT(*), 0)::float8    AS DropoutRate
             FROM matching m
             JOIN enrollments.enrollment_records er
               ON er.student_profile_id = m.student_profile_id AND er.term_id = m.term_id;";

@@ -113,8 +113,8 @@ public sealed class DemoCorpusHostedService : IHostedService
                 r.SubjectId,
                 DemoCorpusData.DemoCommissionId,
                 r.TermId,
-                EnrollmentStatus.Aprobada,
-                ApprovalMethod.Final,
+                EnrollmentStatus.Passed,
+                ApprovalMethod.FinalExam,
                 r.Grade))
             .ToList();
 
@@ -128,7 +128,7 @@ public sealed class DemoCorpusHostedService : IHostedService
                 f.SubjectId,
                 DemoCorpusData.DemoCommissionId,
                 f.TermId,
-                f.IsAbandoned ? EnrollmentStatus.Abandonada : EnrollmentStatus.Reprobada,
+                f.IsAbandoned ? EnrollmentStatus.Dropped : EnrollmentStatus.Failed,
                 null,
                 null))
             .ToList();
@@ -200,8 +200,8 @@ public sealed class DemoCorpusHostedService : IHostedService
                 DemoCorpusData.LuciaPendingSubjectId,
                 DemoCorpusData.LuciaPendingCommissionId,
                 DemoCorpusData.LuciaPendingTermId,
-                EnrollmentStatus.Aprobada,
-                ApprovalMethod.Final,
+                EnrollmentStatus.Passed,
+                ApprovalMethod.FinalExam,
                 9m),
         ];
     }

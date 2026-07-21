@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { TERM_KIND_LABELS } from '@/lib/academic-terms';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createSubjectAction, updateSubjectAction } from '../actions';
 import { SUBJECT_LIMITS } from '../schema';
@@ -19,8 +20,6 @@ type Props = {
 
 const inputClass =
   'w-full rounded-md border border-line bg-bg-card px-3 py-2 text-[13px] text-ink outline-none focus:border-ink-3 disabled:opacity-50';
-
-const TERM_KINDS = ['Bimestral', 'Cuatrimestral', 'Semestral', 'Anual'] as const;
 
 /**
  * Form de alta/edición de materia (US-062 admin). React 19 primitives + Zod en el action, mismo
@@ -39,7 +38,7 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
     initialManageSubjectState,
   );
   const [termKind, setTermKind] = useState(subject?.termKind ?? '');
-  const isAnnual = termKind === 'Anual';
+  const isAnnual = termKind === 'FullYear';
 
   const ids = {
     code: useId(),
@@ -122,9 +121,9 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             className={inputClass}
           >
             <option value="">Elegí una cadencia</option>
-            {TERM_KINDS.map((k) => (
-              <option key={k} value={k}>
-                {k}
+            {Object.entries(TERM_KIND_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>

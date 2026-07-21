@@ -18,8 +18,8 @@ const inputClass =
   'w-full rounded-md border border-line bg-bg-card px-3 py-2 text-[13px] text-ink outline-none focus:border-ink-3 disabled:opacity-50';
 
 const TYPE_LABELS: Record<PrerequisiteType, string> = {
-  ParaCursar: 'Para cursar',
-  ParaRendir: 'Para rendir',
+  ToEnroll: 'Para cursar',
+  ToTakeFinal: 'Para rendir',
 };
 
 /**
@@ -52,16 +52,16 @@ export function PrerequisitesPanel({
 
       <div className="grid grid-cols-1 border-t border-line sm:grid-cols-2">
         <PrerequisiteTypeList
-          title={TYPE_LABELS.ParaCursar}
-          type="ParaCursar"
-          edges={edges.filter((e) => e.type === 'ParaCursar')}
+          title={TYPE_LABELS.ToEnroll}
+          type="ToEnroll"
+          edges={edges.filter((e) => e.type === 'ToEnroll')}
           subjectsById={subjectsById}
           planId={planId}
         />
         <PrerequisiteTypeList
-          title={TYPE_LABELS.ParaRendir}
-          type="ParaRendir"
-          edges={edges.filter((e) => e.type === 'ParaRendir')}
+          title={TYPE_LABELS.ToTakeFinal}
+          type="ToTakeFinal"
+          edges={edges.filter((e) => e.type === 'ToTakeFinal')}
           subjectsById={subjectsById}
           planId={planId}
           className="border-t border-line sm:border-t-0 sm:border-l"
@@ -167,8 +167,8 @@ function AddPrerequisiteForm({
           className={cn(inputClass, 'w-40')}
         >
           <option value="">Elegí un tipo</option>
-          <option value="ParaCursar">{TYPE_LABELS.ParaCursar}</option>
-          <option value="ParaRendir">{TYPE_LABELS.ParaRendir}</option>
+          <option value="ToEnroll">{TYPE_LABELS.ToEnroll}</option>
+          <option value="ToTakeFinal">{TYPE_LABELS.ToTakeFinal}</option>
         </select>
       </div>
       <Button type="submit" size="sm" disabled={isPending || !hydrated}>

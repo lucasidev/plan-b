@@ -26,7 +26,7 @@ public class AcademicTermTests
             AnyUni,
             year: 2026,
             number: 1,
-            kind: TermKind.Cuatrimestral,
+            kind: TermKind.FourMonth,
             startDate: DefaultStart,
             endDate: DefaultEnd,
             enrollmentOpens: DefaultOpen,
@@ -39,7 +39,7 @@ public class AcademicTermTests
         term.UniversityId.ShouldBe(AnyUni);
         term.Year.ShouldBe(2026);
         term.Number.ShouldBe(1);
-        term.Kind.ShouldBe(TermKind.Cuatrimestral);
+        term.Kind.ShouldBe(TermKind.FourMonth);
         term.Label.ShouldBe("2026·1c");
         term.CreatedAt.ShouldBe(Clock.UtcNow);
     }
@@ -51,7 +51,7 @@ public class AcademicTermTests
     public void Create_YearOutOfRange_ReturnsError(int year)
     {
         var result = AcademicTerm.Create(
-            AnyUni, year, 1, TermKind.Cuatrimestral,
+            AnyUni, year, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "label", Clock);
 
         result.IsFailure.ShouldBeTrue();
@@ -64,7 +64,7 @@ public class AcademicTermTests
         var futureLimit = Clock.UtcNow.Year + 20;
 
         var result = AcademicTerm.Create(
-            AnyUni, futureLimit, 1, TermKind.Cuatrimestral,
+            AnyUni, futureLimit, 1, TermKind.FourMonth,
             new DateOnly(futureLimit, 3, 1),
             new DateOnly(futureLimit, 7, 1),
             new DateTimeOffset(futureLimit, 2, 15, 0, 0, 0, TimeSpan.Zero),
@@ -81,7 +81,7 @@ public class AcademicTermTests
     public void Create_NumberOutOfRange_ReturnsError(int number)
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, number, TermKind.Cuatrimestral,
+            AnyUni, 2026, number, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "label", Clock);
 
         result.IsFailure.ShouldBeTrue();
@@ -92,7 +92,7 @@ public class AcademicTermTests
     public void Create_AnualWithNumberOtherThan1_ReturnsError()
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, number: 2, kind: TermKind.Anual,
+            AnyUni, 2026, number: 2, kind: TermKind.FullYear,
             new DateOnly(2026, 3, 1),
             new DateOnly(2026, 12, 1),
             DefaultOpen, DefaultClose, "2026", Clock);
@@ -105,13 +105,13 @@ public class AcademicTermTests
     public void Create_AnualWithNumber1_ReturnsSuccess()
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, number: 1, kind: TermKind.Anual,
+            AnyUni, 2026, number: 1, kind: TermKind.FullYear,
             new DateOnly(2026, 3, 1),
             new DateOnly(2026, 12, 1),
             DefaultOpen, DefaultClose, "2026", Clock);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Kind.ShouldBe(TermKind.Anual);
+        result.Value.Kind.ShouldBe(TermKind.FullYear);
         result.Value.Number.ShouldBe(1);
     }
 
@@ -119,7 +119,7 @@ public class AcademicTermTests
     public void Create_EndDateBeforeStart_ReturnsError()
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             startDate: new DateOnly(2026, 7, 1),
             endDate: new DateOnly(2026, 3, 1), // invertida
             enrollmentOpens: DefaultOpen,
@@ -134,7 +134,7 @@ public class AcademicTermTests
     public void Create_EndDateEqualStart_ReturnsError()
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             startDate: DefaultStart,
             endDate: DefaultStart, // igual
             DefaultOpen, DefaultClose, "label", Clock);
@@ -147,7 +147,7 @@ public class AcademicTermTests
     public void Create_EnrollmentWindowInverted_ReturnsError()
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd,
             enrollmentOpens: new DateTimeOffset(2026, 3, 1, 0, 0, 0, TimeSpan.Zero),
             enrollmentCloses: new DateTimeOffset(2026, 2, 15, 0, 0, 0, TimeSpan.Zero),
@@ -164,7 +164,7 @@ public class AcademicTermTests
     public void Create_BlankLabel_ReturnsError(string? label)
     {
         var result = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, label!, Clock);
 
         result.IsFailure.ShouldBeTrue();
@@ -176,7 +176,7 @@ public class AcademicTermTests
     {
         var id = AcademicTermId.New();
         var term = AcademicTerm.Hydrate(
-            id, AnyUni, 1900, 9, TermKind.Bimestral,
+            id, AnyUni, 1900, 9, TermKind.TwoMonth,
             new DateOnly(2026, 1, 1),
             new DateOnly(2026, 1, 1), // dates iguales: Create rechazaría
             DefaultOpen, DefaultClose, "raw", Clock.UtcNow);
@@ -191,11 +191,11 @@ public class AcademicTermTests
     // ------------------------------------------------------------------
 
     [Theory]
-    [InlineData(TermKind.Anual, 1, "2026")]
-    [InlineData(TermKind.Cuatrimestral, 1, "2026-C1")]
-    [InlineData(TermKind.Cuatrimestral, 2, "2026-C2")]
-    [InlineData(TermKind.Semestral, 1, "2026-S1")]
-    [InlineData(TermKind.Bimestral, 3, "2026-B3")]
+    [InlineData(TermKind.FullYear, 1, "2026")]
+    [InlineData(TermKind.FourMonth, 1, "2026-C1")]
+    [InlineData(TermKind.FourMonth, 2, "2026-C2")]
+    [InlineData(TermKind.SixMonth, 1, "2026-S1")]
+    [InlineData(TermKind.TwoMonth, 3, "2026-B3")]
     public void ComputeLabel_PerKind_ReturnsExpectedFormat(TermKind kind, int number, string expected)
     {
         var label = AcademicTerm.ComputeLabel(2026, number, kind);
@@ -211,7 +211,7 @@ public class AcademicTermTests
     public void Update_HappyPath_ReplacesFieldsAndKeepsIdentity()
     {
         var term = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
         var originalId = term.Id;
 
@@ -221,7 +221,7 @@ public class AcademicTermTests
         var newClose = new DateTimeOffset(2026, 7, 25, 23, 59, 0, TimeSpan.Zero);
 
         var result = term.Update(
-            2026, 2, TermKind.Cuatrimestral, newStart, newEnd, newOpen, newClose, "2026-C2", Clock);
+            2026, 2, TermKind.FourMonth, newStart, newEnd, newOpen, newClose, "2026-C2", Clock);
 
         result.IsSuccess.ShouldBeTrue();
         term.Id.ShouldBe(originalId);
@@ -238,11 +238,11 @@ public class AcademicTermTests
     public void Update_EndDateBeforeStart_ReturnsErrorAndLeavesTermUnchanged()
     {
         var term = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
 
         var result = term.Update(
-            2026, 1, TermKind.Cuatrimestral,
+            2026, 1, TermKind.FourMonth,
             startDate: new DateOnly(2026, 7, 1),
             endDate: new DateOnly(2026, 3, 1), // invertida
             DefaultOpen, DefaultClose, "2026-C1", Clock);
@@ -256,11 +256,11 @@ public class AcademicTermTests
     public void Update_AnualWithNumberOtherThan1_ReturnsError()
     {
         var term = AcademicTerm.Create(
-            AnyUni, 2026, 1, TermKind.Cuatrimestral,
+            AnyUni, 2026, 1, TermKind.FourMonth,
             DefaultStart, DefaultEnd, DefaultOpen, DefaultClose, "2026-C1", Clock).Value;
 
         var result = term.Update(
-            2026, 2, TermKind.Anual,
+            2026, 2, TermKind.FullYear,
             new DateOnly(2026, 3, 1), new DateOnly(2026, 12, 1),
             DefaultOpen, DefaultClose, "2026", Clock);
 

@@ -69,8 +69,8 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = 8m,
             });
 
@@ -78,8 +78,8 @@ public class RegisterEnrollmentEndpointTests
 
         var body = await response.Content.ReadFromJsonAsync<RegisterEnrollmentResponse>();
         body.ShouldNotBeNull();
-        body!.Status.ShouldBe("Aprobada");
-        body.ApprovalMethod.ShouldBe("FinalLibre");
+        body!.Status.ShouldBe("Passed");
+        body.ApprovalMethod.ShouldBe("IndependentFinalExam");
         body.Grade.ShouldBe(8m);
     }
 
@@ -95,8 +95,8 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject102,
                 commissionId = (Guid?)null,
                 termId = (Guid?)null,
-                status = "Aprobada",
-                approvalMethod = "Equivalencia",
+                status = "Passed",
+                approvalMethod = "CreditTransfer",
                 grade = 7m,
             });
 
@@ -115,7 +115,7 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
-                status = "Regular",
+                status = "Regularized",
                 approvalMethod = (string?)null,
                 grade = 6m,
             });
@@ -136,8 +136,8 @@ public class RegisterEnrollmentEndpointTests
             {
                 subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = 8m,
             });
 
@@ -157,8 +157,8 @@ public class RegisterEnrollmentEndpointTests
             {
                 subjectId = foreignSubject,
                 termId = (Guid?)Term2024_1c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = 8m,
             });
 
@@ -176,8 +176,8 @@ public class RegisterEnrollmentEndpointTests
             {
                 subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = (decimal?)null,
             });
 
@@ -196,7 +196,7 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
-                status = "Cursando",
+                status = "InProgress",
                 approvalMethod = (string?)null,
                 grade = 8m,
             });
@@ -233,8 +233,8 @@ public class RegisterEnrollmentEndpointTests
             subjectId = Subject101,
             commissionId = (Guid?)null,
             termId = (Guid?)Term2024_1c,
-            status = "Aprobada",
-            approvalMethod = "FinalLibre",
+            status = "Passed",
+            approvalMethod = "IndependentFinalExam",
             grade = 8m,
         };
 
@@ -257,7 +257,7 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
-                status = "Reprobada",
+                status = "Failed",
                 approvalMethod = (string?)null,
                 grade = (decimal?)null,
             });
@@ -270,8 +270,8 @@ public class RegisterEnrollmentEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_2c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = 8m,
             });
         second.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -288,8 +288,8 @@ public class RegisterEnrollmentEndpointTests
             {
                 subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
-                status = "Aprobada",
-                approvalMethod = "FinalLibre",
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
                 grade = 8m,
             });
 

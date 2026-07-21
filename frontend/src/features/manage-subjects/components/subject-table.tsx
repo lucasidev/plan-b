@@ -180,14 +180,14 @@ function StatusBadge({ active }: { active: boolean }) {
 }
 
 const TERM_KIND_ABBR: Record<string, string> = {
-  Bimestral: 'b',
-  Cuatrimestral: 'c',
-  Semestral: 's',
+  TwoMonth: 'b',
+  FourMonth: 'c',
+  SixMonth: 's',
 };
 
 /** "1c" (1er cuatrimestre), "2b" (2do bimestre); "anual" para materias anuales. */
 function formatTermLabel(termKind: string, termInYear: number | null): string {
-  if (termKind === 'Anual' || termInYear === null) {
+  if (termKind === 'FullYear' || termInYear === null) {
     return 'anual';
   }
   return `${termInYear}${TERM_KIND_ABBR[termKind] ?? ''}`;

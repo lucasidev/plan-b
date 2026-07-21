@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useActionState, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { TERM_KIND_LABELS } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { approveCareerPlanAction } from '../actions';
 import {
@@ -60,7 +61,7 @@ export function CareerPlanPreviewTable({
         name: p.detectedName ?? '',
         yearInPlan: p.detectedYearInPlan != null ? String(p.detectedYearInPlan) : '1',
         termInYear: p.detectedTermInYear != null ? String(p.detectedTermInYear) : '',
-        termKind: p.detectedTermKind ?? 'Cuatrimestral',
+        termKind: p.detectedTermKind ?? 'FourMonth',
       })),
     [payload.items],
   );
@@ -84,7 +85,11 @@ export function CareerPlanPreviewTable({
     name: r.name.trim(),
     yearInPlan: Number.parseInt(r.yearInPlan, 10) || 1,
     termInYear:
-      r.termKind === 'Anual' ? null : r.termInYear.trim() ? Number.parseInt(r.termInYear, 10) : 1,
+      r.termKind === 'FullYear'
+        ? null
+        : r.termInYear.trim()
+          ? Number.parseInt(r.termInYear, 10)
+          : 1,
     termKind: r.termKind,
   }));
 
@@ -172,7 +177,7 @@ export function CareerPlanPreviewTable({
                   />
                 </Td>
                 <Td>
-                  {r.termKind === 'Anual' ? (
+                  {r.termKind === 'FullYear' ? (
                     <span className="text-ink-3">–</span>
                   ) : (
                     <input
@@ -194,10 +199,11 @@ export function CareerPlanPreviewTable({
                     className={inputClass}
                     style={inputStyle}
                   >
-                    <option value="Cuatrimestral">Cuatrimestral</option>
-                    <option value="Semestral">Semestral</option>
-                    <option value="Bimestral">Bimestral</option>
-                    <option value="Anual">Anual</option>
+                    {Object.entries(TERM_KIND_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                 </Td>
                 <Td>

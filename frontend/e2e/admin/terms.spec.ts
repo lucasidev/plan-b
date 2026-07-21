@@ -46,7 +46,7 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
 
     await page.getByLabel(/^año$/i).fill(String(year));
     await page.getByLabel(/número de período/i).fill('1');
-    await page.getByLabel(/^cadencia$/i).selectOption('Cuatrimestral');
+    await page.getByLabel(/^cadencia$/i).selectOption('FourMonth');
     await page.getByLabel(/fecha de inicio/i).fill(`${year}-03-01`);
     await page.getByLabel(/fecha de fin/i).fill(`${year}-07-01`);
     await page.getByLabel(/apertura de inscripción/i).fill(`${year}-02-01T00:00`);

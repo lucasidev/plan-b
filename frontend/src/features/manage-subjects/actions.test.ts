@@ -50,7 +50,7 @@ const VALID_SUBJECT = {
   code: 'MAT101',
   name: 'Análisis Matemático I',
   yearInPlan: '1',
-  termKind: 'Cuatrimestral',
+  termKind: 'FourMonth',
   termInYear: '1',
   weeklyHours: '8',
   totalHours: '128',
@@ -61,7 +61,7 @@ const VALID_SUBJECT_BODY = {
   code: 'MAT101',
   name: 'Análisis Matemático I',
   yearInPlan: 1,
-  termKind: 'Cuatrimestral',
+  termKind: 'FourMonth',
   termInYear: 1,
   weeklyHours: 8,
   totalHours: 128,
@@ -69,7 +69,7 @@ const VALID_SUBJECT_BODY = {
 
 const VALID_PREREQUISITE = {
   requiredSubjectId: REQUIRED_SUBJECT_ID,
-  type: 'ParaCursar',
+  type: 'ToEnroll',
 };
 
 function formData(values: Record<string, string | string[]>): FormData {
@@ -159,7 +159,7 @@ describe('createSubjectAction', () => {
   it('rechaza cuando Zod invalida la regla cross-field (anual con termInYear), sin llamar al backend', async () => {
     const result = await createSubjectAction(
       initialManageSubjectState,
-      formData({ ...VALID_SUBJECT, termKind: 'Anual', termInYear: '1', planId: PLAN_ID }),
+      formData({ ...VALID_SUBJECT, termKind: 'FullYear', termInYear: '1', planId: PLAN_ID }),
     );
 
     expect(result.status).toBe('error');
@@ -771,7 +771,7 @@ describe('removePrerequisiteAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
     getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
 
-    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ParaCursar');
+    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToEnroll');
 
     expect(result.ok).toBe(false);
     expect(apiFetchMock).not.toHaveBeenCalled();
@@ -780,11 +780,11 @@ describe('removePrerequisiteAction', () => {
   it('204 devuelve ok y llama DELETE a la URL de la correlativa', async () => {
     apiFetchMock.mockResolvedValue(jsonResponse(204));
 
-    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ParaRendir');
+    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToTakeFinal');
 
     expect(result.ok).toBe(true);
     expect(apiFetchMock).toHaveBeenCalledWith(
-      `/api/academic/subjects/${SUBJECT_ID}/prerequisites/${REQUIRED_SUBJECT_ID}/ParaRendir`,
+      `/api/academic/subjects/${SUBJECT_ID}/prerequisites/${REQUIRED_SUBJECT_ID}/ToTakeFinal`,
       expect.objectContaining({ method: 'DELETE' }),
     );
   });
@@ -792,7 +792,7 @@ describe('removePrerequisiteAction', () => {
   it('404 mapea a correlativa no encontrada', async () => {
     apiFetchMock.mockResolvedValue(jsonResponse(404));
 
-    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ParaCursar');
+    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToEnroll');
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -803,7 +803,7 @@ describe('removePrerequisiteAction', () => {
   it('403 mapea a sin permisos', async () => {
     apiFetchMock.mockResolvedValue(jsonResponse(403));
 
-    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ParaCursar');
+    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToEnroll');
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -814,7 +814,7 @@ describe('removePrerequisiteAction', () => {
   it('devuelve error cuando falla la conexión', async () => {
     apiFetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
 
-    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ParaCursar');
+    const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToEnroll');
 
     expect(result.ok).toBe(false);
     if (!result.ok) {

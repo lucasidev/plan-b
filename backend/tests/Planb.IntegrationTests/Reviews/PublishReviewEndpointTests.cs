@@ -82,8 +82,8 @@ public class PublishReviewEndpointTests
                 subjectId = Subject111,
                 commissionId = (Guid?)CommissionA,
                 termId = (Guid?)Term2026_1c,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8.5m,
             });
         resp.EnsureSuccessStatusCode();
@@ -249,7 +249,7 @@ public class PublishReviewEndpointTests
                 subjectId = Subject101,
                 commissionId = (Guid?)Guid.NewGuid(),
                 termId = (Guid?)Term2024_1c,
-                status = "Cursando",
+                status = "InProgress",
                 approvalMethod = (string?)null,
                 grade = (decimal?)null,
             });

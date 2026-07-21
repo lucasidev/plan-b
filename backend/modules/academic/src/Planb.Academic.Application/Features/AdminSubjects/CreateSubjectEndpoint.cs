@@ -92,7 +92,7 @@ public sealed class CreateSubjectEndpoint : ICarterModule
 
 /// <summary>
 /// Body del POST. Code/name/yearInPlan/termKind/weeklyHours/totalHours requeridos; termInYear
-/// (obligatorio salvo kind=Anual, lo valida el dominio) y description opcionales. TermKind viaja
+/// (obligatorio salvo kind=FullYear, lo valida el dominio) y description opcionales. TermKind viaja
 /// como string (el endpoint lo parsea).
 /// </summary>
 public sealed record CreateSubjectRequest(

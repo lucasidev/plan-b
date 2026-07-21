@@ -73,7 +73,7 @@ internal sealed class EnrollmentRecordConfiguration : IEntityTypeConfiguration<E
         // por (student, subject), independiente del term (que es null).
         builder.HasIndex(e => new { e.StudentProfileId, e.SubjectId })
             .IsUnique()
-            .HasFilter("approval_method = 'Equivalencia'")
+            .HasFilter("approval_method = 'CreditTransfer'")
             .HasDatabaseName("ux_enrollment_records_student_subject_equivalencia");
 
         // CHECKs del data-model. Replicados en DB como defensa adicional para writes que
@@ -82,27 +82,27 @@ internal sealed class EnrollmentRecordConfiguration : IEntityTypeConfiguration<E
         {
             t.HasCheckConstraint(
                 "ck_enrollment_records_status_grade_consistency",
-                "(status IN ('Aprobada','Regular') AND grade IS NOT NULL) OR " +
-                "(status IN ('Cursando','Reprobada','Abandonada') AND grade IS NULL)");
+                "(status IN ('Passed','Regularized') AND grade IS NOT NULL) OR " +
+                "(status IN ('InProgress','Failed','Dropped') AND grade IS NULL)");
 
             t.HasCheckConstraint(
                 "ck_enrollment_records_status_approval_method_consistency",
-                "(status = 'Aprobada' AND approval_method IS NOT NULL) OR " +
-                "(status <> 'Aprobada' AND approval_method IS NULL)");
+                "(status = 'Passed' AND approval_method IS NOT NULL) OR " +
+                "(status <> 'Passed' AND approval_method IS NULL)");
 
             t.HasCheckConstraint(
                 "ck_enrollment_records_equivalencia_no_commission_no_term",
-                "approval_method IS DISTINCT FROM 'Equivalencia' OR " +
+                "approval_method IS DISTINCT FROM 'CreditTransfer' OR " +
                 "(commission_id IS NULL AND term_id IS NULL)");
 
             t.HasCheckConstraint(
                 "ck_enrollment_records_final_libre_term_only",
-                "approval_method IS DISTINCT FROM 'FinalLibre' OR " +
+                "approval_method IS DISTINCT FROM 'IndependentFinalExam' OR " +
                 "(commission_id IS NULL AND term_id IS NOT NULL)");
 
             t.HasCheckConstraint(
                 "ck_enrollment_records_cursada_requires_commission_and_term",
-                "approval_method NOT IN ('Cursada','Promocion','Final') OR " +
+                "approval_method NOT IN ('Coursework','Promotion','FinalExam') OR " +
                 "(commission_id IS NOT NULL AND term_id IS NOT NULL)");
 
             t.HasCheckConstraint(

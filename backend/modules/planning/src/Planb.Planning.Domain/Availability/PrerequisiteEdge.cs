@@ -13,10 +13,10 @@ public sealed record PrerequisiteEdge(Guid SubjectId, Guid RequiredSubjectId, Pr
 
 /// <summary>
 /// Los dos tipos de correlativa (ADR-0003). Para decidir si el alumno **puede inscribirse** solo
-/// pesa <see cref="ParaCursar"/>: <see cref="ParaRendir"/> condiciona rendir el final, no cursar.
+/// pesa <see cref="ToEnroll"/>: <see cref="ToTakeFinal"/> condiciona rendir el final, no cursar.
 /// </summary>
 public enum PrerequisiteKind
 {
-    ParaCursar = 1,
-    ParaRendir = 2,
+    ToEnroll = 1,
+    ToTakeFinal = 2,
 }

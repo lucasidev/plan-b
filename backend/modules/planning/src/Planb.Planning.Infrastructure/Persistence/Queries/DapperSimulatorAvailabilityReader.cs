@@ -72,7 +72,7 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
     }
 
     /// <summary>
-    /// Correlativas del plan (los dos types juntos; el evaluador filtra ParaCursar). Resuelve el
+    /// Correlativas del plan (los dos types juntos; el evaluador filtra ToEnroll). Resuelve el
     /// plan vía join con subjects, igual que <c>PrerequisiteRepository.GetByPlanAsync</c> en
     /// Academic: la tabla de correlativas no lleva career_plan_id propio.
     /// </summary>
@@ -136,11 +136,11 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
     /// </summary>
     private static PrerequisiteKind MapKind(string type) => type switch
     {
-        "ParaCursar" => PrerequisiteKind.ParaCursar,
-        "ParaRendir" => PrerequisiteKind.ParaRendir,
+        "ToEnroll" => PrerequisiteKind.ToEnroll,
+        "ToTakeFinal" => PrerequisiteKind.ToTakeFinal,
         _ => throw new InvalidOperationException(
             $"Unknown prerequisite type '{type}' in academic.prerequisites. " +
-            "Expected 'ParaCursar' or 'ParaRendir'."),
+            "Expected 'ToEnroll' or 'ToTakeFinal'."),
     };
 
     /// <summary>
@@ -150,14 +150,14 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
     /// </summary>
     private static SubjectProgress MapProgress(string status) => status switch
     {
-        "Cursando" => SubjectProgress.InProgress,
-        "Regular" => SubjectProgress.Regular,
-        "Aprobada" => SubjectProgress.Approved,
-        "Reprobada" => SubjectProgress.Failed,
-        "Abandonada" => SubjectProgress.Dropped,
+        "InProgress" => SubjectProgress.InProgress,
+        "Regularized" => SubjectProgress.Regular,
+        "Passed" => SubjectProgress.Approved,
+        "Failed" => SubjectProgress.Failed,
+        "Dropped" => SubjectProgress.Dropped,
         _ => throw new InvalidOperationException(
             $"Unknown enrollment status '{status}' in enrollments.enrollment_records. " +
-            "Expected one of Cursando/Regular/Aprobada/Reprobada/Abandonada."),
+            "Expected one of InProgress/Regularized/Passed/Failed/Dropped."),
     };
 
     private sealed record PrerequisiteEdgeRow

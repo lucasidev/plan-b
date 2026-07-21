@@ -78,7 +78,7 @@ public class CareerTests
 
         var result = career.Update(
             "  New Name  ", "  NEW-SLUG  ", "Short", "COD",
-            CareerDegreeType.Grado, 5, TermKind.Cuatrimestral, "  Descripción  ",
+            CareerDegreeType.Grado, 5, TermKind.FourMonth, "  Descripción  ",
             laterClock);
 
         result.IsSuccess.ShouldBeTrue();
@@ -88,7 +88,7 @@ public class CareerTests
         career.Code.ShouldBe("COD");
         career.DegreeType.ShouldBe(CareerDegreeType.Grado);
         career.DurationYears.ShouldBe(5);
-        career.Cadence.ShouldBe(TermKind.Cuatrimestral);
+        career.Cadence.ShouldBe(TermKind.FourMonth);
         career.Description.ShouldBe("Descripción");
         career.UpdatedAt.ShouldBe(laterClock.UtcNow);
     }

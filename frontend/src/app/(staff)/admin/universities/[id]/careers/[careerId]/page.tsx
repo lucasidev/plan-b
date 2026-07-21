@@ -10,6 +10,7 @@ import {
   fetchCareerPlansServer,
 } from '@/features/manage-careers/api.server';
 import { fetchUniversityDetailServer } from '@/features/manage-universities/api.server';
+import { formatTermKind } from '@/lib/academic-terms';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,7 +48,7 @@ export default async function CareerDetailPage({
   const summaryParts = [
     career.degreeType,
     career.durationYears ? `${career.durationYears} años` : null,
-    career.cadence,
+    career.cadence ? formatTermKind(career.cadence) : null,
     career.code,
   ].filter(Boolean);
   const subtitle = summaryParts.length

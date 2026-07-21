@@ -1,3 +1,4 @@
+import { formatTermKind } from '@/lib/academic-terms';
 import type { SubjectDetail, SubjectInsights, SubjectPassRate } from '../types';
 
 /**
@@ -23,7 +24,7 @@ export function SubjectHeader({
     <header className="flex flex-col gap-5">
       <div>
         <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">
-          {subject.code} · Año {subject.yearInPlan} · {subject.termKind}
+          {subject.code} · Año {subject.yearInPlan} · {formatTermKind(subject.termKind)}
           {!subject.isOfficial && (
             <span className="ml-2 rounded-pill bg-bg-elev px-2 py-[2px] text-[10px] text-ink-4">
               plan no oficial

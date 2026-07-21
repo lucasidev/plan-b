@@ -63,7 +63,7 @@ internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQuerySer
               ON r.enrollment_id = er.id
              AND r.status <> 'Deleted'
             WHERE er.student_profile_id = @StudentProfileId
-              AND er.status <> 'Cursando'
+              AND er.status <> 'InProgress'
               AND er.commission_id IS NOT NULL
               AND r.id IS NULL
             ORDER BY er.created_at DESC;";

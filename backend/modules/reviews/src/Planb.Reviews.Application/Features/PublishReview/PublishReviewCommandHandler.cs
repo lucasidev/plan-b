@@ -52,7 +52,7 @@ public static class PublishReviewCommandHandler
             return ReviewErrors.EnrollmentNotFoundOrNotOwned;
         }
 
-        if (enrollment.Status == EnrollmentStatusSnapshot.Cursando)
+        if (enrollment.Status == EnrollmentStatusSnapshot.InProgress)
         {
             return ReviewErrors.EnrollmentStillOngoing;
         }
