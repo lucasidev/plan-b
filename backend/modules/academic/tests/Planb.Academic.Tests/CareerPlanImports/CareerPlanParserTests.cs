@@ -51,7 +51,7 @@ public class CareerPlanParserTests
 
         payload.Items.ShouldHaveSingleItem();
         var item = payload.Items[0];
-        item.DetectedTermKind.ShouldBe("Anual");
+        item.DetectedTermKind.ShouldBe("FullYear");
         item.DetectedTermInYear.ShouldBeNull();
         item.DetectedYearInPlan.ShouldBe(1);
     }

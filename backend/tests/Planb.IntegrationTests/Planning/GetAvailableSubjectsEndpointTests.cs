@@ -88,7 +88,7 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
                 name: name,
                 yearInPlan: 1,
                 termInYear: 1,
-                termKind: TermKind.Cuatrimestral,
+                termKind: TermKind.FourMonth,
                 weeklyHours: 4,
                 totalHours: 64,
                 description: null,
@@ -114,7 +114,7 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
         // B requiere A para_cursar.
         (await admin.Client.PostAsJsonAsync(
                 $"/api/academic/subjects/{b.Id}/prerequisites",
-                new { requiredSubjectId = a.Id, type = "ParaCursar" }))
+                new { requiredSubjectId = a.Id, type = "ToEnroll" }))
             .EnsureSuccessStatusCode();
 
         var student = await StudentAsync(planId, "noprereq");
@@ -147,7 +147,7 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
 
         (await admin.Client.PostAsJsonAsync(
                 $"/api/academic/subjects/{b.Id}/prerequisites",
-                new { requiredSubjectId = a.Id, type = "ParaCursar" }))
+                new { requiredSubjectId = a.Id, type = "ToEnroll" }))
             .EnsureSuccessStatusCode();
 
         var student = await StudentAsync(planId, "regularized");
@@ -160,7 +160,7 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
                     subjectId = a.Id,
                     commissionId = (Guid?)null,
                     termId = (Guid?)null,
-                    status = "Regular",
+                    status = "Regularized",
                     approvalMethod = (string?)null,
                     grade = 6m,
                 }))

@@ -11,7 +11,7 @@ namespace Planb.Academic.Application.Features.AdminPrerequisites;
 /// <summary>
 /// DELETE /api/academic/subjects/{subjectId:guid}/prerequisites/{requiredSubjectId:guid}/{type}
 /// (admin, US-062). Baja de una correlativa puntual. Type viaja como segmento de ruta (string,
-/// "ParaCursar"/"ParaRendir"); mismo criterio de parseo que en el POST. Gateado a rol Admin.
+/// "ToEnroll"/"ToTakeFinal"); mismo criterio de parseo que en el POST. Gateado a rol Admin.
 /// </summary>
 public sealed class DeletePrerequisiteEndpoint : ICarterModule
 {

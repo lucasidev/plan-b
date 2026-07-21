@@ -12,11 +12,11 @@ import type { CommissionTeacherOption } from '../types';
  * Role label maps the backend PascalCase enum to rioplatense display copy.
  */
 const ROLE_LABELS: Record<string, string> = {
-  Titular: 'Titular',
-  Adjunto: 'Adjunto/a',
-  Jtp: 'JTP',
-  Ayudante: 'Ayudante',
-  Invitado: 'Invitado/a',
+  Lead: 'Titular',
+  Associate: 'Adjunto/a',
+  PracticalLead: 'JTP',
+  Assistant: 'Ayudante',
+  Guest: 'Invitado/a',
 };
 
 export function TeacherPicker({

@@ -118,10 +118,10 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
     /// </summary>
     public static string ComputeLabel(int year, int number, TermKind kind) => kind switch
     {
-        TermKind.Anual => $"{year}",
-        TermKind.Cuatrimestral => $"{year}-C{number}",
-        TermKind.Semestral => $"{year}-S{number}",
-        TermKind.Bimestral => $"{year}-B{number}",
+        TermKind.FullYear => $"{year}",
+        TermKind.FourMonth => $"{year}-C{number}",
+        TermKind.SixMonth => $"{year}-S{number}",
+        TermKind.TwoMonth => $"{year}-B{number}",
         _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown TermKind."),
     };
 
@@ -149,9 +149,9 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
             return AcademicTermErrors.NumberOutOfRange;
         }
 
-        // Anual implica número 1 (no hay "anual 2"). Las otras cadencias permiten más de 1
+        // FullYear implica número 1 (no hay "anual 2"). Las otras cadencias permiten más de 1
         // (ej. bimestre 3 del año, cuatrimestre 2).
-        if (kind == TermKind.Anual && number != 1)
+        if (kind == TermKind.FullYear && number != 1)
         {
             return AcademicTermErrors.NumberInconsistentWithKind;
         }

@@ -248,11 +248,11 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             ORDER BY
                 c.name,
                 CASE ct.role
-                    WHEN 'Titular'  THEN 0
-                    WHEN 'Adjunto'  THEN 1
-                    WHEN 'Jtp'      THEN 2
-                    WHEN 'Ayudante' THEN 3
-                    WHEN 'Invitado' THEN 4
+                    WHEN 'Lead'          THEN 0
+                    WHEN 'Associate'     THEN 1
+                    WHEN 'PracticalLead' THEN 2
+                    WHEN 'Assistant'     THEN 3
+                    WHEN 'Guest'         THEN 4
                     ELSE 5
                 END;";
 
@@ -303,11 +303,11 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE ct.commission_id = @CommissionId
             ORDER BY
                 CASE ct.role
-                    WHEN 'Titular'  THEN 0
-                    WHEN 'Adjunto'  THEN 1
-                    WHEN 'Jtp'      THEN 2
-                    WHEN 'Ayudante' THEN 3
-                    WHEN 'Invitado' THEN 4
+                    WHEN 'Lead'          THEN 0
+                    WHEN 'Associate'     THEN 1
+                    WHEN 'PracticalLead' THEN 2
+                    WHEN 'Assistant'     THEN 3
+                    WHEN 'Guest'         THEN 4
                     ELSE 5
                 END;";
 

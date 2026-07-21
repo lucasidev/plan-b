@@ -105,12 +105,12 @@ public class CommissionTests
         var commission = CreateValid();
         var teacherId = TeacherId.New();
 
-        var result = commission.AssignTeacher(teacherId, CommissionTeacherRole.Titular, Clock);
+        var result = commission.AssignTeacher(teacherId, CommissionTeacherRole.Lead, Clock);
 
         result.IsSuccess.ShouldBeTrue();
         commission.Teachers.Count.ShouldBe(1);
         commission.Teachers[0].TeacherId.ShouldBe(teacherId);
-        commission.Teachers[0].Role.ShouldBe(CommissionTeacherRole.Titular);
+        commission.Teachers[0].Role.ShouldBe(CommissionTeacherRole.Lead);
     }
 
     [Fact]
@@ -118,9 +118,9 @@ public class CommissionTests
     {
         var commission = CreateValid();
 
-        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Titular, Clock).IsSuccess.ShouldBeTrue();
-        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Jtp, Clock).IsSuccess.ShouldBeTrue();
-        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Ayudante, Clock).IsSuccess.ShouldBeTrue();
+        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Lead, Clock).IsSuccess.ShouldBeTrue();
+        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.PracticalLead, Clock).IsSuccess.ShouldBeTrue();
+        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Assistant, Clock).IsSuccess.ShouldBeTrue();
 
         commission.Teachers.Count.ShouldBe(3);
     }
@@ -130,9 +130,9 @@ public class CommissionTests
     {
         var commission = CreateValid();
         var teacherId = TeacherId.New();
-        commission.AssignTeacher(teacherId, CommissionTeacherRole.Adjunto, Clock);
+        commission.AssignTeacher(teacherId, CommissionTeacherRole.Associate, Clock);
 
-        var result = commission.AssignTeacher(teacherId, CommissionTeacherRole.Jtp, Clock);
+        var result = commission.AssignTeacher(teacherId, CommissionTeacherRole.PracticalLead, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CommissionErrors.TeacherAlreadyAssigned);
@@ -143,9 +143,9 @@ public class CommissionTests
     public void AssignTeacher_SecondTitular_ReturnsError()
     {
         var commission = CreateValid();
-        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Titular, Clock);
+        commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Lead, Clock);
 
-        var result = commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Titular, Clock);
+        var result = commission.AssignTeacher(TeacherId.New(), CommissionTeacherRole.Lead, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CommissionErrors.TitularAlreadyAssigned);
@@ -161,7 +161,7 @@ public class CommissionTests
     {
         var commission = CreateValid();
         var teacherId = TeacherId.New();
-        commission.AssignTeacher(teacherId, CommissionTeacherRole.Titular, Clock);
+        commission.AssignTeacher(teacherId, CommissionTeacherRole.Lead, Clock);
 
         var result = commission.UnassignTeacher(teacherId, Clock);
 

@@ -12,7 +12,7 @@ describe('subjectFieldsSchema', () => {
     code: 'MAT101',
     name: 'Análisis Matemático I',
     yearInPlan: '1',
-    termKind: 'Cuatrimestral',
+    termKind: 'FourMonth',
     termInYear: '1',
     weeklyHours: '8',
     totalHours: '128',
@@ -100,7 +100,7 @@ describe('subjectFieldsSchema', () => {
     it('acepta Bimestral', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Bimestral',
+        termKind: 'TwoMonth',
         termInYear: '3',
       });
       expect(result.success).toBe(true);
@@ -109,7 +109,7 @@ describe('subjectFieldsSchema', () => {
     it('acepta Semestral', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Semestral',
+        termKind: 'SixMonth',
         termInYear: '1',
       });
       expect(result.success).toBe(true);
@@ -128,7 +128,11 @@ describe('subjectFieldsSchema', () => {
 
   describe('cross-field: termKind/termInYear', () => {
     it('acepta Anual sin termInYear', () => {
-      const result = subjectFieldsSchema.safeParse({ ...base, termKind: 'Anual', termInYear: '' });
+      const result = subjectFieldsSchema.safeParse({
+        ...base,
+        termKind: 'FullYear',
+        termInYear: '',
+      });
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.termInYear).toBeUndefined();
@@ -136,7 +140,11 @@ describe('subjectFieldsSchema', () => {
     });
 
     it('rechaza Anual con termInYear presente', () => {
-      const result = subjectFieldsSchema.safeParse({ ...base, termKind: 'Anual', termInYear: '1' });
+      const result = subjectFieldsSchema.safeParse({
+        ...base,
+        termKind: 'FullYear',
+        termInYear: '1',
+      });
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues[0].message).toMatch(/anual.*no lleva número/i);
@@ -146,7 +154,7 @@ describe('subjectFieldsSchema', () => {
     it('rechaza una cadencia no anual sin termInYear', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
         termInYear: '',
       });
       expect(result.success).toBe(false);
@@ -158,7 +166,7 @@ describe('subjectFieldsSchema', () => {
     it('acepta el mínimo de termInYear (1) con una cadencia no anual', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
         termInYear: '1',
       });
       expect(result.success).toBe(true);
@@ -167,7 +175,7 @@ describe('subjectFieldsSchema', () => {
     it('acepta el máximo de termInYear (6) con una cadencia no anual', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Bimestral',
+        termKind: 'TwoMonth',
         termInYear: '6',
       });
       expect(result.success).toBe(true);
@@ -176,7 +184,7 @@ describe('subjectFieldsSchema', () => {
     it('rechaza termInYear 0', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
         termInYear: '0',
       });
       expect(result.success).toBe(false);
@@ -185,7 +193,7 @@ describe('subjectFieldsSchema', () => {
     it('rechaza termInYear 7', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
-        termKind: 'Bimestral',
+        termKind: 'TwoMonth',
         termInYear: '7',
       });
       expect(result.success).toBe(false);
@@ -353,7 +361,7 @@ describe('subjectFieldsSchema', () => {
 describe('prerequisiteFieldsSchema', () => {
   const base = {
     requiredSubjectId: '00000005-0000-4000-a000-000000000001',
-    type: 'ParaCursar',
+    type: 'ToEnroll',
   };
 
   it('acepta un input válido', () => {
@@ -362,7 +370,7 @@ describe('prerequisiteFieldsSchema', () => {
   });
 
   it('acepta ParaRendir', () => {
-    const result = prerequisiteFieldsSchema.safeParse({ ...base, type: 'ParaRendir' });
+    const result = prerequisiteFieldsSchema.safeParse({ ...base, type: 'ToTakeFinal' });
     expect(result.success).toBe(true);
   });
 

@@ -251,7 +251,7 @@ describe('approveCareerPlanAction', () => {
     name: 'Ingeniería de Software',
     yearInPlan: 3,
     termInYear: 1,
-    termKind: 'Cuatrimestral',
+    termKind: 'FourMonth',
   };
 
   function approveFormData(overrides: Record<string, string | undefined> = {}): FormData {

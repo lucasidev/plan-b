@@ -19,7 +19,7 @@ namespace Planb.IntegrationTests.Academic;
 /// Tests de integración del admin CRUD de correlativas (US-062). Cubren el wiring HTTP +
 /// persistencia + el gating por rol Admin (RequireRole contra el claim del JWT), mismo patrón que
 /// <see cref="AdminAcademicTermsEndpointTests"/>. El corazón de la suite es la detección de ciclos
-/// (directo e indirecto) y la independencia de los dos grafos (ParaCursar / ParaRendir, ADR-0003).
+/// (directo e indirecto) y la independencia de los dos grafos (ToEnroll / ToTakeFinal, ADR-0003).
 ///
 /// <para>
 /// Cada test que necesita materias arma su propia Career + CareerPlan + Subjects vía
@@ -74,7 +74,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
                 name: $"Materia de Prueba {i}",
                 yearInPlan: 1,
                 termInYear: 1,
-                termKind: TermKind.Cuatrimestral,
+                termKind: TermKind.FourMonth,
                 weeklyHours: 4,
                 totalHours: 64,
                 description: null,
@@ -89,7 +89,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
         return (plan.Id.Value, subjectIds);
     }
 
-    private static object NewEdgeBody(Guid requiredSubjectId, string type = "ParaCursar") =>
+    private static object NewEdgeBody(Guid requiredSubjectId, string type = "ToEnroll") =>
         new { requiredSubjectId, type };
 
     [Fact]
@@ -106,12 +106,12 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
         var created = await create.Content.ReadFromJsonAsync<EdgeDto>();
         created!.SubjectId.ShouldBe(a);
         created.RequiredSubjectId.ShouldBe(b);
-        created.Type.ShouldBe("ParaCursar");
+        created.Type.ShouldBe("ToEnroll");
 
         var graph = await admin.Client.GetFromJsonAsync<GraphDto>(
             $"/api/academic/career-plans/{planId}/prerequisites");
         graph!.Items.ShouldContain(
-            e => e.SubjectId == a && e.RequiredSubjectId == b && e.Type == "ParaCursar");
+            e => e.SubjectId == a && e.RequiredSubjectId == b && e.Type == "ToEnroll");
     }
 
     [Fact]
@@ -170,15 +170,15 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
         var a = subjects[0];
         var b = subjects[1];
 
-        // A requiere B en ParaCursar.
+        // A requiere B en ToEnroll.
         (await admin.Client.PostAsJsonAsync(
-                $"/api/academic/subjects/{a}/prerequisites", NewEdgeBody(b, "ParaCursar")))
+                $"/api/academic/subjects/{a}/prerequisites", NewEdgeBody(b, "ToEnroll")))
             .EnsureSuccessStatusCode();
 
-        // B requiere A en ParaRendir: mismo par de materias, pero es un grafo distinto (ADR-0003).
+        // B requiere A en ToTakeFinal: mismo par de materias, pero es un grafo distinto (ADR-0003).
         // No debería rechazarse como ciclo porque para_cursar y para_rendir son DAGs separados.
         var second = await admin.Client.PostAsJsonAsync(
-            $"/api/academic/subjects/{b}/prerequisites", NewEdgeBody(a, "ParaRendir"));
+            $"/api/academic/subjects/{b}/prerequisites", NewEdgeBody(a, "ToTakeFinal"));
 
         second.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
@@ -246,7 +246,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
             .EnsureSuccessStatusCode();
 
         var delete = await admin.Client.DeleteAsync(
-            $"/api/academic/subjects/{a}/prerequisites/{b}/ParaCursar");
+            $"/api/academic/subjects/{a}/prerequisites/{b}/ToEnroll");
         delete.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         var graph = await admin.Client.GetFromJsonAsync<GraphDto>(
@@ -263,7 +263,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
         var b = subjects[1];
 
         var delete = await admin.Client.DeleteAsync(
-            $"/api/academic/subjects/{a}/prerequisites/{b}/ParaCursar");
+            $"/api/academic/subjects/{a}/prerequisites/{b}/ToEnroll");
 
         delete.StatusCode.ShouldBe(HttpStatusCode.NotFound);
         (await delete.Content.ReadAsStringAsync())

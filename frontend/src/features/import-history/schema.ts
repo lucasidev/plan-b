@@ -10,14 +10,14 @@ export const confirmedItemSchema = z
   .object({
     subjectId: z.string().uuid({ message: 'Materia inválida.' }),
     termId: z.string().uuid().optional().nullable(),
-    status: z.enum(['Aprobada', 'Regular', 'Cursando', 'Reprobada', 'Abandonada']),
+    status: z.enum(['Passed', 'Regularized', 'InProgress', 'Failed', 'Dropped']),
     approvalMethod: z
-      .enum(['Cursada', 'Promocion', 'Final', 'FinalLibre', 'Equivalencia'])
+      .enum(['Coursework', 'Promotion', 'FinalExam', 'IndependentFinalExam', 'CreditTransfer'])
       .optional()
       .nullable(),
     grade: z.coerce.number().min(0).max(10).optional().nullable(),
   })
-  .refine((d) => d.status !== 'Aprobada' || !!d.approvalMethod, {
+  .refine((d) => d.status !== 'Passed' || !!d.approvalMethod, {
     message: 'Aprobada requiere forma de aprobación.',
     path: ['approvalMethod'],
   });

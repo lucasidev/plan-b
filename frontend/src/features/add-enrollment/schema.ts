@@ -13,11 +13,11 @@ export const addEnrollmentSchema = z
     subjectId: z.string().uuid({ message: 'Elegí una materia.' }),
     commissionId: z.string().uuid().optional().nullable(),
     termId: z.string().uuid().optional().nullable(),
-    status: z.enum(['Aprobada', 'Regular', 'Cursando', 'Reprobada', 'Abandonada'], {
+    status: z.enum(['Passed', 'Regularized', 'InProgress', 'Failed', 'Dropped'], {
       message: 'Elegí un estado válido.',
     }),
     approvalMethod: z
-      .enum(['Cursada', 'Promocion', 'Final', 'FinalLibre', 'Equivalencia'])
+      .enum(['Coursework', 'Promotion', 'FinalExam', 'IndependentFinalExam', 'CreditTransfer'])
       .optional()
       .nullable(),
     grade: z.coerce
@@ -27,23 +27,23 @@ export const addEnrollmentSchema = z
       .optional()
       .nullable(),
   })
-  .refine((d) => d.status !== 'Aprobada' || !!d.approvalMethod, {
+  .refine((d) => d.status !== 'Passed' || !!d.approvalMethod, {
     message: 'Aprobada requiere forma de aprobación.',
     path: ['approvalMethod'],
   })
-  .refine((d) => !(d.status === 'Aprobada' || d.status === 'Regular') || d.grade != null, {
+  .refine((d) => !(d.status === 'Passed' || d.status === 'Regularized') || d.grade != null, {
     message: 'La nota es obligatoria.',
     path: ['grade'],
   })
-  .refine((d) => d.status !== 'Cursando' || !!d.termId, {
+  .refine((d) => d.status !== 'InProgress' || !!d.termId, {
     message: 'Indicá el cuatrimestre.',
     path: ['termId'],
   })
-  .refine((d) => d.approvalMethod !== 'Equivalencia' || (!d.commissionId && !d.termId), {
+  .refine((d) => d.approvalMethod !== 'CreditTransfer' || (!d.commissionId && !d.termId), {
     message: 'Equivalencia no lleva comisión ni cuatrimestre.',
     path: ['approvalMethod'],
   })
-  .refine((d) => d.approvalMethod !== 'FinalLibre' || (!d.commissionId && !!d.termId), {
+  .refine((d) => d.approvalMethod !== 'IndependentFinalExam' || (!d.commissionId && !!d.termId), {
     message: 'Final libre requiere cuatrimestre sin comisión.',
     path: ['approvalMethod'],
   });

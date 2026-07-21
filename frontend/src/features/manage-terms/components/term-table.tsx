@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { formatTermKind } from '@/lib/academic-terms';
 import type { AdminTermRow } from '../types';
 
 const GRID = 'minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) 96px';
@@ -50,7 +51,7 @@ function TermRow({ universityId, term }: { universityId: string; term: AdminTerm
     <div className="border-b border-line-2 last:border-b-0">
       <div className="grid items-center gap-3.5 px-3.5 py-2" style={{ gridTemplateColumns: GRID }}>
         <div className="truncate font-mono text-ink">{term.label}</div>
-        <div className="truncate text-ink-2">{term.kind}</div>
+        <div className="truncate text-ink-2">{formatTermKind(term.kind)}</div>
         <div className="truncate font-mono text-[11px] text-ink-2">
           {formatDateOnly(term.startDate)} a {formatDateOnly(term.endDate)}
         </div>

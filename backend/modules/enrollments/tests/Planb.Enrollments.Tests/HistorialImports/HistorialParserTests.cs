@@ -56,7 +56,8 @@ public class HistorialParserTests
         item.SubjectId.ShouldBe(MatId);
         item.SubjectName.ShouldBe("Análisis Matemático I");
         item.DetectedGrade.ShouldBe(8.5m);
-        item.DetectedStatus.ShouldBe("Aprobada");
+        // El parser lee "Aprobada" del historial y emite el valor canónico del enum (inglés).
+        item.DetectedStatus.ShouldBe("Passed");
         item.Confidence.ShouldBe(ParseConfidence.High);
     }
 
@@ -113,7 +114,7 @@ ISW301  Ingeniería de Software  Regular  6  2024 2c
         var payload = _parser.Parse(text, DefaultInputs());
 
         var item = payload.Items.First(i => i.DetectedCode == "MAT101");
-        item.DetectedStatus.ShouldBe("Reprobada");
+        item.DetectedStatus.ShouldBe("Failed");
     }
 
     [Fact]
@@ -123,7 +124,33 @@ ISW301  Ingeniería de Software  Regular  6  2024 2c
         var payload = _parser.Parse(text, DefaultInputs());
 
         var item = payload.Items.First(i => i.DetectedCode == "ALG101");
-        item.DetectedApprovalMethod.ShouldBe("Equivalencia");
+        item.DetectedApprovalMethod.ShouldBe("CreditTransfer");
+    }
+
+    [Fact]
+    public void Parse_EquivalenciaSinPeriodo_NoPideElCuatrimestre()
+    {
+        // Una equivalencia no lleva período por invariante (term_id null), así que no tiene sentido
+        // avisarle al alumno que "complete el cuatrimestre". La rama que decide ese aviso compara
+        // el status/método detectado: al renombrar los enums a inglés el parser dejó de emitir
+        // "Equivalencia" (ahora "CreditTransfer"), y una comparación que quedó con el string viejo
+        // hacía que el aviso saltara igual. Este test fija el comportamiento correcto.
+        var text = "ALG101  Álgebra  7  Aprobada  Equivalencia";
+        var payload = _parser.Parse(text, DefaultInputs());
+
+        var item = payload.Items.First(i => i.DetectedCode == "ALG101");
+        item.Issues.ShouldNotContain(i => i.Contains("cuatrimestre"));
+    }
+
+    [Fact]
+    public void Parse_CursandoSinPeriodo_NoPideElCuatrimestre()
+    {
+        // Misma rama: una cursada en curso todavía no tiene período cerrado, tampoco se le pide.
+        var text = "MAT101  Análisis  Cursando";
+        var payload = _parser.Parse(text, DefaultInputs());
+
+        var item = payload.Items.First(i => i.DetectedCode == "MAT101");
+        item.Issues.ShouldNotContain(i => i.Contains("cuatrimestre"));
     }
 
     [Fact]

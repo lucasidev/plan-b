@@ -39,7 +39,7 @@ const TERM_ID = '00000005-0000-4000-a000-000000000099';
 const VALID_TERM = {
   year: '2026',
   number: '1',
-  kind: 'Cuatrimestral',
+  kind: 'FourMonth',
   startDate: '2026-03-01',
   endDate: '2026-07-01',
   enrollmentOpens: '2026-02-01T00:00',
@@ -50,7 +50,7 @@ const VALID_TERM = {
 const VALID_TERM_BODY = {
   year: 2026,
   number: 1,
-  kind: 'Cuatrimestral',
+  kind: 'FourMonth',
   startDate: '2026-03-01',
   endDate: '2026-07-01',
   enrollmentOpens: '2026-02-01T00:00',
@@ -144,7 +144,7 @@ describe('createTermAction', () => {
   it('rechaza cuando Zod invalida la regla cross-field (anual con number != 1), sin llamar al backend', async () => {
     const result = await createTermAction(
       initialManageTermState,
-      formData({ ...VALID_TERM, kind: 'Anual', number: '2', universityId: UNIVERSITY_ID }),
+      formData({ ...VALID_TERM, kind: 'FullYear', number: '2', universityId: UNIVERSITY_ID }),
     );
 
     expect(result.status).toBe('error');

@@ -58,8 +58,8 @@ test.describe('Reseñas · tab Explorar (US-048)', () => {
           subjectId: SUBJECT_ID,
           commissionId: COMMISSION_ID,
           termId: TERM_ID,
-          status: 'Aprobada',
-          approvalMethod: 'Final',
+          status: 'Passed',
+          approvalMethod: 'FinalExam',
           grade: 7,
         },
       });

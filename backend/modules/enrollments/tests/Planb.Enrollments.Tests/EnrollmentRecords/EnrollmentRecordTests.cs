@@ -20,12 +20,12 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Cursada, grade: 8m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.Coursework, grade: 8m, Clock);
 
         result.IsSuccess.ShouldBeTrue();
         var r = result.Value;
-        r.Status.ShouldBe(EnrollmentStatus.Aprobada);
-        r.ApprovalMethod.ShouldBe(ApprovalMethod.Cursada);
+        r.Status.ShouldBe(EnrollmentStatus.Passed);
+        r.ApprovalMethod.ShouldBe(ApprovalMethod.Coursework);
         r.Grade!.Value.Value.ShouldBe(8m);
     }
 
@@ -34,7 +34,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: null,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Equivalencia, grade: 7m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.CreditTransfer, grade: 7m, Clock);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -44,7 +44,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.FinalLibre, grade: 6m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.IndependentFinalExam, grade: 6m, Clock);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -54,7 +54,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Regular, approvalMethod: null, grade: 6m, Clock);
+            EnrollmentStatus.Regularized, approvalMethod: null, grade: 6m, Clock);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.ApprovalMethod.ShouldBeNull();
@@ -66,7 +66,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Cursando, approvalMethod: null, grade: null, Clock);
+            EnrollmentStatus.InProgress, approvalMethod: null, grade: null, Clock);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -76,7 +76,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Reprobada, approvalMethod: null, grade: null, Clock);
+            EnrollmentStatus.Failed, approvalMethod: null, grade: null, Clock);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -86,7 +86,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Abandonada, approvalMethod: null, grade: null, Clock);
+            EnrollmentStatus.Dropped, approvalMethod: null, grade: null, Clock);
 
         result.IsSuccess.ShouldBeTrue();
     }
@@ -94,11 +94,11 @@ public class EnrollmentRecordTests
     // ── Invariantes: Status vs Grade ────────────────────────────────────
 
     [Theory]
-    [InlineData(EnrollmentStatus.Aprobada)]
-    [InlineData(EnrollmentStatus.Regular)]
+    [InlineData(EnrollmentStatus.Passed)]
+    [InlineData(EnrollmentStatus.Regularized)]
     public void Create_StatusRequiereGrade_PeroFaltaGrade_ReturnsError(EnrollmentStatus status)
     {
-        var method = status == EnrollmentStatus.Aprobada ? ApprovalMethod.Cursada : (ApprovalMethod?)null;
+        var method = status == EnrollmentStatus.Passed ? ApprovalMethod.Coursework : (ApprovalMethod?)null;
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
             status, method, grade: null, Clock);
@@ -108,9 +108,9 @@ public class EnrollmentRecordTests
     }
 
     [Theory]
-    [InlineData(EnrollmentStatus.Cursando)]
-    [InlineData(EnrollmentStatus.Reprobada)]
-    [InlineData(EnrollmentStatus.Abandonada)]
+    [InlineData(EnrollmentStatus.InProgress)]
+    [InlineData(EnrollmentStatus.Failed)]
+    [InlineData(EnrollmentStatus.Dropped)]
     public void Create_StatusNoPermiteGrade_PeroVieneGrade_ReturnsError(EnrollmentStatus status)
     {
         var result = EnrollmentRecord.Create(
@@ -129,7 +129,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Cursada, grade, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.Coursework, grade, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.GradeOutOfRange);
@@ -142,23 +142,23 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Aprobada, approvalMethod: null, grade: 8m, Clock);
+            EnrollmentStatus.Passed, approvalMethod: null, grade: 8m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.ApprovalMethodRequiredForAprobada);
     }
 
     [Theory]
-    [InlineData(EnrollmentStatus.Regular)]
-    [InlineData(EnrollmentStatus.Cursando)]
-    [InlineData(EnrollmentStatus.Reprobada)]
-    [InlineData(EnrollmentStatus.Abandonada)]
+    [InlineData(EnrollmentStatus.Regularized)]
+    [InlineData(EnrollmentStatus.InProgress)]
+    [InlineData(EnrollmentStatus.Failed)]
+    [InlineData(EnrollmentStatus.Dropped)]
     public void Create_NoAprobadaConMethod_ReturnsError(EnrollmentStatus status)
     {
-        var grade = status == EnrollmentStatus.Regular ? (decimal?)6m : null;
+        var grade = status == EnrollmentStatus.Regularized ? (decimal?)6m : null;
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            status, ApprovalMethod.Cursada, grade, Clock);
+            status, ApprovalMethod.Coursework, grade, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.ApprovalMethodNotAllowedForStatus);
@@ -171,7 +171,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, termId: null,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Equivalencia, grade: 8m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.CreditTransfer, grade: 8m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.EquivalenciaRequiresNoCommissionNorTerm);
@@ -182,7 +182,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Equivalencia, grade: 8m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.CreditTransfer, grade: 8m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.EquivalenciaRequiresNoCommissionNorTerm);
@@ -193,7 +193,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: null,
-            EnrollmentStatus.Aprobada, ApprovalMethod.FinalLibre, grade: 7m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.IndependentFinalExam, grade: 7m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.FinalLibreRequiresTermWithoutCommission);
@@ -204,21 +204,21 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.FinalLibre, grade: 7m, Clock);
+            EnrollmentStatus.Passed, ApprovalMethod.IndependentFinalExam, grade: 7m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.FinalLibreRequiresTermWithoutCommission);
     }
 
     [Theory]
-    [InlineData(ApprovalMethod.Cursada)]
-    [InlineData(ApprovalMethod.Promocion)]
-    [InlineData(ApprovalMethod.Final)]
+    [InlineData(ApprovalMethod.Coursework)]
+    [InlineData(ApprovalMethod.Promotion)]
+    [InlineData(ApprovalMethod.FinalExam)]
     public void Create_CursadaSinCommissionOTerm_ReturnsError(ApprovalMethod method)
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: AnyTerm,
-            EnrollmentStatus.Aprobada, method, grade: 8m, Clock);
+            EnrollmentStatus.Passed, method, grade: 8m, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.CursadaApprovalMissingCommissionOrTerm);
@@ -229,7 +229,7 @@ public class EnrollmentRecordTests
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, AnyCommission, termId: null,
-            EnrollmentStatus.Cursando, approvalMethod: null, grade: null, Clock);
+            EnrollmentStatus.InProgress, approvalMethod: null, grade: null, Clock);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EnrollmentRecordErrors.CursandoRequiresTerm);
@@ -244,11 +244,11 @@ public class EnrollmentRecordTests
         // Combinación inválida que Create rechazaría (Aprobada sin method, Equivalencia con commission).
         var r = EnrollmentRecord.Hydrate(
             id, AnyStudent, AnySubject, AnyCommission, AnyTerm,
-            EnrollmentStatus.Aprobada, ApprovalMethod.Equivalencia, grade: 8m,
+            EnrollmentStatus.Passed, ApprovalMethod.CreditTransfer, grade: 8m,
             Clock.UtcNow, Clock.UtcNow);
 
         r.Id.ShouldBe(id);
-        r.Status.ShouldBe(EnrollmentStatus.Aprobada);
-        r.ApprovalMethod.ShouldBe(ApprovalMethod.Equivalencia);
+        r.Status.ShouldBe(EnrollmentStatus.Passed);
+        r.ApprovalMethod.ShouldBe(ApprovalMethod.CreditTransfer);
     }
 }

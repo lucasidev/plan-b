@@ -263,7 +263,7 @@ public class CareerPlanImportEndpointTests
                     "MAT101 Algo",
                     new List<ParsedSubjectItem>
                     {
-                        new(0, "MAT101 Algo", "MAT101", "Algo", 1, 1, "Cuatrimestral",
+                        new(0, "MAT101 Algo", "MAT101", "Algo", 1, 1, "FourMonth",
                             SubjectParseConfidence.High, Array.Empty<string>()),
                     },
                     new CareerPlanImportSummary(1, 1, 0, 0)),
@@ -284,7 +284,7 @@ public class CareerPlanImportEndpointTests
                         name = "Algo",
                         yearInPlan = 1,
                         termInYear = (int?)1,
-                        termKind = "Cuatrimestral",
+                        termKind = "FourMonth",
                     },
                 },
             });

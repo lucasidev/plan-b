@@ -52,14 +52,14 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
         comA.Teachers.Count.ShouldBe(2);
         comA.Teachers[0].FirstName.ShouldBe("Carlos");
         comA.Teachers[0].LastName.ShouldBe("Brandt");
-        comA.Teachers[0].Role.ShouldBe("Titular");
+        comA.Teachers[0].Role.ShouldBe("Lead");
         comA.Teachers[1].FirstName.ShouldBe("Diego");
-        comA.Teachers[1].Role.ShouldBe("Jtp");
+        comA.Teachers[1].Role.ShouldBe("PracticalLead");
 
         var comB = commissions[1];
         comB.Name.ShouldBe("B (Virtual)");
         comB.Modality.ShouldBe("Virtual");
-        comB.Teachers[0].Role.ShouldBe("Titular");
+        comB.Teachers[0].Role.ShouldBe("Lead");
         comB.Teachers[0].LastName.ShouldBe("Reynoso");
     }
 
@@ -119,9 +119,9 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
         teachers!.Count.ShouldBe(2);
         teachers[0].FirstName.ShouldBe("Carlos");
         teachers[0].LastName.ShouldBe("Brandt");
-        teachers[0].Role.ShouldBe("Titular");
+        teachers[0].Role.ShouldBe("Lead");
         teachers[1].LastName.ShouldBe("Sosa");
-        teachers[1].Role.ShouldBe("Jtp");
+        teachers[1].Role.ShouldBe("PracticalLead");
     }
 
     [Fact]

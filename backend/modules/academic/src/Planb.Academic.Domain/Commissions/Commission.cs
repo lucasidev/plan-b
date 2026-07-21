@@ -12,7 +12,7 @@ namespace Planb.Academic.Domain.Commissions;
 ///
 /// <para>
 /// Invariantes internos del aggregate (validados acá): nombre no vacío, capacity &gt; 0 cuando
-/// aplica, a lo sumo un docente con rol <see cref="CommissionTeacherRole.Titular"/>, y no se asigna
+/// aplica, a lo sumo un docente con rol <see cref="CommissionTeacherRole.Lead"/>, y no se asigna
 /// el mismo docente dos veces. La coherencia cross-aggregate (misma universidad de Subject + Term +
 /// Teacher, <c>Subject.term_kind == Term.kind</c>, UNIQUE(subject, term, name)) la valida el app
 /// service que cree comisiones, no el aggregate (no tiene acceso a esas entidades).
@@ -149,8 +149,8 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
             return CommissionErrors.TeacherAlreadyAssigned;
         }
 
-        if (role == CommissionTeacherRole.Titular
-            && _teachers.Any(t => t.Role == CommissionTeacherRole.Titular))
+        if (role == CommissionTeacherRole.Lead
+            && _teachers.Any(t => t.Role == CommissionTeacherRole.Lead))
         {
             return CommissionErrors.TitularAlreadyAssigned;
         }

@@ -33,12 +33,12 @@ namespace Planb.Enrollments.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_enrollment_records", x => x.id);
-                    table.CheckConstraint("ck_enrollment_records_cursada_requires_commission_and_term", "approval_method NOT IN ('Cursada','Promocion','Final') OR (commission_id IS NOT NULL AND term_id IS NOT NULL)");
-                    table.CheckConstraint("ck_enrollment_records_equivalencia_no_commission_no_term", "approval_method IS DISTINCT FROM 'Equivalencia' OR (commission_id IS NULL AND term_id IS NULL)");
-                    table.CheckConstraint("ck_enrollment_records_final_libre_term_only", "approval_method IS DISTINCT FROM 'FinalLibre' OR (commission_id IS NULL AND term_id IS NOT NULL)");
+                    table.CheckConstraint("ck_enrollment_records_cursada_requires_commission_and_term", "approval_method NOT IN ('Coursework','Promotion','FinalExam') OR (commission_id IS NOT NULL AND term_id IS NOT NULL)");
+                    table.CheckConstraint("ck_enrollment_records_equivalencia_no_commission_no_term", "approval_method IS DISTINCT FROM 'CreditTransfer' OR (commission_id IS NULL AND term_id IS NULL)");
+                    table.CheckConstraint("ck_enrollment_records_final_libre_term_only", "approval_method IS DISTINCT FROM 'IndependentFinalExam' OR (commission_id IS NULL AND term_id IS NOT NULL)");
                     table.CheckConstraint("ck_enrollment_records_grade_range", "grade IS NULL OR (grade >= 0 AND grade <= 10)");
-                    table.CheckConstraint("ck_enrollment_records_status_approval_method_consistency", "(status = 'Aprobada' AND approval_method IS NOT NULL) OR (status <> 'Aprobada' AND approval_method IS NULL)");
-                    table.CheckConstraint("ck_enrollment_records_status_grade_consistency", "(status IN ('Aprobada','Regular') AND grade IS NOT NULL) OR (status IN ('Cursando','Reprobada','Abandonada') AND grade IS NULL)");
+                    table.CheckConstraint("ck_enrollment_records_status_approval_method_consistency", "(status = 'Passed' AND approval_method IS NOT NULL) OR (status <> 'Passed' AND approval_method IS NULL)");
+                    table.CheckConstraint("ck_enrollment_records_status_grade_consistency", "(status IN ('Passed','Regularized') AND grade IS NOT NULL) OR (status IN ('InProgress','Failed','Dropped') AND grade IS NULL)");
                 });
 
             migrationBuilder.CreateIndex(
@@ -53,7 +53,7 @@ namespace Planb.Enrollments.Infrastructure.Migrations
                 table: "enrollment_records",
                 columns: new[] { "student_profile_id", "subject_id" },
                 unique: true,
-                filter: "approval_method = 'Equivalencia'");
+                filter: "approval_method = 'CreditTransfer'");
 
             migrationBuilder.CreateIndex(
                 name: "ux_enrollment_records_student_subject_term",

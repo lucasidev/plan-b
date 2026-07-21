@@ -67,7 +67,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
 
     private static object NewSubjectBody(
         string? code = null, string? name = null,
-        int yearInPlan = 1, int? termInYear = 1, string? termKind = "Cuatrimestral",
+        int yearInPlan = 1, int? termInYear = 1, string? termKind = "FourMonth",
         int weeklyHours = 4, int totalHours = 64, string? description = null)
     {
         var unique = Guid.NewGuid().ToString("N")[..8];
@@ -104,7 +104,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         row.ShouldNotBeNull();
         row.YearInPlan.ShouldBe(2);
         row.TermInYear.ShouldBe(1);
-        row.TermKind.ShouldBe("Cuatrimestral");
+        row.TermKind.ShouldBe("FourMonth");
         row.WeeklyHours.ShouldBe(6);
         row.TotalHours.ShouldBe(96);
         row.Description.ShouldBe("Materia de prueba");
@@ -220,7 +220,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
             var prerequisite = Prerequisite.Create(
                 new SubjectId(dependent!.Id),
                 new SubjectId(required!.Id),
-                PrerequisiteType.ParaCursar,
+                PrerequisiteType.ToEnroll,
                 clock.UtcNow).Value;
             db.Prerequisites.Add(prerequisite);
             await db.SaveChangesAsync();

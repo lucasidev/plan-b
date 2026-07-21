@@ -17,7 +17,7 @@ namespace Planb.Academic.Domain.Subjects;
 ///
 /// <para>
 /// El invariante <see cref="TermKind"/>/<see cref="TermInYear"/> es app-level: si la materia es
-/// <see cref="Planb.Academic.Domain.TermKind.Anual"/>, <c>TermInYear</c> debe ser null. Para
+/// <see cref="Planb.Academic.Domain.TermKind.FullYear"/>, <c>TermInYear</c> debe ser null. Para
 /// cualquier otra cadencia, <c>TermInYear</c> es obligatorio (1-N según la cadencia).
 /// </para>
 ///
@@ -251,7 +251,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
 
         // Invariante anual vs no-anual: el data-model lo declara como CHECK. Lo enforcamos acá
         // para que el Result<> tenga el motivo claro.
-        if (termKind == TermKind.Anual)
+        if (termKind == TermKind.FullYear)
         {
             if (termInYear is not null)
             {
@@ -265,7 +265,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
                 return SubjectErrors.TermInYearInconsistentWithKind;
             }
 
-            // 6 cubre Bimestral (hasta 5-6 bimestres anuales). Cuatrimestral/Semestral siempre
+            // 6 cubre TwoMonth (hasta 5-6 bimestres anuales). FourMonth/SixMonth siempre
             // 1 o 2.
             if (termInYear is < 1 or > 6)
             {

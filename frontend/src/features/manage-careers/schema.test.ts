@@ -179,22 +179,22 @@ describe('careerFieldsSchema', () => {
 
   describe('cadence', () => {
     it('acepta Anual', () => {
-      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'Anual' });
+      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'FullYear' });
       expect(result.success).toBe(true);
     });
 
     it('acepta Cuatrimestral', () => {
-      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'Cuatrimestral' });
+      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'FourMonth' });
       expect(result.success).toBe(true);
     });
 
     it('acepta Semestral', () => {
-      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'Semestral' });
+      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'SixMonth' });
       expect(result.success).toBe(true);
     });
 
     it('rechaza una cadencia que el form no ofrece', () => {
-      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'Bimestral' });
+      const result = careerFieldsSchema.safeParse({ ...base, cadence: 'TwoMonth' });
       expect(result.success).toBe(false);
     });
 

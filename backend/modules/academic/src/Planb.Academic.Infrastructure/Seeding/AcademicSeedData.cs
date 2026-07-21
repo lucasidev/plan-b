@@ -281,63 +281,63 @@ public static class AcademicSeedData
             CareerPlanId: TudcsPlanId,
             Code: "101",
             Name: "Algoritmos y Paradigmas",
-            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.FullYear,
             WeeklyHours: 3, TotalHours: 84),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000002")),
             CareerPlanId: TudcsPlanId,
             Code: "102",
             Name: "Álgebra I",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000003")),
             CareerPlanId: TudcsPlanId,
             Code: "103",
             Name: "Inglés A1",
-            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.FullYear,
             WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000004")),
             CareerPlanId: TudcsPlanId,
             Code: "104",
             Name: "Formación Humanística I",
-            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.FullYear,
             WeeklyHours: 3, TotalHours: 84),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000005")),
             CareerPlanId: TudcsPlanId,
             Code: "111",
             Name: "Desarrollo de Software",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000006")),
             CareerPlanId: TudcsPlanId,
             Code: "113",
             Name: "Gestión de RR.HH",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000007")),
             CareerPlanId: TudcsPlanId,
             Code: "121",
             Name: "Base de datos",
-            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000008")),
             CareerPlanId: TudcsPlanId,
             Code: "122",
             Name: "Álgebra II",
-            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000009")),
             CareerPlanId: TudcsPlanId,
             Code: "123",
             Name: "Seminario Informático I",
-            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
 
         // ---------- 2do año ----------
@@ -346,56 +346,56 @@ public static class AcademicSeedData
             CareerPlanId: TudcsPlanId,
             Code: "201",
             Name: "Inglés A2",
-            YearInPlan: 2, TermInYear: null, TermKind: TermKind.Anual,
+            YearInPlan: 2, TermInYear: null, TermKind: TermKind.FullYear,
             WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000011")),
             CareerPlanId: TudcsPlanId,
             Code: "202",
             Name: "Formación Humanística II",
-            YearInPlan: 2, TermInYear: null, TermKind: TermKind.Anual,
+            YearInPlan: 2, TermInYear: null, TermKind: TermKind.FullYear,
             WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000012")),
             CareerPlanId: TudcsPlanId,
             Code: "211",
             Name: "Fundamentos de Control de Calidad",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000013")),
             CareerPlanId: TudcsPlanId,
             Code: "212",
             Name: "Seminario Informático II",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000014")),
             CareerPlanId: TudcsPlanId,
             Code: "213",
             Name: "Desarrollo Front End",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 6, TotalHours: 84),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000015")),
             CareerPlanId: TudcsPlanId,
             Code: "221",
             Name: "Control de Calidad Avanzado",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000016")),
             CareerPlanId: TudcsPlanId,
             Code: "222",
             Name: "Seminario Informático III",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000017")),
             CareerPlanId: TudcsPlanId,
             Code: "223",
             Name: "Desarrollo Back End",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
             WeeklyHours: 6, TotalHours: 84),
 
         // ---------- 3er año ----------
@@ -404,28 +404,28 @@ public static class AcademicSeedData
             CareerPlanId: TudcsPlanId,
             Code: "311",
             Name: "Desarrollo de Aplicaciones Web",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 5, TotalHours: 70),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000019")),
             CareerPlanId: TudcsPlanId,
             Code: "312",
             Name: "Testeo Automatizado",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000020")),
             CareerPlanId: TudcsPlanId,
             Code: "313",
             Name: "Inglés B1:1",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
             WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000021")),
             CareerPlanId: TudcsPlanId,
             Code: "314",
             Name: "Proyecto Final",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
             // 0 hs semanales es correcto (no es una cursada con horario fijo, ver
             // Subject.Validate): no lo "corrijas" a 1. 350 hs totales.
             WeeklyHours: 0, TotalHours: 350),
@@ -433,7 +433,7 @@ public static class AcademicSeedData
 
     // ====================================================================
     // Prerequisites (correlativas, ADR-0003). 16 parejas reales cargadas dos veces, una por type:
-    // ParaCursar (para inscribirte a cursar necesitás la previa regularizada) y ParaRendir (para
+    // ToEnroll (para inscribirte a cursar necesitás la previa regularizada) y ToTakeFinal (para
     // rendir el final necesitás la previa aprobada). No es redundante: son dos grafos separados
     // sobre los mismos subjects, y la PK (subject_id, required_subject_id, type) permite
     // justamente que la misma pareja aparezca en los dos.
@@ -476,8 +476,8 @@ public static class AcademicSeedData
         {
             var subjectId = Sid(subjectNn);
             var requiredId = Sid(requiredNn);
-            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ParaCursar));
-            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ParaRendir));
+            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ToEnroll));
+            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ToTakeFinal));
         }
 
         return records;
@@ -500,7 +500,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000001")),
             UniversityId: Unsta.Id,
-            Year: 2024, Number: 1, Kind: TermKind.Cuatrimestral,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2024, 3, 11),
             EndDate: new DateOnly(2024, 7, 6),
             EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
@@ -509,7 +509,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000002")),
             UniversityId: Unsta.Id,
-            Year: 2024, Number: 2, Kind: TermKind.Cuatrimestral,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2024, 8, 5),
             EndDate: new DateOnly(2024, 11, 30),
             EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
@@ -518,7 +518,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000003")),
             UniversityId: Unsta.Id,
-            Year: 2025, Number: 1, Kind: TermKind.Cuatrimestral,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2025, 3, 10),
             EndDate: new DateOnly(2025, 7, 5),
             EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
@@ -527,7 +527,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000004")),
             UniversityId: Unsta.Id,
-            Year: 2025, Number: 2, Kind: TermKind.Cuatrimestral,
+            Year: 2025, Number: 2, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2025, 8, 4),
             EndDate: new DateOnly(2025, 11, 29),
             EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
@@ -536,7 +536,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000005")),
             UniversityId: Unsta.Id,
-            Year: 2026, Number: 1, Kind: TermKind.Cuatrimestral,
+            Year: 2026, Number: 1, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2026, 3, 9),
             EndDate: new DateOnly(2026, 7, 4),
             EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
@@ -545,7 +545,7 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000006")),
             UniversityId: Unsta.Id,
-            Year: 2026, Number: 2, Kind: TermKind.Cuatrimestral,
+            Year: 2026, Number: 2, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2026, 8, 3),
             EndDate: new DateOnly(2026, 11, 28),
             EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
@@ -594,58 +594,58 @@ public static class AcademicSeedData
         new CommissionRecord(Cid("01"), Sid("05"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Titular), // brandt
-                new CommissionTeacherRecord(Tid("04"), CommissionTeacherRole.Jtp),     // sosa
+                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Lead), // brandt
+                new CommissionTeacherRecord(Tid("04"), CommissionTeacherRole.PracticalLead),     // sosa
             }),
         new CommissionRecord(Cid("02"), Sid("05"), Atid("05"), "B (Virtual)", CommissionModality.Virtual, 60, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular),  // reynoso
-                new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Ayudante), // quiroga
+                new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead),  // reynoso
+                new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Assistant), // quiroga
             }),
 
         // Algoritmos y Paradigmas (101) · 2026·1c.
         new CommissionRecord(Cid("03"), Sid("01"), Atid("05"), "Mañana", CommissionModality.Presencial, 35, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Titular), // iturralde
+                new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Lead), // iturralde
             }),
 
         // Desarrollo Back End (223) · 2025·2c.
         new CommissionRecord(Cid("04"), Sid("17"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Titular), // castro
-                new CommissionTeacherRecord(Tid("05"), CommissionTeacherRole.Adjunto), // castellanos
+                new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Lead), // castro
+                new CommissionTeacherRecord(Tid("05"), CommissionTeacherRole.Associate), // castellanos
             }),
 
         // Base de datos (121) · 2025·2c.
         new CommissionRecord(Cid("05"), Sid("07"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Titular), // méndez
-                new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Jtp),     // páez
+                new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Lead), // méndez
+                new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.PracticalLead),     // páez
             }),
 
         // Inglés B1:1 (313) · 2026·1c. brandt acá es adjunto (mismo docente, otra comisión).
         new CommissionRecord(Cid("06"), Sid("20"), Atid("05"), "A", CommissionModality.Presencial, 25, null,
             new[]
             {
-                new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular), // ledesma
-                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Adjunto), // brandt
+                new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead), // ledesma
+                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Associate), // brandt
             }),
 
         // Comisiones adicionales (una por materia) en 2026·1c, coherentes con el mapeo docente del
         // demo corpus. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
         // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
         new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular) }), // álgebra I (102): reynoso
+            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead) }), // álgebra I (102): reynoso
         new CommissionRecord(Cid("08"), Sid("09"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular) }), // seminario informático I (123): ledesma
+            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead) }), // seminario informático I (123): ledesma
         new CommissionRecord(Cid("09"), Sid("14"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Titular) }), // desarrollo front end (213): páez
+            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Lead) }), // desarrollo front end (213): páez
         new CommissionRecord(Cid("0a"), Sid("11"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Titular) }), // formación humanística II (202): quiroga
+            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Lead) }), // formación humanística II (202): quiroga
     };
 
     private static SubjectId Sid(string nn) =>

@@ -22,7 +22,7 @@ const PAYLOAD: CareerPlanImportPayload = {
       detectedName: 'Análisis I',
       detectedYearInPlan: 1,
       detectedTermInYear: 1,
-      detectedTermKind: 'Cuatrimestral',
+      detectedTermKind: 'FourMonth',
       confidence: 'High',
       issues: [],
     },
@@ -33,7 +33,7 @@ const PAYLOAD: CareerPlanImportPayload = {
       detectedName: 'Física II',
       detectedYearInPlan: 2,
       detectedTermInYear: 2,
-      detectedTermKind: 'Cuatrimestral',
+      detectedTermKind: 'FourMonth',
       confidence: 'Low',
       issues: ['Nombre ambiguo'],
     },
@@ -103,7 +103,7 @@ describe('CareerPlanPreviewTable', () => {
         name: 'Análisis I',
         yearInPlan: 1,
         termInYear: 1,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
       },
     ]);
 
@@ -117,14 +117,14 @@ describe('CareerPlanPreviewTable', () => {
         name: 'Análisis I',
         yearInPlan: 1,
         termInYear: 1,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
       },
       {
         code: 'FIS201',
         name: 'Física II',
         yearInPlan: 2,
         termInYear: 2,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
       },
     ]);
 

@@ -106,7 +106,7 @@ public static class ApproveCareerPlanImportCommandHandler
         {
             if (!Enum.TryParse<TermKind>(item.TermKind, ignoreCase: true, out var termKind))
             {
-                termKind = TermKind.Cuatrimestral;
+                termKind = TermKind.FourMonth;
             }
 
             var (weekly, total) = DefaultHoursFor(termKind);
@@ -116,7 +116,7 @@ public static class ApproveCareerPlanImportCommandHandler
                 code: item.Code,
                 name: item.Name,
                 yearInPlan: item.YearInPlan,
-                termInYear: termKind == TermKind.Anual ? null : (item.TermInYear ?? 1),
+                termInYear: termKind == TermKind.FullYear ? null : (item.TermInYear ?? 1),
                 termKind: termKind,
                 weeklyHours: weekly,
                 totalHours: total,
@@ -180,10 +180,10 @@ public static class ApproveCareerPlanImportCommandHandler
 
     private static (int weekly, int total) DefaultHoursFor(TermKind kind) => kind switch
     {
-        TermKind.Anual => (4, 120),
-        TermKind.Cuatrimestral => (4, 60),
-        TermKind.Bimestral => (4, 30),
-        TermKind.Semestral => (4, 60),
+        TermKind.FullYear => (4, 120),
+        TermKind.FourMonth => (4, 60),
+        TermKind.TwoMonth => (4, 30),
+        TermKind.SixMonth => (4, 60),
         _ => (4, 60),
     };
 }

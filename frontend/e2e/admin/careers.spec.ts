@@ -45,7 +45,7 @@ test.describe('Backoffice de carreras y planes de estudio (US-061)', () => {
     await page.getByLabel(/^slug$/i).fill(`carrera-e2e-${tag}`);
     await page.getByLabel(/tipo de título/i).selectOption('Grado');
     await page.getByLabel(/duración/i).fill('5');
-    await page.getByLabel(/modalidad/i).selectOption('Cuatrimestral');
+    await page.getByLabel(/modalidad/i).selectOption('FourMonth');
     await page.getByRole('button', { name: /crear carrera/i }).click();
 
     // El alta (server action + redirect) vuelve al listado y la carrera recién creada aparece.

@@ -86,11 +86,11 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
             .HasColumnName("updated_at")
             .IsRequired();
 
-        // CHECK app-level del data-model: term_kind='anual' ↔ term_in_year IS NULL. Lo replicamos
+        // CHECK app-level del data-model: term_kind='FullYear' ↔ term_in_year IS NULL. Lo replicamos
         // en DB como defensa adicional (los inserts via seed bypassean Subject.Create).
         builder.ToTable(t => t.HasCheckConstraint(
             "ck_subjects_term_kind_year_consistency",
-            "(term_kind = 'Anual' AND term_in_year IS NULL) OR (term_kind <> 'Anual' AND term_in_year IS NOT NULL)"));
+            "(term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind <> 'FullYear' AND term_in_year IS NOT NULL)"));
 
         builder.Ignore(s => s.DomainEvents);
     }

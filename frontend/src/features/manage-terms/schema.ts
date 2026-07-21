@@ -35,7 +35,7 @@ export const termFieldsSchema = z
       .int('Tiene que ser un número entero.')
       .min(1, 'Mínimo 1.')
       .max(6, 'Máximo 6.'),
-    kind: z.enum(['Bimestral', 'Cuatrimestral', 'Semestral', 'Anual'], {
+    kind: z.enum(['TwoMonth', 'FourMonth', 'SixMonth', 'FullYear'], {
       message: 'Elegí una cadencia.',
     }),
     startDate: z.string().trim().regex(DATE_RE, 'Ingresá una fecha de inicio válida.'),
@@ -49,7 +49,7 @@ export const termFieldsSchema = z
       .trim()
       .regex(DATETIME_LOCAL_RE, 'Ingresá una fecha y hora de cierre de inscripción válida.'),
   })
-  .refine((v) => v.kind !== 'Anual' || v.number === 1, {
+  .refine((v) => v.kind !== 'FullYear' || v.number === 1, {
     message: 'Un período anual siempre es el número 1.',
     path: ['number'],
   })

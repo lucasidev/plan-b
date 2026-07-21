@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Planb.Academic.Application.Contracts;
+using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Enrollments.Domain.HistorialImports;
 
 namespace Planb.Enrollments.Application.Services.HistorialParser;
@@ -165,25 +166,29 @@ public sealed class HistorialParser : IHistorialParser
         }
 
         // ── Status ────────────────────────────────────────────────────────
+        // El historial está en castellano (regex sobre "aprobada", "regular", etc.), pero lo que se
+        // emite es el valor canónico del enum del dominio (inglés): el wire de import es inglés como
+        // el resto de la app, y el frontend le pone el label español encima. `nameof` hace que un
+        // futuro rename del enum arrastre estos valores sin que queden mintiendo en silencio.
         string? status = null;
-        if (StatusAprobadaRegex.IsMatch(rawRow)) status = "Aprobada";
-        else if (StatusRegularRegex.IsMatch(rawRow)) status = "Regular";
-        else if (StatusCursandoRegex.IsMatch(rawRow)) status = "Cursando";
-        else if (StatusReprobadaRegex.IsMatch(rawRow)) status = "Reprobada";
-        else if (StatusAbandonadaRegex.IsMatch(rawRow)) status = "Abandonada";
+        if (StatusAprobadaRegex.IsMatch(rawRow)) status = nameof(EnrollmentStatus.Passed);
+        else if (StatusRegularRegex.IsMatch(rawRow)) status = nameof(EnrollmentStatus.Regularized);
+        else if (StatusCursandoRegex.IsMatch(rawRow)) status = nameof(EnrollmentStatus.InProgress);
+        else if (StatusReprobadaRegex.IsMatch(rawRow)) status = nameof(EnrollmentStatus.Failed);
+        else if (StatusAbandonadaRegex.IsMatch(rawRow)) status = nameof(EnrollmentStatus.Dropped);
 
         var isEquivalencia = StatusEquivalenciaRegex.IsMatch(rawRow);
         if (isEquivalencia)
         {
-            // Equivalencia: status=Aprobada + approvalMethod=Equivalencia. La keyword
-            // "equivalencia" pisa lo que haya detectado antes.
-            status = "Aprobada";
+            // Equivalencia: status aprobada + método equivalencia. La keyword "equivalencia" pisa
+            // lo que haya detectado antes.
+            status = nameof(EnrollmentStatus.Passed);
         }
 
-        // Si tenemos nota válida y no detectamos status explícito → asumir Aprobada y avisar.
+        // Si tenemos nota válida y no detectamos status explícito, asumimos aprobada y avisamos.
         if (status is null && grade is not null)
         {
-            status = "Aprobada";
+            status = nameof(EnrollmentStatus.Passed);
             issues.Add("Estado inferido como Aprobada por la nota detectada.");
         }
 
@@ -191,23 +196,23 @@ public sealed class HistorialParser : IHistorialParser
         string? approvalMethod = null;
         if (isEquivalencia)
         {
-            approvalMethod = "Equivalencia";
+            approvalMethod = nameof(ApprovalMethod.CreditTransfer);
         }
         else if (MethodFinalLibreRegex.IsMatch(rawRow))
         {
-            approvalMethod = "FinalLibre";
+            approvalMethod = nameof(ApprovalMethod.IndependentFinalExam);
         }
         else if (MethodPromocionRegex.IsMatch(rawRow))
         {
-            approvalMethod = "Promocion";
+            approvalMethod = nameof(ApprovalMethod.Promotion);
         }
         else if (MethodCursadaRegex.IsMatch(rawRow))
         {
-            approvalMethod = "Cursada";
+            approvalMethod = nameof(ApprovalMethod.Coursework);
         }
         else if (MethodFinalRegex.IsMatch(rawRow))
         {
-            approvalMethod = "Final";
+            approvalMethod = nameof(ApprovalMethod.FinalExam);
         }
 
         // ── Período ───────────────────────────────────────────────────────
@@ -228,8 +233,10 @@ public sealed class HistorialParser : IHistorialParser
                 issues.Add($"Período {year}·{termNumber}c detectado pero no está cargado en tu universidad.");
             }
         }
-        else if (status != "Cursando" && approvalMethod != "Equivalencia")
+        else if (status != nameof(EnrollmentStatus.InProgress) && !isEquivalencia)
         {
+            // Una cursada en curso todavía no tiene período cerrado, y una equivalencia no lleva
+            // período por invariante (term_id null): en esos dos casos no pedimos el cuatrimestre.
             issues.Add("No detectamos el cuatrimestre. Completalo manualmente.");
         }
 

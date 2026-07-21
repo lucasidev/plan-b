@@ -21,11 +21,11 @@ const noop = vi.fn().mockResolvedValue(PUBLISH_REVIEW_INITIAL_STATE);
 // Un solo docente: el editor lo preselecciona, así el gate del picker no estorba a los tests que
 // validan los otros campos. Los tests del picker en sí usan dos docentes.
 const ONE_TEACHER = [
-  { teacherId: 'tid-brandt', firstName: 'Carlos', lastName: 'Brandt', role: 'Titular' },
+  { teacherId: 'tid-brandt', firstName: 'Carlos', lastName: 'Brandt', role: 'Lead' },
 ];
 const TWO_TEACHERS = [
   ...ONE_TEACHER,
-  { teacherId: 'tid-sosa', firstName: 'Diego', lastName: 'Sosa', role: 'Jtp' },
+  { teacherId: 'tid-sosa', firstName: 'Diego', lastName: 'Sosa', role: 'PracticalLead' },
 ];
 
 // El texto es obligatorio al publicar (mínimo 50 chars, alineado con ReviewText del backend).

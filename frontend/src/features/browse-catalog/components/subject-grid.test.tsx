@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { formatTermLabel, groupSubjectsByYear } from '../lib/group-subjects';
 import type { Subject } from '../types';
-import { formatTermLabel, groupSubjectsByYear } from './subject-grid';
 
 /**
  * Cubre la lógica pura de agrupamiento/orden de `subject-grid.tsx` (rama "Utils" de la
@@ -16,7 +16,7 @@ function subject(overrides: Partial<Subject>): Subject {
     name: 'Materia',
     yearInPlan: 1,
     termInYear: 1,
-    termKind: 'Cuatrimestral',
+    termKind: 'FourMonth',
     ...overrides,
   };
 }
@@ -62,8 +62,8 @@ describe('groupSubjectsByYear', () => {
 
   it('agrupa las materias anuales (termInYear null) en un grupo propio, después de los términos numerados', () => {
     const subjects = [
-      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'Anual' }),
-      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'Cuatrimestral' }),
+      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'FullYear' }),
+      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'FourMonth' }),
     ];
 
     const [year1] = groupSubjectsByYear(subjects);
@@ -79,9 +79,9 @@ describe('groupSubjectsByYear', () => {
         code: 'A100',
         yearInPlan: 1,
         termInYear: 1,
-        termKind: 'Cuatrimestral',
+        termKind: 'FourMonth',
       }),
-      subject({ id: 'bim', code: 'B100', yearInPlan: 1, termInYear: 1, termKind: 'Bimestral' }),
+      subject({ id: 'bim', code: 'B100', yearInPlan: 1, termInYear: 1, termKind: 'TwoMonth' }),
     ];
 
     const [year1] = groupSubjectsByYear(subjects);
@@ -92,24 +92,24 @@ describe('groupSubjectsByYear', () => {
 
 describe('formatTermLabel', () => {
   it('formatea cuatrimestres', () => {
-    expect(formatTermLabel(1, 'Cuatrimestral')).toBe('1er cuatrimestre');
-    expect(formatTermLabel(2, 'Cuatrimestral')).toBe('2do cuatrimestre');
+    expect(formatTermLabel(1, 'FourMonth')).toBe('1er cuatrimestre');
+    expect(formatTermLabel(2, 'FourMonth')).toBe('2do cuatrimestre');
   });
 
   it('formatea bimestres', () => {
-    expect(formatTermLabel(3, 'Bimestral')).toBe('3er bimestre');
-    expect(formatTermLabel(4, 'Bimestral')).toBe('4to bimestre');
+    expect(formatTermLabel(3, 'TwoMonth')).toBe('3er bimestre');
+    expect(formatTermLabel(4, 'TwoMonth')).toBe('4to bimestre');
   });
 
   it('formatea semestres', () => {
-    expect(formatTermLabel(1, 'Semestral')).toBe('1er semestre');
+    expect(formatTermLabel(1, 'SixMonth')).toBe('1er semestre');
   });
 
   it('devuelve "Anual" para termKind Anual sin importar termInYear', () => {
-    expect(formatTermLabel(null, 'Anual')).toBe('Anual');
+    expect(formatTermLabel(null, 'FullYear')).toBe('Anual');
   });
 
   it('devuelve "Anual" cuando termInYear es null aunque el termKind no lo sea (defensivo)', () => {
-    expect(formatTermLabel(null, 'Cuatrimestral')).toBe('Anual');
+    expect(formatTermLabel(null, 'FourMonth')).toBe('Anual');
   });
 });

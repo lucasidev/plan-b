@@ -7,15 +7,15 @@ namespace Planb.Academic.Domain;
 /// de ningún aggregate.
 ///
 /// <para>
-/// El valor <see cref="Anual"/> es distinto en semántica: la materia/term cubre todo el año y
+/// El valor <see cref="FullYear"/> es distinto en semántica: la materia/term cubre todo el año y
 /// no tiene número de cuatrimestre/bimestre. Los aggregates lo enforcan con CHECK constraints
 /// app-level.
 /// </para>
 /// </summary>
 public enum TermKind
 {
-    Bimestral,
-    Cuatrimestral,
-    Semestral,
-    Anual,
+    TwoMonth,
+    FourMonth,
+    SixMonth,
+    FullYear,
 }

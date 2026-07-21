@@ -28,7 +28,7 @@ export type AdminSubjectRow = {
 /** Detalle de una materia para prefillear el form de edición: mismo shape que `AdminSubjectRow`. */
 export type SubjectDetail = AdminSubjectRow;
 
-export type PrerequisiteType = 'ParaCursar' | 'ParaRendir';
+export type PrerequisiteType = 'ToEnroll' | 'ToTakeFinal';
 
 /** Arista del grafo de correlativas: `subjectId` requiere `requiredSubjectId` según `type`. */
 export type PrerequisiteEdge = {

@@ -39,7 +39,7 @@ export type EnrollmentContext = {
 /**
  * One teacher of the enrollment's commission, offered in the editor's "who taught you" picker
  * (US-065 docente real por reseña). Mirrors the backend `CommissionTeacherItem`. Names come title
- * cased; `role` is the PascalCase enum value (Titular / Adjunto / Jtp / Ayudante / Invitado).
+ * cased; `role` is the PascalCase enum value (Lead / Associate / PracticalLead / Assistant / Guest).
  */
 export type CommissionTeacherOption = {
   teacherId: string;

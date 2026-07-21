@@ -61,7 +61,7 @@ public sealed class SubjectAvailabilityEvaluator : ISubjectAvailabilityEvaluator
 
         foreach (var edge in prerequisites)
         {
-            if (edge.Kind != PrerequisiteKind.ParaCursar)
+            if (edge.Kind != PrerequisiteKind.ToEnroll)
             {
                 continue;
             }

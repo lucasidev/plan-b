@@ -64,8 +64,8 @@ public class RespondToReviewEndpointTests : IClassFixture<RegisterApiFixture>
                 subjectId,
                 commissionId = (Guid?)commissionId,
                 termId = (Guid?)termId,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8m,
             });
         enrollmentResp.EnsureSuccessStatusCode();

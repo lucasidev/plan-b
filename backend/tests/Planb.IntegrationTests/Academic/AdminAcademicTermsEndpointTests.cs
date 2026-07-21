@@ -37,7 +37,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
             _fixture, $"admin.{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
 
     private static object NewTermBody(
-        int year, int number = 1, string? kind = "Cuatrimestral",
+        int year, int number = 1, string? kind = "FourMonth",
         DateOnly? startDate = null, DateOnly? endDate = null,
         DateTimeOffset? enrollmentOpens = null, DateTimeOffset? enrollmentCloses = null) =>
         new
@@ -58,7 +58,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
-            NewTermBody(year: 2040, number: 1, kind: "Cuatrimestral"));
+            NewTermBody(year: 2040, number: 1, kind: "FourMonth"));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
@@ -68,7 +68,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         row.ShouldNotBeNull();
         row.Year.ShouldBe(2040);
         row.Number.ShouldBe(1);
-        row.Kind.ShouldBe("Cuatrimestral");
+        row.Kind.ShouldBe("FourMonth");
         row.Label.ShouldBe("2040-C1");
 
         var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
@@ -76,7 +76,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         detail!.UniversityId.ShouldBe(Unsta);
         detail.Year.ShouldBe(2040);
         detail.Number.ShouldBe(1);
-        detail.Kind.ShouldBe("Cuatrimestral");
+        detail.Kind.ShouldBe("FourMonth");
         detail.Label.ShouldBe("2040-C1");
     }
 
@@ -87,7 +87,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
-            NewTermBody(year: 2041, number: 1, kind: "Anual"));
+            NewTermBody(year: 2041, number: 1, kind: "FullYear"));
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
@@ -196,12 +196,12 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
-            NewTermBody(year: 2046, number: 1, kind: "Cuatrimestral"));
+            NewTermBody(year: 2046, number: 1, kind: "FourMonth"));
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
             $"/api/academic/academic-terms/{created!.Id}",
-            NewTermBody(year: 2046, number: 2, kind: "Cuatrimestral"));
+            NewTermBody(year: 2046, number: 2, kind: "FourMonth"));
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
@@ -217,17 +217,17 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
 
         (await admin.Client.PostAsJsonAsync(
                 $"/api/academic/universities/{Unsta}/terms",
-                NewTermBody(year: 2039, number: 1, kind: "Cuatrimestral")))
+                NewTermBody(year: 2039, number: 1, kind: "FourMonth")))
             .EnsureSuccessStatusCode();
 
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
-            NewTermBody(year: 2039, number: 2, kind: "Cuatrimestral"));
+            NewTermBody(year: 2039, number: 2, kind: "FourMonth"));
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
             $"/api/academic/academic-terms/{created!.Id}",
-            NewTermBody(year: 2039, number: 1, kind: "Cuatrimestral"));
+            NewTermBody(year: 2039, number: 1, kind: "FourMonth"));
 
         update.StatusCode.ShouldBe(HttpStatusCode.Conflict);
         (await update.Content.ReadAsStringAsync())

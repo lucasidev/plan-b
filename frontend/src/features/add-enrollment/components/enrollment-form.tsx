@@ -23,11 +23,11 @@ type Props = {
  * shipped in PR1.
  *
  * Conditional rendering of the form:
- *   - Status=Aprobada: shows the `approvalMethod` select + `grade` input. If
- *     method=Equivalencia, hides term + commission. If method=FinalLibre, hides
- *     commission.
- *   - Status=Regular: shows the `grade` input, hides `approvalMethod`.
- *   - Status in {Cursando, Reprobada, Abandonada}: hides grade + approvalMethod.
+ *   - Status=Passed: shows the `approvalMethod` select + `grade` input. If
+ *     method=CreditTransfer, hides term + commission. If method=IndependentFinalExam,
+ *     hides commission.
+ *   - Status=Regularized: shows the `grade` input, hides `approvalMethod`.
+ *   - Status in {InProgress, Failed, Dropped}: hides grade + approvalMethod.
  *
  * The backend re-validates every invariant: this form only guides the user.
  */
@@ -37,25 +37,25 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
     initialAddEnrollmentState,
   );
 
-  const [status, setStatus] = useState<string>('Aprobada');
-  const [approvalMethod, setApprovalMethod] = useState<string>('FinalLibre');
+  const [status, setStatus] = useState<string>('Passed');
+  const [approvalMethod, setApprovalMethod] = useState<string>('IndependentFinalExam');
   const [subjectId, setSubjectId] = useState<string>('');
   const [termId, setTermId] = useState<string>('');
 
   const subjects = useQuery(addEnrollmentQueries.subjects(careerPlanId));
   const terms = useQuery(addEnrollmentQueries.academicTerms(universityId));
 
-  const showApprovalMethod = status === 'Aprobada';
-  const showGrade = status === 'Aprobada' || status === 'Regular';
-  const showTerm = !showApprovalMethod || approvalMethod !== 'Equivalencia';
+  const showApprovalMethod = status === 'Passed';
+  const showGrade = status === 'Passed' || status === 'Regularized';
+  const showTerm = !showApprovalMethod || approvalMethod !== 'CreditTransfer';
 
   // El picker de comisión aparece cuando la cursada tuvo cátedra real (no equivalencia ni final
   // libre): elegir la comisión es lo que después hace la cursada reseñable (la reseña ancla al
   // docente de la comisión, US-065/US-040). Se identifica por (materia, cuatrimestre), así que
   // necesita ambos elegidos.
   const attendedCommission =
-    (status === 'Aprobada' && ['Cursada', 'Promocion', 'Final'].includes(approvalMethod)) ||
-    ['Regular', 'Cursando', 'Reprobada', 'Abandonada'].includes(status);
+    (status === 'Passed' && ['Coursework', 'Promotion', 'FinalExam'].includes(approvalMethod)) ||
+    ['Regularized', 'InProgress', 'Failed', 'Dropped'].includes(status);
   const showCommission = attendedCommission && !!subjectId && !!termId;
 
   const commissions = useQuery(
@@ -116,11 +116,11 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
           className={selectClass}
           style={selectStyle}
         >
-          <option value="Aprobada">Aprobada</option>
-          <option value="Regular">Regular (regularicé, falta final)</option>
-          <option value="Cursando">Cursando</option>
-          <option value="Reprobada">Reprobada</option>
-          <option value="Abandonada">Abandonada</option>
+          <option value="Passed">Aprobada</option>
+          <option value="Regularized">Regular (regularicé, falta final)</option>
+          <option value="InProgress">Cursando</option>
+          <option value="Failed">Reprobada</option>
+          <option value="Dropped">Abandonada</option>
         </select>
       </Field>
 
@@ -135,11 +135,11 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
             className={selectClass}
             style={selectStyle}
           >
-            <option value="Cursada">Cursada (regular + final)</option>
-            <option value="Promocion">Promoción</option>
-            <option value="Final">Final</option>
-            <option value="FinalLibre">Final libre</option>
-            <option value="Equivalencia">Equivalencia</option>
+            <option value="Coursework">Cursada (regular + final)</option>
+            <option value="Promotion">Promoción</option>
+            <option value="FinalExam">Final</option>
+            <option value="IndependentFinalExam">Final libre</option>
+            <option value="CreditTransfer">Equivalencia</option>
           </select>
           {fieldError === 'approvalMethod' && <FieldError>{formError}</FieldError>}
         </Field>
@@ -150,14 +150,14 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
           <select
             id="term"
             name="termId"
-            required={status === 'Cursando' || approvalMethod === 'FinalLibre'}
+            required={status === 'InProgress' || approvalMethod === 'IndependentFinalExam'}
             className={selectClass}
             style={selectStyle}
             value={termId}
             onChange={(e) => setTermId(e.target.value)}
           >
             <option value="">
-              {showApprovalMethod && approvalMethod === 'FinalLibre'
+              {showApprovalMethod && approvalMethod === 'IndependentFinalExam'
                 ? 'Elegí el cuatrimestre en que rendiste'
                 : 'Elegí un cuatrimestre'}
             </option>

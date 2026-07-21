@@ -33,7 +33,7 @@ export const approveSubjectItemSchema = z.object({
   name: z.string().min(1).max(200),
   yearInPlan: z.coerce.number().int().min(1).max(10),
   termInYear: z.coerce.number().int().min(1).max(6).nullable(),
-  termKind: z.enum(['Cuatrimestral', 'Anual', 'Semestral', 'Bimestral']),
+  termKind: z.enum(['FourMonth', 'FullYear', 'SixMonth', 'TwoMonth']),
 });
 
 export type ApproveSubjectItemInput = z.infer<typeof approveSubjectItemSchema>;

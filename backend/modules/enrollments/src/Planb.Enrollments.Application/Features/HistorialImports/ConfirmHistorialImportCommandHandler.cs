@@ -69,9 +69,12 @@ public static class ConfirmHistorialImportCommandHandler
                 continue;
             }
 
+            // El contrato de /confirm lleva el valor canónico del enum (inglés), igual que el resto
+            // de la app: el parser ya tradujo el castellano del historial al emitir el preview, y el
+            // frontend edita con esos valores. Acá solo se castea.
             if (!Enum.TryParse<EnrollmentStatus>(item.Status, ignoreCase: true, out var status))
             {
-                return EnrollmentRecordErrors.GradeOutOfRange; // status inválido — surface 400
+                return EnrollmentRecordErrors.GradeOutOfRange; // status inválido: surface 400
             }
 
             ApprovalMethod? method = null;

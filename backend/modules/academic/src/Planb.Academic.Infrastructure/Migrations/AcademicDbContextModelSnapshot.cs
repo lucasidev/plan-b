@@ -477,7 +477,7 @@ namespace Planb.Academic.Infrastructure.Migrations
 
                     b.ToTable("subjects", "academic", t =>
                         {
-                            t.HasCheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind = 'Anual' AND term_in_year IS NULL) OR (term_kind <> 'Anual' AND term_in_year IS NOT NULL)");
+                            t.HasCheckConstraint("ck_subjects_term_kind_year_consistency", "(term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind <> 'FullYear' AND term_in_year IS NOT NULL)");
                         });
                 });
 

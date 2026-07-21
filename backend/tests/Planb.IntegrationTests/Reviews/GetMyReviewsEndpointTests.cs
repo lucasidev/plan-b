@@ -84,8 +84,8 @@ public class GetMyReviewsEndpointTests
                 subjectId,
                 commissionId = (Guid?)commissionId,
                 termId = (Guid?)Term2026_1c,
-                status = "Aprobada",
-                approvalMethod = "Final",
+                status = "Passed",
+                approvalMethod = "FinalExam",
                 grade = 8m,
             });
         resp.EnsureSuccessStatusCode();

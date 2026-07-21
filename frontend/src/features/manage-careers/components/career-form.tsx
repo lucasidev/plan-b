@@ -19,7 +19,14 @@ const inputClass =
   'w-full rounded-md border border-line bg-bg-card px-3 py-2 text-[13px] text-ink outline-none focus:border-ink-3';
 
 const DEGREE_TYPES = ['Grado', 'Posgrado', 'Tecnicatura'] as const;
-const CADENCES = ['Anual', 'Cuatrimestral', 'Semestral'] as const;
+
+// El wire lleva el valor canónico del enum (inglés), la UI muestra el label español: mismo patrón
+// que el StatusChip de reseñas.
+const CADENCE_LABELS: Record<string, string> = {
+  FullYear: 'Anual',
+  FourMonth: 'Cuatrimestral',
+  SixMonth: 'Semestral',
+};
 
 /**
  * Form de alta/edición de carrera (US-061 admin). React 19 primitives + Zod en el action (form
@@ -154,15 +161,15 @@ export function CareerForm({ mode, universityId, career }: Props) {
           >
             <option value="">Sin especificar</option>
             {/* El form ofrece 3 de los 4 TermKind. Si la carrera ya tiene una cadencia fuera de esa
-                lista (ej. Bimestral, que un import crowdsourced podría setear), la preservamos como
+                lista (ej. TwoMonth, que un import crowdsourced podría setear), la preservamos como
                 opción para no borrarla en silencio al guardar: Update hace replace incondicional, así
                 que un defaultValue que no matchea ninguna opción se enviaría vacío y limpiaría el campo. */}
-            {career?.cadence && !(CADENCES as readonly string[]).includes(career.cadence) && (
+            {career?.cadence && !Object.keys(CADENCE_LABELS).includes(career.cadence) && (
               <option value={career.cadence}>{career.cadence}</option>
             )}
-            {CADENCES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {Object.entries(CADENCE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>

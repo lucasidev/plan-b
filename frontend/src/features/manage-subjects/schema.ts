@@ -53,7 +53,7 @@ export const subjectFieldsSchema = z
       .int('El año del plan tiene que ser un número entero.')
       .min(SUBJECT_LIMITS.yearInPlan.min, `Mínimo ${SUBJECT_LIMITS.yearInPlan.min}.`)
       .max(SUBJECT_LIMITS.yearInPlan.max, `Máximo ${SUBJECT_LIMITS.yearInPlan.max}.`),
-    termKind: z.enum(['Bimestral', 'Cuatrimestral', 'Semestral', 'Anual'], {
+    termKind: z.enum(['TwoMonth', 'FourMonth', 'SixMonth', 'FullYear'], {
       message: 'Elegí una cadencia.',
     }),
     termInYear: z.preprocess(
@@ -84,11 +84,11 @@ export const subjectFieldsSchema = z
       `Máximo ${SUBJECT_LIMITS.description.maxLength} caracteres.`,
     ),
   })
-  .refine((v) => v.termKind !== 'Anual' || v.termInYear === undefined, {
+  .refine((v) => v.termKind !== 'FullYear' || v.termInYear === undefined, {
     message: 'Una materia anual no lleva número de cuatrimestre o bimestre.',
     path: ['termInYear'],
   })
-  .refine((v) => v.termKind === 'Anual' || v.termInYear !== undefined, {
+  .refine((v) => v.termKind === 'FullYear' || v.termInYear !== undefined, {
     message: 'Elegí el cuatrimestre o bimestre de la materia.',
     path: ['termInYear'],
   })
@@ -107,7 +107,7 @@ export type SubjectFieldsValues = z.infer<typeof subjectFieldsSchema>;
  */
 export const prerequisiteFieldsSchema = z.object({
   requiredSubjectId: z.string().trim().min(1, 'Elegí la materia correlativa.'),
-  type: z.enum(['ParaCursar', 'ParaRendir'], { message: 'Elegí un tipo de correlativa.' }),
+  type: z.enum(['ToEnroll', 'ToTakeFinal'], { message: 'Elegí un tipo de correlativa.' }),
 });
 
 export type PrerequisiteFieldsValues = z.infer<typeof prerequisiteFieldsSchema>;

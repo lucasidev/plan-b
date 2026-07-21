@@ -29,9 +29,9 @@ public sealed record EnrollmentSummary(
 /// </summary>
 public enum EnrollmentStatusSnapshot
 {
-    Cursando,
-    Aprobada,
-    Reprobada,
-    Abandonada,
-    Regular,
+    InProgress,
+    Passed,
+    Failed,
+    Dropped,
+    Regularized,
 }
