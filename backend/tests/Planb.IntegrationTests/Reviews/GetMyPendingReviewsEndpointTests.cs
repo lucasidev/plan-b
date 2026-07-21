@@ -27,9 +27,9 @@ public class GetMyPendingReviewsEndpointTests
     // cursadas con comisión sembrada real son reseñables/pendientes: el endpoint de pendientes filtra
     // commission_id IS NOT NULL (una cursada sin comisión no se puede reseñar, así que no se ofrece).
     // Por eso cada materia ancla a una comisión + docente sembrados:
-    //   111 Desarrollo de Software → Cid01 (Brandt)    · 2026·1c
-    //   101 Algoritmos y Paradigmas → Cid03 (iturralde) · 2026·1c
-    //   223 Desarrollo Back End     → Cid04 (castro)    · 2025·2c
+    //   111 Desarrollo de Software → comisión "A" (Brandt)         · 2026·1c
+    //   101 Algoritmos y Paradigmas → comisión "Mañana" (iturralde) · 2026·1c
+    //   223 Desarrollo Back End     → comisión "Noche" (castro)     · 2025·2c
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Subject111 =

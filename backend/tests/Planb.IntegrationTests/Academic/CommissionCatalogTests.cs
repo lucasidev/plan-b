@@ -101,7 +101,7 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
-    // Comisión "A" de 111 Desarrollo de Software (Cid01): brandt (Titular) + sosa (Jtp). Caller
+    // Comisión "A" de 111 Desarrollo de Software: brandt (Titular) + sosa (Jtp). Caller
     // del endpoint: el picker de docente del editor de reseña (US-065 docente real por reseña).
     private static readonly Guid Subject111CommissionAId =
         Guid.Parse("00000007-0000-4000-a000-000000000001");

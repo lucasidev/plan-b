@@ -32,9 +32,9 @@ public class PublishReviewEndpointTests
         Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    // 111 Desarrollo de Software + 2026·1c + comisión "A" (Cid01) con docente Brandt: triple
-    // sembrado y coherente, exigido por la validación docente-en-comisión del handler de publish
-    // (US-017 reforzada).
+    // 111 Desarrollo de Software + 2026·1c + comisión "A" con docente Brandt: la terna materia +
+    // período + comisión coherente que exige la validación docente-en-comisión del handler de
+    // publish (US-017 reforzada).
     private static readonly Guid Subject111 =
         Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026_1c =
@@ -69,7 +69,7 @@ public class PublishReviewEndpointTests
 
     /// <summary>
     /// Crea un enrollment "Aprobada" anclado a la comisión sembrada 111 Desarrollo de Software ·
-    /// 2026·1c · "A" (Cid01), cuyo titular es Brandt. Eso lo hace reseñable: la review puede
+    /// 2026·1c · "A", cuyo titular es Brandt. Eso lo hace reseñable: la review puede
     /// apuntar a un docente real de la comisión y pasar la validación docente-en-comisión. Devuelve
     /// el id del enrollment creado.
     /// </summary>
@@ -97,9 +97,9 @@ public class PublishReviewEndpointTests
         var auth = await SetupUserWithProfileAsync("wrong-docente");
         var enrollmentId = await CreateReviewableEnrollmentAsync(auth);
 
-        // Castro (Tid06) es un docente real, pero de OTRA comisión (Cid04, 223 Desarrollo Back
-        // End): no dictó la comisión "A" de 111 Desarrollo de Software del enrollment, así que la
-        // review tiene que rebotar 400.
+        // Castro es un docente real, pero de OTRA comisión (la comisión "Noche" de 223 Desarrollo
+        // Back End): no dictó la comisión "A" de 111 Desarrollo de Software del enrollment, así que
+        // la review tiene que rebotar 400.
         var castro = Guid.Parse("00000006-0000-4000-a000-000000000006");
         var response = await auth.Client.PostAsJsonAsync(
             "/api/reviews",

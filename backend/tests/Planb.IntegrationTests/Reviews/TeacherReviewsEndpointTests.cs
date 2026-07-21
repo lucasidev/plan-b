@@ -30,11 +30,12 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Triples sembrados (materia · comisión · docente titular/jtp · term de esa comisión). El handler
-    // de publish exige que el docente reseñado pertenezca a la comisión de la cursada, así que cada
-    // reseña ancla su cursada a una comisión real que contiene al docente reseñado. Las comisiones
-    // que comparten docente (Brandt está en Cid01 y Cid06) habilitan agregar dos reseñas del mismo
-    // docente sobre cursadas distintas sin chocar con UNIQUE(student, subject, term).
+    // Cada reseña se ancla a una comisión real sembrada (materia · comisión · docente titular/jtp ·
+    // term de esa comisión). El handler de publish exige que el docente reseñado pertenezca a la
+    // comisión de la cursada, así que cada reseña ancla su cursada a una comisión real que contiene
+    // al docente reseñado. Las comisiones que comparten docente (Brandt está en la comisión "A" de
+    // 111 y en la comisión "A" de 313) habilitan agregar dos reseñas del mismo docente sobre
+    // cursadas distintas sin chocar con UNIQUE(student, subject, term).
     private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
     private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017"); // Desarrollo Back End
     private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005"); // Desarrollo de Software
@@ -49,8 +50,9 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid CommissionSubject313 = Guid.Parse("00000007-0000-4000-a000-000000000006");
 
     // Docentes del catálogo sembrado (US-063), por id. Iturralde y Castro son cada uno de una sola
-    // comisión (sirven para el test de filtro estricto); Brandt está en Cid01 y Cid06 (sirve para
-    // agregar dos reseñas del mismo docente sobre cursadas distintas).
+    // comisión (sirven para el test de filtro estricto); Brandt está en la comisión "A" de 111 y en
+    // la comisión "A" de 313 (sirve para agregar dos reseñas del mismo docente sobre cursadas
+    // distintas).
     private static readonly Guid TeacherIturralde = Guid.Parse("00000006-0000-4000-a000-000000000002");
     private static readonly Guid TeacherCastro = Guid.Parse("00000006-0000-4000-a000-000000000006");
     private static readonly Guid TeacherBrandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
@@ -121,8 +123,8 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         // Dos docentes reales de comisiones distintas (cada uno docente de su cursada). El filtro por
         // teacherId tiene que devolver sólo la reseña del docente pedido.
-        var teacherA = TeacherIturralde; // titular de Cid03 (101 Algoritmos y Paradigmas · 2026·1c)
-        var teacherB = TeacherCastro;    // titular de Cid04 (223 Desarrollo Back End · 2025·2c)
+        var teacherA = TeacherIturralde; // titular de la comisión "Mañana" (101 Algoritmos y Paradigmas · 2026·1c)
+        var teacherB = TeacherCastro;    // titular de la comisión "Noche" (223 Desarrollo Back End · 2025·2c)
 
         var auth = await SetupUserAsync("filter");
         await SetupProfileAsync(auth);
@@ -148,7 +150,7 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task TeacherInsights_aggregates_only_that_teachers_published_reviews()
     {
-        // Brandt es docente de dos comisiones (Cid01 y Cid06): permite dos reseñas del mismo docente
+        // Brandt es docente de dos comisiones "A" (111 y 313): permite dos reseñas del mismo docente
         // sobre cursadas distintas, sin chocar con UNIQUE(student, subject, term).
         var teacher = TeacherBrandt;
 
