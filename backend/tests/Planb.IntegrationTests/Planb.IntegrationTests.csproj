@@ -10,6 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="DotNetEnv" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\host\Planb.Api\Planb.Api.csproj" />
