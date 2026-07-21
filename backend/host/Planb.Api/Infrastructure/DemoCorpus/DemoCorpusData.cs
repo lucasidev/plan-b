@@ -55,8 +55,8 @@ public static class DemoCorpusData
     public static Guid TeacherForSubject(Guid subjectId) => SubjectTeacher[subjectId];
 
     // ── Cursada reseñable interactiva (Lucía) ──────────────────────────────────────────────────
-    // Lucía (persona logueable del DevSeed) recibe UNA cursada Aprobada SIN reseña, anclada a una
-    // comisión REAL de US-065 (Cid01: 111 Desarrollo de Software con brandt titular + sosa jtp).
+    // Lucía (persona logueable del DevSeed) recibe UNA cursada Aprobada SIN reseña, anclada a la
+    // comisión "A" real de 111 Desarrollo de Software (US-065), con brandt titular + sosa jtp.
     // Demuestra el write-flow interactivo end-to-end: Lucía abre "escribir reseña", elige el
     // docente real de la comisión y publica (docente real por reseña). Como no se le crea reseña,
     // queda en su listado de pendientes.
@@ -64,7 +64,7 @@ public static class DemoCorpusData
     public const string LuciaPendingKey = "lucia-subject111-pending";
     public static readonly Guid LuciaPendingSubjectId = Subject111;
     public static readonly Guid LuciaPendingCommissionId =
-        Guid.Parse("00000007-0000-4000-a000-000000000001"); // Cid01, Desarrollo de Software comisión "A"
+        Guid.Parse("00000007-0000-4000-a000-000000000001"); // comisión "A" de Desarrollo de Software
     public static readonly Guid LuciaPendingTermId =
         Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
 

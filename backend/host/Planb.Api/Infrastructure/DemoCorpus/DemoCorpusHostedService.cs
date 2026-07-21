@@ -133,9 +133,10 @@ public sealed class DemoCorpusHostedService : IHostedService
                 null))
             .ToList();
 
-        // Cursada reseñable interactiva de Lucía (sin reseña): se le ancla a la comisión real Cid01
-        // para que pueda elegir un docente real al reseñar. Lucía la siembra el IdentitySeeder antes
-        // que este hosted service; si no tiene profile (caso raro), se saltea sin romper.
+        // Cursada reseñable interactiva de Lucía (sin reseña): se le ancla a la comisión "A" real de
+        // 111 Desarrollo de Software para que pueda elegir un docente real al reseñar. Lucía la
+        // siembra el IdentitySeeder antes que este hosted service; si no tiene profile (caso raro),
+        // se saltea sin romper.
         var identityQuery = sp.GetRequiredService<IIdentityQueryService>();
         var luciaSpecs = await BuildLuciaPendingSpecAsync(users, identityQuery, ct);
 

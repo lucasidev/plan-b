@@ -16,7 +16,7 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
 // cursada sea reseñable.
 const SUBJECT_ID = '00000004-0000-4000-a000-000000000005'; // 111 Desarrollo de Software
 const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
-const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // comisión "A" (brandt, sosa)
 
 test.describe('Reseñas · editar (US-018)', () => {
   test.setTimeout(120_000);

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
- * E2E for US-048 PR-C: tab Explorar shows the public feed of Published reviews.
+ * E2E for US-048: tab Explorar shows the public feed of Published reviews.
  *
  * El endpoint es público (AllowAnonymous), pero el shell de `/reviews` vive en `(member)`, así
  * que la página requiere sesión. Creamos un alumno descartable (`createStudent`, ver
@@ -19,7 +19,7 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
 // cursada sea reseñable.
 const SUBJECT_ID = '00000004-0000-4000-a000-000000000005'; // 111 Desarrollo de Software
 const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
-const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // comisión "A" (brandt, sosa)
 
 test.describe('Reseñas · tab Explorar (US-048)', () => {
   test.setTimeout(120_000);

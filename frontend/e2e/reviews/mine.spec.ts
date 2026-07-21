@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
- * E2E for US-048 PR-B: tab Mías shows the reviews the authenticated student published.
+ * E2E for US-048: tab Mías shows the reviews the authenticated student published.
  *
  * Cada corrida crea su propio alumno descartable (`createStudent`, ver
  * `e2e/helpers/students.ts`) y publica una reseña sobre una cursada propia: al ser un alumno
@@ -15,7 +15,7 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
 // cursada sea reseñable.
 const SUBJECT_ID = '00000004-0000-4000-a000-000000000005'; // 111 Desarrollo de Software
 const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
-const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
+const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // comisión "A" (brandt, sosa)
 
 test.describe('Reseñas · tab Mías (US-048)', () => {
   test.setTimeout(120_000);
