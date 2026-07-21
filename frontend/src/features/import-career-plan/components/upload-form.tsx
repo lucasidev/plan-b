@@ -143,7 +143,7 @@ export function UploadCareerPlanForm({
             name="rawText"
             rows={12}
             required={mode === 'text'}
-            placeholder="Ej.:&#10;1° AÑO - 1° CUATRIMESTRE&#10;MAT101 Análisis Matemático I&#10;ALG101 Álgebra I&#10;…"
+            placeholder="Ej.:&#10;1° AÑO - 1° CUATRIMESTRE&#10;101 Algoritmos y Paradigmas&#10;102 Álgebra I&#10;…"
             className={cn(
               'w-full bg-bg-card text-ink border border-line rounded',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
