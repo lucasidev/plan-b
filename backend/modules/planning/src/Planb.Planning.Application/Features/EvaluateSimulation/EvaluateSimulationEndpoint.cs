@@ -30,6 +30,14 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 ///         (materia fuera del plan, sin StudentProfile activo, etc.).</item>
 /// </list>
 /// </para>
+///
+/// <para>
+/// En el 200, <c>weightedDifficulty</c> y las tasas de <c>combinationStats</c> pueden venir
+/// <c>null</c> a propósito (sin reseñas, sin cohorte, o cohorte por debajo del piso
+/// anti-reidentificación de ADR-0047): ver <see cref="EvaluateSimulationResponse"/> y
+/// <see cref="CombinationCohortStats"/> para el criterio completo. <c>sampleSize</c> siempre
+/// viaja con su valor real.
+/// </para>
 /// </summary>
 public sealed class EvaluateSimulationEndpoint : ICarterModule
 {

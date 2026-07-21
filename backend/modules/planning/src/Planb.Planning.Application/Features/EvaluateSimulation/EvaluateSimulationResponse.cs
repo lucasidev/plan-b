@@ -17,6 +17,16 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 /// detalle estructurado): se corta antes, como un <c>Result.Failure</c> genérico
 /// (<c>EvaluationErrors.SubjectNotInPlan</c>).
 /// </para>
+///
+/// <para>
+/// Cuando <see cref="IsValid"/> es <c>true</c>, dos campos pueden venir <c>null</c> a propósito,
+/// no por error: <see cref="WeightedDifficulty"/> es null si ninguna materia elegida tiene
+/// reseñas todavía ("no sabemos" no es lo mismo que "fácil"), y
+/// <see cref="CombinationStats"/>.PassRate/DropoutRate son null si la muestra de la cohorte es 0,
+/// o si es menor al piso anti-reidentificación de <c>CombinationCohortStats</c> (ver su docstring
+/// para el criterio completo, ADR-0047). <c>CombinationStats.SampleSize</c> en cambio siempre
+/// viaja con su valor real: es informativo y no identifica a nadie.
+/// </para>
 /// </summary>
 public sealed record EvaluateSimulationResponse(
     bool IsValid,
