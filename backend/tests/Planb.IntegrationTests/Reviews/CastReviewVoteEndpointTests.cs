@@ -20,11 +20,12 @@ public class CastReviewVoteEndpointTests
 
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Triple sembrado reseñable (PRG101 · 2026·1c · comisión "A" Cid01, titular Brandt). El handler
-    // de publish exige que el docente reseñado pertenezca a la comisión de la cursada, así que toda
-    // reseña de estos tests ancla a Brandt en esa comisión. Cada author es un user distinto y publica
-    // una sola reseña, así no choca con UNIQUE(student, subject, term).
-    private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
+    // Triple sembrado reseñable (111 Desarrollo de Software · 2026·1c · comisión "A" Cid01,
+    // titular Brandt). El handler de publish exige que el docente reseñado pertenezca a la
+    // comisión de la cursada, así que toda reseña de estos tests ancla a Brandt en esa comisión.
+    // Cada author es un user distinto y publica una sola reseña, así no choca con UNIQUE(student,
+    // subject, term).
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
     private static readonly Guid CommissionA = Guid.Parse("00000007-0000-4000-a000-000000000001");
     private static readonly Guid TeacherBrandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
@@ -40,7 +41,7 @@ public class CastReviewVoteEndpointTests
     [Fact]
     public async Task Cast_helpful_returns_counts_and_my_vote()
     {
-        var (author, reviewId) = await SetupAuthorWithReviewAsync(PRG101);
+        var (author, reviewId) = await SetupAuthorWithReviewAsync(Subject111);
         var voter = await SetupUserWithProfileAsync("voter-a");
 
         var resp = await voter.Client.PostAsJsonAsync(
@@ -56,7 +57,7 @@ public class CastReviewVoteEndpointTests
     [Fact]
     public async Task Voting_same_value_twice_toggles_off()
     {
-        var (author, reviewId) = await SetupAuthorWithReviewAsync(PRG101);
+        var (author, reviewId) = await SetupAuthorWithReviewAsync(Subject111);
         var voter = await SetupUserWithProfileAsync("toggle");
 
         await voter.Client.PostAsJsonAsync($"/api/reviews/{reviewId}/vote", new { helpful = true });
@@ -71,7 +72,7 @@ public class CastReviewVoteEndpointTests
     [Fact]
     public async Task Voting_opposite_changes_vote()
     {
-        var (author, reviewId) = await SetupAuthorWithReviewAsync(PRG101);
+        var (author, reviewId) = await SetupAuthorWithReviewAsync(Subject111);
         var voter = await SetupUserWithProfileAsync("change");
 
         await voter.Client.PostAsJsonAsync($"/api/reviews/{reviewId}/vote", new { helpful = true });
@@ -87,7 +88,7 @@ public class CastReviewVoteEndpointTests
     [Fact]
     public async Task Author_cannot_vote_own_review()
     {
-        var (author, reviewId) = await SetupAuthorWithReviewAsync(PRG101);
+        var (author, reviewId) = await SetupAuthorWithReviewAsync(Subject111);
 
         var resp = await author.Client.PostAsJsonAsync(
             $"/api/reviews/{reviewId}/vote", new { helpful = true });
@@ -99,7 +100,7 @@ public class CastReviewVoteEndpointTests
     public async Task Cannot_vote_under_review()
     {
         var author = await SetupUserWithProfileAsync("dirty-author");
-        var enrollmentId = await CreateApprovedEnrollmentAsync(author, PRG101);
+        var enrollmentId = await CreateApprovedEnrollmentAsync(author, Subject111);
         // "idiota" dispara el content filter -> la reseña queda UnderReview, no votable.
         var dirty = await author.Client.PostAsJsonAsync("/api/reviews", ReviewPayload(
             enrollmentId, text: "El profe es un idiota total y no responde nunca, mala experiencia."));
@@ -125,19 +126,19 @@ public class CastReviewVoteEndpointTests
     [Fact]
     public async Task Browse_read_surfaces_counts_and_my_vote()
     {
-        var (author, reviewId) = await SetupAuthorWithReviewAsync(PRG101);
+        var (author, reviewId) = await SetupAuthorWithReviewAsync(Subject111);
         var voter = await SetupUserWithProfileAsync("browse-voter");
         await voter.Client.PostAsJsonAsync($"/api/reviews/{reviewId}/vote", new { helpful = true });
 
         // El votante ve helpfulCount=1 y myVote=true; un anónimo ve el conteo pero myVote=null.
-        var mine = await voter.Client.GetFromJsonAsync<JsonElement>($"/api/reviews?subjectId={PRG101}");
+        var mine = await voter.Client.GetFromJsonAsync<JsonElement>($"/api/reviews?subjectId={Subject111}");
         var row = mine.GetProperty("items").EnumerateArray()
             .First(i => i.GetProperty("id").GetGuid() == reviewId);
         row.GetProperty("helpfulCount").GetInt32().ShouldBe(1);
         row.GetProperty("myVoteIsHelpful").GetBoolean().ShouldBeTrue();
 
         using var anon = _fixture.Factory.CreateClient();
-        var pub = await anon.GetFromJsonAsync<JsonElement>($"/api/reviews?subjectId={PRG101}");
+        var pub = await anon.GetFromJsonAsync<JsonElement>($"/api/reviews?subjectId={Subject111}");
         var pubRow = pub.GetProperty("items").EnumerateArray()
             .First(i => i.GetProperty("id").GetGuid() == reviewId);
         pubRow.GetProperty("helpfulCount").GetInt32().ShouldBe(1);
@@ -169,8 +170,9 @@ public class CastReviewVoteEndpointTests
         return (author, reviewId);
     }
 
-    // Crea una cursada aprobada anclada a la comisión sembrada Cid01 (PRG101 · 2026·1c), reseñable
-    // por Brandt. El subjectId se ignora para mantener la firma estable en los call sites.
+    // Crea una cursada aprobada anclada a la comisión sembrada Cid01 (111 Desarrollo de Software ·
+    // 2026·1c), reseñable por Brandt. El subjectId se ignora para mantener la firma estable en los
+    // call sites.
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
     {
@@ -178,7 +180,7 @@ public class CastReviewVoteEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = PRG101,
+                subjectId = Subject111,
                 commissionId = (Guid?)CommissionA,
                 termId = (Guid?)Term2026_1c,
                 status = "Aprobada",

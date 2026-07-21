@@ -4,6 +4,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Commissions;
+using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
@@ -45,6 +46,7 @@ public sealed class AcademicSeeder
         await SeedUniversitiesAsync(now, ct);
         await SeedCareersAndPlansAsync(now, ct);
         await SeedSubjectsAsync(now, ct);
+        await SeedPrerequisitesAsync(now, ct);
         await SeedAcademicTermsAsync(now, ct);
         await SeedTeachersAsync(now, ct);
         await SeedCommissionsAsync(now, ct);
@@ -178,6 +180,37 @@ public sealed class AcademicSeeder
         {
             _logger.LogInformation(
                 "AcademicSeeder: inserted {Count} subjects", inserted);
+        }
+    }
+
+    /// <summary>
+    /// Correlativas del plan TUDCS (ADR-0003). Idempotencia por la tripla completa (no hay id
+    /// propio, ver el docstring de <see cref="Prerequisite"/>): sin eso, re-ejecutar el seeder
+    /// duplicaría cada pareja contra el UNIQUE compuesto.
+    /// </summary>
+    private async Task SeedPrerequisitesAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existing = (await _db.Prerequisites
+            .AsNoTracking()
+            .Select(p => new { p.SubjectId, p.RequiredSubjectId, p.Type })
+            .ToListAsync(ct))
+            .Select(p => (p.SubjectId, p.RequiredSubjectId, p.Type))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.Prerequisites)
+        {
+            if (existing.Contains((record.SubjectId, record.RequiredSubjectId, record.Type))) continue;
+
+            _db.Prerequisites.Add(Prerequisite.Hydrate(
+                record.SubjectId, record.RequiredSubjectId, record.Type, now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation(
+                "AcademicSeeder: inserted {Count} prerequisites", inserted);
         }
     }
 

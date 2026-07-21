@@ -27,9 +27,9 @@ public class RegisterEnrollmentEndpointTests
     // Seed IDs reales (DB persistente entre tests del fixture).
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
-    private static readonly Guid MAT102 =
+    private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid ALG101 =
+    private static readonly Guid Subject102 =
         Guid.Parse("00000004-0000-4000-a000-000000000002");
     private static readonly Guid Term2024_1c =
         Guid.Parse("00000005-0000-4000-a000-000000000001");
@@ -66,7 +66,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
                 status = "Aprobada",
@@ -92,7 +92,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = ALG101,
+                subjectId = Subject102,
                 commissionId = (Guid?)null,
                 termId = (Guid?)null,
                 status = "Aprobada",
@@ -112,7 +112,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
                 status = "Regular",
@@ -134,7 +134,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
                 status = "Aprobada",
                 approvalMethod = "FinalLibre",
@@ -174,7 +174,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
                 status = "Aprobada",
                 approvalMethod = "FinalLibre",
@@ -193,7 +193,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
                 status = "Cursando",
@@ -213,7 +213,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
                 status = "FooBar",
                 approvalMethod = (string?)null,
@@ -230,7 +230,7 @@ public class RegisterEnrollmentEndpointTests
 
         var payload = new
         {
-            subjectId = MAT102,
+            subjectId = Subject101,
             commissionId = (Guid?)null,
             termId = (Guid?)Term2024_1c,
             status = "Aprobada",
@@ -254,7 +254,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
                 status = "Reprobada",
@@ -267,7 +267,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_2c,
                 status = "Aprobada",
@@ -286,7 +286,7 @@ public class RegisterEnrollmentEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = MAT102,
+                subjectId = Subject101,
                 termId = (Guid?)Term2024_1c,
                 status = "Aprobada",
                 approvalMethod = "FinalLibre",

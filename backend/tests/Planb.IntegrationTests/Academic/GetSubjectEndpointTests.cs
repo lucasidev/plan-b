@@ -16,7 +16,7 @@ public class GetSubjectEndpointTests
     private readonly RegisterApiFixture _fixture;
 
     // Seed determinístico de Academic (mismas ids que los tests de Enrollments/Reviews).
-    private static readonly Guid MAT102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
 
     public GetSubjectEndpointTests(RegisterApiFixture fixture)
     {
@@ -31,12 +31,12 @@ public class GetSubjectEndpointTests
     {
         using var client = _fixture.Factory.CreateClient();
 
-        var response = await client.GetAsync($"/api/academic/subjects/{MAT102}");
+        var response = await client.GetAsync($"/api/academic/subjects/{Subject101}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SubjectDetailItem>();
         body.ShouldNotBeNull();
-        body!.Id.ShouldBe(MAT102);
+        body!.Id.ShouldBe(Subject101);
         body.Code.ShouldNotBeNullOrWhiteSpace();
         body.Name.ShouldNotBeNullOrWhiteSpace();
         body.TotalHours.ShouldBeGreaterThan(0);
@@ -57,7 +57,7 @@ public class GetSubjectEndpointTests
     {
         using var client = _fixture.Factory.CreateClient();
 
-        var response = await client.GetAsync($"/api/academic/subjects/{MAT102}");
+        var response = await client.GetAsync($"/api/academic/subjects/{Subject101}");
 
         response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
     }

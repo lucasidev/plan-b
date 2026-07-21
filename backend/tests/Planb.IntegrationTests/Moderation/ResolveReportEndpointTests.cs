@@ -21,7 +21,8 @@ namespace Planb.IntegrationTests.Moderation;
 public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
-    private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
+    // 111 Desarrollo de Software · 2026·1c · comisión "A" (Cid01), titular Brandt.
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
     private static readonly Guid CommissionA = Guid.Parse("00000007-0000-4000-a000-000000000001");
     private static readonly Guid TeacherBrandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
@@ -51,7 +52,7 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
             "/api/me/enrollment-records",
             new
             {
-                subjectId = PRG101,
+                subjectId = Subject111,
                 commissionId = (Guid?)CommissionA,
                 termId = (Guid?)Term2026_1c,
                 status = "Aprobada",

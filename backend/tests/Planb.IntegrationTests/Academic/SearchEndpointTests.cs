@@ -15,8 +15,8 @@ namespace Planb.IntegrationTests.Academic;
 /// </summary>
 public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
 {
-    private static readonly Guid MAT102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
+    private static readonly Guid Subject102 = Guid.Parse("00000004-0000-4000-a000-000000000002"); // Álgebra I
     private static readonly Guid Brandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
     private static readonly Guid Ledesma = Guid.Parse("00000006-0000-4000-a000-000000000009");
 
@@ -32,15 +32,15 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        var response = await client.GetAsync("/api/search?q=MAT102");
+        var response = await client.GetAsync("/api/search?q=101");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
         body.ShouldNotBeNull();
         body!.Items.ShouldNotBeEmpty();
         body.Items[0].Type.ShouldBe("subject");
-        body.Items[0].Id.ShouldBe(MAT102);
-        body.Items[0].Sublabel.ShouldBe("MAT102");
+        body.Items[0].Id.ShouldBe(Subject101);
+        body.Items[0].Sublabel.ShouldBe("101");
     }
 
     [Fact]
@@ -48,12 +48,12 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        // "analisis" sin acento debe encontrar "Análisis Matemático I".
-        var response = await client.GetAsync("/api/search?q=analisis");
+        // "algebra" sin acento debe encontrar "Álgebra I".
+        var response = await client.GetAsync("/api/search?q=algebra");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
-        body!.Items.ShouldContain(i => i.Id == MAT102);
+        body!.Items.ShouldContain(i => i.Id == Subject102);
     }
 
     [Fact]
@@ -61,12 +61,13 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        // "programcion" (typo) debe acercarse a "Programación I" por similitud trigram.
-        var response = await client.GetAsync("/api/search?q=programcion");
+        // "paradigms" (typo de "paradigmas") debe acercarse a "Algoritmos y Paradigmas" por
+        // similitud trigram.
+        var response = await client.GetAsync("/api/search?q=paradigms");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
-        body!.Items.ShouldContain(i => i.Id == PRG101);
+        body!.Items.ShouldContain(i => i.Id == Subject101);
     }
 
     [Fact]
@@ -115,8 +116,8 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        // "mat" matchea varias (MAT102, MAT201, Matemática...); limit=1 recorta a una.
-        var response = await client.GetAsync("/api/search?q=mat&limit=1");
+        // "desarrollo" matchea varias (111, 213, 223, 311); limit=1 recorta a una.
+        var response = await client.GetAsync("/api/search?q=desarrollo&limit=1");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
@@ -128,7 +129,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        var response = await client.GetAsync("/api/search?q=MAT102");
+        var response = await client.GetAsync("/api/search?q=101");
 
         response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
     }

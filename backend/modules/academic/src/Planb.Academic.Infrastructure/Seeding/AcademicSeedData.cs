@@ -3,6 +3,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Commissions;
+using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
@@ -254,15 +255,19 @@ public static class AcademicSeedData
     };
 
     // ====================================================================
-    // Subjects (TUDCS UNSTA — Plan 2018)
+    // Subjects (TUDCS UNSTA, plan de estudios real, aportado por el dueño del proyecto, que cursa
+    // la carrera). 21 materias: 9 de 1er año, 8 de 2do año, 4 de 3ro.
     //
-    // Subset curado para que el form de US-013 tenga un catálogo coherente con el mock del
-    // tab Historial (canvas v2). Cuando el backoffice admin (US-062) aterrice, esto se reemplaza
-    // por carga vía UI o CSV importer. Mientras tanto, alcanza para validar el flow end-to-end.
+    // TermInYear: las Anuales van con null (invariante del aggregate, ver Subject.Validate). Para
+    // las cuatrimestrales, el plan no discrimina 1er/2do cuatrimestre por materia: el dato se
+    // infiere del código, asumiendo que el segundo dígito marca el cuatrimestre (11X/21X/31X → 1,
+    // 12X/22X → 2). "102 Álgebra I" es la excepción (no encaja en X1X ni X2X): va al 1er
+    // cuatrimestre porque su continuación (122 Álgebra II) ya ocupa el 2do.
     //
     // Convención de UUIDs:
-    //   - Subjects: 00000004-0000-4000-a000-0000000000NN
-    //   donde NN agrupa por año del plan (01-09 → 1º, 10-19 → 2º, 20-29 → 3º).
+    //   - Subjects: 00000004-0000-4000-a000-0000000000NN, NN secuencial en el orden del plan real
+    //   (1er año 01-09, 2do año 10-17, 3er año 18-21). Reemplaza la convención anterior (bandas de
+    //   a diez por año): con 21 materias reales no sobra margen para reservar huecos.
     // ====================================================================
 
     private static readonly CareerPlanId TudcsPlanId =
@@ -270,117 +275,213 @@ public static class AcademicSeedData
 
     public static IReadOnlyList<SubjectRecord> Subjects { get; } = new[]
     {
-        // 1er año
+        // ---------- 1er año ----------
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000001")),
             CareerPlanId: TudcsPlanId,
-            Code: "MAT102",
-            Name: "Análisis Matemático I",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            Code: "101",
+            Name: "Algoritmos y Paradigmas",
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            WeeklyHours: 3, TotalHours: 84),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000002")),
             CareerPlanId: TudcsPlanId,
-            Code: "ALG101",
-            Name: "Álgebra",
+            Code: "102",
+            Name: "Álgebra I",
             YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
+            WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000003")),
             CareerPlanId: TudcsPlanId,
-            Code: "INT101",
-            Name: "Introducción a Sistemas",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 4, TotalHours: 64),
+            Code: "103",
+            Name: "Inglés A1",
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000004")),
             CareerPlanId: TudcsPlanId,
-            Code: "PRG101",
-            Name: "Programación I",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            Code: "104",
+            Name: "Formación Humanística I",
+            YearInPlan: 1, TermInYear: null, TermKind: TermKind.Anual,
+            WeeklyHours: 3, TotalHours: 84),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000005")),
             CareerPlanId: TudcsPlanId,
-            Code: "ING101",
-            Name: "Inglés Técnico I",
+            Code: "111",
+            Name: "Desarrollo de Software",
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000006")),
+            CareerPlanId: TudcsPlanId,
+            Code: "113",
+            Name: "Gestión de RR.HH",
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000007")),
+            CareerPlanId: TudcsPlanId,
+            Code: "121",
+            Name: "Base de datos",
             YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 3, TotalHours: 48),
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000008")),
+            CareerPlanId: TudcsPlanId,
+            Code: "122",
+            Name: "Álgebra II",
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000009")),
+            CareerPlanId: TudcsPlanId,
+            Code: "123",
+            Name: "Seminario Informático I",
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
 
-        // 2do año
+        // ---------- 2do año ----------
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000010")),
             CareerPlanId: TudcsPlanId,
-            Code: "PRG201",
-            Name: "Programación II",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            Code: "201",
+            Name: "Inglés A2",
+            YearInPlan: 2, TermInYear: null, TermKind: TermKind.Anual,
+            WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000011")),
             CareerPlanId: TudcsPlanId,
-            Code: "MAT201",
-            Name: "Análisis Matemático II",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            Code: "202",
+            Name: "Formación Humanística II",
+            YearInPlan: 2, TermInYear: null, TermKind: TermKind.Anual,
+            WeeklyHours: 4, TotalHours: 112),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000012")),
             CareerPlanId: TudcsPlanId,
-            Code: "ISW201",
-            Name: "Ingeniería de Software I (intro)",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
+            Code: "211",
+            Name: "Fundamentos de Control de Calidad",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 4, TotalHours: 56),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000013")),
             CareerPlanId: TudcsPlanId,
-            Code: "BD201",
-            Name: "Bases de Datos I",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
+            Code: "212",
+            Name: "Seminario Informático II",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000014")),
             CareerPlanId: TudcsPlanId,
-            Code: "SO201",
-            Name: "Sistemas Operativos",
+            Code: "213",
+            Name: "Desarrollo Front End",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 6, TotalHours: 84),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000015")),
+            CareerPlanId: TudcsPlanId,
+            Code: "221",
+            Name: "Control de Calidad Avanzado",
             YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000016")),
+            CareerPlanId: TudcsPlanId,
+            Code: "222",
+            Name: "Seminario Informático III",
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000017")),
+            CareerPlanId: TudcsPlanId,
+            Code: "223",
+            Name: "Desarrollo Back End",
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 6, TotalHours: 84),
 
-        // 3er año
+        // ---------- 3er año ----------
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000018")),
+            CareerPlanId: TudcsPlanId,
+            Code: "311",
+            Name: "Desarrollo de Aplicaciones Web",
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 5, TotalHours: 70),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000019")),
+            CareerPlanId: TudcsPlanId,
+            Code: "312",
+            Name: "Testeo Automatizado",
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
+            WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000020")),
             CareerPlanId: TudcsPlanId,
-            Code: "ISW301",
-            Name: "Ingeniería de Software I",
+            Code: "313",
+            Name: "Inglés B1:1",
             YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            WeeklyHours: 3, TotalHours: 42),
         new SubjectRecord(
             Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000021")),
             CareerPlanId: TudcsPlanId,
-            Code: "BD301",
-            Name: "Bases de Datos II",
+            Code: "314",
+            Name: "Proyecto Final",
             YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000022")),
-            CareerPlanId: TudcsPlanId,
-            Code: "ARQ301",
-            Name: "Arquitectura de Computadoras",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000023")),
-            CareerPlanId: TudcsPlanId,
-            Code: "REDES301",
-            Name: "Redes de Computadoras",
-            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 5, TotalHours: 80),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000024")),
-            CareerPlanId: TudcsPlanId,
-            Code: "ISW302",
-            Name: "Ingeniería de Software II",
-            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.Cuatrimestral,
-            WeeklyHours: 6, TotalHours: 96),
+            // 0 hs semanales es correcto (no es una cursada con horario fijo, ver
+            // Subject.Validate): no lo "corrijas" a 1. 350 hs totales.
+            WeeklyHours: 0, TotalHours: 350),
     };
+
+    // ====================================================================
+    // Prerequisites (correlativas, ADR-0003). 16 parejas reales cargadas dos veces, una por type:
+    // ParaCursar (para inscribirte a cursar necesitás la previa regularizada) y ParaRendir (para
+    // rendir el final necesitás la previa aprobada). No es redundante: son dos grafos separados
+    // sobre los mismos subjects, y la PK (subject_id, required_subject_id, type) permite
+    // justamente que la misma pareja aparezca en los dos.
+    //
+    // Procedencia del dato: las primeras 7 parejas salen de la nomenclatura del plan (I, II, III
+    // son entregas sucesivas de la misma materia). Las 9 restantes son inferidas por dependencia
+    // técnica (una requiere lo que la otra enseña), no un régimen de correlatividades oficial: el
+    // plan aportado no incluye ese detalle.
+    // ====================================================================
+
+    private static IReadOnlyList<(string SubjectNn, string RequiredNn)> PrerequisitePairs { get; } = new[]
+    {
+        // Nomenclatura del plan (I, II, III).
+        ("08", "02"), // 122 Álgebra II ← 102 Álgebra I
+        ("10", "03"), // 201 Inglés A2 ← 103 Inglés A1
+        ("20", "10"), // 313 Inglés B1:1 ← 201 Inglés A2
+        ("11", "04"), // 202 Formación Humanística II ← 104 Formación Humanística I
+        ("13", "09"), // 212 Seminario Informático II ← 123 Seminario Informático I
+        ("16", "13"), // 222 Seminario Informático III ← 212 Seminario Informático II
+        ("15", "12"), // 221 Control de Calidad Avanzado ← 211 Fundamentos de Control de Calidad
+
+        // Inferidas por dependencia técnica (no vienen de la nomenclatura del plan).
+        ("05", "01"), // 111 Desarrollo de Software ← 101 Algoritmos y Paradigmas
+        ("14", "05"), // 213 Desarrollo Front End ← 111 Desarrollo de Software
+        ("17", "05"), // 223 Desarrollo Back End ← 111 Desarrollo de Software
+        ("17", "07"), // 223 Desarrollo Back End ← 121 Base de datos
+        ("18", "14"), // 311 Desarrollo de Aplicaciones Web ← 213 Desarrollo Front End
+        ("18", "17"), // 311 Desarrollo de Aplicaciones Web ← 223 Desarrollo Back End
+        ("19", "12"), // 312 Testeo Automatizado ← 211 Fundamentos de Control de Calidad
+        ("21", "18"), // 314 Proyecto Final ← 311 Desarrollo de Aplicaciones Web
+        ("21", "15"), // 314 Proyecto Final ← 221 Control de Calidad Avanzado
+    };
+
+    public static IReadOnlyList<PrerequisiteRecord> Prerequisites { get; } = BuildPrerequisites();
+
+    private static IReadOnlyList<PrerequisiteRecord> BuildPrerequisites()
+    {
+        var records = new List<PrerequisiteRecord>();
+        foreach (var (subjectNn, requiredNn) in PrerequisitePairs)
+        {
+            var subjectId = Sid(subjectNn);
+            var requiredId = Sid(requiredNn);
+            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ParaCursar));
+            records.Add(new PrerequisiteRecord(subjectId, requiredId, PrerequisiteType.ParaRendir));
+        }
+
+        return records;
+    }
 
     // ====================================================================
     // AcademicTerms (UNSTA cuatrimestrales 2024-2026)
@@ -489,44 +590,44 @@ public static class AcademicSeedData
     // ====================================================================
     public static IReadOnlyList<CommissionRecord> Commissions { get; } = new[]
     {
-        // Programación I (PRG101) · 2026·1c: dos comisiones, distinta modalidad.
-        new CommissionRecord(Cid("01"), Sid("04"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
+        // Desarrollo de Software (111) · 2026·1c: dos comisiones, distinta modalidad.
+        new CommissionRecord(Cid("01"), Sid("05"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
             new[]
             {
                 new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Titular), // brandt
                 new CommissionTeacherRecord(Tid("04"), CommissionTeacherRole.Jtp),     // sosa
             }),
-        new CommissionRecord(Cid("02"), Sid("04"), Atid("05"), "B (Virtual)", CommissionModality.Virtual, 60, null,
+        new CommissionRecord(Cid("02"), Sid("05"), Atid("05"), "B (Virtual)", CommissionModality.Virtual, 60, null,
             new[]
             {
                 new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular),  // reynoso
                 new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Ayudante), // quiroga
             }),
 
-        // Análisis Matemático I (MAT102) · 2026·1c.
+        // Algoritmos y Paradigmas (101) · 2026·1c.
         new CommissionRecord(Cid("03"), Sid("01"), Atid("05"), "Mañana", CommissionModality.Presencial, 35, null,
             new[]
             {
                 new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Titular), // iturralde
             }),
 
-        // Programación II (PRG201) · 2025·2c.
-        new CommissionRecord(Cid("04"), Sid("10"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
+        // Desarrollo Back End (223) · 2025·2c.
+        new CommissionRecord(Cid("04"), Sid("17"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
             new[]
             {
                 new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Titular), // castro
                 new CommissionTeacherRecord(Tid("05"), CommissionTeacherRole.Adjunto), // castellanos
             }),
 
-        // Bases de Datos I (BD201) · 2025·2c.
-        new CommissionRecord(Cid("05"), Sid("13"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
+        // Base de datos (121) · 2025·2c.
+        new CommissionRecord(Cid("05"), Sid("07"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
             new[]
             {
                 new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Titular), // méndez
                 new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Jtp),     // páez
             }),
 
-        // Ingeniería de Software I (ISW301) · 2026·1c. brandt acá es adjunto (mismo docente, otra comisión).
+        // Inglés B1:1 (313) · 2026·1c. brandt acá es adjunto (mismo docente, otra comisión).
         new CommissionRecord(Cid("06"), Sid("20"), Atid("05"), "A", CommissionModality.Presencial, 25, null,
             new[]
             {
@@ -538,13 +639,13 @@ public static class AcademicSeedData
         // demo corpus. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
         // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
         new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular) }), // álgebra: reynoso
-        new CommissionRecord(Cid("08"), Sid("03"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular) }), // intro sistemas: ledesma
+            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Titular) }), // álgebra I (102): reynoso
+        new CommissionRecord(Cid("08"), Sid("09"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Titular) }), // seminario informático I (123): ledesma
         new CommissionRecord(Cid("09"), Sid("14"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Titular) }), // sistemas operativos: páez
+            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Titular) }), // desarrollo front end (213): páez
         new CommissionRecord(Cid("0a"), Sid("11"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Titular) }), // análisis II: quiroga
+            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Titular) }), // formación humanística II (202): quiroga
     };
 
     private static SubjectId Sid(string nn) =>
@@ -584,6 +685,13 @@ public sealed record SubjectRecord(
     TermKind TermKind,
     int WeeklyHours,
     int TotalHours);
+
+/// <summary>
+/// Correlativa del seed: <see cref="SubjectId"/> requiere a <see cref="RequiredSubjectId"/> según
+/// <see cref="Type"/> (ADR-0003). Análogo de <see cref="Prerequisites.Prerequisite"/> pero sin
+/// <c>CreatedAt</c>: el seeder le pone la fecha al hidratar, igual que con el resto de los records.
+/// </summary>
+public sealed record PrerequisiteRecord(SubjectId SubjectId, SubjectId RequiredSubjectId, PrerequisiteType Type);
 
 /// <summary>
 /// Período lectivo del seed. UUIDs determinísticos para consistencia entre runs y referencias

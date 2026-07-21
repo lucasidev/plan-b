@@ -53,9 +53,10 @@ test.describe('Catálogo público (US-001)', () => {
       timeout: 30_000,
     });
     await expect(page.getByText('Año 1')).toBeVisible();
-    // Link completo (código + nombre): getByText del nombre solo choca en strict mode con "Análisis
-    // Matemático II" (lo contiene como prefijo); el name del link es único.
-    await expect(page.getByRole('link', { name: 'MAT102 Análisis Matemático I' })).toBeVisible();
+    // Link completo (código + nombre): "Algoritmos y Paradigmas" no es prefijo de ningún otro
+    // nombre del plan (a diferencia de "Álgebra I" / "Álgebra II"), así que el name del link es
+    // único sin ambigüedad de strict mode.
+    await expect(page.getByRole('link', { name: '101 Algoritmos y Paradigmas' })).toBeVisible();
   });
 
   test('el link de la lista de universidades navega a sus carreras', async ({ page }) => {
