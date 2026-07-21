@@ -273,13 +273,17 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
             }
         }
 
-        // 40hs semanales = jornada laboral completa. Más es input degenerado.
-        if (weeklyHours is < 1 or > 40)
+        // 0 es válido y no es un caso raro: hay materias con carga total pero sin carga semanal
+        // fija (Proyecto Final de la TUDCS son 0 hs/sem y 350 totales, y lo mismo pasa con
+        // prácticas profesionales y tesis). Rechazarlo dejaba planes reales fuera del modelo.
+        // El techo de 40 sigue: es una jornada laboral completa, más que eso es input degenerado.
+        if (weeklyHours is < 0 or > 40)
         {
             return SubjectErrors.WeeklyHoursOutOfRange;
         }
 
-        // Total al menos lo que ya cubre una semana (la materia dura como mínimo 1 semana).
+        // La carga total sí tiene que ser positiva (una materia sin horas no existe) y nunca menor
+        // que la semanal.
         if (totalHours < weeklyHours || totalHours <= 0)
         {
             return SubjectErrors.TotalHoursOutOfRange;

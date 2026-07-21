@@ -142,8 +142,21 @@ public class SubjectTests
         result.Error.ShouldBe(SubjectErrors.TermInYearOutOfRange);
     }
 
+    [Fact]
+    public void Create_WithoutWeeklyHours_ReturnsSuccess()
+    {
+        // Proyecto Final de la TUDCS: 0 hs semanales y 350 totales. No tiene carga semanal fija
+        // porque no es una cursada con horario, y lo mismo pasa con prácticas profesionales y
+        // tesis. Rechazarlo dejaba planes de estudio reales fuera del modelo.
+        var result = Subject.Create(
+            AnyPlan, "314", "Proyecto Final", 3, 1, TermKind.Cuatrimestral, 0, 350, null, Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.WeeklyHours.ShouldBe(0);
+        result.Value.TotalHours.ShouldBe(350);
+    }
+
     [Theory]
-    [InlineData(0)]
     [InlineData(-1)]
     [InlineData(41)]
     public void Create_WeeklyHoursOutOfRange_ReturnsError(int weeklyHours)

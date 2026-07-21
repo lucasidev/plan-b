@@ -32,7 +32,7 @@ public static class SubjectErrors
     public static readonly Error WeeklyHoursOutOfRange =
         Error.Validation(
             "academic.subject.weekly_hours_out_of_range",
-            "Subject weekly_hours must be between 1 and 40.");
+            "Subject weekly_hours must be between 0 and 40.");
 
     public static readonly Error TotalHoursOutOfRange =
         Error.Validation(

@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Schema de los campos de una materia (US-062 admin). Los rangos espejan las validaciones del
  * aggregate Subject del backend (`Subject.Validate`): code/name obligatorios (code max 40, name max
- * 200, columnas del data-model), yearInPlan 1-10, weeklyHours 1-40, totalHours positivo y al menos
+ * 200, columnas del data-model), yearInPlan 1-10, weeklyHours 0-40, totalHours positivo y al menos
  * la semanal, y el invariante term_kind/term_in_year (una materia anual nunca lleva número de
  * cuatrimestre o bimestre; cualquier otra cadencia sí, entre 1 y 6): feedback inmediato, el dominio
  * revalida (defensa en profundidad, no la única barrera).
@@ -40,7 +40,9 @@ export const subjectFieldsSchema = z
     weeklyHours: z.coerce
       .number({ message: 'Ingresá una carga horaria semanal válida.' })
       .int('Tiene que ser un número entero.')
-      .min(1, 'Mínimo 1 hora semanal.')
+      // 0 es válido: hay materias con carga total pero sin carga semanal fija (Proyecto Final de
+      // la TUDCS son 0 hs/sem y 350 totales, igual que prácticas profesionales y tesis).
+      .min(0, 'No puede ser negativa.')
       .max(40, 'Máximo 40 horas semanales.'),
     totalHours: z.coerce
       .number({ message: 'Ingresá una carga horaria total válida.' })
