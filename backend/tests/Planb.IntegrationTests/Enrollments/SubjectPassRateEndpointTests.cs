@@ -19,10 +19,10 @@ namespace Planb.IntegrationTests.Enrollments;
 public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
-    private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid Prg101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
-    private static readonly Guid Bd201 = Guid.Parse("00000004-0000-4000-a000-000000000013");
-    private static readonly Guid So201 = Guid.Parse("00000004-0000-4000-a000-000000000014");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000007");
+    private static readonly Guid Subject213 = Guid.Parse("00000004-0000-4000-a000-000000000014");
 
     private static readonly Guid[] Terms =
     [
@@ -47,13 +47,13 @@ public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
         var auth = await SetupUserAsync("met");
 
         // 3 aprobadas + 2 reprobadas -> 3/5 = 60%.
-        await PassFinalLibre(auth, Prg101, Terms[0]);
-        await PassFinalLibre(auth, Prg101, Terms[1]);
-        await PassFinalLibre(auth, Prg101, Terms[2]);
-        await Fail(auth, Prg101, Terms[3]);
-        await Fail(auth, Prg101, Terms[4]);
+        await PassFinalLibre(auth, Subject111, Terms[0]);
+        await PassFinalLibre(auth, Subject111, Terms[1]);
+        await PassFinalLibre(auth, Subject111, Terms[2]);
+        await Fail(auth, Subject111, Terms[3]);
+        await Fail(auth, Subject111, Terms[4]);
 
-        var body = await GetPassRate(auth.Client, Prg101);
+        var body = await GetPassRate(auth.Client, Subject111);
         body.SampleSize.ShouldBe(5);
         body.PassRate.ShouldNotBeNull();
         body.PassRate!.Value.ShouldBe(60.0, 0.01);
@@ -65,11 +65,11 @@ public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
         var auth = await SetupUserAsync("gated");
 
         // Solo 3 con verdicto: bajo el gate de 5 -> PassRate null.
-        await PassFinalLibre(auth, So201, Terms[0]);
-        await PassFinalLibre(auth, So201, Terms[1]);
-        await Fail(auth, So201, Terms[2]);
+        await PassFinalLibre(auth, Subject213, Terms[0]);
+        await PassFinalLibre(auth, Subject213, Terms[1]);
+        await Fail(auth, Subject213, Terms[2]);
 
-        var body = await GetPassRate(auth.Client, So201);
+        var body = await GetPassRate(auth.Client, Subject213);
         body.SampleSize.ShouldBe(3);
         body.PassRate.ShouldBeNull();
     }
@@ -81,15 +81,15 @@ public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
 
         // 4 aprobadas (FinalLibre) + 1 reprobada -> 4/5 = 80%. La equivalencia y la abandonada
         // quedan afuera del cálculo (no rindió acá / sin verdicto de examen).
-        await PassFinalLibre(auth, Bd201, Terms[0]);
-        await PassFinalLibre(auth, Bd201, Terms[1]);
-        await PassFinalLibre(auth, Bd201, Terms[2]);
-        await PassFinalLibre(auth, Bd201, Terms[3]);
-        await Fail(auth, Bd201, Terms[4]);
-        await Abandon(auth, Bd201, Terms[5]);
-        await PassEquivalencia(auth, Bd201);
+        await PassFinalLibre(auth, Subject121, Terms[0]);
+        await PassFinalLibre(auth, Subject121, Terms[1]);
+        await PassFinalLibre(auth, Subject121, Terms[2]);
+        await PassFinalLibre(auth, Subject121, Terms[3]);
+        await Fail(auth, Subject121, Terms[4]);
+        await Abandon(auth, Subject121, Terms[5]);
+        await PassEquivalencia(auth, Subject121);
 
-        var body = await GetPassRate(auth.Client, Bd201);
+        var body = await GetPassRate(auth.Client, Subject121);
         body.SampleSize.ShouldBe(5);
         body.PassRate.ShouldNotBeNull();
         body.PassRate!.Value.ShouldBe(80.0, 0.01);
@@ -100,7 +100,7 @@ public class SubjectPassRateEndpointTests : IClassFixture<RegisterApiFixture>
     {
         using var client = _fixture.Factory.CreateClient();
 
-        var response = await client.GetAsync($"/api/enrollments/subjects/{Mat102}/pass-rate");
+        var response = await client.GetAsync($"/api/enrollments/subjects/{Subject101}/pass-rate");
 
         response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
     }

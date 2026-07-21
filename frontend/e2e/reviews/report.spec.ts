@@ -12,7 +12,7 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
 
 // Comisión sembrada (US-065): materia+term+comisión con docente real, condición para que la
 // cursada sea reseñable.
-const SUBJECT_ID = '00000004-0000-4000-a000-000000000004'; // PRG101
+const SUBJECT_ID = '00000004-0000-4000-a000-000000000005'; // 111 Desarrollo de Software
 const TERM_ID = '00000005-0000-4000-a000-000000000005'; // 2026·1c
 const COMMISSION_ID = '00000007-0000-4000-a000-000000000001'; // Cid01 (brandt, sosa)
 

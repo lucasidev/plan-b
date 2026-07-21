@@ -29,11 +29,12 @@ public class DeleteOwnReviewEndpointTests
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Triple sembrado reseñable (PRG101 · 2026·1c · comisión "A" Cid01, titular Brandt). El handler
-    // de publish exige que el docente reseñado pertenezca a la comisión de la cursada, por eso la
-    // reseña apunta a Brandt. Cada test usa un user fresco con una sola cursada.
-    private static readonly Guid PRG101 =
-        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    // Triple sembrado reseñable (111 Desarrollo de Software · 2026·1c · comisión "A" Cid01,
+    // titular Brandt). El handler de publish exige que el docente reseñado pertenezca a la
+    // comisión de la cursada, por eso la reseña apunta a Brandt. Cada test usa un user fresco con
+    // una sola cursada.
+    private static readonly Guid Subject111 =
+        Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026_1c =
         Guid.Parse("00000005-0000-4000-a000-000000000005");
     private static readonly Guid CommissionA =
@@ -61,8 +62,9 @@ public class DeleteOwnReviewEndpointTests
         profile.EnsureSuccessStatusCode();
     }
 
-    // Crea una cursada aprobada anclada a la comisión sembrada Cid01 (PRG101 · 2026·1c), reseñable
-    // por Brandt. El subjectId se ignora para mantener estable la firma de los call sites.
+    // Crea una cursada aprobada anclada a la comisión sembrada Cid01 (111 Desarrollo de Software ·
+    // 2026·1c), reseñable por Brandt. El subjectId se ignora para mantener estable la firma de los
+    // call sites.
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
     {
@@ -70,7 +72,7 @@ public class DeleteOwnReviewEndpointTests
             "/api/me/enrollment-records",
             new
             {
-                subjectId = PRG101,
+                subjectId = Subject111,
                 commissionId = (Guid?)CommissionA,
                 termId = (Guid?)Term2026_1c,
                 status = "Aprobada",
@@ -130,7 +132,7 @@ public class DeleteOwnReviewEndpointTests
     {
         var auth = await SetupUserAsync("happy");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, Subject111);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         var resp = await auth.Client.DeleteAsync($"/api/me/reviews/{reviewId}");
@@ -147,7 +149,7 @@ public class DeleteOwnReviewEndpointTests
     {
         var auth = await SetupUserAsync("idempotent");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, Subject111);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         var first = await auth.Client.DeleteAsync($"/api/me/reviews/{reviewId}");
@@ -164,7 +166,7 @@ public class DeleteOwnReviewEndpointTests
     {
         var auth = await SetupUserAsync("mine");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, Subject111);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         await auth.Client.DeleteAsync($"/api/me/reviews/{reviewId}");
@@ -179,7 +181,7 @@ public class DeleteOwnReviewEndpointTests
     {
         var auth = await SetupUserAsync("rewrite");
         await SetupProfileAsync(auth);
-        var enrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
+        var enrollment = await CreateApprovedEnrollmentAsync(auth, Subject111);
         var reviewId = await PublishCleanReviewAsync(auth, enrollment);
 
         // Borrar.
@@ -203,7 +205,7 @@ public class DeleteOwnReviewEndpointTests
     {
         var owner = await SetupUserAsync("owner");
         await SetupProfileAsync(owner);
-        var enrollment = await CreateApprovedEnrollmentAsync(owner, PRG101);
+        var enrollment = await CreateApprovedEnrollmentAsync(owner, Subject111);
         var reviewId = await PublishCleanReviewAsync(owner, enrollment);
 
         var other = await SetupUserAsync("other");

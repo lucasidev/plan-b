@@ -22,22 +22,22 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
 
     private static readonly Guid Iturralde = Guid.Parse("00000006-0000-4000-a000-000000000002");
-    private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid CommissionMat102 = Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
+    private static readonly Guid CommissionSubject101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
 
     private static readonly Guid Castro = Guid.Parse("00000006-0000-4000-a000-000000000006");
-    private static readonly Guid Prg201 = Guid.Parse("00000004-0000-4000-a000-000000000010");
-    private static readonly Guid CommissionPrg201 = Guid.Parse("00000007-0000-4000-a000-000000000004");
+    private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017"); // Desarrollo Back End
+    private static readonly Guid CommissionSubject223 = Guid.Parse("00000007-0000-4000-a000-000000000004");
     private static readonly Guid Term2025_2c = Guid.Parse("00000005-0000-4000-a000-000000000004");
 
     private static readonly Guid Brandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
-    private static readonly Guid Prg101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
-    private static readonly Guid CommissionPrg101 = Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005"); // Desarrollo de Software
+    private static readonly Guid CommissionSubject111 = Guid.Parse("00000007-0000-4000-a000-000000000001");
 
     private static readonly Guid Ledesma = Guid.Parse("00000006-0000-4000-a000-000000000009");
-    private static readonly Guid Isw301 = Guid.Parse("00000004-0000-4000-a000-000000000020");
-    private static readonly Guid CommissionIsw301 = Guid.Parse("00000007-0000-4000-a000-000000000006");
+    private static readonly Guid Subject313 = Guid.Parse("00000004-0000-4000-a000-000000000020"); // Inglés B1:1
+    private static readonly Guid CommissionSubject313 = Guid.Parse("00000007-0000-4000-a000-000000000006");
 
     private const string ResponseText =
         "Gracias por la devolución. Ajusté el cronograma de prácticos para este cuatrimestre.";
@@ -127,7 +127,7 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
     public async Task Verified_teacher_edits_its_response_and_feed_shows_the_new_text()
     {
         var reviewId = await PublishReviewAsync(
-            "happy", Iturralde, Mat102, CommissionMat102, Term2026_1c);
+            "happy", Iturralde, Subject101, CommissionSubject101, Term2026_1c);
         var teacher = await CreateVerifiedTeacherAsync("happy", Iturralde);
         (await teacher.Client.PostAsJsonAsync(
             $"/api/reviews/{reviewId}/teacher-response", new { text = ResponseText }))
@@ -150,7 +150,7 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
     public async Task Non_verified_user_cannot_edit_the_response()
     {
         var reviewId = await PublishReviewAsync(
-            "403", Castro, Prg201, CommissionPrg201, Term2025_2c);
+            "403", Castro, Subject223, CommissionSubject223, Term2025_2c);
         var teacher = await CreateVerifiedTeacherAsync("403", Castro);
         (await teacher.Client.PostAsJsonAsync(
             $"/api/reviews/{reviewId}/teacher-response", new { text = ResponseText }))
@@ -171,7 +171,7 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
     public async Task Returns_404_when_the_review_has_no_response()
     {
         var reviewId = await PublishReviewAsync(
-            "404", Brandt, Prg101, CommissionPrg101, Term2026_1c);
+            "404", Brandt, Subject111, CommissionSubject111, Term2026_1c);
         var teacher = await CreateVerifiedTeacherAsync("404", Brandt);
 
         // Sin responder primero: no hay respuesta que editar.
@@ -187,7 +187,7 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
     public async Task Fourth_edit_within_24h_is_rejected_by_cooldown()
     {
         var reviewId = await PublishReviewAsync(
-            "cooldown", Ledesma, Isw301, CommissionIsw301, Term2026_1c);
+            "cooldown", Ledesma, Subject313, CommissionSubject313, Term2026_1c);
         var teacher = await CreateVerifiedTeacherAsync("cooldown", Ledesma);
         (await teacher.Client.PostAsJsonAsync(
             $"/api/reviews/{reviewId}/teacher-response", new { text = ResponseText }))

@@ -35,18 +35,18 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     // reseña ancla su cursada a una comisión real que contiene al docente reseñado. Las comisiones
     // que comparten docente (Brandt está en Cid01 y Cid06) habilitan agregar dos reseñas del mismo
     // docente sobre cursadas distintas sin chocar con UNIQUE(student, subject, term).
-    private static readonly Guid MAT102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid PRG201 = Guid.Parse("00000004-0000-4000-a000-000000000010");
-    private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
-    private static readonly Guid ISW301 = Guid.Parse("00000004-0000-4000-a000-000000000020");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
+    private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017"); // Desarrollo Back End
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005"); // Desarrollo de Software
+    private static readonly Guid Subject313 = Guid.Parse("00000004-0000-4000-a000-000000000020"); // Inglés B1:1
 
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
     private static readonly Guid Term2025_2c = Guid.Parse("00000005-0000-4000-a000-000000000004");
 
-    private static readonly Guid CommissionMat102 = Guid.Parse("00000007-0000-4000-a000-000000000003");
-    private static readonly Guid CommissionPrg201 = Guid.Parse("00000007-0000-4000-a000-000000000004");
-    private static readonly Guid CommissionPrg101 = Guid.Parse("00000007-0000-4000-a000-000000000001");
-    private static readonly Guid CommissionIsw301 = Guid.Parse("00000007-0000-4000-a000-000000000006");
+    private static readonly Guid CommissionSubject101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid CommissionSubject223 = Guid.Parse("00000007-0000-4000-a000-000000000004");
+    private static readonly Guid CommissionSubject111 = Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid CommissionSubject313 = Guid.Parse("00000007-0000-4000-a000-000000000006");
 
     // Docentes del catálogo sembrado (US-063), por id. Iturralde y Castro son cada uno de una sola
     // comisión (sirven para el test de filtro estricto); Brandt está en Cid01 y Cid06 (sirve para
@@ -121,17 +121,17 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         // Dos docentes reales de comisiones distintas (cada uno docente de su cursada). El filtro por
         // teacherId tiene que devolver sólo la reseña del docente pedido.
-        var teacherA = TeacherIturralde; // titular de Cid03 (MAT102 · 2026·1c)
-        var teacherB = TeacherCastro;    // titular de Cid04 (PRG201 · 2025·2c)
+        var teacherA = TeacherIturralde; // titular de Cid03 (101 Algoritmos y Paradigmas · 2026·1c)
+        var teacherB = TeacherCastro;    // titular de Cid04 (223 Desarrollo Back End · 2025·2c)
 
         var auth = await SetupUserAsync("filter");
         await SetupProfileAsync(auth);
 
-        var enrollmentA = await CreateApprovedEnrollmentAsync(auth, MAT102, CommissionMat102, Term2026_1c);
+        var enrollmentA = await CreateApprovedEnrollmentAsync(auth, Subject101, CommissionSubject101, Term2026_1c);
         await PublishReviewForTeacherAsync(auth, enrollmentA, teacherA, overall: 5);
 
         // Otra cursada/comisión, otro docente reseñado: NO debe aparecer al filtrar por teacherA.
-        var enrollmentB = await CreateApprovedEnrollmentAsync(auth, PRG201, CommissionPrg201, Term2025_2c);
+        var enrollmentB = await CreateApprovedEnrollmentAsync(auth, Subject223, CommissionSubject223, Term2025_2c);
         await PublishReviewForTeacherAsync(auth, enrollmentB, teacherB, overall: 2);
 
         using var anon = _fixture.Factory.CreateClient();
@@ -142,7 +142,7 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         body.ShouldNotBeNull();
         body!.Items.ShouldNotBeEmpty();
         body.Items.ShouldAllBe(i => i.OverallRating == 5); // solo la de teacherA (overall 5)
-        body.Items.ShouldContain(i => i.SubjectId == MAT102);
+        body.Items.ShouldContain(i => i.SubjectId == Subject101);
     }
 
     [Fact]
@@ -155,9 +155,9 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         var auth = await SetupUserAsync("insights");
         await SetupProfileAsync(auth);
 
-        var e1 = await CreateApprovedEnrollmentAsync(auth, PRG101, CommissionPrg101, Term2026_1c);
+        var e1 = await CreateApprovedEnrollmentAsync(auth, Subject111, CommissionSubject111, Term2026_1c);
         await PublishReviewForTeacherAsync(auth, e1, teacher, overall: 4);
-        var e2 = await CreateApprovedEnrollmentAsync(auth, ISW301, CommissionIsw301, Term2026_1c);
+        var e2 = await CreateApprovedEnrollmentAsync(auth, Subject313, CommissionSubject313, Term2026_1c);
         await PublishReviewForTeacherAsync(auth, e2, teacher, overall: 2);
 
         using var anon = _fixture.Factory.CreateClient();

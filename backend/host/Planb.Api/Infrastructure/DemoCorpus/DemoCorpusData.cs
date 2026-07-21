@@ -21,13 +21,17 @@ public static class DemoCorpusData
     // reales de US-065 + validar docente-en-comisión es la slice de "docente real por reseña".
     public static readonly Guid DemoCommissionId = Guid.Parse("0000000c-0000-4000-a000-000000000001");
 
-    private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Análisis Matemático I
-    private static readonly Guid Alg101 = Guid.Parse("00000004-0000-4000-a000-000000000002"); // Álgebra
-    private static readonly Guid Int101 = Guid.Parse("00000004-0000-4000-a000-000000000003"); // Introducción a Sistemas
-    private static readonly Guid Prg101 = Guid.Parse("00000004-0000-4000-a000-000000000004"); // Programación I
-    private static readonly Guid Prg201 = Guid.Parse("00000004-0000-4000-a000-000000000010"); // Programación II
-    private static readonly Guid Bd201 = Guid.Parse("00000004-0000-4000-a000-000000000013"); // Bases de Datos I
-    private static readonly Guid So201 = Guid.Parse("00000004-0000-4000-a000-000000000014"); // Sistemas Operativos
+    // Ids del catálogo real (AcademicSeedData.Subjects). Nombrados por código: los 21 subjects del
+    // plan TUDCS reemplazaron el catálogo inventado, y con eso cambió qué id ocupa cada rol de este
+    // corpus (comisión con 2 cátedras, materia reseñable con SQL, etc). Ver el comentario de
+    // Commissions en AcademicSeedData para el mapeo completo materia <-> comisión.
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
+    private static readonly Guid Subject102 = Guid.Parse("00000004-0000-4000-a000-000000000002"); // Álgebra I
+    private static readonly Guid Subject123 = Guid.Parse("00000004-0000-4000-a000-000000000009"); // Seminario Informático I
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005"); // Desarrollo de Software
+    private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017"); // Desarrollo Back End
+    private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000007"); // Base de datos
+    private static readonly Guid Subject213 = Guid.Parse("00000004-0000-4000-a000-000000000014"); // Desarrollo Front End
 
     // Docente reseñado por materia: ids reales del catálogo docente (US-063). El titular de la
     // comisión sembrada (US-065) cuando la materia tiene una; un docente coherente de UNSTA para las
@@ -36,13 +40,13 @@ public static class DemoCorpusData
     // placeholder hasta la slice de "docente real por reseña".
     private static readonly IReadOnlyDictionary<Guid, Guid> SubjectTeacher = new Dictionary<Guid, Guid>
     {
-        [Mat102] = Teacher("02"), // iturralde (titular comisión Mañana)
-        [Prg101] = Teacher("01"), // brandt (titular comisión A)
-        [Prg201] = Teacher("06"), // castro (titular comisión Noche)
-        [Bd201] = Teacher("07"),  // méndez (titular comisión U1)
-        [Alg101] = Teacher("03"), // reynoso
-        [Int101] = Teacher("09"), // ledesma
-        [So201] = Teacher("08"),  // páez
+        [Subject101] = Teacher("02"), // iturralde (titular comisión Mañana)
+        [Subject111] = Teacher("01"), // brandt (titular comisión A)
+        [Subject223] = Teacher("06"), // castro (titular comisión Noche)
+        [Subject121] = Teacher("07"), // méndez (titular comisión U1)
+        [Subject102] = Teacher("03"), // reynoso
+        [Subject123] = Teacher("09"), // ledesma
+        [Subject213] = Teacher("08"), // páez
     };
 
     private static Guid Teacher(string nn) => Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}");
@@ -52,14 +56,15 @@ public static class DemoCorpusData
 
     // ── Cursada reseñable interactiva (Lucía) ──────────────────────────────────────────────────
     // Lucía (persona logueable del DevSeed) recibe UNA cursada Aprobada SIN reseña, anclada a una
-    // comisión REAL de US-065 (Cid01: PRG101 con brandt titular + sosa jtp). Demuestra el write-flow
-    // interactivo end-to-end: Lucía abre "escribir reseña", elige el docente real de la comisión y
-    // publica (docente real por reseña). Como no se le crea reseña, queda en su listado de pendientes.
+    // comisión REAL de US-065 (Cid01: 111 Desarrollo de Software con brandt titular + sosa jtp).
+    // Demuestra el write-flow interactivo end-to-end: Lucía abre "escribir reseña", elige el
+    // docente real de la comisión y publica (docente real por reseña). Como no se le crea reseña,
+    // queda en su listado de pendientes.
     public const string LuciaEmail = "lucia.mansilla@gmail.com";
-    public const string LuciaPendingKey = "lucia-prg101-pending";
-    public static readonly Guid LuciaPendingSubjectId = Prg101;
+    public const string LuciaPendingKey = "lucia-subject111-pending";
+    public static readonly Guid LuciaPendingSubjectId = Subject111;
     public static readonly Guid LuciaPendingCommissionId =
-        Guid.Parse("00000007-0000-4000-a000-000000000001"); // Cid01, PRG101 comisión "A"
+        Guid.Parse("00000007-0000-4000-a000-000000000001"); // Cid01, Desarrollo de Software comisión "A"
     public static readonly Guid LuciaPendingTermId =
         Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
 
@@ -113,27 +118,27 @@ public static class DemoCorpusData
     private static IReadOnlyList<ReviewDef> BuildReviews()
     {
         var raw = new List<ReviewDef>();
-        raw.AddRange(Mat102Reviews());
-        raw.AddRange(Prg101Reviews());
-        raw.AddRange(Bd201Reviews());
-        raw.AddRange(Int101Reviews());
-        raw.AddRange(Prg201Reviews());
-        raw.AddRange(So201Reviews());
-        raw.AddRange(Alg101Reviews());
+        raw.AddRange(Subject101Reviews());
+        raw.AddRange(Subject111Reviews());
+        raw.AddRange(Subject121Reviews());
+        raw.AddRange(Subject123Reviews());
+        raw.AddRange(Subject223Reviews());
+        raw.AddRange(Subject213Reviews());
+        raw.AddRange(Subject102Reviews());
 
         // Term ciclado por índice: variedad sin tocar el UNIQUE (cada fila tiene profile distinto
         // dentro de una misma materia, así que el term puede repetirse sin colisión).
         return raw.Select((r, i) => r with { TermId = Terms[i % Terms.Length] }).ToList();
     }
 
-    private static IEnumerable<ReviewDef> Mat102Reviews()
+    private static IEnumerable<ReviewDef> Subject101Reviews()
     {
-        var s = Mat102;
+        var s = Subject101;
         yield return R("mat102-a01", "a01", s, 5, 3, 10, true, true, 6m, 420,
-            "Análisis I es el filtro del primer año. Si no venís con base fuerte del secundario, prepará muchas horas de práctica.",
+            "Algoritmos y Paradigmas es el filtro del primer año. Si no venís con base fuerte de lógica, prepará muchas horas de práctica.",
             "pide mucho", "exige pero acompaña");
         yield return R("mat102-a02", "a02", s, 4, 4, 8, true, true, 7m, 380,
-            "Los teóricos son densos pero los prácticos te salvan. Iba a abandonar y terminé enganchándome con límites y derivadas.",
+            "Los teóricos son densos pero los prácticos te salvan. Iba a abandonar y terminé enganchándome con la recursividad y las estructuras de datos.",
             "exige pero acompaña", "TPs bien armados");
         yield return R("mat102-a03", "a03", s, 5, 2, 12, false, false, 4m, 300,
             "Parciales durísimos, te toman cosas que no llegaste a ver en clase. Aprobé de milagro recién en el segundo recuperatorio.",
@@ -148,7 +153,7 @@ public static class DemoCorpusData
             "Le tenía pánico y resultó más llevadera de lo que pensaba. Los videos de repaso del aula virtual ayudan un montón.",
             "claro explicando", "estructura ordenada");
         yield return R("mat102-a07", "a07", s, 4, 3, 8, true, false, 7m, 120,
-            "Contenido importante pero la cursada se hace larga. Algunos temas quedan medio colgados por falta de tiempo al final.",
+            "Contenido importante pero la cursada se hace larga (es anual). Algunos temas quedan medio colgados por falta de tiempo al final.",
             "material desactualizado");
         yield return R("mat102-a08", "a08", s, 4, 4, 9, true, true, 7m, 90,
             "Si la encarás desde el principio no es imposible. El problema es dejar todo para la semana del parcial y ahí explota.",
@@ -158,9 +163,9 @@ public static class DemoCorpusData
             "exige pero acompaña", "cercano con alumnos");
     }
 
-    private static IEnumerable<ReviewDef> Prg101Reviews()
+    private static IEnumerable<ReviewDef> Subject111Reviews()
     {
-        var s = Prg101;
+        var s = Subject111;
         yield return R("prg101-a01", "a01", s, 2, 5, 6, true, true, 9m, 400,
             "La mejor materia del primer año si te gusta programar. Arrancás de cero y terminás haciendo proyectitos que funcionan.",
             "claro explicando", "TPs bien armados");
@@ -177,7 +182,7 @@ public static class DemoCorpusData
             "Aprendí muchísimo. El docente explica con ejemplos reales del laburo y eso te ayuda a entender para qué sirve cada cosa.",
             "claro explicando", "estructura ordenada");
         yield return R("prg101-a07", "a07", s, 3, 3, 7, true, false, 7m, 140,
-            "Buena introducción pero se queda corta en algunos temas. Después en Programación II terminás sufriendo lo que faltó.",
+            "Buena introducción pero se queda corta en algunos temas. Después en Desarrollo Back End terminás sufriendo lo que faltó.",
             "material desactualizado");
         yield return R("prg101-a08", "a08", s, 3, 4, 8, true, true, 8m, 100,
             "Cargada de entregas semanales, no te podés dormir ni una. Pero salís con lo básico de programación bien firme.",
@@ -190,11 +195,11 @@ public static class DemoCorpusData
             "estructura ordenada", "cercano con alumnos");
     }
 
-    private static IEnumerable<ReviewDef> Bd201Reviews()
+    private static IEnumerable<ReviewDef> Subject121Reviews()
     {
-        var s = Bd201;
+        var s = Subject121;
         yield return R("bd201-a02", "a02", s, 3, 5, 7, true, true, 8m, 360,
-            "Bases de Datos te cambia la cabeza para diseñar sistemas. Vas de SQL desde cero hasta normalización sin que se note el salto.",
+            "Base de Datos te cambia la cabeza para diseñar sistemas. Vas de SQL desde cero hasta normalización sin que se note el salto.",
             "claro explicando", "TPs bien armados");
         yield return R("bd201-a03", "a03", s, 4, 4, 8, true, false, 7m, 300,
             "Materia clave de la tecnicatura. El TP integrador es exigente pero terminás aprendiendo un montón de modelado real.",
@@ -216,62 +221,62 @@ public static class DemoCorpusData
             "TPs bien armados");
     }
 
-    private static IEnumerable<ReviewDef> Int101Reviews()
+    private static IEnumerable<ReviewDef> Subject123Reviews()
     {
-        var s = Int101;
+        var s = Subject123;
         yield return R("int101-a01", "a01", s, 2, 4, 4, true, false, 8m, 410,
-            "Materia introductoria tranquila, ideal para arrancar la carrera sin estrés. Te da los conceptos generales de qué es un sistema.",
+            "Seminario tranquilo, ideal para arrancar el año sin estrés. Te da un panorama general de la carrera y de la disciplina.",
             "estructura ordenada");
         yield return R("int101-a03", "a03", s, 2, 3, 4, true, false, 7m, 280,
-            "Un poco teórica de más para mi gusto, pero te deja el panorama general de cómo se piensa un sistema de información.",
+            "Un poco teórico de más para mi gusto, pero te deja el panorama general de cómo se piensa el desarrollo de software.",
             "material desactualizado");
         yield return R("int101-a06", "a06", s, 2, 4, 3, true, true, 8m, 160,
-            "Buena para ubicarte al principio de todo. Nada complicado, pero no la subestimes porque el parcial igual te puede sorprender.",
+            "Buena para ubicarte a mitad de año. Nada complicado, pero no la subestimes porque el parcial igual te puede sorprender.",
             "parciales justos");
         yield return R("int101-a09", "a09", s, 2, 4, 4, true, false, 9m, 70,
             "Liviana pero útil. Sienta las bases conceptuales que después vas a usar en casi todas las materias que siguen.",
             "claro explicando");
     }
 
-    private static IEnumerable<ReviewDef> Prg201Reviews()
+    private static IEnumerable<ReviewDef> Subject223Reviews()
     {
-        var s = Prg201;
+        var s = Subject223;
         yield return R("prg201-a02", "a02", s, 4, 4, 9, true, true, 7m, 330,
-            "El salto desde Programación I es grande. Programación orientada a objetos, estructuras, todo se pone bastante más serio acá.",
+            "El salto desde Desarrollo de Software es grande. Lógica de negocio, persistencia, todo se pone bastante más serio acá.",
             "pide mucho", "exige pero acompaña");
         yield return R("prg201-a04", "a04", s, 4, 5, 10, true, true, 8m, 220,
             "Materia exigente pero la que más me sirvió de toda la carrera. Los TPs son como mini proyectos reales de software.",
             "TPs bien armados", "claro explicando");
         yield return R("prg201-a07", "a07", s, 5, 3, 11, true, false, 6m, 150,
-            "Difícil si venís flojo de Programación I. Reforzá lo básico antes de arrancar porque acá no hay tiempo de ponerse al día.",
+            "Difícil si venís flojo de Desarrollo de Software. Reforzá lo básico antes de arrancar porque acá no hay tiempo de ponerse al día.",
             "pide mucho");
         yield return R("prg201-a10", "a10", s, 4, 4, 9, true, true, 8m, 55,
             "Mucho trabajo pero salís programando en serio. El docente acompaña bien en las entregas y devuelve correcciones útiles.",
             "exige pero acompaña", "cercano con alumnos");
     }
 
-    private static IEnumerable<ReviewDef> So201Reviews()
+    private static IEnumerable<ReviewDef> Subject213Reviews()
     {
-        var s = So201;
+        var s = Subject213;
         yield return R("so201-a01", "a01", s, 4, 4, 8, true, false, 7m, 200,
-            "Sistemas Operativos es fascinante pero abstracto. Procesos, memoria, planificación: todo lo que pasa abajo y nunca ves.",
+            "Desarrollo Front End engancha rápido. HTML, CSS y JavaScript todo junto, y en pocas clases ya tenés algo andando en pantalla.",
             "claro explicando");
         yield return R("so201-a05", "a05", s, 4, 3, 9, true, false, 6m, 110,
-            "Tema denso, requiere leer bastante por fuera de la clase. El parcial teórico es exigente, así que no lo dejes para último momento.",
+            "El framework que usan pide práctica extra fuera de la cursada. El TP final es exigente, así que no lo dejes para último momento.",
             "parciales difíciles", "pide mucho");
         yield return R("so201-a08", "a08", s, 3, 4, 7, true, true, 8m, 50,
-            "Muy interesante para entender cómo funciona una computadora por dentro de verdad. Recomendable si te copa lo de bajo nivel.",
+            "Muy entretenida para ver resultados rápido en pantalla. Recomendable si te copa maquetar interfaces.",
             "estructura ordenada");
     }
 
-    private static IEnumerable<ReviewDef> Alg101Reviews()
+    private static IEnumerable<ReviewDef> Subject102Reviews()
     {
-        var s = Alg101;
+        var s = Subject102;
         yield return R("alg101-a03", "a03", s, 3, 4, 6, true, false, 8m, 340,
             "Álgebra es prolija si te gusta la matemática estructurada. Matrices y vectores, todo bastante mecánico una vez que agarrás la mano.",
             "estructura ordenada", "parciales justos");
         yield return R("alg101-a06", "a06", s, 3, 4, 5, true, true, 8m, 130,
-            "Llevadera comparada con Análisis. Los parciales son previsibles si hiciste la práctica, no hay sorpresas raras en la cursada.",
+            "Llevadera comparada con Algoritmos y Paradigmas. Los parciales son previsibles si hiciste la práctica, no hay sorpresas raras en la cursada.",
             "parciales justos");
     }
 
@@ -319,9 +324,10 @@ public static class DemoCorpusData
 
     /// <summary>
     /// Cursadas sin aprobar (Reprobada/Abandonada), sin reseña, por <see cref="FailureAuthors"/>.
-    /// Alimentan el denominador del pass-rate (ADR-0047). Curado para un spread realista: MAT102
-    /// (el filtro del primer año) queda bajo, PRG101 alto, y ALG101 queda bajo el gate de muestra
-    /// (demuestra el estado "datos insuficientes"). Cada (autor, materia) es único.
+    /// Alimentan el denominador del pass-rate (ADR-0047). Curado para un spread realista: 101
+    /// (Algoritmos y Paradigmas, el filtro del primer año) queda bajo, 111 (Desarrollo de Software)
+    /// alto, y 102 (Álgebra I) queda bajo el gate de muestra (demuestra el estado "datos
+    /// insuficientes"). Cada (autor, materia) es único.
     /// </summary>
     public static IReadOnlyList<FailureDef> Failures { get; } = BuildFailures();
 
@@ -329,31 +335,31 @@ public static class DemoCorpusData
     {
         var raw = new List<FailureDef>
         {
-            // MAT102 (9 aprob): 6 reprobadas + 1 abandonada -> 9/(9+6) = 60%.
-            F("fail-mat102-b01", "b01", Mat102, false),
-            F("fail-mat102-b02", "b02", Mat102, false),
-            F("fail-mat102-b03", "b03", Mat102, false),
-            F("fail-mat102-b04", "b04", Mat102, false),
-            F("fail-mat102-b05", "b05", Mat102, false),
-            F("fail-mat102-b06", "b06", Mat102, false),
-            F("fail-mat102-b07", "b07", Mat102, true),
-            // PRG101 (9 aprob): 2 reprobadas -> 9/11 = 82%.
-            F("fail-prg101-b01", "b01", Prg101, false),
-            F("fail-prg101-b02", "b02", Prg101, false),
-            // BD201 (7 aprob): 3 reprobadas -> 7/10 = 70%.
-            F("fail-bd201-b03", "b03", Bd201, false),
-            F("fail-bd201-b04", "b04", Bd201, false),
-            F("fail-bd201-b05", "b05", Bd201, false),
-            // INT101 (4 aprob): 1 reprobada -> 4/5 = 80% (N=5, justo el gate).
-            F("fail-int101-b06", "b06", Int101, false),
-            // PRG201 (4 aprob): 2 reprobadas -> 4/6 = 67%.
-            F("fail-prg201-b07", "b07", Prg201, false),
-            F("fail-prg201-b08", "b08", Prg201, false),
-            // SO201 (3 aprob): 2 reprobadas -> 3/5 = 60% (N=5).
-            F("fail-so201-b01", "b01", So201, false),
-            F("fail-so201-b02", "b02", So201, false),
-            // ALG101 (2 aprob): 1 reprobada -> N=3 < 5, GATED ("datos insuficientes").
-            F("fail-alg101-b03", "b03", Alg101, false),
+            // 101 Algoritmos y Paradigmas (9 aprob): 6 reprobadas + 1 abandonada -> 9/(9+6) = 60%.
+            F("fail-mat102-b01", "b01", Subject101, false),
+            F("fail-mat102-b02", "b02", Subject101, false),
+            F("fail-mat102-b03", "b03", Subject101, false),
+            F("fail-mat102-b04", "b04", Subject101, false),
+            F("fail-mat102-b05", "b05", Subject101, false),
+            F("fail-mat102-b06", "b06", Subject101, false),
+            F("fail-mat102-b07", "b07", Subject101, true),
+            // 111 Desarrollo de Software (9 aprob): 2 reprobadas -> 9/11 = 82%.
+            F("fail-prg101-b01", "b01", Subject111, false),
+            F("fail-prg101-b02", "b02", Subject111, false),
+            // 121 Base de datos (7 aprob): 3 reprobadas -> 7/10 = 70%.
+            F("fail-bd201-b03", "b03", Subject121, false),
+            F("fail-bd201-b04", "b04", Subject121, false),
+            F("fail-bd201-b05", "b05", Subject121, false),
+            // 123 Seminario Informático I (4 aprob): 1 reprobada -> 4/5 = 80% (N=5, justo el gate).
+            F("fail-int101-b06", "b06", Subject123, false),
+            // 223 Desarrollo Back End (4 aprob): 2 reprobadas -> 4/6 = 67%.
+            F("fail-prg201-b07", "b07", Subject223, false),
+            F("fail-prg201-b08", "b08", Subject223, false),
+            // 213 Desarrollo Front End (3 aprob): 2 reprobadas -> 3/5 = 60% (N=5).
+            F("fail-so201-b01", "b01", Subject213, false),
+            F("fail-so201-b02", "b02", Subject213, false),
+            // 102 Álgebra I (2 aprob): 1 reprobada -> N=3 < 5, GATED ("datos insuficientes").
+            F("fail-alg101-b03", "b03", Subject102, false),
         };
 
         return raw.Select((f, i) => f with { TermId = Terms[i % Terms.Length] }).ToList();

@@ -29,29 +29,29 @@ public class GetMyReviewsEndpointTests
     // Dos materias sembradas con comisión real, para que un mismo user pueda tener dos cursadas
     // reseñables distintas (UNIQUE student+subject+term exige que difieran). Cada una ancla a su
     // comisión/docente sembrado (el handler de publish valida docente-en-comisión):
-    //   MAT102 → comisión Cid03 (iturralde) · 2026·1c
-    //   PRG101 → comisión Cid01 (Brandt)    · 2026·1c
-    private static readonly Guid MAT102 =
+    //   101 Algoritmos y Paradigmas → comisión Cid03 (iturralde) · 2026·1c
+    //   111 Desarrollo de Software  → comisión Cid01 (Brandt)    · 2026·1c
+    private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid PRG101 =
-        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid Subject111 =
+        Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026_1c =
         Guid.Parse("00000005-0000-4000-a000-000000000005");
 
-    private static readonly Guid CommissionMat102 =
+    private static readonly Guid CommissionSubject101 =
         Guid.Parse("00000007-0000-4000-a000-000000000003");
     private static readonly Guid TeacherIturralde =
         Guid.Parse("00000006-0000-4000-a000-000000000002");
-    private static readonly Guid CommissionPrg101 =
+    private static readonly Guid CommissionSubject111 =
         Guid.Parse("00000007-0000-4000-a000-000000000001");
     private static readonly Guid TeacherBrandt =
         Guid.Parse("00000006-0000-4000-a000-000000000001");
 
     // Comisión + docente sembrados que corresponden a cada materia reseñable de arriba.
     private static (Guid CommissionId, Guid TeacherId) SeededFor(Guid subjectId) =>
-        subjectId == MAT102
-            ? (CommissionMat102, TeacherIturralde)
-            : (CommissionPrg101, TeacherBrandt);
+        subjectId == Subject101
+            ? (CommissionSubject101, TeacherIturralde)
+            : (CommissionSubject111, TeacherBrandt);
 
     public GetMyReviewsEndpointTests(RegisterApiFixture fixture)
     {
@@ -183,11 +183,11 @@ public class GetMyReviewsEndpointTests
         var auth = await SetupUserAsync("happy");
         await SetupProfileAsync(auth);
 
-        var cleanEnrollment = await CreateApprovedEnrollmentAsync(auth, MAT102);
-        await PublishCleanReviewAsync(auth, cleanEnrollment, MAT102);
+        var cleanEnrollment = await CreateApprovedEnrollmentAsync(auth, Subject101);
+        await PublishCleanReviewAsync(auth, cleanEnrollment, Subject101);
 
-        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, PRG101);
-        await PublishDirtyReviewAsync(auth, dirtyEnrollment, PRG101);
+        var dirtyEnrollment = await CreateApprovedEnrollmentAsync(auth, Subject111);
+        await PublishDirtyReviewAsync(auth, dirtyEnrollment, Subject111);
 
         var response = await auth.Client.GetAsync("/api/reviews/me");
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -200,14 +200,14 @@ public class GetMyReviewsEndpointTests
         var first = body.Items[0];
         first.EnrollmentId.ShouldBe(dirtyEnrollment);
         first.Status.ShouldBe("UnderReview");
-        first.SubjectId.ShouldBe(PRG101);
+        first.SubjectId.ShouldBe(Subject111);
         first.SubjectCode.ShouldNotBeNullOrWhiteSpace();
         first.SubjectName.ShouldNotBeNullOrWhiteSpace();
 
         var second = body.Items[1];
         second.EnrollmentId.ShouldBe(cleanEnrollment);
         second.Status.ShouldBe("Published");
-        second.SubjectId.ShouldBe(MAT102);
+        second.SubjectId.ShouldBe(Subject101);
         second.FinalGrade.ShouldBe(8m);
 
         body.Stats.TotalCount.ShouldBe(2);
@@ -221,8 +221,8 @@ public class GetMyReviewsEndpointTests
     {
         var alice = await SetupUserAsync("alice");
         await SetupProfileAsync(alice);
-        var aliceEnrollment = await CreateApprovedEnrollmentAsync(alice, MAT102);
-        await PublishCleanReviewAsync(alice, aliceEnrollment, MAT102);
+        var aliceEnrollment = await CreateApprovedEnrollmentAsync(alice, Subject101);
+        await PublishCleanReviewAsync(alice, aliceEnrollment, Subject101);
 
         var bob = await SetupUserAsync("bob");
         await SetupProfileAsync(bob);

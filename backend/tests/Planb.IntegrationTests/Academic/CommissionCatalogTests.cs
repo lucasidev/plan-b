@@ -24,9 +24,9 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
         _client = fixture.Factory.CreateClient();
     }
 
-    // Programación I (PRG101) + 2026·1c: tiene 2 comisiones sembradas (A presencial, B virtual).
-    private static readonly Guid Prg101Id =
-        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    // Desarrollo de Software (111) + 2026·1c: tiene 2 comisiones sembradas (A presencial, B virtual).
+    private static readonly Guid Subject111Id =
+        Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026C1Id =
         Guid.Parse("00000005-0000-4000-a000-000000000005");
 
@@ -34,7 +34,7 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
     public async Task ListCommissions_returns_seeded_commissions_with_teachers()
     {
         var response = await _client.GetAsync(
-            $"/api/academic/subjects/{Prg101Id}/commissions?termId={Term2026C1Id}");
+            $"/api/academic/subjects/{Subject111Id}/commissions?termId={Term2026C1Id}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -67,7 +67,7 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
     public async Task ListCommissions_title_cases_accented_teacher_names()
     {
         var response = await _client.GetAsync(
-            $"/api/academic/subjects/{Prg101Id}/commissions?termId={Term2026C1Id}");
+            $"/api/academic/subjects/{Subject111Id}/commissions?termId={Term2026C1Id}");
 
         var commissions = await response.Content.ReadFromJsonAsync<List<CommissionListItem>>();
         commissions.ShouldNotBeNull();
@@ -96,21 +96,21 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
     public async Task ListCommissions_returns_400_when_termId_missing()
     {
         var response = await _client.GetAsync(
-            $"/api/academic/subjects/{Prg101Id}/commissions");
+            $"/api/academic/subjects/{Subject111Id}/commissions");
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
-    // Comisión "A" de PRG101 (Cid01): brandt (Titular) + sosa (Jtp). Caller del endpoint:
-    // el picker de docente del editor de reseña (US-065 docente real por reseña).
-    private static readonly Guid Prg101CommissionAId =
+    // Comisión "A" de 111 Desarrollo de Software (Cid01): brandt (Titular) + sosa (Jtp). Caller
+    // del endpoint: el picker de docente del editor de reseña (US-065 docente real por reseña).
+    private static readonly Guid Subject111CommissionAId =
         Guid.Parse("00000007-0000-4000-a000-000000000001");
 
     [Fact]
     public async Task GetCommissionTeachers_returns_titular_first_title_cased()
     {
         var response = await _client.GetAsync(
-            $"/api/academic/commissions/{Prg101CommissionAId}/teachers");
+            $"/api/academic/commissions/{Subject111CommissionAId}/teachers");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 

@@ -24,37 +24,37 @@ public class SubjectInsightsEndpointTests
     // tests seeding reviews for the same subject would cross-contaminate the aggregates. Cada materia
     // que se reseña ancla a su comisión + docente sembrados (el handler de publish valida
     // docente-en-comisión) y al term de esa comisión:
-    //   MAT102 → Cid03 (iturralde) · 2026·1c
-    //   PRG201 → Cid04 (castro)     · 2025·2c
-    //   PRG101 → Cid01 (Brandt)     · 2026·1c
-    // INT101 no tiene comisión sembrada: lo usa solo el test de materia vacía (no publica nada).
-    private static readonly Guid MAT102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid PRG201 = Guid.Parse("00000004-0000-4000-a000-000000000010");
-    private static readonly Guid INT101 = Guid.Parse("00000004-0000-4000-a000-000000000003");
-    private static readonly Guid PRG101 = Guid.Parse("00000004-0000-4000-a000-000000000004");
+    //   101 Algoritmos y Paradigmas → Cid03 (iturralde) · 2026·1c
+    //   223 Desarrollo Back End     → Cid04 (castro)     · 2025·2c
+    //   111 Desarrollo de Software  → Cid01 (Brandt)     · 2026·1c
+    // 103 Inglés A1 no tiene comisión sembrada: lo usa solo el test de materia vacía (no publica nada).
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
+    private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017");
+    private static readonly Guid Subject103 = Guid.Parse("00000004-0000-4000-a000-000000000003");
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
 
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
     private static readonly Guid Term2025_2c = Guid.Parse("00000005-0000-4000-a000-000000000004");
 
-    private static readonly Guid CommissionMat102 = Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid CommissionSubject101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
     private static readonly Guid TeacherIturralde = Guid.Parse("00000006-0000-4000-a000-000000000002");
-    private static readonly Guid CommissionPrg201 = Guid.Parse("00000007-0000-4000-a000-000000000004");
+    private static readonly Guid CommissionSubject223 = Guid.Parse("00000007-0000-4000-a000-000000000004");
     private static readonly Guid TeacherCastro = Guid.Parse("00000006-0000-4000-a000-000000000006");
-    private static readonly Guid CommissionPrg101 = Guid.Parse("00000007-0000-4000-a000-000000000001");
+    private static readonly Guid CommissionSubject111 = Guid.Parse("00000007-0000-4000-a000-000000000001");
     private static readonly Guid TeacherBrandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
 
     // Comisión + docente + term sembrados que corresponden a cada materia reseñable de arriba.
     private static (Guid CommissionId, Guid TeacherId, Guid TermId) SeededFor(Guid subjectId)
     {
-        if (subjectId == MAT102)
+        if (subjectId == Subject101)
         {
-            return (CommissionMat102, TeacherIturralde, Term2026_1c);
+            return (CommissionSubject101, TeacherIturralde, Term2026_1c);
         }
-        if (subjectId == PRG201)
+        if (subjectId == Subject223)
         {
-            return (CommissionPrg201, TeacherCastro, Term2025_2c);
+            return (CommissionSubject223, TeacherCastro, Term2025_2c);
         }
-        return (CommissionPrg101, TeacherBrandt, Term2026_1c);
+        return (CommissionSubject111, TeacherBrandt, Term2026_1c);
     }
 
     public SubjectInsightsEndpointTests(RegisterApiFixture fixture)
@@ -68,13 +68,13 @@ public class SubjectInsightsEndpointTests
     [Fact]
     public async Task Aggregates_published_reviews_for_subject()
     {
-        // Three clean reviews for MAT102: overall 5/3/1, recommend true/true/false.
-        await PublishReviewAsync(MAT102, overall: 5, difficulty: 4, recommend: true, "clean-a");
-        await PublishReviewAsync(MAT102, overall: 3, difficulty: 2, recommend: true, "clean-b");
-        await PublishReviewAsync(MAT102, overall: 1, difficulty: 3, recommend: false, "clean-c");
+        // Three clean reviews for Subject101: overall 5/3/1, recommend true/true/false.
+        await PublishReviewAsync(Subject101, overall: 5, difficulty: 4, recommend: true, "clean-a");
+        await PublishReviewAsync(Subject101, overall: 3, difficulty: 2, recommend: true, "clean-b");
+        await PublishReviewAsync(Subject101, overall: 1, difficulty: 3, recommend: false, "clean-c");
 
         using var client = _fixture.Factory.CreateClient();
-        var response = await client.GetAsync($"/api/reviews/insights?subjectId={MAT102}");
+        var response = await client.GetAsync($"/api/reviews/insights?subjectId={Subject101}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var insights = await response.Content.ReadFromJsonAsync<SubjectReviewInsights>();
@@ -90,14 +90,14 @@ public class SubjectInsightsEndpointTests
     [Fact]
     public async Task Excludes_under_review_from_aggregates()
     {
-        await PublishReviewAsync(PRG201, overall: 5, difficulty: 4, recommend: true, "clean");
+        await PublishReviewAsync(Subject223, overall: 5, difficulty: 4, recommend: true, "clean");
         // "idiota" trips the content filter -> the review lands UnderReview, not Published.
         await PublishReviewAsync(
-            PRG201, overall: 1, difficulty: 5, recommend: false, "dirty",
+            Subject223, overall: 1, difficulty: 5, recommend: false, "dirty",
             text: "El profe es un idiota y no responde nunca, pésima experiencia de cursada.");
 
         using var client = _fixture.Factory.CreateClient();
-        var response = await client.GetAsync($"/api/reviews/insights?subjectId={PRG201}");
+        var response = await client.GetAsync($"/api/reviews/insights?subjectId={Subject223}");
 
         var insights = await response.Content.ReadFromJsonAsync<SubjectReviewInsights>();
         insights!.TotalCount.ShouldBe(1); // only the clean one
@@ -108,8 +108,8 @@ public class SubjectInsightsEndpointTests
     public async Task Empty_subject_returns_zeros_and_nulls()
     {
         using var client = _fixture.Factory.CreateClient();
-        // INT101 is untouched by the other tests in this class, so it stays empty.
-        var response = await client.GetAsync($"/api/reviews/insights?subjectId={INT101}");
+        // Subject103 (103 Inglés A1) is untouched by the other tests in this class, so it stays empty.
+        var response = await client.GetAsync($"/api/reviews/insights?subjectId={Subject103}");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var insights = await response.Content.ReadFromJsonAsync<SubjectReviewInsights>();
@@ -132,10 +132,10 @@ public class SubjectInsightsEndpointTests
     [Fact]
     public async Task Subject_reviews_list_does_not_leak_author_identity()
     {
-        await PublishReviewAsync(PRG101, overall: 4, difficulty: 3, recommend: true, "privacy");
+        await PublishReviewAsync(Subject111, overall: 4, difficulty: 3, recommend: true, "privacy");
 
         using var client = _fixture.Factory.CreateClient();
-        var response = await client.GetAsync($"/api/reviews?subjectId={PRG101}");
+        var response = await client.GetAsync($"/api/reviews?subjectId={Subject111}");
         var raw = await response.Content.ReadAsStringAsync();
 
         // ADR-0009: the public projection never carries author-identifying fields.

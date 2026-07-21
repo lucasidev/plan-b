@@ -26,13 +26,13 @@ public class RespondToReviewEndpointTests : IClassFixture<RegisterApiFixture>
 
     // (docente · materia · comisión donde es titular · term de esa comisión).
     private static readonly Guid Iturralde = Guid.Parse("00000006-0000-4000-a000-000000000002");
-    private static readonly Guid Mat102 = Guid.Parse("00000004-0000-4000-a000-000000000001");
-    private static readonly Guid CommissionMat102 = Guid.Parse("00000007-0000-4000-a000-000000000003");
+    private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001"); // Algoritmos y Paradigmas
+    private static readonly Guid CommissionSubject101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
 
     private static readonly Guid Castro = Guid.Parse("00000006-0000-4000-a000-000000000006");
-    private static readonly Guid Prg201 = Guid.Parse("00000004-0000-4000-a000-000000000010");
-    private static readonly Guid CommissionPrg201 = Guid.Parse("00000007-0000-4000-a000-000000000004");
+    private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017"); // Desarrollo Back End
+    private static readonly Guid CommissionSubject223 = Guid.Parse("00000007-0000-4000-a000-000000000004");
     private static readonly Guid Term2025_2c = Guid.Parse("00000005-0000-4000-a000-000000000004");
 
     private static readonly Guid Brandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
@@ -123,7 +123,7 @@ public class RespondToReviewEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task Verified_teacher_responds_and_response_shows_in_feed()
     {
         var reviewId = await PublishReviewAsync(
-            "happy", Iturralde, Mat102, CommissionMat102, Term2026_1c);
+            "happy", Iturralde, Subject101, CommissionSubject101, Term2026_1c);
         var teacher = await CreateVerifiedTeacherAsync("happy", Iturralde);
 
         var response = await teacher.Client.PostAsJsonAsync(
@@ -144,7 +144,7 @@ public class RespondToReviewEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task Non_verified_user_cannot_respond()
     {
         var reviewId = await PublishReviewAsync(
-            "403", Iturralde, Mat102, CommissionMat102, Term2026_1c);
+            "403", Iturralde, Subject101, CommissionSubject101, Term2026_1c);
 
         // Un member verificado pero que NO reclamó a Iturralde.
         var intruder = await AuthenticatedClient.CreateAsync(
@@ -162,7 +162,7 @@ public class RespondToReviewEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task Second_response_is_idempotent()
     {
         var reviewId = await PublishReviewAsync(
-            "idem", Castro, Prg201, CommissionPrg201, Term2025_2c);
+            "idem", Castro, Subject223, CommissionSubject223, Term2025_2c);
         var teacher = await CreateVerifiedTeacherAsync("idem", Castro);
 
         var first = await teacher.Client.PostAsJsonAsync(
