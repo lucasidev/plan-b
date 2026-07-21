@@ -58,6 +58,18 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 | **regular / regularizar** | Cursada finalizada con los trabajos prácticos/parciales aprobados pero sin rendir el final. Habilita `para_cursar` de correlativas dependientes. |
 | **HistorialImport** | Staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. Guarda el crudo en JSONB para reprocesar. |
 
+## Planificación de cuatrimestre
+
+| Término | Significado |
+|---|---|
+| **simulación** | Combinación de materias que el alumno está considerando cursar el período que viene. Es una **intención**, no un hecho: no lo inscribe a nada ni queda registrada como cursada. Esa distinción entre futuro e pasado es la razón de que Planning sea un BC separado de Enrollments ([ADR-0029](../decisions/0029-planning-bc-separado.md)). |
+| **SimulationDraft** | La simulación guardada. Aggregate del BC Planning. **Todavía no existe**: US-016 evalúa sin persistir nada; la persistencia llega con US-023, que es premium ([ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)). |
+| **materia disponible** | Materia del plan que el alumno puede cursar el próximo período: tiene todas sus correlativas `para_cursar` regularizadas o aprobadas, y no la aprobó, regularizó ni la está cursando. |
+| **materia bloqueada** | Materia que no puede cursar porque le falta alguna correlativa `para_cursar`. El sistema siempre informa **cuáles** faltan: "no podés" sin el motivo no le sirve al alumno para decidir qué hacer. |
+| **combinación** | El conjunto de materias de una simulación. Dos combinaciones son la misma si tienen exactamente las mismas materias, sin importar el orden en que se eligieron. |
+| **cohorte** | Los alumnos que cursaron **exactamente la misma combinación** de materias en un mismo período. Responde "¿cómo les fue a otros que se anotaron a esto mismo?". Ver la desambiguación: no es la camada de ingreso. |
+| **muestra mínima** | Piso de alumnos por debajo del cual no se muestran las tasas de una cohorte (5, [ADR-0047](../decisions/0047-pass-rate-publico-desde-historial-privado.md)). Con menos, el dato permitiría deducir el resultado académico de un compañero puntual. El **tamaño** de la muestra sí se muestra siempre: un porcentaje sin saber sobre cuántos casos se calculó es peor que no mostrar nada. |
+
 ## Reseñas y moderación
 
 | Término | Significado |
@@ -97,6 +109,8 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 | **moderador-docente** | "Un docente puede moderar" | Estructuralmente imposible: `moderator` y `member` son roles exclusivos. Un docente que quiera moderar necesita una segunda cuenta con rol `moderator`. |
 | **anónimo** | "Los datos del autor no existen en DB" | El anonimato es de **presentación**, no de storage. La identidad siempre se preserva internamente. |
 | **estado de materia** | "Lo que muestra la UI (disponible/bloqueada/cursando/etc.)" | La UI muestra una mezcla de estados persistidos (`status` del enrollment) y estados derivados (computados desde correlativas). Solo los persistidos son "status" en el modelo. |
+| **cohorte** | "La camada de ingreso" (la acepción universitaria habitual: "la cohorte 2020") | En planb es el grupo de alumnos que cursó **la misma combinación de materias** en un período, sin importar cuándo ingresaron. El sentido de camada de ingreso **no se usa** en el producto; si algún día hace falta, va con otro nombre. |
+| **simulación** | "Una inscripción" | No inscribe a nada ni reserva un cupo: es una combinación que el alumno está evaluando. Lo que registra un hecho es el `EnrollmentRecord`. |
 | **backoffice** | "Un módulo del backend, con su propio namespace de API (`/api/admin/...`)" | Es la **unión de las features no-públicas de cada agregado**, un corte transversal sobre los módulos que ya existen. No es un bounded context ni un prefijo de ruta: cada feature de backoffice vive en su módulo dueño y expone `/api/<modulo>/...` (ej. el CRUD de carreras es `/api/academic/...`). Ver [ADR-0050](../decisions/0050-backoffice-como-corte-transversal.md). |
 | **admin** | "Un módulo, un área del backend, o un namespace de API" | Es un `role` de `User` (ver Identidades y cuentas). Nombra al **actor**, no a un lugar del sistema. Al conjunto de pantallas que ese actor usa se lo llama **backoffice**; en el frontend "admin" sí nombra algo real, pero es una sección de UI (`src/app/(staff)/admin/`), no un módulo del backend. |
 
