@@ -198,6 +198,17 @@ describe('subjectFieldsSchema', () => {
       expect(result.success).toBe(true);
     });
 
+    it('acepta 0 para materias sin carga semanal fija', () => {
+      // Proyecto Final de la TUDCS: 0 hs/sem y 350 totales. No es un dato degenerado, es una
+      // materia que no se cursa con horario semanal.
+      const result = subjectFieldsSchema.safeParse({
+        ...base,
+        weeklyHours: '0',
+        totalHours: '350',
+      });
+      expect(result.success).toBe(true);
+    });
+
     it('acepta el máximo (40)', () => {
       const result = subjectFieldsSchema.safeParse({
         ...base,
@@ -207,8 +218,8 @@ describe('subjectFieldsSchema', () => {
       expect(result.success).toBe(true);
     });
 
-    it('rechaza 0', () => {
-      const result = subjectFieldsSchema.safeParse({ ...base, weeklyHours: '0' });
+    it('rechaza negativas', () => {
+      const result = subjectFieldsSchema.safeParse({ ...base, weeklyHours: '-1' });
       expect(result.success).toBe(false);
     });
 
