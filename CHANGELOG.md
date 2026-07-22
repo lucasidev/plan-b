@@ -102,6 +102,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - catalogo publico de universidades, carreras, planes y materias (US-001) (academic) — [`2e5eb75`](https://github.com/lucasidev/plan-b/commit/2e5eb75f7b1510748eb91a5c414d83a08e087c8a)
 - CRUD admin de Subject y correlativas con validacion DAG (US-062) (academic) — [`efac9f5`](https://github.com/lucasidev/plan-b/commit/efac9f51c97762ad96de3d19cc7fbb5aa9bbe9fe)
 - backoffice de materias y correlativas en el admin (US-062-f) (academic) — [`2bffa70`](https://github.com/lucasidev/plan-b/commit/2bffa70154481a3326cb896dbf10b187e32bb21c)
+- modulo Planning y evaluador de disponibilidad de materias (US-016) (planning) — [`97197e2`](https://github.com/lucasidev/plan-b/commit/97197e288151b52bec0b7cc370260e8541f4724c)
+- endpoint de materias disponibles del simulador (US-016) (planning) — [`387daa4`](https://github.com/lucasidev/plan-b/commit/387daa4114605d5f72f60782bef576759b230bf5)
+- el simulador consume el backend real (US-016) (planning) — [`7c1687d`](https://github.com/lucasidev/plan-b/commit/7c1687d53d4baa7113e0ff6bb78b8e674183be7c)
+- plan real de la TUDCS con sus correlativas en el seed (academic) — [`f8552e8`](https://github.com/lucasidev/plan-b/commit/f8552e8044a590f12b5a0f537b98d9ddcc601dd9)
+- endpoint de evaluacion de una combinacion (US-016) (planning) — [`e6d956c`](https://github.com/lucasidev/plan-b/commit/e6d956c5d5e4a9dfb46ff07b7350c0b8dc1758c4)
+- panel de metricas del simulador con datos reales (US-016) (planning) — [`9b1248c`](https://github.com/lucasidev/plan-b/commit/9b1248c4c8ea4bab2d5e83aa1636c71da11a7f00)
 
 ### Fixed
 
@@ -151,6 +157,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - panel de planes via TanStack Query, no router.refresh (US-061) (academic) — [`b468223`](https://github.com/lucasidev/plan-b/commit/b468223e74104a8e975f25a436f411b7b1cc5abd)
 - guardar el enrollment window del AcademicTerm en UTC (US-064) (academic) — [`0ebf9dd`](https://github.com/lucasidev/plan-b/commit/0ebf9ddfc52bf93246797c82e3a331933022e063)
 - el backoffice perdia el feedback de sus formularios (frontend) — [`246ab9c`](https://github.com/lucasidev/plan-b/commit/246ab9cc06d2187f19a536a901275b49b885efe7)
+- guarda de hidratacion en los formularios de auth (frontend) — [`bcaba26`](https://github.com/lucasidev/plan-b/commit/bcaba26eee5d0268cf42309d60ce1d8a12b21eed)
+- permitir materias sin carga horaria semanal fija (academic) — [`e3a961d`](https://github.com/lucasidev/plan-b/commit/e3a961d77701e3ddd33dc7407df2cf7eeb3aab49)
+- piso de muestra anti-reidentificacion en la cohorte (ADR-0047) (planning) — [`4db7835`](https://github.com/lucasidev/plan-b/commit/4db78351c79d371a00640236412e90c5b70c0121)
+- los rangos del form de materia salen del schema (academic) — [`89becee`](https://github.com/lucasidev/plan-b/commit/89becee9d5c18e130da7b979e8064902d86e2cf2)
 
 ### Changed
 
@@ -159,3 +169,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - guarda clientApiFetch para fetchers client-side (#147) (frontend) — [`7272689`](https://github.com/lucasidev/plan-b/commit/727268979cd2f3377c2a3319fc48f85cbd44f4aa)
 - destructurar useRouter y corregir docstring (teacher-claim) — [`7fb9f1d`](https://github.com/lucasidev/plan-b/commit/7fb9f1db97b8f44a580b6506b7f2de5e4560bb3f)
 - remediar auditoria de US-061 (Cadence, UpdatedAt, parse estricto) (academic) — [`6c8c69a`](https://github.com/lucasidev/plan-b/commit/6c8c69a7027c077d802889ecc185e4dc50e7545f)
+- sacar del codigo la jerga que nacio en una conversacion — [`16e3edf`](https://github.com/lucasidev/plan-b/commit/16e3edfb67bc3a23ab72053c87dd99850058c8ee)
+- separar los helpers puros del drawer (planning) — [`48e9b45`](https://github.com/lucasidev/plan-b/commit/48e9b453479bebae9d1bc5dc4a7a26167f980e2c)
