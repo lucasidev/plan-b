@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
+import { formatTermOfYear } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { deactivateSubjectAction, reactivateSubjectAction } from '../actions';
 import type { AdminSubjectRow, SubjectDependent } from '../types';
@@ -44,7 +45,7 @@ export function SubjectTable({
       >
         <div>Código</div>
         <div>Materia</div>
-        <div>Cuatr.</div>
+        <div>Cadencia</div>
         <div className="text-right">Horas</div>
         <div>Estado</div>
         <div className="text-right">Acciones</div>
@@ -110,7 +111,7 @@ function SubjectRow({ basePath, subject }: { basePath: string; subject: AdminSub
         <div className="truncate font-mono text-ink">{subject.code}</div>
         <div className="truncate text-ink-2">{subject.name}</div>
         <div className="truncate font-mono text-[11px] text-ink-2">
-          {formatTermLabel(subject.termKind, subject.termInYear)}
+          {formatTermOfYear(subject.termKind, subject.termInYear, { short: true })}
         </div>
         <div className="text-right font-mono text-[11px] text-ink-2">
           {subject.totalHours}
@@ -177,20 +178,6 @@ function StatusBadge({ active }: { active: boolean }) {
       {active ? 'ACTIVA' : 'ARCHIVADA'}
     </span>
   );
-}
-
-const TERM_KIND_ABBR: Record<string, string> = {
-  TwoMonth: 'b',
-  FourMonth: 'c',
-  SixMonth: 's',
-};
-
-/** "1c" (1er cuatrimestre), "2b" (2do bimestre); "anual" para materias anuales. */
-function formatTermLabel(termKind: string, termInYear: number | null): string {
-  if (termKind === 'FullYear' || termInYear === null) {
-    return 'anual';
-  }
-  return `${termInYear}${TERM_KIND_ABBR[termKind] ?? ''}`;
 }
 
 function groupByYear(subjects: AdminSubjectRow[]): [number, AdminSubjectRow[]][] {

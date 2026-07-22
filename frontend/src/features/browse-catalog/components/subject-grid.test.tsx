@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatTermLabel, groupSubjectsByYear } from '../lib/group-subjects';
+import { groupSubjectsByYear } from '../lib/group-subjects';
 import type { Subject } from '../types';
 
 /**
@@ -87,29 +87,5 @@ describe('groupSubjectsByYear', () => {
     const [year1] = groupSubjectsByYear(subjects);
 
     expect(year1.terms).toHaveLength(2);
-  });
-});
-
-describe('formatTermLabel', () => {
-  it('formatea cuatrimestres', () => {
-    expect(formatTermLabel(1, 'FourMonth')).toBe('1er cuatrimestre');
-    expect(formatTermLabel(2, 'FourMonth')).toBe('2do cuatrimestre');
-  });
-
-  it('formatea bimestres', () => {
-    expect(formatTermLabel(3, 'TwoMonth')).toBe('3er bimestre');
-    expect(formatTermLabel(4, 'TwoMonth')).toBe('4to bimestre');
-  });
-
-  it('formatea semestres', () => {
-    expect(formatTermLabel(1, 'SixMonth')).toBe('1er semestre');
-  });
-
-  it('devuelve "Anual" para termKind Anual sin importar termInYear', () => {
-    expect(formatTermLabel(null, 'FullYear')).toBe('Anual');
-  });
-
-  it('devuelve "Anual" cuando termInYear es null aunque el termKind no lo sea (defensivo)', () => {
-    expect(formatTermLabel(null, 'FourMonth')).toBe('Anual');
   });
 });

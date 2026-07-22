@@ -1,13 +1,15 @@
 import { MOCK_COMMISSION_OPTIONS_INT302 } from '../data/mocks';
 
 /**
- * Commission comparator (US-046). For a given subject, shows the available commissions
- * with their crowd-sourced insights (diff, workload, approval, count). Mock using the
- * INT302 dataset as an example; when US-024 (share simulation) lands, insights come
- * from the real corpus.
+ * Comparador de comisiones (US-046). Muestra las comisiones de una materia con sus métricas
+ * (dificultad, carga, aprobación, cantidad de reseñas).
  *
- * Rendered inline in the page (not modal): more visible for the mockup and matches the
- * "Comparar" button in the header.
+ * Los números todavía salen de un dataset fijo: el corpus real llega con US-024. Hasta entonces el
+ * rótulo tiene que decirlo. Antes decía "Insights del corpus", que afirmaba exactamente lo que no
+ * era: el resto de la app puede mostrar datos incompletos, pero ninguna otra parte le atribuía a un
+ * dato inventado un origen que no tenía.
+ *
+ * Se renderiza inline en la página (no modal): más visible y matchea el botón "Comparar" del header.
  */
 export function CommissionCompare({ subjectCode = 'INT302' }: { subjectCode?: string }) {
   const options = MOCK_COMMISSION_OPTIONS_INT302; // hardcoded to INT302 until the corpus lands
@@ -26,7 +28,7 @@ export function CommissionCompare({ subjectCode = 'INT302' }: { subjectCode?: st
           Comparar comisiones · {subjectCode}
         </h2>
         <small className="text-ink-3" style={{ fontWeight: 400 }}>
-          Insights del corpus
+          Datos de ejemplo
         </small>
       </div>
       <div

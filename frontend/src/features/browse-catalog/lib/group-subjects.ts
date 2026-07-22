@@ -21,29 +21,6 @@ export type SubjectYearGroup = {
   terms: SubjectTermGroup[];
 };
 
-const ORDINALS: Record<number, string> = {
-  1: '1er',
-  2: '2do',
-  3: '3er',
-  4: '4to',
-  5: '5to',
-  6: '6to',
-};
-
-const TERM_NOUNS: Record<string, string> = {
-  FourMonth: 'cuatrimestre',
-  SixMonth: 'semestre',
-  TwoMonth: 'bimestre',
-};
-
-/** "1er cuatrimestre", "2do bimestre", "Anual" (termKind Anual no tiene número de término). */
-export function formatTermLabel(termInYear: number | null, termKind: string): string {
-  if (termKind === 'FullYear' || termInYear === null) return 'Anual';
-  const ordinal = ORDINALS[termInYear] ?? `${termInYear}°`;
-  const noun = TERM_NOUNS[termKind] ?? termKind.toLowerCase();
-  return `${ordinal} ${noun}`;
-}
-
 /**
  * Agrupa las materias de un plan por `yearInPlan` y, dentro de cada año, por término
  * (`termInYear` + `termKind`: dos materias con el mismo número de término pero cadencia

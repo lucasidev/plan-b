@@ -10,7 +10,6 @@ import { DisplayHeading } from '@/components/ui/display-heading';
 import { Lede } from '@/components/ui/lede';
 import { type DeletableReview, DeleteReviewModal } from '@/features/delete-review';
 import { publishReviewAction } from '../actions';
-import { MOCK_ANONYMOUS_IDENTITY } from '../data/mocks';
 import { REVIEW_FORM_DEFAULTS, reviewFormSchema } from '../schema';
 import type {
   CommissionTeacherOption,
@@ -363,12 +362,13 @@ export function ReviewEditor({
             text={draft.text ?? ''}
             tags={draft.tags}
             identity={{
-              // Period is real (from the enrollment). Year + career stay placeholders until
-              // the session carries them (US-012); the sidebar hardcodes them for the same
-              // reason. Wiring real values here is part of that US, not this one.
-              year: MOCK_ANONYMOUS_IDENTITY.year,
-              career: MOCK_ANONYMOUS_IDENTITY.career,
-              period: ctx.period ?? MOCK_ANONYMOUS_IDENTITY.period,
+              // El período sale de la cursada real. Año y carrera todavía no viajan en la sesión
+              // (US-012), y hasta acá se rellenaban con el mock: la preview le mostraba "4° ·
+              // Sistemas" a todo alumno, fuera cual fuera su carrera. Van en null y la preview
+              // omite lo que no sabe: mejor incompleto que atribuirle datos de otro.
+              year: null,
+              career: null,
+              period: ctx.period,
             }}
           />
           <PrivacyCard />

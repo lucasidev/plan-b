@@ -1,3 +1,4 @@
+import { NO_DATA_YET } from '@/lib/copy';
 import { cn } from '@/lib/utils';
 import type { ReportDetail } from '../types';
 
@@ -7,7 +8,7 @@ import type { ReportDetail } from '../types';
  */
 function accountSince(iso: string | null): string {
   if (!iso) {
-    return 'sin dato';
+    return NO_DATA_YET;
   }
   return new Date(iso).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' });
 }

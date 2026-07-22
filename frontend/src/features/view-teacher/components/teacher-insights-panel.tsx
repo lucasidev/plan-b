@@ -1,4 +1,5 @@
 import { RatingHistogram } from '@/components/reviews/rating-histogram';
+import { NO_DATA_YET } from '@/lib/copy';
 import type { TeacherInsights } from '../types';
 
 /**
@@ -30,7 +31,7 @@ export function TeacherInsightsPanel({ insights }: { insights: TeacherInsights }
           max={20}
           display={
             insights.averageHoursPerWeek === null
-              ? 'sin dato'
+              ? NO_DATA_YET
               : `${insights.averageHoursPerWeek.toFixed(0)} hs/sem`
           }
         />

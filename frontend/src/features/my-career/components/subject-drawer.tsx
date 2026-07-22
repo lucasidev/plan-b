@@ -13,6 +13,7 @@ import {
   missingCorrelativas,
   stateLabel,
 } from '@/features/my-career/lib/subject-status';
+import { NO_DATA_YET } from '@/lib/copy';
 import { cn } from '@/lib/utils';
 import { PrerequisiteChip } from './prerequisite-chip';
 import { ReviewCard } from './review-card';
@@ -226,7 +227,7 @@ function StatsCard({
       <h2 className="font-display font-semibold text-base text-ink mb-3">En números</h2>
       <div className="grid grid-cols-2 gap-3.5">
         <StatCell
-          value={rating != null ? `★ ${rating.toFixed(1)}` : 'sin datos'}
+          value={rating != null ? `★ ${rating.toFixed(1)}` : NO_DATA_YET}
           label="rating promedio"
         />
         <StatCell value={String(totalReviews)} label="reseñas" />

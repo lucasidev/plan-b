@@ -10,8 +10,10 @@ namespace Planb.Reviews.Application.Features.GetMyPendingReviews;
 /// teachers and let the student pick who to review ("docente real por reseña").
 ///
 /// <para>
-/// <see cref="TermLabel"/> example: "2025·2c". May be null for older enrollments without a
-/// linked academic term.
+/// El período viaja crudo: <see cref="TermYear"/>, <see cref="TermNumber"/> y <see cref="TermKind"/>
+/// (valores de <c>academic_terms.kind</c>: Bimestral, Cuatrimestral, Semestral, Anual). Armar el
+/// label de presentación (ej. "2025·2c") es responsabilidad del frontend, no de esta capa de datos.
+/// Los tres campos son null en conjunto para cursadas sin período académico vinculado.
 /// </para>
 /// </summary>
 public sealed record PendingReviewItem(
@@ -22,4 +24,6 @@ public sealed record PendingReviewItem(
     Guid CommissionId,
     string Status,
     decimal? Grade,
-    string? TermLabel);
+    int? TermYear,
+    int? TermNumber,
+    string? TermKind);

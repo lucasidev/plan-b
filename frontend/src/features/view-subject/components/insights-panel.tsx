@@ -1,4 +1,5 @@
 import { RatingHistogram } from '@/components/reviews/rating-histogram';
+import { NO_DATA_YET } from '@/lib/copy';
 import type { SubjectInsights } from '../types';
 
 /**
@@ -17,11 +18,18 @@ export function InsightsPanel({ insights }: { insights: SubjectInsights }) {
       </div>
 
       <div className="flex flex-col justify-center gap-3.5 rounded-lg border border-line bg-bg-card p-4">
+        {/* Sin reseñas, el medidor decía "0.0/5" y "0%": se lee como "facilísima" y "no la
+            recomienda nadie", cuando el dato simplemente no existe. Encima el header de la misma
+            página mostraba "s/d" para el mismo campo, así que la ficha se contradecía sola. */}
         <Meter
           label="Dificultad"
           value={insights.averageDifficulty ?? 0}
           max={5}
-          display={`${(insights.averageDifficulty ?? 0).toFixed(1)}/5`}
+          display={
+            insights.averageDifficulty === null
+              ? NO_DATA_YET
+              : `${insights.averageDifficulty.toFixed(1)}/5`
+          }
         />
         <Meter
           label="Carga real"
@@ -29,7 +37,7 @@ export function InsightsPanel({ insights }: { insights: SubjectInsights }) {
           max={20}
           display={
             insights.averageHoursPerWeek === null
-              ? 'sin dato'
+              ? NO_DATA_YET
               : `${insights.averageHoursPerWeek.toFixed(0)} hs/sem`
           }
         />
@@ -37,7 +45,11 @@ export function InsightsPanel({ insights }: { insights: SubjectInsights }) {
           label="Recomendarían"
           value={insights.recommendPercentage ?? 0}
           max={100}
-          display={`${(insights.recommendPercentage ?? 0).toFixed(0)}%`}
+          display={
+            insights.recommendPercentage === null
+              ? NO_DATA_YET
+              : `${insights.recommendPercentage.toFixed(0)}%`
+          }
         />
       </div>
     </div>

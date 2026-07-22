@@ -46,6 +46,8 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 | **CommissionTeacher** | Asignación M:N entre `Teacher` y `Commission` con `role` (titular, adjunto, JTP, ayudante, invitado). |
 | **AcademicTerm** | Período lectivo de una universidad. Tiene un `kind` (bimestral, cuatrimestral, semestral, anual) que define su duración. Ej: "2026-C1". |
 | **term_kind** | Cadencia del período: `bimestral`, `cuatrimestral`, `semestral`, `anual`. Genérico para soportar universidades con distintos calendarios. |
+| **cadencia (cómo se dice en la UI)** | `term_kind` mostrado al usuario: "1er cuatrimestre", "3er bimestre", "anual"; forma corta "1er cuatri". **Nunca codificada en letras** (`1c`, `3b`, `1s`): esas abreviaturas no están definidas en ninguna pantalla y no significan nada para quien las lee por primera vez. Fuente única: `frontend/src/lib/academic-terms.ts` ([ADR-0051](../decisions/0051-vocabulario-academico-canonico-en-la-ui.md)). |
+| **período (cómo se dice en la UI)** | Un `AcademicTerm` mostrado al usuario: "2025 · 2do cuatrimestre". No confundir con el `label` que se persiste ("2025-C1"): ese es un identificador estable del período, no copy. Cambiar cómo se lee un período no debería reescribir filas. |
 
 ## Historial del alumno
 
@@ -107,7 +109,8 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 | **carrera** | "Un plan de estudios específico" | `Career` es el concepto estable. `CareerPlan` es la versión específica. Un alumno cursa una `Career` bajo un `CareerPlan` determinado. |
 | **reseña** | Usado como sinónimo de "reporte" | `Review` ≠ `ReviewReport`. Reseña es contenido publicado por un alumno. Reporte es una denuncia contra una reseña. |
 | **comisión** | "Cursada del alumno" | `Commission` es la oferta (materia + cuatrimestre + docentes). `EnrollmentRecord` es la cursada específica del alumno en esa comisión. |
-| **cuatrimestre** | Como sinónimo de cualquier período | `AcademicTerm` generaliza a bimestral/cuatrimestral/semestral/anual. "Cuatrimestre" es un `AcademicTerm` con `kind='cuatrimestral'`. |
+| **cuatrimestre** | Como sinónimo de cualquier período | `AcademicTerm` generaliza a bimestral/cuatrimestral/semestral/anual. "Cuatrimestre" es un `AcademicTerm` con `kind='cuatrimestral'`. Vale también para el código: concatenar una "c" fija al formatear un período asume la cadencia de UNSTA y rompe la generalidad que compró [ADR-0001](../decisions/0001-multi-universidad-desde-dia-1.md). |
+| **sin datos** | Mostrar `0` cuando una métrica todavía no tiene reseñas que la sustenten | `0.0/5` se lee "facilísima" y `0%` se lee "no la recomienda nadie": son mediciones, no ausencia de dato. Una métrica sin sustento dice **`sin datos`** (`NO_DATA_YET` en `lib/copy.ts`), nunca `s/d`, que es una abreviatura que la app nunca definió. |
 | **moderador-docente** | "Un docente puede moderar" | Estructuralmente imposible: `moderator` y `member` son roles exclusivos. Un docente que quiera moderar necesita una segunda cuenta con rol `moderator`. |
 | **anónimo** | "Los datos del autor no existen en DB" | El anonimato es de **presentación**, no de storage. La identidad siempre se preserva internamente. |
 | **estado de materia** | "Lo que muestra la UI (disponible/bloqueada/cursando/etc.)" | La UI muestra una mezcla de estados persistidos (`status` del enrollment) y estados derivados (computados desde correlativas). Solo los persistidos son "status" en el modelo. |

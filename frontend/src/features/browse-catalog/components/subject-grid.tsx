@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Pill } from '@/components/ui';
-import { formatTermKind } from '@/lib/academic-terms';
-import { formatTermLabel, groupSubjectsByYear } from '../lib/group-subjects';
+import { formatTermKind, formatTermOfYear } from '@/lib/academic-terms';
+import { groupSubjectsByYear } from '../lib/group-subjects';
 import type { Subject } from '../types';
 
 /**
@@ -32,7 +32,7 @@ export function SubjectGrid({ subjects }: { subjects: Subject[] }) {
             {yearGroup.terms.map((term) => (
               <div key={term.key}>
                 <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-                  {formatTermLabel(term.termInYear, term.termKind)}
+                  {formatTermOfYear(term.termKind, term.termInYear)}
                 </h3>
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {term.subjects.map((subject) => (

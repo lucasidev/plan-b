@@ -30,7 +30,10 @@ export type EnrollmentContext = {
   prof?: string | null;
   /** Commission label. Null until the Commission aggregate lands (US-063). */
   com?: string | null;
-  /** Human-readable academic period (e.g. "2025·2c"). Null for enrollments without a term. */
+  /**
+   * Human-readable academic period (e.g. "2025 · 2do cuatrimestre"), already formatted by
+   * `formatAcademicPeriod` (`lib/academic-terms.ts`). Null for enrollments without a linked term.
+   */
   period: string | null;
   /** Final grade the student loaded in their transcript. Null if not loaded. */
   finalNote: number | null;
@@ -54,9 +57,14 @@ export type CommissionTeacherOption = {
  * expose name, email, or student id number.
  */
 export type ReviewAnonymousIdentity = {
-  year: number;
-  career: string;
-  period: string;
+  /**
+   * Null cuando el dato todavía no viaja en la sesión (año y carrera, US-012). La preview omite
+   * la parte que falta en vez de rellenarla: antes se completaba con un mock y todo alumno veía
+   * "4° · Sistemas" como identidad propia, sin importar en qué carrera estuviera.
+   */
+  year: number | null;
+  career: string | null;
+  period: string | null;
 };
 
 /**

@@ -1,13 +1,14 @@
+import { NO_DATA_YET } from '@/lib/copy';
 import { reviewStatusLabel } from '../reasons';
 import type { ReportDetail } from '../types';
 
-/** Un rating de la reseña (dificultad / general). Muestra estrellas + N/5, o "sin dato" si es null. */
+/** Un rating de la reseña (dificultad / general). Muestra estrellas + N/5, o "sin datos" si es null. */
 function Rating({ label, value }: { label: string; value: number | null }) {
   return (
     <span>
       {label}:{' '}
       {value == null ? (
-        <span className="text-ink-4">sin dato</span>
+        <span className="text-ink-4">{NO_DATA_YET}</span>
       ) : (
         <span className="text-ink">
           {'★'.repeat(value)}
