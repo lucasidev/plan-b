@@ -1,7 +1,7 @@
 import type { AvailabilityStatus, AvailableSubject, BlockedBySubject } from '../types';
 
 /**
- * Helpers puros del catálogo de materias disponibles del simulador (US-016). Viven acá y no en
+ * Helpers puros del catálogo de materias disponibles del planificador (US-016). Viven acá y no en
  * `subject-picker-drawer.tsx` porque un archivo que mezcla componentes con funciones sueltas rompe
  * el fast-refresh de React (regla `only-export-components`): al editar el componente, React no
  * puede recargar en caliente y recarga la página entera. Además son puros y testeables sin montar
@@ -12,7 +12,7 @@ const VISIBLE_STATUSES: ReadonlySet<AvailabilityStatus> = new Set(['Available', 
 
 /**
  * Disponibles + bloqueadas (con motivo). Las ya aprobadas/regularizadas/en curso quedan afuera:
- * no tiene sentido ofrecerlas para sumar a una simulación del cuatrimestre que viene.
+ * no tiene sentido ofrecerlas para sumar a una simulación del período que viene.
  */
 export function selectVisibleSubjects(items: readonly AvailableSubject[]): AvailableSubject[] {
   return items.filter((item) => VISIBLE_STATUSES.has(item.status));

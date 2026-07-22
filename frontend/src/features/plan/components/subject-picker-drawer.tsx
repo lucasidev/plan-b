@@ -17,7 +17,7 @@ import type { AvailableSubject } from '../types';
  * materias del plan evaluadas contra el historial del alumno (GET /api/me/simulator/available):
  * disponibles (clickeables, se pueden sumar a la simulación) y bloqueadas (deshabilitadas, con el
  * motivo). Las que ya aprobó, regularizó o está cursando no se listan: no tiene sentido sumarlas a
- * una simulación del cuatrimestre que viene.
+ * una simulación del período que viene.
  *
  * Sin ModalityPill ni chip de profesor: esos datos son de Commission (la oferta de un
  * cuatrimestre puntual), no de Subject. TODO(US-093): cuando exista el backoffice de comisiones,
@@ -88,7 +88,7 @@ export function SubjectPickerDrawer({ open, onClose, onPick }: Props) {
               Agregar materia
             </h2>
             <p className="text-sm text-ink-3" style={{ marginTop: 4, lineHeight: 1.45 }}>
-              Filtradas por tu plan + historial. Sumá las que querés simular.
+              Filtradas por tu plan + historial. Sumá las que querés cursar.
             </p>
           </div>
           <button

@@ -3,7 +3,7 @@ import { clientApiFetch } from '@/lib/api-client';
 import type { AvailableSubjectsResponse, SimulationEvaluation } from './types';
 
 /**
- * Query client-side de las materias disponibles para el simulador (US-016). La página /plan
+ * Query client-side de las materias disponibles para el planificador (US-016). La página /plan
  * prefetchea con el fetcher server-only (api.server) seedeando este mismo queryKey; el drawer
  * "Agregar materia" consume con useSuspenseQuery.
  */

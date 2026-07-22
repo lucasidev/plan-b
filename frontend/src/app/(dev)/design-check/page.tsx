@@ -144,7 +144,7 @@ export default function DesignCheckPage() {
         <div className="border border-line rounded overflow-hidden h-[600px]">
           <AuthSplit
             heading={AUTH_SPLIT_DEMO_HEADING}
-            description="plan-b es la app donde alumnos de UNSTA simulan su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
+            description="plan-b es la app donde alumnos de UNSTA planifican su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
             quote={{
               text: '"Iba a anotarme con el primero que tenía horario libre. Acá vi que había una comisión con 4.1★ vs 3.4★. Esperé un cuatri."',
               attribution: 'Anónimo · 4° año Sistemas',

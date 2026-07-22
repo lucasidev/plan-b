@@ -2,7 +2,7 @@
  * Formato canónico de períodos y cadencias para toda la UI.
  *
  * Antes cada consumidor formateaba por su cuenta y el resultado eran cuatro vocabularios distintos
- * para el mismo dato: "2025-C2" en el backoffice, "2025·2c" en reseñas, "1c" en el simulador y
+ * para el mismo dato: "2025-C2" en el backoffice, "2025·2c" en reseñas, "1c" en el planificador y
  * "1er cuatri" en las píldoras. Ninguno estaba definido en ningún lado, así que el alumno tenía que
  * adivinar si "3b" era un bimestre, una comisión o un aula.
  *

@@ -100,8 +100,8 @@ const WEEK = [
 ] as const;
 
 // Bloques del mini calendario (datos de ejemplo). `col` = día, `top`/`h` en px dentro de la
-// columna. Colores literales por materia (no tokens): mismo criterio que el simulador de la
-// landing. `warn` marca el choque.
+// columna. Colores literales por materia (no tokens): mismo criterio que el demo del
+// planificador en la landing. `warn` marca el choque.
 type Block = {
   col: number;
   top: number;

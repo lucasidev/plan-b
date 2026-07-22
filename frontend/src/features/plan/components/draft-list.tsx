@@ -23,7 +23,7 @@ type Props = {
 /**
  * Arma los tiles del mock de un borrador. Sin cambio de comportamiento: es la misma lógica que
  * antes vivía adentro de `StatsGrid`, relocalizada acá porque ese componente pasó a ser puramente
- * presentacional (US-016: el tab activo ahora arma los suyos desde datos reales del simulador,
+ * presentacional (US-016: el tab activo ahora arma los suyos desde datos reales del planificador,
  * ver `SimulatorEvaluationPanel`). Los borradores siguen sin materias con id real que evaluar
  * (US-023 pendiente), así que siguen mostrando el mock tal cual.
  */
