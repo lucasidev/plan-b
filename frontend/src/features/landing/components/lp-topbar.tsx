@@ -31,12 +31,6 @@ export function LpTopbar({ isLoggedIn }: Props) {
       style={{ padding: '18px 48px', gap: 18 }}
     >
       <Logo size={16} />
-      <span
-        className="font-mono uppercase text-ink-3"
-        style={{ fontSize: 10.5, letterSpacing: '0.06em' }}
-      >
-        · beta abierta
-      </span>
       <span className="flex-1" />
       <nav className="flex items-center text-ink-2" style={{ gap: 24, fontSize: 13 }}>
         <a href="#features" className={NAV_LINK_CLASSES}>

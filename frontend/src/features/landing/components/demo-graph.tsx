@@ -7,8 +7,8 @@ type GraphNode = {
   state: SubjectState;
 };
 
-// Grafo mini de correlativas: 3 columnas, 6 nodos. Data hardcodeada del mock
-// (US-054-f), no representa un plan de estudios real.
+// Grafo mini de correlativas: 3 columnas, 6 nodos. Data de ejemplo (vidriera de
+// marketing), no representa un plan de estudios real.
 const NODES: GraphNode[] = [
   { x: 0, y: 0, code: 'MAT101', state: 'AP' },
   { x: 0, y: 1, code: 'PRG101', state: 'AP' },
@@ -39,6 +39,8 @@ const WIDTH = 240;
 const HEIGHT = 120;
 const COL_WIDTH = 100;
 const ROW_HEIGHT = 56;
+const NODE_W = 70;
+const NODE_H = 24;
 
 function nodeX(node: GraphNode) {
   return 12 + node.x * COL_WIDTH;
@@ -49,30 +51,30 @@ function nodeY(node: GraphNode) {
 }
 
 /**
- * Demo embebido de la feature "Plan" (US-054-f). Port de `DemoGraph`
- * (docs/design/reference/canvas-mocks/landing.jsx, líneas 224-282): grafo SVG
- * mini de correlativas con curvas bézier entre nodos. Visual puro, sin fetch.
+ * Demo embebido de la feature "Plan" (US-054-f). Grafo SVG mini de correlativas con
+ * curvas bézier entre nodos. Visual puro, sin fetch, datos de ejemplo.
+ *
+ * Nodos y líneas viven ambos DENTRO del SVG (mismo sistema de coordenadas del
+ * `viewBox`), así escalan juntos y quedan alineados en cualquier ancho. Antes los
+ * nodos eran `<div>` absolutos en px fijos: al cambiar el viewport, el SVG estiraba
+ * las líneas y los divs se quedaban clavados, rompiendo la alineación.
  */
 export function DemoGraph() {
   return (
-    <div
-      className="bg-bg relative overflow-hidden"
-      style={{ borderRadius: 10, padding: 14, height: HEIGHT }}
-    >
+    <div className="bg-bg" style={{ borderRadius: 10, padding: 14 }}>
       <svg
         width="100%"
-        height="100%"
         viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-        className="absolute inset-0"
+        style={{ display: 'block', maxWidth: WIDTH, margin: '0 auto' }}
         aria-hidden="true"
       >
         {EDGES.map(([fromIndex, toIndex]) => {
           const from = NODES[fromIndex];
           const to = NODES[toIndex];
-          const x1 = nodeX(from) + 70;
-          const y1 = nodeY(from) + 14;
+          const x1 = nodeX(from) + NODE_W;
+          const y1 = nodeY(from) + NODE_H / 2;
           const x2 = nodeX(to);
-          const y2 = nodeY(to) + 14;
+          const y2 = nodeY(to) + NODE_H / 2;
           const midX = (x1 + x2) / 2;
           return (
             <path
@@ -84,30 +86,38 @@ export function DemoGraph() {
             />
           );
         })}
+        {NODES.map((node) => {
+          const [bg, fg] = STATE_COLOR[node.state];
+          return (
+            <g key={node.code} transform={`translate(${nodeX(node)} ${nodeY(node)})`}>
+              <rect width={NODE_W} height={NODE_H} rx={6} fill={bg} />
+              <text
+                x={8}
+                y={16}
+                fill={fg}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 10,
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {node.code}
+              </text>
+              <text
+                x={NODE_W - 8}
+                y={16}
+                textAnchor="end"
+                fill={fg}
+                opacity={0.7}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600 }}
+              >
+                {node.state}
+              </text>
+            </g>
+          );
+        })}
       </svg>
-      {NODES.map((node) => {
-        const [bg, fg] = STATE_COLOR[node.state];
-        return (
-          <div
-            key={node.code}
-            className="absolute flex justify-between font-mono font-semibold"
-            style={{
-              left: nodeX(node),
-              top: nodeY(node),
-              width: 70,
-              padding: '5px 8px',
-              borderRadius: 6,
-              background: bg,
-              color: fg,
-              fontSize: 10,
-              letterSpacing: '0.02em',
-            }}
-          >
-            <span>{node.code}</span>
-            <span style={{ opacity: 0.7 }}>{node.state}</span>
-          </div>
-        );
-      })}
     </div>
   );
 }

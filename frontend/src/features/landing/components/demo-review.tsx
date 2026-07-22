@@ -39,7 +39,7 @@ export function DemoReview() {
   );
 }
 
-// Port de `.mp` (mono pill): no existe como clase real, ver `mini-sim.tsx`.
+// Port de `.mp` (mono pill): no existe como clase real, ver `demo-sim.tsx`.
 function MpPill({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <span

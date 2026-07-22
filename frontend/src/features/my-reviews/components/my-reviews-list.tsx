@@ -82,10 +82,7 @@ function MyReviewCard({ review }: { review: MyReview }) {
               Editar
             </Link>
           ) : (
-            <span
-              className="text-[12px] text-ink-4"
-              title="Solo podés editar reseñas publicadas (ADR-0012)."
-            >
+            <span className="text-[12px] text-ink-4" title="Solo podés editar reseñas publicadas.">
               No editable
             </span>
           )}

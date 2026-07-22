@@ -39,7 +39,7 @@ export function LpCtaFinal() {
           )}
           style={{ padding: '12px 24px', fontSize: 14 }}
         >
-          Crear cuenta con email institucional
+          Crear cuenta
         </Link>
       </div>
     </section>

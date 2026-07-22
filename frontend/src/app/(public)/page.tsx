@@ -18,8 +18,8 @@ const DEMO_PROF = <DemoProf />;
 const VERIFICATION_STEPS = [
   {
     n: '1',
-    title: 'Te registrás con email institucional',
-    example: 'lucia.mansilla@tu-universidad.edu.ar',
+    title: 'Creás tu cuenta',
+    example: 'Con cualquier email',
   },
   { n: '2', title: 'Cargás tu historial académico', example: '8 materias aprobadas, 1 cursando' },
   {
@@ -154,9 +154,9 @@ export default async function LandingPage() {
                   marginBottom: 0,
                 }}
               >
-                Te registrás con tu mail .edu.ar. Confirmamos que sos alumno y nunca más mostramos
-                tu nombre asociado a una reseña. Las reseñas se publican después de que cargues que
-                cursaste esa materia, no antes.
+                Te registrás con cualquier email y cargás tu historial académico. Eso confirma que
+                sos alumno y qué cursaste, y nunca mostramos tu nombre asociado a una reseña. Solo
+                podés reseñar materias que ya cursaste.
               </p>
             </div>
 
