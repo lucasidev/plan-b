@@ -11,9 +11,8 @@ import { cn } from '@/lib/utils';
  * no extra icon. Keeps the page sober and saves the user from another
  * piece of decoration to parse.
  *
- * The "Volver al inicio" CTA points at /sign-in porque no hay landing pública
- * todavía. Cuando exista una ruta home pública (`/` o equivalente), este
- * link se actualiza.
+ * El CTA "Volver al inicio" apunta a la landing pública (`/`), que se ve igual
+ * para visitantes anónimos y usuarios con sesión.
  */
 export default function NotFound() {
   return (
@@ -79,7 +78,7 @@ export default function NotFound() {
         </p>
 
         <Link
-          href="/sign-in"
+          href="/"
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',
