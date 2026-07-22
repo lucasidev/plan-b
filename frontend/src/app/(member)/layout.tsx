@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/app-shell';
+import { OfflineBanner } from '@/components/layout/offline-banner';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
@@ -35,8 +36,11 @@ export default async function MemberLayout({ children }: { children: React.React
     .join(' · ');
 
   return (
-    <AppShell email={session.email} contextLabel={contextLabel}>
-      {children}
-    </AppShell>
+    <>
+      <OfflineBanner />
+      <AppShell email={session.email} contextLabel={contextLabel}>
+        {children}
+      </AppShell>
+    </>
   );
 }
