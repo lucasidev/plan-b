@@ -1,14 +1,24 @@
 type Props = { active: 1 | 2 | 3 };
 
 const STEPS = [
-  { n: 1, title: 'Pedís el link', sub: 'Ingresás tu email institucional', mono: 'POST /reset' },
+  {
+    n: 1,
+    title: 'Pedís el link',
+    sub: 'Ingresás tu email',
+    mono: 'Con el que te registraste',
+  },
   {
     n: 2,
     title: 'Te llega el mail',
     sub: 'Click en el link dentro de los 30 min',
-    mono: 'noreply@plan-b',
+    mono: 'Puede caer en spam',
   },
-  { n: 3, title: 'Cambiás la contraseña', sub: 'En una sola pantalla', mono: 'PATCH /password' },
+  {
+    n: 3,
+    title: 'Cambiás la contraseña',
+    sub: 'En una sola pantalla',
+    mono: 'Mínimo 12 caracteres',
+  },
 ] as const;
 
 /**

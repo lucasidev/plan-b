@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { AuthShell } from '@/components/layout/auth-shell';
 import { AccountDeactivatedBanner } from '@/features/sign-in/components/account-deactivated-banner';
-import { LastActivityPanel } from '@/features/sign-in/components/last-activity-panel';
+import { HowItWorksPanel } from '@/features/sign-in/components/how-it-works-panel';
 import { ResetSuccessBanner } from '@/features/sign-in/components/reset-success-banner';
 import { SignInForm } from '@/features/sign-in/components/sign-in-form';
 
@@ -10,7 +10,7 @@ type Props = {
 };
 
 // Hoisted para no crear refs nuevas por render (regla react-doctor/jsx-no-jsx-as-prop).
-const LEFT_PANEL = <LastActivityPanel />;
+const LEFT_PANEL = <HowItWorksPanel />;
 const FOOT = (
   <>
     ¿Sos nuevo?{' '}
@@ -27,7 +27,7 @@ const FOOT = (
 
 /**
  * `/sign-in` login screen. Server component que arma el `AuthShell` v2 (eyebrow
- * "02 · Ingresar" + `LastActivityPanel` a la izquierda) y delega el form a
+ * "02 · Ingresar" + `HowItWorksPanel` a la izquierda) y delega el form a
  * `<SignInForm>`.
  *
  * `?reset=success` (US-033-i) y `?account-deactivated=1` (ADR-0044, US-038-bis)
@@ -44,7 +44,7 @@ export default async function SignInPage({ searchParams }: Props) {
       stepCode="02"
       stepName="Ingresar"
       leftPanel={LEFT_PANEL}
-      title="Buenas de nuevo"
+      title="Entrá a tu cuenta"
       sub="Ingresá con la cuenta que usaste para registrarte."
       foot={FOOT}
     >

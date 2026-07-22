@@ -24,7 +24,7 @@ type Props = {
  * de marketing pre-canvas-v2) en las vistas migradas (US-059-f).
  *
  * Grid 1.05fr/1fr: panel izquierdo con eyebrow numerado + contenido de producto
- * por vista (`leftPanel`); columna derecha con header (logo + "beta") + form
+ * por vista (`leftPanel`); columna derecha con header (logo + "institucional") + form
  * centrado + footer. Colapsa a 1 columna en < 1024px (el panel izq se oculta,
  * el form ocupa el 100%). Copy multi-universidad: el disclaimer es genérico, no
  * nombra UNSTA.
@@ -65,11 +65,14 @@ export function AuthShell({ stepCode, stepName, leftPanel, title, sub, children,
             className="font-mono uppercase text-ink-3"
             style={{ fontSize: 10.5, letterSpacing: '0.06em' }}
           >
-            beta
+            institucional
           </span>
         </header>
 
-        <div className="flex flex-1 flex-col justify-center w-full" style={{ maxWidth: 480 }}>
+        <div
+          className="flex flex-1 flex-col justify-center w-full"
+          style={{ maxWidth: 480, margin: '0 auto' }}
+        >
           <h2
             className="text-ink"
             style={{
