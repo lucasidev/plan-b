@@ -70,7 +70,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     // 6. CTA "Iniciar sesión" → /sign-in
     await page.getByRole('link', { name: /iniciar sesión/i }).click();
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
-    await expect(page.getByRole('heading', { name: /buenas de nuevo/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /entrá a tu cuenta/i })).toBeVisible();
 
     // 7. Login con la cuenta recién creada. Guard de (member) lo manda a
     //    /onboarding/welcome porque el alumno todavía no tiene StudentProfile

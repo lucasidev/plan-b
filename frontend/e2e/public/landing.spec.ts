@@ -21,10 +21,11 @@ test.describe('landing pública (US-054-f)', () => {
       timeout: 15_000,
     });
 
-    // Topbar anónimo: CTAs de ingreso / registro (name exacto para no chocar con
-    // "Crear cuenta gratis" del hero ni "...con email institucional" del CTA final).
-    await expect(page.getByRole('link', { name: 'Ingresar', exact: true })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Crear cuenta', exact: true })).toBeVisible();
+    // Topbar anónimo: CTAs de ingreso / registro. Scopeado al <header> (banner):
+    // "Crear cuenta" también existe como CTA final de la página.
+    const topbar = page.getByRole('banner');
+    await expect(topbar.getByRole('link', { name: 'Ingresar', exact: true })).toBeVisible();
+    await expect(topbar.getByRole('link', { name: 'Crear cuenta', exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: /ir a mi inicio/i })).toHaveCount(0);
   });
 
