@@ -37,9 +37,9 @@ const services: Service[] = [
     cwd: resolve(ROOT, 'backend/host/Planb.Api'),
     command: 'dotnet',
     args: ['watch', 'run'],
-    // Demo corpus seed: solo en `just dev` (no en `dotnet test`), así los integration tests
-    // quedan con DB limpia. El backend lo gatea además por IsDevelopment(). Ver DemoCorpusHostedService.
-    env: { PLANB_SEED_DEMO: '1' },
+    // Seed corpus: solo en `just dev` (no en `dotnet test`), así los integration tests
+    // quedan con DB limpia. El backend lo gatea además por IsDevelopment(). Ver SeedCorpusHostedService.
+    env: { PLANB_SEED_CORPUS: '1' },
   },
   {
     name: 'frontend',

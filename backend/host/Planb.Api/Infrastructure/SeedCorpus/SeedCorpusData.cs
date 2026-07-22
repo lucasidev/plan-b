@@ -1,25 +1,25 @@
-namespace Planb.Api.Infrastructure.DemoCorpus;
+namespace Planb.Api.Infrastructure.SeedCorpus;
 
 /// <summary>
-/// Manifiesto del corpus demo de reseñas (devex, sin US). Datos curados a mano: autores fantasma
-/// + reseñas anónimas variadas por materia (ratings, tags, recomendaciones y fechas escalonadas
-/// para que cada página de materia y el feed Explorar se sientan poblados) + votos generados de
-/// forma determinista entre autores.
+/// Manifiesto del corpus de prueba de reseñas (devex, sin US). Datos curados a mano: autores
+/// fantasma + reseñas anónimas variadas por materia (ratings, tags, recomendaciones y fechas
+/// escalonadas para que cada página de materia y el feed Explorar se sientan poblados) + votos
+/// generados de forma determinista entre autores.
 ///
 /// Vive en el host porque cruza módulos (identity, enrollments, reviews): el host es el único que
 /// referencia los tres. Cada seeder de módulo recibe datos planos; acá está el "qué", no el "cómo".
 /// Los IDs de catálogo (materias, terms, plan, carrera) son los deterministas de
 /// <c>AcademicSeedData</c>; las cross-references son Guids sueltos (ADR-0017, sin FK cross-schema).
 /// </summary>
-public static class DemoCorpusData
+public static class SeedCorpusData
 {
     // Catálogo TUDCS (UNSTA): IDs espejados de AcademicSeedData.
     public static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     public static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
 
-    // Comisión demo: hoy commission_id es un Guid libre. Repuntar las cursadas demo a las comisiones
-    // reales de US-065 + validar docente-en-comisión es la slice de "docente real por reseña".
-    public static readonly Guid DemoCommissionId = Guid.Parse("0000000c-0000-4000-a000-000000000001");
+    // Comisión de prueba: hoy commission_id es un Guid libre. Repuntar las cursadas de prueba a las
+    // comisiones reales de US-065 + validar docente-en-comisión es la slice de "docente real por reseña".
+    public static readonly Guid SeedCommissionId = Guid.Parse("0000000c-0000-4000-a000-000000000001");
 
     // Ids del catálogo real (AcademicSeedData.Subjects). Nombrados por código: los 21 subjects del
     // plan TUDCS reemplazaron el catálogo inventado, y con eso cambió qué id ocupa cada rol de este
@@ -35,7 +35,7 @@ public static class DemoCorpusData
 
     // Docente reseñado por materia: ids reales del catálogo docente (US-063). El titular de la
     // comisión sembrada (US-065) cuando la materia tiene una; un docente coherente de UNSTA para las
-    // que no. Reemplaza el placeholder anterior: cada reseña demo apunta a un docente real, así la
+    // que no. Reemplaza el placeholder anterior: cada reseña de prueba apunta a un docente real, así la
     // página de docente (US-003) muestra contenido. El write-flow de producción sigue usando el
     // placeholder hasta la slice de "docente real por reseña".
     private static readonly IReadOnlyDictionary<Guid, Guid> SubjectTeacher = new Dictionary<Guid, Guid>
@@ -51,7 +51,7 @@ public static class DemoCorpusData
 
     private static Guid Teacher(string nn) => Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}");
 
-    /// <summary>Docente reseñado real para una materia demo (id del catálogo, US-063).</summary>
+    /// <summary>Docente reseñado real para una materia de prueba (id del catálogo, US-063).</summary>
     public static Guid TeacherForSubject(Guid subjectId) => SubjectTeacher[subjectId];
 
     // ── Cursada reseñable interactiva (Lucía) ──────────────────────────────────────────────────
@@ -79,16 +79,16 @@ public static class DemoCorpusData
     /// <summary>Diez autores fantasma TUDCS. Verificados con profile, anónimos en la UI.</summary>
     public static IReadOnlyList<AuthorDef> Authors { get; } =
     [
-        new("a01", "demo.a01@planb.local", 2021),
-        new("a02", "demo.a02@planb.local", 2021),
-        new("a03", "demo.a03@planb.local", 2020),
-        new("a04", "demo.a04@planb.local", 2022),
-        new("a05", "demo.a05@planb.local", 2022),
-        new("a06", "demo.a06@planb.local", 2020),
-        new("a07", "demo.a07@planb.local", 2023),
-        new("a08", "demo.a08@planb.local", 2021),
-        new("a09", "demo.a09@planb.local", 2022),
-        new("a10", "demo.a10@planb.local", 2023),
+        new("a01", "seed.a01@planb.local", 2021),
+        new("a02", "seed.a02@planb.local", 2021),
+        new("a03", "seed.a03@planb.local", 2020),
+        new("a04", "seed.a04@planb.local", 2022),
+        new("a05", "seed.a05@planb.local", 2022),
+        new("a06", "seed.a06@planb.local", 2020),
+        new("a07", "seed.a07@planb.local", 2023),
+        new("a08", "seed.a08@planb.local", 2021),
+        new("a09", "seed.a09@planb.local", 2022),
+        new("a10", "seed.a10@planb.local", 2023),
     ];
 
     /// <summary>
@@ -99,14 +99,14 @@ public static class DemoCorpusData
     /// </summary>
     public static IReadOnlyList<AuthorDef> FailureAuthors { get; } =
     [
-        new("b01", "demo.b01@planb.local", 2020),
-        new("b02", "demo.b02@planb.local", 2021),
-        new("b03", "demo.b03@planb.local", 2021),
-        new("b04", "demo.b04@planb.local", 2022),
-        new("b05", "demo.b05@planb.local", 2020),
-        new("b06", "demo.b06@planb.local", 2022),
-        new("b07", "demo.b07@planb.local", 2023),
-        new("b08", "demo.b08@planb.local", 2021),
+        new("b01", "seed.b01@planb.local", 2020),
+        new("b02", "seed.b02@planb.local", 2021),
+        new("b03", "seed.b03@planb.local", 2021),
+        new("b04", "seed.b04@planb.local", 2022),
+        new("b05", "seed.b05@planb.local", 2020),
+        new("b06", "seed.b06@planb.local", 2022),
+        new("b07", "seed.b07@planb.local", 2023),
+        new("b08", "seed.b08@planb.local", 2021),
     ];
 
     /// <summary>
@@ -369,10 +369,10 @@ public static class DemoCorpusData
         new(key, author, subject, Guid.Empty, abandoned);
 }
 
-/// <summary>Autor fantasma del corpus demo.</summary>
+/// <summary>Autor fantasma del corpus de prueba.</summary>
 public sealed record AuthorDef(string Key, string Email, int EnrollmentYear);
 
-/// <summary>Reseña curada del corpus demo. <c>TermId</c> se asigna por índice en el builder.</summary>
+/// <summary>Reseña curada del corpus de prueba. <c>TermId</c> se asigna por índice en el builder.</summary>
 public sealed record ReviewDef(
     string Key,
     string AuthorKey,
@@ -388,8 +388,8 @@ public sealed record ReviewDef(
     string Text,
     IReadOnlyList<string> Tags);
 
-/// <summary>Voto demo: un autor vota la reseña de otro.</summary>
+/// <summary>Voto de prueba: un autor vota la reseña de otro.</summary>
 public sealed record VoteDef(string VoterKey, string ReviewKey, bool IsHelpful);
 
-/// <summary>Cursada sin aprobar del corpus demo (Reprobada/Abandonada), sin reseña. Para el pass-rate.</summary>
+/// <summary>Cursada sin aprobar del corpus de prueba (Reprobada/Abandonada), sin reseña. Para el pass-rate.</summary>
 public sealed record FailureDef(string Key, string AuthorKey, Guid SubjectId, Guid TermId, bool IsAbandoned);

@@ -218,16 +218,16 @@ builder.Services.AddHostedService<DevSeedHostedService>();
 // (mismo motivo que el seed de Identity: necesita schema academic existente).
 builder.Services.AddHostedService<AcademicSeedHostedService>();
 
-// Demo corpus seed (devex, sin US): autores fantasma + cursadas + reseñas + votos para que el
+// Seed corpus (devex, sin US): autores fantasma + cursadas + reseñas + votos para que el
 // corpus de reseñas sea consumible y demostrable en `just dev` sin armar datos a mano. Cruza
 // identity/enrollments/reviews; el host orquesta. Gateado por IsDevelopment() Y el env var
-// PLANB_SEED_DEMO (default off): SOLO lo prende `just dev`, así los integration tests (que corren
+// PLANB_SEED_CORPUS (default off): SOLO lo prende `just dev`, así los integration tests (que corren
 // en Development) NO reciben el corpus y sus asserts de conteo quedan intactos. Va último: depende
 // de los seeds de Identity (personas) y Academic (catálogo) ya aplicados.
-builder.Services.AddScoped<Planb.Identity.Application.Seeding.DemoAuthorsSeeder>();
-builder.Services.AddScoped<Planb.Enrollments.Application.Seeding.EnrollmentsDemoSeeder>();
-builder.Services.AddScoped<Planb.Reviews.Application.Seeding.ReviewsDemoSeeder>();
-builder.Services.AddHostedService<Planb.Api.Infrastructure.DemoCorpus.DemoCorpusHostedService>();
+builder.Services.AddScoped<Planb.Identity.Application.Seeding.AuthorsSeeder>();
+builder.Services.AddScoped<Planb.Enrollments.Application.Seeding.EnrollmentsSeeder>();
+builder.Services.AddScoped<Planb.Reviews.Application.Seeding.ReviewsSeeder>();
+builder.Services.AddHostedService<Planb.Api.Infrastructure.SeedCorpus.SeedCorpusHostedService>();
 
 // ------------------------------------------------------------------
 // HTTP pipeline

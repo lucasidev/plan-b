@@ -554,7 +554,7 @@ public static class AcademicSeedData
     };
 
     // ====================================================================
-    // Teachers (UNSTA): catálogo docente demo (US-063). Nombres en lowercase
+    // Teachers (UNSTA): catálogo docente de prueba (US-063). Nombres en lowercase
     // (storage); el display los pasa a title case. Sin claim/verificación: son
     // del catálogo, no perfiles reclamados (eso es US-030/031, otro vertical).
     //
@@ -579,10 +579,10 @@ public static class AcademicSeedData
         new(Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}"));
 
     // ====================================================================
-    // Commissions + CommissionTeachers (UNSTA): oferta demo (US-065). Cada comisión cuelga de un
+    // Commissions + CommissionTeachers (UNSTA): oferta de prueba (US-065). Cada comisión cuelga de un
     // Subject TUDCS + un AcademicTerm UNSTA, con docentes del catálogo asignados por rol. Todo
     // UNSTA, así la coherencia universitaria total y term_kind (Cuatrimestral) se sostienen.
-    // Habilita "docente real por reseña": las reseñas demo van a anclar su docente a uno de estos.
+    // Habilita "docente real por reseña": las reseñas de prueba van a anclar su docente a uno de estos.
     //
     // Convención de UUIDs:
     //   - Commissions: 00000007-0000-4000-a000-0000000000NN
@@ -636,7 +636,7 @@ public static class AcademicSeedData
             }),
 
         // Comisiones adicionales (una por materia) en 2026·1c, coherentes con el mapeo docente del
-        // demo corpus. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
+        // corpus de prueba. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
         // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
         new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
             new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead) }), // álgebra I (102): reynoso
@@ -712,7 +712,7 @@ public sealed record AcademicTermRecord(
 
 /// <summary>
 /// Docente del seed. Nombres en lowercase (storage). UUIDs determinísticos para referencias
-/// estables (las reseñas demo van a apuntar a estos ids cuando aterrice "docente real por reseña").
+/// estables (las reseñas de prueba van a apuntar a estos ids cuando aterrice "docente real por reseña").
 /// </summary>
 public sealed record TeacherRecord(
     TeacherId Id, UniversityId UniversityId, string FirstName, string LastName, string? Title);

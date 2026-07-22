@@ -40,14 +40,14 @@ lefthook-install:
 dev: infra-up
     bun scripts/dev.ts
 
-# Run backend only. PLANB_SEED_DEMO=1 enables the demo review corpus (see DemoCorpusHostedService).
+# Run backend only. PLANB_SEED_CORPUS=1 enables the test review corpus (see SeedCorpusHostedService).
 [unix]
 dev-backend: infra-up
-    cd backend/host/Planb.Api && PLANB_SEED_DEMO=1 dotnet watch run
+    cd backend/host/Planb.Api && PLANB_SEED_CORPUS=1 dotnet watch run
 
 [windows]
 dev-backend: infra-up
-    $env:PLANB_SEED_DEMO='1'; cd backend/host/Planb.Api; dotnet watch run
+    $env:PLANB_SEED_CORPUS='1'; cd backend/host/Planb.Api; dotnet watch run
 
 # Run frontend only (any shell)
 dev-frontend: infra-up
