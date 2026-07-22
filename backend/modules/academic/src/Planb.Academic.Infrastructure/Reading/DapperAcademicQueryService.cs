@@ -355,4 +355,31 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
 
         return domains ?? [];
     }
+
+    public async Task<IReadOnlyList<PublicPrerequisiteEdge>> ListPrerequisitesByCareerPlanAsync(
+        Guid careerPlanId, CancellationToken ct = default)
+    {
+        // Doble join a subjects: una vez para la materia dependiente (s), otra para la requerida
+        // (rs). Invariante del data-model: las dos materias de una correlativa son siempre del mismo
+        // plan, así que alcanza con filtrar por el career_plan_id de un solo lado (s).
+        const string sql = @"
+            SELECT
+                p.subject_id          AS SubjectId,
+                s.code                AS SubjectCode,
+                s.name                AS SubjectName,
+                p.required_subject_id AS RequiredSubjectId,
+                rs.code               AS RequiredSubjectCode,
+                rs.name               AS RequiredSubjectName,
+                p.type                AS Type
+            FROM academic.prerequisites p
+            JOIN academic.subjects s  ON s.id = p.subject_id
+            JOIN academic.subjects rs ON rs.id = p.required_subject_id
+            WHERE s.career_plan_id = @CareerPlanId
+            ORDER BY s.code ASC, rs.code ASC, p.type ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<PublicPrerequisiteEdge>(
+            new CommandDefinition(sql, new { CareerPlanId = careerPlanId }, cancellationToken: ct));
+        return rows.AsList();
+    }
 }

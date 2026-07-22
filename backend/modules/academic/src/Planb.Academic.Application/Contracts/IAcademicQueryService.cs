@@ -124,4 +124,13 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<string>> GetInstitutionalEmailDomainsForTeacherAsync(
         Guid teacherId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista las correlativas (ambos types juntos) de un CareerPlan, con code + name de las dos
+    /// materias de cada arista. Caller: el grafo público de correlativas de la landing, sin auth.
+    /// Plan inexistente o sin correlativas cargadas devuelve lista vacía (no 404): mismo criterio
+    /// que <see cref="ListSubjectsByCareerPlanAsync"/> para un catálogo público.
+    /// </summary>
+    Task<IReadOnlyList<PublicPrerequisiteEdge>> ListPrerequisitesByCareerPlanAsync(
+        Guid careerPlanId, CancellationToken ct = default);
 }
