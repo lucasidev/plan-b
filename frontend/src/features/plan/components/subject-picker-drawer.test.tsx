@@ -4,13 +4,13 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { availableSubjectsQueries } from '../api';
-import type { AvailableSubject } from '../types';
 import {
   formatBlockedReason,
   formatSubjectPeriod,
-  SubjectPickerDrawer,
   selectVisibleSubjects,
-} from './subject-picker-drawer';
+} from '../lib/available-subjects';
+import type { AvailableSubject } from '../types';
+import { SubjectPickerDrawer } from './subject-picker-drawer';
 
 function subject(overrides: Partial<AvailableSubject> = {}): AvailableSubject {
   return {
