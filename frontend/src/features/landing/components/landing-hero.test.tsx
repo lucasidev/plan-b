@@ -25,10 +25,10 @@ describe('LandingHero', () => {
     );
   });
 
-  it('muestra los stats de alumnos, reseñas y carreras', () => {
+  it('muestra las propuestas de valor del producto', () => {
     render(<LandingHero />);
-    expect(screen.getByText('340')).toBeInTheDocument();
-    expect(screen.getByText('1.2k')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    expect(screen.getByText('Verificado')).toBeInTheDocument();
+    expect(screen.getByText('Anónimo')).toBeInTheDocument();
+    expect(screen.getByText('Independiente')).toBeInTheDocument();
   });
 });

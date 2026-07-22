@@ -1,6 +1,6 @@
 /**
  * Layout shell of the About plan-b page (US-074). Hero on top + 2-column grid with the
- * manifesto + roadmap on the left and team + stats + universities + open source on the
+ * manifesto + roadmap on the left and team + universities + open source on the
  * right. Server component (all content is static).
  */
 
@@ -8,7 +8,6 @@ import { AboutHero } from './about-hero';
 import { ManifestoCard } from './manifesto-card';
 import { OpenSourceCard } from './open-source-card';
 import { RoadmapCard } from './roadmap-card';
-import { StatsCard } from './stats-card';
 import { TeamCard } from './team-card';
 import { UniversitiesCard } from './universities-card';
 
@@ -32,7 +31,6 @@ export function AboutShell() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <TeamCard />
-            <StatsCard />
             <UniversitiesCard />
             <OpenSourceCard />
           </div>

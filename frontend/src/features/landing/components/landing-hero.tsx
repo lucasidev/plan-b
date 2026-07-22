@@ -1,22 +1,21 @@
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { MiniSim } from './mini-sim';
+import { DemoSim } from './demo-sim';
 
-// Aspiracionales para la fase de presentación (US-054-f, "Out of scope"): sin
-// endpoint público de stats todavía. Reemplazar por data real cuando aterrice.
-const HERO_STATS = [
-  { value: '340', label: 'alumnos verificados' },
-  { value: '1.2k', label: 'reseñas' },
-  { value: '3', label: 'carreras' },
+// Propuestas de valor del producto, no métricas de tracción (que no tenemos).
+const HERO_VALUES = [
+  { value: 'Verificado', label: 'por tu historial' },
+  { value: 'Anónimo', label: 'hacia afuera' },
+  { value: 'Independiente', label: 'del decanato' },
 ] as const;
 
 /**
  * Hero de la landing pública (US-054-f). Port de la sección `<section>` de
  * `Landing` (docs/design/reference/canvas-mocks/landing.jsx, líneas 360-413):
- * copy + 2 CTAs + stats a la izquierda, `<MiniSim/>` a la derecha.
+ * copy + 2 CTAs + stats a la izquierda, `<DemoSim/>` a la derecha.
  *
- * Grid `1fr auto` colapsa a 1 columna (texto arriba, MiniSim abajo) debajo de
- * 1024px. El wrapper de `MiniSim` usa `maxWidth` en vez de `width` fijo para no
+ * Grid `1fr auto` colapsa a 1 columna (texto arriba, DemoSim abajo) debajo de
+ * 1024px. El wrapper de `DemoSim` usa `maxWidth` en vez de `width` fijo para no
  * desbordar el viewport en pantallas angostas; a >=1024px se ve idéntico al mock.
  */
 export function LandingHero() {
@@ -83,19 +82,19 @@ export function LandingHero() {
           className="flex font-mono text-ink-3"
           style={{ gap: 32, marginTop: 36, fontSize: 11.5, letterSpacing: '0.04em' }}
         >
-          {HERO_STATS.map((stat) => (
-            <div key={stat.label}>
+          {HERO_VALUES.map((item) => (
+            <div key={item.label}>
               <b className="text-ink" style={{ fontSize: 14 }}>
-                {stat.value}
+                {item.value}
               </b>{' '}
-              {stat.label}
+              {item.label}
             </div>
           ))}
         </div>
       </div>
 
       <div className="w-full" style={{ maxWidth: 560 }}>
-        <MiniSim />
+        <DemoSim />
       </div>
     </section>
   );

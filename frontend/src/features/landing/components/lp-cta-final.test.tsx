@@ -10,10 +10,8 @@ describe('LpCtaFinal', () => {
     ).toBeInTheDocument();
   });
 
-  it('muestra el link "Crear cuenta con email institucional" hacia /sign-up', () => {
+  it('muestra el link "Crear cuenta" hacia /sign-up', () => {
     render(<LpCtaFinal />);
-    expect(
-      screen.getByRole('link', { name: /crear cuenta con email institucional/i }),
-    ).toHaveAttribute('href', '/sign-up');
+    expect(screen.getByRole('link', { name: /crear cuenta/i })).toHaveAttribute('href', '/sign-up');
   });
 });

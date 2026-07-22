@@ -84,17 +84,6 @@ export const ABOUT_TEAM: readonly TeamMember[] = [
 export const ABOUT_ACADEMIC_CONTEXT =
   'Proyecto Final 2026 · Tutor: Ing. Elio Copas · Universidad del Norte Santo Tomás de Aquino (UNSTA), Tucumán.';
 
-/**
- * Hardcoded stats. When `GET /api/stats/public` lands (separate cross-module US), these
- * values come from the backend and the card switches to RSC with fetch.
- */
-export const ABOUT_STATS = {
-  students: '340',
-  reviews: '1.247',
-  teachers: '87',
-  version: 'v0.2',
-} as const;
-
 export const ABOUT_REPO_URL = 'https://github.com/lucasidev/plan-b';
 
 /**

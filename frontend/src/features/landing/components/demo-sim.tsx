@@ -8,7 +8,7 @@ type SubjectRow = {
   commission: string;
 };
 
-// Data hardcodeada del mock (US-054-f): MiniSim es un visual estático, sin fetch.
+// Data hardcodeada del mock (US-054-f): DemoSim es un visual estático, sin fetch.
 const SUBJECTS: SubjectRow[] = [
   { code: 'ISW302', name: 'Ing. de Software II', difficulty: 4, commission: 'A' },
   { code: 'MOV302', name: 'Aplicaciones Móviles', difficulty: 3, commission: 'A' },
@@ -77,7 +77,7 @@ const DIFFICULTY_CLASSES: Record<DifficultyTone, string> = {
  * una US futura del simulador público. `.mp`/`.dot`/`.diff-hi/mid/lo` del mock
  * no existen como clases reales, portadas acá inline con `MpPill`.
  */
-export function MiniSim() {
+export function DemoSim() {
   return (
     <div
       className="bg-bg-card border border-line overflow-hidden"
