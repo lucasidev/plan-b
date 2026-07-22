@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-20 (cierre de S9 con US-062 y apertura de S10, cuyo foco es el simulador de cuatrimestre). Ese mismo día, una auditoría de documentación corrigió un error conceptual que venía arrastrándose: el backoffice no es un módulo ni tiene namespace de API propio ([ADR-0050](decisions/0050-backoffice-como-corte-transversal.md)). De paso salieron a la luz US-065, US-067 y US-081, que figuraban Done sin tener implementada la funcionalidad que declaran, y ahora están como **Parcial**.
+**Última actualización**: 2026-07-26 (cierre de S10: el simulador de cuatrimestre US-016 conectado a catálogo/correlativas/historial/reseñas, las páginas de error globales US-009-f y el estado offline US-039-f; más un bloque extra de vidrieras del producto (landing y sign-in) y el vocabulario de datos de prueba vs demo asentado en el glosario).
 
 ---
 
@@ -22,7 +22,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S7 | 2026-06-23 a 2026-07-05 (extendido) | **Vertical docente (keystone US-063 Teacher)**: catálogo + admin de docentes, comisiones (US-065), página pública de docente (US-003), claim + verificación docente (US-030/031), responder + editar reseña como docente (US-040/041), rama docente de la búsqueda (US-004), cuentas staff (US-067). | ✓ Done |
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
-| S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). | ⏳ Planificado |
+| S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11+ | next+ | Backlog planificado: backoffice restante (US-065/067/081 parciales + importadores US-006/007 + wizard US-091 + comisión por cuatri US-090), planificación premium (US-023-027), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
@@ -489,7 +489,7 @@ Revisando US-060 en el browser saltaron dos gaps que entran al sprint:
 
 ---
 
-## S10 ⏳ Planificado
+## S10 ✓ Done
 
 **Rango**: 2026-07-21 a 2026-07-26 (lunes → sábado).
 
@@ -503,9 +503,9 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 
 | US | Título | Pri | Effort | Estado |
 |---|---|---|---|---|
-| US-016 | Simular inscripción (disponibles/bloqueadas + métricas de la combinación) | High | L | ⚪ No empezada |
-| US-009-f | Páginas de error globales (404 + 5xx) | Med | S | ⚪ No empezada |
-| US-039-f | Estado offline (banner global + acciones en pausa) | Med | S | ⚪ No empezada |
+| US-016 | Simular inscripción (disponibles/bloqueadas + métricas de la combinación) | High | L | ✓ Done |
+| US-009-f | Páginas de error globales (404 + 5xx) | Med | S | ✓ Done |
+| US-039-f | Estado offline (banner global + acciones en pausa) | Med | S | ✓ Done (core) |
 
 ### Decisiones de scope tomadas al planificar (2026-07-20)
 
@@ -514,6 +514,23 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 - **Las premium de planificación quedan fuera**: US-023 (guardar draft), US-024 (compartir), US-025 (editar), US-026 (borrar), US-027 (ver públicas). Entran cuando el simulador base esté validado con usuarios reales, no antes.
 - **El backoffice restante se difiere a S11**: US-065 y US-067 quedaron **parciales** en S7 y US-081 nunca aterrizó su dashboard (los tres detectados en la auditoría de docs del 2026-07-20). Es valor para el operador, no para el alumno, así que va después del simulador.
 - **Descubrimiento (US-056 Meilisearch + US-057 rankings) se difiere a S12**: gana valor cuando ya haya corpus y catálogo completos, y US-056 además suma infraestructura nueva.
+
+### Cierre (2026-07-26)
+
+Las tres US entraron:
+
+- **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con el piso anti-reidentificación de [ADR-0047](decisions/0047-pass-rate-publico-desde-historial-privado.md)) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
+- **US-009-f** hecho: las superficies de error (404, 500, 403, loading, offline) con su diseño; el CTA de la 404 y la página offline apuntan a la landing pública.
+- **US-039-f** hecho en su core: hook `useOnlineStatus`, `OfflineBanner` global en el shell `(member)` con reintento y la transición "Conexión restablecida", más tests unit/component y el E2E con `context.setOffline`. **Deuda incremental**: el barrido de `disabled` por botón de mutación en cada feature (el hook queda listo para engancharlo) y la nota del patrón offline en `docs/testing/conventions.md`.
+
+### Extra del sprint: vidrieras del producto + vocabulario de datos
+
+Un bloque que salió revisando la landing y el auth:
+
+- **Correlativas públicas del plan**: endpoint anónimo `GET /api/academic/prerequisites` para el grafo de correlativas sin login.
+- **Vocabulario de datos** asentado en el glosario ([ubiquitous-language.md](domain/ubiquitous-language.md), sección "Producto, landing y datos"): **datos de prueba** (el seed de contenido de la DB, `SeedCorpus`) vs **datos demo** (los ejemplos hardcodeados de las vidrieras).
+- **Vidrieras de las tres herramientas**: los demos de la landing (reseña, mapa de carrera responsive, simulador) y el panel de bienvenida del sign-in (`HowItWorksPanel`), con datos de ejemplo.
+- **Copy del producto**: el registro acepta cualquier email, el hero y el about muestran propuestas de valor, el badge de auth es "institucional".
 
 ## Backlog open (sin sprint asignado)
 
