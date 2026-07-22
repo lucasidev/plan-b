@@ -1,4 +1,4 @@
-import type { EnrollmentContext, ReviewAnonymousIdentity } from '../types';
+import type { EnrollmentContext } from '../types';
 
 /**
  * Test fixture for the enrollment context (`V2_EDITOR_CTX` in the canvas). The pages now
@@ -15,19 +15,6 @@ export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
   com: 'A',
   period: '2025·2c',
   finalNote: 8,
-};
-
-/**
- * Fallback for the pseudonymous identity rendered in the side preview (ADR-0009: year in
- * career + career + period). The editor fills `period` with the real enrollment period; the
- * `year` and `career` stay placeholders until the session carries them (US-012). The sidebar
- * hardcodes the career name for the same reason, so this stays consistent with the rest of
- * the chrome until that US lands.
- */
-export const MOCK_ANONYMOUS_IDENTITY: ReviewAnonymousIdentity = {
-  year: 4,
-  career: 'Sistemas',
-  period: '2025·2c',
 };
 
 /**

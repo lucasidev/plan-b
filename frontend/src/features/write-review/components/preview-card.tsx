@@ -3,6 +3,23 @@
 import type { ReviewAnonymousIdentity } from '../types';
 
 /**
+ * Arma la línea de identidad con las partes que realmente conocemos. Año y carrera todavía no
+ * viajan en la sesión (US-012): omitirlos deja "Anónimo · cursó 2025 · 2do cuatrimestre", que es
+ * incompleto pero cierto, en vez del "4° · Sistemas" mock que le atribuía a cada alumno la carrera
+ * de otro. El "°" solo nunca dice de qué es, así que va acompañado de "año".
+ */
+function identityLine(identity: ReviewAnonymousIdentity): string {
+  return [
+    'Anónimo',
+    identity.year === null ? null : `${identity.year}° año`,
+    identity.career,
+    identity.period === null ? null : `cursó ${identity.period}`,
+  ]
+    .filter((part): part is string => part !== null)
+    .join(' · ');
+}
+
+/**
  * Live editor preview (US-049, right column). Mirrors the aside in the mockup.
  *
  * Shows how the review will appear in the feed (US-048) using the author's anonymous
@@ -54,9 +71,7 @@ export function PreviewCard({
           <div className="grid h-6 w-6 place-items-center rounded-full bg-bg-elev text-[12px] text-ink-3">
             ?
           </div>
-          <div className="min-w-0 flex-1 text-[11px] text-ink-3">
-            Anónimo · {identity.year}° · {identity.career} · cursó {identity.period}
-          </div>
+          <div className="min-w-0 flex-1 text-[11px] text-ink-3">{identityLine(identity)}</div>
           <output
             className="font-mono text-[11px] tracking-wider"
             style={{ color: 'var(--color-accent-ink)' }}

@@ -8,5 +8,5 @@ export { PlanList } from './components/plan-list';
 export { SubjectGrid } from './components/subject-grid';
 export { UniversityList } from './components/university-list';
 export type { SubjectYearGroup } from './lib/group-subjects';
-export { formatTermLabel, groupSubjectsByYear } from './lib/group-subjects';
+export { groupSubjectsByYear } from './lib/group-subjects';
 export type { Career, CareerPlan, CareerPlanSummary, Subject, University } from './types';

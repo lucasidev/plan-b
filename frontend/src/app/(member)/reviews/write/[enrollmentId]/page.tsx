@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { fetchPendingReviewServer } from '@/features/pending-reviews/api.server';
 import { type EnrollmentContext, ReviewEditor } from '@/features/write-review';
 import { fetchCommissionTeachersServer } from '@/features/write-review/api.server';
+import { formatAcademicPeriod } from '@/lib/academic-terms';
 
 export const metadata = {
   title: 'Escribir reseña · planb',
@@ -42,7 +43,7 @@ export default async function WriteReviewPage({ params }: { params: Params }) {
     matName: pending.subjectName,
     prof: null,
     com: null,
-    period: pending.termLabel,
+    period: formatAcademicPeriod(pending.termYear, pending.termKind, pending.termNumber),
     finalNote: pending.grade,
   };
 

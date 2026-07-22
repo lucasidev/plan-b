@@ -3,9 +3,10 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { Check } from 'lucide-react';
 import Link from 'next/link';
+import { formatAcademicPeriod } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { pendingReviewsQueries } from '../api';
-import type { PendingReview } from '../types';
+import type { EnrollmentStatus, PendingReview } from '../types';
 
 /**
  * Tab "Pendientes" listing for US-048. Reads the suspense query hydrated by the page's
@@ -30,6 +31,9 @@ export function PendingList() {
 }
 
 function PendingCard({ item }: { item: PendingReview }) {
+  const period = formatAcademicPeriod(item.termYear, item.termKind, item.termNumber, {
+    short: true,
+  });
   return (
     <li>
       <article
@@ -43,12 +47,8 @@ function PendingCard({ item }: { item: PendingReview }) {
             <span className="font-mono text-[10.5px] text-ink-3 tracking-wide">
               {item.subjectCode}
             </span>
-            {item.termLabel && (
-              <span className="font-mono text-[10.5px] text-ink-3">· {item.termLabel}</span>
-            )}
-            <span className="font-mono text-[10.5px] text-ink-3">
-              · {item.status.toLowerCase()}
-            </span>
+            {period && <span className="font-mono text-[10.5px] text-ink-3">· {period}</span>}
+            <StatusChip status={item.status} />
           </div>
           <div className="text-[15px] font-medium leading-snug text-ink mb-0.5 truncate">
             {item.subjectName}
@@ -69,6 +69,34 @@ function PendingCard({ item }: { item: PendingReview }) {
         </Link>
       </article>
     </li>
+  );
+}
+
+/**
+ * Estado de la cursada (no de la reseña). "Regular" a secas se lee como el coloquial "más o
+ * menos"; el label visible desambigua ("regularizada") y el prefijo sr-only deja explícito para
+ * lectores de pantalla que el chip describe el estado de la cursada, no otra cosa.
+ */
+function StatusChip({ status }: { status: EnrollmentStatus }) {
+  const map: Record<EnrollmentStatus, { label: string; tone: string }> = {
+    InProgress: { label: 'cursando', tone: 'bg-st-coursing-bg text-st-coursing-fg' },
+    Regularized: { label: 'regularizada', tone: 'bg-st-regularized-bg text-st-regularized-fg' },
+    Passed: { label: 'aprobada', tone: 'bg-st-approved-bg text-st-approved-fg' },
+    Failed: { label: 'reprobada', tone: 'bg-st-failed-bg text-st-failed-fg' },
+    Dropped: { label: 'abandonada', tone: 'bg-line text-ink-3' },
+  };
+  const { label, tone } = map[status];
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center px-1.5 py-px rounded-pill',
+        'font-mono text-[10.5px] font-medium tracking-wide flex-shrink-0',
+        tone,
+      )}
+    >
+      <span className="sr-only">Estado de la cursada: </span>
+      {label}
+    </span>
   );
 }
 

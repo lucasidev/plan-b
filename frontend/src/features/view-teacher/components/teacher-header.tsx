@@ -1,3 +1,4 @@
+import { NO_DATA_YET } from '@/lib/copy';
 import type { TeacherDetail, TeacherInsights } from '../types';
 
 /**
@@ -40,7 +41,7 @@ export function TeacherHeader({
           value={
             insights.averageOverallRating !== null
               ? insights.averageOverallRating.toFixed(1)
-              : 's/d'
+              : NO_DATA_YET
           }
           suffix={insights.averageOverallRating !== null ? '/5' : undefined}
           sub="promedio"
@@ -53,7 +54,9 @@ export function TeacherHeader({
         <Stat
           label="Dificultad"
           value={
-            insights.averageDifficulty !== null ? insights.averageDifficulty.toFixed(1) : 's/d'
+            insights.averageDifficulty !== null
+              ? insights.averageDifficulty.toFixed(1)
+              : NO_DATA_YET
           }
           suffix={insights.averageDifficulty !== null ? '/5' : undefined}
           sub="promedio"
@@ -61,7 +64,9 @@ export function TeacherHeader({
         <Stat
           label="Recomiendan"
           value={
-            insights.recommendPercentage !== null ? insights.recommendPercentage.toFixed(0) : 's/d'
+            insights.recommendPercentage !== null
+              ? insights.recommendPercentage.toFixed(0)
+              : NO_DATA_YET
           }
           suffix={insights.recommendPercentage !== null ? '%' : undefined}
           sub="de la cursada"

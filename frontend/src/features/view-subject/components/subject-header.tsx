@@ -1,4 +1,5 @@
 import { formatTermKind } from '@/lib/academic-terms';
+import { NO_DATA_YET } from '@/lib/copy';
 import type { SubjectDetail, SubjectInsights, SubjectPassRate } from '../types';
 
 /**
@@ -51,7 +52,9 @@ export function SubjectHeader({
           <Stat
             label="Dificultad"
             value={
-              insights.averageDifficulty !== null ? insights.averageDifficulty.toFixed(1) : 's/d'
+              insights.averageDifficulty !== null
+                ? insights.averageDifficulty.toFixed(1)
+                : NO_DATA_YET
             }
             suffix={insights.averageDifficulty !== null ? '/5' : undefined}
             sub="promedio"
@@ -67,14 +70,16 @@ export function SubjectHeader({
             value={
               insights.recommendPercentage !== null
                 ? insights.recommendPercentage.toFixed(0)
-                : 's/d'
+                : NO_DATA_YET
             }
             suffix={insights.recommendPercentage !== null ? '%' : undefined}
             sub="de la cursada"
           />
           <Stat
             label="Aprobación"
-            value={passRate.passRate !== null ? Math.round(passRate.passRate).toString() : 's/d'}
+            value={
+              passRate.passRate !== null ? Math.round(passRate.passRate).toString() : NO_DATA_YET
+            }
             suffix={passRate.passRate !== null ? '%' : undefined}
             sub={passRate.passRate !== null ? 'histórica' : 'pocos datos'}
           />

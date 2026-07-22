@@ -50,10 +50,9 @@ internal sealed class DapperPendingReviewsQueryService : IPendingReviewsQuerySer
                 er.commission_id                                            AS CommissionId,
                 er.status                                                   AS Status,
                 er.grade                                                    AS Grade,
-                CASE
-                    WHEN t.id IS NULL THEN NULL
-                    ELSE CONCAT(t.year::text, '·', t.number::text, 'c')
-                END                                                         AS TermLabel
+                t.year                                                      AS TermYear,
+                t.number                                                    AS TermNumber,
+                t.kind                                                      AS TermKind
             FROM enrollments.enrollment_records er
             JOIN academic.subjects s
               ON s.id = er.subject_id
