@@ -69,12 +69,12 @@ const DIFFICULTY_CLASSES: Record<DifficultyTone, string> = {
 };
 
 /**
- * Mock visual del simulador embebido en el hero de la landing (US-054-f). Port
+ * Mock visual del planificador embebido en el hero de la landing (US-054-f). Port
  * de `MiniSim` (docs/design/reference/canvas-mocks/landing.jsx, líneas 17-168):
  * selección de materias + stats + mini calendario semanal, todo hardcodeado.
  *
  * No es interactivo (sin drag, sin combinar comisiones): esa versión queda para
- * una US futura del simulador público. `.mp`/`.dot`/`.diff-hi/mid/lo` del mock
+ * una US futura del planificador público. `.mp`/`.dot`/`.diff-hi/mid/lo` del mock
  * no existen como clases reales, portadas acá inline con `MpPill`.
  */
 export function DemoSim() {

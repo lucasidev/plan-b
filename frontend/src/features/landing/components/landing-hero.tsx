@@ -16,7 +16,9 @@ const HERO_VALUES = [
  *
  * Grid `1fr auto` colapsa a 1 columna (texto arriba, DemoSim abajo) debajo de
  * 1024px. El wrapper de `DemoSim` usa `maxWidth` en vez de `width` fijo para no
- * desbordar el viewport en pantallas angostas; a >=1024px se ve idéntico al mock.
+ * desbordar el viewport en pantallas angostas, y se centra en el colapso
+ * (`mx-auto lg:mx-0`): sin eso queda clavado a la izquierda con aire muerto a
+ * la derecha. A >=1024px se ve idéntico al mock.
  */
 export function LandingHero() {
   return (
@@ -50,8 +52,8 @@ export function LandingHero() {
           className="text-ink-2"
           style={{ marginTop: 20, fontSize: 16, maxWidth: '52ch', lineHeight: 1.55 }}
         >
-          plan-b es una herramienta para alumnos: simulá tu cuatrimestre, comparás comisiones y leés
-          reseñas verificadas de quienes ya cursaron. Sin nombres, sin filtros del decanato.
+          plan-b es una herramienta para alumnos: planificá tu cuatrimestre, comparás comisiones y
+          leés reseñas verificadas de quienes ya cursaron. Sin nombres, sin filtros del decanato.
         </p>
         <div className="flex" style={{ gap: 12, marginTop: 28 }}>
           <Link
@@ -93,7 +95,7 @@ export function LandingHero() {
         </div>
       </div>
 
-      <div className="w-full" style={{ maxWidth: 560 }}>
+      <div className="w-full mx-auto lg:mx-0" style={{ maxWidth: 560 }}>
         <DemoSim />
       </div>
     </section>
