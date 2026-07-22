@@ -161,6 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - permitir materias sin carga horaria semanal fija (academic) — [`e3a961d`](https://github.com/lucasidev/plan-b/commit/e3a961d77701e3ddd33dc7407df2cf7eeb3aab49)
 - piso de muestra anti-reidentificacion en la cohorte (ADR-0047) (planning) — [`4db7835`](https://github.com/lucasidev/plan-b/commit/4db78351c79d371a00640236412e90c5b70c0121)
 - los rangos del form de materia salen del schema (academic) — [`89becee`](https://github.com/lucasidev/plan-b/commit/89becee9d5c18e130da7b979e8064902d86e2cf2)
+- la UI habla un solo idioma de períodos y datos (frontend) — [`231a7d3`](https://github.com/lucasidev/plan-b/commit/231a7d304d94d589a9ada7c0b3218657bc5916e3)
 
 ### Changed
 
