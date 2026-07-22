@@ -41,14 +41,18 @@ test.describe('Planificar (US-046)', () => {
     });
   });
 
-  test('tab "En curso" muestra materias del año, stats y calendario', async ({ page }) => {
+  test('tab "En curso" muestra materias del año, el panel y el calendario', async ({ page }) => {
     await expect(page.getByRole('heading', { name: /materias del año/i })).toBeVisible();
     // ISW302 aparece tanto en la lista de materias (sidebar) como en bloques del calendario
     // (varios días). Verificamos que esté visible al menos una vez sin imponer strict mode.
     await expect(page.getByText('ISW302').first()).toBeVisible();
     await expect(page.getByText('INT302').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: /distribución semanal/i })).toBeVisible();
-    await expect(page.getByText(/semanales/i).first()).toBeVisible();
+    // El panel de métricas (US-016) reacciona a las materias que el alumno suma desde el drawer,
+    // no al borrador activo (que es mock sin id real, US-023). Al cargar el tab arranca sin
+    // materias en la simulación, así que invita a sumarlas en vez de mostrar stats: las métricas
+    // reales se ejercitan agregando una materia (ver el test del drawer más abajo).
+    await expect(page.getByText(/sumá materias a tu simulación/i).first()).toBeVisible();
   });
 
   test('cambio a tab "Borradores" via click URL', async ({ page }) => {
