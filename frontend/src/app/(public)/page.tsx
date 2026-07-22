@@ -1,5 +1,5 @@
 import { DemoGraph } from '@/features/landing/components/demo-graph';
-import { DemoProf } from '@/features/landing/components/demo-prof';
+import { DemoPlanner } from '@/features/landing/components/demo-planner';
 import { DemoReview } from '@/features/landing/components/demo-review';
 import { LandingHero } from '@/features/landing/components/landing-hero';
 import { LpCtaFinal } from '@/features/landing/components/lp-cta-final';
@@ -12,7 +12,7 @@ import { getSession } from '@/lib/session';
 // Hoisted para no crear refs nuevas por render (regla react-doctor/jsx-no-jsx-as-prop).
 const DEMO_REVIEW = <DemoReview />;
 const DEMO_GRAPH = <DemoGraph />;
-const DEMO_PROF = <DemoProf />;
+const DEMO_PLANNER = <DemoPlanner />;
 
 // Pasos de verificación de la sección "Cómo verificamos" (#data).
 const VERIFICATION_STEPS = [
@@ -102,22 +102,22 @@ export default async function LandingPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3" style={{ gap: 18 }}>
             <LpFeature
-              code="01 · Reseñas"
+              eyebrow="Reseñas"
               title="Lo que tus compañeros nunca te dijeron en voz alta."
               body="Reseñas anónimas de materia y docente, con dificultad, exigencia y carga real. Verificamos que quien escribe haya cursado, no que se llame X."
               demo={DEMO_REVIEW}
             />
             <LpFeature
-              code="02 · Plan"
+              eyebrow="Mi carrera"
               title="Tu carrera como mapa, no como Excel."
               body="Mirá qué tenés aprobado, qué te falta y qué se te abre con cada materia. El grafo te muestra correlativas reales, no solo nombres."
               demo={DEMO_GRAPH}
             />
             <LpFeature
-              code="03 · Simulador"
+              eyebrow="Planificador"
               title="Probá cuatrimestres antes de inscribirte."
               body="Combiná materias, comisiones y horarios. Ves la carga semanal, choques y la dificultad agregada antes de clavarte 6 meses."
-              demo={DEMO_PROF}
+              demo={DEMO_PLANNER}
             />
           </div>
         </section>

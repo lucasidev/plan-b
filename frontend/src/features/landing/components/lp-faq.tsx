@@ -12,7 +12,7 @@ const FAQ_ITEMS = [
   {
     question: '¿Tengo que cargar todo mi historial?',
     answer:
-      'Sí, esa es la base. Sin historial no podés reseñar ni armar simulador útil. Tarda 2 minutos.',
+      'Sí, esa es la base. Sin historial no podés reseñar ni armar un plan útil. Tarda 2 minutos.',
   },
   {
     question: '¿Qué pasa con las reseñas viejas si cambia el profesor?',

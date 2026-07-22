@@ -35,12 +35,14 @@ const STATE_COLOR: Record<SubjectState, [bg: string, fg: string]> = {
   AV: ['oklch(0.94 0.012 80)', 'oklch(0.35 0.012 80)'],
 };
 
-const WIDTH = 240;
-const HEIGHT = 120;
 const COL_WIDTH = 100;
 const ROW_HEIGHT = 56;
 const NODE_W = 70;
 const NODE_H = 24;
+// viewBox = contenido real + 12px de margen por lado (la última columna arranca
+// en x=212 y el nodo mide 70: un ancho menor recorta la columna derecha).
+const WIDTH = 12 + 2 * COL_WIDTH + NODE_W + 12;
+const HEIGHT = 12 + ROW_HEIGHT + NODE_H + 12;
 
 function nodeX(node: GraphNode) {
   return 12 + node.x * COL_WIDTH;
@@ -51,7 +53,7 @@ function nodeY(node: GraphNode) {
 }
 
 /**
- * Demo embebido de la feature "Plan" (US-054-f). Grafo SVG mini de correlativas con
+ * Demo embebido de la feature "Mi carrera" (US-054-f). Grafo SVG mini de correlativas con
  * curvas bézier entre nodos. Visual puro, sin fetch, datos de ejemplo.
  *
  * Nodos y líneas viven ambos DENTRO del SVG (mismo sistema de coordenadas del

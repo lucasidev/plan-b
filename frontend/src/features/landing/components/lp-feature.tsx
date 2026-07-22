@@ -1,18 +1,22 @@
 type Props = {
-  /** Eyebrow mono, ej. "01 · Reseñas". */
-  code: string;
+  /** Eyebrow mono, ej. "Reseñas". */
+  eyebrow: string;
   title: string;
   body: string;
-  /** Demo embebido (`DemoReview` / `DemoGraph` / `DemoProf`). */
+  /** Demo embebido (`DemoReview` / `DemoGraph` / `DemoPlanner`). */
   demo: React.ReactNode;
 };
 
 /**
  * Tarjeta de feature reusable de la landing pública (US-054-f). Port de
- * `LpFeature` (docs/design/reference/canvas-mocks/landing.jsx, líneas 170-194).
- * Usada 3 veces en la sección "Tres herramientas, un mismo lugar" (`#features`).
+ * `LpFeature` (docs/design/reference/canvas-mocks/landing.jsx). Usada 3 veces
+ * en la sección "Tres herramientas, un mismo lugar" (`#features`).
+ *
+ * El eyebrow va sin numeración: las secciones de la landing ya se numeran
+ * ("02 · funciones", "03 · cómo lo hacemos") y una segunda lista numerada
+ * adentro se confunde con esa.
  */
-export function LpFeature({ code, title, body, demo }: Props) {
+export function LpFeature({ eyebrow, title, body, demo }: Props) {
   return (
     <div
       className="bg-bg-card border border-line flex flex-col"
@@ -22,7 +26,7 @@ export function LpFeature({ code, title, body, demo }: Props) {
         className="font-mono uppercase text-accent-ink"
         style={{ fontSize: 10.5, letterSpacing: '0.08em' }}
       >
-        {code}
+        {eyebrow}
       </div>
       <div>
         <div
