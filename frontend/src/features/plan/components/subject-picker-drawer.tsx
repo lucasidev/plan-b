@@ -5,7 +5,12 @@ import { X } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { availableSubjectsQueries } from '../api';
-import type { AvailabilityStatus, AvailableSubject, BlockedBySubject } from '../types';
+import {
+  formatBlockedReason,
+  formatSubjectPeriod,
+  selectVisibleSubjects,
+} from '../lib/available-subjects';
+import type { AvailableSubject } from '../types';
 
 /**
  * "Agregar materia" drawer (US-046 shell, cableado a datos reales por US-016). Catálogo de
@@ -23,36 +28,6 @@ type Props = {
   onClose: () => void;
   onPick: (subject: AvailableSubject) => void;
 };
-
-const VISIBLE_STATUSES: ReadonlySet<AvailabilityStatus> = new Set(['Available', 'Blocked']);
-
-/**
- * Disponibles + bloqueadas (con motivo). Las ya aprobadas/regularizadas/en curso quedan afuera:
- * no tiene sentido ofrecerlas para sumar a una simulación del cuatrimestre que viene.
- */
-export function selectVisibleSubjects(items: readonly AvailableSubject[]): AvailableSubject[] {
-  return items.filter((item) => VISIBLE_STATUSES.has(item.status));
-}
-
-/**
- * "Año 2 · Cuatrimestral 1" / "Año 2 · Anual" (Anual nunca trae termInYear, invariante del
- * backend). Sin traducir a ordinales: mismo criterio simple que `SubjectHeader` de view-subject
- * (termKind ya viaja en español desde el backend).
- */
-export function formatSubjectPeriod(
-  yearInPlan: number,
-  termInYear: number | null,
-  termKind: string,
-): string {
-  const term = termInYear !== null ? `${termKind} ${termInYear}` : termKind;
-  return `Año ${yearInPlan} · ${term}`;
-}
-
-/** "Te falta aprobar o regularizar: MAT101 Análisis Matemático I, FIS101 Física I". */
-export function formatBlockedReason(blockedBy: readonly BlockedBySubject[]): string {
-  const list = blockedBy.map((b) => `${b.code} ${b.name}`).join(', ');
-  return `Te falta aprobar o regularizar: ${list}`;
-}
 
 export function SubjectPickerDrawer({ open, onClose, onPick }: Props) {
   const [query, setQuery] = useState('');

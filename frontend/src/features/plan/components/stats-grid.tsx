@@ -2,8 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { simulationEvaluationQueries } from '../api';
+import { formatBlockedReason } from '../lib/available-subjects';
 import type { BlockedSubjectEvaluation, SimulationEvaluation } from '../types';
-import { formatBlockedReason } from './subject-picker-drawer';
 
 /**
  * Un tile de la grilla de métricas: valor grande + label chico debajo. `warn` lo pinta con el
