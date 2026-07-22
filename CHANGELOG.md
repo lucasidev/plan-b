@@ -171,3 +171,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remediar auditoria de US-061 (Cadence, UpdatedAt, parse estricto) (academic) — [`6c8c69a`](https://github.com/lucasidev/plan-b/commit/6c8c69a7027c077d802889ecc185e4dc50e7545f)
 - sacar del codigo la jerga que nacio en una conversacion — [`16e3edf`](https://github.com/lucasidev/plan-b/commit/16e3edfb67bc3a23ab72053c87dd99850058c8ee)
 - separar los helpers puros del drawer (planning) — [`48e9b45`](https://github.com/lucasidev/plan-b/commit/48e9b453479bebae9d1bc5dc4a7a26167f980e2c)
+- valores de enum del dominio en ingles (domain) — [`fe80e3a`](https://github.com/lucasidev/plan-b/commit/fe80e3aafa9a70b39a926339eefca933c9b1083b)
