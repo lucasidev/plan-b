@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 /**
  * E2E de /about (US-074). Página pública, no requiere auth. Verifica que el contenido
- * estático (hero + cards de manifiesto, equipo, números, universidades, open source) renderea
+ * estático (hero + cards de manifiesto, equipo, universidades, open source) renderea
  * sin errores y los links externos apuntan donde corresponde.
  */
 
@@ -25,7 +25,7 @@ test.describe('Sobre plan-b (US-074)', () => {
     await expect(page.getByText(/herramienta de planificación académica/i)).toBeVisible();
   });
 
-  test('cards principales renderean (manifiesto + equipo + números + roadmap + universidades + open source)', async ({
+  test('cards principales renderean (manifiesto + equipo + roadmap + universidades + open source)', async ({
     page,
   }) => {
     await expect(page.getByText(/^manifiesto$/i)).toBeVisible({ timeout: 15_000 });
@@ -34,9 +34,6 @@ test.describe('Sobre plan-b (US-074)', () => {
     await expect(page.getByText(/^equipo$/i)).toBeVisible();
     await expect(page.getByText(/lucas iriarte/i)).toBeVisible();
     await expect(page.getByText(/proyecto final 2026.+ing\. elio copas.+unsta/i)).toBeVisible();
-
-    await expect(page.getByText(/^números$/i)).toBeVisible();
-    await expect(page.getByText('340')).toBeVisible();
 
     await expect(page.getByText(/^lo que viene$/i)).toBeVisible();
     await expect(page.getByText(/^ahora$/i)).toBeVisible();

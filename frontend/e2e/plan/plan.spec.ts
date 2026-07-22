@@ -52,7 +52,7 @@ test.describe('Planificar (US-046)', () => {
     // no al borrador activo (que es mock sin id real, US-023). Al cargar el tab arranca sin
     // materias en la simulación, así que invita a sumarlas en vez de mostrar stats: las métricas
     // reales se ejercitan agregando una materia (ver el test del drawer más abajo).
-    await expect(page.getByText(/sumá materias a tu simulación/i).first()).toBeVisible();
+    await expect(page.getByText(/sumá materias para ver las métricas/i).first()).toBeVisible();
   });
 
   test('cambio a tab "Borradores" via click URL', async ({ page }) => {
