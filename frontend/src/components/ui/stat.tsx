@@ -11,7 +11,7 @@ type Props = {
 };
 
 /**
- * KPI cell. Used in the stat strips at the top of plan / simulator / profile
+ * KPI cell. Used in the stat strips at the top of plan / planner / profile
  * views. Number is tabular-numeric so columns of stats line up across the
  * decimal point.
  */

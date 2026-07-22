@@ -59,7 +59,7 @@ export function StatsGrid({ items }: { items: StatGridItem[] }) {
 }
 
 /**
- * Panel de métricas del simulador (US-016), cableado a POST /api/me/simulator/evaluate.
+ * Panel de métricas del planificador (US-016), cableado a POST /api/me/simulator/evaluate.
  * Reacciona al conjunto de materias elegidas (`subjectIds`): sin ninguna, no llama al endpoint
  * (no hay combinación que evaluar). Ver `simulationEvaluationQueries` en `../api` para por qué es
  * un `useQuery` con el subset en el queryKey y no un `useMutation`.
@@ -75,7 +75,7 @@ export function SimulatorEvaluationPanel({ subjectIds }: { subjectIds: readonly 
   );
 
   if (subjectIds.length === 0) {
-    return <Notice text="Sumá materias a tu simulación para ver las métricas de la combinación." />;
+    return <Notice text="Sumá materias para ver las métricas de la combinación." />;
   }
 
   if (isPending) {

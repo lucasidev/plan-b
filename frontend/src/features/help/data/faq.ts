@@ -25,7 +25,7 @@ export const FAQ: readonly FaqEntry[] = [
     id: 'draft',
     question: 'Cómo armar un borrador',
     answer:
-      'En "Planificar" → tab "Borradores" → "+ Nuevo borrador". Elegís año y cuatrimestre, sumás materias del catálogo de tu carrera, comparás comisiones y publicás cuando estés listo. El borrador NO te inscribe a nada: es una simulación para ver choques, carga semanal y dificultad esperada antes de inscribirte en serio.',
+      'En "Planificar" → tab "Borradores" → "+ Nuevo borrador". Elegís el período, sumás materias del catálogo de tu carrera, comparás comisiones y publicás cuando estés listo. El borrador NO te inscribe a nada: es una simulación para ver choques, carga semanal y dificultad esperada antes de inscribirte en serio.',
   },
   {
     id: 'difficulty',

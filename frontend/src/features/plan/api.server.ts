@@ -4,7 +4,7 @@ import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type { AvailableSubjectsResponse } from './types';
 
 /**
- * Materias del plan evaluadas por el simulador (US-016). GET /api/me/simulator/available,
+ * Materias del plan evaluadas por el planificador (US-016). GET /api/me/simulator/available,
  * autenticado (alumno con StudentProfile activo). Usado por la RSC de /plan para prefetchear +
  * hidratar el drawer "Agregar materia" (`components/subject-picker-drawer.tsx`), así consume con
  * useSuspenseQuery sin un roundtrip extra al abrirse.

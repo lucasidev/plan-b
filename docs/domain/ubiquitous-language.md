@@ -18,7 +18,7 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 | Término | Significado |
 |---|---|
 | **producto / aplicación** | El sistema real, plan-b (backend + frontend). Contiene las herramientas y los features de plataforma. Se prueba y se muestra cargándole datos de prueba. |
-| **herramienta** | Feature de valor que un actor (alumno, docente, staff) usa para su tarea: Reseñas, Plan (mapa de carrera), Simulador, moderación, gestión de catálogo. No es cualquier feature: los de plataforma (registro, login, recuperar contraseña, gestión de cuenta) habilitan el uso pero no son herramientas. |
+| **herramienta** | Feature de valor que un actor (alumno, docente, staff) usa para su tarea: Reseñas, Mi carrera (mapa de la carrera), Planificador, moderación, gestión de catálogo. Se nombran como las nombra la app. No es cualquier feature: los de plataforma (registro, login, recuperar contraseña, gestión de cuenta) habilitan el uso pero no son herramientas. |
 | **landing** | La cara de venta del producto (marketing). Ilustra las herramientas con datos demo y puede idealizar. Es pública, pero eso no la define: hay herramientas públicas también (catálogo, reseñas de una materia). Lo que la separa es que ilustra, no ejecuta. |
 | **datos de prueba** | Datos sembrados en la DB para probar y mostrar la aplicación real funcionando (desarrollo, tests, defensa ante el tribunal). Los consumen los endpoints reales. Implementados como el `SeedCorpus` en el host (gateado por `PLANB_SEED_CORPUS`) más los seeders por módulo (`AuthorsSeeder`, `EnrollmentsSeeder`, `ReviewsSeeder`). |
 | **datos demo** | Datos de ejemplo hardcodeados en la UI de la landing (componentes `demo-*`), para ilustrar las herramientas. Marketing: no viven en el backend, no se fetchean, no pretenden exactitud. |
@@ -74,10 +74,15 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 | **regular / regularizar** | Cursada finalizada con los trabajos prácticos/parciales aprobados pero sin rendir el final. Habilita `para_cursar` de correlativas dependientes. |
 | **HistorialImport** | Staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. Guarda el crudo en JSONB para reprocesar. |
 
-## Planificación de cuatrimestre
+## Planificador
 
 | Término | Significado |
 |---|---|
+| **Planificador** | La herramienta con la que el alumno arma su período académico. Vive en `/plan` (UI "Planificar"). Planifica el **período en curso** y permite crear **borradores** de períodos futuros. **No se llama "simulador"**: simular es una acción dentro del planificador, no el nombre de la herramienta. |
+| **período (de planificación)** | La unidad que el planificador arma: un `AcademicTerm` de la universidad del alumno. Su cadencia la define el régimen de la universidad (`term_kind`): bimestre, cuatrimestre, semestre o año. **Año y semestre pueden ser el mismo período** según la universidad, y el planificador los trata como lo mismo: un único concepto de período, sin flujos separados por cadencia. |
+| **en curso** | El plan del período actual del alumno. Se edita en el planificador (tab "En curso"); no es un borrador. |
+| **borrador** | Plan de un período que **no es el actual** o es uno futuro. Crear y ajustar borradores es **simular**. Es el `SimulationDraft` cuando se persista (US-023); hoy vive solo en la sesión. |
+| **simular** | Armar y evaluar un borrador de un período no actual: elegir materias, ver carga/dificultad/cohorte sin inscribirse a nada. Es una **capacidad del planificador**, no su nombre. Los identificadores `EvaluateSimulation` y `/api/me/simulator/*` nombran esta acción. |
 | **simulación** | Combinación de materias que el alumno está considerando cursar el período que viene. Es una **intención**, no un hecho: no lo inscribe a nada ni queda registrada como cursada. Esa distinción entre futuro e pasado es la razón de que Planning sea un BC separado de Enrollments ([ADR-0029](../decisions/0029-planning-bc-separado.md)). |
 | **SimulationDraft** | La simulación guardada. Aggregate del BC Planning. **Todavía no existe**: US-016 evalúa sin persistir nada; la persistencia llega con US-023, que es premium ([ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)). |
 | **materia disponible** | Materia del plan que el alumno puede cursar el próximo período: tiene todas sus correlativas `para_cursar` regularizadas o aprobadas, y no la aprobó, regularizó ni la está cursando. |
@@ -92,7 +97,7 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 |---|---|
 | **Review** | Reseña de una cursada específica. Anclada a un `EnrollmentRecord` finalizado (no `cursando`). Una por enrollment. |
 | **docente_reseñado** | El `Teacher` al que apunta el texto libre del docente dentro de la reseña. Debe pertenecer al `CommissionTeacher` de la comisión del enrollment. |
-| **difficulty_rating** | Rating de dificultad global de la cursada, 1-5. Input del simulador para promedios combinados. |
+| **difficulty_rating** | Rating de dificultad global de la cursada, 1-5. Input del planificador para promedios combinados. |
 | **ReviewReport** | Reporte de un usuario sobre una reseña (spam, datos personales, lenguaje inapropiado, difamación). Múltiples reportes posibles sobre una misma reseña. |
 | **TeacherResponse** | Respuesta pública de un `Teacher` verificado a una reseña donde fue el `docente_reseñado`. Una por reseña. |
 | **ReviewAuditLog** | Log inmutable de cambios sobre una reseña (edit, report, remove, restore) con diffs en JSONB. Uso interno de moderación y auditoría. |
@@ -128,6 +133,7 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 | **estado de materia** | "Lo que muestra la UI (disponible/bloqueada/cursando/etc.)" | La UI muestra una mezcla de estados persistidos (`status` del enrollment) y estados derivados (computados desde correlativas). Solo los persistidos son "status" en el modelo. |
 | **cohorte** | "La camada de ingreso" (la acepción universitaria habitual: "la cohorte 2020") | En planb es el grupo de alumnos que cursó **la misma combinación de materias** en un período, sin importar cuándo ingresaron. El sentido de camada de ingreso **no se usa** en el producto; si algún día hace falta, va con otro nombre. |
 | **simulación** | "Una inscripción" | No inscribe a nada ni reserva un cupo: es una combinación que el alumno está evaluando. Lo que registra un hecho es el `EnrollmentRecord`. |
+| **simulador** | "El nombre de la herramienta de planificación" | La herramienta es el **Planificador** (`/plan`, UI "Planificar"). Simular es la acción de armar borradores de períodos no actuales dentro de él. Los identificadores de esa acción (`EvaluateSimulation`, `/api/me/simulator/*`) son correctos; llamar "simulador" a la herramienta, no. |
 | **backoffice** | "Un módulo del backend, con su propio namespace de API (`/api/admin/...`)" | Es la **unión de las features no-públicas de cada agregado**, un corte transversal sobre los módulos que ya existen. No es un bounded context ni un prefijo de ruta: cada feature de backoffice vive en su módulo dueño y expone `/api/<modulo>/...` (ej. el CRUD de carreras es `/api/academic/...`). Ver [ADR-0050](../decisions/0050-backoffice-como-corte-transversal.md). |
 | **admin** | "Un módulo, un área del backend, o un namespace de API" | Es un `role` de `User` (ver Identidades y cuentas). Nombra al **actor**, no a un lugar del sistema. Al conjunto de pantallas que ese actor usa se lo llama **backoffice**; en el frontend "admin" sí nombra algo real, pero es una sección de UI (`src/app/(staff)/admin/`), no un módulo del backend. |
 

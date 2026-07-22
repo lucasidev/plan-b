@@ -48,7 +48,7 @@ describe('SimulatorEvaluationPanel (US-016)', () => {
     renderPanel([], undefined);
 
     expect(
-      screen.getByText('Sumá materias a tu simulación para ver las métricas de la combinación.'),
+      screen.getByText('Sumá materias para ver las métricas de la combinación.'),
     ).toBeInTheDocument();
   });
 

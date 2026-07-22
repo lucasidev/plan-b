@@ -15,7 +15,7 @@ export function ActiveTab({ simulation }: { simulation: Simulation }) {
   const [compareOpen, setCompareOpen] = useState(false);
 
   // Ids reales elegidos en el drawer "Agregar materia" (US-016), acumulados en esta sesión: el
-  // simulador no persiste nada (ADR-0029), así que no sobrevive a un refresh ni a cambiar de tab.
+  // planificador no persiste nada (ADR-0029), así que no sobrevive a un refresh ni a cambiar de tab.
   // Arranca vacío a propósito: `simulation.subjects` es mock (US-023 storage pendiente, sin id
   // real de backend), así que no hay nada de ahí para sembrar acá. El panel de métricas
   // reacciona solo a este estado, no al mock de la lista de materias del año.
