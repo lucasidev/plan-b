@@ -167,8 +167,9 @@ function MiniSim() {
   );
 }
 
-// Tarjeta de feature
-function LpFeature({ code, title, body, demo }) {
+// Tarjeta de feature. El eyebrow va sin numeración: las secciones de la landing ya
+// se numeran y una segunda lista numerada adentro se confunde con esa.
+function LpFeature({ eyebrow, title, body, demo }) {
   return (
     <div style={{
       background:'var(--bg-card)', border:'1px solid var(--line)',
@@ -178,7 +179,7 @@ function LpFeature({ code, title, body, demo }) {
       <div style={{
         fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--accent-ink)',
         letterSpacing:'0.08em', textTransform:'uppercase',
-      }}>{code}</div>
+      }}>{eyebrow}</div>
       <div>
         <div style={{
           fontSize:18, fontWeight:600, letterSpacing:'-0.012em',
@@ -281,48 +282,40 @@ function DemoGraph() {
   );
 }
 
-function DemoProf() {
+// Demo del Planificador. En el producto es un carousel CSS que rota tres facetas
+// (métricas de la combinación, correlativas bloqueantes, comparador de comisiones);
+// acá queda el comparador como cara estática de referencia.
+function DemoPlanner() {
   return (
     <div style={{
       background:'var(--bg)', borderRadius:10, padding:'12px 14px',
-      fontSize:12, color:'var(--ink-2)',
     }}>
-      <div style={{display:'flex', justifyContent:'space-between', marginBottom:10}}>
-        <div>
-          <div style={{fontWeight:600, color:'var(--ink)', fontSize:13}}>Federico Brandt</div>
-          <div style={{
-            fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--ink-3)',
-          }}>3 materias · 87 reseñas</div>
-        </div>
-        <div style={{
-          fontFamily:'var(--font-mono)', fontSize:18, fontWeight:600,
-          color:'var(--ink)', letterSpacing:'-0.02em',
-        }}>4.1<span style={{fontSize:11, color:'var(--ink-3)', marginLeft:2}}>/5</span></div>
-      </div>
-      {[
-        ['Claridad', 0.78],
-        ['Exigencia', 0.84],
-        ['Buena onda', 0.62],
-      ].map(([k, v]) => (
-        <div key={k} style={{
-          display:'grid', gridTemplateColumns:'70px 1fr 32px',
-          gap:8, alignItems:'center', marginBottom:5, fontSize:11,
-        }}>
-          <span style={{color:'var(--ink-3)'}}>{k}</span>
-          <span style={{
-            height:5, background:'var(--line-2)', borderRadius:3, overflow:'hidden',
+      <div style={{
+        fontFamily:'var(--font-mono)', fontSize:9.5, color:'var(--ink-3)',
+        letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8,
+      }}>INT302 · elegí comisión</div>
+      <div style={{display:'flex', flexDirection:'column', gap:6}}>
+        {[
+          ['Com A', 'Iturralde', 'Lun 14-18', '4.1'],
+          ['Com B', 'Vázquez', 'Mar 18-22', '3.4'],
+        ].map(([com, prof, sched, rating]) => (
+          <div key={com} style={{
+            background:'var(--bg-card)', border:'1px solid var(--line)',
+            borderRadius:8, padding:'8px 12px',
+            display:'flex', alignItems:'center', gap:8,
           }}>
+            <span style={{fontSize:12, fontWeight:600, color:'var(--ink)'}}>{com}</span>
+            <span style={{fontSize:11, color:'var(--ink-3)'}}>{prof}</span>
+            <span style={{flex:1}}/>
             <span style={{
-              display:'block', width:`${v*100}%`, height:'100%',
-              background:'var(--accent)',
-            }}/>
-          </span>
-          <span style={{
-            fontFamily:'var(--font-mono)', fontSize:10.5,
-            color:'var(--ink)', textAlign:'right',
-          }}>{(v*5).toFixed(1)}</span>
-        </div>
-      ))}
+              fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--ink-3)',
+            }}>{sched}</span>
+            <span style={{
+              fontFamily:'var(--font-mono)', fontSize:11.5, color:'var(--ink)',
+            }}>{rating} <span style={{color:'var(--accent)'}}>★</span></span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -343,10 +336,6 @@ function Landing() {
         borderBottom:'1px solid var(--line)', zIndex:5,
       }}>
         <LpLogo/>
-        <span style={{
-          fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--ink-3)',
-          letterSpacing:'0.06em', textTransform:'uppercase',
-        }}>· beta abierta</span>
         <span style={{flex:1}}/>
         <nav style={{display:'flex', gap:24, fontSize:13, color:'var(--ink-2)'}}>
           <a href="#features" onClick={e=>e.preventDefault()} style={{color:'inherit', textDecoration:'none'}}>Cómo funciona</a>
@@ -383,7 +372,7 @@ function Landing() {
             marginTop:20, fontSize:16, color:'var(--ink-2)',
             maxWidth:'52ch', lineHeight:1.55,
           }}>
-            plan-b es una herramienta para alumnos: simulá tu cuatrimestre,
+            plan-b es una herramienta para alumnos: planificá tu cuatrimestre,
             comparás comisiones y leés reseñas verificadas de quienes ya cursaron.
             Sin nombres, sin filtros del decanato.
           </p>
@@ -400,9 +389,9 @@ function Landing() {
             fontFamily:'var(--font-mono)', fontSize:11.5, color:'var(--ink-3)',
             letterSpacing:'0.04em',
           }}>
-            <div><b style={{color:'var(--ink)', fontSize:14}}>340</b> alumnos verificados</div>
-            <div><b style={{color:'var(--ink)', fontSize:14}}>1.2k</b> reseñas</div>
-            <div><b style={{color:'var(--ink)', fontSize:14}}>3</b> carreras</div>
+            <div><b style={{color:'var(--ink)', fontSize:14}}>Verificado</b> por tu historial</div>
+            <div><b style={{color:'var(--ink)', fontSize:14}}>Anónimo</b> hacia afuera</div>
+            <div><b style={{color:'var(--ink)', fontSize:14}}>Independiente</b> del decanato</div>
           </div>
         </div>
 
@@ -457,22 +446,22 @@ function Landing() {
           display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:18,
         }}>
           <LpFeature
-            code="01 · Reseñas"
+            eyebrow="Reseñas"
             title="Lo que tus compañeros nunca te dijeron en voz alta."
             body="Reseñas anónimas de materia y docente, con dificultad, exigencia y carga real. Verificamos que quien escribe haya cursado, no que se llame X."
             demo={<DemoReview/>}
           />
           <LpFeature
-            code="02 · Plan"
+            eyebrow="Mi carrera"
             title="Tu carrera como mapa, no como Excel."
             body="Mirá qué tenés aprobado, qué te falta y qué se te abre con cada materia. El grafo te muestra correlativas reales, no solo nombres."
             demo={<DemoGraph/>}
           />
           <LpFeature
-            code="03 · Simulador"
+            eyebrow="Planificador"
             title="Probá cuatrimestres antes de inscribirte."
             body="Combiná materias, comisiones y horarios. Ves la carga semanal, choques y la dificultad agregada antes de clavarte 6 meses."
-            demo={<DemoProf/>}
+            demo={<DemoPlanner/>}
           />
         </div>
       </section>
