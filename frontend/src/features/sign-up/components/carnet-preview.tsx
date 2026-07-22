@@ -61,7 +61,7 @@ export function CarnetPreview() {
               Lucía Mansilla
             </div>
             <div className="font-mono text-ink-3" style={{ fontSize: 11.5, marginTop: 2 }}>
-              lucia.mansilla@tu-universidad.edu.ar
+              lucia.mansilla@gmail.com
             </div>
           </div>
         </div>

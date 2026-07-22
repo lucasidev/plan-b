@@ -36,7 +36,7 @@ export default function SignUpPage() {
       stepName="Crear cuenta"
       leftPanel={LEFT_PANEL}
       title="Empezá en 30 segundos"
-      sub="Validamos que seas alumno con tu email institucional. Después, lo que escribas es anónimo."
+      sub="Validamos que seas alumno con tu historial académico. Después, lo que escribas es anónimo."
       foot={FOOT}
     >
       <SignUpForm />
