@@ -11,6 +11,18 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 - **Mensajes de error internos** (logs, excepciones, códigos de error): inglés.
 - **Documentación y ADRs**: narrativa en español, nombres de entidades en inglés cuando referencia al modelo (ej. "el `EnrollmentRecord` tiene estado `aprobada`").
 
+## Producto, landing y datos
+
+La distinción que se venía mezclando: los **datos de prueba** llenan la **aplicación** real (las herramientas funcionando); los **datos demo** ilustran esas herramientas en la **landing** (venta). No se cruzan: la landing no lee datos del backend.
+
+| Término | Significado |
+|---|---|
+| **producto / aplicación** | El sistema real, plan-b (backend + frontend). Contiene las herramientas y los features de plataforma. Se prueba y se muestra cargándole datos de prueba. |
+| **herramienta** | Feature de valor que un actor (alumno, docente, staff) usa para su tarea: Reseñas, Plan (mapa de carrera), Simulador, moderación, gestión de catálogo. No es cualquier feature: los de plataforma (registro, login, recuperar contraseña, gestión de cuenta) habilitan el uso pero no son herramientas. |
+| **landing** | La cara de venta del producto (marketing). Ilustra las herramientas con datos demo y puede idealizar. Es pública, pero eso no la define: hay herramientas públicas también (catálogo, reseñas de una materia). Lo que la separa es que ilustra, no ejecuta. |
+| **datos de prueba** | Datos sembrados en la DB para probar y mostrar la aplicación real funcionando (desarrollo, tests, defensa ante el tribunal). Los consumen los endpoints reales. Implementados como el `SeedCorpus` en el host (gateado por `PLANB_SEED_CORPUS`) más los seeders por módulo (`AuthorsSeeder`, `EnrollmentsSeeder`, `ReviewsSeeder`). |
+| **datos demo** | Datos de ejemplo hardcodeados en la UI de la landing (componentes `demo-*`), para ilustrar las herramientas. Marketing: no viven en el backend, no se fetchean, no pretenden exactitud. |
+
 ## Identidades y cuentas
 
 | Término | Significado | Ubicación |

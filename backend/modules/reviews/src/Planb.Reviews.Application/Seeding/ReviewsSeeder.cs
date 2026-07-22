@@ -7,29 +7,29 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Reviews.Application.Seeding;
 
 /// <summary>
-/// Materializa el corpus demo de reseñas + votos. Construye las reseñas con los mismos VOs y
+/// Materializa el corpus de prueba de reseñas + votos. Construye las reseñas con los mismos VOs y
 /// factory que el handler de publish (no SQL crudo), todas <see cref="ReviewStatus.Published"/>
-/// (el texto demo es limpio, no pasa por el content filter), con <c>CreatedAt</c> backdated por
-/// reseña vía un clock fijo, así el feed muestra fechas históricas escalonadas en vez de "hoy".
+/// (el texto de prueba es limpio, no pasa por el content filter), con <c>CreatedAt</c> backdated
+/// por reseña vía un clock fijo, así el feed muestra fechas históricas escalonadas en vez de "hoy".
 ///
-/// Después seedea los votos entre autores (helpful counts no-cero en el demo). Los votantes son
-/// siempre autores distintos del autor de la reseña (el manifiesto lo garantiza); las personas de
-/// login (Lucía, Mateo) NO votan acá, así arrancan sin voto y pueden votar en vivo.
+/// Después seedea los votos entre autores (helpful counts no-cero en el corpus de prueba). Los
+/// votantes son siempre autores distintos del autor de la reseña (el manifiesto lo garantiza); las
+/// personas de login (Lucía, Mateo) NO votan acá, así arrancan sin voto y pueden votar en vivo.
 /// </summary>
-public sealed class ReviewsDemoSeeder
+public sealed class ReviewsSeeder
 {
     private readonly IReviewRepository _reviews;
     private readonly IReviewVoteRepository _votes;
     private readonly IReviewsUnitOfWork _unitOfWork;
     private readonly IDateTimeProvider _clock;
-    private readonly ILogger<ReviewsDemoSeeder> _log;
+    private readonly ILogger<ReviewsSeeder> _log;
 
-    public ReviewsDemoSeeder(
+    public ReviewsSeeder(
         IReviewRepository reviews,
         IReviewVoteRepository votes,
         IReviewsUnitOfWork unitOfWork,
         IDateTimeProvider clock,
-        ILogger<ReviewsDemoSeeder> log)
+        ILogger<ReviewsSeeder> log)
     {
         _reviews = reviews;
         _votes = votes;
@@ -39,8 +39,8 @@ public sealed class ReviewsDemoSeeder
     }
 
     public async Task SeedAsync(
-        IReadOnlyList<DemoReviewSpec> reviewSpecs,
-        IReadOnlyList<DemoVoteSpec> voteSpecs,
+        IReadOnlyList<ReviewSpec> reviewSpecs,
+        IReadOnlyList<VoteSpec> voteSpecs,
         CancellationToken ct = default)
     {
         var reviewIds = new Dictionary<string, ReviewId>(StringComparer.Ordinal);
@@ -53,7 +53,7 @@ public sealed class ReviewsDemoSeeder
             var subjectText = ReviewText.CreateOptional(spec.SubjectText);
             if (difficulty.IsFailure || overall.IsFailure || subjectText.IsFailure)
             {
-                _log.LogWarning("Demo review {Key} has invalid value objects; skipping.", spec.Key);
+                _log.LogWarning("Seed review {Key} has invalid value objects; skipping.", spec.Key);
                 continue;
             }
 
@@ -63,7 +63,7 @@ public sealed class ReviewsDemoSeeder
                 var gradeResult = FinalGrade.Create(spec.FinalGrade.Value);
                 if (gradeResult.IsFailure)
                 {
-                    _log.LogWarning("Demo review {Key} has invalid final grade; skipping.", spec.Key);
+                    _log.LogWarning("Seed review {Key} has invalid final grade; skipping.", spec.Key);
                     continue;
                 }
                 finalGrade = gradeResult.Value;
@@ -90,7 +90,7 @@ public sealed class ReviewsDemoSeeder
 
             if (reviewResult.IsFailure)
             {
-                _log.LogWarning("Demo review {Key} publish failed: {Error}", spec.Key, reviewResult.Error.Code);
+                _log.LogWarning("Seed review {Key} publish failed: {Error}", spec.Key, reviewResult.Error.Code);
                 continue;
             }
 
@@ -115,7 +115,7 @@ public sealed class ReviewsDemoSeeder
         if (createdReviews > 0 || createdVotes > 0)
         {
             await _unitOfWork.SaveChangesAsync(ct);
-            _log.LogInformation("Seeded {Reviews} demo reviews and {Votes} votes.", createdReviews, createdVotes);
+            _log.LogInformation("Seeded {Reviews} reviews and {Votes} votes.", createdReviews, createdVotes);
         }
     }
 
@@ -128,8 +128,8 @@ public sealed class ReviewsDemoSeeder
     }
 }
 
-/// <summary>Spec plano de una reseña demo. <c>EnrollmentId</c> ya resuelto por el seeder de cursadas.</summary>
-public sealed record DemoReviewSpec(
+/// <summary>Spec plano de una reseña de prueba. <c>EnrollmentId</c> ya resuelto por el seeder de cursadas.</summary>
+public sealed record ReviewSpec(
     string Key,
     Guid EnrollmentId,
     Guid DocenteResenadoId,
@@ -143,5 +143,5 @@ public sealed record DemoReviewSpec(
     decimal? FinalGrade,
     int CreatedAtDaysAgo);
 
-/// <summary>Spec plano de un voto demo. <c>VoterUserId</c> es el userId de otro autor demo.</summary>
-public sealed record DemoVoteSpec(Guid VoterUserId, string ReviewKey, bool IsHelpful);
+/// <summary>Spec plano de un voto de prueba. <c>VoterUserId</c> es el userId de otro autor de prueba.</summary>
+public sealed record VoteSpec(Guid VoterUserId, string ReviewKey, bool IsHelpful);

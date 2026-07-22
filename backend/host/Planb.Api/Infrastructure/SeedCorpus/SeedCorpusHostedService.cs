@@ -6,37 +6,37 @@ using Planb.Identity.Application.Seeding;
 using Planb.Identity.Domain.Users;
 using Planb.Reviews.Application.Seeding;
 
-namespace Planb.Api.Infrastructure.DemoCorpus;
+namespace Planb.Api.Infrastructure.SeedCorpus;
 
 /// <summary>
-/// Orquesta el seed del corpus demo de reseñas en el arranque del host. Cruza tres módulos
+/// Orquesta el seed del corpus de prueba de reseñas en el arranque del host. Cruza tres módulos
 /// (identity, enrollments, reviews) threadeando los IDs que cada seeder materializa: autores ->
 /// sus profileIds -> cursadas -> sus enrollmentIds -> reseñas + votos.
 ///
 /// Gating doble:
 /// <list type="bullet">
 ///   <item><see cref="IHostEnvironment.IsDevelopment"/>: solo en dev.</item>
-///   <item>env var <c>PLANB_SEED_DEMO</c> (default off): SOLO lo prende <c>just dev</c>. Los
+///   <item>env var <c>PLANB_SEED_CORPUS</c> (default off): SOLO lo prende <c>just dev</c>. Los
 ///         integration tests corren en Development pero NO setean el flag, así sus DBs quedan
 ///         limpias y los asserts de conteo no se rompen. Es la separación clave del diseño.</item>
 /// </list>
 ///
-/// Idempotencia gruesa (all-or-nothing): si el primer autor demo ya existe, el corpus ya se
+/// Idempotencia gruesa (all-or-nothing): si el primer autor de prueba ya existe, el corpus ya se
 /// seedeó y se saltea entero. Un fallo no tumba el host (mismo criterio que los otros seeders):
 /// se loguea y el dev server sigue.
 /// </summary>
-public sealed class DemoCorpusHostedService : IHostedService
+public sealed class SeedCorpusHostedService : IHostedService
 {
     private readonly IServiceProvider _sp;
     private readonly IHostEnvironment _env;
     private readonly IConfiguration _config;
-    private readonly ILogger<DemoCorpusHostedService> _log;
+    private readonly ILogger<SeedCorpusHostedService> _log;
 
-    public DemoCorpusHostedService(
+    public SeedCorpusHostedService(
         IServiceProvider sp,
         IHostEnvironment env,
         IConfiguration config,
-        ILogger<DemoCorpusHostedService> log)
+        ILogger<SeedCorpusHostedService> log)
     {
         _sp = sp;
         _env = env;
@@ -57,7 +57,7 @@ public sealed class DemoCorpusHostedService : IHostedService
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Demo corpus seed failed; continuing without it.");
+            _log.LogError(ex, "Seed corpus failed; continuing without it.");
         }
     }
 
@@ -65,7 +65,7 @@ public sealed class DemoCorpusHostedService : IHostedService
 
     private bool IsEnabled()
     {
-        var flag = _config["PLANB_SEED_DEMO"];
+        var flag = _config["PLANB_SEED_CORPUS"];
         return string.Equals(flag, "1", StringComparison.OrdinalIgnoreCase)
             || string.Equals(flag, "true", StringComparison.OrdinalIgnoreCase);
     }
@@ -77,41 +77,41 @@ public sealed class DemoCorpusHostedService : IHostedService
 
         // Gate all-or-nothing.
         var users = sp.GetRequiredService<IUserRepository>();
-        var firstEmail = EmailAddress.Create(DemoCorpusData.Authors[0].Email);
+        var firstEmail = EmailAddress.Create(SeedCorpusData.Authors[0].Email);
         if (firstEmail.IsSuccess && await users.ExistsByEmailAsync(firstEmail.Value, ct))
         {
-            _log.LogInformation("Demo corpus already seeded; skipping.");
+            _log.LogInformation("Seed corpus already seeded; skipping.");
             return;
         }
 
-        var authorsSeeder = sp.GetRequiredService<DemoAuthorsSeeder>();
-        var enrollmentsSeeder = sp.GetRequiredService<EnrollmentsDemoSeeder>();
-        var reviewsSeeder = sp.GetRequiredService<ReviewsDemoSeeder>();
+        var authorsSeeder = sp.GetRequiredService<AuthorsSeeder>();
+        var enrollmentsSeeder = sp.GetRequiredService<EnrollmentsSeeder>();
+        var reviewsSeeder = sp.GetRequiredService<ReviewsSeeder>();
 
         // 1) Autores -> profileIds. Incluye los autores de fallas (solo Reprobada/Abandonada, sin
         // reseña), que alimentan el denominador del pass-rate; perfiles distintos de los de reseñas.
-        var authorSpecs = DemoCorpusData.Authors
-            .Concat(DemoCorpusData.FailureAuthors)
-            .Select(a => new DemoAuthorSpec(
+        var authorSpecs = SeedCorpusData.Authors
+            .Concat(SeedCorpusData.FailureAuthors)
+            .Select(a => new AuthorSpec(
                 a.Key,
                 a.Email,
-                $"demo-seed-{a.Key}-2026",
-                DemoCorpusData.TudcsPlanId,
-                DemoCorpusData.TudcsCareerId,
+                $"seed-{a.Key}-2026",
+                SeedCorpusData.TudcsPlanId,
+                SeedCorpusData.TudcsCareerId,
                 a.EnrollmentYear))
             .ToList();
         var authors = await authorsSeeder.SeedAsync(authorSpecs, ct);
 
         // 2) Cursadas (una por reseña cuyo autor se materializó) -> enrollmentIds.
-        var seedableReviews = DemoCorpusData.Reviews
+        var seedableReviews = SeedCorpusData.Reviews
             .Where(r => authors.ContainsKey(r.AuthorKey))
             .ToList();
         var enrollmentSpecs = seedableReviews
-            .Select(r => new DemoEnrollmentSpec(
+            .Select(r => new EnrollmentSpec(
                 r.Key,
                 authors[r.AuthorKey].ProfileId,
                 r.SubjectId,
-                DemoCorpusData.DemoCommissionId,
+                SeedCorpusData.SeedCommissionId,
                 r.TermId,
                 EnrollmentStatus.Passed,
                 ApprovalMethod.FinalExam,
@@ -120,13 +120,13 @@ public sealed class DemoCorpusHostedService : IHostedService
 
         // Cursadas sin aprobar (Reprobada/Abandonada, sin reseña): denominador del pass-rate
         // (ADR-0047). approval_method y grade van null (lo exige el CHECK del aggregate).
-        var failureSpecs = DemoCorpusData.Failures
+        var failureSpecs = SeedCorpusData.Failures
             .Where(f => authors.ContainsKey(f.AuthorKey))
-            .Select(f => new DemoEnrollmentSpec(
+            .Select(f => new EnrollmentSpec(
                 f.Key,
                 authors[f.AuthorKey].ProfileId,
                 f.SubjectId,
-                DemoCorpusData.DemoCommissionId,
+                SeedCorpusData.SeedCommissionId,
                 f.TermId,
                 f.IsAbandoned ? EnrollmentStatus.Dropped : EnrollmentStatus.Failed,
                 null,
@@ -146,10 +146,10 @@ public sealed class DemoCorpusHostedService : IHostedService
         // 3) Reseñas (ancladas a las cursadas) + votos entre autores.
         var reviewSpecs = seedableReviews
             .Where(r => enrollments.ContainsKey(r.Key))
-            .Select(r => new DemoReviewSpec(
+            .Select(r => new ReviewSpec(
                 r.Key,
                 enrollments[r.Key],
-                DemoCorpusData.TeacherForSubject(r.SubjectId),
+                SeedCorpusData.TeacherForSubject(r.SubjectId),
                 r.Difficulty,
                 r.Overall,
                 r.Hours,
@@ -160,21 +160,21 @@ public sealed class DemoCorpusHostedService : IHostedService
                 r.Grade,
                 r.DaysAgo))
             .ToList();
-        var voteSpecs = DemoCorpusData.BuildVotes()
+        var voteSpecs = SeedCorpusData.BuildVotes()
             .Where(v => authors.ContainsKey(v.VoterKey) && enrollments.ContainsKey(v.ReviewKey))
-            .Select(v => new DemoVoteSpec(authors[v.VoterKey].UserId, v.ReviewKey, v.IsHelpful))
+            .Select(v => new VoteSpec(authors[v.VoterKey].UserId, v.ReviewKey, v.IsHelpful))
             .ToList();
         await reviewsSeeder.SeedAsync(reviewSpecs, voteSpecs, ct);
 
         _log.LogInformation(
-            "Demo corpus seeded: {Authors} authors, {Reviews} reviews, {Votes} votes, {Failures} failed enrollments.",
+            "Seed corpus seeded: {Authors} authors, {Reviews} reviews, {Votes} votes, {Failures} failed enrollments.",
             authors.Count, reviewSpecs.Count, voteSpecs.Count, failureSpecs.Count);
     }
 
-    private static async Task<IReadOnlyList<DemoEnrollmentSpec>> BuildLuciaPendingSpecAsync(
+    private static async Task<IReadOnlyList<EnrollmentSpec>> BuildLuciaPendingSpecAsync(
         IUserRepository users, IIdentityQueryService identity, CancellationToken ct)
     {
-        var email = EmailAddress.Create(DemoCorpusData.LuciaEmail);
+        var email = EmailAddress.Create(SeedCorpusData.LuciaEmail);
         if (email.IsFailure)
         {
             return [];
@@ -194,12 +194,12 @@ public sealed class DemoCorpusHostedService : IHostedService
 
         return
         [
-            new DemoEnrollmentSpec(
-                DemoCorpusData.LuciaPendingKey,
+            new EnrollmentSpec(
+                SeedCorpusData.LuciaPendingKey,
                 profile.Id,
-                DemoCorpusData.LuciaPendingSubjectId,
-                DemoCorpusData.LuciaPendingCommissionId,
-                DemoCorpusData.LuciaPendingTermId,
+                SeedCorpusData.LuciaPendingSubjectId,
+                SeedCorpusData.LuciaPendingCommissionId,
+                SeedCorpusData.LuciaPendingTermId,
                 EnrollmentStatus.Passed,
                 ApprovalMethod.FinalExam,
                 9m),

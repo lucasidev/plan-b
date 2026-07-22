@@ -6,26 +6,27 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Enrollments.Application.Seeding;
 
 /// <summary>
-/// Materializa las cursadas finalizadas que anclan las reseñas demo (una por reseña). El publish
-/// de reseñas solo rechaza el status <c>Cursando</c>, así que las cursadas demo van Aprobadas por
-/// Final (con grade, commission y term), que es lo más representativo de "ya cursé, ahora reseño".
+/// Materializa las cursadas finalizadas que anclan las reseñas de prueba (una por reseña). El
+/// publish de reseñas solo rechaza el status <c>Cursando</c>, así que las cursadas de prueba van
+/// Aprobadas por Final (con grade, commission y term), que es lo más representativo de "ya cursé,
+/// ahora reseño".
 ///
 /// Pasa por el factory <see cref="EnrollmentRecord.Create"/> (valida las invariantes del
 /// data-model), no por SQL crudo. Devuelve <c>Key → enrollmentId</c> para que el seeder de
 /// reseñas ancle cada una.
 /// </summary>
-public sealed class EnrollmentsDemoSeeder
+public sealed class EnrollmentsSeeder
 {
     private readonly IEnrollmentRecordRepository _records;
     private readonly IEnrollmentsUnitOfWork _unitOfWork;
     private readonly IDateTimeProvider _clock;
-    private readonly ILogger<EnrollmentsDemoSeeder> _log;
+    private readonly ILogger<EnrollmentsSeeder> _log;
 
-    public EnrollmentsDemoSeeder(
+    public EnrollmentsSeeder(
         IEnrollmentRecordRepository records,
         IEnrollmentsUnitOfWork unitOfWork,
         IDateTimeProvider clock,
-        ILogger<EnrollmentsDemoSeeder> log)
+        ILogger<EnrollmentsSeeder> log)
     {
         _records = records;
         _unitOfWork = unitOfWork;
@@ -34,7 +35,7 @@ public sealed class EnrollmentsDemoSeeder
     }
 
     public async Task<IReadOnlyDictionary<string, Guid>> SeedAsync(
-        IReadOnlyList<DemoEnrollmentSpec> specs, CancellationToken ct = default)
+        IReadOnlyList<EnrollmentSpec> specs, CancellationToken ct = default)
     {
         var result = new Dictionary<string, Guid>();
         var created = 0;
@@ -53,7 +54,7 @@ public sealed class EnrollmentsDemoSeeder
 
             if (createResult.IsFailure)
             {
-                _log.LogWarning("Demo enrollment {Key} invalid: {Error}", spec.Key, createResult.Error.Code);
+                _log.LogWarning("Seed enrollment {Key} invalid: {Error}", spec.Key, createResult.Error.Code);
                 continue;
             }
 
@@ -66,15 +67,15 @@ public sealed class EnrollmentsDemoSeeder
         if (created > 0)
         {
             await _unitOfWork.SaveChangesAsync(ct);
-            _log.LogInformation("Seeded {Count} demo enrollments.", created);
+            _log.LogInformation("Seeded {Count} seed enrollments.", created);
         }
 
         return result;
     }
 }
 
-/// <summary>Spec plano de una cursada demo. <c>Key</c> es el de la reseña que va a anclar.</summary>
-public sealed record DemoEnrollmentSpec(
+/// <summary>Spec plano de una cursada de prueba. <c>Key</c> es el de la reseña que va a anclar.</summary>
+public sealed record EnrollmentSpec(
     string Key,
     Guid StudentProfileId,
     Guid SubjectId,
