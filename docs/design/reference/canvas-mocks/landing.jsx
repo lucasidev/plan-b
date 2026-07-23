@@ -282,37 +282,56 @@ function DemoGraph() {
   );
 }
 
-// Demo del Planificador. En el producto es un carousel CSS que rota tres facetas
-// (métricas de la combinación, correlativas bloqueantes, comparador de comisiones);
-// acá queda el comparador como cara estática de referencia.
+// Demo del Planificador. En el producto es un carousel CSS que rota cuatro facetas
+// (semana simulada, métricas de la combinación, correlativas bloqueantes, comparador
+// de comisiones); acá queda la semana como cara estática de referencia.
 function DemoPlanner() {
+  const days = ['L', 'M', 'M', 'J', 'V'];
+  const blocks = [
+    { col:0, top:2, h:40, code:'ISW', bg:'#fbe8e1', fg:'#7a3922' },
+    { col:2, top:26, h:42, code:'INT', bg:'#eef0e0', fg:'#475020' },
+    { col:4, top:2, h:38, code:'SEG', bg:'#eee1f2', fg:'#4a2c5a' },
+  ];
   return (
     <div style={{
       background:'var(--bg)', borderRadius:10, padding:'12px 14px',
     }}>
-      <div style={{
-        fontFamily:'var(--font-mono)', fontSize:9.5, color:'var(--ink-3)',
-        letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:8,
-      }}>INT302 · elegí comisión</div>
-      <div style={{display:'flex', flexDirection:'column', gap:6}}>
-        {[
-          ['Com A', 'Iturralde', 'Lun 14-18', '4.1'],
-          ['Com B', 'Vázquez', 'Mar 18-22', '3.4'],
-        ].map(([com, prof, sched, rating]) => (
-          <div key={com} style={{
-            background:'var(--bg-card)', border:'1px solid var(--line)',
-            borderRadius:8, padding:'8px 12px',
-            display:'flex', alignItems:'center', gap:8,
-          }}>
-            <span style={{fontSize:12, fontWeight:600, color:'var(--ink)'}}>{com}</span>
-            <span style={{fontSize:11, color:'var(--ink-3)'}}>{prof}</span>
-            <span style={{flex:1}}/>
-            <span style={{
-              fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--ink-3)',
-            }}>{sched}</span>
-            <span style={{
-              fontFamily:'var(--font-mono)', fontSize:11.5, color:'var(--ink)',
-            }}>{rating} <span style={{color:'var(--accent)'}}>★</span></span>
+      <div style={{display:'flex', alignItems:'center', marginBottom:8}}>
+        <span style={{
+          fontFamily:'var(--font-mono)', fontSize:9.5, color:'var(--ink-3)',
+          letterSpacing:'0.08em', textTransform:'uppercase',
+        }}>Semana simulada</span>
+        <span style={{flex:1}}/>
+        <span style={{fontSize:10.5, color:'var(--accent-ink)'}}>⚠ 1 choque</span>
+      </div>
+      <div style={{display:'grid', gridTemplateColumns:'repeat(5, 1fr)', gap:4, height:104}}>
+        {days.map((d, col) => (
+          <div key={col} style={{background:'var(--bg-card)', borderRadius:5, position:'relative'}}>
+            <div style={{
+              fontFamily:'var(--font-mono)', fontSize:8.5, color:'var(--ink-4)',
+              textAlign:'center', padding:'2px 0',
+            }}>{d}</div>
+            {blocks.filter(b => b.col === col).map(b => (
+              <div key={b.code} style={{
+                position:'absolute', left:3, right:3, top:16 + b.top, height:b.h,
+                background:b.bg, color:b.fg, borderRadius:4,
+                fontFamily:'var(--font-mono)', fontWeight:600, fontSize:8, padding:'2px 3px',
+              }}>{b.code}</div>
+            ))}
+            {col === 1 && (
+              <div style={{
+                position:'absolute', left:3, right:3, top:66, height:34,
+                display:'flex', gap:2, padding:2, borderRadius:5,
+                border:'1.5px solid var(--accent-ink)',
+              }}>
+                {[['MOV', '#e0eef4', '#1e4d6b'], ['MAT', '#fbe8e1', '#7a3922']].map(([code, bg, fg]) => (
+                  <div key={code} style={{
+                    flex:1, minWidth:0, background:bg, color:fg, borderRadius:3,
+                    fontFamily:'var(--font-mono)', fontWeight:600, fontSize:8, padding:'2px 3px',
+                  }}>{code}</div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -412,15 +431,16 @@ function Landing() {
           letterSpacing:'-0.01em', color:'var(--ink)',
           margin:0,
         }}>
-          "Iba a anotarme en INT302 con el primero que tenía horario libre.
-          Acá vi que había una comisión de 2c con 4.1★ vs 3.4★. Esperé un cuatri."
+          "Iba a anotarme en Inteligencia Artificial I con el primero que tenía horario libre.
+          Acá vi que había una comisión en el segundo cuatrimestre con 4.1★ vs 3.4★.
+          Esperé un cuatrimestre."
         </p>
         <div style={{
           marginTop:14,
           fontFamily:'var(--font-mono)', fontSize:11, color:'var(--ink-3)',
           letterSpacing:'0.04em',
         }}>
-          — Anónimo · 4° año Sistemas
+          Anónimo · 4° año Sistemas · Inteligencia Artificial I (INT302)
         </div>
       </section>
 

@@ -72,14 +72,15 @@ export default async function LandingPage() {
               margin: 0,
             }}
           >
-            "Iba a anotarme en INT302 con el primero que tenía horario libre. Acá vi que había una
-            comisión de 2c con 4.1★ vs 3.4★. Esperé un cuatri."
+            "Iba a anotarme en Inteligencia Artificial I con el primero que tenía horario libre. Acá
+            vi que había una comisión en el segundo cuatrimestre con 4.1★ vs 3.4★. Esperé un
+            cuatrimestre."
           </p>
           <div
             className="font-mono text-ink-3"
             style={{ marginTop: 14, fontSize: 11, letterSpacing: '0.04em' }}
           >
-            Anónimo · 4° año Sistemas
+            Anónimo · 4° año Sistemas · Inteligencia Artificial I (INT302)
           </div>
         </section>
 
