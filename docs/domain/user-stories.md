@@ -138,9 +138,10 @@ Agrupado por epic.
 | [US-016](user-stories/US-016.md) | Simular inscripción (rediseño: Planificar 2 tabs En curso / Borrador, ADR-0041) | High | L |
 | [US-023](user-stories/US-023.md) | Guardar simulación como draft privado | Medium | M |
 | [US-024](user-stories/US-024.md) | Compartir simulación al corpus público | Medium | S |
-| [US-025](user-stories/US-025.md) | Editar simulación | Medium | S |
-| [US-026](user-stories/US-026.md) | Borrar simulación | Low | S |
+| [US-025](user-stories/US-025.md) | Editar simulación (fusionada en US-023) | Medium | S |
+| [US-026](user-stories/US-026.md) | Borrar simulación (fusionada en US-023) | Low | S |
 | [US-027](user-stories/US-027.md) | Ver simulaciones públicas de otros alumnos | Medium | S |
+| [US-096](user-stories/US-096.md) | Elegir comisión y ver choques en el planificador | High | M |
 | [US-044](user-stories/US-044.md) | Inicio v2 con pregunta dominante | High | M |
 | [US-046](user-stories/US-046.md) | Planificar shell + 2 tabs (en curso / borrador) + nudge de promoción | High | L |
 
@@ -200,7 +201,7 @@ Agrupado por epic.
 | [US-006](user-stories/US-006.md) | Merge de Subjects duplicados (admin) | Medium | L |
 | [US-084](user-stories/US-084.md) | Migración asistida de plan de estudios (mapping de materias) | Medium | XL |
 | [US-088](user-stories/US-088.md) | Importar plan de estudios desde PDF en onboarding (Done, S3) | Medium | L |
-| [US-093](user-stories/US-093.md) | Gestionar Comisión (CRUD de oferta por cuatrimestre) | Medium | M |
+| [US-093](user-stories/US-093.md) | Gestionar Comisión (CRUD de oferta por término, con horarios; absorbe pendiente de US-065) | High | L |
 | [US-094](user-stories/US-094.md) | Wizard de alta de universidad (onboarding admin) | Medium | L |
 
 #### EPIC-09: Backoffice de cuentas staff

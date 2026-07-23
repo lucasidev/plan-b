@@ -23,7 +23,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
-| S11+ | next+ | Backlog planificado: backoffice restante (US-065/067/081 parciales + importadores US-006/007 + wizard US-091 + comisión por cuatri US-090), planificación premium (US-023-027), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
+| S11 | 2026-07-23 a 2026-08-01 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ⏳ En curso |
+| S12+ | next+ | Backlog planificado: backoffice restante (US-067/US-081 parciales + importadores US-006/007 + wizard US-094 + usuarios US-095), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -531,6 +532,31 @@ Un bloque que salió revisando la landing y el auth:
 - **Vocabulario de datos** asentado en el glosario ([ubiquitous-language.md](domain/ubiquitous-language.md), sección "Producto, landing y datos"): **datos de prueba** (el seed de contenido de la DB, `SeedCorpus`) vs **datos demo** (los ejemplos hardcodeados de las vidrieras).
 - **Vidrieras de las tres herramientas**: los demos de la landing (reseña, mapa de carrera responsive, simulador) y el panel de bienvenida del sign-in (`HowItWorksPanel`), con datos de ejemplo.
 - **Copy del producto**: el registro acepta cualquier email, el hero y el about muestran propuestas de valor, el badge de auth es "institucional".
+
+## S11 (en curso)
+
+**Rango**: 2026-07-23 a 2026-08-01.
+
+**Foco**: **terminar el planificador**. S10 entregó el núcleo (US-016: evaluar combinaciones contra correlativas, historial y cohortes); este sprint cierra todo lo que la herramienta promete y todavía no cumple: la oferta real de comisiones con horarios, los choques y el comparador reales, los borradores que sobreviven al refresh con su promote a plan activo, y la capa social de simulaciones. Regla del sprint: **la landing no promete nada que la herramienta no haga**.
+
+### Scope
+
+| US | Qué | Effort |
+|---|---|---|
+| [US-093](domain/user-stories/US-093.md) | CRUD de comisiones con docentes y horarios de cursada (absorbe el pendiente de US-065) | L |
+| [US-096](domain/user-stories/US-096.md) | Elegir comisión y ver choques en el planificador | M |
+| [US-023](domain/user-stories/US-023.md) | Borradores persistidos + promote (absorbe US-025/US-026) | M |
+| [US-024](domain/user-stories/US-024.md) | Compartir simulación al corpus (anonimizada) | S |
+| [US-027](domain/user-stories/US-027.md) | Feed de simulaciones públicas | S |
+
+**Orden**: US-093 antes que US-096 (los choques necesitan oferta con horarios cargada); US-023 corre en paralelo desde el arranque; US-024 y US-027 al final, sobre US-023.
+
+### Notas de planificación
+
+- **US-093 arranca con el diseño del modelo de horarios**: `Commission` hoy no tiene schedule; el diseño (bloques día + rango por comisión) se presenta antes de implementar.
+- **El período del draft nace multi-cadencia** (US-023): `AcademicTerm` real, no el enum `'1c' | '2c'` del mock de US-046. Vocabulario en el glosario (sección Planificador).
+- **Fusiones de planificación**: US-065 (pendiente) → US-093; US-025 y US-026 → US-023. Los archivos de las fusionadas quedan como registro con banner.
+- **Corrección de numeración** respecto de la tabla vieja: la comisión por término es US-093 (no US-090) y el wizard de universidad es US-094 (no US-091); US-090-f y US-091 son otras historias (ADR-0048).
 
 ## Backlog open (sin sprint asignado)
 
