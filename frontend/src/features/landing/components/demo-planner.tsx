@@ -44,14 +44,18 @@ const WEEK_CLASH = {
   ],
 } as const;
 
-// Un ciclo de 20s, cada slide visible ~5s con crossfade. Los delays escalonados
-// (0/5/10/15s) hacen la rotación; con prefers-reduced-motion queda fija la semana.
+// Un ciclo de 20s, cada slide visible ~5s. Los delays escalonados (0/5/10/15s) hacen
+// la rotación; con prefers-reduced-motion queda fija la semana.
+//
+// Las ventanas NO se superponen: cada cara hace un fade corto (0.2s) contra el fondo
+// del panel y recién ahí entra la siguiente. Un crossfade clásico acá encima el texto
+// de dos caras a la vez (los slides no tienen fondo opaco propio) y se lee como sopa.
 const CAROUSEL_CSS = `
 @keyframes demo-planner-cycle {
   0% { opacity: 0; }
-  2.5% { opacity: 1; }
-  23% { opacity: 1; }
-  27% { opacity: 0; }
+  1% { opacity: 1; }
+  24% { opacity: 1; }
+  25% { opacity: 0; }
   100% { opacity: 0; }
 }
 .demo-planner-slide {
