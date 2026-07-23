@@ -108,6 +108,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - plan real de la TUDCS con sus correlativas en el seed (academic) — [`f8552e8`](https://github.com/lucasidev/plan-b/commit/f8552e8044a590f12b5a0f537b98d9ddcc601dd9)
 - endpoint de evaluacion de una combinacion (US-016) (planning) — [`e6d956c`](https://github.com/lucasidev/plan-b/commit/e6d956c5d5e4a9dfb46ff07b7350c0b8dc1758c4)
 - panel de metricas del simulador con datos reales (US-016) (planning) — [`9b1248c`](https://github.com/lucasidev/plan-b/commit/9b1248c4c8ea4bab2d5e83aa1636c71da11a7f00)
+- correlativas públicas del plan (academic) — [`ef9f645`](https://github.com/lucasidev/plan-b/commit/ef9f645e748a0b16f882f0ad6637913391505a68)
+- vidrieras de las herramientas con datos de ejemplo (landing) — [`054352a`](https://github.com/lucasidev/plan-b/commit/054352a7ea0f26e22bf36a5f7b8aaf94114d8003)
+- panel de bienvenida en el sign-in (auth) — [`720f28d`](https://github.com/lucasidev/plan-b/commit/720f28d004a9dd37b0a3d27455946de3fcf6074b)
+- estado offline reactivo (US-039-f) (frontend) — [`0d99fd3`](https://github.com/lucasidev/plan-b/commit/0d99fd30a23e7de8b5daeca1b313bc18065d9e96)
+- carousel del planificador y cards por nombre de herramienta (landing) — [`04e94c1`](https://github.com/lucasidev/plan-b/commit/04e94c1a4f7125333494d093a3de00458c36c85e)
+- semana en el carousel del planificador y cita en lenguaje natural (landing) — [`122713c`](https://github.com/lucasidev/plan-b/commit/122713cd382600bcf85170d0b52498cc9d834e32)
 
 ### Fixed
 
@@ -162,6 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - piso de muestra anti-reidentificacion en la cohorte (ADR-0047) (planning) — [`4db7835`](https://github.com/lucasidev/plan-b/commit/4db78351c79d371a00640236412e90c5b70c0121)
 - los rangos del form de materia salen del schema (academic) — [`89becee`](https://github.com/lucasidev/plan-b/commit/89becee9d5c18e130da7b979e8064902d86e2cf2)
 - la UI habla un solo idioma de períodos y datos (frontend) — [`231a7d3`](https://github.com/lucasidev/plan-b/commit/231a7d304d94d589a9ada7c0b3218657bc5916e3)
+- las caras del carousel no se superponen al rotar (landing) — [`4a3fb7d`](https://github.com/lucasidev/plan-b/commit/4a3fb7d16afb68afbb090ec7514519938da8893c)
+- carousel del planificador deslizante con una sola animacion (landing) — [`dcfe56c`](https://github.com/lucasidev/plan-b/commit/dcfe56c35eb722b9106585bbff0e6cf3b16dea89)
 
 ### Changed
 
@@ -173,3 +181,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - sacar del codigo la jerga que nacio en una conversacion — [`16e3edf`](https://github.com/lucasidev/plan-b/commit/16e3edfb67bc3a23ab72053c87dd99850058c8ee)
 - separar los helpers puros del drawer (planning) — [`48e9b45`](https://github.com/lucasidev/plan-b/commit/48e9b453479bebae9d1bc5dc4a7a26167f980e2c)
 - valores de enum del dominio en ingles (domain) — [`fe80e3a`](https://github.com/lucasidev/plan-b/commit/fe80e3aafa9a70b39a926339eefca933c9b1083b)
+- SeedCorpus para el corpus de datos de prueba (backend) — [`2c64299`](https://github.com/lucasidev/plan-b/commit/2c64299fbeeb8cdc005094bfdda195f91c265c57)
+- planificador como nombre de la herramienta (frontend) — [`76acfde`](https://github.com/lucasidev/plan-b/commit/76acfde29ce69a947445c28adb7e67767ce59f65)
