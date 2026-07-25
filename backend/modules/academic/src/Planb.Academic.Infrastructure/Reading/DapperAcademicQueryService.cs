@@ -1,4 +1,5 @@
 using System.Data;
+using System.Globalization;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -231,6 +232,8 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         // Join plano comisión + asignaciones + docente. Una fila por (comisión, docente); las
         // comisiones sin docente igual aparecen (LEFT JOIN, teacher fields null). initcap pasa el
         // nombre lowercase del storage a title case. El CASE ordena titular primero para display.
+        // US-093: solo comisiones activas en el catálogo público (soft delete), mismo criterio que
+        // Subject.IsActive en ListSubjectsByCareerPlanAsync.
         const string sql = @"
             SELECT
                 c.id                AS CommissionId,
@@ -244,7 +247,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             FROM academic.commissions c
             LEFT JOIN academic.commission_teachers ct ON ct.commission_id = c.id
             LEFT JOIN academic.teachers t ON t.id = ct.teacher_id
-            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId
+            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId AND c.is_active = true
             ORDER BY
                 c.name,
                 CASE ct.role
@@ -256,10 +259,50 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                     ELSE 5
                 END;";
 
+        // Horarios: tabla hija independiente de commission_teachers (sin relación entre sí), así que
+        // se resuelve con una segunda query plana en vez de sumarla al join de arriba (evita el cross
+        // product entre docentes y franjas de la misma comisión).
+        const string scheduleSql = @"
+            SELECT
+                cs.commission_id AS CommissionId,
+                cs.day_of_week   AS Day,
+                cs.start_time    AS Start,
+                cs.end_time      AS End
+            FROM academic.commissions c
+            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
+            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId AND c.is_active = true
+            ORDER BY
+                CASE cs.day_of_week
+                    WHEN 'Monday'    THEN 1
+                    WHEN 'Tuesday'   THEN 2
+                    WHEN 'Wednesday' THEN 3
+                    WHEN 'Thursday'  THEN 4
+                    WHEN 'Friday'    THEN 5
+                    WHEN 'Saturday'  THEN 6
+                    WHEN 'Sunday'    THEN 7
+                    ELSE 8
+                END,
+                cs.start_time;";
+
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<CommissionTeacherRow>(
             new CommandDefinition(
                 sql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
+
+        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
+            new CommandDefinition(
+                scheduleSql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
+
+        var scheduleByCommission = scheduleRows
+            .GroupBy(r => r.CommissionId)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<CommissionScheduleItem>)g
+                    .Select(r => new CommissionScheduleItem(
+                        r.Day,
+                        r.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
+                        r.End.ToString("HH:mm", CultureInfo.InvariantCulture)))
+                    .ToList());
 
         // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
         // nombre desde el SQL), así que el listado sale ordenado sin re-sort.
@@ -273,9 +316,12 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 g.Where(r => r.TeacherId.HasValue)
                     .Select(r => new CommissionTeacherItem(
                         r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
-                    .ToList()))
+                    .ToList(),
+                scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
             .ToList();
     }
+
+    private static readonly IReadOnlyList<CommissionScheduleItem> EmptySchedule = [];
 
     private sealed record CommissionTeacherRow(
         Guid CommissionId,
@@ -286,6 +332,8 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         string? FirstName,
         string? LastName,
         string? Role);
+
+    private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 
     public async Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
         Guid commissionId, CancellationToken ct = default)

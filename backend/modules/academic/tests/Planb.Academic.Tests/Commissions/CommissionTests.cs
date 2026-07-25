@@ -315,4 +315,128 @@ public class CommissionTests
         commission.Schedules.Count.ShouldBe(1);
         commission.Schedules[0].Day.ShouldBe(DayOfWeek.Monday);
     }
+
+    // -------------------------------------------------------------------
+    // Deactivate / Reactivate (soft delete, idempotencia explícita, US-093)
+    // -------------------------------------------------------------------
+
+    [Fact]
+    public void Deactivate_Active_SetsInactive()
+    {
+        var commission = CreateValid();
+
+        var result = commission.Deactivate(Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.IsActive.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Deactivate_AlreadyInactive_ReturnsError()
+    {
+        var commission = CreateValid();
+        commission.Deactivate(Clock);
+
+        var result = commission.Deactivate(Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.AlreadyInactive);
+    }
+
+    [Fact]
+    public void Reactivate_Inactive_SetsActive()
+    {
+        var commission = CreateValid();
+        commission.Deactivate(Clock);
+
+        var result = commission.Reactivate(Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.IsActive.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Reactivate_AlreadyActive_ReturnsError()
+    {
+        var commission = CreateValid();
+
+        var result = commission.Reactivate(Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.AlreadyActive);
+    }
+
+    // -------------------------------------------------------------------
+    // Reconfigure (atómico: metadata + docentes + horarios, US-093)
+    // -------------------------------------------------------------------
+
+    [Fact]
+    public void Reconfigure_ValidSets_AppliesMetadataTeachersAndSchedule()
+    {
+        var commission = CreateValid();
+        var later = new FixedClock(Clock.UtcNow.AddDays(1));
+        var lead = TeacherId.New();
+
+        var result = commission.Reconfigure(
+            "  Noche  ", CommissionModality.Hibrida, 50, "  nota  ",
+            [(lead, CommissionTeacherRole.Lead), (TeacherId.New(), CommissionTeacherRole.Assistant)],
+            [Block(DayOfWeek.Monday, 18, 22), Block(DayOfWeek.Wednesday, 18, 20)], later);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.Name.ShouldBe("Noche");
+        commission.Modality.ShouldBe(CommissionModality.Hibrida);
+        commission.Capacity.ShouldBe(50);
+        commission.Notes.ShouldBe("nota");
+        commission.Teachers.Count.ShouldBe(2);
+        commission.Teachers[0].TeacherId.ShouldBe(lead);
+        commission.Schedules.Count.ShouldBe(2);
+        commission.UpdatedAt.ShouldBe(later.UtcNow);
+    }
+
+    [Fact]
+    public void Reconfigure_OverlappingSchedule_LeavesAggregateUnchanged()
+    {
+        var commission = CreateValid();
+        var original = TeacherId.New();
+        commission.Reconfigure(
+            "Mañana", CommissionModality.Presencial, 30, "nota",
+            [(original, CommissionTeacherRole.Lead)], [Block(DayOfWeek.Monday, 8, 10)], Clock);
+
+        // Horario solapado en el segundo Reconfigure: debe fallar sin tocar metadata ni docentes ya
+        // cargados (es el bug que el review encontró: Wolverine commitea aunque el Result falle).
+        var result = commission.Reconfigure(
+            "Noche", CommissionModality.Virtual, 99, "otra",
+            [(TeacherId.New(), CommissionTeacherRole.Lead)],
+            [Block(DayOfWeek.Tuesday, 18, 22), Block(DayOfWeek.Tuesday, 19, 21)], Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.ScheduleOverlap);
+        commission.Name.ShouldBe("Mañana");
+        commission.Modality.ShouldBe(CommissionModality.Presencial);
+        commission.Teachers.Count.ShouldBe(1);
+        commission.Teachers[0].TeacherId.ShouldBe(original);
+        commission.Schedules.Count.ShouldBe(1);
+        commission.Schedules[0].Day.ShouldBe(DayOfWeek.Monday);
+    }
+
+    [Fact]
+    public void Reconfigure_SecondTitular_LeavesAggregateUnchanged()
+    {
+        var commission = CreateValid();
+        var original = TeacherId.New();
+        commission.Reconfigure(
+            "Mañana", CommissionModality.Presencial, 30, null,
+            [(original, CommissionTeacherRole.Lead)], [], Clock);
+
+        var result = commission.Reconfigure(
+            "Noche", CommissionModality.Virtual, 99, null,
+            [(TeacherId.New(), CommissionTeacherRole.Lead), (TeacherId.New(), CommissionTeacherRole.Lead)],
+            [], Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.TitularAlreadyAssigned);
+        commission.Name.ShouldBe("Mañana");
+        commission.Teachers.Count.ShouldBe(1);
+        commission.Teachers[0].TeacherId.ShouldBe(original);
+    }
 }

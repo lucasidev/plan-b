@@ -306,6 +306,7 @@ public sealed class AcademicSeeder
                 record.Teachers.Select(t => (t.TeacherId, t.Role)),
                 // Horarios: el seed todavía no los carga; llegan con el escenario de choque (US-096).
                 [],
+                isActive: true,
                 createdAt: now,
                 updatedAt: now));
             inserted++;
