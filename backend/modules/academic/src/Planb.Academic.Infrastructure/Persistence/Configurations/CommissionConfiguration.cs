@@ -76,5 +76,34 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
         });
 
         builder.Navigation(c => c.Teachers).AutoInclude();
+
+        builder.OwnsMany(c => c.Schedules, cs =>
+        {
+            cs.ToTable("commission_schedules");
+
+            cs.Property<CommissionId>("commission_id")
+                .HasColumnName("commission_id")
+                .HasConversion(id => id.Value, value => new CommissionId(value));
+
+            cs.WithOwner().HasForeignKey("commission_id");
+
+            // DayOfWeek como string ("Monday".."Sunday"), igual criterio que los otros enums.
+            cs.Property(s => s.Day)
+                .HasColumnName("day_of_week")
+                .HasConversion<string>()
+                .HasMaxLength(16)
+                .IsRequired();
+
+            // TimeOnly -> time (sin timezone): hora del día, no un instante. Npgsql lo mapea directo.
+            cs.Property(s => s.StartTime).HasColumnName("start_time").IsRequired();
+            cs.Property(s => s.EndTime).HasColumnName("end_time").IsRequired();
+
+            // PRIMARY KEY (commission_id, day_of_week, start_time): admite varias franjas el mismo
+            // día si arrancan a horas distintas (teórico + práctico). El no-solape lo garantiza el
+            // aggregate, no la PK.
+            cs.HasKey("commission_id", "Day", "StartTime");
+        });
+
+        builder.Navigation(c => c.Schedules).AutoInclude();
     }
 }

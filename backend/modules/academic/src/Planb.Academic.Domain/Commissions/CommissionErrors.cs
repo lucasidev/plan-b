@@ -40,4 +40,14 @@ public static class CommissionErrors
 
     public static readonly Error NotFound =
         Error.NotFound("academic.commission.not_found", "Commission not found.");
+
+    public static readonly Error ScheduleInvalidRange =
+        Error.Validation(
+            "academic.commission.schedule_invalid_range",
+            "A schedule block must end after it starts.");
+
+    public static readonly Error ScheduleOverlap =
+        Error.Conflict(
+            "academic.commission.schedule_overlap",
+            "Schedule blocks within a commission cannot overlap.");
 }
