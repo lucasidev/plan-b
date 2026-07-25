@@ -29,6 +29,14 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     public CommissionModality Modality { get; private set; }
     public int? Capacity { get; private set; }
     public string? Notes { get; private set; }
+
+    /// <summary>
+    /// Soft delete (US-093). EnrollmentRecord y Review anclan a la comisión por id sin FK
+    /// cross-schema (ADR-0017), así que no hay hard delete: mismo criterio que Subject.IsActive /
+    /// Teacher.IsActive.
+    /// </summary>
+    public bool IsActive { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
 
@@ -75,6 +83,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
             Modality = modality,
             Capacity = capacity,
             Notes = TrimToNull(notes),
+            IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,
         };
@@ -96,6 +105,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         string? notes,
         IEnumerable<(TeacherId TeacherId, CommissionTeacherRole Role)> teachers,
         IEnumerable<(DayOfWeek Day, TimeOnly Start, TimeOnly End)> schedules,
+        bool isActive,
         DateTimeOffset createdAt,
         DateTimeOffset updatedAt)
     {
@@ -108,6 +118,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
             Modality = modality,
             Capacity = capacity,
             Notes = notes,
+            IsActive = isActive,
             CreatedAt = createdAt,
             UpdatedAt = updatedAt,
         };
@@ -202,25 +213,137 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         ArgumentNullException.ThrowIfNull(blocks);
         ArgumentNullException.ThrowIfNull(clock);
 
-        var candidates = new List<CommissionSchedule>();
+        var built = BuildScheduleSet(blocks);
+        if (built.IsFailure)
+        {
+            return built.Error;
+        }
+
+        _schedules.Clear();
+        _schedules.AddRange(built.Value);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Reconfiguración atómica de la comisión (US-093): metadata + docentes + horarios en una sola
+    /// operación. Valida los TRES sets antes de mutar nada, y solo aplica si todos pasan. Es la
+    /// operación del PUT del backoffice. Sin esta atomicidad, un fallo tardío (doble titular, horario
+    /// solapado) dejaría la metadata y los docentes ya mutados: el middleware de transacción de
+    /// Wolverine commitea igual, porque un <c>Result.Failure</c> no es una excepción y no dispara el
+    /// rollback. Por eso el handler no puede mutar en pasos; muta todo o nada, acá adentro.
+    /// </summary>
+    public Result Reconfigure(
+        string name,
+        CommissionModality modality,
+        int? capacity,
+        string? notes,
+        IEnumerable<(TeacherId TeacherId, CommissionTeacherRole Role)> teachers,
+        IEnumerable<(DayOfWeek Day, TimeOnly Start, TimeOnly End)> schedule,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(teachers);
+        ArgumentNullException.ThrowIfNull(schedule);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        var metadata = Validate(name, capacity, notes);
+        if (metadata.IsFailure)
+        {
+            return metadata.Error;
+        }
+
+        var teacherSet = BuildTeacherSet(teachers);
+        if (teacherSet.IsFailure)
+        {
+            return teacherSet.Error;
+        }
+
+        var scheduleSet = BuildScheduleSet(schedule);
+        if (scheduleSet.IsFailure)
+        {
+            return scheduleSet.Error;
+        }
+
+        // Los tres sets validados: recién ahora mutamos.
+        Name = name.Trim();
+        Modality = modality;
+        Capacity = capacity;
+        Notes = TrimToNull(notes);
+        _teachers.Clear();
+        _teachers.AddRange(teacherSet.Value);
+        _schedules.Clear();
+        _schedules.AddRange(scheduleSet.Value);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>Arma el set de docentes validando (sin duplicados, a lo sumo un titular) sin mutar.</summary>
+    private static Result<List<CommissionTeacher>> BuildTeacherSet(
+        IEnumerable<(TeacherId TeacherId, CommissionTeacherRole Role)> teachers)
+    {
+        var result = new List<CommissionTeacher>();
+        foreach (var (teacherId, role) in teachers)
+        {
+            if (result.Any(t => t.TeacherId == teacherId))
+            {
+                return CommissionErrors.TeacherAlreadyAssigned;
+            }
+            if (role == CommissionTeacherRole.Lead
+                && result.Any(t => t.Role == CommissionTeacherRole.Lead))
+            {
+                return CommissionErrors.TitularAlreadyAssigned;
+            }
+            result.Add(new CommissionTeacher(teacherId, role));
+        }
+        return result;
+    }
+
+    /// <summary>Arma el set de franjas validando (rango válido, sin solape) sin mutar.</summary>
+    private static Result<List<CommissionSchedule>> BuildScheduleSet(
+        IEnumerable<(DayOfWeek Day, TimeOnly Start, TimeOnly End)> blocks)
+    {
+        var result = new List<CommissionSchedule>();
         foreach (var (day, start, end) in blocks)
         {
             if (end <= start)
             {
                 return CommissionErrors.ScheduleInvalidRange;
             }
-
             var slot = new CommissionSchedule(day, start, end);
-            if (candidates.Any(existing => existing.OverlapsWith(slot)))
+            if (result.Any(existing => existing.OverlapsWith(slot)))
             {
                 return CommissionErrors.ScheduleOverlap;
             }
+            result.Add(slot);
+        }
+        return result;
+    }
 
-            candidates.Add(slot);
+    /// <summary>Soft delete (US-093). Idempotencia explícita: re-desactivar devuelve error.</summary>
+    public Result Deactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (!IsActive)
+        {
+            return CommissionErrors.AlreadyInactive;
         }
 
-        _schedules.Clear();
-        _schedules.AddRange(candidates);
+        IsActive = false;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    public Result Reactivate(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (IsActive)
+        {
+            return CommissionErrors.AlreadyActive;
+        }
+
+        IsActive = true;
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }

@@ -38,6 +38,10 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
             .HasColumnName("notes")
             .HasMaxLength(Commission.MaxNotesLength);
 
+        // Soft delete (US-093). defaultValue: true en la migración para no archivar de golpe las
+        // comisiones ya sembradas (mismo criterio que subjects.is_active).
+        builder.Property(c => c.IsActive).HasColumnName("is_active").IsRequired();
+
         builder.Property(c => c.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(c => c.UpdatedAt).HasColumnName("updated_at").IsRequired();
 

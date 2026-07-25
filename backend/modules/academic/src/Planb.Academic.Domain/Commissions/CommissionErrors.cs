@@ -50,4 +50,72 @@ public static class CommissionErrors
         Error.Conflict(
             "academic.commission.schedule_overlap",
             "Schedule blocks within a commission cannot overlap.");
+
+    public static readonly Error AlreadyInactive =
+        Error.Conflict("academic.commission.already_inactive", "Commission is already inactive.");
+
+    public static readonly Error AlreadyActive =
+        Error.Conflict("academic.commission.already_active", "Commission is already active.");
+
+    /// <summary>
+    /// Modality es obligatoria en el aggregate (mismo criterio que Subject.TermKind /
+    /// AcademicTerm.Kind): la usa <c>CommissionEnumParsing</c> cuando el string del request viene
+    /// vacío/null.
+    /// </summary>
+    public static readonly Error ModalityRequired =
+        Error.Validation("academic.commission.modality_required", "Commission modality is required.");
+
+    /// <summary>
+    /// El subjectId del alta/edición no corresponde a ninguna Subject del catálogo. No hay FK
+    /// cross-schema (ADR-0017), así que el application layer valida la existencia antes de crear.
+    /// </summary>
+    public static readonly Error SubjectNotFound =
+        Error.NotFound(
+            "academic.commission.subject_not_found",
+            "The subject for this commission does not exist.");
+
+    /// <summary>
+    /// La materia existe pero está archivada (soft delete, US-062): no se pueden abrir comisiones
+    /// nuevas sobre una materia que ya no se dicta.
+    /// </summary>
+    public static readonly Error SubjectInactive =
+        Error.Conflict(
+            "academic.commission.subject_inactive",
+            "Cannot create a commission for an archived subject.");
+
+    /// <summary>El termId del alta no corresponde a ningún AcademicTerm del catálogo.</summary>
+    public static readonly Error TermNotFound =
+        Error.NotFound(
+            "academic.commission.term_not_found",
+            "The academic term for this commission does not exist.");
+
+    /// <summary>
+    /// El term_kind de la materia y el kind del período lectivo no coinciden (ej. una materia
+    /// cuatrimestral no puede ofertarse en un período anual).
+    /// </summary>
+    public static readonly Error TermKindMismatch =
+        Error.Validation(
+            "academic.commission.term_kind_mismatch",
+            "The academic term's kind does not match the subject's term_kind.");
+
+    /// <summary>
+    /// La materia, el período lectivo y cada docente asignado deben pertenecer a la misma
+    /// universidad.
+    /// </summary>
+    public static readonly Error UniversityMismatch =
+        Error.Validation(
+            "academic.commission.university_mismatch",
+            "The subject, academic term and every assigned teacher must belong to the same university.");
+
+    /// <summary>Uno de los teacherId asignados no corresponde a ningún Teacher del catálogo.</summary>
+    public static readonly Error TeacherNotFound =
+        Error.NotFound(
+            "academic.commission.teacher_not_found",
+            "One of the assigned teachers does not exist.");
+
+    /// <summary>El (subject_id, term_id, name) ya lo usa otra comisión. Refleja el UNIQUE de DB.</summary>
+    public static readonly Error NameAlreadyExists =
+        Error.Conflict(
+            "academic.commission.name_already_exists",
+            "Another commission for this subject and term already uses this name.");
 }
