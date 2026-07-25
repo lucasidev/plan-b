@@ -37,6 +37,11 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     /// <summary>Docentes asignados, cargados eager con el aggregate (OwnsMany + AutoInclude).</summary>
     public IReadOnlyList<CommissionTeacher> Teachers => _teachers;
 
+    private readonly List<CommissionSchedule> _schedules = [];
+
+    /// <summary>Franjas horarias de cursada, cargadas eager con el aggregate (OwnsMany + AutoInclude).</summary>
+    public IReadOnlyList<CommissionSchedule> Schedules => _schedules;
+
     private Commission() { }
 
     /// <summary>
@@ -76,9 +81,10 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Reconstitución con Id pre-asignado + docentes, para seeder y EF rehydration. Saltea
-    /// validaciones (el caller se hace responsable de datos coherentes). Recibe los docentes como
-    /// pares crudos porque <see cref="CommissionTeacher"/> tiene ctor internal al dominio.
+    /// Reconstitución con Id pre-asignado + docentes + horarios, para seeder y EF rehydration.
+    /// Saltea validaciones (el caller se hace responsable de datos coherentes). Recibe docentes y
+    /// franjas como pares/tuplas crudas porque <see cref="CommissionTeacher"/> y
+    /// <see cref="CommissionSchedule"/> tienen ctor internal al dominio.
     /// </summary>
     public static Commission Hydrate(
         CommissionId id,
@@ -89,6 +95,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         int? capacity,
         string? notes,
         IEnumerable<(TeacherId TeacherId, CommissionTeacherRole Role)> teachers,
+        IEnumerable<(DayOfWeek Day, TimeOnly Start, TimeOnly End)> schedules,
         DateTimeOffset createdAt,
         DateTimeOffset updatedAt)
     {
@@ -108,6 +115,11 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         foreach (var (teacherId, role) in teachers)
         {
             commission._teachers.Add(new CommissionTeacher(teacherId, role));
+        }
+
+        foreach (var (day, start, end) in schedules)
+        {
+            commission._schedules.Add(new CommissionSchedule(day, start, end));
         }
 
         return commission;
@@ -172,6 +184,43 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         }
 
         _teachers.Remove(existing);
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Reemplaza todas las franjas horarias por el conjunto dado (US-093). Valida el set completo
+    /// antes de mutar: cada bloque termina después de empezar, y ningún par se solapa (una comisión
+    /// no se pisa a sí misma). Un set vacío deja la comisión sin horario cargado, que es válido:
+    /// una virtual asincrónica, o una oferta cuyos horarios todavía no se cargaron. Es el método que
+    /// usa la grilla del backoffice, que manda la grilla entera y no un diff.
+    /// </summary>
+    public Result ReplaceSchedule(
+        IEnumerable<(DayOfWeek Day, TimeOnly Start, TimeOnly End)> blocks,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(blocks);
+        ArgumentNullException.ThrowIfNull(clock);
+
+        var candidates = new List<CommissionSchedule>();
+        foreach (var (day, start, end) in blocks)
+        {
+            if (end <= start)
+            {
+                return CommissionErrors.ScheduleInvalidRange;
+            }
+
+            var slot = new CommissionSchedule(day, start, end);
+            if (candidates.Any(existing => existing.OverlapsWith(slot)))
+            {
+                return CommissionErrors.ScheduleOverlap;
+            }
+
+            candidates.Add(slot);
+        }
+
+        _schedules.Clear();
+        _schedules.AddRange(candidates);
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }

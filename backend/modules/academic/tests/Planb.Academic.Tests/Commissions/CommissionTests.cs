@@ -212,4 +212,107 @@ public class CommissionTests
         commission.Name.ShouldBe("A");
         commission.Modality.ShouldBe(CommissionModality.Presencial);
     }
+
+    // -------------------------------------------------------------------
+    // ReplaceSchedule (US-093)
+    // -------------------------------------------------------------------
+
+    private static (DayOfWeek, TimeOnly, TimeOnly) Block(DayOfWeek day, int fromHour, int toHour) =>
+        (day, new TimeOnly(fromHour, 0), new TimeOnly(toHour, 0));
+
+    [Fact]
+    public void ReplaceSchedule_ValidBlocks_SetsSchedulesAndBumpsUpdatedAt()
+    {
+        var commission = CreateValid();
+        var later = new FixedClock(Clock.UtcNow.AddDays(1));
+
+        var result = commission.ReplaceSchedule(
+            [Block(DayOfWeek.Monday, 18, 22), Block(DayOfWeek.Wednesday, 18, 20)], later);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.Schedules.Count.ShouldBe(2);
+        commission.Schedules[0].Day.ShouldBe(DayOfWeek.Monday);
+        commission.Schedules[0].StartTime.ShouldBe(new TimeOnly(18, 0));
+        commission.Schedules[0].EndTime.ShouldBe(new TimeOnly(22, 0));
+        commission.UpdatedAt.ShouldBe(later.UtcNow);
+    }
+
+    [Fact]
+    public void ReplaceSchedule_EmptySet_LeavesCommissionWithoutSchedule()
+    {
+        var commission = CreateValid();
+        commission.ReplaceSchedule([Block(DayOfWeek.Monday, 18, 22)], Clock);
+
+        var result = commission.ReplaceSchedule([], Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.Schedules.ShouldBeEmpty();
+    }
+
+    [Theory]
+    [InlineData(20, 20)] // termina cuando empieza: dura cero
+    [InlineData(22, 18)] // termina antes de empezar
+    public void ReplaceSchedule_EndNotAfterStart_ReturnsError(int fromHour, int toHour)
+    {
+        var commission = CreateValid();
+
+        var result = commission.ReplaceSchedule([Block(DayOfWeek.Monday, fromHour, toHour)], Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.ScheduleInvalidRange);
+        commission.Schedules.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ReplaceSchedule_OverlappingSameDay_ReturnsError()
+    {
+        var commission = CreateValid();
+
+        // 18-22 y 19-21 el mismo día se pisan.
+        var result = commission.ReplaceSchedule(
+            [Block(DayOfWeek.Tuesday, 18, 22), Block(DayOfWeek.Tuesday, 19, 21)], Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CommissionErrors.ScheduleOverlap);
+    }
+
+    [Fact]
+    public void ReplaceSchedule_ContiguousSameDay_Allowed()
+    {
+        var commission = CreateValid();
+
+        // 18-20 y 20-22 el mismo día son contiguos, no chocan (intervalo semiabierto [start, end)).
+        var result = commission.ReplaceSchedule(
+            [Block(DayOfWeek.Tuesday, 18, 20), Block(DayOfWeek.Tuesday, 20, 22)], Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.Schedules.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void ReplaceSchedule_SameHoursDifferentDay_Allowed()
+    {
+        var commission = CreateValid();
+
+        var result = commission.ReplaceSchedule(
+            [Block(DayOfWeek.Monday, 18, 22), Block(DayOfWeek.Tuesday, 18, 22)], Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        commission.Schedules.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void ReplaceSchedule_InvalidSet_LeavesPreviousScheduleUnchanged()
+    {
+        var commission = CreateValid();
+        commission.ReplaceSchedule([Block(DayOfWeek.Monday, 8, 10)], Clock);
+
+        // Un set inválido (solapado) no debe tocar el horario ya cargado: valida antes de mutar.
+        var result = commission.ReplaceSchedule(
+            [Block(DayOfWeek.Tuesday, 18, 22), Block(DayOfWeek.Tuesday, 19, 21)], Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        commission.Schedules.Count.ShouldBe(1);
+        commission.Schedules[0].Day.ShouldBe(DayOfWeek.Monday);
+    }
 }
