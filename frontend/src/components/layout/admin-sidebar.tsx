@@ -24,7 +24,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { label: 'Carreras' },
       { label: 'Materias' },
       { label: 'Docentes', href: '/admin/teachers', roles: ['admin'] },
-      { label: 'Comisiones' },
+      { label: 'Comisiones', href: '/admin/commissions', roles: ['admin'] },
       { label: 'Importador' },
     ],
   },
