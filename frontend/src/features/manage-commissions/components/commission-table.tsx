@@ -6,11 +6,7 @@ import { useState, useTransition } from 'react';
 import { cn } from '@/lib/utils';
 import { deactivateCommissionAction, reactivateCommissionAction } from '../actions';
 import { formatCommissionSchedule, formatTeacherNames } from '../lib/commission-format';
-import type {
-  CommissionScheduleBlock,
-  CommissionTeacherAssignment,
-  TermCommissionRow,
-} from '../types';
+import type { TermCommissionRow } from '../types';
 
 const GRID = 'minmax(0,1.7fr) 56px minmax(0,1.3fr) minmax(0,1.2fr) 64px 168px 132px';
 
