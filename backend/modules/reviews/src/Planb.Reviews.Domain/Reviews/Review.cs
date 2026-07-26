@@ -27,6 +27,27 @@ namespace Planb.Reviews.Domain.Reviews;
 public sealed class Review : Entity<ReviewId>, IAggregateRoot
 {
     public Guid EnrollmentId { get; private set; }
+    /// <summary>
+    /// Autor de la reseña, desnormalizado desde Identity (ADR-0017: Guid plano, sin FK cross-schema).
+    /// Lo prescribe ADR-0044 y faltaba.
+    ///
+    /// <para>
+    /// Antes el autor se resolvía con un JOIN de tres tablas (reviews -&gt; enrollment_records -&gt;
+    /// student_profiles -&gt; users), y la baja de cuenta borra ese student_profile. Con el profile
+    /// borrado el autor quedaba irresoluble: reportar la reseña devolvía 404 y el guard de auto-voto
+    /// nunca disparaba. O sea que publicar una difamación y después darse de baja dejaba la reseña
+    /// visible y fuera del alcance de moderación de forma permanente.
+    /// </para>
+    ///
+    /// <para>
+    /// Se guarda el user y no el student profile porque el user sobrevive a la baja (soft delete con
+    /// anonimización) y el profile no. Y no se resuelve conservando el profile porque ese row ata
+    /// carrera + año de ingreso a una persona, que es justo el cuasi-identificador que el piso
+    /// anti-reidentificación de ADR-0047 trata de evitar: conservarlo sería peor para privacidad.
+    /// </para>
+    /// </summary>
+    public Guid AuthorUserId { get; private set; }
+
     public Guid DocenteResenadoId { get; private set; }
     public DifficultyRating DifficultyRating { get; private set; }
 
@@ -99,6 +120,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </summary>
     public static Result<Review> Publish(
         Guid enrollmentId,
+        Guid authorUserId,
         Guid docenteResenadoId,
         DifficultyRating difficultyRating,
         OverallRating overallRating,
@@ -131,6 +153,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         {
             Id = ReviewId.New(),
             EnrollmentId = enrollmentId,
+            AuthorUserId = authorUserId,
             DocenteResenadoId = docenteResenadoId,
             DifficultyRating = difficultyRating,
             OverallRating = overallRating,

@@ -535,6 +535,16 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     {
         ArgumentNullException.ThrowIfNull(clock);
 
+        // La baja de cuenta va primero: es terminal, así que ni siquiera tiene sentido evaluar el
+        // resto. Faltaba, y el agujero era real: `Deactivate` borra los student profiles pero no
+        // toca `EmailVerifiedAt` ni `DisabledAt`, así que los tres chequeos de abajo pasaban y con
+        // el access token todavía vivo (15 min) se podía volver a crear el profile que la baja
+        // acababa de borrar, legajo incluido.
+        if (IsDeactivated)
+        {
+            return UserErrors.AlreadyDeactivated;
+        }
+
         if (!IsEmailVerified)
         {
             return UserErrors.EmailNotVerified;

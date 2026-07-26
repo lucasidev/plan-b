@@ -75,6 +75,7 @@ public sealed class ReviewsSeeder
 
             var reviewResult = Review.Publish(
                 spec.EnrollmentId,
+                spec.AuthorUserId,
                 spec.DocenteResenadoId,
                 difficulty.Value,
                 overall.Value,
@@ -132,6 +133,7 @@ public sealed class ReviewsSeeder
 public sealed record ReviewSpec(
     string Key,
     Guid EnrollmentId,
+    Guid AuthorUserId,
     Guid DocenteResenadoId,
     int DifficultyRating,
     int OverallRating,

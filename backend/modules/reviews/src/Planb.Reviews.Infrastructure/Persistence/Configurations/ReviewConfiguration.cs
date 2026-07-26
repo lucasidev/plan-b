@@ -56,6 +56,15 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasColumnName("enrollment_id")
             .IsRequired();
 
+        builder.Property(r => r.AuthorUserId)
+            .HasColumnName("author_user_id")
+            .IsRequired();
+
+        // El autor se busca por sí solo (moderación, guard de auto-voto, "mis reseñas"), así que el
+        // índice es la contrapartida de haber sacado el JOIN de tres tablas que lo resolvía antes.
+        builder.HasIndex(r => r.AuthorUserId)
+            .HasDatabaseName("ix_reviews_author_user_id");
+
         builder.Property(r => r.DocenteResenadoId)
             .HasColumnName("docente_resenado_id")
             .IsRequired();

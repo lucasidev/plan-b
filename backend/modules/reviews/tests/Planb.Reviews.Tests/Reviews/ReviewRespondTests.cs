@@ -24,6 +24,7 @@ public class ReviewRespondTests
     {
         var review = Review.Publish(
             Guid.NewGuid(),
+            Guid.NewGuid(),
             teacherId,
             DifficultyRating.Create(3).Value,
             OverallRating.Create(4).Value,

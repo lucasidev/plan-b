@@ -35,4 +35,21 @@ public interface ITeacherProfileRepository
     /// claims pending al mismo docente, solo uno termina verified).
     /// </summary>
     Task<bool> AnyVerifiedForTeacherAsync(Guid teacherId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Todos los claims del user (tracked, con sus tokens). Lo consume la baja de cuenta.
+    ///
+    /// <para>
+    /// El claim docente no es una owned collection del <c>User</c>, así que ADR-0044 no lo cubrió y
+    /// sobrevivía intacto a la baja. Eso dejaba dos cosas: el <c>institutional_email</c> vivo en la
+    /// base (PII que la baja dice borrar) y el <c>teacher_id</c> ocupando para siempre el índice
+    /// parcial de "docente ya verificado", así que el docente real que después reclamara ese id
+    /// recibía <c>TeacherAlreadyVerifiedByAnother</c> sin ningún camino de liberación.
+    /// </para>
+    /// </summary>
+    Task<IReadOnlyList<TeacherProfile>> ListForUserAsync(
+        UserId userId, CancellationToken ct = default);
+
+    /// <summary>Marca el claim para borrado en el próximo SaveChanges (sus tokens cascadean).</summary>
+    void Remove(TeacherProfile profile);
 }

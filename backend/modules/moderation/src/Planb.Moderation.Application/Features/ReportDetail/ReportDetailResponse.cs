@@ -29,14 +29,19 @@ public sealed record ReportDetailResponse
 
     // ── Reporter ─────────────────────────────────────────────
     public Guid ReporterUserId { get; init; }
-    public bool ReporterDisabled { get; init; }
+
+    /// <summary>Null cuando el user del reporter no se puede resolver: "no sabemos", no "no baneado".</summary>
+    public bool? ReporterDisabled { get; init; }
 
     // ── Contexto del autor de la reseña ──────────────────────
+    // Todo este bloque es nullable a propósito. El autor se resuelve por JOIN a student_profiles, y
+    // una baja de cuenta borra ese profile, así que "no hay autor resoluble" es un estado posible.
+    // Cuando pasa, estos campos NO llevan cero ni false: llevan null, y la UI dice "sin datos".
     public Guid? AuthorUserId { get; init; }
     public DateTime? AuthorAccountSince { get; init; }
-    public int AuthorReviewsWritten { get; init; }
-    public int AuthorReportsReceived { get; init; }
-    public bool AuthorBanned { get; init; }
+    public int? AuthorReviewsWritten { get; init; }
+    public int? AuthorReportsReceived { get; init; }
+    public bool? AuthorBanned { get; init; }
 
     // ── Otros reports open de la misma reseña (cascade preview) ─
     public IReadOnlyList<OtherOpenReport> OtherOpenReports { get; init; } = [];
