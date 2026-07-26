@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { formatCommissionSchedule, formatTeacherNames } from '../lib/commission-format';
 import type {
   CommissionScheduleBlock,
   CommissionTeacherAssignment,
   TermCommissionRow,
 } from '../types';
-import { CommissionTable, formatCommissionSchedule, formatTeacherNames } from './commission-table';
+import { CommissionTable } from './commission-table';
 
 // CommissionRow usa useRouter (refresh tras el toggle) y llama a los actions: se mockean los dos para
 // que el render corra en jsdom sin un App Router real ni un fetch real (mismo patrón que
