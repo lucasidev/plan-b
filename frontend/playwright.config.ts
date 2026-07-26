@@ -17,8 +17,9 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
  * Convenciones (ADR-0036, docs/testing/conventions.md):
  *   - Specs en `frontend/e2e/<área>/<flow>.spec.ts`.
  *   - Helpers reusables en `frontend/e2e/helpers/`.
- *   - Localmente: requiere `just infra-up` + backend en :5000 + frontend en :3000.
- *     Recipe Justfile: `just frontend-test-e2e`.
+ *   - Localmente: `just frontend-test-e2e` levanta su propio stack contra una base efímera
+ *     (`scripts/run-e2e.ts`, mismo patrón que el job de CI), así que el stack de dev tiene que
+ *     estar ABAJO. Solo hace falta la infra: `just infra-up`.
  *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
  */
 export default defineConfig({

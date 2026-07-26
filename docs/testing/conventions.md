@@ -35,7 +35,7 @@ just backend-test-integration     # próximamente
 
 # frontend solo
 just frontend-test                # vitest, rápido
-just frontend-test-e2e            # Playwright headless, requiere backend levantado
+just frontend-test-e2e            # Playwright headless, levanta su propio stack (dev stack ABAJO)
 just frontend-test-e2e-show       # Playwright con browser visible y slowMo (ver el flow correr)
 ```
 
@@ -287,8 +287,14 @@ Reglas:
 - Helpers en `e2e/helpers/`: no copiar parsing de mail por test.
 - Personas (`LUCIA`, `MATEO`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
-- Cada test es independiente: limpia rate limits, restaura estado al final si modificó datos.
+- Cada test es independiente: limpia rate limits (Mailpit y Redis se comparten dentro de una corrida). La base **no** hace falta restaurarla: cada corrida arranca de una base nueva.
 - **E2E corre siempre en CI** en cada PR como gate antes de merge (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
+
+**Base efímera por corrida.** Los dos recipes locales levantan su propio backend + frontend contra una base `planb_e2e` que se dropea y recrea al arrancar (`scripts/run-e2e.ts`), o sea que el stack de dev tiene que estar **abajo**: si `just dev` está corriendo, el script corta con el puerto ocupado. Es el mismo aislamiento que CI ya tenía por usar un service container nuevo en cada corrida, y el mismo patrón que [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md) usa una capa más abajo.
+
+Antes la suite local corría contra la base de dev y cada corrida dejaba usuarios, reseñas y borradores acumulados. El costo no era el desorden: **los specs no podían afirmar datos concretos** porque el estado era compartido y mutable entre corridas, así que afirmaban comportamiento y nada más. Con base propia, un spec puede volver a asumir un punto de partida conocido.
+
+La base sobrevive a la corrida a propósito (el drop es al arrancar, no al terminar): si un spec falla, entrás con `psql -d planb_e2e` a ver en qué estado quedó. Contrapartida a tener presente: los bugs que se acumulan con el tiempo (filas huérfanas, cuentas dadas de baja que dejan rastro) ya no van a aparecer solos como aparecían en la base de dev de larga vida; esos hay que cubrirlos con un test explícito.
 
 #### Política E2E: una sola regla
 
