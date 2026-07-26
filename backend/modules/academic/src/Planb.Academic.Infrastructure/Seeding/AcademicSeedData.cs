@@ -665,6 +665,38 @@ public static class AcademicSeedData
         new CommissionRecord(Cid("0a"), Sid("11"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
             new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Lead) }, // formación humanística II (202): quiroga
             new[] { Slot(DayOfWeek.Friday, 8, 12) }),
+
+        // Oferta histórica (2024·2c, 2025·1c, 2025·2c) para las materias del corpus de reseñas.
+        // Existe porque el invariante "el docente reseñado pertenece a la comisión de la cursada"
+        // necesita una comisión real del par (materia, período) de cada cursada, y las de arriba
+        // son de 2026·1c: una reseña escrita hace más de 139 días precedería a ese cuatrimestre.
+        // El período de cada una se eligió para que termine antes de la reseña más vieja de su
+        // materia, así ninguna cursada Aprobada cierra un cuatrimestre que todavía no terminó.
+        // El titular es, en cada caso, el docente que el corpus reseña para esa materia.
+        //
+        // Sin horario cargado, igual que las otras comisiones de períodos pasados (Cid 04 y 05):
+        // "sin horario" es un estado válido del dominio y no hay dato real que inventar acá.
+        new CommissionRecord(Cid("0b"), Sid("01"), Atid("02"), "Mañana", CommissionModality.Presencial, 35, null,
+            new[] { new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Lead) }, // algoritmos y paradigmas (101): iturralde
+            []),
+        new CommissionRecord(Cid("0c"), Sid("05"), Atid("02"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Lead) }, // desarrollo de software (111): brandt
+            []),
+        new CommissionRecord(Cid("0d"), Sid("09"), Atid("02"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead) }, // seminario informático I (123): ledesma
+            []),
+        new CommissionRecord(Cid("0e"), Sid("07"), Atid("03"), "U1", CommissionModality.Presencial, 30, null,
+            new[] { new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Lead) }, // base de datos (121): méndez
+            []),
+        new CommissionRecord(Cid("0f"), Sid("17"), Atid("03"), "Noche", CommissionModality.Hibrida, null, null,
+            new[] { new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Lead) }, // desarrollo back end (223): castro
+            []),
+        new CommissionRecord(Cid("10"), Sid("02"), Atid("03"), "A", CommissionModality.Presencial, 40, null,
+            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead) }, // álgebra I (102): reynoso
+            []),
+        new CommissionRecord(Cid("11"), Sid("14"), Atid("04"), "A", CommissionModality.Presencial, 35, null,
+            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Lead) }, // desarrollo front end (213): páez
+            []),
     };
 
     private static SubjectId Sid(string nn) =>

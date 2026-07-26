@@ -17,10 +17,6 @@ public static class SeedCorpusData
     public static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     public static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
 
-    // Comisión de prueba: hoy commission_id es un Guid libre. Repuntar las cursadas de prueba a las
-    // comisiones reales de US-065 + validar docente-en-comisión es la slice de "docente real por reseña".
-    public static readonly Guid SeedCommissionId = Guid.Parse("0000000c-0000-4000-a000-000000000001");
-
     // Ids del catálogo real (AcademicSeedData.Subjects). Nombrados por código: los 21 subjects del
     // plan TUDCS reemplazaron el catálogo inventado, y con eso cambió qué id ocupa cada rol de este
     // corpus (comisión con 2 cátedras, materia reseñable con SQL, etc). Ver el comentario de
@@ -54,6 +50,52 @@ public static class SeedCorpusData
     /// <summary>Docente reseñado real para una materia de prueba (id del catálogo, US-063).</summary>
     public static Guid TeacherForSubject(Guid subjectId) => SubjectTeacher[subjectId];
 
+    /// <summary>
+    /// Oferta real a la que se ancla cada materia del corpus: la comisión histórica de
+    /// <c>AcademicSeedData</c> cuyo titular es justamente el docente que reseñan estas filas, más el
+    /// período de esa comisión.
+    ///
+    /// <para>
+    /// Reemplaza al Guid de comisión inventado que usaba el corpus. Con él, 56 de 63 cursadas
+    /// apuntaban a una comisión que no existe en el catálogo, así que la mayoría de las reseñas
+    /// violaba el invariante "el docente reseñado pertenece a la comisión de la cursada" que el
+    /// publish de producción sí valida, y esas cursadas aparecían en "Pendientes" donde publicar
+    /// fallaba con <c>TeacherNotInEnrollmentCommission</c>.
+    /// </para>
+    ///
+    /// <para>
+    /// El período sale de la comisión y no se cicla por índice: una comisión pertenece a un par
+    /// (materia, período), así que elegir los dos por separado era justamente lo que producía la
+    /// incoherencia. El ciclado no aportaba nada visible, solo variedad en una columna que la UI no
+    /// muestra, y el UNIQUE (profile, subject, term) se sigue respetando porque dentro de una misma
+    /// materia cada fila tiene un autor distinto.
+    /// </para>
+    /// </summary>
+    private static readonly IReadOnlyDictionary<Guid, SubjectOffering> Offerings =
+        new Dictionary<Guid, SubjectOffering>
+        {
+            [Subject101] = Offering("0b", "02"), // algoritmos y paradigmas · 2024·2c · iturralde
+            [Subject111] = Offering("0c", "02"), // desarrollo de software · 2024·2c · brandt
+            [Subject123] = Offering("0d", "02"), // seminario informático I · 2024·2c · ledesma
+            [Subject121] = Offering("0e", "03"), // base de datos · 2025·1c · méndez
+            [Subject223] = Offering("0f", "03"), // desarrollo back end · 2025·1c · castro
+            [Subject102] = Offering("10", "03"), // álgebra I · 2025·1c · reynoso
+            [Subject213] = Offering("11", "04"), // desarrollo front end · 2025·2c · páez
+        };
+
+    private static SubjectOffering Offering(string commissionNn, string termNn) =>
+        new(Guid.Parse($"00000007-0000-4000-a000-0000000000{commissionNn}"),
+            Guid.Parse($"00000005-0000-4000-a000-0000000000{termNn}"));
+
+    /// <summary>Comisión real de la cursada de prueba de una materia (su titular es el reseñado).</summary>
+    public static Guid CommissionForSubject(Guid subjectId) => Offerings[subjectId].CommissionId;
+
+    /// <summary>
+    /// Período de esa comisión. La cursada tiene que compartirlo: una cursada Aprobada en un período
+    /// distinto al de su comisión es la incoherencia que este mapa existe para evitar.
+    /// </summary>
+    public static Guid TermForSubject(Guid subjectId) => Offerings[subjectId].TermId;
+
     // ── Cursada reseñable interactiva (Lucía) ──────────────────────────────────────────────────
     // Lucía (persona logueable del DevSeed) recibe UNA cursada Aprobada SIN reseña, anclada a la
     // comisión "A" real de 111 Desarrollo de Software (US-065), con brandt titular + sosa jtp.
@@ -67,14 +109,6 @@ public static class SeedCorpusData
         Guid.Parse("00000007-0000-4000-a000-000000000001"); // comisión "A" de Desarrollo de Software
     public static readonly Guid LuciaPendingTermId =
         Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
-
-    private static readonly Guid[] Terms =
-    [
-        Guid.Parse("00000005-0000-4000-a000-000000000001"), // 2024 1c
-        Guid.Parse("00000005-0000-4000-a000-000000000002"), // 2024 2c
-        Guid.Parse("00000005-0000-4000-a000-000000000003"), // 2025 1c
-        Guid.Parse("00000005-0000-4000-a000-000000000004"), // 2025 2c
-    ];
 
     /// <summary>Diez autores fantasma TUDCS. Verificados con profile, anónimos en la UI.</summary>
     public static IReadOnlyList<AuthorDef> Authors { get; } =
@@ -110,8 +144,8 @@ public static class SeedCorpusData
     ];
 
     /// <summary>
-    /// Reseñas curadas. El <c>TermId</c> se asigna por índice más abajo (no afecta la UI, solo el
-    /// UNIQUE (profile, subject, term), que se respeta porque cada autor reseña cada materia una vez).
+    /// Reseñas curadas. El <c>TermId</c> lo resuelve <see cref="TermForSubject"/> más abajo: sale de
+    /// la comisión de la materia, no de un ciclado.
     /// </summary>
     public static IReadOnlyList<ReviewDef> Reviews { get; } = BuildReviews();
 
@@ -126,9 +160,7 @@ public static class SeedCorpusData
         raw.AddRange(Subject213Reviews());
         raw.AddRange(Subject102Reviews());
 
-        // Term ciclado por índice: variedad sin tocar el UNIQUE (cada fila tiene profile distinto
-        // dentro de una misma materia, así que el term puede repetirse sin colisión).
-        return raw.Select((r, i) => r with { TermId = Terms[i % Terms.Length] }).ToList();
+        return raw.Select(r => r with { TermId = TermForSubject(r.SubjectId) }).ToList();
     }
 
     private static IEnumerable<ReviewDef> Subject101Reviews()
@@ -362,12 +394,19 @@ public static class SeedCorpusData
             F("fail-alg101-b03", "b03", Subject102, false),
         };
 
-        return raw.Select((f, i) => f with { TermId = Terms[i % Terms.Length] }).ToList();
+        return raw.Select(f => f with { TermId = TermForSubject(f.SubjectId) }).ToList();
     }
 
     private static FailureDef F(string key, string author, Guid subject, bool abandoned) =>
         new(key, author, subject, Guid.Empty, abandoned);
 }
+
+/// <summary>
+/// Par (comisión, período) real al que se ancla una materia del corpus. Van juntos a propósito: una
+/// comisión pertenece a un par (materia, período), así que separarlos permite elegir combinaciones
+/// que no existen.
+/// </summary>
+public sealed record SubjectOffering(Guid CommissionId, Guid TermId);
 
 /// <summary>Autor fantasma del corpus de prueba.</summary>
 public sealed record AuthorDef(string Key, string Email, int EnrollmentYear);
