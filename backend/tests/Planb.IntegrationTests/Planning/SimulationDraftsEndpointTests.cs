@@ -134,6 +134,12 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
     private static Task<HttpResponseMessage> DeleteDraftAsync(AuthenticatedClient student, Guid draftId) =>
         student.Client.DeleteAsync($"/api/me/simulations/drafts/{draftId}");
 
+    private static Task<HttpResponseMessage> ShareDraftAsync(AuthenticatedClient student, Guid draftId) =>
+        student.Client.PostAsync($"/api/me/simulations/drafts/{draftId}/share", content: null);
+
+    private static Task<HttpResponseMessage> UnshareDraftAsync(AuthenticatedClient student, Guid draftId) =>
+        student.Client.PostAsync($"/api/me/simulations/drafts/{draftId}/unshare", content: null);
+
     private static async Task<ListDraftsDto> ListDraftsAsync(AuthenticatedClient student)
     {
         var response = await student.Client.GetAsync("/api/me/simulations/drafts");
@@ -370,6 +376,99 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
+    public async Task Share_SetsVisibilityToSharedAndReflectsInTheOwnList()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "share");
+        var draftId = await CreateDraftAndGetIdAsync(student, termId, "Para compartir", (subjects[0].Id, null));
+
+        var response = await ShareDraftAsync(student, draftId);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ShareDraftDto>();
+        body.ShouldNotBeNull();
+        body!.Id.ShouldBe(draftId);
+        body.Visibility.ShouldBe("Shared");
+
+        var list = await ListDraftsAsync(student);
+        list.Items.Single(d => d.Id == draftId).Visibility.ShouldBe("Shared");
+    }
+
+    [Fact]
+    public async Task Share_AlreadyShared_IsIdempotentAndReturnsOk()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "share-idempotent");
+        var draftId = await CreateDraftAndGetIdAsync(student, termId, null, (subjects[0].Id, null));
+        (await ShareDraftAsync(student, draftId)).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var second = await ShareDraftAsync(student, draftId);
+
+        second.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await second.Content.ReadFromJsonAsync<ShareDraftDto>();
+        body!.Visibility.ShouldBe("Shared");
+    }
+
+    [Fact]
+    public async Task Unshare_RevertsToPrivateAndReflectsInTheOwnList()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "unshare");
+        var draftId = await CreateDraftAndGetIdAsync(student, termId, null, (subjects[0].Id, null));
+        (await ShareDraftAsync(student, draftId)).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var response = await UnshareDraftAsync(student, draftId);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ShareDraftDto>();
+        body!.Visibility.ShouldBe("Private");
+
+        var list = await ListDraftsAsync(student);
+        list.Items.Single(d => d.Id == draftId).Visibility.ShouldBe("Private");
+    }
+
+    [Fact]
+    public async Task Unshare_AlreadyPrivate_IsIdempotentAndReturnsOk()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "unshare-idempotent");
+        var draftId = await CreateDraftAndGetIdAsync(student, termId, null, (subjects[0].Id, null));
+
+        var response = await UnshareDraftAsync(student, draftId);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ShareDraftDto>();
+        body!.Visibility.ShouldBe("Private");
+    }
+
+    [Fact]
+    public async Task Share_and_unshare_on_another_students_draft_return_forbidden()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var owner = await StudentAsync(planId, "share-owner");
+        var intruder = await StudentAsync(planId, "share-intruder");
+        var draftId = await CreateDraftAndGetIdAsync(owner, termId, null, (subjects[0].Id, null));
+
+        (await ShareDraftAsync(intruder, draftId)).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        (await UnshareDraftAsync(intruder, draftId)).StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+
+        // El intento del intruso no debe haber tocado nada: el draft del owner sigue Private.
+        var list = await ListDraftsAsync(owner);
+        list.Items.Single(d => d.Id == draftId).Visibility.ShouldBe("Private");
+    }
+
+    [Fact]
+    public async Task Share_and_unshare_on_a_nonexistent_draft_return_not_found()
+    {
+        var (planId, _, _, _) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "share-missing");
+        var missingId = Guid.NewGuid();
+
+        (await ShareDraftAsync(student, missingId)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+        (await UnshareDraftAsync(student, missingId)).StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
     public async Task Returns_401_when_no_session_cookie()
     {
         using var anon = _fixture.Factory.CreateClient();
@@ -383,11 +482,13 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
 
     private sealed record PromoteDraftDto(Guid Id, string Status);
 
+    private sealed record ShareDraftDto(Guid Id, string Visibility);
+
     private sealed record DraftListItemSubjectDto(
         Guid SubjectId, string SubjectCode, string SubjectName, Guid? CommissionId, string? CommissionName);
 
     private sealed record DraftListItemDto(
-        Guid Id, Guid TermId, string? Label, string Status,
+        Guid Id, Guid TermId, string? Label, string Status, string Visibility,
         List<DraftListItemSubjectDto> Items, DateTimeOffset CreatedAt);
 
     private sealed record ListDraftsDto(List<DraftListItemDto> Items);

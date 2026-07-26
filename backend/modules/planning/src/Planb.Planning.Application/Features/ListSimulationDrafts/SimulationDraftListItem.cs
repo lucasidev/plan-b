@@ -2,13 +2,15 @@ namespace Planb.Planning.Application.Features.ListSimulationDrafts;
 
 /// <summary>
 /// Borrador para el listado de "mis simulaciones" (US-023). Trae todos los estados
-/// (Draft/Active/Archived): el frontend decide cómo agruparlos.
+/// (Draft/Active/Archived): el frontend decide cómo agruparlos. <see cref="Visibility"/>
+/// ("Private"/"Shared", US-024) le dice al frontend qué borradores ya están en el corpus público.
 /// </summary>
 public sealed record SimulationDraftListItem(
     Guid Id,
     Guid TermId,
     string? Label,
     string Status,
+    string Visibility,
     IReadOnlyList<SimulationDraftListItemSubject> Items,
     DateTimeOffset CreatedAt);
 

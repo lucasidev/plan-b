@@ -242,4 +242,88 @@ public class SimulationDraftTests
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(SimulationDraftErrors.CannotArchive);
     }
+
+    // -------------------------------------------------------------------
+    // Share / Unshare (US-024)
+    // -------------------------------------------------------------------
+
+    [Fact]
+    public void Share_FromPrivate_SetsSharedAndStampsSharedAt()
+    {
+        var draft = CreateValid();
+        var later = new FixedClock(Clock.UtcNow.AddDays(1));
+
+        var result = draft.Share(later);
+
+        result.IsSuccess.ShouldBeTrue();
+        draft.Visibility.ShouldBe(SimulationVisibility.Shared);
+        draft.SharedAt.ShouldBe(later.UtcNow);
+        draft.UpdatedAt.ShouldBe(later.UtcNow);
+    }
+
+    [Fact]
+    public void Share_AlreadyShared_IsIdempotentAndKeepsOriginalSharedAt()
+    {
+        var draft = CreateValid();
+        var firstShareAt = new FixedClock(Clock.UtcNow.AddDays(1));
+        draft.Share(firstShareAt);
+        var secondShareAt = new FixedClock(Clock.UtcNow.AddDays(2));
+
+        var result = draft.Share(secondShareAt);
+
+        result.IsSuccess.ShouldBeTrue();
+        draft.Visibility.ShouldBe(SimulationVisibility.Shared);
+        // No revive la posición del borrador en el feed (shared_at DESC): un segundo share no
+        // reestampa SharedAt con el clock más nuevo.
+        draft.SharedAt.ShouldBe(firstShareAt.UtcNow);
+        draft.UpdatedAt.ShouldBe(firstShareAt.UtcNow);
+    }
+
+    [Fact]
+    public void Unshare_FromShared_SetsPrivateAndClearsSharedAt()
+    {
+        var draft = CreateValid();
+        draft.Share(Clock);
+        var later = new FixedClock(Clock.UtcNow.AddDays(1));
+
+        var result = draft.Unshare(later);
+
+        result.IsSuccess.ShouldBeTrue();
+        draft.Visibility.ShouldBe(SimulationVisibility.Private);
+        draft.SharedAt.ShouldBeNull();
+        draft.UpdatedAt.ShouldBe(later.UtcNow);
+    }
+
+    [Fact]
+    public void Unshare_AlreadyPrivate_IsIdempotentAndSucceeds()
+    {
+        var draft = CreateValid(); // nace Private
+
+        var result = draft.Unshare(Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        draft.Visibility.ShouldBe(SimulationVisibility.Private);
+        draft.SharedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Share_then_unshare_then_share_again_keeps_visibility_and_shared_at_coherent()
+    {
+        var draft = CreateValid();
+        var t1 = new FixedClock(Clock.UtcNow.AddDays(1));
+        var t2 = new FixedClock(Clock.UtcNow.AddDays(2));
+        var t3 = new FixedClock(Clock.UtcNow.AddDays(3));
+
+        draft.Share(t1);
+        draft.Visibility.ShouldBe(SimulationVisibility.Shared);
+        draft.SharedAt.ShouldNotBeNull();
+
+        draft.Unshare(t2);
+        draft.Visibility.ShouldBe(SimulationVisibility.Private);
+        draft.SharedAt.ShouldBeNull();
+
+        draft.Share(t3);
+        draft.Visibility.ShouldBe(SimulationVisibility.Shared);
+        draft.SharedAt.ShouldBe(t3.UtcNow);
+    }
 }

@@ -27,6 +27,9 @@ public static class DependencyInjection
         services.AddScoped<ISimulationDraftRepository, SimulationDraftRepository>();
         services.AddScoped<ISimulationDraftListReader, DapperSimulationDraftListReader>();
 
+        // US-027: feed público de simulaciones compartidas.
+        services.AddScoped<IPublicSimulationsReader, DapperPublicSimulationsReader>();
+
         return services;
     }
 

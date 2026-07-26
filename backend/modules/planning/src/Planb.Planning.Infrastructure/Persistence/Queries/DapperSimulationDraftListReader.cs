@@ -39,6 +39,7 @@ internal sealed class DapperSimulationDraftListReader : ISimulationDraftListRead
                 term_id    AS TermId,
                 label      AS Label,
                 status     AS Status,
+                visibility AS Visibility,
                 created_at AS CreatedAt
             FROM planning.simulation_drafts
             WHERE owner_profile_id = @OwnerProfileId
@@ -87,6 +88,7 @@ internal sealed class DapperSimulationDraftListReader : ISimulationDraftListRead
                 d.TermId,
                 d.Label,
                 d.Status,
+                d.Visibility,
                 itemsByDraft.GetValueOrDefault(d.Id, EmptyItems),
                 d.CreatedAt))
             .ToList();
@@ -104,6 +106,7 @@ internal sealed class DapperSimulationDraftListReader : ISimulationDraftListRead
         public Guid TermId { get; init; }
         public string? Label { get; init; }
         public string Status { get; init; } = string.Empty;
+        public string Visibility { get; init; } = string.Empty;
         public DateTimeOffset CreatedAt { get; init; }
     }
 
