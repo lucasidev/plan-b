@@ -7,19 +7,23 @@ import type { AcademicTerm, SimulationDraft } from '../types';
 import { DraftList } from './draft-list';
 
 /**
- * Tests de `DraftList` (US-023): fallback de label con el período, materias + comisión, y el
- * cableado de las tres acciones (Editar/Borrar/Publicar) a los server actions reales. Mocks de
- * borde: `../actions` (las cuatro mutaciones) y `next/navigation` (que usa `PublishPlanModal` para
- * navegar a "En curso" tras publicar).
+ * Tests de `DraftList` (US-023 + US-024 compartir): fallback de label con el período, materias +
+ * comisión, y el cableado de las acciones (Editar/Borrar/Compartir/Dejar de compartir/Publicar) a
+ * los server actions reales. Mocks de borde: `../actions` (las seis mutaciones) y `next/navigation`
+ * (que usa `PublishPlanModal` para navegar a "En curso" tras publicar).
  */
 
 const deleteMock = vi.fn();
 const updateMock = vi.fn();
 const promoteMock = vi.fn();
+const shareMock = vi.fn();
+const unshareMock = vi.fn();
 vi.mock('../actions', () => ({
   deleteSimulationDraftAction: (...args: unknown[]) => deleteMock(...args),
   updateSimulationDraftAction: (...args: unknown[]) => updateMock(...args),
   promoteSimulationDraftAction: (...args: unknown[]) => promoteMock(...args),
+  shareSimulationDraftAction: (...args: unknown[]) => shareMock(...args),
+  unshareSimulationDraftAction: (...args: unknown[]) => unshareMock(...args),
 }));
 
 const pushMock = vi.fn();
@@ -45,6 +49,7 @@ function draft(overrides: Partial<SimulationDraft> = {}): SimulationDraft {
     termId: TERM_2027_1C.id,
     label: null,
     status: 'Draft',
+    visibility: 'Private',
     items: [
       {
         subjectId: 'sub-1',
@@ -75,6 +80,8 @@ beforeEach(() => {
   deleteMock.mockReset();
   updateMock.mockReset();
   promoteMock.mockReset();
+  shareMock.mockReset();
+  unshareMock.mockReset();
   pushMock.mockReset();
   vi.spyOn(window, 'confirm');
 });
@@ -222,5 +229,113 @@ describe('DraftList (US-023)', () => {
     expect(
       screen.getByRole('heading', { name: /publicar "plan liviano" como tu período en curso/i }),
     ).toBeInTheDocument();
+  });
+
+  it('un borrador privado no muestra el chip "Compartido" y ofrece "Compartir"', () => {
+    render(
+      <DraftList
+        drafts={[draft({ visibility: 'Private' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      {
+        wrapper,
+      },
+    );
+
+    expect(screen.queryByText('Compartido')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^compartir$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /dejar de compartir/i })).not.toBeInTheDocument();
+  });
+
+  it('"Compartir" abre el modal de explicación (US-024), sin llamar al action todavía', async () => {
+    const user = userEvent.setup();
+    render(
+      <DraftList
+        drafts={[draft({ label: 'Plan liviano', visibility: 'Private' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      { wrapper },
+    );
+
+    await user.click(screen.getByRole('button', { name: /^compartir$/i }));
+
+    expect(
+      screen.getByRole('heading', { name: /compartir "plan liviano" con la comunidad/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/sin tu nombre/i)).toBeInTheDocument();
+    expect(shareMock).not.toHaveBeenCalled();
+  });
+
+  it('confirmar en el modal de compartir llama a shareSimulationDraftAction con el id', async () => {
+    shareMock.mockResolvedValue({ status: 'success', visibility: 'Shared' });
+    const user = userEvent.setup();
+    render(
+      <DraftList
+        drafts={[draft({ id: 'draft-x', visibility: 'Private' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      { wrapper },
+    );
+
+    await user.click(screen.getByRole('button', { name: /^compartir$/i }));
+    await user.click(screen.getByRole('button', { name: /compartir borrador/i }));
+
+    await waitFor(() => expect(shareMock).toHaveBeenCalledWith('draft-x'));
+  });
+
+  it('un borrador compartido muestra el chip "Compartido" y ofrece "Dejar de compartir"', () => {
+    render(
+      <DraftList
+        drafts={[draft({ visibility: 'Shared' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      {
+        wrapper,
+      },
+    );
+
+    expect(screen.getByText('Compartido')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /dejar de compartir/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^compartir$/i })).not.toBeInTheDocument();
+  });
+
+  it('"Dejar de compartir" llama directo a unshareSimulationDraftAction, sin modal', async () => {
+    unshareMock.mockResolvedValue({ status: 'success', visibility: 'Private' });
+    const user = userEvent.setup();
+    render(
+      <DraftList
+        drafts={[draft({ id: 'draft-y', visibility: 'Shared' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      { wrapper },
+    );
+
+    await user.click(screen.getByRole('button', { name: /dejar de compartir/i }));
+
+    await waitFor(() => expect(unshareMock).toHaveBeenCalledWith('draft-y'));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('error al compartir se muestra inline en la fila', async () => {
+    shareMock.mockResolvedValue({ status: 'error', message: 'Ese borrador no te pertenece.' });
+    const user = userEvent.setup();
+    render(
+      <DraftList
+        drafts={[draft({ visibility: 'Private' })]}
+        terms={[TERM_2027_1C]}
+        onCreate={vi.fn()}
+      />,
+      { wrapper },
+    );
+
+    await user.click(screen.getByRole('button', { name: /^compartir$/i }));
+    await user.click(screen.getByRole('button', { name: /compartir borrador/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/no te pertenece/i);
   });
 });

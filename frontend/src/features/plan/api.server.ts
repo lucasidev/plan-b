@@ -4,6 +4,7 @@ import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type {
   AcademicTerm,
   AvailableSubjectsResponse,
+  ListPublicSimulationsResponse,
   ListSimulationDraftsResponse,
 } from './types';
 
@@ -55,4 +56,27 @@ export async function fetchSimulationDraftsServer(): Promise<ListSimulationDraft
     throw new Error(`simulation drafts fetch failed with ${res.status}`);
   }
   return (await res.json()) as ListSimulationDraftsResponse;
+}
+
+/**
+ * Primera página del feed de simulaciones públicas (US-027), GET /api/simulations/public,
+ * autenticado (alumno con StudentProfile activo del mismo careerPlanId pedido). Usado por la RSC de
+ * /plan para prefetchear + hidratar la pestaña "Comunidad" cuando ya es la pestaña pedida
+ * (`?tab=public`): a diferencia del catálogo y los borradores, no se prefetchea sin importar la
+ * pestaña porque es una consulta nueva y más pesada que solo importa cuando el alumno la abre.
+ */
+export async function fetchPublicSimulationsServer(
+  careerPlanId: string,
+  termId: string,
+  cursor: string | null,
+): Promise<ListPublicSimulationsResponse> {
+  const params = new URLSearchParams({ careerPlanId, termId });
+  if (cursor) params.set('cursor', cursor);
+  const res = await apiFetchAuthenticated(`/api/simulations/public?${params.toString()}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) {
+    throw new Error(`public simulations fetch failed with ${res.status}`);
+  }
+  return (await res.json()) as ListPublicSimulationsResponse;
 }

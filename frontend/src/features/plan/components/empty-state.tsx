@@ -4,8 +4,19 @@ import { Button } from '@/components/ui/button';
  * Plan global empty state (US-046, `v2-empty.jsx::V2PlanificarVacio`). Shown when the
  * student has neither an active period nor any drafts. Centered card with eyebrow,
  * heading, body and primary CTA "Crear primer borrador".
+ *
+ * `onExplorePublicFeed` (US-027) es la única forma de llegar a la pestaña "Comunidad" para un
+ * alumno sin borradores todavía: el feed público sirve sobre todo para inspirarse ANTES de armar el
+ * primero, y sin borradores la pestaña de Plan no se llega a renderizar (`PlanShell` corta acá con
+ * este mismo empty state).
  */
-export function PlanEmpty({ onCreateDraft }: { onCreateDraft: () => void }) {
+export function PlanEmpty({
+  onCreateDraft,
+  onExplorePublicFeed,
+}: {
+  onCreateDraft: () => void;
+  onExplorePublicFeed: () => void;
+}) {
   return (
     <div
       className="bg-bg-card border border-line rounded-lg"
@@ -45,10 +56,13 @@ export function PlanEmpty({ onCreateDraft }: { onCreateDraft: () => void }) {
           Armá un borrador con materias, docentes y comisiones. Plan-b te avisa de choques de
           horario, carga estimada y reseñas relevantes. Después decidís.
         </p>
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3" style={{ flexWrap: 'wrap' }}>
           <Button onClick={onCreateDraft}>Crear primer borrador</Button>
           <Button variant="ghost" type="button">
             Cómo funciona
+          </Button>
+          <Button variant="ghost" type="button" onClick={onExplorePublicFeed}>
+            Ver simulaciones compartidas
           </Button>
         </div>
       </div>

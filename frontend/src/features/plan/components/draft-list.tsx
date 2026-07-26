@@ -3,17 +3,20 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
+import { Pill } from '@/components/ui/pill';
 import { formatAcademicPeriod } from '@/lib/academic-terms';
-import { deleteSimulationDraftAction } from '../actions';
+import { deleteSimulationDraftAction, unshareSimulationDraftAction } from '../actions';
 import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
 import type { AcademicTerm, SimulationDraft, SimulationDraftItem } from '../types';
 import { EditDraftModal } from './edit-draft-modal';
 import { PublishPlanModal } from './publish-plan-modal';
+import { ShareDraftModal } from './share-draft-modal';
 
 /**
- * "Borrador" tab of Plan (US-046 shell + US-023 datos reales). Lista de borradores propios (status
- * Draft) con label (propio o un fallback legible con el período), y sus materias + comisión.
- * Acciones por fila: Editar, Borrar (con confirmación) y Publicar.
+ * "Borrador" tab of Plan (US-046 shell + US-023 datos reales + US-024 compartir). Lista de
+ * borradores propios (status Draft) con label (propio o un fallback legible con el período), y sus
+ * materias + comisión. Acciones por fila: Editar, Borrar (con confirmación), Compartir/Dejar de
+ * compartir y Publicar. Un borrador `Shared` muestra el chip "Compartido" junto al nombre.
  *
  * Antes mostraba `MOCK_DRAFTS` con una grilla de métricas y un calendario por borrador
  * (`StatsGrid`/`CalendarWeek`, US-046). El endpoint real de borradores (`GET
@@ -31,6 +34,7 @@ type Props = {
 export function DraftList({ drafts, terms, onCreate }: Props) {
   const [publishingDraft, setPublishingDraft] = useState<SimulationDraft | null>(null);
   const [editingDraft, setEditingDraft] = useState<SimulationDraft | null>(null);
+  const [sharingDraft, setSharingDraft] = useState<SimulationDraft | null>(null);
 
   if (drafts.length === 0) {
     return (
@@ -67,6 +71,7 @@ export function DraftList({ drafts, terms, onCreate }: Props) {
           label={draftLabel(draft, terms)}
           onEdit={() => setEditingDraft(draft)}
           onPublish={() => setPublishingDraft(draft)}
+          onShare={() => setSharingDraft(draft)}
         />
       ))}
 
@@ -76,6 +81,11 @@ export function DraftList({ drafts, terms, onCreate }: Props) {
         onClose={() => setPublishingDraft(null)}
       />
       <EditDraftModal draft={editingDraft} onClose={() => setEditingDraft(null)} />
+      <ShareDraftModal
+        draft={sharingDraft}
+        label={sharingDraft ? draftLabel(sharingDraft, terms) : ''}
+        onClose={() => setSharingDraft(null)}
+      />
     </div>
   );
 }
@@ -94,11 +104,13 @@ function DraftCard({
   label,
   onEdit,
   onPublish,
+  onShare,
 }: {
   draft: SimulationDraft;
   label: string;
   onEdit: () => void;
   onPublish: () => void;
+  onShare: () => void;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -116,6 +128,23 @@ function DraftCard({
       }
     });
   }
+
+  // Descompartir no repite la explicación del modal de compartir (`ShareDraftModal`): volver a
+  // privado es reversible y sin riesgo de exposición, así que se ejecuta directo, mismo criterio
+  // que el resto de las acciones de fila sin confirmación (Editar, Publicar).
+  function handleUnshare() {
+    setError(null);
+    startTransition(async () => {
+      const result = await unshareSimulationDraftAction(draft.id);
+      if (result.status === 'success') {
+        queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+      } else {
+        setError(result.message);
+      }
+    });
+  }
+
+  const isShared = draft.visibility === 'Shared';
 
   return (
     <article className="bg-bg-card border border-line rounded-lg" style={{ padding: 20 }}>
@@ -142,9 +171,12 @@ function DraftCard({
           >
             Borrador
           </div>
-          <h3 className="text-ink-1" style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
-            {label}
-          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 className="text-ink-1" style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
+              {label}
+            </h3>
+            {isShared && <Pill tone="good">Compartido</Pill>}
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={onEdit} disabled={isPending}>
@@ -153,6 +185,15 @@ function DraftCard({
           <Button variant="ghost" size="sm" onClick={handleDelete} disabled={isPending}>
             {isPending ? 'Borrando...' : 'Borrar'}
           </Button>
+          {isShared ? (
+            <Button variant="ghost" size="sm" onClick={handleUnshare} disabled={isPending}>
+              {isPending ? '...' : 'Dejar de compartir'}
+            </Button>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={onShare} disabled={isPending}>
+              Compartir
+            </Button>
+          )}
           <Button size="sm" onClick={onPublish} disabled={isPending}>
             Publicar
           </Button>
@@ -169,12 +210,19 @@ function DraftCard({
         </p>
       )}
 
-      <DraftItemsList items={draft.items} />
+      <SimulationSubjectList items={draft.items} />
     </article>
   );
 }
 
-function DraftItemsList({ items }: { items: readonly SimulationDraftItem[] }) {
+/**
+ * Lista de materias + comisión de una simulación (código, nombre, comisión elegida o "sin
+ * comisión"). Compartido entre `DraftList` (borradores propios, US-023) y `PublicFeedTab` (feed
+ * público, US-027): el backend documenta las dos formas como el mismo shape a propósito
+ * (`PublicSimulationSubjectItem` = `SimulationDraftListItemSubject`) para reusar el mismo "chip de
+ * materia" en ambas pantallas.
+ */
+export function SimulationSubjectList({ items }: { items: readonly SimulationDraftItem[] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {items.map((item, i) => (

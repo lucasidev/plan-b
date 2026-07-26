@@ -10,22 +10,26 @@ import { ActiveTab } from './active-tab';
 import { DraftList } from './draft-list';
 import { PlanEmpty } from './empty-state';
 import { PlanTabs, type TabId } from './plan-tabs';
+import { PublicFeedTab } from './public-feed-tab';
 import { TermSelector } from './term-selector';
 
 /**
- * Plan shell (US-046 + US-096 + US-023). Renders the header (con el selector de período) + tabs +
- * tab content. Global empty state si el alumno no tiene ningún borrador (de ningún estado). Los
- * borradores (US-023) ya son datos reales: `useSuspenseQuery` los lee del cache hidratado por la
- * RSC de /plan (mismo queryKey), y este componente agrupa por status + término para decidir qué va
- * en "En curso" (el `Active` del período elegido) y en "Borradores" (los `Draft`).
+ * Plan shell (US-046 + US-096 + US-023 + US-027). Renders the header (con el selector de período) +
+ * tabs + tab content. Global empty state si el alumno no tiene ningún borrador (de ningún estado),
+ * salvo que la pestaña pedida sea "Comunidad" (ver más abajo). Los borradores (US-023) ya son datos
+ * reales: `useSuspenseQuery` los lee del cache hidratado por la RSC de /plan (mismo queryKey), y
+ * este componente agrupa por status + término para decidir qué va en "En curso" (el `Active` del
+ * período elegido) y en "Borradores" (los `Draft`).
  */
 type Props = {
   activeTab: TabId;
   terms: readonly AcademicTerm[];
   selectedTermId: string | null;
+  /** Del StudentProfile del alumno (US-027): filtro del feed público, ver `PublicFeedTab`. */
+  careerPlanId: string | null;
 };
 
-export function PlanShell({ activeTab, terms, selectedTermId }: Props) {
+export function PlanShell({ activeTab, terms, selectedTermId, careerPlanId }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data } = useSuspenseQuery(simulationDraftsQueries.list());
@@ -40,10 +44,25 @@ export function PlanShell({ activeTab, terms, selectedTermId }: Props) {
     router.push(`?${params.toString()}`, { scroll: false });
   }
 
-  if (allDrafts.length === 0) {
+  function goToDraftsTab() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', 'draft');
+    router.push(`?${params.toString()}`, { scroll: false });
+  }
+
+  function goToPublicFeed() {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', 'public');
+    router.push(`?${params.toString()}`, { scroll: false });
+  }
+
+  // El empty state global se salta cuando la pestaña pedida es "Comunidad" (US-027): el feed
+  // público sirve sobre todo para inspirarse ANTES de armar el primer borrador propio, así que un
+  // alumno sin borradores todavía tiene que poder llegar ahí (por el link nuevo en `PlanEmpty`).
+  if (allDrafts.length === 0 && activeTab !== 'public') {
     return (
       <div>
-        <PlanEmpty onCreateDraft={goToBuilder} />
+        <PlanEmpty onCreateDraft={goToBuilder} onExplorePublicFeed={goToPublicFeed} />
       </div>
     );
   }
@@ -63,6 +82,13 @@ export function PlanShell({ activeTab, terms, selectedTermId }: Props) {
       id: 'draft' as TabId,
       label: 'Borradores',
       tag: `${draftItems.length}`,
+    },
+    {
+      // Sin tag: a diferencia de las otras dos, el conteo del feed público no está prefetcheado
+      // sin importar la pestaña (ver el comentario en `page.tsx`), así que mostrar un número acá
+      // implicaría un dato que no tenemos barato.
+      id: 'public' as TabId,
+      label: 'Comunidad',
     },
   ];
 
@@ -140,8 +166,20 @@ export function PlanShell({ activeTab, terms, selectedTermId }: Props) {
         <Suspense fallback={null}>
           <ActiveTab activeDraft={activeDraft} termId={selectedTermId} />
         </Suspense>
-      ) : (
+      ) : activeTab === 'draft' ? (
         <DraftList drafts={draftItems} terms={terms} onCreate={goToBuilder} />
+      ) : (
+        // Suspense porque PublicFeedTab lee useSuspenseInfiniteQuery(publicSimulationsQueries.feed)
+        // directo (US-027). Resuelve al toque cuando la RSC prefetcheó esta pestaña (ver
+        // `page.tsx`); si se llega acá sin haberla prefetcheado (edge case), degrada al mismo
+        // patrón que el resto de las queries de este feature (log + refetch client-side).
+        <Suspense fallback={null}>
+          <PublicFeedTab
+            careerPlanId={careerPlanId}
+            termId={selectedTermId}
+            onGoToDrafts={goToDraftsTab}
+          />
+        </Suspense>
       )}
     </div>
   );
