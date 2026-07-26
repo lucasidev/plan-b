@@ -48,6 +48,16 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Teacher121 = Guid.Parse("00000006-0000-4000-a000-000000000007"); // méndez
     private static readonly Guid Term121 = Guid.Parse("00000005-0000-4000-a000-000000000004"); // 2025·2c
 
+    // 102 Álgebra I (TUDCS, sin correlativas propias): comisión "A" (Cid 07), horario lunes 18-21 y
+    // viernes 18-21 (seed US-096). Choca a propósito con 111 Desarrollo de Software "A" los lunes.
+    private static readonly Guid Subject102 = Guid.Parse("00000004-0000-4000-a000-000000000002");
+    private static readonly Guid Commission102A = Guid.Parse("00000007-0000-4000-a000-000000000007");
+
+    // 111 Desarrollo de Software (TUDCS, requiere 101 Algoritmos y Paradigmas para_cursar): comisión
+    // "A" (Cid 01), horario lunes 18-22 y miércoles 18-22 (seed US-096).
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid Commission111A = Guid.Parse("00000007-0000-4000-a000-000000000001");
+
     private readonly RegisterApiFixture _fixture;
 
     public EvaluateSimulationEndpointTests(RegisterApiFixture fixture)
@@ -353,6 +363,61 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task Evaluate_with_two_clashing_commissions_reports_one_clash_and_marks_the_blocks()
+    {
+        var student = await StudentAsync(TudcsPlanId, "clash");
+
+        // 111 Desarrollo de Software requiere 101 Algoritmos y Paradigmas para_cursar: regularizamos
+        // 101 para que 111 no quede Blocked y la evaluación llegue a computar métricas (US-096).
+        await EnrollAsync(student, Subject101, "Regularized", null, null, null, 6m);
+
+        var response = await student.Client.PostAsJsonAsync(
+            "/api/me/simulator/evaluate",
+            new
+            {
+                subjectIds = new[] { Subject102, Subject111 },
+                commissions = new[]
+                {
+                    new { subjectId = Subject102, commissionId = Commission102A },
+                    new { subjectId = Subject111, commissionId = Commission111A },
+                },
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
+        body.ShouldNotBeNull();
+        body!.IsValid.ShouldBeTrue();
+        body.Clashes.ShouldBe(1);
+        body.Schedule.Count.ShouldBe(4);
+
+        // Lunes: Álgebra I 18-21 y Desarrollo de Software 18-22 se pisan de 18 a 21: los dos
+        // bloques del lunes quedan marcados. Miércoles (Desarrollo de Software) y viernes (Álgebra
+        // I) no chocan con nada: quedan sin marcar.
+        var mondayBlocks = body.Schedule.Where(b => b.Day == "Monday").ToList();
+        mondayBlocks.Count.ShouldBe(2);
+        mondayBlocks.ShouldAllBe(b => b.Clashing);
+
+        var restOfBlocks = body.Schedule.Where(b => b.Day != "Monday").ToList();
+        restOfBlocks.Count.ShouldBe(2);
+        restOfBlocks.ShouldAllBe(b => !b.Clashing);
+    }
+
+    [Fact]
+    public async Task Evaluate_without_chosen_commissions_reports_null_clashes_and_empty_schedule()
+    {
+        var (planId, subjects) = await CreatePlanWithSubjectsAsync(2);
+        var student = await StudentAsync(planId, "noclash");
+
+        var response = await EvaluateAsync(student, subjects[0].Id, subjects[1].Id);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<EvaluateSimulationResponseDto>();
+        body.ShouldNotBeNull();
+        body!.Clashes.ShouldBeNull();
+        body.Schedule.ShouldBeEmpty();
+    }
+
     private static async Task EnrollAsync(
         AuthenticatedClient student,
         Guid subjectId,
@@ -447,11 +512,23 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
 
     private sealed record CombinationCohortStatsDto(int SampleSize, double? PassRate, double? DropoutRate);
 
+    private sealed record SimulationScheduleBlockDto(
+        Guid SubjectId,
+        string SubjectCode,
+        Guid CommissionId,
+        string CommissionName,
+        string Day,
+        string Start,
+        string End,
+        bool Clashing);
+
     private sealed record EvaluateSimulationResponseDto(
         bool IsValid,
         List<BlockedSubjectDto> BlockedSubjects,
         int TotalWeeklyHours,
         int TotalHours,
         double? WeightedDifficulty,
-        CombinationCohortStatsDto CombinationStats);
+        CombinationCohortStatsDto CombinationStats,
+        List<SimulationScheduleBlockDto> Schedule,
+        int? Clashes);
 }

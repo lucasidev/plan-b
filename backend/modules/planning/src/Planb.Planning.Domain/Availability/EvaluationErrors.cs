@@ -20,4 +20,35 @@ public static class EvaluationErrors
         Error.Validation(
             "planning.simulator.subject_not_in_plan",
             "One or more subjects do not belong to the student's career plan.");
+
+    /// <summary>
+    /// Una <c>CommissionChoice</c> (US-096) referencia una materia que no está en el subset de
+    /// <c>SubjectIds</c> de la misma request. Mismo criterio 400 que <see cref="SubjectNotInPlan"/>:
+    /// el contenido de lo que mandó el caller está mal formado, no falta un recurso.
+    /// </summary>
+    public static readonly Error CommissionSubjectNotRequested =
+        Error.Validation(
+            "planning.simulator.commission_subject_not_requested",
+            "A commission choice references a subject that is not part of the requested combination.");
+
+    /// <summary>Una <c>CommissionChoice</c> (US-096) referencia una comisión que no existe en el catálogo.</summary>
+    public static readonly Error CommissionNotFound =
+        Error.Validation(
+            "planning.simulator.commission_not_found",
+            "One or more chosen commissions do not exist.");
+
+    /// <summary>
+    /// La comisión elegida existe pero pertenece a otra materia, no a la que indica la
+    /// <c>CommissionChoice</c> (US-096).
+    /// </summary>
+    public static readonly Error CommissionSubjectMismatch =
+        Error.Validation(
+            "planning.simulator.commission_subject_mismatch",
+            "A chosen commission does not belong to the subject it was selected for.");
+
+    /// <summary>La comisión elegida (US-096) existe pero está dada de baja (soft delete, US-093).</summary>
+    public static readonly Error CommissionInactive =
+        Error.Validation(
+            "planning.simulator.commission_inactive",
+            "A chosen commission is not active.");
 }
