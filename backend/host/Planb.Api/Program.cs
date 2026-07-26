@@ -115,6 +115,10 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Moderation.Infrastru
     Planb.Moderation.Infrastructure.DependencyInjection.ConfigureModerationDbContext(
         opts, connectionString));
 
+builder.Services.AddDbContextWithWolverineIntegration<Planb.Planning.Infrastructure.Persistence.PlanningDbContext>(opts =>
+    Planb.Planning.Infrastructure.DependencyInjection.ConfigurePlanningDbContext(
+        opts, connectionString));
+
 // ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox + FluentValidation middleware)
 // ------------------------------------------------------------------
