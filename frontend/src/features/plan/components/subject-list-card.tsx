@@ -23,14 +23,17 @@ function diffBucket(d: number): 'hi' | 'mid' | 'lo' {
  * `onAddSubject` (US-016) is optional: `ActiveTab` lo pasa para acumular los ids reales elegidos
  * (que alimentan `SimulatorEvaluationPanel`); `DraftList` no lo pasa todavía porque los borradores
  * no tienen materias con id real contra las que evaluar (US-023 pendiente), así que ahí elegir
- * del drawer sigue sin efecto, igual que antes.
+ * del drawer sigue sin efecto, igual que antes. `termId` (US-096) sí se pasa en los dos casos: es
+ * el período elegido en el header de /plan, y el catálogo que abre el drawer depende de él.
  */
 export function SubjectListCard({
   subjects,
   onAddSubject,
+  termId,
 }: {
   subjects: Subject[];
   onAddSubject?: (subject: AvailableSubject) => void;
+  termId: string | null;
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -165,6 +168,7 @@ export function SubjectListCard({
             onAddSubject?.(subject);
             setDrawerOpen(false);
           }}
+          termId={termId}
         />
       </Suspense>
     </>

@@ -1,9 +1,10 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { NO_DATA_YET } from '@/lib/copy';
 import { simulationEvaluationQueries } from '../api';
 import { formatBlockedReason } from '../lib/available-subjects';
-import type { BlockedSubjectEvaluation, SimulationEvaluation } from '../types';
+import type { BlockedSubjectEvaluation, CommissionSelection, SimulationEvaluation } from '../types';
 
 /**
  * Un tile de la grilla de métricas: valor grande + label chico debajo. `warn` lo pinta con el
@@ -59,22 +60,22 @@ export function StatsGrid({ items }: { items: StatGridItem[] }) {
 }
 
 /**
- * Panel de métricas del planificador (US-016), cableado a POST /api/me/simulator/evaluate.
- * Reacciona al conjunto de materias elegidas (`subjectIds`): sin ninguna, no llama al endpoint
- * (no hay combinación que evaluar). Ver `simulationEvaluationQueries` en `../api` para por qué es
- * un `useQuery` con el subset en el queryKey y no un `useMutation`.
- *
- * Sin "choques": detectarlos requiere el horario de cada comisión, y la oferta real de
- * comisiones por cuatrimestre es US-093 (todavía no existe). Mostrar un número acá, aunque sea
- * 0, sería mentirle al alumno: "no tiene choques" y "no lo sabemos" no son lo mismo.
- * TODO(US-093): sumar la métrica de choques cuando exista la oferta real de comisiones.
+ * Panel de métricas del planificador (US-016 + US-096), cableado a POST
+ * /api/me/simulator/evaluate. Reacciona al conjunto de materias + comisiones elegidas
+ * (`selections`): sin ninguna materia, no llama al endpoint (no hay combinación que evaluar). Ver
+ * `simulationEvaluationQueries` en `../api` para por qué es un `useQuery` con la combinación en el
+ * queryKey y no un `useMutation`.
  */
-export function SimulatorEvaluationPanel({ subjectIds }: { subjectIds: readonly string[] }) {
+export function SimulatorEvaluationPanel({
+  selections,
+}: {
+  selections: readonly CommissionSelection[];
+}) {
   const { data, isPending, isError } = useQuery(
-    simulationEvaluationQueries.forSubjects(subjectIds),
+    simulationEvaluationQueries.forSelections(selections),
   );
 
-  if (subjectIds.length === 0) {
+  if (selections.length === 0) {
     return <Notice text="Sumá materias para ver las métricas de la combinación." />;
   }
 
@@ -94,19 +95,32 @@ export function SimulatorEvaluationPanel({ subjectIds }: { subjectIds: readonly 
 }
 
 /**
- * Los dos nulls posibles no son un caso borde, son el punto: `weightedDifficulty` null significa
- * "ninguna de estas materias tiene reseñas todavía" (nunca se muestra como 0, que leería como
- * "fácil"). `combinationStats.passRate` null significa que la muestra está debajo del piso
+ * Los nulls posibles no son un caso borde, son el punto: `clashes` (US-096) null significa
+ * "ninguna materia de la combinación tiene comisión elegida todavía" (nunca "cero choques"; ese
+ * dato solo existe una vez que el alumno eligió al menos una comisión). `weightedDifficulty` null
+ * significa "ninguna de estas materias tiene reseñas todavía" (nunca se muestra como 0, que leería
+ * como "fácil"). `combinationStats.passRate` null significa que la muestra está debajo del piso
  * anti-reidentificación (ADR-0047, N < 5): ahí se muestra el tamaño de muestra igual (es el dato
  * honesto), nunca el porcentaje (sería ruido sobre 1 o 2 alumnos, y de paso identificable).
+ *
+ * El texto de "no hay dato" es siempre `NO_DATA_YET` ("sin datos"), nunca la abreviatura "s/d":
+ * la app nunca define qué significa, y el glosario lo prohíbe explícito (desambiguación de
+ * "sin datos" en docs/domain/ubiquitous-language.md).
  */
 function buildEvaluationItems(data: SimulationEvaluation): StatGridItem[] {
   const { combinationStats } = data;
 
   return [
     { value: `${data.totalWeeklyHours}h`, label: 'semanales' },
+    data.clashes === null
+      ? { value: NO_DATA_YET, label: 'sin comisión elegida' }
+      : {
+          value: `${data.clashes}`,
+          label: data.clashes === 1 ? 'choque' : 'choques',
+          warn: data.clashes > 0,
+        },
     data.weightedDifficulty === null
-      ? { value: 's/d', label: 'sin reseñas todavía' }
+      ? { value: NO_DATA_YET, label: 'sin reseñas todavía' }
       : { value: data.weightedDifficulty.toFixed(1), label: 'dificultad' },
     combinationStats.passRate === null
       ? {

@@ -10,6 +10,12 @@ namespace Planb.Academic.Application.Contracts;
 /// cliente la muestra tal cual. <see cref="Year"/> y <see cref="Number"/> quedan disponibles
 /// para sorting cliente-side sin tener que parsear el label.
 /// </para>
+///
+/// <para>
+/// <see cref="StartDate"/> y <see cref="EndDate"/> las agrega US-096: el planificador arranca
+/// posicionado en el período que viene, y "cuál viene" se decide comparando fechas contra hoy.
+/// Sin ellas el cliente solo podía caer en "el más reciente de la lista", que es otra cosa.
+/// </para>
 /// </summary>
 public sealed record AcademicTermListItem(
     Guid Id,
@@ -17,4 +23,6 @@ public sealed record AcademicTermListItem(
     int Year,
     int Number,
     string Kind,
-    string Label);
+    string Label,
+    DateOnly StartDate,
+    DateOnly EndDate);

@@ -1,18 +1,16 @@
-import type {
-  AcademicPeriod,
-  CalendarBlock,
-  CommissionOption,
-  Simulation,
-  Subject,
-} from '../types';
+import type { AcademicPeriod, CalendarWeekBlock, Simulation, Subject } from '../types';
 
 /**
  * Mock data aligned with the v2 canvas (`v2-shell.jsx::V2_ACTIVE`,
- * `v2-screens.jsx::V2MiniCalendar`). When US-016 + US-023 land, this is replaced by a
- * real fetch to the backend.
+ * `v2-screens.jsx::V2MiniCalendar`). When US-023 (draft/active storage) lands, this is replaced by
+ * a real fetch to the backend.
  *
- * The whole file is **placeholder data, not real domain**. It is not used in
- * production when the backend exists; it only lives for the US-046 visual mockup.
+ * The whole file is **placeholder data, not real domain**: `MOCK_DRAFTS` still stands in for
+ * borradores (US-023 has no backend yet). `MOCK_ACTIVE_SIMULATION` only keeps its `subjects`
+ * (mock "Materias del año" list) and `period`/`label` for the same reason; its `blocks`/`stats`
+ * are dead weight the `Simulation` type still requires (see the comment on the constant itself):
+ * the "En curso" tab's calendar and metrics now come from `POST /api/me/simulator/evaluate`
+ * (US-016 + US-096), not from here.
  */
 
 const PERIOD_2026_1C: AcademicPeriod = {
@@ -89,17 +87,6 @@ const ACTIVE_SUBJECTS: Subject[] = [
   },
 ];
 
-const ACTIVE_BLOCKS: CalendarBlock[] = [
-  { day: 0, h: 14, dur: 4, code: 'INT302', mod: '1c', warn: false },
-  { day: 0, h: 18, dur: 4, code: 'ISW302', mod: '1c', warn: false },
-  { day: 1, h: 18, dur: 4, code: 'MAT401', mod: 'anual', warn: true },
-  { day: 1, h: 19, dur: 3, code: 'MOV302', mod: '1c', warn: true },
-  { day: 2, h: 18, dur: 4, code: 'ISW302', mod: '1c', warn: false },
-  { day: 3, h: 19, dur: 3, code: 'SEG302', mod: '1c', warn: false },
-  { day: 4, h: 14, dur: 4, code: 'INT302', mod: '1c', warn: false },
-  { day: 4, h: 19, dur: 3, code: 'MOV302', mod: '1c', warn: false },
-];
-
 const DRAFT_2027_SUBJECTS: Subject[] = [
   {
     code: 'ISW401',
@@ -129,23 +116,28 @@ const DRAFT_2027_SUBJECTS: Subject[] = [
   },
 ];
 
-const DRAFT_2027_BLOCKS: CalendarBlock[] = [
-  { day: 0, h: 14, dur: 4, code: 'ISW401', mod: '1c', warn: false },
-  { day: 0, h: 18, dur: 4, code: 'ALG402', mod: '1c', warn: false },
-  { day: 1, h: 14, dur: 4, code: 'ARQ301', mod: '1c', warn: false },
-  { day: 2, h: 18, dur: 4, code: 'BD402', mod: '1c', warn: false },
-  { day: 3, h: 14, dur: 4, code: 'PRO402', mod: '1c', warn: false },
-  { day: 4, h: 18, dur: 4, code: 'ALG402', mod: '1c', warn: false },
+const DRAFT_2027_BLOCKS: CalendarWeekBlock[] = [
+  { subjectCode: 'ISW401', day: 'Monday', start: '14:00', end: '18:00', clashing: false },
+  { subjectCode: 'ALG402', day: 'Monday', start: '18:00', end: '22:00', clashing: false },
+  { subjectCode: 'ARQ301', day: 'Tuesday', start: '14:00', end: '18:00', clashing: false },
+  { subjectCode: 'BD402', day: 'Wednesday', start: '18:00', end: '22:00', clashing: false },
+  { subjectCode: 'PRO402', day: 'Thursday', start: '14:00', end: '18:00', clashing: false },
+  { subjectCode: 'ALG402', day: 'Friday', start: '18:00', end: '22:00', clashing: false },
 ];
 
+// `blocks`/`stats` no tienen consumidor real en el tab "En curso" (US-096: el calendario y las
+// métricas de esa tab ahora salen de POST /api/me/simulator/evaluate, cableado a las comisiones
+// que el alumno elige en la sesión, no a este mock). Se dejan en su valor vacío porque el tipo
+// `Simulation` los sigue pidiendo: todavía es compartido con los borradores (`MOCK_DRAFTS` abajo),
+// que sí los usan de mock hasta que exista el backend de US-023.
 export const MOCK_ACTIVE_SIMULATION: Simulation = {
   id: 'sim-active-2026-1c',
   status: 'active',
   period: PERIOD_2026_1C,
   label: '2026 · primer cuatrimestre',
   subjects: ACTIVE_SUBJECTS,
-  blocks: ACTIVE_BLOCKS,
-  stats: { weeklyHours: 25, clashes: 1, avgDiff: 3.8, expectedApproval: 0.52 },
+  blocks: [],
+  stats: { weeklyHours: 0, clashes: 0, avgDiff: 0, expectedApproval: 0 },
 };
 
 export const MOCK_DRAFTS: Simulation[] = [
@@ -166,31 +158,6 @@ export const MOCK_DRAFTS: Simulation[] = [
     subjects: DRAFT_2027_SUBJECTS.slice(0, 4),
     blocks: DRAFT_2027_BLOCKS.slice(0, 5),
     stats: { weeklyHours: 17, clashes: 0, avgDiff: 3.3, expectedApproval: 0.66 },
-  },
-];
-
-/**
- * Commission options for the comparator. Hardcoded today; once reviews + crowd
- * insights land, the calculation comes from the backend.
- */
-export const MOCK_COMMISSION_OPTIONS_INT302: CommissionOption[] = [
-  {
-    com: 'A',
-    prof: 'Iturralde',
-    schedule: 'Lun 14-18, Vie 14-18',
-    insights: { diff: 4.1, workload: 9, approval: 0.55, reviewsCount: 24 },
-  },
-  {
-    com: 'B',
-    prof: 'Vázquez',
-    schedule: 'Mar 18-22',
-    insights: { diff: 3.4, workload: 6, approval: 0.71, reviewsCount: 18 },
-  },
-  {
-    com: 'C',
-    prof: 'Méndez',
-    schedule: 'Jue 14-18',
-    insights: { diff: 3.9, workload: 7, approval: 0.62, reviewsCount: 11 },
   },
 ];
 

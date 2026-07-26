@@ -7,7 +7,9 @@ import {
   MOCK_DRAFTS,
   PlanShell,
 } from '@/features/plan';
-import { fetchAvailableSubjectsServer } from '@/features/plan/api.server';
+import { fetchAcademicTermsServer, fetchAvailableSubjectsServer } from '@/features/plan/api.server';
+import { pickDefaultTerm } from '@/features/plan/lib/default-term';
+import { fetchStudentProfile } from '@/lib/student-profile';
 
 export const metadata = {
   title: 'Planificar · planb',
@@ -17,12 +19,13 @@ export const metadata = {
 // Dynamic para no intentar prerenderear en build con el backend caído.
 export const dynamic = 'force-dynamic';
 
-type SearchParams = Promise<{ tab?: string }>;
+type SearchParams = Promise<{ tab?: string; termId?: string }>;
 
 /**
- * /plan (US-046 shell + US-016 backend). "En curso" / "Borradores" siguen con datos mock (US-023
- * storage pendiente), pero el drawer "Agregar materia" ya es real: la página prefetchea acá +
- * hidrata, así `SubjectPickerDrawer` consume con useSuspenseQuery sin un roundtrip extra al abrirse.
+ * /plan (US-046 shell + US-016 backend + US-096 comisiones/período). "En curso" / "Borradores"
+ * siguen con datos mock (US-023 storage pendiente), pero el catálogo de materias + comisiones ya
+ * es real: la página prefetchea acá + hidrata, así el drawer "Agregar materia" y el picker de
+ * comisión consumen con useSuspenseQuery sin un roundtrip extra al abrirse.
  */
 export default async function PlanPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
@@ -33,11 +36,25 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
   const active = MOCK_ACTIVE_SIMULATION;
   const drafts = MOCK_DRAFTS;
 
+  const profile = await fetchStudentProfile();
+  // Degrada a lista vacía ante cualquier falla (backend caído, 5xx): el selector de período
+  // muestra "sin períodos cargados" en vez de tirar abajo toda la página (mismo criterio que
+  // `fetchStudentProfile`).
+  const terms = profile?.universityId
+    ? await fetchAcademicTermsServer(profile.universityId).catch(() => [])
+    : [];
+
+  const requestedTermId =
+    params.termId && terms.some((t) => t.id === params.termId) ? params.termId : null;
+  // Sin `?termId=` en la URL, el planificador arranca en el período que viene (ver
+  // `pickDefaultTerm`): el alumno entra a armar lo próximo, no a mirar lo que ya cursó.
+  const selectedTermId = requestedTermId ?? pickDefaultTerm(terms);
+
   const queryClient = new QueryClient();
-  const availableOptions = availableSubjectsQueries.list();
+  const availableOptions = availableSubjectsQueries.list(selectedTermId);
   await queryClient.prefetchQuery({
     queryKey: availableOptions.queryKey,
-    queryFn: fetchAvailableSubjectsServer,
+    queryFn: () => fetchAvailableSubjectsServer(selectedTermId),
   });
 
   return (
@@ -50,7 +67,13 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
       </div>
 
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <PlanShell active={active} drafts={drafts} activeTab={activeTab} />
+        <PlanShell
+          active={active}
+          drafts={drafts}
+          activeTab={activeTab}
+          terms={terms}
+          selectedTermId={selectedTermId}
+        />
       </HydrationBoundary>
     </div>
   );

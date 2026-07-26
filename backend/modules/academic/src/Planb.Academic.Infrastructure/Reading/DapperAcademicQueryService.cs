@@ -375,7 +375,9 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 year          AS Year,
                 number        AS Number,
                 kind          AS Kind,
-                label         AS Label
+                label         AS Label,
+                start_date    AS StartDate,
+                end_date      AS EndDate
             FROM academic.academic_terms
             WHERE university_id = @UniversityId
             ORDER BY year DESC, number DESC;";

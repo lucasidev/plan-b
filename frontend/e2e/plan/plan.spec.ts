@@ -106,15 +106,24 @@ test.describe('Planificar (US-046)', () => {
   });
 
   test('compare commissions toggle muestra y oculta el comparador', async ({ page }) => {
+    // Desde US-096 el comparador muestra la oferta real de una materia SUMADA a la simulación (antes
+    // mostraba un mock fijo de INT302 sin importar el estado): hay que sumar una materia primero. No
+    // afirmamos qué materia puntual, mismo motivo que el test del drawer de arriba (el catálogo
+    // disponible varía según qué otros specs ya consumieron vía enrollments).
+    await page.getByRole('button', { name: /\+ agregar materia/i }).click();
+    const drawer = page.getByRole('dialog', { name: /agregar materia/i });
+    await expect(drawer).toBeVisible();
+    await drawer
+      .getByRole('button', { name: /\+ sumar/i })
+      .first()
+      .click();
+    await expect(drawer).not.toBeVisible();
+
     const compareBtn = page.getByRole('button', { name: /^comparar comisiones$/i });
     await compareBtn.click();
-    await expect(
-      page.getByRole('heading', { name: /comparar comisiones · INT302/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /comparar comisiones ·/i })).toBeVisible();
 
     await page.getByRole('button', { name: /^ocultar comparador$/i }).click();
-    await expect(
-      page.getByRole('heading', { name: /comparar comisiones · INT302/i }),
-    ).not.toBeVisible();
+    await expect(page.getByRole('heading', { name: /comparar comisiones ·/i })).not.toBeVisible();
   });
 });

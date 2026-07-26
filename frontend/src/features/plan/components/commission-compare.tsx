@@ -1,18 +1,38 @@
-import { MOCK_COMMISSION_OPTIONS_INT302 } from '../data/mocks';
+'use client';
+
+import { useState } from 'react';
+import { formatCommissionModality, formatScheduleSummary } from '../lib/commission-format';
+import type { AvailableSubject } from '../types';
 
 /**
- * Comparador de comisiones (US-046). Muestra las comisiones de una materia con sus métricas
- * (dificultad, carga, aprobación, cantidad de reseñas).
+ * Comparador de comisiones (US-046 shell, cableado a datos reales en US-096). Compara las
+ * comisiones ofrecidas de UNA materia entre las que el alumno sumó a la simulación; si sumó más de
+ * una, un select adicional deja elegir cuál mirar.
  *
- * Los números todavía salen de un dataset fijo: el corpus real llega con US-024. Hasta entonces el
- * rótulo tiene que decirlo. Antes decía "Insights del corpus", que afirmaba exactamente lo que no
- * era: el resto de la app puede mostrar datos incompletos, pero ninguna otra parte le atribuía a un
- * dato inventado un origen que no tenía.
- *
- * Se renderiza inline en la página (no modal): más visible y matchea el botón "Comparar" del header.
+ * Antes usaba `MOCK_COMMISSION_OPTIONS_INT302` (hardcoded a la materia INT302) con "insights" de
+ * dificultad/carga/aprobación por comisión inventados. Esos insights NO existen en el backend
+ * todavía (agruparían reseñas por comisión, no por materia): se dice explícito en vez de
+ * inventarlos. Lo que sí es real: nombre, modalidad, docentes y horario de cada comisión.
  */
-export function CommissionCompare({ subjectCode = 'INT302' }: { subjectCode?: string }) {
-  const options = MOCK_COMMISSION_OPTIONS_INT302; // hardcoded to INT302 until the corpus lands
+type Props = {
+  subjects: readonly AvailableSubject[];
+};
+
+export function CommissionCompare({ subjects }: Props) {
+  const [activeId, setActiveId] = useState<string | null>(subjects[0]?.id ?? null);
+
+  if (subjects.length === 0) {
+    return (
+      <div
+        className="bg-bg-card border border-line rounded-lg text-ink-3"
+        style={{ padding: 16, fontSize: 13, textAlign: 'center' }}
+      >
+        Sumá una materia a la simulación para comparar sus comisiones.
+      </div>
+    );
+  }
+
+  const subject = subjects.find((s) => s.id === activeId) ?? subjects[0];
 
   return (
     <div className="bg-bg-card border border-line rounded-lg" style={{ padding: 16 }}>
@@ -22,76 +42,78 @@ export function CommissionCompare({ subjectCode = 'INT302' }: { subjectCode?: st
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'baseline',
+          gap: 12,
+          flexWrap: 'wrap',
         }}
       >
         <h2 className="text-base font-semibold text-ink-1" style={{ margin: 0 }}>
-          Comparar comisiones · {subjectCode}
+          Comparar comisiones · {subject.code}
         </h2>
-        <small className="text-ink-3" style={{ fontWeight: 400 }}>
-          Datos de ejemplo
-        </small>
+        {subjects.length > 1 && (
+          <select
+            aria-label="Elegí qué materia comparar"
+            value={subject.id}
+            onChange={(e) => setActiveId(e.target.value)}
+            className="border border-line rounded"
+            style={{ padding: '4px 8px', fontSize: 12, background: 'var(--bg)' }}
+          >
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.code} · {s.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 10,
-        }}
-      >
-        {options.map((opt) => (
-          <div key={opt.com} className="border border-line rounded" style={{ padding: 12 }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                marginBottom: 6,
-              }}
-            >
+
+      {subject.commissions.length === 0 ? (
+        <p className="text-ink-3" style={{ fontSize: 13 }}>
+          Sin oferta cargada para este período.
+        </p>
+      ) : (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${Math.min(subject.commissions.length, 3)}, 1fr)`,
+            gap: 10,
+          }}
+        >
+          {subject.commissions.map((c) => (
+            <div key={c.id} className="border border-line rounded" style={{ padding: 12 }}>
               <div
                 className="text-ink-1"
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: 14,
                   fontWeight: 600,
+                  marginBottom: 6,
                 }}
               >
-                com {opt.com}
+                com {c.name}
               </div>
-              <small className="text-ink-4" style={{ fontSize: 10.5 }}>
-                {opt.insights.reviewsCount} reseñas
-              </small>
+              <div className="text-ink-2" style={{ fontSize: 12, marginBottom: 2 }}>
+                {formatCommissionModality(c.modality)}
+              </div>
+              <div className="text-ink-2" style={{ fontSize: 12, marginBottom: 2 }}>
+                {c.teacherNames.length > 0 ? c.teacherNames.join(', ') : 'Sin docente asignado'}
+              </div>
+              <div className="text-ink-3" style={{ fontSize: 11, marginBottom: 8 }}>
+                {formatScheduleSummary(c.schedule)}
+              </div>
+              {c.capacity !== null && (
+                <div className="text-ink-3" style={{ fontSize: 11 }}>
+                  Cupo: {c.capacity}
+                </div>
+              )}
             </div>
-            <div className="text-ink-2" style={{ fontSize: 12, marginBottom: 2 }}>
-              {opt.prof}
-            </div>
-            <div className="text-ink-3" style={{ fontSize: 11, marginBottom: 10 }}>
-              {opt.schedule}
-            </div>
-            <Insight label="dificultad" value={opt.insights.diff.toFixed(1)} />
-            <Insight label="carga semanal" value={`${opt.insights.workload}h`} />
-            <Insight label="aprob. esp." value={`${Math.round(opt.insights.approval * 100)}%`} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+          ))}
+        </div>
+      )}
 
-function Insight({ label, value }: { label: string; value: string }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: 11.5,
-        padding: '3px 0',
-      }}
-    >
-      <span className="text-ink-3">{label}</span>
-      <span className="text-ink-1" style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
-        {value}
-      </span>
+      <p className="text-ink-4" style={{ fontSize: 11, marginTop: 12, marginBottom: 0 }}>
+        Dificultad, carga y aprobación por comisión llegan cuando haya reseñas suficientes por
+        comisión.
+      </p>
     </div>
   );
 }
