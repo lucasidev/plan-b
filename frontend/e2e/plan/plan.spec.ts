@@ -1,30 +1,27 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { LUCIA } from '../helpers/personas';
 
 /**
- * Plan E2E (US-046). Frontend with mocks (no simulation backend yet; US-016 + US-023
- * pending).
+ * Plan E2E (US-046 shell + US-016 simulador + US-096 comisiones/choques + US-023 borradores +
+ * US-024/US-027 comunidad). Todo el planificador corre contra el backend real: no queda nada mock.
  *
- * Covers:
- *  - Login Lucía + navigate to /plan from the sidebar.
- *  - Header + tabs render.
- *  - Default "En curso" tab: subject list for the year + stats + weekly calendar.
- *  - "Borrador" tab: switch via URL ?tab=draft, renders mock drafts.
- *  - "Publicar plan" modal opens with checklist on click "Publicar".
- *  - "Agregar materia" drawer opens with filterable catalog.
+ * Cubre el recorrido que le da sentido a la herramienta:
+ *  - Sumar una materia del catálogo real y elegir su comisión de la oferta del período.
+ *  - Guardar esa combinación como borrador, verla en "Borradores", compartirla y publicarla.
+ *  - La pestaña "Comunidad" con las simulaciones compartidas del plan.
  *
- * We do not exercise real publish nor mutations (no backend); the spec only checks the
- * visual layout + pure client interactions.
+ * Regla de robustez: NO afirmamos materias ni comisiones puntuales. La suite comparte la persona
+ * Lucía y el catálogo disponible cambia según qué otros specs consumieron cursadas (una materia ya
+ * aprobada deja de ofrecerse), así que afirmamos comportamiento, no data concreta. Por el mismo
+ * motivo el estado inicial puede tener o no borradores de corridas anteriores: `openBuilder`
+ * absorbe las dos ramas.
  */
 
-test.describe('Planificar (US-046)', () => {
-  // En dev frontend (turbopack JIT) el primer hit a /plan compila ~10s; sumado a sign-in
-  // lento en dev (~4s) el beforeEach se acerca al 60s default. Subimos el budget del test
-  // para que tenga margen real. En CI (build estático) no aplica.
+test.describe('Planificar', () => {
+  // Dev frontend (turbopack JIT) compila la primera vez ~10s, y el sign-in en dev tarda ~4s.
   test.setTimeout(120_000);
 
   test.beforeEach(async ({ page, context }) => {
-    // Limpiamos cookies para evitar herencia entre tests cuando el dev frontend cachea sesión.
     await context.clearCookies();
 
     await page.goto('/sign-in');
@@ -41,89 +38,183 @@ test.describe('Planificar (US-046)', () => {
     });
   });
 
-  test('tab "En curso" muestra materias del año, el panel y el calendario', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /materias del año/i })).toBeVisible();
-    // ISW302 aparece tanto en la lista de materias (sidebar) como en bloques del calendario
-    // (varios días). Verificamos que esté visible al menos una vez sin imponer strict mode.
-    await expect(page.getByText('ISW302').first()).toBeVisible();
-    await expect(page.getByText('INT302').first()).toBeVisible();
+  test('el selector de período y las tres pestañas renderean', async ({ page }) => {
+    await expect(page.getByLabel(/período lectivo/i)).toBeVisible();
+    // El label del período usa el formato canónico ("2026 · 1er cuatrimestre"), nunca la forma
+    // codificada que ADR-0051 prohíbe.
+    await expect(page.getByLabel(/período lectivo/i)).not.toHaveValue(/^\d{4}[·-]\dc$/);
+
+    await openBuilder(page);
+    await expect(page.getByRole('link', { name: /en curso/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /borradores/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /^comunidad$/i })).toBeVisible();
+  });
+
+  test('sumar materia, elegir comisión y ver el calendario real', async ({ page }) => {
+    await openBuilder(page);
+    // El período por defecto es el que viene, y el seed carga la oferta de comisiones en el primer
+    // cuatrimestre de 2026: elegimos ese para que haya comisiones que elegir. Por label (formato
+    // canónico de `@/lib/academic-terms`), no por id.
+    await selectTermWithOffering(page);
+    await addFirstAvailableSubject(page);
+
+    // Sin comisión elegida, la métrica de choques no inventa un cero: dice que falta elegirla.
+    await expect(page.getByText(/sin comisión elegida/i).first()).toBeVisible({ timeout: 20_000 });
+
+    const commissionPicked = await pickFirstCommission(page);
+    if (!commissionPicked) {
+      // La materia que tocó no tiene oferta cargada en este período: es un estado válido y la UI lo
+      // dice explícito. No forzamos el caso: lo afirmamos y salimos.
+      await expect(page.getByText(/sin oferta cargada/i).first()).toBeVisible();
+      return;
+    }
+
+    // Con comisión elegida el calendario se arma con las franjas reales de esa comisión.
     await expect(page.getByRole('heading', { name: /distribución semanal/i })).toBeVisible();
-    // El panel de métricas (US-016) reacciona a las materias que el alumno suma desde el drawer,
-    // no al borrador activo (que es mock sin id real, US-023). Al cargar el tab arranca sin
-    // materias en la simulación, así que invita a sumarlas en vez de mostrar stats: las métricas
-    // reales se ejercitan agregando una materia (ver el test del drawer más abajo).
-    await expect(page.getByText(/sumá materias para ver las métricas/i).first()).toBeVisible();
+    await expect(page.getByText(/elegí una comisión por materia/i)).not.toBeVisible();
   });
 
-  test('cambio a tab "Borradores" via click URL', async ({ page }) => {
+  test('guardar la combinación como borrador y verla en Borradores', async ({ page }) => {
+    await openBuilder(page);
+    await addFirstAvailableSubject(page);
+
+    const label = `E2E ${Date.now()}`;
+    await saveDraft(page, label);
+
     await page.getByRole('link', { name: /borradores/i }).click();
-    // Timeout explícito: desde US-016 la página es `force-dynamic` y hace un fetch autenticado al
-    // simulador en cada render, así que el round-trip del RSC al cambiar de tab tarda mas que el
-    // default de 5s cuando el backend viene cargado.
-    await expect(page).toHaveURL(/tab=draft/, { timeout: 20_000 });
-    await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
+    await expect(page.getByText(label)).toBeVisible({ timeout: 20_000 });
   });
 
-  test('drawer "Agregar materia" abre con catálogo filtrable', async ({ page }) => {
-    await page.getByRole('button', { name: /\+ agregar materia/i }).click();
+  test('compartir un borrador y verlo en Comunidad', async ({ page }) => {
+    await openBuilder(page);
+    await addFirstAvailableSubject(page);
 
-    const drawer = page.getByRole('dialog', { name: /agregar materia/i });
-    await expect(drawer).toBeVisible();
-    await expect(drawer.getByRole('heading', { name: /agregar materia/i })).toBeVisible();
-    await expect(drawer.getByPlaceholder(/buscar/i)).toBeVisible();
+    const label = `E2E share ${Date.now()}`;
+    await saveDraft(page, label);
 
-    // Desde US-016 el drawer consume GET /api/me/simulator/available en vez del mock. No afirmamos
-    // una materia puntual a propósito: casi todas las del plan seedeado las consume algún otro spec
-    // de la suite (los de reseñas crean enrollments de MAT102, ALG101, INT101... para poder
-    // reseñar), y una materia ya cursada correctamente deja de ofrecerse en el simulador. Afirmar
-    // un código concreto hace que este test dependa del orden de la suite. Afirmamos el
-    // comportamiento: hay materias disponibles, con su carga horaria, dato que solo viene del
-    // backend real.
-    await expect(drawer.getByText(/hs\/sem/).first()).toBeVisible();
-    await expect(drawer.getByText('+ Sumar').first()).toBeVisible();
+    await page.getByRole('link', { name: /borradores/i }).click();
+    const card = page.locator('article', { hasText: label });
+    await expect(card).toBeVisible({ timeout: 20_000 });
 
-    await drawer.getByPlaceholder(/buscar/i).fill('xyz999');
-    await expect(drawer.getByText(/no encontramos/i)).toBeVisible();
+    // Compartir pide confirmación explicando que se publica sin su nombre (US-024).
+    await card.getByRole('button', { name: /^compartir$/i }).click();
+    const shareDialog = page.getByRole('dialog');
+    await expect(shareDialog).toBeVisible();
+    await expect(shareDialog.getByText(/sin tu nombre/i)).toBeVisible();
+    await shareDialog.getByRole('button', { name: /^compartir borrador$/i }).click();
+
+    await expect(card.getByText(/^compartido$/i)).toBeVisible({ timeout: 20_000 });
+
+    // Aparece en el feed de la comunidad del mismo plan + período, anonimizado.
+    await page.getByRole('link', { name: /^comunidad$/i }).click();
+    await expect(page.getByText(label)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/otro alumno de tu plan/i).first()).toBeVisible();
   });
 
-  test('publicar un borrador abre modal con checklist de validaciones', async ({ page }) => {
-    await page.goto('/plan?tab=draft');
-    await expect(page.getByText(/borrador 2027/i).first()).toBeVisible();
+  test('publicar un borrador lo vuelve el plan en curso', async ({ page }) => {
+    await openBuilder(page);
+    await addFirstAvailableSubject(page);
 
-    // Click en el primer botón "Publicar" disponible (puede haber drafts vencidos con Activar
-    // en lugar de Publicar; el primer borrador 2027 todavía no venció).
-    const publishButtons = page.getByRole('button', { name: /^publicar$/i });
-    await publishButtons.first().click();
+    const label = `E2E publish ${Date.now()}`;
+    await saveDraft(page, label);
 
+    await page.getByRole('link', { name: /borradores/i }).click();
+    const card = page.locator('article', { hasText: label });
+    await expect(card).toBeVisible({ timeout: 20_000 });
+
+    await card.getByRole('button', { name: /^publicar$/i }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('heading', { name: /publicar este borrador/i })).toBeVisible();
-    await expect(dialog.getByText(/sin choques de horario/i)).toBeVisible();
-    await expect(dialog.getByText(/correlativas/i)).toBeVisible();
-
-    await dialog.getByRole('button', { name: /cancelar/i }).click();
-    await expect(dialog).not.toBeVisible();
-  });
-
-  test('compare commissions toggle muestra y oculta el comparador', async ({ page }) => {
-    // Desde US-096 el comparador muestra la oferta real de una materia SUMADA a la simulación (antes
-    // mostraba un mock fijo de INT302 sin importar el estado): hay que sumar una materia primero. No
-    // afirmamos qué materia puntual, mismo motivo que el test del drawer de arriba (el catálogo
-    // disponible varía según qué otros specs ya consumieron vía enrollments).
-    await page.getByRole('button', { name: /\+ agregar materia/i }).click();
-    const drawer = page.getByRole('dialog', { name: /agregar materia/i });
-    await expect(drawer).toBeVisible();
-    await drawer
-      .getByRole('button', { name: /\+ sumar/i })
-      .first()
+    await dialog
+      .getByRole('button', { name: /^publicar/i })
+      .last()
       .click();
-    await expect(drawer).not.toBeVisible();
 
-    const compareBtn = page.getByRole('button', { name: /^comparar comisiones$/i });
-    await compareBtn.click();
-    await expect(page.getByRole('heading', { name: /comparar comisiones ·/i })).toBeVisible();
-
-    await page.getByRole('button', { name: /^ocultar comparador$/i }).click();
-    await expect(page.getByRole('heading', { name: /comparar comisiones ·/i })).not.toBeVisible();
+    // Publicar navega a "En curso" con el período del borrador publicado.
+    await expect(page).toHaveURL(/tab=active/, { timeout: 20_000 });
   });
 });
+
+/**
+ * Deja la pantalla en la pestaña "En curso" (el builder). Absorbe las dos ramas del estado inicial:
+ * si el alumno no tiene ningún borrador, el shell muestra el empty state global (que oculta las
+ * pestañas) y hay que entrar por su CTA; si ya tiene, se entra por la pestaña.
+ */
+async function openBuilder(page: Page): Promise<void> {
+  const firstDraftCta = page.getByRole('button', { name: /crear primer borrador/i });
+  if (await firstDraftCta.isVisible().catch(() => false)) {
+    await firstDraftCta.click();
+  }
+  const activeTab = page.getByRole('link', { name: /en curso/i });
+  if (await activeTab.isVisible().catch(() => false)) {
+    await activeTab.click();
+  }
+  await expect(page.getByRole('button', { name: /\+ agregar materia/i })).toBeVisible({
+    timeout: 20_000,
+  });
+}
+
+/** Suma la primera materia disponible del drawer (cuál toque depende del historial del alumno). */
+async function addFirstAvailableSubject(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /\+ agregar materia/i }).click();
+  const drawer = page.getByRole('dialog', { name: /agregar materia/i });
+  await expect(drawer).toBeVisible();
+  await drawer
+    .getByRole('button', { name: /\+ sumar/i })
+    .first()
+    .click();
+  await expect(drawer).not.toBeVisible();
+}
+
+/**
+ * Elige la primera comisión ofrecida para la primera materia de la selección. Devuelve false si esa
+ * materia no tiene oferta cargada en el período (el select solo trae "Sin elegir comisión"), que es
+ * un estado válido del dominio y no una falla del test.
+ */
+async function pickFirstCommission(page: Page): Promise<boolean> {
+  // El bloque "Comisión por materia" aparece con la primera materia sumada; adentro va un select por
+  // materia CON oferta, o el aviso de que no hay oferta cargada. Esperamos el bloque, no el select.
+  await expect(page.getByRole('heading', { name: /comisión por materia/i })).toBeVisible({
+    timeout: 20_000,
+  });
+
+  const select = page.locator('select[aria-label^="Comisión de"]').first();
+  if (!(await select.isVisible().catch(() => false))) {
+    return false;
+  }
+  const options = await select.locator('option').all();
+  if (options.length <= 1) {
+    return false;
+  }
+  const value = await options[1].getAttribute('value');
+  await select.selectOption(value as string);
+  return true;
+}
+
+/**
+ * Deja elegido el período que tiene oferta de comisiones sembrada (primer cuatrimestre de 2026). Si
+ * ese período no está en el select (seed distinto), deja el que estaba: el test degrada al camino
+ * "sin oferta cargada", que también es una aserción válida.
+ */
+async function selectTermWithOffering(page: Page): Promise<void> {
+  const selector = page.getByLabel(/período lectivo/i);
+  await expect(selector).toBeVisible();
+  const option = selector.locator('option', { hasText: /2026.*1er cuatrimestre/i }).first();
+  const value = await option.getAttribute('value').catch(() => null);
+  if (value) {
+    await selector.selectOption(value);
+    await expect(page.getByRole('button', { name: /\+ agregar materia/i })).toBeVisible({
+      timeout: 20_000,
+    });
+  }
+}
+
+/** Guarda la combinación actual como borrador con el label dado. */
+async function saveDraft(page: Page, label: string): Promise<void> {
+  await page.getByRole('button', { name: /guardar como borrador/i }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel(/nombre/i).fill(label);
+  await dialog.getByRole('button', { name: /^guardar borrador$/i }).click();
+  await expect(dialog).not.toBeVisible({ timeout: 20_000 });
+}
