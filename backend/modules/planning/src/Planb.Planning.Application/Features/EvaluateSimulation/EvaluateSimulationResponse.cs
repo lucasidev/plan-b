@@ -5,9 +5,11 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 ///
 /// <para>
 /// Si <see cref="IsValid"/> es <c>false</c>, la combinación no es viable (alguna materia
-/// bloqueada) y <see cref="BlockedSubjects"/> trae el detalle; ninguna métrica se computa en ese
-/// caso (viajan en su default: 0 horas, dificultad null, cohorte en 0/null, <see cref="Schedule"/>
-/// vacío y <see cref="Clashes"/> null). Mismo criterio que
+/// bloqueada) y <see cref="BlockedSubjects"/> trae el detalle. Las horas se computan igual (son una
+/// suma del catálogo, no una consulta: se saben aunque la combinación no sirva); lo que no se
+/// consultó viaja null, no en su default: <see cref="WeightedDifficulty"/>,
+/// <see cref="CombinationStats"/> y <see cref="Clashes"/>, con <see cref="Schedule"/> vacío.
+/// Mismo criterio que
 /// <c>DeactivateSubjectResponse.Deactivated</c> (Academic, US-062): el rechazo con una lista de
 /// detalle no entra en el shape fijo (Code, Message, Type) de <c>Error</c>, así que viaja como
 /// valor de éxito del Result y el endpoint decide el status HTTP.
@@ -31,8 +33,17 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 /// completo, ADR-0047), y <see cref="Clashes"/> (US-096) es null cuando NINGUNA materia de la
 /// combinación tiene comisión elegida: "no sabemos" también acá, no "cero choques". Con al menos
 /// una comisión elegida, <see cref="Clashes"/> es el número real de choques detectados (puede ser
-/// 0). <c>CombinationStats.SampleSize</c> en cambio siempre viaja con su valor real: es informativo
-/// y no identifica a nadie.
+/// 0).
+/// </para>
+///
+/// <para>
+/// La distinción que hace <see cref="CombinationStats"/> nullable: el objeto entero es null cuando
+/// la consulta de cohorte no corrió (combinación bloqueada), mientras que
+/// <c>SampleSize == 0</c> es una medición real (la consulta corrió y no encontró a nadie con esa
+/// combinación exacta). Las dos cosas se veían igual cuando el camino bloqueado devolvía
+/// <c>new CombinationCohortStats(0, null, null)</c>, y eso convertía un placeholder en una
+/// afirmación. Cuando el objeto está presente, su <c>SampleSize</c> siempre es el valor real: es
+/// informativo y no identifica a nadie.
 /// </para>
 /// </summary>
 public sealed record EvaluateSimulationResponse(
@@ -41,6 +52,6 @@ public sealed record EvaluateSimulationResponse(
     int TotalWeeklyHours,
     int TotalHours,
     double? WeightedDifficulty,
-    CombinationCohortStats CombinationStats,
+    CombinationCohortStats? CombinationStats,
     IReadOnlyList<SimulationScheduleBlock> Schedule,
     int? Clashes);

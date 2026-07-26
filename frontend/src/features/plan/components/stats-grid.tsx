@@ -103,6 +103,11 @@ export function SimulatorEvaluationPanel({
  * anti-reidentificación (ADR-0047, N < 5): ahí se muestra el tamaño de muestra igual (es el dato
  * honesto), nunca el porcentaje (sería ruido sobre 1 o 2 alumnos, y de paso identificable).
  *
+ * `combinationStats` entero en null es un caso distinto de `sampleSize === 0`: el primero es "la
+ * consulta no corrió" (combinación bloqueada) y el segundo es una medición real de cero alumnos. En
+ * la práctica el null no llega acá porque el componente corta antes con el aviso de bloqueo, pero
+ * se maneja igual: es el tipo el que dice qué puede pasar, no el orden de los returns.
+ *
  * El texto de "no hay dato" es siempre `NO_DATA_YET` ("sin datos"), nunca la abreviatura "s/d":
  * la app nunca define qué significa, y el glosario lo prohíbe explícito (desambiguación de
  * "sin datos" en docs/domain/ubiquitous-language.md).
@@ -122,12 +127,15 @@ function buildEvaluationItems(data: SimulationEvaluation): StatGridItem[] {
     data.weightedDifficulty === null
       ? { value: NO_DATA_YET, label: 'sin reseñas todavía' }
       : { value: data.weightedDifficulty.toFixed(1), label: 'dificultad' },
-    combinationStats.passRate === null
-      ? {
-          value: `${combinationStats.sampleSize}`,
-          label: combinationStats.sampleSize === 1 ? 'alumno, pocos datos' : 'alumnos, pocos datos',
-        }
-      : { value: `${Math.round(combinationStats.passRate)}%`, label: 'aprob. esperada' },
+    combinationStats === null
+      ? { value: NO_DATA_YET, label: 'cohorte no consultada' }
+      : combinationStats.passRate === null
+        ? {
+            value: `${combinationStats.sampleSize}`,
+            label:
+              combinationStats.sampleSize === 1 ? 'alumno, pocos datos' : 'alumnos, pocos datos',
+          }
+        : { value: `${Math.round(combinationStats.passRate)}%`, label: 'aprob. esperada' },
   ];
 }
 
