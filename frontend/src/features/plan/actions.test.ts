@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * Tests de los server actions de borradores (US-023). Mocks de borde:
+ * Tests de los server actions de borradores (US-023 + US-024 compartir/descompartir). Mocks de
+ * borde:
  *   - @/lib/session           -> fake de getSession para simular sesión / sin sesión.
  *   - @/lib/api-client.server -> controla la Response que recibe cada action.
  *
@@ -25,6 +26,8 @@ import {
   createSimulationDraftAction,
   deleteSimulationDraftAction,
   promoteSimulationDraftAction,
+  shareSimulationDraftAction,
+  unshareSimulationDraftAction,
   updateSimulationDraftAction,
 } from './actions';
 import type { CommissionSelection } from './types';
@@ -406,6 +409,151 @@ describe('promoteSimulationDraftAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.message).toMatch(/no pudimos conectarnos/i);
+    }
+  });
+});
+
+describe('shareSimulationDraftAction', () => {
+  it('rechaza sin sesión, sin llamar al backend', async () => {
+    getSessionMock.mockResolvedValue(null);
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    expect(apiFetchMock).not.toHaveBeenCalled();
+  });
+
+  it('llama POST /share y 200 devuelve success con la visibility resultante', async () => {
+    apiFetchMock.mockResolvedValue(jsonResponse(200, { id: DRAFT_ID, visibility: 'Shared' }));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result).toEqual({ status: 'success', visibility: 'Shared' });
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      `/api/me/simulations/drafts/${DRAFT_ID}/share`,
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
+  it('403 not_owner mapea a mensaje específico', async () => {
+    apiFetchMock.mockResolvedValue(problem(403, 'planning.simulation_draft.not_owner'));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no te pertenece/i);
+    }
+  });
+
+  it('404 not_found mapea a mensaje específico', async () => {
+    apiFetchMock.mockResolvedValue(problem(404, 'planning.simulation_draft.not_found'));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no encontramos ese borrador/i);
+    }
+  });
+
+  it('404 student_profile_required mapea a mensaje específico', async () => {
+    apiFetchMock.mockResolvedValue(problem(404, 'planning.simulator.student_profile_required'));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no encontramos tu perfil de alumno/i);
+    }
+  });
+
+  it('devuelve error cuando falla la conexión', async () => {
+    apiFetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no pudimos conectarnos/i);
+    }
+  });
+
+  it('500 cae al mensaje fallback de compartir', async () => {
+    apiFetchMock.mockResolvedValue(jsonResponse(500));
+
+    const result = await shareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no pudimos compartir el borrador/i);
+    }
+  });
+});
+
+describe('unshareSimulationDraftAction', () => {
+  it('rechaza sin sesión, sin llamar al backend', async () => {
+    getSessionMock.mockResolvedValue(null);
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    expect(apiFetchMock).not.toHaveBeenCalled();
+  });
+
+  it('llama POST /unshare y 200 devuelve success con la visibility resultante', async () => {
+    apiFetchMock.mockResolvedValue(jsonResponse(200, { id: DRAFT_ID, visibility: 'Private' }));
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result).toEqual({ status: 'success', visibility: 'Private' });
+    expect(apiFetchMock).toHaveBeenCalledWith(
+      `/api/me/simulations/drafts/${DRAFT_ID}/unshare`,
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
+  it('403 not_owner mapea a mensaje específico', async () => {
+    apiFetchMock.mockResolvedValue(problem(403, 'planning.simulation_draft.not_owner'));
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no te pertenece/i);
+    }
+  });
+
+  it('404 not_found mapea a mensaje específico', async () => {
+    apiFetchMock.mockResolvedValue(problem(404, 'planning.simulation_draft.not_found'));
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no encontramos ese borrador/i);
+    }
+  });
+
+  it('devuelve error cuando falla la conexión', async () => {
+    apiFetchMock.mockRejectedValue(new Error('ECONNREFUSED'));
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no pudimos conectarnos/i);
+    }
+  });
+
+  it('500 cae al mensaje fallback de dejar de compartir', async () => {
+    apiFetchMock.mockResolvedValue(jsonResponse(500));
+
+    const result = await unshareSimulationDraftAction(DRAFT_ID);
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.message).toMatch(/no pudimos dejar de compartir el borrador/i);
     }
   });
 });

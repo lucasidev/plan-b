@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export type TabId = 'active' | 'draft';
+export type TabId = 'active' | 'draft' | 'public';
 
 type TabItem = {
   id: TabId;
@@ -12,9 +12,9 @@ type TabItem = {
 };
 
 /**
- * URL-driven Plan tabs (US-046). Canonical state in `?tab=active|draft`. If the query
- * param is missing, the default is "active". Visual aligned with the v2 canvas
- * (V2Tabs).
+ * URL-driven Plan tabs (US-046 + US-027 "Comunidad"). Canonical state in
+ * `?tab=active|draft|public`. If the query param is missing, the default is "active". Visual
+ * aligned with the v2 canvas (V2Tabs).
  */
 export function PlanTabs({ items, active }: { items: TabItem[]; active: TabId }) {
   const searchParams = useSearchParams();

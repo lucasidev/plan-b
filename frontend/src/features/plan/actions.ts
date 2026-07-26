@@ -8,7 +8,9 @@ import type {
   DeleteDraftResult,
   PromoteDraftResult,
   SaveDraftResult,
+  ShareDraftResult,
   SimulationDraftStatus,
+  SimulationDraftVisibility,
 } from './types';
 
 const SESSION_EXPIRED = 'Tu sesión expiró. Volvé a iniciar sesión.';
@@ -162,7 +164,77 @@ export async function promoteSimulationDraftAction(draftId: string): Promise<Pro
 }
 
 /**
- * Mapeo de errores compartido por las cuatro mutaciones de borradores (US-023). El backend
+ * Comparte un borrador propio al corpus público (US-024). POST
+ * /api/me/simulations/drafts/{id}/share. Idempotente en el backend (compartir uno ya Shared
+ * responde 200 con el estado actual, no falla): el cliente no distingue "recién compartido" de "ya
+ * estaba compartido", ambos casos son success. Reusa `mapDraftError`: los únicos códigos que puede
+ * devolver este endpoint (`not_found`, `not_owner`, `student_profile_required`) ya están cubiertos
+ * ahí por las otras mutaciones de borrador.
+ */
+export async function shareSimulationDraftAction(draftId: string): Promise<ShareDraftResult> {
+  const session = await getSession();
+  if (!session) {
+    return { status: 'error', message: SESSION_EXPIRED };
+  }
+
+  let response: Response;
+  try {
+    response = await apiFetchAuthenticated(`/api/me/simulations/drafts/${draftId}/share`, {
+      method: 'POST',
+    });
+  } catch {
+    return { status: 'error', message: NO_CONNECTION };
+  }
+
+  if (response.status === 200) {
+    const body = (await response.json()) as { id: string; visibility: SimulationDraftVisibility };
+    return { status: 'success', visibility: body.visibility };
+  }
+
+  return {
+    status: 'error',
+    message: await mapDraftError(
+      response,
+      'No pudimos compartir el borrador. Probá de nuevo en un rato.',
+    ),
+  };
+}
+
+/**
+ * Deja de compartir un borrador propio (US-024). POST /api/me/simulations/drafts/{id}/unshare.
+ * Mismo criterio idempotente que compartir: uno ya Private responde 200 sin fallar.
+ */
+export async function unshareSimulationDraftAction(draftId: string): Promise<ShareDraftResult> {
+  const session = await getSession();
+  if (!session) {
+    return { status: 'error', message: SESSION_EXPIRED };
+  }
+
+  let response: Response;
+  try {
+    response = await apiFetchAuthenticated(`/api/me/simulations/drafts/${draftId}/unshare`, {
+      method: 'POST',
+    });
+  } catch {
+    return { status: 'error', message: NO_CONNECTION };
+  }
+
+  if (response.status === 200) {
+    const body = (await response.json()) as { id: string; visibility: SimulationDraftVisibility };
+    return { status: 'success', visibility: body.visibility };
+  }
+
+  return {
+    status: 'error',
+    message: await mapDraftError(
+      response,
+      'No pudimos dejar de compartir el borrador. Probá de nuevo en un rato.',
+    ),
+  };
+}
+
+/**
+ * Mapeo de errores compartido por las mutaciones de borradores (US-023 + US-024). El backend
  * responde RFC 7807 (`title` = código de dominio, `detail` = mensaje): se distingue primero por
  * `title` (cubre todos los códigos de negocio, incluido el 429 de rate limit) y recién después por
  * status HTTP genérico para lo que no matcheó ningún código conocido.

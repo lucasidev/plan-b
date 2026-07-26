@@ -1,4 +1,4 @@
-export { availableSubjectsQueries, simulationDraftsQueries } from './api';
+export { availableSubjectsQueries, publicSimulationsQueries, simulationDraftsQueries } from './api';
 export { PlanShell } from './components/plan-shell';
 export type {
   AcademicTerm,
@@ -13,10 +13,13 @@ export type {
   CommissionChoice,
   CommissionScheduleSlot,
   CommissionSelection,
+  ListPublicSimulationsResponse,
   ListSimulationDraftsResponse,
+  PublicSimulationItem,
   SimulationDraft,
   SimulationDraftItem,
   SimulationDraftStatus,
+  SimulationDraftVisibility,
   SimulationEvaluation,
   SimulationScheduleBlock,
 } from './types';

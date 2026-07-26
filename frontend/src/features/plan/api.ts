@@ -1,8 +1,9 @@
-import { queryOptions } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query';
 import { clientApiFetch } from '@/lib/api-client';
 import type {
   AvailableSubjectsResponse,
   CommissionSelection,
+  ListPublicSimulationsResponse,
   ListSimulationDraftsResponse,
   SimulationEvaluation,
 } from './types';
@@ -107,5 +108,40 @@ export const simulationDraftsQueries = {
     queryOptions({
       queryKey: SIMULATION_DRAFTS_QUERY_KEY,
       queryFn: fetchSimulationDrafts,
+    }),
+};
+
+async function fetchPublicSimulations(
+  careerPlanId: string,
+  termId: string,
+  cursor: string | null,
+): Promise<ListPublicSimulationsResponse> {
+  const params = new URLSearchParams({ careerPlanId, termId });
+  if (cursor) params.set('cursor', cursor);
+  const response = await clientApiFetch(`/api/simulations/public?${params.toString()}`, {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(`public simulations fetch failed: ${response.status}`);
+  }
+  return (await response.json()) as ListPublicSimulationsResponse;
+}
+
+/**
+ * Feed de simulaciones públicas del mismo plan de carrera + período (US-027), paginado por cursor
+ * opaco (no offset/page): primer `useInfiniteQuery` del frontend (Reviews pagina por page/pageSize,
+ * ver `browse-reviews`). `initialPageParam` es `null` (primera página, sin cursor); `getNextPageParam`
+ * devuelve `nextCursor` tal cual, que TanStack Query trata como "no hay más páginas" tanto si es
+ * `null` como `undefined` (`hasNextPage` chequea `!= null`), así que no hace falta mapear el null a
+ * undefined a mano.
+ */
+export const publicSimulationsQueries = {
+  feed: (careerPlanId: string, termId: string) =>
+    infiniteQueryOptions({
+      queryKey: ['plan', 'public-simulations', careerPlanId, termId] as const,
+      queryFn: ({ pageParam }: { pageParam: string | null }) =>
+        fetchPublicSimulations(careerPlanId, termId, pageParam),
+      initialPageParam: null as string | null,
+      getNextPageParam: (lastPage: ListPublicSimulationsResponse) => lastPage.nextCursor,
     }),
 };

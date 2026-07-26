@@ -199,6 +199,9 @@ export type CombinationCohortStats = {
 /** Espeja `SimulationDraftStatus` del backend (serializado como el nombre del enum, en inglés). */
 export type SimulationDraftStatus = 'Draft' | 'Active' | 'Archived';
 
+/** Espeja `SimulationVisibility` del backend (US-024): si el borrador está en el corpus público. */
+export type SimulationDraftVisibility = 'Private' | 'Shared';
+
 /**
  * Materia de un borrador ya resuelta a code/name (+ comisión elegida, si hay). Mirrors
  * `SimulationDraftListItemSubject`: el read model resuelve esto server-side (Dapper cross-schema)
@@ -222,6 +225,9 @@ export type SimulationDraft = {
   termId: string;
   label: string | null;
   status: SimulationDraftStatus;
+  /** Si ya está en el corpus público (US-024). Determina si la fila ofrece "Compartir" o "Dejar de
+   * compartir" y si muestra el chip "Compartido". */
+  visibility: SimulationDraftVisibility;
   items: SimulationDraftItem[];
   createdAt: string;
 };
@@ -253,3 +259,46 @@ export type DeleteDraftResult = { status: 'success' } | { status: 'error'; messa
 export type PromoteDraftResult =
   | { status: 'success'; draftStatus: SimulationDraftStatus }
   | { status: 'error'; message: string };
+
+/**
+ * Resultado de compartir o descompartir un borrador (US-024). Mutación pura (ADR-0046) e idempotente
+ * en el backend: compartir uno ya `Shared`, o descompartir uno ya `Private`, responde 200 con el
+ * estado actual en vez de fallar, así que `visibility` siempre viaja en success sin importar el
+ * estado previo.
+ */
+export type ShareDraftResult =
+  | { status: 'success'; visibility: SimulationDraftVisibility }
+  | { status: 'error'; message: string };
+
+/**
+ * Real backend types del feed público de simulaciones compartidas (US-027). Mirror
+ * `Planb.Planning.Application.Features.ListPublicSimulations`.
+ */
+
+/**
+ * Simulación compartida al corpus público (US-027), anonimizada: el backend nunca manda ningún dato
+ * del autor (ni id ni nombre). `items` reusa `SimulationDraftItem`: mismo shape que la materia de un
+ * borrador propio (`subjectId/subjectCode/subjectName/commissionId/commissionName`); el backend lo
+ * documenta explícito así (`PublicSimulationSubjectItem`) para reusar el mismo "chip de materia" en
+ * ambas pantallas. `averageDifficulty` es null cuando ninguna materia de la combinación tiene
+ * reseñas todavía: mismo criterio honesto que `weightedDifficulty` de la evaluación (nunca 0, que
+ * leería como "fácil").
+ */
+export type PublicSimulationItem = {
+  id: string;
+  label: string | null;
+  termId: string;
+  items: SimulationDraftItem[];
+  totalWeeklyHours: number;
+  averageDifficulty: number | null;
+};
+
+/**
+ * Wrapper del GET /api/simulations/public. `nextCursor` es null cuando no hay más páginas; si no,
+ * es el cursor opaco que se reenvía tal cual en el próximo pedido (el cliente nunca lo decodifica
+ * ni arma a mano).
+ */
+export type ListPublicSimulationsResponse = {
+  items: PublicSimulationItem[];
+  nextCursor: string | null;
+};

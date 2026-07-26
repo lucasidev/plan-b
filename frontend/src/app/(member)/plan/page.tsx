@@ -2,10 +2,16 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { Suspense } from 'react';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Lede } from '@/components/ui/lede';
-import { availableSubjectsQueries, PlanShell, simulationDraftsQueries } from '@/features/plan';
+import {
+  availableSubjectsQueries,
+  PlanShell,
+  publicSimulationsQueries,
+  simulationDraftsQueries,
+} from '@/features/plan';
 import {
   fetchAcademicTermsServer,
   fetchAvailableSubjectsServer,
+  fetchPublicSimulationsServer,
   fetchSimulationDraftsServer,
 } from '@/features/plan/api.server';
 import { pickDefaultTerm } from '@/features/plan/lib/default-term';
@@ -22,17 +28,20 @@ export const dynamic = 'force-dynamic';
 type SearchParams = Promise<{ tab?: string; termId?: string }>;
 
 /**
- * /plan (US-046 shell + US-016 simulador + US-096 comisiones/período + US-023 borradores). "En
- * curso" y "Borradores" ya son datos reales (`SimulationDraft`, agrupados por status + término en
- * `PlanShell`); el catálogo de materias + comisiones también. La página prefetchea ambas queries +
- * hidrata, así `PlanShell`/`ActiveTab`/el drawer "Agregar materia" consumen con useSuspenseQuery sin
- * un roundtrip extra al montar.
+ * /plan (US-046 shell + US-016 simulador + US-096 comisiones/período + US-023 borradores + US-024
+ * compartir + US-027 feed público). "En curso" y "Borradores" ya son datos reales (`SimulationDraft`,
+ * agrupados por status + término en `PlanShell`); el catálogo de materias + comisiones también. La
+ * página prefetchea ambas queries + hidrata, así `PlanShell`/`ActiveTab`/el drawer "Agregar materia"
+ * consumen con useSuspenseQuery sin un roundtrip extra al montar. La tercera pestaña "Comunidad"
+ * (US-027) se prefetchea aparte y solo cuando es la pestaña pedida (ver más abajo).
  */
 export default async function PlanPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const activeTab = params.tab === 'draft' ? 'draft' : 'active';
+  const activeTab =
+    params.tab === 'draft' ? 'draft' : params.tab === 'public' ? 'public' : 'active';
 
   const profile = await fetchStudentProfile();
+  const careerPlanId = profile?.careerPlanId ?? null;
   // Degrada a lista vacía ante cualquier falla (backend caído, 5xx): el selector de período
   // muestra "sin períodos cargados" en vez de tirar abajo toda la página (mismo criterio que
   // `fetchStudentProfile`).
@@ -59,6 +68,18 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
     }),
   ]);
 
+  // Feed de "Comunidad" (US-027): a diferencia de los dos prefetch de arriba (siempre corren, son
+  // el core de la página), este es condicional a la pestaña pedida. Prefetchearlo siempre pagaría
+  // un roundtrip de más en la mayoría de las visitas, que entran a "En curso" o "Borradores".
+  if (activeTab === 'public' && careerPlanId && selectedTermId) {
+    const feedOptions = publicSimulationsQueries.feed(careerPlanId, selectedTermId);
+    await queryClient.prefetchInfiniteQuery({
+      ...feedOptions,
+      queryFn: ({ pageParam }) =>
+        fetchPublicSimulationsServer(careerPlanId, selectedTermId, pageParam as string | null),
+    });
+  }
+
   return (
     <div className="py-6">
       {/* DisplayHeading + Lede live in the shell; we keep an aliased export so the
@@ -73,7 +94,12 @@ export default async function PlanPage({ searchParams }: { searchParams: SearchP
             useSearchParams() directo. Resuelve al toque desde el cache recién hidratado; el
             boundary es la red de contención si algún día suspende de verdad. */}
         <Suspense fallback={null}>
-          <PlanShell activeTab={activeTab} terms={terms} selectedTermId={selectedTermId} />
+          <PlanShell
+            activeTab={activeTab}
+            terms={terms}
+            selectedTermId={selectedTermId}
+            careerPlanId={careerPlanId}
+          />
         </Suspense>
       </HydrationBoundary>
     </div>
