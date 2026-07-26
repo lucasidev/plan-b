@@ -2,8 +2,9 @@
  * Mock domain types for Planificar (US-046). Aligned with the v2 canvas mock data
  * (`v2-shell.jsx::V2_ACTIVE`, `v2-screens.jsx::V2MiniCalendar`).
  *
- * Once the real backend lands (US-016 simulation + US-023 storage), these types will
- * couple to the API DTOs. For now they are pure mocks with a stable shape.
+ * The "active" simulation (subjects del año, período, label) sigue siendo mock: la persistencia
+ * real de qué está cursando el alumno es US-023, todavía no existe backend. Los tipos reales del
+ * simulador (materias disponibles, evaluar combinación, comisiones) empiezan más abajo.
  */
 
 export type Modality = '1c' | '2c' | 'anual' | 'bim1' | 'bim2' | 'bim3' | 'bim4';
@@ -37,36 +38,19 @@ export type Subject = {
 };
 
 /**
- * Block in the weekly calendar. Day 0=Mon, 4=Fri. `h` is the start hour (24h). `dur`
- * in hours. `warn` highlights clashes.
+ * Block in the weekly calendar (US-096), decoupled from the mock `CalendarBlock` shape it
+ * replaces: `day` is the weekday name the backend serializes (`"Monday"`..`"Sunday"`, only
+ * Monday-Friday actually render, see `lib/calendar-blocks.ts`), `start`/`end` are `"HH:mm"`. Real
+ * data (`SimulationScheduleBlock` below) is a structural superset of this shape, so the evaluate
+ * response's `schedule` can be passed to `CalendarWeek` without mapping. Mock draft data
+ * (`data/mocks.ts`) is written directly in this shape too: one calendar component, one contract.
  */
-export type CalendarBlock = {
-  day: 0 | 1 | 2 | 3 | 4;
-  h: number;
-  dur: number;
-  code: string;
-  mod: Modality;
-  warn: boolean;
-};
-
-/**
- * Alternative commission for the comparator. Insights are derived from the
- * crowdsourced corpus when it lands (US-024); mock for now.
- */
-export type CommissionOption = {
-  com: string;
-  prof: string;
-  schedule: string;
-  insights: {
-    /** Average difficulty per reviews (0-5). */
-    diff: number;
-    /** Estimated weekly workload in hours. */
-    workload: number;
-    /** % expected approval. */
-    approval: number;
-    /** Number of reviews backing the insights. */
-    reviewsCount: number;
-  };
+export type CalendarWeekBlock = {
+  subjectCode: string;
+  day: string;
+  start: string;
+  end: string;
+  clashing: boolean;
 };
 
 /**
@@ -79,7 +63,7 @@ export type Simulation = {
   period: AcademicPeriod;
   label: string;
   subjects: Subject[];
-  blocks: CalendarBlock[];
+  blocks: CalendarWeekBlock[];
   /** Precomputed aggregate stats for the active tab header. */
   stats: {
     weeklyHours: number;
@@ -112,11 +96,32 @@ export type BlockedBySubject = {
   name: string;
 };
 
+/** A weekly slot of a commission's schedule. Mirrors `SimulatorScheduleItem`: day as the enum name
+ * (`"Monday"`..`"Sunday"`), hours as `"HH:mm"`. */
+export type CommissionScheduleSlot = {
+  day: string;
+  start: string;
+  end: string;
+};
+
 /**
- * A plan subject evaluated by the simulator (US-016). Mirrors `AvailableSubjectItem`. No `mod`
- * (modality) nor teacher: those belong to Commission (a term's actual offering), not Subject. The
- * backend does not expose them here on purpose; they come back once the commission backoffice
- * (US-093) exists.
+ * A commission actually offered for a subject in a given term (US-096). Mirrors
+ * `AvailableCommissionItem`. Only populated when the caller of `/available` passed a `termId`;
+ * otherwise every subject's `commissions` travels empty (see `AvailableSubject` below).
+ */
+export type AvailableCommission = {
+  id: string;
+  name: string;
+  modality: string;
+  capacity: number | null;
+  teacherNames: string[];
+  schedule: CommissionScheduleSlot[];
+};
+
+/**
+ * A plan subject evaluated by the simulator (US-016). Mirrors `AvailableSubjectItem`.
+ * `commissions` (US-096) is the term's actual offering for this subject: empty when the caller of
+ * `/available` did not pass a `termId`, populated (with teachers + schedule) when it did.
  */
 export type AvailableSubject = {
   id: string;
@@ -129,6 +134,7 @@ export type AvailableSubject = {
   totalHours: number;
   status: AvailabilityStatus;
   blockedBy: BlockedBySubject[];
+  commissions: AvailableCommission[];
 };
 
 /** Wrapper of the `GET /api/me/simulator/available` response. */
@@ -137,14 +143,70 @@ export type AvailableSubjectsResponse = {
 };
 
 /**
+ * Período lectivo de una universidad (US-096). Mirrors `AcademicTermListItem`
+ * (`GET /api/academic/academic-terms?universityId=`). Las fechas las expone el catálogo público
+ * desde US-096: son las que deciden cuál es "el período que viene", el default del planificador
+ * (ver `pickDefaultTerm` en `lib/default-term.ts`).
+ */
+export type AcademicTerm = {
+  id: string;
+  universityId: string;
+  year: number;
+  number: number;
+  kind: string;
+  label: string;
+  /** ISO date (YYYY-MM-DD). */
+  startDate: string;
+  endDate: string;
+};
+
+/** La comisión que el alumno eligió para una materia de la combinación. Mirrors `CommissionChoice`. */
+export type CommissionChoice = {
+  subjectId: string;
+  commissionId: string;
+};
+
+/**
+ * Selección de una materia en la simulación (US-096): la materia siempre está (viene del drawer
+ * "Agregar materia"), la comisión es opcional (estado válido: cuenta para horas/dificultad pero no
+ * para choques hasta que se elija una).
+ */
+export type CommissionSelection = {
+  subjectId: string;
+  commissionId: string | null;
+};
+
+/**
  * Real backend types for the metrics panel (US-016). Mirror `POST /api/me/simulator/evaluate`
  * (`Planb.Planning.Application.Features.EvaluateSimulation`).
  */
 
 /**
+ * A schedule block of a chosen commission (US-096), ready for the weekly calendar. Mirrors
+ * `SimulationScheduleBlock`. Structural superset of `CalendarWeekBlock` (adds `subjectId`,
+ * `commissionId`, `commissionName`): `CalendarWeek` can render this array directly.
+ */
+export type SimulationScheduleBlock = {
+  subjectId: string;
+  subjectCode: string;
+  commissionId: string;
+  commissionName: string;
+  day: string;
+  start: string;
+  end: string;
+  clashing: boolean;
+};
+
+/**
  * Result of evaluating a subject combination. Mirrors `EvaluateSimulationResponse`. When
  * `isValid` is false no metric was computed: they travel at their default (0 hours, null
- * difficulty, cohort at 0/null); what matters to show in that case is `blockedSubjects`.
+ * difficulty, cohort at 0/null, `schedule` empty, `clashes` null); what matters to show in that
+ * case is `blockedSubjects`.
+ *
+ * `clashes` (US-096) is `null` when NO subject in the combination has a commission chosen ("we
+ * don't know", never "zero clashes"); with at least one commission chosen it is the real count
+ * (can be 0). Same honesty rule as `weightedDifficulty`. See `EvaluateSimulationResponse` on the
+ * backend for the exact wording.
  */
 export type SimulationEvaluation = {
   isValid: boolean;
@@ -153,6 +215,8 @@ export type SimulationEvaluation = {
   totalHours: number;
   weightedDifficulty: number | null;
   combinationStats: CombinationCohortStats;
+  schedule: SimulationScheduleBlock[];
+  clashes: number | null;
 };
 
 /**

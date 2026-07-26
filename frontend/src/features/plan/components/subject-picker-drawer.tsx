@@ -10,28 +10,30 @@ import {
   formatSubjectPeriod,
   selectVisibleSubjects,
 } from '../lib/available-subjects';
+import { formatCommissionModality, formatScheduleSummary } from '../lib/commission-format';
 import type { AvailableSubject } from '../types';
 
 /**
- * "Agregar materia" drawer (US-046 shell, cableado a datos reales por US-016). Catálogo de
- * materias del plan evaluadas contra el historial del alumno (GET /api/me/simulator/available):
+ * "Agregar materia" drawer (US-046 shell, cableado a datos reales por US-016 + US-096). Catálogo
+ * de materias del plan evaluadas contra el historial del alumno (GET /api/me/simulator/available):
  * disponibles (clickeables, se pueden sumar a la simulación) y bloqueadas (deshabilitadas, con el
  * motivo). Las que ya aprobó, regularizó o está cursando no se listan: no tiene sentido sumarlas a
  * una simulación del período que viene.
  *
- * Sin ModalityPill ni chip de profesor: esos datos son de Commission (la oferta de un
- * cuatrimestre puntual), no de Subject. TODO(US-093): cuando exista el backoffice de comisiones,
- * volver a mostrar modalidad + docente acá con la oferta real del próximo período.
+ * Modalidad + docentes por comisión ya se muestran cuando el catálogo trae oferta cargada para el
+ * período elegido (`termId`): antes esto no existía porque el backoffice de comisiones (US-093)
+ * todavía no estaba. Sin oferta cargada, se dice explícito en vez de esconderlo.
  */
 type Props = {
   open: boolean;
   onClose: () => void;
   onPick: (subject: AvailableSubject) => void;
+  termId: string | null;
 };
 
-export function SubjectPickerDrawer({ open, onClose, onPick }: Props) {
+export function SubjectPickerDrawer({ open, onClose, onPick, termId }: Props) {
   const [query, setQuery] = useState('');
-  const { data } = useSuspenseQuery(availableSubjectsQueries.list());
+  const { data } = useSuspenseQuery(availableSubjectsQueries.list(termId));
 
   if (!open) return null;
 
@@ -179,7 +181,33 @@ function AvailableSubjectCard({
         </InfoPill>
         <InfoPill>{subject.weeklyHours} hs/sem</InfoPill>
       </div>
+      <CommissionOffer commissions={subject.commissions} />
     </button>
+  );
+}
+
+/** Oferta de comisiones de la materia en el período elegido (US-096): una línea compacta por
+ * comisión con modalidad + docentes. Sin oferta cargada, lo dice explícito en vez de esconderlo. */
+function CommissionOffer({ commissions }: { commissions: AvailableSubject['commissions'] }) {
+  if (commissions.length === 0) {
+    return (
+      <p className="text-ink-4" style={{ fontSize: 11, margin: 0 }}>
+        Sin oferta cargada para este período.
+      </p>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {commissions.map((c) => (
+        <p key={c.id} className="text-ink-3" style={{ fontSize: 11, margin: 0, lineHeight: 1.4 }}>
+          <span style={{ fontFamily: 'var(--font-mono)' }}>{c.name}</span>:{' '}
+          {formatCommissionModality(c.modality)} ·{' '}
+          {c.teacherNames.length > 0 ? c.teacherNames.join(', ') : 'sin docente asignado'} ·{' '}
+          {formatScheduleSummary(c.schedule)}
+        </p>
+      ))}
+    </div>
   );
 }
 

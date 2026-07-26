@@ -18,6 +18,7 @@ import { SubjectListCard } from './subject-list-card';
 type Props = {
   drafts: Simulation[];
   onCreate: () => void;
+  termId: string | null;
 };
 
 /**
@@ -40,7 +41,7 @@ function buildDraftStatsItems(stats: Simulation['stats']): StatGridItem[] {
   ];
 }
 
-export function DraftList({ drafts, onCreate }: Props) {
+export function DraftList({ drafts, onCreate, termId }: Props) {
   const [publishingDraft, setPublishingDraft] = useState<Simulation | null>(null);
 
   if (drafts.length === 0) {
@@ -127,7 +128,7 @@ export function DraftList({ drafts, onCreate }: Props) {
                 gap: 16,
               }}
             >
-              <SubjectListCard subjects={draft.subjects} />
+              <SubjectListCard subjects={draft.subjects} termId={termId} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <StatsGrid items={buildDraftStatsItems(draft.stats)} />
                 <div className="border border-line rounded" style={{ padding: 16 }}>

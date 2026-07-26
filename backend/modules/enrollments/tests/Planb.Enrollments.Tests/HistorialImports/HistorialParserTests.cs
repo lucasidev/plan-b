@@ -33,8 +33,12 @@ public class HistorialParserTests
         };
         var terms = new[]
         {
-            new AcademicTermListItem(Term2024_1cId, UniId, 2024, 1, "FirstHalf", "2024·1c"),
-            new AcademicTermListItem(Term2024_2cId, UniId, 2024, 2, "SecondHalf", "2024·2c"),
+            new AcademicTermListItem(
+                Term2024_1cId, UniId, 2024, 1, "FirstHalf", "2024·1c",
+                new DateOnly(2024, 3, 1), new DateOnly(2024, 7, 1)),
+            new AcademicTermListItem(
+                Term2024_2cId, UniId, 2024, 2, "SecondHalf", "2024·2c",
+                new DateOnly(2024, 8, 1), new DateOnly(2024, 12, 1)),
         };
 
         var byCode = subjects.ToDictionary(s => s.Code, StringComparer.OrdinalIgnoreCase);

@@ -16,6 +16,12 @@ export type StudentProfile = {
    * universidad es el slug/acrónimo ("unsta"); la carrera es el nombre completo. */
   careerName: string | null;
   universityShortName: string | null;
+  /**
+   * Id de la universidad del alumno (derivado de career -> university, mismo LEFT JOIN que
+   * `universityShortName`). Lo necesita el planificador (US-096) para listar los períodos
+   * lectivos de esa universidad (`GET /api/academic/academic-terms?universityId=`).
+   */
+  universityId: string | null;
 };
 
 /**

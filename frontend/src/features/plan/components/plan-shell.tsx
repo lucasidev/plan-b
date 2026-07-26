@@ -2,25 +2,28 @@
 
 import { Suspense, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import type { Simulation } from '../types';
+import type { AcademicTerm, Simulation } from '../types';
 import { ActiveTab } from './active-tab';
 import { DraftList } from './draft-list';
 import { PlanEmpty } from './empty-state';
 import { PlanTabs, type TabId } from './plan-tabs';
+import { TermSelector } from './term-selector';
 
 /**
- * Plan shell (US-046). Renders the header + tabs + active-tab content. Global empty
- * state if there is no active simulation nor drafts. Mock data for now (US-016 +
- * US-023 pending); when the backend lands, this shell consumes real queries with the
- * same contract.
+ * Plan shell (US-046 + US-096). Renders the header (con el selector de período) + tabs +
+ * active-tab content. Global empty state if there is no active simulation nor drafts. La
+ * simulación activa y los borradores siguen siendo mock (US-023 storage pendiente); el catálogo de
+ * materias/comisiones que consumen `ActiveTab`/`DraftList` ya es real, cableado por `termId`.
  */
 type Props = {
   active: Simulation | null;
   drafts: Simulation[];
   activeTab: TabId;
+  terms: readonly AcademicTerm[];
+  selectedTermId: string | null;
 };
 
-export function PlanShell({ active, drafts, activeTab }: Props) {
+export function PlanShell({ active, drafts, activeTab, terms, selectedTermId }: Props) {
   const [_createDraftRequested, setCreateDraftRequested] = useState(false);
 
   const isEmpty = !active && drafts.length === 0;
@@ -87,13 +90,19 @@ export function PlanShell({ active, drafts, activeTab }: Props) {
             cátedra; vos elegís comisión y horario.
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" size="sm">
-            Comparar
-          </Button>
-          <Button size="sm" onClick={() => setCreateDraftRequested(true)}>
-            + Nuevo borrador
-          </Button>
+        <div className="flex flex-col items-end gap-2">
+          {/* Suspense porque TermSelector usa useSearchParams() (mismo motivo que PlanTabs abajo). */}
+          <Suspense fallback={null}>
+            <TermSelector terms={terms} selectedTermId={selectedTermId} />
+          </Suspense>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm">
+              Comparar
+            </Button>
+            <Button size="sm" onClick={() => setCreateDraftRequested(true)}>
+              + Nuevo borrador
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -108,14 +117,24 @@ export function PlanShell({ active, drafts, activeTab }: Props) {
 
       {activeTab === 'active' ? (
         active ? (
-          <ActiveTab simulation={active} />
+          // Suspense porque ActiveTab ahora lee useSuspenseQuery(availableSubjectsQueries.list)
+          // directo (US-096, para el picker de comisión). Normalmente resuelve al toque desde el
+          // cache hidratado por la RSC de /plan (mismo criterio que el Suspense del drawer en
+          // SubjectListCard); el boundary es la red de contención si algún día suspende de verdad.
+          <Suspense fallback={null}>
+            <ActiveTab simulation={active} termId={selectedTermId} />
+          </Suspense>
         ) : (
           <p className="text-ink-3" style={{ padding: 24 }}>
             No tenés período activo. Pasá a la tab Borradores y publicá uno.
           </p>
         )
       ) : (
-        <DraftList drafts={drafts} onCreate={() => setCreateDraftRequested(true)} />
+        <DraftList
+          drafts={drafts}
+          onCreate={() => setCreateDraftRequested(true)}
+          termId={selectedTermId}
+        />
       )}
     </div>
   );
