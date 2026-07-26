@@ -8,18 +8,16 @@ import { simulationDraftsQueries } from '../api';
 import type { AcademicTerm } from '../types';
 import { ActiveTab } from './active-tab';
 import { DraftList } from './draft-list';
-import { PlanEmpty } from './empty-state';
 import { PlanTabs, type TabId } from './plan-tabs';
 import { PublicFeedTab } from './public-feed-tab';
 import { TermSelector } from './term-selector';
 
 /**
  * Plan shell (US-046 + US-096 + US-023 + US-027). Renders the header (con el selector de período) +
- * tabs + tab content. Global empty state si el alumno no tiene ningún borrador (de ningún estado),
- * salvo que la pestaña pedida sea "Comunidad" (ver más abajo). Los borradores (US-023) ya son datos
- * reales: `useSuspenseQuery` los lee del cache hidratado por la RSC de /plan (mismo queryKey), y
- * este componente agrupa por status + término para decidir qué va en "En curso" (el `Active` del
- * período elegido) y en "Borradores" (los `Draft`).
+ * tabs + tab content, siempre: el vacío lo resuelve cada pestaña, no este componente. Los
+ * borradores (US-023) ya son datos reales: `useSuspenseQuery` los lee del cache hidratado por la RSC
+ * de /plan (mismo queryKey), y este componente agrupa por status + término para decidir qué va en
+ * "En curso" (el `Active` del período elegido) y en "Borradores" (los `Draft`).
  */
 type Props = {
   activeTab: TabId;
@@ -50,23 +48,10 @@ export function PlanShell({ activeTab, terms, selectedTermId, careerPlanId }: Pr
     router.push(`?${params.toString()}`, { scroll: false });
   }
 
-  function goToPublicFeed() {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'public');
-    router.push(`?${params.toString()}`, { scroll: false });
-  }
-
-  // El empty state global se salta cuando la pestaña pedida es "Comunidad" (US-027): el feed
-  // público sirve sobre todo para inspirarse ANTES de armar el primer borrador propio, así que un
-  // alumno sin borradores todavía tiene que poder llegar ahí (por el link nuevo en `PlanEmpty`).
-  if (allDrafts.length === 0 && activeTab !== 'public') {
-    return (
-      <div>
-        <PlanEmpty onCreateDraft={goToBuilder} onExplorePublicFeed={goToPublicFeed} />
-      </div>
-    );
-  }
-
+  // Sin empty state global a propósito: cada pestaña resuelve su propio vacío ("En curso" invita a
+  // sumar materias, "Borradores" dice que no hay ninguno, "Comunidad" que nadie compartió todavía).
+  // Cortar acá cuando el alumno no tiene borradores dejaba la pantalla sin header ni pestañas, y el
+  // CTA para crear el primero volvía a la misma vista: no había forma de armar el primer borrador.
   const activeDraft =
     allDrafts.find((d) => d.status === 'Active' && d.termId === selectedTermId) ?? null;
   const draftItems = allDrafts.filter((d) => d.status === 'Draft');
