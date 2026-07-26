@@ -83,6 +83,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
                 u.email                AS Email,
                 u.created_at           AS MemberSince,
                 c.name                 AS CareerName,
+                un.id                  AS UniversityId,
                 un.slug                AS UniversityShortName
             FROM identity.student_profiles sp
             INNER JOIN identity.users u ON u.id = sp.user_id

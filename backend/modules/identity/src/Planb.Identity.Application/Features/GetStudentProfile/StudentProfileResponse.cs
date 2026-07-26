@@ -34,5 +34,13 @@ public sealed record StudentProfileResponse
     // "utn-frt"), que es la forma corta que el mockup espera; la carrera usa el nombre completo
     // (no hay forma corta). Nullable: el LEFT JOIN puede no resolver si la career quedó colgada.
     public string? CareerName { get; init; }
+    /// <summary>
+    /// Id de la universidad del alumno (derivado de career -> university). Lo necesita el
+    /// planificador para listar los períodos lectivos de SU universidad
+    /// (<c>GET /api/academic/academic-terms?universityId=</c>): el alumno planifica sobre un
+    /// período concreto y ese endpoint pide el id. Nullable por el mismo LEFT JOIN que
+    /// <see cref="UniversityShortName"/>.
+    /// </summary>
+    public Guid? UniversityId { get; init; }
     public string? UniversityShortName { get; init; }
 }
