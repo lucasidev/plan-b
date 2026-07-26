@@ -583,7 +583,7 @@ Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (
 | `id`            | UUID                            | PK                                       |                                                    |
 | `owner_profile_id` | UUID                         | NOT NULL                                 | FK lógica a `identity.student_profile.id` (no FK constraint cross-schema, [ADR-0017](../decisions/0017-persistence-ignorance.md)) |
 | `term_id`       | UUID                            | NOT NULL                                 | FK lógica a `academic.academic_term.id`            |
-| `subject_ids`   | UUID[]                          | NOT NULL                                 | Lista de subjects que componen la simulación       |
+| `status`        | ENUM `simulation_draft_status`  | NOT NULL, DEFAULT `'draft'`              | `draft`, `active` o `archived`. Un solo `active` por (owner, term) |
 | `visibility`    | ENUM `simulation_visibility`    | NOT NULL, DEFAULT `'private'`            | `private` o `shared`                               |
 | `label`         | TEXT                            | NULL                                     | Nombre opcional dado por el alumno                 |
 | `created_at`    | TIMESTAMPTZ                     | NOT NULL                                 |                                                    |
@@ -594,9 +594,26 @@ Constraints:
 
 - CHECK: `visibility='shared'` ⇒ `shared_at NOT NULL`.
 - CHECK: `visibility='private'` ⇒ `shared_at IS NULL`.
-- `subject_ids` no vacío.
+- Índice `(owner_profile_id, term_id, status)`: sirve el listado propio y el lookup del activo al publicar.
 
 Hard delete permitido (drafts privados no tienen valor de retención).
+
+### Entity: SimulationDraftItem
+
+Cada materia que compone la simulación, con la comisión que el alumno eligió para cursarla (US-096).
+
+| Campo           | Tipo | Constraints                        | Notas                                        |
+| --------------- | ---- | ---------------------------------- | -------------------------------------------- |
+| `draft_id`      | UUID | FK → SimulationDraft, NOT NULL     | Cascade delete                               |
+| `subject_id`    | UUID | NOT NULL                           | FK lógica a `academic.subject.id`            |
+| `commission_id` | UUID | NULL                               | FK lógica a `academic.commission.id`. Null cuando el alumno todavía no eligió comisión: la materia cuenta para carga y dificultad, pero no para choques |
+
+Constraints:
+
+- `PRIMARY KEY (draft_id, subject_id)`: una materia no se repite en el mismo borrador.
+- Un draft tiene al menos un item (invariante del aggregate, no CHECK de DB).
+
+> **Nota de revisión pendiente**: esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. La forma final (tabla hija vs un `jsonb` en `simulation_drafts`) quedó **abierta** para la revisión de modelos de datos acordada al cierre de S11: el borrador se lee y se escribe entero, así que un documento embebido también encaja. Lo implementado hoy es la tabla hija.
 
 ## Apéndice A: Enums
 

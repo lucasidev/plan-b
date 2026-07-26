@@ -34,7 +34,7 @@ public sealed class SimulationDraft : Entity<SimulationDraftId>, IAggregateRoot
     public SimulationDraftStatus Status { get; private set; }
     public SimulationVisibility Visibility { get; private set; }
 
-    /// <summary>Cuándo pasó a Shared. Null mientras Private. US-024 lo estampa; acá siempre null.</summary>
+    /// <summary>Cuándo pasó a Shared (US-024, <see cref="Share"/>). Null mientras Private.</summary>
     public DateTimeOffset? SharedAt { get; private set; }
 
     public DateTimeOffset CreatedAt { get; private set; }
@@ -155,6 +155,53 @@ public sealed class SimulationDraft : Entity<SimulationDraftId>, IAggregateRoot
         }
 
         Status = SimulationDraftStatus.Archived;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Comparte el borrador al corpus público (US-024): pasa <see cref="Visibility"/> a
+    /// <see cref="SimulationVisibility.Shared"/> y estampa <see cref="SharedAt"/>. Los dos campos se
+    /// mueven siempre juntos (constraint del data-model: shared implica SharedAt no nulo).
+    ///
+    /// <para>
+    /// Idempotente: si ya estaba Shared, es un no-op exitoso que no vuelve a estampar
+    /// <see cref="SharedAt"/> (mismo criterio que <see cref="Promote"/> sobre un draft ya Active,
+    /// para no romper ante un doble-click del alumno). No reestampar importa además para el orden
+    /// del feed público (US-027, <c>shared_at DESC</c>): un share repetido no debe "revivir" la
+    /// posición del borrador como si se hubiese compartido recién.
+    /// </para>
+    /// </summary>
+    public Result Share(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Visibility == SimulationVisibility.Shared)
+        {
+            return Result.Success();
+        }
+
+        Visibility = SimulationVisibility.Shared;
+        SharedAt = clock.UtcNow;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Deja de compartir el borrador (US-024): vuelve a <see cref="SimulationVisibility.Private"/> y
+    /// limpia <see cref="SharedAt"/>. Idempotente: si ya estaba Private, es un no-op exitoso.
+    /// </summary>
+    public Result Unshare(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Visibility == SimulationVisibility.Private)
+        {
+            return Result.Success();
+        }
+
+        Visibility = SimulationVisibility.Private;
+        SharedAt = null;
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
