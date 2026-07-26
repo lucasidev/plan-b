@@ -11,14 +11,12 @@ public static class DependencyInjection
     {
         // US-016: ISubjectAvailabilityEvaluator es un domain service puro (sin dependencias, sin
         // estado), mismo criterio que IPrerequisiteGraphValidator en Academic: se registra
-        // Singleton. El aggregate SimulationDraft y sus handlers de escritura llegan con US-023
-        // (Fase 4); hasta entonces no hay nada más para registrar acá (ADR-0029).
+        // Singleton.
         services.AddSingleton<ISubjectAvailabilityEvaluator, SubjectAvailabilityEvaluator>();
 
         // FluentValidation validators del módulo. Wolverine los descubre del DI cuando inyecta
-        // IValidator<TCommand> en el middleware de validación. EvaluateSimulationValidator es el
-        // primero del módulo (GetAvailableSubjects no necesita validator: su query solo lleva el
-        // UserId del JWT).
+        // IValidator<TCommand> en el middleware de validación. Escanea todo el assembly, así que
+        // los validators de US-023 (Create/UpdateSimulationDraft) se registran solos.
         services.AddValidatorsFromAssemblyContaining<EvaluateSimulationValidator>(
             includeInternalTypes: true);
 
