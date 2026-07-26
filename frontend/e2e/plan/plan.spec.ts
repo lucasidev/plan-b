@@ -125,11 +125,11 @@ test.describe('Planificar', () => {
     await card.getByRole('button', { name: /^publicar$/i }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    await dialog
-      .getByRole('button', { name: /^publicar/i })
-      .last()
-      .click();
+    await dialog.getByRole('button', { name: /^publicar plan$/i }).click();
 
+    // El modal cierra solo cuando el publicar salió bien (si falla, muestra el error y queda
+    // abierto): esperarlo primero distingue "fallo el publicar" de "todavia no navego".
+    await expect(dialog).not.toBeVisible({ timeout: 20_000 });
     // Publicar navega a "En curso" con el período del borrador publicado.
     await expect(page).toHaveURL(/tab=active/, { timeout: 20_000 });
   });
@@ -201,12 +201,18 @@ async function selectTermWithOffering(page: Page): Promise<void> {
   await expect(selector).toBeVisible();
   const option = selector.locator('option', { hasText: /2026.*1er cuatrimestre/i }).first();
   const value = await option.getAttribute('value').catch(() => null);
-  if (value) {
-    await selector.selectOption(value);
-    await expect(page.getByRole('button', { name: /\+ agregar materia/i })).toBeVisible({
-      timeout: 20_000,
-    });
+  if (!value) {
+    return;
   }
+
+  await selector.selectOption(value);
+  // Esperamos que el período quede en la URL, no que reaparezca un botón: "+ Agregar materia" ya
+  // estaba visible antes de cambiar de período, así que esperarlo devuelve al instante y el resto
+  // del test sigue contra el catálogo del período anterior (carrera).
+  await expect(page).toHaveURL(new RegExp(`termId=${value}`), { timeout: 20_000 });
+  await expect(page.getByRole('button', { name: /\+ agregar materia/i })).toBeVisible({
+    timeout: 20_000,
+  });
 }
 
 /** Guarda la combinación actual como borrador con el label dado. */
