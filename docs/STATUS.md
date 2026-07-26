@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-26 (cierre de S10: el simulador de cuatrimestre US-016 conectado a catálogo/correlativas/historial/reseñas, las páginas de error globales US-009-f y el estado offline US-039-f; más un bloque extra de vidrieras del producto (landing y sign-in) y el vocabulario de datos de prueba vs demo asentado en el glosario).
+**Última actualización**: 2026-07-26 (cierre de S11: el planificador terminado de punta a punta, con la oferta de comisiones y sus horarios cargables desde el backoffice US-093, la comisión elegible y los choques reales US-096, los borradores persistidos con publicar US-023, y la capa social US-024/US-027. Queda acordada una revisión aggregate por aggregate de modelos de datos y motores, con los hallazgos listados al final de la sección de S11).
 
 ---
 
@@ -23,7 +23,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S8 | 2026-07-07 a 2026-07-11 | **Moderación + hardening de proceso**: backoffice de moderación (US-050 cola + US-051 resolver). Más: ruleset de `main` con required checks (PRs-only enforced por plataforma), fix del bot del changelog, higiene de docs y config del repo. | ✓ Done |
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
-| S11 | 2026-07-23 a 2026-08-01 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ⏳ En curso |
+| S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
 | S12+ | next+ | Backlog planificado: backoffice restante (US-067/US-081 parciales + importadores US-006/007 + wizard US-094 + usuarios US-095), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
@@ -533,9 +533,9 @@ Un bloque que salió revisando la landing y el auth:
 - **Vidrieras de las tres herramientas**: los demos de la landing (reseña, mapa de carrera responsive, simulador) y el panel de bienvenida del sign-in (`HowItWorksPanel`), con datos de ejemplo.
 - **Copy del producto**: el registro acepta cualquier email, el hero y el about muestran propuestas de valor, el badge de auth es "institucional".
 
-## S11 (en curso)
+## S11 ✓ Done
 
-**Rango**: 2026-07-23 a 2026-08-01.
+**Rango**: 2026-07-23 a 2026-07-26 (cerrado antes de lo previsto).
 
 **Foco**: **terminar el planificador**. S10 entregó el núcleo (US-016: evaluar combinaciones contra correlativas, historial y cohortes); este sprint cierra todo lo que la herramienta promete y todavía no cumple: la oferta real de comisiones con horarios, los choques y el comparador reales, los borradores que sobreviven al refresh con su promote a plan activo, y la capa social de simulaciones. Regla del sprint: **la landing no promete nada que la herramienta no haga**.
 
@@ -557,6 +557,39 @@ Un bloque que salió revisando la landing y el auth:
 - **El período del draft nace multi-cadencia** (US-023): `AcademicTerm` real, no el enum `'1c' | '2c'` del mock de US-046. Vocabulario en el glosario (sección Planificador).
 - **Fusiones de planificación**: US-065 (pendiente) → US-093; US-025 y US-026 → US-023. Los archivos de las fusionadas quedan como registro con banner.
 - **Corrección de numeración** respecto de la tabla vieja: la comisión por término es US-093 (no US-090) y el wizard de universidad es US-094 (no US-091); US-090-f y US-091 son otras historias (ADR-0048).
+
+### Cierre (2026-07-26)
+
+Las cinco US entregadas. El planificador dejó de tener datos inventados: `features/plan/data/mocks.ts` se borró completo, y con él el aviso de "borrador vencido" y el checklist de publicación que mostraba "correlativas cumplidas" sin chequear nada.
+
+| US | Qué quedó andando |
+|---|---|
+| US-093 | Horarios de cursada en `Commission` (child entity con no-solape), CRUD admin completo, y la pantalla "Comisiones · período" del backoffice (el item del menú dejó de estar inerte) |
+| US-096 | Oferta con horarios en el catálogo del simulador, comisión elegible por materia, calendario semanal real y choques detectados en el dominio de Planning |
+| US-023 | `SimulationDraft` persistido (estrena el lado de escritura del BC: DbContext, schema, repo, UoW), CRUD + publicar (archiva el activo anterior del período en la misma transacción) |
+| US-024 | Compartir/descompartir un borrador, con `visibility` y `shared_at` moviéndose siempre juntos |
+| US-027 | Feed "Comunidad" del mismo plan y período, anonimizado, paginado por cursor |
+
+**Verificación**: 1021 tests de backend (unit de los 7 módulos + 393 de integración contra Postgres real + 48 de architecture), 842 de frontend, 55 E2E, y recorrido en browser de los dos flujos nuevos (backoffice de comisiones y planificador con choques, borradores y comunidad).
+
+**Lo que encontró la verificación**:
+
+- **El E2E destapó un callejón sin salida** que ningún unit test podía ver: con cero borradores el planificador cortaba sin header ni pestañas, y el CTA para crear el primero volvía a la misma pantalla. Los mocks anteriores nunca pasaban por el estado vacío. Arreglado quitando el empty state global: cada pestaña resuelve su propio vacío.
+- **Un review adversarial encontró un bug de atomicidad** en el update de comisiones: Wolverine commitea aunque el handler devuelva `Result` de falla, así que un PUT que fallaba tarde dejaba la comisión renombrada y sin docentes. Resuelto con `Commission.Reconfigure`, que valida los tres sets antes de mutar.
+- **Un bug de EF Core**: una key compuesta con `Guid` plano se marca `ValueGeneratedOnAdd` por convención y generaba un UPDATE fantasma al agregar items a un aggregate trackeado.
+
+### Deuda y hallazgos para la revisión de modelos de datos
+
+Al cerrar el sprint quedó acordada una **revisión aggregate por aggregate** de modelos de datos y motores. Lo detectado hasta acá, para no perderlo:
+
+- **La forma de los ítems del borrador quedó abierta**: hoy es tabla hija (`simulation_draft_items`), pero el data-model había definido un array desnormalizado, y el borrador se lee y se escribe entero (un documento embebido también encaja). Marcado como abierto en [`architecture/data-model.md`](architecture/data-model.md).
+- **Los CHECK de `visibility`/`shared_at` que el data-model documenta no existen en la DB**: el invariante lo sostiene solo el aggregate. La revisión decide dónde va.
+- **El `label` persistido de `AcademicTerm` usa la notación codificada** ("2026·1c") que la UI tiene prohibida por ADR-0051, y se filtró a pantalla en el selector de período.
+- **El seed carga comisiones que violan la coherencia materia/período** (una materia anual colgada de un término cuatrimestral): pasa porque el seeder entra por `Hydrate`, que saltea las validaciones del dominio.
+- **La oferta sembrada vive en 2026·1c**, que ya terminó, así que el período "que viene" arranca sin oferta. Es dato de prueba, no código.
+- **US-093 diferido**: rechazar el cambio de modalidad cuando la comisión ya tiene inscriptos (necesita un read cross-BC a Enrollments). `TODO` marcado en el handler.
+- **US-023 diferido**: los borradores `Archived` y los `Active` de otros períodos no se muestran en ninguna pantalla todavía.
+- Del mockup de comisiones quedaron afuera, a propósito: aula, ocupación (`42/50`, no hay inscripciones a comisiones futuras en el modelo), "Importar oferta" (es US-007) y "Cuatri anterior".
 
 ## Backlog open (sin sprint asignado)
 
