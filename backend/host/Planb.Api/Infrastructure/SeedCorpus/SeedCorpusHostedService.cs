@@ -57,7 +57,11 @@ public sealed class SeedCorpusHostedService : IHostedService
         }
         catch (Exception ex)
         {
-            _log.LogError(ex, "Seed corpus failed; continuing without it.");
+            // Mismo criterio que el seeder de academic: ruidoso. El corpus solo corre con el flag
+            // prendido y es determinista, así que si falla no hay nada que degradar: sin él el feed
+            // queda vacío y el síntoma no nombra la causa.
+            _log.LogError(ex, "Seed corpus failed.");
+            throw;
         }
     }
 
@@ -106,12 +110,15 @@ public sealed class SeedCorpusHostedService : IHostedService
         var seedableReviews = SeedCorpusData.Reviews
             .Where(r => authors.ContainsKey(r.AuthorKey))
             .ToList();
+        // La comisión sale de la materia (SeedCorpusData.Offerings): es la comisión real cuyo titular
+        // es el docente que la reseña apunta, y su período es el que la cursada ya trae. Aprobada por
+        // FinalExam exige comisión y período no nulos, así que el trío tiene que ser coherente.
         var enrollmentSpecs = seedableReviews
             .Select(r => new EnrollmentSpec(
                 r.Key,
                 authors[r.AuthorKey].ProfileId,
                 r.SubjectId,
-                SeedCorpusData.SeedCommissionId,
+                SeedCorpusData.CommissionForSubject(r.SubjectId),
                 r.TermId,
                 EnrollmentStatus.Passed,
                 ApprovalMethod.FinalExam,
@@ -126,7 +133,7 @@ public sealed class SeedCorpusHostedService : IHostedService
                 f.Key,
                 authors[f.AuthorKey].ProfileId,
                 f.SubjectId,
-                SeedCorpusData.SeedCommissionId,
+                SeedCorpusData.CommissionForSubject(f.SubjectId),
                 f.TermId,
                 f.IsAbandoned ? EnrollmentStatus.Dropped : EnrollmentStatus.Failed,
                 null,
