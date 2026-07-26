@@ -146,9 +146,13 @@ export type SimulationScheduleBlock = {
 
 /**
  * Result of evaluating a subject combination. Mirrors `EvaluateSimulationResponse`. When
- * `isValid` is false no metric was computed: they travel at their default (0 hours, null
- * difficulty, cohort at 0/null, `schedule` empty, `clashes` null); what matters to show in that
- * case is `blockedSubjects`.
+ * `isValid` is false the hours are still real (a catalog sum, not a query), but whatever was not
+ * consulted travels null rather than at its default: `weightedDifficulty`, `combinationStats` and
+ * `clashes`, with `schedule` empty. What matters to show in that case is `blockedSubjects`.
+ *
+ * `combinationStats` null means the cohort query never ran. `combinationStats.sampleSize === 0` is
+ * something else entirely: a real measurement (the query ran and found nobody who took that exact
+ * combination). Those two used to be indistinguishable.
  *
  * `clashes` (US-096) is `null` when NO subject in the combination has a commission chosen ("we
  * don't know", never "zero clashes"); with at least one commission chosen it is the real count
@@ -161,7 +165,7 @@ export type SimulationEvaluation = {
   totalWeeklyHours: number;
   totalHours: number;
   weightedDifficulty: number | null;
-  combinationStats: CombinationCohortStats;
+  combinationStats: CombinationCohortStats | null;
   schedule: SimulationScheduleBlock[];
   clashes: number | null;
 };

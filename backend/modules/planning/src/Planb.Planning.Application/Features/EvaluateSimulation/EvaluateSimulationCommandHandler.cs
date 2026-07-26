@@ -81,22 +81,28 @@ public static class EvaluateSimulationCommandHandler
             .Select(evaluation => ToBlockedItem(subjectsById[evaluation.SubjectId], evaluation, subjectsById))
             .ToList();
 
-        if (blocked.Count > 0)
-        {
-            return new EvaluateSimulationResponse(
-                IsValid: false,
-                BlockedSubjects: blocked,
-                TotalWeeklyHours: 0,
-                TotalHours: 0,
-                WeightedDifficulty: null,
-                CombinationStats: new CombinationCohortStats(0, null, null),
-                Schedule: [],
-                Clashes: null);
-        }
-
+        // Las horas se computan antes del corte por bloqueo a propósito: son una suma del catálogo,
+        // no una consulta, así que se saben igual. Antes viajaban en 0 y eso afirmaba "0 horas
+        // semanales" sobre una combinación de, por ejemplo, 24.
         var selectedSubjects = requestedIds.Select(id => subjectsById[id]).ToList();
         var totalWeeklyHours = selectedSubjects.Sum(s => s.WeeklyHours);
         var totalHours = selectedSubjects.Sum(s => s.TotalHours);
+
+        if (blocked.Count > 0)
+        {
+            // La cohorte va null, no en 0: la query nunca corrió. Un SampleSize 0 acá decía
+            // "ningún alumno cursó esta combinación", que es una medición que no se hizo. El 0 real
+            // (la query corrió y no encontró a nadie) sigue siendo 0 en el camino válido.
+            return new EvaluateSimulationResponse(
+                IsValid: false,
+                BlockedSubjects: blocked,
+                TotalWeeklyHours: totalWeeklyHours,
+                TotalHours: totalHours,
+                WeightedDifficulty: null,
+                CombinationStats: null,
+                Schedule: [],
+                Clashes: null);
+        }
 
         var weightedDifficulty = await evaluationReader.GetWeightedDifficultyAsync(requestedIds, ct);
         var cohortStats = await evaluationReader.GetCombinationCohortStatsAsync(
