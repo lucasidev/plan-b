@@ -1,48 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
-import { isDraftStale } from '../hooks/use-active-academic-period';
-import type { Simulation } from '../types';
-import { CalendarWeek } from './calendar-week';
-import { PromoteBanner } from './promote-banner';
+import { formatAcademicPeriod } from '@/lib/academic-terms';
+import { deleteSimulationDraftAction } from '../actions';
+import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
+import type { AcademicTerm, SimulationDraft, SimulationDraftItem } from '../types';
+import { EditDraftModal } from './edit-draft-modal';
 import { PublishPlanModal } from './publish-plan-modal';
-import { type StatGridItem, StatsGrid } from './stats-grid';
-import { SubjectListCard } from './subject-list-card';
 
 /**
- * "Borrador" tab of Plan (US-046). List of drafts with preview + per-draft actions
- * (Editar, Borrar, Compartir). The "stale" draft (period already started) shows the
- * PromoteBanner. On activate, opens the PublishPlanModal with a validation checklist.
+ * "Borrador" tab of Plan (US-046 shell + US-023 datos reales). Lista de borradores propios (status
+ * Draft) con label (propio o un fallback legible con el período), y sus materias + comisión.
+ * Acciones por fila: Editar, Borrar (con confirmación) y Publicar.
+ *
+ * Antes mostraba `MOCK_DRAFTS` con una grilla de métricas y un calendario por borrador
+ * (`StatsGrid`/`CalendarWeek`, US-046). El endpoint real de borradores (`GET
+ * /api/me/simulations/drafts`) no trae ese detalle: ni dificultad ni horario por materia, datos que
+ * solo produce evaluar la combinación (US-016). El AC de esta US pide mostrar label + estado +
+ * materias con comisión, no reconstruir esas métricas acá, así que se retira ese detalle en vez de
+ * inventarlo (el panel de métricas y el calendario reales viven en la pestaña "En curso").
  */
 type Props = {
-  drafts: Simulation[];
+  drafts: readonly SimulationDraft[];
+  terms: readonly AcademicTerm[];
   onCreate: () => void;
-  termId: string | null;
 };
 
-/**
- * Arma los tiles del mock de un borrador. Sin cambio de comportamiento: es la misma lógica que
- * antes vivía adentro de `StatsGrid`, relocalizada acá porque ese componente pasó a ser puramente
- * presentacional (US-016: el tab activo ahora arma los suyos desde datos reales del planificador,
- * ver `SimulatorEvaluationPanel`). Los borradores siguen sin materias con id real que evaluar
- * (US-023 pendiente), así que siguen mostrando el mock tal cual.
- */
-function buildDraftStatsItems(stats: Simulation['stats']): StatGridItem[] {
-  return [
-    { value: `${stats.weeklyHours}h`, label: 'semanales' },
-    {
-      value: `${stats.clashes}`,
-      label: stats.clashes === 1 ? 'choque' : 'choques',
-      warn: stats.clashes > 0,
-    },
-    { value: stats.avgDiff.toFixed(1), label: 'dificultad' },
-    { value: `${Math.round(stats.expectedApproval * 100)}%`, label: 'aprob. esperada' },
-  ];
-}
-
-export function DraftList({ drafts, onCreate, termId }: Props) {
-  const [publishingDraft, setPublishingDraft] = useState<Simulation | null>(null);
+export function DraftList({ drafts, terms, onCreate }: Props) {
+  const [publishingDraft, setPublishingDraft] = useState<SimulationDraft | null>(null);
+  const [editingDraft, setEditingDraft] = useState<SimulationDraft | null>(null);
 
   if (drafts.length === 0) {
     return (
@@ -72,84 +60,161 @@ export function DraftList({ drafts, onCreate, termId }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {drafts.map((draft) => {
-        const stale = isDraftStale(draft.period);
-        return (
-          <article
-            key={draft.id}
-            className="bg-bg-card border border-line rounded-lg"
-            style={{ padding: 20 }}
-          >
-            {stale && <PromoteBanner draft={draft} onActivate={(d) => setPublishingDraft(d)} />}
-            <header
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                marginBottom: 12,
-              }}
-            >
-              <div>
-                <div
-                  className="text-ink-3"
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    marginBottom: 3,
-                  }}
-                >
-                  Borrador
-                </div>
-                <h3 className="text-ink-1" style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
-                  {draft.label}
-                </h3>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm">
-                  Editar
-                </Button>
-                <Button variant="ghost" size="sm">
-                  Compartir
-                </Button>
-                {!stale && (
-                  <Button size="sm" onClick={() => setPublishingDraft(draft)}>
-                    Publicar
-                  </Button>
-                )}
-              </div>
-            </header>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '320px 1fr',
-                gap: 16,
-              }}
-            >
-              <SubjectListCard subjects={draft.subjects} termId={termId} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <StatsGrid items={buildDraftStatsItems(draft.stats)} />
-                <div className="border border-line rounded" style={{ padding: 16 }}>
-                  <CalendarWeek blocks={draft.blocks} />
-                </div>
-              </div>
-            </div>
-          </article>
-        );
-      })}
+      {drafts.map((draft) => (
+        <DraftCard
+          key={draft.id}
+          draft={draft}
+          label={draftLabel(draft, terms)}
+          onEdit={() => setEditingDraft(draft)}
+          onPublish={() => setPublishingDraft(draft)}
+        />
+      ))}
 
       <PublishPlanModal
-        open={publishingDraft !== null}
         draft={publishingDraft}
+        label={publishingDraft ? draftLabel(publishingDraft, terms) : ''}
         onClose={() => setPublishingDraft(null)}
-        onConfirm={() => {
-          // Mock: the status flip (draft -> active) is the backend's job (US-023). Here
-          // we just close the modal; when that lands, this callback fires the mutation.
-          setPublishingDraft(null);
-        }}
       />
+      <EditDraftModal draft={editingDraft} onClose={() => setEditingDraft(null)} />
+    </div>
+  );
+}
+
+/** Label propio, o un fallback legible con el período (year + cadencia canónica, ADR-0051): nunca
+ * un formato codificado tipo "1c". Si el término no se encuentra (edge case), un fallback neutro. */
+function draftLabel(draft: SimulationDraft, terms: readonly AcademicTerm[]): string {
+  if (draft.label) return draft.label;
+  const term = terms.find((t) => t.id === draft.termId);
+  if (!term) return 'Borrador sin nombre';
+  return formatAcademicPeriod(term.year, term.kind, term.number) ?? term.label;
+}
+
+function DraftCard({
+  draft,
+  label,
+  onEdit,
+  onPublish,
+}: {
+  draft: SimulationDraft;
+  label: string;
+  onEdit: () => void;
+  onPublish: () => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const queryClient = useQueryClient();
+
+  function handleDelete() {
+    if (!window.confirm(`¿Borrar "${label}"? No se puede deshacer.`)) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await deleteSimulationDraftAction(draft.id);
+      if (result.status === 'success') {
+        queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+      } else {
+        setError(result.message);
+      }
+    });
+  }
+
+  return (
+    <article className="bg-bg-card border border-line rounded-lg" style={{ padding: 20 }}>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          marginBottom: 12,
+          gap: 12,
+          flexWrap: 'wrap',
+        }}
+      >
+        <div>
+          <div
+            className="text-ink-3"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              marginBottom: 3,
+            }}
+          >
+            Borrador
+          </div>
+          <h3 className="text-ink-1" style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>
+            {label}
+          </h3>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm" onClick={onEdit} disabled={isPending}>
+            Editar
+          </Button>
+          <Button variant="ghost" size="sm" onClick={handleDelete} disabled={isPending}>
+            {isPending ? 'Borrando...' : 'Borrar'}
+          </Button>
+          <Button size="sm" onClick={onPublish} disabled={isPending}>
+            Publicar
+          </Button>
+        </div>
+      </header>
+
+      {error && (
+        <p
+          role="alert"
+          className="text-st-failed-fg"
+          style={{ fontSize: 12.5, margin: '0 0 10px' }}
+        >
+          {error}
+        </p>
+      )}
+
+      <DraftItemsList items={draft.items} />
+    </article>
+  );
+}
+
+function DraftItemsList({ items }: { items: readonly SimulationDraftItem[] }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {items.map((item, i) => (
+        <div
+          key={item.subjectId}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 8,
+            padding: '9px 0',
+            borderTop: i ? '1px solid var(--line)' : 'none',
+          }}
+        >
+          <div>
+            <span
+              className="text-ink-3"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 10, marginRight: 8 }}
+            >
+              {item.subjectCode}
+            </span>
+            <span className="text-ink-1" style={{ fontSize: 13 }}>
+              {item.subjectName}
+            </span>
+          </div>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10.5,
+              padding: '2px 8px',
+              borderRadius: 999,
+              background: 'var(--line-2, var(--line))',
+              color: 'var(--ink-3)',
+              flexShrink: 0,
+            }}
+          >
+            {item.commissionName ? `com ${item.commissionName}` : 'sin comisión'}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

@@ -1,7 +1,11 @@
 import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
-import type { AcademicTerm, AvailableSubjectsResponse } from './types';
+import type {
+  AcademicTerm,
+  AvailableSubjectsResponse,
+  ListSimulationDraftsResponse,
+} from './types';
 
 /**
  * Materias del plan evaluadas por el planificador (US-016), con la oferta de comisiones de un
@@ -38,4 +42,17 @@ export async function fetchAcademicTermsServer(universityId: string): Promise<Ac
     throw new Error(`academic terms fetch failed with ${res.status}`);
   }
   return (await res.json()) as AcademicTerm[];
+}
+
+/**
+ * Borradores guardados del alumno (US-023), todos los estados. GET /api/me/simulations/drafts,
+ * autenticado (alumno con StudentProfile activo). Usado por la RSC de /plan para prefetchear +
+ * hidratar antes de que `PlanShell` los consuma con useSuspenseQuery (tabs "En curso"/"Borradores").
+ */
+export async function fetchSimulationDraftsServer(): Promise<ListSimulationDraftsResponse> {
+  const res = await apiFetchAuthenticated('/api/me/simulations/drafts', { cache: 'no-store' });
+  if (!res.ok) {
+    throw new Error(`simulation drafts fetch failed with ${res.status}`);
+  }
+  return (await res.json()) as ListSimulationDraftsResponse;
 }

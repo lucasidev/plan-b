@@ -1,38 +1,43 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import type { AvailableSubject, Subject } from '../types';
-import { ModalityPill } from './modality-pill';
+import type { AvailableSubject } from '../types';
 import { SubjectPickerDrawer } from './subject-picker-drawer';
 
-const DIFF_PALETTE: Record<string, [string, string]> = {
-  hi: ['oklch(0.92 0.06 25)', 'oklch(0.45 0.15 25)'],
-  mid: ['oklch(0.93 0.05 70)', 'oklch(0.48 0.13 65)'],
-  lo: ['oklch(0.94 0.05 145)', 'oklch(0.42 0.09 145)'],
+/**
+ * Materia sumada a la combinación actual (US-023), ya resuelta contra el catálogo para mostrarse:
+ * `code`/`name` salen de `AvailableSubject`, `commissionName` de la comisión elegida (si hay). Lo
+ * arma `ActiveTab` a partir de `selections` + el catálogo; este componente no sabe de dónde sale.
+ */
+export type SelectedSubjectRow = {
+  subjectId: string;
+  code: string;
+  name: string;
+  commissionName: string | null;
 };
 
-function diffBucket(d: number): 'hi' | 'mid' | 'lo' {
-  return d >= 4 ? 'hi' : d === 3 ? 'mid' : 'lo';
-}
-
 /**
- * Side list of subjects in the period (US-046). Header with title + count, rows with
- * code + name + pills (modality, commission, difficulty), per-subject "× sacar"
- * button, and a final "+ Agregar materia" CTA that opens the drawer.
+ * Side list de la combinación armada en "En curso" (US-023, antes US-046 con datos mock). Header
+ * con título + contador, filas con code + name + comisión elegida (si hay), botón "x sacar" por
+ * fila, y un CTA final "+ Agregar materia" que abre el drawer.
  *
- * `onAddSubject` (US-016) is optional: `ActiveTab` lo pasa para acumular los ids reales elegidos
- * (que alimentan `SimulatorEvaluationPanel`); `DraftList` no lo pasa todavía porque los borradores
- * no tienen materias con id real contra las que evaluar (US-023 pendiente), así que ahí elegir
- * del drawer sigue sin efecto, igual que antes. `termId` (US-096) sí se pasa en los dos casos: es
- * el período elegido en el header de /plan, y el catálogo que abre el drawer depende de él.
+ * Antes mostraba `simulation.subjects`, un array mock fijo sin relación con lo que el alumno
+ * elegía (US-046/US-016): ahora muestra `rows`, derivado de la selección real de la sesión
+ * (`CommissionSelection[]`), así que "x sacar" pasa a tener efecto real (`onRemoveSubject`). Se
+ * dejaron afuera la píldora de modalidad/cadencia y la de dificultad por materia: la primera no
+ * aporta nada nuevo en esta vista (ya está acotada al período elegido) y la segunda no tiene fuente
+ * real (`AvailableSubject` no trae una dificultad por materia; la única real es la ponderada de la
+ * combinación entera, en el panel de métricas de arriba).
  */
 export function SubjectListCard({
-  subjects,
+  rows,
   onAddSubject,
+  onRemoveSubject,
   termId,
 }: {
-  subjects: Subject[];
+  rows: SelectedSubjectRow[];
   onAddSubject?: (subject: AvailableSubject) => void;
+  onRemoveSubject?: (subjectId: string) => void;
   termId: string | null;
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -49,94 +54,87 @@ export function SubjectListCard({
           }}
         >
           <h2 className="text-base font-semibold text-ink-1" style={{ margin: 0 }}>
-            Materias del año
+            Materias elegidas
           </h2>
           <small className="text-ink-3" style={{ fontWeight: 400 }}>
-            {subjects.length}
+            {rows.length}
           </small>
         </div>
-        {subjects.map((s, i) => {
-          const [bg, fg] = DIFF_PALETTE[diffBucket(s.diff)];
-          return (
+        {rows.length === 0 && (
+          <p className="text-ink-3" style={{ fontSize: 12.5, padding: '4px 0 12px' }}>
+            Todavía no sumaste materias.
+          </p>
+        )}
+        {rows.map((row, i) => (
+          <div
+            key={row.subjectId}
+            style={{
+              padding: '11px 0',
+              borderTop: i ? '1px solid var(--line)' : 'none',
+            }}
+          >
             <div
-              key={s.code}
               style={{
-                padding: '11px 0',
-                borderTop: i ? '1px solid var(--line)' : 'none',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: 8,
               }}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: 6,
-                }}
-              >
-                <div>
-                  <div
-                    className="text-ink-3"
+              <div>
+                <div
+                  className="text-ink-3"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    letterSpacing: '0.04em',
+                    marginBottom: 2,
+                  }}
+                >
+                  {row.code}
+                </div>
+                <div
+                  className="text-ink-1"
+                  style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.3 }}
+                >
+                  {row.name}
+                </div>
+                {row.commissionName && (
+                  <span
                     style={{
+                      display: 'inline-block',
+                      marginTop: 5,
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      letterSpacing: '0.04em',
-                      marginBottom: 2,
+                      fontSize: 10.5,
+                      padding: '2px 8px',
+                      borderRadius: 999,
+                      background: 'var(--line-2, var(--line))',
+                      color: 'var(--ink-3)',
                     }}
                   >
-                    {s.code}
-                  </div>
-                  <div
-                    className="text-ink-1"
-                    style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.3 }}
-                  >
-                    {s.name}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  aria-label={`Sacar ${s.name}`}
-                  className="text-ink-4 hover:text-ink-2 transition-colors"
-                  style={{
-                    appearance: 'none',
-                    border: 0,
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    padding: 2,
-                  }}
-                >
-                  ×
-                </button>
+                    com {row.commissionName}
+                  </span>
+                )}
               </div>
-              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                <ModalityPill mod={s.mod} />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10.5,
-                    padding: '2px 8px',
-                    borderRadius: 999,
-                    background: 'var(--line-2, var(--line))',
-                    color: 'var(--ink-3)',
-                  }}
-                >
-                  com {s.com}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10.5,
-                    padding: '2px 8px',
-                    borderRadius: 999,
-                    background: bg,
-                    color: fg,
-                  }}
-                >
-                  dif {s.diff}
-                </span>
-              </div>
+              <button
+                type="button"
+                aria-label={`Sacar ${row.name}`}
+                onClick={() => onRemoveSubject?.(row.subjectId)}
+                className="text-ink-4 hover:text-ink-2 transition-colors"
+                style={{
+                  appearance: 'none',
+                  border: 0,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: 2,
+                  flexShrink: 0,
+                }}
+              >
+                ×
+              </button>
             </div>
-          );
-        })}
+          </div>
+        ))}
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}

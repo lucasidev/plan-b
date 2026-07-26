@@ -1,49 +1,16 @@
 /**
- * Mock domain types for Planificar (US-046). Aligned with the v2 canvas mock data
- * (`v2-shell.jsx::V2_ACTIVE`, `v2-screens.jsx::V2MiniCalendar`).
- *
- * The "active" simulation (subjects del año, período, label) sigue siendo mock: la persistencia
- * real de qué está cursando el alumno es US-023, todavía no existe backend. Los tipos reales del
- * simulador (materias disponibles, evaluar combinación, comisiones) empiezan más abajo.
+ * Real backend types for Planificar (US-046 shell + US-016/US-096 simulador + US-023 borradores).
+ * Cada bloque documenta el endpoint que espeja (Planb.Planning.Application). Ya no quedan tipos
+ * mock: US-023 reemplazó al último (`Simulation`/`Subject`/`AcademicPeriod` de la v2 canvas) por
+ * los borradores reales de más abajo.
  */
 
-export type Modality = '1c' | '2c' | 'anual' | 'bim1' | 'bim2' | 'bim3' | 'bim4';
-
-export type DiffLevel = 1 | 2 | 3 | 4 | 5;
-
 /**
- * Academic period (year + term). The "current period" is a single one; drafts
- * reference future periods.
- */
-export type AcademicPeriod = {
-  year: number;
-  term: '1c' | '2c';
-  /** ISO date (YYYY-MM-DD). Mocked; will come from the AcademicTerm backoffice (US-064) when it exists. */
-  startsAt: string;
-  endsAt: string;
-};
-
-export type Subject = {
-  code: string;
-  name: string;
-  mod: Modality;
-  /** Assigned commission. */
-  com: string;
-  /** Main teacher to display. */
-  prof: string;
-  diff: DiffLevel;
-  /** "8 of 16" in the mockup; current week / total. */
-  week?: number;
-  weeks?: number;
-};
-
-/**
- * Block in the weekly calendar (US-096), decoupled from the mock `CalendarBlock` shape it
- * replaces: `day` is the weekday name the backend serializes (`"Monday"`..`"Sunday"`, only
- * Monday-Friday actually render, see `lib/calendar-blocks.ts`), `start`/`end` are `"HH:mm"`. Real
- * data (`SimulationScheduleBlock` below) is a structural superset of this shape, so the evaluate
- * response's `schedule` can be passed to `CalendarWeek` without mapping. Mock draft data
- * (`data/mocks.ts`) is written directly in this shape too: one calendar component, one contract.
+ * Block in the weekly calendar (US-096): `day` es el nombre del día que serializa el backend
+ * (`"Monday"`..`"Sunday"`, solo lunes a viernes se renderizan, ver `lib/calendar-blocks.ts`),
+ * `start`/`end` son `"HH:mm"`. `SimulationScheduleBlock` (abajo) es un superset estructural de esta
+ * forma, así que el `schedule` de la respuesta de evaluate se le puede pasar a `CalendarWeek` sin
+ * mapear.
  */
 export type CalendarWeekBlock = {
   subjectCode: string;
@@ -54,28 +21,8 @@ export type CalendarWeekBlock = {
 };
 
 /**
- * Simulation (draft or active). A single entity with `status`: the "promote" is a
- * flip, not a copy (ADR pending; spec in the US-046 doc).
- */
-export type Simulation = {
-  id: string;
-  status: 'active' | 'draft' | 'archived';
-  period: AcademicPeriod;
-  label: string;
-  subjects: Subject[];
-  blocks: CalendarWeekBlock[];
-  /** Precomputed aggregate stats for the active tab header. */
-  stats: {
-    weeklyHours: number;
-    clashes: number;
-    avgDiff: number;
-    expectedApproval: number;
-  };
-};
-
-/**
- * Real backend types for the "Agregar materia" drawer (US-016). Unlike the mock types above,
- * these mirror actual DTOs from `GET /api/me/simulator/available` (Planb.Planning.Application).
+ * Real backend types for the "Agregar materia" drawer (US-016). Mirror actual DTOs from
+ * `GET /api/me/simulator/available` (Planb.Planning.Application).
  */
 
 /**
@@ -243,3 +190,66 @@ export type CombinationCohortStats = {
   passRate: number | null;
   dropoutRate: number | null;
 };
+
+/**
+ * Real backend types for los borradores guardados del planificador (US-023). Mirror
+ * `Planb.Planning.Application.Features.{Create,Update,List,Promote,Delete}SimulationDraft`.
+ */
+
+/** Espeja `SimulationDraftStatus` del backend (serializado como el nombre del enum, en inglés). */
+export type SimulationDraftStatus = 'Draft' | 'Active' | 'Archived';
+
+/**
+ * Materia de un borrador ya resuelta a code/name (+ comisión elegida, si hay). Mirrors
+ * `SimulationDraftListItemSubject`: el read model resuelve esto server-side (Dapper cross-schema)
+ * para que la lista se pinte sin pedir nada más por materia/comisión.
+ */
+export type SimulationDraftItem = {
+  subjectId: string;
+  subjectCode: string;
+  subjectName: string;
+  commissionId: string | null;
+  commissionName: string | null;
+};
+
+/**
+ * Un borrador (o el plan activo/archivado) del alumno. Mirrors `SimulationDraftListItem`
+ * (`GET /api/me/simulations/drafts`): trae TODOS los estados sin filtrar, el frontend decide cómo
+ * agruparlos (Draft -> tab Borradores, Active del período elegido -> tab En curso).
+ */
+export type SimulationDraft = {
+  id: string;
+  termId: string;
+  label: string | null;
+  status: SimulationDraftStatus;
+  items: SimulationDraftItem[];
+  createdAt: string;
+};
+
+/** Wrapper del GET /api/me/simulations/drafts. */
+export type ListSimulationDraftsResponse = {
+  items: SimulationDraft[];
+};
+
+/**
+ * Resultado de crear o editar un borrador (US-023). Mutación pura (ADR-0046): el action devuelve
+ * el status, el cliente reacciona invalidando queries. Se invoca directo (no vía `useActionState`,
+ * no hay `<form>` de por medio: la combinación vive en estado de React, no en FormData), así que no
+ * hace falta un estado `'idle'` inicial (mismo criterio que `ToggleResult` de manage-commissions).
+ * `id` en success identifica el borrador tocado sin necesitar otro roundtrip.
+ */
+export type SaveDraftResult =
+  | { status: 'success'; id: string }
+  | { status: 'error'; message: string };
+
+/** Resultado de borrar un borrador (US-023). */
+export type DeleteDraftResult = { status: 'success' } | { status: 'error'; message: string };
+
+/**
+ * Resultado de publicar un borrador (US-023). `draftStatus` es el estado que devuelve el backend
+ * tras el promote (siempre `'Active'`); nombrado distinto de `status` para no pisar el
+ * discriminante de la mutación.
+ */
+export type PromoteDraftResult =
+  | { status: 'success'; draftStatus: SimulationDraftStatus }
+  | { status: 'error'; message: string };
