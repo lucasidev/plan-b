@@ -16,10 +16,18 @@ namespace Planb.Planning.Application.Features.GetAvailableSubjects;
 ///         service puro, ya testeado): esto acá solo junta datos y arma la respuesta HTTP.</item>
 ///   <item>Zippear cada evaluación con la metadata de display de su materia, y resolver
 ///         <c>blockedBy</c> a code/name (no solo ids) buscando en el mismo snapshot.</item>
+///   <item>US-096: si <see cref="GetAvailableSubjectsQuery.TermId"/> vino, sumar la oferta de
+///         comisiones activas de ese término por materia; sin él, cada item viaja con
+///         <c>Commissions: []</c> (comportamiento idéntico al de antes de US-096).</item>
 /// </list>
 /// </summary>
 public static class GetAvailableSubjectsQueryHandler
 {
+    private static readonly IReadOnlyList<AvailableCommissionItem> NoCommissions = [];
+
+    private static readonly IReadOnlyDictionary<Guid, IReadOnlyList<AvailableCommissionItem>>
+        NoCommissionsBySubject = new Dictionary<Guid, IReadOnlyList<AvailableCommissionItem>>();
+
     public static async Task<Result<AvailableSubjectsResponse>> Handle(
         GetAvailableSubjectsQuery query,
         IIdentityQueryService identity,
@@ -50,8 +58,12 @@ public static class GetAvailableSubjectsQueryHandler
         // devuelva en BlockedBy está garantizado activo y de este mismo plan: siempre aparece acá.
         var subjectsById = snapshot.Subjects.ToDictionary(s => s.Id);
 
+        var commissionsBySubject = query.TermId is { } termId
+            ? await reader.GetCommissionOfferingsAsync(termId, planSubjectIds, ct)
+            : NoCommissionsBySubject;
+
         var items = snapshot.Subjects
-            .Select(subject => ToItem(subject, evaluationBySubject[subject.Id], subjectsById))
+            .Select(subject => ToItem(subject, evaluationBySubject[subject.Id], subjectsById, commissionsBySubject))
             .ToList();
 
         return new AvailableSubjectsResponse(items);
@@ -60,7 +72,8 @@ public static class GetAvailableSubjectsQueryHandler
     private static AvailableSubjectItem ToItem(
         SimulatorSubjectSnapshot subject,
         SubjectAvailability evaluation,
-        IReadOnlyDictionary<Guid, SimulatorSubjectSnapshot> subjectsById)
+        IReadOnlyDictionary<Guid, SimulatorSubjectSnapshot> subjectsById,
+        IReadOnlyDictionary<Guid, IReadOnlyList<AvailableCommissionItem>> commissionsBySubject)
     {
         var blockedBy = evaluation.BlockedBy
             .Select(requiredSubjectId => subjectsById[requiredSubjectId])
@@ -77,6 +90,7 @@ public static class GetAvailableSubjectsQueryHandler
             subject.WeeklyHours,
             subject.TotalHours,
             evaluation.Status.ToString(),
-            blockedBy);
+            blockedBy,
+            commissionsBySubject.GetValueOrDefault(subject.Id, NoCommissions));
     }
 }

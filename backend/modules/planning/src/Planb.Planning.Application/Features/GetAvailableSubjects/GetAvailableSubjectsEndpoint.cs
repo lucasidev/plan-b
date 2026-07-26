@@ -17,13 +17,12 @@ namespace Planb.Planning.Application.Features.GetAvailableSubjects;
 /// porque referenciar Identity le cerraría un cycle).
 ///
 /// <para>
-/// Nota sobre <c>termId</c>: el AC original (US-016) pedía <c>?termId=</c> en la query string, pero
-/// con el modelo actual el <c>AcademicTerm</c> no participa del cómputo de disponibilidad: esta
-/// depende solo de correlativas para_cursar + historial del alumno, y ninguna de las dos cosas varía
-/// según el término. Se omite a propósito en vez de agregarlo sin uso: un parámetro que no cambia la
-/// respuesta es ceremonia que además miente (el caller asumiría que filtra algo). Si el simulador
-/// necesita a futuro acotar por oferta de comisiones de un término puntual, se agrega ahí, con un
-/// efecto real y su propio test.
+/// Query param opcional <c>termId</c> (US-096): sin él, la respuesta es la de siempre y cada item
+/// viaja con <c>commissions: []</c>. Con él, cada item suma la oferta de comisiones activas de ese
+/// término para esa materia (docentes + horario), que el planificador usa para elegir comisión y
+/// detectar choques (ver POST /api/me/simulator/evaluate). El AC original de US-016 ya pedía este
+/// query param; se había diferido porque, hasta ahora, ningún dato de disponibilidad dependía del
+/// término (ver el historial de este archivo).
 /// </para>
 /// </summary>
 public sealed class GetAvailableSubjectsEndpoint : ICarterModule
@@ -32,13 +31,14 @@ public sealed class GetAvailableSubjectsEndpoint : ICarterModule
     {
         app.MapGet("/api/me/simulator/available", async (
             HttpContext http,
+            Guid? termId,
             IMessageBus bus,
             CancellationToken ct) =>
         {
             var userId = CurrentUser.RequireUserId(http);
 
             var result = await bus.InvokeAsync<Result<AvailableSubjectsResponse>>(
-                new GetAvailableSubjectsQuery(userId.Value), ct);
+                new GetAvailableSubjectsQuery(userId.Value, termId), ct);
 
             if (result.IsSuccess)
             {

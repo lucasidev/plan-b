@@ -1,8 +1,10 @@
 using System.Data;
+using System.Globalization;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Planb.Planning.Application.Abstractions.Persistence;
+using Planb.Planning.Application.Features.EvaluateSimulation;
 using Planb.Planning.Application.Features.GetAvailableSubjects;
 using Planb.Planning.Domain.Availability;
 
@@ -172,4 +174,196 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
         public Guid SubjectId { get; init; }
         public string Status { get; init; } = string.Empty;
     }
+
+    /// <summary>
+    /// US-096: oferta de comisiones activas de un término para un conjunto de materias
+    /// (GET /available?termId=). Dos queries planas (docentes y horario son tablas hijas
+    /// independientes entre sí, mismo criterio de "flatten + agrupar en memoria" que
+    /// <c>DapperAdminCommissionReader</c> en Academic) agrupadas primero por subjectId y, dentro de
+    /// cada materia, por comisión.
+    /// </summary>
+    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<AvailableCommissionItem>>> GetCommissionOfferingsAsync(
+        Guid termId, IReadOnlyCollection<Guid> subjectIds, CancellationToken ct = default)
+    {
+        if (subjectIds.Count == 0)
+        {
+            return new Dictionary<Guid, IReadOnlyList<AvailableCommissionItem>>();
+        }
+
+        // Docentes: nombre "Apellido, Nombre" armado en SQL (initcap por columna, storage
+        // lowercase), titular primero (mismo CASE de rol que
+        // DapperAcademicQueryService.ListCommissionsBySubjectAndTermAsync en Academic).
+        const string teachersSql = @"
+            SELECT
+                c.id          AS CommissionId,
+                c.subject_id  AS SubjectId,
+                c.name        AS CommissionName,
+                c.modality    AS Modality,
+                c.capacity    AS Capacity,
+                ct.teacher_id AS TeacherId,
+                initcap(t.last_name) || ', ' || initcap(t.first_name) AS TeacherName
+            FROM academic.commissions c
+            LEFT JOIN academic.commission_teachers ct ON ct.commission_id = c.id
+            LEFT JOIN academic.teachers t ON t.id = ct.teacher_id
+            WHERE c.term_id = @TermId AND c.subject_id = ANY(@SubjectIds::uuid[]) AND c.is_active = true
+            ORDER BY
+                c.subject_id,
+                c.name,
+                CASE ct.role
+                    WHEN 'Lead'          THEN 0
+                    WHEN 'Associate'     THEN 1
+                    WHEN 'PracticalLead' THEN 2
+                    WHEN 'Assistant'     THEN 3
+                    WHEN 'Guest'         THEN 4
+                    ELSE 5
+                END;";
+
+        // Horarios: tabla hija independiente de commission_teachers, así que va en su propia query
+        // plana (evita el cross product entre docentes y franjas de la misma comisión).
+        const string scheduleSql = @"
+            SELECT
+                cs.commission_id AS CommissionId,
+                cs.day_of_week   AS Day,
+                cs.start_time    AS Start,
+                cs.end_time      AS End
+            FROM academic.commissions c
+            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
+            WHERE c.term_id = @TermId AND c.subject_id = ANY(@SubjectIds::uuid[]) AND c.is_active = true
+            ORDER BY
+                CASE cs.day_of_week
+                    WHEN 'Monday'    THEN 1
+                    WHEN 'Tuesday'   THEN 2
+                    WHEN 'Wednesday' THEN 3
+                    WHEN 'Thursday'  THEN 4
+                    WHEN 'Friday'    THEN 5
+                    WHEN 'Saturday'  THEN 6
+                    WHEN 'Sunday'    THEN 7
+                    ELSE 8
+                END,
+                cs.start_time;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+
+        var ids = subjectIds.ToArray();
+
+        var teacherRows = await db.QueryAsync<CommissionOfferingRow>(
+            new CommandDefinition(
+                teachersSql, new { TermId = termId, SubjectIds = ids }, cancellationToken: ct));
+
+        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
+            new CommandDefinition(
+                scheduleSql, new { TermId = termId, SubjectIds = ids }, cancellationToken: ct));
+
+        var scheduleByCommission = BuildScheduleIndex(scheduleRows);
+
+        // GroupBy preserva el orden de aparición (subject_id, nombre de comisión) desde el SQL.
+        return teacherRows
+            .GroupBy(r => r.SubjectId)
+            .ToDictionary(
+                bySubject => bySubject.Key,
+                bySubject => (IReadOnlyList<AvailableCommissionItem>)bySubject
+                    .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity))
+                    .Select(g => new AvailableCommissionItem(
+                        g.Key.CommissionId,
+                        g.Key.CommissionName,
+                        g.Key.Modality,
+                        g.Key.Capacity,
+                        g.Where(r => r.TeacherId.HasValue).Select(r => r.TeacherName!).ToList(),
+                        scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
+                    .ToList());
+    }
+
+    /// <summary>
+    /// US-096: snapshot crudo de comisiones puntuales por id (POST /evaluate con
+    /// <c>CommissionChoice</c>). Sin filtro de activa/inactiva ni de término: el handler ya conoce
+    /// el commissionId exacto (lo mandó el caller) y necesita distinguir "no existe" de "existe
+    /// pero está inactiva".
+    /// </summary>
+    public async Task<IReadOnlyDictionary<Guid, CommissionScheduleSnapshot>> GetCommissionSchedulesByIdAsync(
+        IReadOnlyCollection<Guid> commissionIds, CancellationToken ct = default)
+    {
+        if (commissionIds.Count == 0)
+        {
+            return new Dictionary<Guid, CommissionScheduleSnapshot>();
+        }
+
+        const string commissionsSql = @"
+            SELECT
+                id         AS Id,
+                subject_id AS SubjectId,
+                name       AS Name,
+                is_active  AS IsActive
+            FROM academic.commissions
+            WHERE id = ANY(@CommissionIds::uuid[]);";
+
+        const string scheduleSql = @"
+            SELECT
+                commission_id AS CommissionId,
+                day_of_week   AS Day,
+                start_time    AS Start,
+                end_time      AS End
+            FROM academic.commission_schedules
+            WHERE commission_id = ANY(@CommissionIds::uuid[])
+            ORDER BY
+                CASE day_of_week
+                    WHEN 'Monday'    THEN 1
+                    WHEN 'Tuesday'   THEN 2
+                    WHEN 'Wednesday' THEN 3
+                    WHEN 'Thursday'  THEN 4
+                    WHEN 'Friday'    THEN 5
+                    WHEN 'Saturday'  THEN 6
+                    WHEN 'Sunday'    THEN 7
+                    ELSE 8
+                END,
+                start_time;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+
+        var ids = commissionIds.ToArray();
+
+        var commissionRows = await db.QueryAsync<CommissionRow>(
+            new CommandDefinition(commissionsSql, new { CommissionIds = ids }, cancellationToken: ct));
+
+        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
+            new CommandDefinition(scheduleSql, new { CommissionIds = ids }, cancellationToken: ct));
+
+        var scheduleByCommission = BuildScheduleIndex(scheduleRows);
+
+        return commissionRows.ToDictionary(
+            r => r.Id,
+            r => new CommissionScheduleSnapshot(
+                r.SubjectId,
+                r.Name,
+                r.IsActive,
+                scheduleByCommission.GetValueOrDefault(r.Id, EmptySchedule)));
+    }
+
+    private static readonly IReadOnlyList<SimulatorScheduleItem> EmptySchedule = [];
+
+    /// <summary>Agrupa filas planas de horario por comisión, formateando horas como "HH:mm".</summary>
+    private static Dictionary<Guid, IReadOnlyList<SimulatorScheduleItem>> BuildScheduleIndex(
+        IEnumerable<CommissionScheduleRow> rows) =>
+        rows
+            .GroupBy(r => r.CommissionId)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<SimulatorScheduleItem>)g
+                    .Select(r => new SimulatorScheduleItem(
+                        r.Day,
+                        r.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
+                        r.End.ToString("HH:mm", CultureInfo.InvariantCulture)))
+                    .ToList());
+
+    private sealed record CommissionOfferingRow(
+        Guid CommissionId,
+        Guid SubjectId,
+        string CommissionName,
+        string Modality,
+        int? Capacity,
+        Guid? TeacherId,
+        string? TeacherName);
+
+    private sealed record CommissionRow(Guid Id, Guid SubjectId, string Name, bool IsActive);
+
+    private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 }

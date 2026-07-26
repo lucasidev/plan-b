@@ -38,6 +38,14 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 /// <see cref="CombinationCohortStats"/> para el criterio completo. <c>sampleSize</c> siempre
 /// viaja con su valor real.
 /// </para>
+///
+/// <para>
+/// <c>commissions</c> en el body es opcional (US-096): la comisión elegida por el alumno para cada
+/// materia. Con ella, el 200 suma <c>schedule</c> (los bloques de las comisiones elegidas) y
+/// <c>clashes</c> (choques detectados, null si no se eligió ninguna comisión). Una elección mal
+/// formada (materia fuera de <c>subjectIds</c>, comisión inexistente / de otra materia / inactiva)
+/// devuelve 400 vía <c>Results.Problem</c>, igual que el resto de las fallas de validación.
+/// </para>
 /// </summary>
 public sealed class EvaluateSimulationEndpoint : ICarterModule
 {
@@ -50,7 +58,7 @@ public sealed class EvaluateSimulationEndpoint : ICarterModule
             CancellationToken ct) =>
         {
             var userId = CurrentUser.RequireUserId(http);
-            var command = new EvaluateSimulationCommand(userId.Value, body.SubjectIds);
+            var command = new EvaluateSimulationCommand(userId.Value, body.SubjectIds, body.Commissions);
 
             try
             {

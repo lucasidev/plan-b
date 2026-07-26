@@ -27,6 +27,15 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
 {
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
 
+    // Plan real de TUDCS (seed de Academic): tiene comisiones + horarios sembrados en 2026·1c
+    // (US-096), a diferencia de los planes aislados que arma CreatePlanWithSubjectsAsync.
+    private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
+    private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
+
+    // 111 Desarrollo de Software: dos comisiones en 2026·1c, "A" (lunes y miércoles 18-22) y
+    // "B (Virtual)" (martes y jueves 19-23).
+    private static readonly Guid SubjectDesarrolloSoftware = Guid.Parse("00000004-0000-4000-a000-000000000005");
+
     private readonly RegisterApiFixture _fixture;
 
     public GetAvailableSubjectsEndpointTests(RegisterApiFixture fixture)
@@ -203,6 +212,55 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
     }
 
     [Fact]
+    public async Task Available_with_termId_includes_active_commissions_with_teachers_and_schedule()
+    {
+        var student = await StudentAsync(TudcsPlanId, "termid");
+
+        var response = await student.Client.GetAsync(
+            $"/api/me/simulator/available?termId={Term2026_1c}");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var body = await response.Content.ReadFromJsonAsync<AvailableSubjectsDto>();
+        body.ShouldNotBeNull();
+
+        var desarrolloSoftware = body!.Items.Single(i => i.Id == SubjectDesarrolloSoftware);
+        desarrolloSoftware.Commissions.Count.ShouldBe(2);
+
+        var comisionA = desarrolloSoftware.Commissions.Single(c => c.Name == "A");
+        comisionA.Modality.ShouldBe("Presencial");
+        comisionA.Capacity.ShouldBe(40);
+        // Titular (Lead, brandt) primero, después el ayudante de trabajos prácticos (sosa).
+        comisionA.TeacherNames.ShouldBe(["Brandt, Carlos", "Sosa, Diego"]);
+        comisionA.Schedule.ShouldBe(
+        [
+            new SimulatorScheduleItemDto("Monday", "18:00", "22:00"),
+            new SimulatorScheduleItemDto("Wednesday", "18:00", "22:00"),
+        ]);
+
+        var comisionB = desarrolloSoftware.Commissions.Single(c => c.Name == "B (Virtual)");
+        comisionB.Modality.ShouldBe("Virtual");
+        comisionB.Schedule.ShouldBe(
+        [
+            new SimulatorScheduleItemDto("Tuesday", "19:00", "23:00"),
+            new SimulatorScheduleItemDto("Thursday", "19:00", "23:00"),
+        ]);
+    }
+
+    [Fact]
+    public async Task Available_without_termId_returns_empty_commissions()
+    {
+        var student = await StudentAsync(TudcsPlanId, "notermid");
+
+        var response = await student.Client.GetAsync("/api/me/simulator/available");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var body = await response.Content.ReadFromJsonAsync<AvailableSubjectsDto>();
+        body.ShouldNotBeNull();
+
+        body!.Items.Single(i => i.Id == SubjectDesarrolloSoftware).Commissions.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task Returns_404_when_user_has_no_student_profile()
     {
         var auth = await AuthenticatedClient.CreateAsync(
@@ -229,6 +287,16 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
 
     private sealed record BlockedByDto(Guid Id, string Code, string Name);
 
+    private sealed record SimulatorScheduleItemDto(string Day, string Start, string End);
+
+    private sealed record AvailableCommissionItemDto(
+        Guid Id,
+        string Name,
+        string Modality,
+        int? Capacity,
+        List<string> TeacherNames,
+        List<SimulatorScheduleItemDto> Schedule);
+
     private sealed record AvailableSubjectDto(
         Guid Id,
         string Code,
@@ -239,7 +307,8 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
         int WeeklyHours,
         int TotalHours,
         string Status,
-        List<BlockedByDto> BlockedBy);
+        List<BlockedByDto> BlockedBy,
+        List<AvailableCommissionItemDto> Commissions);
 
     private sealed record AvailableSubjectsDto(List<AvailableSubjectDto> Items);
 }
