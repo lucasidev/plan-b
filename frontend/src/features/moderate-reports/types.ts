@@ -71,13 +71,17 @@ export type ReportDetail = {
   reviewStatus: string | null;
   // Reporter
   reporterUserId: string;
-  reporterDisabled: boolean;
+  /** null cuando el user del reporter no se puede resolver: "no sabemos", no "no baneado". */
+  reporterDisabled: boolean | null;
   // Contexto del autor de la reseña
   authorUserId: string | null;
   authorAccountSince: string | null;
-  authorReviewsWritten: number;
-  authorReportsReceived: number;
-  authorBanned: boolean;
+  // Nullable a propósito: el autor se resuelve por JOIN a su student_profile, que una baja de cuenta
+  // borra. Cuando no hay autor resoluble estos campos vienen null y la UI dice "sin datos": un cero
+  // acá le decía al moderador "cuenta nueva sin historial", que es una afirmación inventada.
+  authorReviewsWritten: number | null;
+  authorReportsReceived: number | null;
+  authorBanned: boolean | null;
   // Cascade preview
   otherOpenReports: OtherOpenReport[];
 };

@@ -156,6 +156,7 @@ public sealed class SeedCorpusHostedService : IHostedService
             .Select(r => new ReviewSpec(
                 r.Key,
                 enrollments[r.Key],
+                authors[r.AuthorKey].UserId,
                 SeedCorpusData.TeacherForSubject(r.SubjectId),
                 r.Difficulty,
                 r.Overall,

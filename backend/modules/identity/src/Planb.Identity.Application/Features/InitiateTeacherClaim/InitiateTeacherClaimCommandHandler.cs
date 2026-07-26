@@ -39,6 +39,14 @@ public static class InitiateTeacherClaimCommandHandler
             return UserErrors.NotFoundById;
         }
 
+        // Mismo gate que AddStudentProfile: la baja de cuenta es terminal y va primero. Faltaba, y
+        // con el access token todavía vivo (15 min) una cuenta dada de baja podía iniciar un claim
+        // docente y dejar un email institucional nuevo en la base, justo después de que la baja
+        // borró su PII.
+        if (user.IsDeactivated)
+        {
+            return UserErrors.AlreadyDeactivated;
+        }
         if (!user.IsEmailVerified)
         {
             return UserErrors.EmailNotVerified;

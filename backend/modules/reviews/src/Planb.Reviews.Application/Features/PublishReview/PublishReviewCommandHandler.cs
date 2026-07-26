@@ -125,6 +125,7 @@ public static class PublishReviewCommandHandler
         // 6) Aggregate factory.
         var reviewResult = Review.Publish(
             command.EnrollmentId,
+            command.UserId,
             command.DocenteResenadoId,
             difficultyResult.Value,
             overallResult.Value,

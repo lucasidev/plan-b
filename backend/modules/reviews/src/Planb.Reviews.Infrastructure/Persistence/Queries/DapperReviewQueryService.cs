@@ -7,13 +7,20 @@ using Planb.Reviews.Application.Contracts;
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
 /// <summary>
-/// Dapper implementation of the cross-BC <see cref="IReviewQueryService"/>. Resolves a
-/// review back to its author's user id with a single read crossing three schemas:
-/// <c>reviews.reviews</c> -> <c>enrollments.enrollment_records</c> ->
-/// <c>identity.student_profiles</c>. Cross-schema raw reads on read paths are allowed by
-/// ADR-0018 (the ban in ADR-0017 is on FKs and EF navigation, not Dapper joins).
+/// Impl Dapper del contrato cross-BC <see cref="IReviewQueryService"/>. Lee el autor directo de
+/// <c>reviews.reviews.author_user_id</c>: una sola tabla, sin cruzar schemas.
 ///
-/// Soft-deleted reviews (US-055) return null: a deleted review has no reportable author.
+/// <para>
+/// Antes resolvía el autor con un JOIN de tres schemas (reviews -&gt; enrollment_records -&gt;
+/// student_profiles), y eso lo hacía romperse con la baja de cuenta: <c>User.Deactivate</c> borra el
+/// student_profile, así que el autor quedaba irresoluble y reportar la reseña devolvía 404 sobre una
+/// reseña que seguía publicada y visible. La columna desnormalizada que prescribe ADR-0044 cierra
+/// ese agujero, y de paso saca el cruce de schemas del read path.
+/// </para>
+///
+/// <para>
+/// Una reseña borrada (US-055) devuelve null: no tiene autor reportable.
+/// </para>
 /// </summary>
 internal sealed class DapperReviewQueryService : IReviewQueryService
 {
@@ -29,14 +36,10 @@ internal sealed class DapperReviewQueryService : IReviewQueryService
     public async Task<Guid?> GetAuthorUserIdAsync(Guid reviewId, CancellationToken ct = default)
     {
         const string sql = @"
-            SELECT sp.user_id
-            FROM reviews.reviews r
-            JOIN enrollments.enrollment_records er
-              ON er.id = r.enrollment_id
-            JOIN identity.student_profiles sp
-              ON sp.id = er.student_profile_id
-            WHERE r.id = @ReviewId
-              AND r.status <> 'Deleted';";
+            SELECT author_user_id
+            FROM reviews.reviews
+            WHERE id = @ReviewId
+              AND status <> 'Deleted';";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         return await db.QuerySingleOrDefaultAsync<Guid?>(

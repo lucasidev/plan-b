@@ -32,4 +32,11 @@ internal sealed class TeacherProfileRepository : ITeacherProfileRepository
     public Task<bool> AnyVerifiedForTeacherAsync(Guid teacherId, CancellationToken ct = default) =>
         _db.TeacherProfiles.AsNoTracking()
             .AnyAsync(p => p.TeacherId == teacherId && p.VerifiedAt != null, ct);
+
+    // Tracked a propósito: el caller los borra, así que EF tiene que estar siguiéndolos.
+    public async Task<IReadOnlyList<TeacherProfile>> ListForUserAsync(
+        UserId userId, CancellationToken ct = default) =>
+        await _db.TeacherProfiles.Where(p => p.UserId == userId).ToListAsync(ct);
+
+    public void Remove(TeacherProfile profile) => _db.TeacherProfiles.Remove(profile);
 }

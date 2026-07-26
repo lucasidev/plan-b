@@ -156,6 +156,41 @@ public class ReportReviewEndpointTests
         body.ThresholdReached.ShouldBeFalse();
     }
 
+    /// <summary>
+    /// Regresión del agujero de moderación que ADR-0044 dejó abierto: la reseña de un autor que se
+    /// dio de baja tiene que seguir siendo reportable.
+    ///
+    /// <para>
+    /// Antes el autor se resolvía con un JOIN a <c>student_profiles</c>, y la baja de cuenta borra esa
+    /// fila, así que el autor quedaba irresoluble y el endpoint devolvía 404 sobre una reseña que
+    /// seguía publicada y visible. O sea: publicar una difamación y después darse de baja la volvía
+    /// intocable de forma permanente, sin ningún camino para el moderador. Lo cierra la columna
+    /// <c>author_user_id</c> desnormalizada en la reseña, que sobrevive a la baja.
+    /// </para>
+    ///
+    /// <para>
+    /// El test valida además que el 403 de "no puedo reportar la mía" no se convirtió en un permiso
+    /// accidental: el reporter es otro user, así que el 201 es la respuesta correcta.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Creates_report_for_a_review_whose_author_deactivated_their_account()
+    {
+        var (author, reviewId) = await SeedAuthoredReviewAsync("deactivated-author");
+
+        var deactivate = await author.Client.DeleteAsync("/api/me/account");
+        deactivate.EnsureSuccessStatusCode();
+
+        var reporter = await SetupUserAsync("reporter-deactivated");
+        var resp = await reporter.Client.PostAsJsonAsync(
+            $"/api/reviews/{reviewId}/reports",
+            new { reason = "Difamacion", details = "el autor se dio de baja despues de publicarla" });
+
+        resp.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var body = await resp.Content.ReadFromJsonAsync<ReportReviewResponse>();
+        body!.ReportId.ShouldNotBe(Guid.Empty);
+    }
+
     [Fact]
     public async Task Returns_409_on_duplicate_report()
     {

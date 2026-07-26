@@ -11,8 +11,16 @@ namespace Planb.Identity.Application.Features.DeactivateAccount;
 
 /// <summary>
 /// Handler del soft delete con anonimización (ADR-0044). Reemplaza al hard delete user-facing.
-/// El user row sobrevive en DB con la PII anonimizada — las reseñas y demás contenido
-/// crowdsourced que apunte al user (cuando aterricen, S5+) quedan visibles como "Ex-miembro".
+/// El user row sobrevive en DB con la PII anonimizada: las reseñas y demás contenido crowdsourced
+/// que apunte al user quedan visibles como "Ex-miembro".
+///
+/// <para>
+/// Además del aggregate <c>User</c> (que limpia sus owned collections), se borran los claims
+/// docentes del user. Son un aggregate aparte, así que <c>User.Deactivate</c> no los alcanza y
+/// ADR-0044 no los contempló: sobrevivían intactos, dejando el email institucional en la base y el
+/// docente reclamado bloqueado para siempre contra el índice parcial de verificados. Van en la misma
+/// transacción que la anonimización, no como best-effort.
+/// </para>
 ///
 /// <para>
 /// El email anonimizado se computa acá (no en el aggregate) con SHA-256 determinístico del
@@ -41,6 +49,7 @@ public static class DeactivateAccountCommandHandler
         DeactivateAccountCommand command,
         IUserRepository users,
         IUserDeletionLogRepository deletionLogs,
+        ITeacherProfileRepository teacherProfiles,
         IIdentityUnitOfWork unitOfWork,
         IRefreshTokenStore refreshTokens,
         IDomainEventPublisher publisher,
@@ -69,6 +78,15 @@ public static class DeactivateAccountCommandHandler
         if (deactivateResult.IsFailure)
         {
             return deactivateResult.Error;
+        }
+
+        // El claim docente es un aggregate aparte: User.Deactivate no lo alcanza, así que se borra
+        // acá y en la misma transacción. Sin esto queda el institutional_email (PII que la baja dice
+        // borrar) y el teacher_id ocupando el índice parcial de verificados, o sea el docente real
+        // bloqueado sin camino de liberación.
+        foreach (var teacherProfile in await teacherProfiles.ListForUserAsync(user.Id, ct))
+        {
+            teacherProfiles.Remove(teacherProfile);
         }
 
         await DomainEventDispatcher.DispatchAsync([user], publisher, ct);

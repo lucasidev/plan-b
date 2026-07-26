@@ -13,6 +13,11 @@ function accountSince(iso: string | null): string {
   return new Date(iso).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' });
 }
 
+/** Cantidad agregada del autor. null es "no sabemos" y se dice, nunca se muestra como cero. */
+function count(value: number | null): string {
+  return value === null ? NO_DATA_YET : String(value);
+}
+
 function Stat({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
@@ -38,18 +43,25 @@ export function AuthorContextCard({ detail }: { detail: ReportDetail }) {
       </header>
       <div className="flex flex-wrap gap-x-8 gap-y-2 text-[12.5px]">
         <Stat label="Cuenta desde">{accountSince(detail.authorAccountSince)}</Stat>
-        <Stat label="Reseñas escritas">{detail.authorReviewsWritten}</Stat>
-        <Stat label="Reportes recibidos">{detail.authorReportsReceived}</Stat>
+        <Stat label="Reseñas escritas">{count(detail.authorReviewsWritten)}</Stat>
+        <Stat label="Reportes recibidos">{count(detail.authorReportsReceived)}</Stat>
         <Stat label="Estado">
+          {/* Tres estados, no dos: baneado, activo, y "no sabemos" cuando el autor no se resuelve. */}
           <span
             className={cn(
               'rounded-sm px-1.5 py-0.5 font-mono text-[9.5px] tracking-[0.04em]',
-              detail.authorBanned
-                ? 'bg-st-failed-bg text-st-failed-fg'
-                : 'bg-st-approved-bg text-st-approved-fg',
+              detail.authorBanned === null
+                ? 'bg-bg-elev text-ink-3'
+                : detail.authorBanned
+                  ? 'bg-st-failed-bg text-st-failed-fg'
+                  : 'bg-st-approved-bg text-st-approved-fg',
             )}
           >
-            {detail.authorBanned ? 'BANEADO' : 'ACTIVO'}
+            {detail.authorBanned === null
+              ? NO_DATA_YET
+              : detail.authorBanned
+                ? 'BANEADO'
+                : 'ACTIVO'}
           </span>
         </Stat>
       </div>

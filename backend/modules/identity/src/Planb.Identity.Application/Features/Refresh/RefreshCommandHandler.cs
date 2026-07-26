@@ -36,6 +36,16 @@ public static class RefreshCommandHandler
 
         // Block refresh from disabled / unverified users — they shouldn't keep extending sessions
         // even if they hold an old refresh token.
+        // Cuenta dada de baja: se responde igual que un token inválido, a propósito. La cuenta está
+        // anonimizada y no corresponde confirmar que existió.
+        //
+        // Este chequeo es la barrera real, no un cinturón. La revocación de refresh tokens en Redis
+        // es best-effort (se traga sus propios errores con un warning) y corre DESPUÉS del
+        // SaveChanges de la baja. Sin este if, un parpadeo de Redis durante la baja dejaba el
+        // refresh token vivo hasta 30 días y renovable por rotación de forma indefinida: una cuenta
+        // "eliminada" que sigue autenticando.
+        if (user.IsDeactivated) return UserErrors.InvalidCredentials;
+
         if (user.IsDisabled) return UserErrors.AccountDisabled;
         if (!user.IsEmailVerified) return UserErrors.EmailNotVerified;
 

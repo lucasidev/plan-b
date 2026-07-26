@@ -24,6 +24,7 @@ public class ReviewRemoveRestoreTests
         var review = Review.Publish(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            Guid.NewGuid(),
             DifficultyRating.Create(3).Value,
             OverallRating.Create(4).Value,
             null,
