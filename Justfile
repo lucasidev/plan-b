@@ -115,8 +115,15 @@ backend-test-integration:
 frontend-test:
     cd frontend && bun run test
 
+# E2E contra una base efímera, igual que el job `e2e` de ci.yml. El script levanta su propio
+# backend + frontend contra una `planb_e2e` recreada, así que el stack de dev tiene que estar
+# ABAJO (si `just dev` corre, corta con el puerto ocupado).
+#
+# Antes esto era `bunx playwright test` a secas contra el stack de dev, y cada corrida dejaba
+# usuarios, reseñas y borradores acumulados en la base de dev. El costo no era el desorden: los
+# specs no podían afirmar datos concretos porque el estado era compartido y mutable.
 frontend-test-e2e *args:
-    cd frontend && bunx playwright test {{args}}
+    bun scripts/run-e2e.ts {{args}}
 
 # E2E con browser visible y slowMo (ver el flow correr en pantalla).
 # Usalo para inspección visual o cuando un spec falla y querés mirar.
