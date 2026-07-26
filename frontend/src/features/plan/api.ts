@@ -1,6 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
 import { clientApiFetch } from '@/lib/api-client';
-import type { AvailableSubjectsResponse, CommissionSelection, SimulationEvaluation } from './types';
+import type {
+  AvailableSubjectsResponse,
+  CommissionSelection,
+  ListSimulationDraftsResponse,
+  SimulationEvaluation,
+} from './types';
 
 /**
  * Query client-side de las materias disponibles para el planificador (US-016), con la oferta de
@@ -78,4 +83,29 @@ export const simulationEvaluationQueries = {
       enabled: subjectIds.length > 0,
     });
   },
+};
+
+async function fetchSimulationDrafts(): Promise<ListSimulationDraftsResponse> {
+  const response = await clientApiFetch('/api/me/simulations/drafts', { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`simulation drafts fetch failed: ${response.status}`);
+  }
+  return (await response.json()) as ListSimulationDraftsResponse;
+}
+
+/** Query key único de "mis borradores" (US-023): crear/editar/borrar/publicar invalidan este mismo
+ * key, así que vive exportado en vez de repetir el literal en cada action/componente. */
+export const SIMULATION_DRAFTS_QUERY_KEY = ['plan', 'simulation-drafts'] as const;
+
+/**
+ * Borradores guardados del alumno (US-023): todos los estados (Draft/Active/Archived), sin
+ * filtrar. `PlanShell` agrupa por status + `termId` para decidir qué mostrar en "En curso" (el
+ * Active del período elegido) y en "Borradores" (los Draft).
+ */
+export const simulationDraftsQueries = {
+  list: () =>
+    queryOptions({
+      queryKey: SIMULATION_DRAFTS_QUERY_KEY,
+      queryFn: fetchSimulationDrafts,
+    }),
 };
