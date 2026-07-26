@@ -114,6 +114,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - estado offline reactivo (US-039-f) (frontend) — [`0d99fd3`](https://github.com/lucasidev/plan-b/commit/0d99fd30a23e7de8b5daeca1b313bc18065d9e96)
 - carousel del planificador y cards por nombre de herramienta (landing) — [`04e94c1`](https://github.com/lucasidev/plan-b/commit/04e94c1a4f7125333494d093a3de00458c36c85e)
 - semana en el carousel del planificador y cita en lenguaje natural (landing) — [`122713c`](https://github.com/lucasidev/plan-b/commit/122713cd382600bcf85170d0b52498cc9d834e32)
+- horarios de cursada en la comisión (academic) — [`1da858c`](https://github.com/lucasidev/plan-b/commit/1da858c7e945c44c1cc1a57e1f7d60bbc884c3f2)
+- CRUD de comisiones con horarios en el backoffice (academic) — [`f51241e`](https://github.com/lucasidev/plan-b/commit/f51241e8e3e1a9b95ef92da60db02e4fc6bef560)
+- oferta de comisiones de un periodo en el backoffice (academic) — [`2198228`](https://github.com/lucasidev/plan-b/commit/2198228d2f3afcb966efc2bbf50581cd3931f36a)
+- pantalla de comisiones en el backoffice (admin) — [`61cecbb`](https://github.com/lucasidev/plan-b/commit/61cecbb9c80c1c4f2d0a61f6168afc75c84a8158)
+- choques de horario al elegir comision (planning) — [`da65a6c`](https://github.com/lucasidev/plan-b/commit/da65a6c7f55b10687e264447054498cb9cd5af3d)
+- el perfil del alumno expone su universidad (identity) — [`528cd2c`](https://github.com/lucasidev/plan-b/commit/528cd2c9b0300615e3bc915a4c0c27c2e1d51896)
+- elegir comision y ver los choques del cuatri (plan) — [`7568d88`](https://github.com/lucasidev/plan-b/commit/7568d8886d3c8bd26116a7a76320927e2feaac3a)
+- borradores de simulacion persistidos (planning) — [`5e5a7a6`](https://github.com/lucasidev/plan-b/commit/5e5a7a6ffdd659232bce5c2c67d12841ed77e94b)
+- compartir una simulacion y feed publico del plan (planning) — [`50aa4bf`](https://github.com/lucasidev/plan-b/commit/50aa4bf419203c213be44cbbdae8c5e29aaed667)
+- los borradores del planificador son reales (plan) — [`9fd982b`](https://github.com/lucasidev/plan-b/commit/9fd982b785362c78bd615b2beebb4bfcd2964e42)
+- compartir simulaciones y ver las de la comunidad (plan) — [`7ac6340`](https://github.com/lucasidev/plan-b/commit/7ac63401b9631586277aad17ce3a4bd2c8216ba9)
 
 ### Fixed
 
@@ -170,6 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - la UI habla un solo idioma de períodos y datos (frontend) — [`231a7d3`](https://github.com/lucasidev/plan-b/commit/231a7d304d94d589a9ada7c0b3218657bc5916e3)
 - las caras del carousel no se superponen al rotar (landing) — [`4a3fb7d`](https://github.com/lucasidev/plan-b/commit/4a3fb7d16afb68afbb090ec7514519938da8893c)
 - carousel del planificador deslizante con una sola animacion (landing) — [`dcfe56c`](https://github.com/lucasidev/plan-b/commit/dcfe56c35eb722b9106585bbff0e6cf3b16dea89)
+- se podia entrar a armar el primer borrador (plan) — [`cb064ba`](https://github.com/lucasidev/plan-b/commit/cb064ba523c1dcaed78bfa04c499204411331ded)
 
 ### Changed
 
@@ -183,3 +195,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - valores de enum del dominio en ingles (domain) — [`fe80e3a`](https://github.com/lucasidev/plan-b/commit/fe80e3aafa9a70b39a926339eefca933c9b1083b)
 - SeedCorpus para el corpus de datos de prueba (backend) — [`2c64299`](https://github.com/lucasidev/plan-b/commit/2c64299fbeeb8cdc005094bfdda195f91c265c57)
 - planificador como nombre de la herramienta (frontend) — [`76acfde`](https://github.com/lucasidev/plan-b/commit/76acfde29ce69a947445c28adb7e67767ce59f65)
+- el formateo de la oferta sale del componente de tabla (admin) — [`385a24c`](https://github.com/lucasidev/plan-b/commit/385a24cd7e738243dd7da00cc9fb882c129646aa)
