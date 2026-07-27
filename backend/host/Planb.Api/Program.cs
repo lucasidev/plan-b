@@ -134,6 +134,17 @@ builder.Host.UseWolverine(opts =>
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
+
+    // El outbox durable garantiza que el mensaje se persista al commitear, pero las colas locales
+    // son in-memory por default: la entrega es "lo saco del outbox y lo pongo en una Channel". Si el
+    // proceso se cae entre esas dos cosas, el mensaje se pierde sin rastro.
+    //
+    // Eso no es teórico acá: los dos imports (historial y plan de carrera) son fire-and-forget con
+    // el usuario esperando en un polling. Un restart en el momento equivocado dejaba el import en
+    // Pending para siempre, con la pantalla girando contra un worker que ya no existe. Con colas
+    // durables el envelope sobrevive al restart y Wolverine lo reentrega.
+    opts.Policies.UseDurableLocalQueues();
+
     opts.UseFluentValidation(fv => fv.IncludeInternalTypes = true);
 
     // CritterStack-canonical environment split: dev auto-creates schemas, prod assumes the
