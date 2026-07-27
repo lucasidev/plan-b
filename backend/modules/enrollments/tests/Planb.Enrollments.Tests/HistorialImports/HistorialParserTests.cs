@@ -34,10 +34,10 @@ public class HistorialParserTests
         var terms = new[]
         {
             new AcademicTermListItem(
-                Term2024_1cId, UniId, 2024, 1, "FirstHalf", "2024·1c",
+                Term2024_1cId, UniId, 2024, 1, "FirstHalf", "2024-C1",
                 new DateOnly(2024, 3, 1), new DateOnly(2024, 7, 1)),
             new AcademicTermListItem(
-                Term2024_2cId, UniId, 2024, 2, "SecondHalf", "2024·2c",
+                Term2024_2cId, UniId, 2024, 2, "SecondHalf", "2024-C2",
                 new DateOnly(2024, 8, 1), new DateOnly(2024, 12, 1)),
         };
 

@@ -39,10 +39,29 @@ public static class EnrollmentRecordErrors
             "enrollments.record.final_libre_term_only",
             "Approval method 'final_libre' requires term_id present and commission_id null.");
 
-    public static readonly Error CursadaApprovalMissingCommissionOrTerm =
+    /// <summary>
+    /// Aprobar cursando exige saber el período. La comisión NO se exige.
+    ///
+    /// <para>
+    /// Exigirla dejaba fuera el caso mayoritario del sistema: el historial académico (SIU y
+    /// equivalentes) lista materia, fecha, nota y condición, y en ningún lado la comisión, así que
+    /// el import de US-014 nunca podía propagarla. Con la comisión obligatoria, importar un
+    /// historial con una sola materia aprobada por cursada devolvía 400 y no importaba nada: el
+    /// import solo podía registrar equivalencias y finales libres, que son la minoría de cualquier
+    /// historial real.
+    /// </para>
+    /// <para>
+    /// La comisión sigue siendo el vínculo con el docente, así que sin ella la cursada no es
+    /// reseñable: <c>DapperPendingReviewsQueryService</c> ya filtra <c>commission_id IS NOT NULL</c>
+    /// y el publish corta con <c>EnrollmentWithoutCommission</c>. O sea que el dato faltante degrada
+    /// una función y no corrompe ninguna: exactamente lo que queremos frente a un dato que la
+    /// plataforma no tiene (ADR-0054).
+    /// </para>
+    /// </summary>
+    public static readonly Error CursadaApprovalRequiresTerm =
         Error.Validation(
-            "enrollments.record.cursada_requires_commission_and_term",
-            "Approval methods 'cursada', 'promocion' or 'final' require both commission_id and term_id.");
+            "enrollments.record.cursada_requires_term",
+            "Approval methods 'cursada', 'promocion' or 'final' require term_id.");
 
     public static readonly Error CursandoRequiresTerm =
         Error.Validation(

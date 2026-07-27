@@ -69,13 +69,22 @@ public sealed class HistorialImport : Entity<HistorialImportId>, IAggregateRoot
 
     /// <summary>
     /// Transición a <see cref="HistorialImportStatus.Parsing"/>. El worker la invoca al tomar
-    /// el job. Defense en profundidad: si el aggregate ya está en otro estado terminal,
-    /// devolvemos error (el worker se retiraría).
+    /// el job. Si el aggregate ya está en un estado terminal (Parsed / Failed / Confirmed),
+    /// devolvemos error y el worker se retira.
+    ///
+    /// <para>
+    /// <see cref="HistorialImportStatus.Parsing"/> se acepta de vuelta a propósito: significa que
+    /// alguien ya tomó este job y no lo terminó, o sea que el proceso se cayó a mitad del parseo.
+    /// Cuando rechazábamos ese caso, la redelivery del mensaje se dropeaba y el import quedaba en
+    /// Parsing para siempre, con el frontend polleando un estado que ya no iba a cambiar nunca. No
+    /// es un no-op: vuelve a estampar <c>UpdatedAt</c>, que es lo único que después permite
+    /// distinguir un parseo en curso de uno abandonado.
+    /// </para>
     /// </summary>
     public Result MarkParsing(IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
-        if (Status != HistorialImportStatus.Pending)
+        if (Status is not (HistorialImportStatus.Pending or HistorialImportStatus.Parsing))
         {
             return HistorialImportErrors.InvalidStateTransition;
         }

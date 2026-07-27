@@ -55,11 +55,10 @@ public class HistorialImportTests
     }
 
     [Theory]
-    [InlineData(HistorialImportStatus.Parsing)]
     [InlineData(HistorialImportStatus.Parsed)]
     [InlineData(HistorialImportStatus.Failed)]
     [InlineData(HistorialImportStatus.Confirmed)]
-    public void MarkParsing_FromNonPending_ReturnsInvalidStateTransition(HistorialImportStatus status)
+    public void MarkParsing_FromTerminalState_ReturnsInvalidStateTransition(HistorialImportStatus status)
     {
         var import = ImportInState(status);
 
@@ -67,6 +66,22 @@ public class HistorialImportTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(HistorialImportErrors.InvalidStateTransition);
+    }
+
+    /// <summary>
+    /// Estar ya en Parsing significa que el worker anterior se cayó a mitad. Rechazar la redelivery
+    /// dejaba el import trabado ahí para siempre, con el frontend polleando algo que no iba a
+    /// cambiar nunca.
+    /// </summary>
+    [Fact]
+    public void MarkParsing_FromParsing_RetomaElJob()
+    {
+        var import = ImportInState(HistorialImportStatus.Parsing);
+
+        var result = import.MarkParsing(Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        import.Status.ShouldBe(HistorialImportStatus.Parsing);
     }
 
     // ── MarkParsed ───────────────────────────────────────────────────────
