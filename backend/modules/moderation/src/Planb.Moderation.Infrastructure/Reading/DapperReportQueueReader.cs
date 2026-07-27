@@ -68,7 +68,12 @@ internal sealed class DapperReportQueueReader : IReportQueueReader
                 q.id               AS Id,
                 q.created_at       AS CreatedAt,
                 q.reason           AS Reason,
-                left(r.subject_text, 140) AS Snippet,
+                -- COALESCE porque el aggregate exige al menos un texto, no los dos: una reseña que
+                -- solo habla del docente salía con el snippet en null y el moderador veía un item en
+                -- blanco, teniendo que abrir el detalle de cada uno para saber de qué se trataba,
+                -- que es justo lo que la cola existe para evitar. Y el caso en blanco era el más
+                -- denunciable: difamación sobre una persona.
+                left(coalesce(r.subject_text, r.teacher_text), 140) AS Snippet,
                 q.review_id        AS TargetReviewId,
                 q.reporter_user_id AS ReporterUserId,
                 q.tone             AS Tone,

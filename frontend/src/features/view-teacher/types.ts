@@ -41,7 +41,11 @@ export type TeacherReview = {
   tags: string[];
   wouldRecommendCourse: boolean;
   wouldRetakeTeacher: boolean;
+  // Los dos ejes de texto de la reseña. `teacherText` es el que habla de esta persona; `subjectText`
+  // habla de la cursada. El aggregate exige al menos uno, no los dos, así que cualquiera puede venir
+  // null y la card decide qué mostrar y con qué etiqueta.
   subjectText: string | null;
+  teacherText: string | null;
   finalGrade: number | null;
   createdAt: string;
   /** Votos de utilidad (helpfulness). myVoteIsHelpful: null si el caller no votó / es anónimo. */

@@ -99,7 +99,7 @@ describe('publishReviewAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.message).toBe(
-        'Escribí tu experiencia (mínimo 50 caracteres) antes de publicar.',
+        'Contá cómo fue la cursada (mínimo 50 caracteres) antes de publicar.',
       );
     }
     expect(apiFetchMock).not.toHaveBeenCalled();

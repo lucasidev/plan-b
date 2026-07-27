@@ -22,6 +22,9 @@ public sealed record MyReviewItem(
     string SubjectName,
     string Status,
     int DifficultyRating,
+    // Los dos ejes de texto. El autor tiene que ver los dos: si solo se le devuelve el de la materia,
+    // el editor de edición carga media reseña y al guardar borra el otro sin avisar.
     string? SubjectText,
+    string? TeacherText,
     decimal? FinalGrade,
     DateTime CreatedAt);

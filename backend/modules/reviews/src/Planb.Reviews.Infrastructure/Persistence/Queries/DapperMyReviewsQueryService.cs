@@ -48,6 +48,7 @@ internal sealed class DapperMyReviewsQueryService : IMyReviewsQueryService
                 r.status                                   AS Status,
                 r.difficulty_rating::int                   AS DifficultyRating,
                 r.subject_text                             AS SubjectText,
+                r.teacher_text                             AS TeacherText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt
             FROM reviews.reviews r

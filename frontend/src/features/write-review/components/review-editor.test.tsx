@@ -33,7 +33,7 @@ const VALID_TEXT =
   'Cursada muy buena, el material es claro y los parciales fueron justos. La recomiendo.';
 
 describe('ReviewEditor (US-049)', () => {
-  it('renderea los 6 campos numerados y el preview lateral', () => {
+  it('renderea los 7 campos numerados y el preview lateral', () => {
     render(
       <ReviewEditor
         ctx={MOCK_ENROLLMENT_CONTEXT}
@@ -48,7 +48,10 @@ describe('ReviewEditor (US-049)', () => {
     expect(screen.getByText(/qué tan difícil/i)).toBeInTheDocument();
     expect(screen.getByText(/cuántas horas estudiabas/i)).toBeInTheDocument();
     expect(screen.getByText(/etiquetá la cursada/i)).toBeInTheDocument();
-    expect(screen.getByText(/contá tu experiencia/i)).toBeInTheDocument();
+    // Dos ejes de texto: la cursada (obligatorio) y el docente (opcional). Hasta que existió el
+    // segundo, la columna teacher_text no la podía escribir nadie desde la app.
+    expect(screen.getByText(/sobre la cursada/i)).toBeInTheDocument();
+    expect(screen.getByText(/sobre el docente/i)).toBeInTheDocument();
     expect(screen.getByText(/dos preguntas rápidas/i)).toBeInTheDocument();
 
     expect(screen.getByRole('radio', { name: /1 estrella$/i })).toBeInTheDocument();
@@ -99,7 +102,7 @@ describe('ReviewEditor (US-049)', () => {
     // Falta el texto: el botón sigue disabled hasta cargarlo.
     expect(publish).toBeDisabled();
 
-    await user.type(screen.getByLabelText(/contá tu experiencia/i), VALID_TEXT);
+    await user.type(screen.getByLabelText(/sobre la cursada/i), VALID_TEXT);
     expect(publish).toBeEnabled();
   });
 
@@ -127,7 +130,7 @@ describe('ReviewEditor (US-049)', () => {
         'label:has(input[name="field-difficulty-radio"][value="3"])',
       ) as Element,
     );
-    await user.type(screen.getByLabelText(/contá tu experiencia/i), VALID_TEXT);
+    await user.type(screen.getByLabelText(/sobre la cursada/i), VALID_TEXT);
     expect(publish).toBeDisabled();
 
     // Elegir el docente lo habilita.

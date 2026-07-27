@@ -307,11 +307,11 @@ export function ReviewEditor({
             <TagsPicker fieldId="field-tags" selected={draft.tags} onToggle={toggleTag} />
           </Card>
 
-          {/* Field 5: Free text */}
+          {/* Field 5: texto sobre la cursada */}
           <Card>
             <FieldHead
               n={5}
-              label="Contá tu experiencia"
+              label="Sobre la cursada"
               required={mode === 'write'}
               hint="Lo que te hubiera gustado leer antes de inscribirte. Se publica anónimo."
               htmlFor="field-text"
@@ -330,9 +330,33 @@ export function ReviewEditor({
             </div>
           </Card>
 
-          {/* Field 6: Recommendations */}
+          {/* Field 6: texto sobre el docente. Es el eje que faltaba: la columna existía desde el
+              principio pero el editor mandaba null siempre, así que la página del docente terminaba
+              mostrando el texto de la cursada como si hablara de la persona. */}
           <Card>
-            <FieldHead n={6} label="Dos preguntas rápidas" htmlFor="field-recommendations" />
+            <FieldHead
+              n={6}
+              label="Sobre el docente"
+              hint="Opcional. Cómo explica, cómo evalúa, cómo trata al curso. Se publica anónimo y con su nombre visible."
+              htmlFor="field-teacher-text"
+            />
+            <textarea
+              id="field-teacher-text"
+              value={draft.teacherText ?? ''}
+              onChange={(e) => updateField('teacherText', e.target.value || undefined)}
+              placeholder="¿Explica claro? ¿Está para las consultas? ¿Los parciales se parecen a lo que da en clase?"
+              maxLength={2000}
+              className="mt-3 min-h-[110px] w-full resize-y rounded border border-line bg-bg-card px-3.5 py-3 font-sans text-[13px] leading-relaxed text-ink outline-none focus:border-accent"
+            />
+            <div className="mt-1.5 flex justify-between text-[11px] text-ink-3">
+              <span>Si escribís, mínimo 50 caracteres</span>
+              <span className="font-mono">{(draft.teacherText ?? '').length} / 2000</span>
+            </div>
+          </Card>
+
+          {/* Field 7: Recommendations */}
+          <Card>
+            <FieldHead n={7} label="Dos preguntas rápidas" htmlFor="field-recommendations" />
             <RecommendationsToggles
               fieldId="field-recommendations"
               wouldRecommendCourse={draft.wouldRecommendCourse}
