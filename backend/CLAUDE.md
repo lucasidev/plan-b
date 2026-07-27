@@ -11,7 +11,7 @@ backend/
 ├── Planb.sln                              solución del monolito
 ├── Directory.Build.props                  target net10.0, nullable, Minimal analysis
 ├── Directory.Packages.props               Central Package Management
-├── global.json                            SDK 10.0.201
+├── global.json                            SDK 10.0.201+, rollForward latestFeature (cualquier 10.0.x)
 ├── libs/shared-kernel/
 │   └── src/Planb.SharedKernel/
 │       ├── Primitives/                    Result<T>, Error, PagedResult
@@ -72,8 +72,8 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 
 - **Source of truth siempre Postgres**. Redis es solo derivación o ephemeral.
 - **Toda key tiene TTL explícito**. Convención: ≤ 30 días.
-- **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): refresh token revocation list, rate limiting (sliding window), idempotency keys (SETNX), hot reads cache (cache-aside), crowd insights cache. Patrones concretos (key shape, TTL, comandos, fallback) en [`docs/architecture/redis-key-patterns.md`](../docs/architecture/redis-key-patterns.md).
-- **No usar Redis raw** en handlers. Cada módulo expone abstracciones específicas (`IRefreshTokenStore`, `IRateLimiter`, `ISubjectCache`) que internamente usan `IRedisConnection` de SharedKernel.
+- **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): los seis patrones (key shape, TTL, comandos, fallback) están en [`docs/architecture/redis-key-patterns.md`](../docs/architecture/redis-key-patterns.md). **Implementados hoy: solo los dos primeros** (refresh token revocation list y rate limiting sliding-window). Idempotency keys, hot reads cache, crowd insights cache y recently-viewed son diseño acordado sin código: antes de usarlos hay que escribirlos.
+- **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, la usan academic, moderation y planning). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
 - **Degradación**: si Redis no responde, los handlers degradan (cache miss → DB; rate limiter no disponible → fail open con warning; refresh tokens no validables → 401 y user se relogea). No fallan completamente.
 - **Out of scope**: pub/sub (Wolverine outbox cubre messaging), vector search (pgvector), source of truth de cualquier dato persistente.
 

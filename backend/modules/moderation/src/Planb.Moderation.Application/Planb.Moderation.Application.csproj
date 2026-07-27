@@ -15,7 +15,8 @@
          ReviewQuarantineRequested event to publish. Moderation -> Reviews only; Reviews
          never references Moderation, so the assembly graph stays acyclic. -->
     <ProjectReference Include="..\..\..\reviews\src\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />
-    <!-- IRateLimiter (per-reporter throttle) + IIdentityQueryService if needed. -->
+    <!-- CurrentUser (claims del caller en los endpoints). El throttle por reportero ya no cuenta
+         acá: IRateLimiter se mudó a SharedKernel cuando tuvo consumidores en tres módulos. -->
     <ProjectReference Include="..\..\..\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
-using Planb.Identity.Application.Abstractions.Security;
 using Planb.Moderation.Application.Abstractions.Persistence;
 using Planb.Moderation.Application.Features.ReportReview;
 using Planb.Moderation.Domain.Reports;
 using Planb.Reviews.Application.Contracts;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using Shouldly;
 using Wolverine;
 using Xunit;
