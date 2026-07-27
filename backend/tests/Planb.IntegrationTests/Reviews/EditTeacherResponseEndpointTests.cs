@@ -80,7 +80,7 @@ public class EditTeacherResponseEndpointTests : IClassFixture<RegisterApiFixture
             new
             {
                 enrollmentId = enrollment!.Id,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = 3,
                 overallRating = 4,
                 wouldRecommendCourse = true,

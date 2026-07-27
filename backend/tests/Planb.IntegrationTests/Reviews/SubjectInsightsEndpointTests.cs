@@ -24,9 +24,9 @@ public class SubjectInsightsEndpointTests
     // tests seeding reviews for the same subject would cross-contaminate the aggregates. Cada materia
     // que se reseña ancla a su comisión + docente sembrados (el handler de publish valida
     // docente-en-comisión) y al term de esa comisión:
-    //   101 Algoritmos y Paradigmas → comisión "Mañana" (iturralde) · 2026·1c
-    //   223 Desarrollo Back End     → comisión "Noche" (castro)     · 2025·2c
-    //   111 Desarrollo de Software  → comisión "A" (Brandt)         · 2026·1c
+    //   101 Algoritmos y Paradigmas → comisión "Mañana" (iturralde) · 2026-C1
+    //   223 Desarrollo Back End     → comisión "Noche" (castro)     · 2025-C2
+    //   111 Desarrollo de Software  → comisión "A" (Brandt)         · 2026-C1
     // 103 Inglés A1 no tiene comisión sembrada: lo usa solo el test de materia vacía (no publica nada).
     private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
     private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017");
@@ -177,7 +177,7 @@ public class SubjectInsightsEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = difficulty,
                 overallRating = overall,
                 wouldRecommendCourse = recommend,

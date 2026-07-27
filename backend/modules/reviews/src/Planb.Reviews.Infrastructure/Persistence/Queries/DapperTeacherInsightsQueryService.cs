@@ -9,7 +9,7 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
 /// <summary>
 /// Dapper read de los crowd insights de un docente (US-003). Una query agregada sobre
-/// <c>reviews.reviews</c> filtrando por <c>docente_resenado_id</c> (la reseña guarda el docente
+/// <c>reviews.reviews</c> filtrando por <c>reviewed_teacher_id</c> (la reseña guarda el docente
 /// reseñado directo, no hace falta join con enrollments). Solo cuentan las Published, mismo
 /// invariante que el feed y los insights de materia.
 ///
@@ -44,7 +44,7 @@ internal sealed class DapperTeacherInsightsQueryService : ITeacherInsightsQueryS
                 COUNT(*) FILTER (WHERE r.overall_rating = 4)::int                    AS Rating4,
                 COUNT(*) FILTER (WHERE r.overall_rating = 5)::int                    AS Rating5
             FROM reviews.reviews r
-            WHERE r.docente_resenado_id = @TeacherId
+            WHERE r.reviewed_teacher_id = @TeacherId
               AND r.status = 'Published';";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);

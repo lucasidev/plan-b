@@ -32,7 +32,7 @@ public class ReportReviewEndpointTests
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026·1c ·
+    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026-C1 ·
     // comisión "A", titular Brandt). Cada author es un user fresco que publica una sola reseña:
     // anclar todas a esta terna no choca con UNIQUE(student, subject, term). El handler de publish
     // exige que el docente reseñado pertenezca a la comisión de la cursada, por eso la reseña
@@ -91,7 +91,7 @@ public class ReportReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 4,
                 wouldRecommendCourse = true,

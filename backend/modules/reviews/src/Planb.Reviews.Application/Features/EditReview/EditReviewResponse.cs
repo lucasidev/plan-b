@@ -8,7 +8,7 @@ namespace Planb.Reviews.Application.Features.EditReview;
 public sealed record EditReviewResponse(
     Guid Id,
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     int DifficultyRating,
     int OverallRating,
     int? HoursPerWeek,

@@ -50,6 +50,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 r.teacher_text                             AS TeacherText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt,
+                r.updated_at                               AS UpdatedAt,
                 (SELECT COUNT(*)::int FROM reviews.review_votes rv
                    WHERE rv.review_id = r.id AND rv.is_helpful)        AS HelpfulCount,
                 (SELECT COUNT(*)::int FROM reviews.review_votes rv
@@ -75,7 +76,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
               AND (@SubjectId       IS NULL OR er.subject_id    = @SubjectId)
               AND (@CareerPlanId    IS NULL OR s.career_plan_id = @CareerPlanId)
               AND (@DifficultyRating IS NULL OR r.difficulty_rating = @DifficultyRating)
-              AND (@TeacherId       IS NULL OR r.docente_resenado_id = @TeacherId)
+              AND (@TeacherId       IS NULL OR r.reviewed_teacher_id = @TeacherId)
             ORDER BY r.created_at DESC
             OFFSET @Offset LIMIT @Limit;";
 
@@ -114,6 +115,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 TeacherText: r.TeacherText,
                 FinalGrade: r.FinalGrade,
                 CreatedAt: r.CreatedAt,
+                UpdatedAt: r.UpdatedAt,
                 HelpfulCount: r.HelpfulCount,
                 NotHelpfulCount: r.NotHelpfulCount,
                 MyVoteIsHelpful: r.MyVoteIsHelpful,
@@ -151,6 +153,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public string? TeacherText { get; set; }
         public decimal? FinalGrade { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public int HelpfulCount { get; set; }
         public int NotHelpfulCount { get; set; }
         public bool? MyVoteIsHelpful { get; set; }

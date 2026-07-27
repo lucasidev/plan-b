@@ -18,7 +18,7 @@ public static class ReviewEditedTranslator
             EventId: Guid.NewGuid(),
             ReviewId: domainEvent.ReviewId.Value,
             EnrollmentId: domainEvent.EnrollmentId,
-            DocenteResenadoId: domainEvent.DocenteResenadoId,
+            ReviewedTeacherId: domainEvent.ReviewedTeacherId,
             StatusBefore: domainEvent.StatusBefore.ToString(),
             StatusAfter: domainEvent.StatusAfter.ToString(),
             OccurredAt: domainEvent.OccurredAt))

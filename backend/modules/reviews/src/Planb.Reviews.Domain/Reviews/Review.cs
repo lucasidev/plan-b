@@ -48,7 +48,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </summary>
     public Guid AuthorUserId { get; private set; }
 
-    public Guid DocenteResenadoId { get; private set; }
+    public Guid ReviewedTeacherId { get; private set; }
     public DifficultyRating DifficultyRating { get; private set; }
 
     /// <summary>
@@ -82,6 +82,21 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public ReviewStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
+
+    /// <summary>
+    /// Por qué la reseña está <see cref="ReviewStatus.UnderReview"/>: true si la cuarentena la puso
+    /// el filtro de contenido al publicar o editar, false si la puso el threshold de reports.
+    ///
+    /// <para>
+    /// Los dos caminos llegaban al mismo status y después eran indistinguibles, así que
+    /// <see cref="RestoreFromReports"/> (que se dispara cuando un moderador cierra el último report)
+    /// republicaba cualquier UnderReview, incluida la que el filtro había frenado y sobre la que
+    /// nadie decidió nada. Alcanzaba con que un tercero reportara una reseña cuarentenada por
+    /// filtro, que no está en el feed pero sí es reportable por id, y que el moderador desestimara
+    /// ese report: el contenido salía publicado como efecto colateral de "este report no vale".
+    /// </para>
+    /// </summary>
+    public bool QuarantinedByContentFilter { get; private set; }
 
     /// <summary>
     /// US-055 soft delete. Null while the review is live. When the author deletes it the
@@ -121,7 +136,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public static Result<Review> Publish(
         Guid enrollmentId,
         Guid authorUserId,
-        Guid docenteResenadoId,
+        Guid reviewedTeacherId,
         DifficultyRating difficultyRating,
         OverallRating overallRating,
         int? hoursPerWeek,
@@ -154,7 +169,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             Id = ReviewId.New(),
             EnrollmentId = enrollmentId,
             AuthorUserId = authorUserId,
-            DocenteResenadoId = docenteResenadoId,
+            ReviewedTeacherId = reviewedTeacherId,
             DifficultyRating = difficultyRating,
             OverallRating = overallRating,
             HoursPerWeek = hoursPerWeek,
@@ -165,17 +180,18 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             TeacherText = teacherText,
             FinalGrade = finalGrade,
             Status = initialStatus,
+            QuarantinedByContentFilter = initialStatus == ReviewStatus.UnderReview,
             CreatedAt = now,
             UpdatedAt = now,
         };
 
         if (initialStatus == ReviewStatus.Published)
         {
-            review.Raise(new ReviewPublishedDomainEvent(review.Id, enrollmentId, docenteResenadoId, now));
+            review.Raise(new ReviewPublishedDomainEvent(review.Id, enrollmentId, reviewedTeacherId, now));
         }
         else
         {
-            review.Raise(new ReviewQuarantinedDomainEvent(review.Id, enrollmentId, docenteResenadoId, now));
+            review.Raise(new ReviewQuarantinedDomainEvent(review.Id, enrollmentId, reviewedTeacherId, now));
         }
 
         return Result.Success(review);
@@ -269,12 +285,16 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         TeacherText = nextTeacherText;
         FinalGrade = nextFinalGrade;
         Status = statusAfter;
+        // El edit vuelve a pasar el filtro sobre el texto nuevo, así que su veredicto pisa el
+        // anterior en los dos sentidos: si ahora trae algo que dispara, la cuarentena es del filtro;
+        // si el texto quedó limpio, la reseña vuelve a Published sin marca.
+        QuarantinedByContentFilter = statusAfter == ReviewStatus.UnderReview;
         UpdatedAt = now;
 
         Raise(new ReviewEditedDomainEvent(
             Id,
             EnrollmentId,
-            DocenteResenadoId,
+            ReviewedTeacherId,
             statusBefore,
             statusAfter,
             now));
@@ -291,8 +311,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// <para>
     /// Allowed from <see cref="ReviewStatus.Published"/> and <see cref="ReviewStatus.UnderReview"/>
     /// per the US-055 AC. A <see cref="ReviewStatus.Removed"/> review was taken down by a
-    /// moderator, so the author self-delete does not apply (the caller maps that to a
-    /// no-op-style conflict if it ever reaches here).
+    /// moderator, so the author self-delete does not apply: <c>DeleteOwnReviewCommandHandler</c>
+    /// corta con <c>CannotDeleteRemovedReview</c> antes de llegar acá. Ese corte estaba documentado
+    /// en este mismo docstring y no existía, y su ausencia abría un camino de evasión de moderación
+    /// (borrar libera el índice único parcial y permite republicar). El guard de abajo sigue siendo
+    /// solo el de idempotencia.
     /// </para>
     ///
     /// Returns <c>true</c> when this call performed the deletion, <c>false</c> when it was
@@ -319,7 +342,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         Raise(new ReviewDeletedDomainEvent(
             Id,
             EnrollmentId,
-            DocenteResenadoId,
+            ReviewedTeacherId,
             statusBefore,
             reason,
             now));
@@ -382,18 +405,24 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// invoca esto cuando la moderación cerró el último report abierto.
     ///
     /// <para>
-    /// Simplificación de MVP: no distingue si el UnderReview vino por threshold de reports o por el
-    /// filtro automático (US-017). En la práctica las reseñas ocultas por filtro no están en el feed
-    /// público y no acumulan reports (y una UnderReview no se puede editar para re-disparar el filtro),
-    /// así que este path lo dispara casi siempre el threshold. Endurecer la distinción
-    /// filter-vs-threshold queda para una US aparte si aparece la necesidad.
+    /// Una reseña cuarentenada por el filtro de contenido no se restaura por este camino (ver
+    /// <see cref="QuarantinedByContentFilter"/>): desestimar un report significa "este report no
+    /// vale", no "publiquen este contenido", y son dos decisiones distintas que llegaban al mismo
+    /// status.
+    /// </para>
+    /// <para>
+    /// Hoy eso deja a la reseña frenada por el filtro sin camino de vuelta: <see cref="Edit"/> exige
+    /// Published, y la cola de moderación se arma solo desde <c>moderation.review_reports</c>, así
+    /// que una cuarentena del filtro (que nace con cero reports) no la ve ningún moderador. La
+    /// alternativa era dejar que un report desestimado la publicara de rebote, que es peor: acá al
+    /// menos el contenido filtrado no se publica solo. Falta decidir por dónde sale.
     /// </para>
     /// </summary>
     public bool RestoreFromReports(IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (Status != ReviewStatus.UnderReview)
+        if (Status != ReviewStatus.UnderReview || QuarantinedByContentFilter)
         {
             return false;
         }
@@ -405,7 +434,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
     /// <summary>
     /// Responde la reseña como el docente reseñado (US-040). El caller (handler) ya validó que el
-    /// user es un <c>TeacherProfile</c> verificado para <see cref="DocenteResenadoId"/> (cross-BC) y
+    /// user es un <c>TeacherProfile</c> verificado para <see cref="ReviewedTeacherId"/> (cross-BC) y
     /// que la reseña no tiene respuesta todavía (idempotencia: si la tiene, el handler devuelve la
     /// existente sin re-invocar esto).
     ///
@@ -427,7 +456,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         {
             return ReviewErrors.ResponseAlreadyExists;
         }
-        if (teacherId != DocenteResenadoId)
+        if (teacherId != ReviewedTeacherId)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;
         }

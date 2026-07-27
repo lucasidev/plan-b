@@ -19,7 +19,7 @@ namespace Planb.IntegrationTests.Reviews;
 ///   - GET /api/reviews/teacher-insights?teacherId={id}  (agregados)
 ///   - GET /api/academic/teachers/{id}   (410 Gone si soft-deleted)
 ///
-/// Las reseñas se publican vía el endpoint real con un <c>docenteResenadoId</c> elegido, así se
+/// Las reseñas se publican vía el endpoint real con un <c>reviewedTeacherId</c> elegido, así se
 /// verifica que el filtro es estricto: una reseña con otro docente reseñado no aparece, aunque sea
 /// de la misma materia.
 /// </summary>
@@ -106,7 +106,7 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
             new
             {
                 enrollmentId,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = 3,
                 overallRating = overall,
                 wouldRecommendCourse = true,
@@ -123,8 +123,8 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         // Dos docentes reales de comisiones distintas (cada uno docente de su cursada). El filtro por
         // teacherId tiene que devolver sólo la reseña del docente pedido.
-        var teacherA = TeacherIturralde; // titular de la comisión "Mañana" (101 Algoritmos y Paradigmas · 2026·1c)
-        var teacherB = TeacherCastro;    // titular de la comisión "Noche" (223 Desarrollo Back End · 2025·2c)
+        var teacherA = TeacherIturralde; // titular de la comisión "Mañana" (101 Algoritmos y Paradigmas · 2026-C1)
+        var teacherB = TeacherCastro;    // titular de la comisión "Noche" (223 Desarrollo Back End · 2025-C2)
 
         var auth = await SetupUserAsync("filter");
         await SetupProfileAsync(auth);

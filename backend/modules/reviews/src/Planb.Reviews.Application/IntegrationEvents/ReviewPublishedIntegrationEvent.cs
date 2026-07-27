@@ -23,5 +23,5 @@ public sealed record ReviewPublishedIntegrationEvent(
     Guid EventId,
     Guid ReviewId,
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     DateTimeOffset OccurredAt) : IIntegrationEvent;

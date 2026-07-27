@@ -14,7 +14,7 @@ internal sealed class PublishReviewValidator : AbstractValidator<PublishReviewCo
     {
         RuleFor(c => c.UserId).NotEmpty();
         RuleFor(c => c.EnrollmentId).NotEmpty();
-        RuleFor(c => c.DocenteResenadoId).NotEmpty();
+        RuleFor(c => c.ReviewedTeacherId).NotEmpty();
         RuleFor(c => c.DifficultyRating).InclusiveBetween(1, 5);
         RuleFor(c => c.OverallRating).InclusiveBetween(1, 5);
 

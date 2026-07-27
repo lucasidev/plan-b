@@ -67,7 +67,7 @@ public static class PublishReviewCommandHandler
         // al docente, se rechaza: no se reseña a alguien que no dictó esa comisión.
         var commissionTeachers = await academic.GetCommissionTeachersAsync(
             enrollment.CommissionId.Value, ct);
-        if (commissionTeachers.All(t => t.TeacherId != command.DocenteResenadoId))
+        if (commissionTeachers.All(t => t.TeacherId != command.ReviewedTeacherId))
         {
             return ReviewErrors.TeacherNotInEnrollmentCommission;
         }
@@ -126,7 +126,7 @@ public static class PublishReviewCommandHandler
         var reviewResult = Review.Publish(
             command.EnrollmentId,
             command.UserId,
-            command.DocenteResenadoId,
+            command.ReviewedTeacherId,
             difficultyResult.Value,
             overallResult.Value,
             command.HoursPerWeek,
@@ -151,7 +151,7 @@ public static class PublishReviewCommandHandler
         return new PublishReviewResponse(
             review.Id.Value,
             review.EnrollmentId,
-            review.DocenteResenadoId,
+            review.ReviewedTeacherId,
             review.DifficultyRating.Value,
             review.OverallRating.Value,
             review.HoursPerWeek,

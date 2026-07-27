@@ -17,7 +17,7 @@ namespace Planb.IntegrationTests.Reviews;
 ///   - 409 cuando ya hay reseña para el enrollment (idempotency).
 ///
 /// Set-up: cada test arma un user autenticado, un profile, y un enrollment "Aprobada" anclado a
-/// una comisión sembrada real (111 Desarrollo de Software · 2026·1c · comisión "A"). El handler
+/// una comisión sembrada real (111 Desarrollo de Software · 2026-C1 · comisión "A"). El handler
 /// valida que el docente reseñado pertenezca a esa comisión (cross-BC vía Academic), así que la
 /// review apunta a Brandt, titular de la comisión. Usar un commission_id random ya no sirve: la
 /// validación lo rechaza con 400.
@@ -32,7 +32,7 @@ public class PublishReviewEndpointTests
         Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
-    // 111 Desarrollo de Software + 2026·1c + comisión "A" con docente Brandt: la terna materia +
+    // 111 Desarrollo de Software + 2026-C1 + comisión "A" con docente Brandt: la terna materia +
     // período + comisión coherente que exige la validación docente-en-comisión del handler de
     // publish (US-017 reforzada).
     private static readonly Guid Subject111 =
@@ -69,7 +69,7 @@ public class PublishReviewEndpointTests
 
     /// <summary>
     /// Crea un enrollment "Aprobada" anclado a la comisión sembrada 111 Desarrollo de Software ·
-    /// 2026·1c · "A", cuyo titular es Brandt. Eso lo hace reseñable: la review puede
+    /// 2026-C1 · "A", cuyo titular es Brandt. Eso lo hace reseñable: la review puede
     /// apuntar a un docente real de la comisión y pasar la validación docente-en-comisión. Devuelve
     /// el id del enrollment creado.
     /// </summary>
@@ -106,7 +106,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = castro,
+                reviewedTeacherId = castro,
                 difficultyRating = 3,
                 overallRating = 4,
                 wouldRecommendCourse = true,
@@ -130,7 +130,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 5,
                 hoursPerWeek = 10,
@@ -168,7 +168,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 2,
                 wouldRecommendCourse = false,
@@ -196,7 +196,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId = Guid.NewGuid(),
-                docenteResenadoId = Guid.NewGuid(),
+                reviewedTeacherId = Guid.NewGuid(),
                 difficultyRating = 3,
                 overallRating = 3,
                 wouldRecommendCourse = true,
@@ -223,7 +223,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 3,
                 wouldRecommendCourse = true,
@@ -264,7 +264,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId = enrollBody!.Id,
-                docenteResenadoId = Guid.NewGuid(),
+                reviewedTeacherId = Guid.NewGuid(),
                 difficultyRating = 3,
                 overallRating = 3,
                 wouldRecommendCourse = true,
@@ -286,7 +286,7 @@ public class PublishReviewEndpointTests
         var payload = new
         {
             enrollmentId,
-            docenteResenadoId = TeacherBrandt,
+            reviewedTeacherId = TeacherBrandt,
             difficultyRating = 3,
             overallRating = 3,
             wouldRecommendCourse = true,
@@ -314,7 +314,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 7,
                 wouldRecommendCourse = true,
@@ -338,7 +338,7 @@ public class PublishReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 3,
                 overallRating = 4,
                 tags = new[] { "etiqueta inventada que no existe" },

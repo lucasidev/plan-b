@@ -12,7 +12,7 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 ///   5) construye el aggregate <c>Review.Publish</c> y persiste.
 ///
 /// <para>
-/// El handler valida que el <see cref="DocenteResenadoId"/> esté asignado a la commission de la
+/// El handler valida que el <see cref="ReviewedTeacherId"/> esté asignado a la commission de la
 /// cursada (cross-BC vía <c>IAcademicQueryService.GetCommissionTeachersAsync</c>), invariante del
 /// data-model: no se reseña a un docente que no dictó esa comisión.
 /// </para>
@@ -20,7 +20,7 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 public sealed record PublishReviewCommand(
     Guid UserId,
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     int DifficultyRating,
     int OverallRating,
     int? HoursPerWeek,

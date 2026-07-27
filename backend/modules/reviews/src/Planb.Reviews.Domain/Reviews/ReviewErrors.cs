@@ -151,6 +151,23 @@ public static class ReviewErrors
             "You cannot vote on your own review.");
 
     /// <summary>
+    /// Borrar la propia reseña no aplica cuando un moderador ya la removió. 409.
+    ///
+    /// <para>
+    /// Sin este corte quedaba abierto un camino de evasión completo: el moderador remueve una
+    /// difamación, el autor borra su propia reseña (que la mueve a <c>Deleted</c> y libera el índice
+    /// único parcial, que filtra por <c>status &lt;&gt; 'Deleted'</c>), y la cursada vuelve a figurar
+    /// como pendiente de reseñar. Republica el mismo texto y entra como fila nueva, con id nuevo y
+    /// sin los reportes upheld encima. El filtro de contenido no lo ataja porque es blacklist más
+    /// PII, no detección de difamación, y el moderador no tiene forma de deshacerlo.
+    /// </para>
+    /// </summary>
+    public static readonly Error CannotDeleteRemovedReview =
+        Error.Conflict(
+            "reviews.review.cannot_delete_removed",
+            "A review removed by moderation cannot be deleted by its author.");
+
+    /// <summary>
     /// Solo se vota una reseña <c>Published</c>. UnderReview / Removed / Deleted no son
     /// votables. 409.
     /// </summary>

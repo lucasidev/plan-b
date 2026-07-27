@@ -217,7 +217,7 @@ public static class EditReviewCommandHandler
         return new EditReviewResponse(
             review.Id.Value,
             review.EnrollmentId,
-            review.DocenteResenadoId,
+            review.ReviewedTeacherId,
             review.DifficultyRating.Value,
             review.OverallRating.Value,
             review.HoursPerWeek,

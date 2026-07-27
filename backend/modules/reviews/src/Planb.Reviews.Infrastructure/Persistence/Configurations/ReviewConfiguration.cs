@@ -65,8 +65,8 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasIndex(r => r.AuthorUserId)
             .HasDatabaseName("ix_reviews_author_user_id");
 
-        builder.Property(r => r.DocenteResenadoId)
-            .HasColumnName("docente_resenado_id")
+        builder.Property(r => r.ReviewedTeacherId)
+            .HasColumnName("reviewed_teacher_id")
             .IsRequired();
 
         // DifficultyRating es un VO con .Value (byte). Mapeamos como smallint para alinearnos
@@ -130,6 +130,10 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasMaxLength(20)
             .IsRequired();
 
+        builder.Property(r => r.QuarantinedByContentFilter)
+            .HasColumnName("quarantined_by_content_filter")
+            .IsRequired();
+
         builder.Property(r => r.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
@@ -158,8 +162,8 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasDatabaseName("ux_reviews_enrollment");
 
         // Read path principal: ver reseñas de un docente (US-052 / US-053).
-        builder.HasIndex(r => r.DocenteResenadoId)
-            .HasDatabaseName("ix_reviews_docente_resenado");
+        builder.HasIndex(r => r.ReviewedTeacherId)
+            .HasDatabaseName("ix_reviews_reviewed_teacher");
 
         // CHECKs del data-model. Replicados en DB como defensa adicional contra writes que
         // bypassean el aggregate (raw SQL, migración manual).
