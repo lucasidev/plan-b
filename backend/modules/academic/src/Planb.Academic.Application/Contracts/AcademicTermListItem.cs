@@ -6,7 +6,7 @@ namespace Planb.Academic.Application.Contracts;
 /// cursó/aprobó cada materia.
 ///
 /// <para>
-/// <see cref="Label"/> es la representación human-readable del período (ej. "2026·1c"); el
+/// <see cref="Label"/> es la representación human-readable del período (ej. "2026-C1"); el
 /// cliente la muestra tal cual. <see cref="Year"/> y <see cref="Number"/> quedan disponibles
 /// para sorting cliente-side sin tener que parsear el label.
 /// </para>

@@ -51,6 +51,14 @@ public static class UpdateCommissionCommandHandler
             {
                 return CommissionErrors.TeacherNotFound;
             }
+            // Un docente archivado se rechaza solo si es una asignación nueva. Rechazarlo también
+            // cuando ya estaba asignado (se archivó después) trabaría la comisión entera: el update
+            // reemplaza la lista completa, así que el admin no podría ni tocarle el horario sin
+            // antes sacar al docente, y sacarlo reescribe la historia de quién dictó esa comisión.
+            if (!teacher.IsActive && !commission.Teachers.Any(t => t.TeacherId == teacher.Id))
+            {
+                return CommissionErrors.TeacherInactive;
+            }
             if (teacher.UniversityId.Value != term.UniversityId.Value)
             {
                 return CommissionErrors.UniversityMismatch;

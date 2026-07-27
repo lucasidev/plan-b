@@ -82,10 +82,16 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
         };
     }
 
+    /// <summary>
+    /// El worker toma el job. Acepta volver desde <see cref="CareerPlanImportStatus.Parsing"/>
+    /// (mismo criterio que <c>HistorialImport.MarkParsing</c>): estar ya en Parsing significa que
+    /// el proceso anterior se cayó a mitad, y rechazar la redelivery dejaba el import trabado ahí
+    /// para siempre.
+    /// </summary>
     public Result MarkParsing(IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
-        if (Status != CareerPlanImportStatus.Pending)
+        if (Status is not (CareerPlanImportStatus.Pending or CareerPlanImportStatus.Parsing))
         {
             return CareerPlanImportErrors.InvalidStateTransition;
         }

@@ -31,7 +31,7 @@ public class AcademicTermTests
             endDate: DefaultEnd,
             enrollmentOpens: DefaultOpen,
             enrollmentCloses: DefaultClose,
-            label: "  2026·1c  ",
+            label: "  2026-C1  ",
             clock: Clock);
 
         result.IsSuccess.ShouldBeTrue();
@@ -40,7 +40,7 @@ public class AcademicTermTests
         term.Year.ShouldBe(2026);
         term.Number.ShouldBe(1);
         term.Kind.ShouldBe(TermKind.FourMonth);
-        term.Label.ShouldBe("2026·1c");
+        term.Label.ShouldBe("2026-C1");
         term.CreatedAt.ShouldBe(Clock.UtcNow);
     }
 

@@ -24,4 +24,24 @@ public interface ICommissionRepository
         string name,
         CommissionId? excludeId,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// True si existe alguna Commission (activa o archivada) para ese período lectivo.
+    ///
+    /// <para>
+    /// La usa el update del período para no dejar cambiar su <c>Kind</c> una vez que hay comisiones
+    /// colgando: al crearlas se validó que la cadencia de la materia coincidiera con la del período
+    /// (<c>CommissionErrors.TermKindMismatch</c>), y editar el período después rompía esa igualdad
+    /// sin que nada la volviera a mirar. Cuenta las archivadas a propósito: siguen siendo el
+    /// registro de lo que se dictó, y su cadencia tiene que seguir describiendo la realidad.
+    /// </para>
+    /// </summary>
+    Task<bool> ExistsForTermAsync(Guid termId, CancellationToken ct = default);
+
+    /// <summary>
+    /// True si existe alguna Commission (activa o archivada) para esa materia. Contraparte de
+    /// <see cref="ExistsForTermAsync"/> del otro lado de la misma igualdad: el update de la materia
+    /// tampoco puede cambiarle el <c>TermKind</c> si ya tiene comisiones dictándose.
+    /// </summary>
+    Task<bool> ExistsForSubjectAsync(Guid subjectId, CancellationToken ct = default);
 }

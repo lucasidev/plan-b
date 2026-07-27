@@ -21,14 +21,21 @@ public interface IAcademicQueryService
     Task<CareerPlanSummary?> GetCareerPlanByIdAsync(Guid careerPlanId, CancellationToken ct = default);
 
     /// <summary>
-    /// Lista todas las universidades del catálogo. Para el dropdown público de US-037
+    /// Lista las universidades activas del catálogo. Para el dropdown público de US-037
     /// (onboarding cascada). Sin paginación: el catálogo MVP tiene &lt; 10 unis y crece poco.
     /// Cuando exceda ~50, agregar paginación.
+    ///
+    /// <para>
+    /// Filtra <c>is_active</c> porque desactivar es el soft delete del catálogo
+    /// (<c>University.Deactivate</c>, US-060): sin el filtro, archivar una universidad no tenía
+    /// ningún efecto visible y un alumno podía seguir haciendo onboarding contra ella.
+    /// </para>
     /// </summary>
     Task<IReadOnlyList<UniversityListItem>> ListUniversitiesAsync(CancellationToken ct = default);
 
     /// <summary>
-    /// Lista las carreras de una universidad. Para el segundo dropdown de la cascada
+    /// Lista las carreras activas de una universidad (mismo criterio de soft delete que
+    /// <see cref="ListUniversitiesAsync"/>). Para el segundo dropdown de la cascada
     /// (US-037). Devuelve lista vacía si la uni no existe (no 404 — el caller ya validó la
     /// uni en el dropdown previo, una uni inválida es input adversarial y devolver vacío es
     /// correcto sin filtrar info).

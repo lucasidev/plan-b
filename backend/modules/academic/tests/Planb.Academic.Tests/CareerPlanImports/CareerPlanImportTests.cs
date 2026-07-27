@@ -112,11 +112,10 @@ public class CareerPlanImportTests
     }
 
     [Theory]
-    [InlineData(CareerPlanImportStatus.Parsing)]
     [InlineData(CareerPlanImportStatus.Parsed)]
     [InlineData(CareerPlanImportStatus.Failed)]
     [InlineData(CareerPlanImportStatus.Approved)]
-    public void MarkParsing_FromNonPending_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
+    public void MarkParsing_FromTerminalState_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
     {
         var import = InState(from);
 
@@ -124,6 +123,22 @@ public class CareerPlanImportTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CareerPlanImportErrors.InvalidStateTransition);
+    }
+
+    /// <summary>
+    /// Estar ya en Parsing significa que el worker anterior se cayó a mitad del parseo. Rechazar esa
+    /// redelivery dejaba el import trabado ahí para siempre, con el frontend polleando un estado que
+    /// no iba a cambiar nunca.
+    /// </summary>
+    [Fact]
+    public void MarkParsing_FromParsing_RetomaElJob()
+    {
+        var import = InState(CareerPlanImportStatus.Parsing);
+
+        var result = import.MarkParsing(Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        import.Status.ShouldBe(CareerPlanImportStatus.Parsing);
     }
 
     // ── MarkParsed ───────────────────────────────────────────────────────

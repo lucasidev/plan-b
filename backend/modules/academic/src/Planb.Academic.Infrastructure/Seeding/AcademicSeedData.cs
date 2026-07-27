@@ -504,8 +504,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2024, 3, 11),
             EndDate: new DateOnly(2024, 7, 6),
             EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero),
-            Label: "2024·1c"),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000002")),
             UniversityId: Unsta.Id,
@@ -513,8 +512,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2024, 8, 5),
             EndDate: new DateOnly(2024, 11, 30),
             EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero),
-            Label: "2024·2c"),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000003")),
             UniversityId: Unsta.Id,
@@ -522,8 +520,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2025, 3, 10),
             EndDate: new DateOnly(2025, 7, 5),
             EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero),
-            Label: "2025·1c"),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000004")),
             UniversityId: Unsta.Id,
@@ -531,8 +528,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2025, 8, 4),
             EndDate: new DateOnly(2025, 11, 29),
             EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero),
-            Label: "2025·2c"),
+            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero)),
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000005")),
             UniversityId: Unsta.Id,
@@ -540,8 +536,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2026, 3, 9),
             EndDate: new DateOnly(2026, 7, 4),
             EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero),
-            Label: "2026·1c"),
+            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero)),
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000006")),
             UniversityId: Unsta.Id,
@@ -549,8 +544,7 @@ public static class AcademicSeedData
             StartDate: new DateOnly(2026, 8, 3),
             EndDate: new DateOnly(2026, 11, 28),
             EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero),
-            Label: "2026·2c"),
+            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
     };
 
     // ====================================================================
@@ -585,7 +579,7 @@ public static class AcademicSeedData
     // term_kind (Cuatrimestral) se sostienen. Habilita "docente real por reseña": las reseñas de
     // prueba van a anclar su docente a uno de estos.
     //
-    // Horarios: solo las comisiones de 2026·1c (Atid "05") tienen franjas cargadas, para tener un
+    // Horarios: solo las comisiones de 2026-C1 (Atid "05") tienen franjas cargadas, para tener un
     // cuatrimestre con oferta completa que el planificador pueda mostrar. Las de otros términos
     // quedan sin horario a propósito: es el caso "sin horario cargado". Desarrollo de Software "A"
     // y Álgebra I "A" chocan a propósito los lunes 18-21: es el escenario de choque que el
@@ -597,7 +591,7 @@ public static class AcademicSeedData
     // ====================================================================
     public static IReadOnlyList<CommissionRecord> Commissions { get; } = new[]
     {
-        // Desarrollo de Software (111) · 2026·1c: dos comisiones, distinta modalidad.
+        // Desarrollo de Software (111) · 2026-C1: dos comisiones, distinta modalidad.
         new CommissionRecord(Cid("01"), Sid("05"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
             new[]
             {
@@ -613,7 +607,7 @@ public static class AcademicSeedData
             },
             new[] { Slot(DayOfWeek.Tuesday, 19, 23), Slot(DayOfWeek.Thursday, 19, 23) }),
 
-        // Algoritmos y Paradigmas (101) · 2026·1c.
+        // Algoritmos y Paradigmas (101) · 2026-C1.
         new CommissionRecord(Cid("03"), Sid("01"), Atid("05"), "Mañana", CommissionModality.Presencial, 35, null,
             new[]
             {
@@ -621,7 +615,7 @@ public static class AcademicSeedData
             },
             new[] { Slot(DayOfWeek.Monday, 8, 12), Slot(DayOfWeek.Wednesday, 8, 12) }),
 
-        // Desarrollo Back End (223) · 2025·2c. Sin horario cargado (otro término).
+        // Desarrollo Back End (223) · 2025-C2. Sin horario cargado (otro término).
         new CommissionRecord(Cid("04"), Sid("17"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
             new[]
             {
@@ -630,7 +624,7 @@ public static class AcademicSeedData
             },
             []),
 
-        // Base de datos (121) · 2025·2c. Sin horario cargado (idem Cid 04).
+        // Base de datos (121) · 2025-C2. Sin horario cargado (idem Cid 04).
         new CommissionRecord(Cid("05"), Sid("07"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
             new[]
             {
@@ -639,7 +633,7 @@ public static class AcademicSeedData
             },
             []),
 
-        // Inglés B1:1 (313) · 2026·1c. brandt acá es adjunto (mismo docente, otra comisión).
+        // Inglés B1:1 (313) · 2026-C1. brandt acá es adjunto (mismo docente, otra comisión).
         new CommissionRecord(Cid("06"), Sid("20"), Atid("05"), "A", CommissionModality.Presencial, 25, null,
             new[]
             {
@@ -648,7 +642,7 @@ public static class AcademicSeedData
             },
             new[] { Slot(DayOfWeek.Saturday, 9, 13) }),
 
-        // Comisiones adicionales (una por materia) en 2026·1c, coherentes con el mapeo docente del
+        // Comisiones adicionales (una por materia) en 2026-C1, coherentes con el mapeo docente del
         // corpus de prueba. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
         // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
         new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
@@ -666,10 +660,10 @@ public static class AcademicSeedData
             new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Lead) }, // formación humanística II (202): quiroga
             new[] { Slot(DayOfWeek.Friday, 8, 12) }),
 
-        // Oferta histórica (2024·2c, 2025·1c, 2025·2c) para las materias del corpus de reseñas.
+        // Oferta histórica (2024-C2, 2025-C1, 2025-C2) para las materias del corpus de reseñas.
         // Existe porque el invariante "el docente reseñado pertenece a la comisión de la cursada"
         // necesita una comisión real del par (materia, período) de cada cursada, y las de arriba
-        // son de 2026·1c: una reseña escrita hace más de 139 días precedería a ese cuatrimestre.
+        // son de 2026-C1: una reseña escrita hace más de 139 días precedería a ese cuatrimestre.
         // El período de cada una se eligió para que termine antes de la reseña más vieja de su
         // materia, así ninguna cursada Aprobada cierra un cuatrimestre que todavía no terminó.
         // El titular es, en cada caso, el docente que el corpus reseña para esa materia.
@@ -750,8 +744,14 @@ public sealed record PrerequisiteRecord(SubjectId SubjectId, SubjectId RequiredS
 
 /// <summary>
 /// Período lectivo del seed. UUIDs determinísticos para consistencia entre runs y referencias
-/// estables desde fixtures de tests. Convención de label per uni: UNSTA usa "YYYY·Nc" para
-/// cuatrimestres (ej. "2026·1c").
+/// estables desde fixtures de tests.
+///
+/// <para>
+/// Sin <c>Label</c>: lo computa el seeder con <c>AcademicTerm.ComputeLabel</c>, el mismo método que
+/// usa el alta admin. Cuando el seed traía su propia convención ("2026-C1") y el admin la suya
+/// ("2026-C1"), el mismo dropdown mezclaba las dos formas de nombrar el mismo tipo de período según
+/// quién lo hubiera creado, y ninguna de las dos era "la" convención.
+/// </para>
 /// </summary>
 public sealed record AcademicTermRecord(
     AcademicTermId Id,
@@ -762,8 +762,7 @@ public sealed record AcademicTermRecord(
     DateOnly StartDate,
     DateOnly EndDate,
     DateTimeOffset EnrollmentOpens,
-    DateTimeOffset EnrollmentCloses,
-    string Label);
+    DateTimeOffset EnrollmentCloses);
 
 /// <summary>
 /// Docente del seed. Nombres en lowercase (storage). UUIDs determinísticos para referencias

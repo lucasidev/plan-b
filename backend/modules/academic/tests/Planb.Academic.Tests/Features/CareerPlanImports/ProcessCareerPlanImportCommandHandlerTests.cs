@@ -218,11 +218,11 @@ public class ProcessCareerPlanImportCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ImportNotPending_DropsWithoutSideEffects()
+    public async Task Handle_ImportInTerminalState_DropsWithoutSideEffects()
     {
         var deps = NewDeps();
         var import = PendingImport(deps.Clock);
-        import.MarkParsing(deps.Clock); // simula que otro worker ya lo está procesando
+        import.MarkFailed("el intento anterior ya cerró en error", deps.Clock);
         deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         var handler = NewHandler(deps);
@@ -230,8 +230,33 @@ public class ProcessCareerPlanImportCommandHandlerTests
             new ProcessCareerPlanImportCommand(import.Id.Value, CareerPlanImportSourceType.Text, null, "MAT101 Analisis"),
             CancellationToken.None);
 
-        import.Status.ShouldBe(CareerPlanImportStatus.Parsing); // sin cambios
+        import.Status.ShouldBe(CareerPlanImportStatus.Failed); // sin cambios
         await deps.UnitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
         deps.Parser.DidNotReceive().Parse(Arg.Any<string>());
+    }
+
+    /// <summary>
+    /// Un import que quedó en Parsing es uno cuyo worker se cayó a mitad, no uno que otro worker
+    /// esté procesando ahora: el mensaje se reentrega justamente porque nadie lo terminó. Cuando el
+    /// handler lo dropeaba, el import se quedaba en ese estado para siempre.
+    /// </summary>
+    [Fact]
+    public async Task Handle_ImportEnParsing_RetomaElTrabajo()
+    {
+        var deps = NewDeps();
+        var import = PendingImport(deps.Clock);
+        import.MarkParsing(deps.Clock);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Parser.Parse(Arg.Any<string>()).Returns(_ => throw new InvalidOperationException("parser boom"));
+
+        var handler = NewHandler(deps);
+        await handler.Handle(
+            new ProcessCareerPlanImportCommand(import.Id.Value, CareerPlanImportSourceType.Text, null, "MAT101 Analisis"),
+            CancellationToken.None);
+
+        // El desenlace concreto (acá Failed, porque el parser explota) importa menos que el hecho de
+        // que el import salga de Parsing: cuando el handler dropeaba la redelivery se quedaba ahí.
+        deps.Parser.Received(1).Parse(Arg.Any<string>());
+        import.Status.ShouldBe(CareerPlanImportStatus.Failed);
     }
 }

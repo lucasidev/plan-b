@@ -33,4 +33,10 @@ internal sealed class CommissionRepository : ICommissionRepository
 
         return query.AnyAsync(ct);
     }
+
+    public Task<bool> ExistsForTermAsync(Guid termId, CancellationToken ct = default) =>
+        _db.Commissions.AnyAsync(c => c.TermId == termId, ct);
+
+    public Task<bool> ExistsForSubjectAsync(Guid subjectId, CancellationToken ct = default) =>
+        _db.Commissions.AnyAsync(c => c.SubjectId == subjectId, ct);
 }

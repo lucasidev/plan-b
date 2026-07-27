@@ -84,6 +84,10 @@ public static class CreateCommissionCommandHandler
             {
                 return CommissionErrors.TeacherNotFound;
             }
+            if (!teacher.IsActive)
+            {
+                return CommissionErrors.TeacherInactive;
+            }
             if (teacher.UniversityId.Value != term.UniversityId.Value)
             {
                 return CommissionErrors.UniversityMismatch;

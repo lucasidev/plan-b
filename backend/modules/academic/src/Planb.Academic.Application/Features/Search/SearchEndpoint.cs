@@ -2,6 +2,7 @@ using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 
 namespace Planb.Academic.Application.Features.Search;
 
