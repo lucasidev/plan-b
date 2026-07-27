@@ -23,7 +23,12 @@ public sealed record BrowseReviewItem(
     IReadOnlyList<string> Tags,
     bool WouldRecommendCourse,
     bool WouldRetakeTeacher,
+    // Los dos ejes de texto de la reseña. El aggregate exige al menos uno, no los dos, así que
+    // cualquiera de ellos puede venir null. Hasta ahora el feed solo traía SubjectText y la página
+    // del docente lo renderizaba como si fuera la opinión sobre él: el lector creía estar leyendo
+    // una cosa y leía otra.
     string? SubjectText,
+    string? TeacherText,
     decimal? FinalGrade,
     DateTime CreatedAt,
     // Votos de utilidad (helpfulness). MyVoteIsHelpful: null si el caller no votó (o es

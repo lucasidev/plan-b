@@ -54,8 +54,19 @@ export function TeacherReviewCard({
           {review.subjectCode} · {review.subjectName}
         </Link>
 
-        {review.subjectText && (
-          <p className="text-[13.5px] leading-relaxed text-ink-2 m-0">{review.subjectText}</p>
+        {/* El texto sobre el docente es el que corresponde acá. Cuando la reseña no lo tiene, se
+            muestra el de la cursada pero ETIQUETADO: hasta ahora se renderizaba el de la cursada sin
+            etiqueta, así que el lector creía estar leyendo la opinión sobre esta persona y leía la
+            opinión sobre la materia. El bug no era mostrarlo, era mostrarlo sin decir qué era. */}
+        {review.teacherText ? (
+          <p className="text-[13.5px] leading-relaxed text-ink-2 m-0">{review.teacherText}</p>
+        ) : (
+          review.subjectText && (
+            <p className="text-[13.5px] leading-relaxed text-ink-2 m-0">
+              <span className="text-ink-4">Sobre la cursada: </span>
+              {review.subjectText}
+            </p>
+          )
         )}
 
         {review.tags.length > 0 && (

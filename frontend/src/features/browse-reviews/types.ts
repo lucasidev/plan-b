@@ -13,6 +13,7 @@ export type BrowseReview = {
   subjectName: string;
   difficultyRating: number;
   subjectText: string | null;
+  teacherText: string | null;
   finalGrade: number | null;
   createdAt: string;
 };

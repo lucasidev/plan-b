@@ -47,6 +47,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 r.would_recommend_course                   AS WouldRecommendCourse,
                 r.would_retake_teacher                     AS WouldRetakeTeacher,
                 r.subject_text                             AS SubjectText,
+                r.teacher_text                             AS TeacherText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt,
                 (SELECT COUNT(*)::int FROM reviews.review_votes rv
@@ -110,6 +111,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 WouldRecommendCourse: r.WouldRecommendCourse,
                 WouldRetakeTeacher: r.WouldRetakeTeacher,
                 SubjectText: r.SubjectText,
+                TeacherText: r.TeacherText,
                 FinalGrade: r.FinalGrade,
                 CreatedAt: r.CreatedAt,
                 HelpfulCount: r.HelpfulCount,
@@ -146,6 +148,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public bool WouldRecommendCourse { get; set; }
         public bool WouldRetakeTeacher { get; set; }
         public string? SubjectText { get; set; }
+        public string? TeacherText { get; set; }
         public decimal? FinalGrade { get; set; }
         public DateTime CreatedAt { get; set; }
         public int HelpfulCount { get; set; }

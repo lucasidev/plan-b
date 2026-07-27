@@ -16,5 +16,8 @@ export type EditableReview = {
   status: 'Published' | 'UnderReview' | 'Removed';
   difficultyRating: number;
   subjectText: string | null;
+  // Necesario para que la página de edición pueda sembrar el draft con el texto persistido. Sin
+  // esto el editor arranca con el campo vacío y al guardar lo borra.
+  teacherText: string | null;
   finalGrade: number | null;
 };

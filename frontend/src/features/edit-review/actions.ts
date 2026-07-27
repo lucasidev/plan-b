@@ -25,6 +25,12 @@ const editPayloadSchema = z.object({
     .max(4000, 'Máximo 4000 caracteres')
     .optional()
     .transform((v) => (v === '' ? undefined : v)),
+  teacherText: z
+    .string()
+    .trim()
+    .max(4000, 'Máximo 4000 caracteres')
+    .optional()
+    .transform((v) => (v === '' ? undefined : v)),
 });
 
 /**
@@ -83,6 +89,10 @@ export async function editReviewAction(
   const body: Record<string, unknown> = {
     difficultyRating: validated.data.difficulty,
     subjectText: validated.data.text ?? '',
+    // El editor ahora representa los dos textos, así que los dos van. Vacío significa "borralo",
+    // que es lo que el autor pidió si dejó el campo en blanco. Depende de que la página de edición
+    // cargue el valor persistido en el draft inicial: si no lo cargara, esto lo borraría solo.
+    teacherText: validated.data.teacherText ?? '',
   };
   if (typeof validated.data.rating === 'number' && validated.data.rating >= 1) {
     body.overallRating = validated.data.rating;

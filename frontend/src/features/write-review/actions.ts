@@ -55,13 +55,13 @@ export async function publishReviewAction(
     };
   }
 
-  // El aggregate Review exige al menos un texto y el editor sólo manda subjectText (teacherText va
-  // null). El schema deja el texto opcional para que el draft type-chee, así que el caso "vacío" se
-  // ataja acá con un mensaje claro en vez del 400 genérico (defensa: el botón ya lo gatea).
+  // El aggregate exige al menos un texto, y el editor deja obligatorio el de la cursada. El schema
+  // los deja opcionales para que el draft type-chee, así que el caso "vacío" se ataja acá con un
+  // mensaje claro en vez del 400 genérico (defensa: el botón ya lo gatea).
   if (!validated.data.text) {
     return {
       status: 'error',
-      message: 'Escribí tu experiencia (mínimo 50 caracteres) antes de publicar.',
+      message: 'Contá cómo fue la cursada (mínimo 50 caracteres) antes de publicar.',
     };
   }
 
@@ -75,7 +75,7 @@ export async function publishReviewAction(
     wouldRecommendCourse: validated.data.wouldRecommendCourse,
     wouldRetakeTeacher: validated.data.wouldRetakeTeacher,
     subjectText: validated.data.text ?? null,
-    teacherText: null,
+    teacherText: validated.data.teacherText ?? null,
     finalGrade: null,
   };
 

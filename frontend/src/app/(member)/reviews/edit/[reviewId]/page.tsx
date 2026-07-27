@@ -55,6 +55,10 @@ export default async function EditReviewPage({ params }: { params: Params }) {
       initialDraft={{
         difficulty: review.difficultyRating,
         text: review.subjectText ?? undefined,
+        // Cargar los dos textos no es opcional: el action manda al PATCH todo campo que el editor
+        // pueda representar, así que un editor que no cargó el texto del docente lo mandaría vacío
+        // y lo borraría sin que el autor se entere.
+        teacherText: review.teacherText ?? undefined,
       }}
       deleteTarget={{
         id: review.id,
