@@ -200,6 +200,7 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
                 c.name        AS CommissionName,
                 c.modality    AS Modality,
                 c.capacity    AS Capacity,
+                c.schedules::text AS SchedulesJson,
                 ct.teacher_id AS TeacherId,
                 initcap(t.last_name) || ', ' || initcap(t.first_name) AS TeacherName
             FROM academic.commissions c
@@ -218,30 +219,6 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
                     ELSE 5
                 END;";
 
-        // Horarios: tabla hija independiente de commission_teachers, así que va en su propia query
-        // plana (evita el cross product entre docentes y franjas de la misma comisión).
-        const string scheduleSql = @"
-            SELECT
-                cs.commission_id AS CommissionId,
-                cs.day_of_week   AS Day,
-                cs.start_time    AS Start,
-                cs.end_time      AS End
-            FROM academic.commissions c
-            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
-            WHERE c.term_id = @TermId AND c.subject_id = ANY(@SubjectIds::uuid[]) AND c.is_active = true
-            ORDER BY
-                CASE cs.day_of_week
-                    WHEN 'Monday'    THEN 1
-                    WHEN 'Tuesday'   THEN 2
-                    WHEN 'Wednesday' THEN 3
-                    WHEN 'Thursday'  THEN 4
-                    WHEN 'Friday'    THEN 5
-                    WHEN 'Saturday'  THEN 6
-                    WHEN 'Sunday'    THEN 7
-                    ELSE 8
-                END,
-                cs.start_time;";
-
         using IDbConnection db = new NpgsqlConnection(_connectionString);
 
         var ids = subjectIds.ToArray();
@@ -250,26 +227,21 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
             new CommandDefinition(
                 teachersSql, new { TermId = termId, SubjectIds = ids }, cancellationToken: ct));
 
-        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
-            new CommandDefinition(
-                scheduleSql, new { TermId = termId, SubjectIds = ids }, cancellationToken: ct));
-
-        var scheduleByCommission = BuildScheduleIndex(scheduleRows);
-
         // GroupBy preserva el orden de aparición (subject_id, nombre de comisión) desde el SQL.
         return teacherRows
             .GroupBy(r => r.SubjectId)
             .ToDictionary(
                 bySubject => bySubject.Key,
                 bySubject => (IReadOnlyList<AvailableCommissionItem>)bySubject
-                    .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity))
+                    .GroupBy(r => (
+                        r.CommissionId, r.CommissionName, r.Modality, r.Capacity, r.SchedulesJson))
                     .Select(g => new AvailableCommissionItem(
                         g.Key.CommissionId,
                         g.Key.CommissionName,
                         g.Key.Modality,
                         g.Key.Capacity,
                         g.Where(r => r.TeacherId.HasValue).Select(r => r.TeacherName!).ToList(),
-                        scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
+                        CommissionScheduleJson.Read(g.Key.SchedulesJson)))
                     .ToList());
     }
 
@@ -293,30 +265,10 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
                 subject_id AS SubjectId,
                 term_id    AS TermId,
                 name       AS Name,
-                is_active  AS IsActive
+                is_active  AS IsActive,
+                schedules::text AS SchedulesJson
             FROM academic.commissions
             WHERE id = ANY(@CommissionIds::uuid[]);";
-
-        const string scheduleSql = @"
-            SELECT
-                commission_id AS CommissionId,
-                day_of_week   AS Day,
-                start_time    AS Start,
-                end_time      AS End
-            FROM academic.commission_schedules
-            WHERE commission_id = ANY(@CommissionIds::uuid[])
-            ORDER BY
-                CASE day_of_week
-                    WHEN 'Monday'    THEN 1
-                    WHEN 'Tuesday'   THEN 2
-                    WHEN 'Wednesday' THEN 3
-                    WHEN 'Thursday'  THEN 4
-                    WHEN 'Friday'    THEN 5
-                    WHEN 'Saturday'  THEN 6
-                    WHEN 'Sunday'    THEN 7
-                    ELSE 8
-                END,
-                start_time;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
 
@@ -325,11 +277,6 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
         var commissionRows = await db.QueryAsync<CommissionRow>(
             new CommandDefinition(commissionsSql, new { CommissionIds = ids }, cancellationToken: ct));
 
-        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
-            new CommandDefinition(scheduleSql, new { CommissionIds = ids }, cancellationToken: ct));
-
-        var scheduleByCommission = BuildScheduleIndex(scheduleRows);
-
         return commissionRows.ToDictionary(
             r => r.Id,
             r => new CommissionScheduleSnapshot(
@@ -337,10 +284,8 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
                 r.TermId,
                 r.Name,
                 r.IsActive,
-                scheduleByCommission.GetValueOrDefault(r.Id, EmptySchedule)));
+                CommissionScheduleJson.Read(r.SchedulesJson)));
     }
-
-    private static readonly IReadOnlyList<SimulatorScheduleItem> EmptySchedule = [];
 
     /// <summary>Agrupa filas planas de horario por comisión, formateando horas como "HH:mm".</summary>
     private static Dictionary<Guid, IReadOnlyList<SimulatorScheduleItem>> BuildScheduleIndex(
@@ -362,11 +307,12 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
         string CommissionName,
         string Modality,
         int? Capacity,
+        string? SchedulesJson,
         Guid? TeacherId,
         string? TeacherName);
 
     private sealed record CommissionRow(
-        Guid Id, Guid SubjectId, Guid TermId, string Name, bool IsActive);
+        Guid Id, Guid SubjectId, Guid TermId, string Name, bool IsActive, string? SchedulesJson);
 
     private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 }

@@ -41,6 +41,7 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                 c.capacity            AS Capacity,
                 c.notes               AS Notes,
                 c.is_active           AS IsActive,
+                c.schedules::text     AS SchedulesJson,
                 ct.teacher_id         AS TeacherId,
                 initcap(t.first_name) AS FirstName,
                 initcap(t.last_name)  AS LastName,
@@ -60,53 +61,18 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     ELSE 5
                 END;";
 
-        const string scheduleSql = @"
-            SELECT
-                cs.commission_id AS CommissionId,
-                cs.day_of_week   AS Day,
-                cs.start_time    AS Start,
-                cs.end_time      AS End
-            FROM academic.commissions c
-            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
-            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId
-            ORDER BY
-                CASE cs.day_of_week
-                    WHEN 'Monday'    THEN 1
-                    WHEN 'Tuesday'   THEN 2
-                    WHEN 'Wednesday' THEN 3
-                    WHEN 'Thursday'  THEN 4
-                    WHEN 'Friday'    THEN 5
-                    WHEN 'Saturday'  THEN 6
-                    WHEN 'Sunday'    THEN 7
-                    ELSE 8
-                END,
-                cs.start_time;";
-
         using IDbConnection db = new NpgsqlConnection(_connectionString);
 
         var teacherRows = await db.QueryAsync<CommissionTeacherRow>(
             new CommandDefinition(
                 teachersSql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
 
-        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
-            new CommandDefinition(
-                scheduleSql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
-
-        var scheduleByCommission = scheduleRows
-            .GroupBy(r => r.CommissionId)
-            .ToDictionary(
-                g => g.Key,
-                g => (IReadOnlyList<AdminCommissionScheduleItem>)g
-                    .Select(r => new AdminCommissionScheduleItem(
-                        r.Day,
-                        r.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
-                        r.End.ToString("HH:mm", CultureInfo.InvariantCulture)))
-                    .ToList());
-
         // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
         // nombre desde el SQL), así que el listado sale ordenado sin re-sort.
         return teacherRows
-            .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity, r.Notes, r.IsActive))
+            .GroupBy(r => (
+                r.CommissionId, r.CommissionName, r.Modality, r.Capacity, r.Notes, r.IsActive,
+                r.SchedulesJson))
             .Select(g => new AdminCommissionListItem(
                 g.Key.CommissionId,
                 g.Key.CommissionName,
@@ -118,16 +84,16 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     .Select(r => new AdminCommissionTeacherItem(
                         r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
                     .ToList(),
-                scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
+                [.. CommissionScheduleJson.Read(g.Key.SchedulesJson)
+                    .Select(s => new AdminCommissionScheduleItem(s.Day, s.Start, s.End))]))
             .ToList();
     }
 
     /// <summary>
-    /// Listado global de comisiones de un término, cross-materia (US-093 cont.). Igual criterio de
-    /// "dos queries planas + agrupar en memoria" que <see cref="ListBySubjectAndTermAsync"/>, sumando
-    /// un JOIN a <c>academic.subjects</c> en la query de docentes para traer código/nombre de materia
-    /// (necesarios porque acá el listado mezcla materias distintas, no una sola). La query de
-    /// horarios no necesita ese JOIN: solo filtra por término vía <c>commissions.term_id</c>.
+    /// Listado global de comisiones de un término, cross-materia (US-093 cont.). Una sola query, con
+    /// un JOIN a <c>academic.subjects</c> para traer código/nombre de materia (necesarios porque acá
+    /// el listado mezcla materias distintas, no una sola). Las franjas viajan en la fila de la
+    /// comisión, como documento embebido (ADR-0053).
     /// </summary>
     public async Task<IReadOnlyList<TermCommissionListItem>> ListByTermAsync(
         Guid termId, CancellationToken ct = default)
@@ -142,6 +108,7 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                 c.modality            AS Modality,
                 c.capacity            AS Capacity,
                 c.is_active           AS IsActive,
+                c.schedules::text     AS SchedulesJson,
                 ct.teacher_id         AS TeacherId,
                 initcap(t.first_name) AS FirstName,
                 initcap(t.last_name)  AS LastName,
@@ -163,53 +130,17 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     ELSE 5
                 END;";
 
-        const string scheduleSql = @"
-            SELECT
-                cs.commission_id AS CommissionId,
-                cs.day_of_week   AS Day,
-                cs.start_time    AS Start,
-                cs.end_time      AS End
-            FROM academic.commissions c
-            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
-            WHERE c.term_id = @TermId
-            ORDER BY
-                CASE cs.day_of_week
-                    WHEN 'Monday'    THEN 1
-                    WHEN 'Tuesday'   THEN 2
-                    WHEN 'Wednesday' THEN 3
-                    WHEN 'Thursday'  THEN 4
-                    WHEN 'Friday'    THEN 5
-                    WHEN 'Saturday'  THEN 6
-                    WHEN 'Sunday'    THEN 7
-                    ELSE 8
-                END,
-                cs.start_time;";
-
         using IDbConnection db = new NpgsqlConnection(_connectionString);
 
         var teacherRows = await db.QueryAsync<TermCommissionTeacherRow>(
             new CommandDefinition(teachersSql, new { TermId = termId }, cancellationToken: ct));
-
-        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
-            new CommandDefinition(scheduleSql, new { TermId = termId }, cancellationToken: ct));
-
-        var scheduleByCommission = scheduleRows
-            .GroupBy(r => r.CommissionId)
-            .ToDictionary(
-                g => g.Key,
-                g => (IReadOnlyList<AdminCommissionScheduleItem>)g
-                    .Select(r => new AdminCommissionScheduleItem(
-                        r.Day,
-                        r.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
-                        r.End.ToString("HH:mm", CultureInfo.InvariantCulture)))
-                    .ToList());
 
         // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
         // materia+comisión desde el SQL), así que el listado sale ordenado sin re-sort.
         return teacherRows
             .GroupBy(r => (
                 r.CommissionId, r.SubjectId, r.SubjectCode, r.SubjectName, r.CommissionName,
-                r.Modality, r.Capacity, r.IsActive))
+                r.Modality, r.Capacity, r.IsActive, r.SchedulesJson))
             .Select(g => new TermCommissionListItem(
                 g.Key.CommissionId,
                 g.Key.SubjectId,
@@ -223,7 +154,8 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     .Select(r => new AdminCommissionTeacherItem(
                         r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
                     .ToList(),
-                scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
+                [.. CommissionScheduleJson.Read(g.Key.SchedulesJson)
+                    .Select(s => new AdminCommissionScheduleItem(s.Day, s.Start, s.End))]))
             .ToList();
     }
 
@@ -234,6 +166,7 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
         int? Capacity,
         string? Notes,
         bool IsActive,
+        string? SchedulesJson,
         Guid? TeacherId,
         string? FirstName,
         string? LastName,
@@ -248,10 +181,9 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
         string Modality,
         int? Capacity,
         bool IsActive,
+        string? SchedulesJson,
         Guid? TeacherId,
         string? FirstName,
         string? LastName,
         string? Role);
-
-    private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 }

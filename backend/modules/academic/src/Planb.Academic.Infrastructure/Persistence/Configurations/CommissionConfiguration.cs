@@ -1,5 +1,9 @@
+using System.Globalization;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Teachers;
 
@@ -7,6 +11,60 @@ namespace Planb.Academic.Infrastructure.Persistence.Configurations;
 
 internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commission>
 {
+    /// <summary>
+    /// Shape del documento embebido de franjas (ADR-0053). Se fija acá a propósito en lugar de dejar
+    /// que EF elija: tres readers de Dapper parsean esta columna, así que el shape es un contrato,
+    /// no un detalle de serialización.
+    ///
+    /// <para>
+    /// Día como nombre ("Monday") y horas como "HH:mm" porque es exactamente el shape que los readers
+    /// ya devolvían al formatear para display. Con eso el jsonb se pasa casi tal cual, sin re-mapear.
+    /// </para>
+    /// </summary>
+    private sealed record ScheduleDocument(string Day, string Start, string End);
+
+    private static readonly JsonSerializerOptions ScheduleJsonOptions =
+        new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+    private const string TimeFormat = "HH:mm";
+
+    private static readonly ValueConverter<IReadOnlyList<CommissionSchedule>, string>
+        SchedulesConverter = new(
+            schedules => SerializeSchedules(schedules),
+            json => DeserializeSchedules(json));
+
+    /// <summary>
+    /// Sin comparer, EF no detectaría un cambio dentro de la colección (compararía por referencia) y
+    /// una edición de horarios no generaría UPDATE. Mismo motivo que el comparer de <c>tags</c> en
+    /// Reviews.
+    /// </summary>
+    private static readonly ValueComparer<IReadOnlyList<CommissionSchedule>> SchedulesComparer =
+        new(
+            (a, b) => (a == null && b == null)
+                || (a != null && b != null && a.Count == b.Count && a.Zip(b).All(pair =>
+                    pair.First.Day == pair.Second.Day
+                    && pair.First.StartTime == pair.Second.StartTime
+                    && pair.First.EndTime == pair.Second.EndTime)),
+            list => list.Aggregate(
+                0, (hash, s) => HashCode.Combine(hash, s.Day, s.StartTime, s.EndTime)),
+            list => (IReadOnlyList<CommissionSchedule>)list.ToList());
+
+    private static string SerializeSchedules(IReadOnlyList<CommissionSchedule> schedules) =>
+        JsonSerializer.Serialize(
+            schedules.Select(s => new ScheduleDocument(
+                s.Day.ToString(),
+                s.StartTime.ToString(TimeFormat, CultureInfo.InvariantCulture),
+                s.EndTime.ToString(TimeFormat, CultureInfo.InvariantCulture))),
+            ScheduleJsonOptions);
+
+    private static IReadOnlyList<CommissionSchedule> DeserializeSchedules(string json) =>
+        (JsonSerializer.Deserialize<List<ScheduleDocument>>(json, ScheduleJsonOptions) ?? [])
+            .Select(d => CommissionSchedule.Hydrate(
+                Enum.Parse<DayOfWeek>(d.Day),
+                TimeOnly.ParseExact(d.Start, TimeFormat, CultureInfo.InvariantCulture),
+                TimeOnly.ParseExact(d.End, TimeFormat, CultureInfo.InvariantCulture)))
+            .ToList();
+
     public void Configure(EntityTypeBuilder<Commission> builder)
     {
         builder.ToTable("commissions");
@@ -97,39 +155,24 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
 
         builder.Navigation(c => c.Teachers).AutoInclude();
 
-        builder.OwnsMany(c => c.Schedules, cs =>
-        {
-            // El rango invertido es el que de verdad hace daño: el detector de choques compara
-            // `a.Start < b.End && b.Start < a.End`, así que contra una franja con el fin antes del
-            // inicio nunca marca conflicto. El alumno ve "22:00 a 18:00" en la grilla y el
-            // planificador le dice que no hay choques.
-            cs.ToTable("commission_schedules", t => t.HasCheckConstraint(
-                "ck_commission_schedules_end_after_start",
-                "end_time > start_time"));
-
-            cs.Property<CommissionId>("commission_id")
-                .HasColumnName("commission_id")
-                .HasConversion(id => id.Value, value => new CommissionId(value));
-
-            cs.WithOwner().HasForeignKey("commission_id");
-
-            // DayOfWeek como string ("Monday".."Sunday"), igual criterio que los otros enums.
-            cs.Property(s => s.Day)
-                .HasColumnName("day_of_week")
-                .HasConversion<string>()
-                .HasMaxLength(16)
-                .IsRequired();
-
-            // TimeOnly -> time (sin timezone): hora del día, no un instante. Npgsql lo mapea directo.
-            cs.Property(s => s.StartTime).HasColumnName("start_time").IsRequired();
-            cs.Property(s => s.EndTime).HasColumnName("end_time").IsRequired();
-
-            // PRIMARY KEY (commission_id, day_of_week, start_time): admite varias franjas el mismo
-            // día si arrancan a horas distintas (teórico + práctico). El no-solape lo garantiza el
-            // aggregate, no la PK.
-            cs.HasKey("commission_id", "Day", "StartTime");
-        });
-
-        builder.Navigation(c => c.Schedules).AutoInclude();
+        // Franjas como documento embebido en vez de tabla hija (ADR-0053). El criterio se evalúa por
+        // colección: ninguna lectura expande las franjas a filas para joinear (se leen por
+        // commission_id y se formatean), mientras que los docentes de arriba sí se joinean contra
+        // academic.teachers para el nombre, y por eso ellos siguen siendo tabla.
+        //
+        // Lo que esto elimina: la doble query. Eran dos tablas hijas independientes, así que joinear
+        // las dos en una sola query daba cross product entre docentes y franjas; los tres readers lo
+        // esquivaban con una segunda query plana y un reagrupado en memoria, con el mismo comentario
+        // explicándolo tres veces. Con las franjas dentro de la fila, los docentes joinean normal.
+        //
+        // Se pierde el CHECK end_time > start_time que tenía la tabla hija: un CHECK no puede
+        // recorrer un array jsonb sin una función IMMUTABLE aparte. Se compensa cerrando el bypass en
+        // lugar de netearlo, que es mejor: Commission.Hydrate ahora valida y tira (era el único
+        // camino de escritura que salteaba el aggregate, y su único caller es el seeder).
+        builder.Property(c => c.Schedules)
+            .HasColumnName("schedules")
+            .HasColumnType("jsonb")
+            .HasConversion(SchedulesConverter, SchedulesComparer)
+            .IsRequired();
     }
 }
