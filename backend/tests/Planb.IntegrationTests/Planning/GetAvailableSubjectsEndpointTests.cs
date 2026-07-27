@@ -27,12 +27,12 @@ public class GetAvailableSubjectsEndpointTests : IClassFixture<RegisterApiFixtur
 {
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
 
-    // Plan real de TUDCS (seed de Academic): tiene comisiones + horarios sembrados en 2026·1c
+    // Plan real de TUDCS (seed de Academic): tiene comisiones + horarios sembrados en 2026-C1
     // (US-096), a diferencia de los planes aislados que arma CreatePlanWithSubjectsAsync.
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Term2026_1c = Guid.Parse("00000005-0000-4000-a000-000000000005");
 
-    // 111 Desarrollo de Software: dos comisiones en 2026·1c, "A" (lunes y miércoles 18-22) y
+    // 111 Desarrollo de Software: dos comisiones en 2026-C1, "A" (lunes y miércoles 18-22) y
     // "B (Virtual)" (martes y jueves 19-23).
     private static readonly Guid SubjectDesarrolloSoftware = Guid.Parse("00000004-0000-4000-a000-000000000005");
 

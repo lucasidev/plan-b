@@ -48,6 +48,13 @@ internal sealed class DapperPublicSimulationsReader : IPublicSimulationsReader
         // Keyset pagination sobre (shared_at, id) ambos DESC: sin cursor (los dos parámetros
         // null) trae desde el principio; con cursor sigue estrictamente después de la última fila
         // que ya vio el caller. El empate por id desambigua dos shares con el mismo shared_at.
+        //
+        // status y visibility son ejes independientes, y archivar no desactiva el share: el handler
+        // de promote archiva el Active anterior del mismo (owner, term) sin tocar visibility. Sin
+        // este filtro, cada vez que un alumno promovía un plan nuevo el viejo seguía en el feed para
+        // siempre, mostrado igual que uno vigente. Archived es exactamente "este plan lo reemplacé",
+        // así que es lo único que se excluye: un Draft compartido a propósito sí es contenido válido
+        // del corpus (compartir no exige haber promovido).
         const string draftsSql = @"
             SELECT
                 sd.id        AS Id,
@@ -56,6 +63,7 @@ internal sealed class DapperPublicSimulationsReader : IPublicSimulationsReader
             FROM planning.simulation_drafts sd
             JOIN identity.student_profiles sp ON sp.id = sd.owner_profile_id
             WHERE sd.visibility = 'Shared'
+              AND sd.status <> 'Archived'
               AND sd.term_id = @TermId
               AND sp.career_plan_id = @CareerPlanId
               AND (

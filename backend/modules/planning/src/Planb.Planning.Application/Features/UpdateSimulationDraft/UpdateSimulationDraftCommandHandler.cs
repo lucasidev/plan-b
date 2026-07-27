@@ -1,11 +1,11 @@
 using Planb.Academic.Application.Contracts;
-using Planb.Identity.Application.Abstractions.Security;
 using Planb.Identity.Application.Contracts;
 using Planb.Planning.Application.Abstractions.Persistence;
 using Planb.Planning.Application.Validation;
 using Planb.Planning.Domain.Availability;
 using Planb.Planning.Domain.Drafts;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Planning.Application.Features.UpdateSimulationDraft;
