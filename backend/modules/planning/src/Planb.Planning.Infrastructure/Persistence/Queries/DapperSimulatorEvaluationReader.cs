@@ -93,14 +93,22 @@ internal sealed class DapperSimulatorEvaluationReader : ISimulatorEvaluationRead
     public async Task<CombinationCohortStats> GetCombinationCohortStatsAsync(
         IReadOnlyCollection<Guid> subjectIds,
         Guid excludingStudentProfileId,
+        Guid careerPlanId,
         CancellationToken ct = default)
     {
+        // El JOIN a student_profiles acota el universo al plan del alumno. Sin él este CTE agrupaba
+        // el historial de toda la plataforma en cada POST /evaluate, o sea que el costo crecía con
+        // el total de cursadas cargadas por todos los usuarios y no con el tamaño de la simulación.
+        // Y el resultado además era incorrecto como comparación: metía alumnos de otras carreras y
+        // otras universidades en la cohorte de "quiénes cursaron este combo".
         const string sql = @"
             WITH student_terms AS (
-                SELECT student_profile_id, term_id, array_agg(subject_id) AS subject_set
-                FROM enrollments.enrollment_records
-                WHERE term_id IS NOT NULL
-                GROUP BY student_profile_id, term_id
+                SELECT er.student_profile_id, er.term_id, array_agg(er.subject_id) AS subject_set
+                FROM enrollments.enrollment_records er
+                JOIN identity.student_profiles sp ON sp.id = er.student_profile_id
+                WHERE er.term_id IS NOT NULL
+                  AND sp.career_plan_id = @CareerPlanId
+                GROUP BY er.student_profile_id, er.term_id
             ),
             matching AS (
                 SELECT st.student_profile_id, st.term_id
@@ -125,6 +133,7 @@ internal sealed class DapperSimulatorEvaluationReader : ISimulatorEvaluationRead
                 {
                     SubjectIds = subjectIds.ToArray(),
                     ExcludingStudentProfileId = excludingStudentProfileId,
+                    CareerPlanId = careerPlanId,
                 },
                 cancellationToken: ct));
 
