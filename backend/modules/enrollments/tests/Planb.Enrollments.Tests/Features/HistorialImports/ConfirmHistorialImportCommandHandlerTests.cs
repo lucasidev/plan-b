@@ -296,8 +296,6 @@ public class ConfirmHistorialImportCommandHandlerTests
         deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        // Los dos con IndependentFinalExam porque el confirm fuerza commissionId null, y ese es el
-        // único método de aprobación que el aggregate acepta sin comisión pero con período.
         var items = new ConfirmedItem[]
         {
             new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 7m),
@@ -325,18 +323,54 @@ public class ConfirmHistorialImportCommandHandlerTests
                 Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
             .Returns(import);
 
-        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
+        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, null, Arg.Any<CancellationToken>())
             .Returns(false);
 
-        // Aprobada + Cursada exige commission_id, que el import nunca propaga: el aggregate
-        // rechaza el invariante y el handler debe devolver el error, sin confirmar el import.
-        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", "Coursework", 7m) };
+        // Aprobada por cursada sin período: el aggregate rechaza el invariante y el handler debe
+        // devolver el error, sin confirmar el import ni persistir nada.
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, null, "Passed", "Coursework", 7m) };
 
         var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(EnrollmentRecordErrors.CursadaApprovalMissingCommissionOrTerm);
+        result.Error.ShouldBe(EnrollmentRecordErrors.CursadaApprovalRequiresTerm);
         import.Status.ShouldBe(HistorialImportStatus.Parsed);
         await deps.UnitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// El caso mayoritario de cualquier historial real, que hasta ahora era el único que el import
+    /// no podía registrar: aprobada cursando. El aggregate exigía comisión y el confirm siempre la
+    /// manda null (el documento no la trae), así que un historial con una sola materia aprobada por
+    /// cursada devolvía 400 y no importaba nada.
+    /// </summary>
+    [Theory]
+    [InlineData("Coursework")]
+    [InlineData("Promotion")]
+    [InlineData("FinalExam")]
+    public async Task Handle_AprobadaPorCursadaSinComision_CreatesTheRecord(string approvalMethod)
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+
+        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", approvalMethod, 7m) };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.CreatedCount.ShouldBe(1);
+        await deps.Records.Received(1).AddAsync(
+            Arg.Is<EnrollmentRecord>(r => r != null && r.CommissionId == null && r.TermId == TermId),
+            Arg.Any<CancellationToken>());
+        import.Status.ShouldBe(HistorialImportStatus.Confirmed);
     }
 }

@@ -142,7 +142,11 @@ public static class ConfirmHistorialImportCommandHandler
             var recordResult = EnrollmentRecord.Create(
                 studentProfileId: profile.Id,
                 subjectId: item.SubjectId,
-                commissionId: null, // el import no propaga commissionId (US-014 lo deja null)
+                // El historial académico no dice en qué comisión cursaste, así que acá no hay nada
+                // que propagar: viaja null, no un valor inventado. La consecuencia es acotada y
+                // conocida: la cursada importada no aparece como pendiente de reseñar hasta que
+                // exista comisión (DapperPendingReviewsQueryService filtra commission_id NOT NULL).
+                commissionId: null,
                 termId: item.TermId,
                 status: status,
                 approvalMethod: method,

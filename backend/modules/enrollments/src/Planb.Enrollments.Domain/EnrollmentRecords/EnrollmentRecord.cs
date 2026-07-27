@@ -119,9 +119,12 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
                                   or EnrollmentRecords.ApprovalMethod.Promotion
                                   or EnrollmentRecords.ApprovalMethod.FinalExam)
         {
-            if (commissionId is null || termId is null)
+            // Solo el período. La comisión queda opcional a propósito: ver el docstring de
+            // CursadaApprovalRequiresTerm (el historial académico no la trae, y exigirla rompía el
+            // import entero de US-014).
+            if (termId is null)
             {
-                return EnrollmentRecordErrors.CursadaApprovalMissingCommissionOrTerm;
+                return EnrollmentRecordErrors.CursadaApprovalRequiresTerm;
             }
         }
 

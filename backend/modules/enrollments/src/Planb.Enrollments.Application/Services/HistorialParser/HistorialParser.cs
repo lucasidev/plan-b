@@ -15,7 +15,7 @@ namespace Planb.Enrollments.Application.Services.HistorialParser;
 ///         Validado contra <c>SubjectsByCode</c> del plan del student.</item>
 ///   <item><b>Nota / grade</b>: 0–10 con coma o punto decimal.</item>
 ///   <item><b>Estado</b>: keywords (Aprobada, Regular, Cursando, etc.).</item>
-///   <item><b>Período</b>: múltiples formatos (2024·1c, 1er cuatri 2024, etc).</item>
+///   <item><b>Período</b>: múltiples formatos (2024-C1, 1er cuatri 2024, etc).</item>
 ///   <item><b>Método de aprobación</b>: keywords (Cursada, Final, Equivalencia, etc.).</item>
 /// </list>
 ///
@@ -81,7 +81,7 @@ public sealed class HistorialParser : IHistorialParser
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     // Período: múltiples patrones evaluados en orden.
-    // 1. "2024·1c" / "2024-1c" / "2024 1c" / "2024 / 1c"
+    // 1. "2024-C1" / "2024-1c" / "2024 1c" / "2024 / 1c"
     // 2. "1c/2024" / "1c-2024" / "1c 2024"
     // 3. "1er cuatri 2024" / "primer cuatrimestre 2024" / "segundo cuatri 2024"
     // 4. "Cuatri 1/2024" / "Cuatri 1 2024" / "C1 2024"

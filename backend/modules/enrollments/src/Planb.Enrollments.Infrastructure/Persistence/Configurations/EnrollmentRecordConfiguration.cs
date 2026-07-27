@@ -114,10 +114,12 @@ internal sealed class EnrollmentRecordConfiguration : IEntityTypeConfiguration<E
                 "approval_method IS DISTINCT FROM 'IndependentFinalExam' OR " +
                 "(commission_id IS NULL AND term_id IS NOT NULL)");
 
+            // Sin la comisión: el historial académico no la trae y exigirla acá hacía imposible el
+            // import de US-014 (ver EnrollmentRecordErrors.CursadaApprovalRequiresTerm).
             t.HasCheckConstraint(
-                "ck_enrollment_records_cursada_requires_commission_and_term",
+                "ck_enrollment_records_cursada_requires_term",
                 "approval_method NOT IN ('Coursework','Promotion','FinalExam') OR " +
-                "(commission_id IS NOT NULL AND term_id IS NOT NULL)");
+                "term_id IS NOT NULL");
 
             t.HasCheckConstraint(
                 "ck_enrollment_records_grade_range",

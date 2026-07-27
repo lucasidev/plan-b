@@ -214,14 +214,34 @@ public class EnrollmentRecordTests
     [InlineData(ApprovalMethod.Coursework)]
     [InlineData(ApprovalMethod.Promotion)]
     [InlineData(ApprovalMethod.FinalExam)]
-    public void Create_CursadaSinCommissionOTerm_ReturnsError(ApprovalMethod method)
+    public void Create_CursadaSinTerm_ReturnsError(ApprovalMethod method)
+    {
+        var result = EnrollmentRecord.Create(
+            AnyStudent, AnySubject, AnyCommission, termId: null,
+            EnrollmentStatus.Passed, method, grade: 8m, Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.CursadaApprovalRequiresTerm);
+    }
+
+    /// <summary>
+    /// El camino del import de historial: aprobada por cursada, con período y sin comisión. El
+    /// documento que sube el alumno no dice en qué comisión cursó, así que si el aggregate la
+    /// exigiera no habría forma de registrar la cursada más común que existe.
+    /// </summary>
+    [Theory]
+    [InlineData(ApprovalMethod.Coursework)]
+    [InlineData(ApprovalMethod.Promotion)]
+    [InlineData(ApprovalMethod.FinalExam)]
+    public void Create_CursadaSinCommissionPeroConTerm_Succeeds(ApprovalMethod method)
     {
         var result = EnrollmentRecord.Create(
             AnyStudent, AnySubject, commissionId: null, termId: AnyTerm,
             EnrollmentStatus.Passed, method, grade: 8m, Clock);
 
-        result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(EnrollmentRecordErrors.CursadaApprovalMissingCommissionOrTerm);
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.CommissionId.ShouldBeNull();
+        result.Value.TermId.ShouldBe(AnyTerm);
     }
 
     [Fact]
