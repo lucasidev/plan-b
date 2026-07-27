@@ -46,6 +46,8 @@ export type SubjectReview = {
   subjectText: string | null;
   finalGrade: number | null;
   createdAt: string;
+  /** Si es > createdAt, la reseña fue editada (US-018). */
+  updatedAt: string;
   /** Votos de utilidad (helpfulness). myVoteIsHelpful: null si el caller no votó / es anónimo. */
   helpfulCount: number;
   notHelpfulCount: number;

@@ -16,6 +16,8 @@ export type BrowseReview = {
   teacherText: string | null;
   finalGrade: number | null;
   createdAt: string;
+  /** Si es > createdAt, la reseña fue editada (US-018). */
+  updatedAt: string;
 };
 
 export type BrowseReviewsResponse = {

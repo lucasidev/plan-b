@@ -121,7 +121,7 @@ export function CarnetPreview() {
           <div>
             <div style={{ fontSize: 15, fontWeight: 500 }}>Anónimo</div>
             <div className="text-ink-4 font-mono" style={{ fontSize: 11.5, marginTop: 2 }}>
-              Sistemas · 4° año · cursó 2024·2c
+              Sistemas · 4° año · cursó 2024-C2
             </div>
           </div>
         </div>

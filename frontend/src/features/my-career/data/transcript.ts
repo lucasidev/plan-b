@@ -24,7 +24,7 @@ export type HistorialEntry = {
 };
 
 export type HistorialPeriod = {
-  /** Human-readable period label (e.g. `2025·2c`). */
+  /** Human-readable period label (e.g. `2025-C2`). */
   period: string;
   /** Period average (precomputed in the mock). */
   avg: number;
@@ -33,7 +33,7 @@ export type HistorialPeriod = {
 
 export const historial: HistorialPeriod[] = [
   {
-    period: '2025·2c',
+    period: '2025-C2',
     avg: 7.7,
     items: [
       {
@@ -54,7 +54,7 @@ export const historial: HistorialPeriod[] = [
     ],
   },
   {
-    period: '2025·1c',
+    period: '2025-C1',
     avg: 7.7,
     items: [
       {
@@ -69,7 +69,7 @@ export const historial: HistorialPeriod[] = [
     ],
   },
   {
-    period: '2024·2c',
+    period: '2024-C2',
     avg: 7.0,
     items: [
       { code: 'PRG201', name: 'Programación II', state: 'aprob', grade: 8, teacher: 'García' },
@@ -83,7 +83,7 @@ export const historial: HistorialPeriod[] = [
     ],
   },
   {
-    period: '2024·1c',
+    period: '2024-C1',
     avg: 8.0,
     items: [
       { code: 'MAT102', name: 'Análisis Matemático I', state: 'aprob', grade: 7, teacher: 'López' },

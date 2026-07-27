@@ -49,14 +49,14 @@ export function Topbar() {
  * cursada to review"). When there are no pendings the user lands on the empty state
  * and the badge disappears.
  *
- * Client-only fetch: the topbar lives in the member layout, outside any page's RSC
- * prefetch + HydrationBoundary, so this query is never hydrated. The queryFn uses a
- * relative URL (`/api/...`) that only resolves in the browser. Under
- * ReactQueryStreamedHydration a plain useQuery would otherwise execute server-side during
- * SSR and throw "Failed to parse URL" (no base, no cookie), which intermittently broke the
- * RSC render of the page being navigated to. Gating on a mounted flag keeps the fetch on
- * the client. Hydration-safe: server and the first client render both see enabled=false
- * (no badge); the effect flips it after mount.
+ * La data la siembra el layout de `(member)` (prefetch + HydrationBoundary con este mismo
+ * queryKey), así que el badge sale bien desde el primer paint.
+ *
+ * El flag `mounted` se queda igual, y no es redundante: `enabled` no afecta la lectura de la
+ * cache hidratada, pero sí impide que el queryFn corra server-side si algún día el prefetch del
+ * layout no está (falla, o alguien monta el topbar en otro lado). Ese queryFn usa un path relativo
+ * `/api/...` que en Node no resuelve, y su fallo rompía la RSC de la página a la que se estaba
+ * navegando. Hydration-safe: server y primer render de cliente ven enabled=false.
  */
 function WriteReviewButton() {
   const [mounted, setMounted] = useState(false);

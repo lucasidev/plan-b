@@ -24,7 +24,7 @@ type Params = Promise<{ enrollmentId: string }>;
  *
  * The pending item carries the enrollment's `commissionId` (only reviewable enrollments surface),
  * so the page fetches that commission's teachers and hands them to the editor: the student picks the
- * real docente they had, which the publish action sends as `docenteResenadoId` (US-065 docente real
+ * real docente they had, which the publish action sends as `reviewedTeacherId` (US-065 docente real
  * por reseña). The backend validates that the picked teacher belongs to the commission.
  */
 export default async function WriteReviewPage({ params }: { params: Params }) {

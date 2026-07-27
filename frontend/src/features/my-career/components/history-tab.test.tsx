@@ -17,12 +17,12 @@ const entry = (
 
 const fixturePeriods: HistorialPeriod[] = [
   {
-    period: '2025·2c',
+    period: '2025-C2',
     avg: 8.0,
     items: [entry('ISW301', 'aprob', 8), entry('BD301', 'aprob', 8)],
   },
   {
-    period: '2024·1c',
+    period: '2024-C1',
     avg: 7.5,
     items: [entry('MAT101', 'aprob', 7), entry('PRG101', 'recurso', null)],
   },
@@ -46,8 +46,8 @@ describe('HistoryTab', () => {
 
   it('renderea una card por período', () => {
     render(<HistoryTab periods={fixturePeriods} />);
-    expect(screen.getByText('2025·2c')).toBeInTheDocument();
-    expect(screen.getByText('2024·1c')).toBeInTheDocument();
+    expect(screen.getByText('2025-C2')).toBeInTheDocument();
+    expect(screen.getByText('2024-C1')).toBeInTheDocument();
   });
 
   it('renderea las entradas con sus datos y chips de estado', () => {

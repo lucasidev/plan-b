@@ -33,7 +33,7 @@ export function DemoReview() {
         className="font-mono text-ink-3"
         style={{ marginTop: 8, fontSize: 10.5, letterSpacing: '0.04em' }}
       >
-        Anónimo · cursó 2024·2c · 7 (final)
+        Anónimo · cursó 2024-C2 · 7 (final)
       </div>
     </div>
   );

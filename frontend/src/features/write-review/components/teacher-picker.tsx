@@ -6,7 +6,7 @@ import type { CommissionTeacherOption } from '../types';
 /**
  * "¿Quién te dio la cursada?" picker (US-065 docente real por reseña). The student reviews one real
  * teacher of the enrollment's commission, so this lists the commission's teachers and lets them pick
- * exactly one. The selected `teacherId` is what the publish action sends as `docenteResenadoId`
+ * exactly one. The selected `teacherId` is what the publish action sends as `reviewedTeacherId`
  * (replacing the old placeholder). Single-select, required.
  *
  * Role label maps the backend PascalCase enum to rioplatense display copy.

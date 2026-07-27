@@ -9,7 +9,7 @@ export type PendingReview = {
   name: string;
   /** Surname of the teacher who delivered the subject that term. */
   prof: string;
-  /** Compact string of the closed term (e.g. "2025·2c"). */
+  /** Compact string of the closed term (e.g. "2025-C2"). */
   closed: string;
   /** Final grade the student got. `null` if approved via equivalence or without a numeric grade. */
   note: number | null;
@@ -22,21 +22,21 @@ export const pendingReviews: PendingReview[] = [
     code: 'ISW301',
     name: 'Ingeniería de Software I',
     prof: 'Brandt',
-    closed: '2025·2c',
+    closed: '2025-C2',
     note: 8,
   },
   {
     code: 'BD301',
     name: 'Bases de Datos',
     prof: 'Castellanos',
-    closed: '2025·2c',
+    closed: '2025-C2',
     note: 7,
   },
   {
     code: 'COM301',
     name: 'Comunicación de Datos',
     prof: 'Sosa',
-    closed: '2025·2c',
+    closed: '2025-C2',
     note: 6,
   },
 ];

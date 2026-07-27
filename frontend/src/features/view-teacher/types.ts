@@ -48,6 +48,12 @@ export type TeacherReview = {
   teacherText: string | null;
   finalGrade: number | null;
   createdAt: string;
+  /**
+   * Si es > createdAt, la reseña fue editada (US-018). Mismo marcador que la respuesta del docente:
+   * sin él, el autor podía reescribir el texto después de que le respondieran y dejar la respuesta
+   * contestando algo que ya no estaba escrito, sin que el lector tuviera cómo notarlo.
+   */
+  updatedAt: string;
   /** Votos de utilidad (helpfulness). myVoteIsHelpful: null si el caller no votó / es anónimo. */
   helpfulCount: number;
   notHelpfulCount: number;

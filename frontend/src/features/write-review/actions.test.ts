@@ -8,7 +8,7 @@ import { PUBLISH_REVIEW_INITIAL_STATE } from './types';
  *   - `@/lib/api-client.server` → controla la Response que recibe el action.
  *
  * Cubrimos las guardas pre-fetch (no pegan al backend si fallan):
- *   - falta docenteResenadoId
+ *   - falta reviewedTeacherId
  *   - JSON.parse del payload con catch
  *   - gate de "texto requerido" (el schema deja el texto opcional, el action lo exige)
  * y un happy path 201 para confirmar que un input completo atraviesa las tres guardas.
@@ -42,7 +42,7 @@ function formData(overrides: Record<string, string | undefined> = {}): FormData 
   const fd = new FormData();
   const values: Record<string, string> = {
     enrollmentId: '11111111-1111-4111-a111-111111111111',
-    docenteResenadoId: '22222222-2222-4222-a222-222222222222',
+    reviewedTeacherId: '22222222-2222-4222-a222-222222222222',
     payload: JSON.stringify(VALID_DRAFT),
   };
   for (const [k, v] of Object.entries(overrides)) {
@@ -63,10 +63,10 @@ beforeEach(() => {
 });
 
 describe('publishReviewAction', () => {
-  it('rechaza cuando falta docenteResenadoId, sin llamar al backend', async () => {
+  it('rechaza cuando falta reviewedTeacherId, sin llamar al backend', async () => {
     const result = await publishReviewAction(
       PUBLISH_REVIEW_INITIAL_STATE,
-      formData({ docenteResenadoId: undefined }),
+      formData({ reviewedTeacherId: undefined }),
     );
 
     expect(result.status).toBe('error');

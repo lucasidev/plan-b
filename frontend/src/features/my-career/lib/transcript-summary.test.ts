@@ -22,17 +22,17 @@ const entry = (
 
 const fixturePeriods: HistorialPeriod[] = [
   {
-    period: '2025·2c',
+    period: '2025-C2',
     avg: 8,
     items: [entry('A', 'aprob', 8), entry('B', 'aprob', 9)],
   },
   {
-    period: '2025·1c',
+    period: '2025-C1',
     avg: 7,
     items: [entry('C', 'aprob', 7), entry('D', 'recurso', null)],
   },
   {
-    period: '2024·1c',
+    period: '2024-C1',
     avg: 8,
     items: [entry('E', 'aprob', 8)],
   },
@@ -81,21 +81,19 @@ describe('periodsCount', () => {
 });
 
 describe('firstPeriodLabel', () => {
-  it('mapea YYYY·1c a "Mar YYYY"', () => {
+  it('mapea YYYY-C1 a "Mar YYYY"', () => {
     expect(firstPeriodLabel(fixturePeriods)).toBe('Mar 2024');
   });
 
-  it('mapea YYYY·2c a "Ago YYYY"', () => {
+  it('mapea YYYY-C2 a "Ago YYYY"', () => {
     const periods: HistorialPeriod[] = [
-      { period: '2024·2c', avg: 0, items: [entry('A', 'aprob')] },
+      { period: '2024-C2', avg: 0, items: [entry('A', 'aprob')] },
     ];
     expect(firstPeriodLabel(periods)).toBe('Ago 2024');
   });
 
-  it('mapea anual a "YYYY anual"', () => {
-    const periods: HistorialPeriod[] = [
-      { period: '2020·anual', avg: 0, items: [entry('A', 'aprob')] },
-    ];
+  it('mapea el año pelado (anual) a "YYYY anual"', () => {
+    const periods: HistorialPeriod[] = [{ period: '2020', avg: 0, items: [entry('A', 'aprob')] }];
     expect(firstPeriodLabel(periods)).toBe('2020 anual');
   });
 

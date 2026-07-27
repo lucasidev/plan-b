@@ -57,19 +57,20 @@ export function periodsCount(periods: HistorialPeriod[]): number {
  * Readable label of the first period taken (the oldest in the array, assuming the
  * mock's default descending order).
  *
- * The canvas uses the `"Mar 2024"` (month + year) format. The mock uses the
- * `"2024·1c"` format. We do a simple mapping: `1c` to `Mar`, `2c` to `Ago`. If the
- * period does not match the format, it's rendered raw.
+ * The canvas uses the `"Mar 2024"` (month + year) format. The period arrives in the label the
+ * backend computes (`AcademicTerm.ComputeLabel`): `"2024-C1"` for a cuatrimestre, `"2024"` bare
+ * for an anual. We map the cuatrimestre to when it starts (`C1` to `Mar`, `C2` to `Ago`). Any
+ * other cadence (`-S1`, `-B3`) is rendered raw: no single month is a fair stand-in for a semester.
  */
 export function firstPeriodLabel(periods: HistorialPeriod[]): string {
   if (periods.length === 0) return '—';
   const first = periods[periods.length - 1].period;
-  const match = first.match(/^(\d{4})·(1c|2c|anual)$/);
+  const yearOnly = first.match(/^(\d{4})$/);
+  if (yearOnly) return `${yearOnly[1]} anual`;
+  const match = first.match(/^(\d{4})-C([12])$/);
   if (!match) return first;
   const [, year, term] = match;
-  if (term === '1c') return `Mar ${year}`;
-  if (term === '2c') return `Ago ${year}`;
-  return `${year} anual`;
+  return term === '1' ? `Mar ${year}` : `Ago ${year}`;
 }
 
 /** One-shot helper that assembles the full `HistorialSummary`. */
