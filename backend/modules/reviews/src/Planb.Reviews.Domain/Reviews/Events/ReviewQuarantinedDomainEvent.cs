@@ -13,5 +13,5 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 public sealed record ReviewQuarantinedDomainEvent(
     ReviewId ReviewId,
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     DateTimeOffset OccurredAt) : IDomainEvent;

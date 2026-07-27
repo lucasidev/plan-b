@@ -11,7 +11,7 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 /// </summary>
 public sealed record PublishReviewRequest(
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     int DifficultyRating,
     int OverallRating,
     int? HoursPerWeek,

@@ -18,7 +18,7 @@ public static class ReviewPublishedTranslator
             EventId: Guid.NewGuid(),
             ReviewId: domainEvent.ReviewId.Value,
             EnrollmentId: domainEvent.EnrollmentId,
-            DocenteResenadoId: domainEvent.DocenteResenadoId,
+            ReviewedTeacherId: domainEvent.ReviewedTeacherId,
             OccurredAt: domainEvent.OccurredAt))
             .AsTask();
 }

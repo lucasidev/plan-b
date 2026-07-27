@@ -75,13 +75,30 @@ public class ReviewRemoveRestoreTests
     }
 
     [Fact]
-    public void RestoreFromReports_republishes_an_under_review_review()
+    public void RestoreFromReports_republishes_a_review_quarantined_by_reports()
     {
-        var review = New(ReviewStatus.UnderReview);
+        var review = New(ReviewStatus.Published);
+        review.QuarantineByReports(new FixedClock(T0)).ShouldBeTrue();
 
         review.RestoreFromReports(new FixedClock(T0.AddHours(1))).ShouldBeTrue();
 
         review.Status.ShouldBe(ReviewStatus.Published);
+    }
+
+    /// <summary>
+    /// Los dos caminos a UnderReview llegaban al mismo status y después eran indistinguibles, así
+    /// que desestimar un report sobre una reseña que el filtro había frenado la publicaba de
+    /// rebote: el moderador decía "este report no vale" y el efecto era "publiquen este contenido".
+    /// </summary>
+    [Fact]
+    public void RestoreFromReports_no_republica_lo_que_freno_el_filtro()
+    {
+        var review = New(ReviewStatus.UnderReview);
+        review.QuarantinedByContentFilter.ShouldBeTrue();
+
+        review.RestoreFromReports(new FixedClock(T0.AddHours(1))).ShouldBeFalse();
+
+        review.Status.ShouldBe(ReviewStatus.UnderReview);
     }
 
     [Fact]

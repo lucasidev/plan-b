@@ -41,7 +41,7 @@ public static class EditTeacherResponseCommandHandler
         }
 
         var isVerifiedTeacher = await identity.HasVerifiedTeacherProfileAsync(
-            command.UserId, review.DocenteResenadoId, ct);
+            command.UserId, review.ReviewedTeacherId, ct);
         if (!isVerifiedTeacher)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;

@@ -28,8 +28,8 @@ public class BrowseReviewsEndpointTests
     // Dos materias sembradas con comisión real, para que un mismo user pueda tener dos cursadas
     // reseñables distintas (UNIQUE student+subject+term). Cada una ancla a su comisión/docente
     // sembrado (el handler de publish valida docente-en-comisión):
-    //   101 Algoritmos y Paradigmas → comisión "Mañana" (iturralde) · 2026·1c
-    //   111 Desarrollo de Software  → comisión "A" (Brandt)         · 2026·1c
+    //   101 Algoritmos y Paradigmas → comisión "Mañana" (iturralde) · 2026-C1
+    //   111 Desarrollo de Software  → comisión "A" (Brandt)         · 2026-C1
     private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
     private static readonly Guid Subject111 =
@@ -100,7 +100,7 @@ public class BrowseReviewsEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = difficulty,
                 overallRating = 4,
                 wouldRecommendCourse = true,
@@ -121,7 +121,7 @@ public class BrowseReviewsEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = 3,
                 overallRating = 2,
                 wouldRecommendCourse = false,

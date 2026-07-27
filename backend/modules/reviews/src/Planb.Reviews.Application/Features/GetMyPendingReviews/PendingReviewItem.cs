@@ -12,7 +12,7 @@ namespace Planb.Reviews.Application.Features.GetMyPendingReviews;
 /// <para>
 /// El período viaja crudo: <see cref="TermYear"/>, <see cref="TermNumber"/> y <see cref="TermKind"/>
 /// (valores de <c>academic_terms.kind</c>: Bimestral, Cuatrimestral, Semestral, Anual). Armar el
-/// label de presentación (ej. "2025·2c") es responsabilidad del frontend, no de esta capa de datos.
+/// label de presentación (ej. "2025-C2") es responsabilidad del frontend, no de esta capa de datos.
 /// Los tres campos son null en conjunto para cursadas sin período académico vinculado.
 /// </para>
 /// </summary>

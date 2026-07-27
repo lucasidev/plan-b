@@ -49,7 +49,7 @@ public static class RespondToReviewCommandHandler
         }
 
         var isVerifiedTeacher = await identity.HasVerifiedTeacherProfileAsync(
-            command.UserId, review.DocenteResenadoId, ct);
+            command.UserId, review.ReviewedTeacherId, ct);
         if (!isVerifiedTeacher)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;
@@ -61,7 +61,7 @@ public static class RespondToReviewCommandHandler
             return textResult.Error;
         }
 
-        var respondResult = review.Respond(review.DocenteResenadoId, textResult.Value, clock);
+        var respondResult = review.Respond(review.ReviewedTeacherId, textResult.Value, clock);
         if (respondResult.IsFailure)
         {
             return respondResult.Error;
@@ -70,7 +70,7 @@ public static class RespondToReviewCommandHandler
         auditLog.Add(ReviewAuditLog.Record(
             review.Id,
             ReviewAuditAction.ResponsePublished,
-            JsonSerializer.Serialize(new { teacher_id = review.DocenteResenadoId }),
+            JsonSerializer.Serialize(new { teacher_id = review.ReviewedTeacherId }),
             command.UserId,
             clock.UtcNow));
 

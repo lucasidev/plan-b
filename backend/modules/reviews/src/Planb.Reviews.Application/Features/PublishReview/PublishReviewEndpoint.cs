@@ -29,7 +29,7 @@ public sealed class PublishReviewEndpoint : ICarterModule
             var command = new PublishReviewCommand(
                 userId.Value,
                 body.EnrollmentId,
-                body.DocenteResenadoId,
+                body.ReviewedTeacherId,
                 body.DifficultyRating,
                 body.OverallRating,
                 body.HoursPerWeek,

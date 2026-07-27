@@ -20,7 +20,7 @@ public class CastReviewVoteEndpointTests
 
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026·1c ·
+    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026-C1 ·
     // comisión "A", titular Brandt). El handler de publish exige que el docente reseñado pertenezca
     // a la comisión de la cursada, así que toda reseña de estos tests ancla a Brandt en esa
     // comisión. Cada author es un user distinto y publica una sola reseña, así no choca con
@@ -171,7 +171,7 @@ public class CastReviewVoteEndpointTests
     }
 
     // Crea una cursada aprobada anclada a la comisión sembrada "A" (111 Desarrollo de Software ·
-    // 2026·1c), reseñable por Brandt. El subjectId se ignora para mantener la firma estable en los
+    // 2026-C1), reseñable por Brandt. El subjectId se ignora para mantener la firma estable en los
     // call sites.
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
@@ -194,7 +194,7 @@ public class CastReviewVoteEndpointTests
     private static object ReviewPayload(Guid enrollmentId, string? text = null) => new
     {
         enrollmentId,
-        docenteResenadoId = TeacherBrandt,
+        reviewedTeacherId = TeacherBrandt,
         difficultyRating = 4,
         overallRating = 4,
         wouldRecommendCourse = true,

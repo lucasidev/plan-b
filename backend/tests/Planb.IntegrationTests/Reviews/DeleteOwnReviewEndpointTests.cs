@@ -29,7 +29,7 @@ public class DeleteOwnReviewEndpointTests
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026·1c ·
+    // Terna reseñable de materia + período + comisión (111 Desarrollo de Software · 2026-C1 ·
     // comisión "A", titular Brandt). El handler de publish exige que el docente reseñado pertenezca
     // a la comisión de la cursada, por eso la reseña apunta a Brandt. Cada test usa un user fresco
     // con una sola cursada.
@@ -63,7 +63,7 @@ public class DeleteOwnReviewEndpointTests
     }
 
     // Crea una cursada aprobada anclada a la comisión sembrada "A" (111 Desarrollo de Software ·
-    // 2026·1c), reseñable por Brandt. El subjectId se ignora para mantener estable la firma de los
+    // 2026-C1), reseñable por Brandt. El subjectId se ignora para mantener estable la firma de los
     // call sites.
     private static async Task<Guid> CreateApprovedEnrollmentAsync(
         AuthenticatedClient auth, Guid subjectId)
@@ -92,7 +92,7 @@ public class DeleteOwnReviewEndpointTests
             new
             {
                 enrollmentId,
-                docenteResenadoId = TeacherBrandt,
+                reviewedTeacherId = TeacherBrandt,
                 difficultyRating = 4,
                 overallRating = 4,
                 wouldRecommendCourse = true,

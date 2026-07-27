@@ -18,7 +18,7 @@ public static class ReviewDeletedTranslator
             EventId: Guid.NewGuid(),
             ReviewId: domainEvent.ReviewId.Value,
             EnrollmentId: domainEvent.EnrollmentId,
-            DocenteResenadoId: domainEvent.DocenteResenadoId,
+            ReviewedTeacherId: domainEvent.ReviewedTeacherId,
             StatusBefore: domainEvent.StatusBefore.ToString(),
             Reason: domainEvent.Reason.ToString(),
             OccurredAt: domainEvent.OccurredAt))

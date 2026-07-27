@@ -16,7 +16,7 @@ public sealed record ReviewDeletedIntegrationEvent(
     Guid EventId,
     Guid ReviewId,
     Guid EnrollmentId,
-    Guid DocenteResenadoId,
+    Guid ReviewedTeacherId,
     string StatusBefore,
     string Reason,
     DateTimeOffset OccurredAt) : IIntegrationEvent;

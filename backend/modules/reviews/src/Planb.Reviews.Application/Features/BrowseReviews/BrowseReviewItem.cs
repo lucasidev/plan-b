@@ -31,6 +31,11 @@ public sealed record BrowseReviewItem(
     string? TeacherText,
     decimal? FinalGrade,
     DateTime CreatedAt,
+    // UpdatedAt > CreatedAt marca que la reseña se editó, igual que ResponseUpdatedAt del lado del
+    // docente. La asimetría importaba: la respuesta del docente exponía sus ediciones y la reseña
+    // no, así que el autor podía reescribir el texto después de que le respondieran y dejar la
+    // respuesta contestando algo que ya no está escrito, sin que el lector tuviera cómo notarlo.
+    DateTime UpdatedAt,
     // Votos de utilidad (helpfulness). MyVoteIsHelpful: null si el caller no votó (o es
     // anónimo), true = votó útil, false = votó no útil. Sirve para resaltar el botón activo.
     int HelpfulCount,

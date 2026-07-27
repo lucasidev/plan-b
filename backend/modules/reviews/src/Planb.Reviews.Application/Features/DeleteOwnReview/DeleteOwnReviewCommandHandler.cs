@@ -58,6 +58,19 @@ public static class DeleteOwnReviewCommandHandler
             return Result.Failure<DeleteOwnReviewResponse>(ReviewErrors.NotFound);
         }
 
+        // Removed es terminal para el autor. El docstring de Review.Delete ya decía que "el caller
+        // mapea eso a un conflicto", pero el caller no lo hacía: el guard del aggregate solo frena
+        // Deleted, así que desde Removed la transición pasaba.
+        //
+        // Lo que eso habilitaba: el moderador remueve una difamación, el autor borra su propia
+        // reseña (pasa a Deleted, y el unique parcial filtra por status <> 'Deleted', así que la
+        // cursada queda libre), y republica el mismo texto como fila nueva sin los reportes upheld
+        // encima. El moderador no tiene ningún botón para deshacerlo.
+        if (review.Status == ReviewStatus.Removed)
+        {
+            return Result.Failure<DeleteOwnReviewResponse>(ReviewErrors.CannotDeleteRemovedReview);
+        }
+
         var deletedNow = review.Delete(ReviewDeletedReason.Self, clock);
 
         if (deletedNow)
