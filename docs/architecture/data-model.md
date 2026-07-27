@@ -45,19 +45,24 @@ erDiagram
     StudentProfile ||--o{ HistorialImport : imports
 
     EnrollmentRecord ||--o| Review : "reviewed as"
+    User ||--o{ Review : authors
     Review ||--o{ ReviewReport : receives
     Review ||--o| TeacherResponse : "responded by"
     Review ||--o{ ReviewAuditLog : audits
+
+    StudentProfile ||--o{ SimulationDraft : plans
+    SimulationDraft ||--o{ SimulationDraftItem : contains
 ```
 
 **Contextos:**
 
 | Context              | Entidades                                                                                                   | Propósito                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Identity             | User, StudentProfile, TeacherProfile                                                                        | Cuentas, roles, identidades académicas                          |
-| Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm | Datos precargados del dominio académico                         |
+| Identity             | User, StudentProfile, TeacherProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
+| Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
 | Student History      | EnrollmentRecord, HistorialImport                                                                           | Historial de cursadas del alumno                                |
 | Reviews & Moderation | Review, ReviewReport, TeacherResponse, ReviewAuditLog                                                       | Reseñas, reportes, respuestas, auditoría                        |
+| Planning             | SimulationDraft, SimulationDraftItem                                                                        | Simulaciones de cuatrimestre del alumno                         |
 
 ## Context: Identity
 
@@ -262,6 +267,8 @@ Materia de un plan específico.
 | `weekly_hours`   | INT              | NOT NULL                  |                   |
 | `total_hours`    | INT              | NOT NULL                  |                   |
 | `description`    | TEXT             | NULL                      |                   |
+| `is_active`      | BOOLEAN          | NOT NULL, DEFAULT `true`  | Soft delete (US-062) |
+| `is_official`    | BOOLEAN          | NOT NULL                  | False si la creó el crowdsourcing |
 | `created_at`     | TIMESTAMPTZ      | NOT NULL                  |                   |
 | `updated_at`     | TIMESTAMPTZ      | NOT NULL                  |                   |
 
@@ -270,6 +277,17 @@ Constraints:
 - `UNIQUE(career_plan_id, code)`.
 - CHECK: `term_kind = 'anual'` → `term_in_year IS NULL`.
 - CHECK: `term_kind != 'anual'` → `term_in_year IS NOT NULL`.
+- `term_kind` queda congelado apenas la materia tiene comisiones (app-level): crear una comisión valida que la cadencia de materia y período coincidan, y editarla después rompía esa igualdad en silencio.
+
+Índices de búsqueda (US-042):
+
+```sql
+CREATE INDEX ix_subjects_search_trgm ON academic.subjects USING gin (
+    academic.immutable_unaccent(lower(code)) gin_trgm_ops,
+    academic.immutable_unaccent(lower(name)) gin_trgm_ops);
+```
+
+`academic.immutable_unaccent(text)` es un wrapper propio: las dos sobrecargas de `unaccent` son `STABLE`, así que Postgres rechaza indexarlas. Fijando el diccionario de forma explícita (`public.unaccent('public.unaccent'::regdictionary, $1)`) el resultado sí es determinístico y marcarla `IMMUTABLE` es correcto. La query tiene que usar exactamente la misma expresión, y comparar por similitud con el operador `%` (con `pg_trgm.similarity_threshold` seteado en la sesión), porque `similarity(a,b) > x` como llamada a función no es indexable.
 
 ### Entity: Prerequisite
 
@@ -301,8 +319,13 @@ Docente del catálogo de una universidad. Entidad precargada, independiente de s
 | `title`         | TEXT        | NULL                      | Lowercase en DB, title case en display (convención Laravel-style) |
 | `bio`           | TEXT        | NULL                      |                                                                   |
 | `photo_url`     | TEXT        | NULL                      |                                                                   |
+| `is_active`     | BOOLEAN     | NOT NULL, DEFAULT `true`  | Soft delete (US-063)                                              |
 | `created_at`    | TIMESTAMPTZ | NOT NULL                  |                                                                   |
 | `updated_at`    | TIMESTAMPTZ | NOT NULL                  |                                                                   |
+
+Índice de búsqueda análogo al de Subject (`ix_teachers_search_trgm`), con una tercera expresión sobre `first_name || ' ' || last_name` para la búsqueda por nombre completo.
+
+Un docente archivado no se puede asignar a comisiones nuevas (app-level). Sí se lo deja seguir asignado donde ya estaba: sacarlo reescribiría quién dictó esa comisión.
 
 ### Entity: AcademicTerm
 
@@ -328,26 +351,34 @@ Constraints:
 - `UNIQUE(university_id, year, number, kind)`.
 - CHECK: `end_date > start_date`.
 - CHECK: `enrollment_closes > enrollment_opens`.
+- `kind` queda congelado apenas el período tiene comisiones (app-level), por el mismo motivo que `Subject.term_kind`. El resto de los campos se siguen pudiendo corregir.
+
+El `label` lo computa siempre el dominio (`AcademicTerm.ComputeLabel`), incluido el seeder. Cuando el seed traía sus propios literales, el mismo dropdown mezclaba dos convenciones para el mismo tipo de período según quién lo hubiera creado.
 
 ### Entity: Commission
 
 Oferta concreta de una Subject en un AcademicTerm.
 
-| Campo        | Tipo                       | Constraints                 | Notas                    |
-| ------------ | -------------------------- | --------------------------- | ------------------------ |
-| `id`         | UUID                       | PK                          |                          |
-| `subject_id` | UUID                       | FK → Subject, NOT NULL      |                          |
-| `term_id`    | UUID                       | FK → AcademicTerm, NOT NULL |                          |
-| `name`       | TEXT                       | NOT NULL                    | Ej "A", "Com 1", "Noche" |
-| `modality`   | ENUM `commission_modality` | NOT NULL                    |                          |
-| `capacity`   | INT                        | NULL                        |                          |
-| `notes`      | TEXT                       | NULL                        |                          |
-| `created_at` | TIMESTAMPTZ                | NOT NULL                    |                          |
-| `updated_at` | TIMESTAMPTZ                | NOT NULL                    |                          |
+| Campo        | Tipo                       | Constraints                 | Notas                                  |
+| ------------ | -------------------------- | --------------------------- | -------------------------------------- |
+| `id`         | UUID                       | PK                          |                                        |
+| `subject_id` | UUID                       | FK → Subject, NOT NULL      |                                        |
+| `term_id`    | UUID                       | FK → AcademicTerm, NOT NULL |                                        |
+| `name`       | TEXT                       | NOT NULL                    | Ej "A", "Com 1", "Noche"               |
+| `modality`   | ENUM `commission_modality` | NOT NULL                    |                                        |
+| `capacity`   | INT                        | NULL                        |                                        |
+| `notes`      | TEXT                       | NULL                        |                                        |
+| `schedules`  | JSONB                      | NOT NULL                    | Franjas embebidas, ver abajo           |
+| `is_active`  | BOOLEAN                    | NOT NULL                    | Soft delete (US-093), default `true`   |
+| `created_at` | TIMESTAMPTZ                | NOT NULL                    |                                        |
+| `updated_at` | TIMESTAMPTZ                | NOT NULL                    |                                        |
 
 Constraints:
 
-- `UNIQUE(subject_id, term_id, name)`.
+- `UNIQUE(subject_id, term_id, name)`. Sobre todas las filas, no solo las activas: archivar no libera el nombre porque la salida correcta es reactivar la comisión archivada, no crear una segunda con el mismo nombre.
+- CHECK `ck_commissions_capacity_positive`: `capacity IS NULL OR capacity > 0`.
+
+`schedules` es un array de `{day, start, end}` embebido en la fila, no una tabla hija ([ADR-0053](../decisions/0053-forma-de-las-colecciones-hijas-de-un-aggregate.md)): ninguna lectura expande las franjas a filas para joinear. `CommissionTeacher`, en cambio, sigue siendo tabla porque se joinea contra `teachers` para traer el nombre. El CHECK `end_time > start_time` que tenía la tabla de franjas no se puede escribir sobre un array jsonb; el invariante lo sostiene el aggregate, cuyo último bypass (`Commission.Hydrate`, usado por el seeder) ahora valida y tira.
 
 ### Entity: CommissionTeacher
 
@@ -407,14 +438,14 @@ Cursada específica del alumno.
 
 Constraints:
 
-- `UNIQUE(student_id, subject_id, term_id)`.
-- `UNIQUE(student_id, subject_id) WHERE approval_method = 'equivalencia'`.
+- `UNIQUE(student_id, subject_id, term_id)` con `NULLS NOT DISTINCT`: sin eso el índice no restringe nada cuando `term_id` es nulo (en Postgres dos NULL son distintos entre sí) y convivían N cursadas iguales sin período, que es exactamente lo que ensucia el pass rate público.
+- `UNIQUE(student_id, subject_id) WHERE approval_method = 'equivalencia'`: una sola equivalencia por materia, independiente del período (que ahí siempre es nulo).
 - CHECK: `status = 'aprobada'` → `grade NOT NULL AND approval_method NOT NULL`.
 - CHECK: `status = 'regular'` → `grade NOT NULL AND approval_method IS NULL`.
 - CHECK: `status IN ('cursando','reprobada','abandonada')` → `grade IS NULL AND approval_method IS NULL`.
 - CHECK: `approval_method = 'equivalencia'` → `commission_id IS NULL AND term_id IS NULL`.
 - CHECK: `approval_method = 'final_libre'` → `commission_id IS NULL AND term_id IS NOT NULL` (rindió libre en un cuatrimestre específico sin cursar comisión).
-- CHECK: `approval_method IN (NULL, 'cursada', 'promocion', 'final')` → `commission_id NOT NULL AND term_id NOT NULL`.
+- CHECK `ck_enrollment_records_cursada_requires_term`: `approval_method IN ('cursada','promocion','final')` → `term_id NOT NULL`. **La comisión NO se exige**: el historial académico que sube el alumno no dice en qué comisión cursó, así que exigirla hacía imposible importar cualquier materia aprobada cursando (US-014). Sin comisión la cursada no es reseñable, que es una función menos, no un dato falso.
 - CHECK: `grade BETWEEN 0 AND 10`.
 
 ### Entity: HistorialImport
@@ -430,8 +461,11 @@ Staging del parseo de PDF/texto.
 | `status`      | ENUM `import_status`      | NOT NULL, DEFAULT `'pending'` |                                     |
 | `error`       | TEXT                      | NULL                          | Mensaje de error si status='failed' |
 | `parsed_at`   | TIMESTAMPTZ               | NULL                          | Timestamp de parseo exitoso         |
+| `confirmed_at`| TIMESTAMPTZ               | NULL                          | Timestamp del confirm del alumno    |
 | `created_at`  | TIMESTAMPTZ               | NOT NULL                      |                                     |
 | `updated_at`  | TIMESTAMPTZ               | NOT NULL                      |                                     |
+
+`MarkParsing` acepta volver desde `parsing` además de `pending`: estar ya en `parsing` significa que el worker anterior se cayó a mitad del parseo, y rechazar esa redelivery dejaba el import trabado en ese estado para siempre, con el frontend polleando algo que no iba a cambiar nunca. Del lado del transporte, las colas locales de Wolverine son durables (`UseDurableLocalQueues`) para que el mensaje sobreviva al restart en vez de perderse entre el outbox y la cola en memoria.
 
 ### Invariantes cross-table (enforced en app)
 
@@ -464,24 +498,38 @@ erDiagram
 
 Reseña anclada a una cursada finalizada.
 
-| Campo                 | Tipo                 | Constraints                             | Notas                  |
-| --------------------- | -------------------- | --------------------------------------- | ---------------------- |
-| `id`                  | UUID                 | PK                                      |                        |
-| `enrollment_id`       | UUID                 | FK → EnrollmentRecord, NOT NULL, UNIQUE | Una reseña por cursada |
-| `docente_reseñado_id` | UUID                 | FK → Teacher, NOT NULL                  |                        |
-| `difficulty_rating`   | SMALLINT             | NOT NULL                                | 1..5                   |
-| `subject_text`        | TEXT                 | NULL                                    |                        |
-| `teacher_text`        | TEXT                 | NULL                                    |                        |
-| `final_grade`         | NUMERIC(4,2)         | NULL                                    | 0..10                  |
-| `status`              | ENUM `review_status` | NOT NULL, DEFAULT `'published'`         |                        |
-| `created_at`          | TIMESTAMPTZ          | NOT NULL                                |                        |
-| `updated_at`          | TIMESTAMPTZ          | NOT NULL                                |                        |
+| Campo                           | Tipo                        | Constraints                     | Notas                                          |
+| ------------------------------- | --------------------------- | ------------------------------- | ---------------------------------------------- |
+| `id`                            | UUID                        | PK                              |                                                |
+| `enrollment_id`                 | UUID                        | FK → EnrollmentRecord, NOT NULL | Una reseña por cursada, ver el índice de abajo |
+| `author_user_id`                | UUID                        | FK → User, NOT NULL             | Autor. Nunca se serializa (ADR-0009)           |
+| `reviewed_teacher_id`           | UUID                        | FK → Teacher, NOT NULL          |                                                |
+| `difficulty_rating`             | SMALLINT                    | NOT NULL                        | 1..5                                           |
+| `overall_rating`                | SMALLINT                    | NOT NULL                        | 1..5                                           |
+| `hours_per_week`                | INT                         | NULL                            | 0..30                                          |
+| `tags`                          | TEXT[]                      | NOT NULL                        | Subconjunto del set permitido                  |
+| `would_recommend_course`        | BOOLEAN                     | NOT NULL                        |                                                |
+| `would_retake_teacher`          | BOOLEAN                     | NOT NULL                        |                                                |
+| `subject_text`                  | TEXT                        | NULL                            | Sobre la cursada                               |
+| `teacher_text`                  | TEXT                        | NULL                            | Sobre el docente                               |
+| `final_grade`                   | NUMERIC(4,2)                | NULL                            | 0..10                                          |
+| `status`                        | ENUM `review_status`        | NOT NULL, DEFAULT `'published'` |                                                |
+| `quarantined_by_content_filter` | BOOLEAN                     | NOT NULL, DEFAULT `false`       | Por qué está UnderReview, ver abajo            |
+| `created_at`                    | TIMESTAMPTZ                 | NOT NULL                        |                                                |
+| `updated_at`                    | TIMESTAMPTZ                 | NOT NULL                        | `> created_at` marca "editada" en el feed      |
+| `deleted_at`                    | TIMESTAMPTZ                 | NULL                            | Soft delete (US-055)                           |
+| `deleted_reason`                | ENUM `review_deleted_reason`| NULL                            |                                                |
 
 Constraints:
 
-- CHECK: `difficulty_rating BETWEEN 1 AND 5`.
+- `UNIQUE(enrollment_id) WHERE status <> 'Deleted'`: una reseña viva por cursada. Parcial y no total porque una reseña borrada libera la cursada para volver a reseñarla. Ojo con el corolario: por eso el autor no puede borrar una reseña que moderación removió (sería la salida de escape para republicarla limpia), y el handler corta con `reviews.review.cannot_delete_removed`.
+- CHECK: `difficulty_rating BETWEEN 1 AND 5`, `overall_rating BETWEEN 1 AND 5`.
+- CHECK: `hours_per_week IS NULL OR hours_per_week BETWEEN 0 AND 30`.
 - CHECK: `final_grade IS NULL OR final_grade BETWEEN 0 AND 10`.
-- CHECK: `coalesce(subject_text,'') || coalesce(teacher_text,'') != ''`: no reseña vacía.
+- CHECK `ck_reviews_at_least_one_text`: `subject_text IS NOT NULL OR teacher_text IS NOT NULL`.
+- CHECK `ck_reviews_{subject,teacher}_text_length`: cada texto presente entra en el rango de `ReviewText` (50..2000). No es redundante con el aggregate: el value converter del read path hace `.Value` sobre el `Result`, así que una fila fuera de rango no da error de dominio, revienta al materializar y deja la reseña inutilizable para cualquier operación.
+
+`quarantined_by_content_filter` distingue los dos caminos a `UnderReview` (filtro automático vs threshold de reports), que antes eran indistinguibles. Sin él, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
 
 ### Entity: ReviewReport
 
@@ -534,12 +582,14 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 
 ### Invariantes cross-table (enforced en app)
 
-- `Review.docente_reseñado_id` debe existir en `CommissionTeacher` para la `Commission` del `EnrollmentRecord.commission_id`.
+- `Review.reviewed_teacher_id` debe existir en `CommissionTeacher` para la `Commission` del `EnrollmentRecord.commission_id`.
 - `Review` solo se puede crear si `EnrollmentRecord.status != 'cursando'`.
-- `TeacherResponse.teacher_id = Review.docente_reseñado_id`: solo el docente reseñado responde.
+- `TeacherResponse.teacher_id = Review.reviewed_teacher_id`: solo el docente reseñado responde.
 - `TeacherResponse` solo puede crearse si existe un `TeacherProfile` con `teacher_id = TeacherResponse.teacher_id` y `verified_at NOT NULL`.
 - `ReviewReport.moderator_id` debe apuntar a un User con `role IN ('moderator','admin')`.
 - `ReviewAuditLog`: cuando `action = 'edited'`, `changes` contiene estructura `{before: {...}, after: {...}}`.
+- Una reseña `removed` por moderación no la puede borrar su autor: el índice único es parcial sobre `status <> 'Deleted'`, así que borrarla liberaría la cursada y le permitiría republicar el mismo texto como fila nueva, sin los reportes upheld encima.
+- Desestimar el último report solo restaura a `published` si la cuarentena venía del threshold de reports, no del filtro de contenido (`quarantined_by_content_filter`).
 - Todos los endpoints públicos que serializan Review omiten `enrollment.student_id` y cualquier referencia al User autor. El anonimato es regla de la capa de presentación.
 
 ## Context: Semantic Analytics
@@ -570,8 +620,9 @@ Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (
 
 Constraints:
 
-- CHECK: `visibility='shared'` ⇒ `shared_at NOT NULL`.
+- CHECK `ck_simulation_drafts_shared_requires_shared_at`: `visibility='shared'` ⇒ `shared_at NOT NULL`. El feed público desreferencia `shared_at` y ordena por él, así que una sola fila mal formada tiraba el feed entero de la carrera.
 - CHECK: `visibility='private'` ⇒ `shared_at IS NULL`.
+- `UNIQUE(owner_profile_id, term_id) WHERE status = 'active'`: un solo plan vigente por (alumno, período). El aggregate no puede sostenerlo solo (cruza filas): con Read Committed dos promotes concurrentes leen ambos "no hay ninguno activo" y commitean los dos.
 - Índice `(owner_profile_id, term_id, status)`: sirve el listado propio y el lookup del activo al publicar.
 
 Hard delete permitido (drafts privados no tienen valor de retención).
@@ -591,7 +642,7 @@ Constraints:
 - `PRIMARY KEY (draft_id, subject_id)`: una materia no se repite en el mismo borrador.
 - Un draft tiene al menos un item (invariante del aggregate, no CHECK de DB).
 
-> **Nota de revisión pendiente**: esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. La forma final (tabla hija vs un `jsonb` en `simulation_drafts`) quedó **abierta** para la revisión de modelos de datos acordada al cierre de S11: el borrador se lee y se escribe entero, así que un documento embebido también encaja. Lo implementado hoy es la tabla hija.
+Esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. Sigue siendo tabla hija y no documento embebido: [ADR-0053](../decisions/0053-forma-de-las-colecciones-hijas-de-un-aggregate.md) evalúa el criterio por colección, y acá el feed público expande los items a filas para joinear contra `academic.subjects` y `academic.commissions` (nombre de la materia, nombre de la comisión, carga horaria). Ese join es justamente lo que no se puede hacer contra un array jsonb sin desarmarlo primero.
 
 ## Apéndice A: Enums
 
@@ -611,12 +662,15 @@ Nombres y valores de todos los enums del modelo.
 | `enrollment_status`           | `cursando`, `regular`, `aprobada`, `reprobada`, `abandonada`                          |
 | `approval_method`             | `cursada`, `promocion`, `final`, `final_libre`, `equivalencia`                        |
 | `import_source_type`          | `pdf`, `text`, `manual`                                                               |
-| `import_status`               | `pending`, `parsed`, `failed`                                                         |
-| `review_status`               | `published`, `under_review`, `removed`                                                |
+| `import_status`               | `pending`, `parsing`, `parsed`, `failed`, `confirmed`                                 |
+| `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
+| `review_status`               | `published`, `under_review`, `removed`, `deleted`                                     |
+| `review_deleted_reason`       | `self`, `moderator`                                                                   |
 | `review_report_reason`        | `spam`, `datos_personales`, `lenguaje_inapropiado`, `difamacion`, `off_topic`, `otro` |
 | `review_report_status`        | `open`, `upheld`, `dismissed`                                                         |
 | `teacher_response_status`     | `published`, `removed`                                                                |
-| `review_audit_action`         | `published`, `edited`, `reported`, `removed`, `restored`                              |
+| `review_audit_action`         | `edited`, `deleted`, `reported`, `moderator_decision`, `response_published`           |
+| `simulation_draft_status`     | `draft`, `active`, `archived`                                                         |
 | `simulation_visibility`       | `private`, `shared`                                                                   |
 | `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 
