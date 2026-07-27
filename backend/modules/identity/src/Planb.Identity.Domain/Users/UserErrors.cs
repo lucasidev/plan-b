@@ -32,6 +32,16 @@ public static class UserErrors
     public static readonly Error DisableReasonRequired =
         Error.Validation("identity.disable.reason_required", "A reason is required to disable a user.");
 
+    /// <summary>
+    /// El actor que deshabilita tiene que ser alguien. <c>disabled_by</c> es el único registro de
+    /// quién tomó la decisión (la US-058 lo usa para distinguir un disable de admin de un
+    /// self-disable comparando contra el propio user id), así que un <c>Guid.Empty</c> no es un
+    /// valor pobre: es un audit trail que apunta a nadie y encima se confunde con un user id real
+    /// que nunca va a existir.
+    /// </summary>
+    public static readonly Error DisabledByRequired =
+        Error.Validation("identity.disable.actor_required", "A disabling actor is required.");
+
     public static readonly Error AlreadyDisabled =
         Error.Conflict("identity.disable.already_disabled", "User is already disabled.");
 
