@@ -2,6 +2,7 @@ using Planb.Academic.Application.Contracts;
 using Planb.Identity.Application.Abstractions.Security;
 using Planb.Identity.Application.Contracts;
 using Planb.Planning.Application.Abstractions.Persistence;
+using Planb.Planning.Application.Validation;
 using Planb.Planning.Domain.Availability;
 using Planb.Planning.Domain.Drafts;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -16,9 +17,9 @@ namespace Planb.Planning.Application.Features.CreateSimulationDraft;
 ///         <c>planning:ratelimit:save:{userId}</c>).</item>
 ///   <item>Resolver el StudentProfile activo (cross-BC). Sin profile activo, NotFound (reusa
 ///         AvailabilityErrors.StudentProfileRequired: mismo hecho de negocio que Evaluate/Available).</item>
-///   <item>Validar que cada materia del borrador pertenezca al CareerPlan del profile (cross-BC vía
-///         IAcademicQueryService.IsSubjectInPlanAsync). No valida término ni comisión: son Guid
-///         planos sin FK (ADR-0017) y el AC de US-023 no pidió esa coherencia acá.</item>
+///   <item>Validar las referencias cross-BC de los items contra el catálogo (materia en el plan,
+///         período de la universidad del alumno, y comisión existente, de esa materia, de ese
+///         período y todavía ofrecida). Ver <c>DraftItemValidator</c> para el por qué.</item>
 ///   <item>Crear el aggregate (valida no-vacío, sin duplicados, largo del label) y persistir.</item>
 /// </list>
 /// </summary>
@@ -50,12 +51,15 @@ public static class CreateSimulationDraftCommandHandler
             return Result.Failure<CreateSimulationDraftResponse>(AvailabilityErrors.StudentProfileRequired);
         }
 
-        foreach (var subjectId in command.Items.Select(i => i.SubjectId).Distinct())
+        var itemsValidation = await DraftItemValidator.ValidateAsync(
+            academic,
+            profile.CareerPlanId,
+            command.TermId,
+            [.. command.Items.Select(i => (i.SubjectId, i.CommissionId))],
+            ct);
+        if (itemsValidation.IsFailure)
         {
-            if (!await academic.IsSubjectInPlanAsync(subjectId, profile.CareerPlanId, ct))
-            {
-                return Result.Failure<CreateSimulationDraftResponse>(SimulationDraftErrors.SubjectNotInPlan);
-            }
+            return Result.Failure<CreateSimulationDraftResponse>(itemsValidation.Error);
         }
 
         var created = SimulationDraft.Create(

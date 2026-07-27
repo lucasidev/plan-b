@@ -68,4 +68,41 @@ public static class EnrollmentRecordErrors
         Error.Validation(
             "enrollments.record.subject_not_in_plan",
             "The selected subject does not belong to the student's career plan.");
+
+    // Coherencia de las referencias cross-BC (comisión y período). No hay FK que las sostenga
+    // (ADR-0017), así que el application layer es el único lugar donde se validan. Son cuatro errores
+    // distintos y no uno genérico porque desde el cliente cada caso se arregla distinto.
+
+    public static readonly Error TermNotInUniversity =
+        Error.Validation(
+            "enrollments.record.term_not_in_university",
+            "The selected academic term does not belong to the student's university.");
+
+    public static readonly Error CommissionNotFound =
+        Error.Validation(
+            "enrollments.record.commission_not_found",
+            "The selected commission does not exist.");
+
+    public static readonly Error CommissionNotForSubject =
+        Error.Validation(
+            "enrollments.record.commission_not_for_subject",
+            "The selected commission belongs to a different subject.");
+
+    public static readonly Error CommissionNotForTerm =
+        Error.Validation(
+            "enrollments.record.commission_not_for_term",
+            "The selected commission belongs to a different academic term.");
+
+    // Antes los valores de enum inválidos devolvían GradeOutOfRange, así que el usuario recibía
+    // "nota fuera de rango" por un campo que no había tocado.
+
+    public static readonly Error InvalidStatus =
+        Error.Validation(
+            "enrollments.record.invalid_status",
+            "Unknown enrollment status.");
+
+    public static readonly Error InvalidApprovalMethod =
+        Error.Validation(
+            "enrollments.record.invalid_approval_method",
+            "Unknown approval method.");
 }

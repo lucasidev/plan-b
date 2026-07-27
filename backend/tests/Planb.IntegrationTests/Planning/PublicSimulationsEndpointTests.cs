@@ -26,6 +26,12 @@ public class PublicSimulationsEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
 
+    /// <summary>
+    /// 2026·1c de UNSTA, del seed academic. Guardar un borrador valida que el período sea uno real de
+    /// la universidad de la carrera, así que acá ya no sirve un Guid inventado.
+    /// </summary>
+    private static readonly Guid Seed2026FirstTerm = Guid.Parse("00000005-0000-4000-a000-000000000005");
+
     private readonly RegisterApiFixture _fixture;
 
     public PublicSimulationsEndpointTests(RegisterApiFixture fixture)
@@ -93,7 +99,7 @@ public class PublicSimulationsEndpointTests : IClassFixture<RegisterApiFixture>
             subjects.Add(new SubjectSeed(subject.Id.Value, code, name));
         }
 
-        var termId = Guid.NewGuid();
+        var termId = Seed2026FirstTerm;
         var commission = Commission.Create(
             subjects[0].Id, termId, "Comisión Feed A",
             CommissionModality.Presencial, 40, null, clock).Value;

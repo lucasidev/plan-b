@@ -15,6 +15,9 @@ namespace Planb.Enrollments.Application.Features.RegisterEnrollment;
 ///   <item>Validar que el subject pertenece al plan del student (cross-BC via
 ///         <see cref="IAcademicQueryService.IsSubjectInPlanAsync"/>). Sin pertenencia →
 ///         Validation.</item>
+///   <item>Validar comisión y período, que llegan como Guids libres del cliente: el período tiene
+///         que ser de la universidad del alumno, y la comisión tiene que existir y ser de esa
+///         materia en ese período. Sin FK que lo sostenga (ADR-0017), es el único chequeo.</item>
 ///   <item>Chequear idempotencia: ya existe un record para (student, subject, term)? Devolver
 ///         409 Conflict en vez de explotar contra UNIQUE.</item>
 ///   <item>Crear el aggregate con <see cref="EnrollmentRecord.Create"/> (enforce invariantes
@@ -48,7 +51,34 @@ public static class RegisterEnrollmentCommandHandler
             return EnrollmentRecordErrors.SubjectNotInPlan;
         }
 
-        // 3) Idempotencia.
+        // 3) Coherencia de comisión y período, que llegan del cliente como Guids libres. Sin FK que
+        // los sostenga (ADR-0017), esto es lo único que los valida. Antes pasaba cualquier Guid, y
+        // con eso se podía anclar la cursada a la comisión de OTRA materia: después publicar reseña
+        // pasa su gate (valida que el docente esté en la comisión de la cursada) y queda una reseña
+        // contra un docente que nunca dio esa clase, colgada además de la materia equivocada.
+        var plan = await academic.GetCareerPlanByIdAsync(profile.CareerPlanId, ct);
+        if (plan is null)
+        {
+            return EnrollmentRecordErrors.StudentProfileRequired;
+        }
+
+        if (command.TermId is not null && !await academic.IsAcademicTermInUniversityAsync(
+                command.TermId.Value, plan.UniversityId, ct))
+        {
+            return EnrollmentRecordErrors.TermNotInUniversity;
+        }
+
+        if (command.CommissionId is not null)
+        {
+            var placement = await academic.GetCommissionPlacementAsync(command.CommissionId.Value, ct);
+            var commissionCheck = ValidateCommission(placement, command.SubjectId, command.TermId);
+            if (commissionCheck.IsFailure)
+            {
+                return commissionCheck.Error;
+            }
+        }
+
+        // 4) Idempotencia.
         var alreadyExists = await records.ExistsAsync(
             profile.Id, command.SubjectId, command.TermId, ct);
         if (alreadyExists)
@@ -56,7 +86,7 @@ public static class RegisterEnrollmentCommandHandler
             return EnrollmentRecordErrors.Duplicate;
         }
 
-        // 4) Aggregate.
+        // 5) Aggregate.
         var recordResult = EnrollmentRecord.Create(
             profile.Id,
             command.SubjectId,
@@ -86,5 +116,37 @@ public static class RegisterEnrollmentCommandHandler
             record.ApprovalMethod?.ToString(),
             record.Grade?.Value,
             record.CreatedAt);
+    }
+
+    /// <summary>
+    /// La comisión tiene que existir, ser de la materia que se está cargando y, cuando el período
+    /// viene informado, ser de ese período. Tres errores separados porque desde el cliente cada caso
+    /// se arregla distinto: elegir otra comisión, corregir la materia, o corregir el cuatrimestre.
+    ///
+    /// <para>
+    /// No se rechaza una comisión archivada: una cursada histórica puede apuntar legítimamente a una
+    /// comisión que ya se dio de baja del catálogo. El alta de comisión sí la rechaza, que es donde
+    /// corresponde.
+    /// </para>
+    /// </summary>
+    private static Result ValidateCommission(
+        CommissionPlacement? placement, Guid subjectId, Guid? termId)
+    {
+        if (placement is null)
+        {
+            return EnrollmentRecordErrors.CommissionNotFound;
+        }
+
+        if (placement.SubjectId != subjectId)
+        {
+            return EnrollmentRecordErrors.CommissionNotForSubject;
+        }
+
+        if (termId is not null && placement.TermId != termId.Value)
+        {
+            return EnrollmentRecordErrors.CommissionNotForTerm;
+        }
+
+        return Result.Success();
     }
 }

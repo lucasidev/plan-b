@@ -31,7 +31,13 @@ public sealed class RegisterEnrollmentEndpoint : ICarterModule
 
             // Parse de los enums string → enum. Si el string no matchea, devolvemos 400 con
             // mensaje claro (mejor que ValidationException genérica de FluentValidation).
-            if (!Enum.TryParse<EnrollmentStatus>(body.Status, ignoreCase: true, out var status))
+            //
+            // El Enum.IsDefined no es redundante: Enum.TryParse acepta strings numéricos, así que
+            // "9" pasaba como válido y se persistía con ToString(). Quedaba la string "9" en la
+            // columna, fuera del enum, y los CHECK de la tabla no la atajan porque están escritos
+            // como implicaciones y un valor desconocido los satisface por vacuidad.
+            if (!Enum.TryParse<EnrollmentStatus>(body.Status, ignoreCase: true, out var status)
+                || !Enum.IsDefined(status))
             {
                 return Results.Problem(
                     title: "enrollments.record.invalid_status",
@@ -42,7 +48,8 @@ public sealed class RegisterEnrollmentEndpoint : ICarterModule
             ApprovalMethod? method = null;
             if (!string.IsNullOrWhiteSpace(body.ApprovalMethod))
             {
-                if (!Enum.TryParse<ApprovalMethod>(body.ApprovalMethod, ignoreCase: true, out var parsed))
+                if (!Enum.TryParse<ApprovalMethod>(body.ApprovalMethod, ignoreCase: true, out var parsed)
+                    || !Enum.IsDefined(parsed))
                 {
                     return Results.Problem(
                         title: "enrollments.record.invalid_approval_method",

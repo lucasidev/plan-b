@@ -1,4 +1,5 @@
 using NSubstitute;
+using Planb.Academic.Application.Contracts;
 using Planb.Enrollments.Application.Abstractions.Persistence;
 using Planb.Enrollments.Application.Features.HistorialImports;
 using Planb.Enrollments.Domain.EnrollmentRecords;
@@ -24,20 +25,40 @@ public class ConfirmHistorialImportCommandHandlerTests
     private static readonly Guid SubjectIdCreated = Guid.NewGuid();
     private static readonly Guid SubjectIdSkipped = Guid.NewGuid();
     private static readonly Guid TermId = Guid.NewGuid();
+    private static readonly Guid UniversityId = Guid.NewGuid();
 
     private sealed record Deps(
         IHistorialImportRepository Imports,
         IEnrollmentRecordRepository Records,
         IEnrollmentsUnitOfWork UnitOfWork,
         IIdentityQueryService Identity,
+        IAcademicQueryService Academic,
         FixedClock Clock);
 
-    private static Deps NewDeps() => new(
-        Substitute.For<IHistorialImportRepository>(),
-        Substitute.For<IEnrollmentRecordRepository>(),
-        Substitute.For<IEnrollmentsUnitOfWork>(),
-        Substitute.For<IIdentityQueryService>(),
-        new FixedClock(T0));
+    /// <summary>
+    /// Academic arranca permisivo (el plan existe, la materia pertenece, el período es de la
+    /// universidad). Estos tests son sobre el loop de confirmación; la validación de referencias
+    /// tiene los suyos, que apagan el stub que corresponda.
+    /// </summary>
+    private static Deps NewDeps()
+    {
+        var academic = Substitute.For<IAcademicQueryService>();
+        academic.GetCareerPlanByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new CareerPlanSummary(Guid.NewGuid(), Guid.NewGuid(), UniversityId, 2024));
+        academic.IsSubjectInPlanAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+        academic.IsAcademicTermInUniversityAsync(
+                Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        return new Deps(
+            Substitute.For<IHistorialImportRepository>(),
+            Substitute.For<IEnrollmentRecordRepository>(),
+            Substitute.For<IEnrollmentsUnitOfWork>(),
+            Substitute.For<IIdentityQueryService>(),
+            academic,
+            new FixedClock(T0));
+    }
 
     private static StudentProfileSummary ActiveProfile() =>
         new(StudentProfileId, CallerUserId, Guid.NewGuid(), Guid.NewGuid(), IsActive: true);
@@ -57,7 +78,8 @@ public class ConfirmHistorialImportCommandHandlerTests
     private static Task<Result<ConfirmHistorialImportResponse>> InvokeAsync(
         Deps deps, ConfirmHistorialImportCommand command) =>
         ConfirmHistorialImportCommandHandler.Handle(
-            command, deps.Imports, deps.Records, deps.UnitOfWork, deps.Identity, deps.Clock, CancellationToken.None);
+            command, deps.Imports, deps.Records, deps.UnitOfWork, deps.Identity, deps.Academic,
+            deps.Clock, CancellationToken.None);
 
     [Fact]
     public async Task Handle_StudentProfileMissing_ReturnsStudentProfileRequired()
@@ -190,6 +212,104 @@ public class ConfirmHistorialImportCommandHandlerTests
         result.Value.CreatedCount.ShouldBe(0);
         result.Value.SkippedCount.ShouldBe(1);
         await deps.Records.DidNotReceive().AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
+        import.Status.ShouldBe(HistorialImportStatus.Confirmed);
+    }
+
+    /// <summary>
+    /// El vector de inflado del pass rate público: el confirm usaba <c>item.SubjectId</c> crudo del
+    /// body sin consultar Academic, así que cualquier usuario autenticado podía confirmar materias
+    /// de otra universidad (o Guids inventados) y mover el porcentaje de aprobación anónimo de una
+    /// materia ajena. El piso de muestra de ADR-0047 no protege: cada período distinto suma otra
+    /// fila al denominador de la misma materia.
+    /// </summary>
+    [Fact]
+    public async Task Handle_SubjectOutsideStudentPlan_ReturnsSubjectNotInPlan()
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+
+        deps.Academic.IsSubjectInPlanAsync(
+                SubjectIdCreated, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 7m) };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.SubjectNotInPlan);
+        await deps.Records.DidNotReceive().AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
+        import.Status.ShouldBe(HistorialImportStatus.Parsed);
+    }
+
+    [Fact]
+    public async Task Handle_TermOutsideStudentUniversity_ReturnsTermNotInUniversity()
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+
+        deps.Academic.IsAcademicTermInUniversityAsync(
+                TermId, UniversityId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 7m) };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.TermNotInUniversity);
+        await deps.Records.DidNotReceive().AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
+        import.Status.ShouldBe(HistorialImportStatus.Parsed);
+    }
+
+    /// <summary>
+    /// El parser emite un item por cada match de código, así que un historial que lista la cursada y
+    /// el final de la misma materia en filas separadas produce dos items con la misma (materia,
+    /// período). <c>ExistsAsync</c> consulta la DB y no ve los Add previos del mismo loop, así que
+    /// antes los dos entraban y el SaveChanges reventaba contra el UNIQUE: 500, no se importaba
+    /// nada, y el reintento fallaba idéntico. El segundo se saltea y se cuenta.
+    /// </summary>
+    [Fact]
+    public async Task Handle_DuplicateItemsWithinTheSameBatch_SkipsTheSecond()
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+
+        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        // Los dos con IndependentFinalExam porque el confirm fuerza commissionId null, y ese es el
+        // único método de aprobación que el aggregate acepta sin comisión pero con período.
+        var items = new ConfirmedItem[]
+        {
+            new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 7m),
+            new(SubjectIdCreated, TermId, "Passed", "IndependentFinalExam", 9m),
+        };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.CreatedCount.ShouldBe(1);
+        result.Value.SkippedCount.ShouldBe(1);
+        await deps.Records.Received(1).AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
         import.Status.ShouldBe(HistorialImportStatus.Confirmed);
     }
 

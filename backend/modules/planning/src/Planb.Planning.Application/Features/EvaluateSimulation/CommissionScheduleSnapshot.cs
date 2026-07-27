@@ -11,6 +11,7 @@ namespace Planb.Planning.Application.Features.EvaluateSimulation;
 /// </summary>
 public sealed record CommissionScheduleSnapshot(
     Guid SubjectId,
+    Guid TermId,
     string Name,
     bool IsActive,
     IReadOnlyList<SimulatorScheduleItem> Schedule);

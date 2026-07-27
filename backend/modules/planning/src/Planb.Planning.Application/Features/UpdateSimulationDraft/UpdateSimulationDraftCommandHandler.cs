@@ -2,6 +2,7 @@ using Planb.Academic.Application.Contracts;
 using Planb.Identity.Application.Abstractions.Security;
 using Planb.Identity.Application.Contracts;
 using Planb.Planning.Application.Abstractions.Persistence;
+using Planb.Planning.Application.Validation;
 using Planb.Planning.Domain.Availability;
 using Planb.Planning.Domain.Drafts;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -52,12 +53,17 @@ public static class UpdateSimulationDraftCommandHandler
             return Result.Failure<UpdateSimulationDraftResponse>(SimulationDraftErrors.NotOwner);
         }
 
-        foreach (var subjectId in command.Items.Select(i => i.SubjectId).Distinct())
+        // El período sale del borrador, no del comando: la edición no lo cambia, así que las
+        // comisiones elegidas se validan contra el período con el que se guardó.
+        var itemsValidation = await DraftItemValidator.ValidateAsync(
+            academic,
+            profile.CareerPlanId,
+            draft.TermId,
+            [.. command.Items.Select(i => (i.SubjectId, i.CommissionId))],
+            ct);
+        if (itemsValidation.IsFailure)
         {
-            if (!await academic.IsSubjectInPlanAsync(subjectId, profile.CareerPlanId, ct))
-            {
-                return Result.Failure<UpdateSimulationDraftResponse>(SimulationDraftErrors.SubjectNotInPlan);
-            }
+            return Result.Failure<UpdateSimulationDraftResponse>(itemsValidation.Error);
         }
 
         var updated = draft.Update(
