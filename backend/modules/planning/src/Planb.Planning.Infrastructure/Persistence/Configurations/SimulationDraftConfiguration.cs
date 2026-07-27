@@ -13,7 +13,22 @@ internal sealed class SimulationDraftConfiguration : IEntityTypeConfiguration<Si
 {
     public void Configure(EntityTypeBuilder<SimulationDraft> builder)
     {
-        builder.ToTable("simulation_drafts");
+        builder.ToTable("simulation_drafts", t =>
+        {
+            // El data-model declaraba estos dos invariantes y no existían en la base. Hoy los sostiene
+            // el aggregate (Share y Unshare mueven visibility y shared_at juntos), pero el read del
+            // feed público asume el primero al desreferenciar shared_at, y una sola fila Shared con
+            // shared_at nulo (fix manual de datos, backfill, o un método futuro que toque visibility
+            // sin la fecha) tiraría el feed entero de una carrera, no solo ese item.
+            //
+            // Van como dos CHECK y no como uno bicondicional para que el error nombre cuál se violó.
+            t.HasCheckConstraint(
+                "ck_simulation_drafts_shared_requires_shared_at",
+                "visibility <> 'Shared' OR shared_at IS NOT NULL");
+            t.HasCheckConstraint(
+                "ck_simulation_drafts_private_has_no_shared_at",
+                "visibility <> 'Private' OR shared_at IS NULL");
+        });
 
         builder.HasKey(d => d.Id);
         builder.Property(d => d.Id)
@@ -48,6 +63,21 @@ internal sealed class SimulationDraftConfiguration : IEntityTypeConfiguration<Si
         // Active): el prefijo (owner_profile_id) cubre el primero, el índice completo el segundo.
         builder.HasIndex(d => new { d.OwnerProfileId, d.TermId, d.Status })
             .HasDatabaseName("ix_simulation_drafts_owner_term_status");
+
+        // "Un solo plan vigente por (alumno, período)" es el único invariante del aggregate que cruza
+        // filas, así que el aggregate por sí solo no puede sostenerlo: el handler de promote lee
+        // "¿hay otro Active?" y después escribe, y con Read Committed dos promotes concurrentes de
+        // borradores distintos ven los dos que no hay ninguno y commitean los dos. El estado que
+        // queda es pegajoso: el próximo promote archiva uno solo, así que el segundo activo se queda
+        // para siempre.
+        //
+        // El proyecto ya usaba índices únicos parciales como red para invariantes equivalentes en
+        // reviews, enrollments, academic y moderation, y los documentó como "belt + suspenders".
+        // Planning era la excepción sin razón escrita.
+        builder.HasIndex(d => new { d.OwnerProfileId, d.TermId })
+            .IsUnique()
+            .HasDatabaseName("ux_simulation_drafts_owner_term_active")
+            .HasFilter("status = 'Active'");
 
         builder.Ignore(d => d.DomainEvents);
 

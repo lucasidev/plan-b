@@ -184,6 +184,28 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             t.HasCheckConstraint(
                 "ck_reviews_final_grade_range",
                 "final_grade IS NULL OR (final_grade >= 0 AND final_grade <= 10)");
+
+            // El rango de largo de ReviewText era el único invariante del aggregate sin CHECK, y el
+            // read path lo asume: el value converter de estas dos columnas hace
+            // `ReviewText.CreateOptional(raw).Value`, y `.Value` sobre un Result fallido tira
+            // InvalidOperationException. O sea que una fila fuera de rango (una redacción manual del
+            // tipo "[removido]", un backfill, un fix de datos) no daba un error de dominio: reventaba
+            // al materializar, y con eso quedaba envenenada para cualquier carga de esa reseña
+            // (editar, votar, responder, aplicar una remoción de moderación), con un 500 que no dice
+            // por qué. Compará con final_grade, que tiene el mismo patrón de converter y nunca puede
+            // reventar justamente porque su CHECK existe.
+            // Los bounds se interpolan desde el value object en lugar de hardcodearse: si alguien
+            // mueve MinLength o MaxLength, la próxima migración se genera con el rango nuevo en vez
+            // de dejar la DB afirmando un rango que el dominio ya no usa.
+            var lengthRange = $"BETWEEN {ReviewText.MinLength} AND {ReviewText.MaxLength}";
+
+            t.HasCheckConstraint(
+                "ck_reviews_subject_text_length",
+                $"subject_text IS NULL OR char_length(subject_text) {lengthRange}");
+
+            t.HasCheckConstraint(
+                "ck_reviews_teacher_text_length",
+                $"teacher_text IS NULL OR char_length(teacher_text) {lengthRange}");
         });
 
         // US-040: respuesta del docente. Owned 1:1 en su propia tabla. El aggregate genera el Id

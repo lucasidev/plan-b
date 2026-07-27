@@ -52,6 +52,22 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
             .IsUnique()
             .HasDatabaseName("ux_commissions_subject_term_name");
 
+        // Commission era la única familia de invariantes de escritura sin réplica en la base, y es
+        // justo la que más la necesita: `Commission.Hydrate` saltea toda la validación del aggregate
+        // (capacity, rango horario, no-solape, un solo titular) y su único caller es el seeder, o sea
+        // que el manifiesto entra sin que nadie lo revise. Un `Slot(Monday, 22, 18)` mal tipeado se
+        // persistía sin ruido, y después el detector de choques del planificador nunca marca conflicto
+        // contra un rango invertido: la grilla muestra "22:00 a 18:00" y nadie se entera.
+        //
+        // El proyecto ya replicaba sus CHECK por este mismo motivo en Subject ("los inserts via seed
+        // bypassean Subject.Create"), Review, EnrollmentRecord, AcademicTerm y Prerequisite.
+        //
+        // El no-solape entre franjas queda afuera a propósito: necesitaría un EXCLUDE con btree_gist,
+        // y la extensión no se justifica para un invariante que hoy solo el seeder puede violar.
+        builder.ToTable(t => t.HasCheckConstraint(
+            "ck_commissions_capacity_positive",
+            "capacity IS NULL OR capacity > 0"));
+
         builder.Ignore(c => c.DomainEvents);
 
         builder.OwnsMany(c => c.Teachers, ct =>
@@ -83,7 +99,13 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
 
         builder.OwnsMany(c => c.Schedules, cs =>
         {
-            cs.ToTable("commission_schedules");
+            // El rango invertido es el que de verdad hace daño: el detector de choques compara
+            // `a.Start < b.End && b.Start < a.End`, así que contra una franja con el fin antes del
+            // inicio nunca marca conflicto. El alumno ve "22:00 a 18:00" en la grilla y el
+            // planificador le dice que no hay choques.
+            cs.ToTable("commission_schedules", t => t.HasCheckConstraint(
+                "ck_commission_schedules_end_after_start",
+                "end_time > start_time"));
 
             cs.Property<CommissionId>("commission_id")
                 .HasColumnName("commission_id")

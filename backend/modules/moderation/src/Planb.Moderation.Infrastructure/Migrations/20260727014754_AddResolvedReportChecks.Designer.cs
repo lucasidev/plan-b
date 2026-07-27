@@ -2,29 +2,32 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Planb.Planning.Infrastructure.Persistence;
+using Planb.Moderation.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Planb.Planning.Infrastructure.Migrations
+namespace Planb.Moderation.Infrastructure.Migrations
 {
-    [DbContext(typeof(PlanningDbContext))]
-    partial class PlanningDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ModerationDbContext))]
+    [Migration("20260727014754_AddResolvedReportChecks")]
+    partial class AddResolvedReportChecks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("planning")
+                .HasDefaultSchema("moderation")
                 .HasAnnotation("ProductVersion", "10.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("WolverineEnabled", "true");
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Planb.Planning.Domain.Drafts.SimulationDraft", b =>
+            modelBuilder.Entity("Planb.Moderation.Domain.Reports.ReviewReport", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -34,54 +37,54 @@ namespace Planb.Planning.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Label")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("label");
+                    b.Property<string>("Details")
+                        .HasColumnType("text")
+                        .HasColumnName("details");
 
-                    b.Property<Guid>("OwnerProfileId")
+                    b.Property<Guid?>("ModeratorUserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("owner_profile_id");
+                        .HasColumnName("moderator_user_id");
 
-                    b.Property<DateTimeOffset?>("SharedAt")
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("reason");
+
+                    b.Property<Guid>("ReporterUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reporter_user_id");
+
+                    b.Property<string>("ResolutionNote")
+                        .HasColumnType("text")
+                        .HasColumnName("resolution_note");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("shared_at");
+                        .HasColumnName("resolved_at");
+
+                    b.Property<Guid>("ReviewId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("review_id");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
                         .HasColumnName("status");
-
-                    b.Property<Guid>("TermId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("term_id");
-
-                    b.Property<DateTimeOffset>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<string>("Visibility")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("visibility");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerProfileId", "TermId")
+                    b.HasIndex("ReviewId", "ReporterUserId")
                         .IsUnique()
-                        .HasDatabaseName("ux_simulation_drafts_owner_term_active")
-                        .HasFilter("status = 'Active'");
+                        .HasDatabaseName("ux_review_reports_review_reporter");
 
-                    b.HasIndex("OwnerProfileId", "TermId", "Status")
-                        .HasDatabaseName("ix_simulation_drafts_owner_term_status");
+                    b.HasIndex("ReviewId", "Status")
+                        .HasDatabaseName("ix_review_reports_review_status");
 
-                    b.ToTable("simulation_drafts", "planning", t =>
+                    b.ToTable("review_reports", "moderation", t =>
                         {
-                            t.HasCheckConstraint("ck_simulation_drafts_private_has_no_shared_at", "visibility <> 'Private' OR shared_at IS NULL");
-
-                            t.HasCheckConstraint("ck_simulation_drafts_shared_requires_shared_at", "visibility <> 'Shared' OR shared_at IS NOT NULL");
+                            t.HasCheckConstraint("ck_review_reports_resolved_has_moderator_and_date", "status = 'Open' OR (moderator_user_id IS NOT NULL AND resolved_at IS NOT NULL)");
                         });
                 });
 
@@ -175,33 +178,6 @@ namespace Planb.Planning.Infrastructure.Migrations
                         {
                             t.ExcludeFromMigrations();
                         });
-                });
-
-            modelBuilder.Entity("Planb.Planning.Domain.Drafts.SimulationDraft", b =>
-                {
-                    b.OwnsMany("Planb.Planning.Domain.Drafts.SimulationDraftItem", "Items", b1 =>
-                        {
-                            b1.Property<Guid>("draft_id")
-                                .HasColumnType("uuid")
-                                .HasColumnName("draft_id");
-
-                            b1.Property<Guid>("SubjectId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("subject_id");
-
-                            b1.Property<Guid?>("CommissionId")
-                                .HasColumnType("uuid")
-                                .HasColumnName("commission_id");
-
-                            b1.HasKey("draft_id", "SubjectId");
-
-                            b1.ToTable("simulation_draft_items", "planning");
-
-                            b1.WithOwner()
-                                .HasForeignKey("draft_id");
-                        });
-
-                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

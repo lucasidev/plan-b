@@ -39,17 +39,35 @@ public class ReportQueueEndpointTests : IClassFixture<RegisterApiFixture>
         await db.Database.ExecuteSqlRawAsync("DELETE FROM moderation.review_reports;");
     }
 
+    /// <summary>
+    /// Inserta un reporte por SQL crudo para armar la cola sin pasar por el flow completo de
+    /// reportar (que exigiría una reseña real por cada fila).
+    ///
+    /// <para>
+    /// Un reporte que no está en <c>Open</c> lleva moderador y fecha de resolución. No es decoración
+    /// del test: es el invariante que sostiene el CHECK
+    /// <c>ck_review_reports_resolved_has_moderator_and_date</c>, y este helper es justo el tipo de
+    /// escritura para el que ese CHECK existe (SQL directo que saltea el aggregate). Antes creaba
+    /// reportes cerrados sin resolver por nadie, un estado que el dominio no puede producir.
+    /// </para>
+    /// </summary>
     private async Task<Guid> InsertReportAsync(
         ReviewReportReason reason, string status, DateTimeOffset createdAt)
     {
         var id = Guid.NewGuid();
+        var isOpen = status == "Open";
+        object? moderatorUserId = isOpen ? null : Guid.NewGuid();
+        object? resolvedAt = isOpen ? null : createdAt.AddMinutes(30);
+
         using var scope = _fixture.Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ModerationDbContext>();
         await db.Database.ExecuteSqlRawAsync(
             "INSERT INTO moderation.review_reports " +
-            "(id, review_id, reporter_user_id, reason, details, status, created_at) " +
-            "VALUES ({0}, {1}, {2}, {3}, null, {4}, {5});",
-            id, Guid.NewGuid(), Guid.NewGuid(), reason.ToString(), status, createdAt);
+            "(id, review_id, reporter_user_id, reason, details, status, created_at, " +
+            " moderator_user_id, resolved_at) " +
+            "VALUES ({0}, {1}, {2}, {3}, null, {4}, {5}, {6}, {7});",
+            id, Guid.NewGuid(), Guid.NewGuid(), reason.ToString(), status, createdAt,
+            moderatorUserId!, resolvedAt!);
         return id;
     }
 
