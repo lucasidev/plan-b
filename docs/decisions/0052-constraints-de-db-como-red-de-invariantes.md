@@ -53,7 +53,14 @@ Rechazada. El error de Postgres es genérico y llega cuando la transacción ya e
 
 Rechazada por una limitación real de Postgres: los índices únicos **parciales** no se pueden diferir (solo los unique constraints, que a su vez no pueden ser parciales). Y casi todas las redes que hacían falta acá son parciales, porque aplican a un subconjunto (solo los Active, solo los tokens vivos).
 
-Consecuencia a tener presente: dentro de una misma transacción el orden importa. El caso concreto es el token de verificación, donde el aggregate invalida el anterior e inserta el nuevo en el mismo `SaveChanges`. Se verificó empíricamente que EF emite el UPDATE antes del INSERT y el índice no se viola; está cubierto por `A_second_request_for_the_same_user_invalidates_the_first_resent_token`.
+Consecuencia a tener presente, y no es teórica: **dentro de una misma transacción el orden de escritura importa, y EF no garantiza cuál elige.**
+
+- **Token de verificación**: el aggregate invalida el anterior e inserta el nuevo en el mismo `SaveChanges`. Se verificó que EF emite el UPDATE antes del INSERT y el índice no se viola. Cubierto por `A_second_request_for_the_same_user_invalidates_the_first_resent_token`.
+- **Promote de borrador**: acá sí mordió. El handler marcaba el borrador nuevo como `Active` y archivaba el anterior en el mismo `SaveChanges`. EF ordena los UPDATE por clave, que es un Guid aleatorio, así que **cerca de la mitad de las veces** emitía primero el que crea el segundo `Active` y el índice abortaba. El síntoma era un promote que fallaba de forma intermitente con un 409 indistinguible de un conflicto legítimo, y apareció recién al correr la suite completa dos veces.
+
+  El arreglo es archivar primero y flushear, y recién después promover: la ventana pasa por cero `Active`, nunca por dos. Los dos `SaveChanges` siguen dentro de la misma transacción, así que la atomicidad no cambia.
+
+La lección general: cuando un índice parcial cubre una transición de estado que mueve **dos filas a la vez**, el handler tiene que ordenar las escrituras de forma explícita en lugar de confiar en el orden que elija el ORM.
 
 ### D. Advisory locks o SERIALIZABLE en los handlers con carrera
 
