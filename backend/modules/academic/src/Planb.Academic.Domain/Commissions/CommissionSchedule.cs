@@ -29,6 +29,19 @@ public sealed class CommissionSchedule
     }
 
     /// <summary>
+    /// Reconstituye una franja ya persistida. Existe porque las franjas se guardan como documento
+    /// embebido (ADR-0053) y el value converter que las deserializa vive en Infrastructure, que no
+    /// alcanza al ctor <c>internal</c>.
+    ///
+    /// <para>
+    /// No valida: el dato ya pasó por el aggregate cuando se escribió. Es el mismo contrato que el
+    /// resto de los <c>Hydrate</c> del proyecto.
+    /// </para>
+    /// </summary>
+    public static CommissionSchedule Hydrate(DayOfWeek day, TimeOnly startTime, TimeOnly endTime) =>
+        new(day, startTime, endTime);
+
+    /// <summary>
     /// True si esta franja se solapa con <paramref name="other"/>: mismo día y rangos que
     /// intersectan. El intervalo es semiabierto <c>[start, end)</c>, así que dos franjas contiguas
     /// (una termina justo cuando la otra empieza) NO se solapan: 18-20 y 20-22 conviven.

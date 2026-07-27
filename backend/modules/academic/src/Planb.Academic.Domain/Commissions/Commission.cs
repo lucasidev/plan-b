@@ -45,10 +45,18 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     /// <summary>Docentes asignados, cargados eager con el aggregate (OwnsMany + AutoInclude).</summary>
     public IReadOnlyList<CommissionTeacher> Teachers => _teachers;
 
-    private readonly List<CommissionSchedule> _schedules = [];
-
-    /// <summary>Franjas horarias de cursada, cargadas eager con el aggregate (OwnsMany + AutoInclude).</summary>
-    public IReadOnlyList<CommissionSchedule> Schedules => _schedules;
+    /// <summary>
+    /// Franjas horarias de cursada. A diferencia de <see cref="Teachers"/>, no es una tabla hija:
+    /// se persiste como documento embebido en una columna <c>jsonb</c> de la comisión (ADR-0053).
+    ///
+    /// <para>
+    /// Por eso la colección se reemplaza entera en vez de mutarse item por item, y por eso la
+    /// propiedad tiene setter privado en lugar de exponer un backing field: es la forma que refleja
+    /// cómo se lee y cómo se escribe. Ningún read filtra ni joinea por franja; los docentes sí se
+    /// joinean contra <c>academic.teachers</c> para el nombre, y por eso ellos siguen siendo tabla.
+    /// </para>
+    /// </summary>
+    public IReadOnlyList<CommissionSchedule> Schedules { get; private set; } = [];
 
     private Commission() { }
 
@@ -90,11 +98,29 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Reconstitución con Id pre-asignado + docentes + horarios, para seeder y EF rehydration.
-    /// Saltea validaciones (el caller se hace responsable de datos coherentes). Recibe docentes y
-    /// franjas como pares/tuplas crudas porque <see cref="CommissionTeacher"/> y
-    /// <see cref="CommissionSchedule"/> tienen ctor internal al dominio.
+    /// Reconstitución con Id pre-asignado + docentes + horarios. Su único caller es el seeder: EF no
+    /// pasa por acá (materializa por ctor privado y setters). Recibe docentes y franjas como
+    /// pares/tuplas crudas porque <see cref="CommissionTeacher"/> y <see cref="CommissionSchedule"/>
+    /// tienen ctor internal al dominio.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A diferencia del resto de los <c>Hydrate</c> del proyecto, este SÍ valida docentes y franjas,
+    /// y tira si el dato no es coherente. La razón es que sus invariantes dejaron de tener red en la
+    /// base: las franjas pasaron a documento embebido (ADR-0053), y un CHECK de Postgres no puede
+    /// recorrer un array jsonb sin una función IMMUTABLE aparte.
+    /// </para>
+    /// <para>
+    /// Cerrar el bypass es mejor que ponerle red igual: el manifiesto del seeder entra sin que nadie
+    /// lo revise, y un <c>Slot(Monday, 22, 18)</c> mal tipeado se persistía sin ruido para después
+    /// romper el detector de choques, que compara <c>start &lt; end</c> y nunca marca conflicto
+    /// contra un rango invertido. Tira en vez de devolver Result porque no es una falla de negocio:
+    /// es un manifiesto roto, y el seeder ya falla ruidoso.
+    /// </para>
+    /// </remarks>
+    /// <exception cref="ArgumentException">
+    /// Si los docentes o las franjas violan los invariantes del aggregate.
+    /// </exception>
     public static Commission Hydrate(
         CommissionId id,
         Guid subjectId,
@@ -123,15 +149,24 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
             UpdatedAt = updatedAt,
         };
 
-        foreach (var (teacherId, role) in teachers)
+        var teacherSet = BuildTeacherSet(teachers);
+        if (teacherSet.IsFailure)
         {
-            commission._teachers.Add(new CommissionTeacher(teacherId, role));
+            throw new ArgumentException(
+                $"Commission '{name}' ({id.Value}) has invalid teachers: {teacherSet.Error.Code}.",
+                nameof(teachers));
         }
 
-        foreach (var (day, start, end) in schedules)
+        var scheduleSet = BuildScheduleSet(schedules);
+        if (scheduleSet.IsFailure)
         {
-            commission._schedules.Add(new CommissionSchedule(day, start, end));
+            throw new ArgumentException(
+                $"Commission '{name}' ({id.Value}) has an invalid schedule: {scheduleSet.Error.Code}.",
+                nameof(schedules));
         }
+
+        commission._teachers.AddRange(teacherSet.Value);
+        commission.Schedules = scheduleSet.Value;
 
         return commission;
     }
@@ -219,8 +254,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
             return built.Error;
         }
 
-        _schedules.Clear();
-        _schedules.AddRange(built.Value);
+        Schedules = built.Value;
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
@@ -271,8 +305,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
         Notes = TrimToNull(notes);
         _teachers.Clear();
         _teachers.AddRange(teacherSet.Value);
-        _schedules.Clear();
-        _schedules.AddRange(scheduleSet.Value);
+        Schedules = scheduleSet.Value;
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }

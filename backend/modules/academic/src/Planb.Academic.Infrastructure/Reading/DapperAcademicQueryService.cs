@@ -240,6 +240,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 c.name              AS CommissionName,
                 c.modality          AS Modality,
                 c.capacity          AS Capacity,
+                c.schedules::text   AS SchedulesJson,
                 ct.teacher_id       AS TeacherId,
                 initcap(t.first_name) AS FirstName,
                 initcap(t.last_name)  AS LastName,
@@ -259,55 +260,15 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                     ELSE 5
                 END;";
 
-        // Horarios: tabla hija independiente de commission_teachers (sin relación entre sí), así que
-        // se resuelve con una segunda query plana en vez de sumarla al join de arriba (evita el cross
-        // product entre docentes y franjas de la misma comisión).
-        const string scheduleSql = @"
-            SELECT
-                cs.commission_id AS CommissionId,
-                cs.day_of_week   AS Day,
-                cs.start_time    AS Start,
-                cs.end_time      AS End
-            FROM academic.commissions c
-            JOIN academic.commission_schedules cs ON cs.commission_id = c.id
-            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId AND c.is_active = true
-            ORDER BY
-                CASE cs.day_of_week
-                    WHEN 'Monday'    THEN 1
-                    WHEN 'Tuesday'   THEN 2
-                    WHEN 'Wednesday' THEN 3
-                    WHEN 'Thursday'  THEN 4
-                    WHEN 'Friday'    THEN 5
-                    WHEN 'Saturday'  THEN 6
-                    WHEN 'Sunday'    THEN 7
-                    ELSE 8
-                END,
-                cs.start_time;";
-
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<CommissionTeacherRow>(
             new CommandDefinition(
                 sql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
 
-        var scheduleRows = await db.QueryAsync<CommissionScheduleRow>(
-            new CommandDefinition(
-                scheduleSql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
-
-        var scheduleByCommission = scheduleRows
-            .GroupBy(r => r.CommissionId)
-            .ToDictionary(
-                g => g.Key,
-                g => (IReadOnlyList<CommissionScheduleItem>)g
-                    .Select(r => new CommissionScheduleItem(
-                        r.Day,
-                        r.Start.ToString("HH:mm", CultureInfo.InvariantCulture),
-                        r.End.ToString("HH:mm", CultureInfo.InvariantCulture)))
-                    .ToList());
-
         // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
         // nombre desde el SQL), así que el listado sale ordenado sin re-sort.
         return rows
-            .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity))
+            .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity, r.SchedulesJson))
             .Select(g => new CommissionListItem(
                 g.Key.CommissionId,
                 g.Key.CommissionName,
@@ -317,17 +278,17 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                     .Select(r => new CommissionTeacherItem(
                         r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
                     .ToList(),
-                scheduleByCommission.GetValueOrDefault(g.Key.CommissionId, EmptySchedule)))
+                [.. CommissionScheduleJson.Read(g.Key.SchedulesJson)
+                    .Select(s => new CommissionScheduleItem(s.Day, s.Start, s.End))]))
             .ToList();
     }
-
-    private static readonly IReadOnlyList<CommissionScheduleItem> EmptySchedule = [];
 
     private sealed record CommissionTeacherRow(
         Guid CommissionId,
         string CommissionName,
         string Modality,
         int? Capacity,
+        string? SchedulesJson,
         Guid? TeacherId,
         string? FirstName,
         string? LastName,
