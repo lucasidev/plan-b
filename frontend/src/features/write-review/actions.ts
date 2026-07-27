@@ -35,8 +35,8 @@ export async function publishReviewAction(
 
   // Docente real elegido en el picker (US-065): la reseña se ancla a un docente de la comisión de
   // la cursada, no a un placeholder. El backend valida que pertenezca a la comisión.
-  const docenteResenadoId = formData.get('docenteResenadoId')?.toString();
-  if (!docenteResenadoId) {
+  const reviewedTeacherId = formData.get('reviewedTeacherId')?.toString();
+  if (!reviewedTeacherId) {
     return { status: 'error', message: 'Elegí el docente que te dio la cursada.' };
   }
 
@@ -67,7 +67,7 @@ export async function publishReviewAction(
 
   const body = {
     enrollmentId,
-    docenteResenadoId,
+    reviewedTeacherId,
     difficultyRating: validated.data.difficulty,
     overallRating: validated.data.rating,
     hoursPerWeek: validated.data.hoursPerWeek ?? null,

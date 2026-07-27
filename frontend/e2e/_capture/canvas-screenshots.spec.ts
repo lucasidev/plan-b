@@ -204,7 +204,7 @@ const CANVASES: ReadonlyArray<Canvas> = [
       {
         section: 'sim',
         id: 'v2-plan-borr',
-        label: 'Borrador 2027·1c',
+        label: 'Borrador 2027-C1',
         width: APP_W,
         height: APP_H,
       },
@@ -413,7 +413,7 @@ const CANVASES: ReadonlyArray<Canvas> = [
       {
         section: 'datos',
         id: 'adm-com-list',
-        label: 'Comisiones · oferta 2026·1c',
+        label: 'Comisiones · oferta 2026-C1',
         width: ADM_W,
         height: ADM_H,
       },

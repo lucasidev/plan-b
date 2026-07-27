@@ -4,7 +4,7 @@
  * When the backend lands: `GET /api/subjects/{code}/commissions?termId=...` (US-065).
  *
  * Each commission links a subject with a teacher in a specific schedule. Mock with 2-3
- * commissions per subject of the 2026·1c term (the ones the mock student is taking or
+ * commissions per subject of the 2026-C1 term (the ones the mock student is taking or
  * could take).
  */
 

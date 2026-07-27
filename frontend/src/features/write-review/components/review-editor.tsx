@@ -67,7 +67,7 @@ type Props = {
   enrollmentId: string;
   /**
    * Teachers of the enrollment's commission, for the "who taught you" picker (write mode, US-065).
-   * The selected one is sent as <c>docenteResenadoId</c>. Omitted in edit mode (the reviewed teacher
+   * The selected one is sent as <c>reviewedTeacherId</c>. Omitted in edit mode (the reviewed teacher
    * does not change on edit).
    */
   teachers?: CommissionTeacherOption[];
@@ -124,7 +124,7 @@ export function ReviewEditor({
   });
   // Selected teacher (write mode only): preselect when the commission has exactly one, so the
   // common single-titular case needs no extra tap.
-  const [docenteResenadoId, setDocenteResenadoId] = useState<string | null>(
+  const [reviewedTeacherId, setReviewedTeacherId] = useState<string | null>(
     teachers?.length === 1 ? teachers[0].teacherId : null,
   );
   const [state, formAction] = useActionState(submitAction, submitInitialState);
@@ -164,7 +164,7 @@ export function ReviewEditor({
       ? draft.difficulty >= 1
       : draft.rating >= 1 &&
         draft.difficulty >= 1 &&
-        docenteResenadoId !== null &&
+        reviewedTeacherId !== null &&
         hasValidText &&
         typeof draft.wouldRecommendCourse === 'boolean' &&
         typeof draft.wouldRetakeTeacher === 'boolean';
@@ -209,7 +209,7 @@ export function ReviewEditor({
             <input type="hidden" name={idFieldName} value={enrollmentId} />
             <input type="hidden" name="payload" value={JSON.stringify(draft)} />
             {mode === 'write' && (
-              <input type="hidden" name="docenteResenadoId" value={docenteResenadoId ?? ''} />
+              <input type="hidden" name="reviewedTeacherId" value={reviewedTeacherId ?? ''} />
             )}
             {mode === 'write' && <DraftButton />}
             <PublishButton
@@ -246,8 +246,8 @@ export function ReviewEditor({
               </p>
               <TeacherPicker
                 teachers={teachers}
-                selected={docenteResenadoId}
-                onSelect={setDocenteResenadoId}
+                selected={reviewedTeacherId}
+                onSelect={setReviewedTeacherId}
               />
             </Card>
           )}

@@ -13,7 +13,7 @@ export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
   matName: 'Ingeniería de Software I',
   prof: 'Brandt, Carlos',
   com: 'A',
-  period: '2025·2c',
+  period: '2025-C2',
   finalNote: 8,
 };
 

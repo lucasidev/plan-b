@@ -7,7 +7,7 @@ const review: PendingReview = {
   code: 'ISW301',
   name: 'Ingeniería de Software I',
   prof: 'Brandt',
-  closed: '2025·2c',
+  closed: '2025-C2',
   note: 8,
 };
 

@@ -63,6 +63,9 @@ export function ReviewCard({ review, canVote }: { review: SubjectReview; canVote
               </span>
             )}
             <span>· {formatRelativeDate(review.createdAt)}</span>
+            {review.updatedAt !== review.createdAt && (
+              <span className="font-mono text-[10.5px] text-ink-4">· editada</span>
+            )}
           </div>
           <ReviewVoteButtons
             reviewId={review.id}

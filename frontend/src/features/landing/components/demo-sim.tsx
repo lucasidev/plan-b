@@ -97,7 +97,7 @@ export function DemoSim() {
           style={{ borderRadius: 999, padding: '4px 10px', fontSize: 11, gap: 7 }}
         >
           <span className="inline-block rounded-full bg-accent" style={{ width: 5, height: 5 }} />
-          2026·1c · borrador
+          2026-C1 · borrador
         </span>
         <span className="flex-1" />
         <span className="font-mono text-ink-3" style={{ fontSize: 10.5 }}>
