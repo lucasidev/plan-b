@@ -24,7 +24,7 @@ public class CommissionCatalogTests : IClassFixture<RegisterApiFixture>
         _client = fixture.Factory.CreateClient();
     }
 
-    // Desarrollo de Software (111) + 2026·1c: tiene 2 comisiones sembradas (A presencial, B virtual).
+    // Desarrollo de Software (111) + 2026-C1: tiene 2 comisiones sembradas (A presencial, B virtual).
     private static readonly Guid Subject111Id =
         Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid Term2026C1Id =

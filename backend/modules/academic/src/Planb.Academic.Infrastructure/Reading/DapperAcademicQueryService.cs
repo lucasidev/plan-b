@@ -79,6 +79,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 name AS Name,
                 slug AS Slug
             FROM academic.universities
+            WHERE is_active
             ORDER BY name ASC;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);
@@ -99,6 +100,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 is_official   AS IsOfficial
             FROM academic.careers
             WHERE university_id = @UniversityId
+              AND is_active
             ORDER BY is_official DESC, name ASC;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);

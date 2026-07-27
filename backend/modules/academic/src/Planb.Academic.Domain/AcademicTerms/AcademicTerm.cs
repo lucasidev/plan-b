@@ -29,12 +29,20 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
     public string Label { get; private set; } = null!;
     public DateTimeOffset CreatedAt { get; private set; }
 
+    /// <summary>
+    /// AcademicTerm era el único aggregate del catálogo sin esta marca, y es de los pocos que el
+    /// admin edita sobre datos que ya están en uso (fechas y ventanas de inscripción que el
+    /// simulador y el historial leen). Sin ella, "estas fechas cambiaron después de que el alumno
+    /// planificó" no se puede ni preguntar.
+    /// </summary>
+    public DateTimeOffset UpdatedAt { get; private set; }
+
     private AcademicTerm() { }
 
     /// <summary>
-    /// Crea un período lectivo con sus ventanas. <paramref name="label"/> queda calculado por el
-    /// caller (típicamente el seeder o un futuro endpoint admin) porque depende de la convención
-    /// de cada universidad (ej. "2026·1c" para UNSTA, "2026-S1" para SIGLO 21).
+    /// Crea un período lectivo con sus ventanas. <paramref name="label"/> lo calcula el caller
+    /// (hoy siempre con <see cref="ComputeLabel"/>) porque la forma depende de la cadencia:
+    /// "2026-C1" para un cuatrimestre, "2026-S1" para un semestre.
     /// </summary>
     public static Result<AcademicTerm> Create(
         UniversityId universityId,
@@ -57,6 +65,7 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
             return validation.Error;
         }
 
+        var now = clock.UtcNow;
         return new AcademicTerm
         {
             Id = AcademicTermId.New(),
@@ -69,7 +78,8 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
             EnrollmentOpens = enrollmentOpens,
             EnrollmentCloses = enrollmentCloses,
             Label = label.Trim(),
-            CreatedAt = clock.UtcNow,
+            CreatedAt = now,
+            UpdatedAt = now,
         };
     }
 
@@ -107,14 +117,16 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
         EnrollmentOpens = enrollmentOpens;
         EnrollmentCloses = enrollmentCloses;
         Label = label.Trim();
+        UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
 
     /// <summary>
     /// Computa el label human-readable de un período a partir de su cadencia (US-064, admin): el
     /// admin no lo tipea, lo arma el dominio para que nunca quede desalineado del período real
-    /// (year/number/kind). El seeder sigue pasando labels manuales con su propia convención
-    /// (ej. "2026·1c") vía <see cref="Create"/>/<see cref="Hydrate"/>, que no cambiaron de firma.
+    /// (year/number/kind). El seeder también pasa por acá: cuando traía sus propios literales
+    /// ("2026·1c") el mismo dropdown mezclaba dos formas de nombrar el mismo tipo de período según
+    /// quién lo hubiera creado.
     /// </summary>
     public static string ComputeLabel(int year, int number, TermKind kind) => kind switch
     {
@@ -202,5 +214,6 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
             EnrollmentCloses = enrollmentCloses,
             Label = label,
             CreatedAt = createdAt,
+            UpdatedAt = createdAt,
         };
 }

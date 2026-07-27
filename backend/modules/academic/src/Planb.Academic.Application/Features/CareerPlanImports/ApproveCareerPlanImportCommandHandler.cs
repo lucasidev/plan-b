@@ -101,6 +101,13 @@ public static class ApproveCareerPlanImportCommandHandler
         await plans.AddAsync(careerPlan, ct);
 
         // ── Crear Subjects ─────────────────────────────────────────────────
+        // El code es único por plan (ux_subjects_plan_code) y el parser puede emitir la misma
+        // materia dos veces (aparece en dos años del PDF, o el alumno la tilda repetida en el
+        // preview). Sin dedupear acá, el SaveChanges reventaba contra el UNIQUE: 500, no se
+        // materializaba nada, el import quedaba en Parsed y el reintento fallaba idéntico, o sea que
+        // un plan con una fila repetida no se podía aprobar nunca. Se compara igual que el índice
+        // (ordinal sobre el code ya trimmeado) para no descartar materias que sí son distintas.
+        var seenCodes = new HashSet<string>(StringComparer.Ordinal);
         var subjectsToAdd = new List<Subject>(command.Items.Count);
         foreach (var item in command.Items)
         {
@@ -127,6 +134,11 @@ public static class ApproveCareerPlanImportCommandHandler
             if (subjectResult.IsFailure)
             {
                 // Saltea esta materia y sigue. El alumno puede agregarla manualmente después.
+                continue;
+            }
+
+            if (!seenCodes.Add(subjectResult.Value.Code))
+            {
                 continue;
             }
 

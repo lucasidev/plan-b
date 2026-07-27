@@ -15,7 +15,7 @@ namespace Planb.IntegrationTests.Academic;
 /// ese término en un mismo listado, ordenado por nombre de materia.
 ///
 /// Subject 111 (Desarrollo de Software) y subject 121 (Base de datos) son ambas de UNSTA/TUDCS y
-/// cuatrimestrales (mismo term_kind que el término 2026·1c). "Base de datos" (B) ordena antes que
+/// cuatrimestrales (mismo term_kind que el término 2026-C1). "Base de datos" (B) ordena antes que
 /// "Desarrollo de Software" (D) en cualquier collation, así que el assert de orden no depende de cómo
 /// Postgres colacione acentos.
 /// </summary>

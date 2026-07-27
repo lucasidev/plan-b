@@ -83,6 +83,23 @@ public static class CommissionErrors
             "academic.commission.subject_inactive",
             "Cannot create a commission for an archived subject.");
 
+    /// <summary>
+    /// El docente existe pero está archivado (soft delete, US-063): no se le pueden asignar
+    /// comisiones nuevas.
+    ///
+    /// <para>
+    /// El chequeo faltaba mientras el de la materia sí estaba, y la asimetría tenía consecuencia
+    /// real: archivar un docente lo saca de la búsqueda y del catálogo, pero su id sigue siendo
+    /// válido, así que la asignación entraba igual y lo devolvía a la superficie del producto por
+    /// la puerta de atrás (aparece como docente de la comisión, es reseñable, y sus reseñas nuevas
+    /// cuentan en sus insights). Archivar dejaba de significar algo.
+    /// </para>
+    /// </summary>
+    public static readonly Error TeacherInactive =
+        Error.Conflict(
+            "academic.commission.teacher_inactive",
+            "Cannot assign an archived teacher to a commission.");
+
     /// <summary>El termId del alta no corresponde a ningún AcademicTerm del catálogo.</summary>
     public static readonly Error TermNotFound =
         Error.NotFound(

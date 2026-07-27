@@ -69,6 +69,10 @@ internal sealed class AcademicTermConfiguration : IEntityTypeConfiguration<Acade
             .HasColumnName("created_at")
             .IsRequired();
 
+        builder.Property(t => t.UpdatedAt)
+            .HasColumnName("updated_at")
+            .IsRequired();
+
         // CHECKs del data-model como defensa en DB:
         //   end_date > start_date
         //   enrollment_closes > enrollment_opens

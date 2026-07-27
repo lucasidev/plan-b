@@ -15,7 +15,7 @@ namespace Planb.IntegrationTests.Academic;
 /// que falla a mitad NO deje la comisión mutada (el middleware de transacción commitea aunque el
 /// handler devuelva un Result de falla; la atomicidad la garantiza `Commission.Reconfigure`).
 ///
-/// Subject 111 (Desarrollo de Software) + term 2026·1c son de UNSTA y ya tienen comisiones sembradas;
+/// Subject 111 (Desarrollo de Software) + term 2026-C1 son de UNSTA y ya tienen comisiones sembradas;
 /// estos tests crean las suyas con nombres únicos y filtran por id, sin depender del seed.
 /// </summary>
 public class AdminCommissionsEndpointTests : IClassFixture<RegisterApiFixture>

@@ -83,4 +83,14 @@ public static class SubjectErrors
         Error.Validation(
             "academic.subject.term_kind_required",
             "Subject term_kind is required.");
+
+    /// <summary>
+    /// La materia ya tiene comisiones, así que su cadencia queda congelada. 409. Es el mismo corte
+    /// que <c>AcademicTermErrors.KindLockedByCommissions</c>, del otro lado de la igualdad que
+    /// valida la creación de comisiones.
+    /// </summary>
+    public static readonly Error TermKindLockedByCommissions =
+        Error.Conflict(
+            "academic.subject.term_kind_locked_by_commissions",
+            "Cannot change the subject term kind: commissions already exist for this subject.");
 }

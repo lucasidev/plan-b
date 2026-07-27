@@ -237,7 +237,7 @@ public sealed class AcademicSeeder
                 record.EndDate,
                 record.EnrollmentOpens,
                 record.EnrollmentCloses,
-                record.Label,
+                AcademicTerm.ComputeLabel(record.Year, record.Number, record.Kind),
                 createdAt: now));
             inserted++;
         }
