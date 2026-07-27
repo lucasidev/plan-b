@@ -140,8 +140,13 @@ public sealed class IdentitySeeder
                 // Verify first (a disabled-but-unverified account is unreachable by design),
                 // then disable.
                 IssueAndConsumeVerificationToken(user);
+                // Se modela como self-disable (US-075), con el propio id como actor. Antes iba
+                // Guid.Empty, que no es un actor: es un id que no le pertenece a nadie y que el
+                // audit trail muestra igual que si fuera real. El aggregate ahora lo rechaza, así
+                // que la persona se quedaba habilitada y los tests del 403 pasaban a verde por el
+                // motivo equivocado.
                 user.Disable(
-                    disabledBy: Guid.Empty,
+                    disabledBy: user.Id.Value,
                     reason: "Seed: persona for testing 403 disabled path",
                     _clock);
                 break;

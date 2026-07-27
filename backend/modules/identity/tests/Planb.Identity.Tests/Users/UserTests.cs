@@ -235,6 +235,24 @@ public class UserTests
         second.Error.ShouldBe(UserErrors.AlreadyDisabled);
     }
 
+    /// <summary>
+    /// disabled_by es el único registro de quién bajó la cuenta, y la US-058 lo compara contra el
+    /// propio user id para distinguir un disable de admin de un self-disable. Guid.Empty pasaba esa
+    /// comparación como si fuera un actor real y dejaba el audit trail apuntando a nadie.
+    /// </summary>
+    [Fact]
+    public void Disable_sin_actor_devuelve_error()
+    {
+        var clock = new FixedClock(T0);
+        var user = User.Register(Email(), "hashed", clock).Value;
+
+        var result = user.Disable(Guid.Empty, "abuse", clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.DisabledByRequired);
+        user.IsDisabled.ShouldBeFalse();
+    }
+
     [Fact]
     public void Restore_clears_fields_and_raises_event()
     {

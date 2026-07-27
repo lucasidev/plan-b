@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Planb.Identity.Application.Abstractions.Security;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 

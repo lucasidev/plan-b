@@ -423,6 +423,11 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     {
         ArgumentNullException.ThrowIfNull(clock);
 
+        if (disabledBy == Guid.Empty)
+        {
+            return UserErrors.DisabledByRequired;
+        }
+
         if (string.IsNullOrWhiteSpace(reason))
         {
             return UserErrors.DisableReasonRequired;

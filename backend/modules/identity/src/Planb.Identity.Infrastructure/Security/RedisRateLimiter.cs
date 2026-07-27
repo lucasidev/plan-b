@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Planb.Identity.Application.Abstractions.Security;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using StackExchange.Redis;
 
 namespace Planb.Identity.Infrastructure.Security;
