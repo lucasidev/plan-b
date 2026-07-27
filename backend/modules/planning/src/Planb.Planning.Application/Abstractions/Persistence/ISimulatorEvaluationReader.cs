@@ -35,8 +35,17 @@ public interface ISimulatorEvaluationReader
     /// <paramref name="excludingStudentProfileId"/>: no tiene sentido comparar al alumno consigo
     /// mismo.
     /// </summary>
+    /// <remarks>
+    /// <paramref name="careerPlanId"/> acota el universo al plan del alumno. Sin él, la query
+    /// agrupaba el historial académico de TODA la plataforma en cada evaluación, y el simulador
+    /// dispara una por cada materia que el alumno toca. Además de crecer con el total de cursadas
+    /// cargadas por todos los usuarios (no con el tamaño de la simulación), la cohorte sin acotar
+    /// mezclaba alumnos de otras carreras y otras universidades, que no es con quiénes el alumno se
+    /// está comparando.
+    /// </remarks>
     Task<CombinationCohortStats> GetCombinationCohortStatsAsync(
         IReadOnlyCollection<Guid> subjectIds,
         Guid excludingStudentProfileId,
+        Guid careerPlanId,
         CancellationToken ct = default);
 }

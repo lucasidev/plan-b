@@ -106,7 +106,7 @@ public static class EvaluateSimulationCommandHandler
 
         var weightedDifficulty = await evaluationReader.GetWeightedDifficultyAsync(requestedIds, ct);
         var cohortStats = await evaluationReader.GetCombinationCohortStatsAsync(
-            requestedIds, profile.Id, ct);
+            requestedIds, profile.Id, profile.CareerPlanId, ct);
 
         var (scheduleBlocks, clashes) = BuildScheduleAndClashes(choices, commissionsById, subjectsById);
 
