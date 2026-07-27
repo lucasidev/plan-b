@@ -62,11 +62,25 @@ internal sealed class EnrollmentRecordConfiguration : IEntityTypeConfiguration<E
         builder.HasIndex(e => e.StudentProfileId)
             .HasDatabaseName("ix_enrollment_records_student");
 
-        // UNIQUE(student, subject, term): 1 cursada por triple. NULL en term (equivalencias)
-        // queda fuera del UNIQUE por la semántica de NULL en Postgres. El segundo unique
-        // partial para equivalencias va aparte.
+        // UNIQUE(student, subject, term): 1 cursada por triple.
+        //
+        // Con NULLS NOT DISTINCT porque si no, el índice no restringe nada cuando term_id es nulo:
+        // en Postgres dos NULL son distintos entre sí, así que N filas sin período convivían. Y no
+        // es solo el caso de equivalencia (que tiene su propio parcial más abajo): Regularized,
+        // Failed y Dropped también admiten término nulo, y ahí no había ninguna red. Doble submit
+        // concurrente con termId null entraba dos veces, y el 409 que promete el handler no salía
+        // nunca porque su chequeo previo corre antes de que el otro commitee.
+        //
+        // El trade-off, explícito: "sin cuatrimestre conocido" pasa a ser UN solo bucket por
+        // (alumno, materia). Un alumno que curso dos veces la misma materia sin saber ninguno de los
+        // dos períodos ya no puede cargar la segunda. Se elige así porque esa segunda fila es
+        // indistinguible de un duplicado (el dato no lleva la diferencia), y admitirla es admitir
+        // duplicados sin límite ni forma de detectarlos, que es lo que ensucia el pass rate público.
+        // La salida para ese alumno es informar el período, que hoy exige un alta nueva porque no
+        // existe edición de cursadas.
         builder.HasIndex(e => new { e.StudentProfileId, e.SubjectId, e.TermId })
             .IsUnique()
+            .AreNullsDistinct(false)
             .HasDatabaseName("ux_enrollment_records_student_subject_term");
 
         // UNIQUE(student, subject) cuando approval_method=Equivalencia: una sola equivalencia

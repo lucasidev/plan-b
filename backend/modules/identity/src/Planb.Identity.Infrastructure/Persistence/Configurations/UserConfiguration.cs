@@ -124,6 +124,19 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
             tokens.Property(t => t.InvalidatedAt)
                 .HasColumnName("invalidated_at");
+
+            // "Un solo token activo por (user, purpose)" (ADR-0033). El data-model ya lo documentaba
+            // con este mismo shape; en la base no existía, y el invariante vivía solo en memoria
+            // (IssueVerificationToken invalida el anterior sobre la colección cargada).
+            //
+            // Sin la red, dos resend concurrentes (doble click, dos pestañas) cargan el mismo user,
+            // los dos invalidan el token viejo y los dos insertan uno nuevo: quedan dos vivos del
+            // mismo purpose. Eso rompe la garantía que hace seguro reenviar el mail ("pedir un link
+            // nuevo mata el anterior"), y en password reset esa garantía es la que importa.
+            tokens.HasIndex("user_id", nameof(VerificationToken.Purpose))
+                .IsUnique()
+                .HasDatabaseName("ux_verification_tokens_user_purpose_active")
+                .HasFilter("consumed_at IS NULL AND invalidated_at IS NULL");
         });
 
         builder.Navigation(u => u.Tokens).AutoInclude();

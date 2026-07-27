@@ -68,5 +68,13 @@ internal sealed class ReviewReportConfiguration : IEntityTypeConfiguration<Revie
         // queue listing.
         builder.HasIndex(r => new { r.ReviewId, r.Status })
             .HasDatabaseName("ix_review_reports_review_status");
+
+        // El data-model declaraba este invariante y la base no lo tenía. Un reporte cerrado sin
+        // moderador ni fecha de resolución rompe la trazabilidad de quién decidió qué, que es todo
+        // el punto de tener el registro: la cola de moderación y el detalle asumen que un reporte
+        // fuera de Open tiene ambos.
+        builder.ToTable(t => t.HasCheckConstraint(
+            "ck_review_reports_resolved_has_moderator_and_date",
+            "status = 'Open' OR (moderator_user_id IS NOT NULL AND resolved_at IS NOT NULL)"));
     }
 }

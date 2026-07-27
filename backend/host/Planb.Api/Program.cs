@@ -234,10 +234,19 @@ builder.Services.AddScoped<Planb.Reviews.Application.Seeding.ReviewsSeeder>();
 builder.Services.AddHostedService<Planb.Api.Infrastructure.SeedCorpus.SeedCorpusHostedService>();
 
 // ------------------------------------------------------------------
+// Traducción de violaciones de UNIQUE a 409. Ver UniqueViolationExceptionHandler: los índices
+// únicos son la red para las carreras que el chequeo previo del handler no puede cerrar, y sin esto
+// esa red se manifestaba como un 500.
+// ------------------------------------------------------------------
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<Planb.Api.Infrastructure.UniqueViolationExceptionHandler>();
+
+// ------------------------------------------------------------------
 // HTTP pipeline
 // ------------------------------------------------------------------
 var app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseIdentityJwtAuthentication();
 app.MapCarter();

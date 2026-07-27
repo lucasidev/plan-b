@@ -146,8 +146,12 @@ internal sealed class DapperPublicSimulationsReader : IPublicSimulationsReader
                     subjects,
                     items.Sum(i => i.WeeklyHours),
                     difficultyByDraft.GetValueOrDefault(d.Id),
-                    // Constraint del data-model: visibility='Shared' implica shared_at no nulo. Si
-                    // la fila llegó hasta acá es porque draftsSql ya filtró visibility='Shared'.
+                    // La fila llegó hasta acá porque draftsSql filtró visibility='Shared', y el CHECK
+                    // ck_simulation_drafts_shared_requires_shared_at garantiza que ahí shared_at no
+                    // es nulo. Hasta que ese CHECK existió, este desreferenciado se apoyaba en un
+                    // constraint que el data-model documentaba pero la base no tenía, y una sola fila
+                    // mal formada tiraba el feed entero de la carrera (además de romper la
+                    // paginación keyset, que ordena por shared_at).
                     d.SharedAt!.Value);
             })
             .ToList();

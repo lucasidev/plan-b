@@ -79,7 +79,10 @@ namespace Planb.Moderation.Infrastructure.Migrations
                     b.HasIndex("ReviewId", "Status")
                         .HasDatabaseName("ix_review_reports_review_status");
 
-                    b.ToTable("review_reports", "moderation");
+                    b.ToTable("review_reports", "moderation", t =>
+                        {
+                            t.HasCheckConstraint("ck_review_reports_resolved_has_moderator_and_date", "status = 'Open' OR (moderator_user_id IS NOT NULL AND resolved_at IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
