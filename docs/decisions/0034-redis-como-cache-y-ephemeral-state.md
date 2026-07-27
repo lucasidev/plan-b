@@ -76,8 +76,25 @@ Un container más + lib + ADR. Ese costo único habilita los seis casos de uso d
 
 ## Cuándo revisitar
 
-- Si en 3 meses la tabla de casos de uso sigue teniendo solo 1-2 entradas activas (refresh + rate limiting), considerar mover esos a Postgres y deprecar Redis. La decisión se justifica solo si se aprovecha.
+- ~~Si en 3 meses la tabla de casos de uso sigue teniendo solo 1-2 entradas activas (refresh + rate limiting), considerar mover esos a Postgres y deprecar Redis. La decisión se justifica solo si se aprovecha.~~ **Cumplida y resuelta el 2026-07-26: Redis se queda.** Ver [Revisión](#revisión-2026-07-26).
 - Si emerge un caso que pide pub/sub seriamente, evaluar Redis Streams o Postgres `LISTEN/NOTIFY` (no agregar Redis-by-default si Wolverine outbox no aplica).
 - Si la operación de Redis en producción (memoria, monitoring, backups) se vuelve un peso desproporcionado al beneficio, replantear.
+
+## Revisión (2026-07-26)
+
+La condición de revisitación se cumplió exactamente: pasaron tres meses desde el 27 de abril y la tabla de casos de uso sigue con **2 de 6 entradas activas**. Los únicos consumidores en todo el backend son `IRefreshTokenStore` e `IRateLimiter`; no existen `ISubjectCache`, ni idempotency keys, ni cache de crowd insights, ni recently-viewed.
+
+**Decisión: Redis se queda, y la condición queda cerrada acá en lugar de seguir colgada.**
+
+El razonamiento: la condición preguntaba si la decisión "se aprovecha", y la respuesta honesta es que los dos casos activos son justamente los dos que Postgres sirve peor.
+
+- **Revocación de refresh tokens**: es una lista de claves efímeras con TTL, que es la estructura nativa de Redis. En Postgres serían filas con una columna de expiración más un job de limpieza, o sea reimplementar el TTL a mano.
+- **Rate limiting por sliding window**: escribe en *cada request* de los endpoints gateados. Mandar esa escritura a Postgres pone carga de write en el camino más caliente de la app para un dato que a nadie le importa persistir.
+
+No es que falten casos: es que los dos que hay son los que mejor justifican el componente. Deprecar Redis para mover estos dos a Postgres sería cambiar una dependencia operacional por carga de escritura en el hot path y un TTL casero.
+
+**Lo que no cambia**: no se activan casos nuevos por ahora. Los cuatro restantes de la tabla siguen siendo casos previstos, no comprometidos, y cada uno tiene que ganarse su lugar cuando aparezca la necesidad real. La mitigación de code review (todo uso de Redis encaja en un patrón canónico o va a Postgres) sigue vigente.
+
+**Sobre la degradación, para que no se vuelva a confundir**: que Redis esté caído no impide que el host arranque. El registro del multiplexer usa `AbortOnConnectFail = false` precisamente para eso, y cada consumidor maneja la indisponibilidad localmente, como dice la sección de fallback. Lo que sí corta el arranque es que **falte la connection string**, que es otra cosa: es configuración ausente, y es deliberado. Antes ese registro era condicional, y cuando la string faltaba se dropeaba en silencio la dependencia de `IRefreshTokenStore`, apareciendo después como un error confuso de validación de DI en vez de un mensaje que nombra el problema. En la práctica no pasa: el Justfile carga `.env` en cada recipe (`set dotenv-load`) y `_ensure-env` lo genera como dependencia de `infra-up`.
 
 Refs: [ADR-0017](0017-persistence-ignorance.md), [ADR-0018](0018-ef-core-writes-dapper-reads.md), [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md).
