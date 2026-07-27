@@ -172,7 +172,7 @@ builder.Services.AddAcademicInfrastructure(builder.Configuration);
 builder.Services.AddEnrollmentsApplication();
 builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 
-builder.Services.AddReviewsApplication(builder.Configuration);
+builder.Services.AddReviewsApplication();
 builder.Services.AddReviewsInfrastructure(builder.Configuration);
 
 builder.Services.AddModerationApplication();

@@ -19,7 +19,6 @@ public sealed class ReviewsDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(SchemaName);
-        modelBuilder.HasPostgresExtension("vector");
         modelBuilder.ApplyConfiguration(new ReviewConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewAuditLogConfiguration());
         modelBuilder.ApplyConfiguration(new ReviewVoteConfiguration());

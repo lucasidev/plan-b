@@ -1,6 +1,6 @@
 # ADR-0007: pgvector implementado en código, feature UI gated off hasta tener volumen
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con la infraestructura diferida (ver [Revisión](#revisión-2026-07-26))
 - **Fecha**: 2026-04-22
 
 ## Contexto
@@ -60,3 +60,15 @@ Descartada porque con 5-10 reseñas, el clustering produce ruido. El output le h
 - Si la ejecución del modelo local resulta demasiado costosa en CPU/latencia para el tráfico esperado.
 - Si aparece un modelo open source claramente superior para español.
 - Si el threshold default (200 reseñas) resulta muy bajo o muy alto en la práctica.
+
+## Revisión (2026-07-26)
+
+**Lo que este ADR decidió no se construyó, y el argumento que lo justificaba dejó de sostenerse.**
+
+Lo que sí existe en el código: la extensión `vector` habilitada, `UseVector()` en el wiring de Npgsql, un handler stub que loguea y sale, y la tabla documentada en el data model. Lo que no existe: la tabla `review_embeddings`, la entidad, el repositorio, el índice HNSW y el pipeline de generación. Una consulta a `pg_attribute` por columnas de tipo `vector` devuelve cero filas.
+
+El argumento central para rechazar la alternativa A era: "si no arranca desde la primera reseña, hay que backfillear N reseñas cuando se active la feature". Ese backfill ya es inevitable, porque ninguna reseña publicada desde la migración inicial tiene embedding. Y la premisa se dio vuelta: mientras el corpus siga chico, el backfill es barato, así que la razón para pagar la infra temprano se debilitó en lugar de crecer.
+
+**Decisión: se borra el andamiaje** (extensión, `UseVector()`, el handler stub y la sección de `ReviewEmbedding` del data model) hasta que exista un consumidor real. Prender `Reviews:Embeddings:Enabled` hoy no hacía nada más que loguear un warning por reseña publicada: el andamiaje no era una feature gateada, era una feature ausente con apariencia de gateada, y eso es peor que no tener nada, porque quien lee el ADR asume que activarla es cambiar un flag.
+
+Lo que **sigue en pie** para cuando la feature se retome: el modelo elegido y su razón de costo (alternativa B), la tabla aparte en lugar de columna embebida (alternativa C), y el gating por volumen (alternativa D). Nada de eso se cuestiona. Lo único que cambia es cuándo se construye, y que el backfill pasa de "evitado" a "asumido".

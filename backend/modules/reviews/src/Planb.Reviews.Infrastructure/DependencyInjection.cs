@@ -63,7 +63,6 @@ public static class DependencyInjection
             npgsql.MigrationsHistoryTable(
                 tableName: "__ef_migrations_history",
                 schema: ReviewsDbContext.SchemaName);
-            npgsql.UseVector();
         });
     }
 }
