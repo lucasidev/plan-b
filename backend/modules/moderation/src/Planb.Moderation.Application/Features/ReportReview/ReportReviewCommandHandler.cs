@@ -6,6 +6,7 @@ using Planb.Moderation.Domain.Reports;
 using Planb.Reviews.Application.Contracts;
 using Planb.Reviews.Application.IntegrationEvents;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 

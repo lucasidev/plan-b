@@ -4,6 +4,8 @@ Catálogo canónico de patrones de keys, valores, TTLs y operaciones para los se
 
 El "por qué" de Redis está en ADR-0034. Este doc es el "cómo": los shapes concretos.
 
+> **Qué está construido y qué no.** Los patrones 1 y 2 (refresh tokens, rate limiting) tienen código: `RedisRefreshTokenStore` e `IRateLimiter` / `RedisRateLimiter`. Los patrones **3 a 6 no existen todavía**: son el shape acordado para cuando se necesiten, no una descripción del sistema. Se aclara acá porque un catálogo que no distingue las dos cosas se lee entero como si estuviera en uso, y alguien termina buscando en el código un cache que nunca se escribió.
+
 ## Convenciones generales
 
 ### Naming
