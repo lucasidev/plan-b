@@ -181,6 +181,18 @@ public static class EvaluateSimulationCommandHandler
             }
         }
 
+        // Todas del mismo período. El comando no recibe el término, y antes tampoco se validaba
+        // contra ninguno: se podían mezclar la comisión de una materia de 2026-1c con la de otra de
+        // 2024-2c y la detección de choques corría igual, sobre una grilla que nunca va a existir.
+        //
+        // Se deriva el período de las comisiones en lugar de pedirlo en el body: el dato ya viene
+        // adentro de cada comisión, así que agregarlo al contrato seria pedirle al cliente algo que
+        // el servidor ya sabe, y encima confiable solo si el cliente no miente.
+        if (commissionsById.Values.Select(c => c.TermId).Distinct().Count() > 1)
+        {
+            return EvaluationErrors.CommissionsSpanMultipleTerms;
+        }
+
         return Result.Success(commissionsById);
     }
 

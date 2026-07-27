@@ -291,6 +291,7 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
             SELECT
                 id         AS Id,
                 subject_id AS SubjectId,
+                term_id    AS TermId,
                 name       AS Name,
                 is_active  AS IsActive
             FROM academic.commissions
@@ -333,6 +334,7 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
             r => r.Id,
             r => new CommissionScheduleSnapshot(
                 r.SubjectId,
+                r.TermId,
                 r.Name,
                 r.IsActive,
                 scheduleByCommission.GetValueOrDefault(r.Id, EmptySchedule)));
@@ -363,7 +365,8 @@ internal sealed class DapperSimulatorAvailabilityReader : ISimulatorAvailability
         Guid? TeacherId,
         string? TeacherName);
 
-    private sealed record CommissionRow(Guid Id, Guid SubjectId, string Name, bool IsActive);
+    private sealed record CommissionRow(
+        Guid Id, Guid SubjectId, Guid TermId, string Name, bool IsActive);
 
     private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 }

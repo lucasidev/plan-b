@@ -241,13 +241,16 @@ public class PublishReviewEndpointTests
     {
         var auth = await SetupUserWithProfileAsync("cursando");
 
-        // Enrollment cursando: termId + commissionId, sin grade, status=Cursando.
+        // Enrollment cursando: solo termId, sin comisión ni grade. Cursando no exige comisión, y el
+        // alta valida que la comisión (cuando viene) sea de esa materia en ese período, así que acá
+        // ya no sirve un Guid inventado. Para lo que este test prueba (reseñar una cursada en curso
+        // da 409) la comisión es irrelevante.
         var enrollResp = await auth.Client.PostAsJsonAsync(
             "/api/me/enrollment-records",
             new
             {
                 subjectId = Subject101,
-                commissionId = (Guid?)Guid.NewGuid(),
+                commissionId = (Guid?)null,
                 termId = (Guid?)Term2024_1c,
                 status = "InProgress",
                 approvalMethod = (string?)null,

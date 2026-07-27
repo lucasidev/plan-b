@@ -26,6 +26,11 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
 
+    // Períodos reales de UNSTA, del seed academic. Se reusan en vez de crear otros porque
+    // (universidad, año, número) es único y cada test llama al helper de armado varias veces.
+    private static readonly Guid Seed2026FirstTerm = Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid Seed2026SecondTerm = Guid.Parse("00000005-0000-4000-a000-000000000006");
+
     private readonly RegisterApiFixture _fixture;
 
     public SimulationDraftsEndpointTests(RegisterApiFixture fixture)
@@ -92,9 +97,11 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
             subjects.Add(new SubjectSeed(subject.Id.Value, code, name));
         }
 
-        // termId es un Guid plano sin FK (ADR-0017): no hace falta un AcademicTerm real para que la
-        // Commission (misma regla) ni el SimulationDraft lo referencien.
-        var termId = Guid.NewGuid();
+        // El período tiene que ser uno real de la universidad de la carrera: guardar un borrador lo
+        // valida. Antes acá alcanzaba un Guid.NewGuid() precisamente porque nadie lo validaba, y ese
+        // atajo era el mismo agujero que dejaba publicar en el feed de la comunidad una comisión de
+        // otra materia o de otro año.
+        var termId = Seed2026FirstTerm;
         var commission = Commission.Create(
             subjects[0].Id, termId, "Comisión Drafts A",
             CommissionModality.Presencial, 40, null, clock).Value;
@@ -302,7 +309,7 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(2);
         var student = await StudentAsync(planId, "promote-other-term");
-        var otherTermId = Guid.NewGuid();
+        var otherTermId = Seed2026SecondTerm;
 
         var draftOtherTermId = await CreateDraftAndGetIdAsync(student, otherTermId, "Otro término", (subjects[0].Id, null));
         (await PromoteDraftAsync(student, draftOtherTermId)).StatusCode.ShouldBe(HttpStatusCode.OK);

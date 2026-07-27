@@ -62,4 +62,43 @@ public static class SimulationDraftErrors
         Error.Conflict(
             "planning.simulation_draft.rate_limit_exceeded",
             "Too many saves. Try again later.");
+
+    // Coherencia de las referencias cross-BC del borrador. Sin FK que las sostenga (ADR-0017), el
+    // application layer es el único lugar donde se validan, y no se validaban: un borrador podía
+    // guardar la comisión de otra materia o de otro cuatrimestre, y el feed público de la comunidad
+    // se lo mostraba a los demás como oferta de esa materia.
+
+    /// <summary>El período del borrador no es de la universidad del alumno (o no existe). 400.</summary>
+    public static readonly Error TermNotInUniversity =
+        Error.Validation(
+            "planning.simulation_draft.term_not_in_university",
+            "The selected academic term does not belong to the student's university.");
+
+    /// <summary>Alguna comisión elegida no existe en el catálogo. 400.</summary>
+    public static readonly Error CommissionNotFound =
+        Error.Validation(
+            "planning.simulation_draft.commission_not_found",
+            "One or more selected commissions do not exist.");
+
+    /// <summary>Alguna comisión elegida es de otra materia. 400.</summary>
+    public static readonly Error CommissionNotForSubject =
+        Error.Validation(
+            "planning.simulation_draft.commission_not_for_subject",
+            "One or more selected commissions belong to a different subject.");
+
+    /// <summary>Alguna comisión elegida es de otro período. 400.</summary>
+    public static readonly Error CommissionNotForTerm =
+        Error.Validation(
+            "planning.simulation_draft.commission_not_for_term",
+            "One or more selected commissions belong to a different academic term.");
+
+    /// <summary>
+    /// Alguna comisión elegida está archivada. Acá sí se rechaza (a diferencia de una cursada
+    /// histórica, que puede apuntar legítimamente a una comisión ya dada de baja): un borrador es un
+    /// plan a futuro, y planificar sobre oferta que ya no se dicta no tiene sentido.
+    /// </summary>
+    public static readonly Error CommissionInactive =
+        Error.Validation(
+            "planning.simulation_draft.commission_inactive",
+            "One or more selected commissions are no longer offered.");
 }

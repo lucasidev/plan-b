@@ -335,10 +335,12 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
         }
         await EnrollOtherStudentInComboAsync(planId, s1.Id, s2.Id, "excl-dropout", "Passed", "Dropped");
 
+        // El caller usa el mismo período que la cohorte, igual que ellos: la exclusión es por alumno,
+        // no por período, así que compartirlo hace el test más fuerte (nada más lo distingue del
+        // resto, y aun así no se cuenta).
         var caller = await StudentAsync(planId, "excl-caller");
-        var callerTerm = Guid.NewGuid();
-        await EnrollAsync(caller, s1.Id, "Passed", "FinalExam", Guid.NewGuid(), callerTerm, 9m);
-        await EnrollAsync(caller, s2.Id, "Passed", "FinalExam", Guid.NewGuid(), callerTerm, 9m);
+        await EnrollAsync(caller, s1.Id, "Passed", "IndependentFinalExam", null, Term101, 9m);
+        await EnrollAsync(caller, s2.Id, "Passed", "IndependentFinalExam", null, Term101, 9m);
 
         var response = await EvaluateAsync(caller, s1.Id, s2.Id);
 
@@ -443,21 +445,30 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
 
     /// <summary>
     /// Crea un alumno nuevo en <paramref name="planId"/> y lo inscribe en exactamente
-    /// <paramref name="s1"/> + <paramref name="s2"/> en un mismo período propio (un term_id
-    /// arbitrario, distinto por alumno): un alumno más que "cursó" ese combo exacto para la
-    /// cohorte de US-016 punto 4. Solo soporta los dos status que ejercitan estos tests
-    /// (Aprobada/Abandonada); no hace falta más.
+    /// <paramref name="s1"/> + <paramref name="s2"/> en un mismo período: un alumno más que "cursó"
+    /// ese combo exacto para la cohorte de US-016 punto 4. Solo soporta los dos status que ejercitan
+    /// estos tests (Aprobada/Abandonada); no hace falta más.
+    ///
+    /// <para>
+    /// El período es uno real (2026·1c de UNSTA) y no un Guid inventado: el alta de cursada valida
+    /// que el período sea de la universidad del alumno. Que todos los alumnos de la cohorte compartan
+    /// el mismo no cambia nada, porque la query agrupa por (alumno, período) y cada alumno es su
+    /// propio grupo. Y las aprobaciones van por final libre, que es el único método que el aggregate
+    /// acepta sin comisión: la cohorte no filtra por método de aprobación, así que da igual cuál sea,
+    /// y así no hace falta inventar una comisión por materia.
+    /// </para>
     /// </summary>
     private async Task EnrollOtherStudentInComboAsync(
         Guid planId, Guid s1, Guid s2, string label, string s1Status, string s2Status)
     {
         var student = await StudentAsync(planId, label);
-        var term = Guid.NewGuid();
-        await EnrollAsync(student, s1, s1Status, ApprovalMethodFor(s1Status), Guid.NewGuid(), term, GradeFor(s1Status));
-        await EnrollAsync(student, s2, s2Status, ApprovalMethodFor(s2Status), Guid.NewGuid(), term, GradeFor(s2Status));
+        var term = Term101;
+        await EnrollAsync(student, s1, s1Status, ApprovalMethodFor(s1Status), null, term, GradeFor(s1Status));
+        await EnrollAsync(student, s2, s2Status, ApprovalMethodFor(s2Status), null, term, GradeFor(s2Status));
     }
 
-    private static string? ApprovalMethodFor(string status) => status == "Passed" ? "FinalExam" : null;
+    private static string? ApprovalMethodFor(string status) =>
+        status == "Passed" ? "IndependentFinalExam" : null;
 
     private static decimal? GradeFor(string status) => status == "Passed" ? 8m : null;
 

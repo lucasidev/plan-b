@@ -51,4 +51,14 @@ public static class EvaluationErrors
         Error.Validation(
             "planning.simulator.commission_inactive",
             "A chosen commission is not active.");
+
+    /// <summary>
+    /// Las comisiones elegidas son de cuatrimestres distintos. Una grilla semanal solo tiene sentido
+    /// dentro de un período: mezclarlos produce choques que no existen, o cero choques donde sí los
+    /// habría, y ese número es el que le dice al alumno si se puede anotar. 400.
+    /// </summary>
+    public static readonly Error CommissionsSpanMultipleTerms =
+        Error.Validation(
+            "planning.simulator.commissions_span_multiple_terms",
+            "All chosen commissions must belong to the same academic term.");
 }

@@ -117,6 +117,41 @@ public interface IAcademicQueryService
         Guid commissionId, CancellationToken ct = default);
 
     /// <summary>
+    /// Ubicación de una comisión en el catálogo (materia, período, activa). Null si no existe.
+    ///
+    /// <para>
+    /// Existe porque ADR-0017 saca las FK cross-schema y deja la validación de referencias en el
+    /// application layer, pero el contrato no exponía cómo preguntar "esta comisión es de esta materia
+    /// en este período?". Sin eso, Enrollments y Planning aceptaban cualquier <c>commission_id</c>: se
+    /// podía registrar una cursada de una materia apuntando a la comisión de otra y después reseñar a
+    /// un docente que nunca dio esa clase, porque el gate de publicar reseña valida que el docente
+    /// esté en la comisión de la cursada y esa comisión nadie la había validado.
+    /// </para>
+    ///
+    /// <para>
+    /// Devuelve la ubicación y no un bool para que cada caller distinga, con una sola lectura, entre
+    /// "no existe", "es de otra materia", "es de otro período" y "está archivada", y devuelva el
+    /// error que corresponde en lugar de uno genérico.
+    /// </para>
+    /// </summary>
+    Task<CommissionPlacement?> GetCommissionPlacementAsync(
+        Guid commissionId, CancellationToken ct = default);
+
+    /// <summary>
+    /// ¿Ese período lectivo pertenece a esa universidad?
+    ///
+    /// <para>
+    /// Cierra la otra mitad de la coherencia universitaria que declara el data-model: un
+    /// <c>term_id</c> que llega del cliente podía ser un Guid inventado o el período de otra
+    /// universidad, y ningún camino de escritura lo miraba. Con la materia ya validada contra el plan
+    /// del alumno y el período contra su universidad, la comisión de ese par queda coherente por
+    /// transitividad.
+    /// </para>
+    /// </summary>
+    Task<bool> IsAcademicTermInUniversityAsync(
+        Guid termId, Guid universityId, CancellationToken ct = default);
+
+    /// <summary>
     /// Devuelve los dominios de email institucional de la universidad a la que pertenece el docente
     /// (US-031). Caller: el flow de verificación de claim docente (Identity) valida que el dominio
     /// del email institucional ingresado esté en esta lista antes de generar el token. Lista vacía
