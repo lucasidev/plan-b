@@ -50,8 +50,6 @@
          Npgsql.EntityFrameworkCore.PostgreSQL de forma transitiva. -->
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
-    <PackageVersion Include="Pgvector" Version="0.3.2" />
-    <PackageVersion Include="Pgvector.EntityFrameworkCore" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup Label="Cache / Ephemeral state (ADR-0034)">

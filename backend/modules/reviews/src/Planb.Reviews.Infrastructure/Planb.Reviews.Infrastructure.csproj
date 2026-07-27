@@ -10,8 +10,6 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="WolverineFx.EntityFrameworkCore" />
-    <PackageReference Include="Pgvector" />
-    <PackageReference Include="Pgvector.EntityFrameworkCore" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Planb.Reviews.Application\Planb.Reviews.Application.csproj" />

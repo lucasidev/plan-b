@@ -37,7 +37,7 @@ Cómo pensamos y decidimos en este proyecto. No son procesos a cumplir: son lent
 | Messaging | Wolverine (mediator + outbox durable) |
 | Endpoints | Carter |
 | Data | EF Core 10 (writes) + Dapper (reads complejos) |
-| DB | PostgreSQL 17 + pgvector |
+| DB | PostgreSQL 17 (la imagen trae pgvector, pero la extensión está sin uso: ver revisión de [ADR-0007](docs/decisions/0007-pgvector-implementado-ui-gated-off.md)) |
 | Cache / ephemeral state | Redis 7 (refresh tokens, rate limiting, hot reads, idempotency). Ver [ADR-0034](docs/decisions/0034-redis-como-cache-y-ephemeral-state.md) |
 | Frontend | Next.js 15 App Router + React 19.1 |
 | Data fetching | TanStack Query v5 con RSC prefetch + HydrationBoundary |
@@ -70,7 +70,7 @@ plan-b/
 ├── scripts/                 TS scripts (bun): no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
-└── docker-compose.yml       Postgres (pgvector) + Redis + Mailpit
+└── docker-compose.yml       Postgres + Redis + Mailpit
 ```
 
 ## Reglas cross-cutting

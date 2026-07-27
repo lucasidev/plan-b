@@ -48,7 +48,6 @@ erDiagram
     Review ||--o{ ReviewReport : receives
     Review ||--o| TeacherResponse : "responded by"
     Review ||--o{ ReviewAuditLog : audits
-    Review ||--o{ ReviewEmbedding : embeds
 ```
 
 **Contextos:**
@@ -59,7 +58,6 @@ erDiagram
 | Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm | Datos precargados del dominio académico                         |
 | Student History      | EnrollmentRecord, HistorialImport                                                                           | Historial de cursadas del alumno                                |
 | Reviews & Moderation | Review, ReviewReport, TeacherResponse, ReviewAuditLog                                                       | Reseñas, reportes, respuestas, auditoría                        |
-| Semantic Analytics   | ReviewEmbedding                                                                                             | Embeddings para clustering y búsqueda semántica (feature gated) |
 
 ## Context: Identity
 
@@ -546,31 +544,11 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 
 ## Context: Semantic Analytics
 
-Embeddings de reseñas para features post-MVP. Ver [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md).
+**No existe.** La revisión del 2026-07-26 de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje de pgvector (la extensión, el wiring de Npgsql y el handler stub) hasta que haya un consumidor real.
 
-```mermaid
-erDiagram
-    Review ||--o{ ReviewEmbedding : embeds
-```
+Este doc describía la tabla `ReviewEmbedding` con su unique y su índice HNSW como si estuvieran creados. Nunca lo estuvieron: no había tabla, ni entidad, ni repositorio, ni índice, ni pipeline. Se saca la descripción en lugar de dejarla marcada como pendiente, porque un modelo de datos que enumera columnas de una tabla inexistente se lee con la misma confianza que el resto del doc.
 
-### Entity: ReviewEmbedding
-
-Requiere extensión `pgvector` en Postgres.
-
-| Campo           | Tipo                    | Constraints           | Notas                              |
-| --------------- | ----------------------- | --------------------- | ---------------------------------- |
-| `id`            | UUID                    | PK                    |                                    |
-| `review_id`     | UUID                    | FK → Review, NOT NULL |                                    |
-| `source`        | ENUM `embedding_source` | NOT NULL              | Qué texto se embebió               |
-| `model_name`    | TEXT                    | NOT NULL              | Ej "intfloat/multilingual-e5-base" |
-| `model_version` | TEXT                    | NOT NULL              | Revisión/commit del modelo         |
-| `embedding`     | VECTOR(768)             | NOT NULL              |                                    |
-| `created_at`    | TIMESTAMPTZ             | NOT NULL              |                                    |
-
-Constraints:
-
-- `UNIQUE(review_id, source, model_name, model_version)`.
-- Index HNSW para búsqueda de similitud (a crear cuando se active el feature).
+El diseño (tabla aparte para poder versionar modelos, el modelo elegido, el gating por volumen) sigue vigente en el ADR para cuando la feature se retome.
 
 ## Context: Planning
 
@@ -639,7 +617,6 @@ Nombres y valores de todos los enums del modelo.
 | `review_report_status`        | `open`, `upheld`, `dismissed`                                                         |
 | `teacher_response_status`     | `published`, `removed`                                                                |
 | `review_audit_action`         | `published`, `edited`, `reported`, `removed`, `restored`                              |
-| `embedding_source`            | `subject_text`, `teacher_text`, `combined`                                            |
 | `simulation_visibility`       | `private`, `shared`                                                                   |
 | `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 

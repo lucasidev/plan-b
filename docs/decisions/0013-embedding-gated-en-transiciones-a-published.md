@@ -1,7 +1,13 @@
 # ADR-0013: Generación de embedding gated en transiciones a `published`
 
-- **Estado**: aceptado
+- **Estado**: aceptado, en suspenso hasta que exista el pipeline
 - **Fecha**: 2026-04-23
+
+> **Nota (2026-07-26)**: la premisa de este ADR ya no se sostiene. La revisión de
+> [ADR-0007](0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje de pgvector porque el
+> pipeline nunca se construyó, así que hoy no hay ningún job que encolar y este ADR no describe nada
+> vigente. La decisión de **cuándo** encolar (en la transición a `published`, no al crear) sigue
+> siendo la correcta y se retoma tal cual cuando el pipeline exista: lo que cambió es que no existe.
 
 ## Contexto
 

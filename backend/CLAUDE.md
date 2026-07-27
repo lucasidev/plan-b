@@ -97,7 +97,7 @@ Naming: archivo `<TypeUnderTest>Tests.cs`, método `Method_Scenario_ExpectedOutc
 | Messaging | `WolverineFx`, `WolverineFx.Postgresql`, `WolverineFx.EntityFrameworkCore` |
 | Endpoints | `Carter` |
 | Validación | `FluentValidation`, `FluentValidation.DependencyInjectionExtensions` |
-| EF Core | `Microsoft.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL`, `Pgvector.EntityFrameworkCore` |
+| EF Core | `Microsoft.EntityFrameworkCore`, `Npgsql.EntityFrameworkCore.PostgreSQL` |
 | Dapper | `Dapper` |
 | Cache | `StackExchange.Redis` (ADR-0034) |
 | Auth | `BCrypt.Net-Next`, `System.IdentityModel.Tokens.Jwt`, `Microsoft.AspNetCore.Authentication.JwtBearer` |
