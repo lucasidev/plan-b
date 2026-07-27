@@ -47,17 +47,31 @@ public static class PromoteSimulationDraftCommandHandler
             return new PromoteSimulationDraftResponse(draft.Id.Value, draft.Status.ToString());
         }
 
+        // El flip va en dos pasos y en este orden por una razón dura: el índice único parcial
+        // ux_simulation_drafts_owner_term_active (ADR-0052) prohíbe dos Active del mismo (owner,
+        // term), y un índice parcial NO se puede diferir en Postgres, así que se evalúa por
+        // statement y no al commitear.
+        //
+        // Si las dos mutaciones viajan en el mismo SaveChanges, el orden lo decide EF (ordena los
+        // UPDATE por clave, que acá es un Guid aleatorio): la mitad de las veces emitía primero el
+        // que marca el nuevo como Active, y ahí el índice ve dos y aborta. El síntoma era un promote
+        // que fallaba de forma intermitente, con un 409 indistinguible de un conflicto legítimo.
+        //
+        // Archivar primero y flushear deja la ventana en cero Active, nunca en dos. Los dos
+        // SaveChanges siguen dentro de la misma transacción (Wolverine la abre alrededor del
+        // handler), así que la atomicidad no cambia: o quedan los dos cambios o ninguno.
+        var previousActive = await drafts.FindActiveForTermAsync(draft.OwnerProfileId, draft.TermId, ct);
+        if (previousActive is not null)
+        {
+            previousActive.Archive(clock);
+            await unitOfWork.SaveChangesAsync(ct);
+        }
+
         var promoted = draft.Promote(clock);
         if (promoted.IsFailure)
         {
             return Result.Failure<PromoteSimulationDraftResponse>(promoted.Error);
         }
-
-        // Flip: el Active anterior del mismo (owner, term), si existe, pasa a Archived en la misma
-        // transacción. La query corre contra la DB todavía no comiteada (SaveChanges es lo último),
-        // así que sigue viendo el status pre-mutación de "draft" y no puede auto-matchearse.
-        var previousActive = await drafts.FindActiveForTermAsync(draft.OwnerProfileId, draft.TermId, ct);
-        previousActive?.Archive(clock);
 
         await unitOfWork.SaveChangesAsync(ct);
 
