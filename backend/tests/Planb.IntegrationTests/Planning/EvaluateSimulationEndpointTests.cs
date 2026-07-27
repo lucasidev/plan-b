@@ -40,13 +40,13 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
     private static readonly Guid Commission101 = Guid.Parse("00000007-0000-4000-a000-000000000003");
     private static readonly Guid Teacher101 = Guid.Parse("00000006-0000-4000-a000-000000000002"); // iturralde
-    private static readonly Guid Term101 = Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
+    private static readonly Guid Term101 = Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026-C1
 
     // 121 Base de datos (TUDCS, sin correlativas propias): idem, otra comisión/term de la seed.
     private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000007");
     private static readonly Guid Commission121 = Guid.Parse("00000007-0000-4000-a000-000000000005");
     private static readonly Guid Teacher121 = Guid.Parse("00000006-0000-4000-a000-000000000007"); // méndez
-    private static readonly Guid Term121 = Guid.Parse("00000005-0000-4000-a000-000000000004"); // 2025·2c
+    private static readonly Guid Term121 = Guid.Parse("00000005-0000-4000-a000-000000000004"); // 2025-C2
 
     // 102 Álgebra I (TUDCS, sin correlativas propias): comisión "A" (Cid 07), horario lunes 18-21 y
     // viernes 18-21 (seed US-096). Choca a propósito con 111 Desarrollo de Software "A" los lunes.
@@ -450,7 +450,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
     /// estos tests (Aprobada/Abandonada); no hace falta más.
     ///
     /// <para>
-    /// El período es uno real (2026·1c de UNSTA) y no un Guid inventado: el alta de cursada valida
+    /// El período es uno real (2026-C1 de UNSTA) y no un Guid inventado: el alta de cursada valida
     /// que el período sea de la universidad del alumno. Que todos los alumnos de la cohorte compartan
     /// el mismo no cambia nada, porque la query agrupa por (alumno, período) y cada alumno es su
     /// propio grupo. Y las aprobaciones van por final libre, que es el único método que el aggregate
@@ -501,7 +501,7 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
             new
             {
                 enrollmentId,
-                docenteResenadoId = teacherId,
+                reviewedTeacherId = teacherId,
                 difficultyRating = difficulty,
                 overallRating = 3,
                 wouldRecommendCourse = true,
