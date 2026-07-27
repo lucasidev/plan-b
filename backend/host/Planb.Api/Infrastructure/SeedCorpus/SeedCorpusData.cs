@@ -74,13 +74,13 @@ public static class SeedCorpusData
     private static readonly IReadOnlyDictionary<Guid, SubjectOffering> Offerings =
         new Dictionary<Guid, SubjectOffering>
         {
-            [Subject101] = Offering("0b", "02"), // algoritmos y paradigmas · 2024·2c · iturralde
-            [Subject111] = Offering("0c", "02"), // desarrollo de software · 2024·2c · brandt
-            [Subject123] = Offering("0d", "02"), // seminario informático I · 2024·2c · ledesma
-            [Subject121] = Offering("0e", "03"), // base de datos · 2025·1c · méndez
-            [Subject223] = Offering("0f", "03"), // desarrollo back end · 2025·1c · castro
-            [Subject102] = Offering("10", "03"), // álgebra I · 2025·1c · reynoso
-            [Subject213] = Offering("11", "04"), // desarrollo front end · 2025·2c · páez
+            [Subject101] = Offering("0b", "02"), // algoritmos y paradigmas · 2024-C2 · iturralde
+            [Subject111] = Offering("0c", "02"), // desarrollo de software · 2024-C2 · brandt
+            [Subject123] = Offering("0d", "02"), // seminario informático I · 2024-C2 · ledesma
+            [Subject121] = Offering("0e", "03"), // base de datos · 2025-C1 · méndez
+            [Subject223] = Offering("0f", "03"), // desarrollo back end · 2025-C1 · castro
+            [Subject102] = Offering("10", "03"), // álgebra I · 2025-C1 · reynoso
+            [Subject213] = Offering("11", "04"), // desarrollo front end · 2025-C2 · páez
         };
 
     private static SubjectOffering Offering(string commissionNn, string termNn) =>
@@ -108,7 +108,7 @@ public static class SeedCorpusData
     public static readonly Guid LuciaPendingCommissionId =
         Guid.Parse("00000007-0000-4000-a000-000000000001"); // comisión "A" de Desarrollo de Software
     public static readonly Guid LuciaPendingTermId =
-        Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026·1c
+        Guid.Parse("00000005-0000-4000-a000-000000000005"); // 2026-C1
 
     /// <summary>Diez autores fantasma TUDCS. Verificados con profile, anónimos en la UI.</summary>
     public static IReadOnlyList<AuthorDef> Authors { get; } =
