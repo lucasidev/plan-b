@@ -165,6 +165,31 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
         (await ReviewStatusAsync(reviewId)).ShouldBe(ReviewStatus.Removed);
     }
 
+    /// <summary>
+    /// El escalón anterior a Removed: mientras hay reportes abiertos mirándola, el autor tampoco la
+    /// borra. Cortar solo en Removed dejaba abierta la ventana entre que se alcanza el threshold y
+    /// que un moderador decide, que es justo cuando el autor tiene el incentivo de sacarla y
+    /// republicar el mismo texto sin los reportes encima.
+    /// </summary>
+    [Fact]
+    public async Task El_autor_no_puede_borrar_una_resena_mientras_moderacion_la_mira()
+    {
+        var (author, reviewId) = await SeedAuthoredReviewWithAuthorAsync("under");
+        await ReportAsync(reviewId, "un1", "LenguajeInapropiado");
+        await ReportAsync(reviewId, "un2", "DatosPersonales");
+        await ReportAsync(reviewId, "un3", "Spam");
+
+        (await PollReviewStatusAsync(reviewId, ReviewStatus.UnderReview, TimeSpan.FromSeconds(15)))
+            .ShouldBeTrue("la reseña debería quedar UnderReview tras 3 reportes");
+
+        var delete = await author.Client.DeleteAsync($"/api/me/reviews/{reviewId}");
+
+        delete.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        var problem = await delete.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString().ShouldBe("reviews.review.cannot_delete_reported");
+        (await ReviewStatusAsync(reviewId)).ShouldBe(ReviewStatus.UnderReview);
+    }
+
     [Fact]
     public async Task Uphold_removes_the_review_and_cascades_other_open_reports()
     {
@@ -303,9 +328,11 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
         // La reseña sigue en el corpus (ADR-0044 preserva el contenido), así que su autor sigue
         // teniendo al menos una escrita: un 0 acá sería el bug de vuelta.
         detail.AuthorReviewsWritten.ShouldBe(1);
+        // La otra agregada del mismo bloque, que el cambio arregló igual y quedaba sin pinear.
+        detail.AuthorReportsReceived.ShouldBe(1);
     }
 
     private sealed record DetailDto(
         Guid ReportId, string Reason, string Tone, string Status, string? SubjectText,
-        Guid ReviewId, int AuthorReviewsWritten);
+        Guid ReviewId, int AuthorReviewsWritten, int? AuthorReportsReceived);
 }

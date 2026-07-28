@@ -20,7 +20,7 @@ internal static class AcademicTermEnumParsing
             return AcademicTermErrors.KindRequired;
         }
 
-        if (Enum.TryParse<TermKind>(value, ignoreCase: true, out var parsed) && Enum.IsDefined(parsed))
+        if (StrictEnum.TryParse<TermKind>(value, out var parsed))
         {
             return parsed;
         }

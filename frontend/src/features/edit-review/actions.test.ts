@@ -55,11 +55,14 @@ beforeEach(() => {
 describe('editReviewAction', () => {
   /**
    * El PATCH trata cualquier clave presente como "seteá este valor", y el action manda siempre los
-   * dos textos. O sea que el contenido del draft inicial ES el contenido que queda persistido: si
-   * la página de edición dejara de sembrar el texto del docente, este PATCH lo borraría sin aviso.
-   * Ese acoplamiento no lo fijaba nada.
+   * dos textos: reenvía lo que venga en el payload, sin omitir el del docente cuando el alumno no
+   * lo tocó.
+   *
+   * Ojo con lo que este test NO cubre: que la página de edición siembre el texto persistido en el
+   * draft inicial. Eso pasa antes, del lado de la page, y desde acá es inobservable. Si la page
+   * dejara de sembrarlo, el PATCH borraría el texto y este test seguiría verde.
    */
-  it('conserva el texto del docente cuando el alumno solo cambia la dificultad', async () => {
+  it('reenvia el texto del docente cuando el alumno solo cambia la dificultad', async () => {
     apiFetchMock.mockResolvedValue(okResponse());
 
     await editReviewAction(
