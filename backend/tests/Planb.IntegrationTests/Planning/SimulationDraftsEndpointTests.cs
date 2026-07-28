@@ -407,6 +407,40 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
         list.Items.Single(d => d.Id == draftThisTermId).Status.ShouldBe("Active");
     }
 
+    /// <summary>
+    /// Promover un borrador ya archivado tiene que fallar sin tocar el plan vigente.
+    ///
+    /// <para>
+    /// El handler archiva y flushea el Active anterior antes de promover, porque el índice único
+    /// parcial no se puede diferir y las dos mutaciones en el mismo SaveChanges chocaban la mitad de
+    /// las veces. Ese orden abre un agujero si el promote falla después: el middleware transaccional
+    /// commitea cuando el handler retorna normalmente, y un Result.Failure es un retorno normal. Sin
+    /// el corte previo, este caso archivaba B, fallaba al promover A, commiteaba igual, y el alumno
+    /// quedaba sin ningún plan vigente y sin forma de recuperarlo (Promote exige Draft).
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Promote_DeUnBorradorArchivado_FallaSinTocarElPlanVigente()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(2);
+        var student = await StudentAsync(planId, "promote-archived");
+
+        var draftA = await CreateDraftAndGetIdAsync(student, termId, "A", (subjects[0].Id, null));
+        (await PromoteDraftAsync(student, draftA)).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var draftB = await CreateDraftAndGetIdAsync(student, termId, "B", (subjects[1].Id, null));
+        (await PromoteDraftAsync(student, draftB)).StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        // A quedó Archived al promover B. Volver a promover A tiene que rebotar.
+        var retry = await PromoteDraftAsync(student, draftA);
+        retry.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+
+        // Y sobre todo: B sigue siendo el plan vigente. Este es el assert que importa.
+        var list = await ListDraftsAsync(student);
+        list.Items.Single(d => d.Id == draftB).Status.ShouldBe("Active");
+        list.Items.Single(d => d.Id == draftA).Status.ShouldBe("Archived");
+    }
+
     [Fact]
     public async Task Promote_AlreadyActive_IsIdempotentAndReturnsOk()
     {

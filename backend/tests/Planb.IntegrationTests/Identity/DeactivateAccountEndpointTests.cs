@@ -89,9 +89,16 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
     /// verificados es lo que impide que dos users reclamen al mismo docente. Si el claim sobrevivía,
     /// ese docente quedaba bloqueado para siempre con <c>TeacherAlreadyVerifiedByAnother</c>, sin
     /// nadie del otro lado para liberarlo.
+    ///
+    /// <para>
+    /// Este test verifica que la fila desaparece, y nada más. Lo que NO cubre es la liberación del
+    /// índice, porque ese índice es parcial sobre los claims verificados y verificar uno acá exige
+    /// el flow del mail. Una aserción del tipo "otro user puede reclamarlo" sobre un claim sin
+    /// verificar pasaría igual con o sin el cascade: sería cobertura falsa, y por eso no está.
+    /// </para>
     /// </summary>
     [Fact]
-    public async Task Cascade_removes_teacher_claims_and_frees_the_teacher_for_someone_else()
+    public async Task Cascade_removes_teacher_claims_of_the_deactivated_user()
     {
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, FreshEmail("deactivate-claim"));
@@ -112,12 +119,6 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
                 auth.UserId.Value)
             .SingleAsync();
         orphanClaims.ShouldBe(0);
-
-        // Y el docente vuelve a ser reclamable por otra persona.
-        var other = await AuthenticatedClient.CreateAsync(_fixture, FreshEmail("claim-after"));
-        var retry = await other.Client.PostAsJsonAsync("/api/me/teacher-claims", new { teacherId });
-        retry.IsSuccessStatusCode.ShouldBeTrue(
-            $"el docente debería quedar libre tras la baja, pero devolvió {retry.StatusCode}");
     }
 
     [Fact]

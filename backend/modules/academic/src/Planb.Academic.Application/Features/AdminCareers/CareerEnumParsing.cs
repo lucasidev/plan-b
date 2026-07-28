@@ -27,7 +27,7 @@ internal static class CareerEnumParsing
             return (T?)null;
         }
 
-        if (Enum.TryParse<T>(value, ignoreCase: true, out var parsed) && Enum.IsDefined(parsed))
+        if (StrictEnum.TryParse<T>(value, out var parsed))
         {
             return (T?)parsed;
         }

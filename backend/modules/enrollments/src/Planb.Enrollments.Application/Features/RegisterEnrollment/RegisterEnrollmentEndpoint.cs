@@ -36,8 +36,7 @@ public sealed class RegisterEnrollmentEndpoint : ICarterModule
             // "9" pasaba como válido y se persistía con ToString(). Quedaba la string "9" en la
             // columna, fuera del enum, y los CHECK de la tabla no la atajan porque están escritos
             // como implicaciones y un valor desconocido los satisface por vacuidad.
-            if (!Enum.TryParse<EnrollmentStatus>(body.Status, ignoreCase: true, out var status)
-                || !Enum.IsDefined(status))
+            if (!StrictEnum.TryParse<EnrollmentStatus>(body.Status, out var status))
             {
                 return Results.Problem(
                     title: "enrollments.record.invalid_status",
@@ -48,8 +47,7 @@ public sealed class RegisterEnrollmentEndpoint : ICarterModule
             ApprovalMethod? method = null;
             if (!string.IsNullOrWhiteSpace(body.ApprovalMethod))
             {
-                if (!Enum.TryParse<ApprovalMethod>(body.ApprovalMethod, ignoreCase: true, out var parsed)
-                    || !Enum.IsDefined(parsed))
+                if (!StrictEnum.TryParse<ApprovalMethod>(body.ApprovalMethod, out var parsed))
                 {
                     return Results.Problem(
                         title: "enrollments.record.invalid_approval_method",

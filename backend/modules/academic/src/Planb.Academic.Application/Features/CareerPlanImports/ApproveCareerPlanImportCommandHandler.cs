@@ -111,7 +111,7 @@ public static class ApproveCareerPlanImportCommandHandler
         var subjectsToAdd = new List<Subject>(command.Items.Count);
         foreach (var item in command.Items)
         {
-            if (!Enum.TryParse<TermKind>(item.TermKind, ignoreCase: true, out var termKind))
+            if (!StrictEnum.TryParse<TermKind>(item.TermKind, out var termKind))
             {
                 termKind = TermKind.FourMonth;
             }

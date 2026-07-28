@@ -32,7 +32,7 @@ public sealed class ReportReviewEndpoint : ICarterModule
         {
             var userId = CurrentUser.RequireUserId(http);
 
-            if (!Enum.TryParse<ReviewReportReason>(body.Reason, ignoreCase: true, out var reason))
+            if (!StrictEnum.TryParse<ReviewReportReason>(body.Reason, out var reason))
             {
                 return Results.Problem(
                     title: "moderation.report.invalid_reason",

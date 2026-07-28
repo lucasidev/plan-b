@@ -22,7 +22,7 @@ internal static class CommissionEnumParsing
             return CommissionErrors.ModalityRequired;
         }
 
-        if (Enum.TryParse<CommissionModality>(value, ignoreCase: true, out var parsed) && Enum.IsDefined(parsed))
+        if (StrictEnum.TryParse<CommissionModality>(value, out var parsed))
         {
             return parsed;
         }
@@ -39,7 +39,7 @@ internal static class CommissionEnumParsing
                 "academic.commission.teacher_role_required", "Commission teacher role is required.");
         }
 
-        if (Enum.TryParse<CommissionTeacherRole>(value, ignoreCase: true, out var parsed) && Enum.IsDefined(parsed))
+        if (StrictEnum.TryParse<CommissionTeacherRole>(value, out var parsed))
         {
             return parsed;
         }
@@ -56,7 +56,7 @@ internal static class CommissionEnumParsing
                 "academic.commission.schedule_day_required", "Schedule day is required.");
         }
 
-        if (Enum.TryParse<DayOfWeek>(value, ignoreCase: true, out var parsed) && Enum.IsDefined(parsed))
+        if (StrictEnum.TryParse<DayOfWeek>(value, out var parsed))
         {
             return parsed;
         }

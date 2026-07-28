@@ -71,6 +71,16 @@ public static class DeleteOwnReviewCommandHandler
             return Result.Failure<DeleteOwnReviewResponse>(ReviewErrors.CannotDeleteRemovedReview);
         }
 
+        // Y tampoco mientras hay reportes abiertos mirándola. Cortar solo en Removed dejaba abierta
+        // la ventana entre que se alcanza el threshold y que un moderador decide, que es justo
+        // cuando el autor tiene el incentivo de sacarla y republicarla limpia. La cuarentena del
+        // filtro automático sí se puede borrar: no hay reportes de los que escaparse, y republicar
+        // el mismo texto lo vuelve a frenar.
+        if (review.Status == ReviewStatus.UnderReview && !review.QuarantinedByContentFilter)
+        {
+            return Result.Failure<DeleteOwnReviewResponse>(ReviewErrors.CannotDeleteReportedReview);
+        }
+
         var deletedNow = review.Delete(ReviewDeletedReason.Self, clock);
 
         if (deletedNow)

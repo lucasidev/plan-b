@@ -168,6 +168,27 @@ public static class ReviewErrors
             "A review removed by moderation cannot be deleted by its author.");
 
     /// <summary>
+    /// Tampoco se borra mientras la moderación la está mirando por reportes. 409.
+    ///
+    /// <para>
+    /// Es el mismo mecanismo que <see cref="CannotDeleteRemovedReview"/>, un escalón antes: borrar
+    /// mueve la reseña a <c>Deleted</c>, el índice único de la cursada filtra por
+    /// <c>status &lt;&gt; 'Deleted'</c>, y el mismo texto vuelve a entrar como fila nueva sin los
+    /// reportes abiertos encima. Cortar solo en <c>Removed</c> dejaba abierta la ventana entera
+    /// entre que se alcanza el threshold y que un moderador decide, que es justo cuando el autor
+    /// tiene el incentivo de sacarla.
+    /// </para>
+    /// <para>
+    /// No aplica a la cuarentena del filtro automático: ahí no hay reportes de los que escaparse y
+    /// republicar el mismo texto lo vuelve a frenar, así que el autor puede borrar la suya.
+    /// </para>
+    /// </summary>
+    public static readonly Error CannotDeleteReportedReview =
+        Error.Conflict(
+            "reviews.review.cannot_delete_reported",
+            "A review under moderation review cannot be deleted by its author.");
+
+    /// <summary>
     /// Solo se vota una reseña <c>Published</c>. UnderReview / Removed / Deleted no son
     /// votables. 409.
     /// </summary>

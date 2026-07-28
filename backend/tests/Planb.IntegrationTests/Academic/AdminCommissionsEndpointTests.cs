@@ -296,6 +296,54 @@ public class AdminCommissionsEndpointTests : IClassFixture<RegisterApiFixture>
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
+    /// <summary>
+    /// La otra rama del guard del update: sumar un docente archivado que NO estaba asignado sí se
+    /// rechaza. Sin este caso, invertir la condición del guard dejaba la suite en verde.
+    /// </summary>
+    [Fact]
+    public async Task Update_agregando_un_docente_archivado_nuevo_devuelve_conflict()
+    {
+        var admin = await AdminAsync();
+        var assigned = await CreateTeacherAsync(admin);
+
+        var create = await admin.Client.PostAsJsonAsync(CreateUrl(), new
+        {
+            termId = Term2026C1Id,
+            name = UniqueName(),
+            modality = "Presencial",
+            capacity = 40,
+            notes = (string?)null,
+            teachers = new[] { new { teacherId = assigned, role = "Lead" } },
+            schedule = Array.Empty<object>(),
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var commissionId = (await create.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var archived = await CreateTeacherAsync(admin);
+        (await admin.Client.DeleteAsync($"/api/academic/teachers/{archived}"))
+            .EnsureSuccessStatusCode();
+
+        var update = await admin.Client.PutAsJsonAsync(
+            $"/api/academic/commissions/{commissionId}",
+            new
+            {
+                name = UniqueName(),
+                modality = "Presencial",
+                capacity = 40,
+                notes = (string?)null,
+                teachers = new[]
+                {
+                    new { teacherId = assigned, role = "Lead" },
+                    new { teacherId = archived, role = "Assistant" },
+                },
+                schedule = Array.Empty<object>(),
+            });
+
+        update.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        (await update.Content.ReadAsStringAsync())
+            .ShouldContain("academic.commission.teacher_inactive");
+    }
+
     private sealed record CreatedDto(Guid Id);
 
     private sealed record AdminListDto(IReadOnlyList<AdminCommissionDto> Items);
