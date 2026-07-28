@@ -221,6 +221,81 @@ public class AdminCommissionsEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
+    // ── Docente archivado ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// Archivar un docente lo saca de la búsqueda y del catálogo, pero su id sigue siendo válido.
+    /// Sin este corte la asignación entraba igual y lo devolvía a la superficie del producto por la
+    /// puerta de atrás: aparece como docente de la comisión, es reseñable, y sus reseñas nuevas
+    /// cuentan en sus insights. Archivar dejaba de significar algo.
+    /// </summary>
+    [Fact]
+    public async Task Create_ConDocenteArchivado_DevuelveConflict()
+    {
+        var admin = await AdminAsync();
+        var teacherId = await CreateTeacherAsync(admin);
+        (await admin.Client.DeleteAsync($"/api/academic/teachers/{teacherId}"))
+            .EnsureSuccessStatusCode();
+
+        var create = await admin.Client.PostAsJsonAsync(CreateUrl(), new
+        {
+            termId = Term2026C1Id,
+            name = UniqueName(),
+            modality = "Presencial",
+            capacity = 40,
+            notes = (string?)null,
+            teachers = new[] { new { teacherId, role = "Lead" } },
+            schedule = Array.Empty<object>(),
+        });
+
+        create.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        (await create.Content.ReadAsStringAsync())
+            .ShouldContain("academic.commission.teacher_inactive");
+    }
+
+    /// <summary>
+    /// La excepción deliberada: si el docente YA estaba asignado y lo archivaron después, el update
+    /// sigue andando. El update reemplaza la lista entera, así que rechazarlo trabaría la comisión
+    /// completa: el admin no podría ni tocarle el horario sin antes sacar al docente, y sacarlo
+    /// reescribe la historia de quién dictó esa comisión.
+    /// </summary>
+    [Fact]
+    public async Task Update_ConDocenteYaAsignadoQueLuegoArchivaron_SigueAndando()
+    {
+        var admin = await AdminAsync();
+        var teacherId = await CreateTeacherAsync(admin);
+
+        var create = await admin.Client.PostAsJsonAsync(CreateUrl(), new
+        {
+            termId = Term2026C1Id,
+            name = UniqueName(),
+            modality = "Presencial",
+            capacity = 40,
+            notes = (string?)null,
+            teachers = new[] { new { teacherId, role = "Lead" } },
+            schedule = Array.Empty<object>(),
+        });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var commissionId = (await create.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        (await admin.Client.DeleteAsync($"/api/academic/teachers/{teacherId}"))
+            .EnsureSuccessStatusCode();
+
+        var update = await admin.Client.PutAsJsonAsync(
+            $"/api/academic/commissions/{commissionId}",
+            new
+            {
+                name = UniqueName(),
+                modality = "Virtual",
+                capacity = 50,
+                notes = (string?)null,
+                teachers = new[] { new { teacherId, role = "Lead" } },
+                schedule = Array.Empty<object>(),
+            });
+
+        update.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
     private sealed record CreatedDto(Guid Id);
 
     private sealed record AdminListDto(IReadOnlyList<AdminCommissionDto> Items);
