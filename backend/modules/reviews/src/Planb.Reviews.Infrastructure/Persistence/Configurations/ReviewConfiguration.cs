@@ -134,6 +134,8 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasColumnName("quarantined_by_content_filter")
             .IsRequired();
 
+        builder.Property(r => r.EditedAt).HasColumnName("edited_at");
+
         builder.Property(r => r.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();

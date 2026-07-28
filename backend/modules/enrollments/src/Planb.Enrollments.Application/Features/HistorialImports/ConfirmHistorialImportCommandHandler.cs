@@ -194,8 +194,17 @@ public static class ConfirmHistorialImportCommandHandler
         where TEnum : struct, Enum
     {
         value = default;
-        return !string.IsNullOrWhiteSpace(raw)
-            && Enum.TryParse(raw, ignoreCase: true, out value)
-            && Enum.IsDefined(value);
+        if (string.IsNullOrWhiteSpace(raw)
+            || !Enum.TryParse(raw, ignoreCase: true, out value)
+            || !Enum.IsDefined(value))
+        {
+            return false;
+        }
+
+        // Enum.IsDefined solo no alcanza: "9" lo frena porque ningún miembro vale 9, pero "0" y "1"
+        // parsean a los dos primeros miembros del enum y pasan como si fueran nombres válidos. El
+        // contrato lleva el nombre canónico en inglés, así que exigir que el string coincida con el
+        // nombre del miembro cierra el bypass entero en vez de los valores que sobran.
+        return string.Equals(value.ToString(), raw.Trim(), StringComparison.OrdinalIgnoreCase);
     }
 }

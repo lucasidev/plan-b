@@ -31,6 +31,27 @@ public static class ReviewReportsResolvedHandler
         var restored = review.RestoreFromReports(clock);
         if (!restored)
         {
+            // El caso en que la reseña sigue UnderReview porque la frenó el filtro de contenido no
+            // puede ser un return silencioso: el moderador desestimó el report y su decisión no
+            // aplicó, y sin esta entrada no queda registro de que pasó ni de por qué. Los demás
+            // no-op (ya Published, Removed, Deleted) sí son silenciosos: ahí la decisión del
+            // moderador no cambiaba nada porque el estado ya era el que corresponde.
+            if (review.Status == ReviewStatus.UnderReview && review.QuarantinedByContentFilter)
+            {
+                auditLog.Add(ReviewAuditLog.Record(
+                    review.Id,
+                    ReviewAuditAction.ModeratorDecision,
+                    JsonSerializer.Serialize(new
+                    {
+                        decision = "not_restored",
+                        reason = "quarantined_by_content_filter",
+                    }),
+                    message.ModeratorUserId,
+                    clock.UtcNow));
+
+                await unitOfWork.SaveChangesAsync(ct);
+            }
+
             return;
         }
 

@@ -57,9 +57,19 @@ public static class PromoteSimulationDraftCommandHandler
         // que marca el nuevo como Active, y ahí el índice ve dos y aborta. El síntoma era un promote
         // que fallaba de forma intermitente, con un 409 indistinguible de un conflicto legítimo.
         //
-        // Archivar primero y flushear deja la ventana en cero Active, nunca en dos. Los dos
-        // SaveChanges siguen dentro de la misma transacción (Wolverine la abre alrededor del
-        // handler), así que la atomicidad no cambia: o quedan los dos cambios o ninguno.
+        // Archivar primero y flushear deja la ventana en cero Active, nunca en dos.
+        //
+        // Pero archivar primero solo es seguro si ya sabemos que el promote va a proceder. El
+        // middleware transaccional de Wolverine commitea cuando el handler retorna normalmente, y
+        // un Result.Failure es un retorno normal: no revierte nada. Sin este corte previo, promover
+        // un draft que no está en Draft (por ejemplo uno ya archivado) dejaba al plan vigente
+        // archivado y commiteado, con el alumno sin ningún plan activo para ese período y sin forma
+        // de recuperarlo, porque Promote exige Draft y el que quedó archivado ya no lo está.
+        if (draft.Status != SimulationDraftStatus.Draft)
+        {
+            return Result.Failure<PromoteSimulationDraftResponse>(SimulationDraftErrors.CannotPromote);
+        }
+
         var previousActive = await drafts.FindActiveForTermAsync(draft.OwnerProfileId, draft.TermId, ct);
         if (previousActive is not null)
         {
@@ -67,6 +77,8 @@ public static class PromoteSimulationDraftCommandHandler
             await unitOfWork.SaveChangesAsync(ct);
         }
 
+        // Redundante con el corte de arriba, pero es el aggregate el que manda sobre su transición:
+        // el chequeo previo existe para no tocar el plan vigente, no para reemplazar esta validación.
         var promoted = draft.Promote(clock);
         if (promoted.IsFailure)
         {

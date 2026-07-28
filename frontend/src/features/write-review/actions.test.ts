@@ -121,4 +121,50 @@ describe('publishReviewAction', () => {
       expect.objectContaining({ method: 'POST' }),
     );
   });
+
+  /**
+   * El bug que este test fija era exactamente "la columna existe y nadie la puede escribir":
+   * teacherText viajaba hardcodeado en null, así que el eje de texto sobre el docente nunca llegaba
+   * al backend. El assert del happy path solo mira el method, así que volver a hardcodearlo pasaría
+   * verde. Acá se inspecciona el body.
+   */
+  it('manda los dos ejes de texto y el docente reseñado en el body', async () => {
+    apiFetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ id: 'review-2' }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    const draft = { ...VALID_DRAFT, teacherText: 'b'.repeat(60) };
+    await publishReviewAction(
+      PUBLISH_REVIEW_INITIAL_STATE,
+      formData({ payload: JSON.stringify(draft) }),
+    );
+
+    const [, init] = apiFetchMock.mock.calls[0];
+    const body = JSON.parse(String(init?.body));
+    expect(body.subjectText).toBe(VALID_DRAFT.text);
+    expect(body.teacherText).toBe(draft.teacherText);
+    expect(body.reviewedTeacherId).toBe('22222222-2222-4222-a222-222222222222');
+  });
+
+  /**
+   * La contraparte: sin texto de docente el campo viaja null, no string vacío. El backend exige que
+   * cada texto presente entre en el rango 50..2000, así que un "" lo rebotaría con 400.
+   */
+  it('manda teacherText null cuando el alumno no completó ese campo', async () => {
+    apiFetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ id: 'review-3' }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    await publishReviewAction(PUBLISH_REVIEW_INITIAL_STATE, formData());
+
+    const [, init] = apiFetchMock.mock.calls[0];
+    const body = JSON.parse(String(init?.body));
+    expect(body.teacherText).toBeNull();
+  });
 });

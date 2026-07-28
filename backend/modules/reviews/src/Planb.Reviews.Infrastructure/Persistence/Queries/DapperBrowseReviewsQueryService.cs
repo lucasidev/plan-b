@@ -50,7 +50,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 r.teacher_text                             AS TeacherText,
                 r.final_grade                              AS FinalGrade,
                 r.created_at                               AS CreatedAt,
-                r.updated_at                               AS UpdatedAt,
+                r.edited_at                                AS EditedAt,
                 (SELECT COUNT(*)::int FROM reviews.review_votes rv
                    WHERE rv.review_id = r.id AND rv.is_helpful)        AS HelpfulCount,
                 (SELECT COUNT(*)::int FROM reviews.review_votes rv
@@ -115,7 +115,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
                 TeacherText: r.TeacherText,
                 FinalGrade: r.FinalGrade,
                 CreatedAt: r.CreatedAt,
-                UpdatedAt: r.UpdatedAt,
+                EditedAt: r.EditedAt,
                 HelpfulCount: r.HelpfulCount,
                 NotHelpfulCount: r.NotHelpfulCount,
                 MyVoteIsHelpful: r.MyVoteIsHelpful,
@@ -153,7 +153,7 @@ internal sealed class DapperBrowseReviewsQueryService : IBrowseReviewsQueryServi
         public string? TeacherText { get; set; }
         public decimal? FinalGrade { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? EditedAt { get; set; }
         public int HelpfulCount { get; set; }
         public int NotHelpfulCount { get; set; }
         public bool? MyVoteIsHelpful { get; set; }

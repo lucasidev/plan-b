@@ -112,4 +112,23 @@ public class UserDeactivateTests
         user.PasswordHash.ShouldBe(passwordHashBefore);
         user.IsDeactivated.ShouldBeFalse();
     }
+
+    /// <summary>
+    /// La baja borra los student profiles, pero el access token del usuario sigue vivo hasta 15
+    /// minutos. Sin este corte, ese token alcanzaba para recrear el profile que la baja acababa de
+    /// borrar y dejar la cuenta dada de baja con datos académicos nuevos encima.
+    /// </summary>
+    [Fact]
+    public void AddStudentProfile_sobre_una_cuenta_dada_de_baja_se_rechaza()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+        user.Deactivate("deleted-abc@anonymized.local", clock).IsSuccess.ShouldBeTrue();
+
+        var result = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.AlreadyDeactivated);
+        user.StudentProfiles.ShouldBeEmpty();
+    }
 }

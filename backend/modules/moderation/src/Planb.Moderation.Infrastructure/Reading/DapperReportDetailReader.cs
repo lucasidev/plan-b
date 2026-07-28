@@ -148,6 +148,9 @@ internal sealed class DapperReportDetailReader : IReportDetailReader
         public DateTime? AuthorAccountSince { get; init; }
         public bool? AuthorBanned { get; init; }
         public int? AuthorReviewsWritten { get; init; }
-        public int AuthorReportsReceived { get; init; }
+        // Nullable como sus tres hermanos del mismo bloque: el CASE del SELECT devuelve NULL cuando
+        // no hay autor, y Dapper tira DataException al materializar un NULL en un int. El destino
+        // (ReportDetailResponse) ya era int?, así que el compilador no marcaba nada.
+        public int? AuthorReportsReceived { get; init; }
     }
 }
