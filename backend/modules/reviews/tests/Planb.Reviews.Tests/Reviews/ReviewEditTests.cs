@@ -138,4 +138,90 @@ public class ReviewEditTests
         result.IsSuccess.ShouldBeTrue();
         review.HoursPerWeek.ShouldBe(5); // el flag manda, no el valor
     }
+
+    /// <summary>
+    /// El edit vuelve a pasar el filtro y su veredicto pisa el anterior en los dos sentidos. Importa
+    /// que la marca quede bien puesta porque es la que decide si un dismiss de moderación puede
+    /// republicar la reseña: si el edit dejara de estamparla, la puerta de republicación de
+    /// contenido filtrado se reabre en silencio.
+    /// </summary>
+    [Theory]
+    [InlineData(ReviewStatus.UnderReview, true)]
+    [InlineData(ReviewStatus.Published, false)]
+    public void Edit_estampa_la_marca_de_cuarentena_segun_el_veredicto_del_filtro(
+        ReviewStatus statusAfter, bool expectedFlag)
+    {
+        var review = PublishedWith(SubjectText(), TeacherText());
+
+        var result = review.Edit(
+            newDifficultyRating: null,
+            newOverallRating: null,
+            newHoursPerWeek: null,
+            hoursPerWeekProvided: false,
+            newTags: null,
+            newWouldRecommendCourse: null,
+            newWouldRetakeTeacher: null,
+            newSubjectText: SubjectText(),
+            subjectTextProvided: true,
+            newTeacherText: null,
+            teacherTextProvided: false,
+            newFinalGrade: null,
+            finalGradeProvided: false,
+            statusAfter: statusAfter,
+            clock: new FixedClock(T0.AddHours(1)));
+
+        result.IsSuccess.ShouldBeTrue();
+        review.QuarantinedByContentFilter.ShouldBe(expectedFlag);
+    }
+
+    /// <summary>
+    /// EditedAt es lo que el feed muestra como "editada". No puede derivarse de UpdatedAt porque esa
+    /// marca la mueven también la respuesta del docente y las transiciones de moderación, o sea
+    /// acciones de otra gente sobre la reseña.
+    /// </summary>
+    [Fact]
+    public void Edit_estampa_EditedAt_que_arranca_nulo()
+    {
+        var review = PublishedWith(SubjectText(), TeacherText());
+        review.EditedAt.ShouldBeNull();
+
+        review.Edit(
+            newDifficultyRating: null,
+            newOverallRating: null,
+            newHoursPerWeek: null,
+            hoursPerWeekProvided: false,
+            newTags: null,
+            newWouldRecommendCourse: null,
+            newWouldRetakeTeacher: null,
+            newSubjectText: SubjectText(),
+            subjectTextProvided: true,
+            newTeacherText: null,
+            teacherTextProvided: false,
+            newFinalGrade: null,
+            finalGradeProvided: false,
+            statusAfter: ReviewStatus.Published,
+            clock: new FixedClock(T0.AddHours(1))).IsSuccess.ShouldBeTrue();
+
+        review.EditedAt.ShouldBe(T0.AddHours(1));
+    }
+
+    /// <summary>
+    /// La contraparte: responder una reseña mueve UpdatedAt pero NO EditedAt. Es exactamente el caso
+    /// que hacía mentir al badge "editada" cuando se derivaba de UpdatedAt.
+    /// </summary>
+    [Fact]
+    public void Respond_no_marca_la_resena_como_editada()
+    {
+        var review = PublishedWith(SubjectText(), TeacherText());
+        var teacherId = review.ReviewedTeacherId;
+
+        review.Respond(
+            teacherId,
+            ReviewText.Create(
+                "Gracias por la devolución, la tomo para el próximo cuatrimestre y la charlo en clase.").Value,
+            new FixedClock(T0.AddHours(2))).IsSuccess.ShouldBeTrue();
+
+        review.UpdatedAt.ShouldBe(T0.AddHours(2));
+        review.EditedAt.ShouldBeNull();
+    }
 }

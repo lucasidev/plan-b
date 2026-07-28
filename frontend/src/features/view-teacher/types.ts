@@ -49,11 +49,14 @@ export type TeacherReview = {
   finalGrade: number | null;
   createdAt: string;
   /**
-   * Si es > createdAt, la reseña fue editada (US-018). Mismo marcador que la respuesta del docente:
-   * sin él, el autor podía reescribir el texto después de que le respondieran y dejar la respuesta
-   * contestando algo que ya no estaba escrito, sin que el lector tuviera cómo notarlo.
+   * No null marca que el autor edito el texto (US-018). Mismo marcador que la respuesta del docente:
+   * sin el, el autor podia reescribir el texto despues de que le respondieran y dejar la respuesta
+   * contestando algo que ya no estaba escrito, sin que el lector tuviera como notarlo.
+   *
+   * No se deriva de updatedAt: esa marca la mueven tambien la respuesta del docente y las
+   * transiciones de moderacion, o sea acciones de otra gente sobre la resena.
    */
-  updatedAt: string;
+  editedAt: string | null;
   /** Votos de utilidad (helpfulness). myVoteIsHelpful: null si el caller no votó / es anónimo. */
   helpfulCount: number;
   notHelpfulCount: number;

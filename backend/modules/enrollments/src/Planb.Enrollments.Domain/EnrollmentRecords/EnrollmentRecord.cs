@@ -30,7 +30,9 @@ namespace Planb.Enrollments.Domain.EnrollmentRecords;
 ///   <item>Status ∈ {Cursando, Reprobada, Abandonada} → grade NULL AND approval_method NULL</item>
 ///   <item>ApprovalMethod=Equivalencia → commission_id NULL AND term_id NULL</item>
 ///   <item>ApprovalMethod=FinalLibre → commission_id NULL AND term_id NOT NULL</item>
-///   <item>ApprovalMethod ∈ {Cursada, Promocion, Final} → commission_id + term_id requeridos</item>
+///   <item>ApprovalMethod ∈ {Cursada, Promocion, Final} → term_id requerido. La comisión NO: el
+///         historial académico que sube el alumno no dice en cuál cursó, y exigirla hacía imposible
+///         el import de US-014 (ver <c>EnrollmentRecordErrors.CursadaApprovalRequiresTerm</c>).</item>
 ///   <item>Status=Cursando → term_id requerido (no se cursa "en algún momento")</item>
 /// </list>
 /// </para>

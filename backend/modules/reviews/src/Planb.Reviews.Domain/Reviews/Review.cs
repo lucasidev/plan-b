@@ -84,6 +84,19 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public DateTimeOffset UpdatedAt { get; private set; }
 
     /// <summary>
+    /// Cuándo el autor editó el contenido por última vez. Null si nunca lo editó.
+    ///
+    /// <para>
+    /// Existe porque <see cref="UpdatedAt"/> no sirve para responder esa pregunta: lo estampan
+    /// también <see cref="Respond"/>, <see cref="EditResponse"/>, <see cref="QuarantineByReports"/>,
+    /// <see cref="RestoreFromReports"/> y <see cref="Remove"/>, o sea acciones de otra gente sobre
+    /// la reseña. Derivar "editada" de <c>UpdatedAt &gt; CreatedAt</c> marcaba como editada por su
+    /// autor cualquier reseña que un docente hubiera respondido.
+    /// </para>
+    /// </summary>
+    public DateTimeOffset? EditedAt { get; private set; }
+
+    /// <summary>
     /// Por qué la reseña está <see cref="ReviewStatus.UnderReview"/>: true si la cuarentena la puso
     /// el filtro de contenido al publicar o editar, false si la puso el threshold de reports.
     ///
@@ -290,6 +303,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         // si el texto quedó limpio, la reseña vuelve a Published sin marca.
         QuarantinedByContentFilter = statusAfter == ReviewStatus.UnderReview;
         UpdatedAt = now;
+        EditedAt = now;
 
         Raise(new ReviewEditedDomainEvent(
             Id,

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Planb.Enrollments.Application.Features.RegisterEnrollment;
 using Planb.IntegrationTests.Infrastructure;
 using Shouldly;
@@ -35,6 +36,14 @@ public class RegisterEnrollmentEndpointTests
         Guid.Parse("00000005-0000-4000-a000-000000000001");
     private static readonly Guid Term2024_2c =
         Guid.Parse("00000005-0000-4000-a000-000000000002");
+    // 111 Desarrollo de Software, su período 2026-C1 y su comisión "A": la única terna del seed con
+    // comisión real, necesaria para ejercitar la validación cross-BC de la comisión.
+    private static readonly Guid Subject111 =
+        Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid Term2026_1c =
+        Guid.Parse("00000005-0000-4000-a000-000000000005");
+    private static readonly Guid Commission111A =
+        Guid.Parse("00000007-0000-4000-a000-000000000001");
 
     public RegisterEnrollmentEndpointTests(RegisterApiFixture fixture)
     {
@@ -294,5 +303,128 @@ public class RegisterEnrollmentEndpointTests
             });
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
+    // ── Validación cross-BC de comisión y período ─────────────────────────
+    //
+    // Sin FK cross-schema (ADR-0017) estas referencias son Guids sueltos, así que lo único que las
+    // sostiene es esta validación en el application layer. Todos los demás tests del archivo mandan
+    // commissionId null, o sea que el bloque entero no se ejecutaba nunca en la suite.
+
+    [Fact]
+    public async Task Returns_201_cuando_la_comision_corresponde_a_la_materia_y_el_periodo()
+    {
+        var auth = await SetupUserWithProfileAsync("comm-ok");
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/me/enrollment-records",
+            new
+            {
+                subjectId = Subject111,
+                commissionId = (Guid?)Commission111A,
+                termId = (Guid?)Term2026_1c,
+                status = "Passed",
+                approvalMethod = "Coursework",
+                grade = 8m,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    public async Task Returns_400_cuando_la_comision_no_existe()
+    {
+        var auth = await SetupUserWithProfileAsync("comm-404");
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/me/enrollment-records",
+            new
+            {
+                subjectId = Subject111,
+                commissionId = (Guid?)Guid.NewGuid(),
+                termId = (Guid?)Term2026_1c,
+                status = "Passed",
+                approvalMethod = "Coursework",
+                grade = 8m,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString()
+            .ShouldBe("enrollments.record.commission_not_found");
+    }
+
+    /// <summary>
+    /// El caso que motiva toda la validación: una comisión real, pero de otra materia. Anclar la
+    /// cursada ahí deja un registro que dice "cursé 101 en la comisión de 111", y de ahí sale el
+    /// docente que después se puede reseñar.
+    /// </summary>
+    [Fact]
+    public async Task Returns_400_cuando_la_comision_es_de_otra_materia()
+    {
+        var auth = await SetupUserWithProfileAsync("comm-subject");
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/me/enrollment-records",
+            new
+            {
+                subjectId = Subject101,
+                commissionId = (Guid?)Commission111A,
+                termId = (Guid?)Term2026_1c,
+                status = "Passed",
+                approvalMethod = "Coursework",
+                grade = 8m,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString()
+            .ShouldBe("enrollments.record.commission_not_for_subject");
+    }
+
+    [Fact]
+    public async Task Returns_400_cuando_la_comision_es_de_otro_periodo()
+    {
+        var auth = await SetupUserWithProfileAsync("comm-term");
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/me/enrollment-records",
+            new
+            {
+                subjectId = Subject111,
+                commissionId = (Guid?)Commission111A,
+                termId = (Guid?)Term2024_1c,
+                status = "Passed",
+                approvalMethod = "Coursework",
+                grade = 8m,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString()
+            .ShouldBe("enrollments.record.commission_not_for_term");
+    }
+
+    [Fact]
+    public async Task Returns_400_cuando_el_periodo_no_es_de_la_universidad_del_alumno()
+    {
+        var auth = await SetupUserWithProfileAsync("term-uni");
+
+        var response = await auth.Client.PostAsJsonAsync(
+            "/api/me/enrollment-records",
+            new
+            {
+                subjectId = Subject101,
+                commissionId = (Guid?)null,
+                termId = (Guid?)Guid.NewGuid(),
+                status = "Passed",
+                approvalMethod = "IndependentFinalExam",
+                grade = 8m,
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString()
+            .ShouldBe("enrollments.record.term_not_in_university");
     }
 }

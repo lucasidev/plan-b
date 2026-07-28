@@ -71,12 +71,14 @@ El `approval_method` dicta qué campos deben o no deben estar poblados. La razó
 
 | `approval_method`                                                           | `commission_id` | `term_id` | Razón                                                                 |
 | --------------------------------------------------------------------------- | --------------- | --------- | --------------------------------------------------------------------- |
-| `NULL` (cuando `status IN ('cursando','regular','reprobada','abandonada')`) | NOT NULL        | NOT NULL  | Hubo cursada en una comisión y cuatrimestre específicos.              |
-| `cursada`                                                                   | NOT NULL        | NOT NULL  | Aprobó con la cursada en sí (promoción con nota final en la cursada). |
-| `promocion`                                                                 | NOT NULL        | NOT NULL  | Promoción directa (sin final).                                        |
-| `final`                                                                     | NOT NULL        | NOT NULL  | Aprobó final tras cursar.                                             |
+| `NULL` (cuando `status IN ('cursando','regular','reprobada','abandonada')`) | opcional        | NOT NULL  | Hubo cursada en un cuatrimestre específico; la comisión puede no saberse. |
+| `cursada`                                                                   | opcional        | NOT NULL  | Aprobó con la cursada en sí (promoción con nota final en la cursada). |
+| `promocion`                                                                 | opcional        | NOT NULL  | Promoción directa (sin final).                                        |
+| `final`                                                                     | opcional        | NOT NULL  | Aprobó final tras cursar.                                             |
 | `final_libre`                                                               | **NULL**        | NOT NULL  | No cursó comisión, rindió libre en un cuatrimestre específico.        |
 | `equivalencia`                                                              | **NULL**        | **NULL**  | Reconocimiento académico sin cursada ni término.                      |
+
+**Por qué la comisión es opcional en las tres de cursada**, si semánticamente siempre hubo una: el historial académico que sube el alumno (SIU y equivalentes) lista materia, fecha, nota y condición, y en ningún lado la comisión. Exigirla hacía que el import de [US-014](user-stories/US-014.md) no pudiera registrar ninguna materia aprobada cursando, que es el caso mayoritario de cualquier historial real. Sin comisión la cursada no es reseñable (el feed de pendientes filtra `commission_id IS NOT NULL` y el publish corta con `EnrollmentWithoutCommission`): el dato faltante degrada una función y no corrompe ninguna.
 
 Estas invariantes están enforceadas como CHECKs en el data model (ver [data-model.md#entity-enrollmentrecord](../architecture/data-model.md#entity-enrollmentrecord)).
 

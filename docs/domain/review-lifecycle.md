@@ -41,11 +41,18 @@ stateDiagram-v2
     published --> under_review : UC-019 reports >= threshold
     published --> removed : UC-051 uphold directo
 
-    under_review --> published : UC-051 dismiss (sin otros open)
+    under_review --> published : UC-051 dismiss (sin otros open,<br/>solo si la cuarentena vino de reports)
     under_review --> removed : UC-051 uphold
 
     removed --> published : UC-052 restore
 ```
+
+**Las dos cuarentenas no son la misma.** `under_review` se alcanza por dos caminos y la fila los distingue con `quarantined_by_content_filter`:
+
+- **Por reports** (threshold de UC-019): desestimar el último report la devuelve a `published`. Es la transición del diagrama.
+- **Por el filtro de contenido** (UC-017): desestimar un report NO la restaura. Desestimar significa "este report no vale", no "publiquen este contenido", y son dos decisiones distintas que antes llegaban al mismo lugar: alcanzaba con que un tercero reportara una reseña frenada por el filtro para que el dismiss la publicara de rebote. El handler deja una entrada de audit log con `decision: not_restored` para que la decisión que no aplicó quede registrada.
+
+**Deuda conocida**: eso deja a la cuarentena por filtro sin salida hacia `published`. `Edit` exige `published` y la cola de moderación se arma solo desde `moderation.review_reports`, que no ve una cuarentena con cero reports, así que hoy ningún moderador llega a esas reseñas. El camino que falta (una cola para el filtro, o permitir editar desde `under_review` para que el filtro reevalúe) no está decidido.
 
 **Nota sobre edición:** la edición (UC-018) solo se permite desde `published` y mantiene el estado. No aparece como transición porque no cambia el estado: cambia el contenido y dispara efectos (ver matriz abajo). No se permite editar reseñas en `under_review` ni `removed` para evitar edit-bombing como evasión de moderación.
 

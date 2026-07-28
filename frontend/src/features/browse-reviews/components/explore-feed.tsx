@@ -91,7 +91,7 @@ function BrowseCard({ review }: { review: BrowseReview }) {
           <span>Dificultad {review.difficultyRating}/5</span>
           {review.finalGrade !== null && <span>· Nota {review.finalGrade}</span>}
           <span>· {dateLabel}</span>
-          {review.updatedAt !== review.createdAt && (
+          {review.editedAt !== null && (
             <span className="font-mono text-[10.5px] text-ink-4">· editada</span>
           )}
         </div>

@@ -373,4 +373,62 @@ public class ConfirmHistorialImportCommandHandlerTests
             Arg.Any<CancellationToken>());
         import.Status.ShouldBe(HistorialImportStatus.Confirmed);
     }
+
+    /// <summary>
+    /// <c>Enum.TryParse</c> por sí solo acepta strings numéricos: <c>"9"</c> devolvía true y se
+    /// persistía con <c>ToString()</c>, o sea que quedaba la string "9" en la columna, fuera del
+    /// conjunto del enum. Y no la atajaba nada: los tres CHECK de la tabla están escritos como
+    /// implicaciones, así que un valor que no es ninguno de los conocidos los satisface a todos por
+    /// vacuidad, y la fila terminaba contando en el pass rate público.
+    /// </summary>
+    [Theory]
+    [InlineData("9")]
+    [InlineData("0")]
+    [InlineData("99")]
+    public async Task Handle_ApprovalMethodNumerico_SeRechaza(string approvalMethod)
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "Passed", approvalMethod, 7m) };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.InvalidApprovalMethod);
+        await deps.Records.DidNotReceive().AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
+        import.Status.ShouldBe(HistorialImportStatus.Parsed);
+    }
+
+    /// <summary>Mismo bypass del lado del status.</summary>
+    [Fact]
+    public async Task Handle_StatusNumerico_SeRechaza()
+    {
+        var deps = NewDeps();
+        var profile = ActiveProfile();
+        deps.Identity.GetStudentProfileForUserAsync(CallerUserId, Arg.Any<CancellationToken>()).Returns(profile);
+
+        var import = ParsedImport(deps.Clock);
+        deps.Imports.FindByIdForOwnerAsync(
+                Arg.Any<HistorialImportId>(), profile.Id, Arg.Any<CancellationToken>())
+            .Returns(import);
+        deps.Records.ExistsAsync(profile.Id, SubjectIdCreated, TermId, Arg.Any<CancellationToken>())
+            .Returns(false);
+
+        var items = new ConfirmedItem[] { new(SubjectIdCreated, TermId, "1", null, null) };
+
+        var result = await InvokeAsync(deps, new ConfirmHistorialImportCommand(CallerUserId, import.Id.Value, items));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.InvalidStatus);
+        await deps.Records.DidNotReceive().AddAsync(Arg.Any<EnrollmentRecord>(), Arg.Any<CancellationToken>());
+    }
 }

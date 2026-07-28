@@ -41,7 +41,11 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
     private Task<AuthenticatedClient> MemberAsync(string label) =>
         AuthenticatedClient.CreateAsync(_fixture, $"{label}.{Guid.NewGuid():N}@planb.local");
 
-    private async Task<Guid> SeedAuthoredReviewAsync(string label)
+    private async Task<Guid> SeedAuthoredReviewAsync(string label) =>
+        (await SeedAuthoredReviewWithAuthorAsync(label)).ReviewId;
+
+    private async Task<(AuthenticatedClient Author, Guid ReviewId)> SeedAuthoredReviewWithAuthorAsync(
+        string label)
     {
         var author = await MemberAsync($"author-{label}");
         (await author.Client.PostAsJsonAsync(
@@ -77,7 +81,9 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
                 finalGrade = 8m,
             });
         reviewResp.EnsureSuccessStatusCode();
-        return (await reviewResp.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("id").GetGuid();
+        var reviewId = (await reviewResp.Content.ReadFromJsonAsync<JsonElement>())
+            .GetProperty("id").GetGuid();
+        return (author, reviewId);
     }
 
     private async Task<Guid> ReportAsync(Guid reviewId, string label, string reason)
@@ -119,6 +125,44 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
             .Where(r => r.Id == new ReviewId(reviewId))
             .Select(r => (ReviewStatus?)r.Status)
             .FirstOrDefaultAsync();
+    }
+
+    /// <summary>
+    /// El autor no puede borrar una reseña que moderación removió.
+    ///
+    /// <para>
+    /// Sin este corte quedaba abierto el camino completo de evasión: borrar mueve la reseña a
+    /// Deleted, el índice único de la cursada es parcial (<c>status &lt;&gt; 'Deleted'</c>), así que
+    /// la cursada volvía a figurar como pendiente y el mismo texto entraba de nuevo como fila
+    /// nueva, con id nuevo y sin los reportes upheld encima. El test espejo de ese mecanismo sobre
+    /// una reseña Published vive en <c>DeleteOwnReviewEndpointTests</c>
+    /// (<c>Cursada_reappears_in_pending_and_is_reviewable_again</c>) y es la funcionalidad que
+    /// queremos conservar: acá se verifica que NO aplica cuando la bajó un moderador.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task El_autor_no_puede_borrar_una_resena_que_moderacion_removio()
+    {
+        var (author, reviewId) = await SeedAuthoredReviewWithAuthorAsync("evasion");
+        var report = await ReportAsync(reviewId, "ev1", "LenguajeInapropiado");
+
+        var moderator = await ModeratorAsync();
+        (await moderator.Client.PostAsJsonAsync(
+            $"/api/moderation/reports/{report}/uphold",
+            new { resolutionNote = "Viola la política." })).EnsureSuccessStatusCode();
+
+        (await PollReviewStatusAsync(reviewId, ReviewStatus.Removed, TimeSpan.FromSeconds(15)))
+            .ShouldBeTrue("la reseña debería quedar Removed tras el uphold");
+
+        var delete = await author.Client.DeleteAsync($"/api/me/reviews/{reviewId}");
+
+        delete.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        // El endpoint mapea Error.Code al title del ProblemDetails.
+        var problem = await delete.Content.ReadFromJsonAsync<JsonElement>();
+        problem.GetProperty("title").GetString().ShouldBe("reviews.review.cannot_delete_removed");
+
+        // Y sigue Removed: el intento fallido no puede dejarla en un estado intermedio.
+        (await ReviewStatusAsync(reviewId)).ShouldBe(ReviewStatus.Removed);
     }
 
     [Fact]
