@@ -41,7 +41,13 @@ if (!string.Equals(
         "Production",
         StringComparison.OrdinalIgnoreCase))
 {
-    DotNetEnv.Env.TraversePath().Load();
+    // NoClobber: el entorno real le gana al .env, nunca al revés. Sin eso, cualquier proceso que
+    // arranque el host con variables propias las perdía en silencio. Y no era hipotético: el runner
+    // de E2E (scripts/run-e2e.ts) le pasa la connection string de una base efímera, el .env la
+    // pisaba con la de dev, y la suite entera corría contra la base de desarrollo creyendo que
+    // corría aislada. Se descubrió porque el spec de períodos empezó a chocar contra períodos que
+    // habían creado corridas anteriores.
+    DotNetEnv.Env.TraversePath().NoClobber().Load();
 }
 
 var builder = WebApplication.CreateBuilder(args);
