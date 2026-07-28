@@ -365,6 +365,34 @@ public class EvaluateSimulationEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
+    /// <summary>
+    /// Dos comisiones de períodos distintos no forman una grilla: 121 tiene la suya en 2025-C2 y 111
+    /// en 2026-C1. Sin este corte el detector de choques cruzaba horarios de cuatrimestres que nunca
+    /// coexistieron y devolvía un veredicto sobre una semana que no existe.
+    /// </summary>
+    [Fact]
+    public async Task Evaluate_con_comisiones_de_periodos_distintos_se_rechaza()
+    {
+        var student = await StudentAsync(TudcsPlanId, "span");
+        await EnrollAsync(student, Subject101, "Regularized", null, null, null, 6m);
+
+        var response = await student.Client.PostAsJsonAsync(
+            "/api/me/simulator/evaluate",
+            new
+            {
+                subjectIds = new[] { Subject121, Subject111 },
+                commissions = new[]
+                {
+                    new { subjectId = Subject121, commissionId = Commission121 },
+                    new { subjectId = Subject111, commissionId = Commission111A },
+                },
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulator.commissions_span_multiple_terms");
+    }
+
     [Fact]
     public async Task Evaluate_with_two_clashing_commissions_reports_one_clash_and_marks_the_blocks()
     {

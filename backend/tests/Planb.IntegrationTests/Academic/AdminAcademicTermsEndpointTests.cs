@@ -24,6 +24,8 @@ namespace Planb.IntegrationTests.Academic;
 public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
 {
     private static readonly Guid Unsta = Guid.Parse("00000001-0000-4000-a000-000000000001");
+    // 2026-C1 del seed: el único período que ya tiene comisiones sembradas colgando.
+    private static readonly Guid Term2026C1Id = Guid.Parse("00000005-0000-4000-a000-000000000005");
 
     private readonly RegisterApiFixture _fixture;
 
@@ -113,6 +115,47 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
                 enrollmentCloses: new DateTimeOffset(2043, 2, 20, 0, 0, 0, TimeSpan.FromHours(-3))));
 
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
+    }
+
+    /// <summary>
+    /// La cadencia queda congelada apenas el período tiene comisiones. Crear una comisión valida que
+    /// la cadencia de la materia coincida con la del período; el update no volvía a mirar esa
+    /// igualdad, así que un PATCH del kind dejaba en silencio a todas las comisiones ya creadas en
+    /// el estado que la creación rechaza. El período 2026-C1 del seed ya tiene comisiones.
+    /// </summary>
+    [Fact]
+    public async Task Update_del_kind_con_comisiones_colgando_devuelve_409()
+    {
+        var admin = await AdminAsync();
+
+        var response = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/academic-terms/{Term2026C1Id}",
+            NewTermBody(year: 2026, number: 1, kind: "SixMonth"));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("academic.term.kind_locked_by_commissions");
+    }
+
+    /// <summary>
+    /// La contraparte: los demás campos del mismo período se siguen pudiendo corregir. El corte es
+    /// sobre la cadencia, no sobre el período entero.
+    /// </summary>
+    [Fact]
+    public async Task Update_de_las_fechas_con_comisiones_colgando_sigue_andando()
+    {
+        var admin = await AdminAsync();
+
+        var response = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/academic-terms/{Term2026C1Id}",
+            NewTermBody(
+                year: 2026,
+                number: 1,
+                kind: "FourMonth",
+                startDate: new DateOnly(2026, 3, 9),
+                endDate: new DateOnly(2026, 7, 10)));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
 
     [Fact]

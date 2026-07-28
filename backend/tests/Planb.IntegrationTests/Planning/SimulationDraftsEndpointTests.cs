@@ -191,6 +191,91 @@ public class SimulationDraftsEndpointTests : IClassFixture<RegisterApiFixture>
             .ShouldContain("planning.simulation_draft.subject_not_in_plan");
     }
 
+    // ── Validación cross-BC de los items del borrador ─────────────────────
+    //
+    // El validador es nuevo y sus cinco ramas de rechazo no las tocaba ningún test: los que existían
+    // solo cubrían el happy path y la materia fuera del plan.
+
+    [Fact]
+    public async Task Create_TermFueraDeLaUniversidadDelAlumno_ReturnsBadRequest()
+    {
+        var (planId, subjects, _, _) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "term-uni");
+
+        var response = await CreateDraftAsync(student, Guid.NewGuid(), null, (subjects[0].Id, null));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulation_draft.term_not_in_university");
+    }
+
+    [Fact]
+    public async Task Create_ComisionInexistente_ReturnsBadRequest()
+    {
+        var (planId, subjects, _, termId) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "comm-404");
+
+        var response = await CreateDraftAsync(
+            student, termId, null, (subjects[0].Id, Guid.NewGuid()));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulation_draft.commission_not_found");
+    }
+
+    /// <summary>
+    /// Una comisión real, pero de otra materia. Sin este corte el borrador queda diciendo "curso X
+    /// en la comisión de Y", y de ahí sale el horario que el planificador dibuja en la grilla.
+    /// </summary>
+    [Fact]
+    public async Task Create_ComisionDeOtraMateria_ReturnsBadRequest()
+    {
+        var (planId, subjects, commissionId, termId) = await CreatePlanWithSubjectsAsync(2);
+        var student = await StudentAsync(planId, "comm-subject");
+
+        // commissionId pertenece a subjects[0]; se la colgamos a subjects[1].
+        var response = await CreateDraftAsync(
+            student, termId, null, (subjects[1].Id, commissionId));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulation_draft.commission_not_for_subject");
+    }
+
+    /// <summary>
+    /// La comisión es de la materia correcta pero de otro período que el del borrador: la grilla
+    /// mostraría un horario que no se dicta en el cuatrimestre que el alumno está planificando.
+    /// </summary>
+    [Fact]
+    public async Task Create_ComisionDeOtroPeriodo_ReturnsBadRequest()
+    {
+        var (planId, subjects, commissionId, _) = await CreatePlanWithSubjectsAsync(1);
+        var student = await StudentAsync(planId, "comm-term");
+
+        var response = await CreateDraftAsync(
+            student, Seed2026SecondTerm, null, (subjects[0].Id, commissionId));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulation_draft.commission_not_for_term");
+    }
+
+    /// <summary>El update pasa por el mismo validador: no alcanza con cubrir el create.</summary>
+    [Fact]
+    public async Task Update_ComisionDeOtraMateria_ReturnsBadRequest()
+    {
+        var (planId, subjects, commissionId, termId) = await CreatePlanWithSubjectsAsync(2);
+        var student = await StudentAsync(planId, "upd-comm");
+        var draftId = await CreateDraftAndGetIdAsync(student, termId, null, (subjects[0].Id, null));
+
+        var response = await UpdateDraftAsync(
+            student, draftId, null, (subjects[1].Id, commissionId));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync())
+            .ShouldContain("planning.simulation_draft.commission_not_for_subject");
+    }
+
     [Fact]
     public async Task List_ResolvesSubjectAndCommissionNamesWithoutExtraCalls()
     {

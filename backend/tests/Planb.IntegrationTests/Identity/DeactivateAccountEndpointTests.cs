@@ -84,6 +84,42 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         orphanCount.ShouldBe(0);
     }
 
+    /// <summary>
+    /// El claim docente también se va con la baja, y no es solo PII: el índice único parcial de
+    /// verificados es lo que impide que dos users reclamen al mismo docente. Si el claim sobrevivía,
+    /// ese docente quedaba bloqueado para siempre con <c>TeacherAlreadyVerifiedByAnother</c>, sin
+    /// nadie del otro lado para liberarlo.
+    /// </summary>
+    [Fact]
+    public async Task Cascade_removes_teacher_claims_and_frees_the_teacher_for_someone_else()
+    {
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, FreshEmail("deactivate-claim"));
+
+        var teacherId = AcademicSeedData.Teachers[0].Id.Value;
+        (await auth.Client.PostAsJsonAsync("/api/me/teacher-claims", new { teacherId }))
+            .EnsureSuccessStatusCode();
+
+        (await auth.Client.DeleteAsync("/api/me/account")).StatusCode
+            .ShouldBe(HttpStatusCode.NoContent);
+
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+
+        var orphanClaims = await db.Database
+            .SqlQueryRaw<int>(
+                "SELECT COUNT(*)::int AS \"Value\" FROM identity.teacher_profiles WHERE user_id = {0}",
+                auth.UserId.Value)
+            .SingleAsync();
+        orphanClaims.ShouldBe(0);
+
+        // Y el docente vuelve a ser reclamable por otra persona.
+        var other = await AuthenticatedClient.CreateAsync(_fixture, FreshEmail("claim-after"));
+        var retry = await other.Client.PostAsJsonAsync("/api/me/teacher-claims", new { teacherId });
+        retry.IsSuccessStatusCode.ShouldBeTrue(
+            $"el docente debería quedar libre tras la baja, pero devolvió {retry.StatusCode}");
+    }
+
     [Fact]
     public async Task Writes_audit_log_row_with_hashed_email()
     {

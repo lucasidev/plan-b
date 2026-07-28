@@ -279,6 +279,32 @@ public class ResolveReportEndpointTests : IClassFixture<RegisterApiFixture>
 
     private sealed record IdDto(Guid Id);
     private sealed record ResolveDto(Guid ReportId, string Status, int CascadedCount);
+    /// <summary>
+    /// El contexto del autor que ve el moderador se deriva del <c>author_user_id</c> de la reseña,
+    /// no del student profile. Cuando pasaba por profiles, dar de baja la cuenta borraba el profile
+    /// y el detalle mostraba 0 reseñas escritas y 0 reportes recibidos para alguien con historial:
+    /// el moderador tomaba la decisión sobre un autor que parecía nuevo.
+    /// </summary>
+    [Fact]
+    public async Task El_detalle_conserva_el_historial_del_autor_despues_de_que_se_dio_de_baja()
+    {
+        var (author, reviewId) = await SeedAuthoredReviewWithAuthorAsync("gone");
+        var report = await ReportAsync(reviewId, "gone1", "LenguajeInapropiado");
+
+        (await author.Client.DeleteAsync("/api/me/account")).StatusCode
+            .ShouldBe(HttpStatusCode.NoContent);
+
+        var moderator = await ModeratorAsync();
+        var detail = await moderator.Client.GetFromJsonAsync<DetailDto>(
+            $"/api/moderation/reports/{report}");
+
+        detail.ShouldNotBeNull();
+        detail!.ReviewId.ShouldBe(reviewId);
+        // La reseña sigue en el corpus (ADR-0044 preserva el contenido), así que su autor sigue
+        // teniendo al menos una escrita: un 0 acá sería el bug de vuelta.
+        detail.AuthorReviewsWritten.ShouldBe(1);
+    }
+
     private sealed record DetailDto(
         Guid ReportId, string Reason, string Tone, string Status, string? SubjectText,
         Guid ReviewId, int AuthorReviewsWritten);
