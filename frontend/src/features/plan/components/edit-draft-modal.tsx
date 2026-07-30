@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { TextField } from '@/components/ui/text-field';
 import { updateSimulationDraftAction } from '../actions';
-import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
+import { PUBLIC_SIMULATIONS_QUERY_KEY, SIMULATION_DRAFTS_QUERY_KEY } from '../api';
 import type { SimulationDraft } from '../types';
 
 type Props = {
@@ -65,6 +65,7 @@ function EditDraftForm({ draft, onClose }: { draft: SimulationDraft; onClose: ()
       );
       if (result.status === 'success') {
         queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
         onClose();
       } else {
         setError(result.message);

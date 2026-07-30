@@ -135,10 +135,21 @@ async function fetchPublicSimulations(
  * `null` como `undefined` (`hasNextPage` chequea `!= null`), así que no hace falta mapear el null a
  * undefined a mano.
  */
+/**
+ * Prefijo del feed público. Se invalida por prefijo (sin plan ni período) porque una mutación no
+ * sabe en qué combinación está parado el que mira: `invalidateQueries` matchea por prefijo.
+ *
+ * **Toda mutación sobre un borrador que pueda cambiar lo que ve la comunidad invalida esto**, no
+ * solo `SIMULATION_DRAFTS_QUERY_KEY`: compartir agrega al feed, descompartir y borrar sacan,
+ * editar cambia el contenido, y publicar archiva el Active anterior, que si estaba compartido
+ * también desaparece. Crear es la única que no puede afectarlo, porque un borrador nace privado.
+ */
+export const PUBLIC_SIMULATIONS_QUERY_KEY = ['plan', 'public-simulations'] as const;
+
 export const publicSimulationsQueries = {
   feed: (careerPlanId: string, termId: string) =>
     infiniteQueryOptions({
-      queryKey: ['plan', 'public-simulations', careerPlanId, termId] as const,
+      queryKey: [...PUBLIC_SIMULATIONS_QUERY_KEY, careerPlanId, termId] as const,
       queryFn: ({ pageParam }: { pageParam: string | null }) =>
         fetchPublicSimulations(careerPlanId, termId, pageParam),
       initialPageParam: null as string | null,
