@@ -114,7 +114,7 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 - [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector pipeline diferido hasta que exista consumidor real (revisión 2026-07-26); el diseño (modelo, tabla, gating por volumen) sigue vigente para cuando se construya.
 - [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato del autor en presentación pública.
 - [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade de reports al upheld; sin reversión al restore.
-- [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md): edit solo desde `published`.
+- [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md): edit bloqueado mientras la modera un reporte (desde `published`, y desde `under_review` si la cuarentena no vino de reportes).
 - [ADR-0013](../../decisions/0013-embedding-gated-en-transiciones-a-published.md): embedding job en transiciones a `published`.
 - ADR-0028: reseñas opcionales + premium features como reward (no gating del simulador).
 

@@ -206,6 +206,6 @@ Ver [`docs/decisions/0017-persistence-ignorance.md`](../decisions/0017-persisten
 - Edit destructive invalida Review: [ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md)
 - Embedding gating: [ADR-0013](../decisions/0013-embedding-gated-en-transiciones-a-published.md)
 - Reseñas opcionales con premium features: [ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)
-- Edit de Review solo desde published: [ADR-0012](../decisions/0012-edicion-de-resena-solo-desde-published.md)
+- Edit de Review bloqueado mientras la modera un reporte: [ADR-0012](../decisions/0012-edicion-de-resena-solo-desde-published.md)
 - ReviewAuditLog como projection: [ADR-0031](../decisions/0031-review-audit-log-como-projection.md)
 - Wolverine como mediator: [ADR-0015](../decisions/0015-wolverine-como-mediator-y-message-bus.md)

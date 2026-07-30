@@ -125,7 +125,11 @@ export async function editReviewAction(
   if (response.status === 409) {
     return {
       status: 'error',
-      message: 'La reseña está en revisión: no podés editarla hasta que el equipo decida.',
+      // El 409 ya solo puede venir de dos casos (revisión 2026-07-29 de ADR-0012): la reportaron y
+      // un moderador la tiene que resolver, o la removieron. Las otras dos cuarentenas ahora se
+      // editan, así que el mensaje viejo ("está en revisión") habría mentido en el caso removida.
+      message:
+        'No podés editar esta reseña: la reportaron y falta que un moderador la resuelva, o ya la removieron.',
     };
   }
   if (response.status === 429) {

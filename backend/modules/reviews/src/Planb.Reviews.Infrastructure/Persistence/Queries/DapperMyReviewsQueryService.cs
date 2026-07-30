@@ -46,6 +46,7 @@ internal sealed class DapperMyReviewsQueryService : IMyReviewsQueryService
                 s.code                                     AS SubjectCode,
                 s.name                                     AS SubjectName,
                 r.status                                   AS Status,
+                r.under_review_reason                      AS UnderReviewReason,
                 r.difficulty_rating::int                   AS DifficultyRating,
                 r.subject_text                             AS SubjectText,
                 r.teacher_text                             AS TeacherText,
