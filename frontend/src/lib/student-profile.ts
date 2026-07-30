@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { apiFetchAuthenticated } from './api-client.server';
 
 /**
@@ -32,8 +33,15 @@ export type StudentProfile = {
  *
  * Auth: post-JwtBearer middleware. Forwardea la cookie planb_session del
  * request del browser via <see cref="apiFetchAuthenticated"/>.
+ *
+ * **Memoizado por request con `cache()` de React.** El guard del layout y la page de cada
+ * pantalla piden el perfil por separado, a propósito (defensa en profundidad: el layout redirige
+ * al onboarding y la page vuelve a chequear). Sin esto eran dos GET idénticos por render, porque
+ * `cache: 'no-store'` deshabilita el fetch cache de Next y no hay nada más que deduplique. La
+ * memoización vive por request y muere con ella, así que no hay riesgo de servirle a un usuario
+ * el perfil de otro.
  */
-export async function fetchStudentProfile(): Promise<StudentProfile | null> {
+export const fetchStudentProfile = cache(async (): Promise<StudentProfile | null> => {
   try {
     const response = await apiFetchAuthenticated('/api/me/student-profile', {
       cache: 'no-store',
@@ -47,4 +55,4 @@ export async function fetchStudentProfile(): Promise<StudentProfile | null> {
   } catch {
     return null;
   }
-}
+});
