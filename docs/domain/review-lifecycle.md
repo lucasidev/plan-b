@@ -16,7 +16,7 @@ Este documento **expande** los UCs UC-017, UC-018, UC-019, UC-050, UC-051 y UC-0
 | Estado         | Significado                                                                                | Visibilidad pública |
 | -------------- | ------------------------------------------------------------------------------------------ | ------------------- |
 | `published`    | Reseña visible públicamente.                                                               | Sí                  |
-| `under_review` | En cola de moderación. Puede haber caído por filtro automático o por threshold de reports. | No                  |
+| `under_review` | En cola de moderación. Puede haber caído por filtro automático, por threshold de reports, o por invalidación al cambiar la cursada (`under_review_reason`, ver más abajo). | No                  |
 | `removed`      | Removida por un moderador.                                                                 | No                  |
 
 ### `ReviewReport.status`
@@ -41,20 +41,20 @@ stateDiagram-v2
     published --> under_review : UC-019 reports >= threshold
     published --> removed : UC-051 uphold directo
 
-    under_review --> published : UC-051 dismiss (sin otros open,<br/>solo si la cuarentena vino de reports)
+    under_review --> published : UC-051 dismiss (sin otros open,<br/>solo si la razón es reports)
+    under_review --> published : UC-018 edit (razón content_filter<br/>o enrollment_changed, filtro da clean)
     under_review --> removed : UC-051 uphold
 
     removed --> published : UC-052 restore
 ```
 
-**Las dos cuarentenas no son la misma.** `under_review` se alcanza por dos caminos y la fila los distingue con `quarantined_by_content_filter`:
+**`under_review` no es una sola causa.** Se alcanza por tres caminos y la fila los distingue con `under_review_reason` (antes un bool `quarantined_by_content_filter` que solo alcanzaba para dos):
 
-- **Por reports** (threshold de UC-019): desestimar el último report la devuelve a `published`. Es la transición del diagrama.
-- **Por el filtro de contenido** (UC-017): desestimar un report NO la restaura. Desestimar significa "este report no vale", no "publiquen este contenido", y son dos decisiones distintas que antes llegaban al mismo lugar: alcanzaba con que un tercero reportara una reseña frenada por el filtro para que el dismiss la publicara de rebote. El handler deja una entrada de audit log con `decision: not_restored` para que la decisión que no aplicó quede registrada.
+- **`reports`** (threshold de UC-019): los reports abiertos cruzaron el threshold. Desestimar el último report la devuelve a `published`. Es la transición del diagrama vía UC-051.
+- **`content_filter`** (UC-017/UC-018): el filtro de contenido la frenó al publicar o al editar. Desestimar un report sobre esta reseña NO la restaura: desestimar significa "este report no vale", no "publiquen este contenido", y son dos decisiones distintas que antes llegaban al mismo lugar (alcanzaba con que un tercero reportara una reseña frenada por el filtro para que el dismiss la publicara de rebote). El handler deja una entrada de audit log con `decision: not_restored` para que la decisión que no aplicó quede registrada. La única salida es que el autor edite (ver más abajo): el filtro reevalúa el texto nuevo, y si da clean la reseña pasa a `published`.
+- **`enrollment_changed`** ([ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md)): la cursada que respalda la reseña cambió de forma destructiva (por ejemplo, el alumno volvió a "cursando" después de haberla dado por aprobada) y la reseña quedó hablando de algo que ya no es cierto. Mismo comportamiento que `content_filter` frente a un dismiss de reports (no la restaura) y frente a una edición (el autor puede editarla para reflejar el nuevo estado real). **Sin escritor implementado todavía**: el modelo ya representa esta razón, pero el consumer cross-BC que la dispara (`EnrollmentRecordEdited` → `InvalidateReview`) no está construido.
 
-**Deuda conocida**: eso deja a la cuarentena por filtro sin salida hacia `published`. `Edit` exige `published` y la cola de moderación se arma solo desde `moderation.review_reports`, que no ve una cuarentena con cero reports, así que hoy ningún moderador llega a esas reseñas. El camino que falta (una cola para el filtro, o permitir editar desde `under_review` para que el filtro reevalúe) no está decidido.
-
-**Nota sobre edición:** la edición (UC-018) solo se permite desde `published` y mantiene el estado. No aparece como transición porque no cambia el estado: cambia el contenido y dispara efectos (ver matriz abajo). No se permite editar reseñas en `under_review` ni `removed` para evitar edit-bombing como evasión de moderación.
+**Nota sobre edición:** la edición (UC-018) se permite desde `published`, y desde `under_review` cuando la razón es `content_filter` o `enrollment_changed`: en ambos casos el filtro reevalúa el texto nuevo, y esa reevaluación decide si la reseña sale a `published` o se queda en `under_review` (con la razón siempre en `content_filter`, sea cual sea la razón de entrada). Por eso la edición desde `under_review` sí puede ser una transición real, a diferencia de la edición desde `published` que nunca cambia el estado. Se sigue sin poder editar cuando la razón es `reports`, ni en `removed`, para evitar edit-bombing como evasión de moderación (ver más abajo).
 
 ## State machine de `ReviewReport.status`
 
@@ -82,6 +82,8 @@ stateDiagram-v2
 | `under_review` → `removed`   | uphold                                   | UC-051 | `ReviewAuditLog(action=removed)`. Todos los reports open → `upheld` (cascade).                                                                                                              |
 | `removed` → `published`      | restore                                  | UC-052 | `ReviewAuditLog(action=restored, note)`. Reports `upheld` históricos **no** se revierten. Enqueue embedding si no había.                                                                    |
 | `published` → `published`    | edición (no es transición de estado)     | UC-018 | `ReviewAuditLog(action=edited, changes={before, after})`. Re-enqueue de embedding sobre el nuevo contenido. Si había `TeacherResponse`, se muestra badge "editada después de tu respuesta". |
+| `under_review` → `published` | edición, razón `content_filter` o `enrollment_changed`, el filtro da clean | UC-018 | `ReviewAuditLog(action=edited, changes={before, after})`. La razón se limpia (`null`). Enqueue embedding (primera vez que llega a `published`).                                              |
+| `under_review` → `under_review` | edición, razón `content_filter` o `enrollment_changed`, el filtro sigue frenando | UC-018 | `ReviewAuditLog(action=edited, changes={before, after})`. La razón pasa a (o queda en) `content_filter`. **No** enqueue de embedding.                                                      |
 
 ## Matriz de transiciones de `ReviewReport`
 
@@ -184,11 +186,11 @@ sequenceDiagram
 
 ## Reglas del lifecycle
 
-### Edición solo desde `published`
+### Edición bloqueada cuando la razón es reports, o si está `removed`
 
-Un alumno **no puede** editar una reseña en `under_review` ni en `removed`. Si intenta, el endpoint devuelve 403.
+Un alumno **puede** editar una reseña en `under_review` cuando `under_review_reason` es `content_filter` o `enrollment_changed`: la edición vuelve a correr el filtro de contenido sobre el texto nuevo, y esa reevaluación es la única salida de esas dos cuarentenas. Un alumno **no puede** editar una reseña en `under_review` cuando la razón es `reports`, ni en `removed`. Si intenta, el endpoint devuelve 409 (`reviews.review.invalid_status_transition`).
 
-**Why:** permitir edit sobre contenido en revisión abre edit-bombing como vector de evasión: el alumno podría modificar la reseña para burlar al moderador antes de que la resuelva. Sobre removidas, el alumno primero debe apelar (que es out-of-flow en MVP, típicamente via email al admin) y ser restaurada.
+**Why:** permitir editar mientras hay reports abiertos activos abre edit-bombing como vector de evasión: el alumno podría modificar la reseña para burlar al moderador antes de que resuelva los reports. Esa razón no aplica cuando la cuarentena es del filtro de contenido o de un cambio de cursada: ahí no hay un moderador humano juzgando reports abiertos, así que dejar que el autor corrija el texto (y que el filtro lo reevalúe) no abre ese vector; es, de hecho, la única forma de que esas dos cuarentenas se resuelvan. Sobre removidas, el alumno primero debe apelar (que es out-of-flow en MVP, típicamente via email al admin) y ser restaurada.
 
 ### Threshold de auto-hide configurable por env var
 
@@ -210,6 +212,7 @@ El worker de generación de embeddings (ver [ADR-0007](../decisions/0007-pgvecto
 
 - `null → published` (publicación con filtro pass).
 - `under_review → published` (dismiss de reports).
+- `under_review → published` (edición con razón `content_filter` o `enrollment_changed`, el filtro da clean).
 - `removed → published` (restore).
 - Edición de contenido en `published` (re-embedding sobre el nuevo texto).
 
@@ -224,5 +227,5 @@ En ningún momento la API expone `enrollment.student_id` o datos derivados del a
 | Tipo       | Referencia                                                                                                                                                                                                 |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs        | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar).                                                                          |
-| ADRs       | [ADR-0005](../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md). |
+| ADRs       | [ADR-0005](../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md), [ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md). |
 | Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`, `ReviewEmbedding`](../architecture/data-model.md#context-reviews--moderation).                                                             |

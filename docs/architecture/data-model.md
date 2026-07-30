@@ -514,7 +514,7 @@ Reseña anclada a una cursada finalizada.
 | `teacher_text`                  | TEXT                        | NULL                            | Sobre el docente                               |
 | `final_grade`                   | NUMERIC(4,2)                | NULL                            | 0..10                                          |
 | `status`                        | ENUM `review_status`        | NOT NULL, DEFAULT `'published'` |                                                |
-| `quarantined_by_content_filter` | BOOLEAN                     | NOT NULL, DEFAULT `false`       | Por qué está UnderReview, ver abajo            |
+| `under_review_reason`           | ENUM `under_review_reason`  | NULL                             | Por qué está UnderReview, ver abajo            |
 | `created_at`                    | TIMESTAMPTZ                 | NOT NULL                        |                                                |
 | `updated_at`                    | TIMESTAMPTZ                 | NOT NULL                        | `> created_at` marca "editada" en el feed      |
 | `deleted_at`                    | TIMESTAMPTZ                 | NULL                            | Soft delete (US-055)                           |
@@ -529,7 +529,7 @@ Constraints:
 - CHECK `ck_reviews_at_least_one_text`: `subject_text IS NOT NULL OR teacher_text IS NOT NULL`.
 - CHECK `ck_reviews_{subject,teacher}_text_length`: cada texto presente entra en el rango de `ReviewText` (50..2000). No es redundante con el aggregate: el value converter del read path hace `.Value` sobre el `Result`, así que una fila fuera de rango no da error de dominio, revienta al materializar y deja la reseña inutilizable para cualquier operación.
 
-`quarantined_by_content_filter` distingue los dos caminos a `UnderReview` (filtro automático vs threshold de reports), que antes eran indistinguibles. Sin él, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
+`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
 
 ### Entity: ReviewReport
 
@@ -589,7 +589,7 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 - `ReviewReport.moderator_id` debe apuntar a un User con `role IN ('moderator','admin')`.
 - `ReviewAuditLog`: cuando `action = 'edited'`, `changes` contiene estructura `{before: {...}, after: {...}}`.
 - Una reseña `removed` por moderación no la puede borrar su autor: el índice único es parcial sobre `status <> 'Deleted'`, así que borrarla liberaría la cursada y le permitiría republicar el mismo texto como fila nueva, sin los reportes upheld encima.
-- Desestimar el último report solo restaura a `published` si la cuarentena venía del threshold de reports, no del filtro de contenido (`quarantined_by_content_filter`).
+- Desestimar el último report solo restaura a `published` si `under_review_reason = 'reports'`; no restaura si la razón es `content_filter` o `enrollment_changed`.
 - Todos los endpoints públicos que serializan Review omiten `enrollment.student_id` y cualquier referencia al User autor. El anonimato es regla de la capa de presentación.
 
 ## Context: Semantic Analytics

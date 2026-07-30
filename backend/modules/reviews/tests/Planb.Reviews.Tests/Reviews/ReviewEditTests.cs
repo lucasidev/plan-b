@@ -140,16 +140,16 @@ public class ReviewEditTests
     }
 
     /// <summary>
-    /// El edit vuelve a pasar el filtro y su veredicto pisa el anterior en los dos sentidos. Importa
-    /// que la marca quede bien puesta porque es la que decide si un dismiss de moderación puede
-    /// republicar la reseña: si el edit dejara de estamparla, la puerta de republicación de
+    /// El edit vuelve a pasar el filtro y su veredicto pisa la razón anterior en los dos sentidos.
+    /// Importa que la razón quede bien puesta porque es la que decide si un dismiss de moderación
+    /// puede republicar la reseña: si el edit dejara de estamparla, la puerta de republicación de
     /// contenido filtrado se reabre en silencio.
     /// </summary>
     [Theory]
-    [InlineData(ReviewStatus.UnderReview, true)]
-    [InlineData(ReviewStatus.Published, false)]
-    public void Edit_estampa_la_marca_de_cuarentena_segun_el_veredicto_del_filtro(
-        ReviewStatus statusAfter, bool expectedFlag)
+    [InlineData(ReviewStatus.UnderReview, UnderReviewReason.ContentFilter)]
+    [InlineData(ReviewStatus.Published, null)]
+    public void Edit_estampa_la_razon_segun_el_veredicto_del_filtro(
+        ReviewStatus statusAfter, UnderReviewReason? expectedReason)
     {
         var review = PublishedWith(SubjectText(), TeacherText());
 
@@ -171,7 +171,7 @@ public class ReviewEditTests
             clock: new FixedClock(T0.AddHours(1)));
 
         result.IsSuccess.ShouldBeTrue();
-        review.QuarantinedByContentFilter.ShouldBe(expectedFlag);
+        review.UnderReviewReason.ShouldBe(expectedReason);
     }
 
     /// <summary>

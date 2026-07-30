@@ -1,6 +1,12 @@
 using Planb.Reviews.Domain.Reviews.Events;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
+// Alias porque el enum y la propiedad se llaman igual (UnderReviewReason): la propiedad es
+// nullable (UnderReviewReason?), así que su tipo no coincide exactamente con el nombre del enum y
+// la regla de C# que desambigua "propiedad igual al tipo" no aplica. Sin este alias, una referencia
+// desnuda al enum dentro de esta clase resuelve a la propiedad (incluso en métodos estáticos) y no
+// compila. Solo hace falta acá adentro (el alias es de archivo); nada fuera de esta clase lo ve.
+using Reason = Planb.Reviews.Domain.Reviews.UnderReviewReason;
 
 namespace Planb.Reviews.Domain.Reviews;
 
@@ -97,19 +103,23 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public DateTimeOffset? EditedAt { get; private set; }
 
     /// <summary>
-    /// Por qué la reseña está <see cref="ReviewStatus.UnderReview"/>: true si la cuarentena la puso
-    /// el filtro de contenido al publicar o editar, false si la puso el threshold de reports.
+    /// Por qué la reseña está <see cref="ReviewStatus.UnderReview"/>. Null cuando el status no es
+    /// UnderReview: el invariante del aggregate es <c>Status == UnderReview</c> si y solo si
+    /// <c>UnderReviewReason is not null</c>.
     ///
     /// <para>
-    /// Los dos caminos llegaban al mismo status y después eran indistinguibles, así que
-    /// <see cref="RestoreFromReports"/> (que se dispara cuando un moderador cierra el último report)
-    /// republicaba cualquier UnderReview, incluida la que el filtro había frenado y sobre la que
-    /// nadie decidió nada. Alcanzaba con que un tercero reportara una reseña cuarentenada por
-    /// filtro, que no está en el feed pero sí es reportable por id, y que el moderador desestimara
-    /// ese report: el contenido salía publicado como efecto colateral de "este report no vale".
+    /// Reemplaza al bool <c>QuarantinedByContentFilter</c>, que solo distinguía dos causas
+    /// (filtro de contenido vs threshold de reports) y no dejaba lugar para la tercera: una
+    /// reseña invalidada porque la cursada que la respalda cambió (ADR-0032). Con solo dos
+    /// causas indistinguibles del status, <see cref="RestoreFromReports"/> (que se dispara
+    /// cuando un moderador cierra el último report) republicaba cualquier UnderReview, incluida
+    /// la que el filtro había frenado y sobre la que nadie decidió nada. Alcanzaba con que un
+    /// tercero reportara una reseña cuarentenada por filtro, que no está en el feed pero sí es
+    /// reportable por id, y que el moderador desestimara ese report: el contenido salía publicado
+    /// como efecto colateral de "este report no vale".
     /// </para>
     /// </summary>
-    public bool QuarantinedByContentFilter { get; private set; }
+    public UnderReviewReason? UnderReviewReason { get; private set; }
 
     /// <summary>
     /// US-055 soft delete. Null while the review is live. When the author deletes it the
@@ -193,7 +203,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             TeacherText = teacherText,
             FinalGrade = finalGrade,
             Status = initialStatus,
-            QuarantinedByContentFilter = initialStatus == ReviewStatus.UnderReview,
+            UnderReviewReason = initialStatus == ReviewStatus.UnderReview ? Reason.ContentFilter : null,
             CreatedAt = now,
             UpdatedAt = now,
         };
@@ -223,9 +233,15 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </list>
     ///
     /// <para>
-    /// This method enforces only the domain rule: edits are allowed exclusively from
-    /// <see cref="ReviewStatus.Published"/> (ADR-0012). UnderReview reviews wait for the
-    /// moderator; Removed reviews are sealed; Deleted reviews are gone for the author.
+    /// This method enforces only the domain rule: edits are allowed from
+    /// <see cref="ReviewStatus.Published"/>, and from <see cref="ReviewStatus.UnderReview"/> when
+    /// <see cref="UnderReviewReason"/> is <see cref="Reviews.UnderReviewReason.ContentFilter"/> or
+    /// <see cref="Reviews.UnderReviewReason.EnrollmentChanged"/>: editing re-runs the content
+    /// filter on the new text, and that is the only way out of those two quarantines. Editing
+    /// stays blocked when the reason is <see cref="Reviews.UnderReviewReason.Reports"/> (ADR-0012,
+    /// anti edit-bombing): a moderator is actively looking at open reports, and letting the author
+    /// rewrite the content mid-review would let them dodge the decision. Removed reviews are
+    /// sealed; Deleted reviews are gone for the author.
     /// </para>
     ///
     /// <para>
@@ -254,7 +270,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (Status != ReviewStatus.Published)
+        var canEdit = Status == ReviewStatus.Published
+            || (Status == ReviewStatus.UnderReview
+                && UnderReviewReason is Reason.ContentFilter or Reason.EnrollmentChanged);
+
+        if (!canEdit)
         {
             return Result.Failure(ReviewErrors.InvalidStatusTransition);
         }
@@ -298,10 +318,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         TeacherText = nextTeacherText;
         FinalGrade = nextFinalGrade;
         Status = statusAfter;
-        // El edit vuelve a pasar el filtro sobre el texto nuevo, así que su veredicto pisa el
-        // anterior en los dos sentidos: si ahora trae algo que dispara, la cuarentena es del filtro;
-        // si el texto quedó limpio, la reseña vuelve a Published sin marca.
-        QuarantinedByContentFilter = statusAfter == ReviewStatus.UnderReview;
+        // El edit vuelve a pasar el filtro sobre el texto nuevo, así que su veredicto pisa la razón
+        // anterior en los dos sentidos: si ahora trae algo que dispara, la razón pasa a ser el
+        // filtro (incluso si la razón de entrada había sido otra); si el texto quedó limpio, la
+        // reseña vuelve a Published y la razón se limpia.
+        UnderReviewReason = statusAfter == ReviewStatus.UnderReview ? Reason.ContentFilter : null;
         UpdatedAt = now;
         EditedAt = now;
 
@@ -349,6 +370,12 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         var statusBefore = Status;
 
         Status = ReviewStatus.Deleted;
+        // US-055 permite borrar desde UnderReview (no solo desde Published), así que este método
+        // también sale de UnderReview y tiene que limpiar la razón: sin esto, borrar una reseña
+        // frenada por reports (o por cualquier otra razón) dejaba Status=Deleted con
+        // UnderReviewReason todavía en Reports, violando el invariante Status == UnderReview
+        // si y solo si UnderReviewReason is not null.
+        UnderReviewReason = null;
         DeletedAt = now;
         DeletedReason = reason;
         UpdatedAt = now;
@@ -386,6 +413,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         }
 
         Status = ReviewStatus.UnderReview;
+        UnderReviewReason = Reason.Reports;
         UpdatedAt = clock.UtcNow;
         return true;
     }
@@ -408,40 +436,36 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
         }
 
         Status = ReviewStatus.Removed;
+        UnderReviewReason = null;
         UpdatedAt = clock.UtcNow;
         return true;
     }
 
     /// <summary>
     /// Restauración tras resolverse (dismiss) el último report abierto de una reseña bajo revisión
-    /// (US-051). Solo una reseña <see cref="ReviewStatus.UnderReview"/> vuelve a
-    /// <see cref="ReviewStatus.Published"/> (devuelve <c>false</c> si no lo está). El consumer solo
-    /// invoca esto cuando la moderación cerró el último report abierto.
+    /// (US-051). Solo una reseña <see cref="ReviewStatus.UnderReview"/> con
+    /// <see cref="UnderReviewReason"/> igual a <see cref="Reviews.UnderReviewReason.Reports"/> vuelve
+    /// a <see cref="ReviewStatus.Published"/> (devuelve <c>false</c> en cualquier otro caso). El
+    /// consumer solo invoca esto cuando la moderación cerró el último report abierto.
     ///
     /// <para>
-    /// Una reseña cuarentenada por el filtro de contenido no se restaura por este camino (ver
-    /// <see cref="QuarantinedByContentFilter"/>): desestimar un report significa "este report no
-    /// vale", no "publiquen este contenido", y son dos decisiones distintas que llegaban al mismo
-    /// status.
-    /// </para>
-    /// <para>
-    /// Hoy eso deja a la reseña frenada por el filtro sin camino de vuelta: <see cref="Edit"/> exige
-    /// Published, y la cola de moderación se arma solo desde <c>moderation.review_reports</c>, así
-    /// que una cuarentena del filtro (que nace con cero reports) no la ve ningún moderador. La
-    /// alternativa era dejar que un report desestimado la publicara de rebote, que es peor: acá al
-    /// menos el contenido filtrado no se publica solo. Falta decidir por dónde sale.
+    /// Una reseña cuarentenada por el filtro de contenido o invalidada por un cambio de cursada no
+    /// se restaura por este camino: desestimar un report significa "este report no vale", no
+    /// "publiquen este contenido", y son decisiones distintas que antes de tener el enum llegaban
+    /// al mismo status y quedaban indistinguibles.
     /// </para>
     /// </summary>
     public bool RestoreFromReports(IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (Status != ReviewStatus.UnderReview || QuarantinedByContentFilter)
+        if (Status != ReviewStatus.UnderReview || UnderReviewReason != Reason.Reports)
         {
             return false;
         }
 
         Status = ReviewStatus.Published;
+        UnderReviewReason = null;
         UpdatedAt = clock.UtcNow;
         return true;
     }

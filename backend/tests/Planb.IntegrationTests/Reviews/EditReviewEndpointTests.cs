@@ -215,8 +215,26 @@ public class EditReviewEndpointTests
         body!.Status.ShouldBe("UnderReview");
     }
 
+    /// <summary>
+    /// La salida del callejón: una reseña que el filtro de contenido frenó se puede editar, y si el
+    /// texto nuevo pasa el filtro vuelve a Published.
+    ///
+    /// <para>
+    /// Este test antes afirmaba lo contrario (409 en el segundo edit) y con eso fijaba un shadow-ban
+    /// permanente como si fuera un requisito: una reseña frenada por el filtro entra a UnderReview
+    /// con cero reportes, la cola de moderación se arma desde los reportes, así que nadie la revisa
+    /// nunca, y el autor tampoco podía corregirla. El propio texto del segundo edit era una
+    /// disculpa. ADR-0032 además promete esta salida.
+    /// </para>
+    ///
+    /// <para>
+    /// El otro lado de la regla (editar SIGUE bloqueado cuando la cuarentena la pusieron los
+    /// reportes, para que nadie edite lo que está siendo moderado) es del dominio y vive donde
+    /// corresponde: <c>ReviewUnderReviewReasonTests</c>. Acá se verifica lo que solo se ve por HTTP.
+    /// </para>
+    /// </summary>
     [Fact]
-    public async Task Returns_409_when_editing_a_review_already_under_review()
+    public async Task Edit_from_under_review_by_filter_republishes_when_the_new_text_is_clean()
     {
         var auth = await SetupUserAsync("locked");
         await SetupProfileAsync(auth);
@@ -228,13 +246,15 @@ public class EditReviewEndpointTests
             $"/api/me/reviews/{reviewId}",
             new { subjectText = "El profe es un idiota total y no responde nunca, no la recomiendo." });
         first.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await first.Content.ReadFromJsonAsync<EditReviewResponse>())!.Status.ShouldBe("UnderReview");
 
-        // Segundo edit: ya está en UnderReview, se rechaza.
+        // Segundo edit: el autor limpia el texto y la reseña sale de la cuarentena.
         var second = await auth.Client.PatchAsJsonAsync(
             $"/api/me/reviews/{reviewId}",
             new { subjectText = "Disculpas, retiro lo dicho, fue exceso de bronca con el final desaprobado." });
 
-        second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        second.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await second.Content.ReadFromJsonAsync<EditReviewResponse>())!.Status.ShouldBe("Published");
     }
 
     [Fact]

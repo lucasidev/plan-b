@@ -117,7 +117,8 @@ public static class ReviewErrors
 
     /// <summary>
     /// Intento de transición a un status desde uno incompatible. Por ejemplo editar una
-    /// reseña que está en <c>UnderReview</c> o <c>Removed</c> (US-018). 409.
+    /// reseña <c>Removed</c>, o <c>UnderReview</c> con <see cref="UnderReviewReason.Reports"/>
+    /// como razón (US-018). 409.
     /// </summary>
     public static readonly Error InvalidStatusTransition =
         Error.Conflict(
@@ -179,8 +180,10 @@ public static class ReviewErrors
     /// tiene el incentivo de sacarla.
     /// </para>
     /// <para>
-    /// No aplica a la cuarentena del filtro automático: ahí no hay reportes de los que escaparse y
-    /// republicar el mismo texto lo vuelve a frenar, así que el autor puede borrar la suya.
+    /// No aplica a la cuarentena del filtro automático ni a la invalidación por cambio de cursada:
+    /// en la primera no hay reportes de los que escaparse (republicar el mismo texto lo vuelve a
+    /// frenar); en la segunda, ADR-0032 ya prevé borrar como una salida válida para el alumno. El
+    /// autor puede borrar la suya en ambos casos.
     /// </para>
     /// </summary>
     public static readonly Error CannotDeleteReportedReview =

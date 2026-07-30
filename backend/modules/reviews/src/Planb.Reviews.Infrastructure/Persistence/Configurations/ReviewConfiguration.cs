@@ -130,9 +130,10 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.Property(r => r.QuarantinedByContentFilter)
-            .HasColumnName("quarantined_by_content_filter")
-            .IsRequired();
+        builder.Property(r => r.UnderReviewReason)
+            .HasColumnName("under_review_reason")
+            .HasConversion<string>()
+            .HasMaxLength(20);
 
         builder.Property(r => r.EditedAt).HasColumnName("edited_at");
 

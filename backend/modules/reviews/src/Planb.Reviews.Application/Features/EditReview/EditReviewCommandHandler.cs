@@ -15,8 +15,10 @@ namespace Planb.Reviews.Application.Features.EditReview;
 /// <list type="number">
 ///   <item>Resolve the active StudentProfile for the user (same anti-enumeration as
 ///         publish: missing or inactive profile returns NotFound).</item>
-///   <item>Load the review; if missing, NotFound. If status is not Published, return
-///         InvalidStatusTransition (ADR-0012).</item>
+///   <item>Load the review; if missing, NotFound. Editable states: Published, y UnderReview
+///         cuando la razón es ContentFilter o EnrollmentChanged (esa reevaluación del filtro es
+///         la única salida de esas dos cuarentenas). Bloqueado cuando la razón es Reports, y en
+///         Removed: InvalidStatusTransition. Ver la revisión 2026-07-29 de ADR-0012.</item>
 ///   <item>Cross-check ownership via enrollments: the enrollment behind the review must
 ///         belong to the current user's profile. We do not rely on a "user id" column in
 ///         the review row.</item>
@@ -73,7 +75,12 @@ public static class EditReviewCommandHandler
             return Result.Failure<EditReviewResponse>(ReviewErrors.NotFound);
         }
 
-        if (review.Status != ReviewStatus.Published)
+        // Fail-fast: el mismo guard que Review.Edit ya enforca, repetido acá para no gastar el
+        // round-trip a enrollments + el conteo de cooldown en un pedido que va a fallar igual.
+        var canEdit = review.Status == ReviewStatus.Published
+            || (review.Status == ReviewStatus.UnderReview
+                && review.UnderReviewReason is UnderReviewReason.ContentFilter or UnderReviewReason.EnrollmentChanged);
+        if (!canEdit)
         {
             return Result.Failure<EditReviewResponse>(ReviewErrors.InvalidStatusTransition);
         }
