@@ -8,9 +8,9 @@ namespace Planb.Reviews.Application.IntegrationEvents;
 /// la cola de revisión humana.
 ///
 /// <para>
-/// El embedding NO se dispara hasta que un moderator la mueva a <c>Published</c>: ADR-0013
-/// gatea el embedding en transiciones a published. Hasta entonces la review existe en DB pero
-/// no en el corpus semántico.
+/// El diseño de ADR-0013 dice que el embedding se encola recién cuando un moderator la mueva a
+/// <c>Published</c>; hoy no hay pipeline ni corpus semántico corriendo (ver revisión de
+/// ADR-0007).
 /// </para>
 /// </summary>
 public sealed record ReviewQuarantinedIntegrationEvent(

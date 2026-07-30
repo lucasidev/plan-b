@@ -5,7 +5,7 @@
 **Root ID**: `ReviewId`
 **Child entities**: `TeacherResponse` (0 o 1, UNIQUE por review)
 
-> Nota sobre `ReviewEmbedding`: es projection / read model, no child entity. Vive en Reviews BC pero no es parte del aggregate. Ver [projections/](../projections/) y [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md).
+> Nota sobre `ReviewEmbedding`: es projection / read model, no child entity. Vive en Reviews BC pero no es parte del aggregate. **Diseño diferido**: la revisión (2026-07-26) de [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje hasta que exista un consumidor real, así que hoy no hay pipeline ni tabla; las menciones a embeddings más abajo en este documento describen ese diseño, no algo construido. Ver [projections/](../projections/) y [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md).
 
 ## Walkthrough Brandolini Software Design Level
 

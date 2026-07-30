@@ -333,7 +333,7 @@ Las 6 del scope original. US-019 era la diferible a S6 y entró igual, con el m�
 
 | US | Título | Effort | PR |
 |---|---|---|---|
-| [US-017](domain/user-stories/US-017.md) | Publicar reseña (backend: `POST /api/me/reviews` + filter clean/triggered + audit log + event embedding) | L | #134 |
+| [US-017](domain/user-stories/US-017.md) | Publicar reseña (backend: `POST /api/me/reviews` + filter clean/triggered + audit log) | L | #134 |
 | [US-049](domain/user-stories/US-049.md) | Editor de reseña 6 campos con preview vivo | L | #135 |
 | [US-048](domain/user-stories/US-048.md) | Reseñas shell + 3 tabs Pendientes / Mías / Explorar + endpoints GET | M | #138 #139 #140 |
 | [US-018](domain/user-stories/US-018.md) | Editar reseña propia (`PATCH` + audit log + cooldown + filter re-run) | S | #141 |

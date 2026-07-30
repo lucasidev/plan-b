@@ -110,6 +110,8 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 
 ## Búsqueda semántica e infraestructura analítica
 
+> Diseño diferido: la revisión (2026-07-26) de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje (extensión pgvector, entidad, pipeline) hasta que exista un consumidor real. Los términos de esta sección describen ese diseño, no algo implementado hoy.
+
 | Término | Significado |
 |---|---|
 | **ReviewEmbedding** | Vector (768 dims) del texto de una reseña. Generado con modelo open source `intfloat/multilingual-e5-base` ejecutado local. |

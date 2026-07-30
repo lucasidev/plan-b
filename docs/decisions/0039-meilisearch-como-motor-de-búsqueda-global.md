@@ -7,7 +7,7 @@
 
 El rediseño UX (claude-design) suma una **búsqueda global** como dropdown desde el topbar: el usuario tipea "Brandt" o "ISW302" y obtiene resultados agrupados (Recientes / Docentes / Materias / Comisiones) con highlight del query y atajos de teclado.
 
-Hoy el stack tiene **Postgres 17** + **pgvector 0.8** + **Redis 7**. La búsqueda básica se podría resolver con Postgres FTS + `pg_trgm` (fuzzy matching) + pgvector (similarity semantic). El producto necesita:
+Hoy el stack tiene **Postgres 17** + **Redis 7** (pgvector quedó diferido hasta tener consumidor real: ver revisión de ADR-0007). La búsqueda básica se podría resolver con Postgres FTS + `pg_trgm` (fuzzy matching) + pgvector (similarity semantic). El producto necesita:
 
 1. **Typo tolerance** ("brnadt" debe encontrar "Brandt").
 2. **Ranking por relevancia** dependiente del query (no sólo recencia ni popularidad).
