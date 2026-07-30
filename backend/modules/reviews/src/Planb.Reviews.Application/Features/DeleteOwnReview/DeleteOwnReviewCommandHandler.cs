@@ -74,9 +74,10 @@ public static class DeleteOwnReviewCommandHandler
         // Y tampoco mientras hay reportes abiertos mirándola. Cortar solo en Removed dejaba abierta
         // la ventana entre que se alcanza el threshold y que un moderador decide, que es justo
         // cuando el autor tiene el incentivo de sacarla y republicarla limpia. La cuarentena del
-        // filtro automático sí se puede borrar: no hay reportes de los que escaparse, y republicar
-        // el mismo texto lo vuelve a frenar.
-        if (review.Status == ReviewStatus.UnderReview && !review.QuarantinedByContentFilter)
+        // filtro automático y la invalidación por cambio de cursada sí se pueden borrar: no hay
+        // reportes de los que escaparse, y para la segunda ADR-0032 ya prevé borrar como una salida
+        // válida para el alumno.
+        if (review.Status == ReviewStatus.UnderReview && review.UnderReviewReason == UnderReviewReason.Reports)
         {
             return Result.Failure<DeleteOwnReviewResponse>(ReviewErrors.CannotDeleteReportedReview);
         }

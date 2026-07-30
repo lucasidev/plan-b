@@ -94,7 +94,7 @@ public class ReviewRemoveRestoreTests
     public void RestoreFromReports_no_republica_lo_que_freno_el_filtro()
     {
         var review = New(ReviewStatus.UnderReview);
-        review.QuarantinedByContentFilter.ShouldBeTrue();
+        review.UnderReviewReason.ShouldBe(UnderReviewReason.ContentFilter);
 
         review.RestoreFromReports(new FixedClock(T0.AddHours(1))).ShouldBeFalse();
 

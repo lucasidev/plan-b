@@ -1,7 +1,8 @@
-# ADR-0012: Edición de reseña permitida solo desde estado `published`
+# ADR-0012: Edición de reseña bloqueada mientras la modera un reporte
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con la regla ampliada el 2026-07-29 (ver [Revisión](#revisión-2026-07-29))
 - **Fecha**: 2026-04-23
+- **Nota**: el filename conserva el slug original (`solo-desde-published`) porque los links del repo apuntan a él. El título dice la regla vigente, no la original.
 
 ## Contexto
 
@@ -23,7 +24,7 @@ Escenario de edit-bombing:
 
 ## Decisión
 
-La edición vía UC-018 solo se permite cuando `Review.status = 'published'`. Intentos de edición sobre `under_review` o `removed` retornan 403 Forbidden con mensaje explicativo.
+La edición vía UC-018 solo se permite cuando `Review.status = 'published'`. Intentos de edición sobre `under_review` o `removed` retornan 403 Forbidden con mensaje explicativo. ([Ampliado el 2026-07-29](#revisión-2026-07-29): desde `under_review` se puede editar cuando la cuarentena no la pusieron los reportes, y el status real es 409, no 403.)
 
 Si un alumno quiere corregir una reseña que está en `under_review`, debe esperar a que un moderador la resuelva:
 
@@ -70,3 +71,20 @@ Descartada: similar a B en que el moderador sigue viendo contenido cambiante. Ad
 
 - Relacionado con [ADR-0005](0005-reseña-anclada-al-enrollment.md) (anclaje a enrollment, `UNIQUE(enrollment_id)`).
 - Flujo completo en [review-lifecycle.md](../domain/review-lifecycle.md).
+
+## Revisión (2026-07-29)
+
+**Esta decisión no se equivocó sobre el edit-bombing. Se equivocó suponiendo que siempre llega un moderador.**
+
+El ADR dejó una sola salida para la cuarentena: esperar el veredicto ("debe esperar a que un moderador la resuelva"), y anotó el costo en sus propias Negativas ("un alumno bien intencionado que genuinamente quiere corregir un error (ej. typo que el filtro catcheó) no puede hacerlo"). Esa espera es infinita cuando la cuarentena la puso el filtro de contenido: la cola de moderación se arma desde `moderation.review_reports`, una reseña frenada por el filtro nace con cero reports, y `Review.Edit` exigía `published`. Ningún moderador la ve y el autor no la puede tocar. No es revisión pendiente, es shadow-ban permanente.
+
+**Regla vigente:** se puede editar desde `under_review` cuando `under_review_reason` es `content_filter` o `enrollment_changed`. Sigue bloqueado cuando es `reports`, y sigue bloqueado en `removed`. Editar vuelve a correr el filtro sobre el texto nuevo, y esa reevaluación decide si la reseña sale a `published` o se queda en cuarentena.
+
+**Eso es la alternativa C de este mismo ADR** ("el alumno puede editar pero no si hay reports open"), con un refinamiento: el candado no cuelga de "hay reports abiertos" sino de la razón por la que la reseña entró a cuarentena. Esa razón pasa de un bool a `under_review_reason` con tres valores (`content_filter`, `reports`, `enrollment_changed`, el último de [ADR-0032](0032-edit-destructive-enrollment-invalida-review.md)). De los dos motivos por los que C se descartó en abril, uno no aplica y el otro se paga:
+
+- "El moderador sigue viendo contenido cambiante": no aplica. Cuando la cuarentena viene de reports, el bloqueo se mantiene igual que antes, así que el moderador nunca juzga una reseña editable.
+- "Comportamiento inconsistente que requiere explicación en UI": se mantiene tal cual, y es el costo que aceptamos. La UI ahora tiene que decir **por qué** una reseña está en revisión, no solo que lo está.
+
+**Sobre el 403 de la Decisión:** el código devuelve 409 con `reviews.review.invalid_status_transition`. No es un typo del ADR: editar en un estado que no lo permite es un conflicto de estado y no una falta de permisos, así que 409 es la elección correcta. Lo que faltó fue registrar ese cambio cuando se implementó.
+
+**Sigue en pie:** el edit-bombing como vector real, el rechazo de la alternativa A (editar desde cualquier estado, sin condición), y la apelación out-of-band para `removed`.
