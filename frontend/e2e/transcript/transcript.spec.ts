@@ -25,14 +25,18 @@ async function signIn(page: Page): Promise<void> {
 }
 
 /**
- * Devuelve el value + el texto de la primera opción real (no placeholder) de un select. Se
+ * Devuelve el value + el texto de la **última** opción real (no placeholder) de un select. Se
  * resuelve en runtime porque el catálogo lo sirve el backend: hardcodear un id de materia o de
  * período ataría el spec al seed.
+ *
+ * Va desde el final y no desde el principio a propósito. La suite comparte la persona Lucía, y
+ * este spec le aprueba una materia, lo que la saca de "materias disponibles" para el resto de
+ * la corrida. `plan.spec.ts` arma su combinación con la **primera** materia disponible, así que
+ * tomar la última deja libre la punta del pool que ese spec consume. La otra mitad de la misma
+ * defensa es el nombre del directorio: `transcript/` ordena después de `plan/`, y Playwright
+ * corre los archivos ordenados con un solo worker.
  */
-async function firstRealOption(
-  page: Page,
-  label: RegExp,
-): Promise<{ value: string; text: string }> {
+async function lastRealOption(page: Page, label: RegExp): Promise<{ value: string; text: string }> {
   // El form monta con un "Cargando materias y cuatrimestres..." mientras resuelven las queries
   // del catálogo, y `count()` no auto-espera como los matchers: sin este await, enumerar las
   // opciones devuelve cero y parece que el select vino vacío.
@@ -40,7 +44,7 @@ async function firstRealOption(
 
   const options = page.getByLabel(label).locator('option');
   const count = await options.count();
-  for (let i = 0; i < count; i++) {
+  for (let i = count - 1; i >= 0; i--) {
     const value = (await options.nth(i).getAttribute('value')) ?? '';
     const text = (await options.nth(i).textContent())?.trim() ?? '';
     if (value === '') continue;
@@ -62,12 +66,12 @@ test.describe('Mi carrera: historial', () => {
     await page.goto('/my-career/transcript/add');
 
     // La materia y el período se resuelven en runtime: hardcodear ids ataría el spec al seed.
-    const subject = await firstRealOption(page, /^Materia$/);
+    const subject = await lastRealOption(page, /^Materia$/);
     await page.getByLabel(/^Materia$/).selectOption(subject.value);
     await page.getByLabel(/^Estado$/).selectOption('Passed');
     await page.getByLabel(/Forma de aprobación/i).selectOption('FinalExam');
 
-    const term = await firstRealOption(page, /^Cuatrimestre$/);
+    const term = await lastRealOption(page, /^Cuatrimestre$/);
     await page.getByLabel(/^Cuatrimestre$/).selectOption(term.value);
     await page.getByLabel(/Nota final/i).fill('8');
 
