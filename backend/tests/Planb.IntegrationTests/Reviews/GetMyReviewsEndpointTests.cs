@@ -17,6 +17,8 @@ namespace Planb.IntegrationTests.Reviews;
 ///   - Lista las reviews del alumno con join al subject (code + name).
 ///   - Stats: cuenta Published vs UnderReview en el GROUP BY.
 ///   - El alumno solo ve sus propias reviews (no leak cross-user).
+///   - `UnderReviewReason` viaja en el payload: "ContentFilter" para la cuarentenada por el
+///     filtro, null para la publicada.
 /// </summary>
 public class GetMyReviewsEndpointTests
     : IClassFixture<RegisterApiFixture>, IAsyncLifetime
@@ -200,6 +202,7 @@ public class GetMyReviewsEndpointTests
         var first = body.Items[0];
         first.EnrollmentId.ShouldBe(dirtyEnrollment);
         first.Status.ShouldBe("UnderReview");
+        first.UnderReviewReason.ShouldBe("ContentFilter");
         first.SubjectId.ShouldBe(Subject111);
         first.SubjectCode.ShouldNotBeNullOrWhiteSpace();
         first.SubjectName.ShouldNotBeNullOrWhiteSpace();
@@ -207,6 +210,7 @@ public class GetMyReviewsEndpointTests
         var second = body.Items[1];
         second.EnrollmentId.ShouldBe(cleanEnrollment);
         second.Status.ShouldBe("Published");
+        second.UnderReviewReason.ShouldBeNull();
         second.SubjectId.ShouldBe(Subject101);
         second.FinalGrade.ShouldBe(8m);
 

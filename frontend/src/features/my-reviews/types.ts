@@ -7,6 +7,13 @@
  */
 export type ReviewStatus = 'Published' | 'UnderReview' | 'Removed';
 
+/**
+ * Por qué una reseña está en `UnderReview`. Espeja el enum de dominio `UnderReviewReason`
+ * (mismo criterio Pascal que `ReviewStatus`). `ContentFilter` y `EnrollmentChanged` se
+ * resuelven editando (el filtro reevalúa el texto nuevo); `Reports` espera a un moderador.
+ */
+export type UnderReviewReason = 'ContentFilter' | 'Reports' | 'EnrollmentChanged';
+
 export type MyReview = {
   id: string;
   enrollmentId: string;
@@ -14,6 +21,8 @@ export type MyReview = {
   subjectCode: string;
   subjectName: string;
   status: ReviewStatus;
+  /** Null salvo que `status` sea `UnderReview`. */
+  underReviewReason: UnderReviewReason | null;
   difficultyRating: number;
   subjectText: string | null;
   finalGrade: number | null;

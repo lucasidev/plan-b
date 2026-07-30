@@ -43,7 +43,7 @@ Casi todos son también integration events publicados al outbox para Moderation 
 - Al menos uno de `SubjectText`, `TeacherText` no vacío.
 - `Difficulty ∈ [1, 5]`.
 - `DocenteResenadoId` ∈ teachers asignados a la commission del enrollment (cross-aggregate, validado en app service vía `IAcademicQueryService.GetCommissionTeachers`).
-- State machine `Status`: `published | under_review | removed`. Edit solo desde `published` ([ADR-0012](../../../decisions/0012-edicion-de-resena-solo-desde-published.md)).
+- State machine `Status`: `published | under_review | removed`. Edit desde `published`, y desde `under_review` cuando `under_review_reason` no es `reports` ([ADR-0012](../../../decisions/0012-edicion-de-resena-solo-desde-published.md) y su revisión del 2026-07-29).
 - Como mucho **una** TeacherResponse por review (invariante interno + UNIQUE constraint en DB).
 - TeacherResponse author = TeacherProfile verificado donde `teacher_id = DocenteResenadoId`.
 
