@@ -17,7 +17,7 @@ Alumno publica su experiencia de cursada, otros leen, autor edita, terceros repo
 ## Decisiones que la condicionan
 
 - [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md): reseña anclada al enrollment
-- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector implementado, UI gated off
+- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector diferido hasta que exista consumidor real (revisión 2026-07-26)
 - [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato como regla de presentación
 - [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade on uphold, sin reversión on restore
 - [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md): edición de reseña solo desde published

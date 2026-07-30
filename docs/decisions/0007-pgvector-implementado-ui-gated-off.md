@@ -1,7 +1,8 @@
-# ADR-0007: pgvector implementado en código, feature UI gated off hasta tener volumen
+# ADR-0007: pgvector diferido hasta tener consumidor real, feature UI gated off hasta tener volumen
 
 - **Estado**: aceptado, con la infraestructura diferida (ver [Revisión](#revisión-2026-07-26))
 - **Fecha**: 2026-04-22
+- **Nota**: el filename conserva el slug original (`pgvector-implementado-ui-gated-off`) porque los links del repo apuntan a él. El título dice el estado vigente, no el original.
 
 ## Contexto
 

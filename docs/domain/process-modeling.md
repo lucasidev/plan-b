@@ -22,6 +22,8 @@ A diferencia del Big Picture, que captura la línea de tiempo y los hot spots, e
 
 Los tres momentos del Big Picture ([eventstorming.md](eventstorming.md)) reordenados acá como flujos reactivos: Onboarding (one-shot por alumno), Loop core (iterativo cada cuatrimestre) y Governance (paralelo, sin loop). Cada step muestra el sticky completo: quién dispara, qué command, qué aggregate, qué event, qué policy reactiva queda enganchada, qué read model se afecta y qué external system participa.
 
+Los pasos que mencionan pgvector o encolar un job de embedding describen el diseño de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md): su revisión (2026-07-26) borró ese pipeline hasta que exista un consumidor real, así que hoy esos pasos no disparan nada.
+
 ### 1. Onboarding (Visitor → Member verificado → Alumno con StudentProfile)
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva (whenever X then Y) | Read Model | External System |
@@ -122,6 +124,8 @@ CRUD-flavored, sin integration events cross-BC en MVP. Cada command emite su eve
 
 Tabla resumida de **todas** las policies del sistema. Cada policy es un handler reactivo en código (Wolverine handler que escucha al event y dispara el command resultante). El outbox garantiza at-least-once delivery (ADR-0030).
 
+Las tres policies hacia `ReviewEmbedding` (filas `ReviewPublished`, `ReviewEdited`, `ReviewRestored`) documentan el diseño de ADR-0007/ADR-0013: no hay handler real hoy, la revisión de ADR-0007 (2026-07-26) lo borró.
+
 | Trigger event | Policy (whenever X then Y) | Aggregates afectados | ADR / Source |
 |---|---|---|---|
 | `UserRegistered` | enviar verification email vía SMTP (vía `IssueVerificationToken` + handler que dispara mail) | User (token re-issue) | eventstorming §1, HOT 1 |
@@ -154,7 +158,7 @@ Tabla resumida de **todas** las policies del sistema. Cada policy es un handler 
 |---|---|---|---|
 | SMTP server | envío de verification emails (UserEmailVerification, TeacherInstitutionalVerification post-MVP) y notificaciones (review notif, mod resolution) | Mailpit | TBD (relay externo, ADR pendiente) |
 | Scheduled job runner | UC-022 expirar registros no verificados (daily 3 AM UTC); en futuro: cleanup de tokens expirados, etc. | TBD (Wolverine scheduled jobs candidato natural) | TBD |
-| pgvector | embedding storage para Review (read model `ReviewEmbedding`); habilitado pero UI gated off (ADR-0007) | dentro de Postgres 17 (extensión) | idem |
+| pgvector | embedding storage para Review (read model `ReviewEmbedding`); diseño diferido, no instalado hoy (revisión 2026-07-26 de ADR-0007) | N/A | N/A |
 | Worker async (HistorialImport processor) | procesa PDFs y texto plano contra el CareerPlan; emite `HistorialImportCompleted` o `HistorialImportFailed` | proceso del backend (Wolverine handler) | idem |
 | `IReviewContentFilter` (domain service) | clasifica texto pre-publish (Clean / Triggered) | implementación in-process; reglas heurísticas iniciales | idem (modelo entrenable a futuro) |
 
@@ -173,7 +177,7 @@ Vistas materializadas o computadas on-demand alimentadas por events de uno o má
 | `InstitutionalDashboard(universityId)` | múltiples aggregates (Reviews, Enrollments) scoped por University | UC-008 dashboard staff | Dapper query on-demand |
 | `ReviewAuditLog(reviewId)` | events de Review (Published/Edited/Quarantined/Invalidated/Removed/Restored) + TeacherResponse (Published/Edited) + ReviewReport (Reported/Upheld/Dismissed) | UC-053 audit log | append-only projection (Moderation BC, ADR-0031) |
 | `ModeratorQueue` | reviews `status=under_review` ordenadas por `count(reports open por reviewId)` | UC-050 cola del moderador | Dapper query on-demand (filtrable por `reason`) |
-| `ReviewEmbedding` | `ReviewPublished` + `ReviewEdited` (text-changed) + `ReviewRestored` | búsqueda semántica (UI gated off, ADR-0007) | pgvector (Postgres extensión); pipeline async via job worker |
+| `ReviewEmbedding` | `ReviewPublished` + `ReviewEdited` (text-changed) + `ReviewRestored` | búsqueda semántica (diseño diferido, ADR-0007) | diseño diferido: pgvector + pipeline async no construidos (revisión 2026-07-26 de ADR-0007) |
 | `FailedHistorialImportLine(importId)` | `HistorialImportCompleted` con rows no resueltos | UI de revisión post-import | EF projection |
 
 ## Cómo se materializa todo esto en código

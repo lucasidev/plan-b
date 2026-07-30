@@ -9,7 +9,7 @@ La división se materializa físicamente como módulos en `backend/modules/<cont
 | **Identity** | `backend/modules/identity/` | Cuentas, autenticación, perfiles académicos del usuario. |
 | **Academic** | `backend/modules/academic/` | Catálogo precargado: universidades, carreras, planes, materias, docentes, comisiones, cuatrimestres. |
 | **Enrollments** | `backend/modules/enrollments/` | Historial académico del alumno: imports, registros de cursadas. |
-| **Reviews** | `backend/modules/reviews/` | Reseñas de cursadas, respuestas docentes, embeddings semánticos. |
+| **Reviews** | `backend/modules/reviews/` | Reseñas de cursadas, respuestas docentes. |
 | **Moderation** | `backend/modules/moderation/` | Reports, audit log, flujo de moderación. |
 | **Planning** | `backend/modules/planning/` (a crear) | Simulaciones de inscripción guardadas, públicas y recomendadas. |
 
@@ -102,16 +102,16 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Reviews
 
-**Capacidad**: reseñas anclas a EnrollmentRecord. Una reseña dice cómo fue la experiencia de esa cursada específica: dificultad percibida, comentarios sobre materia, comentarios sobre docente. El BC también owns las **respuestas docentes** y los **embeddings semánticos** (read model gated off en MVP).
+**Capacidad**: reseñas anclas a EnrollmentRecord. Una reseña dice cómo fue la experiencia de esa cursada específica: dificultad percibida, comentarios sobre materia, comentarios sobre docente. El BC también owns las **respuestas docentes**. Los **embeddings semánticos** son diseño diferido (ver la revisión 2026-07-26 de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md)): no hay read model construido todavía.
 
 **Aggregates**: Review (con TeacherResponse como child).
 
-**Projections**: ReviewEmbedding.
+**Projections**: ReviewEmbedding (diseño diferido, no construida hoy: ver [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md)).
 
 **Decisiones que lo gobiernan**:
 
 - [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md): reseña anclada a EnrollmentRecord (no a User + Subject).
-- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector pipeline implementado, UI gated hasta tener volumen.
+- [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector pipeline diferido hasta que exista consumidor real (revisión 2026-07-26); el diseño (modelo, tabla, gating por volumen) sigue vigente para cuando se construya.
 - [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato del autor en presentación pública.
 - [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade de reports al upheld; sin reversión al restore.
 - [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md): edit solo desde `published`.

@@ -18,7 +18,8 @@ public static class DependencyInjection
     /// el host con <c>AddDbContextWithWolverineIntegration</c> para que las writes entren al
     /// outbox.
     ///
-    /// Embedding worker queda pendiente: feature-flag off por default (ADR-0007, ADR-0013).
+    /// El andamiaje del embedding worker (pgvector, feature-flag) se removió: no hay
+    /// consumidor real todavía (ver revisión de ADR-0007; ADR-0013 define cuándo se retoma).
     /// </summary>
     public static IServiceCollection AddReviewsInfrastructure(
         this IServiceCollection services,

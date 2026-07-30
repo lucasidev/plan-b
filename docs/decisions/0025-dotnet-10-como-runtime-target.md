@@ -70,4 +70,4 @@ Ya es release "pasada" en abril 2026 (.NET 10 salió hace 5 meses). Descartada: 
 **Cuándo revisitar:**
 
 - Si .NET 11 LTS se retrasa significativamente (improbable).
-- Si hay incompatibilidades críticas con paquetes que usamos (Wolverine, Npgsql, pgvector-dotnet).
+- Si hay incompatibilidades críticas con paquetes que usamos (Wolverine, Npgsql).

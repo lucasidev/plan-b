@@ -56,7 +56,7 @@ plan-b/
 │   │   ├── identity/        User, StudentProfile, TeacherProfile
 │   │   ├── academic/        University, Career, Subject, Teacher, Commission
 │   │   ├── enrollments/     EnrollmentRecord, HistorialImport
-│   │   ├── reviews/         Review, TeacherResponse, ReviewEmbedding
+│   │   ├── reviews/         Review, TeacherResponse
 │   │   └── moderation/      ReviewReport, ReviewAuditLog
 │   └── tests/Planb.IntegrationTests/
 ├── frontend/                Next.js 15 App Router

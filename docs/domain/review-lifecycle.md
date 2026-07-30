@@ -72,6 +72,8 @@ stateDiagram-v2
 
 ## Matriz de transiciones de `Review` con side effects
 
+> Los "enqueue de embedding" que aparecen en esta tabla describen el diseño de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md): su revisión (2026-07-26) borró el pipeline hasta que exista un consumidor real, así que hoy ninguna de estas filas encola nada. La tabla se deja tal cual para cuando se retome.
+
 | De → A                       | Trigger                                  | UC     | Side effects                                                                                                                                                                                |
 | ---------------------------- | ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `null` → `published`         | publicar, filtro pass                    | UC-017 | `ReviewAuditLog(action=published)`. Enqueue job de `ReviewEmbedding`.                                                                                                                       |
@@ -95,6 +97,8 @@ stateDiagram-v2
 | `open` → `dismissed`        | moderador rechaza                         | UC-051 | `moderator_id`, `resolution_note`, `resolved_at`. Si era el único open, la Review vuelve a `published`. |
 
 ## Sequence diagrams
+
+> Los diagramas 1 y 4 incluyen un participante "Worker embeddings" que representa el diseño de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md): ese worker no está construido (revisión 2026-07-26), así que hoy publicar o restaurar una reseña no dispara ningún enqueue real.
 
 ### 1. Happy path: publicación con filtro pass
 
@@ -208,6 +212,8 @@ Si después la Review se restaura (UC-052), los reports cascade-upheld **no** se
 
 ### Embedding solo sobre `published`
 
+> **Diseño diferido**: la revisión (2026-07-26) de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje de embeddings (extensión, worker, pipeline) hasta que exista un consumidor real. Lo que sigue describe cuándo se va a encolar el job el día que se construya, según [ADR-0013](../decisions/0013-embedding-gated-en-transiciones-a-published.md).
+
 El worker de generación de embeddings (ver [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md)) se enqueua en las transiciones hacia `published`:
 
 - `null → published` (publicación con filtro pass).
@@ -228,4 +234,4 @@ En ningún momento la API expone `enrollment.student_id` o datos derivados del a
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs        | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar).                                                                          |
 | ADRs       | [ADR-0005](../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md), [ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md). |
-| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`, `ReviewEmbedding`](../architecture/data-model.md#context-reviews--moderation).                                                             |
+| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`](../architecture/data-model.md#context-reviews--moderation).                                                             |

@@ -48,7 +48,7 @@ Las universidades (cliente secundario, comercial) acceden a un dashboard con mé
 7. Respuesta pública de docentes verificados.
 8. Dashboard institucional con reseñas agregadas, tasas de recursada y combinaciones que más fallan.
 
-Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de aprobación, estimación de fecha de recepción, análisis de temas recurrentes con clustering semántico (la infraestructura está, el feature UI queda gated hasta tener volumen).
+Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de aprobación, estimación de fecha de recepción, análisis de temas recurrentes con clustering semántico (diseñado, con la infraestructura diferida hasta tener un consumidor real: ver revisión de ADR-0007).
 
 ## Stack técnico
 
@@ -56,7 +56,7 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 | ----------------------------- | ------------------------ | -------------------------------------------------- |
 | **Frontend**                  | Next.js                  | SSR para indexar reseñas y materias                |
 | **Backend**                   | .NET                     | API REST con Clean Architecture                    |
-| **Base de datos**             | PostgreSQL               | JSONB, CTEs recursivos, full-text search, pgvector |
+| **Base de datos**             | PostgreSQL               | JSONB, CTEs recursivos, full-text search           |
 | **Cache / ephemeral state**   | Redis                    | Refresh tokens, rate limiting, hot reads (ADR-0034) |
 | **Autenticación**             | JWT + email verification | Verificación manual para docentes en MVP           |
 | **Reverse proxy**             | Traefik                  | Ruteo y SSL automático                             |

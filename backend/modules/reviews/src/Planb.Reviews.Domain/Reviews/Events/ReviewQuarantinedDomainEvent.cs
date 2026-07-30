@@ -7,8 +7,9 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 /// recién creada porque el filter de contenido la marcó triggered. Translator a integration
 /// event mappea para notificar a moderation queue.
 ///
-/// El embedding job NO se dispara hasta que la review pase a <c>Published</c>, ver
-/// ADR-0013 (embedding gated en transiciones a published).
+/// El embedding job (pipeline en pausa, ver revisión de ADR-0007) no se dispara hasta que la
+/// review pase a <c>Published</c>: diseño de ADR-0013 (embedding gated en transiciones a
+/// published).
 /// </summary>
 public sealed record ReviewQuarantinedDomainEvent(
     ReviewId ReviewId,
