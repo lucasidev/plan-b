@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
+import type { ProblemDetails } from '@/lib/api-problem';
 import { getSession } from '@/lib/session';
 import { onboardingCareerSchema } from './schema';
 import type { OnboardingCareerFormState } from './types';
@@ -17,7 +18,10 @@ import type { OnboardingCareerFormState } from './types';
  *
  * On success (201) it `redirect('/onboarding/history')` (NEXT_REDIRECT throw).
  * On 409 it maps to "you already have a profile", the two-tabs race edge case
- * documented in US-037-f.
+ * documented in US-037-f. On 400 with the enrollment-year-out-of-range code (the
+ * aggregate's range check, which the client-side Zod schema cannot fully replicate
+ * because it depends on the server clock), the error surfaces on the `enrollmentYear`
+ * field instead of the generic banner.
  */
 export async function submitCareerAction(
   _prev: OnboardingCareerFormState,
@@ -68,6 +72,14 @@ export async function submitCareerAction(
   }
 
   if (response.status === 400) {
+    const body = (await response.json().catch(() => null)) as ProblemDetails | null;
+    if (body?.title === 'identity.student_profile.enrollment_year_out_of_range') {
+      return {
+        status: 'error',
+        message: 'El año de ingreso tiene que estar entre 1990 y el año actual.',
+        field: 'enrollmentYear',
+      };
+    }
     return {
       status: 'error',
       message: 'Los datos no son válidos. Revisalos y probá de nuevo.',
