@@ -7,7 +7,7 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 public sealed record PublishReviewResponse(
     Guid Id,
     Guid EnrollmentId,
-    Guid ReviewedTeacherId,
+    Guid? ReviewedTeacherId,
     int DifficultyRating,
     int OverallRating,
     int? HoursPerWeek,

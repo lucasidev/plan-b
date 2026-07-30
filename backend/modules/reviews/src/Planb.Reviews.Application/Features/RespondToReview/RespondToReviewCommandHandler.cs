@@ -48,8 +48,16 @@ public static class RespondToReviewCommandHandler
             return ToResponse(review);
         }
 
+        // ADR-0060: una reseña que nombra un docente sin resolver (ReviewedTeacherId null) no se
+        // puede responder, porque no hay id contra el cual verificar que quien responde es ese
+        // docente. Es una capacidad que se pierde hasta que alguien resuelva la referencia.
+        if (review.ReviewedTeacherId is null)
+        {
+            return ReviewErrors.NotVerifiedTeacherForReview;
+        }
+
         var isVerifiedTeacher = await identity.HasVerifiedTeacherProfileAsync(
-            command.UserId, review.ReviewedTeacherId, ct);
+            command.UserId, review.ReviewedTeacherId.Value, ct);
         if (!isVerifiedTeacher)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;
@@ -61,7 +69,7 @@ public static class RespondToReviewCommandHandler
             return textResult.Error;
         }
 
-        var respondResult = review.Respond(review.ReviewedTeacherId, textResult.Value, clock);
+        var respondResult = review.Respond(review.ReviewedTeacherId.Value, textResult.Value, clock);
         if (respondResult.IsFailure)
         {
             return respondResult.Error;

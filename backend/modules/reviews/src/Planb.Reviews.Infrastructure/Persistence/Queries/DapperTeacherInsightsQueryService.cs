@@ -13,6 +13,24 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// reseñado directo, no hace falta join con enrollments). Solo cuentan las Published, mismo
 /// invariante que el feed y los insights de materia.
 ///
+/// <para>
+/// ADR-0060: <c>reviewed_teacher_id</c> es nullable (la reseña puede nombrar un docente sin
+/// resolver). El filtro <c>reviewed_teacher_id = @TeacherId</c> ya excluye esas filas de forma
+/// natural (NULL nunca iguala a un Guid concreto en SQL), y es deliberado, no un efecto
+/// colateral: no se sabe de quién habla una reseña sin resolver, así que no puede sumar al
+/// agregado de ningún docente.
+/// </para>
+///
+/// <para>
+/// Desviación deliberada de la letra del ADR: el ADR pide que los agregados cuenten solo lo
+/// respaldado (nivel de confianza de la cursada que ancla la reseña, vía
+/// <c>EnrollmentRecord.Source</c>). Todavía no se filtra por eso acá: hoy toda cursada existente es
+/// <c>SelfDeclared</c> (no hay forma de distinguir cuáles vinieron de un import), así que filtrar
+/// por procedencia vaciaría todos los números del producto sin ganar nada. La procedencia se
+/// registra y viaja en los reads; el filtrado por nivel de confianza llega cuando exista corpus
+/// real de <c>TranscriptImport</c>.
+/// </para>
+///
 /// Los promedios son <c>AVG(...)</c> que devuelve NULL sobre conjunto vacío (docente sin reseñas),
 /// lo que mapea a los <c>double?</c> del DTO. El histograma usa <c>COUNT(*) FILTER</c>.
 /// </summary>

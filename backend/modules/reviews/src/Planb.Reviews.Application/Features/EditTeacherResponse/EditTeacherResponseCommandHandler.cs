@@ -40,8 +40,16 @@ public static class EditTeacherResponseCommandHandler
             return ReviewErrors.ResponseNotFound;
         }
 
+        // Si hay una respuesta, ReviewedTeacherId tuvo que estar resuelto cuando Respond la creó
+        // (ADR-0060: no se puede responder una reseña sin resolver). El chequeo explícito evita
+        // asumirlo silenciosamente si ese invariante cambia más adelante.
+        if (review.ReviewedTeacherId is null)
+        {
+            return ReviewErrors.NotVerifiedTeacherForReview;
+        }
+
         var isVerifiedTeacher = await identity.HasVerifiedTeacherProfileAsync(
-            command.UserId, review.ReviewedTeacherId, ct);
+            command.UserId, review.ReviewedTeacherId.Value, ct);
         if (!isVerifiedTeacher)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;

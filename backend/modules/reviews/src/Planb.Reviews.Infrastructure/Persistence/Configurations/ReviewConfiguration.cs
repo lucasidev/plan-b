@@ -65,8 +65,14 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasIndex(r => r.AuthorUserId)
             .HasDatabaseName("ix_reviews_author_user_id");
 
+        // ADR-0060: nullable. La reseña puede nombrar un docente que todavía no está resuelto
+        // contra el catálogo; ReviewedTeacherName (abajo) es lo que siempre está.
         builder.Property(r => r.ReviewedTeacherId)
-            .HasColumnName("reviewed_teacher_id")
+            .HasColumnName("reviewed_teacher_id");
+
+        builder.Property(r => r.ReviewedTeacherName)
+            .HasColumnName("reviewed_teacher_name")
+            .HasColumnType("text")
             .IsRequired();
 
         // DifficultyRating es un VO con .Value (byte). Mapeamos como smallint para alinearnos

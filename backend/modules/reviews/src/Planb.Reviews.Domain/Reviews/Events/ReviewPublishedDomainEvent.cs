@@ -11,5 +11,5 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 public sealed record ReviewPublishedDomainEvent(
     ReviewId ReviewId,
     Guid EnrollmentId,
-    Guid ReviewedTeacherId,
+    Guid? ReviewedTeacherId,
     DateTimeOffset OccurredAt) : IDomainEvent;

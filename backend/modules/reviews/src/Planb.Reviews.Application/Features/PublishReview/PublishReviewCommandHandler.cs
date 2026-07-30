@@ -15,8 +15,12 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 ///   <item>Resolver el <see cref="StudentProfileSummary"/> activo del user (sin profile activo →
 ///         NotFound, mismo mensaje que enrollment-no-owned, antienumeration).</item>
 ///   <item>Traer el <see cref="EnrollmentSummary"/>. Validar ownership (StudentProfileId del
-///         enrollment coincide con el del user actual), status (no <c>Cursando</c>) y que
-///         tenga commission asociada.</item>
+///         enrollment coincide con el del user actual) y status (no <c>Cursando</c>). Una cursada
+///         sin commission puede reseñarse (ADR-0060): ya no es requisito para escribir.</item>
+///   <item>Resolver la identidad del docente reseñado contra Academic. Ya no se exige que esté en
+///         el plantel actual de la commission de la cursada (ADR-0060: eso afirma el presente, y
+///         una cursada vieja habla del pasado); sí se exige que exista como persona en el catálogo,
+///         de donde sale el nombre declarado.</item>
 ///   <item>Idempotency: si ya existe Review para ese enrollment → 409 Conflict.</item>
 ///   <item>Construir los VOs (DifficultyRating, ReviewText opcionales, FinalGrade opcional).</item>
 ///   <item>Correr el filter de contenido. Clean → Published; Triggered → UnderReview.</item>
@@ -45,7 +49,8 @@ public static class PublishReviewCommandHandler
             return ReviewErrors.EnrollmentNotFoundOrNotOwned;
         }
 
-        // 2) Enrollment + ownership + status + commission.
+        // 2) Enrollment + ownership + status. Una cursada sin commission puede reseñarse
+        // (ADR-0060): se retiró el chequeo que lo bloqueaba.
         var enrollment = await enrollments.GetEnrollmentByIdAsync(command.EnrollmentId, ct);
         if (enrollment is null || enrollment.StudentProfileId != profile.Id)
         {
@@ -57,29 +62,27 @@ public static class PublishReviewCommandHandler
             return ReviewErrors.EnrollmentStillOngoing;
         }
 
-        if (enrollment.CommissionId is null)
+        // 3) El docente reseñado tiene que existir como persona en el catálogo (ADR-0060: la
+        // identidad sigue atada a Academic). Ya no se exige que esté en el plantel de ESTA
+        // commission puntual: ver ReviewErrors.TeacherNotInEnrollmentCommission (retirado). El
+        // nombre declarado sale de acá porque hoy el único camino de publish llega con un id ya
+        // resuelto (el picker de US-065); cuando exista un camino para nombrar un docente sin
+        // resolver, ese nombre viajará tal cual lo escriba el alumno en vez de derivarse.
+        var teacher = await academic.GetTeacherByIdAsync(command.ReviewedTeacherId, ct);
+        if (teacher is null)
         {
-            return ReviewErrors.EnrollmentWithoutCommission;
+            return ReviewErrors.ReviewedTeacherNotFound;
         }
+        var reviewedTeacherName = $"{teacher.FirstName} {teacher.LastName}";
 
-        // 2.5) El docente reseñado tiene que estar asignado a la comisión de la cursada
-        // (invariante data-model). Cross-BC vía Academic. Si la comisión no existe o no tiene
-        // al docente, se rechaza: no se reseña a alguien que no dictó esa comisión.
-        var commissionTeachers = await academic.GetCommissionTeachersAsync(
-            enrollment.CommissionId.Value, ct);
-        if (commissionTeachers.All(t => t.TeacherId != command.ReviewedTeacherId))
-        {
-            return ReviewErrors.TeacherNotInEnrollmentCommission;
-        }
-
-        // 3) Idempotency.
+        // 4) Idempotency.
         var existing = await reviews.FindByEnrollmentIdAsync(command.EnrollmentId, ct);
         if (existing is not null)
         {
             return ReviewErrors.AlreadyExistsForEnrollment;
         }
 
-        // 4) Construcción de VOs.
+        // 5) Construcción de VOs.
         var difficultyResult = DifficultyRating.Create(command.DifficultyRating);
         if (difficultyResult.IsFailure)
         {
@@ -115,18 +118,19 @@ public static class PublishReviewCommandHandler
             finalGrade = gradeResult.Value;
         }
 
-        // 5) Content filter. El filter trabaja con el string original (no con el VO) para que
+        // 6) Content filter. El filter trabaja con el string original (no con el VO) para que
         // pueda ver el texto en bruto incluso si por algún motivo fue truncado al construir.
         var filterResult = contentFilter.Evaluate(command.SubjectText, command.TeacherText);
         var initialStatus = filterResult.Verdict == ContentFilterVerdict.Clean
             ? ReviewStatus.Published
             : ReviewStatus.UnderReview;
 
-        // 6) Aggregate factory.
+        // 7) Aggregate factory.
         var reviewResult = Review.Publish(
             command.EnrollmentId,
             command.UserId,
             command.ReviewedTeacherId,
+            reviewedTeacherName,
             difficultyResult.Value,
             overallResult.Value,
             command.HoursPerWeek,

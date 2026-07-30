@@ -51,11 +51,13 @@ public static class EnrollmentRecordErrors
     /// historial real.
     /// </para>
     /// <para>
-    /// La comisión sigue siendo el vínculo con el docente, así que sin ella la cursada no es
-    /// reseñable: <c>DapperPendingReviewsQueryService</c> ya filtra <c>commission_id IS NOT NULL</c>
-    /// y el publish corta con <c>EnrollmentWithoutCommission</c>. O sea que el dato faltante degrada
-    /// una función y no corrompe ninguna: exactamente lo que queremos frente a un dato que la
-    /// plataforma no tiene (ADR-0054).
+    /// La comisión sigue siendo el vínculo con el docente, pero desde ADR-0060 su ausencia ya no
+    /// bloquea el publish (una cursada sin comisión puede reseñarse igual). Lo que persiste es
+    /// <c>DapperPendingReviewsQueryService</c>, que sigue filtrando <c>commission_id IS NOT NULL</c>
+    /// al armar el listado de "pendientes de reseñar": una cursada sin comisión no aparece ahí como
+    /// sugerencia, aunque publicarla directamente por <c>enrollmentId</c> ya funcione. O sea que el
+    /// dato faltante degrada una función (el descubrimiento) y no corrompe ninguna: exactamente lo
+    /// que queremos frente a un dato que la plataforma no tiene (ADR-0054).
     /// </para>
     /// </summary>
     public static readonly Error CursadaApprovalRequiresTerm =
