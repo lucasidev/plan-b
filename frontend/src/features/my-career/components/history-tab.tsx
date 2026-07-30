@@ -1,23 +1,23 @@
 import Link from 'next/link';
-import type { HistorialPeriod } from '@/features/my-career/data/transcript';
 import { buildSummary } from '@/features/my-career/lib/transcript-summary';
+import type { TranscriptPeriod } from '@/features/my-career/types';
 import { cn } from '@/lib/utils';
 import { HistoryKpi } from './history-kpi';
 import { HistoryPeriodCard } from './history-period-card';
 
 type Props = {
   /**
-   * Real student transcript. Defaults to `[]` (no transcript) → empty state.
+   * Historial real del alumno (US-045-e). Default `[]` (sin historial) → empty state.
+   * `TranscriptTab` es quien pasa los períodos reales; los tests inyectan sus propios
+   * fixtures acá mismo.
    *
-   * Once the read lands (GET /api/me/enrollment-records, next sprint), the parent
-   * server component will pass the real periods here. Meanwhile tests can inject
-   * fixtures via override.
-   *
-   * **Critical**: do NOT default to the `defaultHistorial` mock (Lucía's data). That
-   * caused a cross-user data leak where any new user saw Lucía's full transcript even
-   * though they had nothing loaded. Spotted in the 2026-05-16 demo.
+   * **Crítico**: nunca defaultear esto al mock viejo del historial (los datos de
+   * Lucía). Ese default fue justo la causa de un leak cross-user donde cualquier
+   * alumno nuevo veía el historial completo de Lucía aunque no hubiera cargado nada,
+   * visto en la demo del 2026-05-16. El `[]` de acá es esa defensa, no un placeholder
+   * cosmético.
    */
-  periods?: HistorialPeriod[];
+  periods?: TranscriptPeriod[];
 };
 
 /**
@@ -37,7 +37,7 @@ type Props = {
 // Module-scope empty array so the default value does not create a new ref on every
 // render (react-doctor/rerender-memo-with-default-value rule). Important because we
 // pass `periods` as a dep to other hooks downstream.
-const EMPTY_PERIODS: HistorialPeriod[] = [];
+const EMPTY_PERIODS: TranscriptPeriod[] = [];
 
 export function HistoryTab({ periods = EMPTY_PERIODS }: Props) {
   if (periods.length === 0) {
@@ -89,7 +89,7 @@ export function HistoryTab({ periods = EMPTY_PERIODS }: Props) {
 
       <div className="flex flex-col gap-3.5">
         {periods.map((p) => (
-          <HistoryPeriodCard key={p.period} period={p} />
+          <HistoryPeriodCard key={p.label ?? 'no-period'} period={p} />
         ))}
       </div>
     </div>

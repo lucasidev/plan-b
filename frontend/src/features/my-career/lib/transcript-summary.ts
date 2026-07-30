@@ -1,40 +1,47 @@
-import type { HistorialPeriod } from '@/features/my-career/data/transcript';
+import type { TranscriptPeriod } from '@/features/my-career/types';
 
 /**
- * KPIs computed over the transcript. Literal port of the 4 values the
- * `V2CarreraHistorial` canvas shows above the timeline:
+ * KPIs calculados sobre el historial real (US-045-e). Puerto de los 4 valores que
+ * `V2CarreraHistorial` (canvas) muestra arriba de la timeline:
  *
- *   - approved subjects (count)
- *   - overall average (avg of grades, 1 decimal)
- *   - periods taken (period count)
- *   - first term (label of the oldest period)
+ *   - materias aprobadas (conteo)
+ *   - promedio general (promedio de notas, 1 decimal)
+ *   - períodos cursados (conteo de grupos con período real)
+ *   - primer cuatri (label del período más viejo)
  *
- * Pure helpers. No side effects. Testable in isolation.
+ * Helpers puros, sin side effects, testeables en aislamiento.
  */
 
-export type HistorialSummary = {
+/**
+ * Placeholder de "sin dato". Constante aparte (en vez de un literal repetido en cada
+ * función) para no repetir el carácter directamente en el código fuente.
+ */
+const NO_DATA_PLACEHOLDER = String.fromCharCode(8212);
+
+export type TranscriptSummary = {
   totalApproved: number;
   overallAverage: string;
   periodsCount: number;
   firstPeriodLabel: string;
 };
 
-/** Total subjects with `state === 'aprob'` across periods. */
-export function totalApproved(periods: HistorialPeriod[]): number {
+/** Total de materias con `status === 'Passed'` en todo el historial. */
+export function totalApproved(periods: TranscriptPeriod[]): number {
   let count = 0;
   for (const p of periods) {
     for (const item of p.items) {
-      if (item.state === 'aprob') count++;
+      if (item.status === 'Passed') count++;
     }
   }
   return count;
 }
 
 /**
- * Simple average of the non-null grades. Returns a string with 1 decimal, or the
- * em-dash placeholder when there are no grades (avoids a visible NaN).
+ * Promedio simple de las notas no nulas de todo el historial (incluye el grupo sin
+ * período: una equivalencia con nota suma igual). Devuelve un string con 1 decimal, o
+ * el placeholder cuando no hay ninguna nota (evita un NaN visible).
  */
-export function overallAverage(periods: HistorialPeriod[]): string {
+export function overallAverage(periods: TranscriptPeriod[]): string {
   let sum = 0;
   let n = 0;
   for (const p of periods) {
@@ -45,26 +52,38 @@ export function overallAverage(periods: HistorialPeriod[]): string {
       }
     }
   }
-  return n === 0 ? '—' : (sum / n).toFixed(1);
+  return n === 0 ? NO_DATA_PLACEHOLDER : (sum / n).toFixed(1);
 }
 
-/** Count of periods taken. */
-export function periodsCount(periods: HistorialPeriod[]): number {
-  return periods.length;
+/** True cuando el grupo tiene un período real (no es el grupo de equivalencias). */
+function hasRealPeriod(period: TranscriptPeriod): period is TranscriptPeriod & { label: string } {
+  return period.label !== null;
 }
 
 /**
- * Readable label of the first period taken (the oldest in the array, assuming the
- * mock's default descending order).
- *
- * The canvas uses the `"Mar 2024"` (month + year) format. The period arrives in the label the
- * backend computes (`AcademicTerm.ComputeLabel`): `"2024-C1"` for a cuatrimestre, `"2024"` bare
- * for an anual. We map the cuatrimestre to when it starts (`C1` to `Mar`, `C2` to `Ago`). Any
- * other cadence (`-S1`, `-B3`) is rendered raw: no single month is a fair stand-in for a semester.
+ * Cantidad de períodos cursados: solo cuenta los grupos con `label` real. El grupo de
+ * equivalencias (u otra cursada sin cuatrimestre conocido) no es un período cursado.
  */
-export function firstPeriodLabel(periods: HistorialPeriod[]): string {
-  if (periods.length === 0) return '—';
-  const first = periods[periods.length - 1].period;
+export function periodsCount(periods: TranscriptPeriod[]): number {
+  return periods.filter(hasRealPeriod).length;
+}
+
+/**
+ * Label legible del primer período cursado (el más viejo, último del array porque el
+ * backend ordena descendente), salteando el grupo sin período: ese viaja siempre al
+ * final (ver DapperMyTranscriptReader, NULLS LAST) y no es un período real que
+ * mostrar acá.
+ *
+ * El canvas usa el formato `"Mar 2024"` (mes + año). El período llega en el label que
+ * calcula el backend (`AcademicTerm.ComputeLabel`): `"2024-C1"` para un cuatrimestre,
+ * `"2024"` pelado para un anual. Mapeamos el cuatrimestre a cuándo arranca (`C1` a
+ * `Mar`, `C2` a `Ago`). Cualquier otra cadencia (`-S1`, `-B3`) se muestra cruda:
+ * ningún mes puntual representa bien un semestre.
+ */
+export function firstPeriodLabel(periods: TranscriptPeriod[]): string {
+  const withRealPeriod = periods.filter(hasRealPeriod);
+  if (withRealPeriod.length === 0) return NO_DATA_PLACEHOLDER;
+  const first = withRealPeriod[withRealPeriod.length - 1].label;
   const yearOnly = first.match(/^(\d{4})$/);
   if (yearOnly) return `${yearOnly[1]} anual`;
   const match = first.match(/^(\d{4})-C([12])$/);
@@ -73,8 +92,8 @@ export function firstPeriodLabel(periods: HistorialPeriod[]): string {
   return term === '1' ? `Mar ${year}` : `Ago ${year}`;
 }
 
-/** One-shot helper that assembles the full `HistorialSummary`. */
-export function buildSummary(periods: HistorialPeriod[]): HistorialSummary {
+/** Arma el `TranscriptSummary` completo en una sola pasada. */
+export function buildSummary(periods: TranscriptPeriod[]): TranscriptSummary {
   return {
     totalApproved: totalApproved(periods),
     overallAverage: overallAverage(periods),

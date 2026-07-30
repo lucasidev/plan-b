@@ -15,7 +15,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S0 (pre-sprint) | hasta 2026-04-25 | Foundations + Identity scaffolding (schema + register backend) | ✓ Done |
 | S1 | 2026-04-27 a 2026-05-02 | Auth slice + cleanup auth + AppShell + home + StudentProfile + T-series + git workflow rules. **Cierra Fase 2.** | ✓ Done |
 | S2 | 2026-05-03 a 2026-05-09 | Auth rebuild + Onboarding + Inicio v2 + Mi carrera shell + canvas screenshots pipeline + pre-push hook E2E + audit canvas v3 completo (app + landing + design system + admin/backoffice) + rediseño app (12 US nuevas) + backoffice doc'd (6 US nuevas + ADR-0042 audit log per-BC) | ✓ Done |
-| S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual end-to-end + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
+| S3 | 2026-05-11 a 2026-05-16 | Mi carrera completa (US-045-b/c/d/e) + US-013 historial manual (write, sin el read: ver Scope adicional de S3) + US-014 import historial PDF/texto + **US-088 import plan de estudios en onboarding** + JwtBearer middleware + fix cross-user data leak + workflow auto-regen Dependabot + dependabot tier policy. | ✓ Done |
 | S4 | 2026-05-18 a 2026-05-24 | Cerrar shell del alumno: US-047 Mi perfil + US-072 Ajustes + US-079-i cambio contraseña con sesión + US-046 Planificar shell + US-073 Ayuda + US-074 Sobre plan-b + **US-038-bis bonus** (soft delete con anonimización, ADR-0044) + chore técnico react-doctor cleanup + pre-push hook. | ✓ Done |
 | S5 | 2026-05-25 a 2026-06-08 (extendido) | **Slice de Reseñas (feature core del producto crowdsourced)**: US-017 publicar backend + US-049 editor 6 campos + US-048 shell 3 tabs + US-018 editar + US-055 borrar + US-019 reportar con módulo Moderation + auto-quarantine. Entraron las 6, incluida US-019 que era la diferible. | ✓ Done |
 | S6 | 2026-06-15 a 2026-06-20 | **Corpus consumible (lado materia)**: US-089 enabler (persistir modelo completo de reseña, saca el mapping lossy) → US-002 materia con reseñas + crowd insights → US-004 búsqueda materia-only. Más US-T07-b (architecture tests a todos los módulos). | ✓ Done |
@@ -269,7 +269,7 @@ US existentes con AC nuevas:
 
 ### Scope adicional que entró durante el sprint
 
-- US-013 cargar historial manual end-to-end (PR #104 Academic subjects/terms + PR #106 Enrollments BC + form).
+- US-013 cargar historial manual (PR #104 Academic subjects/terms + PR #106 Enrollments BC + form). **No cerró end-to-end**, aunque la tabla de arriba lo dijo hasta la revisión de producto del 2026-07-29: entregó el write (`POST /api/me/enrollment-records`) y el formulario, y quedó sin el read. El alumno cargaba una materia, se persistía, y la pantalla a la que el propio sistema lo redirigía (`/my-career?tab=transcript`) le decía "Tu historial está vacío" porque `HistoryTab` se renderizaba sin datos. Ocho sprints con la capacidad declarada terminada y el dato invisible para su dueño.
 - US-014 importar historial PDF/texto (PR #117): parser heurístico + worker Wolverine async + preview editable + confirm. AC completos, status `Done` en el doc.
 - **US-088 importar plan de estudios desde PDF en onboarding paso 2** (mergeado el último día del sprint, 2026-05-16): backend (3 endpoints + worker + parser + migration + 11 integration tests + flag `IsOfficial` en Career/CareerPlan/Subject) + frontend (feature import-career-plan + página separada con state restore via URL params + integración career-form + 5 component tests). Crowdsourcing del catálogo: el plan creado queda `isOfficial=false` con badge "No oficial".
 - JwtBearer middleware (PR #114): cierre del workaround pre-JWT en los endpoints `/api/me/*`.
@@ -613,7 +613,7 @@ Al cerrar el sprint quedó acordada una **revisión aggregate por aggregate** de
 
 **Backend / cross-stack**:
 - US-001 (explorar catálogo de universidades y carreras): en S9. US-002 vive en S6; US-003 (página pública de docente) y US-004 (rama docente de la búsqueda) cerradas en el vertical docente de S7.
-- US-013/14/15 (cargar / importar / editar historial): subsumidos en el tab "Historial" de Mi carrera frontend; backend pendiente.
+- US-013/14/15 (cargar / importar / editar historial). Estado real, desagregado, porque esta línea decía "backend pendiente" mientras la tabla de S3 declaraba la US cerrada end-to-end: **el write está** (`POST /api/me/enrollment-records`, S3) y **el import también** (US-014, S3), **falta el read** del historial propio, que es lo que hacía que el tab "Historial" mostrara siempre el empty state. US-015 (editar una entrada) sigue en backlog: hoy una cursada cargada mal no se puede corregir ni borrar.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
 - US-032 + US-069 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.

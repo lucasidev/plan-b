@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
-import { HistoryTab } from '@/features/my-career/components/history-tab';
 import { PlanGrid } from '@/features/my-career/components/plan-grid';
 import { PrerequisitesGraph } from '@/features/my-career/components/prerequisites-graph';
 import { SubjectList } from '@/features/my-career/components/subject-list';
 import { TabsNav } from '@/features/my-career/components/tabs-nav';
 import { TeacherList } from '@/features/my-career/components/teacher-list';
+import { TranscriptTab } from '@/features/my-career/components/transcript-tab';
 import { plan } from '@/features/my-career/data/plan';
 import { type MyCareerTabId, parseTab } from '@/features/my-career/lib/tabs';
 import { getSession } from '@/lib/session';
@@ -26,8 +26,8 @@ import { cn } from '@/lib/utils';
  *   - `prerequisites` → PrerequisitesGraph (US-045-c)
  *   - `catalog` → SubjectList (US-045-d)
  *   - `teachers` → TeacherList (US-045-d)
- *   - `transcript` → HistoryTab (US-045-e). Empty by default until the read endpoint
- *     lands (GET /api/me/enrollment-records).
+ *   - `transcript` → TranscriptTab (US-045-e), que hace su propio fetch server-side de
+ *     GET /api/me/enrollment-records: las otras cuatro tabs no necesitan ese dato.
  *
  * The `(member)/layout.tsx` guard already redirects to onboarding if the user has no
  * StudentProfile (US-037-f); we re-fetch here anyway to display the enrollment year in
@@ -108,6 +108,6 @@ function TabContent({ tab }: { tab: MyCareerTabId }) {
     case 'teachers':
       return <TeacherList />;
     case 'transcript':
-      return <HistoryTab />;
+      return <TranscriptTab />;
   }
 }
