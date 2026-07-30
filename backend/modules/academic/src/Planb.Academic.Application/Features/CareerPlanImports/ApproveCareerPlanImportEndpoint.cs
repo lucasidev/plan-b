@@ -13,6 +13,11 @@ namespace Planb.Academic.Application.Features.CareerPlanImports;
 /// POST /api/me/career-plan-imports/{id}/approve. Body: array de items seleccionados (con
 /// eventuales overrides del alumno). Crea el CareerPlan + sus Subjects en bloque y devuelve
 /// el careerPlanId para que el frontend complete el onboarding paso 2.
+///
+/// <para>
+/// Gateado a rol Admin: el catálogo tiene un solo escritor, el staff. El alumno propone (crea el
+/// import vía <c>CreateCareerPlanImportEndpoint</c>), pero no puede aprobar el suyo propio.
+/// </para>
 /// </summary>
 public sealed class ApproveCareerPlanImportEndpoint : ICarterModule
 {
@@ -69,10 +74,11 @@ public sealed class ApproveCareerPlanImportEndpoint : ICarterModule
         })
         .WithName("Academic_ApproveCareerPlanImport")
         .WithTags("Academic")
-        .RequireAuthorization()
+        .RequireAuthorization(p => p.RequireRole(CareerPlanImportPolicy.RoleName))
         .Produces<ApproveCareerPlanImportResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .ProducesProblem(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status403Forbidden)
         .ProducesProblem(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status409Conflict);
     }

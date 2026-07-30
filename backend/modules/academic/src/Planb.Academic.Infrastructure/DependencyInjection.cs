@@ -11,6 +11,7 @@ using Planb.Academic.Application.Features.AdminCommissions;
 using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
+using Planb.Academic.Application.Features.CareerPlanImportQueue;
 using Planb.Academic.Application.Features.Search;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlanImports;
@@ -54,12 +55,13 @@ public static class DependencyInjection
 
         services.AddScoped<AcademicSeeder>();
 
-        // US-088: writes al catálogo cross-aggregate
+        // US-088: writes al catálogo cross-aggregate + cola de staff (aprobar/rechazar imports)
         services.AddScoped<IAcademicUnitOfWork, AcademicUnitOfWork>();
         services.AddScoped<ICareerRepository, CareerRepository>();
         services.AddScoped<ICareerPlanRepository, CareerPlanRepository>();
         services.AddScoped<ISubjectRepository, SubjectRepository>();
         services.AddScoped<ICareerPlanImportRepository, CareerPlanImportRepository>();
+        services.AddScoped<IImportQueueReader, DapperImportQueueReader>();
 
         // US-062: correlativas + soft delete de materias + admin CRUD de materias
         services.AddScoped<IPrerequisiteRepository, PrerequisiteRepository>();

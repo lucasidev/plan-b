@@ -47,6 +47,13 @@ public class CareerPlanImportTests
         return import;
     }
 
+    private static CareerPlanImport Rejected()
+    {
+        var import = Parsed();
+        import.MarkRejected("No corresponde a un plan de estudios real.", Clock);
+        return import;
+    }
+
     private static CareerPlanImport InState(CareerPlanImportStatus status) => status switch
     {
         CareerPlanImportStatus.Pending => Pending(),
@@ -54,6 +61,7 @@ public class CareerPlanImportTests
         CareerPlanImportStatus.Parsed => Parsed(),
         CareerPlanImportStatus.Failed => Failed(),
         CareerPlanImportStatus.Approved => Approved(),
+        CareerPlanImportStatus.Rejected => Rejected(),
         _ => throw new ArgumentOutOfRangeException(nameof(status)),
     };
 
@@ -115,6 +123,7 @@ public class CareerPlanImportTests
     [InlineData(CareerPlanImportStatus.Parsed)]
     [InlineData(CareerPlanImportStatus.Failed)]
     [InlineData(CareerPlanImportStatus.Approved)]
+    [InlineData(CareerPlanImportStatus.Rejected)]
     public void MarkParsing_FromTerminalState_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
     {
         var import = InState(from);
@@ -161,6 +170,7 @@ public class CareerPlanImportTests
     [InlineData(CareerPlanImportStatus.Parsed)]
     [InlineData(CareerPlanImportStatus.Failed)]
     [InlineData(CareerPlanImportStatus.Approved)]
+    [InlineData(CareerPlanImportStatus.Rejected)]
     public void MarkParsed_FromNonParsing_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
     {
         var import = InState(from);
@@ -176,7 +186,8 @@ public class CareerPlanImportTests
     [Theory]
     [InlineData(CareerPlanImportStatus.Parsed)]
     [InlineData(CareerPlanImportStatus.Approved)]
-    public void MarkFailed_FromParsedOrApproved_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
+    [InlineData(CareerPlanImportStatus.Rejected)]
+    public void MarkFailed_FromParsedApprovedOrRejected_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
     {
         var import = InState(from);
 
@@ -206,6 +217,7 @@ public class CareerPlanImportTests
     [InlineData(CareerPlanImportStatus.Parsing)]
     [InlineData(CareerPlanImportStatus.Failed)]
     [InlineData(CareerPlanImportStatus.Approved)]
+    [InlineData(CareerPlanImportStatus.Rejected)]
     public void MarkApproved_FromNonParsed_ReturnsNotReadyForApprove(CareerPlanImportStatus from)
     {
         var import = InState(from);
@@ -214,5 +226,50 @@ public class CareerPlanImportTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(CareerPlanImportErrors.NotReadyForApprove);
+    }
+
+    // ── MarkRejected ─────────────────────────────────────────────────────
+
+    [Fact]
+    public void MarkRejected_FromParsed_SetsReasonAndTimestampAndTransitionsToRejected()
+    {
+        var import = Parsed();
+
+        var result = import.MarkRejected("Ya existe una carrera equivalente en el catálogo.", Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        import.Status.ShouldBe(CareerPlanImportStatus.Rejected);
+        import.RejectionReason.ShouldBe("Ya existe una carrera equivalente en el catálogo.");
+        import.RejectedAt.ShouldBe(Clock.UtcNow);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void MarkRejected_BlankReason_ReturnsRejectionReasonRequired(string? reason)
+    {
+        var import = Parsed();
+
+        var result = import.MarkRejected(reason!, Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CareerPlanImportErrors.RejectionReasonRequired);
+    }
+
+    [Theory]
+    [InlineData(CareerPlanImportStatus.Pending)]
+    [InlineData(CareerPlanImportStatus.Parsing)]
+    [InlineData(CareerPlanImportStatus.Failed)]
+    [InlineData(CareerPlanImportStatus.Approved)]
+    [InlineData(CareerPlanImportStatus.Rejected)]
+    public void MarkRejected_FromNonParsed_ReturnsInvalidStateTransition(CareerPlanImportStatus from)
+    {
+        var import = InState(from);
+
+        var result = import.MarkRejected("Motivo cualquiera.", Clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(CareerPlanImportErrors.InvalidStateTransition);
     }
 }

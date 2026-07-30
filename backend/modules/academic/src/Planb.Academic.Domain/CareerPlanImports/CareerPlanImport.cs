@@ -18,9 +18,9 @@ namespace Planb.Academic.Domain.CareerPlanImports;
 /// </para>
 ///
 /// <para>
-/// Lifecycle: <c>Pending</c> → <c>Parsing</c> → <c>Parsed</c> → <c>Approved</c> (terminal).
-/// Cualquier punto puede transitar a <c>Failed</c> (terminal). Mismo pattern que
-/// <c>HistorialImport</c>.
+/// Lifecycle: <c>Pending</c> → <c>Parsing</c> → <c>Parsed</c> → <c>Approved</c> (terminal) o
+/// <c>Rejected</c> (terminal, con motivo). Pending/Parsing pueden transitar a <c>Failed</c>
+/// (terminal). Mismo pattern que <c>HistorialImport</c>.
 /// </para>
 /// </summary>
 public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoot
@@ -39,6 +39,8 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
     public DateTimeOffset UpdatedAt { get; private set; }
     public DateTimeOffset? ParsedAt { get; private set; }
     public DateTimeOffset? ApprovedAt { get; private set; }
+    public string? RejectionReason { get; private set; }
+    public DateTimeOffset? RejectedAt { get; private set; }
 
     private CareerPlanImport() { }
 
@@ -119,7 +121,9 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
     public Result MarkFailed(string errorMessage, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
-        if (Status is CareerPlanImportStatus.Parsed or CareerPlanImportStatus.Approved)
+        if (Status is CareerPlanImportStatus.Parsed
+            or CareerPlanImportStatus.Approved
+            or CareerPlanImportStatus.Rejected)
         {
             return CareerPlanImportErrors.InvalidStateTransition;
         }
@@ -144,6 +148,32 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
         return Result.Success();
     }
 
+    /// <summary>
+    /// El staff revisa el preview (mismo punto de decisión que <see cref="MarkApproved"/>) y decide
+    /// no incorporarlo al catálogo. A diferencia de <see cref="MarkFailed"/> (el parser lo tira por
+    /// un error técnico), acá el motivo lo redacta una persona para que el alumno entienda por qué
+    /// su plan no apareció. Solo válido desde <see cref="CareerPlanImportStatus.Parsed"/>: es el
+    /// mismo estado desde el que se puede aprobar.
+    /// </summary>
+    public Result MarkRejected(string reason, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            return CareerPlanImportErrors.RejectionReasonRequired;
+        }
+        if (Status != CareerPlanImportStatus.Parsed)
+        {
+            return CareerPlanImportErrors.InvalidStateTransition;
+        }
+        Status = CareerPlanImportStatus.Rejected;
+        RejectionReason = reason.Trim();
+        var now = clock.UtcNow;
+        RejectedAt = now;
+        UpdatedAt = now;
+        return Result.Success();
+    }
+
     public static CareerPlanImport Hydrate(
         CareerPlanImportId id,
         Guid uploadedByUserId,
@@ -159,7 +189,9 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
         DateTimeOffset createdAt,
         DateTimeOffset updatedAt,
         DateTimeOffset? parsedAt,
-        DateTimeOffset? approvedAt) =>
+        DateTimeOffset? approvedAt,
+        string? rejectionReason,
+        DateTimeOffset? rejectedAt) =>
         new()
         {
             Id = id,
@@ -177,5 +209,7 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
             UpdatedAt = updatedAt,
             ParsedAt = parsedAt,
             ApprovedAt = approvedAt,
+            RejectionReason = rejectionReason,
+            RejectedAt = rejectedAt,
         };
 }
