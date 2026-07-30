@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Pill } from '@/components/ui/pill';
 import { formatAcademicPeriod } from '@/lib/academic-terms';
 import { deleteSimulationDraftAction, unshareSimulationDraftAction } from '../actions';
-import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
+import { PUBLIC_SIMULATIONS_QUERY_KEY, SIMULATION_DRAFTS_QUERY_KEY } from '../api';
 import type { AcademicTerm, SimulationDraft, SimulationDraftItem } from '../types';
 import { EditDraftModal } from './edit-draft-modal';
 import { PublishPlanModal } from './publish-plan-modal';
@@ -123,6 +123,7 @@ function DraftCard({
       const result = await deleteSimulationDraftAction(draft.id);
       if (result.status === 'success') {
         queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
       } else {
         setError(result.message);
       }
@@ -138,6 +139,7 @@ function DraftCard({
       const result = await unshareSimulationDraftAction(draft.id);
       if (result.status === 'success') {
         queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
       } else {
         setError(result.message);
       }

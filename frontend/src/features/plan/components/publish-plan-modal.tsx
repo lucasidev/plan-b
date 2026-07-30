@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { promoteSimulationDraftAction } from '../actions';
-import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
+import { PUBLIC_SIMULATIONS_QUERY_KEY, SIMULATION_DRAFTS_QUERY_KEY } from '../api';
 import type { SimulationDraft } from '../types';
 
 /**
@@ -57,6 +57,7 @@ export function PublishPlanModal({ draft, label, onClose }: Props) {
       const result = await promoteSimulationDraftAction(draft.id);
       if (result.status === 'success') {
         queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
         onClose();
         // "Mostrá el resultado" (spec US-023): navega a "En curso" con el término del borrador
         // recién publicado, así el alumno ve directo que ya es su plan vigente, en vez de quedarse

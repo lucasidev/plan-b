@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { shareSimulationDraftAction } from '../actions';
-import { SIMULATION_DRAFTS_QUERY_KEY } from '../api';
+import { PUBLIC_SIMULATIONS_QUERY_KEY, SIMULATION_DRAFTS_QUERY_KEY } from '../api';
 import type { SimulationDraft } from '../types';
 
 type Props = {
@@ -48,6 +48,7 @@ export function ShareDraftModal({ draft, label, onClose }: Props) {
       const result = await shareSimulationDraftAction(draft.id);
       if (result.status === 'success') {
         queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
         onClose();
       } else {
         setError(result.message);
