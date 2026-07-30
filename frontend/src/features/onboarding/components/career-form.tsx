@@ -100,6 +100,11 @@ export function CareerForm() {
   // `Active` (current) or `Deprecated`.
   const visiblePlans = (plans.data ?? []).filter((p) => p.status === 'Active');
 
+  // Catálogo vacío para el padre ya elegido: distinto de "todavía no elegiste el padre" o
+  // "está cargando". Sin esta rama, el select quedaba habilitado y vacío sin ningún mensaje.
+  const careersEmpty = !careers.isLoading && !careers.isError && (careers.data ?? []).length === 0;
+  const plansEmpty = !plans.isLoading && !plans.isError && (plans.data ?? []).length === 0;
+
   const formError = state.status === 'error' ? state.message : null;
   const fieldError = state.status === 'error' ? state.field : undefined;
 
@@ -146,7 +151,7 @@ export function CareerForm() {
           id="career"
           name="careerId"
           required
-          disabled={!universityId || careers.isLoading}
+          disabled={!universityId || careers.isLoading || careers.isError || careersEmpty}
           value={careerId}
           onChange={(e) => handleCareerChange(e.target.value)}
           className={selectClass}
@@ -158,7 +163,11 @@ export function CareerForm() {
               ? 'Primero elegí una universidad'
               : careers.isLoading
                 ? 'Cargando carreras...'
-                : 'Elegí una carrera'}
+                : careers.isError
+                  ? 'No pudimos cargar las carreras'
+                  : careersEmpty
+                    ? 'Esta universidad todavía no tiene carreras cargadas'
+                    : 'Elegí una carrera'}
           </option>
           {(careers.data ?? []).map((c) => (
             <option key={c.id} value={c.id}>
@@ -166,6 +175,12 @@ export function CareerForm() {
             </option>
           ))}
         </select>
+        {careers.isError && (
+          <InlineRetry
+            message="No pudimos cargar las carreras. Probá de nuevo en un rato."
+            onRetry={() => careers.refetch()}
+          />
+        )}
       </Field>
 
       <Field id="plan" label="Plan de estudios">
@@ -173,7 +188,7 @@ export function CareerForm() {
           id="plan"
           name="careerPlanId"
           required
-          disabled={!careerId || plans.isLoading}
+          disabled={!careerId || plans.isLoading || plans.isError || plansEmpty}
           value={careerPlanId}
           onChange={(e) => setCareerPlanId(e.target.value)}
           className={selectClass}
@@ -185,7 +200,11 @@ export function CareerForm() {
               ? 'Primero elegí una carrera'
               : plans.isLoading
                 ? 'Cargando planes...'
-                : 'Elegí un plan vigente'}
+                : plans.isError
+                  ? 'No pudimos cargar los planes'
+                  : plansEmpty
+                    ? 'Esta carrera todavía no tiene planes cargados'
+                    : 'Elegí un plan vigente'}
           </option>
           {visiblePlans.map((p) => (
             <option key={p.id} value={p.id}>
@@ -194,6 +213,12 @@ export function CareerForm() {
             </option>
           ))}
         </select>
+        {plans.isError && (
+          <InlineRetry
+            message="No pudimos cargar los planes. Probá de nuevo en un rato."
+            onRetry={() => plans.refetch()}
+          />
+        )}
         {/* Si el plan seleccionado es no-oficial, mostramos badge visible. Mejora la
             transparencia ante alumnos que comparten un plan crowdsourced. */}
         {careerPlanId && visiblePlans.find((p) => p.id === careerPlanId && !p.isOfficial) && (
@@ -332,6 +357,32 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
         )}
         style={{ padding: '8px 14px', fontSize: 13, fontWeight: 500 }}
+      >
+        Reintentar
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Igual que `ErrorState` pero pensado para vivir adentro de un `Field`, junto al `<select>`
+ * que falló (Carrera / Plan), no reemplazando todo el form: el alumno no debería perder la
+ * universidad o carrera ya elegidas solo porque el siguiente nivel de la cascada falló.
+ */
+function InlineRetry({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <div role="alert" className="text-st-failed-fg" style={{ fontSize: 12.5, marginTop: 6 }}>
+      <p style={{ marginBottom: 8 }}>{message}</p>
+      <button
+        type="button"
+        onClick={onRetry}
+        className={cn(
+          'inline-flex items-center justify-center',
+          'bg-bg-card text-accent-ink border border-line rounded-pill',
+          'hover:bg-accent-soft transition-colors',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+        )}
+        style={{ padding: '6px 12px', fontSize: 12, fontWeight: 500 }}
       >
         Reintentar
       </button>

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -210,6 +211,172 @@ describe('CareerForm state restore', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/este plan fue subido por un alumno/i)).toBeInTheDocument();
+    });
+  });
+});
+describe('CareerForm empty & error states', () => {
+  const EMPTY_CAREER = '22222222-2222-2222-2222-222222222299';
+
+  beforeEach(() => {
+    mockSearchParams.mockReturnValue(new ReadonlyURLSearchParams(new URLSearchParams()));
+  });
+
+  async function selectUniversity(user: ReturnType<typeof userEvent.setup>) {
+    await waitFor(() => {
+      expect(screen.getByLabelText(/universidad/i)).not.toBeDisabled();
+    });
+    await user.selectOptions(screen.getByLabelText(/universidad/i), UNI_ID);
+  }
+
+  it('la carrera muestra mensaje cuando la universidad no tiene carreras cargadas', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('/api/academic/universities')) {
+        return Promise.resolve(jsonResponse([{ id: UNI_ID, name: 'UNSTA', slug: 'unsta' }]));
+      }
+      if (url.includes('/api/academic/careers')) {
+        return Promise.resolve(jsonResponse([]));
+      }
+      return Promise.resolve({ ok: false, status: 404 } as Response);
+    });
+
+    const user = userEvent.setup();
+    renderWith();
+    await selectUniversity(user);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', {
+          name: /esta universidad todavía no tiene carreras cargadas/i,
+        }),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/carrera/i)).toBeDisabled();
+  });
+
+  it('la carrera muestra error y permite reintentar cuando falla la carga', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('/api/academic/universities')) {
+        return Promise.resolve(jsonResponse([{ id: UNI_ID, name: 'UNSTA', slug: 'unsta' }]));
+      }
+      if (url.includes('/api/academic/careers')) {
+        return Promise.resolve({ ok: false, status: 500 } as Response);
+      }
+      return Promise.resolve({ ok: false, status: 404 } as Response);
+    });
+
+    const user = userEvent.setup();
+    renderWith();
+    await selectUniversity(user);
+
+    // Regex con el punto final para no matchear también el texto (más corto, sin punto) de
+    // la option placeholder del select.
+    await waitFor(() => {
+      expect(screen.getByText(/no pudimos cargar las carreras\. prob/i)).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/carrera/i)).toBeDisabled();
+
+    const callsBefore = fetchMock.mock.calls.filter(([u]) =>
+      String(u).includes('/api/academic/careers'),
+    ).length;
+    await user.click(screen.getByRole('button', { name: /reintentar/i }));
+
+    await waitFor(() => {
+      const callsAfter = fetchMock.mock.calls.filter(([u]) =>
+        String(u).includes('/api/academic/careers'),
+      ).length;
+      expect(callsAfter).toBeGreaterThan(callsBefore);
+    });
+  });
+
+  it('el plan muestra mensaje cuando la carrera no tiene planes cargados', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('/api/academic/universities')) {
+        return Promise.resolve(jsonResponse([{ id: UNI_ID, name: 'UNSTA', slug: 'unsta' }]));
+      }
+      if (url.includes('/api/academic/careers')) {
+        return Promise.resolve(
+          jsonResponse([
+            {
+              id: EMPTY_CAREER,
+              universityId: UNI_ID,
+              name: 'Carrera sin planes',
+              slug: 'carrera-sin-planes',
+              isOfficial: true,
+            },
+          ]),
+        );
+      }
+      if (url.includes('/api/academic/career-plans')) {
+        return Promise.resolve(jsonResponse([]));
+      }
+      return Promise.resolve({ ok: false, status: 404 } as Response);
+    });
+
+    const user = userEvent.setup();
+    renderWith();
+    await selectUniversity(user);
+    await waitFor(() => {
+      expect(screen.getByLabelText(/carrera/i)).not.toBeDisabled();
+    });
+    await user.selectOptions(screen.getByLabelText(/carrera/i), EMPTY_CAREER);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', { name: /esta carrera todavía no tiene planes cargados/i }),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/plan de estudios/i)).toBeDisabled();
+  });
+
+  it('el plan muestra error y permite reintentar cuando falla la carga', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('/api/academic/universities')) {
+        return Promise.resolve(jsonResponse([{ id: UNI_ID, name: 'UNSTA', slug: 'unsta' }]));
+      }
+      if (url.includes('/api/academic/careers')) {
+        return Promise.resolve(
+          jsonResponse([
+            {
+              id: EMPTY_CAREER,
+              universityId: UNI_ID,
+              name: 'Carrera con planes rotos',
+              slug: 'carrera-con-planes-rotos',
+              isOfficial: true,
+            },
+          ]),
+        );
+      }
+      if (url.includes('/api/academic/career-plans')) {
+        return Promise.resolve({ ok: false, status: 500 } as Response);
+      }
+      return Promise.resolve({ ok: false, status: 404 } as Response);
+    });
+
+    const user = userEvent.setup();
+    renderWith();
+    await selectUniversity(user);
+    await waitFor(() => {
+      expect(screen.getByLabelText(/carrera/i)).not.toBeDisabled();
+    });
+    await user.selectOptions(screen.getByLabelText(/carrera/i), EMPTY_CAREER);
+
+    // Regex con el punto final para no matchear también el texto (más corto, sin punto) de
+    // la option placeholder del select.
+    await waitFor(() => {
+      expect(screen.getByText(/no pudimos cargar los planes\. prob/i)).toBeInTheDocument();
+    });
+    expect(screen.getByLabelText(/plan de estudios/i)).toBeDisabled();
+
+    const callsBefore = fetchMock.mock.calls.filter(([u]) =>
+      String(u).includes('/api/academic/career-plans'),
+    ).length;
+    await user.click(screen.getByRole('button', { name: /reintentar/i }));
+
+    await waitFor(() => {
+      const callsAfter = fetchMock.mock.calls.filter(([u]) =>
+        String(u).includes('/api/academic/career-plans'),
+      ).length;
+      expect(callsAfter).toBeGreaterThan(callsBefore);
     });
   });
 });
