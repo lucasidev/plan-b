@@ -33,6 +33,7 @@ public class ReviewEditTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
+            "Docente de Prueba",
             DifficultyRating.Create(3).Value,
             OverallRating.Create(4).Value,
             hoursPerWeek,
@@ -213,7 +214,7 @@ public class ReviewEditTests
     public void Respond_no_marca_la_resena_como_editada()
     {
         var review = PublishedWith(SubjectText(), TeacherText());
-        var teacherId = review.ReviewedTeacherId;
+        var teacherId = review.ReviewedTeacherId!.Value;
 
         review.Respond(
             teacherId,

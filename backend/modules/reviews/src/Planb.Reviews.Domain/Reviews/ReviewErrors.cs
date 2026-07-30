@@ -71,13 +71,25 @@ public static class ReviewErrors
             "Cannot review a course that is still ongoing.");
 
     /// <summary>
-    /// El docente reseñado no estaba en la commission del enrollment. Validación cross-BC vía
-    /// <c>IAcademicQueryService.GetCommissionTeachers</c>.
+    /// El docente indicado no existe como persona en el catálogo de Academic. Cross-BC vía
+    /// <c>IAcademicQueryService.GetTeacherByIdAsync</c>. Reemplaza a
+    /// <c>TeacherNotInEnrollmentCommission</c> (retirado, ADR-0060): ya no se exige que el docente
+    /// esté en el plantel actual de la commission de la cursada (eso afirma el presente y una
+    /// cursada vieja habla del pasado), pero la identidad del docente sigue atada al catálogo.
     /// </summary>
-    public static readonly Error TeacherNotInEnrollmentCommission =
+    public static readonly Error ReviewedTeacherNotFound =
         Error.Validation(
-            "reviews.review.teacher_not_in_commission",
-            "The reviewed teacher did not teach in the enrollment's commission.");
+            "reviews.review.reviewed_teacher_not_found",
+            "The reviewed teacher does not exist in the catalog.");
+
+    /// <summary>
+    /// Invariante del aggregate (ADR-0060): el nombre del docente reseñado nunca es vacío, aunque
+    /// su id no esté resuelto. Es lo mínimo que el alumno declaró.
+    /// </summary>
+    public static readonly Error ReviewedTeacherNameRequired =
+        Error.Validation(
+            "reviews.review.reviewed_teacher_name_required",
+            "The reviewed teacher name must not be empty.");
 
     /// <summary>
     /// Idempotency: ya existe una reseña para el mismo enrollment. 409. Anclar por cursada
@@ -87,15 +99,6 @@ public static class ReviewErrors
         Error.Conflict(
             "reviews.review.already_exists_for_enrollment",
             "A review already exists for this enrollment.");
-
-    /// <summary>
-    /// El enrollment no tiene <c>commission_id</c> asociado (caso típico: equivalencias,
-    /// finales libres). Esos casos no son reseñables porque no hay docente para vincular.
-    /// </summary>
-    public static readonly Error EnrollmentWithoutCommission =
-        Error.Conflict(
-            "reviews.review.enrollment_without_commission",
-            "Cannot review an enrollment that has no associated commission.");
 
     // -- Editar (US-018) / borrar (US-055) / reportar (US-019) - placeholders ---
 

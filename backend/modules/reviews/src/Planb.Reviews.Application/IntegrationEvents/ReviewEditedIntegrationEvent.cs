@@ -23,7 +23,7 @@ public sealed record ReviewEditedIntegrationEvent(
     Guid EventId,
     Guid ReviewId,
     Guid EnrollmentId,
-    Guid ReviewedTeacherId,
+    Guid? ReviewedTeacherId,
     string StatusBefore,
     string StatusAfter,
     DateTimeOffset OccurredAt) : IIntegrationEvent;

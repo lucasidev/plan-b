@@ -19,7 +19,7 @@ namespace Planb.Reviews.Domain.Reviews;
 /// <para>
 /// El aggregate no conoce EnrollmentRecord ni Teacher como navigation properties. Solo
 /// guarda los UUIDs. La validación cross-BC (ownership del enrollment, status no
-/// cursando, docente en la commission) la hace el handler con
+/// cursando, que el docente reseñado exista en el catálogo) la hace el handler con
 /// <c>IEnrollmentsQueryService</c> + <c>IAcademicQueryService</c> antes de invocar el
 /// factory.
 /// </para>
@@ -54,7 +54,24 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// </summary>
     public Guid AuthorUserId { get; private set; }
 
-    public Guid ReviewedTeacherId { get; private set; }
+    /// <summary>
+    /// Identidad del docente reseñado, resuelta contra el catálogo de Academic. Nullable desde
+    /// ADR-0060: la reseña puede nombrar un docente que todavía no está resuelto (el alumno sabe a
+    /// quién tuvo, pero el catálogo o el proceso de resolución todavía no lo linkearon). Cuando es
+    /// null, <see cref="ReviewedTeacherName"/> es lo único que hay para identificarlo, y ningún
+    /// agregado de docente cuenta la reseña (no se sabe de quién habla).
+    /// </summary>
+    public Guid? ReviewedTeacherId { get; private set; }
+
+    /// <summary>
+    /// Nombre del docente tal como lo declaró el alumno (ADR-0060). Siempre presente, esté o no
+    /// resuelto <see cref="ReviewedTeacherId"/>: es lo mínimo que el alumno aportó, y el invariante
+    /// del aggregate es que nunca viaja vacío. Hoy coincide con el nombre del <c>Teacher</c>
+    /// resuelto porque el único camino de publish llega con un id ya elegido de un picker; cuando
+    /// exista un camino para nombrar un docente sin resolver, acá viajará el texto libre.
+    /// </summary>
+    public string ReviewedTeacherName { get; private set; } = null!;
+
     public DifficultyRating DifficultyRating { get; private set; }
 
     /// <summary>
@@ -145,12 +162,13 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// Factory de publicación (US-017). Asume que el caller (handler) ya validó:
     ///   - el enrollment existe y es del user actual,
     ///   - el enrollment no está en status 'cursando',
-    ///   - el docente reseñado estaba en la commission del enrollment,
+    ///   - si <paramref name="reviewedTeacherId"/> viene resuelto, existe en el catálogo de Academic,
     ///   - no existe ya una Review para este enrollment (idempotency en el repo).
     ///
-    /// Las únicas invariantes que valida acá son las del aggregate: al menos uno de
-    /// los dos textos presente (CHECK del data-model) y los value objects de cada
-    /// campo numérico ya validados al construirse.
+    /// Las invariantes que valida acá son las del aggregate: al menos uno de los dos textos
+    /// presente (CHECK del data-model), el nombre del docente reseñado nunca vacío (ADR-0060: el
+    /// id puede ser null, el nombre no) y los value objects de cada campo numérico ya validados al
+    /// construirse.
     ///
     /// <paramref name="initialStatus"/> debe ser <see cref="ReviewStatus.Published"/>
     /// o <see cref="ReviewStatus.UnderReview"/> según el resultado del filter de
@@ -159,7 +177,8 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public static Result<Review> Publish(
         Guid enrollmentId,
         Guid authorUserId,
-        Guid reviewedTeacherId,
+        Guid? reviewedTeacherId,
+        string reviewedTeacherName,
         DifficultyRating difficultyRating,
         OverallRating overallRating,
         int? hoursPerWeek,
@@ -179,6 +198,11 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             return Result.Failure<Review>(ReviewErrors.AtLeastOneTextRequired);
         }
 
+        if (string.IsNullOrWhiteSpace(reviewedTeacherName))
+        {
+            return Result.Failure<Review>(ReviewErrors.ReviewedTeacherNameRequired);
+        }
+
         if (initialStatus is not (ReviewStatus.Published or ReviewStatus.UnderReview))
         {
             throw new ArgumentException(
@@ -193,6 +217,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
             EnrollmentId = enrollmentId,
             AuthorUserId = authorUserId,
             ReviewedTeacherId = reviewedTeacherId,
+            ReviewedTeacherName = reviewedTeacherName.Trim(),
             DifficultyRating = difficultyRating,
             OverallRating = overallRating,
             HoursPerWeek = hoursPerWeek,

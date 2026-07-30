@@ -5,8 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Application.Features.BrowseReviews;
 using Planb.Reviews.Application.Features.TeacherInsights;
+using Planb.Reviews.Domain.Reviews;
 using Planb.SharedKernel.Abstractions.Clock;
 using Shouldly;
 using Xunit;
@@ -173,6 +175,69 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         insights.RatingHistogram.Count.ShouldBe(5);
         insights.RatingHistogram[1].ShouldBe(1); // un rating 2
         insights.RatingHistogram[3].ShouldBe(1); // un rating 4
+    }
+
+    /// <summary>
+    /// ADR-0060: una reseña que nombra un docente sin resolver (<c>reviewed_teacher_id</c> null) no
+    /// cuenta en el agregado de NINGÚN docente, porque no se sabe de quién habla. Hoy no hay ningún
+    /// endpoint que produzca ese estado (el único camino de publish llega con un id ya resuelto de
+    /// un picker), así que se construye directamente vía el aggregate, mismo patrón que
+    /// <see cref="GetTeacher_returns_410_when_soft_deleted"/> para un estado sin endpoint admin.
+    /// </summary>
+    [Fact]
+    public async Task TeacherInsights_excludes_a_review_with_an_unresolved_teacher()
+    {
+        var teacher = TeacherIturralde;
+
+        var auth = await SetupUserAsync("unresolved");
+        await SetupProfileAsync(auth);
+
+        var resolvedEnrollment = await CreateApprovedEnrollmentAsync(
+            auth, Subject101, CommissionSubject101, Term2026_1c);
+        await PublishReviewForTeacherAsync(auth, resolvedEnrollment, teacher, overall: 5);
+
+        // Segunda cursada del mismo alumno, ancla de una reseña sin resolver: no hay forma de
+        // nombrarla así vía HTTP todavía, así que se construye directo con el aggregate.
+        var unresolvedEnrollment = await CreateApprovedEnrollmentAsync(
+            auth, Subject223, CommissionSubject223, Term2025_2c);
+
+        using (var scope = _fixture.Factory.Services.CreateScope())
+        {
+            var reviews = scope.ServiceProvider.GetRequiredService<IReviewRepository>();
+            var unitOfWork = scope.ServiceProvider.GetRequiredService<IReviewsUnitOfWork>();
+            var clock = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+
+            var unresolvedReview = Review.Publish(
+                unresolvedEnrollment,
+                Guid.NewGuid(),
+                reviewedTeacherId: null,
+                reviewedTeacherName: "Docente Sin Resolver",
+                DifficultyRating.Create(3).Value,
+                OverallRating.Create(1).Value,
+                hoursPerWeek: null,
+                tags: [],
+                wouldRecommendCourse: false,
+                wouldRetakeTeacher: false,
+                ReviewText.CreateOptional(
+                    "Reseña sin resolver que no debería sumar a ningún docente en los insights.").Value,
+                teacherText: null,
+                finalGrade: null,
+                ReviewStatus.Published,
+                clock).Value;
+
+            reviews.Add(unresolvedReview);
+            await unitOfWork.SaveChangesAsync(CancellationToken.None);
+        }
+
+        using var anon = _fixture.Factory.CreateClient();
+        var resp = await anon.GetAsync($"/api/reviews/teacher-insights?teacherId={teacher}");
+
+        resp.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var insights = await resp.Content.ReadFromJsonAsync<TeacherReviewInsights>();
+        insights.ShouldNotBeNull();
+        // Si la sin resolver contara, TotalCount sería 2 y el promedio bajaría por el overall=1.
+        insights!.TotalCount.ShouldBe(1);
+        insights.AverageOverallRating!.Value.ShouldBe(5.0, 0.001);
     }
 
     [Fact]

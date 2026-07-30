@@ -15,7 +15,7 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 public sealed record ReviewDeletedDomainEvent(
     ReviewId ReviewId,
     Guid EnrollmentId,
-    Guid ReviewedTeacherId,
+    Guid? ReviewedTeacherId,
     ReviewStatus StatusBefore,
     ReviewDeletedReason Reason,
     DateTimeOffset OccurredAt) : IDomainEvent;

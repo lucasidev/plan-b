@@ -25,6 +25,7 @@ public class ReviewRemoveRestoreTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
+            "Docente de Prueba",
             DifficultyRating.Create(3).Value,
             OverallRating.Create(4).Value,
             null,

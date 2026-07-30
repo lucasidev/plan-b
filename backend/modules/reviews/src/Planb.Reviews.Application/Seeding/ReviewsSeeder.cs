@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Domain.Votes;
@@ -21,6 +22,7 @@ public sealed class ReviewsSeeder
     private readonly IReviewRepository _reviews;
     private readonly IReviewVoteRepository _votes;
     private readonly IReviewsUnitOfWork _unitOfWork;
+    private readonly IAcademicQueryService _academic;
     private readonly IDateTimeProvider _clock;
     private readonly ILogger<ReviewsSeeder> _log;
 
@@ -28,12 +30,14 @@ public sealed class ReviewsSeeder
         IReviewRepository reviews,
         IReviewVoteRepository votes,
         IReviewsUnitOfWork unitOfWork,
+        IAcademicQueryService academic,
         IDateTimeProvider clock,
         ILogger<ReviewsSeeder> log)
     {
         _reviews = reviews;
         _votes = votes;
         _unitOfWork = unitOfWork;
+        _academic = academic;
         _clock = clock;
         _log = log;
     }
@@ -69,6 +73,16 @@ public sealed class ReviewsSeeder
                 finalGrade = gradeResult.Value;
             }
 
+            // ADR-0060: el nombre declarado sale del catálogo, mismo criterio que
+            // PublishReviewCommandHandler (el corpus de prueba siempre nombra un docente resuelto).
+            var teacher = await _academic.GetTeacherByIdAsync(spec.ReviewedTeacherId, ct);
+            if (teacher is null)
+            {
+                _log.LogWarning("Seed review {Key} reviewed teacher not found; skipping.", spec.Key);
+                continue;
+            }
+            var reviewedTeacherName = $"{teacher.FirstName} {teacher.LastName}";
+
             // Backdating: cada reseña se publica con un reloj fijo en el pasado, así el feed
             // muestra "hace 3 meses", "hace 1 año", etc. en vez de que todo el corpus diga "hoy".
             var reviewClock = new FixedClock(_clock.UtcNow.AddDays(-spec.CreatedAtDaysAgo));
@@ -77,6 +91,7 @@ public sealed class ReviewsSeeder
                 spec.EnrollmentId,
                 spec.AuthorUserId,
                 spec.ReviewedTeacherId,
+                reviewedTeacherName,
                 difficulty.Value,
                 overall.Value,
                 spec.HoursPerWeek,
