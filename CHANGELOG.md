@@ -202,6 +202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - el .env pisaba la base efimera y el E2E corria contra la de desarrollo (ops) — [`a5192b6`](https://github.com/lucasidev/plan-b/commit/a5192b6edb2d70aeb91e74dc0fc0b0029f9133d4)
 - cerrar la evasion de moderacion entera y el parseo de enums como patron (reviews) — [`44ca3bd`](https://github.com/lucasidev/plan-b/commit/44ca3bda611b3bebb6ad6719fcd98919ff2935ee)
 - una resena frenada por el filtro no tenia como volver a salir (reviews) — [`9752f77`](https://github.com/lucasidev/plan-b/commit/9752f77156b17171c6a761b099682e29c2388de1)
+- el autor no sabia por que su resena estaba frenada ni como sacarla (reviews) — [`bf5ee99`](https://github.com/lucasidev/plan-b/commit/bf5ee99cb5c66e2d79bb049fc5773191b791f671)
 
 ### Changed
 
