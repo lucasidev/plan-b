@@ -205,11 +205,19 @@ async function selectTermWithOffering(page: Page): Promise<void> {
     return;
   }
 
-  await selector.selectOption(value);
+  // Reintentamos la selección entera, no solo la aserción. El select es un client component que
+  // empuja el período a la URL en su onChange, así que un `selectOption` que llega antes de que
+  // React hidrate cambia el DOM y se pierde: el componente re-renderea desde su propio estado y
+  // deja seleccionado el período anterior, sin navegar nunca. Local no se ve porque hidrata rápido;
+  // en CI apareció tres corridas seguidas, cada vez en un test distinto de este archivo.
+  //
   // Esperamos que el período quede en la URL, no que reaparezca un botón: "+ Agregar materia" ya
   // estaba visible antes de cambiar de período, así que esperarlo devuelve al instante y el resto
   // del test sigue contra el catálogo del período anterior (carrera).
-  await expect(page).toHaveURL(new RegExp(`termId=${value}`), { timeout: 20_000 });
+  await expect(async () => {
+    await selector.selectOption(value);
+    await expect(page).toHaveURL(new RegExp(`termId=${value}`), { timeout: 5_000 });
+  }).toPass({ timeout: 30_000 });
   await expect(page.getByRole('button', { name: /\+ agregar materia/i })).toBeVisible({
     timeout: 20_000,
   });
