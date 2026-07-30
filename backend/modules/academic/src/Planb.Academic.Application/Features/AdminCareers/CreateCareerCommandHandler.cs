@@ -1,5 +1,6 @@
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Domain;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -32,7 +33,11 @@ public static class CreateCareerCommandHandler
 
         var universityId = new UniversityId(command.UniversityId);
 
-        var normalizedSlug = command.Slug.Trim().ToLowerInvariant();
+        // Canonicalizado (sin acentos, no solo Trim+ToLowerInvariant): mismo criterio que el approve
+        // del import crowdsourced. Sin esto, el chequeo de unicidad comparaba contra una forma que
+        // el aggregate no guardaba (Career.Create solo hace Trim+ToLowerInvariant), y dos slugs que
+        // difieren únicamente en acentos pasaban el chequeo y quedaban como carreras duplicadas.
+        var normalizedSlug = SlugCanonicalizer.Canonicalize(command.Slug);
         if (await careers.ExistsBySlugAsync(universityId, normalizedSlug, excludeId: null, ct))
         {
             return CareerErrors.SlugAlreadyTaken;
@@ -48,7 +53,7 @@ public static class CreateCareerCommandHandler
         var result = Career.Create(
             universityId,
             command.Name,
-            command.Slug,
+            normalizedSlug,
             clock,
             isOfficial: true,
             command.ShortName,

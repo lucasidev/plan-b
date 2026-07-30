@@ -93,6 +93,13 @@ internal sealed class CareerPlanImportConfiguration : IEntityTypeConfiguration<C
         builder.Property(i => i.ApprovedAt)
             .HasColumnName("approved_at");
 
+        builder.Property(i => i.RejectionReason)
+            .HasColumnName("rejection_reason")
+            .HasMaxLength(2000);
+
+        builder.Property(i => i.RejectedAt)
+            .HasColumnName("rejected_at");
+
         builder.ToTable(t =>
         {
             t.HasCheckConstraint(
@@ -107,6 +114,9 @@ internal sealed class CareerPlanImportConfiguration : IEntityTypeConfiguration<C
             t.HasCheckConstraint(
                 "ck_career_plan_imports_failed_has_error",
                 "(status <> 'Failed') OR error IS NOT NULL");
+            t.HasCheckConstraint(
+                "ck_career_plan_imports_rejected_has_reason",
+                "(status <> 'Rejected') OR (rejection_reason IS NOT NULL AND rejected_at IS NOT NULL)");
         });
 
         builder.Ignore(i => i.DomainEvents);

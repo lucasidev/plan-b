@@ -12,12 +12,14 @@ using Wolverine;
 namespace Planb.Academic.Application.Features.CareerPlanImports;
 
 /// <summary>
-/// Handler del POST /approve. Materializa el plan crowdsourced:
+/// Handler del POST /approve. Gateado a staff (Admin) a nivel de endpoint: el catálogo tiene un
+/// solo escritor, el alumno propone (crea el import) y el staff decide. Materializa el plan
+/// crowdsourced:
 ///
 /// <list type="number">
-///   <item>Valida ownership + status==Parsed</item>
-///   <item>Resuelve Career: si ya existe una con (universityId, slug) la reusa; si no la crea
-///         con isOfficial=false</item>
+///   <item>Valida status==Parsed (no valida ownership: quien aprueba no es el dueño del import)</item>
+///   <item>Resuelve Career: si ya existe una con (universityId, slug canonicalizado) la reusa; si
+///         no la crea con isOfficial=false</item>
 ///   <item>Chequea conflict de CareerPlan (mismo career, mismo año). Si existe, 409 con su id</item>
 ///   <item>Crea CareerPlan (isOfficial=false)</item>
 ///   <item>Crea Subjects en bloque (isOfficial=false) con defaults de hours (4 semanal, 60 total
@@ -45,8 +47,9 @@ public static class ApproveCareerPlanImportCommandHandler
             return CareerPlanImportErrors.NoItemsSelected;
         }
 
-        var import = await imports.FindByIdForOwnerAsync(
-            new CareerPlanImportId(command.ImportId), command.UserId, ct);
+        // El staff no es el dueño del import (lo subió un alumno): busca por id a secas, no por
+        // owner. La identidad de quien aprueba la exige el endpoint (RequireRole), no el handler.
+        var import = await imports.FindByIdAsync(new CareerPlanImportId(command.ImportId), ct);
         if (import is null)
         {
             return CareerPlanImportErrors.NotFound;
@@ -58,7 +61,7 @@ public static class ApproveCareerPlanImportCommandHandler
         }
 
         // ── Resolver Career: reuse-or-create ──────────────────────────────
-        var slug = Slugify(import.CareerName);
+        var slug = SlugCanonicalizer.Canonicalize(import.CareerName);
         var existingCareer = await careers.FindByUniversityAndSlugAsync(
             import.UniversityId, slug, ct);
 
@@ -178,16 +181,6 @@ public static class ApproveCareerPlanImportCommandHandler
             CareerPlanId: careerPlan.Id.Value,
             CareerId: career.Id.Value,
             SubjectCount: subjectsToAdd.Count);
-    }
-
-    private static string Slugify(string name)
-    {
-        // Slug simple: lowercase + replace whitespace por guión + drop chars no alfanuméricos.
-        // No es robusto contra unicode raro; alcanza para MVP. Si el alumno tipea acentos, los
-        // mantenemos para no destrozar el slug a "ingenieria" cuando el oficial es "ingenieria"
-        // o "ingenier-a" — preferimos comparar siempre lowercase + trim.
-        var slug = name.Trim().ToLowerInvariant();
-        return System.Text.RegularExpressions.Regex.Replace(slug, @"\s+", "-");
     }
 
     private static (int weekly, int total) DefaultHoursFor(TermKind kind) => kind switch

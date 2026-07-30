@@ -2,12 +2,14 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
 using Planb.Academic.Infrastructure.Persistence;
+using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
 using Shouldly;
@@ -19,7 +21,9 @@ namespace Planb.IntegrationTests.Academic;
 /// Integration tests del flujo POST /GET /approve de US-088 con foco en:
 ///   - 401 sin auth en los 3 endpoints (gate)
 ///   - 202 + GET shape correcto
+///   - Approve gateado a Admin: 403 para quien subió el import, 200 para el staff
 ///   - Conflict 409 cuando el plan ya existe (career+year colisiona)
+///   - Dedupe de Career por slug canonicalizado (sin acentos) entre el alta admin y el approve
 ///   - isOfficial=false en la response del GET /career-plans para los crowdsourced
 ///
 /// El worker async (parser) se testea por separado en unit tests; acá nos enfocamos en
@@ -40,6 +44,66 @@ public class CareerPlanImportEndpointTests
 
     public Task InitializeAsync() => Task.CompletedTask;
     public Task DisposeAsync() => Task.CompletedTask;
+
+    private Task<AuthenticatedClient> AdminAsync() =>
+        AuthenticatedClient.CreateAsync(
+            _fixture, $"plan-import-admin.{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
+
+    /// <summary>
+    /// Sube un import via el endpoint del alumno y lo lleva a Parsed a mano (mismo criterio que
+    /// <see cref="Approve_returns_409_when_plan_already_exists"/>): saltea el worker async para que
+    /// el test no dependa del timing de Wolverine.
+    /// </summary>
+    private async Task<Guid> CreateParsedImportAsync(
+        AuthenticatedClient uploader, string careerName, int planYear, string subjectCode = "MAT101")
+    {
+        var post = await uploader.Client.PostAsJsonAsync(
+            "/api/me/career-plan-imports",
+            new
+            {
+                universityId = UnstaUniversityId,
+                careerName,
+                planYear,
+                studentEnrollmentYear = planYear,
+                rawText = $"{subjectCode} Algo",
+            });
+        var created = await post.Content.ReadFromJsonAsync<CreateCareerPlanImportResponse>();
+
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AcademicDbContext>();
+        var clock = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+        var import = await db.CareerPlanImports.FindAsync(new CareerPlanImportId(created!.Id));
+        import.ShouldNotBeNull();
+        import!.MarkParsing(clock);
+        import.MarkParsed(
+            new CareerPlanImportPayload(
+                $"{subjectCode} Algo",
+                new List<ParsedSubjectItem>
+                {
+                    new(0, $"{subjectCode} Algo", subjectCode, "Algo", 1, 1, "FourMonth",
+                        SubjectParseConfidence.High, Array.Empty<string>()),
+                },
+                new CareerPlanImportSummary(1, 1, 0, 0)),
+            clock);
+        await db.SaveChangesAsync();
+
+        return created.Id;
+    }
+
+    private static object ApproveBody(string subjectCode = "MAT101") => new
+    {
+        items = new[]
+        {
+            new
+            {
+                code = subjectCode,
+                name = "Algo",
+                yearInPlan = 1,
+                termInYear = (int?)1,
+                termKind = "FourMonth",
+            },
+        },
+    };
 
     // ── Auth gates ────────────────────────────────────────────────────────
 
@@ -207,8 +271,9 @@ public class CareerPlanImportEndpointTests
     [Fact]
     public async Task Approve_returns_409_when_plan_already_exists()
     {
-        var auth = await AuthenticatedClient.CreateAsync(
+        var uploader = await AuthenticatedClient.CreateAsync(
             _fixture, $"plan-import-conflict.{Guid.NewGuid():N}@planb.local");
+        var admin = await AdminAsync();
 
         // Setup: pre-cargar via DbContext una Career + CareerPlan con la triple que
         // vamos a tratar de duplicar via approve. Más rápido que correr 2 flujos paralelos.
@@ -235,61 +300,111 @@ public class CareerPlanImportEndpointTests
             await db.SaveChangesAsync();
         }
 
-        // Crear el import. Necesitamos llevarlo a Parsed manualmente porque sin esperar al
-        // worker el aggregate queda en Pending y el approve falla con 409 distinto.
-        var importPost = await auth.Client.PostAsJsonAsync(
-            "/api/me/career-plan-imports",
-            new
-            {
-                universityId = UnstaUniversityId,
-                careerName = CareerNameForConflict,
-                planYear = Year,
-                studentEnrollmentYear = Year,
-                rawText = "MAT101 Algo",
-            });
-        var created = await importPost.Content.ReadFromJsonAsync<CreateCareerPlanImportResponse>();
+        var importId = await CreateParsedImportAsync(uploader, CareerNameForConflict, Year);
 
-        // Forzar el aggregate a Parsed con un payload mínimo (saltea el worker async para
-        // tener un test determinístico sin depender del timing de Wolverine).
-        using (var scope = _fixture.Factory.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AcademicDbContext>();
-            var clock = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
-            var import = await db.CareerPlanImports.FindAsync(new CareerPlanImportId(created!.Id));
-            import.ShouldNotBeNull();
-            import!.MarkParsing(clock);
-            import.MarkParsed(
-                new CareerPlanImportPayload(
-                    "MAT101 Algo",
-                    new List<ParsedSubjectItem>
-                    {
-                        new(0, "MAT101 Algo", "MAT101", "Algo", 1, 1, "FourMonth",
-                            SubjectParseConfidence.High, Array.Empty<string>()),
-                    },
-                    new CareerPlanImportSummary(1, 1, 0, 0)),
-                clock);
-            await db.SaveChangesAsync();
-        }
-
-        // Approve: debería pegar 409 por el plan duplicado pre-existente.
-        var approve = await auth.Client.PostAsJsonAsync(
-            $"/api/me/career-plan-imports/{created.Id}/approve",
-            new
-            {
-                items = new[]
-                {
-                    new
-                    {
-                        code = "MAT101",
-                        name = "Algo",
-                        yearInPlan = 1,
-                        termInYear = (int?)1,
-                        termKind = "FourMonth",
-                    },
-                },
-            });
+        // Approve (staff, no el uploader): debería pegar 409 por el plan duplicado pre-existente.
+        var approve = await admin.Client.PostAsJsonAsync(
+            $"/api/me/career-plan-imports/{importId}/approve", ApproveBody());
 
         approve.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    // ── Gate a staff (US-088: el catálogo tiene un solo escritor) ──────────
+
+    /// <summary>
+    /// El bug original: <c>ApproveCareerPlanImportEndpoint</c> no tenía policy de rol y el handler
+    /// buscaba el import con <c>FindByIdForOwnerAsync</c>, así que un alumno podía aprobar su propio
+    /// import y escribir directo en el catálogo global. Este test reproduce exactamente ese intento
+    /// y verifica que ahora lo bloquea.
+    /// </summary>
+    [Fact]
+    public async Task Approve_returns_403_when_the_uploader_tries_to_approve_their_own_import()
+    {
+        var uploader = await AuthenticatedClient.CreateAsync(
+            _fixture, $"plan-import-selfapprove.{Guid.NewGuid():N}@planb.local");
+
+        var importId = await CreateParsedImportAsync(uploader, "Carrera Autoaprobada", 2024);
+
+        var approve = await uploader.Client.PostAsJsonAsync(
+            $"/api/me/career-plan-imports/{importId}/approve", ApproveBody());
+
+        approve.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Approve_returns_200_when_admin_approves_a_parsed_import()
+    {
+        var uploader = await AuthenticatedClient.CreateAsync(
+            _fixture, $"plan-import-approveok.{Guid.NewGuid():N}@planb.local");
+        var admin = await AdminAsync();
+
+        var importId = await CreateParsedImportAsync(uploader, "Carrera Aprobada Por Staff", 2024);
+
+        var approve = await admin.Client.PostAsJsonAsync(
+            $"/api/me/career-plan-imports/{importId}/approve", ApproveBody());
+
+        approve.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await approve.Content.ReadFromJsonAsync<ApproveCareerPlanImportResponse>();
+        body.ShouldNotBeNull();
+        body!.SubjectCount.ShouldBe(1);
+
+        // El aggregate quedó en Approved: lo confirma el propio GET del alumno.
+        var get = await uploader.Client.GetAsync($"/api/me/career-plan-imports/{importId}");
+        var getBody = await get.Content.ReadFromJsonAsync<CareerPlanImportResponse>();
+        getBody!.Status.ShouldBe("Approved");
+        getBody.ApprovedCareerPlanId.ShouldBe(body.CareerPlanId);
+    }
+
+    // ── Dedupe por slug canonicalizado (sin acentos) ────────────────────────
+
+    /// <summary>
+    /// El bug del slug: el admin carga "Ingeniería en Sistemas" con un slug sin acentos
+    /// ("ingenieria-en-sistemas"), y después llega un import cuyo alumno tipeó el mismo nombre CON
+    /// acentos. Antes del fix, el approve derivaba el slug conservando tildes y nunca matcheaba
+    /// contra el slug del admin, así que creaba una Career duplicada. Con la canonicalización
+    /// compartida, el approve tiene que reusar la carrera existente.
+    /// </summary>
+    [Fact]
+    public async Task Approve_reuses_existing_career_when_name_only_differs_by_accents()
+    {
+        const string AccentedName = "Ingeniería en Sistemas";
+        const string PlainAdminSlug = "ingenieria-en-sistemas";
+
+        var admin = await AdminAsync();
+        var createCareer = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{UnstaUniversityId}/careers",
+            new
+            {
+                name = AccentedName,
+                slug = PlainAdminSlug,
+                shortName = (string?)null,
+                code = (string?)null,
+                degreeType = (string?)null,
+                durationYears = (int?)null,
+                cadence = (string?)null,
+                description = (string?)null,
+            });
+        createCareer.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var existingCareer = await createCareer.Content.ReadFromJsonAsync<CreateCareerResponse>();
+
+        var uploader = await AuthenticatedClient.CreateAsync(
+            _fixture, $"plan-import-accents.{Guid.NewGuid():N}@planb.local");
+        // La carrera recién creada no tiene ningún plan todavía, así que cualquier año sirve: el
+        // 200 prueba la reutilización de Career, no un accidente de que no había plan para chocar.
+        var importId = await CreateParsedImportAsync(uploader, AccentedName, 2024);
+
+        var approve = await admin.Client.PostAsJsonAsync(
+            $"/api/me/career-plan-imports/{importId}/approve", ApproveBody());
+
+        approve.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await approve.Content.ReadFromJsonAsync<ApproveCareerPlanImportResponse>();
+        body!.CareerId.ShouldBe(existingCareer!.Id);
+
+        // No se creó una segunda Career: el admin list de esa universidad tiene una sola fila con
+        // ese slug.
+        var list = await admin.Client.GetFromJsonAsync<AdminCareerListResponse>(
+            $"/api/academic/universities/{UnstaUniversityId}/careers");
+        list!.Items.Count(c => c.Slug == PlainAdminSlug).ShouldBe(1);
     }
 
     // ── IsOfficial propaga al catálogo ────────────────────────────────────

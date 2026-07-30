@@ -73,4 +73,9 @@ public static class CareerPlanImportErrors
         Error.Validation(
             "academic.plan_import.no_items_selected",
             "Elegí al menos una materia para crear el plan.");
+
+    public static readonly Error RejectionReasonRequired =
+        Error.Validation(
+            "academic.plan_import.rejection_reason_required",
+            "Indicá el motivo del rechazo.");
 }

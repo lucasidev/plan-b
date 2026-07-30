@@ -78,7 +78,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         var userId = Guid.NewGuid();
         var universityId = UniversityId.New();
         var import = ParsedImport(deps.Clock, userId, universityId);
-        deps.Imports.FindByIdForOwnerAsync(import.Id, userId, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
         deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
@@ -101,7 +101,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         var userId = Guid.NewGuid();
         var universityId = UniversityId.New();
         var import = ParsedImport(deps.Clock, userId, universityId);
-        deps.Imports.FindByIdForOwnerAsync(import.Id, userId, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
             .Returns((Career?)null);
@@ -126,7 +126,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         var userId = Guid.NewGuid();
         var universityId = UniversityId.New();
         var import = ParsedImport(deps.Clock, userId, universityId);
-        deps.Imports.FindByIdForOwnerAsync(import.Id, userId, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
         deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
@@ -152,7 +152,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         var userId = Guid.NewGuid();
         var universityId = UniversityId.New();
         var import = ParsedImport(deps.Clock, userId, universityId);
-        deps.Imports.FindByIdForOwnerAsync(import.Id, userId, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
         deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
@@ -180,7 +180,7 @@ public class ApproveCareerPlanImportCommandHandlerTests
         var userId = Guid.NewGuid();
         var universityId = UniversityId.New();
         var import = ParsedImport(deps.Clock, userId, universityId);
-        deps.Imports.FindByIdForOwnerAsync(import.Id, userId, Arg.Any<CancellationToken>()).Returns(import);
+        deps.Imports.FindByIdAsync(import.Id, Arg.Any<CancellationToken>()).Returns(import);
 
         var existingCareer = Career.Create(universityId, "TUDCS", "tudcs", deps.Clock).Value;
         deps.Careers.FindByUniversityAndSlugAsync(universityId, "tudcs", Arg.Any<CancellationToken>())
