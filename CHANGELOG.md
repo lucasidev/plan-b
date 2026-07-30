@@ -125,6 +125,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - compartir una simulacion y feed publico del plan (planning) — [`50aa4bf`](https://github.com/lucasidev/plan-b/commit/50aa4bf419203c213be44cbbdae8c5e29aaed667)
 - los borradores del planificador son reales (plan) — [`9fd982b`](https://github.com/lucasidev/plan-b/commit/9fd982b785362c78bd615b2beebb4bfcd2964e42)
 - compartir simulaciones y ver las de la comunidad (plan) — [`7ac6340`](https://github.com/lucasidev/plan-b/commit/7ac63401b9631586277aad17ce3a4bd2c8216ba9)
+- la resena tiene dos ejes de texto, materia y docente (reviews) — [`7f57f38`](https://github.com/lucasidev/plan-b/commit/7f57f384d1f7cc6b7df30f64b96a3848a5af19a2)
+- publicar imagenes y dejar el deploy a produccion documentado y probado (ops) — [`a367b2a`](https://github.com/lucasidev/plan-b/commit/a367b2ad2e2e2e3153605e465f4d7ae034e71779)
+- el historial academico dejo de estar siempre vacio (enrollments) — [`09e22e3`](https://github.com/lucasidev/plan-b/commit/09e22e38bacf04bccd37ca290825ead91ce54158)
 
 ### Fixed
 
@@ -182,6 +185,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - las caras del carousel no se superponen al rotar (landing) — [`4a3fb7d`](https://github.com/lucasidev/plan-b/commit/4a3fb7d16afb68afbb090ec7514519938da8893c)
 - carousel del planificador deslizante con una sola animacion (landing) — [`dcfe56c`](https://github.com/lucasidev/plan-b/commit/dcfe56c35eb722b9106585bbff0e6cf3b16dea89)
 - se podia entrar a armar el primer borrador (plan) — [`cb064ba`](https://github.com/lucasidev/plan-b/commit/cb064ba523c1dcaed78bfa04c499204411331ded)
+- el corpus de prueba apunta a comisiones reales (seed) — [`799f80b`](https://github.com/lucasidev/plan-b/commit/799f80bd5672d3ac9f65d0e40464ce55b71aa52c)
+- la baja de cuenta como transicion de estado (identity) — [`15b896b`](https://github.com/lucasidev/plan-b/commit/15b896b13239c209f575de4d3d3a186b86ed3cbe)
+- la cohorte no consultada viaja null, no en cero (planning) — [`abaed8e`](https://github.com/lucasidev/plan-b/commit/abaed8ed989a692c6b091ae0bfb6a98238b72e44)
+- validar comision y periodo en los cuatro caminos de escritura (academic) — [`e9fbb7b`](https://github.com/lucasidev/plan-b/commit/e9fbb7bcc89274b97ccefddc72c3db80778fa7fd)
+- red de constraints para los invariantes que el aggregate no puede sosten (db) — [`babd01d`](https://github.com/lucasidev/plan-b/commit/babd01d302ac8174adc5ba4c54148d6f517d296f)
+- ordenar el flip del plan vigente para no violar su propio indice (planning) — [`f03b9f5`](https://github.com/lucasidev/plan-b/commit/f03b9f5be73df70ec27c77c19ae80144c4312b35)
+- cerrar la puerta de atras para republicar lo que moderacion bajo (reviews) — [`b4f6f36`](https://github.com/lucasidev/plan-b/commit/b4f6f36bc269f92d8c8358f21926a228b8ea3ccf)
+- el historial se puede importar aunque no diga la comision (enrollments) — [`b357208`](https://github.com/lucasidev/plan-b/commit/b3572082af5f1f30874f6821cdbaa22ee5d38547)
+- archivar tiene que significar algo, y la cadencia no se edita sola (academic) — [`83498e3`](https://github.com/lucasidev/plan-b/commit/83498e3deca3387fd45ea0208d744f0cce85b5f1)
+- el feed publico no muestra planes que el alumno ya reemplazo (planning) — [`29fba29`](https://github.com/lucasidev/plan-b/commit/29fba298903444318fbfa1f63af1a7f7332c27b6)
+- dar de baja una cuenta exige un actor real (identity) — [`33f9259`](https://github.com/lucasidev/plan-b/commit/33f9259604401e4545ac965825b414694fc4fe84)
+- un import que se cae a mitad se puede retomar (messaging) — [`f261b12`](https://github.com/lucasidev/plan-b/commit/f261b12da6428eaadd095ad5ad701f8c7e1edeea)
+- hidratar el badge de pendientes y mostrar cuando una resena fue editada (web) — [`fdc9335`](https://github.com/lucasidev/plan-b/commit/fdc93354d306bb8ffca305b90ae9777802f58a11)
+- el badge de editada dejaba de ser cierto apenas alguien respondia (reviews) — [`692b725`](https://github.com/lucasidev/plan-b/commit/692b725e2e100416315794ebc8197981f0d7ca58)
+- el .env pisaba la base efimera y el E2E corria contra la de desarrollo (ops) — [`a5192b6`](https://github.com/lucasidev/plan-b/commit/a5192b6edb2d70aeb91e74dc0fc0b0029f9133d4)
+- cerrar la evasion de moderacion entera y el parseo de enums como patron (reviews) — [`44ca3bd`](https://github.com/lucasidev/plan-b/commit/44ca3bda611b3bebb6ad6719fcd98919ff2935ee)
+- una resena frenada por el filtro no tenia como volver a salir (reviews) — [`9752f77`](https://github.com/lucasidev/plan-b/commit/9752f77156b17171c6a761b099682e29c2388de1)
 
 ### Changed
 
@@ -196,3 +216,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SeedCorpus para el corpus de datos de prueba (backend) — [`2c64299`](https://github.com/lucasidev/plan-b/commit/2c64299fbeeb8cdc005094bfdda195f91c265c57)
 - planificador como nombre de la herramienta (frontend) — [`76acfde`](https://github.com/lucasidev/plan-b/commit/76acfde29ce69a947445c28adb7e67767ce59f65)
 - el formateo de la oferta sale del componente de tabla (admin) — [`385a24c`](https://github.com/lucasidev/plan-b/commit/385a24cd7e738243dd7da00cc9fb882c129646aa)
+- borrar el andamiaje de pgvector (reviews) — [`50571c5`](https://github.com/lucasidev/plan-b/commit/50571c562b81d810a4b4c0c38c7763e46ce11ceb)
+- las franjas de una comision como documento embebido (academic) — [`a6e7012`](https://github.com/lucasidev/plan-b/commit/a6e701253ede4ab3dbf0b434bc6cea5b26c8cc47)
+- hacer alcanzable el indice de busqueda y acotar la cohorte por plan (academic) — [`0b23b01`](https://github.com/lucasidev/plan-b/commit/0b23b0134767d5151e157f01dc6408d24cb300ed)
+- el rate limiter deja de ser una abstraccion de identity (shared-kernel) — [`d1d6dbd`](https://github.com/lucasidev/plan-b/commit/d1d6dbdba36b8408844375a0d3d5f635987c4f2f)
