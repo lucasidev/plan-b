@@ -20,8 +20,9 @@ public class IdentityDatabaseTests
     [Fact]
     public async Task Initial_migration_creates_identity_schema_with_users_table()
     {
-        await using var db = await IdentityDatabase.CreateMigratedAsync(
+        await using var dbHandle = await IdentityDatabase.CreateMigratedAsync(
             _fixture, databaseName: FreshDb("migration"));
+        var db = dbHandle.Context;
 
         var schemaExists = await db.Database.SqlQuery<bool>(
             $"SELECT EXISTS(SELECT 1 FROM information_schema.schemata WHERE schema_name = 'identity') AS \"Value\"")
@@ -49,8 +50,9 @@ public class IdentityDatabaseTests
     [Fact]
     public async Task Can_persist_and_read_a_user_roundtripping_all_fields()
     {
-        await using var db = await IdentityDatabase.CreateMigratedAsync(
+        await using var dbHandle = await IdentityDatabase.CreateMigratedAsync(
             _fixture, databaseName: FreshDb("roundtrip"));
+        var db = dbHandle.Context;
 
         var clock = new FixedClock(new DateTimeOffset(2026, 4, 24, 12, 0, 0, TimeSpan.Zero));
         var email = EmailAddress.Create("Lucas@UNSTA.edu.ar").Value;
@@ -77,8 +79,9 @@ public class IdentityDatabaseTests
     [Fact]
     public async Task Duplicate_email_violates_unique_index()
     {
-        await using var db = await IdentityDatabase.CreateMigratedAsync(
+        await using var dbHandle = await IdentityDatabase.CreateMigratedAsync(
             _fixture, databaseName: FreshDb("unique"));
+        var db = dbHandle.Context;
 
         var clock = new FixedClock(DateTimeOffset.UtcNow);
         var email = EmailAddress.Create("same@planb.local").Value;

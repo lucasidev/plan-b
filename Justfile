@@ -136,6 +136,17 @@ frontend-test-e2e *args:
 frontend-test-e2e-show *args:
     bun scripts/run-e2e-show.ts {{args}}
 
+# Levanta el stack completo (backend + frontend) contra una base efímera propia (`planb_scratch`)
+# para recorrer la app a mano sin ensuciar la base de dev. Usalo en vez de `just dev` cuando solo
+# querés mirar/probar algo y no te interesa que quede guardado.
+#
+# Igual que E2E, pisa los puertos de siempre y necesita el stack de dev ABAJO. A diferencia de
+# E2E: sí siembra el corpus de demo (personas, cursadas, reseñas) y no corre ningún test, queda
+# arriba imprimiendo las URLs y las personas sembradas hasta que cortás con Ctrl+C. Ahí dropea la
+# base: no deja rastro en la base de dev ni en ninguna otra.
+dev-scratch:
+    bun scripts/run-scratch.ts
+
 lint: backend-lint frontend-lint
 
 lint-fix: backend-lint-fix frontend-lint-fix
@@ -186,6 +197,12 @@ migrate-add module name:
 
 # Reset DB: down volumes + up + migrate
 db-reset: infra-reset migrate
+
+# Barre las bases planb_* huerfanas (corridas de test o sesiones scratch que quedaron sin
+# limpiar). NO toca la base de desarrollo `planb`: para esa, `db-reset` es la receta destructiva
+# (dropea todo y recrea de cero). Esta solo limpia el residuo ajeno a la base de dev.
+db-prune:
+    bun scripts/db-prune.ts
 
 db-seed:
     cd backend/host/Planb.Api && dotnet run -- seed
