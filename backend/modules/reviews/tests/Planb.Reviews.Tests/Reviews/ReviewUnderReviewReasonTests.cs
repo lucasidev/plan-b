@@ -75,6 +75,33 @@ public class ReviewUnderReviewReasonTests
     }
 
     [Fact]
+    public void QuarantineByEnrollmentChange_marca_la_razon_enrollment_changed()
+    {
+        var review = New(ReviewStatus.Published);
+
+        review.QuarantineByEnrollmentChange(new FixedClock(T0.AddHours(1))).ShouldBeTrue();
+
+        review.Status.ShouldBe(ReviewStatus.UnderReview);
+        // La razón importa por sus consecuencias: solo la cuarentena por reportes bloquea editar
+        // (revisión 2026-07-29 de ADR-0012), así que marcarla como Reports le sacaría al autor la
+        // única salida que tiene cuando nadie lo reportó.
+        review.UnderReviewReason.ShouldBe(UnderReviewReason.EnrollmentChanged);
+    }
+
+    [Fact]
+    public void QuarantineByEnrollmentChange_es_no_op_sobre_una_resena_ya_en_revision()
+    {
+        // La entrega del outbox es at-least-once: un evento duplicado no puede pisar la razón por
+        // la que la reseña ya estaba en revisión.
+        var review = New(ReviewStatus.Published);
+        review.QuarantineByReports(new FixedClock(T0));
+
+        review.QuarantineByEnrollmentChange(new FixedClock(T0.AddHours(1))).ShouldBeFalse();
+
+        review.UnderReviewReason.ShouldBe(UnderReviewReason.Reports);
+    }
+
+    [Fact]
     public void RestoreFromReports_limpia_la_razon_cuando_aplica()
     {
         var review = New(ReviewStatus.Published);

@@ -444,6 +444,38 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     }
 
     /// <summary>
+    /// Quarantine driven by the student editing the cursada the review is anchored to (US-015,
+    /// ADR-0032). The review talks about a cursada that finished; if that cursada goes back to
+    /// in-progress, what the review claims stopped being true and it cannot stay published as is.
+    ///
+    /// <para>
+    /// The reason is <see cref="Reviews.UnderReviewReason.EnrollmentChanged"/> and not
+    /// <see cref="Reviews.UnderReviewReason.Reports"/>, which is what lets the author edit their
+    /// way out of it: per the 2026-07-29 revision of ADR-0012 only a reports quarantine blocks
+    /// editing. Nobody reported this review; the ground under it moved.
+    /// </para>
+    ///
+    /// <para>
+    /// Same shape as <see cref="QuarantineByReports"/>: idempotent and narrow, so a duplicate or
+    /// out-of-order delivery of the edit event does not thrash the status.
+    /// </para>
+    /// </summary>
+    public bool QuarantineByEnrollmentChange(IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (Status != ReviewStatus.Published)
+        {
+            return false;
+        }
+
+        Status = ReviewStatus.UnderReview;
+        UnderReviewReason = Reason.EnrollmentChanged;
+        UpdatedAt = clock.UtcNow;
+        return true;
+    }
+
+    /// <summary>
     /// Remoción por decisión del moderador (US-051, uphold). El caller (consumer del evento de
     /// moderación) ya validó que un moderador resolvió el/los report(s). Idempotente: solo una reseña
     /// <see cref="ReviewStatus.Published"/> o <see cref="ReviewStatus.UnderReview"/> pasa a
