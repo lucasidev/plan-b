@@ -15,6 +15,10 @@ internal sealed class EnrollmentRecordRepository : IEnrollmentRecordRepository
         return Task.CompletedTask;
     }
 
+    public Task<EnrollmentRecord?> GetByIdAsync(
+        EnrollmentRecordId id, CancellationToken ct = default) =>
+        _db.EnrollmentRecords.FirstOrDefaultAsync(e => e.Id == id, ct);
+
     public Task<bool> ExistsAsync(
         Guid studentProfileId, Guid subjectId, Guid? termId, CancellationToken ct = default) =>
         _db.EnrollmentRecords
