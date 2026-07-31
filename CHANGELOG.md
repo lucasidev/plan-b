@@ -205,6 +205,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - el autor no sabia por que su resena estaba frenada ni como sacarla (reviews) — [`bf5ee99`](https://github.com/lucasidev/plan-b/commit/bf5ee99cb5c66e2d79bb049fc5773191b791f671)
 - show enrollment year range error on its field (onboarding) — [`6f391a0`](https://github.com/lucasidev/plan-b/commit/6f391a031a25b76560bca04ecf0344402975ede9)
 - add empty and error states for career and plan dropdowns (onboarding) — [`deeba00`](https://github.com/lucasidev/plan-b/commit/deeba0082993622b0a2237a5b245dfdc6ebbcc7e)
+- refresh the community feed when a draft changes (plan) — [`4cdf039`](https://github.com/lucasidev/plan-b/commit/4cdf0393676c79d155f691e79374d596d772381e)
 
 ### Changed
 
@@ -223,3 +224,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - las franjas de una comision como documento embebido (academic) — [`a6e7012`](https://github.com/lucasidev/plan-b/commit/a6e701253ede4ab3dbf0b434bc6cea5b26c8cc47)
 - hacer alcanzable el indice de busqueda y acotar la cohorte por plan (academic) — [`0b23b01`](https://github.com/lucasidev/plan-b/commit/0b23b0134767d5151e157f01dc6408d24cb300ed)
 - el rate limiter deja de ser una abstraccion de identity (shared-kernel) — [`d1d6dbd`](https://github.com/lucasidev/plan-b/commit/d1d6dbdba36b8408844375a0d3d5f635987c4f2f)
+- fetch the student profile once per request (frontend) — [`d741428`](https://github.com/lucasidev/plan-b/commit/d7414280d9cc90d76d464cc8c5395779a2737286)
