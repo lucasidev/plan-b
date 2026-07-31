@@ -251,8 +251,30 @@ export function spawnBackend(connectionString: string, seedCorpus: string): Chil
   });
 }
 
-export function spawnFrontend(): ChildProcess {
-  return spawn('bun', ['dev'], {
+/**
+ * `next build` del frontend. Se corre antes de `spawnFrontend('start')`, igual que en CI.
+ * Devuelve el exit code para que el caller decida; no tira.
+ */
+export function buildFrontend(): Promise<number> {
+  return new Promise((resolve) => {
+    const child = spawn('bun', ['run', 'build'], {
+      cwd: FRONTEND,
+      env: { ...process.env },
+      stdio: ['ignore', 'inherit', 'inherit'],
+      shell: process.platform === 'win32',
+    });
+    child.on('close', (code) => resolve(code ?? 1));
+  });
+}
+
+/**
+ * Levanta el frontend. `mode: 'start'` sirve un build de producción, que es lo que hace CI
+ * (`bun next start`); `dev` levanta el dev server con Turbopack, que es más rápido pero tolera
+ * cosas distintas. Requiere que el build ya exista: ver `buildFrontend`.
+ */
+export function spawnFrontend(mode: 'dev' | 'start' = 'dev'): ChildProcess {
+  const command = mode === 'start' ? ['next', 'start', '-p', String(FRONTEND_PORT)] : ['dev'];
+  return spawn('bun', command, {
     cwd: FRONTEND,
     env: { ...process.env, PORT: String(FRONTEND_PORT) },
     stdio: ['ignore', 'ignore', 'inherit'],

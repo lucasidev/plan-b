@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -38,10 +38,29 @@ type Props = {
 
 export function PublishPlanModal({ draft, label, onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
+  /** URL a la que navegar cuando el publicar salió bien. La consume el efecto de abajo. */
+  const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const queryClient = useQueryClient();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // La navegación post-publicar NO puede vivir adentro del startTransition, y el motivo es
+  // concreto: navegar a "En curso" con otro `termId` monta un `useSuspenseQuery` con una query key
+  // nueva (`availableSubjectsQueries.list(termId)`), que suspende. React difiere el commit de una
+  // transición hasta que su suspense resuelva, y el `router.push` es parte de ese commit, así que
+  // la URL no cambiaba hasta entonces. Contra un build de producción eso se pasaba de los 20
+  // segundos y dejaba al alumno en Borradores mirando una card que ya no existía.
+  //
+  // El efecto corre fuera de la transición, que es el patrón que ADR-0046 ya fija para esto: el
+  // action hace el write y devuelve status, y el cliente reacciona invalidando y navegando.
+  useEffect(() => {
+    if (!publishedUrl) return;
+    queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
+    queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
+    router.push(publishedUrl, { scroll: false });
+    onClose();
+  }, [publishedUrl, queryClient, router, onClose]);
 
   if (!draft) return null;
 
@@ -56,16 +75,13 @@ export function PublishPlanModal({ draft, label, onClose }: Props) {
     startTransition(async () => {
       const result = await promoteSimulationDraftAction(draft.id);
       if (result.status === 'success') {
-        queryClient.invalidateQueries({ queryKey: SIMULATION_DRAFTS_QUERY_KEY });
-        queryClient.invalidateQueries({ queryKey: PUBLIC_SIMULATIONS_QUERY_KEY });
-        onClose();
         // "Mostrá el resultado" (spec US-023): navega a "En curso" con el término del borrador
         // recién publicado, así el alumno ve directo que ya es su plan vigente, en vez de quedarse
         // en Borradores confiando en que la card desapareció por la invalidación.
         const params = new URLSearchParams(searchParams.toString());
         params.set('tab', 'active');
         params.set('termId', draft.termId);
-        router.push(`?${params.toString()}`, { scroll: false });
+        setPublishedUrl(`?${params.toString()}`);
       } else {
         setError(result.message);
       }
