@@ -48,6 +48,7 @@ import {
   requireDevConnectionString,
   requireFreePorts,
   spawnBackend,
+  buildFrontend,
   spawnFrontend,
   waitForHttp,
   waitForSeed,
@@ -67,7 +68,17 @@ function cleanup(): void {
 }
 
 async function main(): Promise<number> {
-  const playwrightArgs = process.argv.slice(2);
+  const rawArgs = process.argv.slice(2);
+
+  // `--build` corre la suite contra un build de producción (`next build` + `next start`) en vez
+  // del dev server, que es lo que hace CI. No es un lujo: el dev server tolera cosas que el build
+  // no, y al revés. Un bug de desync entre la URL y el contenido de `/plan` pasaba en verde local
+  // y fallaba en CI, y perseguirlo con `next dev` era imposible porque ahí no se reproduce.
+  //
+  // El default sigue siendo dev: es varios minutos más rápido y alcanza para el 90% de los casos.
+  // Cuando CI falla y local no, ese es el momento de usar esto.
+  const useBuild = rawArgs.includes('--build');
+  const playwrightArgs = rawArgs.filter((a) => a !== '--build');
 
   // ── 1. Puertos libres ────────────────────────────────────────────────────────
   if (
@@ -114,8 +125,19 @@ async function main(): Promise<number> {
   }
 
   // ── 4. Frontend ──────────────────────────────────────────────────────────────
-  console.log(`Levantando el frontend en :${FRONTEND_PORT}...`);
-  const frontend = spawnFrontend();
+  if (useBuild) {
+    console.log('Buildeando el frontend (modo --build, como CI)...');
+    const built = await buildFrontend();
+    if (built !== 0) {
+      console.error('El build del frontend falló.');
+      return 1;
+    }
+  }
+
+  console.log(
+    `Levantando el frontend en :${FRONTEND_PORT}${useBuild ? ' (build de producción)' : ''}...`,
+  );
+  const frontend = spawnFrontend(useBuild ? 'start' : 'dev');
   children.push(frontend);
 
   if (

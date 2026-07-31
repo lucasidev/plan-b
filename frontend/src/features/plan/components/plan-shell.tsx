@@ -27,11 +27,32 @@ type Props = {
   careerPlanId: string | null;
 };
 
+/**
+ * Misma expresión que usa la RSC de `/plan` para derivar la pestaña del query param. Vive
+ * duplicada acá a propósito: el punto es que cliente y servidor lleguen al mismo valor por
+ * separado, no que uno espere al otro.
+ */
+function tabFromParams(raw: string | null): TabId {
+  return raw === 'draft' ? 'draft' : raw === 'public' ? 'public' : 'active';
+}
+
 export function PlanShell({ activeTab, terms, selectedTermId, careerPlanId }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data } = useSuspenseQuery(simulationDraftsQueries.list());
   const allDrafts = data.items;
+
+  // La pestaña se lee de la URL en el cliente, no del prop que manda la RSC, y esto no es
+  // preferencia de estilo: `/plan` es `force-dynamic`, así que cambiar de pestaña con el prop
+  // significaba un render dinámico entero del servidor (perfil, períodos, prefetches) antes de que
+  // el contenido cambiara. Mientras tanto la URL ya había cambiado y la pantalla seguía mostrando
+  // la pestaña anterior, con la barra marcando otra cosa.
+  //
+  // Se vio en CI: el E2E hacía click en "Borradores", la URL quedaba en `?tab=draft`, y a los 20
+  // segundos la pantalla seguía renderizando el builder de "En curso". No era lentitud del test.
+  //
+  // El prop sigue siendo la fuente del primer render (SSR), donde no hay navegación de por medio.
+  const currentTab = searchParams.has('tab') ? tabFromParams(searchParams.get('tab')) : activeTab;
 
   // "+ Nuevo borrador" / "Crear (primer) borrador": armar una combinación pasa siempre por la
   // pestaña "En curso" (el drawer "Agregar materia" + "Guardar como borrador" viven ahí, US-023).
@@ -140,10 +161,10 @@ export function PlanShell({ activeTab, terms, selectedTermId, careerPlanId }: Pr
           is OK: the tabs are visually light and the initial snapshot renders in
           under 50ms. */}
       <Suspense fallback={null}>
-        <PlanTabs items={tabs} active={activeTab} />
+        <PlanTabs items={tabs} active={currentTab} />
       </Suspense>
 
-      {activeTab === 'active' ? (
+      {currentTab === 'active' ? (
         // Suspense porque ActiveTab lee useSuspenseQuery(availableSubjectsQueries.list) directo
         // (US-096, para el picker de comisión). Normalmente resuelve al toque desde el cache
         // hidratado por la RSC de /plan (mismo criterio que el Suspense del drawer en
@@ -151,7 +172,7 @@ export function PlanShell({ activeTab, terms, selectedTermId, careerPlanId }: Pr
         <Suspense fallback={null}>
           <ActiveTab activeDraft={activeDraft} termId={selectedTermId} />
         </Suspense>
-      ) : activeTab === 'draft' ? (
+      ) : currentTab === 'draft' ? (
         <DraftList drafts={draftItems} terms={terms} onCreate={goToBuilder} />
       ) : (
         // Suspense porque PublicFeedTab lee useSuspenseInfiniteQuery(publicSimulationsQueries.feed)
