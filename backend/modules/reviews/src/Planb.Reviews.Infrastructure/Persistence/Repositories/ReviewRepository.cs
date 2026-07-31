@@ -27,4 +27,9 @@ internal sealed class ReviewRepository : IReviewRepository
     public Task<Review?> FindByEnrollmentIdAsync(Guid enrollmentId, CancellationToken ct = default) =>
         _db.Reviews.FirstOrDefaultAsync(
             r => r.EnrollmentId == enrollmentId && r.Status != ReviewStatus.Deleted, ct);
+
+    public async Task<IReadOnlyList<Review>> ListPublishedAsync(CancellationToken ct = default) =>
+        await _db.Reviews
+            .Where(r => r.Status == ReviewStatus.Published)
+            .ToListAsync(ct);
 }
