@@ -69,6 +69,97 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
     {
         ArgumentNullException.ThrowIfNull(clock);
 
+        var validation = ValidateInvariants(commissionId, termId, status, approvalMethod, grade);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+
+        var now = clock.UtcNow;
+        return new EnrollmentRecord
+        {
+            Id = EnrollmentRecordId.New(),
+            StudentProfileId = studentProfileId,
+            SubjectId = subjectId,
+            CommissionId = commissionId,
+            TermId = termId,
+            Status = status,
+            ApprovalMethod = approvalMethod,
+            Grade = ToGradeVo(grade),
+            CreatedAt = now,
+            UpdatedAt = now,
+        };
+    }
+
+    /// <summary>
+    /// Reemplaza los datos académicos de la cursada (US-015), revalidando el juego completo de
+    /// invariantes: una edición parcial puede romper una combinación que era válida antes, así que
+    /// se valida el estado resultante entero y no solo los campos que llegaron.
+    ///
+    /// <para>
+    /// Devuelve si el update cambió algo. El caller lo usa para la idempotencia del PATCH: mandar
+    /// dos veces el mismo payload no puede sellar <see cref="UpdatedAt"/> de nuevo ni emitir el
+    /// evento de edición dos veces.
+    /// </para>
+    ///
+    /// <para>
+    /// Lo que NO se puede cambiar acá: el alumno y la materia. Cambiar cualquiera de los dos no es
+    /// editar esta cursada, es cargar otra, y arrastraría la reseña anclada a un `EnrollmentRecord`
+    /// que ya no habla de lo mismo (ADR-0005).
+    /// </para>
+    /// </summary>
+    public Result<bool> Update(
+        Guid? commissionId,
+        Guid? termId,
+        EnrollmentStatus status,
+        ApprovalMethod? approvalMethod,
+        decimal? grade,
+        IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        var validation = ValidateInvariants(commissionId, termId, status, approvalMethod, grade);
+        if (validation.IsFailure)
+        {
+            return validation.Error;
+        }
+
+        var gradeVo = ToGradeVo(grade);
+        var unchanged = CommissionId == commissionId
+            && TermId == termId
+            && Status == status
+            && ApprovalMethod == approvalMethod
+            && Grade == gradeVo;
+
+        if (unchanged)
+        {
+            return false;
+        }
+
+        CommissionId = commissionId;
+        TermId = termId;
+        Status = status;
+        ApprovalMethod = approvalMethod;
+        Grade = gradeVo;
+        UpdatedAt = clock.UtcNow;
+        return true;
+    }
+
+    /// <summary>
+    /// Las invariantes del data-model, compartidas por <see cref="Create"/> y <see cref="Update"/>.
+    /// Viven acá y no duplicadas en cada uno porque son las mismas: un record editado tiene que
+    /// cumplir exactamente lo que cumple un record recién creado, y dos copias de estas reglas
+    /// driftean.
+    ///
+    /// Orden de evaluación: status vs grade/method, method vs commission/term, status=Cursando vs term.
+    /// </summary>
+    private static Result ValidateInvariants(
+        Guid? commissionId,
+        Guid? termId,
+        EnrollmentStatus status,
+        ApprovalMethod? approvalMethod,
+        decimal? grade)
+    {
         // ── Status vs Grade ──────────────────────────────────────────────
         var statusRequiresGrade = status is EnrollmentStatus.Passed or EnrollmentStatus.Regularized;
         if (statusRequiresGrade && grade is null)
@@ -80,14 +171,9 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
             return EnrollmentRecordErrors.GradeNotAllowedForStatus;
         }
 
-        Grade? gradeVo = null;
-        if (grade is not null)
+        if (grade is not null && (grade.Value < 0m || grade.Value > 10m))
         {
-            if (grade.Value < 0m || grade.Value > 10m)
-            {
-                return EnrollmentRecordErrors.GradeOutOfRange;
-            }
-            gradeVo = new Grade(grade.Value);
+            return EnrollmentRecordErrors.GradeOutOfRange;
         }
 
         // ── Status vs ApprovalMethod ─────────────────────────────────────
@@ -138,21 +224,11 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
             return EnrollmentRecordErrors.CursandoRequiresTerm;
         }
 
-        var now = clock.UtcNow;
-        return new EnrollmentRecord
-        {
-            Id = EnrollmentRecordId.New(),
-            StudentProfileId = studentProfileId,
-            SubjectId = subjectId,
-            CommissionId = commissionId,
-            TermId = termId,
-            Status = status,
-            ApprovalMethod = approvalMethod,
-            Grade = gradeVo,
-            CreatedAt = now,
-            UpdatedAt = now,
-        };
+        return Result.Success();
     }
+
+    private static Grade? ToGradeVo(decimal? grade) =>
+        grade is null ? null : new Grade(grade.Value);
 
     /// <summary>
     /// Reconstitución con Id pre-asignado, para EF rehydration y seeder. Saltea las validaciones

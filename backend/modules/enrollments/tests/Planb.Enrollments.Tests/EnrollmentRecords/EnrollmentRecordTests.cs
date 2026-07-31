@@ -271,4 +271,126 @@ public class EnrollmentRecordTests
         r.Status.ShouldBe(EnrollmentStatus.Passed);
         r.ApprovalMethod.ShouldBe(ApprovalMethod.CreditTransfer);
     }
+
+    // ── Update (US-015) ──────────────────────────────────────────────────
+
+    /// <summary>Cursada en curso, el estado del que sale toda edición de cierre de cuatrimestre.</summary>
+    private static EnrollmentRecord InProgressRecord(FixedClock clock) =>
+        EnrollmentRecord.Create(
+            AnyStudent, AnySubject, AnyCommission, AnyTerm,
+            EnrollmentStatus.InProgress, approvalMethod: null, grade: null, clock).Value;
+
+    [Fact]
+    public void Update_CursandoAAprobada_Success_YSellaUpdatedAt()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+        var createdAt = record.CreatedAt;
+        clock.Advance(TimeSpan.FromDays(30));
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.Passed,
+            ApprovalMethod.Promotion, grade: 9m, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeTrue();
+        record.Status.ShouldBe(EnrollmentStatus.Passed);
+        record.ApprovalMethod.ShouldBe(ApprovalMethod.Promotion);
+        record.Grade!.Value.Value.ShouldBe(9m);
+        record.CreatedAt.ShouldBe(createdAt);
+        record.UpdatedAt.ShouldBe(clock.UtcNow);
+    }
+
+    [Fact]
+    public void Update_MismoPayload_DevuelveFalse_YNoTocaUpdatedAt()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+        var updatedAt = record.UpdatedAt;
+        clock.Advance(TimeSpan.FromDays(30));
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.InProgress,
+            approvalMethod: null, grade: null, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.ShouldBeFalse();
+        record.UpdatedAt.ShouldBe(updatedAt);
+    }
+
+    [Fact]
+    public void Update_AprobadaSinNota_Falla_YNoMuta()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.Passed,
+            ApprovalMethod.Coursework, grade: null, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.GradeRequiredForStatus);
+        record.Status.ShouldBe(EnrollmentStatus.InProgress);
+    }
+
+    [Fact]
+    public void Update_AprobadaSinMetodo_Falla()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.Passed,
+            approvalMethod: null, grade: 8m, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.ApprovalMethodRequiredForAprobada);
+    }
+
+    [Fact]
+    public void Update_EquivalenciaConservandoComision_Falla()
+    {
+        // La combinación era válida antes del update (Cursando con comisión) y deja de serlo
+        // después: es exactamente el caso que obliga a revalidar el estado resultante entero en vez
+        // de solo los campos que llegaron en el PATCH.
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.Passed,
+            ApprovalMethod.CreditTransfer, grade: 8m, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.EquivalenciaRequiresNoCommissionNorTerm);
+    }
+
+    [Fact]
+    public void Update_VolverACursandoSinTerm_Falla()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = EnrollmentRecord.Create(
+            AnyStudent, AnySubject, AnyCommission, AnyTerm,
+            EnrollmentStatus.Passed, ApprovalMethod.Coursework, grade: 8m, clock).Value;
+
+        var result = record.Update(
+            AnyCommission, termId: null, EnrollmentStatus.InProgress,
+            approvalMethod: null, grade: null, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.CursandoRequiresTerm);
+    }
+
+    [Fact]
+    public void Update_NotaFueraDeRango_Falla()
+    {
+        var clock = new FixedClock(new DateTimeOffset(2026, 7, 1, 0, 0, 0, TimeSpan.Zero));
+        var record = InProgressRecord(clock);
+
+        var result = record.Update(
+            AnyCommission, AnyTerm, EnrollmentStatus.Passed,
+            ApprovalMethod.Coursework, grade: 11m, clock);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(EnrollmentRecordErrors.GradeOutOfRange);
+    }
 }
