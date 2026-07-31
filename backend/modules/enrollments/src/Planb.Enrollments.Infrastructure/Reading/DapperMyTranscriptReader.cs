@@ -45,6 +45,9 @@ internal sealed class DapperMyTranscriptReader : IMyTranscriptReader
     {
         const string sql = @"
             SELECT
+                er.id               AS Id,
+                er.subject_id       AS SubjectId,
+                er.commission_id    AS CommissionId,
                 er.term_id          AS TermId,
                 t.label              AS TermLabel,
                 t.year               AS TermYear,
@@ -95,6 +98,7 @@ internal sealed class DapperMyTranscriptReader : IMyTranscriptReader
 
         var items = group
             .Select(r => new TranscriptEntry(
+                r.Id, r.SubjectId, r.CommissionId, r.TermId,
                 r.SubjectCode, r.SubjectName, r.Status, r.ApprovalMethod, r.Grade, r.TeacherLastName))
             .ToList();
 
@@ -102,6 +106,9 @@ internal sealed class DapperMyTranscriptReader : IMyTranscriptReader
     }
 
     private sealed record Row(
+        Guid Id,
+        Guid SubjectId,
+        Guid? CommissionId,
         Guid? TermId,
         string? TermLabel,
         int? TermYear,

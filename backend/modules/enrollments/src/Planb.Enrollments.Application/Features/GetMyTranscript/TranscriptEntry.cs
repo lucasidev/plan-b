@@ -11,8 +11,17 @@ namespace Planb.Enrollments.Application.Features.GetMyTranscript;
 /// <see cref="TeacherLastName"/> es null cuando la cursada no tiene comisión, o la comisión no tiene
 /// titular cargado: el enrollment mismo no guarda docente, así que no hay nada que inventar en esos
 /// casos (ver el reader para el detalle de cómo se deriva cuando sí está disponible).
+///
+/// <see cref="Id"/>, <see cref="SubjectId"/>, <see cref="CommissionId"/> y <see cref="TermId"/> están
+/// para que el historial pueda ofrecer editar la cursada (US-015): el <c>Id</c> es a quién apunta
+/// el PATCH, y los otros tres precargan el formulario con lo que ya estaba guardado. Sin ellos la
+/// pantalla mostraba el dato y no tenía forma de direccionarlo.
 /// </summary>
 public sealed record TranscriptEntry(
+    Guid Id,
+    Guid SubjectId,
+    Guid? CommissionId,
+    Guid? TermId,
     string SubjectCode,
     string SubjectName,
     string Status,
