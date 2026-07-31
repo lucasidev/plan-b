@@ -17,6 +17,10 @@ const entry = (
   status: TranscriptEntry['status'],
   grade: number | null = status === 'Passed' ? 8 : null,
 ): TranscriptEntry => ({
+  id: `enrollment-${subjectCode}`,
+  subjectId: `subject-${subjectCode}`,
+  commissionId: null,
+  termId: null,
   subjectCode,
   subjectName: `${subjectCode} fixture`,
   status,

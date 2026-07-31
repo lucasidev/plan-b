@@ -13,8 +13,16 @@ export type EnrollmentStatus = 'Passed' | 'Regularized' | 'InProgress' | 'Failed
  *
  * `teacherLastName` es null cuando la cursada no tiene comisión, o la comisión no tiene titular
  * cargado: el enrollment no guarda docente, así que no hay nada que inventar en esos casos.
+ *
+ * `id`, `subjectId`, `commissionId` y `termId` sostienen la edición (US-015-f): el `id` es a quién
+ * le pega el PATCH y los otros tres precargan el formulario. Antes de eso el historial mostraba el
+ * dato equivocado en pantalla sin forma de direccionarlo.
  */
 export type TranscriptEntry = {
+  id: string;
+  subjectId: string;
+  commissionId: string | null;
+  termId: string | null;
   subjectCode: string;
   subjectName: string;
   status: EnrollmentStatus;
