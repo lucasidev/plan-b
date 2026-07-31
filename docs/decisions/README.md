@@ -24,12 +24,20 @@ Tres preguntas. Si las tres son "sí", escribilo. Si alguna es "no", no amerita.
 
 ## Formato
 
-Archivos numerados secuencialmente: `NNNN-titulo-corto.md`. Cada uno con:
+Archivos numerados secuencialmente: `NNNN-titulo-corto.md`.
+
+**El título y el filename van en inglés. El cuerpo va en español rioplatense.**
+
+Es el mismo corte que rige el resto del repo, aplicado a los artefactos: el título es un identificador de una línea, del lado de los nombres de rama y los identificadores del código; el cuerpo es prosa, del lado de los comentarios y los docstrings.
+
+Decidido el 2026-07-30. Hasta ese día 42 de los 59 títulos estaban en español; migrarlos es un barrido aparte con sus 1697 referencias.
+
+Cada ADR con:
 
 ```markdown
 # NNNN: Título
 
-- **Estado**: propuesto | aceptado | rechazado | superado por NNNN
+- **Estado**: propuesto | aceptado | rechazado | superado por NNNN | parcialmente superado por NNNN (qué parte) | deprecado por NNNN
 - **Fecha**: YYYY-MM-DD
 
 ## Contexto
@@ -44,6 +52,22 @@ Qué se evaluó y por qué se descartó.
 ## Consecuencias
 Positivas, negativas, advertencias.
 ```
+
+## Cuando una decisión cambia
+
+**Una decisión nueva va en un ADR nuevo, nunca como sección adentro del viejo.** El viejo se taguea en su `Estado` apuntando al nuevo.
+
+La razón es que un ADR que sigue diciendo `aceptado` mientras el código hace otra cosa es documentación que miente, y el lector no tiene cómo enterarse: llega al doc, lee la decisión, y no hay nada que le avise. Esconder el cambio adentro de una sección al final del archivo es la misma mentira con más pasos, porque el `Estado` de arriba es lo primero que se lee.
+
+Distinguir dos cosas que se confunden:
+
+- **Corrección**: el ADR dice algo que siempre estuvo mal (un status code mal transcripto, un nombre equivocado). Se arregla en el lugar, sin ADR nuevo.
+- **Decisión nueva**: cambió lo que decidimos. ADR nuevo, y el viejo tagueado.
+
+Dos detalles que importan:
+
+- **Si el título del ADR viejo dejó de ser cierto, se corrige el título.** El filename se conserva, porque los links del repo apuntan a él, y se agrega una línea `- **Nota**` explicando por qué el slug quedó viejo. Un título que miente es peor que un `Estado` que miente: se lee en el índice, en los links y en las referencias cruzadas.
+- **En la supersesión parcial, decir qué parte.** "Parcialmente superado por NNNN" sin decir cuál parte obliga a leer los dos ADRs enteros para saber qué sigue vigente.
 
 ## Referencias
 

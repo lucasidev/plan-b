@@ -14,6 +14,10 @@ Motivación: durante US-T01..T04 cometí errores de naming de branches, PR title
 | Branch name | `<type>/<scope-description>` | `feat/identity-forgot-password`, `docs/rollback-policy` | `feat/T04-architecture-tests`, `feature/usT01` |
 | PR title | Igual al commit subject (Conventional Commits) | `test(backend): reglas de arquitectura con NetArchTest (US-T04)` | `Test: NetArchTest rules` |
 | US reference | En el commit body o PR body, **NUNCA** en branch o subject | `feat(identity): forgot-password backend (US-033-i)` | `feat/us033-forgot-password` |
+| Idioma del branch | **Inglés** | `feat/academic-commission-crud`, `test/coverage-backfill` | `feat/academic-cola-de-imports` |
+| Idioma del commit subject | **Inglés** | `fix(reviews): a filtered review had no way back out` | `fix(reviews): la reseña no tenía cómo volver a salir` |
+| Idioma del commit body | **Español rioplatense** | El párrafo que explica por qué, con sus acentos | Un body en inglés |
+| Idioma del título del PR | **Inglés** (igual al subject) | `docs(adr): reviews bind only to what the catalog can know` | `docs(adr): la reseña se ata al catálogo` |
 
 ## Ruleset de `main` (enforcement por plataforma, activo desde 2026-07-10)
 
@@ -79,7 +83,9 @@ Tags especiales:
 ```
 
 - **type**: igual que Conventional Commits.
-- **scope-description**: descriptor en kebab-case del cambio. Suficientemente específico como para identificar el branch entre 10 abiertos. Sin US numbers.
+- **scope-description**: descriptor en kebab-case del cambio, **en inglés**. Suficientemente específico como para identificar el branch entre 10 abiertos. Sin US numbers.
+
+**Por qué el título va en inglés y el cuerpo en español**: el nombre de la rama, el subject del commit y el título del PR son identificadores de una línea, del mismo lado que los identificadores del código. El body del commit, el body del PR y el contenido de los docs son prosa, del mismo lado que los comentarios y los docstrings. Decidido el 2026-07-30, después de contar: 31 de 34 branches ya estaban en inglés, y 42 de 59 títulos de ADR estaban en español. Lo primero se ratificó, lo segundo se migra aparte. El historial viejo no se reescribe.
 
 ### Ejemplos válidos
 
