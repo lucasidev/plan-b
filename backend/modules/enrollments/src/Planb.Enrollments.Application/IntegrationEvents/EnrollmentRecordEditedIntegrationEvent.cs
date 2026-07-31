@@ -8,19 +8,12 @@ namespace Planb.Enrollments.Application.IntegrationEvents;
 /// que la reseña habla de algo que todavía no terminó.
 ///
 /// <para>
-/// <b>Vive en el publisher, y eso se aparta de ADR-0045 con razón.</b> Aquel ADR fija que el tipo
-/// del evento vive en el bounded context que <em>recibe</em> la acción, y su restricción declarada
-/// es que el grafo de assemblies quede acíclico. Acá esa regla no se puede aplicar: como una reseña
-/// se ancla a una cursada, <c>Planb.Reviews.Application</c> ya referencia a
-/// <c>Planb.Enrollments.Application</c>, y poner el tipo del lado de Reviews obligaría a Enrollments
-/// a referenciar a Reviews, cerrando el ciclo que ADR-0045 existe para evitar.
-/// </para>
-///
-/// <para>
-/// La diferencia también es semántica, no solo de grafo. Los eventos de ADR-0045 son <em>pedidos</em>
-/// ("cuarentená esta reseña"), y por eso el contrato le pertenece a quien puede cumplirlos. Este es
-/// un <em>hecho</em> del dominio de Enrollments: la cursada cambió. Que Reviews reaccione es
-/// decisión de Reviews, y mañana puede reaccionar otro módulo sin tocar este tipo.
+/// <b>Vive en el publisher y no en el consumer, por ADR-0062.</b> Es un <em>hecho</em> del dominio
+/// de Enrollments (la cursada cambió), no un <em>pedido</em> de los que gobierna ADR-0045
+/// ("cuarentená esta reseña"). Que Reviews reaccione es decisión de Reviews, y mañana puede
+/// reaccionar otro módulo sin tocar este tipo. Además, ubicarlo del lado de Reviews cerraría un
+/// ciclo de assemblies: como una reseña se ancla a una cursada (ADR-0005),
+/// <c>Planb.Reviews.Application</c> ya referencia a <c>Planb.Enrollments.Application</c>.
 /// </para>
 /// </summary>
 /// <param name="PreviousStatus">
