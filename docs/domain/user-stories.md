@@ -129,6 +129,7 @@ Agrupado por epic.
 | [US-013](user-stories/US-013.md) | Cargar historial manual | High | M |
 | [US-014](user-stories/US-014.md) | Importar historial desde PDF/texto | Low | L |
 | [US-015](user-stories/US-015.md) | Editar entrada del historial | Medium | S |
+| [US-097](user-stories/US-097.md) | Cerrar la cursada al terminar el cuatrimestre | High | M |
 | [US-045](user-stories/US-045.md) | Mi carrera shell + 5 tabs (consolidación de vistas académicas) | High | L |
 
 #### EPIC-04: Planificación de cuatrimestre
@@ -142,6 +143,7 @@ Agrupado por epic.
 | [US-026](user-stories/US-026.md) | Borrar simulación (fusionada en US-023) | Low | S |
 | [US-027](user-stories/US-027.md) | Ver simulaciones públicas de otros alumnos | Medium | S |
 | [US-096](user-stories/US-096.md) | Elegir comisión y ver choques en el planificador | High | M |
+| [US-098](user-stories/US-098.md) | Ver cómo le fue a la gente en cada comisión, al elegirla | High | L |
 | [US-044](user-stories/US-044.md) | Inicio v2 con pregunta dominante | High | M |
 | [US-046](user-stories/US-046.md) | Planificar shell + 2 tabs (en curso / borrador) + nudge de promoción | High | L |
 
@@ -161,6 +163,7 @@ Agrupado por epic.
 | [US-077-b](user-stories/US-077-b.md) | Backend de Notificaciones (parent, splitada b-1/b-2/b-3) | Medium | L |
 | [US-077-f](user-stories/US-077-f.md) | Panel de notificaciones (dropdown del bell del topbar) | Medium | M |
 | [US-089](user-stories/US-089.md) | Persistir modelo completo de reseña (rating, horas, tags), en S6 | High | M |
+| [US-099](user-stories/US-099.md) | Valorar materias viejas al cargar el historial, en una pregunta | High | M |
 | [US-055](user-stories/US-055.md) | Borrar reseña propia (action + modal destructivo) | Medium | S |
 
 #### EPIC-06: Claim e identidad docente

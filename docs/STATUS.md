@@ -24,7 +24,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
-| S12+ | next+ | Backlog planificado: backoffice restante (US-067/US-081 parciales + importadores US-006/007 + wizard US-094 + usuarios US-095), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
+| S12 | en curso | **Cerrar el lazo que produce el corpus**: el cierre de cursada como momento que genera los datos (US-015 el mecanismo, US-097 el momento), la valoración por comisión que los muestra donde se decide (US-098), y la reseña simple que siembra corpus desde el día uno (US-099). | 🟡 Open |
+| S13+ | next+ | Backlog planificado: backoffice restante (US-067/US-081 parciales + importadores US-006/007 + wizard US-094 + usuarios US-095), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -590,6 +591,36 @@ Al cerrar el sprint quedó acordada una **revisión aggregate por aggregate** de
 - **US-093 diferido**: rechazar el cambio de modalidad cuando la comisión ya tiene inscriptos (necesita un read cross-BC a Enrollments). `TODO` marcado en el handler.
 - **US-023 diferido**: los borradores `Archived` y los `Active` de otros períodos no se muestran en ninguna pantalla todavía.
 - Del mockup de comisiones quedaron afuera, a propósito: aula, ocupación (`42/50`, no hay inscripciones a comisiones futuras en el modelo), "Importar oferta" (es US-007) y "Cuatri anterior".
+
+## S12 🟡 Open
+
+**Rango**: arranca 2026-07-31.
+
+**Foco**: **cerrar el lazo que produce el corpus**. S10 y S11 dejaron el planificador entero: evalúa combinaciones, muestra choques, guarda borradores y los comparte. Lo que no tiene es de dónde sacar la señal que lo hace distinto de la plataforma de la facultad. Hoy, en la pantalla donde el alumno elige comisión, `AvailableCommissionItem` le muestra nombre, modalidad, cupo, docentes y horarios: todo lo que la universidad ya publica, y ninguna reseña.
+
+La causa está antes: el módulo Enrollments tiene cuatro features y ninguna modifica un record existente, así que **no existe el momento en que el alumno cuenta cómo le fue**. Una cursada nace con su estado definitivo y se queda así para siempre. Sin ese momento no hay pares (materia, comisión) con verdicto, y sin esos pares no hay nada que mostrar donde se decide.
+
+### Scope
+
+| US | Qué entrega |
+|---|---|
+| [US-015](domain/user-stories/US-015.md) | El `PATCH` de una cursada propia, con revalidación de invariantes y el evento que manda a `under_review` la reseña afectada (ADR-0032). Enabler del resto. |
+| [US-097](domain/user-stories/US-097.md) | El momento del cierre: qué cursadas están pendientes, qué se le pregunta al alumno (incluido el método de aprobación) y el handoff a la reseña. |
+| [US-098](domain/user-stories/US-098.md) | El agregado por (materia, comisión) y su lectura en el picker, con la vigencia del plantel medida contra `reviewed_teacher_name`. |
+| [US-099](domain/user-stories/US-099.md) | La reseña simple, una sola pregunta y sin docente, ofrecida al confirmar el import de historial. Siembra corpus el día uno en vez de esperar un cuatrimestre. |
+
+### Decisiones de producto que definen el sprint
+
+- **La unidad de decisión es (materia, comisión), no (materia, docente).** El alumno se inscribe en una comisión; el docente es lo que esa comisión tiene este cuatrimestre. El riesgo de que el agregado envejezca cuando el docente cambia se mide, no se esconde: cada reseña guarda siempre el nombre del docente que nombró (ADR-0060), así que las reseñas reconstruyen el plantel histórico que el catálogo no tiene.
+- **La app planifica, no lleva el historial.** El registro académico oficial vive en la plataforma de la universidad. Lo que ella no da, y esto sí, es la complejidad de una materia, la carga resultante de juntar varias, y las valoraciones.
+- **El método de aprobación se pregunta en el cierre, nunca en la carga retroactiva.** En el cierre el alumno se acuerda; tres años después inventaría.
+- **La reseña de carga tardía no nombra docente, y es decisión.** De una materia vieja se recuerda cuánto costó, no cuál de los tres docentes tocó. Eso además deja sin entradas la cola de resolución de referencias del punto 4 de ADR-0060, que por ahora no hace falta construir.
+
+### Diferido a propósito
+
+- **Ponderar reseñas por completitud.** Mientras no existan las dos formas en cantidad, ponderado y plano dan idéntico y los coeficientes se elegirían a ciegas.
+- **Puntaje de carrera y de universidad.** Decidido que se calculan desde estos agregados, gateados por **cobertura** y no por muestra: si solo 3 de 40 materias del plan tienen puntaje, el de la carrera viaja `null` (ADR-0054), porque el número diría más sobre cuáles materias se reseñaron que sobre la carrera.
+- **Serie temporal por período de la cursada.** Habilita ver cómo evoluciona una materia, y reemplaza la idea de decaer reseñas viejas por antigüedad. Va por período de la cursada, no por fecha de la reseña: si no, la carga masiva apila diez años de historia en el mes en que la gente se registró.
 
 ## Backlog open (sin sprint asignado)
 
