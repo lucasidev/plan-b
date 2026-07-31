@@ -1,5 +1,6 @@
 using Planb.Academic.Application.Contracts;
 using Planb.Enrollments.Application.Abstractions.Persistence;
+using Planb.Enrollments.Application.Services;
 using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Identity.Application.Contracts;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -62,20 +63,12 @@ public static class RegisterEnrollmentCommandHandler
             return EnrollmentRecordErrors.StudentProfileRequired;
         }
 
-        if (command.TermId is not null && !await academic.IsAcademicTermInUniversityAsync(
-                command.TermId.Value, plan.UniversityId, ct))
+        var placementCheck = await EnrollmentPlacement.ValidateAsync(
+            academic, plan.UniversityId, command.SubjectId,
+            command.CommissionId, command.TermId, ct);
+        if (placementCheck.IsFailure)
         {
-            return EnrollmentRecordErrors.TermNotInUniversity;
-        }
-
-        if (command.CommissionId is not null)
-        {
-            var placement = await academic.GetCommissionPlacementAsync(command.CommissionId.Value, ct);
-            var commissionCheck = ValidateCommission(placement, command.SubjectId, command.TermId);
-            if (commissionCheck.IsFailure)
-            {
-                return commissionCheck.Error;
-            }
+            return placementCheck.Error;
         }
 
         // 4) Idempotencia.
@@ -116,37 +109,5 @@ public static class RegisterEnrollmentCommandHandler
             record.ApprovalMethod?.ToString(),
             record.Grade?.Value,
             record.CreatedAt);
-    }
-
-    /// <summary>
-    /// La comisión tiene que existir, ser de la materia que se está cargando y, cuando el período
-    /// viene informado, ser de ese período. Tres errores separados porque desde el cliente cada caso
-    /// se arregla distinto: elegir otra comisión, corregir la materia, o corregir el cuatrimestre.
-    ///
-    /// <para>
-    /// No se rechaza una comisión archivada: una cursada histórica puede apuntar legítimamente a una
-    /// comisión que ya se dio de baja del catálogo. El alta de comisión sí la rechaza, que es donde
-    /// corresponde.
-    /// </para>
-    /// </summary>
-    private static Result ValidateCommission(
-        CommissionPlacement? placement, Guid subjectId, Guid? termId)
-    {
-        if (placement is null)
-        {
-            return EnrollmentRecordErrors.CommissionNotFound;
-        }
-
-        if (placement.SubjectId != subjectId)
-        {
-            return EnrollmentRecordErrors.CommissionNotForSubject;
-        }
-
-        if (termId is not null && placement.TermId != termId.Value)
-        {
-            return EnrollmentRecordErrors.CommissionNotForTerm;
-        }
-
-        return Result.Success();
     }
 }
