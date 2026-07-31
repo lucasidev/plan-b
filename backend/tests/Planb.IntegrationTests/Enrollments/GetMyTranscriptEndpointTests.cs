@@ -154,6 +154,14 @@ public class GetMyTranscriptEndpointTests
         recent.Items[0].Grade.ShouldBe(9m);
         recent.Items[0].TeacherLastName.ShouldBe("brandt");
 
+        // La identidad de la cursada viaja en el listado porque es lo único que le permite al
+        // historial ofrecer editarla (US-015): sin el id, la pantalla muestra el dato y no tiene
+        // a qué apuntarle el PATCH.
+        recent.Items[0].Id.ShouldNotBe(Guid.Empty);
+        recent.Items[0].SubjectId.ShouldBe(Subject111);
+        recent.Items[0].CommissionId.ShouldBe(Commission111A);
+        recent.Items[0].TermId.ShouldBe(Term2026_1c);
+
         var old = periods[1];
         old.Label.ShouldBe("2024-C1");
         old.Year.ShouldBe(2024);
@@ -173,5 +181,7 @@ public class GetMyTranscriptEndpointTests
         noPeriod.Items[0].Status.ShouldBe("Passed");
         noPeriod.Items[0].ApprovalMethod.ShouldBe("CreditTransfer");
         noPeriod.Items[0].TeacherLastName.ShouldBeNull();
+        noPeriod.Items[0].CommissionId.ShouldBeNull();
+        noPeriod.Items[0].TermId.ShouldBeNull();
     }
 }
