@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { EnrollmentStatus, TranscriptPeriod } from '@/features/my-career/types';
 import { cn } from '@/lib/utils';
 
@@ -16,8 +17,9 @@ const NO_GRADE_PLACEHOLDER = String.fromCharCode(8212);
  * solo cuando el período tiene alguna nota real). Body: mini-grid de 6 columnas, una
  * fila por cursada.
  *
- * Server component (sin interacción). El menú `⋯` es un placeholder visual; cuando
- * aterrice US-015 (editar/borrar) se reemplaza.
+ * Server component (sin interacción propia). La última columna es el link a editar esa
+ * cursada (US-015-f): el historial mostraba el dato equivocado en pantalla y no había
+ * forma de arreglarlo.
  */
 export function HistoryPeriodCard({ period }: { period: TranscriptPeriod }) {
   return (
@@ -38,8 +40,9 @@ export function HistoryPeriodCard({ period }: { period: TranscriptPeriod }) {
       </div>
 
       {/* La columna del chip mide 100px (no 90px): "abandonada", la más larga de las
-          cinco palabras de estado, no entraba sin desbordar. */}
-      <div className="grid" style={{ gridTemplateColumns: '80px 1fr 110px 100px 60px 30px' }}>
+          cinco palabras de estado, no entraba sin desbordar. La última pasó de 30px a
+          52px cuando el placeholder visual se volvió el link "Editar". */}
+      <div className="grid" style={{ gridTemplateColumns: '80px 1fr 110px 100px 60px 52px' }}>
         {period.items.map((item, idx) => {
           const borderClass = idx === 0 ? '' : 'border-t border-line';
           return (
@@ -66,12 +69,15 @@ export function HistoryPeriodCard({ period }: { period: TranscriptPeriod }) {
               >
                 {item.grade ?? NO_GRADE_PLACEHOLDER}
               </div>
-              <div
-                className={cn('py-2.5 text-right text-ink-3', borderClass)}
-                aria-hidden
-                title="Acciones disponibles cuando aterrice US-015"
-              >
-                ⋯
+              <div className={cn('py-2.5 text-right', borderClass)}>
+                <Link
+                  href={`/my-career/transcript/${item.id}/edit`}
+                  className="text-ink-3 hover:text-accent-ink transition-colors"
+                  style={{ fontSize: 11.5 }}
+                  aria-label={`Editar ${item.subjectName}`}
+                >
+                  Editar
+                </Link>
               </div>
             </div>
           );
