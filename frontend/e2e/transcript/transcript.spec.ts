@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { LUCIA } from '../helpers/personas';
+import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
  * Historial académico de Mi carrera (US-045-e, read de US-013).
@@ -14,29 +14,34 @@ import { LUCIA } from '../helpers/personas';
  * Por eso vive en E2E y no un nivel más abajo (ADR-0036: subir un nivel solo si el inferior
  * no alcanza). Acá el inferior no alcanza: el defecto era el cableado entre las dos piezas
  * que sí estaban testeadas.
+ *
+ * **Alumno descartable por corrida, y no LUCIA.** El test carga una cursada, o sea que su
+ * primer paso tiene efecto persistente. Con una persona compartida eso lo volvía irrepetible:
+ * si la aserción fallaba, el reintento de Playwright chocaba con
+ * UNIQUE(student_profile_id, subject_id, term_id) y moría con "Ya cargaste esta materia",
+ * tapando el fallo original con uno derivado. Un test que no se puede reintentar no tiene red
+ * de contención contra ningún flake, y encima obligaba a elegir la última opción de cada
+ * select para no pisar el pool que consume `plan.spec.ts`. Con un alumno nuevo por corrida
+ * nada de eso hace falta.
  */
 
-async function signIn(page: Page): Promise<void> {
+async function signIn(page: Page, student: CreatedStudent): Promise<void> {
   await page.goto('/sign-in');
-  await page.getByLabel(/tu email/i).fill(LUCIA.email);
-  await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
+  await page.getByLabel(/tu email/i).fill(student.email);
+  await page.getByLabel(/^contraseña$/i).fill(student.password);
   await page.getByRole('button', { name: /^entrar$/i }).click();
-  await expect(page).toHaveURL(/\/home/);
+  await expect(page).toHaveURL(/\/home/, { timeout: 30_000 });
 }
 
 /**
- * Devuelve el value + el texto de la **última** opción real (no placeholder) de un select. Se
- * resuelve en runtime porque el catálogo lo sirve el backend: hardcodear un id de materia o de
- * período ataría el spec al seed.
- *
- * Va desde el final y no desde el principio a propósito. La suite comparte la persona Lucía, y
- * este spec le aprueba una materia, lo que la saca de "materias disponibles" para el resto de
- * la corrida. `plan.spec.ts` arma su combinación con la **primera** materia disponible, así que
- * tomar la última deja libre la punta del pool que ese spec consume. La otra mitad de la misma
- * defensa es el nombre del directorio: `transcript/` ordena después de `plan/`, y Playwright
- * corre los archivos ordenados con un solo worker.
+ * Primera opción real (no placeholder) de un select, con su value y su texto. Se resuelve en
+ * runtime porque el catálogo lo sirve el backend: hardcodear un id de materia o de período
+ * ataría el spec al seed.
  */
-async function lastRealOption(page: Page, label: RegExp): Promise<{ value: string; text: string }> {
+async function firstRealOption(
+  page: Page,
+  label: RegExp,
+): Promise<{ value: string; text: string }> {
   // El form monta con un "Cargando materias y cuatrimestres..." mientras resuelven las queries
   // del catálogo, y `count()` no auto-espera como los matchers: sin este await, enumerar las
   // opciones devuelve cero y parece que el select vino vacío.
@@ -44,7 +49,7 @@ async function lastRealOption(page: Page, label: RegExp): Promise<{ value: strin
 
   const options = page.getByLabel(label).locator('option');
   const count = await options.count();
-  for (let i = count - 1; i >= 0; i--) {
+  for (let i = 0; i < count; i++) {
     const value = (await options.nth(i).getAttribute('value')) ?? '';
     const text = (await options.nth(i).textContent())?.trim() ?? '';
     if (value === '') continue;
@@ -54,6 +59,16 @@ async function lastRealOption(page: Page, label: RegExp): Promise<{ value: strin
 }
 
 test.describe('Mi carrera: historial', () => {
+  test.setTimeout(120_000);
+
+  let student: CreatedStudent | null = null;
+
+  test.afterEach(async ({ request }) => {
+    if (!student) return;
+    await deleteStudent(request, student);
+    student = null;
+  });
+
   /**
    * Un solo test que recorre el loop entero en vez de dos, y a propósito: el spec no puede
    * asumir cursadas pre-cargadas. El stack de E2E siembra personas pero no el corpus de demo
@@ -61,24 +76,30 @@ test.describe('Mi carrera: historial', () => {
    * hablar es la que él mismo carga. Un test que dependiera del corpus pasaría local y se
    * caería en CI, que es exactamente lo que pasó la primera vez que lo escribí así.
    */
-  test('una materia cargada aparece en el historial con sus datos reales', async ({ page }) => {
-    await signIn(page);
+  test('una materia cargada aparece en el historial con sus datos reales', async ({
+    page,
+    context,
+    request,
+  }) => {
+    student = await createStudent(request, { emailPrefix: 'e2e-transcript' });
+
+    await context.clearCookies();
+    await signIn(page, student);
     await page.goto('/my-career/transcript/add');
 
-    // La materia y el período se resuelven en runtime: hardcodear ids ataría el spec al seed.
-    const subject = await lastRealOption(page, /^Materia$/);
+    const subject = await firstRealOption(page, /^Materia$/);
     await page.getByLabel(/^Materia$/).selectOption(subject.value);
     await page.getByLabel(/^Estado$/).selectOption('Passed');
     await page.getByLabel(/Forma de aprobación/i).selectOption('FinalExam');
 
-    const term = await lastRealOption(page, /^Cuatrimestre$/);
+    const term = await firstRealOption(page, /^Cuatrimestre$/);
     await page.getByLabel(/^Cuatrimestre$/).selectOption(term.value);
     await page.getByLabel(/Nota final/i).fill('8');
 
     await page.getByRole('button', { name: /cargar entrada/i }).click();
 
-    // El action redirige al historial. Que la materia recién cargada se vea acá es lo que
-    // prueba el loop completo: write, redirect, y el read sirviendo dato fresco.
+    // Que la materia recién cargada se vea acá es lo que prueba el loop completo: write,
+    // navegación, y el read sirviendo dato fresco.
     await expect(page).toHaveURL(/\/my-career\?tab=transcript/);
 
     // La aserción central del bug: con una cursada cargada, el empty state no puede seguir.
