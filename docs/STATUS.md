@@ -616,6 +616,23 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
 - **El método de aprobación se pregunta en el cierre, nunca en la carga retroactiva.** En el cierre el alumno se acuerda; tres años después inventaría.
 - **La reseña de carga tardía no nombra docente, y es decisión.** De una materia vieja se recuerda cuánto costó, no cuál de los tres docentes tocó. Eso además deja sin entradas la cola de resolución de referencias del punto 4 de ADR-0060, que por ahora no hace falta construir.
 
+### Avance
+
+- **US-015 hecha** (2026-08-01). El `PATCH` con revalidación de invariantes, la detección de la
+  edición destructiva y el evento que pone la reseña en cuarentena por `EnrollmentChanged`, más el
+  barrido de reconciliación que la recupera si el consumer agota los reintentos. Del lado del
+  alumno, cada fila del historial se puede corregir, con confirmación explícita cuando el cambio
+  manda a revisión una reseña publicada.
+- El `AC` original marcaba la reseña con `needs_revalidation` cuando el evento fallara, y se
+  reemplazó porque era circular: si el evento no llega, Reviews no se entera, y Reviews es quien
+  tendría que poner la marca. Una reseña publicada cuya cursada está en curso ya es contradictoria
+  por sí sola, así que el barrido la encuentra sin depender de que alguien la haya marcado.
+- **Al verificarla apareció un defecto más viejo y más ancho**: guardar un formulario dejaba al
+  alumno en la misma pantalla, con el cambio ya persistido, 1 de cada 2 veces contra un build de
+  producción. No era del alta sino de la navegación posterior, y le pegaba a los once sitios que
+  todavía redirigían adentro del server action. Todos migrados; la revisión de
+  [ADR-0046](decisions/0046-server-actions-como-mutaciones-puras.md) tiene la medición.
+
 ### Diferido a propósito
 
 - **Ponderar reseñas por completitud.** Mientras no existan las dos formas en cantidad, ponderado y plano dan idéntico y los coeficientes se elegirían a ciegas.
