@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/session';
 import { patchMyProfile } from './api';
 import { profileUpdateSchema } from './schema';
@@ -46,7 +45,10 @@ export async function updateMyProfileAction(
   }
 
   if (response.status === 204) {
-    revalidatePath('/my-profile');
+    // Sin `revalidatePath`: la página es `force-dynamic`, así que se re-renderiza en cada visita
+    // sin que nadie la invalide, y el form ya vuelve a modo vista al ver el `success`. Lo único
+    // que agregaba era el re-render embebido en el stream de la respuesta del action, que es lo
+    // que ADR-0046 prohíbe.
     return { status: 'success' };
   }
 

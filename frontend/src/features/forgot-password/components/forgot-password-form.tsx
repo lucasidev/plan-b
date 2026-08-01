@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { forgotPasswordAction } from '../actions';
@@ -25,6 +26,14 @@ export function ForgotPasswordForm() {
     forgotPasswordAction,
     initialForgotPasswordState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   const emailRef = useRef<HTMLInputElement>(null);
   useEffect(() => {

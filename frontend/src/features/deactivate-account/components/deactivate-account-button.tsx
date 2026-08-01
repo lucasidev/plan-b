@@ -4,6 +4,7 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import { useActionState, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 import { deactivateAccountAction } from '../actions';
 import { initialDeactivateAccountState } from '../types';
@@ -36,6 +37,14 @@ export function DeactivateAccountButton({ email }: { email: string }) {
     deactivateAccountAction,
     initialDeactivateAccountState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   const matches = typed.trim().toLowerCase() === email.toLowerCase();
 

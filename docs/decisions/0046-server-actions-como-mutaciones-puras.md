@@ -53,8 +53,55 @@ El `router.push` dispara un flight GET normal a la página (no el stream embebid
 - Si una futura versión de Next resuelve el estancamiento del stream embebido, re-evaluar. Mientras tanto, la regla aplica a toda Server Action que mute en este repo.
 - El patrón asume que la data afectada está en TanStack Query (invalidable) o que un `router.push`/`router.refresh` alcanza. Para data que no está en Query y necesita refresco server-side sin navegación, evaluar `router.refresh()` (flight GET, mismo canal seguro) antes de volver a `revalidatePath`.
 
+## Revisión 2026-08-01: `router.push` tampoco alcanza, y faltaban doce actions
+
+Dos cosas que este ADR daba por resueltas y no lo estaban.
+
+**Primera: el patrón estaba escrito pero no aplicado.** Un barrido encontró **once sitios en diez
+features** que seguían redirigiendo o revalidando adentro del action: alta de cursada, importar
+historial, onboarding, sign-in, sign-up, sign-out, forgot-password, reset-password,
+change-password, deactivate-account (tres caminos) y los `revalidatePath` de settings y
+my-profile. Todos migrados. `settings` y `my-profile` quedaron sin reemplazo: sus páginas son
+`force-dynamic`, así que la invalidación no compraba nada.
+
+**Segunda, y más importante: `router.push` no es un canal seguro.** Este ADR afirmaba que el
+flight GET "nunca presentó el problema". Es falso, y ahora está medido. Corriendo el E2E veinte
+veces contra un build de producción:
+
+| variante | alta de cursada | edición de cursada |
+|---|---|---|
+| `redirect()` adentro del action | 50% falla | - |
+| `router.push` desde el efecto | 5% | 25% |
+| idem + `<Suspense>` en la tab del destino | 0/20 | 10% |
+| `location.assign` | 0/20 | 0/20 |
+
+El trace del fallo es inequívoco: el POST del action vuelve 200 en 14ms, el GET del payload RSC del
+destino vuelve 200 en 3ms, y después no pasa nada durante treinta segundos. El contenido estaba;
+lo que no ocurría era el commit. `router.push` es una transición de React, y React difiere el
+commit de una transición hasta que el árbol nuevo esté listo: mientras tanto la URL no cambia y la
+pantalla sigue siendo el formulario, o sea que el usuario ve su cambio como si no hubiera pasado.
+
+De ahí salen dos correcciones a la decisión original:
+
+1. **La navegación que cierra un formulario va por `navigateAfterMutation`**
+   (`frontend/src/lib/navigate-after-mutation.ts`), que hace `location.assign`. Cambia la URL de
+   forma sincrónica y saca a React de la ecuación. El precio es un reload completo, barato en un
+   flujo que ya está saliendo de la página. **No** es el default para navegar en la app: para
+   moverse entre pantallas sigue siendo `router.push`.
+2. **Una ruta dinámica que hace fetch necesita su `<Suspense>`.** Sin boundary, la navegación
+   entera espera a que el render del servidor cierre el stream. Bajó el fallo del alta de 50% a 0
+   por sí solo, y vale igual con la navegación dura: es lo que hace que la pantalla aparezca
+   enseguida en vez de quedarse en blanco.
+
+Lo que **no** cambia: el action sigue siendo una mutación pura. Lo que cambia es cómo el cliente
+ejecuta la consecuencia.
+
 ## Refs
 
+- Medición de 2026-08-01: `bun scripts/run-e2e.ts --build <spec> --repeat-each=20 --retries=0`.
+  El spec tuvo que volverse repetible primero (alumno descartable en vez de una persona
+  compartida): un test cuyo primer paso persiste no se puede reintentar, y su reintento moría con
+  un 409 que tapaba el fallo original.
 - PR #147: fix del cuelgue + guarda `clientApiFetch`. Diagnóstico con repro estadístico en `next start --repeat-each`.
 - `frontend/src/features/write-review/actions.ts`, `frontend/src/features/edit-review/actions.ts`, `frontend/src/features/delete-review/`: actions que aplican el patrón (comentario inline en el branch del 201/200).
 - `frontend/src/features/write-review/components/review-editor.tsx`: el `useEffect` que reacciona al `status: 'success'`.

@@ -7,6 +7,7 @@ import { useFormStatus } from 'react-dom';
 import { AuthErrorBanner, PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
 import { ResendVerificationButton } from '@/features/resend-verification';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
@@ -27,6 +28,14 @@ export function SignInForm() {
     signInAction,
     initialSignInState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   const emailRef = useRef<HTMLInputElement>(null);
   useEffect(() => {

@@ -11,9 +11,9 @@ vi.mock('../actions', () => ({
   submitEditEnrollmentAction: (...args: unknown[]) => submitMock(...(args as [])),
 }));
 
-const pushMock = vi.fn();
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: pushMock }),
+const navigateMock = vi.fn();
+vi.mock('@/lib/navigate-after-mutation', () => ({
+  navigateAfterMutation: (url: string) => navigateMock(url),
 }));
 
 // El catálogo se stubea acá: lo que se está testeando es la puerta de la edición destructiva, no
@@ -72,7 +72,7 @@ function renderForm(overrides: { hasPublishedReview?: boolean } = {}) {
 describe('EditEnrollmentForm', () => {
   beforeEach(() => {
     submitMock.mockClear();
-    pushMock.mockReset();
+    navigateMock.mockReset();
   });
 
   it('precarga la cursada guardada', async () => {
@@ -151,7 +151,7 @@ describe('EditEnrollmentForm', () => {
     await user.click(screen.getByRole('button', { name: /guardar igual/i }));
 
     await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/my-career?tab=transcript'));
+    await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/my-career?tab=transcript'));
   });
 
   it('no pide confirmación si la cursada ya estaba en curso', async () => {

@@ -2,8 +2,9 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 import { submitAddEnrollmentAction } from '../actions';
 import { addEnrollmentQueries } from '../api';
@@ -36,6 +37,14 @@ export function EnrollmentForm({ careerPlanId, universityId }: Props) {
     submitAddEnrollmentAction,
     initialAddEnrollmentState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente. Con el redirect
+  // adentro del action, el re-render del historial viajaba en el stream de la respuesta y colgaba
+  // el form en "Guardando..." una de cada dos veces contra un build de producción.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation('/my-career?tab=transcript');
+  }, [state.status]);
 
   const [status, setStatus] = useState<string>('Passed');
   const [approvalMethod, setApprovalMethod] = useState<string>('IndependentFinalExam');

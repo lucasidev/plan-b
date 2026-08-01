@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { forgotPassword } from './api';
 import { forgotPasswordSchema } from './schema';
 import type { ForgotPasswordFormState } from './types';
@@ -39,7 +38,10 @@ export async function forgotPasswordAction(
   const response = await forgotPassword({ email: parsed.data.email });
 
   if (response.status === 204) {
-    redirect(`/forgot-password/check-inbox?email=${encodeURIComponent(parsed.data.email)}`);
+    return {
+      status: 'success',
+      redirectTo: `/forgot-password/check-inbox?email=${encodeURIComponent(parsed.data.email)}`,
+    };
   }
 
   if (response.status === 429) {

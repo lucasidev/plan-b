@@ -70,8 +70,13 @@ export function HistoryPeriodCard({ period }: { period: TranscriptPeriod }) {
                 {item.grade ?? NO_GRADE_PLACEHOLDER}
               </div>
               <div className={cn('py-2.5 text-right', borderClass)}>
+                {/* Sin prefetch: la ruta de edición es dinámica y cada visita resuelve historial,
+                    plan y reseñas propias. Con el default, un alumno con treinta materias dispara
+                    treinta prefetches de eso apenas abre el historial, para una acción que casi
+                    siempre no va a usar. */}
                 <Link
                   href={`/my-career/transcript/${item.id}/edit`}
+                  prefetch={false}
                   className="text-ink-3 hover:text-accent-ink transition-colors"
                   style={{ fontSize: 11.5 }}
                   aria-label={`Editar ${item.subjectName}`}

@@ -1,14 +1,18 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import { addEnrollmentSchema } from './schema';
 import type { AddEnrollmentFormState } from './types';
 
 /**
- * Server action for the US-013-f form. POSTs /api/me/enrollment-records (US-013 backend)
- * and on success (201) redirects to `/my-career?tab=transcript`.
+ * Server action for the US-013-f form. POSTs /api/me/enrollment-records (US-013 backend) y
+ * devuelve el resultado; la navegación al historial la hace el form al ver `success`.
+ *
+ * No redirige acá adentro (ADR-0046): lo hacía, y con eso el re-render del historial viajaba
+ * embebido en el stream de la respuesta del action. En un build de producción eso cuelga de forma
+ * intermitente y deja el form en "Guardando..." para siempre, sin error en ningún lado. Se vio en
+ * la suite E2E el 2026-07-31, que es el mismo síntoma que el ADR ya documentaba para las reseñas.
  *
  * The UserId is taken from the session JWT on the server (not from the client) for the
  * same reason as onboarding/career: the backend endpoint accepts it in the body because
@@ -66,7 +70,7 @@ export async function submitAddEnrollmentAction(
   });
 
   if (response.status === 201) {
-    redirect('/my-career?tab=transcript');
+    return { status: 'success' };
   }
 
   if (response.status === 409) {

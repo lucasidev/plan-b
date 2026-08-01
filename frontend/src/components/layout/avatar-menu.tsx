@@ -2,9 +2,10 @@
 
 import { ChevronUp } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { signOutAction } from '@/features/sign-out';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { initialSignOutState, signOutAction } from '@/features/sign-out';
 import { displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -122,6 +123,15 @@ function Identity({ email }: { email: string }) {
 }
 
 function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
+  const [signOutState, signOutFormAction] = useActionState(signOutAction, initialSignOutState);
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el status.
+  // `navigateAfterMutation` y no `router.push`: el porqué está medido en su docstring.
+  useEffect(() => {
+    if (signOutState.status !== 'success') return;
+    navigateAfterMutation(signOutState.redirectTo);
+  }, [signOutState]);
+
   return (
     <div
       role="menu"
@@ -170,7 +180,7 @@ function Dropdown({ email, onClose }: { email: string; onClose: () => void }) {
 
       <div style={{ height: 1, background: 'var(--color-line-2)', margin: '4px 0' }} />
 
-      <form action={signOutAction}>
+      <form action={signOutFormAction}>
         <button
           type="submit"
           role="menuitem"

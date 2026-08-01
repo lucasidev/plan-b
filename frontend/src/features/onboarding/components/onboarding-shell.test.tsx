@@ -13,6 +13,7 @@ import { OnboardingShell } from './onboarding-shell';
  */
 vi.mock('@/features/sign-out', () => ({
   signOutAction: vi.fn(),
+  initialSignOutState: { status: 'idle' },
 }));
 
 describe('OnboardingShell', () => {

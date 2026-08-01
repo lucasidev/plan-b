@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import {
 // misma queryKey, así que abrir el editor sobre una cursada recién cargada ni siquiera refetchea.
 import { addEnrollmentQueries } from '@/features/add-enrollment/api';
 import type { Commission } from '@/features/add-enrollment/types';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 import { submitEditEnrollmentAction } from '../actions';
 import {
@@ -53,7 +53,6 @@ export function EditEnrollmentForm({ enrollment, universityId, hasPublishedRevie
     submitEditEnrollmentAction,
     initialEditEnrollmentState,
   );
-  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
   const [status, setStatus] = useState<string>(enrollment.status);
@@ -89,10 +88,11 @@ export function EditEnrollmentForm({ enrollment, universityId, hasPublishedRevie
     enrollment.status !== 'InProgress' && status === 'InProgress' && hasPublishedReview;
 
   // ADR-0046: el action es mutación pura y la navegación la hace el cliente cuando ve el status.
+  // El porqué de `navigateAfterMutation` y no `router.push` está medido en su docstring.
   useEffect(() => {
     if (state.status !== 'success') return;
-    router.push('/my-career?tab=transcript');
-  }, [state.status, router]);
+    navigateAfterMutation('/my-career?tab=transcript');
+  }, [state.status]);
 
   const formError = state.status === 'error' ? state.message : null;
   const fieldError = state.status === 'error' ? state.field : undefined;

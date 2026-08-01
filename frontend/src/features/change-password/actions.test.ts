@@ -114,7 +114,7 @@ describe('changePasswordAction', () => {
     }
   });
 
-  it('204 borra cookies y redirige a /sign-in?password-changed=1', async () => {
+  it('204 borra cookies y devuelve /sign-in?password-changed=1 como destino', async () => {
     const { store, deleted } = fakeCookieStore();
     // biome-ignore lint/suspicious/noExplicitAny: minimal cookie shim for the test
     cookiesMock.mockResolvedValue(store as any);
@@ -122,7 +122,10 @@ describe('changePasswordAction', () => {
 
     await expect(
       changePasswordAction(initialChangePasswordState, formData(VALID_INPUT)),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?password-changed=1/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/sign-in?password-changed=1',
+    });
 
     expect(deleted).toContain('planb_session');
     expect(deleted).toContain('planb_refresh');

@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import { MAX_PAYLOAD_BYTES } from './schema';
@@ -137,7 +136,7 @@ export async function confirmHistorialAction(
   );
 
   if (response.status === 200) {
-    redirect('/my-career?tab=transcript');
+    return { status: 'success', redirectTo: '/my-career?tab=transcript' };
   }
 
   if (response.status === 404) {
