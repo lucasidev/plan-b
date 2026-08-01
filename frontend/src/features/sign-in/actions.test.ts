@@ -67,7 +67,7 @@ describe('signInAction', () => {
     expect(signInMock).not.toHaveBeenCalled();
   });
 
-  it('redirecciona a /home cuando el backend responde 200', async () => {
+  it('devuelve /home como destino cuando el backend responde 200', async () => {
     signInMock.mockResolvedValue(new Response(null, { status: 200 }));
 
     await expect(
@@ -75,7 +75,10 @@ describe('signInAction', () => {
         initialSignInState,
         formData({ email: 'lucia@test.com', password: 'doce-chars-1' }),
       ),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/home/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/home',
+    });
 
     expect(signInMock).toHaveBeenCalledWith({
       email: 'lucia@test.com',

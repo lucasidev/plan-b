@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useId } from 'react';
+import { useActionState, useEffect, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { PasswordField } from '@/components/ui/password-field';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { changePasswordAction } from '../actions';
 import { initialChangePasswordState } from '../types';
 
@@ -34,6 +35,14 @@ type Props = {
 export function ChangePasswordModal({ open, onOpenChange }: Props) {
   const formId = useId();
   const [state, formAction] = useActionState(changePasswordAction, initialChangePasswordState);
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   // When the modal closes (cancel or overlay click) we would reset the errors of the
   // next open. useActionState does not expose a reset, so the state lives in the

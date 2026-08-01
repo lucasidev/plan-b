@@ -1,8 +1,9 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useActionState, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo, useState } from 'react';
 import { useFormStatus } from 'react-dom';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 import { confirmHistorialAction } from '../actions';
 import type {
@@ -79,6 +80,14 @@ export function PreviewTable({ importId, payload }: Props) {
     confirmHistorialAction,
     initialConfirmHistorialState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   const selectedRows = rows.filter((r) => r.selected && r.parsed.subjectId);
   const error = state.status === 'error' ? state.message : null;

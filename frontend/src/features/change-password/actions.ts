@@ -1,7 +1,6 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import type { ProblemDetails } from '@/lib/api-problem';
 import { getSession } from '@/lib/session';
 import { changePassword } from './api';
@@ -68,7 +67,7 @@ export async function changePasswordAction(
     const cookieStore = await cookies();
     cookieStore.delete(ACCESS_COOKIE);
     cookieStore.delete(REFRESH_COOKIE);
-    redirect('/sign-in?password-changed=1');
+    return { status: 'success', redirectTo: '/sign-in?password-changed=1' };
   }
 
   if (response.status === 401) {

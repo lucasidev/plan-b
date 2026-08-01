@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import type { ValidationProblemDetails } from '@/lib/api-problem';
 import { registerUser } from './api';
 import { signUpSchema } from './schema';
@@ -44,7 +43,10 @@ export async function signUpAction(
   });
 
   if (response.status === 201) {
-    redirect(`/sign-up/check-inbox?email=${encodeURIComponent(parsed.data.email)}`);
+    return {
+      status: 'success',
+      redirectTo: `/sign-up/check-inbox?email=${encodeURIComponent(parsed.data.email)}`,
+    };
   }
 
   if (response.status === 409) {

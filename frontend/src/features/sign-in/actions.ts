@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import type { ProblemDetails } from '@/lib/api-problem';
 import { forwardSetCookies } from '@/lib/forward-set-cookies';
 import { signIn } from './api';
@@ -42,7 +41,7 @@ export async function signInAction(
 
   if (response.status === 200) {
     await forwardSetCookies(response);
-    redirect('/home');
+    return { status: 'success', redirectTo: '/home' };
   }
 
   if (response.status === 401) {

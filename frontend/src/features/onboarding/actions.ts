@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type { ProblemDetails } from '@/lib/api-problem';
 import { getSession } from '@/lib/session';
@@ -61,7 +60,7 @@ export async function submitCareerAction(
   });
 
   if (response.status === 201) {
-    redirect('/onboarding/history');
+    return { status: 'success', redirectTo: '/onboarding/history' };
   }
 
   if (response.status === 409) {

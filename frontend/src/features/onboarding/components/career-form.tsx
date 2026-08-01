@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { TextField } from '@/components/ui';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
 import { submitCareerAction } from '../actions';
 import { onboardingQueries } from '../api';
@@ -33,6 +34,14 @@ export function CareerForm() {
     submitCareerAction,
     initialOnboardingCareerState,
   );
+
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   // State restore: when the student comes from the plan-import sub-flow (US-088), the
   // search params carry universityId + careerId + planId + enrollmentYear. We repopulate

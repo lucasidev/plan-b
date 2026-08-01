@@ -1,7 +1,6 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import type { DeactivateAccountFormState } from './types';
@@ -69,14 +68,14 @@ export async function deactivateAccountAction(
       // to the banner.
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);
-      redirect('/sign-in?account-deactivated=1');
+      return { status: 'success', redirectTo: '/sign-in?account-deactivated=1' };
     }
     if (response.status === 409) {
       // Already deactivated (explicit backend idempotency). Treat as success from the
       // user's point of view: clear cookies and head to the banner.
       cookieStore.delete(ACCESS_COOKIE);
       cookieStore.delete(REFRESH_COOKIE);
-      redirect('/sign-in?account-deactivated=1');
+      return { status: 'success', redirectTo: '/sign-in?account-deactivated=1' };
     }
     if (response.status === 401) {
       return {
@@ -92,5 +91,5 @@ export async function deactivateAccountAction(
 
   cookieStore.delete(ACCESS_COOKIE);
   cookieStore.delete(REFRESH_COOKIE);
-  redirect('/sign-in?account-deactivated=1');
+  return { status: 'success', redirectTo: '/sign-in?account-deactivated=1' };
 }

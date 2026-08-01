@@ -44,11 +44,15 @@ export type Commission = {
 };
 
 /**
- * Server-action state for the US-013-f form. Follows the `idle | error` contract
- * already used by other features (sign-in, onboarding/career).
+ * Server-action state for the US-013-f form.
+ *
+ * `success` existe porque el action es una mutación pura (ADR-0046): hace el write y devuelve el
+ * resultado, y es el cliente el que navega. Antes redirigía adentro del action, que es justo el
+ * patrón que el ADR prohíbe.
  */
 export type AddEnrollmentFormState =
   | { status: 'idle' }
+  | { status: 'success' }
   | { status: 'error'; message: string; field?: string };
 
 export const initialAddEnrollmentState: AddEnrollmentFormState = { status: 'idle' };

@@ -1,6 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import type { ProblemDetails } from '@/lib/api-problem';
 import { resetPassword } from './api';
 import { resetPasswordSchema } from './schema';
@@ -43,7 +42,7 @@ export async function resetPasswordAction(
   });
 
   if (response.status === 204) {
-    redirect('/sign-in?reset=success');
+    return { status: 'success', redirectTo: '/sign-in?reset=success' };
   }
 
   const body = (await response.json().catch(() => null)) as ProblemDetails | null;

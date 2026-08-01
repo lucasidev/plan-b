@@ -21,6 +21,9 @@
  */
 export type ResetPasswordFormState =
   | { status: 'idle' }
+  // El destino lo decide el action, que es donde vive esa lógica; navega el componente
+  // (ADR-0046). Ver `lib/navigate-after-mutation.ts` por qué no alcanza `router.push`.
+  | { status: 'success'; redirectTo: string }
   | {
       status: 'error';
       kind:

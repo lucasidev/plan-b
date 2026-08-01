@@ -1,6 +1,5 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/session';
 import { patchMySettings } from './api';
 import { settingsPatchSchema } from './schema';
@@ -53,7 +52,8 @@ export async function updateSettingsAction(
   }
 
   if (response.status === 204) {
-    revalidatePath('/settings');
+    // Sin `revalidatePath`: misma razón que en `my-profile`. La página es `force-dynamic` y cada
+    // control ya fija su valor persistido al ver el `success` (ADR-0046).
     return { status: 'success', patch: parsed.data };
   }
 

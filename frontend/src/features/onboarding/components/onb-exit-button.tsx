@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import { signOutAction } from '@/features/sign-out';
+import { useActionState, useEffect, useRef } from 'react';
+import { initialSignOutState, signOutAction } from '@/features/sign-out';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 
 /**
  * Botón "Salir" del topbar del onboarding (US-059-f). Confirma antes de cerrar la
@@ -10,14 +11,21 @@ import { signOutAction } from '@/features/sign-out';
  *
  * Client component por el confirm. El botón es `type="button"` y dispara el submit
  * del form con `requestSubmit()` sólo si el usuario confirma, así evitamos un
- * `preventDefault` sobre el submit. `signOutAction` (server) revoca el refresh,
- * limpia las cookies y redirige. Dialog nativo por simplicidad (US-059-f).
+ * `preventDefault` sobre el submit. `signOutAction` (server) revoca el refresh y limpia las
+ * cookies; la vuelta a `/sign-in` la hace el cliente (ADR-0046). Dialog nativo por simplicidad
+ * (US-059-f).
  */
 export function OnbExitButton() {
   const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction] = useActionState(signOutAction, initialSignOutState);
+
+  useEffect(() => {
+    if (state.status !== 'success') return;
+    navigateAfterMutation(state.redirectTo);
+  }, [state]);
 
   return (
-    <form ref={formRef} action={signOutAction}>
+    <form ref={formRef} action={formAction}>
       <button
         type="button"
         onClick={() => {

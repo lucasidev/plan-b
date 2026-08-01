@@ -94,12 +94,15 @@ describe('submitCareerAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('201 redirige a /onboarding/history', async () => {
+  it('201 devuelve /onboarding/history como destino', async () => {
     apiFetchMock.mockResolvedValue(jsonResponse(201));
 
     await expect(
       submitCareerAction(initialOnboardingCareerState, formData(VALID_INPUT)),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/onboarding\/history/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/onboarding/history',
+    });
   });
 
   it('409 mapea a "ya tenés un perfil"', async () => {

@@ -77,7 +77,7 @@ describe('deactivateAccountAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('204 borra cookies y redirige a /sign-in?account-deactivated=1', async () => {
+  it('204 borra cookies y devuelve /sign-in?account-deactivated=1 como destino', async () => {
     getSessionMock.mockResolvedValue({
       userId: '00000000-0000-4000-a000-000000000001',
       email: 'lucia@unsta.edu.ar',
@@ -90,7 +90,10 @@ describe('deactivateAccountAction', () => {
 
     await expect(
       deactivateAccountAction(initialDeactivateAccountState, new FormData()),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/sign-in?account-deactivated=1',
+    });
 
     expect(apiFetchMock).toHaveBeenCalledWith(
       '/api/me/account',
@@ -100,7 +103,7 @@ describe('deactivateAccountAction', () => {
     expect(deleted).toContain('planb_refresh');
   });
 
-  it('404 (user ya borrado) también limpia cookies y redirige', async () => {
+  it('404 (user ya borrado) también limpia cookies y devuelve el destino', async () => {
     getSessionMock.mockResolvedValue({
       userId: '00000000-0000-4000-a000-000000000002',
       email: 'mateo@unsta.edu.ar',
@@ -113,13 +116,16 @@ describe('deactivateAccountAction', () => {
 
     await expect(
       deactivateAccountAction(initialDeactivateAccountState, new FormData()),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/sign-in?account-deactivated=1',
+    });
 
     expect(deleted).toContain('planb_session');
     expect(deleted).toContain('planb_refresh');
   });
 
-  it('409 (ya deactivated) trata como éxito: limpia cookies y redirige', async () => {
+  it('409 (ya deactivated) trata como éxito: limpia cookies y devuelve el destino', async () => {
     getSessionMock.mockResolvedValue({
       userId: '00000000-0000-4000-a000-000000000006',
       email: 'lucia@unsta.edu.ar',
@@ -132,7 +138,10 @@ describe('deactivateAccountAction', () => {
 
     await expect(
       deactivateAccountAction(initialDeactivateAccountState, new FormData()),
-    ).rejects.toThrow(/NEXT_REDIRECT:\/sign-in\?account-deactivated=1/);
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/sign-in?account-deactivated=1',
+    });
 
     expect(deleted).toContain('planb_session');
   });

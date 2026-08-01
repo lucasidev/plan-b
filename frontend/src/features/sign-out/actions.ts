@@ -1,8 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { apiFetch } from '@/lib/api-client';
+import type { SignOutState } from './types';
 
 const ACCESS_COOKIE = 'planb_session';
 const REFRESH_COOKIE = 'planb_refresh';
@@ -24,12 +24,15 @@ const REFRESH_COOKIE = 'planb_refresh';
  * within server actions when same origin; for cross-origin we'd need
  * the explicit forwarding helper used in sign-in).
  *
- * Per frontend/CLAUDE.md, this file is `'use server'` so it can only
- * export async functions. State types are not needed for this action
- * because it doesn't surface anything to a form, just redirects.
+ * Per frontend/CLAUDE.md, this file is `'use server'` so it can only export async functions; el
+ * tipo del estado vive en `types.ts`.
+ *
+ * Devuelve el destino en vez de redirigir (ADR-0046): navegar desde el action embebe el render de
+ * `/sign-in` en el stream de la respuesta, y ese stream se traba cada tanto dejando al usuario con
+ * las cookies ya borradas mirando la app como si siguiera adentro.
  */
 // react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-out is defensive cleanup; safe to invoke even when the session is already gone
-export async function signOutAction(): Promise<void> {
+export async function signOutAction(): Promise<SignOutState> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get(REFRESH_COOKIE)?.value;
 
@@ -46,5 +49,5 @@ export async function signOutAction(): Promise<void> {
 
   cookieStore.delete(ACCESS_COOKIE);
   cookieStore.delete(REFRESH_COOKIE);
-  redirect('/sign-in');
+  return { status: 'success', redirectTo: '/sign-in' };
 }

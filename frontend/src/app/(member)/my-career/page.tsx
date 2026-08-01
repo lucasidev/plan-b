@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { PlanGrid } from '@/features/my-career/components/plan-grid';
@@ -108,6 +109,34 @@ function TabContent({ tab }: { tab: MyCareerTabId }) {
     case 'teachers':
       return <TeacherList />;
     case 'transcript':
-      return <TranscriptTab />;
+      // El boundary no es cosmético: sin él, la navegación entera a `/my-career?tab=transcript`
+      // espera a que el fetch del historial cierre el stream del render, y hasta entonces el
+      // router no commitea, o sea que la URL ni siquiera cambia y el alumno sigue viendo la
+      // pantalla anterior. Medido: 5 de cada 10 corridas del E2E del alta se quedaban ahí.
+      //
+      // Con boundary React commitea al toque mostrando el fallback y el historial entra cuando
+      // llega. Es el mismo criterio que ya usa `/plan` para sus pestañas.
+      return (
+        <Suspense fallback={<TranscriptSkeleton />}>
+          <TranscriptTab />
+        </Suspense>
+      );
   }
+}
+
+/**
+ * Placeholder del historial mientras resuelve su fetch. Espeja la grilla de KPIs y una card de
+ * período para que la pantalla no salte de alto cuando entra el contenido real.
+ */
+function TranscriptSkeleton() {
+  return (
+    <output aria-busy="true" className="flex flex-col gap-4" aria-label="Cargando tu historial">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="bg-bg-card border border-line rounded-lg shadow-card h-[76px]" />
+        ))}
+      </div>
+      <div className="bg-bg-card border border-line rounded-lg shadow-card h-[180px]" />
+    </output>
+  );
 }
