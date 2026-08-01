@@ -128,6 +128,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - la resena tiene dos ejes de texto, materia y docente (reviews) — [`7f57f38`](https://github.com/lucasidev/plan-b/commit/7f57f384d1f7cc6b7df30f64b96a3848a5af19a2)
 - publicar imagenes y dejar el deploy a produccion documentado y probado (ops) — [`a367b2a`](https://github.com/lucasidev/plan-b/commit/a367b2ad2e2e2e3153605e465f4d7ae034e71779)
 - el historial academico dejo de estar siempre vacio (enrollments) — [`09e22e3`](https://github.com/lucasidev/plan-b/commit/09e22e38bacf04bccd37ca290825ead91ce54158)
+- a cursada can change after it was recorded (enrollments) — [`756805f`](https://github.com/lucasidev/plan-b/commit/756805f97b48fa78647e7154f3b63b3df79f8d86)
+- edit your own enrollment record (US-015) (enrollments) — [`8eafaf7`](https://github.com/lucasidev/plan-b/commit/8eafaf7d24bd7dd5efe38592c1c9207056244625)
+- a review does not survive its cursada going back in progress (reviews) — [`7fad41e`](https://github.com/lucasidev/plan-b/commit/7fad41ec4cd219466075417427164dd7e5a41491)
+- recover the reviews an undelivered edit event left behind (reviews) — [`fc0efef`](https://github.com/lucasidev/plan-b/commit/fc0efef40747ff22b2e6dd4b07d3aa6840de82fb)
+- the transcript says which cursada each row is (enrollments) — [`4130634`](https://github.com/lucasidev/plan-b/commit/4130634f01227b194bb4d8e45e455dc2a774981e)
+- fix a cursada you loaded wrong (US-015-f) (enrollments) — [`e100164`](https://github.com/lucasidev/plan-b/commit/e100164aa4a74301083c20504dfeac6cf799a811)
 
 ### Fixed
 
@@ -206,6 +212,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - show enrollment year range error on its field (onboarding) — [`6f391a0`](https://github.com/lucasidev/plan-b/commit/6f391a031a25b76560bca04ecf0344402975ede9)
 - add empty and error states for career and plan dropdowns (onboarding) — [`deeba00`](https://github.com/lucasidev/plan-b/commit/deeba0082993622b0a2237a5b245dfdc6ebbcc7e)
 - refresh the community feed when a draft changes (plan) — [`4cdf039`](https://github.com/lucasidev/plan-b/commit/4cdf0393676c79d155f691e79374d596d772381e)
+- the screen follows the URL instead of waiting for the server (plan) — [`06084c2`](https://github.com/lucasidev/plan-b/commit/06084c29c9d56ad345edbe6bdc19e56e9d6e4d9f)
+- switching tabs stops going to the server (plan) — [`34d7a45`](https://github.com/lucasidev/plan-b/commit/34d7a45a1f9be467c7c991f887a05a56804d81c5)
+- saving a form stops leaving you on the same screen (frontend) — [`d8d39f2`](https://github.com/lucasidev/plan-b/commit/d8d39f22aa1afcf89739a8eca241261872f4da3b)
 
 ### Changed
 
