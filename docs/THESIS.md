@@ -32,6 +32,8 @@ Los dos salen de conteos de frases, con encogimiento hacia el medio según cuán
 
 Cada frase lleva si lo que describe es propio de la materia o de la institución. De ahí sale "de todo lo que la hace difícil, el 65% es la institución fallando, no la carrera siendo dura". Esa es la tesis del producto, y va pegada al número, no en otra caja.
 
+Cómo se produce: cada frase tiene un **sujeto** (la materia, la cátedra o la institución) y un **eje** (exigencia o gestión). La atribución no se declara: se calcula. Lo que es exigencia de la materia es la carrera siendo dura; lo que es gestión de la cátedra o de la institución es alguien fallando. La cátedra tiene ficha propia y, a los efectos de la atribución, cuenta del lado de la institución: el docente que no da clases es la institución que lo permite.
+
 ### 3 · Leer no pide cuenta, producir sí
 
 El gate está en la acción (contar, votar, corregir), no en la puerta. Publicamos sobre instituciones que no nos delegaron nada: esconderlo detrás de un login sería no publicarlo. Y si el muro está antes del valor, no hay corpus.
@@ -39,6 +41,8 @@ El gate está en la acción (contar, votar, corregir), no en la puerta. Publicam
 ### 4 · La unidad es la materia, no el período
 
 Nadie llega con ganas de inventariar su cuatrimestre: llega con una materia en la cabeza, la que lo destrozó o la que le cambió la carrera. Se tocan frases predefinidas y curadas por nosotros, no se escribe en una pantalla en blanco. Confirmar es más barato que elegir. Cinco minutos o no lo hace nunca. Un acto produce muchos datos; no muchas preguntas producen uno.
+
+Lo mismo vale para los hechos: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una. Eso no sale de frases, sale de trayectoria, y la trayectoria se pregunta **de a un hecho, en el momento en que aparece** (cuándo cursaste esto, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo), nunca como inventario. Con esos hechos sueltos, cruzados por cuenta, se reconstruye lo que ningún checklist consigue que alguien complete.
 
 ### 5 · El catálogo es nuestro
 
@@ -58,6 +62,7 @@ Nada de esto es neutral.
 - El nombre del alumno NUNCA aparece. El del docente sí, porque responder es un acto público. El riesgo no es simétrico.
 - Aportar pide cuenta, no constancia: si todos se tienen que verificar, el muro queda antes del valor y no hay corpus. El que prueba su condición de alumno suma una señal que viaja con el dato: verificarse pesa, no habilita. Y jamás mostramos quién es nadie; sin eso, el que más tiene para contar es el que más tiene para perder.
 - El anonimato es mecanismo, no declaración: revisamos que el TEXTO no te reconstruya, y limitamos qué puede citar la réplica.
+- El número tampoco te reconstruye: ningún conteo público sale por debajo del piso de personas, y en un cruce (materias que se llevaron juntas, cátedra, período) el piso vale en cada celda, no solo en el total. Lo que se descarga es lo mismo que se publica, agregado y con su n: no existe un crudo que tenga más que la ficha.
 - Se modera lo que expone a una persona, no lo que incomoda a la institución. Cada testimonio que se baja de más es uno que no se vuelve a escribir.
 
 ## A quién sirve

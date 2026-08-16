@@ -43,7 +43,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 |---|---|
 | `empezar` | Onboarding: marcás por dónde vas. Shell de foco, sin nav. Saltable y retomable. |
 | `micarrera` | Tu plan (el corral), con la pestaña de combinaciones. |
-| `contar` | El acto: checklist y frases. Gateada por tener plan marcado. |
+| `contar` | El acto: elegir una materia y tocar frases. Gateada por tener cuenta, nada más (marcar el plan es opcional: O4-7, O6-3, y Diego no va a marcar ninguno). |
 | `aportes` | Lo que diste. |
 | `perfil` | Tu cuenta y por dónde vas. |
 | `verificar` | Constancia. Opcional y tardío: es señal, no permiso. |
@@ -59,7 +59,7 @@ El mapa las dibuja en flujos pero no tienen pantalla propia todavía:
 | `editar` | Editar o borrar un aporte. Sin esto, contar algo incómodo es irreversible. |
 | `abandono` | Marcar en qué año dejaste, sobre la pantalla del plan. Sin esto no sabemos dónde se cae la mayoría. |
 | `baja` | Borrar la cuenta y lo aportado. Prometemos que es tuyo; poder sacarlo es parte de eso. |
-| `avisos` | Notificaciones. Sin ellas, el que pidió una carrera no se entera de que la cargamos. Es la ruta que más stories sostiene (cinco, en cinco grupos distintos). |
+| `avisos` | Notificaciones. Sin ellas, el que pidió una carrera no se entera de que la cargamos. Es la ruta que más stories sostiene (O2-4, O4-5, O7-5, BO1-3 y T2-2), y T2-2 es P1 de la promesa central: "quien aportó se entera antes de que se publique la réplica" no se puede cumplir sin un canal de aviso. **Decisión 2026-08-16**: deja de ser diferida y es infraestructura del primer bloque, aunque arranque solo por mail (SMTP ya está en el stack; el BC de ADR-0040 se revisa a favor). El panel en la app puede esperar. |
 
 ### Acciones inline (3)
 
