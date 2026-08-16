@@ -1,6 +1,6 @@
 # ADR-0028: Reseñas opcionales con premium features como reward (no gating)
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md)
 - **Fecha**: 2026-04-25
 
 ## Contexto

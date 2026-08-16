@@ -1,8 +1,10 @@
 # planb
 
-Plataforma web para planificación de cuatrimestre y reseñas crowdsourced de materias y docentes, orientada a alumnos de universidades argentinas.
+Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos de WhatsApp y en pasillos) en datos agregados que aguantan una discusión. No es un buscador de carreras, ni un ranking, ni una app de gestión académica.
 
-Resuelve cinco decisiones concretas que enfrenta el alumno al inscribirse (¿recursar o ir a libre?, ¿qué materias meter?, ¿cuántas son viables?, ¿qué comisión elegir?, ¿cómo impacta en la fecha estimada de recepción?), apoyándose en información agregada por los propios alumnos que nadie indexa hoy.
+Se apoya en cinco decisiones que gobiernan todo el producto: dos números por materia que nunca se promedian (exigencia y gestión), atribución de cada señal (propio de la materia o la institución fallando), testimonio por frases curadas en vez de texto libre, lectura sin pedir cuenta, y un catálogo completo cargado por el equipo.
+
+Tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md).
 
 ## Contexto académico
 
@@ -14,19 +16,15 @@ Resuelve cinco decisiones concretas que enfrenta el alumno al inscribirse (¿rec
 
 ## Problema
 
-El plan de estudios universitario asume una trayectoria ideal. Cuando esa trayectoria se rompe (recursadas, equivalencias, cambios de carrera, ingreso ciego), el alumno necesita tomar decisiones informadas sobre su cuatrimestre. La información necesaria (carga real, dificultad, experiencia con docentes) existe atomizada en conversaciones de WhatsApp/Telegram/Discord, pero no de forma estructurada ni accesible.
+Los alumnos sostienen la universidad y no tienen forma de incidir en ella: la institución decide, evalúa, demora y define, y el alumno acepta. Es una asimetría de poder, no de información.
 
-Del lado institucional: alta deserción, baja tasa de graduación, causas invisibles. La data que explicaría esas métricas está dispersa en experiencias individuales que nadie agrega.
+La información es la arista más accionable, porque ya está en manos de los alumnos. Pero vive dispersa en grupos de WhatsApp y en pasillos: un alumno diciendo "no dieron las clases" es una anécdota, cuarenta diciéndolo es un hecho. El único obstáculo entre esas dos cosas es que están dispersos y en silencio.
 
 ## Solución
 
-Una plataforma donde los alumnos:
+Un instrumento de presión: el lugar donde ese reclamo disperso y desmentible se vuelve un dato que aguanta una discusión. No planifica tu cuatrimestre: eso ya se resuelve con una lapicera en quince minutos.
 
-1. **Planifican el cuatrimestre**: simulan combinaciones tentativas de materias y ven carga horaria total, dificultad promedio combinada, y combinaciones históricas de otros alumnos.
-2. **Consultan reseñas** crowdsourced sobre materias y docentes.
-3. **Aportan las suyas**, en un loop de reciprocidad.
-
-Las universidades (cliente secundario, comercial) acceden a un dashboard con métricas agregadas anónimas.
+Sirve al que elige, para no decidir con un folleto. Al que está adentro, para saber si lo que le pasa es la materia o la cátedra, y para no reclamar solo. Al docente que da bien su materia, que por primera vez tiene dónde que se vea. Al que investiga, porque el crudo se descarga sin registro.
 
 ## Actores
 
@@ -35,7 +33,9 @@ Las universidades (cliente secundario, comercial) acceden a un dashboard con mé
 | **Alumno (member)**                 | Usuario principal. Gestiona historial, simula inscripciones, escribe/consulta reseñas.         |
 | **Docente verificado**              | Responde públicamente a reseñas sobre él. Verificación por email institucional o manual.       |
 | **Moderador (staff)**               | Resuelve reports, mantiene la calidad del contenido. Cuenta separada, sin identidad académica. |
-| **Universidad (cliente comercial)** | Accede al dashboard institucional vía suscripción. Datos agregados y anónimos.                 |
+| **Universidad**                     | Destinataria de la presión, no cliente: sin convenios ni suscripciones ("no podríamos publicar estos números y a la vez depender de quien evaluamos"). El mismo dato que la expone es el que le dice dónde arreglar. |
+
+> **Versión anterior (en retiro)**: las dos secciones que siguen (funcionalidades y fases) describen el alcance construido del producto planificador, registrado en retiro por [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md). Se conservan como historia del desarrollo; el alcance vigente se define contra [docs/THESIS.md](docs/THESIS.md).
 
 ## Funcionalidades del MVP
 
@@ -118,7 +118,7 @@ just db-reset         # borra volume y re-migra
 
 ```
 plan-b/
-├── backend/              .NET 10 modular monolith (5 módulos)
+├── backend/              .NET 10 modular monolith (6 módulos; planning en retiro: ADR-0063)
 │   ├── libs/shared-kernel/
 │   ├── host/Planb.Api/
 │   ├── modules/

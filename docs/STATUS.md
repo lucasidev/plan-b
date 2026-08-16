@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-07-26 (cierre de S11: el planificador terminado de punta a punta, con la oferta de comisiones y sus horarios cargables desde el backoffice US-093, la comisión elegible y los choques reales US-096, los borradores persistidos con publicar US-023, y la capa social US-024/US-027. Queda acordada una revisión aggregate por aggregate de modelos de datos y motores, con los hallazgos listados al final de la sección de S11).
+**Última actualización**: 2026-08-16 (viraje de tesis: entra [THESIS.md](THESIS.md) con [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md), S12 cierra con US-097/098/099 canceladas, y la poda de la versión anterior queda registrada abajo, sin sprint asignado). Anterior: 2026-07-26 (cierre de S11: el planificador terminado de punta a punta, con la oferta de comisiones y sus horarios cargables desde el backoffice US-093, la comisión elegible y los choques reales US-096, los borradores persistidos con publicar US-023, y la capa social US-024/US-027. Queda acordada una revisión aggregate por aggregate de modelos de datos y motores, con los hallazgos listados al final de la sección de S11).
 
 ---
 
@@ -24,8 +24,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S9 | 2026-07-14 a 2026-07-19 | **Gestión del catálogo académico (admin)**: US-060 University + US-061 Career/CareerPlan + US-062 Subject/Prerequisite + US-064 AcademicTerm + US-001 explorar catálogo. Sumadas 2026-07-15: US-054-f landing pública + US-059-f rediseño auth/onboarding (absorbe generalización de copy UNSTA→multi-uni). Precedido por el bloque de calidad US-T08 (cobertura) + NSubstitute 6. | ✓ Done |
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
-| S12 | en curso | **Cerrar el lazo que produce el corpus**: el cierre de cursada como momento que genera los datos (US-015 el mecanismo, US-097 el momento), la valoración por comisión que los muestra donde se decide (US-098), y la reseña simple que siembra corpus desde el día uno (US-099). | 🟡 Open |
-| S13+ | next+ | Backlog planificado: backoffice restante (US-067/US-081 parciales + importadores US-006/007 + wizard US-094 + usuarios US-095), búsqueda global (Meilisearch US-056), rankings (US-057), Notifications BC (US-077), audit logs, strike system. | ⏳ Pendiente |
+| S12 | 2026-07-31 a 2026-08-16 | **Cerrar el lazo que produce el corpus**: US-015 entró (el mecanismo de edición con su evento); US-097/098/099 se cancelaron cuando el viraje de tesis ([THESIS.md](THESIS.md), [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md)) retiró el planificador al que servían. | ■ Cerrado por viraje |
+| S13+ | next+ | **Se planifica contra la tesis nueva.** El backlog previo (búsqueda US-056, rankings US-057, Notifications US-077, backoffice restante, etc.) queda bajo revisión contra [THESIS.md](THESIS.md): rankings muere por tesis, el backoffice y los importadores suben de prioridad ("el catálogo es nuestro"), el resto se re-evalúa. | ⏳ Pendiente |
 
 Convenciones:
 
@@ -592,11 +592,56 @@ Al cerrar el sprint quedó acordada una **revisión aggregate por aggregate** de
 - **US-023 diferido**: los borradores `Archived` y los `Active` de otros períodos no se muestran en ninguna pantalla todavía.
 - Del mockup de comisiones quedaron afuera, a propósito: aula, ocupación (`42/50`, no hay inscripciones a comisiones futuras en el modelo), "Importar oferta" (es US-007) y "Cuatri anterior".
 
-## S12 🟡 Open
+## S12 ■ Cerrado por viraje de tesis
 
-**Rango**: arranca 2026-07-31.
+**Rango**: 2026-07-31 a 2026-08-16.
 
-**Foco**: **cerrar el lazo que produce el corpus**. S10 y S11 dejaron el planificador entero: evalúa combinaciones, muestra choques, guarda borradores y los comparte. Lo que no tiene es de dónde sacar la señal que lo hace distinto de la plataforma de la facultad. Hoy, en la pantalla donde el alumno elige comisión, `AvailableCommissionItem` le muestra nombre, modalidad, cupo, docentes y horarios: todo lo que la universidad ya publica, y ninguna reseña.
+### Cierre (2026-08-16): el producto cambió de tesis
+
+El sprint quedó contradicho en su eje, no en su ejecución. La tesis nueva ([THESIS.md](THESIS.md),
+registrada en [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md)) retira el
+planificador, y las tres US que quedaban vivas eran hijas de su lazo:
+
+- **US-015 quedó hecha y mergeada** antes del viraje (el PATCH de la cursada, el evento de
+  cuarentena, el form de edición). Es historia del producto anterior, y su verificación además
+  dejó dos arreglos transversales que sobreviven al viraje (la navegación post-mutación de
+  ADR-0046 y el spec repetible).
+- **US-097 (el momento del cierre de cursada) se cancela**: existía para fabricar el momento de
+  extracción de datos del planificador. La tesis lo dice sin vueltas: nadie llega con ganas de
+  inventariar su cuatrimestre.
+- **US-098 (valoración por comisión en el picker) se cancela**: el picker donde iba a mostrarse
+  se retira con el planificador. La doctrina de su ADR (gate por cobertura, ADR-0061) queda
+  heredada al diseño nuevo.
+- **US-099 (reseña simple al importar historial) se cancela como US, y es la única que muere con
+  honores**: su intuición ("una sola pregunta, confirmar es más barato que elegir") es la
+  decisión 4 de la tesis en miniatura. Sobrevive la idea, no la superficie.
+
+El trabajo siguiente se planifica contra la tesis, no contra este backlog. Lo que sigue abajo es
+el registro histórico del sprint tal como se planificó y avanzó.
+
+### La poda de la versión anterior (registrada, sin sprint asignado)
+
+Lo que [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro y hay
+que remover del código. Es trabajo consciente, no daño colateral de otra tarea, y entra cuando la
+planificación contra la tesis le asigne lugar:
+
+- El módulo `planning` (SimulationDraft, evaluación de combinaciones) con su schema, sus tests y
+  el wiring en el host.
+- La superficie `/plan` del frontend: pestañas En curso/Borradores/Comunidad, el drawer de
+  materias, publicar y compartir planes, y las features que solo existen para eso.
+- El import de planes de estudio propuesto por alumnos (feature `import-career-plan` y su cola de
+  aprobación) como mecanismo de escritura del catálogo. El backoffice queda como único escritor.
+- El onboarding de "cargá todo tu historial" como puerta de entrada.
+- La reseña texto-libre con puntajes y su maquinaria, **recién cuando el sistema de frases tenga
+  diseño y reemplazo**: remover el testimonio viejo sin el nuevo deja al producto sin acto de
+  contribución.
+
+Nada de esto se borra de pasada: cada pieza sale con su PR, sus tests actualizados y sus docs
+espejo al día.
+
+---
+
+**Foco original del sprint** (histórico): **cerrar el lazo que produce el corpus**. S10 y S11 dejaron el planificador entero: evalúa combinaciones, muestra choques, guarda borradores y los comparte. Lo que no tiene es de dónde sacar la señal que lo hace distinto de la plataforma de la facultad. Hoy, en la pantalla donde el alumno elige comisión, `AvailableCommissionItem` le muestra nombre, modalidad, cupo, docentes y horarios: todo lo que la universidad ya publica, y ninguna reseña.
 
 La causa está antes: el módulo Enrollments tiene cuatro features y ninguna modifica un record existente, así que **no existe el momento en que el alumno cuenta cómo le fue**. Una cursada nace con su estado definitivo y se queda así para siempre. Sin ese momento no hay pares (materia, comisión) con verdicto, y sin esos pares no hay nada que mostrar donde se decide.
 
@@ -643,14 +688,19 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
 
 > Las US en sprint no aparecen acá: viven en la sección de su sprint (S6: US-089 / US-002 / US-004 / US-T07-b). Las ya entregadas tampoco: se mueven a la sección del sprint que las cerró. Mantener este principio cada cierre evita que el doc se vuelva inventario obsoleto.
 
+> **2026-08-16**: este backlog quedó **bajo revisión** contra [THESIS.md](THESIS.md) (viraje de
+> tesis, [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md)); ver la fila S13+ de
+> la tabla. Las líneas de abajo describen el estado pre-viraje y arrastran drift acumulado; la
+> lista se rehace en la próxima planificación en vez de parcharse acá.
+
 **Frontend del alumno (rebuild post-canvas v2, ya doc'd)**:
-- [US-057](domain/user-stories/US-057.md) Rankings.
 - [US-056](domain/user-stories/US-056.md) Búsqueda global (Meilisearch).
 - [US-039-f](domain/user-stories/US-039-f.md) estado offline (banner global).
 - [US-077-f](domain/user-stories/US-077-f.md) panel de notificaciones (dropdown del bell).
 - [US-009-f](domain/user-stories/US-009-f.md) páginas de error globales (404 + 5xx).
 
 **Cancelled**:
+- ~~[US-057](domain/user-stories/US-057.md) Rankings~~: cancelada el 2026-08-16 por viraje de tesis ([ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md)): "no es un buscador de carreras, ni un ranking".
 - ~~[US-075](domain/user-stories/US-075.md) Member self-disable~~: reemplazada por **US-038-bis** (S4 Done) bajo [ADR-0044](decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md). El paso intermedio "deshabilitar" desapareció; el flow real es soft delete con anonimización del PII.
 
 **Notifications BC (decisión 2026-05-09 sobre INDEFINIDO #5)**:
@@ -661,7 +711,7 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
 
 **Backend / cross-stack**:
 - US-001 (explorar catálogo de universidades y carreras): en S9. US-002 vive en S6; US-003 (página pública de docente) y US-004 (rama docente de la búsqueda) cerradas en el vertical docente de S7.
-- US-013/14/15 (cargar / importar / editar historial). Estado real, desagregado, porque esta línea decía "backend pendiente" mientras la tabla de S3 declaraba la US cerrada end-to-end: **el write está** (`POST /api/me/enrollment-records`, S3) y **el import también** (US-014, S3), **falta el read** del historial propio, que es lo que hacía que el tab "Historial" mostrara siempre el empty state. US-015 (editar una entrada) sigue en backlog: hoy una cursada cargada mal no se puede corregir ni borrar.
+- US-013/14/15 (cargar / importar / editar historial). Estado real, desagregado, porque esta línea decía "backend pendiente" mientras la tabla de S3 declaraba la US cerrada end-to-end: **el write está** (`POST /api/me/enrollment-records`, S3), **el import también** (US-014, S3), **el read llegó** con US-045-e, y **la edición cerró en S12** (US-015, con su evento de cuarentena): la línea entera quedó saldada antes del viraje.
 - US-016 + US-023..027 (simulación + planificación-storage backend): pendientes (Planificar shell ya entregado en S4 con mocks).
 - US-020 (publicar reseña anónima vs autenticada, flag opcional): pendiente. US-017/18/19/48/49/55 cerradas en S5.
 - US-032 + US-069 (resto del epic 06 docente): pendiente. US-030/031 (claim + verificación institucional) y US-040/041 (responder + editar respuesta) cerradas en S7.

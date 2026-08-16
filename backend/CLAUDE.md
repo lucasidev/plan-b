@@ -1,6 +1,6 @@
 # Backend (planb)
 
-.NET 10 modular monolith. 5 módulos (bounded contexts) + SharedKernel + Host.
+.NET 10 modular monolith. 6 módulos (bounded contexts) + SharedKernel + Host. `planning` pertenece a la versión anterior del producto, en retiro ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)).
 
 Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions/) para ADRs.
 
@@ -53,7 +53,7 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 ## Modular monolith: reglas físicas
 
-- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`). Misma connection string, schemas distintos.
+- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`, `planning`). Misma connection string, schemas distintos.
 - **No EF navigation cross-module**: un `Review` no tiene `.Subject` cargado con JOIN. Si necesita data de Subject, el handler pide `IAcademicQueryService.GetSubjectByIdAsync(subjectId)` (de `Planb.Academic.Application.Contracts`).
 - **No FKs cross-schema**: las referencias son UUIDs sin constraint. La validación se hace en el application layer. Ver [ADR-0017](../docs/decisions/0017-persistence-ignorance.md).
 - **Cross-module communication**:

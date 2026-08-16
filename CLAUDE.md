@@ -1,6 +1,8 @@
 # planb
 
-Plataforma web de planificación de cuatrimestre y reseñas crowdsourced de materias y docentes para universidades argentinas. Proyecto Final de la Tecnicatura Universitaria en Desarrollo y Calidad de Software (UNSTA).
+Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos y pasillos) en datos agregados que aguantan una discusión. Dos números por materia que nunca se promedian (exigencia y gestión), atribución de cada señal (propio de la materia vs la institución fallando), testimonio por frases curadas, lectura sin cuenta. Proyecto Final de la Tecnicatura Universitaria en Desarrollo y Calidad de Software (UNSTA).
+
+La tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). **El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro**: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md) y la poda se planifica en [`docs/STATUS.md`](docs/STATUS.md).
 
 Detalle del dominio: [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md).
 
@@ -52,12 +54,13 @@ plan-b/
 ├── backend/                 Modular monolith (.NET 10)
 │   ├── libs/shared-kernel/  Result<T>, Error, abstractions
 │   ├── host/Planb.Api/      Program.cs, DI, endpoints compose
-│   ├── modules/             5 bounded contexts
+│   ├── modules/             6 bounded contexts
 │   │   ├── identity/        User, StudentProfile, TeacherProfile
 │   │   ├── academic/        University, Career, Subject, Teacher, Commission
 │   │   ├── enrollments/     EnrollmentRecord, HistorialImport
 │   │   ├── reviews/         Review, TeacherResponse
-│   │   └── moderation/      ReviewReport, ReviewAuditLog
+│   │   ├── moderation/      ReviewReport, ReviewAuditLog
+│   │   └── planning/        SimulationDraft (versión anterior, en retiro: ADR-0063)
 │   └── tests/Planb.IntegrationTests/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
@@ -105,14 +108,15 @@ just ci              # Las mismas gates que corre GitHub Actions
 
 Las cosas críticas para entender el sistema antes de programar:
 
-1. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
-2. [`docs/architecture/data-model.md`](docs/architecture/data-model.md). ERD consolidado por bounded context.
-3. [`docs/decisions/`](docs/decisions/). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
-4. [`docs/testing/conventions.md`](docs/testing/conventions.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
-5. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
-6. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
-7. [`docs/design/design-system.md`](docs/design/design-system.md). Contrato visual del producto (paleta, tipografía, mapping canvas a frontend). Antes de tocar visuales, chequear acá. Screenshots de cada vista en [`docs/design/reference/screenshots/`](docs/design/reference/screenshots/) (auto-generados desde el canvas, son la fuente).
-8. [`docs/STATUS.md`](docs/STATUS.md). Tracker operativo por sprints (cadencia, foco y estado de cada uno) + las convenciones del sistema de US: numeración `US-NNN[-x]` (sufijos `-b/-f/-i/-t`), la US como incremento de valor, y el parent (`US-NNN`) que se reemplaza por subdivisiones al entrar a sprint. Catálogo en [`docs/domain/user-stories.md`](docs/domain/user-stories.md), epics en [`docs/domain/epics.md`](docs/domain/epics.md), plantilla en [`docs/domain/us-template.md`](docs/domain/us-template.md), Definition of Done en [`docs/domain/definition-of-done.md`](docs/domain/definition-of-done.md).
+1. [`docs/THESIS.md`](docs/THESIS.md). La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto.
+2. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
+3. [`docs/architecture/data-model.md`](docs/architecture/data-model.md). ERD consolidado por bounded context.
+4. [`docs/decisions/`](docs/decisions/). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+5. [`docs/testing/conventions.md`](docs/testing/conventions.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
+6. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
+7. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
+8. [`docs/design/design-system.md`](docs/design/design-system.md). Contrato visual del producto (paleta, tipografía, mapping canvas a frontend). Antes de tocar visuales, chequear acá. Screenshots de cada vista en [`docs/design/reference/screenshots/`](docs/design/reference/screenshots/) (auto-generados desde el canvas, son la fuente).
+9. [`docs/STATUS.md`](docs/STATUS.md). Tracker operativo por sprints (cadencia, foco y estado de cada uno) + las convenciones del sistema de US: numeración `US-NNN[-x]` (sufijos `-b/-f/-i/-t`), la US como incremento de valor, y el parent (`US-NNN`) que se reemplaza por subdivisiones al entrar a sprint. Catálogo en [`docs/domain/user-stories.md`](docs/domain/user-stories.md), epics en [`docs/domain/epics.md`](docs/domain/epics.md), plantilla en [`docs/domain/us-template.md`](docs/domain/us-template.md), Definition of Done en [`docs/domain/definition-of-done.md`](docs/domain/definition-of-done.md).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
