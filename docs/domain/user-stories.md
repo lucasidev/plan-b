@@ -2,6 +2,8 @@
 
 Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
 
+> **Estado (2026-08-16)**: este catálogo se escribió para la tesis anterior (el planificador). El producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): US-097/098/099 quedaron canceladas con S12, US-057 (rankings) muere por tesis, y el resto del backlog queda **bajo revisión** hasta que la próxima planificación lo evalúe contra la tesis. Las US hechas son historia y no se tocan.
+
 Convención de IDs: `US-NNN[-x]` con `-b` backend, `-f` frontend, `-i` infra, `-t` tooling. Foundations (`US-FNN`) son trabajo del Sprint 0 (pre-sprint). Tooling cross-cutting post-S0 usa prefijo `US-TNN` (e.g. testing infra, observability infra, release tooling).
 
 Granularidad: cada US backlog mapea 1:1 con un UC del catálogo ([actors-and-use-cases.md](actors-and-use-cases.md)). Los UCs identificados durante el DDD discovery se integraron al rango canónico (US-021 a US-028 cubren los flujos nuevos de Identity onboarding y Planning premium).

@@ -2,6 +2,8 @@
 
 Capabilities mayores del producto. Cada epic agrupa user stories que aportan valor al usuario y comparten contexto de implementación. Cada epic vive en su propio archivo dentro de [epics/](epics/).
 
+> **Estado (2026-08-16)**: este catálogo se escribió para la tesis anterior (el planificador). El producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): US-097/098/099 quedaron canceladas con S12, US-057 (rankings) muere por tesis, y el resto del backlog queda **bajo revisión** hasta que la próxima planificación lo evalúe contra la tesis. Las US hechas son historia y no se tocan.
+
 Granularidad: una epic es una unidad que en un equipo grande podría asumirse como "trabajo de varios sprints". Para nuestro proyecto solo-dev, una epic suele cruzar varios sprints de 7 días.
 
 | ID | Epic | Sprint target | Status | US (archivos) |

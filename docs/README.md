@@ -12,6 +12,7 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 | [`design/`](design/) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference/). |
 | [`testing/`](testing/) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
 | [`operations/`](operations/) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
+| [`THESIS.md`](THESIS.md) | La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto. |
 | [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). El backlog vivo + status se trackean en Notion; este doc es la narrativa. |
 
 ## Cuándo va cada cosa

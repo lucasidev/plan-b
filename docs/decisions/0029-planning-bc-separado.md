@@ -1,6 +1,6 @@
 # ADR-0029: Bounded Context Planning separado de Enrollments
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md)
 - **Fecha**: 2026-04-25
 
 ## Contexto

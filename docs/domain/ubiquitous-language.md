@@ -2,6 +2,8 @@
 
 Glosario de términos del dominio. Es la referencia autoritativa para el uso de cada término en código, UI, documentación y conversación con stakeholders. Si un término aparece acá con un significado específico, no se usa con otro significado en otro lado.
 
+> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). Este glosario describe el código que existe, que incluye la versión anterior en retiro: la sección [Planificador](#planificador) entera y los términos de reseñas texto-libre siguen acá mientras exista el código que los implementa. El vocabulario de la tesis nueva (frase, toque, exigencia, gestión, atribución, encogimiento) entra cuando su diseño aterrice, no antes: definir términos de un sistema que todavía no se diseñó es exactamente el tipo de doc que después miente.
+
 Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos en conversación o código, se agregan acá antes de propagarse.
 
 ## Convenciones generales
@@ -77,6 +79,8 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 | **HistorialImport** | Staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. Guarda el crudo en JSONB para reprocesar. |
 
 ## Planificador
+
+> **En retiro** (ADR-0063): esta sección describe el planificador de la versión anterior. Válida mientras el módulo `planning` y `/plan` existan; se elimina con la poda.
 
 | Término | Significado |
 |---|---|
