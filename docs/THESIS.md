@@ -56,7 +56,7 @@ Planes, materias y correlativas los carga el equipo, completos. Una ficha a medi
 Nada de esto es neutral.
 
 - El nombre del alumno NUNCA aparece. El del docente sí, porque responder es un acto público. El riesgo no es simétrico.
-- Verificamos que el alumno sea real y jamás mostramos quién es. Sin eso, el que más tiene para contar es el que más tiene para perder.
+- Aportar pide cuenta, no constancia: si todos se tienen que verificar, el muro queda antes del valor y no hay corpus. El que prueba su condición de alumno suma una señal que viaja con el dato: verificarse pesa, no habilita. Y jamás mostramos quién es nadie; sin eso, el que más tiene para contar es el que más tiene para perder.
 - El anonimato es mecanismo, no declaración: revisamos que el TEXTO no te reconstruya, y limitamos qué puede citar la réplica.
 - Se modera lo que expone a una persona, no lo que incomoda a la institución. Cada testimonio que se baja de más es uno que no se vuelve a escribir.
 

@@ -1,6 +1,6 @@
 # ADR-0048: Oficialización de condición (alumno/docente) opt-in, desacoplada del email
 
-- **Estado**: parcialmente superado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (la mitad "el producto no afirma verificar condición"; la oficialización por evidencia sigue vigente como semilla del mecanismo nuevo)
+- **Estado**: aceptado, extendido por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (la oficialización opt-in pasa de badge de perfil a señal del corpus: verificarse pesa, no habilita)
 - **Fecha**: 2026-07-17
 
 ## Contexto
