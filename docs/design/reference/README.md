@@ -1,6 +1,8 @@
 # Design reference (vendored mockup)
 
-Este directorio es la **fuente de verdad visual** del proyecto. Lo que está acá no se edita: es el mockup original que define el lenguaje de diseño de plan-b (paleta, tipografía, primitivas, layouts macro). Todo lo que se construye en `frontend/` debe ser fiel a esta referencia.
+> **Congelado como historia (2026-08-16)**: este directorio es el diseño de la **versión anterior** del producto (el planificador con reseñas), retirada por [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md). No se edita ni se regeneran sus capturas: queda porque las US Done lo citan como evidencia. La referencia de diseño vigente es el mapa de producto en [`../map/`](../map/README.md).
+
+Este directorio fue la **fuente de verdad visual** del proyecto. Lo que está acá no se edita: es el mockup original que define el lenguaje de diseño de plan-b (paleta, tipografía, primitivas, layouts macro). Todo lo que se construye en `frontend/` debe ser fiel a esta referencia.
 
 Hay **dos generaciones** de mockup conviviendo en este directorio:
 
