@@ -2,7 +2,7 @@
 
 Capabilities mayores del producto. Cada epic agrupa user stories que aportan valor al usuario y comparten contexto de implementación. Cada epic vive en su propio archivo dentro de [epics/](epics/).
 
-> **Estado (2026-08-16)**: este catálogo se escribió para la tesis anterior (el planificador). El producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): US-097/098/099 quedaron canceladas con S12, US-057 (rankings) muere por tesis, y el resto del backlog queda **bajo revisión** hasta que la próxima planificación lo evalúe contra la tesis. Las US hechas son historia y no se tocan.
+> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). **Los agrupadores vigentes son los objetivos del mapa de producto** (O1..O8, T1..T4, BO1..BO5), listados con sus stories en [`user-stories.md`](user-stories.md); la estructura completa está en [`product-map.md`](product-map.md). Los epics de abajo pertenecen a la versión anterior y quedan como historia: los que sirven a la tesis nueva (catálogo, backoffice, identidad, moderación) se remapean a objetivos cuando la planificación los retome.
 
 Granularidad: una epic es una unidad que en un equipo grande podría asumirse como "trabajo de varios sprints". Para nuestro proyecto solo-dev, una epic suele cruzar varios sprints de 7 días.
 
