@@ -11,7 +11,7 @@ Convenciones duras de planb (detalle en `CLAUDE.md`, `backend/CLAUDE.md`, `front
 
 - Código en inglés (clases, métodos, rutas, identificadores). UI en español rioplatense.
 - **Backend**: vertical slice (un feature = 6 archivos), `Result<T>` nunca `throw` para business failures, `IDateTimeProvider.UtcNow` nunca `DateTime.UtcNow`, no EF navigation cross-module, no FKs cross-schema (ADR-0017).
-- **Frontend**: features flat por use case, server actions puras (ADR-0046, no `revalidatePath`/`redirect` adentro), imports con `@/`, diseño desde el flujo del mapa de producto (`docs/design/map/`, mid-fi) con los tokens de `docs/design/design-system.md`.
+- **Frontend**: features flat por use case, server actions puras (ADR-0046, no `revalidatePath`/`redirect` adentro), imports con `@/`, diseño desde la user story con los tokens de `docs/design/design-system.md` (el mapa mid-fi es orientativo, no contrato).
 - **NUNCA em-dashes** (U+2014): usá dos puntos, comas, paréntesis.
 - Cambios quirúrgicos: solo lo que pide el spec, nada de "mejoras" adyacentes.
 
