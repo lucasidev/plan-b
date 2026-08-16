@@ -2,7 +2,7 @@
 
 La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16). Este doc es la copia versionada de lo que el canvas define: rutas, flujos, planos y reglas. Las user stories viven en [`user-stories.md`](user-stories.md) (catálogo vigente) y las personas en [`user-personas.md`](user-personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
-**Estado**: diseño. Nada de esto está construido tal cual; el cruce contra el código real está al final de este doc.
+**Estado**: orientativo. Es la estructura que el mapa propone (rutas, flujos, planos), útil para entender qué vistas podría necesitar el producto; **no fija el diseño final ni la UX/UI**. Lo vinculante son las stories de [`user-stories.md`](user-stories.md) y las personas. Nada de esto está construido; el cruce contra el código real está al final.
 
 ## Los tres planos
 

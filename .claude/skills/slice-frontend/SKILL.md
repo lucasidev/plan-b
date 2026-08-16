@@ -1,6 +1,6 @@
 ---
 name: slice-frontend
-description: Scaffoldea un feature slice nuevo en el frontend de planb (Next.js 15 App Router: un feature flat por caso de uso con api/actions/schema/types/components/index). Usalo cuando haya que agregar una pantalla o interacción nueva que consume el backend (un form que envía, un listado que fetchea, una mutación), aunque no se diga "feature slice". Las server actions que mutan son puras (ADR-0046). La UI se arma desde el flujo del mapa de producto (docs/design/map/, mid-fi) con los tokens de design-system.md, no inventada.
+description: Scaffoldea un feature slice nuevo en el frontend de planb (Next.js 15 App Router: un feature flat por caso de uso con api/actions/schema/types/components/index). Usalo cuando haya que agregar una pantalla o interacción nueva que consume el backend (un form que envía, un listado que fetchea, una mutación), aunque no se diga "feature slice". Las server actions que mutan son puras (ADR-0046). La UI se arma desde la user story (su "listo cuando" y su persona) con los tokens de design-system.md; el mapa mid-fi es orientativo, no contrato.
 ---
 
 Scaffoldeás un feature frontend siguiendo el flat slice por caso de uso. El patrón completo vive en [`frontend/CLAUDE.md`](../../../frontend/CLAUDE.md); este skill es el procedimiento + los ejemplos canónicos a copiar. No reinventes de memoria: copiá la forma de un feature real.
@@ -30,7 +30,7 @@ Ejemplo canónico que el ADR bendice: `frontend/src/features/write-review/action
 
 - **Imports con `@/`** (alias absoluto), no relativos largos.
 - **Data fetching**: RSC prefetch + `HydrationBoundary`, consumo con TanStack Query (ADR-0021). No fetchees en client component lo que se puede prefetchear en el server.
-- **UI en español rioplatense**, desde el flujo del mapa de producto que dibuja la story (`docs/domain/product-map.md` para ubicarlo, `docs/design/map/` para verlo) y los tokens de `docs/design/design-system.md`. El mapa es mid-fi: fija qué vistas y qué muestran, no el detalle visual. El diseño va primero: si falta backend, se mantiene el visual con stub + TODO, no se vacía la vista.
+- **UI en español rioplatense**, desde la user story (su "listo cuando" y la persona a la que sirve) y los tokens de `docs/design/design-system.md`. El mapa mid-fi (`docs/domain/product-map.md`) es orientativo sobre vistas y flujos, no un contrato de UX/UI. El diseño va primero: si falta backend, se mantiene el visual con stub + TODO, no se vacía la vista.
 - **NUNCA em-dashes** (U+2014): dos puntos, comas, paréntesis.
 
 ## Al terminar
