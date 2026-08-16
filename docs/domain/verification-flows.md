@@ -1,5 +1,7 @@
 # Verification Flows (planb)
 
+> **Vigente con alcance parcial (2026-08-16)**: cubre la verificación de **docente** (`TeacherProfile`), que sobrevive al viraje de tesis ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) porque la réplica con nombre sigue siendo parte del producto. La verificación opcional de **alumno** por constancia (señal, no permiso: [THESIS.md](../THESIS.md), stories T1-3, BO2-3, BO2-4 del [mapa](product-map.md)) no está diseñada todavía y no vive acá.
+
 Flows completos de verificación de `TeacherProfile`. Un `member` reclama identidad de docente creando un `TeacherProfile`, pero ese profile no desbloquea la capacidad `review:respond` (UC-040) hasta verificarse. Hay dos caminos: email institucional (automático) o evidencia manual revisada por admin.
 
 Cubre:

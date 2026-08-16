@@ -1,5 +1,7 @@
 # Review Lifecycle (planb)
 
+> **En retiro (2026-08-16), con una parte que sobrevive**: la mitad de moderación (reportes, uphold/dismiss, cascadas) es la que BO2 y BO5 del mapa retoman; se porta al lifecycle del sistema nuevo cuando ese diseño exista. El resto (la reseña texto-libre y sus estados): este documento describe código que todavía existe y que [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../STATUS.md).
+
 Ciclo de vida de una reseña desde su publicación hasta su eventual remoción o restauración. Cubre:
 
 - State machines de `Review.status` y `ReviewReport.status`.
