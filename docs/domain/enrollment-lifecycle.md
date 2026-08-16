@@ -1,5 +1,7 @@
 # Enrollment Lifecycle (planb)
 
+> **En retiro (2026-08-16)**: este documento describe código que todavía existe y que [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../STATUS.md).
+
 Ciclo de vida del `EnrollmentRecord`, la entidad que representa una cursada específica de un alumno (par alumno × materia × cuatrimestre). Es el ancla del historial académico y la precondición del sistema de reseñas.
 
 Cubre:

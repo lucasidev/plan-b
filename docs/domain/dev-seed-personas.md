@@ -1,4 +1,6 @@
-# Personas de testing
+# Personas de testing (fixtures del seeder)
+
+> No confundir con [`user-personas.md`](user-personas.md), que son las personas de **producto**. Esto son identidades fijas de desarrollo.
 
 Cuatro identidades fijas que el `DevSeedHostedService` deja seteadas al levantar el host en Development. Cada una cubre un camino concreto del flujo de auth (login happy path, login con cuenta deshabilitada, login con email no verificado, alumno entrando por primera vez). Sirven para:
 
@@ -21,9 +23,9 @@ Las personas son **no commiteables a producción**. El hosted service que las cr
 | Estado | verified, member |
 | Rol | `member` |
 
-Es la protagonista del mockup. Alumna avanzada de 3° año Sistemas, ~124 créditos cursados, recursando MAT201, planeando 2026·1c. Cuando estén `StudentProfile` + historial, su data espejea `USER_STATES.advanced` de [`docs/design/reference/components/data.jsx`](../design/reference/) (no commiteado todavía).
+Alumna avanzada de 3° año Sistemas, con historial cargado. Es la persona con la que se recorre el camino feliz de un alumno que ya tiene datos.
 
-**La usamos para**: login happy path, futuros flows post-login (plan view, simulador, escribir reseñas).
+**La usamos para**: login happy path y cualquier flujo post-login que necesite un alumno con perfil e historial.
 
 ### Mateo Giménez
 
