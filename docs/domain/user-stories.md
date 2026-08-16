@@ -8,9 +8,11 @@ Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-sto
 
 # El catálogo vigente (mapa de producto, 2026-08-16)
 
-Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de backoffice con 20: 76 en total. Cada una trae su criterio de "listo cuando": sin criterio no se puede decir si una pantalla la resuelve. Prioridad solo donde el mapa la marca (P1/P2); el resto no está priorizado todavía.
+Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de backoffice con 20: 75 en total (revisado 2026-08-16: se fusionaron O4-3 en O4-6 y O7-4 en O7-7, O5-3 pasó a garantía, y entraron T2-4 y O8-6). Cada una trae su criterio de "listo cuando": sin criterio no se puede decir si una pantalla la resuelve. Prioridad solo donde el mapa la marca (P1/P2); el resto no está priorizado todavía.
 
 ## O1 · Decidir dónde estudiar (y poder desconfiar del número)
+
+> O1-1, O1-7, O3-1 y O4-8 no salen de frases: salen de **trayectoria** (cuándo cursaste, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo). Decisión 2026-08-16 (THESIS.md, decisión 4): esos hechos se preguntan de a uno, en el momento en que aparecen, nunca como inventario.
 
 | ID | Story | Listo cuando |
 |---|---|---|
@@ -36,7 +38,7 @@ Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de bac
 | ID | Story | Listo cuando |
 |---|---|---|
 | O3-1 | Como quien está cursando, quiero saber qué materias se pueden llevar juntas, para no repetir la combinación que ya me tumbó. | La ficha del plan muestra, por par de materias, cuántos las llevaron juntas y cuántos dejaron una. |
-| O3-2 | Como quien está cursando, quiero ver esas combinaciones contra lo que me falta, porque el promedio de todos no es mi caso. | Entrando con cuenta, la lista queda filtrada a las materias que todavía puedo cursar, con las correlativas resueltas. |
+| O3-2 | Como quien está cursando, quiero ver esas combinaciones contra lo que me falta, porque el promedio de todos no es mi caso. | Entrando con cuenta, la lista queda filtrada a las materias que todavía puedo cursar, con las correlativas resueltas. (Resolver correlativas contra el plan es lo que hoy hace `SubjectAvailabilityEvaluator` en el módulo `planning` que se poda: se rescata a `academic` antes de borrar, no se reescribe.) |
 | O3-3 | Como quien está cursando, quiero armarlo en papel y volver a marcar lo que curso, porque el planificador propio era el error de la versión anterior. | El producto no arma horarios: entrega los números y el paso siguiente vuelve a marcar el plan. |
 
 ## O4 · Que quede registrado (sin que me cueste la cursada)
@@ -45,24 +47,26 @@ Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de bac
 |---|---|---|
 | O4-1 | Como quien está cursando, quiero contarlo en menos de cinco minutos, porque si me lleva más no lo hago nunca. | Se publica tocando frases, sin escribir nada obligatorio. |
 | O4-2 | Como quien está cursando, quiero contar de una materia sola, porque no llego con ganas de inventariar el período. | El flujo arranca eligiendo una, sin checklist. |
-| O4-3 | Como quien está cursando, quiero que el número quede publicado, porque el reclamo interno no fue a ningún lado. | La cátedra muestra cuántas clases no se dieron. |
 | O4-4 | Como quien está cursando, quiero que nadie sepa que fui yo, para poder decir lo que pasó sin que me cueste la cursada. | Lo publicado dice el rol y el período, nunca el nombre. |
 | O4-5 | Como quien está cursando, quiero que me avisen cuando cierra el período, porque si nadie me lo recuerda no vuelvo. | El aviso llega con una materia concreta para contar. |
-| O4-6 | Como quien está cursando, quiero decir cuántas clases no se dieron, porque es el número que la facultad no publica y el que más pesa cuando reclamo. | La pregunta llega solo a quien marcó que hubo clases sin dar, y el conteo aparece en la ficha de la cátedra. |
+| O4-6 | Como quien está cursando, quiero decir cuántas clases no se dieron y que el número quede publicado, porque es el que la facultad no publica y el que más pesa cuando reclamo, y el reclamo interno no fue a ningún lado. | La pregunta llega solo a quien marcó que hubo clases sin dar, y el conteo aparece en la ficha de la cátedra. (Absorbe la que era O4-3.) |
 | O4-7 | Como quien dejó la carrera, quiero contar por qué me fui aunque ya no curse, porque el que abandonó tiene la explicación completa y nadie se la pide. | Aportar no exige estar cursando, y una materia sola alcanza para dejar el testimonio. |
-| O4-8 | Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos abandonan y cuándo es el dato que ninguna facultad publica. | La ficha muestra en qué punto del plan se cae la mayoría, no solo cuánto tarda el que llega. |
+| O4-8 | Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos abandonan y cuándo es el dato que ninguna facultad publica. | La ficha muestra en qué punto del plan se cae la mayoría, no solo cuánto tarda el que llega. Una pregunta, opcional, sobre el plan; el egreso se pregunta igual ("¿te recibiste? ¿cuándo?") para que O1-1 y O1-7 tengan fuente. |
 | O4-9 | Como quien dejó la carrera, quiero que no me traten como a un fracaso, porque me fui por cómo la llevaban, no por no poder. | El testimonio de quien abandonó pesa igual que el del que se recibió, y su atribución se cuenta. |
 
 ## O5 · Poder deshacer (garantía: se verifica en cada pantalla, no en un flujo)
+
+> O5 y O6 son **garantías**, no trabajo a construir: cada pantalla nueva las tiene que cumplir, y se verifican como parte del Definition of Done del producto nuevo. Recuperar la contraseña (la que era O5-3) es una de ellas y no una story: la cuenta con todo adentro vuelve con un link al mail.
 
 | ID | Story | Listo cuando |
 |---|---|---|
 | O5-1 | Como quien ya aportó, quiero editar o borrar lo que conté, porque me expuse más de lo que quería. | El aporte se puede modificar y borrar desde Mis aportes. |
 | O5-2 | Como quien ya aportó, quiero borrar mi cuenta y lo mío, porque prometieron que era mío, y eso incluye poder sacarlo. | La baja borra la cuenta y decide qué pasa con lo aportado. |
-| O5-3 | Como quien ya aportó, quiero volver a entrar, porque perder la clave no puede costarme lo que ya conté. | Un link al mail devuelve la cuenta con todo adentro. |
 | O5-4 | Como quien lee, quiero reportar algo sin registrarme, porque no me voy a hacer cuenta en el sitio que me difama. | El reporte se manda sin cuenta y se revisa a mano. |
 
 ## O6 · Que no me molesten (garantía: el contrapeso, nadie quiere más funciones)
+
+> Garantías, como O5. O6-1 es la decisión 3 de la tesis dicha como checklist.
 
 | ID | Story | Listo cuando |
 |---|---|---|
@@ -78,16 +82,16 @@ Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de bac
 | O7-1 | Como el docente, quiero responder por mi cátedra con mi nombre, para que mi versión quede al lado y no abajo. | La respuesta se publica junto al testimonio, sin bajarlo. |
 | O7-2 | Como el docente, quiero que se vea que doy bien mi materia, porque es la primera vez que alguien lo mide. | La ficha de cátedra distingue exigencia de gestión. |
 | O7-3 | Como la institución, quiero saber en qué estoy peor que la de al lado, porque el dato que me expone es el que me dice dónde arreglar. | La ficha compara gestión contra todas las cargadas. |
-| O7-4 | Como la institución, quiero que se vea si mejoré, porque arreglé el trámite y el número es de cohortes viejas. | La serie muestra período a período con la escala completa. |
 | O7-5 | Como el docente, quiero enterarme de que me nombraron, porque no puedo responder algo que no sé que existe. | Al docente verificado le llega el aviso cuando su cátedra recibe una valoración. |
 | O7-6 | Como el docente, quiero que no me presuman el silencio, porque no contestar es una postura, no una admisión. | La ficha dice "todavía no respondió" y nunca interpreta por qué. |
-| O7-7 | Como la institución, quiero ver si mejoré desde que lo publicaron, porque sin serie el número es una foto y no me sirve para gestionar. | La ficha muestra la gestión período a período con escala completa de 1 a 5. |
+| O7-7 | Como la institución, quiero ver si mejoré desde que lo publicaron, porque arreglé el trámite, el número es de cohortes viejas, y sin serie es una foto que no me sirve para gestionar. | La ficha muestra la gestión período a período con escala completa de 1 a 5. (Absorbe la que era O7-4.) |
 
 ## O8 · Llevarme el dato (para discutirlo afuera)
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O8-1 | Como quien investiga, quiero descargar el crudo sin registrarme, porque ustedes muestran qué pasa y el por qué es trabajo mío. | El CSV sale con una fila por frase, su eje y su atribución. |
+| O8-1 | Como quien investiga, quiero descargar el crudo sin registrarme, porque ustedes muestran qué pasa y el por qué es trabajo mío. | El CSV sale agregado: una fila por (frase, sujeto, período) con su conteo, su eje y su atribución, y respeta el mismo piso que la ficha. Nunca una fila por persona: lo que se descarga es lo que se publica. |
+| O8-6 | Como quien investiga, quiero saber cuánto se bajó del corpus y por qué, porque una muestra que no declara su curaduría no se puede citar. | El crudo excluye lo removido, y publica cuántos testimonios se bajaron y en qué categoría, sin su contenido. |
 | O8-2 | Como quien investiga, quiero saber qué no cubren, porque una muestra sin su sesgo declarado no se puede citar. | La cobertura publica cuántas están cargadas, en cola y pedidas. |
 | O8-3 | Como quien investiga, quiero citar un número que no me puedan desarmar, porque del otro lado van a discutir la metodología antes que el dato. | El método es público y el número muestra su n. |
 | O8-4 | Como quien investiga, quiero que no interpreten por mí, porque si me dan la conclusión ya no puedo citarlo como fuente. | Las fichas muestran conteos y atribución, y en ningún lado se afirma una causa. |
@@ -108,6 +112,7 @@ Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de bac
 | T2-1 | Como quien va a contar, quiero que me avisen si lo que escribí me delata, porque "los tres que cursamos con Pérez en el turno noche" no tiene nombres y aun así soy yo. | Antes de publicar se marca lo que puede identificar por contexto, y decido yo si lo dejo. | P1 |
 | T2-2 | Como quien ya aportó, quiero no quedar expuesto cuando el docente responde con nombre, porque si éramos cuatro en la comisión, su respuesta me señala sin nombrarme. | La respuesta no puede citar la parte del testimonio que identifica, y quien aportó se entera antes de que se publique. | P1 |
 | T2-3 | Como quien entra primero, quiero entender qué hago acá si no hay nada cargado todavía, porque si la ficha está vacía y nadie escribió, no tengo razón para ser el primero. | Una ficha sin testimonios explica que arranca vacía y qué se desbloquea con el primer aporte. | P1 |
+| T2-4 | Como quien aportó, quiero que ningún cruce de datos me identifique, porque un número sobre cinco personas de mi cohorte soy yo con otro nombre. | Ningún conteo público sale por debajo del piso de personas, y en los cruces (par de materias, cátedra, período) el piso vale en cada celda, no solo en el total. | P1 |
 
 ## T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)
 
@@ -173,7 +178,7 @@ Ocho objetivos con 43 stories, cuatro grupos transversales con 13, y seis de bac
 
 | ID | Story | Listo cuando | Prioridad |
 |---|---|---|---|
-| BO6-1 | Como quien administra, quiero que alguien revise lo que hizo el equipo, porque todo el producto se sostiene en que el escrutinio necesita a alguien de afuera mirando, y adentro no lo aplicamos. | El registro de acciones se puede leer, se revisa cada tanto, y las bajas de testimonios quedan contables. | P1 |
+| BO6-1 | Como quien administra, quiero que alguien revise lo que hizo el equipo, porque todo el producto se sostiene en que el escrutinio necesita a alguien de afuera mirando, y adentro no lo aplicamos. | El registro de acciones se puede leer, se revisa cada tanto, y las bajas de testimonios quedan contables. Primera capa, construible: el registro de moderación es público en agregado (cuántos se bajaron, por qué categoría, sin contenido: es lo que O8-6 publica). Segunda capa, decisión de gobierno y no story: una persona externa con acceso de lectura al registro completo. | P1 |
 | BO6-2 | Como quien administra, quiero dar de baja a alguien del equipo, porque el acceso a nombres reales no puede sobrevivir a la persona que se fue. | Quitar a alguien le corta el acceso en el momento y su registro de acciones queda. | P2 |
 
 ---
