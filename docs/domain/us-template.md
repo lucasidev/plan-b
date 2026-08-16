@@ -113,7 +113,7 @@ Pirámide formal en [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Mockup: <link a canvas v2 sección X o filename JSX en docs/design/reference/>
+- Mockup: <flujo del mapa de producto que dibuja esta story, ej. "flujo 05 del mapa" (docs/design/map/, ver docs/domain/product-map.md)>
 - Use case: [UC-NNN](../use-cases/UC-NNN.md) (si aplica)
 - ADRs: [ADR-NNNN](../../decisions/NNNN-titulo.md)
 - US relacionadas: [US-MMM](US-MMM.md)
@@ -130,7 +130,7 @@ Una US está lista para entrar a sprint cuando:
 - [ ] **Edge cases** identificados (al menos los obvios para flujo, network, auth state).
 - [ ] **Test scenarios** críticos en Given-When-Then.
 - [ ] **Dependencies** identificadas y resueltas o explícitamente diferidas. Si la US depende de otra US no Done, la dependencia bloquea (no entra a sprint hasta que se cierre o se difiera explícito).
-- [ ] **Mockup** linkeado para US con UI.
+- [ ] **Mockup** referenciado para US con UI: el flujo del mapa que la dibuja. Si la story está entre las que el mapa marca sin flujo ni ruta, primero se dibuja el flujo.
 - [ ] **Sub-tasks** desglosadas por capa.
 
 Una US en Backlog que solo tiene AC + sub-tasks NO está Ready para sprint todavía: eso es backfill que se hace al planificar el sprint.

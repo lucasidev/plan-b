@@ -1,6 +1,8 @@
 # Screenshots del canvas
 
-Capturas automáticas de cada artboard del canvas de design. Cada captura es la fuente visual de verdad para la US correspondiente: cuando el código difiera de la imagen, el código está mal (a menos que haya una decisión documentada en ADR o lessons-learned que lo justifique).
+> **Congeladas como historia (2026-08-16)**: son las capturas del diseño de la versión anterior ([ADR-0063](../../../decisions/0063-the-product-is-a-pressure-instrument.md)). No se regeneran ni se toman como fuente para trabajo nuevo; quedan porque las US Done las embeben. La referencia vigente es el mapa de producto ([`../../map/`](../../map/README.md)).
+
+Capturas automáticas de cada artboard del canvas de design de la versión anterior. Fueron la fuente visual de verdad de cada US: cuando el código difería de la imagen, el código estaba mal (salvo decisión documentada).
 
 ## Estructura del canvas
 

@@ -1,8 +1,8 @@
 # Design system
 
-Documento canónico del lenguaje visual de plan-b. Contrato entre el canvas (donde el sistema vive como mockup) y la implementación frontend (donde se construye el producto).
+Documento canónico del lenguaje visual de plan-b: paleta, tipografía, tokens y su mapping al frontend.
 
-La fuente de verdad es la sección **⓪ Design System** del canvas (`docs/design/reference/plan-b-direcciones.html`), renderizada desde `canvas-mocks/design-system.jsx`. Cualquier cambio visual del producto pasa primero por el canvas; la implementación frontend deriva.
+> **Estado (2026-08-16)**: los tokens y la tipografía de este doc siguen vigentes (`frontend/src/app/globals.css` es lo que consume el producto). Lo que cambió es la fuente de las **pantallas**: el canvas de la versión anterior (`reference/`) quedó congelado con [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md), y la referencia vigente de qué vistas existen y qué muestra cada una es el mapa de producto ([`map/`](map/README.md)), que es mid-fi a propósito. El hi-fi del producto nuevo no está fijado: hasta que lo esté, este doc es el único contrato visual, y las pantallas se arman con estos tokens sobre los wireframes del mapa.
 
 ## Snapshot
 
@@ -52,7 +52,7 @@ Tailwind 4 requiere el prefijo `--color-` para que los utilities (`bg-bg`, `text
 
 ## Cómo se mantiene
 
-- Cada cambio visual del producto: editar `canvas-mocks/*.jsx`, regenerar screenshot (`PLAYWRIGHT_INCLUDE_CAPTURE=1 bunx playwright test e2e/_capture/canvas-screenshots.spec.ts`), y ajustar `frontend/src/app/globals.css` si toca tokens.
+- Cambios de tokens: `frontend/src/app/globals.css` es la fuente; este doc se actualiza en el mismo diff. La regeneración de capturas del canvas viejo (`canvas-screenshots.spec.ts`, skill `regen-screenshots`) queda sin uso desde el viraje: ese canvas está congelado.
 - Si un token nuevo aparece en el canvas y todavía no está en el frontend, agregarlo a `globals.css` con prefijo `--color-` antes de usarlo.
 - Si un drift de naming intencional se introduce (ej. `--paper` → `--color-bg-card`), documentarlo en la tabla de arriba.
 

@@ -225,13 +225,13 @@ UX strings en español (la app es en español). Descriptores técnicos de `descr
 
 | En inglés (código) | En español (UI/UX) |
 |---|---|
-| Rutas: `/my-career`, `/reviews/write/[enrollmentId]` | Labels visibles: "Mi carrera", "Escribir reseña" |
+| Rutas: `/subjects/[id]`, `/admin/universities` | Labels visibles: "Materia", "Universidades" |
 | Carpetas de `app/` y `features/` | Texto en `<h1>`, `<p>`, `<button>`, placeholders |
-| Filenames: `transcript-summary.ts`, `prerequisite-chip.tsx` | Strings hardcoded en JSX renderizado |
-| Identificadores: `MyCareerTabId`, `MOCK_ENROLLMENT_CONTEXT`, `parseTab()` | Mensajes de error que ve el alumno |
-| Type literals usados como código: `'prerequisites' \| 'catalog' \| 'teachers'` | Aria-labels que el screen reader le lee al alumno |
+| Filenames: `decision-panel.tsx`, `verified-badge.tsx` | Strings hardcoded en JSX renderizado |
+| Identificadores: `ReportQueueFilters`, `parseTab()` | Mensajes de error que ve el alumno |
+| Type literals usados como código: `'pending' \| 'published' \| 'removed'` | Aria-labels que el screen reader le lee al alumno |
 | Object keys: `{ students: '340', reviews: '1.247' }` | Email subjects, notification copy |
-| Query param values (son código): `?tab=transcript`, `?tab=draft` | Toast / banner / modal messages |
+| Query param values (son código): `?tab=pending`, `?status=open` | Toast / banner / modal messages |
 | Type parameters / generics | **Comentarios, docstrings, JSDoc, inline comments y test descriptions** (así razona el equipo) |
 | Error codes / log messages internos | |
 
@@ -276,4 +276,4 @@ just dev-frontend / frontend-build / frontend-lint / frontend-test
 - **No** poner lógica de dominio en componentes. Va en `features/<feature>/` (hooks, actions, schemas).
 - **No** tocar `globals.css` para agregar clases arbitrarias. Usar Tailwind utilities o `@theme` si es variable de diseño. Tokens documentados en [`docs/design/design-system.md`](../docs/design/design-system.md).
 - **No** saltear el guard del backend confiando solo en el guard del frontend. El layout guard es UX, no seguridad.
-- **No** improvisar visuales. Cada US frontend tiene su mockup como image embed en `## Refs > Mockup` (auto-generado del canvas). Si el código difiere de la imagen, fixear código.
+- **No** improvisar visuales. Cada US frontend referencia en `## Refs > Mockup` el flujo del mapa de producto que la dibuja (`docs/design/map/`, mid-fi: dice qué vistas y qué muestran, no el detalle visual). Los tokens salen de `design-system.md`. Las capturas del canvas de la versión anterior (`docs/design/reference/screenshots/`) están congeladas: no son referencia para trabajo nuevo.

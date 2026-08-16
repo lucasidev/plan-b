@@ -53,7 +53,7 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 ## Modular monolith: reglas físicas
 
-- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`, `planning`). Misma connection string, schemas distintos.
+- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`, y `planning`, que se dropea con la poda). Misma connection string, schemas distintos.
 - **No EF navigation cross-module**: un `Review` no tiene `.Subject` cargado con JOIN. Si necesita data de Subject, el handler pide `IAcademicQueryService.GetSubjectByIdAsync(subjectId)` (de `Planb.Academic.Application.Contracts`).
 - **No FKs cross-schema**: las referencias son UUIDs sin constraint. La validación se hace en el application layer. Ver [ADR-0017](../docs/decisions/0017-persistence-ignorance.md).
 - **Cross-module communication**:
@@ -73,7 +73,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 - **Source of truth siempre Postgres**. Redis es solo derivación o ephemeral.
 - **Toda key tiene TTL explícito**. Convención: ≤ 30 días.
 - **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): los seis patrones (key shape, TTL, comandos, fallback) están en [`docs/architecture/redis-key-patterns.md`](../docs/architecture/redis-key-patterns.md). **Implementados hoy: solo los dos primeros** (refresh token revocation list y rate limiting sliding-window). Idempotency keys, hot reads cache, crowd insights cache y recently-viewed son diseño acordado sin código: antes de usarlos hay que escribirlos.
-- **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, la usan academic, moderation y planning). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
+- **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, la usan academic y moderation; planning también, mientras exista). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
 - **Degradación**: si Redis no responde, los handlers degradan (cache miss → DB; rate limiter no disponible → fail open con warning; refresh tokens no validables → 401 y user se relogea). No fallan completamente.
 - **Out of scope**: pub/sub (Wolverine outbox cubre messaging), vector search (pgvector), source of truth de cualquier dato persistente.
 
