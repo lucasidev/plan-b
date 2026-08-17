@@ -43,7 +43,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 |---|---|
 | `empezar` | Onboarding: marcás por dónde vas. Shell de foco, sin nav. Saltable y retomable. |
 | `micarrera` | Tu plan (el corral), con la pestaña de combinaciones. |
-| `contar` | El acto: elegir una materia y tocar frases. Gateada por tener cuenta, nada más (marcar el plan es opcional: O4-7, O6-3, y Diego no va a marcar ninguno). |
+| `reseñar` | El acto de reseñar: elegir una materia y marcar frases. Gateada por tener cuenta, nada más (marcar el plan es opcional: O4-7, O6-3, y Diego no va a marcar ninguno). |
 | `aportes` | Lo que diste. |
 | `perfil` | Tu cuenta y por dónde vas. |
 | `verificar` | Constancia. Opcional y tardío: es señal, no permiso. |
@@ -90,15 +90,15 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 | 02 | Ana busca la suya y no está | `explorar` → vacío explicado → `pedir` → `cola` → `avisos` |
 | 03 | Matías vuelve, y esta vez completa | `catedra` → lee → (tres semanas después) → `carrera` → `ingresar`/`registro` → `empezar` |
 | 04 | Lucía no quiere repetir el error | `carrera` (combinaciones) → cuántos dejaron → `micarrera` → filtrado a lo que puede cursar → papel → `empezar` |
-| 05 | Lucía cuenta, y le lleva cinco minutos | `avisos` → `contar` (elige materia) → frases → cátedra (opcional) → clases sin dar (opcional) → cuándo cursó |
+| 05 | Lucía reseña, y le lleva cinco minutos | `avisos` → `reseñar` (elige materia) → frases → cátedra (opcional) → clases sin dar (opcional) → cuándo cursó |
 | 06 | Claudia contesta, con nombre porque es público | la nombran → `responder` → la respuesta queda al lado → actúa o no → se ve en la serie |
 | 07 | Rocío se lleva el dato | `explorar`/`carrera` → `metodo` → qué no cubrimos → descarga el crudo → lo discute afuera → corrige un dato al volver |
-| 08 | Los avisos, lo que cierra el circuito | `avisos` (cerró el período, o cargamos lo pedido) → `contar`/`empezar`/`responder` → `perfil` (se apagan) |
+| 08 | Los avisos, lo que cierra el circuito | `avisos` (cerró el período, o cargamos lo pedido) → `reseñar`/`empezar`/`responder` → `perfil` (se apagan) |
 | 09 | Deshacer, la garantía que hace que se animen | `aportes` → `editar` (edita o borra) → `baja` (se va) → decide qué pasa con lo aportado |
-| 10 | Los evaluados, responder y abandonar | te nombran en `catedra` → `responder` · del otro lado: `abandono` (marca el año) → `contar` (cuenta por qué, opcional) |
+| 10 | Los evaluados, responder y abandonar | te nombran en `catedra` → `responder` · del otro lado: `abandono` (marca el año) → `reseñar` (cuenta por qué, opcional) |
 | 11 | Buscar, cuando te recomiendan una persona | busca un nombre → `buscar` → `catedra` → si no está, `buscar` explica por qué → `pedir` (opcional) |
-| 12 | El texto que te delata sin nombrar a nadie | escribe en `contar` → se marca lo que identifica por contexto → decide el autor → la réplica no puede citar esa parte |
-| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué y qué se desbloquea → cuenta en `contar` → lo ve reflejado |
+| 12 | El texto que te delata sin nombrar a nadie | escribe en `reseñar` → se marca lo que identifica por contexto → decide el autor → la réplica no puede citar esa parte |
+| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué y qué se desbloquea → cuenta en `reseñar` → lo ve reflejado |
 | 14 | Cuando el dato no me alcanza | la materia no está / recursó con otra cátedra → se acepta igual → queda pendiente de vincular → ve qué cambió en `aportes` |
 | 15 | Cuando el número no se sostiene solo | testimonios viejos declarados en la ficha → cátedra y carrera se contradicen → explica que uno no promedia al otro → aporta lo contrario |
 
@@ -120,7 +120,7 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 > Con uno aparece la primera frase. Con cinco, los dos números. Con quince, la atribución.
 
-**Las frases**: `metodo` promete el corpus completo publicado ("las 32 frases"). El mapa no las lista en un solo lugar; muestra ejemplos por familia en las pantallas de `contar`, `catedra` e `institucion`:
+**Las frases**: `metodo` promete el corpus completo publicado ("las 32 frases"). El mapa no las lista en un solo lugar; muestra ejemplos por familia en las pantallas de `reseñar`, `catedra` e `institucion`:
 
 - De materia: "Es dura de verdad", "Se aprueba yendo a clase", "El final es otro nivel", "El contenido está al día", "Contenido de hace diez años", "Es muchísimo contenido".
 - De cátedra: "Explican bien", "Están para las consultas", "Te la estudiás solo", "Hay clases que no se dan", "El cronograma se cumple".
@@ -136,7 +136,7 @@ Lo que el repo ya tiene, mapeado contra las rutas. "Existe" significa que el cha
 |---|---|---|---|
 | Públicas | `inicio`, `donde`, `institucion`, `carrera`, `materia`, `catedra` (fichas públicas del catálogo actual) | `explorar` (hoy el browse rico es member-only), `metodo` (hoy sección de la landing), `anonimato` (about existe, habla de otra cosa), `pedir` (existe gateado al onboarding) | `cola`, `error` |
 | Umbral | `ingresar`, `registro`, `recuperar` (auth completo) | | |
-| Con cuenta | `empezar`, `micarrera`, `aportes`, `perfil` (chasis del onboarding, mi carrera y mis reseñas) | `contar` (existe el editor texto-libre; el acto de frases es otro modelo), `verificar` (existe solo para docentes) | |
+| Con cuenta | `empezar`, `micarrera`, `aportes`, `perfil` (chasis del onboarding, mi carrera y mis reseñas) | `reseñar` (existe el editor texto-libre; el acto de frases es otro modelo), `verificar` (existe solo para docentes) | |
 | Backoffice | `bo/catalogo` (ABM completo), `bo/reportes` (cola de moderación) | `bo/pedidos` (el endpoint de cola existe; la pantalla no) | `bo/correcciones`, `bo/verificaciones`, `bo/equipo` |
 
 Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (modelo, conteos, atribución), los dos números con encogimiento, la cola pública de pedidos, la verificación de alumno por constancia, y las seis rutas diseñadas sin construir (`responder`, `buscar`, `editar`, `abandono`, `baja`, `avisos`).
