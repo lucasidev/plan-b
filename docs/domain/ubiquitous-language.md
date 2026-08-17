@@ -2,7 +2,7 @@
 
 Glosario de términos del dominio. Es la referencia autoritativa para el uso de cada término en código, UI, documentación y conversación con stakeholders. Si un término aparece acá con un significado específico, no se usa con otro significado en otro lado.
 
-> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). Este glosario describe el código que existe, que incluye la versión anterior en retiro: la sección [Planificador](#planificador) entera y los términos de reseñas texto-libre siguen acá mientras exista el código que los implementa. El vocabulario de la tesis nueva (frase, toque, exigencia, gestión, atribución, encogimiento) entra cuando su diseño aterrice, no antes: definir términos de un sistema que todavía no se diseñó es exactamente el tipo de doc que después miente.
+> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). Este glosario describe el código que existe, que incluye la versión anterior en retiro: la sección [Planificador](#planificador) entera y los términos de reseñas texto-libre siguen acá mientras exista el código que los implementa. El vocabulario del producto nuevo entra por capas, a medida que se cierra: la sección [El producto nuevo: qué recabamos](#el-producto-nuevo-qué-recabamos) ya está (cerrada el 2026-08-16); lo que hace a qué se publica (los dos números, atribución, voces mínimas, cortes) entra cuando esa capa cierre. Definir términos de un sistema que todavía no se diseñó es el tipo de doc que después miente.
 
 Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos en conversación o código, se agregan acá antes de propagarse.
 
@@ -97,7 +97,33 @@ La distinción que se venía mezclando: los **datos de prueba** llenan la **apli
 | **cohorte** | Los alumnos que cursaron **exactamente la misma combinación** de materias en un mismo período. Responde "¿cómo les fue a otros que se anotaron a esto mismo?". Ver la desambiguación: no es la camada de ingreso. |
 | **muestra mínima** | Piso de alumnos por debajo del cual no se muestran las tasas de una cohorte (5, [ADR-0047](../decisions/0047-pass-rate-publico-desde-historial-privado.md)). Con menos, el dato permitiría deducir el resultado académico de un compañero puntual. El **tamaño** de la muestra sí se muestra siempre: un porcentaje sin saber sobre cuántos casos se calculó es peor que no mostrar nada. |
 
-## Reseñas y moderación
+## El producto nuevo: qué recabamos
+
+Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), sección "Qué recabamos"). Es lo que la persona hace y lo que el sistema recibe. Los términos de lo que se **publica** (números, atribución, cortes) entran cuando esa capa cierre.
+
+| Término | Significado |
+|---|---|
+| **Reseñar** | El acto principal: elegir una materia que cursaste y contar lo que viviste cursándola. Pide cuenta. Cinco minutos. **No se dice "contar"** (era jerga del canvas del mapa) ni "escribir una reseña" (escribir es opcional). |
+| **Reseña** | Lo que produce reseñar: una cuenta × una materia × el período en que la cursó, con sus frases marcadas, su comentario opcional, y la cátedra si la recordó. Es la unidad de contribución. |
+| **Cursada** | Lo que se reseña: la experiencia de haber cursado una materia, que incluye la materia (el contenido), la cátedra (cómo la dieron) y la gestión que la rodeó (mesas, aula, sistema, trato). Un solo acto cubre las tres. |
+| **Frase** | Una oración predefinida ("Es dura de verdad", "Hay clases que no se dan", "Tiene un techo de nota"). No se escribe: se **marca**. Las hay nuestras (las semilla) y destiladas. Cada frase tiene un sujeto y un eje. |
+| **Marcar** | Decir "esto me pasó" sobre una frase. Es lo mínimo que hace una reseña. **No se dice "tocar"**. |
+| **Sujeto** de una frase | De qué habla: la materia, la cátedra, la institución, el centro de estudiantes. La lista no es cerrada. Determina a qué ficha va la frase. |
+| **Eje** de una frase | De qué aspecto habla: **exigencia** (cuán duro) o **gestión** (cuán bien lo llevan). Son los dos ejes de la tesis. |
+| **Comentario** | El campo opcional donde el que reseña escribe en sus palabras lo que ninguna frase cubre. **No se dice "texto libre"**. Qué se hace con él al publicar es parte de "qué publicamos". |
+| **Evento institucional** | Lo que se reseña fuera de una cursada: un trámite, el título, una equivalencia, una vacante que no conseguiste, el sistema que falló, una mesa que no hubo, el trato de un administrativo o del centro. Se pregunta de a uno cuando aparece, sin materia. Lleva frases, comentario y votos igual que la reseña. |
+| **Voto** | "A mí también me pasó", sobre una reseña o un evento entero, sin escribir. Convierte una reseña en muchas voces. Pide cuenta. |
+| **Voces** | Cuántas personas distintas sostienen algo: la reseña más sus votos. Es lo que acompaña a cualquier dato que se muestre. **No se dice "n"**. |
+| **Hecho de trayectoria** | Un dato de la vida académica de la cuenta, preguntado de a uno cuando aparece: cuándo entraste, cuándo cursaste (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo. Nunca como inventario. |
+| **Constancia** | La prueba opcional de condición de alumno. Verificarse pesa, no habilita. |
+| **Destilar** | Sacar, con inteligencia, frases nuevas de los comentarios de muchos, y sumarlas a las que se ofrecen para marcar. La frase destilada es dato derivado, no pedido. |
+| **Aporte** | Genérico: cualquier cosa que alguien contribuye (una reseña, un evento, un voto, una corrección de dato, un pedido de carrera). "Mis aportes" es la pantalla que junta todo eso. No es sinónimo de reseña. |
+| **Cátedra** | El equipo docente que dicta una materia: titular a cargo, adjuntos, JTPs, ayudantes. Persiste entre cuatrimestres. Una materia puede tener varias en paralelo y el alumno elige. **No existe hoy en el catálogo** (hay `Commission`, que es otra cosa). |
+| **Comisión** | La división horaria y de cupo dentro de una cátedra (Com A, martes noche). Existe en el catálogo como `Commission`. |
+| **Réplica** | La respuesta del docente, con su nombre, a lo publicado sobre su cátedra. Pide identidad docente verificada: para el docente, verificar es permiso. |
+| **Ficha** | La página pública de un sujeto (materia, cátedra, carrera, institución) con lo que se publica de él. Se lee sin cuenta. Qué muestra es parte de "qué publicamos". |
+
+## Reseñas y moderación (versión anterior, en retiro)
 
 | Término | Significado |
 |---|---|

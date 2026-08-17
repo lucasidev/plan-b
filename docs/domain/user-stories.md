@@ -45,12 +45,12 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O4-1 | Como quien está cursando, quiero contarlo en menos de cinco minutos, porque si me lleva más no lo hago nunca. | Se publica tocando frases, sin escribir nada obligatorio. |
-| O4-2 | Como quien está cursando, quiero contar de una materia sola, porque no llego con ganas de inventariar el período. | El flujo arranca eligiendo una, sin checklist. |
+| O4-1 | Como quien está cursando, quiero reseñarla en menos de cinco minutos, porque si me lleva más no lo hago nunca. | Se publica tocando frases, sin escribir nada obligatorio. |
+| O4-2 | Como quien está cursando, quiero reseñar una materia sola, porque no llego con ganas de inventariar el período. | El flujo arranca eligiendo una, sin checklist. |
 | O4-4 | Como quien está cursando, quiero que nadie sepa que fui yo, para poder decir lo que pasó sin que me cueste la cursada. | Lo publicado dice el rol y el período, nunca el nombre. |
-| O4-5 | Como quien está cursando, quiero que me avisen cuando cierra el período, porque si nadie me lo recuerda no vuelvo. | El aviso llega con una materia concreta para contar. |
+| O4-5 | Como quien está cursando, quiero que me avisen cuando cierra el período, porque si nadie me lo recuerda no vuelvo. | El aviso llega con una materia concreta para reseñar. |
 | O4-6 | Como quien está cursando, quiero decir cuántas clases no se dieron y que el número quede publicado, porque es el que la facultad no publica y el que más pesa cuando reclamo, y el reclamo interno no fue a ningún lado. | La pregunta llega solo a quien marcó que hubo clases sin dar, y el conteo aparece en la ficha de la cátedra. (Absorbe la que era O4-3.) |
-| O4-7 | Como quien dejó la carrera, quiero contar por qué me fui aunque ya no curse, porque el que abandonó tiene la explicación completa y nadie se la pide. | Aportar no exige estar cursando, y una materia sola alcanza para dejar el testimonio. |
+| O4-7 | Como quien dejó la carrera, quiero reseñar por qué me fui aunque ya no curse, porque el que abandonó tiene la explicación completa y nadie se la pide. | Aportar no exige estar cursando, y una materia sola alcanza para dejar el testimonio. |
 | O4-8 | Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos abandonan y cuándo es el dato que ninguna facultad publica. | La ficha muestra en qué punto del plan se cae la mayoría, no solo cuánto tarda el que llega. Una pregunta, opcional, sobre el plan; el egreso se pregunta igual ("¿te recibiste? ¿cuándo?") para que O1-1 y O1-7 tengan fuente. |
 | O4-9 | Como quien dejó la carrera, quiero que no me traten como a un fracaso, porque me fui por cómo la llevaban, no por no poder. | El testimonio de quien abandonó pesa igual que el del que se recibió, y su atribución se cuenta. |
 
@@ -109,7 +109,7 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando | Prioridad |
 |---|---|---|---|
-| T2-1 | Como quien va a contar, quiero que me avisen si lo que escribí me delata, porque "los tres que cursamos con Pérez en el turno noche" no tiene nombres y aun así soy yo. | Antes de publicar se marca lo que puede identificar por contexto, y decido yo si lo dejo. | P1 |
+| T2-1 | Como quien va a reseñar, quiero que me avisen si lo que escribí me delata, porque "los tres que cursamos con Pérez en el turno noche" no tiene nombres y aun así soy yo. | Antes de publicar se marca lo que puede identificar por contexto, y decido yo si lo dejo. | P1 |
 | T2-2 | Como quien ya aportó, quiero no quedar expuesto cuando el docente responde con nombre, porque si éramos cuatro en la comisión, su respuesta me señala sin nombrarme. | La respuesta no puede citar la parte del testimonio que identifica, y quien aportó se entera antes de que se publique. | P1 |
 | T2-3 | Como quien entra primero, quiero entender qué hago acá si no hay nada cargado todavía, porque si la ficha está vacía y nadie escribió, no tengo razón para ser el primero. | Una ficha sin testimonios explica que arranca vacía y qué se desbloquea con el primer aporte. | P1 |
 | T2-4 | Como quien aportó, quiero que ningún cruce de datos me identifique, porque un número sobre cinco personas de mi cohorte soy yo con otro nombre. | Ningún conteo público sale por debajo del piso de personas, y en los cruces (par de materias, cátedra, período) el piso vale en cada celda, no solo en el total. | P1 |
@@ -118,11 +118,11 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando | Prioridad |
 |---|---|---|---|
-| T3-1 | Como quien ya cursa, quiero contar una materia que no está en el plan cargado, porque es optativa, o es de un plan viejo, o se llama distinto. | Se puede aportar sobre una materia que no está y queda pendiente de vincular en el catálogo. | P1 |
+| T3-1 | Como quien ya cursa, quiero reseñar una materia que no está en el plan cargado, porque es optativa, o es de un plan viejo, o se llama distinto. | Se puede aportar sobre una materia que no está y queda pendiente de vincular en el catálogo. | P1 |
 | T3-2 | Como quien está eligiendo, quiero saber de cuándo son los testimonios, porque una cátedra que cambió de docente hace dos años ya no es la misma. | Cada ficha muestra el período de lo que la sostiene, y avisa cuando lo último es de hace más de dos años. | P1 |
-| T3-3 | Como quien va a contar, quiero retomar lo que empecé a escribir, porque cerré la pestaña en el medio y no lo voy a hacer dos veces. | El aporte a medias queda guardado y aparece para retomar la próxima vez. | P2 |
+| T3-3 | Como quien va a reseñar, quiero retomar lo que empecé a escribir, porque cerré la pestaña en el medio y no lo voy a hacer dos veces. | El aporte a medias queda guardado y aparece para retomar la próxima vez. | P2 |
 | T3-4 | Como quien ya aportó, quiero ver qué cambió con lo que conté, porque es lo único que me trae de vuelta la próxima vez. | Mis aportes muestran cuánto se movió el número de esa cátedra y cuántos lo leyeron. | P2 |
-| T3-5 | Como quien ya cursa, quiero contar la misma materia dos veces si la recursé con otro docente, porque son dos cátedras distintas y la segunda vez fue otra experiencia. | Un segundo aporte sobre la misma materia se acepta si la cátedra o el período cambian. | P2 |
+| T3-5 | Como quien ya cursa, quiero reseñar la misma materia dos veces si la recursé con otro docente, porque son dos cátedras distintas y la segunda vez fue otra experiencia. | Un segundo aporte sobre la misma materia se acepta si la cátedra o el período cambian. | P2 |
 | T3-6 | Como quien lee, quiero entender por qué la cátedra tiene 1.9 y la carrera 3.8, porque si los niveles se contradicen, no sé cuál creer. | La ficha de cátedra ubica su número contra el de su carrera y explica que uno no promedia al otro. | P2 |
 
 ## T4 · Y quien no está de acuerdo (discrepar no es lo mismo que denunciar)
