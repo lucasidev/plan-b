@@ -12,17 +12,17 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 ## O1 · Decidir dónde estudiar (y poder desconfiar del número)
 
-> O1-1, O1-7, O3-1 y O4-8 no salen de frases: salen de **trayectoria** (cuándo cursaste, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo). Decisión 2026-08-16 (THESIS.md, decisión 4): esos hechos se preguntan de a uno, en el momento en que aparecen, nunca como inventario.
+> O1-1, O1-7, O3-1 y O4-8 no salen de frases: salen de **trayectoria** (cuándo cursaste y cómo terminó, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo). Esos hechos se preguntan de a uno, en el momento en que aparecen, nunca como inventario, y el silencio no se infiere; qué se publica con ellos y cómo se calcula: [ADR-0067](../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md).
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O1-1 | Como quien está eligiendo, quiero ver cuánto tarda de verdad, para no creerle a la duración del plan. | La ficha muestra nominal, real y de cuántos egresados sale. |
-| O1-2 | Como quien está eligiendo, quiero comparar la misma carrera en varias instituciones, para elegir con algo más que la opinión de mi familia. | Las ofertas se ven lado a lado y ninguna gana en todo. |
-| O1-3 | Como quien está eligiendo, quiero saber si lo que la hace difícil es la carrera o la facultad, porque una cosa la elijo y la otra la sufro. | La atribución está pegada al número, no en otra caja. |
+| O1-1 | Como quien está eligiendo, quiero ver cuánto tarda de verdad, para no creerle a la duración del plan. | La ficha muestra la nominal del plan, la real (mediana de los egresados que declararon cuándo entraron y cuándo se recibieron) y de cuántos egresados sale. |
+| O1-2 | Como quien está eligiendo, quiero comparar la misma carrera en varias instituciones, para elegir con algo más que la opinión de mi familia. | Las ofertas de la misma carrera canónica se ven lado a lado, dato por dato, sin compuesto ni orden por valor; ninguna gana en todo. |
+| O1-3 | Como quien está eligiendo, quiero saber si lo que la hace difícil es la carrera o la facultad, porque una cosa la elijo y la otra la sufro. | La atribución va en la cabecera de la ficha, no en otra caja: dos proporciones de personas con el mismo denominador (dicen que es dura / marcaron alguien fallando), y la decide el eje de cada frase ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)). |
 | O1-4 | Como quien está eligiendo, quiero ver cómo calculan cada número, para poder descartarlo con fundamento o citarlo. | La fórmula, el encogimiento y el valor de cada frase están publicados. |
 | O1-5 | Como quien está eligiendo, quiero ver sobre cuántas voces se calcula, porque un número con dos testimonios miente. | Cada número muestra su n al lado. |
 | O1-6 | Como quien lee, quiero buscar por materia, carrera o docente, porque lo que me recomiendan es una persona, no una carrera. | Una sola búsqueda devuelve los cuatro tipos de objeto. |
-| O1-7 | Como quien paga y no cursa, quiero saber si esto termina en un título, porque pongo la plata y no entiendo de planes ni de correlativas. | Duración real y cuántos se reciben se leen sin abrir nada ni saber vocabulario académico. |
+| O1-7 | Como quien paga y no cursa, quiero saber si esto termina en un título, porque pongo la plata y no entiendo de planes ni de correlativas. | Duración real y cuántos se reciben (de cohortes cerradas, con el "no dijo" a la vista) se leen sin abrir nada ni saber vocabulario académico. |
 
 ## O2 · Entender el vacío (cuando lo que busco no está)
 
@@ -37,7 +37,7 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O3-1 | Como quien está cursando, quiero saber qué materias se pueden llevar juntas, para no repetir la combinación que ya me tumbó. | La ficha del plan muestra, por par de materias, cuántos las llevaron juntas y cuántos dejaron una. |
+| O3-1 | Como quien está cursando, quiero saber qué materias se pueden llevar juntas, para no repetir la combinación que ya me tumbó. | La ficha del plan muestra, por par de materias y período, cuántas personas las reseñaron juntas y cuántas dejaron una; solo desde reseñas, nunca desde el plan marcado. |
 | O3-2 | Como quien está cursando, quiero ver esas combinaciones contra lo que me falta, porque el promedio de todos no es mi caso. | Entrando con cuenta, la lista queda filtrada a las materias que todavía puedo cursar, con las correlativas resueltas. (Resolver correlativas contra el plan es lo que hoy hace `SubjectAvailabilityEvaluator` en el módulo `planning` que se poda: se rescata a `academic` antes de borrar, no se reescribe.) |
 | O3-3 | Como quien está cursando, quiero armarlo en papel y volver a marcar lo que curso, porque el planificador propio era el error de la versión anterior. | El producto no arma horarios: entrega los números y el paso siguiente vuelve a marcar el plan. |
 
@@ -45,13 +45,13 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O4-1 | Como quien está cursando, quiero reseñarla en menos de cinco minutos, porque si me lleva más no lo hago nunca. | Se publica tocando frases, sin escribir nada obligatorio. |
+| O4-1 | Como quien está cursando, quiero reseñarla en menos de cinco minutos, porque si me lleva más no lo hago nunca. | Se publica marcando frases, sin escribir nada obligatorio; el comentario es el último paso y es opcional. |
 | O4-2 | Como quien está cursando, quiero reseñar una materia sola, porque no llego con ganas de inventariar el período. | El flujo arranca eligiendo una, sin checklist. |
 | O4-4 | Como quien está cursando, quiero que nadie sepa que fui yo, para poder decir lo que pasó sin que me cueste la cursada. | Lo publicado dice el rol y el período, nunca el nombre. |
 | O4-5 | Como quien está cursando, quiero que me avisen cuando cierra el período, porque si nadie me lo recuerda no vuelvo. | El aviso llega con una materia concreta para reseñar. |
 | O4-6 | Como quien está cursando, quiero decir cuántas clases no se dieron y que el número quede publicado, porque es el que la facultad no publica y el que más pesa cuando reclamo, y el reclamo interno no fue a ningún lado. | La pregunta llega solo a quien marcó que hubo clases sin dar, y el conteo aparece en la ficha de la cátedra. (Absorbe la que era O4-3.) |
 | O4-7 | Como quien dejó la carrera, quiero reseñar por qué me fui aunque ya no curse, porque el que abandonó tiene la explicación completa y nadie se la pide. | Aportar no exige estar cursando, y una materia sola alcanza para dejar el testimonio. |
-| O4-8 | Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos abandonan y cuándo es el dato que ninguna facultad publica. | La ficha muestra en qué punto del plan se cae la mayoría, no solo cuánto tarda el que llega. Una pregunta, opcional, sobre el plan; el egreso se pregunta igual ("¿te recibiste? ¿cuándo?") para que O1-1 y O1-7 tengan fuente. |
+| O4-8 | Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos abandonan y cuándo es el dato que ninguna facultad publica. | La ficha muestra en qué año del plan se fue la mayoría de los que se fueron, y por materia dónde se cae (abandono de cursada, aprobación), no solo cuánto tarda el que llega. Una pregunta, opcional, en `reseñar` o en `abandono`, sin plan marcado; el egreso se pregunta igual ("¿te recibiste? ¿cuándo?", en la app o por mail una vez al año) para que O1-1 y O1-7 tengan fuente. |
 | O4-9 | Como quien dejó la carrera, quiero que no me traten como a un fracaso, porque me fui por cómo la llevaban, no por no poder. | El testimonio de quien abandonó pesa igual que el del que se recibió, y su atribución se cuenta. |
 
 ## O5 · Poder deshacer (garantía: se verifica en cada pantalla, no en un flujo)
@@ -62,7 +62,7 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 |---|---|---|
 | O5-1 | Como quien ya aportó, quiero editar o borrar lo que conté, porque me expuse más de lo que quería. | El aporte se puede modificar y borrar desde Mis aportes. |
 | O5-2 | Como quien ya aportó, quiero borrar mi cuenta y lo mío, porque prometieron que era mío, y eso incluye poder sacarlo. | La baja borra la cuenta y decide qué pasa con lo aportado. |
-| O5-4 | Como quien lee, quiero reportar algo sin registrarme, porque no me voy a hacer cuenta en el sitio que me difama. | El reporte se manda sin cuenta y se revisa a mano. |
+| O5-4 | Como quien lee, quiero reportar algo sin registrarme, porque no me voy a hacer cuenta en el sitio que me difama. | El reporte se manda sin cuenta, confirma el mail por link antes de entrar a la cola, y lo resuelve una persona: nada baja solo por cantidad de reportes. |
 
 ## O6 · Que no me molesten (garantía: el contrapeso, nadie quiere más funciones)
 
@@ -81,16 +81,16 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 |---|---|---|
 | O7-1 | Como el docente, quiero responder por mi cátedra con mi nombre, para que mi versión quede al lado y no abajo. | La respuesta se publica junto al testimonio, sin bajarlo. |
 | O7-2 | Como el docente, quiero que se vea que doy bien mi materia, porque es la primera vez que alguien lo mide. | La ficha de cátedra distingue exigencia de gestión. |
-| O7-3 | Como la institución, quiero saber en qué estoy peor que la de al lado, porque el dato que me expone es el que me dice dónde arreglar. | La ficha compara gestión contra todas las cargadas. |
+| O7-3 | Como la institución, quiero saber en qué estoy peor que la de al lado, porque el dato que me expone es el que me dice dónde arreglar. | La ficha compara lo que se dice de ella como sujeto contra las demás cargadas, frase por frase y lado a lado, sin puesto ni compuesto. |
 | O7-5 | Como el docente, quiero enterarme de que me nombraron, porque no puedo responder algo que no sé que existe. | Al docente verificado le llega el aviso cuando su cátedra recibe una valoración. |
 | O7-6 | Como el docente, quiero que no me presuman el silencio, porque no contestar es una postura, no una admisión. | La ficha dice "todavía no respondió" y nunca interpreta por qué. |
-| O7-7 | Como la institución, quiero ver si mejoré desde que lo publicaron, porque arreglé el trámite, el número es de cohortes viejas, y sin serie es una foto que no me sirve para gestionar. | La ficha muestra la gestión período a período con escala completa de 1 a 5. (Absorbe la que era O7-4.) |
+| O7-7 | Como la institución, quiero ver si mejoré desde que lo publicaron, porque arreglé el trámite, el número es de cohortes viejas, y sin serie es una foto que no me sirve para gestionar. | La ficha muestra cada proporción por el período en que pasó, con sus voces y su encogimiento, sin suavizar, con la publicación y la réplica marcadas. (Absorbe la que era O7-4.) |
 
 ## O8 · Llevarme el dato (para discutirlo afuera)
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| O8-1 | Como quien investiga, quiero descargar el crudo sin registrarme, porque ustedes muestran qué pasa y el por qué es trabajo mío. | El CSV sale agregado: una fila por (frase, sujeto, período) con su conteo, su eje y su atribución, y respeta el mismo piso que la ficha. Nunca una fila por persona: lo que se descarga es lo que se publica. |
+| O8-1 | Como quien investiga, quiero descargar el crudo sin registrarme, porque ustedes muestran qué pasa y el por qué es trabajo mío. | El CSV sale agregado: una fila por (frase, sujeto, período) con sus voces y su eje (la atribución es el eje, no va dos veces), y una segunda tabla con los agregados de trayectoria (por carrera-institución y cohorte; por materia y período; por par y período). Lo que se descarga es lo que se publica, ni más fino ni más grueso: nunca nombre, cuenta ni perfil. |
 | O8-6 | Como quien investiga, quiero saber cuánto se bajó del corpus y por qué, porque una muestra que no declara su curaduría no se puede citar. | El crudo excluye lo removido, y publica cuántos testimonios se bajaron y en qué categoría, sin su contenido. |
 | O8-2 | Como quien investiga, quiero saber qué no cubren, porque una muestra sin su sesgo declarado no se puede citar. | La cobertura publica cuántas están cargadas, en cola y pedidas. |
 | O8-3 | Como quien investiga, quiero citar un número que no me puedan desarmar, porque del otro lado van a discutir la metodología antes que el dato. | El método es público y el número muestra su n. |
@@ -109,10 +109,10 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando | Prioridad |
 |---|---|---|---|
-| T2-1 | Como quien va a reseñar, quiero que me avisen si lo que escribí me delata, porque "los tres que cursamos con Pérez en el turno noche" no tiene nombres y aun así soy yo. | Antes de publicar se marca lo que puede identificar por contexto, y decido yo si lo dejo. | P1 |
-| T2-2 | Como quien ya aportó, quiero no quedar expuesto cuando el docente responde con nombre, porque si éramos cuatro en la comisión, su respuesta me señala sin nombrarme. | La respuesta no puede citar la parte del testimonio que identifica, y quien aportó se entera antes de que se publique. | P1 |
-| T2-3 | Como quien entra primero, quiero entender qué hago acá si no hay nada cargado todavía, porque si la ficha está vacía y nadie escribió, no tengo razón para ser el primero. | Una ficha sin testimonios explica que arranca vacía y qué se desbloquea con el primer aporte. | P1 |
-| T2-4 | Como quien aportó, quiero que ningún cruce de datos me identifique, porque un número sobre cinco personas de mi cohorte soy yo con otro nombre. | Ningún conteo público sale por debajo del piso de personas, y en los cruces (par de materias, cátedra, período) el piso vale en cada celda, no solo en el total. | P1 |
+| T2-1 | Como quien va a reseñar, quiero que me avisen si lo que escribí me delata, porque "los tres que cursamos con Pérez en el turno noche" no tiene nombres y aun así soy yo. | Antes de publicar se marca lo que puede identificar por contexto y decido yo si lo dejo, sabiendo que la réplica no va a poder citarlo; lo que habla de una persona fuera de su acto queda retenido hasta que alguien lo mire, y me lo dicen ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)). | P1 |
+| T2-2 | Como quien ya aportó, quiero no quedar expuesto cuando el docente responde con nombre, porque si éramos cuatro en la comisión, su respuesta me señala sin nombrarme. | La respuesta no puede citar la parte del testimonio que identifica, pasa el mismo chequeo que el aporte, y queda retenida un plazo desde el aviso: en ese plazo quien aportó edita, borra o pide revisión, y si borra, la respuesta no sale. | P1 |
+| T2-3 | Como quien entra primero, quiero entender qué hago acá si no hay nada cargado todavía, porque si la ficha está vacía y nadie escribió, no tengo razón para ser el primero. | Una ficha sin testimonios explica que arranca vacía y que la primera voz ya se publica, con sus voces a la vista. | P1 |
+| T2-4 | Como quien aportó, quiero que ningún cruce de datos me identifique, porque un número sobre cinco personas de mi cohorte soy yo con otro nombre. | Nada publicado trae nombre, cuenta ni perfil, en ningún cruce; no hay piso de personas, y antes de publicar se le dice al que reseña que en un grupo chico pueden sospechar: no prometemos anonimato estadístico, prometemos no publicar quién ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)). | P1 |
 
 ## T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)
 
@@ -121,7 +121,7 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 | T3-1 | Como quien ya cursa, quiero reseñar una materia que no está en el plan cargado, porque es optativa, o es de un plan viejo, o se llama distinto. | Se puede aportar sobre una materia que no está y queda pendiente de vincular en el catálogo. | P1 |
 | T3-2 | Como quien está eligiendo, quiero saber de cuándo son los testimonios, porque una cátedra que cambió de docente hace dos años ya no es la misma. | Cada ficha muestra el período de lo que la sostiene, y avisa cuando lo último es de hace más de dos años. | P1 |
 | T3-3 | Como quien va a reseñar, quiero retomar lo que empecé a escribir, porque cerré la pestaña en el medio y no lo voy a hacer dos veces. | El aporte a medias queda guardado y aparece para retomar la próxima vez. | P2 |
-| T3-4 | Como quien ya aportó, quiero ver qué cambió con lo que conté, porque es lo único que me trae de vuelta la próxima vez. | Mis aportes muestran cuánto se movió el número de esa cátedra y cuántos lo leyeron. | P2 |
+| T3-4 | Como quien ya aportó, quiero ver qué cambió con lo que conté, porque es lo único que me trae de vuelta la próxima vez. | Mis aportes muestran las voces que sumó cada frase que marqué en esa cátedra y cuántos la leyeron. | P2 |
 | T3-5 | Como quien ya cursa, quiero reseñar la misma materia dos veces si la recursé con otro docente, porque son dos cátedras distintas y la segunda vez fue otra experiencia. | Un segundo aporte sobre la misma materia se acepta si la cátedra o el período cambian. | P2 |
 | T3-6 | Como quien lee, quiero entender por qué la cátedra tiene 1.9 y la carrera 3.8, porque si los niveles se contradicen, no sé cuál creer. | La ficha de cátedra ubica su número contra el de su carrera y explica que uno no promedia al otro. | P2 |
 
@@ -144,7 +144,7 @@ Ocho objetivos con 41 stories, cuatro grupos transversales con 14, y seis de bac
 
 | ID | Story | Listo cuando |
 |---|---|---|
-| BO2-1 | Como quien modera, quiero bajar solo lo que expone a una persona, porque si bajamos lo que incomoda a la institución, plan-b deja de tener sentido. | El reporte muestra motivo y criterio, y la queja dura contra la institución no es causal. |
+| BO2-1 | Como quien modera, quiero bajar solo lo que expone a una persona, porque si bajamos lo que incomoda a la institución, plan-b deja de tener sentido. | El reporte muestra motivo y criterio; la exposición protegida es la de quien aportó y la de terceros, no la del docente evaluado ni la de la institución; la queja dura contra ellos no es causal; se baja el texto, nunca la voz. |
 | BO2-2 | Como quien modera, quiero que el que reportó sepa por qué quedó o se bajó, porque un formulario sin respuesta enseña a no volver a reportar. | Resolver un reporte manda el criterio aplicado, no un acuse genérico. |
 | BO2-3 | Como quien modera, quiero ver lo mínimo de una constancia para decidir, porque cada nombre que veo es alguien que confió en que sería anónimo. | La verificación compara contra lo declarado y el documento se destruye al resolver. |
 | BO2-4 | Como quien modera, quiero no poder ver qué escribió la persona que verifico, porque si puedo cruzarlo, el anonimato es una promesa y no un mecanismo. | Desde la cola de verificaciones no hay ningún camino a los aportes de esa cuenta. |

@@ -7,7 +7,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 ## Los tres planos
 
 1. **El catálogo.** Instituciones, carreras, planes, correlativas. Lo cargamos nosotros, a mano y completo: la calidad del dato base no se crowdsourcea. Una carrera está cargada entera o no está. Sin cobertura no hay nada: si la institución no está cargada no hay ficha, ni plan, ni materias. No inventamos una ficha vacía.
-2. **Lo que publicamos.** Los dos números, la atribución, la brecha, la serie, los testimonios. Todo derivado del corpus, nada declarado a mano. La ausencia no es un juicio: decimos "no la cargamos todavía", no "no hay datos", y muchísimo menos un cero.
+2. **Lo que publicamos.** Las frases con sus voces por eje, la atribución (que es la lectura de los ejes), la serie, los testimonios. Todo derivado del corpus, nada declarado a mano. La ausencia no es un juicio: decimos "no la cargamos todavía", no "no hay datos", y muchísimo menos un cero.
 3. **Lo que hacemos.** Publicar, atribuir y exigir respuesta. Es el único plano donde alguien sin cobertura tiene lugar: el pedido es un dato público. Cuánta gente reclama que se cargue algo dice dónde la comunidad quiere que se mire y no llegamos.
 
 ## Las rutas
@@ -19,7 +19,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 | `inicio` | La vitrina (landing). |
 | `explorar` | El home real: dos lentes, carreras y universidades. |
 | `donde` | Comparar: las ofertas de una carrera, lado a lado. |
-| `carrera` | Ficha de carrera en una institución. Dos números, brecha y atribución juntas. |
+| `carrera` | Ficha de carrera en una institución. Los dos ejes con sus frases y la atribución juntas, derivados de sus cursadas con la cobertura a la vista. |
 | `institucion` | El sujeto evaluado: gestión, serie, respuesta oficial y cómo se compara. |
 | `materia` | Ficha de materia. Correlativas: qué pide y qué abre. |
 | `catedra` | Ficha de cátedra, por docente, comparada con las otras. |
@@ -98,7 +98,7 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 | 10 | Los evaluados, responder y abandonar | te nombran en `catedra` → `responder` · del otro lado: `abandono` (marca el año) → `reseñar` (cuenta por qué, opcional) |
 | 11 | Buscar, cuando te recomiendan una persona | busca un nombre → `buscar` → `catedra` → si no está, `buscar` explica por qué → `pedir` (opcional) |
 | 12 | El texto que te delata sin nombrar a nadie | escribe en `reseñar` → se marca lo que identifica por contexto → decide el autor → la réplica no puede citar esa parte |
-| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué y qué se desbloquea → cuenta en `reseñar` → lo ve reflejado |
+| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué está vacía y que la primera voz ya se publica → reseña en `reseñar` → lo ve reflejado |
 | 14 | Cuando el dato no me alcanza | la materia no está / recursó con otra cátedra → se acepta igual → queda pendiente de vincular → ve qué cambió en `aportes` |
 | 15 | Cuando el número no se sostiene solo | testimonios viejos declarados en la ficha → cátedra y carrera se contradicen → explica que uno no promedia al otro → aporta lo contrario |
 
@@ -116,9 +116,7 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 ## Reglas del corpus
 
-**Desbloqueos por volumen** (una ficha recién cargada arranca vacía y se enciende por aportes):
-
-> Con uno aparece la primera frase. Con cinco, los dos números. Con quince, la atribución.
+**Desbloqueos por volumen**: el mapa encendía la ficha por escalones ("con uno aparece la primera frase; con cinco, los dos números; con quince, la atribución"). **Cerrado el 2026-08-16** ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)): no hay escalera ni piso. Todo se publica desde la primera voz, como "X de N voces" con su encogimiento; lo único que espera es la cabecera derivada de carrera e institución, por cobertura (más de la mitad de las materias del plan con voces), y mientras tanto la ficha lo dice.
 
 **Las frases**: `metodo` promete el corpus completo publicado ("las 32 frases"). El mapa no las lista en un solo lugar; muestra ejemplos por familia en las pantallas de `reseñar`, `catedra` e `institucion`:
 
@@ -126,7 +124,7 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 - De cátedra: "Explican bien", "Están para las consultas", "Te la estudiás solo", "Hay clases que no se dan", "El cronograma se cumple".
 - De institución: "Cada trámite es una pelea", "El título tardó meses".
 
-La lista canónica completa, con el eje y la atribución de cada frase, es un entregable del diseño del sistema de frases (ver auditoría abajo): hoy no existe ni en el mapa ni en el repo.
+La lista canónica completa, con el sujeto y el eje de cada frase (la atribución sale del eje: [ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)), es un entregable del diseño del sistema de frases (ver auditoría abajo): hoy no existe ni en el mapa ni en el repo, y se publica entera en `metodo`.
 
 ## Estado contra el código (cruce 2026-08-16)
 
@@ -139,7 +137,7 @@ Lo que el repo ya tiene, mapeado contra las rutas. "Existe" significa que el cha
 | Con cuenta | `empezar`, `micarrera`, `aportes`, `perfil` (chasis del onboarding, mi carrera y mis reseñas) | `reseñar` (existe el editor texto-libre; el acto de frases es otro modelo), `verificar` (existe solo para docentes) | |
 | Backoffice | `bo/catalogo` (ABM completo), `bo/reportes` (cola de moderación) | `bo/pedidos` (el endpoint de cola existe; la pantalla no) | `bo/correcciones`, `bo/verificaciones`, `bo/equipo` |
 
-Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (modelo, conteos, atribución), los dos números con encogimiento, la cola pública de pedidos, la verificación de alumno por constancia, y las seis rutas diseñadas sin construir (`responder`, `buscar`, `editar`, `abandono`, `baja`, `avisos`).
+Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (modelo, conteos, sujeto y eje), las proporciones de voces con encogimiento, la cola pública de pedidos, la verificación de alumno por constancia, y las seis rutas diseñadas sin construir (`responder`, `buscar`, `editar`, `abandono`, `baja`, `avisos`).
 
 ## Auditoría del mapa (2026-08-16)
 
@@ -147,8 +145,8 @@ Hallazgos de revisar el mapa contra sí mismo, contra la tesis y contra el repo.
 
 1. **Los conteos de faltantes no cierran entre sí.** La portada dice "cuatro rutas no se recorren"; la sección "lo que falta" lista seis diseñadas sin construir; el reagrupamiento dice "diez ya tienen flujo y todavía no tienen ruta" y "diecisiete no tienen ni flujo ni ruta". Cuatro cifras distintas para el mismo concepto: unificar en una sola verdad antes de planificar contra el mapa.
 2. **"Las 32 frases" no existen como lista.** `metodo` las promete publicadas y el mapa muestra ~13 ejemplos dispersos. El corpus curado es EL contenido del producto: su lista canónica (frase, eje, atribución, familia) es un entregable que hoy no tiene dueño ni lugar.
-3. **La atribución del mapa es ternaria; la de la tesis, binaria.** THESIS.md dice "propio de la materia o de la institución"; el mapa opera con tres familias (materia, cátedra, institución). La cátedra como sujeto propio es más fiel a "saber si lo que le pasa es la materia o la cátedra", pero contradice la letra de la decisión 2. Alinear tesis o mapa: cambia la taxonomía entera.
+3. **La atribución del mapa es ternaria; la de la tesis, binaria.** THESIS.md decía "propio de la materia o de la institución"; el mapa opera con tres familias (materia, cátedra, institución). **Cerrado el 2026-08-16** ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)): no competían. La ternaria es el **sujeto** (a qué ficha va la frase, y quién); la binaria es el **eje** (de qué lado cae). Las familias del mapa quedan como sujetos; la atribución la decide el eje.
 4. **Los 17 escenarios sin flujo ni ruta son los de riesgo.** El propio mapa lo dice: "es el estado más urgente, porque no hay ni un recorrido contra el que discutirlos". Incluyen los tres P1 que tocan la promesa central (el texto que te delata, la réplica que te señala, la ficha vacía sin razones para el primero). Dibujarlos antes de construir nada que los pise.
 5. **`avisos` es el cuello estructural.** Sostiene cinco stories en cinco grupos y no está construida ni diseñada como pantalla. En el repo, Notifications (ADR-0040, US-077) quedó "diferido a revisión" en ADR-0063: el mapa lo revalida como bloqueante temprano, no como diferible.
 6. **El grupo "que no me molesten" es el contrapeso del mapa** (cuatro stories que piden menos producto). Usarlo como gate de revisión de cada pantalla nueva, que es exactamente el rol que el reagrupamiento le da: sin él, "el mapa solo suma funciones".
-7. **Consistencias verificadas** (no hallazgos, confirmaciones): `verificar` como "señal, no permiso" coincide con la decisión de verificación registrada en THESIS.md; los desbloqueos 1/5/15 respetan ADR-0054 (nada muestra un número sin sustento); `reportar` sin cuenta es coherente con la posición de moderación; el flujo 05 pregunta el período de cursada, que es lo que BO-5 necesita para pegar la valoración al plan.
+7. **Consistencias verificadas** (no hallazgos, confirmaciones): `verificar` como "señal, no permiso" coincide con la decisión de verificación registrada en THESIS.md; debajo del gate de cobertura la ficha dice "todavía no derivamos", nunca un cero (ADR-0054); `reportar` sin cuenta es coherente con la posición de moderación; el flujo 05 pregunta el período de cursada, que es lo que BO-5 necesita para pegar la valoración al plan.

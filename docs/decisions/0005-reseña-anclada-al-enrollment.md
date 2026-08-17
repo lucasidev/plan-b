@@ -1,6 +1,6 @@
 # ADR-0005: Reseña anclada al EnrollmentRecord
 
-- **Estado**: parcialmente superado por [ADR-0060](0060-review-names-the-teacher-it-remembers.md) (solo la regla de que el docente reseñado pertenezca al plantel de la comisión; el anclaje de la reseña al `EnrollmentRecord` sigue vigente)
+- **Estado**: superado por [ADR-0064](0064-phrases-with-voices-not-scores.md) (la reseña ya no ancla a un `EnrollmentRecord`: ancla a la cursada declarada, materia y período, y se compone de frases con voces). Antes, parcialmente superado por [ADR-0060](0060-review-names-the-teacher-it-remembers.md) en la regla del plantel
 - **Fecha**: 2026-04-22
 
 ## Contexto

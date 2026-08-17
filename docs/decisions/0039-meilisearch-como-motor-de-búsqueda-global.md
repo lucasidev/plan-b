@@ -1,6 +1,6 @@
 # ADR-0039: Meilisearch como motor de búsqueda global
 
-- **Estado**: aceptado
+- **Estado**: aceptado, diferido a revisión por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (la búsqueda del lector sigue teniendo sentido en el producto nuevo; el motor dedicado se re-evalúa cuando ese producto la necesite)
 - **Fecha**: 2026-05-02
 
 ## Contexto

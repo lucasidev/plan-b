@@ -1,6 +1,6 @@
 # ADR-0061: Ratings aggregate by commission, and roll up only when coverage backs them
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0064](0064-phrases-with-voices-not-scores.md) y [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los ratings por comisión se reemplazan por frases con voces; la derivación de carrera e institución y el gate de cobertura, que acá quedó sin umbral, quedan fijados: más de la mitad de las materias del plan con voces)
 - **Fecha**: 2026-07-31
 
 ## Contexto

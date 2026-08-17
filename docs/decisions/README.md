@@ -37,7 +37,7 @@ Cada ADR con:
 ```markdown
 # NNNN: Título
 
-- **Estado**: propuesto | aceptado | rechazado | superado por NNNN | parcialmente superado por NNNN (qué parte) | deprecado por NNNN
+- **Estado**: propuesto | aceptado | aceptado, extendido por NNNN | rechazado | superado por NNNN | parcialmente superado por NNNN (qué parte) | deprecado por NNNN
 - **Fecha**: YYYY-MM-DD
 
 ## Contexto
@@ -58,6 +58,10 @@ Positivas, negativas, advertencias.
 **Una decisión nueva va en un ADR nuevo, nunca como sección adentro del viejo.** El viejo se taguea en su `Estado` apuntando al nuevo.
 
 La razón es que un ADR que sigue diciendo `aceptado` mientras el código hace otra cosa es documentación que miente, y el lector no tiene cómo enterarse: llega al doc, lee la decisión, y no hay nada que le avise. Esconder el cambio adentro de una sección al final del archivo es la misma mentira con más pasos, porque el `Estado` de arriba es lo primero que se lee.
+
+**Y se taguea en el mismo commit que crea el nuevo.** No es un paso posterior: si el ADR nuevo supersede, depreca o extiende a otros, esos otros cambian su `Estado` en el mismo diff, con el link. Es lo que hace que la cadena de ADRs sea la verdad completa, y no solo el último. Es el paso que más fácil se saltea, porque el ADR nuevo se escribe con la cabeza en la decisión y los viejos quedan diciendo `aceptado`.
+
+Los estados, para no inventar uno cada vez: `aceptado` (vigente), `superado por NNNN` (hay decisión que lo reemplaza; si es una parte, `parcialmente superado por NNNN (qué parte)`), `deprecado por NNNN` (murió sin reemplazo directo, típicamente porque el producto que lo necesitaba se retiró), y `aceptado, extendido por NNNN` (sigue vigente y otro ADR lo amplía o lo revalida). Es la escalera estándar de los ADRs (propuesto → aceptado → superado / deprecado, con extensiones), y el cuerpo del ADR viejo no se edita en ninguno de los casos: es historia.
 
 Distinguir dos cosas que se confunden:
 

@@ -4,7 +4,7 @@
 
 Este documento es la tesis del producto: lo que plan-b es, lo que no hace, y la posición que toma. Todo lo demás del repo se lee contra esto. El código de hoy contiene la versión anterior (el planificador) en retiro; que un módulo exista no significa que la tesis lo respalde.
 
-> **Revisión en curso (2026-08-16)**: la tesis se está cerrando por capas, en orden. **Cerrado**: qué es, el problema, a quién sirve, y [qué recabamos](#qué-recabamos). **Abierto**: qué publicamos y cómo (los dos números, la atribución, la lista destilada, con qué reglas). Las decisiones 1 y 2 de abajo describen la intención original y se reescriben cuando cierre lo publicado; hasta entonces no se construye nada que dependa de ellas.
+> **Estado (2026-08-16)**: la tesis se cerró por capas, en orden: qué es, el problema, a quién sirve, [qué recabamos](#qué-recabamos) y [qué publicamos](#qué-publicamos) entero. Cada capa tiene su ADR con el porqué, las alternativas y las fuentes: la unidad de publicación ([ADR-0064](decisions/0064-phrases-with-voices-not-scores.md)), la atribución ([ADR-0065](decisions/0065-attribution-is-the-axis-not-a-split.md)), la derivación y sus cortes ([ADR-0066](decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)), la trayectoria y las comparaciones ([ADR-0067](decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)) y el comentario ([ADR-0068](decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)). Lo que sigue es propagarla al catálogo de stories y planificar contra ella.
 
 ---
 
@@ -24,17 +24,17 @@ Contexto argentino: la universidad, y sobre todo la pública, está endiosada. E
 
 ## Las cinco decisiones que gobiernan todo
 
-### 1 · Dos números, nunca promediados
+### 1 · Dos ejes, nunca mezclados
 
 **Exigencia** (cuán dura es) y **gestión** (cuán bien la llevan). Una carrera exigente no es una carrera mal llevada, y confundirlas es exactamente lo que protege al que la lleva mal. Exigencia alta NO es un defecto: es información. Gestión baja SÍ es alarma: es alguien fallando.
 
-Los dos salen de conteos de frases, con encogimiento hacia el medio según cuánta gente habló: cuatro marcas de un solo lado no producen un 5.0.
+No son dos números: son dos familias de hechos. Lo que se publica por eje es la lista de frases que lo componen, cada una con la proporción de voces que la sostiene ("hay clases que no se dan: 37% de 120 personas"). Un puntaje de gestión promediaría nueve fallas distintas y escondería ocho; la lista dice cuál. El encogimiento por pocas voces tiene nombre y fórmula publicada (el límite inferior de Wilson): cuatro marcas de cuatro no producen un 100%. Por qué así y no un 1 a 5, con las alternativas y las fuentes: [ADR-0064](decisions/0064-phrases-with-voices-not-scores.md).
 
-### 2 · Atribución
+### 2 · Atribución: la decide el eje
 
-Cada frase lleva si lo que describe es propio de la materia o de la institución. De ahí sale "de todo lo que la hace difícil, el 65% es la institución fallando, no la carrera siendo dura". Esa es la tesis del producto, y va pegada al número, no en otra caja.
+La pregunta de quien elige es si lo que la hace difícil es la carrera o la facultad, porque una cosa la elige y la otra la sufre. La respuesta la da el eje de cada frase, y nada más: lo de **exigencia** es la carrera siendo dura, venga de la materia, de la cátedra o de quien sea (información, no defecto); lo de **gestión** es alguien fallando (alarma). El **sujeto** de la frase (materia, cátedra, institución, centro, la lista es abierta) no atribuye: dice a qué ficha va y, cuando es cátedra o institución, quién. La atribución no se declara ni se pregunta: está en el catálogo de frases, en la redacción y el eje de cada una, publicado entero en el método.
 
-Cómo se produce: cada frase tiene un **sujeto** (la materia, la cátedra o la institución) y un **eje** (exigencia o gestión). La atribución no se declara: se calcula. Lo que es exigencia de la materia es la carrera siendo dura; lo que es gestión de la cátedra o de la institución es alguien fallando. La cátedra tiene ficha propia y, a los efectos de la atribución, cuenta del lado de la institución: el docente que no da clases es la institución que lo permite.
+Se publica pegada a la ficha, no en otra caja, y como dos proporciones de personas con el mismo denominador: "5 de cada 10 que reseñaron dicen que es dura; 7 de cada 10 marcaron alguien fallando". Nunca como un split del tipo "el 65% de lo difícil es la institución": ese número depende de cuántas frases ofrecemos por eje, no de lo que la gente dijo, y esconde que una materia puede ser dura y estar mal llevada a la vez. Por qué así, con las alternativas: [ADR-0065](decisions/0065-attribution-is-the-axis-not-a-split.md).
 
 ### 3 · Leer no pide cuenta, producir sí
 
@@ -46,7 +46,7 @@ Nadie llega con ganas de inventariar su cuatrimestre: llega con una materia en l
 
 Las frases no son solo nuestras. Las nuestras son el punto de partida; de lo que muchos escriben se destilan las que faltaban, y esas se suman a las que se ofrecen. Si las frases las inventáramos solo nosotros, el producto respondería "¿qué falla?" únicamente con las fallas que se nos ocurrieron.
 
-Lo mismo vale para los hechos: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una. Eso no sale de frases, sale de trayectoria, y la trayectoria se pregunta **de a un hecho, en el momento en que aparece** (cuándo cursaste esto, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo), nunca como inventario. Con esos hechos sueltos, cruzados por cuenta, se reconstruye lo que ningún checklist consigue que alguien complete.
+Lo mismo vale para los hechos: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una. Eso no sale de frases, sale de trayectoria, y la trayectoria se pregunta **de a un hecho, en el momento en que aparece** (cuándo cursaste esto y cómo terminó, cuándo entraste, si te fuiste cuándo, si te recibiste cuándo), nunca como inventario. Con esos hechos sueltos, cruzados por cuenta, se reconstruye lo que ningún checklist consigue que alguien complete.
 
 ### 5 · El catálogo es nuestro
 
@@ -56,10 +56,10 @@ Planes, materias y correlativas los carga el equipo, completos. Una ficha a medi
 
 Cerrado el 2026-08-16. Es la lista de datos que el producto pide, sin nada de cómo se muestran: eso se decide después, y aparte.
 
-1. **La reseña de una cursada.** El acto principal: elegís una materia que cursaste. Lleva la materia y el período en que la cursaste; la cátedra, si la recordás; las **frases que marcás** de las que se ofrecen (las nuestras y las ya destiladas para esa materia); el **comentario** en tus palabras, opcional; y si hubo clases que no se dieron, cuántas (una pregunta que aparece solo si marcaste que sí). Cada frase habla de algo (su **sujeto**: la materia, la cátedra, la institución, el centro de estudiantes; la lista no es cerrada, es "de qué habla") y de un aspecto (su **eje**: exigencia o gestión). Todo lo que hace a la cursada entra acá: cómo se dicta, cómo se evalúa, el techo de nota, rendir libre, el trato, y también el acoso, como cualquier otra frase.
+1. **La reseña de una cursada.** El acto principal: elegís una materia que cursaste. Lleva la materia y el período en que la cursaste; **cómo terminó** (la aprobaste, te quedó regular, la desaprobaste, la dejaste, seguís); la cátedra, si la recordás; las **frases que marcás** de las que se ofrecen (las nuestras y las ya destiladas para esa materia); el **comentario** en tus palabras, opcional; y si hubo clases que no se dieron, cuántas (una pregunta que aparece solo si marcaste que sí). Cada frase habla de algo (su **sujeto**: la materia, la cátedra, la institución, el centro de estudiantes; la lista no es cerrada, es "de qué habla") y de un aspecto (su **eje**: exigencia o gestión). Todo lo que hace a la cursada entra acá: cómo se dicta, cómo se evalúa, el techo de nota, rendir libre, el trato, y también el acoso, como cualquier otra frase.
 2. **El evento institucional.** Lo que pasa fuera de una cursada y también hay que contar: trámites y título (cuánto tardó, si salió), equivalencias, vacantes que no conseguiste, el sistema que no cargó o se cayó, mesas que no hubo o regularidades que vencieron esperando, el trato de administrativos y del centro de estudiantes. Se pregunta de a un evento, cuando aparece, sin materia. Lleva frases, comentario y votos igual que la reseña: es el mismo mecanismo con el sujeto fijo, no otro producto.
 3. **Los votos.** "A mí también me pasó", sobre una reseña o un evento que otro escribió, sin escribir. Es lo que convierte una reseña en muchas voces. Se vota la reseña entera, no una frase suelta.
-4. **Los hechos de trayectoria.** De a uno, cuando aparecen, nunca como inventario: cuándo entraste, cuándo cursaste cada materia (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo.
+4. **Los hechos de trayectoria.** De a uno, cuando aparecen, nunca como inventario: cuándo entraste (una vez, la primera vez que reseñás), cuándo cursaste cada materia y cómo terminó (vienen con la reseña), si te fuiste cuándo, si te recibiste cuándo (una pregunta, cuando el período que contás es viejo, o por mail una vez al año). El silencio no se infiere: quien no dijo es "no dijo".
 5. **La constancia**, opcional: la prueba de condición de alumno. Verificarse pesa, no habilita.
 6. **Lo destilado.** De los comentarios de muchos, con inteligencia, salen frases nuevas que se suman a las que se ofrecen para marcar. Es un dato derivado, no pedido, y está acá porque alimenta el punto 1.
 
@@ -67,7 +67,24 @@ Nada más se reseña. Ni la carrera, ni la universidad, ni la gestión como acto
 
 ## Qué publicamos
 
-**Abierto.** Con lo recabado cerrado, lo siguiente es decidir qué se muestra y cómo: los dos números y si son suficientes, la atribución (hoy la decisión 2 dice que la decide el cruce sujeto × eje y deja dos combinaciones sin lado; la propuesta en discusión es que la decida el eje solo), la lista destilada con sus voces, los hechos declarados, la trayectoria, y con qué reglas se derivan carrera e institución. La posición "publicamos el número, no el veredicto" va a esa mesa como posición a revisar, no como axioma. Hasta que cierre, las decisiones 1 y 2 son la intención original, no el diseño.
+Cerrado entero. La base es [ADR-0064](decisions/0064-phrases-with-voices-not-scores.md); sobre ella, 0065 a 0068. Cada punto lleva el ADR con el porqué, las alternativas rechazadas y las fuentes.
+
+**Cerrado:**
+
+1. **La unidad de publicación es la frase con su proporción de voces**, separada por eje. Cada frase es su propio hecho, con su propio n; no se promedia con ninguna otra.
+2. **No hay número global 1 a 5.** Ni por eje ni total. Lo que la ficha muestra por eje es la lista de sus frases con voces; arriba, para leer en dos segundos, una proporción de personas y no un promedio de frases: "7 de cada 10 que reseñaron marcaron algún problema de gestión".
+3. **El encogimiento** por pocas voces es el límite inferior del intervalo de Wilson, aplicado a cada proporción por separado, y está publicado en el método. Con pocas voces la proporción sale baja y sube sola con el corpus: es lo correcto, no un defecto.
+4. **Todo dato viaja con sus voces y con el período** de lo que lo sostiene. Es lo que separa un hecho de una anécdota.
+5. **La lista se reprocesa** a medida que entran reseñas, y se dice. **La frase destilada no es cita**: es síntesis, y se declara.
+6. **La atribución la decide el eje** ([ADR-0065](decisions/0065-attribution-is-the-axis-not-a-split.md)): exigencia es la carrera siendo dura, gestión es alguien fallando, venga del sujeto que venga. Se publica como dos proporciones de personas con el mismo denominador, en la cabecera; nunca como un split de marcas. El catálogo de frases con su sujeto y su eje se publica entero en el método.
+7. **Lo que no se reseña se deriva sumando voces** ([ADR-0066](decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)). Arriba de la cursada la voz es una persona hablando de una cursada, y se suma: quien reseñó tres cursadas de una carrera son tres voces en ella. La materia en todos sus períodos y la cátedra suman sus cursadas; la carrera en una institución suma todo lo marcado en las cursadas de su plan; la institución son tres cosas que nunca se mezclan en un número: lo que se dice de ella como sujeto (trámites, título, trato), sus cursadas, y su cobertura.
+8. **Todo dato derivado viaja con su cobertura** (cuántas materias del plan tienen voces) y cada frase derivada dice en cuántas materias aparece: lo sistémico y lo local se distinguen con un número. **La cabecera derivada de carrera e institución espera** a que más de la mitad de las materias del plan tenga voces; hasta entonces la ficha dice que todavía no derivamos y se lee materia por materia.
+9. **No hay piso.** Todo se publica desde la primera voz, como "X de N voces" y con su encogimiento a la vista; nada se desbloquea por escalones. Vale para las frases, las cabeceras, los derivados, los cruces y el CSV.
+10. **La trayectoria sale de hechos declarados, y el silencio no se infiere** ([ADR-0067](decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)). La duración real es la mediana de los egresados que dijeron cuándo entraron y cuándo se recibieron, contra la nominal del plan; la brecha es la diferencia, en años. El egreso y el abandono se publican solo de cohortes cerradas (las que entraron hace al menos una vez y media la duración nominal), como tres proporciones de personas: se recibió, se fue, no dijo o sigue. Dónde se cae: por año del plan, y por materia desde cómo terminó cada cursada (abandono de cursada, aprobación). Qué se lleva junto: solo desde reseñas, nunca desde el plan que alguien marcó para sí. Todo "de quienes reseñaron", nunca "la tasa de la carrera".
+11. **La serie es por el período en que pasó**, no por cuándo se reseñó; cada punto con sus voces y su encogimiento, sin suavizar, con la fecha de publicación y la de la réplica marcadas.
+12. **Comparar es lado a lado, dato por dato, sin ordenar por valor.** La misma carrera (una carrera canónica que cura el catálogo) en varias instituciones: nominal, real, brecha, egreso, las dos cabeceras con su gate, la cobertura, las listas por eje. Sin compuesto y sin ganador; el que quiere ordenar baja el CSV, que gana una segunda tabla con los agregados de trayectoria.
+
+13. **El comentario se publica como testimonio, debajo de las frases, nunca como cuerpo** ([ADR-0068](decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): la reseña tal como se lee, con su período, su cátedra y las frases que marcó, sin cuenta ni nombre, con tope de un párrafo. Antes de publicar, un chequeo: lo que puede identificarte por contexto se marca y lo decidís vos (y la réplica no podrá citarlo); lo que habla de una persona fuera de su acto público queda retenido hasta que alguien lo mire. Se modera lo que expone a una persona (la que aportó, un tercero), no al docente evaluado ni a la institución; nada baja solo por cantidad de reportes; y si un texto se retira, sus frases siguen contando. La réplica pasa el mismo chequeo, queda retenida un plazo desde el aviso, y se publica al lado, con nombre: no baja el testimonio ni mueve conteos. Los testimonios se ordenan por "a mí también me pasó", alimentan la destilación siempre, y no se exportan en bloque.
 
 ## Qué no hace
 
@@ -82,8 +99,8 @@ Nada de esto es neutral.
 
 - El nombre del alumno NUNCA aparece. El del docente sí, porque responder es un acto público. El riesgo no es simétrico.
 - Aportar pide cuenta, no constancia: si todos se tienen que verificar, el muro queda antes del valor y no hay corpus. El que prueba su condición de alumno suma una señal que viaja con el dato: verificarse pesa, no habilita. Y jamás mostramos quién es nadie; sin eso, el que más tiene para contar es el que más tiene para perder.
-- El anonimato es mecanismo, no declaración: revisamos que el TEXTO no te reconstruya, y limitamos qué puede citar la réplica.
-- El número tampoco te reconstruye: ningún conteo público sale por debajo del piso de personas, y en un cruce (materias que se llevaron juntas, cátedra, período) el piso vale en cada celda, no solo en el total. Lo que se descarga es lo mismo que se publica, agregado y con su n: no existe un crudo que tenga más que la ficha.
+- El anonimato es mecanismo, no declaración: revisamos que el TEXTO no te reconstruya, y limitamos qué puede citar la réplica ([ADR-0068](decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)).
+- Los conteos no te nombran: nada publicado trae nombre, cuenta ni perfil, y lo que se descarga es lo mismo que se publica, agregado y con sus voces; no existe un crudo que tenga más que la ficha. No hay piso de personas: un conteo chico se publica chico, con sus voces a la vista. Lo que no prometemos es anonimato estadístico: en un grupo chico la sospecha existe y no es nuestra para eliminar; es el precio de reclamar, y se le dice al que reseña antes de publicar.
 - Se modera lo que expone a una persona, no lo que incomoda a la institución. Cada testimonio que se baja de más es uno que no se vuelve a escribir.
 
 ## A quién sirve

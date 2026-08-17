@@ -1,6 +1,6 @@
 # ADR-0040: Notifications como bounded context nuevo
 
-- **Estado**: aceptado
+- **Estado**: aceptado, revalidado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (los avisos sostienen cinco stories del producto nuevo y son infraestructura del primer bloque, arrancando por mail; ver [product-map.md](../domain/product-map.md))
 - **Fecha**: 2026-05-02
 
 ## Contexto

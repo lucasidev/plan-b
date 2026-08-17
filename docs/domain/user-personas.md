@@ -2,7 +2,7 @@
 
 Las personas del producto, portadas del mapa de producto (canvas `plan-b mapa`, sección "quién camina cada paso"). Cada una existe por una tensión, y cada tensión produjo una decisión de diseño concreta: si la persona no obliga a decidir nada, sobra.
 
-**No confundir con [`personas.md`](personas.md)**: aquel doc son las identidades de testing que siembra el `DevSeedHostedService` (Lucía Mansilla y compañía). Esto es producto, no fixtures.
+**No confundir con [`dev-seed-personas.md`](dev-seed-personas.md)**: aquel doc son las identidades de testing que siembra el `DevSeedHostedService` (Lucía Mansilla y compañía). Esto es producto, no fixtures.
 
 Tres reglas que el mapa fija sobre este conjunto:
 
@@ -26,7 +26,7 @@ Cuarto año, veinte horas de trabajo. Tiene más para contar que nadie y menos t
 
 **La contradicción**: quiere que exista el dato pero no quiere producirlo. Aportaría si le costara lo que cuesta mandar un mensaje.
 
-**Decisión que produce**: por ella se tocan frases en vez de escribir, y la unidad es una materia y no el período.
+**Decisión que produce**: por ella se marcan frases en vez de escribir, y la unidad es una cursada y no el período.
 
 ### Matías, 26 · "Reclamó solo y no sirvió de nada"
 
@@ -66,7 +66,7 @@ Cursó tres años de ingeniería y abandonó. Tiene la explicación completa de 
 
 **La contradicción**: es el que más tiene para contar y el que menos razón tiene para volver. Todo lo que sabe se pierde el día que cierra sesión por última vez.
 
-**Decisión que produce**: por él aportar no exige estar cursando, y contar una materia sola alcanza. El que se fue no va a inventariar cinco años.
+**Decisión que produce**: por él aportar no exige estar cursando, y reseñar una materia sola alcanza. El que se fue no va a inventariar cinco años; su año de salida se le pregunta una vez, y si no vuelve, por mail.
 
 ### Silvia, 51 · "Paga la cuota y no pisa la facultad"
 
@@ -74,7 +74,7 @@ Financia una privada para su hija. No entiende de planes ni de correlativas, y n
 
 **La contradicción**: es la que pone la plata y la que menos derecho siente a opinar. Si le mostramos la interfaz del alumno, se va en diez segundos.
 
-**Decisión que produce**: por ella la duración real y la tasa de egreso están arriba en la ficha, no escondidas entre los dos números.
+**Decisión que produce**: por ella la duración real y la tasa de egreso están arriba en la ficha, no escondidas entre las frases.
 
 ### Prof. Paredes, 58 · "Lo nombraron y no piensa contestar"
 

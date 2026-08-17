@@ -1,6 +1,6 @@
 # planb
 
-Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos y pasillos) en datos agregados que aguantan una discusión. Dos números por materia que nunca se promedian (exigencia y gestión), atribución de cada señal (propio de la materia vs la institución fallando), testimonio por frases curadas, lectura sin cuenta. Proyecto Final de la Tecnicatura Universitaria en Desarrollo y Calidad de Software (UNSTA).
+Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos y pasillos) en datos agregados que aguantan una discusión. Dos ejes por cursada que nunca se mezclan (exigencia y gestión), publicados como frases con la proporción de voces que las sostiene y no como puntajes; la atribución la decide el eje (lo exigente es la carrera siendo dura, lo mal gestionado es alguien fallando); testimonio por frases curadas; lectura sin cuenta. Proyecto Final de la Tecnicatura Universitaria en Desarrollo y Calidad de Software (UNSTA).
 
 La tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). **El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro**: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md) y la poda se planifica en [`docs/STATUS.md`](docs/STATUS.md).
 
