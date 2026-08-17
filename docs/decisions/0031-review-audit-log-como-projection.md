@@ -1,6 +1,6 @@
 # ADR-0031: ReviewAuditLog como projection (no aggregate)
 
-- **Estado**: aceptado
+- **Estado**: deprecado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (retirado con la versión anterior del producto: el audit log como projection era de la reseña texto-libre; la doctrina de proyectar desde eventos sigue disponible cuando el sistema nuevo la necesite)
 - **Fecha**: 2026-04-25
 
 ## Contexto

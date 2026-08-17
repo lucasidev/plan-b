@@ -1,6 +1,6 @@
 # ADR-0012: Edición de reseña bloqueada mientras la modera un reporte
 
-- **Estado**: aceptado, con la regla ampliada el 2026-07-29 (ver [Revisión](#revisión-2026-07-29))
+- **Estado**: deprecado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (retirado con la versión anterior del producto: la máquina de estados de edición era de la reseña texto-libre; la revisión del 2026-07-29 queda como historia)
 - **Fecha**: 2026-04-23
 - **Nota**: el filename conserva el slug original (`solo-desde-published`) porque los links del repo apuntan a él. El título dice la regla vigente, no la original.
 

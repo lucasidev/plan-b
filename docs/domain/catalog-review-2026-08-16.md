@@ -3,7 +3,7 @@
 Segunda vuelta sobre las bases del producto nuevo, esta vez buscando el caso que las rompe en vez de leerlas asintiendo: tres lentes en paralelo (las nueve personas caminando las stories; ocho adversarios atacando; el modelo de datos que las stories exigen sin decir), sobre [THESIS.md](../THESIS.md), [user-stories.md](user-stories.md), [user-personas.md](user-personas.md) y [product-map.md](product-map.md). Salieron 39 hallazgos; muchos son la misma falla vista desde tres lados. Acá están consolidados por raíz, con la evidencia y una propuesta por cada uno. **Es insumo para decidir, no decisiones**: lo que Lucas resuelva se propaga a la tesis y al catálogo, y este doc queda como registro de por qué.
 
 > **Qué se decidió con esto (2026-08-16, misma tarde)**. La discusión que siguió reordenó el trabajo: primero se cierra **qué recabamos**, después **qué publicamos y cómo**. Lo cerrado está en [THESIS.md, "Qué recabamos"](../THESIS.md#qué-recabamos) y en el [glosario](ubiquitous-language.md#el-producto-nuevo-qué-recabamos). Sobre los grupos de abajo:
-> - **A (el piso)**: se descarta como sistema. Nosotros no publicamos autoría; en un grupo chico la sospecha existe y no es nuestra para eliminar: es el precio de reclamar, y se le dice al que reseña. Queda de A solo lo que era spam (A2, va a BO5-2 por procedencia) y no regalar timestamps al docente (A5: aviso como resumen). Todo lo demás de A era diseñar desde el miedo.
+> - **A (el piso)**: se descarta como sistema ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md): no hay piso ni escalera; todo se publica desde la primera voz). Nosotros no publicamos autoría; en un grupo chico la sospecha existe y no es nuestra para eliminar: es el precio de reclamar, y se le dice al que reseña. Queda de A solo lo que era spam (A2, va a BO5-2 por procedencia) y no regalar timestamps al docente (A5: aviso como resumen). Todo lo demás de A era diseñar desde el miedo.
 > - **B (el comentario)**: existe, opcional; qué se hace con él al publicar se decide en "qué publicamos". La destilación de frases desde los comentarios entra a la tesis (decisión 4).
 > - **C1 (verificación docente como permiso, cola separada)** y **G5 (baja según ADR-0044)**: cerrados así. **G6 (materia canónica)**: cerrado, sí, antes del segundo plan. **G2 (cátedra)**: es el equipo docente (titular a cargo), no la comisión; entidad nueva del catálogo. **G3**: cada frase sabe su sujeto; carrera e institución no se reseñan, se derivan.
 > - **G1 (atribución)** y todo lo que es "qué se muestra" (los dos números, cortes, mínimos, la ficha): abierto hasta cerrar "qué publicamos". La posición "publicamos el número, no el veredicto" va a esa mesa como posición a revisar.
@@ -43,6 +43,7 @@ Lo que las tres lentes coincidieron en señalar como lo más grave: **el catálo
 
 **B2. Y si existe, deshace el argumento del pivote.** ADR-0063 justificó el viraje diciendo que la curaduría concentra el riesgo "en texto que escribimos y controlamos nosotros, no en texto libre de terceros". Con texto libre publicado: me registro, elijo la cátedra de la docente que me bochó, toco frases suaves y en el texto escribo una acusación falsa sobre su vida privada. T2-1 chequea si me delata *a mí* (no), "decido yo si lo dejo", se publica. La única defensa es reactiva (reporte + Nahuel), y Paredes por definición no reporta.
 → **Propuesta (una decisión de producto, dos opciones)**: **(a) el texto no se publica**: alimenta la curaduría (el canal "ninguna de estas describe lo mío" que ADR-0063 pide en "a vigilar"), el backoffice tiene la cola de textos que no encontraron frase, y T2-1/T2-2 se reescriben (lo que delata es la combinación cátedra + período + rol, y se fusionan con T2-4). Coherente con la tesis y con el pivote. **(b) el texto se publica**: hace falta una story que lo cree con tope, que no entre a los números, que pase T2-1 *y* una revisión previa cuando nombra o describe a una persona, y BO2-1 tiene que decir que el docente nombrado cuenta como persona expuesta. Mi recomendación es (a); es la única que no reabre lo que el pivote cerró.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): **(b)**, con lo que (b) exigía: tope, no entra a los números, chequeo previo con retención de lo que habla de una persona fuera de su acto, y el criterio de exposición en BO2-1.
 
 ## C · La réplica: sin identidad probada, sin palanca, sin curaduría
 
@@ -51,26 +52,33 @@ Lo que las tres lentes coincidieron en señalar como lo más grave: **el catálo
 
 **C2. "Se entera antes de que se publique" no le da ni ventana ni acción.** Claudia responde 23:50, el aviso llega 23:51, se publica 23:52: criterio cumplido, promesa rota. Y si borró su aporte (O5-1) o su cuenta (O5-2), no hay a quién avisar y la réplica sale igual.
 → **Propuesta**: T2-2 gana plazo y palanca: la respuesta queda retenida N días desde el aviso; en ese plazo quien aportó puede editar, borrar o pedir revisión; si borra, la respuesta no se publica.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): así.
 
 **C3. La réplica no cita pero describe.** "En mi comisión hubo una sola persona que rindió tres veces el primer parcial y faltó nueve clases": no cita una palabra del testimonio y señala a una persona con conocimiento del aula. T2-2 prohíbe citar; esto no cita. La réplica es el único texto libre no curado del producto y no pasa el chequeo que T2-1 le hace al alumno.
 → **Propuesta**: la respuesta pasa el mismo chequeo de identificación por contexto que el aporte, y cuando describe notas, asistencia o situación personal de alguien no se publica sin moderación.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): así.
 
 ## D · Moderación: criterio, estado intermedio, y quién la ejecuta
 
 **D1. BO2-1 no dice de quién es la exposición que cuenta.** "Bajar solo lo que expone a una persona": el docente *es* una persona y está nombrado. Leído literal, todo testimonio sobre una cátedra es bajable. La tesis tiene la respuesta ("el del docente sí, porque responder es un acto público; el riesgo no es simétrico") pero la story no la carga, y la story es lo que Nahuel abre a las tres de la mañana. Paredes reporta las catorce apariciones de "hay clases que no se dan" alegando exposición y no hay criterio escrito.
 → **Propuesta**: BO2-1 dice explícito que la exposición protegida es la de quien aportó, no la del docente ni la de la institución nombrada; el reporte de un evaluado sobre su propia ficha se resuelve con ese criterio.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): así.
 
 **D2. Nadie decidió qué pasa con lo reportado mientras espera.** Si baja, el reporte masivo es un botón de censura (el adversario g). Si queda, "expone a una persona" sigue publicado días. ADR-0010 (auto-hide con umbral) era la única respuesta y ADR-0063 lo puso en retiro sin reemplazo.
 → **Propuesta**: lo reportado sigue publicado hasta que un humano resuelva; ninguna cantidad de reportes lo baja sola; existe un único caso "riesgo inmediato" con criterio escrito que despublica antes.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): así; ADR-0010 queda superado.
 
 **D3. Reporte sin cuenta deja a BO5-3 sin nada que agrupar.** O5-4 saca el único identificador estable; BO5-3 (P1) quiere agrupar "doce reportes de la misma facultad" y no puede. Y BO2-2 quiere responderle al reportante, que no tiene cuenta.
 → **Propuesta**: el reporte sigue sin pedir cuenta pero **confirma el mail por link** antes de entrar a la cola; dos reportes del mismo mail cuentan uno; el mail es el canal de BO2-2 y el origen agrupable de BO5-3.
+→ **Decidido** ([ADR-0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)): así.
 
 **D4. Moderación y verificación viven en la misma persona: BO2-4 es ausencia de UI, no mecanismo.** BO3-1 corta un solo lado (catálogo no llega a reportes ni verificaciones) y deja fusionados los dos que rompen el anonimato. Nahuel está definido así ("modera reportes y verifica constancias"). Ve la constancia con nombre y carrera a las 14:32 y a las 14:40 la cola de reportes filtrada por esa carrera: no hay camino en la pantalla, hay camino en la cabeza y en la sesión. Y BO3-2 registra, no impide: el Admin se puede auto-asignar los dos roles.
 → **Propuesta**: verificación y moderación son roles **excluyentes** (asignar el segundo a quien tiene el primero es imposible, no auditado); el registro guarda referencias que un solo rol no puede unir; el Admin no se auto-asigna roles operativos. Y la persona Nahuel se parte en dos, o el equipo mínimo son cuatro.
+→ **Pendiente**: se decide en la propagación al catálogo (backoffice).
 
 **D5. Falta la cola de moderación desbordada.** BO4-1 es la gemela para catálogo; no existe para moderación. Cuarenta reportes a cinco minutos son tres horas de una persona.
 → **Propuesta**: story gemela de BO4-1 en BO4 o BO5.
+→ **Pendiente**: se escribe en la propagación al catálogo; ADR-0068 la vuelve más urgente porque ahora hay texto que moderar.
 
 ## E · Ataques al corpus que las stories no cubren
 
@@ -90,6 +98,7 @@ Lo que las tres lentes coincidieron en señalar como lo más grave: **el catálo
 
 **F2. Tres promesas dependen del plan marcado, que el catálogo declara opcional.** `abandono` vive "sobre la pantalla del plan" que Diego no visita; O4-5 ("el aviso llega con una materia concreta") no se puede armar para quien salteó el onboarding y O6-2 prohíbe volver a preguntar; y el egreso "se pregunta igual" sin decir a quién ni cuándo: el que se recibió no vuelve nunca, así que O1-1 y O1-7 (Silvia) no tienen mecanismo de adquisición.
 → **Propuesta**: la pregunta de abandono aparece dentro de `reseñar`, una vez, sin plan marcado; y una story de reenganche por mail a cuentas inactivas con una sola pregunta ("¿te recibiste? ¿cuándo?"), respondible sin volver a la app.
+→ **Decidido** ([ADR-0067](../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)): así, y el reenganche por mail es infraestructura junto con los avisos.
 
 **F3. El mail de Ana la deja donde le prometimos no mandarla.** O2-2 promete pedir sin cuenta; O2-4 promete "el plan ya está listo para marcar", que es `micarrera` (con cuenta). El mail la deposita en el registro, y `registro` le vuelve a pedir institución y carrera (contra O6-2). Y dejó su mail sin cuenta y no hay story que le permita sacarlo.
 → **Propuesta**: el mail lleva a la ficha ya cargada (que se lee sin cuenta); si decide registrarse, el pedido precarga institución y carrera; el mismo mail trae el link para borrar la dirección.
@@ -106,7 +115,8 @@ Lo que las tres lentes coincidieron en señalar como lo más grave: **el catálo
 ## G · Lo que hay que decidir para poder modelar (sin respuesta en ningún doc)
 
 **G1. La atribución deja dos combinaciones sin lado, y el propio corpus del mapa las usa.** La regla que escribimos hoy en la tesis: exigencia-materia = carrera dura; gestión-cátedra o gestión-institución = alguien fallando. Pero "Contenido de hace diez años" es sujeto materia y eje gestión (alguien falla, y la regla la manda a "carrera dura" o a ningún lado); "Te la estudiás solo" es sujeto cátedra y eje exigencia (la regla no la asigna). La matriz sujeto × eje tiene seis celdas y la regla resuelve tres; el "65%" no tiene denominador.
-→ **Propuesta**: la atribución la decide el **eje**, no el sujeto: todo lo de eje exigencia es "la carrera siendo dura" venga de donde venga (una materia dura o una cátedra exigente son la carrera exigiendo); todo lo de eje gestión es "alguien fallando" (una materia con contenido viejo o una cátedra que no da clases son la institución fallando). Seis celdas resueltas, denominador = todos los toques. La oración de la tesis se corrige a eso.
+→ **Propuesta**: la atribución la decide el **eje**, no el sujeto: todo lo de eje exigencia es "la carrera siendo dura" venga de donde venga (una materia dura o una cátedra exigente son la carrera exigiendo); todo lo de eje gestión es "alguien fallando" (una materia con contenido viejo o una cátedra que no da clases son la institución fallando). Seis celdas resueltas. La oración de la tesis se corrige a eso.
+→ **Decidido 2026-08-16** ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)): la decide el eje. Con una corrección a la propuesta: el denominador **no** son las marcas (el split es un artefacto de cuántas frases hay por eje) sino las personas, dos proporciones con el mismo denominador, como fijó ADR-0064 para la cabecera.
 
 **G2. Qué es "cátedra".** El mapa dice "por docente"; ADR-0061 eligió la comisión; el catálogo tiene Commission con varios docentes con rol. Tres candidatos incompatibles: (materia, docente), (materia, comisión), (materia, equipo). Bloquea la referencia del aporte, la unicidad, la comparación de T3-6 y "mi cátedra" de O7-1 (si la comisión tiene cuatro docentes, ¿los cuatro responden?).
 → **Propuesta**: la cátedra es la **comisión** (materia × período × nombre), como ya se había decidido en ADR-0061; los docentes son atributo del período; la réplica la firma un docente de la comisión con su nombre; la ficha muestra la vigencia del plantel (E2). Y las frases de cátedra sin cátedra elegida (Diego no recuerda al docente) van al conteo de la materia con sujeto "cátedra sin identificar": suman a gestión-institución del nivel de arriba y no se pierden.
@@ -131,11 +141,12 @@ Lo que las tres lentes coincidieron en señalar como lo más grave: **el catálo
 
 **G9. Trajectory: consentimiento y derivación.** O3-1 (co-cursada) solo sale de cruzar dos aportes de la misma cuenta en el mismo período (sesga a quien contó ambas) o del plan marcado, que es privado y nadie consintió publicar (precedente exacto: ADR-0047).
 → **Propuesta**: la co-cursada sale solo de aportes (que son públicos por acto), nunca del plan marcado; el sesgo se declara en `metodo`.
+→ **Decidido** ([ADR-0067](../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)): así.
 
 ## H · Contradicciones internas menores del catálogo
 
 - **T1-1 y T1-2** dicen "como quien ya aportó"; el mapa dice que votar y corregir "piden cuenta". Decide si Rocío (que no aporta) puede corregir el catálogo. Propuesta: cuenta alcanza.
-- **O8-1** solo lleva frases; los embudos y la duración real, el dato más citable, no son descargables. Propuesta: el CSV tiene una segunda tabla de agregados de trayectoria, con el mismo piso.
+- **O8-1** solo lleva frases; los embudos y la duración real, el dato más citable, no son descargables. Propuesta: el CSV tiene una segunda tabla de agregados de trayectoria. **Decidido** ([ADR-0067](../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)): así, sin piso.
 - **La cola de pedidos** no tiene su BO5: E3 lo cubre.
 
 ---

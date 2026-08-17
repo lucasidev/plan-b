@@ -1,6 +1,6 @@
 # ADR-0010: Threshold de auto-hide configurable por env var
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0068](0068-comment-publishes-as-testimony-below-the-phrases.md) (en el producto nuevo ninguna cantidad de reportes baja nada sola: lo reportado sigue publicado hasta que un humano resuelve, y el único caso de riesgo inmediato tiene criterio escrito). El auto-ocultar de la reseña texto-libre se retira con la versión anterior ([ADR-0063](0063-the-product-is-a-pressure-instrument.md))
 - **Fecha**: 2026-04-23
 
 ## Contexto

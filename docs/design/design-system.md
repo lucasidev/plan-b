@@ -17,6 +17,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, tokens y
 | Canvas (mockup) | [`reference/canvas-mocks/design-system.jsx`](reference/canvas-mocks/design-system.jsx) | Render JSX del design system con todas las primitivas + tokens visibles. Es lo que muestra el screenshot de arriba. |
 | Canvas (tokens) | [`reference/canvas-tokens.css`](reference/canvas-tokens.css) | Tokens del shell del canvas: paleta Apricot Soft, tipografía, radii, sombras. |
 | Mockup v1 | [`reference/styles.css`](reference/styles.css) | Tokens y clases compuestas del mockup HTML v1 (pre-rediseño). Histórico, no nuevo. |
+| Bocetos por ADR | [`sketches/`](sketches/README.md) | Mid-fi hechos para decidir (hoy: el testimonio, ADR-0068). Orientativos, como el mapa. |
 | Implementación | [`frontend/src/app/globals.css`](../../frontend/src/app/globals.css) | `@theme` Tailwind 4 con los tokens reales que consume el producto. Mismos nombres que canvas pero con prefijo `--color-`. |
 
 ## Mapping canvas → frontend

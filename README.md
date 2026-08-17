@@ -2,7 +2,7 @@
 
 Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos de WhatsApp y en pasillos) en datos agregados que aguantan una discusión. No es un buscador de carreras, ni un ranking, ni una app de gestión académica.
 
-Se apoya en cinco decisiones que gobiernan todo el producto: dos números por materia que nunca se promedian (exigencia y gestión), atribución de cada señal (propio de la materia o la institución fallando), testimonio por frases curadas en vez de texto libre, lectura sin pedir cuenta, y un catálogo completo cargado por el equipo.
+Se apoya en cinco decisiones que gobiernan todo el producto: dos ejes por cursada que nunca se mezclan (exigencia y gestión), publicados como frases con sus voces y no como puntajes; la atribución la decide el eje (lo exigente es la carrera siendo dura, lo mal gestionado es alguien fallando); testimonio por frases curadas en vez de texto libre; lectura sin pedir cuenta, y un catálogo completo cargado por el equipo.
 
 Tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md).
 

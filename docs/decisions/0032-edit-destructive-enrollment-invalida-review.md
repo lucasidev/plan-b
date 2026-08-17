@@ -1,6 +1,6 @@
 # ADR-0032: Edit destructive de EnrollmentRecord invalida la Review correspondiente
 
-- **Estado**: aceptado
+- **Estado**: deprecado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (retirado con la versión anterior del producto: la edición destructiva de la cursada que invalidaba la reseña era del modelo anterior de historial; la reseña nueva se define por cuenta × materia × período, no por un `EnrollmentRecord` con su máquina de estados)
 - **Fecha**: 2026-04-25
 
 ## Contexto

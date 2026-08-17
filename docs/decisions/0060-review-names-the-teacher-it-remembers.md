@@ -1,6 +1,6 @@
 # ADR-0060: A review names the teacher it remembers, even when the roster moved on
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0064](0064-phrases-with-voices-not-scores.md) (la reseña de texto libre con docente reseñado se reemplaza por la reseña de la cursada con frases y voces; la idea que sobrevive, la cátedra como sujeto propio distinto del docente, quedó recogida en el glosario del producto nuevo)
 - **Fecha**: 2026-07-30
 
 ## Contexto

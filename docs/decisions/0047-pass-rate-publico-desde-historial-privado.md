@@ -1,6 +1,6 @@
 # ADR-0047: Pass-rate público (aprobación histórica) desde el historial privado de enrollments
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) y [ADR-0067](0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la forma, publicar proporciones con su n, sigue como proporción de voces con encogimiento; la definición de aprobación sigue, ahora desde cómo terminó cada cursada declarada en la reseña; el piso de cinco personas y la fuente privada no: se publica desde la primera voz, de hechos declarados)
 - **Fecha**: 2026-06-23
 
 ## Contexto

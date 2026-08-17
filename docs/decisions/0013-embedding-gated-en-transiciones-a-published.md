@@ -1,6 +1,6 @@
 # ADR-0013: Generación de embedding gated en transiciones a `published`
 
-- **Estado**: aceptado, en suspenso hasta que exista el pipeline
+- **Estado**: deprecado por [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (el pipeline de embeddings sobre reseñas texto-libre no va a existir; la búsqueda semántica, si vuelve, se decide de nuevo contra la tesis)
 - **Fecha**: 2026-04-23
 
 > **Nota (2026-07-26)**: la premisa de este ADR ya no se sostiene. La revisión de
