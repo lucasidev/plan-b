@@ -56,29 +56,30 @@ El mapa las dibuja en flujos pero no tienen pantalla propia todavía:
 |---|---|
 | `responder` | La respuesta del docente/institución. La dibujan los flujos 06, 08 y 10, y `metodo` la promete; hoy las respuestas de ejemplo están cargadas a mano. |
 | `buscar` | Resultados de búsqueda. El topbar tiene buscador y todavía no lleva a ninguna pantalla; el flujo 11 la dibuja. |
-| `editar` | Editar o borrar un aporte. Sin esto, contar algo incómodo es irreversible. |
-| `abandono` | Marcar en qué año dejaste, sobre la pantalla del plan. Sin esto no sabemos dónde se cae la mayoría. |
-| `baja` | Borrar la cuenta y lo aportado. Prometemos que es tuyo; poder sacarlo es parte de eso. |
+| `editar` | Editar o borrar un aporte. Sin esto, reseñar algo incómodo es irreversible. Un comentario editado vuelve al chequeo previo antes de publicarse. |
+| `abandono` | La pregunta de trayectoria de a uno (me fui, cuándo / me recibí, cuándo / sigo), sin plan marcado; también aparece en `reseñar` cuando el período declarado es viejo, y por mail una vez al año. Sin esto no sabemos dónde se cae la mayoría, y el silencio no se infiere. |
+| `baja` | Dar de baja la cuenta: anonimiza la identidad y preserva lo aportado (ADR-0044); lo que quieras sacar lo borrás antes, de a uno, en `editar`. Prometemos que es tuyo; poder sacarlo es parte de eso. |
 | `avisos` | Notificaciones. Sin ellas, el que pidió una carrera no se entera de que la cargamos. Es la ruta que más stories sostiene (O2-4, O4-5, O7-5, BO1-3 y T2-2), y T2-2 es P1 de la promesa central: "quien aportó se entera antes de que se publique la réplica" no se puede cumplir sin un canal de aviso. **Decisión 2026-08-16**: deja de ser diferida y es infraestructura del primer bloque, aunque arranque solo por mail (SMTP ya está en el stack; el BC de ADR-0040 se revisa a favor). El panel en la app puede esperar. |
 
 ### Acciones inline (3)
 
 No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 
-- `reportar`: denunciar algo publicado. Modal sobre la ficha. **Sin cuenta**: el difamado no tiene por qué registrarse en el sitio que lo difama.
+- `reportar`: denunciar algo publicado. Modal sobre la ficha. **Sin cuenta**: el difamado no tiene por qué registrarse en el sitio que lo difama; confirma el mail por link antes de entrar a la cola, y nada baja solo por cantidad de reportes.
 - `corregir`: un dato duro está mal. La fila se vuelve editable ahí mismo. Pide cuenta.
-- `votar`: "esto me sirvió". Ordena qué se lee primero. Pide cuenta.
+- `votar`: "a mí también me pasó", sobre la reseña o el evento entero. Suma una voz a sus frases y ordena qué testimonio se lee primero. Pide cuenta.
 
-### Backoffice (6) · el equipo
+### Backoffice (7) · el equipo
 
 | Ruta | Qué es |
 |---|---|
 | `bo/pedidos` | La cola de carga, ordenada por cuántos lo pidieron, no por orden de llegada. |
-| `bo/catalogo` | Cargar un plan. Abre por huecos: no se publica hasta terminar. |
+| `bo/catalogo` | Cargar una oferta: el plan con su duración nominal, sus materias canónicas, sus cátedras (el equipo docente a cargo, entidad propia) y su carrera canónica. Abre por huecos: no se publica hasta terminar. |
 | `bo/correcciones` | Datos duros que alguien corrigió. Se contrastan contra la fuente antes de aplicar. |
-| `bo/reportes` | Moderación. Se baja lo que expone a una persona; la queja dura no es causal. |
-| `bo/verificaciones` | Constancias. El único lugar con nombres reales, y sin camino a los aportes. |
-| `bo/equipo` | Accesos. Cada rol ve solo sus colas: el anonimato es mecanismo, no declaración. |
+| `bo/reportes` | Moderación, dos colas: lo reportado (que sigue publicado hasta que alguien resuelve; salvo riesgo inmediato con criterio escrito) y lo retenido por el chequeo previo (comentarios y réplicas que hablan de una persona fuera de su acto, sin publicar hasta que alguien mire). Se baja el texto que expone a una persona, nunca la voz; la queja dura no es causal. |
+| `bo/verificaciones` | Dos colas distintas: constancias de alumno (señal; el único lugar con nombres reales, y sin camino a los aportes) e identidad docente (permiso para la réplica; se prueba contra la cátedra del catálogo). |
+| `bo/equipo` | Accesos. Cada rol ve solo sus colas: el anonimato es mecanismo, no declaración. (Pendiente D4: verificación y moderación como roles excluyentes.) |
+| `bo/frases` | El catálogo de frases: la redacción, el sujeto y el eje de cada una, las semilla y las destiladas en cola de curaduría. Es lo que `metodo` publica entero, y el eje es la atribución: corregirlo reprocesa las fichas. |
 
 ## Los flujos
 
@@ -86,33 +87,35 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 | # | Flujo | Recorrido |
 |---|---|---|
-| 01 | Valentina tiene que elegir en dos meses | `inicio`/`buscar` → `explorar` → `carrera` → `materia`/`catedra` → `metodo` (opcional) → `donde` |
-| 02 | Ana busca la suya y no está | `explorar` → vacío explicado → `pedir` → `cola` → `avisos` |
-| 03 | Matías vuelve, y esta vez completa | `catedra` → lee → (tres semanas después) → `carrera` → `ingresar`/`registro` → `empezar` |
-| 04 | Lucía no quiere repetir el error | `carrera` (combinaciones) → cuántos dejaron → `micarrera` → filtrado a lo que puede cursar → papel → `empezar` |
-| 05 | Lucía reseña, y le lleva cinco minutos | `avisos` → `reseñar` (elige materia) → frases → cátedra (opcional) → clases sin dar (opcional) → cuándo cursó |
-| 06 | Claudia contesta, con nombre porque es público | la nombran → `responder` → la respuesta queda al lado → actúa o no → se ve en la serie |
-| 07 | Rocío se lleva el dato | `explorar`/`carrera` → `metodo` → qué no cubrimos → descarga el crudo → lo discute afuera → corrige un dato al volver |
-| 08 | Los avisos, lo que cierra el circuito | `avisos` (cerró el período, o cargamos lo pedido) → `reseñar`/`empezar`/`responder` → `perfil` (se apagan) |
-| 09 | Deshacer, la garantía que hace que se animen | `aportes` → `editar` (edita o borra) → `baja` (se va) → decide qué pasa con lo aportado |
-| 10 | Los evaluados, responder y abandonar | te nombran en `catedra` → `responder` · del otro lado: `abandono` (marca el año) → `reseñar` (cuenta por qué, opcional) |
-| 11 | Buscar, cuando te recomiendan una persona | busca un nombre → `buscar` → `catedra` → si no está, `buscar` explica por qué → `pedir` (opcional) |
-| 12 | El texto que te delata sin nombrar a nadie | escribe en `reseñar` → se marca lo que identifica por contexto → decide el autor → la réplica no puede citar esa parte |
-| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué está vacía y que la primera voz ya se publica → reseña en `reseñar` → lo ve reflejado |
-| 14 | Cuando el dato no me alcanza | la materia no está / recursó con otra cátedra → se acepta igual → queda pendiente de vincular → ve qué cambió en `aportes` |
-| 15 | Cuando el número no se sostiene solo | testimonios viejos declarados en la ficha → cátedra y carrera se contradicen → explica que uno no promedia al otro → aporta lo contrario |
+| 01 | Valentina tiene que elegir en dos meses | `inicio`/`buscar` → `explorar` → `carrera` (con cabecera si la cobertura pasó la mitad del plan; si no, cobertura y frases con "en N materias") → `materia`/`catedra` → `metodo` (opcional) → `donde` (lado a lado, sin ganador) |
+| 02 | Ana busca la suya y no está | `explorar` → el vacío explicado (no la cargamos / cargada sin voces / cargada, todavía no derivamos) → `pedir` → `cola` → mail con el link a la ficha, que se lee sin cuenta |
+| 03 | Matías vuelve, y esta vez completa | `catedra` → lee → (tres semanas después) → `carrera` → `ingresar`/`registro` → `empezar` → `reseñar` (la primera reseña pregunta el año de ingreso, una sola vez) |
+| 04 | Lucía no quiere repetir el error | `carrera` (co-cursada: por par y período, solo desde reseñas, con sus voces) → cuántos dejaron una → `micarrera` (filtrado: pendiente de decidir qué recaba marcar el plan) → papel → `empezar` |
+| 05 | Lucía reseña, y le lleva cinco minutos | `avisos` → `reseñar` (elige materia) → cuándo cursó (si es viejo: ¿seguís cursando? / me recibí / me fui) → cómo terminó → frases → cátedra (opcional) → clases sin dar (opcional) → comentario (opcional, con tope; el chequeo marca lo que identifica y decide ella; lo que habla de una persona fuera de su acto queda retenido) → el aviso de sospecha en grupo chico → publica, con o sin comentario |
+| 06 | Claudia contesta, con nombre porque es público | le llega el resumen (sin timestamps) → verifica identidad (permiso, cola propia) → `responder` (mismo chequeo previo; no cita lo marcado) → retenida el plazo desde el aviso al autor → queda al lado, con nombre; no baja ni mueve conteos → actúa o no → se ve en la serie, por período en que pasó, con la réplica marcada |
+| 07 | Rocío se lleva el dato | `explorar`/`carrera` → `metodo` (fórmula, catálogo de frases con sujeto y eje, sesgos declarados) → qué no cubrimos → descarga el crudo (dos tablas: frases con voces y eje; agregados de trayectoria; sin testimonios) → lo discute afuera → corrige un dato al volver |
+| 08 | Los avisos, lo que cierra el circuito | mail (cerró el período, o cargamos lo pedido, o el resumen al docente sin timestamps, o el reenganche anual: ¿te recibiste?) → `reseñar`/`empezar`/`responder`, o responder desde el mail → `perfil` (se apagan) |
+| 09 | Deshacer, lo que hace que se animen | `aportes` → `editar` (edita o borra; el comentario editado vuelve al chequeo previo) → `baja` (se va: la identidad se anonimiza y lo aportado queda; lo que quiso sacar lo borró antes) |
+| 10 | Los evaluados, responder y abandonar | te llega el resumen → verificás identidad → `responder` (retenida el plazo desde el aviso) · del otro lado: `abandono` (me fui, cuándo; también en `reseñar` si el período es viejo, o por mail una vez al año) → `reseñar` (contás por qué, opcional) |
+| 11 | Buscar, cuando te recomiendan una persona | busca un nombre → `buscar` → la cátedra de la que forma parte (un docente no es una ficha: la cátedra sí) → si no está, `buscar` explica por qué → `pedir` (opcional) |
+| 12 | El texto que te delata sin nombrar a nadie | escribe en `reseñar` → el chequeo marca lo que identifica por contexto → decide el autor (la réplica no podrá citar esa parte) · si habla de una persona fuera de su acto: queda retenido hasta que alguien lo mire, y se le dice → el aviso de sospecha en grupo chico → publica, con o sin comentario |
+| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué está vacía y que la primera voz ya se publica → reseña en `reseñar` → lo ve reflejado en la materia y en las listas; la cabecera de la carrera dice "todavía no derivamos" hasta que la cobertura pase la mitad del plan |
+| 14 | Cuando el dato no me alcanza | la materia no está / la recursó en otro período → se acepta igual → queda pendiente de vincular a la materia canónica → ve qué cambió en `aportes` |
+| 15 | Cuando la frase no se sostiene sola | voces viejas declaradas en la ficha → una frase pesa mucho en la cátedra y poco en la carrera → la ficha explica que la carrera suma cursadas y no promedia, y muestra en cuántas materias aparece → marca la frase del otro sentido al reseñar esa cursada |
 
-### Del backoffice (7)
+### Del backoffice (9)
 
 | # | Flujo | Qué resuelve |
 |---|---|---|
-| BO-1 | Cargar lo que piden, por prioridad | la cola ordenada por pedidos; no se publica hasta terminar; se avisa a los que esperaban |
+| BO-1 | Cargar lo que piden, por prioridad | la cola ordenada por pedidos; la oferta se ata a su carrera canónica y lleva su duración nominal antes de publicarse; no se publica hasta terminar; se avisa a los que esperaban |
 | BO-2 | Contrastar una corrección contra la fuente | valor viejo y nuevo a la vista; aplicar queda registrado; la ficha cambia para todos sin votación |
-| BO-3 | Moderar sin bajar la queja incómoda | ¿expone a alguien? sí: se baja / no: queda; quien reportó recibe el criterio, no un acuse |
-| BO-4 | Ver un nombre una sola vez | la constancia se compara con lo declarado; el documento se destruye al resolver; nunca hay camino de la verificación a los aportes |
-| BO-5 | Cuando la facultad reforma el plan | los dos planes coexisten con su año; la valoración queda pegada al plan en que se cursó |
-| BO-6 | Cuando alguien intenta inflar el corpus | picos por cátedra y período; reportes agrupados por origen; congelar conteos sin borrar nada; la ficha declara "período bajo revisión" |
-| BO-7 | Cuando la cola nos gana, y quién nos mira | se dice cuánto se tarda sin fingir que se resuelve todo; registro interno de qué se bajó y por qué; quien se va pierde acceso |
+| BO-3 | Moderar sin bajar la queja incómoda | reporte con mail confirmado → sigue publicado mientras espera (salvo riesgo inmediato, con criterio escrito) → ¿expone a una persona fuera de su acto? sí: se baja el texto con su categoría, nunca la voz / no: queda → quien reportó recibe el criterio por mail, no un acuse |
+| BO-4 | Ver un nombre una sola vez | la constancia de alumno se compara con lo declarado; el documento se destruye al resolver; nunca hay camino de esa cola a los aportes. La identidad docente es otra cola y otro flujo: ahí sí se ata a la cátedra, porque es el permiso de la réplica |
+| BO-5 | Cuando la facultad reforma el plan | los dos planes coexisten con su año; la reseña queda pegada al período y a la materia canónica, no a la fila del plan |
+| BO-6 | Cuando alguien intenta inflar el corpus | la alarma mira la procedencia de las cuentas, no el volumen; los reportes se agrupan por mail confirmado; las cuentas marcadas no suman voces ni trayectoria; congelar conteos sin borrar nada; la ficha declara "período bajo revisión" |
+| BO-7 | Cuando la cola nos gana, y quién nos mira | dos colas que nos ganan (catálogo y moderación), y la de moderación bloquea publicación: se dice cuánto se tarda sin fingir que se resuelve todo; registro de qué se bajó y qué quedó retenido, por categoría; quien se va pierde acceso |
+| BO-8 | Lo que el chequeo previo retuvo | comentario o réplica que habla de una persona fuera de su acto → cola de retenidos, con la parte marcada → una persona lo mira → sale, se baja con su categoría, o vuelve al autor; nada se publica por vencimiento de tiempo |
+| BO-9 | Destilar y clasificar frases nuevas | los comentarios de muchos → la máquina propone una frase → cola de curaduría: se aprueba con sujeto y eje o se descarta → recién entonces se ofrece para marcar, marcada como destilada → corregir un eje reprocesa las fichas |
 
 ## Reglas del corpus
 
@@ -144,7 +147,7 @@ Lo que no existe en ningún módulo del backend y es el corazón del build: el s
 Hallazgos de revisar el mapa contra sí mismo, contra la tesis y contra el repo. Son insumo para iterar el canvas, no para resolver acá.
 
 1. **Los conteos de faltantes no cierran entre sí.** La portada dice "cuatro rutas no se recorren"; la sección "lo que falta" lista seis diseñadas sin construir; el reagrupamiento dice "diez ya tienen flujo y todavía no tienen ruta" y "diecisiete no tienen ni flujo ni ruta". Cuatro cifras distintas para el mismo concepto: unificar en una sola verdad antes de planificar contra el mapa.
-2. **"Las 32 frases" no existen como lista.** `metodo` las promete publicadas y el mapa muestra ~13 ejemplos dispersos. El corpus curado es EL contenido del producto: su lista canónica (frase, eje, atribución, familia) es un entregable que hoy no tiene dueño ni lugar.
+2. **"Las 32 frases" no existen como lista** (2026-08-17: ahora tienen dueño, BO1-8, y pantalla, `bo/frases`). `metodo` las promete publicadas y el mapa muestra ~13 ejemplos dispersos. El corpus curado es EL contenido del producto: su lista canónica (frase, eje, atribución, familia) es un entregable que hoy no tiene dueño ni lugar.
 3. **La atribución del mapa es ternaria; la de la tesis, binaria.** THESIS.md decía "propio de la materia o de la institución"; el mapa opera con tres familias (materia, cátedra, institución). **Cerrado el 2026-08-16** ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)): no competían. La ternaria es el **sujeto** (a qué ficha va la frase, y quién); la binaria es el **eje** (de qué lado cae). Las familias del mapa quedan como sujetos; la atribución la decide el eje.
 4. **Los 17 escenarios sin flujo ni ruta son los de riesgo.** El propio mapa lo dice: "es el estado más urgente, porque no hay ni un recorrido contra el que discutirlos". Incluyen los tres P1 que tocan la promesa central (el texto que te delata, la réplica que te señala, la ficha vacía sin razones para el primero). Dibujarlos antes de construir nada que los pise.
 5. **`avisos` es el cuello estructural.** Sostiene cinco stories en cinco grupos y no está construida ni diseñada como pantalla. En el repo, Notifications (ADR-0040, US-077) quedó "diferido a revisión" en ADR-0063: el mapa lo revalida como bloqueante temprano, no como diferible.
