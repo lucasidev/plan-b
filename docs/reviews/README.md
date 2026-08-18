@@ -15,7 +15,7 @@ Cada revisión adversarial o auditoría deja acá su registro: qué se miró, c�
 
 | Fecha | Registro | Tipo | Alcance y norma | Hallazgos | Abiertos |
 |---|---|---|---|---|---|
-| 2026-08-16 | [Auditoría del mapa de producto](2026-08-16-product-map.md) | revisión | el canvas recién portado, contra sí mismo, la tesis y el repo | 7 | M04 (los escenarios sin pantalla: se resuelve con las fichas por pantalla), M02 (la lista semilla de frases) |
+| 2026-08-16 | [Auditoría del mapa de producto](2026-08-16-product-map.md) | revisión | el canvas recién portado, contra sí mismo, la tesis y el repo | 7 | M04 (los escenarios sin pantalla: se resuelve con las fichas por pantalla); M02 cerrado con `docs/domain/phrases.md` |
 | 2026-08-16 | [Revisión adversarial del catálogo](2026-08-16-catalog.md) | revisión | 75 stories, personas y mapa; tres lentes (personas, adversarios, modelo de datos) | 39 en 8 grupos | ninguno: los que quedaron sin "→ Decidido" pasaron a D01 a D10, todas cerradas |
 | 2026-08-17 | [Estados de los ADRs](2026-08-17-adr-states.md) | auditoría | los 16 ADRs afectados por el viraje, contra la regla del README de decisiones (el Estado dice la verdad) | 3 | ninguno |
 | 2026-08-17 | [Propagación de la tesis al catálogo](2026-08-17-catalog-propagation.md) | revisión | 75 stories, 22 flujos, 12 personas contra ADR-0064 a 0068; tres revisores en paralelo | 39 reescritas, 19 nuevas, 10 decisiones | ninguno (D01 a D10 cerradas el 2026-08-18) |
