@@ -19,4 +19,4 @@ Lo que sí es fuente, portado del mapa a docs versionados:
 Si el canvas cambia en Claude Design, se vuelve a vendorizar acá y se re-portan los docs.
 
 El diseño de la versión anterior (canvas `plan-b-*.html`, mocks y las 77 capturas) queda congelado
-en [`../reference/`](../reference/) como historia: las US Done lo citan y no se reescriben.
+en [`../reference/`](../reference) como historia: las US Done lo citan y no se reescriben.

@@ -2,7 +2,7 @@
 
 .NET 10 modular monolith. 6 módulos (bounded contexts) + SharedKernel + Host. `planning` pertenece a la versión anterior del producto, en retiro ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)).
 
-Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions/) para ADRs.
+Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions) para ADRs.
 
 ## Layout
 

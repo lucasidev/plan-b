@@ -1,6 +1,6 @@
 # User Stories (planb)
 
-Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
+Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories).
 
 > **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). **El catálogo vigente es el de abajo, portado del mapa de producto**; el de la versión anterior queda al final como historia (US-097/098/099 canceladas con S12, US-057 muere por tesis, las hechas son historia y no se tocan). La numeración formal `US-NNN` se asigna cuando una story entra a sprint, como siempre; hasta entonces se referencian por su ID de mapa (`O1-1`, `T2-1`, `BO4-2`). Estructura del mapa (pantallas, flujos, planos): [`product-map.md`](product-map.md). Los nombres en backticks (`donde`, `reseñar`, `metodo`) son nombres de pantalla del mapa, no rutas: la URL es código, en inglés, y se fija al entrar a sprint. Personas: [`user-personas.md`](user-personas.md).
 
@@ -207,7 +207,7 @@ Ocho objetivos con 49 stories, cuatro grupos transversales con 15, y seis de bac
 
 # Catálogo de la versión anterior (historia)
 
-Las **126 fichas** de la versión anterior (foundations `US-F*`, tooling `US-T*`, y las `US-001..099` con sus subdivisiones `-b/-f/-i`) viven en [`user-stories/`](user-stories/), cada una con su `Status` en el header (75 Done, el resto Backlog, Cancelada, Parcial o Superada). Son la evidencia del trabajo hecho y **no se tocan**: ni se actualizan ni se reescriben contra la tesis nueva.
+Las **126 fichas** de la versión anterior (foundations `US-F*`, tooling `US-T*`, y las `US-001..099` con sus subdivisiones `-b/-f/-i`) viven en [`user-stories/`](user-stories), cada una con su `Status` en el header (75 Done, el resto Backlog, Cancelada, Parcial o Superada). Son la evidencia del trabajo hecho y **no se tocan**: ni se actualizan ni se reescriben contra la tesis nueva.
 
 El índice por estado y por epic que vivía acá se eliminó el 2026-08-16: había quedado desincronizado con las fichas (31 archivos que no listaba, parents subdivididos que la propia convención dice que no deberían coexistir) y ya no cumplía función. Para el estado histórico, la fuente es el header de cada ficha y las secciones de sprint de [STATUS.md](../STATUS.md).
 
@@ -236,6 +236,6 @@ US que entran a sprint backfillean (si faltan): Out of scope, Edge cases, Test s
 
 ## Cómo se trackean
 
-- Catálogo canónico: este doc (las stories del mapa, referenciadas por su ID de mapa hasta entrar a sprint) + una ficha por US numerada en [user-stories/](user-stories/) cuando entra a sprint.
+- Catálogo canónico: este doc (las stories del mapa, referenciadas por su ID de mapa hasta entrar a sprint) + una ficha por US numerada en [user-stories/](user-stories) cuando entra a sprint.
 - Tracking operacional: Notion (DB `plan-b: User Stories`), con cross-link a este file vía property `Doc link`.
 - En código: PRs referencian `US-NNN` o `UC-NNN` desde la descripción y los commits.

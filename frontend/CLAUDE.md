@@ -2,7 +2,7 @@
 
 Next.js 15 App Router + React 19.1 + Bun + TanStack Query + shadcn/ui + Tailwind 4.
 
-Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions/) para ADRs.
+Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions) para ADRs.
 
 ## Layout
 

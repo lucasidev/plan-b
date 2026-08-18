@@ -6,12 +6,13 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 
 | Directorio / doc | Contiene |
 |---|---|
-| [`decisions/`](decisions/) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
-| [`domain/`](domain/) | Modelo del negocio, independiente de la tecnología: [ubiquitous-language](domain/ubiquitous-language.md), actores + casos de uso ([use-cases/](domain/use-cases/)), **user stories** ([user-stories.md](domain/user-stories.md) + [user-stories/](domain/user-stories/), [plantilla](domain/us-template.md), [Definition of Done](domain/definition-of-done.md)), **epics** ([epics.md](domain/epics.md) + [epics/](domain/epics/)), **mapa de producto** ([product-map.md](domain/product-map.md)) y **user personas** ([user-personas.md](domain/user-personas.md)); congelados como historia del producto anterior: casos de uso, modelo táctico, lifecycles y eventstorming; fixtures de dev en [dev-seed-personas.md](domain/dev-seed-personas.md). |
-| [`architecture/`](architecture/) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
-| [`design/`](design/) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference/). |
-| [`testing/`](testing/) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
-| [`operations/`](operations/) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
+| [`decisions/`](decisions) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
+| [`domain/`](domain) | El producto, independiente de la tecnología: [la tesis](THESIS.md) manda; el [glosario](domain/ubiquitous-language.md), las [personas](domain/user-personas.md), el [catálogo de stories](domain/user-stories.md) con sus fichas `US-NNN`, el [mapa de producto](domain/product-map.md) (orientativo), el [template de US](domain/us-template.md) y el [Definition of Done](domain/definition-of-done.md). |
+| [`history/`](history) | El ático: lo que describía la versión anterior (actores y casos de uso, ciclos de vida, event storming, agregados, épicas y glosario v1). No se edita; se va con el código que describe. |
+| [`architecture/`](architecture) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
+| [`design/`](design) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference). |
+| [`testing/`](testing) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
+| [`operations/`](operations) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
 | [`THESIS.md`](THESIS.md) | La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto. |
 | [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). El backlog vivo + status se trackean en Notion; este doc es la narrativa. |
 

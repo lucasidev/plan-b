@@ -111,7 +111,7 @@ Las cosas críticas para entender el sistema antes de programar:
 1. [`docs/THESIS.md`](docs/THESIS.md). La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto.
 2. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
 3. [`docs/architecture/data-model.md`](docs/architecture/data-model.md). ERD consolidado por bounded context.
-4. [`docs/decisions/`](docs/decisions/). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
+4. [`docs/decisions/`](docs/decisions). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
 5. [`docs/testing/conventions.md`](docs/testing/conventions.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 6. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 7. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
