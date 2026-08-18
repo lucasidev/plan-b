@@ -237,5 +237,5 @@ US que entran a sprint backfillean (si faltan): Out of scope, Edge cases, Test s
 ## Cómo se trackean
 
 - Catálogo canónico: este doc (las stories del mapa, referenciadas por su ID de mapa hasta entrar a sprint) + una ficha por US numerada en [user-stories/](user-stories) cuando entra a sprint.
-- Tracking operacional: Notion (DB `plan-b: User Stories`), con cross-link a este file vía property `Doc link`.
-- En código: PRs referencian `US-NNN` o `UC-NNN` desde la descripción y los commits.
+- Tracking operacional: este repo. El `Status` vive en el header de cada ficha; el sprint, en [`STATUS.md`](../STATUS.md). Notion se dejó de usar el 2026-08-18.
+- En código: PRs referencian `US-NNN` desde la descripción y los commits.

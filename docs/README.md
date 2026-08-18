@@ -14,11 +14,11 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 | [`testing/`](testing) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
 | [`operations/`](operations) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
 | [`THESIS.md`](THESIS.md) | La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto. |
-| [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). El backlog vivo + status se trackean en Notion; este doc es la narrativa. |
+| [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). Es el tracker: el backlog vivo es el catálogo de stories y el status de cada US vive en su ficha. |
 
 ## Cuándo va cada cosa
 
-- **Nueva user story / epic** → `domain/user-stories/US-NNN.md` (plantilla: `us-template.md`); trackear también en Notion (DB `plan-b: Tasks`) y linkear vía `Doc link`. Convenciones de numeración + sprint en `domain/user-stories.md` y `STATUS.md`.
+- **Nueva user story / epic** → `domain/user-stories/US-NNN.md` (plantilla: `us-template.md`), con su `Status` en el header; el sprint en `STATUS.md`. Convenciones de numeración + sprint en `domain/user-stories.md` y `STATUS.md`.
 - **Decisión con alternativas reales** → `decisions/NNNN-titulo.md`.
 - **Definición de término del dominio** → `domain/ubiquitous-language.md`.
 - **Flow de negocio** (ciclo de vida de una entidad, flujo de moderación, etc.) → `domain/<nombre-del-flow>.md`.
