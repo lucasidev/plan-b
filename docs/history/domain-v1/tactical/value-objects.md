@@ -1,6 +1,6 @@
 # Value Objects (planb)
 
-Inventario cross-cutting de Value Objects del modelo. Cada VO vive descrito en el archivo del aggregate que lo usa primario (ver [aggregates/](aggregates/)). Los VOs shared del kernel viven en [shared-kernel.md](shared-kernel.md).
+Inventario cross-cutting de Value Objects del modelo. Cada VO vive descrito en el archivo del aggregate que lo usa primario (ver [aggregates/](aggregates)). Los VOs shared del kernel viven en [shared-kernel.md](shared-kernel.md).
 
 Un VO no tiene identidad: su igualdad se define por sus atributos. En .NET 10 / C# 14 los modelamos como `readonly record struct` cuando son simples (un solo valor wrapped) o `readonly record class` cuando contienen colecciones o son más pesados.
 
@@ -48,5 +48,5 @@ Todos los IDs son VO. Ningún aggregate ni entity usa `Guid` directamente. Ver [
 
 ## Refs
 
-- Aggregates: [aggregates/](aggregates/)
+- Aggregates: [aggregates/](aggregates)
 - Shared kernel: [shared-kernel.md](shared-kernel.md)

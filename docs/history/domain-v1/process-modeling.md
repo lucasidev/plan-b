@@ -1,8 +1,8 @@
 # Process Modeling Level (planb)
 
-> **Historia (2026-08-16)**: este documento describe la versión anterior del producto (el planificador con reseñas). El producto cambió de tesis ([THESIS.md](../../THESIS.md), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md)) y este doc queda congelado como registro del proceso y del modelo anterior: no se actualiza ni se toma como referencia para trabajo nuevo. La referencia vigente es el mapa de producto ([product-map.md](../../domain/product-map.md)) y su catálogo ([user-stories.md](../../domain/user-stories.md)).
+> **Historia (2026-08-16)**: este documento describe la versión anterior del producto (el planificador con reseñas). El producto cambió de tesis ([THESIS.md](../../THESIS.md), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md)) y este doc queda congelado como registro del proceso y del modelo anterior: no se actualiza ni se toma como referencia para trabajo nuevo. La referencia vigente es el mapa de producto ([product-map.md](../../design/product-map.md)) y su catálogo ([user-stories.md](../../domain/user-stories.md)).
 
-Este doc cubre el **nivel 2 de EventStorming (Brandolini)**: Process Modeling. Conecta el Big Picture (level 1, ver [eventstorming.md](eventstorming.md)) con el Software Design (level 3, ver [tactical/aggregates/](tactical/aggregates/)).
+Este doc cubre el **nivel 2 de EventStorming (Brandolini)**: Process Modeling. Conecta el Big Picture (level 1, ver [eventstorming.md](eventstorming.md)) con el Software Design (level 3, ver [tactical/aggregates/](tactical/aggregates)).
 
 Foco: **Actors → Commands → Aggregates → Events → Policies → Read Models → External Systems**. Las policies ("whenever X then Y") son la pieza clave porque definen los reactive flows que viajan por el Wolverine outbox (ver [ADR-0030](../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md)).
 
@@ -116,7 +116,7 @@ Paralelo al loop core, sin retorno automático al alumno. Tiene tres sub-flujos:
 
 #### 3.4. Catálogo (admin)
 
-CRUD-flavored, sin integration events cross-BC en MVP. Cada command emite su event correspondiente que solo alimenta audit interno y read models del propio Academic. Detalle en [tactical/aggregates/](tactical/aggregates/) (University, Career, CareerPlan, Subject, Teacher, AcademicTerm, Commission). Una policy notable:
+CRUD-flavored, sin integration events cross-BC en MVP. Cada command emite su event correspondiente que solo alimenta audit interno y read models del propio Academic. Detalle en [tactical/aggregates/](tactical/aggregates) (University, Career, CareerPlan, Subject, Teacher, AcademicTerm, Commission). Una policy notable:
 
 | # | Actor | Command | Aggregate | Event emitido | Policy reactiva | Read Model | External System |
 |---|---|---|---|---|---|---|---|
@@ -200,7 +200,7 @@ Ver [`docs/decisions/0017-persistence-ignorance.md`](../../decisions/0017-persis
 ## Refs
 
 - Big Picture (level 1): [eventstorming.md](eventstorming.md)
-- Software Design (level 3): [tactical/aggregates/](tactical/aggregates/)
+- Software Design (level 3): [tactical/aggregates/](tactical/aggregates)
 - Domain events index: [tactical/domain-events.md](tactical/domain-events.md)
 - Outbox y eventual consistency: [ADR-0030](../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md)
 - Cascade rules de moderación: [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md)

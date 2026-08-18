@@ -1,6 +1,6 @@
 # Domain Events (planb)
 
-Catálogo cross-cutting de events del modelo. Cada event vive descrito en el archivo del aggregate que lo emite (ver [aggregates/](aggregates/)). Este doc es índice + reglas globales.
+Catálogo cross-cutting de events del modelo. Cada event vive descrito en el archivo del aggregate que lo emite (ver [aggregates/](aggregates)). Este doc es índice + reglas globales.
 
 ## Distinción: domain event vs integration event
 
@@ -152,5 +152,5 @@ Ver [ADR-0030](../../../decisions/0030-cross-bc-consistency-via-wolverine-outbox
 
 ## Refs
 
-- Aggregates: [aggregates/](aggregates/)
+- Aggregates: [aggregates/](aggregates)
 - ADRs: [ADR-0030](../../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md)

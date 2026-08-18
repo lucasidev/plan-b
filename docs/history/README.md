@@ -6,6 +6,7 @@ Reglas: **no se edita** (es historia); **se borra con el código que describe**,
 
 | Carpeta | Qué hay | Vigente hasta |
 |---|---|---|
-| [`domain-v1/`](domain-v1/) | Actores y casos de uso (49 UC), ciclos de vida de enrollment y review, event storming, process modeling, contextos y agregados (strategic, tactical), las épicas EPIC-00 a EPIC-11 y el glosario de la versión anterior | la poda del planificador y de la reseña de texto libre |
+| [`domain-v1/`](domain-v1) | Actores y casos de uso (49 UC), ciclos de vida de enrollment y review, event storming, process modeling, contextos y agregados (strategic, tactical), las épicas EPIC-00 a EPIC-11 y el glosario de la versión anterior | la poda del planificador y de la reseña de texto libre |
+| [`design-v1/`](design-v1) | Los cuatro canvases de Claude Design de la versión anterior con sus tokens, mocks JSX y capturas | mientras las fichas `US-NNN` hechas los referencien como mockup |
 
-Lo que sigue vivo de la versión anterior no está acá: las 126 fichas `US-NNN` siguen en [`docs/domain/user-stories/`](../domain/user-stories/) (son la evidencia del trabajo hecho y el mismo lugar donde entran las nuevas), la historia del diseño en [`docs/design/`](../design/), y las decisiones en [`docs/decisions/`](../decisions/) con su `Estado`.
+Lo que sigue vivo de la versión anterior no está acá: las 126 fichas `US-NNN` siguen en [`docs/domain/user-stories/`](../domain/user-stories) (son la evidencia del trabajo hecho y el mismo lugar donde entran las nuevas), la historia del diseño en [`docs/design/`](../design), y las decisiones en [`docs/decisions/`](../decisions) con su `Estado`.

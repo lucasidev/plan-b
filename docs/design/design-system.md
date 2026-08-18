@@ -6,7 +6,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, tokens y
 
 ## Snapshot
 
-![Sistema visual](reference/screenshots/ds-ds-main.png)
+![Sistema visual](../history/design-v1/reference/screenshots/ds-ds-main.png)
 
 (Captura auto-generada por `frontend/e2e/_capture/canvas-screenshots.spec.ts`. Re-correr cuando el JSX del DS cambie.)
 
@@ -14,10 +14,11 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, tokens y
 
 | Capa | Archivo | Qué es |
 |---|---|---|
-| Canvas (mockup) | [`reference/canvas-mocks/design-system.jsx`](reference/canvas-mocks/design-system.jsx) | Render JSX del design system con todas las primitivas + tokens visibles. Es lo que muestra el screenshot de arriba. |
-| Canvas (tokens) | [`reference/canvas-tokens.css`](reference/canvas-tokens.css) | Tokens del shell del canvas: paleta Apricot Soft, tipografía, radii, sombras. |
-| Mockup v1 | [`reference/styles.css`](reference/styles.css) | Tokens y clases compuestas del mockup HTML v1 (pre-rediseño). Histórico, no nuevo. |
-| Bocetos por ADR | [`sketches/`](sketches/README.md) | Mid-fi hechos para decidir (hoy: el testimonio, ADR-0068). Orientativos, como el mapa. |
+| Canvas (mockup) | [`reference/canvas-mocks/design-system.jsx`](../history/design-v1/reference/canvas-mocks/design-system.jsx) | Render JSX del design system con todas las primitivas + tokens visibles. Es lo que muestra el screenshot de arriba. |
+| Canvas (tokens) | [`reference/canvas-tokens.css`](../history/design-v1/reference/canvas-tokens.css) | Tokens del shell del canvas: paleta Apricot Soft, tipografía, radii, sombras. |
+| Mockup v1 | [`reference/styles.css`](../history/design-v1/reference/styles.css) | Tokens y clases compuestas del mockup HTML v1 (pre-rediseño). Histórico, no nuevo. |
+| Pantallas | [`screens/`](screens/README.md) | Una ficha por pantalla con su boceto (mid-fi, hi-fi en las clave). Es donde se rehace la UX/UI del producto nuevo. |
+| Mapa de producto | [`product-map.md`](product-map.md) | Índice de pantallas y flujos, orientativo, con la tabla pantalla → slug. |
 | Implementación | [`frontend/src/app/globals.css`](../../frontend/src/app/globals.css) | `@theme` Tailwind 4 con los tokens reales que consume el producto. Mismos nombres que canvas pero con prefijo `--color-`. |
 
 ## Mapping canvas → frontend
@@ -60,5 +61,5 @@ Tailwind 4 requiere el prefijo `--color-` para que los utilities (`bg-bg`, `text
 ## Referencias
 
 - ADRs: [ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md) (rediseño UX post claude-design).
-- Canvas index: [`reference/README.md`](reference/README.md) (catálogo de archivos del bundle).
-- Screenshots index: [`reference/screenshots/README.md`](reference/screenshots/README.md) (mapping artboard → US).
+- Canvas index: [`reference/README.md`](../history/design-v1/reference/README.md) (catálogo de archivos del bundle).
+- Screenshots index: [`reference/screenshots/README.md`](../history/design-v1/reference/screenshots/README.md) (mapping artboard → US).

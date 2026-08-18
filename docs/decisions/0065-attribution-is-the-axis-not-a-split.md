@@ -41,7 +41,7 @@ Lo que la atribución **no** dice: para una frase de gestión con sujeto materia
 - **La responsabilidad se corre al catálogo de frases**: la clasificación (sujeto, eje) de cada frase es una decisión editorial publicada. Un error de eje en una frase es un error de atribución en todas las fichas que la usan; se corrige en un lugar y se reprocesa (0064 ya dice que la lista se reprocesa y se declara).
 - **La cabecera de la ficha son dos proporciones de voces**, una por eje, con el mismo denominador y con Wilson. La cabecera y las listas cuentan lo mismo de dos maneras: no hay un tercer número.
 - **El CSV de O8-1** lleva sujeto y eje por fila; la columna "atribución" es el eje y no se duplica.
-- **La familia ternaria del mapa (materia / cátedra / institución) y la atribución binaria de la tesis no compiten**: la ternaria es sujeto, la binaria es eje. El hallazgo 3 del [product-map](../domain/product-map.md) se cierra.
+- **La familia ternaria del mapa (materia / cátedra / institución) y la atribución binaria de la tesis no compiten**: la ternaria es sujeto, la binaria es eje. El hallazgo 3 del [product-map](../design/product-map.md) se cierra.
 - **Riesgo aceptado**: la proporción de voces por eje sigue siendo algo sensible a cuántas frases hay por eje (más frases de gestión, más chances de marcar al menos una). Menos que el split, más que la proporción por frase, que es inmune. Se mitiga con un catálogo balanceado y publicado, no con una fórmula.
 
 ## Precedente
@@ -52,4 +52,4 @@ El instrumento de evaluación docente más estudiado, el SEEQ de Marsh, resuelve
 
 - [THESIS.md](../THESIS.md), decisión 2 y "Qué publicamos". [ADR-0064](0064-phrases-with-voices-not-scores.md): la unidad de publicación (proporción de voces por frase y por eje, con Wilson) que esta decisión aplica a la atribución. **Completa** a 0064.
 - [Marsh, H. W. (1987). Students' Evaluations of University Teaching: Research Findings, Methodological Issues, and Directions for Future Research](https://eric.ed.gov/?id=ED338629) (los nueve factores del SEEQ, workload/difficulty entre ellos; multidimensionalidad). [Marsh & Roche (1997). Making students' evaluations of teaching effectiveness effective](https://www.researchgate.net/publication/228466142_Making_students'_evaluations_of_teaching_effectiveness_effective_The_critical_issues_of_validity_bias_and_utility) (American Psychologist 52(11): la carga de trabajo entre los sesgos hipotetizados que no afectan las demás dimensiones).
-- Hallazgo G1 de la [revisión del catálogo del 2026-08-16](../reviews/2026-08-16-catalog.md) y hallazgo 3 de la auditoría del [product-map](../domain/product-map.md).
+- Hallazgo G1 de la [revisión del catálogo del 2026-08-16](../reviews/2026-08-16-catalog.md) y hallazgo 3 de la auditoría del [product-map](../design/product-map.md).
