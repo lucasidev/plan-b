@@ -1,6 +1,6 @@
 # Skills del repo
 
-Los skills viven acá versionados. Los propios del proyecto (`slice-*`, `dapper-read`, `integration-event`, `new-us`, `new-adr`, `ship`, `sync-notion`, `regen-screenshots`) se escribieron para planb. Los de UX/UI son de terceros, copiados como archivos (sin CLI ni ejecución de instaladores) y revisados antes de entrar. Se listan acá con procedencia para que la copia sea auditable.
+Los skills viven acá versionados. Los propios del proyecto (`slice-*`, `dapper-read`, `integration-event`, `new-us`, `new-adr`, `ship`, `regen-screenshots`) se escribieron para planb (`sync-notion` se retiró el 2026-08-18 con Notion). Los de UX/UI son de terceros, copiados como archivos (sin CLI ni ejecución de instaladores) y revisados antes de entrar. Se listan acá con procedencia para que la copia sea auditable.
 
 ## UX/UI (terceros, instalados 2026-08-16)
 

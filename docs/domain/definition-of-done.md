@@ -60,9 +60,9 @@ Cada AC específica de una US se suma a estos criterios generales, no los reempl
 
 ## 9. Tracking
 
-- [ ] Card de Notion movida a `Done` en el kanban del sprint actual.
-- [ ] Sub-tasks (checklist) marcadas como completadas.
-- [ ] PR linkeada desde el card cuando aplique.
+- [ ] `Status: Done` en el header de la ficha `US-NNN.md`, con el sprint y el PR.
+- [ ] `docs/STATUS.md` refleja el cierre (misma PR).
+- [ ] Sub-tasks (checklist de la ficha) marcadas como completadas.
 
 ---
 
