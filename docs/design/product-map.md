@@ -44,8 +44,8 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 | Pantalla | Qué es |
 |---|---|
 | `empezar` | Onboarding: marcás por dónde vas. Shell de foco, sin nav. Saltable y retomable. |
-| `micarrera` | Tu plan (el corral), con la pestaña de combinaciones. |
-| `reseñar` | El acto de reseñar: elegir una materia y marcar frases. Gateada por tener cuenta, nada más (marcar el plan es opcional: O4-7, O6-3, y Diego no va a marcar ninguno). |
+| `micarrera` | Tu plan: las materias con sus correlativas, lo que reseñaste con cómo terminó (hecho), lo que marcás como que te falta o considerás (preferencia privada, no dato: [ADR-0069](../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)), y la pestaña de co-cursada filtrada a tu caso. |
+| `reseñar` | El acto de reseñar: elegir una materia y marcar frases. Gateada por tener cuenta, nada más (marcar el plan es opcional y es preferencia privada: O4-7, O6-3, y Diego no va a marcar ninguno). |
 | `aportes` | Lo que diste. |
 | `perfil` | Tu cuenta y por dónde vas. |
 | `verificar` | Constancia. Opcional y tardío: es señal, no permiso. |
@@ -92,7 +92,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 | 01 | Valentina tiene que elegir en dos meses | `inicio`/`buscar` → `explorar` → `carrera` (con cabecera si la cobertura pasó la mitad del plan; si no, cobertura y frases con "en N materias") → `materia`/`catedra` → `metodo` (opcional) → `donde` (lado a lado, sin ganador) |
 | 02 | Ana busca la suya y no está | `explorar` → el vacío explicado (no la cargamos / cargada sin voces / cargada, todavía no derivamos) → `pedir` → `cola` → mail con el link a la ficha, que se lee sin cuenta |
 | 03 | Matías vuelve, y esta vez completa | `catedra` → lee → (tres semanas después) → `carrera` → `ingresar`/`registro` → `empezar` → `reseñar` (la primera reseña pregunta el año de ingreso, una sola vez) |
-| 04 | Lucía no quiere repetir el error | `carrera` (co-cursada: por par y período, solo desde reseñas, con sus voces) → cuántos dejaron una → `micarrera` (filtrado: pendiente de decidir qué recaba marcar el plan) → papel → `empezar` |
+| 04 | Lucía no quiere repetir el error | `carrera` (co-cursada: por par y período, solo desde reseñas, con sus voces) → cuántos dejaron una → `micarrera` (la co-cursada filtrada a lo que reseñó y a lo que marcó como que le falta: preferencia privada, no dato) → papel → `empezar` |
 | 05 | Lucía reseña, y le lleva cinco minutos | `avisos` → `reseñar` (elige materia) → cuándo cursó (si es viejo: ¿seguís cursando? / me recibí / me fui) → cómo terminó → frases → cátedra (opcional) → clases sin dar (opcional) → comentario (opcional, con tope; el chequeo marca lo que identifica y decide ella; lo que habla de una persona fuera de su acto queda retenido) → el aviso de sospecha en grupo chico → publica, con o sin comentario |
 | 06 | Claudia contesta, con nombre porque es público | le llega el resumen (sin timestamps) → verifica identidad (permiso, cola propia) → `responder` (mismo chequeo previo; no cita lo marcado) → retenida el plazo desde el aviso al autor → queda al lado, con nombre; no baja ni mueve conteos → actúa o no → se ve en la serie, por período en que pasó, con la réplica marcada |
 | 07 | Rocío se lleva el dato | `explorar`/`carrera` → `metodo` (fórmula, catálogo de frases con sujeto y eje, sesgos declarados) → qué no cubrimos → descarga el crudo (dos tablas: frases con voces y eje; agregados de trayectoria; sin testimonios) → lo discute afuera → corrige un dato al volver |
