@@ -14,9 +14,9 @@ Lo que sí es fuente, portado del mapa a docs versionados:
 
 - [`docs/domain/user-stories.md`](../../domain/user-stories.md): las 76 stories con su "listo cuando" (esto es lo que se construye).
 - [`docs/domain/user-personas.md`](../../domain/user-personas.md): las 12 personas.
-- [`docs/domain/product-map.md`](../../domain/product-map.md): rutas, flujos y planos tal como el mapa los propone, con la auditoría del mapa. Es la mejor foto de la estructura pensada, con el mismo carácter orientativo.
+- [`docs/design/product-map.md`](../product-map.md): pantallas, flujos y planos tal como el mapa los propone (la auditoría del mapa está en [`docs/reviews/`](../../reviews/2026-08-16-product-map.md)). Es la mejor foto de la estructura pensada, con el mismo carácter orientativo; las fichas por pantalla en [`screens/`](../screens/README.md) son lo que se construye.
 
 Si el canvas cambia en Claude Design, se vuelve a vendorizar acá y se re-portan los docs.
 
 El diseño de la versión anterior (canvas `plan-b-*.html`, mocks y las 77 capturas) queda congelado
-en [`../reference/`](../reference) como historia: las US Done lo citan y no se reescriben.
+en [`docs/history/design-v1/reference/`](../../history/design-v1/reference/README.md) como historia: las US Done lo citan y no se reescriben.

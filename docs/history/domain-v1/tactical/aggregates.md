@@ -1,6 +1,6 @@
 # Aggregates (planb)
 
-Inventario tactical DDD del modelo. Cada aggregate vive en su propio archivo dentro de [aggregates/](aggregates/).
+Inventario tactical DDD del modelo. Cada aggregate vive en su propio archivo dentro de [aggregates/](aggregates).
 
 Convención **Vernon/Khorikov**: si una entidad se loadea independientemente, es un aggregate. NO existen "standalone entities". Distinguimos rich vs lean según complejidad interna, no según si tiene `IAggregateRoot` (todos lo tienen).
 

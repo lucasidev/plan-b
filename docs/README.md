@@ -7,11 +7,11 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 | Directorio / doc | Contiene |
 |---|---|
 | [`decisions/`](decisions) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
-| [`domain/`](domain) | El producto, independiente de la tecnología: [la tesis](THESIS.md) manda; el [glosario](domain/ubiquitous-language.md), las [personas](domain/user-personas.md), el [catálogo de stories](domain/user-stories.md) con sus fichas `US-NNN`, el [mapa de producto](domain/product-map.md) (orientativo), el [template de US](domain/us-template.md) y el [Definition of Done](domain/definition-of-done.md). |
+| [`domain/`](domain) | El producto, independiente de la tecnología: [la tesis](THESIS.md) manda; el [glosario](domain/ubiquitous-language.md), las [personas](domain/user-personas.md), el [catálogo de stories](domain/user-stories.md) con sus fichas `US-NNN`, el [template de US](domain/us-template.md) y el [Definition of Done](domain/definition-of-done.md). |
 | [`reviews/`](reviews) | Revisiones y auditorías: un registro por revisión, cada hallazgo con ID y estado (resuelto, cerrado, pendiente, descartado). Los ADRs y las stories los citan por ID. |
 | [`history/`](history) | El ático: lo que describía la versión anterior (actores y casos de uso, ciclos de vida, event storming, agregados, épicas y glosario v1). No se edita; se va con el código que describe. |
 | [`architecture/`](architecture) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
-| [`design/`](design) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference). |
+| [`design/`](design) | Cómo se ve y cómo se recorre: [design-system](design/design-system.md) (el contrato visual: paleta, tipografía, tokens), [screens/](design/screens/README.md) (una ficha por pantalla con su boceto), `flows/` (los flujos como diagramas), [product-map](design/product-map.md) (el índice de pantallas y flujos, orientativo) y [map/](design/map/README.md) (el canvas del que sale todo, orientativo). |
 | [`testing/`](testing) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
 | [`operations/`](operations) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
 | [`THESIS.md`](THESIS.md) | La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto. |

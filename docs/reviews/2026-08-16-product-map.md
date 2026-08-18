@@ -1,6 +1,6 @@
 # Auditoría del mapa de producto (2026-08-16)
 
-> Registro de revisión ([índice](README.md)). **Alcance**: el canvas `plan-b mapa` recién portado a [`product-map.md`](../domain/product-map.md), contra sí mismo, contra la tesis y contra el repo. **Método**: lectura cruzada, sin agentes. Los hallazgos son insumo, no tareas.
+> Registro de revisión ([índice](README.md)). **Alcance**: el canvas `plan-b mapa` recién portado a [`product-map.md`](../design/product-map.md), contra sí mismo, contra la tesis y contra el repo. **Método**: lectura cruzada, sin agentes. Los hallazgos son insumo, no tareas.
 
 | ID | Hallazgo | Estado |
 |---|---|---|

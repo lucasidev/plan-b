@@ -1,8 +1,8 @@
 # Actors and Use Cases (planb)
 
-> **Historia (2026-08-16)**: este documento describe la versión anterior del producto (el planificador con reseñas). El producto cambió de tesis ([THESIS.md](../../THESIS.md), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md)) y este doc queda congelado como registro del proceso y del modelo anterior: no se actualiza ni se toma como referencia para trabajo nuevo. La referencia vigente es el mapa de producto ([product-map.md](../../domain/product-map.md)) y su catálogo ([user-stories.md](../../domain/user-stories.md)).
+> **Historia (2026-08-16)**: este documento describe la versión anterior del producto (el planificador con reseñas). El producto cambió de tesis ([THESIS.md](../../THESIS.md), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md)) y este doc queda congelado como registro del proceso y del modelo anterior: no se actualiza ni se toma como referencia para trabajo nuevo. La referencia vigente es el mapa de producto ([product-map.md](../../design/product-map.md)) y su catálogo ([user-stories.md](../../domain/user-stories.md)).
 
-Catálogo completo de UCs del MVP. Cada UC vive en su propio archivo dentro de [use-cases/](use-cases/) y tiene un ID estable que se referencia desde la API, desde diagramas de secuencia futuros y desde user stories.
+Catálogo completo de UCs del MVP. Cada UC vive en su propio archivo dentro de [use-cases/](use-cases) y tiene un ID estable que se referencia desde la API, desde diagramas de secuencia futuros y desde user stories.
 
 La lista representa la **superficie funcional completa del MVP**. Cada UC mapea 1:1 a un application service (Clean Architecture) y a un endpoint de la API.
 

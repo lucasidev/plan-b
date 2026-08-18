@@ -56,4 +56,4 @@ Las universidades que publican sus evaluaciones docentes usan dos cortes distint
 
 - [THESIS.md](../THESIS.md), "Qué publicamos" y "Posición". [ADR-0064](0064-phrases-with-voices-not-scores.md): la unidad (proporción de voces con Wilson) que acá se suma hacia arriba; **completa** a 0064. [ADR-0065](0065-attribution-is-the-axis-not-a-split.md): la cabecera que se deriva.
 - [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): debajo del gate no hay un cero, hay "todavía no derivamos" con la cobertura a la vista.
-- Grupo A de la [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md) (el piso como sistema, descartado) y "Reglas del corpus" del [product-map](../domain/product-map.md) (la escalera).
+- Grupo A de la [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md) (el piso como sistema, descartado) y "Reglas del corpus" del [product-map](../design/product-map.md) (la escalera).

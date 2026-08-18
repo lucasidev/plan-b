@@ -22,7 +22,7 @@
  *   PLAYWRIGHT_INCLUDE_CAPTURE=1 bunx playwright test e2e/_capture/canvas-screenshots.spec.ts
  *
  * Algoritmo:
- *   1. Levanta un static server con `node:http` sobre `docs/design/reference/`.
+ *   1. Levanta un static server con `node:http` sobre `docs/history/design-v1/reference/` (los canvases de la versión anterior, congelados).
  *   2. Para cada `CANVAS` definido abajo: navega al HTML correspondiente,
  *      espera al menos un `.dc-card`, scrollea cada artboard y captura.
  *   3. Acumula resultados y genera `manifest.json` con todo junto.
@@ -38,7 +38,7 @@ import { extname, join, resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 const ROOT = resolve(process.cwd(), '..');
-const DESIGN_DIR = resolve(ROOT, 'docs/design/reference');
+const DESIGN_DIR = resolve(ROOT, 'docs/history/design-v1/reference');
 const OUT_DIR = resolve(DESIGN_DIR, 'screenshots');
 const PORT = 4567;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -63,7 +63,7 @@ type Artboard = {
 };
 
 type Canvas = {
-  /** Filename del HTML del canvas dentro de `docs/design/reference/`. */
+  /** Filename del HTML del canvas dentro de `docs/history/design-v1/reference/`. */
   file: string;
   /** Slug que se usa como prefijo en el nombre del PNG y en el manifest. */
   slug: 'ds' | 'landing' | 'app' | 'admin';
@@ -537,7 +537,7 @@ test('captura screenshots de cada artboard del canvas (multi-HTML)', async ({ pa
 
   const manifest = {
     generatedAt: new Date().toISOString(),
-    sources: CANVASES.map((c) => `docs/design/reference/${c.file}`),
+    sources: CANVASES.map((c) => `docs/history/design-v1/reference/${c.file}`),
     artboards: allResults.map(({ canvas, section, id, label, width, height, file, ok, error }) => ({
       canvas,
       section,

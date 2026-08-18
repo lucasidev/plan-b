@@ -742,7 +742,7 @@ US-081 es bloqueante hard: sin admin shell aterrizado, ninguna feature de backof
 - **El tracker es este repo** desde el 2026-08-18: este doc para sprints y foco, [`domain/user-stories.md`](domain/user-stories.md) como backlog, y el `Status` en el header de cada ficha `US-NNN.md`. Notion (`plan-b: Tasks`, `plan-b: Epics`) se dejó de usar ese día: no se sincroniza más y lo que quedó ahí es historia.
 - **GitHub** (`https://github.com/lucasidev/plan-b`): commits, PRs, CI status.
 
-Para preguntas sobre decisiones de diseño puntuales: `docs/decisions/`. Para lenguaje del dominio: `docs/domain/ubiquitous-language.md`. Para "qué hace el sistema": [`domain/user-stories.md`](domain/user-stories.md) (el catálogo) y [`THESIS.md`](THESIS.md); lo de la versión anterior está en [`history/`](history/). Para epics: `docs/domain/epics.md`.
+Para preguntas sobre decisiones de diseño puntuales: `docs/decisions/`. Para lenguaje del dominio: `docs/domain/ubiquitous-language.md`. Para "qué hace el sistema": [`domain/user-stories.md`](domain/user-stories.md) (el catálogo) y [`THESIS.md`](THESIS.md); lo de la versión anterior está en [`history/`](history). Para epics: `docs/domain/epics.md`.
 
 ---
 
