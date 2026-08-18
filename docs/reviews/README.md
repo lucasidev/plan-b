@@ -16,9 +16,9 @@ Cada revisión adversarial o auditoría deja acá su registro: qué se miró, c�
 | Fecha | Registro | Tipo | Alcance y norma | Hallazgos | Abiertos |
 |---|---|---|---|---|---|
 | 2026-08-16 | [Auditoría del mapa de producto](2026-08-16-product-map.md) | revisión | el canvas recién portado, contra sí mismo, la tesis y el repo | 7 | M04 (los escenarios sin pantalla: se resuelve con las fichas por pantalla), M02 (la lista semilla de frases) |
-| 2026-08-16 | [Revisión adversarial del catálogo](2026-08-16-catalog.md) | revisión | 75 stories, personas y mapa; tres lentes (personas, adversarios, modelo de datos) | 39 en 8 grupos | los que quedaron sin "→ Decidido" pasaron a D01 a D10 |
+| 2026-08-16 | [Revisión adversarial del catálogo](2026-08-16-catalog.md) | revisión | 75 stories, personas y mapa; tres lentes (personas, adversarios, modelo de datos) | 39 en 8 grupos | los que quedaron sin "→ Decidido" pasaron a D01 a D10 (D01 cerrada) |
 | 2026-08-17 | [Estados de los ADRs](2026-08-17-adr-states.md) | auditoría | los 16 ADRs afectados por el viraje, contra la regla del README de decisiones (el Estado dice la verdad) | 3 | ninguno |
-| 2026-08-17 | [Propagación de la tesis al catálogo](2026-08-17-catalog-propagation.md) | revisión | 75 stories, 22 flujos, 12 personas contra ADR-0064 a 0068; tres revisores en paralelo | 39 reescritas, 19 nuevas, 10 decisiones | **D01 a D10** |
+| 2026-08-17 | [Propagación de la tesis al catálogo](2026-08-17-catalog-propagation.md) | revisión | 75 stories, 22 flujos, 12 personas contra ADR-0064 a 0068; tres revisores en paralelo | 39 reescritas, 19 nuevas, 10 decisiones | **D02 a D10** (D01 cerrada por ADR-0069) |
 | 2026-08-17 | [Calidad del catálogo contra los estándares](2026-08-17-catalog-quality.md) | auditoría | 94 stories contra INVEST, las 3C, QUS y la práctica de criterios de aceptación | 8 | ninguno |
 | 2026-08-18 | [Revisión de `docs/domain`](2026-08-18-docs-domain.md) | auditoría | las 20 entradas de la carpeta, contra "describe el producto vigente" y "tiene referencias entrantes" | 7 | ninguno |
 
