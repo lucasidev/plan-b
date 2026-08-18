@@ -56,7 +56,7 @@ Dos pantallas, mostradas y aprobadas antes de escribir esto (el boceto está en 
 - **T2-1 y T2-2 ganan lo que les faltaba**: la retención de lo que habla de una persona, el plazo y la palanca antes de que salga la réplica, y la prohibición de citar lo marcado. **BO2-1** carga el criterio de exposición. **O5-4** confirma el mail. **O4-1** sigue: se publica marcando frases, sin escribir nada obligatorio.
 - **[ADR-0010](0010-threshold-auto-hide-configurable-por-env-var.md) queda superado**: en el producto nuevo ninguna cantidad de reportes baja nada sola.
 - **El chequeo previo es trabajo del sistema de frases**: la misma capacidad que destila comentarios clasifica "identifica por contexto" y "habla de la persona fuera de su acto". Es la única inteligencia con efecto en lo publicado, y nunca decide sola.
-- **La cola de moderación necesita su story de desborde** (D5 de la revisión) y **verificación y moderación como roles excluyentes** (D4) sigue pendiente de decidir en la propagación al catálogo: no es de esta decisión, y esta decisión la vuelve más urgente porque ahora hay texto que moderar.
+- **La cola de moderación necesita su story de desborde** (BO4-6) y **verificación y moderación son roles excluyentes** (BO3-3, decidido en la propagación al catálogo): no son de esta decisión, y esta decisión las vuelve más urgentes porque ahora hay texto que moderar.
 - **La ficha muestra huecos honestos**: un texto retirado se ve como retirado. Es lo que hace creíble a O8-6.
 - **La destilación gana corpus** aunque el comentario se retire o se borre después.
 

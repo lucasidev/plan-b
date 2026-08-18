@@ -12,20 +12,20 @@
 
 ## Lo que no arregla ninguna story: decisiones pendientes
 
-Cada una está anotada en la fila de su story y en el header del catálogo. Cuando Lucas decida, el estado de acá cambia y la fila se reescribe.
+Las diez se cerraron entre el 2026-08-18 (D01 por [ADR-0069](../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md); D02 a D10 como se recomendaron, aplicadas en su story, el mapa, el glosario, las personas y los ADRs que tocaban). El estado de cada una dice dónde quedó.
 
 | ID | Decisión | Recomendación | Estado |
 |---|---|---|---|
 | D01 | **Qué recaba "marcar el plan"** (O3-2, `micarrera`): el filtro "lo que todavía puedo cursar" necesita saber qué aprobaste en todo el plan, y la tesis no lo pide. | La primera recomendación (el hecho suelto "la cursé, cómo terminó" desde el plan) se retiró: diluye los conteos si cuenta como reseña y es un tercer tipo de dato si no; y es el inventario con otro nombre. Lo que se recomendó y decidió: lo que marcás en el plan es **preferencia privada, no dato**; lo reseñado con cómo terminó viene marcado como hecho; O3-2 filtra con las dos cosas. | **Cerrado** el 2026-08-18: [ADR-0069](../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md); O3-2 y O3-3 reescritas, `micarrera` definida en el mapa, término en el glosario. |
-| D02 | **"Clases sin dar" es un escalar** (O4-6) y no tiene unidad de publicación. | Mediana y rango con sus voces ("clases sin dar: 4, entre 2 y 8, 12 voces"), sin piso. Era F6 de la [revisión del 16](2026-08-16-catalog.md). | Pendiente |
-| D03 | **El pedido de carrera** (O2-2): ¿confirma el mail por link como el reporte? | Sí: misma regla que D3 del 16; la cola pública cuenta confirmados. Era E3. | Pendiente |
-| D04 | **El denominador del gate de cobertura cuando coexisten dos planes** (BO5-1 contra ADR-0066). | Materias canónicas de la carrera (la unión de planes): es la consecuencia de haber decidido materia canónica (G6). | Pendiente |
-| D05 | **BO5-3 después de D3**: agrupar por mail confirmado no agrupa "doce de la misma facultad" con mails distintos. | Agrupar además por objetivo y ventana (misma cátedra o institución en 72 horas); el mail deduplica. | Pendiente |
-| D06 | **El docente nunca notificado** (O7-6, Paredes): "todavía no respondió" presupone una pregunta que solo se le hace al verificado. | Declarar el estado del canal: "sin réplica" y, si aplica, "docente sin identidad verificada"; nunca "no quiso". Era F4. | Pendiente |
-| D07 | **Corregir un dato** (T1-2): ¿pide aporte previo o solo cuenta? | Cuenta. Era H. | Pendiente |
-| D08 | **La materia pendiente de vincular** (T3-1): ¿cuenta en alguna ficha antes de vincularse? ¿entra a la cobertura? | No cuenta ni entra hasta vincularse; el autor la ve como pendiente en Mis aportes. Era G7. | Pendiente |
-| D09 | **Verificación y moderación como roles excluyentes** (BO3-3; era D4 del 16). Implica cuatro personas de equipo mínimo y parte a Nahuel en dos. | Sí. | Pendiente |
-| D10 | **Los hechos de trayectoria al dar de baja la cuenta**: G5 decía "el año de ingreso se generaliza a rango"; 0067 recalcula cohortes desde los hechos. | Los hechos quedan exactos y ya anónimos (la cuenta se anonimizó); quien quiera sacar algo lo borra antes. | Pendiente |
+| D02 | **"Clases sin dar" es un escalar** (O4-6) y no tiene unidad de publicación. | Mediana y rango con sus voces ("clases sin dar: 4, entre 2 y 8, 12 voces"), sin piso. Era F6 de la [revisión del 16](2026-08-16-catalog.md). | **Cerrado** el 2026-08-18: mediana y rango con voces, sin piso (O4-6, glosario "Clases sin dar", tesis punto 1). |
+| D03 | **El pedido de carrera** (O2-2): ¿confirma el mail por link como el reporte? | Sí: misma regla que D3 del 16; la cola pública cuenta confirmados. Era E3. | **Cerrado** el 2026-08-18: confirma el mail por link; la cola cuenta confirmados (O2-2, O2-3, `pedir` y `cola` en el mapa). |
+| D04 | **El denominador del gate de cobertura cuando coexisten dos planes** (BO5-1 contra ADR-0066). | Materias canónicas de la carrera (la unión de planes): es la consecuencia de haber decidido materia canónica (G6). | **Cerrado** el 2026-08-18: materias canónicas de la carrera, sobre todos sus planes (ADR-0066 §4, tesis punto 8, glosario, O1-8, mapa). |
+| D05 | **BO5-3 después de D3**: agrupar por mail confirmado no agrupa "doce de la misma facultad" con mails distintos. | Agrupar además por objetivo y ventana (misma cátedra o institución en 72 horas); el mail deduplica. | **Cerrado** el 2026-08-18: por objetivo y ventana de 72 horas; el mail deduplica (BO5-3, flujo BO-6). |
+| D06 | **El docente nunca notificado** (O7-6, Paredes): "todavía no respondió" presupone una pregunta que solo se le hace al verificado. | Declarar el estado del canal: "sin réplica" y, si aplica, "docente sin identidad verificada"; nunca "no quiso". Era F4. | **Cerrado** el 2026-08-18: estado del canal, "sin réplica" y "docente sin identidad verificada"; nunca "no quiso" (O7-6, Paredes, glosario "Réplica"). |
+| D07 | **Corregir un dato** (T1-2): ¿pide aporte previo o solo cuenta? | Cuenta. Era H. | **Cerrado** el 2026-08-18: cuenta alcanza (T1-2, rol "quien vuelve"). |
+| D08 | **La materia pendiente de vincular** (T3-1): ¿cuenta en alguna ficha antes de vincularse? ¿entra a la cobertura? | No cuenta ni entra hasta vincularse; el autor la ve como pendiente en Mis aportes. Era G7. | **Cerrado** el 2026-08-18: no cuenta ni entra a la cobertura hasta vincularse; visible como pendiente (T3-1, glosario "Pendiente de vincular", flujo 14). |
+| D09 | **Verificación y moderación como roles excluyentes** (BO3-3; era D4 del 16). Implica cuatro personas de equipo mínimo y parte a Nahuel en dos. | Sí. | **Cerrado** el 2026-08-18: sí; equipo mínimo de cuatro; Nahuel (moderación) y Camila (verificación) (BO3-3, BO6-1, `bo/equipo`, personas, roles del catálogo). |
+| D10 | **Los hechos de trayectoria al dar de baja la cuenta**: G5 decía "el año de ingreso se generaliza a rango"; 0067 recalcula cohortes desde los hechos. | Los hechos quedan exactos y ya anónimos (la cuenta se anonimizó); quien quiera sacar algo lo borra antes. | **Cerrado** el 2026-08-18: exactos y anónimos (O5-2, ADR-0067). |
 
 Un aviso que no es decisión: si alguien borra un aporte, la serie y los agregados cambian hacia atrás. 0064 ya dice que la lista se reprocesa y O8-8 publica la fecha de lectura; no se proponen "cortes con fecha" (vinieron del grupo A del 16 y se descartaron).
 
@@ -33,4 +33,4 @@ Un aviso que no es decisión: si alguien borra un aporte, la serie y los agregad
 
 - La duración nominal vive en `Career`, nullable, y ADR-0067 la usa "del plan"; con dos planes de distinta duración no hay dónde guardar la segunda. Es del modelo de datos nuevo (BO1-1 la exige como hueco bloqueante).
 - `bo/verificaciones` se apoya en un mecanismo docente que no existe: BO2-6 lo construye; el modelo todavía tiene `institutional_email_domains`.
-- La segunda capa de BO6-1 (una persona externa con lectura del registro completo) choca con D09 si se acepta: tendría que leer el registro ya disociado.
+- La segunda capa de BO6-1 (una persona externa con lectura del registro) se resolvió con D09: lee el registro ya disociado, como manda BO3-3.

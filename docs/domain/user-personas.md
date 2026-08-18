@@ -82,9 +82,9 @@ Da la misma materia desde 2009. Se enteró de que hay conteos sobre su cátedra 
 
 **La contradicción**: su silencio no es indiferencia, es una posición. Y tiene razón en algo: nadie nos delegó esto.
 
-**Decisión que produce**: por él la respuesta es opcional y nunca se presume. La ficha dice "todavía no respondió", no "no quiso responder".
+**Decisión que produce**: por él la respuesta es opcional y nunca se presume. La ficha declara el estado del canal ("sin réplica"; "docente sin identidad verificada" si nunca se le pudo avisar), no "no quiso responder".
 
-## Las tres del equipo
+## Las cuatro del equipo
 
 ### Sofía, 29 · equipo, catálogo
 
@@ -96,11 +96,19 @@ Carga planes, correlativas, la duración nominal, las cátedras (el equipo docen
 
 ### Nahuel, 34 · equipo, comunidad
 
-Modera reportes y verifica constancias, así que es el único que ve nombres reales de gente que confió en que sería anónima; y desde que el comentario se publica, mira también lo que el chequeo previo retuvo y la identidad de los docentes que quieren replicar. Cada vez que abre un documento está tocando la promesa central del producto. (Si D4 se acepta, verificar y moderar no pueden ser la misma persona: esta persona se parte en dos.)
+Modera reportes y mira lo que el chequeo previo retuvo, así que ve testimonios enteros y decide qué se baja. No verifica: quien ve nombres reales es otra persona (Camila), y BO3-3 hace que no puedan ser la misma. Cada vez que baja un texto está tocando la promesa central del producto por el otro lado: cada testimonio que se baja de más es uno que no se vuelve a escribir.
 
 > "Si yo filtro un nombre, no rompo una regla: rompo la única razón por la que alguien contó algo incómodo."
 
-**Qué necesita**: ver lo mínimo para decidir, que quede registrado que lo vio, que nadie más pueda, y que la cola de retenidos no lo convierta en el cuello del corpus: lo retenido es la excepción, no todo comentario.
+**Qué necesita**: el criterio escrito de qué es exposición, que quede registrado qué bajó y por qué, y que la cola de retenidos no lo convierta en el cuello del corpus: lo retenido es la excepción, no todo comentario.
+
+### Camila, 27 · equipo, verificación
+
+Verifica constancias de alumno y la identidad de los docentes que quieren replicar, así que es la única que ve nombres reales de gente que confió en que sería anónima. No modera y no llega a los aportes: BO3-3 corta ese camino por construcción, no por buena voluntad, y BO2-4 le cierra la puerta desde la cola de constancias.
+
+> "Veo el nombre, comparo con lo declarado, destruyo el documento. Si algún día pudiera ver qué reseñó, ese día el anonimato sería una promesa."
+
+**Qué necesita**: ver lo mínimo para decidir, que quede registrado que lo vio, y que nadie más pueda; y para el docente, atarlo a la cátedra del catálogo, porque para él verificar es el permiso de replicar.
 
 ### Admin · equipo, accesos
 

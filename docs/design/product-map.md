@@ -26,8 +26,8 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 | `materia` | Ficha de materia. Correlativas: qué pide y qué abre. |
 | `catedra` | Ficha de cátedra, por docente, comparada con las otras. |
 | `metodo` | Cómo lo calculamos: fórmula, qué no hacemos, el corpus de frases y la descarga del crudo. |
-| `pedir` | Pedir una carrera, sin cuenta: solo el mail para avisarte. |
-| `cola` | Qué falta cargar: la cola de pedidos, pública, cuántos piden cada carrera y cuáles ya están. |
+| `pedir` | Pedir una carrera, sin cuenta: solo el mail para avisarte, confirmado por link para que el pedido cuente. |
+| `cola` | Qué falta cargar: la cola de pedidos, pública, cuántos mails confirmados piden cada carrera y cuáles ya están. |
 | `anonimato` | Cómo te cubrimos: la posición de anonimato explicada. |
 | `error` | Se rompió. |
 
@@ -80,7 +80,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 | `bo/correcciones` | Datos duros que alguien corrigió. Se contrastan contra la fuente antes de aplicar. |
 | `bo/reportes` | Moderación, dos colas: lo reportado (que sigue publicado hasta que alguien resuelve; salvo riesgo inmediato con criterio escrito) y lo retenido por el chequeo previo (comentarios y réplicas que hablan de una persona fuera de su acto, sin publicar hasta que alguien mire). Se baja el texto que expone a una persona, nunca la voz; la queja dura no es causal. |
 | `bo/verificaciones` | Dos colas distintas: constancias de alumno (señal; el único lugar con nombres reales, y sin camino a los aportes) e identidad docente (permiso para la réplica; se prueba contra la cátedra del catálogo). |
-| `bo/equipo` | Accesos. Cada rol ve solo sus colas: el anonimato es mecanismo, no declaración. (Pendiente D4: verificación y moderación como roles excluyentes.) |
+| `bo/equipo` | Accesos. Cada rol ve solo sus colas: el anonimato es mecanismo, no declaración. Verificación y moderación son roles excluyentes (BO3-3): el Admin no puede juntarlos en una persona ni asignárselos a sí mismo. |
 | `bo/frases` | El catálogo de frases: la redacción, el sujeto y el eje de cada una, las semilla y las destiladas en cola de curaduría. Es lo que `metodo` publica entero, y el eje es la atribución: corregirlo reprocesa las fichas. |
 
 ## Los flujos
@@ -89,8 +89,8 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 | # | Flujo | Recorrido |
 |---|---|---|
-| 01 | Valentina tiene que elegir en dos meses | `inicio`/`buscar` → `explorar` → `carrera` (con cabecera si la cobertura pasó la mitad del plan; si no, cobertura y frases con "en N materias") → `materia`/`catedra` → `metodo` (opcional) → `donde` (lado a lado, sin ganador) |
-| 02 | Ana busca la suya y no está | `explorar` → el vacío explicado (no la cargamos / cargada sin voces / cargada, todavía no derivamos) → `pedir` → `cola` → mail con el link a la ficha, que se lee sin cuenta |
+| 01 | Valentina tiene que elegir en dos meses | `inicio`/`buscar` → `explorar` → `carrera` (con cabecera si la cobertura pasó la mitad de las materias de la carrera; si no, cobertura y frases con "en N materias") → `materia`/`catedra` → `metodo` (opcional) → `donde` (lado a lado, sin ganador) |
+| 02 | Ana busca la suya y no está | `explorar` → el vacío explicado (no la cargamos / cargada sin voces / cargada, todavía no derivamos) → `pedir` (confirma el mail por link) → `cola` → mail con el link a la ficha, que se lee sin cuenta |
 | 03 | Matías vuelve, y esta vez completa | `catedra` → lee → (tres semanas después) → `carrera` → `ingresar`/`registro` → `empezar` → `reseñar` (la primera reseña pregunta el año de ingreso, una sola vez) |
 | 04 | Lucía no quiere repetir el error | `carrera` (co-cursada: por par y período, solo desde reseñas, con sus voces) → cuántos dejaron una → `micarrera` (la co-cursada filtrada a lo que reseñó y a lo que marcó como que le falta: preferencia privada, no dato) → papel → `empezar` |
 | 05 | Lucía reseña, y le lleva cinco minutos | `avisos` → `reseñar` (elige materia) → cuándo cursó (si es viejo: ¿seguís cursando? / me recibí / me fui) → cómo terminó → frases → cátedra (opcional) → clases sin dar (opcional) → comentario (opcional, con tope; el chequeo marca lo que identifica y decide ella; lo que habla de una persona fuera de su acto queda retenido) → el aviso de sospecha en grupo chico → publica, con o sin comentario |
@@ -101,8 +101,8 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 | 10 | Los evaluados, responder y abandonar | te llega el resumen → verificás identidad → `responder` (retenida el plazo desde el aviso) · del otro lado: `abandono` (me fui, cuándo; también en `reseñar` si el período es viejo, o por mail una vez al año) → `reseñar` (contás por qué, opcional) |
 | 11 | Buscar, cuando te recomiendan una persona | busca un nombre → `buscar` → la cátedra de la que forma parte (un docente no es una ficha: la cátedra sí) → si no está, `buscar` explica por qué → `pedir` (opcional) |
 | 12 | El texto que te delata sin nombrar a nadie | escribe en `reseñar` → el chequeo marca lo que identifica por contexto → decide el autor (la réplica no podrá citar esa parte) · si habla de una persona fuera de su acto: queda retenido hasta que alguien lo mire, y se le dice → el aviso de sospecha en grupo chico → publica, con o sin comentario |
-| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué está vacía y que la primera voz ya se publica → reseña en `reseñar` → lo ve reflejado en la materia y en las listas; la cabecera de la carrera dice "todavía no derivamos" hasta que la cobertura pase la mitad del plan |
-| 14 | Cuando el dato no me alcanza | la materia no está / la recursó en otro período → se acepta igual → queda pendiente de vincular a la materia canónica → ve qué cambió en `aportes` |
+| 13 | La ficha vacía y el primero que aporta | ficha vacía en `carrera` → dice por qué está vacía y que la primera voz ya se publica → reseña en `reseñar` → lo ve reflejado en la materia y en las listas; la cabecera de la carrera dice "todavía no derivamos" hasta que la cobertura pase la mitad de las materias de la carrera |
+| 14 | Cuando el dato no me alcanza | la materia no está / la recursó en otro período → se acepta igual → queda pendiente de vincular a la materia canónica (no cuenta en ninguna ficha ni en la cobertura hasta entonces) → ve qué cambió en `aportes` |
 | 15 | Cuando la frase no se sostiene sola | voces viejas declaradas en la ficha → una frase pesa mucho en la cátedra y poco en la carrera → la ficha explica que la carrera suma cursadas y no promedia, y muestra en cuántas materias aparece → marca la frase del otro sentido al reseñar esa cursada |
 
 ### Del backoffice (9)
@@ -114,14 +114,14 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 | BO-3 | Moderar sin bajar la queja incómoda | reporte con mail confirmado → sigue publicado mientras espera (salvo riesgo inmediato, con criterio escrito) → ¿expone a una persona fuera de su acto? sí: se baja el texto con su categoría, nunca la voz / no: queda → quien reportó recibe el criterio por mail, no un acuse |
 | BO-4 | Ver un nombre una sola vez | la constancia de alumno se compara con lo declarado; el documento se destruye al resolver; nunca hay camino de esa cola a los aportes. La identidad docente es otra cola y otro flujo: ahí sí se ata a la cátedra, porque es el permiso de la réplica |
 | BO-5 | Cuando la facultad reforma el plan | los dos planes coexisten con su año; la reseña queda pegada al período y a la materia canónica, no a la fila del plan |
-| BO-6 | Cuando alguien intenta inflar el corpus | la alarma mira la procedencia de las cuentas, no el volumen; los reportes se agrupan por mail confirmado; las cuentas marcadas no suman voces ni trayectoria; congelar conteos sin borrar nada; la ficha declara "período bajo revisión" |
+| BO-6 | Cuando alguien intenta inflar el corpus | la alarma mira la procedencia de las cuentas, no el volumen; los reportes se agrupan por objetivo y ventana, y el mail confirmado deduplica; las cuentas marcadas no suman voces ni trayectoria; congelar conteos sin borrar nada; la ficha declara "período bajo revisión" |
 | BO-7 | Cuando la cola nos gana, y quién nos mira | dos colas que nos ganan (catálogo y moderación), y la de moderación bloquea publicación: se dice cuánto se tarda sin fingir que se resuelve todo; registro de qué se bajó y qué quedó retenido, por categoría; quien se va pierde acceso |
 | BO-8 | Lo que el chequeo previo retuvo | comentario o réplica que habla de una persona fuera de su acto → cola de retenidos, con la parte marcada → una persona lo mira → sale, se baja con su categoría, o vuelve al autor; nada se publica por vencimiento de tiempo |
 | BO-9 | Destilar y clasificar frases nuevas | los comentarios de muchos → la máquina propone una frase → cola de curaduría: se aprueba con sujeto y eje o se descarta → recién entonces se ofrece para marcar, marcada como destilada → corregir un eje reprocesa las fichas |
 
 ## Reglas del corpus
 
-**Desbloqueos por volumen**: el mapa encendía la ficha por escalones ("con uno aparece la primera frase; con cinco, los dos números; con quince, la atribución"). **Cerrado el 2026-08-16** ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)): no hay escalera ni piso. Todo se publica desde la primera voz, como "X de N voces" con su encogimiento; lo único que espera es la cabecera derivada de carrera e institución, por cobertura (más de la mitad de las materias del plan con voces), y mientras tanto la ficha lo dice.
+**Desbloqueos por volumen**: el mapa encendía la ficha por escalones ("con uno aparece la primera frase; con cinco, los dos números; con quince, la atribución"). **Cerrado el 2026-08-16** ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)): no hay escalera ni piso. Todo se publica desde la primera voz, como "X de N voces" con su encogimiento; lo único que espera es la cabecera derivada de carrera e institución, por cobertura (más de la mitad de las materias canónicas de la carrera con voces), y mientras tanto la ficha lo dice.
 
 **Las frases**: `metodo` promete el corpus completo publicado ("las 32 frases"). El mapa no las lista en un solo lugar; muestra ejemplos por familia en las pantallas de `reseñar`, `catedra` e `institucion`:
 
