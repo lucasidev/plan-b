@@ -47,6 +47,8 @@ Una tabla de hechos por cuenta (`entré`, `me fui`, `me recibí`, cada uno con a
 - Serie: cualquiera de las anteriores con `group by período`.
 - Encogimiento (0064): con `p = k/n` y `z = 1,96`, el límite inferior de Wilson es `(p + z²/2n − z·√(p(1−p)/n + z²/4n²)) / (1 + z²/n)`. Una función en la capa de lectura, publicada en `metodo` tal cual.
 
+Los hechos sobreviven a la baja de la cuenta, exactos y sin cuenta ([ADR-0044](0044-soft-delete-del-user-con-preservacion-de-corpus.md)): una baja no recalcula una cohorte ni generaliza un año a rango; quien quiera sacar algo lo borra antes, de a uno.
+
 Control de calidad, que es lo único que se parece a inteligencia y no lo es: **consistencia por cuenta** (`recibí ≥ entré`; períodos de cursada dentro de `[entré, recibí o me fui]`; un solo `entré` por carrera), y lo inconsistente no entra al agregado y `metodo` publica cuántas cuentas quedaron afuera y por qué; **procedencia** (BO5-2): las cuentas que el anti-spam marca no suman a ninguna trayectoria; **reproceso**: cada corte recalcula todo desde los hechos, nada se acumula a mano.
 
 Lo que ningún cálculo arregla, y se declara en cada dato: es **de quienes reseñaron**, nunca "la tasa de egreso de la carrera" (el disclaimer de 0047, ahora regla general del método); la duración real es de **los que se recibieron** (supervivencia); y **es lento**: egreso solo con cohortes cerradas, duración real solo cuando reseñen egresados. El reenganche por mail es lo que lo acorta.
