@@ -143,6 +143,7 @@ Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), sección "Qué recab
 | **Co-cursada** | Dos materias reseñadas por la misma cuenta en el mismo período. Se publica por par y período: cuántas personas las llevaron juntas y cuántas dejaron una. Solo desde reseñas, nunca desde el plan marcado. |
 | **Serie** | La misma proporción, por el **período en que pasó** (período de cursada, fecha del evento), nunca por cuándo se reseñó. Cada punto con sus voces y su encogimiento, sin suavizar, con la publicación y la réplica marcadas. |
 | **Carrera canónica** | El nombre bajo el que el catálogo declara que dos ofertas de distintas instituciones son la misma carrera, para compararlas en `donde`. Lo decide el equipo, no el parecido del nombre. |
+| **Nombre de pantalla** | Cómo se nombra una pantalla en docs y stories: con el nombre del mapa, en español y en backticks (`donde`, `reseñar`, `micarrera`, `metodo`). Es vocabulario de UX, como la etiqueta visible. **No es la ruta**: la URL es código, va en inglés y con slug (`/my-career`, `/reviews/write`), y se fija cuando la pantalla entra a sprint. |
 | **Comparar** (`donde`) | La misma carrera canónica en varias instituciones, lado a lado, dato por dato, sin compuesto, sin ganador y sin ordenar por valor. Quien quiere ordenar baja el CSV. |
 
 ## Reseñas y moderación (versión anterior, en retiro)

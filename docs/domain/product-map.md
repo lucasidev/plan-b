@@ -1,8 +1,8 @@
 # Product map
 
-La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16). Este doc es la copia versionada de lo que el canvas define: rutas, flujos, planos y reglas. Las user stories viven en [`user-stories.md`](user-stories.md) (catálogo vigente) y las personas en [`user-personas.md`](user-personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
+La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16). Este doc es la copia versionada de lo que el canvas define: pantallas, flujos, planos y reglas. Las user stories viven en [`user-stories.md`](user-stories.md) (catálogo vigente) y las personas en [`user-personas.md`](user-personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
-**Estado**: orientativo. Es la estructura que el mapa propone (rutas, flujos, planos), útil para entender qué vistas podría necesitar el producto; **no fija el diseño final ni la UX/UI**. Lo vinculante son las stories de [`user-stories.md`](user-stories.md) y las personas. Nada de esto está construido; el cruce contra el código real está al final.
+**Estado**: orientativo. Es la estructura que el mapa propone (pantallas, flujos, planos), útil para entender qué vistas podría necesitar el producto; **no fija el diseño final ni la UX/UI**. Lo vinculante son las stories de [`user-stories.md`](user-stories.md) y las personas. Nada de esto está construido; el cruce contra el código real está al final.
 
 ## Los tres planos
 
@@ -10,11 +10,13 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 2. **Lo que publicamos.** Las frases con sus voces por eje, la atribución (que es la lectura de los ejes), la serie, los testimonios. Todo derivado del corpus, nada declarado a mano. La ausencia no es un juicio: decimos "no la cargamos todavía", no "no hay datos", y muchísimo menos un cero.
 3. **Lo que hacemos.** Publicar, atribuir y exigir respuesta. Es el único plano donde alguien sin cobertura tiene lugar: el pedido es un dato público. Cuánta gente reclama que se cargue algo dice dónde la comunidad quiere que se mire y no llegamos.
 
-## Las rutas
+## Las pantallas
+
+> **Los nombres en backticks son nombres de pantalla, no rutas.** `donde`, `reseñar`, `micarrera`, `metodo` son el vocabulario del mapa (UX, en español) para nombrar una pantalla en docs y stories, igual que "Mi carrera" o "Comparar" son la etiqueta visible. **La URL es código**: va en inglés, con slug, y se fija cuando la pantalla entra a sprint, siguiendo las que ya existen ([frontend/CLAUDE.md](../../frontend/CLAUDE.md): `/careers/[id]`, `/universities/[slug]`, `/my-career`, `/reviews/write`). Lo que el mapa trae de otro departamento se revisa antes de adoptarlo: el nombre de pantalla se queda como nombre; nada de eso es un identificador de código. La tabla del cruce con el código, al final, dice qué slug tiene hoy cada pantalla que ya tiene chasis y cuáles esperan el suyo.
 
 ### Públicas (12) · leer el escrutinio, sin login
 
-| Ruta | Qué es |
+| Pantalla | Qué es |
 |---|---|
 | `inicio` | La vitrina (landing). |
 | `explorar` | El home real: dos lentes, carreras y universidades. |
@@ -31,7 +33,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 
 ### El umbral (3)
 
-| Ruta | Qué es |
+| Pantalla | Qué es |
 |---|---|
 | `ingresar` | Con el motivo a la vista y vuelta a donde ibas. |
 | `registro` | Rol, institución y carrera. Es declarar dónde estás, no elegir. |
@@ -39,7 +41,7 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 
 ### Con cuenta (6) · producir y lo tuyo
 
-| Ruta | Qué es |
+| Pantalla | Qué es |
 |---|---|
 | `empezar` | Onboarding: marcás por dónde vas. Shell de foco, sin nav. Saltable y retomable. |
 | `micarrera` | Tu plan (el corral), con la pestaña de combinaciones. |
@@ -52,18 +54,18 @@ La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16).
 
 El mapa las dibuja en flujos pero no tienen pantalla propia todavía:
 
-| Ruta | Por qué importa |
+| Pantalla | Por qué importa |
 |---|---|
 | `responder` | La respuesta del docente/institución. La dibujan los flujos 06, 08 y 10, y `metodo` la promete; hoy las respuestas de ejemplo están cargadas a mano. |
 | `buscar` | Resultados de búsqueda. El topbar tiene buscador y todavía no lleva a ninguna pantalla; el flujo 11 la dibuja. |
 | `editar` | Editar o borrar un aporte. Sin esto, reseñar algo incómodo es irreversible. Un comentario editado vuelve al chequeo previo antes de publicarse. |
 | `abandono` | La pregunta de trayectoria de a uno (me fui, cuándo / me recibí, cuándo / sigo), sin plan marcado; también aparece en `reseñar` cuando el período declarado es viejo, y por mail una vez al año. Sin esto no sabemos dónde se cae la mayoría, y el silencio no se infiere. |
 | `baja` | Dar de baja la cuenta: anonimiza la identidad y preserva lo aportado (ADR-0044); lo que quieras sacar lo borrás antes, de a uno, en `editar`. Prometemos que es tuyo; poder sacarlo es parte de eso. |
-| `avisos` | Notificaciones. Sin ellas, el que pidió una carrera no se entera de que la cargamos. Es la ruta que más stories sostiene (O2-4, O4-5, O7-5, BO1-3 y T2-2), y T2-2 es P1 de la promesa central: "quien aportó se entera antes de que se publique la réplica" no se puede cumplir sin un canal de aviso. **Decisión 2026-08-16**: deja de ser diferida y es infraestructura del primer bloque, aunque arranque solo por mail (SMTP ya está en el stack; el BC de ADR-0040 se revisa a favor). El panel en la app puede esperar. |
+| `avisos` | Notificaciones. Sin ellas, el que pidió una carrera no se entera de que la cargamos. Es la pantalla que más stories sostiene (O2-4, O4-5, O7-5, BO1-3 y T2-2), y T2-2 es P1 de la promesa central: "quien aportó se entera antes de que se publique la réplica" no se puede cumplir sin un canal de aviso. **Decisión 2026-08-16**: deja de ser diferida y es infraestructura del primer bloque, aunque arranque solo por mail (SMTP ya está en el stack; el BC de ADR-0040 se revisa a favor). El panel en la app puede esperar. |
 
 ### Acciones inline (3)
 
-No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
+No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 - `reportar`: denunciar algo publicado. Modal sobre la ficha. **Sin cuenta**: el difamado no tiene por qué registrarse en el sitio que lo difama; confirma el mail por link antes de entrar a la cola, y nada baja solo por cantidad de reportes.
 - `corregir`: un dato duro está mal. La fila se vuelve editable ahí mismo. Pide cuenta.
@@ -71,7 +73,7 @@ No son rutas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 ### Backoffice (7) · el equipo
 
-| Ruta | Qué es |
+| Pantalla | Qué es |
 |---|---|
 | `bo/pedidos` | La cola de carga, ordenada por cuántos lo pidieron, no por orden de llegada. |
 | `bo/catalogo` | Cargar una oferta: el plan con su duración nominal, sus materias canónicas, sus cátedras (el equipo docente a cargo, entidad propia) y su carrera canónica. Abre por huecos: no se publica hasta terminar. |
@@ -131,7 +133,7 @@ La lista canónica completa, con el sujeto y el eje de cada frase (la atribució
 
 ## Estado contra el código (cruce 2026-08-16)
 
-Lo que el repo ya tiene, mapeado contra las rutas. "Existe" significa que el chasis existe; donde el contenido cambia (fichas con escrutinio en vez de reseñas texto-libre), el chasis se conserva y el contenido se rehace.
+Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el chasis existe; donde el contenido cambia (fichas con escrutinio en vez de reseñas texto-libre), el chasis se conserva y el contenido se rehace.
 
 | Carril | Existe (chasis) | Adaptar | Nuevo de cero |
 |---|---|---|---|
@@ -140,7 +142,29 @@ Lo que el repo ya tiene, mapeado contra las rutas. "Existe" significa que el cha
 | Con cuenta | `empezar`, `micarrera`, `aportes`, `perfil` (chasis del onboarding, mi carrera y mis reseñas) | `reseñar` (existe el editor texto-libre; el acto de frases es otro modelo), `verificar` (existe solo para docentes) | |
 | Backoffice | `bo/catalogo` (ABM completo), `bo/reportes` (cola de moderación) | `bo/pedidos` (el endpoint de cola existe; la pantalla no) | `bo/correcciones`, `bo/verificaciones`, `bo/equipo` |
 
-Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (modelo, conteos, sujeto y eje), las proporciones de voces con encogimiento, la cola pública de pedidos, la verificación de alumno por constancia, y las seis rutas diseñadas sin construir (`responder`, `buscar`, `editar`, `abandono`, `baja`, `avisos`).
+**Pantalla del mapa → slug en código** (verificado contra `frontend/src/app/` el 2026-08-17). Las que no tienen slug lo reciben, en inglés, cuando entran a sprint.
+
+| Pantalla | Slug hoy | Nota |
+|---|---|---|
+| `inicio` | `/` | la landing |
+| `carrera` | `/careers/[id]` | la ficha pasa a ser carrera-en-institución |
+| `institucion` | `/universities/[slug]` | |
+| `materia` | `/subjects/[id]` | |
+| `catedra` | `/teachers/[id]` | chasis del docente; la cátedra como entidad es BO1-6 y pide su propio slug |
+| `explorar` | `/careers`, `/universities` | los listados públicos |
+| `anonimato` | `/about` | habla de otra cosa; se rehace |
+| `ingresar` / `registro` / `recuperar` | `/sign-in`, `/sign-up`, `/forgot-password` | |
+| `empezar` | `/onboarding/*` | el onboarding se rehace: muere "cargá tu historial" |
+| `micarrera` | `/my-career` | el contenido se rehace |
+| `aportes` | `/reviews` | |
+| `perfil` | `/my-profile` | |
+| `reseñar` | `/reviews/write` | existe el editor texto-libre; el acto de frases es otro modelo |
+| `verificar` | `/verify-teacher` | hoy solo docente; la constancia de alumno no tiene pantalla |
+| `bo/catalogo` | `/admin/universities`, `/admin/teachers`, `/admin/commissions` | |
+| `bo/reportes` | `/admin/moderacion/reportes` | **slug en castellano, contra la convención**: se renombra en inglés cuando se toque |
+| `donde`, `metodo`, `pedir`, `cola`, `buscar`, `avisos`, `abandono`, `baja`, `editar`, `responder`, `error`, `bo/pedidos`, `bo/correcciones`, `bo/verificaciones`, `bo/equipo`, `bo/frases` | sin slug | se definen al entrar a sprint, en inglés |
+
+Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (modelo, conteos, sujeto y eje), las proporciones de voces con encogimiento, la cola pública de pedidos, la verificación de alumno por constancia, y las seis pantallas diseñadas sin construir (`responder`, `buscar`, `editar`, `abandono`, `baja`, `avisos`).
 
 ## Auditoría del mapa (2026-08-16)
 
@@ -149,7 +173,7 @@ Hallazgos de revisar el mapa contra sí mismo, contra la tesis y contra el repo.
 1. **Los conteos de faltantes no cierran entre sí.** La portada dice "cuatro rutas no se recorren"; la sección "lo que falta" lista seis diseñadas sin construir; el reagrupamiento dice "diez ya tienen flujo y todavía no tienen ruta" y "diecisiete no tienen ni flujo ni ruta". Cuatro cifras distintas para el mismo concepto: unificar en una sola verdad antes de planificar contra el mapa.
 2. **"Las 32 frases" no existen como lista** (2026-08-17: ahora tienen dueño, BO1-8, y pantalla, `bo/frases`). `metodo` las promete publicadas y el mapa muestra ~13 ejemplos dispersos. El corpus curado es EL contenido del producto: su lista canónica (frase, eje, atribución, familia) es un entregable que hoy no tiene dueño ni lugar.
 3. **La atribución del mapa es ternaria; la de la tesis, binaria.** THESIS.md decía "propio de la materia o de la institución"; el mapa opera con tres familias (materia, cátedra, institución). **Cerrado el 2026-08-16** ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)): no competían. La ternaria es el **sujeto** (a qué ficha va la frase, y quién); la binaria es el **eje** (de qué lado cae). Las familias del mapa quedan como sujetos; la atribución la decide el eje.
-4. **Los 17 escenarios sin flujo ni ruta son los de riesgo.** El propio mapa lo dice: "es el estado más urgente, porque no hay ni un recorrido contra el que discutirlos". Incluyen los tres P1 que tocan la promesa central (el texto que te delata, la réplica que te señala, la ficha vacía sin razones para el primero). Dibujarlos antes de construir nada que los pise.
+4. **Los 17 escenarios sin flujo ni pantalla son los de riesgo.** El propio mapa lo dice: "es el estado más urgente, porque no hay ni un recorrido contra el que discutirlos". Incluyen los tres P1 que tocan la promesa central (el texto que te delata, la réplica que te señala, la ficha vacía sin razones para el primero). Dibujarlos antes de construir nada que los pise.
 5. **`avisos` es el cuello estructural.** Sostiene cinco stories en cinco grupos y no está construida ni diseñada como pantalla. En el repo, Notifications (ADR-0040, US-077) quedó "diferido a revisión" en ADR-0063: el mapa lo revalida como bloqueante temprano, no como diferible.
 6. **El grupo "que no me molesten" es el contrapeso del mapa** (cuatro stories que piden menos producto). Usarlo como gate de revisión de cada pantalla nueva, que es exactamente el rol que el reagrupamiento le da: sin él, "el mapa solo suma funciones".
 7. **Consistencias verificadas** (no hallazgos, confirmaciones): `verificar` como "señal, no permiso" coincide con la decisión de verificación registrada en THESIS.md; debajo del gate de cobertura la ficha dice "todavía no derivamos", nunca un cero (ADR-0054); `reportar` sin cuenta es coherente con la posición de moderación; el flujo 05 pregunta el período de cursada, que es lo que BO-5 necesita para pegar la valoración al plan.
