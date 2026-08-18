@@ -459,7 +459,7 @@ Staging del parseo de PDF/texto.
 | `source_type` | ENUM `import_source_type` | NOT NULL                      |                                     |
 | `raw_payload` | JSONB                     | NOT NULL                      | Output crudo del parser             |
 | `status`      | ENUM `import_status`      | NOT NULL, DEFAULT `'pending'` |                                     |
-| `error`       | TEXT                      | NULL                          | Mensaje de error si status='failed' |
+| Error       | TEXT                      | NULL                          | Mensaje de error si status='failed' |
 | `parsed_at`   | TIMESTAMPTZ               | NULL                          | Timestamp de parseo exitoso         |
 | `confirmed_at`| TIMESTAMPTZ               | NULL                          | Timestamp del confirm del alumno    |
 | `created_at`  | TIMESTAMPTZ               | NOT NULL                      |                                     |

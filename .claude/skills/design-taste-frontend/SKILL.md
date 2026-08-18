@@ -1,6 +1,6 @@
 ---
 name: design-taste-frontend
-description: Anti-slop para landing pages y piezas de vitrina (el propio skill se declara fuera de alcance para dashboards, tablas de datos y UI de producto multi-paso). En planb aplica SOLO a la landing pública (`inicio`) y a nada del producto; para pantallas de producto el default es bencium-controlled-ux-designer. Usar cuando Lucas lo pida por nombre o al trabajar la landing.
+description: Anti-slop para landing pages y piezas de vitrina (el propio skill se declara fuera de alcance para dashboards, tablas de datos y UI de producto multi-paso). En planb aplica SOLO a la landing pública (Inicio) y a nada del producto; para pantallas de producto el default es bencium-controlled-ux-designer. Usar cuando Lucas lo pida por nombre o al trabajar la landing.
 ---
 
 # tasteskill: Anti-Slop Frontend Skill
