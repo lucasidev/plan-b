@@ -9,7 +9,7 @@ La tesis promete cuatro cosas que no salen de frases sino de trayectoria: cuánt
 
 Lo que se recaba estaba cerrado ([ADR-0064](0064-phrases-with-voices-not-scores.md), punto 6): cuándo entraste, cuándo cursaste cada materia (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo; de a uno, nunca como inventario. Con eso solo se sabe en qué **año del plan** se fue el que se fue. No se sabe qué materias tumban gente, ni cuántos dejaron una de un par, ni la aprobación que [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md) llamaba "el dato más objetivo de la página": las tres dependen de un hecho que faltaba, **cómo terminó la cursada**.
 
-Y quedaban tres cabos: qué queda de 0047 (su definición de aprobación, su piso, su fuente privada); "brecha", que el mapa usa junto a los dos números y nadie definió; y el hallazgo G9 de la [revisión del catálogo](../domain/catalog-review-2026-08-16.md): la co-cursada no puede salir del plan que la persona marcó para sí, que es privado y nadie consintió publicar.
+Y quedaban tres cabos: qué queda de 0047 (su definición de aprobación, su piso, su fuente privada); "brecha", que el mapa usa junto a los dos números y nadie definió; y el hallazgo G9 de la [revisión del catálogo](../reviews/2026-08-16-catalog.md): la co-cursada no puede salir del plan que la persona marcó para sí, que es privado y nadie consintió publicar.
 
 Nada de esto pide inteligencia. Pide contabilidad sobre hechos sueltos unidos por cuenta, y disciplina para no inventar el hecho que falta.
 
@@ -85,4 +85,4 @@ La Secretaría de Políticas Universitarias publica el coeficiente **duración r
 
 - [THESIS.md](../THESIS.md), decisión 4, "Qué recabamos" y "Qué publicamos". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la unidad y el encogimiento que acá se aplican a proporciones de personas), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso; el gate de la cabecera que `donde` respeta). **Completa** a 0064.
 - [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): la definición de aprobación que sobrevive. [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): una cohorte abierta no publica un cero, no publica.
-- Hallazgos F2 (reenganche) y G9 (co-cursada) de la [revisión adversarial del catálogo](../domain/catalog-review-2026-08-16.md).
+- Hallazgos F2 (reenganche) y G9 (co-cursada) de la [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md).

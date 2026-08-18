@@ -9,7 +9,7 @@ La reseña lleva un **comentario** opcional: lo que la persona escribe en sus pa
 
 La tesis ya lo daba por publicado ("revisamos que el TEXTO no te reconstruya, y limitamos qué puede citar la réplica"; "cada testimonio que se baja de más es uno que no se vuelve a escribir"), y once stories también: T1-1 (el voto ordena los testimonios), T2-1 (avisar si lo que escribí me delata; decido yo), T2-2 (la réplica no cita la parte que identifica; me entero antes), T3-2 (de cuándo son), O7-1 (la respuesta queda al lado, sin bajarlo), O8-6 (cuántos se bajaron y por qué), BO2-1, BO2-2, BO2-4, O5-4 (reportar sin cuenta), T4-1 (aportar lo contrario).
 
-La [revisión adversarial del catálogo](../domain/catalog-review-2026-08-16.md) recomendó lo contrario (grupo B): no publicarlo, porque con texto público alguien elige la cátedra de quien lo bochó, marca frases suaves y en el comentario escribe una acusación falsa sobre la vida privada del docente, y la única defensa sería reactiva. Y dejó tres cabos sobre la réplica (C2: "se entera antes" sin plazo ni palanca; C3: la réplica no cita pero describe) y sobre la moderación (D1: de quién es la exposición que cuenta; D2: qué pasa con lo reportado mientras espera; D3: reporte sin cuenta que no se puede agrupar).
+La [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md) recomendó lo contrario (grupo B): no publicarlo, porque con texto público alguien elige la cátedra de quien lo bochó, marca frases suaves y en el comentario escribe una acusación falsa sobre la vida privada del docente, y la única defensa sería reactiva. Y dejó tres cabos sobre la réplica (C2: "se entera antes" sin plazo ni palanca; C3: la réplica no cita pero describe) y sobre la moderación (D1: de quién es la exposición que cuenta; D2: qué pasa con lo reportado mientras espera; D3: reporte sin cuenta que no se puede agrupar).
 
 Términos: **testimonio** es la reseña tal como se lee (su comentario, las frases que marcó, el período y la cátedra si la dio; sin cuenta, sin nombre, sin "cómo terminó"); sin comentario, la reseña no aparece como testimonio, es voz en los conteos. **Exposición**, la que se modera, es la de una persona fuera de su acto público: el docente nombrado en su rol no está expuesto, está evaluado.
 
@@ -67,5 +67,5 @@ RateMyProfessors publica comentarios anónimos sobre docentes nombrados y remuev
 ## Refs
 
 - [THESIS.md](../THESIS.md), "Qué recabamos", "Qué publicamos" y "Posición". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la ficha muestra frases con voces, no textos, como cuerpo; el comentario alimenta la destilación); **completa** a 0064 y cierra "qué publicamos". [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: la sospecha en grupo chico se declara). [ADR-0009](0009-anonimato-como-regla-de-presentacion.md) (el anonimato como regla de presentación).
-- Grupos B, C y D de la [revisión adversarial del catálogo](../domain/catalog-review-2026-08-16.md).
+- Grupos B, C y D de la [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md).
 - Boceto: [`docs/design/sketches/testimonio.html`](../design/sketches/testimonio.html).

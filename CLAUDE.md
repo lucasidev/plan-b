@@ -69,7 +69,9 @@ plan-b/
 │   ├── domain/              Ubiquitous language, casos de uso, lifecycles
 │   ├── architecture/        ERD, data model
 │   ├── testing/             Convenciones cross-stack de testing (ADR-0036)
-│   └── operations/          Playbooks operacionales (rollback, ...)
+│   ├── operations/          Playbooks operacionales (rollback, ...)
+│   ├── reviews/             Revisiones y auditorías: hallazgos con ID y estado
+│   └── history/             El ático: lo que describía la versión anterior
 ├── scripts/                 TS scripts (bun): no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
