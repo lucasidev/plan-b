@@ -81,7 +81,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 | Reportes | Moderación, dos colas: lo reportado (que sigue publicado hasta que alguien resuelve; salvo riesgo inmediato con criterio escrito) y lo retenido por el chequeo previo (comentarios y réplicas que hablan de una persona fuera de su acto, sin publicar hasta que alguien mire). Se baja el texto que expone a una persona, nunca la voz; la queja dura no es causal. |
 | Verificaciones | Dos colas distintas: constancias de alumno (señal; el único lugar con nombres reales, y sin camino a los aportes) e identidad docente (permiso para la réplica; se prueba contra la cátedra del catálogo). |
 | Equipo | Accesos. Cada rol ve solo sus colas: el anonimato es mecanismo, no declaración. Verificación y moderación son roles excluyentes (BO3-3): el Admin no puede juntarlos en una persona ni asignárselos a sí mismo. |
-| Frases | El catálogo de frases: la redacción, el sujeto y el eje de cada una, las semilla y las destiladas en cola de curaduría. Es lo que Método publica entero, y el eje es la atribución: corregirlo reprocesa las fichas. |
+| Frases | El catálogo de frases ([`docs/domain/phrases.md`](../domain/phrases.md)): la redacción, el sujeto y el eje de cada una, las semilla y las destiladas en cola de curaduría. Es lo que Método publica entero, y el eje es la atribución: corregirlo reprocesa las fichas. |
 
 ## Los flujos
 
@@ -123,13 +123,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 **Desbloqueos por volumen**: el mapa encendía la ficha por escalones ("con uno aparece la primera frase; con cinco, los dos números; con quince, la atribución"). **Cerrado el 2026-08-16** ([ADR-0066](../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)): no hay escalera ni piso. Todo se publica desde la primera voz, como "X de N voces" con su encogimiento; lo único que espera es la cabecera derivada de carrera e institución, por cobertura (más de la mitad de las materias canónicas de la carrera con voces), y mientras tanto la ficha lo dice.
 
-**Las frases**: Método promete el corpus completo publicado ("las 32 frases"). El mapa no las lista en un solo lugar; muestra ejemplos por familia en las pantallas de Reseñar, Ficha de cátedra e Ficha de institución:
-
-- De materia: "Es dura de verdad", "Se aprueba yendo a clase", "El final es otro nivel", "El contenido está al día", "Contenido de hace diez años", "Es muchísimo contenido".
-- De cátedra: "Explican bien", "Están para las consultas", "Te la estudiás solo", "Hay clases que no se dan", "El cronograma se cumple".
-- De institución: "Cada trámite es una pelea", "El título tardó meses".
-
-La lista canónica completa, con el sujeto y el eje de cada frase (la atribución sale del eje: [ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)), es un entregable del diseño del sistema de frases (ver auditoría abajo): hoy no existe ni en el mapa ni en el repo, y se publica entera en Método.
+**Las frases**: Método promete el corpus completo publicado. El canvas traía 17, en las pantallas de Reseñar, Ficha de cátedra y Ficha de institución ("Es dura de verdad", "Hay clases que no se dan", "Cada trámite es una pelea"...); la lista canónica, con el sujeto y el eje de cada frase (la atribución sale del eje: [ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)), vive en [`docs/domain/phrases.md`](../domain/phrases.md) y es lo que Método publica entero y Frases (backoffice) edita.
 
 ## Estado contra el código (cruce 2026-08-16)
 
