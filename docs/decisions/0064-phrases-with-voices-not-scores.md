@@ -86,7 +86,7 @@ Rechazada como cuerpo de la ficha, no como dato: cuarenta reseñas escritas son 
 ### A vigilar
 
 - **La proporción "de personas que marcó algún problema" puede convertirse en el número que dijimos que no queríamos**, si la UI lo trata como puntaje. Es una proporción de personas y se muestra como tal ("7 de cada 10"), nunca como 0.7 ni como estrellas.
-- **Wilson con n muy chico da proporciones muy bajas** para frases verdaderas: 2 de 2 puede publicarse como 34%. Es correcto (no sabemos más que eso) y hay que explicarlo en `metodo`; no es un bug.
+- **Wilson con n muy chico da proporciones muy bajas** para frases verdaderas: 2 de 2 puede publicarse como 34%. Es correcto (no sabemos más que eso) y hay que explicarlo en Método; no es un bug.
 - **La destilación puede inventar frases que nadie marcó**: por eso la frase destilada no se publica hasta que las voces la validen (punto 3).
 
 ## Refs

@@ -5,7 +5,7 @@
 
 ## Contexto
 
-La pantalla de tu plan (el mapa la llama `micarrera`; en el código es `/my-career`) muestra el plan de estudios de la carrera que declaraste, con sus correlativas, y una pestaña de co-cursada. La story O3-2 pide "ver esas combinaciones contra lo que me falta", y para resolver correlativas hace falta saber qué materias aprobaste o regularizaste en **todo** el plan. La tesis solo sabe de vos lo que declaraste al reseñar (cuándo cursaste, cómo terminó) y dice de los hechos de trayectoria: "de a uno, cuando aparecen, nunca como inventario" ([THESIS.md](../THESIS.md), "Qué recabamos"; [ADR-0067](0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)). Era la decisión D01 de la [propagación del 17](../reviews/2026-08-17-catalog-propagation.md).
+La pantalla de tu plan (el mapa la llama Mi carrera; en el código es `/my-career`) muestra el plan de estudios de la carrera que declaraste, con sus correlativas, y una pestaña de co-cursada. La story O3-2 pide "ver esas combinaciones contra lo que me falta", y para resolver correlativas hace falta saber qué materias aprobaste o regularizaste en **todo** el plan. La tesis solo sabe de vos lo que declaraste al reseñar (cuándo cursaste, cómo terminó) y dice de los hechos de trayectoria: "de a uno, cuando aparecen, nunca como inventario" ([THESIS.md](../THESIS.md), "Qué recabamos"; [ADR-0067](0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)). Era la decisión D01 de la [propagación del 17](../reviews/2026-08-17-catalog-propagation.md).
 
 ## Decisión
 

@@ -18,7 +18,7 @@ Nadie en su familia terminó una carrera, así que no tiene a quién preguntarle
 
 **La contradicción**: desconfía de los rankings y a la vez necesita uno. Si le mostramos un número redondo lo descarta; si le mostramos de qué está hecho, lo usa.
 
-**Decisión que produce**: por ella la lectura es pública y el método es criticable; la cabecera son dos proporciones que se leen en dos segundos, no un puntaje; y `donde` compara lado a lado sin ganador. Si el gate estuviera antes del valor, se va y no vuelve.
+**Decisión que produce**: por ella la lectura es pública y el método es criticable; la cabecera son dos proporciones que se leen en dos segundos, no un puntaje; y Dónde estudiarla compara lado a lado sin ganador. Si el gate estuviera antes del valor, se va y no vuelve.
 
 ### Lucía, 23 · "Se anotó en cinco y dejó dos"
 
