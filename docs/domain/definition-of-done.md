@@ -48,13 +48,17 @@ Cada AC específica de una US se suma a estos criterios generales, no los reempl
 - [ ] Self-review del propio diff antes de pedir review externa (Ing. Copas o pares).
 - [ ] Comentarios del review resueltos (atendidos o respondidos con justificación).
 
-## 7. Demo / verificación funcional
+## 7. Restricciones del producto
+
+- [ ] Cumple las [restricciones del catálogo](user-stories.md#restricciones-no-son-stories-se-verifican-en-el-dod): accesibilidad y celular en lo público, datos personales (Ley 25.326), política de moderación y réplica publicada, rendimiento y disponibilidad de lo público. No son AC de una US: se sostienen en todas.
+
+## 8. Demo / verificación funcional
 
 - [ ] Para US con UI: probada manualmente en navegador, capturas de los estados clave si suma evidencia.
 - [ ] Para US backend: endpoint probado vía Postman / curl o tests de integración que demuestran el contract real.
 - [ ] Para US infra/tooling: el cambio se verifica en otra máquina (no solo "funciona en mi laptop").
 
-## 8. Tracking
+## 9. Tracking
 
 - [ ] Card de Notion movida a `Done` en el kanban del sprint actual.
 - [ ] Sub-tasks (checklist) marcadas como completadas.
