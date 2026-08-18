@@ -8,6 +8,7 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 |---|---|
 | [`decisions/`](decisions) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
 | [`domain/`](domain) | El producto, independiente de la tecnología: [la tesis](THESIS.md) manda; el [glosario](domain/ubiquitous-language.md), las [personas](domain/user-personas.md), el [catálogo de stories](domain/user-stories.md) con sus fichas `US-NNN`, el [mapa de producto](domain/product-map.md) (orientativo), el [template de US](domain/us-template.md) y el [Definition of Done](domain/definition-of-done.md). |
+| [`reviews/`](reviews) | Revisiones y auditorías: un registro por revisión, cada hallazgo con ID y estado (resuelto, cerrado, pendiente, descartado). Los ADRs y las stories los citan por ID. |
 | [`history/`](history) | El ático: lo que describía la versión anterior (actores y casos de uso, ciclos de vida, event storming, agregados, épicas y glosario v1). No se edita; se va con el código que describe. |
 | [`architecture/`](architecture) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
 | [`design/`](design) | Source-of-truth visual: paleta, tipografía, primitivas, layouts. Mockups vendoreados + screenshots en [reference/](design/reference). |
