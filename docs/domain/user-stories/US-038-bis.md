@@ -2,7 +2,7 @@
 
 **Status**: Done (S4, 2026-05-24)
 **Sprint**: S4
-**Epic**: [EPIC-02: Identidad y autenticación](../epics/EPIC-02.md)
+**Epic**: [EPIC-02: Identidad y autenticación](../../history/domain-v1/epics/EPIC-02.md)
 **Priority**: High
 **Effort**: M
 **ADR refs**: [ADR-0044](../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md)

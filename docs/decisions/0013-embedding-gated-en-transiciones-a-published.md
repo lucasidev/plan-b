@@ -15,7 +15,7 @@ Según [ADR-0007](0007-pgvector-implementado-ui-gated-off.md), el pipeline de ge
 
 La pregunta de este ADR: **¿en qué momento del ciclo de vida de una reseña se encola el job de generación?**
 
-Los estados posibles de `Review.status` son `published`, `under_review`, y `removed`. Las transiciones entre ellos están en [review-lifecycle.md](../domain/review-lifecycle.md). Una reseña puede pasar por `under_review` (retenida por filtro o por threshold de reports) y eventualmente ser removida: en cuyo caso gastar compute en embebber su contenido es desperdicio.
+Los estados posibles de `Review.status` son `published`, `under_review`, y `removed`. Las transiciones entre ellos están en [review-lifecycle.md](../history/domain-v1/review-lifecycle.md). Una reseña puede pasar por `under_review` (retenida por filtro o por threshold de reports) y eventualmente ser removida: en cuyo caso gastar compute en embebber su contenido es desperdicio.
 
 ## Decisión
 
@@ -65,4 +65,4 @@ El embedding se genera on-demand cuando alguna query de búsqueda semántica lo 
 **Referencias:**
 
 - Pipeline de embeddings descripto en [ADR-0007](0007-pgvector-implementado-ui-gated-off.md).
-- Transiciones de estado detalladas en [review-lifecycle.md](../domain/review-lifecycle.md).
+- Transiciones de estado detalladas en [review-lifecycle.md](../history/domain-v1/review-lifecycle.md).

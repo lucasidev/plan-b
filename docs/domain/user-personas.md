@@ -2,7 +2,7 @@
 
 Las personas del producto, portadas del mapa de producto (canvas `plan-b mapa`, sección "quién camina cada paso"). Cada una existe por una tensión, y cada tensión produjo una decisión de diseño concreta: si la persona no obliga a decidir nada, sobra.
 
-**No confundir con [`dev-seed-personas.md`](dev-seed-personas.md)**: aquel doc son las identidades de testing que siembra el `DevSeedHostedService` (Lucía Mansilla y compañía). Esto es producto, no fixtures.
+**No confundir con [`dev-seed-personas.md`](../testing/dev-seed-personas.md)**: aquel doc son las identidades de testing que siembra el `DevSeedHostedService` (Lucía Mansilla y compañía). Esto es producto, no fixtures.
 
 Tres reglas que el mapa fija sobre este conjunto:
 

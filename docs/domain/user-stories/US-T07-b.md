@@ -2,7 +2,7 @@
 
 **Status**: Done
 **Sprint**: S6
-**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../../history/domain-v1/epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: S
 **UC**:
@@ -63,5 +63,5 @@ Done. Se hizo **parametrizado** (la opción de organización 2 del US): las 8 re
 - DoD: [Definition of Done](../definition-of-done.md)
 - US base: [US-T04-b](US-T04-b.md) (architecture tests de Identity, el patron a replicar)
 - ADRs: [ADR-0014](../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0015](../../decisions/0015-wolverine-como-mediator-y-message-bus.md), [ADR-0017](../../decisions/0017-persistence-ignorance.md), [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.md)
-- Test project: [`backend/tests/Planb.ArchitectureTests/`](../../../backend/tests/Planb.ArchitectureTests/)
+- Test project: [`backend/tests/Planb.ArchitectureTests/`](../../../backend/tests/Planb.ArchitectureTests)
 - Convenciones: [docs/testing/conventions.md](../../testing/conventions.md)

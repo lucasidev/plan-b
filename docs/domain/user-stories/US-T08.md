@@ -2,7 +2,7 @@
 
 **Status**: Done
 **Sprint**: S9
-**Epic**: [EPIC-00](../epics/EPIC-00.md)
+**Epic**: [EPIC-00](../../history/domain-v1/epics/EPIC-00.md)
 **Priority**: High
 **Effort**: L
 **ADR refs**: [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.md)

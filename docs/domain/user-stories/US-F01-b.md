@@ -2,7 +2,7 @@
 
 **Status**: Done
 **Sprint**: S0 (pre-sprint)
-**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../../history/domain-v1/epics/EPIC-00.md)
 **Priority**: High
 **Effort**: L
 **UC**: 

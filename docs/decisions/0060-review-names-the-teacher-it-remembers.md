@@ -77,4 +77,4 @@ Descartada porque sin id no hay agregación: no habría página de docente, ni p
 
 - Supera parcialmente a [ADR-0005](0005-reseña-anclada-al-enrollment.md): se retira la regla de que el docente reseñado deba pertenecer al `CommissionTeacher` de la comisión del enrollment (su Decisión, punto 3). El anclaje de la reseña al `EnrollmentRecord`, que es el corazón de ese ADR, sigue vigente.
 - Relacionado con [ADR-0009](0009-anonimato-como-regla-de-presentacion.md) y [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): el dato se guarda completo y la presentación decide cuánto vale.
-- Flujo completo en [review-lifecycle.md](../domain/review-lifecycle.md).
+- Flujo completo en [review-lifecycle.md](../history/domain-v1/review-lifecycle.md).

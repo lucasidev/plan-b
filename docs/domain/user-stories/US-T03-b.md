@@ -2,7 +2,7 @@
 
 **Status**: Done (shipped en branch `feat/t03-backend-unit-test-split`)
 **Sprint**: S1
-**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../../history/domain-v1/epics/EPIC-00.md)
 **Priority**: Medium
 **Effort**: M (parcial: cubierto identity; otros módulos cuando tengan tests)
 **UC**: 

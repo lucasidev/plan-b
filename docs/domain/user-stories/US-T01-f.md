@@ -2,7 +2,7 @@
 
 **Status**: Done (shipped en branch `feat/t01-frontend-testing-infra`)
 **Sprint**: S1 (junto con la institucionalización de testing)
-**Epic**: [EPIC-00: Foundations & DevEx](../epics/EPIC-00.md)
+**Epic**: [EPIC-00: Foundations & DevEx](../../history/domain-v1/epics/EPIC-00.md)
 **Priority**: High
 **Effort**: M
 **UC**: 

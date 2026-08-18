@@ -17,7 +17,7 @@ Ninguna de las dos es cierta:
 
 Lo grave es que **quince de esas US ya están Done**: se implementaron contra la ruta real y el AC quedó describiendo una ruta ficticia. El doc no quedó viejo, quedó falso, y sobrevivió así varios sprints porque nadie lo contrastó contra el código.
 
-La causa de fondo es un hueco en el lenguaje: [`ubiquitous-language.md`](../domain/ubiquitous-language.md) define **admin** como rol (`role = 'admin'`), que es correcto, pero nunca definió **backoffice**. Sin esa definición, "admin" se deslizó de rol a módulo sin que nada lo frenara. Los epics sí lo tenían bien ([EPIC-08](../domain/epics/EPIC-08.md) dice "BC: Academic primario", [EPIC-09](../domain/epics/EPIC-09.md) dice "Identity primario"), pero un epic no alcanza para frenar la deriva si el glosario calla.
+La causa de fondo es un hueco en el lenguaje: [`ubiquitous-language.md`](../domain/ubiquitous-language.md) define **admin** como rol (`role = 'admin'`), que es correcto, pero nunca definió **backoffice**. Sin esa definición, "admin" se deslizó de rol a módulo sin que nada lo frenara. Los epics sí lo tenían bien ([EPIC-08](../history/domain-v1/epics/EPIC-08.md) dice "BC: Academic primario", [EPIC-09](../history/domain-v1/epics/EPIC-09.md) dice "Identity primario"), pero un epic no alcanza para frenar la deriva si el glosario calla.
 
 ## Decisión
 
@@ -69,5 +69,5 @@ Es lo que el código viene haciendo desde US-060 sin que nadie lo hubiera escrit
 
 - Código: `backend/modules/academic/src/Planb.Academic.Application/Features/AdminCareers/`, `AdminAcademicTerms/`, `frontend/src/app/(staff)/admin/`.
 - Glosario: [`ubiquitous-language.md`](../domain/ubiquitous-language.md), entradas **admin** (rol) y **backoffice**.
-- Epics que ya lo modelaban bien: [EPIC-08](../domain/epics/EPIC-08.md), [EPIC-09](../domain/epics/EPIC-09.md).
+- Epics que ya lo modelaban bien: [EPIC-08](../history/domain-v1/epics/EPIC-08.md), [EPIC-09](../history/domain-v1/epics/EPIC-09.md).
 - Boundaries de módulo: [ADR-0017](0017-persistence-ignorance.md).

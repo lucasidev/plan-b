@@ -27,7 +27,6 @@ Este template incorpora las prácticas establecidas que la industria reconoce de
 **Epic**: [EPIC-NN: Nombre](../epics/EPIC-NN.md)
 **Priority**: High | Medium | Low
 **Effort**: S | M | L
-**UC**: [UC-NNN](../use-cases/UC-NNN.md) (si mapea 1:1)
 **ADR refs**: [ADR-NNNN](../../decisions/NNNN-titulo.md)
 
 ## Como <actor>, quiero <capability> para <outcome>
@@ -114,7 +113,7 @@ Pirámide formal en [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.
 
 - DoD: [Definition of Done](../definition-of-done.md)
 - Mockup: <si existe un diseño decidido para esta pantalla, linkearlo; si no, dejar explícito que la UI se diseña en la story. El flujo del mapa (docs/domain/product-map.md) se puede citar como orientación, no como contrato>
-- Use case: [UC-NNN](../use-cases/UC-NNN.md) (si aplica)
+- Story del catálogo: `O1-1` / `T2-1` / `BO4-2` (el ID del mapa del que sale esta US)
 - ADRs: [ADR-NNNN](../../decisions/NNNN-titulo.md)
 - US relacionadas: [US-MMM](US-MMM.md)
 ```

@@ -70,7 +70,7 @@ Descartada: similar a B en que el moderador sigue viendo contenido cambiante. Ad
 **Referencias:**
 
 - Relacionado con [ADR-0005](0005-reseña-anclada-al-enrollment.md) (anclaje a enrollment, `UNIQUE(enrollment_id)`).
-- Flujo completo en [review-lifecycle.md](../domain/review-lifecycle.md).
+- Flujo completo en [review-lifecycle.md](../history/domain-v1/review-lifecycle.md).
 
 ## Revisión (2026-07-29)
 
