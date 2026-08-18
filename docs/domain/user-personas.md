@@ -7,7 +7,7 @@ Las personas del producto, portadas del mapa de producto (canvas `plan-b mapa`, 
 Tres reglas que el mapa fija sobre este conjunto:
 
 - **No son segmentos.** No hay tamaño de mercado ni porcentaje: hay una tensión cada una, y si dos comparten tensión, sobra una.
-- **Cinco no son alumnos que cursan, y eso es del pivote.** Sin ellas el escrutinio no tiene a quién servirle, la réplica no tiene dueño, y el que se fue o el que paga quedan afuera de un producto que los afecta.
+- **Cinco no son alumnos que cursan, y eso es del pivote.** Sin ellas lo publicado no tiene a quién servirle, la réplica no tiene dueño, y el que se fue o el que paga quedan afuera de un producto que los afecta.
 - **Ninguna quiere el producto.** Quieren decidir, que quede registrado, o llevar un dato a una reunión. El producto es el medio, y confundirlo con el fin es lo que infló la versión anterior.
 
 ## Las nueve de negocio

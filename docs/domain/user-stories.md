@@ -2,7 +2,7 @@
 
 Catálogo de user stories. Cada US vive en su propio archivo dentro de [user-stories/](user-stories/).
 
-> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). **El catálogo vigente es el de abajo, portado del mapa de producto**; el de la versión anterior queda al final como historia (US-097/098/099 canceladas con S12, US-057 muere por tesis, las hechas son historia y no se tocan). La numeración formal `US-NNN` se asigna cuando una story entra a sprint, como siempre; hasta entonces se referencian por su ID de mapa (`O1-1`, `T2-1`, `BO4-2`). Estructura del mapa (rutas, flujos, planos): [`product-map.md`](product-map.md). Personas: [`user-personas.md`](user-personas.md).
+> **Estado (2026-08-16)**: el producto cambió de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). **El catálogo vigente es el de abajo, portado del mapa de producto**; el de la versión anterior queda al final como historia (US-097/098/099 canceladas con S12, US-057 muere por tesis, las hechas son historia y no se tocan). La numeración formal `US-NNN` se asigna cuando una story entra a sprint, como siempre; hasta entonces se referencian por su ID de mapa (`O1-1`, `T2-1`, `BO4-2`). Estructura del mapa (pantallas, flujos, planos): [`product-map.md`](product-map.md). Los nombres en backticks (`donde`, `reseñar`, `metodo`) son nombres de pantalla del mapa, no rutas: la URL es código, en inglés, y se fija al entrar a sprint. Personas: [`user-personas.md`](user-personas.md).
 
 ---
 
@@ -63,9 +63,9 @@ Ocho objetivos con 49 stories, cuatro grupos transversales con 15, y seis de bac
 | O4-12 | Como quien ya no entra a la app, quiero que me pregunten por mail si me recibí, porque no voy a volver solo para contarlo. | A las cuentas inactivas les llega, una vez al año, un mail con una sola pregunta ("¿te recibiste? ¿cuándo?") respondible desde el mail sin entrar a la app. | depende de avisos por mail |
 | O4-13 | Como quien está cursando, quiero reseñar lo que pasó fuera de una cursada, porque el título que tardó ocho meses no es de ninguna materia. | Se reseña de a un evento, sin materia: frases, comentario opcional y votos igual que una cursada, y sus frases van a la ficha de la institución como lo que se dice de ella como sujeto. | épica: se parte al planificar |
 
-## O5 · Poder deshacer (se construye: `editar`, `baja` y el reporte sin cuenta)
+## O5 · Poder deshacer (se construye: las pantallas `editar` y `baja`, y el reporte sin cuenta)
 
-> O6 es una **garantía**: cada pantalla nueva la tiene que cumplir y se verifica como parte del Definition of Done del producto nuevo. O5 no: deshacer se construye (las rutas `editar` y `baja`, y el reporte sin cuenta con mail confirmado por link). Recuperar la contraseña (la que era O5-3) sí es garantía y no una story: la cuenta con todo adentro vuelve con un link al mail.
+> O6 es una **garantía**: cada pantalla nueva la tiene que cumplir y se verifica como parte del Definition of Done del producto nuevo. O5 no: deshacer se construye (las pantallas `editar` y `baja`, y el reporte sin cuenta con mail confirmado por link). Recuperar la contraseña (la que era O5-3) sí es garantía y no una story: la cuenta con todo adentro vuelve con un link al mail.
 
 | ID | Story | Listo cuando | Notas |
 |---|---|---|---|
@@ -200,7 +200,7 @@ Ocho objetivos con 49 stories, cuatro grupos transversales con 15, y seis de bac
 
 | ID | Story | Listo cuando | Notas |
 |---|---|---|---|
-| BO6-1 | Como quien administra, quiero que alguien revise lo que hizo el equipo, porque todo el producto se sostiene en que el escrutinio necesita a alguien de afuera mirando, y adentro no lo aplicamos. | 1. El registro de acciones se puede leer y se revisa cada tanto; quedan contables por categoría las bajas de testimonios y lo que el chequeo previo retuvo y no se publicó.<br>2. Primera capa, construible: el registro de moderación es público en agregado (cuántos se bajaron, cuántos quedaron retenidos, por qué categoría, sin contenido).<br>3. Segunda capa, decisión de gobierno y no story: una persona externa con acceso de lectura al registro completo. | P1 |
+| BO6-1 | Como quien administra, quiero que alguien revise lo que hizo el equipo, porque todo el producto se sostiene en que lo publicado necesita a alguien de afuera mirando, y adentro no lo aplicamos. | 1. El registro de acciones se puede leer y se revisa cada tanto; quedan contables por categoría las bajas de testimonios y lo que el chequeo previo retuvo y no se publicó.<br>2. Primera capa, construible: el registro de moderación es público en agregado (cuántos se bajaron, cuántos quedaron retenidos, por qué categoría, sin contenido).<br>3. Segunda capa, decisión de gobierno y no story: una persona externa con acceso de lectura al registro completo. | P1 |
 | BO6-2 | Como quien administra, quiero dar de baja a alguien del equipo, porque el acceso a nombres reales no puede sobrevivir a la persona que se fue. | Quitar a alguien le corta el acceso en el momento y su registro de acciones queda. | P2 |
 
 ---
