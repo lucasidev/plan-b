@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Verificaciones (épica Moderar sin romper el producto)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Verificaciones (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Las dos colas</h2>
+  <section class="pb" aria-label="Resumen: las dos colas de Verificaciones">
+    <p class="eyebrow">Verificaciones · backoffice, rol verificación</p>
+    <p class="title">Dos colas, nunca cruzadas</p>
+    <p class="muted" style="margin:0 0 12px">La de constancias es señal: no habilita nada. La de identidad docente es permiso: sin ella, no se publica ninguna réplica.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+      <div class="card">
+        <p class="eyebrow">Constancias de alumno</p>
+        <p style="font-size:22px;font-weight:500">4</p>
+        <p class="muted">esperando</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow">Identidad docente</p>
+        <p style="font-size:22px;font-weight:500">2</p>
+        <p class="muted">esperando</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:10px">BO2-3, BO2-6: dos colas separadas, dos preguntas distintas.</p>
+  </section>
+
+  <h2>Cola: constancias de alumno</h2>
+  <section class="pb" aria-label="Cola de constancias de alumno">
+    <div class="card list">
+      <p class="row"><span>Lucía · Ingeniería en Sistemas, UNSTA</span><span class="chip">esperando</span></p>
+      <p class="muted" style="padding:0 0 8px">Constancia subida hace 1 día</p>
+      <p class="row"><span>Ana · Diseño Gráfico, Siglo 21</span><span class="chip">esperando</span></p>
+      <p class="muted" style="padding:0">Constancia subida hoy</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO2-3: se ve lo mínimo para decidir, nunca el resto del perfil.</p>
+  </section>
+
+  <h2>Revisar una constancia</h2>
+  <section class="pb" aria-label="Revisar una constancia: lo mínimo, comparar, decidir">
+    <p class="eyebrow">Lucía · legajo 4521</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px">
+      <div class="card">
+        <p class="muted" style="margin:0 0 4px">Declarado en la cuenta</p>
+        <p>UNSTA · Ingeniería en Sistemas · legajo 4521</p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0 0 4px">Dice la constancia</p>
+        <p>UNSTA · Ingeniería en Sistemas · legajo 4521 · vigente 2026</p>
+      </div>
+    </div>
+    <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn primary">Aprobar</span><span class="btn">Rechazar</span></p>
+    <p class="muted" style="margin-top:8px">BO2-3, BO2-4, T1-3. Sin ningún link desde acá a lo que Lucía reseñó o votó, ni por URL directa. Aprobar destruye el documento al resolver; la señal que queda es solo "verificada".</p>
+  </section>
+
+  <h2>Estado: constancia aprobada</h2>
+  <section class="pb" aria-label="Estado: constancia aprobada, el documento ya no está">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Aprobada el 19 de agosto.</p>
+      <p class="muted">El documento ya no está en ningún lado: se destruyó al resolver. Queda la fecha y quién la revisó.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO2-3: comparar y destruir son el mismo paso.</p>
+  </section>
+
+  <h2>Estado: constancia rechazada</h2>
+  <section class="pb" aria-label="Estado: constancia rechazada, motivo y sin marcar">
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 4px">Rechazada: la fecha no coincide con la carrera declarada.</p>
+      <p class="muted">La cuenta no queda marcada. Puede subir una constancia de nuevo cuando quiera.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO4-4: motivo a la vista, sin marcar a quien la subió.</p>
+  </section>
+
+  <h2>Cola: identidad docente</h2>
+  <section class="pb" aria-label="Cola de identidad docente, separada de las constancias">
+    <div class="card list">
+      <p class="row"><span>Claudia Fernández · dice ser titular de Cátedra Pérez</span><span class="chip">esperando</span></p>
+      <p class="muted" style="padding:0 0 8px">Análisis Matemático II, UNSTA · evidencia subida hace 2 días</p>
+      <p class="row"><span>Prof. Paredes · dice ser titular de Cátedra Ibáñez</span><span class="chip">esperando</span></p>
+      <p class="muted" style="padding:0">Álgebra y Geometría Analítica, UNSTA · evidencia subida hoy</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO2-6: la cátedra que dice tener, contra lo que el catálogo ya sabe de ella.</p>
+  </section>
+
+  <h2>Revisar una identidad docente</h2>
+  <section class="pb" aria-label="Revisar una identidad docente: contra la cátedra, con autor y fecha">
+    <p class="eyebrow">Claudia Fernández</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px">
+      <div class="card">
+        <p class="muted" style="margin:0 0 4px">Dice ser</p>
+        <p>Titular de Cátedra Pérez, Análisis Matemático II, UNSTA</p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0 0 4px">Dice el catálogo</p>
+        <p>Cátedra Pérez: titular Claudia Fernández, activa desde 2021</p>
+      </div>
+    </div>
+    <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn primary">Aprobar</span><span class="btn">Rechazar</span></p>
+    <p class="muted" style="margin-top:8px">BO2-6, O7-8. Aprobar queda con autor (Camila) y fecha, y habilita Responder en esa cátedra. Rechazar no habilita la réplica y no marca a nadie.</p>
+  </section>
+
+  <h2>Estado: identidad docente pendiente</h2>
+  <section class="pb" aria-label="Estado: identidad docente pendiente de resolver">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Prof. Paredes: pendiente.</p>
+      <p class="muted">Sin resolver todavía. Hasta que se apruebe o se rechace, la Cátedra Ibáñez no tiene ninguna réplica publicada; la ficha muestra "sin réplica", nunca "no quiso responder".</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO2-6, D06 (registro del 17): el estado del canal se declara, nunca se presume.</p>
+  </section>
+</main>
+</body>
+</html>

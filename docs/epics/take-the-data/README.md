@@ -1,6 +1,6 @@
 # Llevarse el dato
 
-> Épica del grupo **O8 · Llevarme el dato (para discutirlo afuera)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O8 · Llevarme el dato (para discutirlo afuera)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y su pantalla propia con ficha y boceto mid-fi ([Método](screens/method/README.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -29,15 +29,13 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (la fórmula de Wilson publicada tal cual en Método), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el CSV gana la segunda tabla de trayectoria; los chequeos de consistencia por cuenta publicados en el método; todo número "de los que reseñaron"), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el texto no va al CSV ni se exporta en bloque; las bajas se publican contables por categoría), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (cobertura declarada en todo dato derivado), [THESIS.md](../../THESIS.md) ("Posición": sin acuerdos con instituciones; el crudo se descarga sin registro), D09 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): la segunda capa de BO6-1, el lector externo, lee el registro ya disociado).
 
-## Pantallas que compone
+## Pantallas
 
-- **Método** (pública, sin cuenta): la fórmula, qué no hacemos, el corpus de frases, la descarga; compartida con [Elegir dónde estudiar](../choose-where-to-study/README.md).
-- La descarga del crudo (adentro de Método): el CSV con sus dos tablas.
-- Las fichas: cada número con voces y período; el texto retirado visible con su categoría; la marca de destilada y la fecha del último reproceso.
+La que existe solo para esta épica vive acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Método**](screens/method/README.md) (pública, sin cuenta; compartida con [Elegir dónde estudiar](../choose-where-to-study/README.md)): la fórmula del encogimiento, cómo se derivan las fichas, el catálogo de frases entero, los sesgos declarados, qué no cubrimos, cuánto se bajó y por qué, la política de moderación y réplica, la postura y la descarga del crudo; [boceto mid-fi](screens/method/sketch.html) de sus bloques.
 
-Por dibujar: Método (cómo se organizan en pantalla la fórmula, el catálogo de frases, los sesgos y la descarga).
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): la [Ficha de cátedra](../../design/screens/chair/README.md), la Ficha de materia, la Ficha de carrera y la Ficha de institución (cada una con su número con voces y período, el texto retirado con su categoría, la marca de destilada y la fecha del último reproceso).
 
 ## Lo que esta épica todavía no resuelve
 

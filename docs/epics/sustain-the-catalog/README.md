@@ -1,6 +1,6 @@
 # Sostener el catálogo
 
-> Épica del grupo **BO1 · Sostener el catálogo (lo único que no se crowdsourcea)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **BO1 · Sostener el catálogo (lo único que no se crowdsourcea)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y sus pantallas propias con ficha y boceto mid-fi (Pedidos, Catálogo, Correcciones, Frases); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -41,13 +41,16 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO4 �
 
 Los tres planos del [mapa de producto](../../design/product-map.md) (el catálogo lo cargamos nosotros, a mano y completo; una carrera está cargada entera o no está), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la carrera canónica curada por nosotros; la duración nominal del plan), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (el eje de cada frase es la atribución: corregirlo reprocesa las fichas), [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (las frases semilla y las destiladas; la destilación es dato derivado), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 7: el comentario alimenta la destilación siempre, se publique o no), D08 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): la pendiente de vincular no cuenta ni entra a la cobertura hasta que el catálogo la vincula). El catálogo de frases con sus seis reglas: [`phrases.md`](../../domain/phrases.md).
 
-## Pantallas que compone
+## Pantallas
 
-Backoffice: **Pedidos** (la cola ordenada por cuántos lo pidieron, con la institución de origen), **Catálogo** (cargar una oferta: el plan con su duración nominal, sus materias canónicas, sus cátedras, su carrera canónica; abre por huecos, no se publica hasta terminar; la cola de materias declaradas), **Correcciones** (valor viejo y nuevo a la vista, contrastados contra la fuente), **Frases** (el catálogo de frases: redacción, sujeto, eje; la cola de curaduría de las destiladas). Lo público que depende: **La cola** (en [Pedir una carrera](../request-a-career/README.md)), **Método** (publica el catálogo de frases entero).
+Las cuatro que existen solo para esta épica viven acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Pedidos**](screens/requests/README.md) (backoffice): la cola de carga ordenada por pedidos confirmados, con la institución de origen; [boceto mid-fi](screens/requests/sketch.html).
+- [**Catálogo**](screens/catalog/README.md) (backoffice): cargar una oferta por huecos, las materias canónicas, las cátedras, la carrera canónica, la reforma del plan y la cola de materias declaradas; [boceto mid-fi](screens/catalog/sketch.html) con sus varias vistas.
+- [**Correcciones**](screens/corrections/README.md) (backoffice): valor viejo y nuevo a la vista, contrastados contra la fuente antes de aplicar; [boceto mid-fi](screens/corrections/sketch.html).
+- [**Frases**](screens/phrases/README.md) (backoffice): el catálogo de frases con su redacción, sujeto y eje, y la cola de curaduría de las destiladas; [boceto mid-fi](screens/phrases/sketch.html).
 
-Por dibujar, las cuatro: Pedidos (la cola con el conteo y la institución de origen), Catálogo (el estado por huecos, qué bloquea publicar), Correcciones (valor viejo y nuevo lado a lado), Frases (la redacción con sujeto y eje, la cola de curaduría con los comentarios de origen).
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): la [Ficha de cátedra](../../design/screens/chair/README.md) (de donde llega una corrección) y la Ficha de materia (a donde va lo cargado), **Dónde estudiarla** (usa la carrera canónica que acá se declara), **La cola** (la vista pública de Pedidos, en [Pedir una carrera](../request-a-career/README.md)), **Método** (publica el catálogo de frases entero, en [Llevarse el dato](../take-the-data/README.md)) y los mails de [Avisos](../notices/README.md) (el aviso al terminar de cargar una oferta).
 
 ## Lo que esta épica todavía no resuelve
 

@@ -1,6 +1,6 @@
 # Elegir dónde estudiar
 
-> Épica del grupo **O1 · Decidir dónde estudiar (y poder desconfiar del número)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O1 · Decidir dónde estudiar (y poder desconfiar del número)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y su pantalla propia con ficha y boceto mid-fi ([Dónde estudiarla](screens/where-to-study/README.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -37,14 +37,13 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (T2 ·
 
 [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (frases con proporción de voces y encogimiento de Wilson; sin puntaje 1 a 5), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (la cabecera son dos proporciones; la atribución la decide el eje), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (la carrera y la institución se derivan sumando voces; la cabecera derivada espera el gate de cobertura; sin piso ni escalera), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (duración real como mediana de egresados, brecha, cohorte cerrada con "no dijo" visible, carrera canónica, lado a lado sin ordenar por valor), D04 (el denominador del gate son las materias canónicas de la carrera en todos sus planes). El catálogo de frases que se lee: [`phrases.md`](../../domain/phrases.md).
 
-## Pantallas que compone
+## Pantallas
 
-Todas públicas, sin cuenta: **Inicio** (la vitrina), **Explorar** (el home real: dos lentes, carreras y universidades), **Buscar** (diseñada sin construir: resultados de los cuatro sujetos), **Dónde estudiarla** (comparar), **Ficha de carrera**, **Ficha de institución**, **Ficha de materia**, [Ficha de cátedra](../../design/screens/chair/README.md), **Método** (compartida con [Llevarse el dato](../take-the-data/README.md)). Sale hacia [Pedir una carrera](../request-a-career/README.md) cuando lo que busca no está, y hacia [Reseñar](../write-a-review/README.md) cuando quien lee quiere aportar.
+La que existe solo para esta épica vive acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Dónde estudiarla**](screens/where-to-study/README.md) (pública, sin cuenta): la misma carrera canónica en varias instituciones, lado a lado, sin ganador; [boceto mid-fi](screens/where-to-study/sketch.html) de la comparación y sus tres estados.
 
-- Existe: la [Ficha de cátedra](../../design/screens/chair/sketch.html) (mid-fi, aprobada el 2026-08-18), que fija cómo se ven la cabecera, las listas por eje, la serie y los testimonios en toda ficha.
-- Por dibujar: la Ficha de carrera (cabecera con gate, cobertura, trayectoria, co-cursada pública), Dónde estudiarla (lado a lado con muchas ofertas), Explorar, Buscar, Método.
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): **Inicio** (la vitrina), **Explorar** (el home real: dos lentes, carreras y universidades), **Buscar** (diseñada sin construir: resultados de los cuatro sujetos), **Ficha de carrera**, **Ficha de institución**, **Ficha de materia**, la [Ficha de cátedra](../../design/screens/chair/README.md), y [**Método**](../take-the-data/screens/method/README.md) (dueña [Llevarse el dato](../take-the-data/README.md)).
 
 ## Lo que esta épica todavía no resuelve
 

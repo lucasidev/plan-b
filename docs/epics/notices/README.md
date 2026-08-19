@@ -1,6 +1,6 @@
 # Avisos
 
-> Épica **infraestructura transversal** del [catálogo](../../domain/user-stories.md): no tiene stories propias, sostiene O2-4, O4-5, O4-12, O7-5, BO1-3 y T2-2. **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica **infraestructura transversal** del [catálogo](../../domain/user-stories.md): no tiene stories propias, sostiene O2-4, O4-5, O4-12, O7-5, BO1-3 y T2-2. **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y su pantalla propia con ficha y boceto mid-fi ([Avisos](screens/mail/README.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -20,13 +20,13 @@ No tiene stories propias: sostiene [O2-4](../request-a-career/README.md) y [BO1-
 
 [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche anual por mail, una sola pregunta respondible sin entrar a la app, es uno de los cuatro caminos para preguntar si te recibiste o te fuiste), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el resumen al docente sin fecha ni hora por reseña: ningún aviso permite inferir cuándo aportó alguien; el aviso al autor antes de que salga la réplica, con su plazo), [ADR-0040](../../decisions/0040-notifications-como-bounded-context.md) y [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (Notifications como bounded context, revalidado como infraestructura del primer bloque: sostiene cinco stories del producto nuevo aunque arranque solo por mail), D03 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): el pedido y el reporte confirman el mail por link para poder contarse; es una prueba de que ese mail existe, no un aviso de que algo pasó, y por eso no vive en esta infraestructura).
 
-## Pantallas que compone
+## Pantallas
 
-**Avisos** (el mail de cada disparador; y el lugar donde se apagan, Mi perfil), y sus destinos: **Reseñar**, **Empezar**, **Responder**, **Mi situación**; el mail que se responde sin entrar a la app.
+La que existe solo para esta épica vive acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Avisos**](screens/mail/README.md) (los cinco mails; no es una pantalla del sitio con cuenta o pública): cerró el período, cargamos lo que pediste, el resumen al docente, el aviso antes de la réplica, el reenganche anual; [boceto mid-fi](screens/mail/sketch.html), con los cinco y el apagado en Mi perfil.
 
-Por dibujar: el mail de cada disparador (cerró el período, cargamos lo pedido, el resumen al docente, el aviso antes de la réplica, el reenganche anual), y la sección de Mi perfil donde cada uno se apaga.
+Sus destinos son pantallas de otras épicas: [Reseñar](../write-a-review/README.md) y [Mi situación](../write-a-review/screens/my-status/README.md) (las dos de Reseñar), [Responder](../reply/README.md) (de Replicar) y Empezar (de Mi carrera, cuando alguien se registra por primera vez desde "cargamos lo que pediste"). Donde cada aviso se apaga, **Mi perfil**, vive en [`docs/design/screens/`](../../design/screens/README.md).
 
 ## Lo que esta épica todavía no resuelve
 

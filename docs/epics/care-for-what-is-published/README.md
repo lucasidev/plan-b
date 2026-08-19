@@ -1,6 +1,6 @@
 # Cuidar lo publicado
 
-> Épica del grupo **T1 · Cuidar lo publicado (curación, no opinión)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **T1 · Cuidar lo publicado (curación, no opinión)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)), sin pantallas propias; revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -24,14 +24,9 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 1 y 6: el testimonio debajo de las frases, ordenado por votos; votar pide cuenta), D07 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): corregir pide cuenta, no aporte previo, y queda registrado quién), [ADR-0048](../../decisions/0048-oficializacion-de-condicion-opt-in.md) (aceptado y extendido por [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md): verificarse es señal, no permiso), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (cada frase marcada en el testimonio trae su eje: la que alarma es gestión, la que informa es exigencia).
 
-## Pantallas que compone
+## Pantallas
 
-Las acciones inline **Votar** y **Corregir** (adentro de la ficha, sin cambiar de pantalla), **Verificar** (la constancia de alumno; hoy la pantalla existe solo para docentes), [Ficha de cátedra](../../design/screens/chair/README.md) y Ficha de materia (los testimonios ordenados por votos). Backoffice: **Correcciones**, **Verificaciones** (la cola de constancias de alumno).
-
-## Bocetos
-
-- Existe: la [Ficha de cátedra](../../design/screens/chair/sketch.html) (mid-fi, aprobada el 2026-08-18) ya dibuja las tres acciones (Votar, Corregir un dato de la cátedra) y los testimonios ordenados por votos, con la réplica al lado.
-- Por dibujar: Verificar para alumno (hoy solo existe para docentes), y Correcciones y Verificaciones en el backoffice.
+Esta épica no tiene pantallas propias: sus tres acciones pasan adentro de pantallas que viven en otro lado. Las que comparte viven en [`docs/design/screens/`](../../design/screens/README.md): las acciones inline **Votar** y **Corregir** (adentro de la ficha, sin cambiar de pantalla), **Verificar** (la constancia de alumno; hoy la pantalla existe solo para docentes), la [Ficha de cátedra](../../design/screens/chair/README.md) y la Ficha de materia (los testimonios ordenados por votos); en el backoffice, **Correcciones** (dueña [Sostener el catálogo](../sustain-the-catalog/README.md)) y **Verificaciones** (dueña [Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md)).
 
 ## Lo que esta épica todavía no resuelve
 

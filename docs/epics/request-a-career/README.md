@@ -1,6 +1,6 @@
 # Pedir una carrera
 
-> Épica del grupo **O2 · Entender el vacío (cuando lo que busco no está)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O2 · Entender el vacío (cuando lo que busco no está)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y sus pantallas propias con ficha y boceto mid-fi (Pedir, La cola); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -25,13 +25,14 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 D03 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): el pedido confirma el mail por link como el reporte; un mail cuenta una vez por carrera), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los tres estados del vacío salen del gate de cobertura: sin voces, con voces sin cabecera), los tres planos del [mapa](../../design/product-map.md) (el catálogo lo cargamos nosotros, entero o no está; no inventamos una ficha vacía), [Avisos](../notices/README.md) como infraestructura.
 
-## Pantallas que compone
+## Pantallas
 
-**Pedir** (pública, sin cuenta: solo el mail), **La cola** (pública: cuántos mails confirmados piden cada carrera, cuáles ya están, cuánto se tarda), el vacío explicado en **Explorar**, **Buscar** y la **Ficha de carrera**, el mail de **Avisos** (la cargamos), **Registro** (precargado si viene del pedido). En el backoffice, **Pedidos** (la cola ordenada por cuántos lo pidieron: [Sostener el catálogo](../sustain-the-catalog/README.md)).
+Las dos que existen solo para esta épica viven acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Pedir**](screens/request/README.md) (pública, sin cuenta): el mail y la carrera, la confirmación por link y el pedido que cuenta; [boceto mid-fi](screens/request/sketch.html) de sus estados.
+- [**La cola**](screens/queue/README.md) (pública): qué falta cargar, ordenada por pedidos confirmados, cuánto se tarda; [boceto mid-fi](screens/queue/sketch.html) de sus estados.
 
-Por dibujar: Pedir (un campo, la confirmación por mail y el estado "tu pedido cuenta"), La cola (la lista pública con el conteo y el tiempo), y el vacío explicado como estado de una ficha.
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): el vacío explicado en **Explorar**, **Buscar** y la **Ficha de carrera**, y **Registro** (precargado si viene del pedido). El mail de **Avisos** (la cargamos) y, en el backoffice, **Pedidos** (la cola ordenada por cuántos lo pidieron), viven cada uno en la épica que los tiene por dueña.
 
 ## Lo que esta épica todavía no resuelve
 

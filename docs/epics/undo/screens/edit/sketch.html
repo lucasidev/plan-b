@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Editar (épica Deshacer)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Editar (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Editar un aporte</h2>
+  <section class="pb" aria-label="Editar un aporte: contexto, frases y comentario">
+    <p class="eyebrow">Mis aportes › Editar</p>
+    <p class="title">Análisis Matemático II · 2025, 1° cuatrimestre · Cátedra Pérez</p>
+    <p class="muted" style="margin:0 0 12px">Me quedó regular. Este contexto no se toca desde acá.</p>
+
+    <p class="eyebrow">Frases marcadas</p>
+    <div class="card" style="margin:0 0 12px">
+      <p><span class="chip on">Es dura de verdad</span><span class="chip">Es muchísimo contenido</span><span class="chip">El final es exigente</span></p>
+      <p><span class="chip g on">Hay clases que no se dan</span><span class="chip g">Te la estudiás solo</span><span class="chip g on">Explican bien</span></p>
+      <p class="muted" style="margin-top:6px">Sacás o agregás con el mismo toque que al reseñar; cada cambio mueve las voces de esa frase.</p>
+    </div>
+
+    <p class="eyebrow">Comentario</p>
+    <div class="card" style="min-height:80px;font-size:15px;line-height:1.55;margin:0 0 4px">El titular faltó todo mayo y después tomó todo igual. <span class="mark">Los tres que cursamos a la noche</span> lo hablamos con el coordinador. El final fue sobre temas que nunca se dieron.</div>
+    <p class="muted" style="text-align:right;margin:0 0 12px">302 / 600 · se lee; no suma a los conteos</p>
+
+    <div class="card warn" style="margin:0 0 12px">
+      <p style="font-size:13px;margin:0 0 6px">Tocaste el comentario. Al guardar, vuelve a pasar el mismo chequeo previo de cuando reseñaste: lo que puede identificarte por contexto se marca de nuevo, y decidís si lo dejás o lo sacás.</p>
+      <p class="muted" style="color:var(--warnink)">Si lo dejás, la réplica que ya está publicada sigue sin poder citar esa parte.</p>
+    </div>
+
+    <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn primary">Guardar cambios</span><span class="btn">Cancelar</span><span class="btn" style="margin-left:auto;color:var(--acci)">Borrar este aporte</span></p>
+    <p class="muted" style="margin-top:8px">O5-1: se edita y se borra desde Mis aportes. T2-1: si no tocaste el comentario, guardar no vuelve a pasar por el chequeo.</p>
+  </section>
+
+  <h2>Borrar este aporte</h2>
+  <section class="pb" aria-label="Confirmación: borrar el aporte entero">
+    <div class="card warn">
+      <p style="font-weight:500;margin:0 0 4px">Vas a borrar tu reseña de Análisis Matemático II, 2025 1C.</p>
+      <p style="margin:0 0 8px">Esto no se puede deshacer. Deja de contar en todas las fichas donde sumó: 3 frases de la materia y 2 de la Cátedra Pérez bajan una voz.</p>
+      <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn" style="background:#fff;border-color:var(--acci);color:var(--acci)">Borrar de todos modos</span><span class="btn" style="background:#fff">Cancelar</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">O5-1. La reseña es tuya: se borra entera, no frase por frase.</p>
+  </section>
+
+  <h2>Borrar un hecho de trayectoria</h2>
+  <section class="pb" aria-label="Borrar un hecho de trayectoria, de a uno">
+    <p class="eyebrow">Mis aportes › hechos de trayectoria</p>
+    <div class="card list">
+      <p class="row"><span>Entraste a Ingeniería en Sistemas en 2021</span><span class="muted">no se borra: es el dato que ata todo lo demás</span></p>
+      <p class="row"><span>Dijiste que te fuiste en 2023</span><span class="btn" style="margin:0">Borrar</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">ADR-0067: los hechos de trayectoria se borran de a uno, nunca en bloque. Diego borra el «me fui» si se equivocó de año; lo vuelve a contestar en <a href="#">Mi situación</a>.</p>
+  </section>
+
+  <h2>Estado: reseña con réplica publicada</h2>
+  <section class="pb" aria-label="Estado: la reseña ya tiene una réplica al lado">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Esta reseña tiene una respuesta de Cátedra Pérez publicada al lado.</p>
+      <p class="muted">Podés editarla o borrarla igual. Qué pasa con esa respuesta si lo hacés todavía no está decidido.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">Pregunta abierta de esta ficha: ni ADR-0068 ni el flujo de Replicar dicen qué pasa con la réplica cuando el testimonio que respondía cambia.</p>
+  </section>
+
+  <h2>Estado: reseña pendiente de vincular</h2>
+  <section class="pb" aria-label="Estado: la materia todavía no está en el catálogo">
+    <p class="eyebrow">Mis aportes › Editar</p>
+    <p class="title">«Taller de Programación» · 2024, 2° cuatrimestre</p>
+    <div class="card warn" style="margin:8px 0 0">
+      <p>Todavía está pendiente de que el equipo la vincule a una materia del catálogo. No cuenta en ninguna ficha hasta entonces, pero se edita y se borra igual.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">T3-1. El mismo estado que se ve en Mis aportes desde que se reseñó: no cuenta en ninguna ficha hasta que el catálogo la vincula.</p>
+  </section>
+
+  <h2>Estado: comentario retenido</h2>
+  <section class="pb" aria-label="Estado: el comentario todavía lo mira el equipo">
+    <p class="eyebrow">Mis aportes › Editar</p>
+    <p class="title">Física I · 2024, 1° cuatrimestre</p>
+    <div class="card warn" style="margin:8px 0 0">
+      <p>Tu comentario todavía lo está mirando alguien del equipo antes de publicarse: hablaba de una persona fuera de su rol en la cátedra. Mientras tanto, tus frases ya cuentan; podés editar el comentario o sacarlo.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">T2-1, ADR-0068. Cuánto tiempo queda así es una pregunta abierta.</p>
+  </section>
+</main>
+</body>
+</html>

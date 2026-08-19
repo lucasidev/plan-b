@@ -1,6 +1,6 @@
 # Deshacer
 
-> Épica del grupo **O5 · Poder deshacer (se construye: las pantallas Editar y Baja, y el reporte sin cuenta)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O5 · Poder deshacer (se construye: las pantallas Editar y Baja, y el reporte sin cuenta)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y sus pantallas propias con ficha y boceto mid-fi ([Editar](screens/edit/README.md), [Baja](screens/delete-account/README.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -26,17 +26,14 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 [ADR-0044](../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (la baja anonimiza y preserva lo aportado), D10 (los hechos de trayectoria sobreviven exactos y ya anónimos, [registro del 17](../../reviews/2026-08-17-catalog-propagation.md)), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario editado vuelve al chequeo previo; reportar sin cuenta confirma el mail; nada baja solo por cantidad de reportes; se baja el texto, nunca la voz), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) ("quien quiera sacar algo lo borra antes, de a uno"), D05 (los reportes se agrupan por objetivo y ventana de 72 horas; el mail confirmado deduplica).
 
-## Pantallas que compone
+## Pantallas
 
-- **Mis aportes** (con cuenta): lo que diste, con el camino a Editar.
-- **Editar** (diseñada sin construir, con cuenta): modificar o borrar un aporte; el comentario editado vuelve al chequeo previo.
-- **Baja** (diseñada sin construir, con cuenta): dar de baja la cuenta, con las palabras exactas de qué pasa.
-- **Reportar** (acción inline sobre la ficha, sin cuenta): motivo y mail.
-- **Mi perfil** (con cuenta): de donde se llega a Baja.
+Las dos que existen solo para esta épica viven acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Editar**](screens/edit/README.md) (con cuenta): modificar o borrar un aporte, de a uno, con sus estados; [boceto mid-fi](screens/edit/sketch.html).
+- [**Baja**](screens/delete-account/README.md) (con cuenta): dar de baja la cuenta, con las palabras exactas de qué pasa; [boceto mid-fi](screens/delete-account/sketch.html).
 
-Por dibujar: Editar (qué campos de una reseña publicada se pueden tocar y cuáles no), Baja (el texto exacto de qué pasa con la identidad y con lo aportado), Reportar (el modal: motivo, mail, la confirmación).
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): **Mis aportes** (con cuenta: de donde se llega a Editar) y **Mi perfil** (con cuenta: de donde se llega a Baja). **Reportar** es una acción inline sobre la ficha, sin cuenta, sin carpeta propia: el flujo la dibuja en [`flow.md`](flow.md).
 
 ## Lo que esta épica todavía no resuelve
 
