@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Mi situación (épica Reseñar)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Mi situación (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>La pregunta</h2>
+  <section class="pb" aria-label="Mi situación: la pregunta de trayectoria">
+    <p class="eyebrow">Mi situación · Ingeniería en Sistemas, UNSTA</p>
+    <p class="title">¿Seguís cursando la carrera?</p>
+    <p class="muted" style="margin:0 0 12px">Una sola pregunta, una sola vez. Con esto se calcula cuántos se reciben, cuántos se van y cuándo, por cohorte cerrada y sin tu nombre. Si no contestás, quedás como «no dijo»: nunca se infiere.</p>
+    <div class="card" style="margin:0 0 10px">
+      <p><span class="chip">Sigo</span><span class="chip">Me recibí, en…</span><span class="chip on">Me fui, en…</span><span class="chip">Ahora no</span></p>
+      <p class="muted" style="margin:6px 0 6px">¿En qué año?</p>
+      <p><span class="chip">2024</span><span class="chip on">2023</span><span class="chip">2022</span><span class="chip">2021</span><span class="chip">otro…</span></p>
+      <p style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><span class="btn primary">Guardar</span><span class="btn">Ahora no</span></p>
+    </div>
+    <p class="muted">O4-8, ADR-0067: el hecho de trayectoria, de a uno. La misma pregunta aparece en Reseñar cuando el período es viejo, y por mail una vez al año (O4-12). Respondida, se apaga para siempre (O6-2).</p>
+  </section>
+
+  <h2>Estado: ya contestada</h2>
+  <section class="pb" aria-label="Mi situación: ya contestada">
+    <p class="eyebrow">Mi situación</p>
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 2px">Dijiste que te fuiste en 2023.</p>
+      <p class="muted" style="margin:0 0 8px">No te lo volvemos a preguntar. Si te equivocaste, lo corregís como cualquier aporte tuyo, desde Mis aportes.</p>
+      <p><span class="btn">Corregir en Mis aportes</span></p>
+    </div>
+  </section>
+</main>
+</body>
+</html>
