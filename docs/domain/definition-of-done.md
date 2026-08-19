@@ -33,7 +33,7 @@ Cada AC específica de una US se suma a estos criterios generales, no los reempl
 
 - [ ] ADR creada o actualizada si hay decisión arquitectónica con alternativas reales (ver `docs/decisions/README.md`).
 - [ ] README de módulo actualizado si la API pública cambió.
-- [ ] Docs de dominio (`ubiquitous-language.md`, `aggregates.md`, `epics.md`, `user-stories.md`) actualizados si introduce términos o reglas nuevas.
+- [ ] Docs de dominio (`ubiquitous-language.md`, `user-stories.md`, la épica en `docs/epics/`) actualizados si introduce términos o reglas nuevas.
 - [ ] OpenAPI / contratos del endpoint expuestos y verificables.
 
 ## 5. Git workflow

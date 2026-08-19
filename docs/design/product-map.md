@@ -2,7 +2,7 @@
 
 La estructura del producto nuevo, portada del canvas `plan-b mapa` (2026-08-16). Este doc es la copia versionada de lo que el canvas define: pantallas, flujos, planos y reglas. Las user stories viven en [`user-stories.md`](../domain/user-stories.md) (catálogo vigente) y las personas en [`user-personas.md`](../domain/user-personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
-**Estado**: orientativo, y en camino a ser solo el índice: cada pantalla gana su ficha en [`screens/`](screens/README.md) y cada flujo su diagrama en `flows/`; cuando existan, las tablas de acá se reducen a la lista con links. Es la estructura que el mapa propone (pantallas, flujos, planos), útil para entender qué vistas podría necesitar el producto; **no fija el diseño final ni la UX/UI**. Lo vinculante son las stories de [`user-stories.md`](../domain/user-stories.md) y las personas. Nada de esto está construido; el cruce contra el código real está al final.
+**Estado**: orientativo, y en camino a ser solo el índice: cada pantalla gana su ficha en [`screens/`](screens/README.md) y cada flujo su diagrama en mermaid dentro de su épica en [`docs/epics/`](../epics/README.md); cuando existan, las tablas de acá se reducen a la lista con links. Es la estructura que el mapa propone (pantallas, flujos, planos), útil para entender qué vistas podría necesitar el producto; **no fija el diseño final ni la UX/UI**. Lo vinculante son las stories de [`user-stories.md`](../domain/user-stories.md) y las personas. Nada de esto está construido; el cruce contra el código real está al final.
 
 ## Los tres planos
 
@@ -86,6 +86,8 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 ## Los flujos
 
 ### Del producto (15)
+
+Los flujos escritos en mermaid viven en su épica; la fila de acá queda como índice. Escritos: 05, 12 y 14 → [Reseñar](../epics/resenar/flujo.md).
 
 | # | Flujo | Recorrido |
 |---|---|---|

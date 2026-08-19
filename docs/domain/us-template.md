@@ -24,7 +24,7 @@ Este template incorpora las prácticas establecidas que la industria reconoce de
 
 **Status**: Backlog | Sprint actual | Done
 **Sprint**: candidato a SX | SX |: 
-**Epic**: [EPIC-NN: Nombre](../epics/EPIC-NN.md)
+**Épica**: [Nombre](../../epics/<epica>/README.md)
 **Priority**: High | Medium | Low
 **Effort**: S | M | L
 **ADR refs**: [ADR-NNNN](../../decisions/NNNN-titulo.md)
