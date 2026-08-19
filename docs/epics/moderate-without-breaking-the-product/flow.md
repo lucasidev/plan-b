@@ -26,10 +26,8 @@ flowchart TD
   B --> C{Una persona lo mira}
   C -->|libera| D([Se publica])
   C -->|baja| E([Se baja, con su categoría, O8-7])
-  C -->|vuelve al autor| F([No se publica: puede reescribirlo])
   D --> G[Quien lo escribió ve que estuvo retenido y por qué]
   E --> G
-  F --> G
   G --> H([Nada se publica solo por vencimiento de tiempo])
 ```
 

@@ -12,7 +12,7 @@ O5-1 (dueña): el aporte se puede modificar y borrar desde Mis aportes, y el com
 
 ## Qué muestra
 
-- **Editar un aporte**: llega desde Mis aportes con la materia, el período, cómo terminó y la cátedra a la vista, como contexto. Las frases marcadas, con toggle para sacarlas o agregar otras; el comentario, editable, con el mismo tope y la misma advertencia que al reseñar ("se lee; no suma a los conteos"). Guardar dispara el chequeo previo otra vez solo si el comentario cambió (T2-1); si no lo tocaste, no vuelve a pasar por ahí.
+- **Editar un aporte**: llega desde Mis aportes con la materia, el período, cómo terminó y la cátedra a la vista, como contexto. Las frases marcadas, con toggle para sacarlas o agregar otras; destildar «Hay clases que no se dan» retira también el número de clases declarado, porque esa pregunta solo existe colgada de esa frase (O4-6, D02). El comentario, editable, con el mismo tope y la misma advertencia que al reseñar ("se lee; no suma a los conteos"). Guardar dispara el chequeo previo otra vez solo si el comentario cambió (T2-1); si no lo tocaste, no vuelve a pasar por ahí.
 - **Borrar este aporte**: una confirmación aparte ("esto no se puede deshacer"); al confirmar, la reseña entera deja de contar y sus voces bajan de cada frase que había marcado.
 - **Borrar un hecho de trayectoria**: el mismo camino, de a uno ("dijiste que te fuiste en 2023", con su borrar al lado); nunca en bloque (ADR-0067).
 - **Estado "reseña con réplica publicada"**: avisa que ya hay una respuesta de la cátedra al lado de esta reseña; qué pasa con esa respuesta si editás o borrás es una pregunta abierta.
@@ -33,6 +33,6 @@ Llega desde Mis aportes, por cada aporte. Guardar o borrar vuelve a Mis aportes;
 
 ## Lo que esta ficha deja abierto
 
-- **Qué campos se pueden tocar**: ¿período y materia, o solo cómo terminó, frases y comentario? El boceto los muestra como contexto fijo; si algún día se pueden editar es lo que queda abierto.
+- **Qué campos se pueden tocar**: ¿el período, la materia, cómo terminó o la cátedra se vuelven editables, o solo frases y comentario? El boceto los muestra como contexto fijo; si algún día se pueden editar es lo que queda abierto.
 - **Qué pasa con una réplica ya publicada** si el autor edita o borra el testimonio que la motivó: ni ADR-0068 ni el flujo de Replicar lo dicen.
 - **Cuánto tiempo queda "retenido" un comentario** antes de que alguien del equipo lo mire.

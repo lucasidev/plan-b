@@ -26,11 +26,12 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 ## Pantallas
 
-Esta épica no tiene pantallas propias: sus tres acciones pasan adentro de pantallas que viven en otro lado. Las que comparte viven en [`docs/design/screens/`](../../design/screens/README.md): las acciones inline **Votar** y **Corregir** (adentro de la ficha, sin cambiar de pantalla), **Verificar** (la constancia de alumno; hoy la pantalla existe solo para docentes), la [Ficha de cátedra](../../design/screens/chair/README.md) y la Ficha de materia (los testimonios ordenados por votos); en el backoffice, **Correcciones** (dueña [Sostener el catálogo](../sustain-the-catalog/README.md)) y **Verificaciones** (dueña [Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md)).
+Esta épica no tiene pantallas propias: sus tres acciones pasan adentro de pantallas que viven en otro lado. Las que comparte viven en [`docs/design/screens/`](../../design/screens/README.md): **Mi perfil** (la señal de verificado se ve ahí, T1-3), las acciones inline **Votar** y **Corregir** (adentro de la ficha, sin cambiar de pantalla), **Verificar** (la constancia de alumno; hoy la pantalla existe solo para docentes), la [Ficha de cátedra](../../design/screens/chair/README.md) y la Ficha de materia (los testimonios ordenados por votos); en el backoffice, **Correcciones** (dueña [Sostener el catálogo](../sustain-the-catalog/README.md)) y **Verificaciones** (dueña [Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md)).
 
 ## Lo que esta épica todavía no resuelve
 
 - **Cómo se ve la señal de verificado en la ficha sin identificar a nadie**: qué muestra ("12 de 20 voces verificadas"? un ícono al lado del testimonio?) es una pregunta, no una decisión.
 - **Si el voto se puede retirar** una vez puesto.
+- **Dónde se vota una reseña sin comentario**: T1-1 dice que el voto va sobre la reseña entera, y una reseña sin comentario no aparece como testimonio (es voz en los conteos): hoy no tiene superficie donde recibir el voto.
 - **Qué datos duros son editables inline y cuáles no** (correlativas, duración nominal, nombre de cátedra), y cuáles quedan reservados al catálogo.
 - **Si una cuenta puede votar su propia reseña**: ni T1-1 ni ADR-0068 lo dicen.

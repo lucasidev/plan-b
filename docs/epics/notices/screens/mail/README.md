@@ -20,7 +20,9 @@ Cinco mails, cada uno con su asunto, su cuerpo y su acción:
 4. **Va a salir una réplica sobre tu testimonio**: el plazo con su fecha, y tres salidas desde el mail: editar, borrar o pedir revisión (T2-2).
 5. **El reenganche anual**: una sola pregunta (¿te recibiste? ¿cuándo?), respondible con un click desde el mail, sin entrar a la app (O4-12); responderla la apaga para siempre (O6-2), no responderla la vuelve a mandar el año que viene.
 
-**En Mi perfil**: la lista de los cinco, cada uno con su estado (prendido o apagado), y el aviso de que lo único que puede volver a ofrecerse es el hecho que nunca se contestó.
+Por el mismo canal salen otros dos mails que no son avisos de cuenta y no se apagan: el criterio aplicado al mail de quien reportó (BO2-2) y el aviso de qué cambió a quienes tienen marcada una oferta corregida (BO4-2).
+
+**En Mi perfil**: la lista de los cinco; los otros cuatro se prenden y apagan, el aviso de la réplica queda siempre prendido, es la palanca del plazo (protección P1); y el aviso de que lo único que puede volver a ofrecerse es el hecho que nunca se contestó.
 
 ## Lo que no muestra nunca
 

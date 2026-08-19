@@ -13,7 +13,8 @@ flowchart TD
   B -->|la materia no está en el plan cargado| B2[Se acepta igual: queda pendiente de vincular<br/>no cuenta hasta que el catálogo la vincula, T3-1]
   B2 --> C
   B -->|es un trámite, el título, una mesa| E1[Evento institucional: sin materia<br/>mismas frases del sujeto institución, O4-13]
-  E1 --> F
+  E1 --> E2[¿Cuándo pasó? el período o la fecha del evento, ADR-0067]
+  E2 --> F
   B --> C[¿Cuándo la cursaste? período]
   C -->|primera reseña de esta carrera| C1[¿En qué año entraste? una sola vez, O4-11]
   C1 --> C2
@@ -31,6 +32,7 @@ flowchart TD
   F -->|leyó en la ficha algo que a él no le pasó| F1[Marca la frase del otro sentido: cada una publica su proporción,<br/>ninguna resta de la otra; discrepar no es reportar, T4-1]
   F1 --> G
   F --> G[¿Cátedra? opcional]
+  F -->|viene del evento institucional: sin cátedra| H
   G -->|marcó que hubo clases sin dar| G1[¿Cuántas? O4-6]
   G1 --> H
   G --> H[Comentario, opcional, con tope]

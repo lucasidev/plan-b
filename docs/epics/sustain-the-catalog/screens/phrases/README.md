@@ -24,7 +24,7 @@ Una destilada ofrecida para marcar antes de aprobarse con sujeto y eje (BO1-9); 
 
 ## Adónde va
 
-Lo que se aprueba acá alimenta Reseñar (las frases que se ofrecen para marcar), la [Ficha de cátedra](../../../../design/screens/chair/README.md) y las demás fichas (las listas por eje), y Método (publica el catálogo entero, [Llevarse el dato](../../../take-the-data/README.md)). Llega desde el pipeline de destilación, que no tiene pantalla propia: lee los comentarios de las reseñas ya publicadas.
+Lo que se aprueba acá alimenta Reseñar (las frases que se ofrecen para marcar), la [Ficha de cátedra](../../../../design/screens/chair/README.md) y las demás fichas (las listas por eje), y Método (publica el catálogo entero, [Llevarse el dato](../../../take-the-data/README.md)). Llega desde el pipeline de destilación, que no tiene pantalla propia: lee los comentarios de todas las reseñas, publicadas o no, retiradas o no (ADR-0068 punto 7).
 
 ## Decisiones que aplica
 

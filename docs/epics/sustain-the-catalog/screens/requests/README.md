@@ -22,7 +22,7 @@ Los mails ni ningún otro dato de quienes pidieron (solo el conteo y la instituc
 
 ## Adónde va
 
-Cada fila abre [Catálogo](../catalog/README.md) para cargar esa oferta. "Marcar como cargada" dispara el mail de [Avisos](../../../notices/README.md) y actualiza **La cola**, la vista pública de los mismos pedidos confirmados sin el detalle operativo (sin ficha propia todavía; vive en [Pedir una carrera](../../../request-a-career/README.md)). El pedido nace en **Pedir**, sin ficha propia todavía, de la misma épica.
+Cada fila abre [Catálogo](../catalog/README.md) para cargar esa oferta. "Marcar como cargada" dispara el mail de [Avisos](../../../notices/README.md) y actualiza [**La cola**](../../../request-a-career/screens/queue/README.md), la vista pública de los mismos pedidos confirmados sin el detalle operativo. El pedido nace en [**Pedir**](../../../request-a-career/screens/request/README.md), de la misma épica.
 
 ## Decisiones que aplica
 

@@ -12,7 +12,7 @@ O5-2 (dueña): los aportes se borran de a uno antes, en [Editar](../edit/README.
 
 ## Qué muestra
 
-- **Qué pasa, con esas palabras**: tu mail y tu nombre dejan de existir; tus reseñas, tus frases marcadas y tus hechos de trayectoria (cuándo entraste, si te fuiste o te recibiste, cuándo) quedan publicados exactos, sin vos atrás. Es irreversible: si volvés, es con una cuenta nueva.
+- **Qué pasa, con esas palabras**: tu nombre se borra y tu mail se convierte en un hash irreversible (ADR-0044): queda solo para detectar cuentas repetidas, nadie puede volver de ahí a tu mail. Tus reseñas, tus frases marcadas y tus hechos de trayectoria (cuándo entraste, si te fuiste o te recibiste, cuándo) quedan publicados exactos, sin vos atrás. Es irreversible: si volvés, es con una cuenta nueva.
 - **Estado "con aportes pendientes de borrar sugeridos"**: antes de confirmar, la pantalla lista lo que diste (reseñas, hechos de trayectoria) con un link a Editar para cada uno, por si hay algo puntual que preferís sacar antes en vez de dejarlo publicado y anónimo.
 - **Confirmar**: una acción explícita (no un solo click apurado) que repite que no se puede deshacer, antes del botón final.
 - **Estado "confirmada"**: la cuenta ya se anonimizó; se cierra la sesión y vuelve a Ingresar.

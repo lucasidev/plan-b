@@ -19,7 +19,9 @@ flowchart TD
   G -->|pasa el plazo sin acción| H([Publicada al lado, con nombre y rol<br/>no baja el testimonio ni mueve conteos, O7-1])
   H --> I[La serie marca la fecha de publicación y de la réplica, O7-7]
 
-  A -.->|Paredes no contesta| J([La ficha declara el estado del canal:<br/>sin réplica, o sin identidad verificada, O7-6])
+  A -.->|Paredes, verificado, no contesta| J([La ficha declara: sin réplica, O7-6])
+
+  M([Docente sin identidad verificada: no se le pudo avisar]) -.-> N([La ficha lo declara, D06])
 
   K([La institución lee su ficha]) --> L[Ficha de institución: frase por frase contra las demás<br/>sin puesto ni orden por valor, O7-3]
   L --> I

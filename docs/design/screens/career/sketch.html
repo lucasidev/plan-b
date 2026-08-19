@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Ficha de carrera (mid-fi)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:20px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.g{background:var(--accs);border-color:#f3cdb7;color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+  .bar{height:6px;border-radius:999px;background:var(--elev);overflow:hidden;margin:4px 0 0}
+  .bar i{display:block;height:100%;background:var(--ink4)}
+  .bar.g i{background:var(--acc)}
+  .sk{font-size:11px;color:var(--ink3)}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .state{border-style:dashed;background:var(--elev)}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  h1,h2,h3,p{margin:0}
+  a{color:var(--acci)}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Ficha de carrera (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>La ficha, con cabecera derivada</h2>
+  <section class="pb" aria-label="Ficha de carrera: cabecera, listas por eje, trayectoria, co-cursada y plan">
+    <p class="eyebrow">Ficha de carrera · pública, sin cuenta</p>
+    <p class="title">Ingeniería en Sistemas · UNSTA</p>
+    <p class="muted" style="margin:0 0 4px">Se arma sumando las cursadas de las materias del plan, no se reseña directamente</p>
+    <p class="muted" style="margin:0 0 16px">612 voces, de 2019 a 2025 · lo último es de 2025, primer cuatrimestre · cobertura: 24 de 40 materias con voces</p>
+
+    <div class="cols" style="margin:0 0 18px">
+      <div style="background:var(--elev);border-radius:12px;padding:12px 14px">
+        <p class="eyebrow" style="margin:0 0 2px">Exigencia · información</p>
+        <p style="font-size:22px;font-weight:500">5 de cada 10</p>
+        <p class="muted">dicen que es dura · 612 voces · encogido de 51% a 48%</p>
+      </div>
+      <div style="background:var(--accs);border-radius:12px;padding:12px 14px">
+        <p class="eyebrow" style="margin:0 0 2px;color:var(--acci)">Gestión · alarma</p>
+        <p style="font-size:22px;font-weight:500;color:var(--acci)">6 de cada 10</p>
+        <p class="muted" style="color:var(--acci)">marcaron alguien fallando · 612 voces · encogido de 62% a 58%</p>
+      </div>
+    </div>
+
+    <div class="cols" style="margin:0 0 18px">
+      <section class="card">
+        <p class="eyebrow">Exigencia · por materia del plan</p>
+        <div style="margin:0 0 8px"><p class="row"><span>Es dura de verdad</span><span class="sk">48% · en 19 materias</span></p><div class="bar"><i style="width:48%"></i></div></div>
+        <div style="margin:0 0 8px"><p class="row"><span>Es muchísimo contenido</span><span class="sk">33% · en 14 materias</span></p><div class="bar"><i style="width:33%"></i></div></div>
+        <div style="margin:0 0 8px"><p class="row"><span>El final es exigente</span><span class="sk">27% · en 11 materias</span></p><div class="bar"><i style="width:27%"></i></div></div>
+        <div style="margin:0 0 4px"><p class="row"><span>Se aprueba yendo a clase</span><span class="sk">19% · en 8 materias</span></p><div class="bar"><i style="width:19%"></i></div></div>
+        <p class="sk" style="margin-top:6px">Cada frase dice en cuántas de las 40 materias del plan aparece. <a href="#">Ver las frases de exigencia</a>.</p>
+      </section>
+      <section class="card">
+        <p class="eyebrow" style="color:var(--acci)">Gestión · por materia del plan</p>
+        <div style="margin:0 0 8px"><p class="row"><span>Hay clases que no se dan</span><span class="sk">29% · en 9 materias</span></p><div class="bar g"><i style="width:29%"></i></div></div>
+        <div style="margin:0 0 8px"><p class="row"><span>Te la estudiás solo</span><span class="sk">24% · en 11 materias</span></p><div class="bar g"><i style="width:24%"></i></div></div>
+        <div style="margin:0 0 8px"><p class="row"><span>Contenido de hace diez años</span><span class="sk">17% · en 6 materias</span></p><div class="bar g"><i style="width:17%"></i></div></div>
+        <div style="margin:0 0 4px"><p class="row"><span>Las correlativas te traban</span><span class="sk">14% · en 5 materias</span></p><div class="bar g"><i style="width:14%"></i></div></div>
+        <p class="sk" style="margin-top:6px">Un problema en dos materias no es una carrera rota: por eso cada frase muestra su "en N materias". <a href="#">Ver las frases de gestión</a>.</p>
+      </section>
+    </div>
+
+    <p class="eyebrow" style="margin:0 0 8px">Trayectoria</p>
+    <section class="card" style="margin:0 0 18px">
+      <div class="cols">
+        <div>
+          <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
+          <p class="row" style="margin-top:4px"><span class="sk">Duración real</span><span class="sk">7,3 años · mediana de 38 egresados</span></p>
+          <p class="row" style="margin-top:4px"><span class="sk">Brecha</span><span class="sk">2,3 años</span></p>
+          <p class="muted" style="margin-top:8px">Siempre de quienes se recibieron y reseñaron acá.</p>
+        </div>
+        <div>
+          <p class="muted" style="margin:0 0 6px">Cohorte 2016 a 2018 · 210 personas</p>
+          <p style="margin:0 0 8px"><span class="chip">41% se recibió</span><span class="chip">22% se fue</span><span class="chip">37% no dijo o sigue</span></p>
+          <p class="muted">De los que se fueron, 6 de cada 10 se fueron en primero o segundo año del plan · 47 voces. <a href="#">Ver materia por materia</a>.</p>
+        </div>
+      </div>
+      <p class="sk" style="margin-top:10px">Cohorte cerrada: entró hace al menos 1,5 veces la duración nominal. Quien no dijo queda como "no dijo", nunca se infiere.</p>
+    </section>
+
+    <p class="eyebrow" style="margin:0 0 8px">Co-cursada pública</p>
+    <section class="card" style="margin:0 0 18px">
+      <p class="row" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>Análisis Matemático II + Programación I · 2024, 2do cuatrimestre</span><span class="sk">40 juntas · 12 dejaron una</span></p>
+      <p class="row" style="padding:6px 0"><span>Estructuras de Datos + Bases de Datos I · 2024, 2do cuatrimestre</span><span class="sk">28 juntas · 6 dejaron una</span></p>
+      <p class="muted" style="margin-top:8px">Solo desde reseñas de la misma cuenta en el mismo período, nunca desde un plan marcado. <a href="#">Ver todos los pares</a>.</p>
+    </section>
+
+    <p class="eyebrow" style="margin:0 0 8px">El plan (40 materias)</p>
+    <section class="card" style="margin:0 0 18px">
+      <p class="muted" style="margin:0 0 4px">1° año</p>
+      <p style="margin:0 0 8px"><a href="#">Introducción a la Programación</a> · <a href="#">Análisis Matemático I</a> · <a href="#">Álgebra</a></p>
+      <p class="muted" style="margin:0 0 4px">2° año</p>
+      <p style="margin:0 0 8px"><a href="#">Análisis Matemático II</a> · <a href="#">Programación I</a> · <a href="#">Estructuras de Datos</a></p>
+      <p class="muted" style="margin:0 0 4px">3° año</p>
+      <p><a href="#">Bases de Datos I</a> · <a href="#">Sistemas Operativos</a> · <a href="#">Redes</a></p>
+      <p class="muted" style="margin-top:8px"><a href="#">Ver el plan completo</a>, con sus correlativas.</p>
+    </section>
+
+    <footer style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span class="btn primary">Reseñar esta carrera</span>
+      <span class="btn">Dónde estudiarla</span>
+      <span class="btn">Pedir si falta algo</span>
+      <span class="btn">Cómo se calcula</span>
+    </footer>
+    <p class="muted" style="margin-top:12px">O1-8, D04, ADR-0066. O1-1, O1-7, O4-8, O3-1, T3-6, T3-2. La cabecera espera el gate de cobertura; sin él, cobertura a la vista y lectura materia por materia.</p>
+  </section>
+
+  <h2>Estado: vacía, con el primero</h2>
+  <section class="pb" aria-label="Estado: carrera cargada, sin ninguna voz todavía">
+    <p class="eyebrow">Ficha de carrera · Ingeniería en Sistemas</p>
+    <div class="card state" style="max-width:340px">
+      <p class="eyebrow">Siglo 21</p>
+      <p style="font-weight:500;margin:0 0 2px">Cargada, sin voces todavía.</p>
+      <p class="muted" style="margin:0 0 8px">Duración nominal: 4 años (plan a distancia). Nada más: sin voces no hay proporción que mostrar, y la primera que se publique ya cuenta.</p>
+      <p class="muted">Sé la primera voz: <a href="#">reseñar una cursada acá</a>.</p>
+    </div>
+    <p class="muted" style="margin-top:12px">T2-3, ADR-0066. Sin escalones ni nada que desbloquear: arranca vacía y la primera voz ya se publica.</p>
+  </section>
+
+  <h2>Estado: sin cabecera</h2>
+  <section class="pb" aria-label="Estado: cobertura todavía no pasó la mitad de las materias canónicas">
+    <p class="eyebrow">Ficha de carrera · Ingeniería en Sistemas de Información</p>
+    <div class="card" style="max-width:340px">
+      <p class="eyebrow">UNT</p>
+      <p style="font-weight:500;margin:0 0 2px">Todavía no derivamos la cabecera.</p>
+      <p class="muted" style="margin:0 0 10px">Cobertura: 9 de 42 materias con voces. Falta que más de la mitad tenga alguna voz.</p>
+      <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
+      <p class="muted" style="margin:6px 0 0">Cohorte 2023: todavía no cerró (nominal × 1,5).</p>
+      <p style="margin-top:10px"><a href="#">Leer materia por materia</a></p>
+    </div>
+    <p class="muted" style="margin-top:12px">O1-8, D04. ADR-0066 punto 4: el gate es sobre las materias canónicas de la carrera, sumando todos sus planes; no es un piso, las listas de frases se publican desde la primera voz.</p>
+  </section>
+</main>
+</body>
+</html>

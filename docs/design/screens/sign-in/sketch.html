@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Ingresar (mid-fi)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:520px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px;margin:0 0 8px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .state{border-style:dashed;background:var(--elev)}
+  .links{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
+  .links a{font-size:13px}
+  p{margin:0}
+  a{color:var(--acci)}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Ingresar (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Sin motivo · llegaste directo</h2>
+  <section class="pb" aria-label="Ingresar sin motivo, llegada directa por el link">
+    <p class="eyebrow">Ingresar</p>
+    <p class="title">Entrá a tu cuenta</p>
+    <p class="muted" style="margin:0 0 12px">Leer plan-b nunca pide cuenta. Esto es para producir: reseñar, votar, corregir o responder.</p>
+    <div class="card">
+      <div class="input">tu@mail.com</div>
+      <div class="input">Contraseña</div>
+      <p><span class="btn primary">Ingresar</span></p>
+      <p class="links"><a href="#">¿No tenés cuenta? Registrate</a><a href="#">¿Olvidaste tu contraseña?</a></p>
+    </div>
+    <p class="muted" style="margin-top:8px">O6-1: ninguna pantalla de lectura tiene login; esta es la única puerta, y solo se abre para producir.</p>
+  </section>
+
+  <h2>Con motivo · viniste a votar</h2>
+  <section class="pb" aria-label="Ingresar con motivo: votar una reseña">
+    <p class="eyebrow">Ingresar · con motivo</p>
+    <div class="card" style="margin:0 0 12px;background:var(--elev)">
+      <p style="font-weight:500">Para votar «a mí también me pasó» necesitás una cuenta.</p>
+      <p class="muted">Al entrar, volvés al testimonio y el voto se suma solo.</p>
+    </div>
+    <div class="card">
+      <div class="input">tu@mail.com</div>
+      <div class="input">Contraseña</div>
+      <p><span class="btn primary">Ingresar y votar</span></p>
+      <p class="links"><a href="#">¿No tenés cuenta? Registrate</a><a href="#">¿Olvidaste tu contraseña?</a></p>
+    </div>
+    <p class="muted" style="margin-top:8px">T1-1 (Cuidar lo publicado) dispara el gate; esta pantalla no vota ni conoce la frase, solo abre la cuenta.</p>
+  </section>
+
+  <h2>Con motivo · viniste a reseñar</h2>
+  <section class="pb" aria-label="Ingresar con motivo: reseñar una cursada">
+    <p class="eyebrow">Ingresar · con motivo</p>
+    <div class="card" style="margin:0 0 12px;background:var(--elev)">
+      <p style="font-weight:500">Para reseñar Análisis Matemático II necesitás una cuenta.</p>
+      <p class="muted">Cinco minutos, marcando. Al entrar, seguís directo en el paso 1 de Reseñar.</p>
+    </div>
+    <div class="card">
+      <div class="input">tu@mail.com</div>
+      <div class="input">Contraseña</div>
+      <p><span class="btn primary">Ingresar y reseñar</span></p>
+      <p class="links"><a href="#">¿No tenés cuenta? Registrate</a><a href="#">¿Olvidaste tu contraseña?</a></p>
+    </div>
+    <p class="muted" style="margin-top:8px">O4-1 (Reseñar) dispara el gate. El motivo nombra la materia, no un genérico "reseñá algo".</p>
+  </section>
+
+  <h2>Con motivo · viniste a corregir un dato</h2>
+  <section class="pb" aria-label="Ingresar con motivo: corregir un dato duro">
+    <p class="eyebrow">Ingresar · con motivo</p>
+    <div class="card" style="margin:0 0 12px;background:var(--elev)">
+      <p style="font-weight:500">Para corregir este dato necesitás una cuenta.</p>
+      <p class="muted">Al entrar, la fila que ibas a corregir sigue editable, tal como la dejaste.</p>
+    </div>
+    <div class="card">
+      <div class="input">tu@mail.com</div>
+      <div class="input">Contraseña</div>
+      <p><span class="btn primary">Ingresar y corregir</span></p>
+      <p class="links"><a href="#">¿No tenés cuenta? Registrate</a><a href="#">¿Olvidaste tu contraseña?</a></p>
+    </div>
+    <p class="muted" style="margin-top:8px">T1-2 (Cuidar lo publicado) dispara el gate: corregir un dato duro pide cuenta, no aporte previo.</p>
+  </section>
+
+  <h2>Estado: credenciales inválidas</h2>
+  <section class="pb" aria-label="Estado: mail o contraseña no coinciden">
+    <p class="eyebrow">Ingresar · error</p>
+    <div class="card warn">
+      <p style="font-weight:500;margin:0 0 4px">El mail o la contraseña no coinciden.</p>
+      <p>Volvé a intentar; lo que ya escribiste en el mail queda como estaba.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="input">lucia.mansilla@ejemplo.com</div>
+      <div class="input">••••••••</div>
+      <p><span class="btn primary">Ingresar</span></p>
+      <p class="links"><a href="#">¿Olvidaste tu contraseña?</a></p>
+    </div>
+    <p class="muted" style="margin-top:8px">Que no me molesten: el umbral existe para volver a una cuenta, no para trabarte más de lo necesario.</p>
+  </section>
+
+  <h2>Al entrar: vuelta a donde estabas</h2>
+  <section class="pb" aria-label="Estado: sesión abierta, vuelta a la acción pendiente">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Listo. Volviste al testimonio que ibas a votar.</p>
+      <p class="muted">La sesión se abrió y la acción que te trajo sigue donde la dejaste: no hay una pantalla intermedia de bienvenida.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">O6-1: el gate está en la acción, no en la puerta; entrar no es un destino en sí mismo.</p>
+  </section>
+</main>
+</body>
+</html>
