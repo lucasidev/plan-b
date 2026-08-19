@@ -6,4 +6,5 @@ Una pantalla se nombra por lo que dice arriba, en español y sin backticks (Fich
 
 | Pantalla | Ficha | Boceto | Estado |
 |---|---|---|---|
-| El testimonio (pedazo de Ficha de cátedra y de Reseñar) | en su ficha, cuando exista | [`testimonio.html`](testimonio.html) | boceto aprobado con [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md); se absorbe en las fichas de Ficha de cátedra y Reseñar |
+| Ficha de cátedra | [`ficha-de-catedra.md`](ficha-de-catedra.md) | [`ficha-de-catedra.html`](ficha-de-catedra.html) | borrador aprobado el 2026-08-18 (mid-fi); revisión adversarial pendiente antes de hi-fi |
+| El testimonio (pedazo de Ficha de cátedra y de Reseñar) | en Ficha de cátedra y, cuando exista, en Reseñar | [`testimonio.html`](testimonio.html) | boceto aprobado con [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md); absorbido por `ficha-de-catedra.html`; queda hasta que Reseñar tenga el suyo |
