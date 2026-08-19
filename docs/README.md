@@ -23,10 +23,11 @@ Esta carpeta organiza toda la documentación del proyecto planb, agrupada por pr
 - **Nueva user story / epic** → `domain/user-stories/US-NNN.md` (plantilla: `us-template.md`), con su `Status` en el header; el sprint en `STATUS.md`. Convenciones de numeración + sprint en `domain/user-stories.md` y `STATUS.md`.
 - **Decisión con alternativas reales** → `decisions/NNNN-titulo.md`.
 - **Definición de término del dominio** → `domain/ubiquitous-language.md`.
-- **Flow de negocio** (ciclo de vida de una entidad, flujo de moderación, etc.) → `domain/<nombre-del-flow>.md`.
+- **Flujo de una épica** (persona, disparador, pasos, salidas) → `epics/<epic>/flow.md`, en mermaid; el boceto de un paso, en `epics/<epic>/sketches/`; la ficha de una pantalla compartida, en `design/screens/<screen>/`.
 - **Diagrama o descripción técnica** (ERD, topología, arquitectura) → `architecture/<nombre>.md`.
 - **Checklist operativo** (pre-deploy, post-incident) → `docs/<checklist>.md` directo.
-- **Código viejo/archivado que se preserva** → `reference/<nombre>.md`.
+- **Lo que describía la versión anterior** → `history/`, sin editar.
+- **Idioma**: la prosa va en español rioplatense con su ortografía (ñ, tildes); los nombres de carpeta y archivo, los slugs y los títulos de una línea (ADR, commit, branch) van en inglés en kebab-case, como todo identificador del repo ([`decisions/README.md`](decisions/README.md), [`operations/git-workflow.md`](operations/git-workflow.md)). Un nombre visible va en español en el texto y en inglés en el path: Ficha de cátedra vive en `design/screens/chair/`, Reseñar en `epics/write-a-review/`. Castellano sin ñ ni tildes como identificador no es ninguno de los dos idiomas.
 
 ## Qué NO va acá
 

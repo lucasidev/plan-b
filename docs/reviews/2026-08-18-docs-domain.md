@@ -1,6 +1,6 @@
 # Revisión de `docs/domain` (2026-08-18)
 
-> Registro de revisión ([índice](README.md)). **Alcance**: las 20 entradas de `docs/domain`. **Método**: inventario medido (tamaño, banner, último cambio, referencias entrantes desde fuera de la carpeta) y veredicto por entrada. **Aplicado** en el commit `bcf3c7a`.
+> Registro de revisión ([índice](README.md)). **Alcance**: las 20 entradas de `docs/domain`. **Método**: inventario medido (tamaño, banner, último cambio, referencias entrantes desde fuera de la carpeta) y veredicto por entrada. **Aplicado** el 2026-08-18 (commit `docs: docs/domain keeps only the current product; the previous version moves to the attic`).
 
 | ID | Hallazgo | Estado |
 |---|---|---|

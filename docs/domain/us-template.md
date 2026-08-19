@@ -112,7 +112,7 @@ Pirámide formal en [ADR-0036](../../decisions/0036-testing-pyramid-cross-stack.
 ## Refs
 
 - DoD: [Definition of Done](../definition-of-done.md)
-- Pantalla: <la ficha de pantalla en docs/design/screens/<pantalla>.md, con su boceto, si existe; si no, dejar explícito que la UI se diseña en la story. El flujo del mapa (docs/design/product-map.md) se puede citar como orientación, no como contrato>
+- Pantalla: <la ficha de pantalla en docs/design/screens/<screen>/README.md, con su sketch.html, si existe; si no, dejar explícito que la UI se diseña en la story. El flujo de la épica (docs/epics/<epic>/flow.md) es la referencia del recorrido; el mapa (docs/design/product-map.md) es orientación, no contrato>
 - Story del catálogo: `O1-1` / `T2-1` / `BO4-2` (el ID del mapa del que sale esta US)
 - ADRs: [ADR-NNNN](../../decisions/NNNN-titulo.md)
 - US relacionadas: [US-MMM](US-MMM.md)

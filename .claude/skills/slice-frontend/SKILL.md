@@ -30,7 +30,7 @@ Ejemplo canónico que el ADR bendice: `frontend/src/features/write-review/action
 
 - **Imports con `@/`** (alias absoluto), no relativos largos.
 - **Data fetching**: RSC prefetch + `HydrationBoundary`, consumo con TanStack Query (ADR-0021). No fetchees en client component lo que se puede prefetchear en el server.
-- **UI en español rioplatense**, desde la user story (su "listo cuando" y la persona a la que sirve) y los tokens de `docs/design/design-system.md`. La ficha de la pantalla (`docs/design/screens/<pantalla>.md`, con su boceto) es la referencia visual cuando existe; el mapa (`docs/design/product-map.md`) es orientativo sobre vistas y flujos, no un contrato de UX/UI. El diseño va primero: si falta backend, se mantiene el visual con stub + TODO, no se vacía la vista.
+- **UI en español rioplatense**, desde la user story (su "listo cuando" y la persona a la que sirve) y los tokens de `docs/design/design-system.md`. La ficha de la pantalla (`docs/design/screens/<screen>/README.md`, con su `sketch.html`) es la referencia visual cuando existe; el mapa (`docs/design/product-map.md`) es orientativo sobre vistas y flujos, no un contrato de UX/UI. El diseño va primero: si falta backend, se mantiene el visual con stub + TODO, no se vacía la vista.
 - **NUNCA em-dashes** (U+2014): dos puntos, comas, paréntesis.
 
 ## Al terminar

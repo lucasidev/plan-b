@@ -1,6 +1,6 @@
 # Propagación de la tesis cerrada al catálogo (2026-08-17)
 
-> Registro de revisión ([índice](README.md)). **Alcance**: las 75 stories, los 22 flujos y las 12 personas, contra la tesis cerrada ([ADR-0064](../decisions/0064-phrases-with-voices-not-scores.md) a [0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)) y el glosario. **Método**: tres revisores en contexto fresco, uno por porción (O1 a O4 con flujos 01 a 08 y sus personas; O5 a O8 más T1 a T4 con flujos 09 a 15; BO1 a BO6 con los flujos de backoffice y las personas del equipo), con la misma lista de control (R1 a R7, P1 a P14) y el mismo formato de salida. **Aplicado** en el commit `1aa98b6` (`docs(domain): the catalog reads against the closed thesis`).
+> Registro de revisión ([índice](README.md)). **Alcance**: las 75 stories, los 22 flujos y las 12 personas, contra la tesis cerrada ([ADR-0064](../decisions/0064-phrases-with-voices-not-scores.md) a [0068](../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)) y el glosario. **Método**: tres revisores en contexto fresco, uno por porción (O1 a O4 con flujos 01 a 08 y sus personas; O5 a O8 más T1 a T4 con flujos 09 a 15; BO1 a BO6 con los flujos de backoffice y las personas del equipo), con la misma lista de control (R1 a R7, P1 a P14) y el mismo formato de salida. **Aplicado** el 2026-08-17 (commit `docs(domain): the catalog reads against the closed thesis`).
 
 ## Qué se aplicó
 
