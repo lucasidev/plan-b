@@ -17,9 +17,13 @@ revisar la UX/UI que el mapa propone, se hace como trabajo explícito.
 
 Lo que sí es fuente, portado del mapa a docs versionados:
 
-- [`docs/domain/user-stories.md`](../../domain/user-stories.md): las 76 stories con su "listo cuando" (esto es lo que se construye).
-- [`docs/domain/user-personas.md`](../../domain/user-personas.md): las 12 personas.
-- [`docs/design/product-map.md`](../product-map.md): pantallas, flujos y planos tal como el mapa los propone (la auditoría del mapa está en [`docs/reviews/`](../../reviews/2026-08-16-product-map.md)). Es la mejor foto de la estructura pensada, con el mismo carácter orientativo; las fichas por pantalla en [`screens/`](../screens/README.md) son lo que se construye.
+- [`docs/domain/user-stories.md`](../../domain/user-stories.md): las 93 stories con su "listo cuando" (esto es lo que se construye).
+- [`docs/domain/user-personas.md`](../../domain/user-personas.md): las 13 personas.
+- [`docs/epics/`](../../epics/README.md): los flujos del mapa, uno por uno, como diagramas en mermaid dentro de la épica que los contiene, con sus ramas, salidas y errores.
+- [`docs/design/screens/README.md`](../screens/README.md): el inventario de pantallas con su carpeta, su slug y las épicas que las componen; las fichas por pantalla son lo que se construye.
+- [`docs/design/product-map.md`](../product-map.md): el índice (los tres planos, cada flujo del mapa con el link a su épica, el estado contra el código; la auditoría del mapa está en [`docs/reviews/`](../../reviews/2026-08-16-product-map.md)).
+
+El canvas se queda como referencia mid-fi de cómo se veían las pantallas hasta que cada una tenga su ficha y su boceto; después va al ático.
 
 Si el canvas cambia en Claude Design, se vuelve a vendorizar acá y se re-portan los docs.
 

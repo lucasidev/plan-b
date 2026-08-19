@@ -1,6 +1,6 @@
 # Ficha de cátedra
 
-> Ficha de pantalla ([formato](../README.md)). **Estado**: borrador para revisar; el boceto es [`sketch.html`](sketch.html) (mid-fi). Pantalla pública, se lee sin cuenta. Slug propuesto: `/chairs/[id]` (hoy el chasis es `/teachers/[id]`, la ficha del docente; la cátedra como entidad es BO1-6). Épicas que la componen: [Reseñar](../../../epics/write-a-review/README.md), que llega desde acá y vuelve; las de leer, votar, reportar y replicar, cuando se escriban.
+> Ficha de pantalla ([formato](../README.md)). **Estado**: borrador para revisar; el boceto es [`sketch.html`](sketch.html) (mid-fi). Pantalla pública, se lee sin cuenta. Slug propuesto: `/chairs/[id]` (hoy el chasis es `/teachers/[id]`, la ficha del docente; la cátedra como entidad es BO1-6). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (la lectura, los testimonios, de cuándo son), [Reseñar](../../../epics/write-a-review/README.md) (llega desde acá y vuelve), [Cuidar lo publicado](../../../epics/care-for-what-is-published/README.md) (votar, corregir), [Deshacer](../../../epics/undo/README.md) (reportar) y [Replicar](../../../epics/reply/README.md) (la réplica al lado, el estado del canal).
 
 ## Qué es
 
