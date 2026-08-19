@@ -62,3 +62,4 @@ Las que comparte con otras épicas viven en [`docs/design/screens/`](../../desig
 - **Si al marcar una frase se avisa que existe el sentido contrario** (T4-1), y qué pasa si el catálogo todavía no tiene el sentido contrario de una frase destilada (BO1-9 lo agrega; no está decidido si es obligatorio al aprobarla).
 - **Qué hace el chequeo previo con texto que identifica a un tercero alumno** (ni al autor ni a un docente): si cae en "habla de una persona fuera de su acto" o pasa de largo (T2-1).
 - **El copy exacto del aviso de la sospecha** (T2-4): la tesis da las palabras; la ficha de la pantalla las fija.
+- **Si una cursada sin cátedra recordada pierde las frases de cátedra o hace falta una «cátedra sin identificar»** (la G2 del registro del 16 quedó superada): hoy el boceto ofrece solo las de materia.

@@ -40,7 +40,7 @@ Cada [ficha de pantalla](../../design/screens/README.md) nueva responde estas cu
 - **¿Deja de funcionar si no hay plan marcado?** Tiene que ser no, salvo la pantalla que necesita saber qué cursás (O6-3).
 - **¿Destaca, patrocina u ordena algo por conveniencia?** Tiene que ser no, en ningún listado (O6-4).
 
-La [Ficha de cátedra](../../design/screens/chair/README.md), la única escrita hasta ahora, ya las responde: se lee sin cuenta, no repite ninguna pregunta, no depende de ningún plan marcado, y ordena los testimonios por votos, nunca por conveniencia.
+La [Ficha de cátedra](../../design/screens/chair/README.md) ya las responde: se lee sin cuenta, no repite ninguna pregunta, no depende de ningún plan marcado y ordena por votos, nunca por conveniencia. Las fichas escritas el 2026-08-19 tienen esta verificación pendiente: es parte de su revisión adversarial.
 
 ## Lo que esta épica todavía no resuelve
 

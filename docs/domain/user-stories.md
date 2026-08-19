@@ -32,7 +32,7 @@ La letra de cada story (la fila entera, con su "listo cuando" y sus notas) vive 
 | [Sostener el catálogo](../epics/sustain-the-catalog/README.md) | `docs/epics/sustain-the-catalog/` | BO1 · Sostener el catálogo (lo único que no se crowdsourcea) | BO1-1, BO1-2, BO1-3, BO1-4, BO1-5, BO1-6, BO1-7, BO1-8, BO1-9, BO4-1, BO4-2, BO4-3, BO4-5, BO5-1 |
 | [Moderar sin romper el producto](../epics/moderate-without-breaking-the-product/README.md) | `docs/epics/moderate-without-breaking-the-product/` | BO2 · Moderar sin romper el producto (decir que no importa más que decir que sí) | BO2-1, BO2-2, BO2-3, BO2-4, BO2-5, BO2-6, BO4-4, BO4-6, BO5-2, BO5-3 |
 | [Cortar los accesos](../epics/cut-the-access/README.md) | `docs/epics/cut-the-access/` | BO3 · Cortar los accesos (que el anonimato sea mecanismo) | BO3-1, BO3-2, BO3-3, BO6-1, BO6-2 |
-| [Avisos](../epics/notices/README.md) | `docs/epics/notices/` | infraestructura transversal | ninguna propia: sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2 |
+| [Avisos](../epics/notices/README.md) | `docs/epics/notices/` | infraestructura transversal | ninguna propia: sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2 (y los mails de BO2-2 y BO4-2) |
 
 ## Los temas del mapa que no son épicas
 

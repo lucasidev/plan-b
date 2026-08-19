@@ -90,6 +90,6 @@ Sentido: **+** describe algo que funciona; **−** describe una falla o una carg
 
 ## Lo que este catálogo todavía no resuelve
 
-- **Cuántas ofrecer por vez.** Cuarenta y seis frases no se muestran todas al reseñar: la pantalla Reseñar ofrece las del sujeto que corresponde (materia y cátedra en una cursada; institución, administración y centro en un evento), y el orden y el corte son diseño de esa ficha de pantalla.
+- **Cuántas ofrecer por vez.** Cuarenta y seis frases no se muestran todas al reseñar: la pantalla Reseñar ofrece las del sujeto que corresponde (la cursada ofrece materia, cátedra y lo de alrededor: administración, institución; el evento institucional queda para lo que pasa fuera de una cursada, con institución, administración y centro), y el orden y el corte son diseño de esa ficha de pantalla.
 - **La materia como sujeto de gestión** (F05 a F11) habla de decisiones que toma la cátedra o el plan, no "la materia": el sujeto dice a qué ficha va, no quién falla ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)).
 - **Los sentidos + de institución** (F32, F33, F35, F37, F39) existen para que discrepar sea marcar y no reportar (T4-1); si nadie los marca, no pesan.

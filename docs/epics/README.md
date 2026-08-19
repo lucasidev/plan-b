@@ -42,6 +42,6 @@ Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo i
 | [Sostener el catálogo](sustain-the-catalog/README.md) | `sustain-the-catalog/` | BO1 (+ BO4-1, BO4-2, BO4-3, BO4-5, BO5-1) | Sofía, quien cura las frases | 14 | borrador: README, flujo y sus cuatro pantallas con ficha y boceto |
 | [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md) | `moderate-without-breaking-the-product/` | BO2 (+ BO4-4, BO4-6, BO5-2, BO5-3) | Nahuel, Camila | 10 | borrador: README, flujo, Reportes y Verificaciones con ficha y boceto |
 | [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ BO6-1, BO6-2) | Admin | 5 | borrador: README, flujo y Equipo con ficha y boceto |
-| [Avisos](notices/README.md) | `notices/` | infraestructura transversal (sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2) | todos | 0 propias | borrador: README, flujo y los cinco mails con ficha y boceto |
+| [Avisos](notices/README.md) | `notices/` | infraestructura transversal (sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2) (y los mails de BO2-2 y BO4-2) | todos | 0 propias | borrador: README, flujo y los cinco mails con ficha y boceto |
 
 93 stories en total; la cuenta por épica es la del README de cada una. Las épicas de la versión anterior (EPIC-00 a EPIC-11) están en el [ático](../history/domain-v1/epics/) con sus fichas.
