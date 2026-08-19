@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Dónde estudiarla (épica Elegir dónde estudiar)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+  .offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .bar{height:6px;border-radius:999px;background:var(--elev);overflow:hidden;margin:4px 0 0}
+  .bar i{display:block;height:100%;background:var(--ink4)}
+  .bar.g i{background:var(--acc)}
+  .sk{font-size:11px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Dónde estudiarla (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md, no de este archivo. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>La comparación</h2>
+  <section class="pb" aria-label="Comparar: Ingeniería en Sistemas, lado a lado">
+    <p class="eyebrow">Dónde estudiarla · pública, sin cuenta</p>
+    <p class="title">Ingeniería en Sistemas</p>
+    <p class="muted" style="margin:0 0 14px">2 ofertas cargadas con cabecera derivada (hay una tercera más abajo, todavía sin cabecera) · orden alfabético · sin compuesto, sin ganador. <a href="#">Bajar el CSV para ordenar distinto</a>.</p>
+    <div class="offers">
+      <div class="card">
+        <p class="eyebrow">UNSTA</p>
+        <p style="font-weight:500;margin:0 0 8px"><a href="#">Ver la ficha de la carrera</a></p>
+        <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
+        <p class="row" style="margin-top:4px"><span class="sk">Duración real</span><span class="sk">7,3 años · mediana de 38 egresados</span></p>
+        <p class="row" style="margin-top:4px"><span class="sk">Brecha</span><span class="sk">2,3 años</span></p>
+        <p class="muted" style="margin:10px 0 4px">Cohorte 2016 a 2018 · 210 personas</p>
+        <p><span class="chip">41% se recibió</span><span class="chip">22% se fue</span><span class="chip">37% no dijo o sigue</span></p>
+        <div style="background:var(--elev);border-radius:10px;padding:10px 12px;margin:10px 0">
+          <p class="row"><span>Exigencia</span><span class="sk">5 de cada 10 · 612 voces</span></p>
+          <p class="row" style="margin-top:6px"><span style="color:var(--acci)">Gestión</span><span class="sk" style="color:var(--acci)">6 de cada 10 · 612 voces</span></p>
+        </div>
+        <p class="muted" style="margin:0 0 8px">Cobertura: 24 de 40 materias con voces</p>
+        <p class="eyebrow">Exigencia</p>
+        <div style="margin:0 0 8px"><p class="row"><span>Es dura de verdad</span><span class="sk">48% · en 19 materias</span></p><div class="bar"><i style="width:48%"></i></div></div>
+        <p class="eyebrow" style="color:var(--acci)">Gestión</p>
+        <div style="margin:0 0 4px"><p class="row"><span>Hay clases que no se dan</span><span class="sk">29% · en 9 materias</span></p><div class="bar g"><i style="width:29%"></i></div></div>
+      </div>
+      <div class="card">
+        <p class="eyebrow">UTN</p>
+        <p style="font-weight:500;margin:0 0 8px"><a href="#">Ver la ficha de la carrera</a></p>
+        <p class="row"><span class="sk">Duración nominal</span><span class="sk">5,5 años</span></p>
+        <p class="row" style="margin-top:4px"><span class="sk">Duración real</span><span class="sk">7,1 años · mediana de 26 egresados</span></p>
+        <p class="row" style="margin-top:4px"><span class="sk">Brecha</span><span class="sk">1,6 años</span></p>
+        <p class="muted" style="margin:10px 0 4px">Cohorte 2016 a 2018 · 260 personas</p>
+        <p><span class="chip">35% se recibió</span><span class="chip">18% se fue</span><span class="chip">47% no dijo o sigue</span></p>
+        <div style="background:var(--elev);border-radius:10px;padding:10px 12px;margin:10px 0">
+          <p class="row"><span>Exigencia</span><span class="sk">4 de cada 10 · 480 voces</span></p>
+          <p class="row" style="margin-top:6px"><span style="color:var(--acci)">Gestión</span><span class="sk" style="color:var(--acci)">5 de cada 10 · 480 voces</span></p>
+        </div>
+        <p class="muted" style="margin:0 0 8px">Cobertura: 31 de 44 materias con voces</p>
+        <p class="eyebrow">Exigencia</p>
+        <div style="margin:0 0 8px"><p class="row"><span>Es muchísimo contenido</span><span class="sk">36% · en 15 materias</span></p><div class="bar"><i style="width:36%"></i></div></div>
+        <p class="eyebrow" style="color:var(--acci)">Gestión</p>
+        <div style="margin:0 0 4px"><p class="row"><span>Te la estudiás solo</span><span class="sk">22% · en 12 materias</span></p><div class="bar g"><i style="width:22%"></i></div></div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:12px">O1-2, O1-1, O1-5. ADR-0067, ADR-0065, ADR-0064. Mismo denominador entre exigencia y gestión de cada oferta; ninguna columna de total ni oferta remarcada.</p>
+  </section>
+
+  <h2>Estado: una oferta sin cabecera</h2>
+  <section class="pb" aria-label="Estado: una oferta sin cabecera, cobertura a la vista">
+    <p class="eyebrow">Dónde estudiarla · Ingeniería en Sistemas de Información</p>
+    <div class="card" style="max-width:320px">
+      <p class="eyebrow">UNT</p>
+      <p style="font-weight:500;margin:0 0 2px">Todavía no derivamos la cabecera.</p>
+      <p class="muted" style="margin:0 0 10px">Cobertura: 9 de 42 materias con voces. Falta que más de la mitad tenga alguna voz.</p>
+      <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
+      <p class="muted" style="margin:6px 0 0">Cohorte 2023: todavía no cerró (nominal × 1,5).</p>
+      <p style="margin-top:10px"><a href="#">Leer materia por materia</a></p>
+    </div>
+    <p class="muted" style="margin-top:12px">O1-8. ADR-0066 punto 4. La misma carrera canónica que UNSTA y UTN, decidida por el catálogo (BO1-5): "Ingeniería en Sistemas" y "en Sistemas de Información" son una porque lo decidimos, no por el nombre.</p>
+  </section>
+
+  <h2>Estado: una oferta sin voces</h2>
+  <section class="pb" aria-label="Estado: una oferta recién cargada, sin ninguna voz">
+    <p class="eyebrow">Dónde estudiarla · Ingeniería en Sistemas</p>
+    <div class="card state" style="max-width:320px">
+      <p class="eyebrow">Siglo 21</p>
+      <p style="font-weight:500;margin:0 0 2px">Cargada, sin voces todavía.</p>
+      <p class="muted" style="margin:0 0 8px">Duración nominal: 4 años (plan a distancia). Nada más: sin voces no hay proporción que mostrar, y no se inventa un cero.</p>
+      <p class="muted">Sé la primera voz: <a href="#">reseñar una cursada acá</a>.</p>
+    </div>
+    <p class="muted" style="margin-top:12px">O1-2. ADR-0066: no hay piso, y una oferta sin voces no se saca de la comparación, se muestra como lo que es.</p>
+  </section>
+
+  <h2>Estado: solo una oferta cargada</h2>
+  <section class="pb" aria-label="Estado: la carrera canónica todavía existe en una sola institución">
+    <p class="eyebrow">Dónde estudiarla · Tecnicatura Universitaria en Desarrollo y Calidad de Software</p>
+    <div class="card" style="max-width:360px">
+      <p style="font-weight:500;margin:0 0 2px">No hay con qué comparar todavía.</p>
+      <p class="muted" style="margin:0 0 8px">Esta carrera canónica hoy solo está cargada en UNSTA. Cuando otra institución la sume, aparece acá lado a lado.</p>
+      <p><a href="#">Ver la ficha de la carrera en UNSTA</a></p>
+    </div>
+    <p class="muted" style="margin-top:12px">O1-2: comparar necesita al menos dos ofertas de la misma carrera canónica.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Cortar los accesos
 
-> Épica del grupo **BO3 · Cortar los accesos (que el anonimato sea mecanismo)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **BO3 · Cortar los accesos (que el anonimato sea mecanismo)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README, [flujo](flow.md) y su pantalla propia con ficha y boceto mid-fi: Equipo); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -32,13 +32,13 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO6 �
 
 D09 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): verificación y moderación son roles excluyentes, el Admin no se auto-asigna roles operativos, equipo mínimo de cuatro), [THESIS.md](../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../decisions/0050-backoffice-como-corte-transversal.md) (el backoffice es un corte transversal sobre los módulos existentes; el gating es por rol en cada endpoint, no por estar en un módulo aparte: es la base técnica de que cada rol vea solo sus colas), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (separa qué se modera, lo retenido y lo reportado, de qué habilita una réplica, la identidad verificada: por qué Reportes y Verificaciones son colas distintas).
 
-## Pantallas que compone
+## Pantallas
 
-Backoffice: **Equipo** (altas, roles, bajas; cada rol ve solo sus colas). Las colas que cada rol ve, y que no puede cruzar: Pedidos, Catálogo, Correcciones y Frases ([Sostener el catálogo](../sustain-the-catalog/README.md)); Reportes y Verificaciones ([Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md)).
+La única que existe solo para esta épica vive acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Equipo**](screens/team/README.md) (backoffice, rol Admin): altas, roles con la exclusión imposible en la propia pantalla, el registro con autor y fecha, la baja que corta el acceso en el momento; [boceto mid-fi](screens/team/sketch.html).
 
-Por dibujar: Equipo (el alta, la asignación de rol con la regla de exclusión bloqueada en la propia pantalla, la baja).
+Las colas que cada rol ve, y que no puede cruzar, viven en su épica: [Pedidos, Catálogo, Correcciones y Frases](../sustain-the-catalog/README.md) (catálogo y curaduría); [Reportes y Verificaciones](../moderate-without-breaking-the-product/README.md) (moderación y verificación).
 
 ## Lo que esta épica todavía no resuelve
 

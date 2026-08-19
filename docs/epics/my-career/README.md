@@ -1,6 +1,6 @@
 # Mi carrera
 
-> Épica del grupo **O3 · Armar el cuatrimestre (lo que la lapicera no calcula sola)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O3 · Armar el cuatrimestre (lo que la lapicera no calcula sola)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y sus pantallas propias con ficha y boceto mid-fi (Mi carrera, Empezar); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -24,15 +24,14 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo que marcás es preferencia privada, no dato), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la co-cursada: solo desde reseñas, por par y período; el sesgo declarado en Método), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: se publica desde la primera voz con sus voces), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta épica no lo revive, O3-3).
 
-## Pantallas que compone
+## Pantallas
 
-- **Mi carrera** (con cuenta): el plan con correlativas, lo reseñado marcado como hecho, la preferencia privada de lo que falta o se considera, y la co-cursada filtrada a tu caso.
-- **Empezar** (onboarding, con cuenta): marcás por dónde vas la primera vez; salteable y retomable.
-- Llega desde y vuelve a: Ficha de carrera (la pestaña de co-cursada pública, por par y período), Ficha de materia (correlativas: qué pide y qué abre).
+Las dos que existen solo para esta épica viven acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Mi carrera**](screens/my-career/README.md) (con cuenta): el plan con correlativas, lo reseñado marcado como hecho, la preferencia privada de lo que falta o se considera, la co-cursada filtrada a tu caso; [boceto mid-fi](screens/my-career/sketch.html).
+- [**Empezar**](screens/onboarding/README.md) (con cuenta): el onboarding, marcás por dónde vas la primera vez, salteable y retomable; [boceto mid-fi](screens/onboarding/sketch.html).
 
-Por dibujar: Mi carrera (cómo se distingue en pantalla lo reseñado, que es hecho, de lo marcado, que es preferencia; la pestaña de co-cursada con muchos pares), Empezar (qué pregunta la primera vez, más allá de por dónde vas).
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): la **Ficha de carrera** (la pestaña de co-cursada pública, por par y período) y la **Ficha de materia** (correlativas: qué pide y qué abre).
 
 ## Lo que esta épica todavía no resuelve
 

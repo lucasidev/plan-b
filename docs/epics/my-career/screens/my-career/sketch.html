@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Mi carrera (épica Mi carrera)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+  .tabs{display:flex;gap:4px;margin:0 0 14px;border-bottom:1px solid var(--line)}
+  .tab{padding:8px 4px;margin-right:18px;font-size:13px;color:var(--ink3);border-bottom:2px solid transparent}
+  .tab.active{color:var(--ink);border-color:var(--acc);font-weight:500}
+  .tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em;border:1px solid var(--line);white-space:nowrap}
+  .tag.hecho{background:var(--elev);color:var(--ink2);font-weight:500}
+  .tag.pref{background:var(--card);color:var(--ink3);border-style:dashed}
+  .tag.none{background:transparent;color:var(--ink4);border-style:dashed}
+  .plan-row{padding:10px 0;border-bottom:1px solid var(--line)}
+  .plan-row:last-child{border-bottom:0}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Mi carrera (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Tu plan</h2>
+  <section class="pb" aria-label="Mi carrera: el plan con correlativas, hecho y preferencia">
+    <p class="eyebrow">Mi carrera · con cuenta</p>
+    <p class="title">Ingeniería en Sistemas · UNSTA</p>
+    <p class="muted" style="margin:0 0 12px">Plan 2024. Lo que reseñaste viene marcado solo; lo que marcás aparte es tuyo, no lo vemos nosotros.</p>
+
+    <div class="tabs">
+      <span class="tab active">Tu plan</span>
+      <span class="tab">Co-cursada</span>
+    </div>
+
+    <div class="card" style="padding:4px 16px">
+      <div class="plan-row">
+        <p class="row">
+          <span>Álgebra y Geometría Analítica <span class="muted">· 1er año</span></span>
+          <span class="tag hecho">Aprobada</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Reseñada · 2024, 1er cuatrimestre. Sin correlativas para cursarla.</p>
+      </div>
+      <div class="plan-row">
+        <p class="row">
+          <span>Sistemas de Representación <span class="muted">· 1er año</span></span>
+          <span class="tag hecho">Aprobada</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Reseñada · 2024, 2do cuatrimestre. Sin correlativas para cursarla.</p>
+      </div>
+      <div class="plan-row">
+        <p class="row">
+          <span>Análisis Matemático II <span class="muted">· 2do año</span></span>
+          <span class="tag hecho">La estás cursando</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Reseñada · 2025, 1er cuatrimestre. Para cursar: Álgebra y Geometría Analítica (regularizada).</p>
+      </div>
+      <div class="plan-row">
+        <p class="row">
+          <span>Física I <span class="muted">· 2do año</span></span>
+          <span class="tag pref">La estás considerando</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Sin reseñar. Para cursar: Álgebra y Geometría Analítica (regularizada).</p>
+      </div>
+      <div class="plan-row">
+        <p class="row">
+          <span>Álgebra Lineal <span class="muted">· 2do año</span></span>
+          <span class="tag pref">Te falta</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Sin reseñar. Para cursar: Álgebra y Geometría Analítica (regularizada).</p>
+      </div>
+      <div class="plan-row" style="border-bottom:0">
+        <p class="row">
+          <span>Análisis Matemático III <span class="muted">· 3er año</span></span>
+          <span class="tag none">Sin marcar</span>
+        </p>
+        <p class="muted" style="margin-top:2px">Sin reseñar. Para cursar: Análisis Matemático II (regularizada).</p>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:10px">O3-1, ADR-0067: lo aprobado y en curso viene de tus reseñas, es un hecho. O3-3, ADR-0069: «te falta» y «la estás considerando» los marcás vos, y quedan acá, privados: no se recaban ni se publican.</p>
+  </section>
+
+  <h2>Pestaña: co-cursada</h2>
+  <section class="pb" aria-label="Mi carrera: co-cursada filtrada a lo que todavía podés cursar">
+    <p class="eyebrow">Mi carrera · con cuenta</p>
+    <p class="title">Qué se llevó junto, en lo que te falta.</p>
+    <p class="muted" style="margin:0 0 12px">Por par de materias y período, solo entre reseñas: nunca desde lo que alguien marcó en su plan.</p>
+
+    <div class="tabs">
+      <span class="tab">Tu plan</span>
+      <span class="tab active">Co-cursada</span>
+    </div>
+
+    <div class="card" style="margin:0 0 10px">
+      <p class="row">
+        <span>Física I + Álgebra Lineal</span>
+        <span class="muted">2025, 1er cuatrimestre</span>
+      </p>
+      <p style="font-size:15px;margin-top:6px">40 personas las llevaron juntas · 12 dejaron una</p>
+    </div>
+    <div class="card">
+      <p class="row">
+        <span>Física I + Análisis Matemático III</span>
+        <span class="muted">2024, 2do cuatrimestre</span>
+      </p>
+      <p style="font-size:15px;margin-top:6px">18 personas las llevaron juntas · 5 dejaron una</p>
+    </div>
+
+    <p class="muted" style="margin-top:10px">O3-1, O3-2, ADR-0067: filtrada a Física I, Álgebra Lineal y Análisis Matemático III, que es lo que todavía te falta o considerás en tu plan; sin piso, se publica desde la primera voz (ADR-0066).</p>
+  </section>
+
+  <h2>Estado: sin nada marcado ni reseñado</h2>
+  <section class="pb" aria-label="Estado: cuenta nueva, sin plan marcado ni reseñas">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Todavía no marcaste ni reseñaste nada de esta carrera.</p>
+      <p class="muted">El plan se ve igual, sin ninguna materia etiquetada. Podés reseñar una materia o marcar por dónde vas cuando quieras.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">O6-3: esta pantalla necesita saber qué cursás, pero el resto de la app funciona igual sin haber marcado nada acá.</p>
+  </section>
+
+  <h2>Estado: la facultad reformó el plan</h2>
+  <section class="pb" aria-label="Estado: dos planes coexisten con su año">
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 4px">Ingeniería en Sistemas, UNSTA tiene dos planes.</p>
+      <p><span class="chip on">Plan 2019</span><span class="chip">Plan 2024</span></p>
+      <p class="muted" style="margin-top:6px">Cursaste materias de los dos. Cada reseña queda pegada al período y a la materia canónica, no a la fila de un plan en particular.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">BO5-1: los dos planes coexisten con su año. Cómo se ve esto en pantalla, más allá de este boceto, sigue abierto.</p>
+  </section>
+</main>
+</body>
+</html>

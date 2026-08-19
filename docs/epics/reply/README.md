@@ -1,6 +1,6 @@
 # Replicar
 
-> Épica del grupo **O7 · Contestar lo que se publicó (con nombre, porque es público)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O7 · Contestar lo que se publicó (con nombre, porque es público)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)) y su pantalla propia con ficha y boceto mid-fi ([Responder](screens/respond/README.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -31,18 +31,13 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (T2 ·
 
 [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 5: la réplica pasa el mismo chequeo, no cita lo marcado, retenida el plazo desde el aviso, solo identidad docente o institucional verificada, queda al lado con nombre y rol, no baja ni mueve conteos; punto 6: orden por votos), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la serie por el período en que pasó, sin suavizar, con publicación y réplica marcadas; la comparación lado a lado sin ordenar por valor), D06 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): el estado del canal, "sin réplica" y "docente sin identidad verificada", nunca "no quiso responder"), [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md) (el anonimato como regla de presentación).
 
-## Pantallas que compone
+## Pantallas
 
-- **Responder** (diseñada sin construir, con identidad verificada): donde el docente o la institución escribe la réplica.
-- **Verificar** (identidad docente; hoy `/verify-teacher`): el permiso de responder, probado contra la cátedra del catálogo.
-- **Avisos** (mail): el resumen periódico al docente, sin timestamps por reseña.
-- [Ficha de cátedra](../../design/screens/chair/README.md): la réplica al lado del testimonio, el estado del canal, la serie.
-- **Ficha de institución**: la serie por período, la comparación frase por frase contra las demás.
-- Backoffice: **Verificaciones** (la cola de identidad docente, [Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md)), **Reportes** (la cola de retenidos, BO2-5).
+La que existe solo para esta épica vive acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Responder**](screens/respond/README.md) (con identidad verificada): el testimonio con la parte no citable marcada, la respuesta con su chequeo previo, el plazo visible y cómo queda publicada; [boceto mid-fi](screens/respond/sketch.html) con sus tres pasos y sus estados.
 
-Por dibujar: Responder (el campo de réplica, el chequeo previo, el plazo visible), Verificar identidad docente (contra qué cátedra prueba), Ficha de institución (la comparación frase por frase).
+Las que comparte con otras épicas viven en [`docs/design/screens/`](../../design/screens/README.md): **Verificar** (identidad docente, el permiso para responder) y **Ficha de institución** (la serie por período, la comparación frase por frase), además de la [Ficha de cátedra](../../design/screens/chair/README.md) (la réplica al lado del testimonio, el estado del canal, la serie). En el backoffice, **Verificaciones** y **Reportes** (la cola de retenidos, BO2-5), las dos de [Moderar sin romper el producto](../moderate-without-breaking-the-product/README.md). Los mails de [Avisos](../notices/README.md) (el resumen periódico al docente, sin timestamps por reseña) traen hasta acá.
 
 ## Lo que esta épica todavía no resuelve
 

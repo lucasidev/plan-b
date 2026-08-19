@@ -1,6 +1,6 @@
 # Que no me molesten
 
-> Épica del grupo **O6 · Que no me molesten (garantía: el contrapeso, nadie quiere más funciones)** del [catálogo](../../domain/user-stories.md). **Estado**: garantía vigente; se verifica en cada ficha de pantalla y en el Definition of Done. No se planifica.
+> Épica del grupo **O6 · Que no me molesten (garantía: el contrapeso, nadie quiere más funciones)** del [catálogo](../../domain/user-stories.md). **Estado**: garantía vigente, sin pantallas propias; se verifica en cada ficha de pantalla y en el Definition of Done. No se planifica.
 
 ## Qué es
 
@@ -27,9 +27,9 @@ Las de esta épica, con su letra completa: es la única copia de cada una (el [c
 
 [THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche por mail una vez al año, una sola pregunta; entré se pregunta una sola vez), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../domain/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../../domain/user-stories.md#restricciones-no-son-stories-se-verifican-en-el-dod): accesibilidad, datos personales, política de moderación pública, rendimiento).
 
-## Pantallas que compone
+## Pantallas
 
-Todas las públicas del [mapa](../../design/product-map.md) (O6-1, O6-4), [Reseñar](../write-a-review/README.md) y [Empezar](../my-career/README.md) (O6-2, O6-3), Ingresar / Registro / Recuperar (el umbral: el gate en la acción, vuelta a donde ibas).
+Esta épica no tiene pantallas propias: es la garantía que se verifica en cada pantalla de las demás. Las que cita para verificarse viven en [`docs/design/screens/`](../../design/screens/README.md) y en sus épicas dueñas: todas las públicas del [mapa](../../design/product-map.md) (O6-1, O6-4), [Reseñar](../write-a-review/README.md) y [Empezar](../my-career/README.md) (O6-2, O6-3), **Ingresar**, **Registro** y **Recuperar** (el umbral: el gate en la acción, vuelta a donde ibas).
 
 ## Cómo se verifica
 

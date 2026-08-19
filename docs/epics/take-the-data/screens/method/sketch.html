@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Método (épica Llevarse el dato)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+  .sk{font-size:11px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Método (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md, no de este archivo. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>La fórmula</h2>
+  <section class="pb" aria-label="Cómo se calcula el encogimiento">
+    <p class="eyebrow">Método · cómo lo calculamos</p>
+    <p class="title">El límite inferior del intervalo de Wilson</p>
+    <p class="muted" style="margin:0 0 10px">Es el encogimiento: corrige una proporción cuando la sostienen pocas voces, y sube solo a medida que crece el corpus.</p>
+    <div class="card" style="font-family:'IBM Plex Mono',monospace;font-size:13px;overflow-x:auto">
+      (p + z²/2n − z·√(p(1−p)/n + z²/4n²)) / (1 + z²/n)
+    </div>
+    <p class="muted" style="margin:8px 0 0">p = la proporción cruda (voces que marcaron la frase, sobre voces del sujeto). n = las voces. z = 1,96 (95% de confianza). Se aplica a cada proporción por separado, nunca a un número global.</p>
+    <p class="muted" style="margin-top:8px">Ejemplo: 2 de 2 voces marcan una frase; la proporción publicada no es 100%, es 34%. Es correcto, no un error: con dos voces no sabemos más que eso.</p>
+    <p class="muted" style="margin-top:8px">O1-4, O8-3. ADR-0064.</p>
+  </section>
+
+  <h2>Cómo se derivan las fichas</h2>
+  <section class="pb" aria-label="Cómo se suman las voces y se derivan las fichas">
+    <p class="eyebrow">Método · derivar</p>
+    <p class="title">La voz se suma, nunca se promedia</p>
+    <p class="muted" style="margin:0 0 10px">Arriba de la cursada, una voz es una persona hablando de una cursada. Quien reseñó tres cursadas de una carrera son tres voces en ella.</p>
+    <div class="card">
+      <p class="row"><span>Materia, cátedra</span><span class="sk">suman las cursadas que les pertenecen</span></p>
+      <p class="row" style="margin-top:6px"><span>Carrera en una institución</span><span class="sk">suma todo lo marcado en las cursadas de su plan</span></p>
+      <p class="row" style="margin-top:6px"><span>Institución</span><span class="sk">tres cosas separadas: como sujeto, sus cursadas, su cobertura</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">No se deduplica por persona ni se promedian proporciones por materia: la proporción de una frase en cualquier nivel es voces que la marcaron sobre voces del nivel.</p>
+    <p class="muted" style="margin-top:8px">O1-4, O8-3. ADR-0066.</p>
+  </section>
+
+  <h2>El catálogo de frases</h2>
+  <section class="pb" aria-label="El catálogo de frases entero, con sujeto y eje">
+    <p class="eyebrow">Método · el catálogo</p>
+    <p class="title">46 frases, cada una con su sujeto y su eje</p>
+    <p class="muted" style="margin:0 0 10px">Ninguno se pregunta: están en la redacción. Es contenido editorial nuestro, y se publica entero para que se pueda auditar.</p>
+    <div class="card">
+      <p class="row" style="font-weight:500"><span>Frase</span><span class="sk">sujeto · eje</span></p>
+      <p class="row" style="margin-top:8px"><span>Es dura de verdad</span><span class="sk">materia · exigencia</span></p>
+      <p class="row" style="margin-top:6px"><span>Contenido de hace diez años</span><span class="sk">materia · gestión</span></p>
+      <p class="row" style="margin-top:6px"><span>Explican bien</span><span class="sk">cátedra · gestión</span></p>
+      <p class="row" style="margin-top:6px"><span>Hay clases que no se dan</span><span class="sk">cátedra · gestión</span></p>
+      <p class="row" style="margin-top:6px"><span>Hubo acoso</span><span class="sk">cátedra · gestión</span></p>
+      <p class="row" style="margin-top:6px"><span>El nivel académico es alto</span><span class="sk">institución · exigencia</span></p>
+      <p class="muted" style="margin-top:10px"><a href="#">Ver las 46</a></p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="row"><span>Toman lo que no dieron <span class="chip" style="padding:1px 7px;font-size:11px;margin:0 0 0 4px">síntesis</span></span><span class="sk">destilada de comentarios, validada por las voces</span></p>
+      <p class="muted" style="margin-top:6px">No es cita de nadie: la propone la máquina, la valida la gente marcándola, y se reprocesa a medida que entran reseñas.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">O8-8, O1-4. ADR-0064, ADR-0065.</p>
+  </section>
+
+  <h2>Los sesgos declarados</h2>
+  <section class="pb" aria-label="Los sesgos que el método declara">
+    <p class="eyebrow">Método · qué sesgo tiene cada dato</p>
+    <div class="card">
+      <p style="margin:0 0 6px">Todo es <strong>de quienes reseñaron</strong>, nunca "la tasa de la carrera".</p>
+      <p style="margin:0 0 6px">La <strong>duración real</strong> es de los que se recibieron: quien no se recibió no está en ese número.</p>
+      <p>La <strong>co-cursada</strong> es de quien reseñó las dos materias: no sale del plan que alguien marcó para sí, que es privado.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">O8-2.</p>
+  </section>
+
+  <h2>Qué no cubrimos</h2>
+  <section class="pb" aria-label="Qué no cubrimos todavía">
+    <p class="eyebrow">Método · el hueco declarado</p>
+    <div class="card">
+      <p class="row"><span>Carreras cargadas</span><span class="sk">86</span></p>
+      <p class="row" style="margin-top:6px"><span>En cola</span><span class="sk">61</span></p>
+      <p class="row" style="margin-top:6px"><span>Pedidas, sin confirmar todavía</span><span class="sk">214</span></p>
+      <p class="row" style="margin-top:6px"><span>Cuentas afuera por inconsistencia</span><span class="sk">142 de 9.400</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">Cobertura por plan: cada Ficha de carrera muestra la suya ("22 de 40 materias con voces"). Acá se declara que existe el hueco, no se repite ficha por ficha.</p>
+    <p class="muted" style="margin-top:8px">O8-2.</p>
+  </section>
+
+  <h2>Cuánto se bajó y por qué</h2>
+  <section class="pb" aria-label="Cuánto se bajó del corpus y por qué">
+    <p class="eyebrow">Método · lo que se retiró</p>
+    <div class="card">
+      <p class="row"><span>Vida privada, salud o familia</span><span class="sk">14 textos</span></p>
+      <p class="row" style="margin-top:6px"><span>Aspecto</span><span class="sk">4 textos</span></p>
+      <p class="row" style="margin-top:6px"><span>Datos de contacto</span><span class="sk">3 textos</span></p>
+      <p class="row" style="margin-top:8px;font-weight:500"><span>Total, este trimestre</span><span class="sk">21 de 3.240 comentarios</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">Se baja el texto, nunca la voz: las frases marcadas de esas reseñas siguen contando. Nunca se publica el contenido retirado.</p>
+    <p class="muted" style="margin-top:8px">O8-6. ADR-0068.</p>
+  </section>
+
+  <h2>La política de moderación y réplica</h2>
+  <section class="pb" aria-label="La política de moderación y réplica, pública">
+    <p class="eyebrow">Método · antes de que exista el primer reporte</p>
+    <div class="card">
+      <p style="margin:0 0 6px"><strong>Qué es exposición y qué no.</strong> La que se modera es la del que aportó y la de terceros; el docente nombrado en su rol no está expuesto, está evaluado. Hay un único caso de riesgo inmediato, con criterio escrito.</p>
+      <p style="margin:0 0 6px"><strong>El chequeo previo.</strong> Corre antes de publicar un comentario o una réplica: marca lo que identifica por contexto y decide el autor; retiene, hasta que alguien lo mire, lo que habla de una persona fuera de su acto.</p>
+      <p><strong>La réplica.</strong> Pasa el mismo chequeo, no puede citar lo que el autor marcó como identificante, y queda retenida un plazo desde el aviso.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">Restricción del catálogo, no story de esta épica: BO2-1, T2-1, T2-2, O7-8.</p>
+  </section>
+
+  <h2>La postura</h2>
+  <section class="pb" aria-label="La postura: sin acuerdos con instituciones">
+    <p class="eyebrow">Método · posición tomada</p>
+    <p style="margin:0 0 8px">No tenemos acuerdos con ninguna institución, y ninguna tiene trato preferencial. No podríamos publicar estos números y a la vez depender de quien evaluamos.</p>
+    <p class="muted">Ninguna ficha afirma una causa: publicamos que una materia es un embudo en tres instituciones; por qué lo es, no lo sabemos y no lo afirmamos.</p>
+    <p class="muted" style="margin-top:8px">O8-4, O8-5. THESIS, "Posición".</p>
+  </section>
+
+  <h2>La descarga del crudo</h2>
+  <section class="pb" aria-label="Descargar el crudo, sin cuenta">
+    <p class="eyebrow">Método · sin cuenta</p>
+    <div class="card" style="margin:0 0 8px">
+      <p style="font-weight:500;margin:0 0 2px">Tabla 1 · frases</p>
+      <p class="muted">Una fila por (frase, sujeto, período), con sus voces y su eje.</p>
+    </div>
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 2px">Tabla 2 · trayectoria</p>
+      <p class="muted">Los agregados por carrera-institución y cohorte; por materia y período; por par y período.</p>
+    </div>
+    <p class="muted" style="margin:10px 0">Lo que no viene: nombre, cuenta, perfil, y los testimonios no se exportan en bloque. Lo que se descarga es lo que se publica, ni más fino ni más grueso.</p>
+    <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn primary">Descargar el CSV</span></p>
+    <p class="muted" style="margin-top:8px">O8-1. ADR-0067, ADR-0068.</p>
+  </section>
+</main>
+</body>
+</html>

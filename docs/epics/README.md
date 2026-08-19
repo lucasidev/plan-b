@@ -30,18 +30,18 @@ Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo i
 
 | Épica | Carpeta | Grupo del mapa | Persona que la pide | Stories | Estado |
 |---|---|---|---|---|---|
-| [Elegir dónde estudiar](choose-where-to-study/README.md) | `choose-where-to-study/` | O1 · Decidir dónde estudiar (+ T1-4, T2-3, T3-2, T3-6) | Valentina, Silvia, quien lee | 12 | borrador: README y flujo |
-| [Pedir una carrera](request-a-career/README.md) | `request-a-career/` | O2 · Entender el vacío | Ana | 4 | borrador: README y flujo |
-| [Mi carrera](my-career/README.md) | `my-career/` | O3 · Armar el cuatrimestre | Lucía | 3 | borrador: README y flujo |
-| [Reseñar](write-a-review/README.md) | `write-a-review/` | O4 · Que quede registrado (+ T2-1, T2-4, T3-1, T3-3, T3-4, T3-5, T4-1) | Lucía, Matías, Diego | 19 | borrador: README, flujo y la pantalla Reseñar con su boceto |
-| [Deshacer](undo/README.md) | `undo/` | O5 · Poder deshacer | quien ya aportó; quien lee (reportar) | 3 | borrador: README y flujo |
+| [Elegir dónde estudiar](choose-where-to-study/README.md) | `choose-where-to-study/` | O1 · Decidir dónde estudiar (+ T1-4, T2-3, T3-2, T3-6) | Valentina, Silvia, quien lee | 12 | borrador: README, flujo y Dónde estudiarla con ficha y boceto |
+| [Pedir una carrera](request-a-career/README.md) | `request-a-career/` | O2 · Entender el vacío | Ana | 4 | borrador: README, flujo, Pedir y La cola con ficha y boceto |
+| [Mi carrera](my-career/README.md) | `my-career/` | O3 · Armar el cuatrimestre | Lucía | 3 | borrador: README, flujo, Mi carrera y Empezar con ficha y boceto |
+| [Reseñar](write-a-review/README.md) | `write-a-review/` | O4 · Que quede registrado (+ T2-1, T2-4, T3-1, T3-3, T3-4, T3-5, T4-1) | Lucía, Matías, Diego | 19 | borrador: README, flujo, Reseñar y Mi situación con ficha y boceto |
+| [Deshacer](undo/README.md) | `undo/` | O5 · Poder deshacer | quien ya aportó; quien lee (reportar) | 3 | borrador: README, flujo, Editar y Baja con ficha y boceto |
 | [Que no me molesten](do-not-bother-me/README.md) | `do-not-bother-me/` | O6 · garantía | quien lee, quien vuelve | 4 | garantía: se verifica en cada ficha de pantalla y en el DoD; no se planifica |
-| [Replicar](reply/README.md) | `reply/` | O7 · Contestar lo que se publicó (+ T2-2) | Claudia, Paredes, la institución | 8 | borrador: README y flujo |
-| [Llevarse el dato](take-the-data/README.md) | `take-the-data/` | O8 · Llevarme el dato | Rocío | 8 | borrador: README y flujo |
-| [Cuidar lo publicado](care-for-what-is-published/README.md) | `care-for-what-is-published/` | T1 · votar, corregir, verificarse | quien ya aportó, quien vuelve | 3 | borrador: README y flujo |
-| [Sostener el catálogo](sustain-the-catalog/README.md) | `sustain-the-catalog/` | BO1 (+ BO4-1, BO4-2, BO4-3, BO4-5, BO5-1) | Sofía, quien cura las frases | 14 | borrador: README y flujo |
-| [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md) | `moderate-without-breaking-the-product/` | BO2 (+ BO4-4, BO4-6, BO5-2, BO5-3) | Nahuel, Camila | 10 | borrador: README y flujo |
-| [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ BO6-1, BO6-2) | Admin | 5 | borrador: README y flujo |
-| [Avisos](notices/README.md) | `notices/` | infraestructura transversal (sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2) | todos | 0 propias | borrador: README y flujo |
+| [Replicar](reply/README.md) | `reply/` | O7 · Contestar lo que se publicó (+ T2-2) | Claudia, Paredes, la institución | 8 | borrador: README, flujo y Responder con ficha y boceto |
+| [Llevarse el dato](take-the-data/README.md) | `take-the-data/` | O8 · Llevarme el dato | Rocío | 8 | borrador: README, flujo y Método con ficha y boceto |
+| [Cuidar lo publicado](care-for-what-is-published/README.md) | `care-for-what-is-published/` | T1 · votar, corregir, verificarse | quien ya aportó, quien vuelve | 3 | borrador: README y flujo; sin pantallas propias |
+| [Sostener el catálogo](sustain-the-catalog/README.md) | `sustain-the-catalog/` | BO1 (+ BO4-1, BO4-2, BO4-3, BO4-5, BO5-1) | Sofía, quien cura las frases | 14 | borrador: README, flujo y sus cuatro pantallas con ficha y boceto |
+| [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md) | `moderate-without-breaking-the-product/` | BO2 (+ BO4-4, BO4-6, BO5-2, BO5-3) | Nahuel, Camila | 10 | borrador: README, flujo, Reportes y Verificaciones con ficha y boceto |
+| [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ BO6-1, BO6-2) | Admin | 5 | borrador: README, flujo y Equipo con ficha y boceto |
+| [Avisos](notices/README.md) | `notices/` | infraestructura transversal (sostiene O2-4, O4-5, O4-12, O7-5, BO1-3, T2-2) | todos | 0 propias | borrador: README, flujo y los cinco mails con ficha y boceto |
 
 93 stories en total; la cuenta por épica es la del README de cada una. Las épicas de la versión anterior (EPIC-00 a EPIC-11) están en el [ático](../history/domain-v1/epics/) con sus fichas.

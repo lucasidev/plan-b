@@ -1,6 +1,6 @@
 # Moderar sin romper el producto
 
-> Épica del grupo **BO2 · Moderar sin romper el producto (decir que no importa más que decir que sí)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README y [flujo](flow.md)); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **BO2 · Moderar sin romper el producto (decir que no importa más que decir que sí)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-19 (README, [flujo](flow.md) y sus pantallas propias con ficha y boceto mid-fi: Reportes, Verificaciones); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -37,13 +37,14 @@ Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO4 �
 
 [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 2: el chequeo previo con dos salidas; punto 3: se modera la exposición de quien aportó y de terceros, nunca la del docente ni la de la institución nombrados, y la queja dura contra ellos no es causal; lo reportado sigue publicado hasta resolver salvo el único caso de riesgo inmediato con criterio escrito; reportar confirma el mail; punto 4: se baja el texto, nunca la voz, con categoría; punto 5: la réplica pasa el mismo chequeo), D09 ([registro del 17](../../reviews/2026-08-17-catalog-propagation.md): verificación y moderación son roles excluyentes, equipo mínimo de cuatro), [ADR-0010](../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md) (superado: en el producto nuevo ningún umbral de reportes baja nada solo), [ADR-0048](../../decisions/0048-oficializacion-de-condicion-opt-in.md) (para el alumno, verificarse es señal, no permiso), las Restricciones del catálogo ([`user-stories.md`](../../domain/user-stories.md): la política de moderación y réplica es pública antes de que exista el primer reporte).
 
-## Pantallas que compone
+## Pantallas
 
-Backoffice: **Reportes** (dos colas: lo reportado, que sigue publicado mientras espera; lo retenido por el chequeo previo, sin publicar hasta que alguien mire), **Verificaciones** (dos colas: constancias de alumno, sin camino a los aportes; identidad docente, contra la cátedra). Público: **Anonimato** y **Método** (la política escrita), la ficha con el texto retirado y su categoría ([Ficha de cátedra](../../design/screens/chair/README.md)).
+Las dos que existen solo para esta épica viven acá, con su ficha y su boceto:
 
-## Bocetos
+- [**Reportes**](screens/reports/README.md) (backoffice, rol moderación): las dos colas (lo reportado, que sigue publicado; lo retenido, sin publicar hasta que alguien mire), el criterio de exposición a la vista, la alarma de cuentas correlacionadas y los reportes agrupados; [boceto mid-fi](screens/reports/sketch.html).
+- [**Verificaciones**](screens/verifications/README.md) (backoffice, rol verificación): las dos colas separadas, constancias de alumno (lo mínimo, el documento se destruye, sin camino a los aportes) e identidad docente (el permiso, contra la cátedra); [boceto mid-fi](screens/verifications/sketch.html).
 
-Por dibujar: Reportes (las dos colas, el criterio de riesgo inmediato, el estado de cada reporte), Verificaciones (las dos colas, lo mínimo que ve Camila de cada una).
+Las que comparte con otras épicas: **Anonimato** y **Método** (donde la política de moderación y réplica se publica, en [Llevarse el dato](../take-the-data/README.md)), y la [Ficha de cátedra](../../design/screens/chair/README.md) (el texto retirado con su categoría).
 
 ## Lo que esta épica todavía no resuelve
 
