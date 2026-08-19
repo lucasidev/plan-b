@@ -70,6 +70,7 @@ plan-b/
 │   ├── architecture/        ERD, data model
 │   ├── testing/             Convenciones cross-stack de testing (ADR-0036)
 │   ├── operations/          Playbooks operacionales (rollback, ...)
+│   ├── epics/               Una carpeta por épica: stories por ID, flujo en mermaid, bocetos (ADR-0070)
 │   ├── reviews/             Revisiones y auditorías: hallazgos con ID y estado
 │   └── history/             El ático: lo que describía la versión anterior
 ├── scripts/                 TS scripts (bun): no usar bash
@@ -118,7 +119,7 @@ Las cosas críticas para entender el sistema antes de programar:
 6. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 7. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
 8. [`docs/design/design-system.md`](docs/design/design-system.md). Contrato visual del producto (paleta, tipografía, tokens y su mapping al frontend). Antes de tocar visuales, chequear acá. Qué se construye lo dicen las user stories y las personas ([`docs/domain/user-stories.md`](docs/domain/user-stories.md), [`docs/domain/user-personas.md`](docs/domain/user-personas.md)); el mapa mid-fi ([`docs/design/map/`](docs/design/map/README.md)) es orientativo sobre vistas y flujos, no un contrato de UX/UI. Las capturas del canvas de la versión anterior están congeladas como historia.
-9. [`docs/STATUS.md`](docs/STATUS.md). Tracker operativo por sprints (cadencia, foco y estado de cada uno) + las convenciones del sistema de US: numeración `US-NNN[-x]` (sufijos `-b/-f/-i/-t`), la US como incremento de valor, y el parent (`US-NNN`) que se reemplaza por subdivisiones al entrar a sprint. Catálogo en [`docs/domain/user-stories.md`](docs/domain/user-stories.md), epics en [`docs/domain/epics.md`](docs/domain/epics.md), plantilla en [`docs/domain/us-template.md`](docs/domain/us-template.md), Definition of Done en [`docs/domain/definition-of-done.md`](docs/domain/definition-of-done.md).
+9. [`docs/STATUS.md`](docs/STATUS.md). Tracker operativo por sprints (cadencia, foco y estado de cada uno) + las convenciones del sistema de US: numeración `US-NNN[-x]` (sufijos `-b/-f/-i/-t`), la US como incremento de valor, y el parent (`US-NNN`) que se reemplaza por subdivisiones al entrar a sprint. Catálogo en [`docs/domain/user-stories.md`](docs/domain/user-stories.md), épicas en [`docs/epics/`](docs/epics/README.md), plantilla en [`docs/domain/us-template.md`](docs/domain/us-template.md), Definition of Done en [`docs/domain/definition-of-done.md`](docs/domain/definition-of-done.md).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 
