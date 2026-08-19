@@ -1,6 +1,6 @@
 # El mapa de producto (canvas mid-fi, orientativo)
 
-`plan-b-mapa.html` es el canvas del producto nuevo, vendorizado desde Claude Design el 2026-08-16. Es
+`canvas.html` es el canvas del producto nuevo, vendorizado desde Claude Design el 2026-08-16. Es
 autocontenido (solo carga fuentes de Google): se abre en el browser directo, sin servidor. **La copia del repo
 es la referencia desde el 2026-08-18**: se renombraron sus etiquetas de pantalla para que coincidan con los
 nombres del producto (`contar` → Reseñar; `donde` → Dónde estudiarla; `abandono` → Mi situación; y el resto

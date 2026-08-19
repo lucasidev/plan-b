@@ -1,6 +1,6 @@
 # Reseñar
 
-> Épica del grupo **O4 · Que quede registrado (sin que me cueste la cursada)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-18 (README, [flujo](flujo.md), bocetos de los pasos); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
+> Épica del grupo **O4 · Que quede registrado (sin que me cueste la cursada)** del [catálogo](../../domain/user-stories.md). **Estado**: borrador escrito el 2026-08-18 (README, [flujo](flow.md), bocetos de los pasos); revisión adversarial pendiente antes de planificar. Sin sprint asignado.
 
 ## Qué es
 
@@ -20,14 +20,14 @@ O4-1 (en menos de cinco minutos, marcando, sin escribir nada obligatorio), O4-2 
 
 ## Pantallas que compone
 
-- **Reseñar** (con cuenta): la secuencia de pasos de esta épica; su ficha va en `docs/design/screens/resenar/` cuando se dibuje entera; los bocetos de los pasos que solo existen acá están en [`bocetos/`](bocetos/).
+- **Reseñar** (con cuenta): la secuencia de pasos de esta épica; su ficha va en `docs/design/screens/write-a-review/` cuando se dibuje entera; los bocetos de los pasos que solo existen acá están en [`sketches/`](sketches/).
 - **Mi situación** (con cuenta): la pregunta de trayectoria, también accesible sola.
 - **Avisos** (mail): el aviso al cerrar el período y el reenganche anual.
-- Llega desde y vuelve a: [Ficha de cátedra](../../design/screens/ficha-de-catedra/README.md), Ficha de materia, Mi carrera, Mis aportes.
+- Llega desde y vuelve a: [Ficha de cátedra](../../design/screens/chair/README.md), Ficha de materia, Mi carrera, Mis aportes.
 
 ## Bocetos
 
-- [`bocetos/paso-comentario-y-testimonio.html`](bocetos/paso-comentario-y-testimonio.html): el paso del comentario con el chequeo previo y las dos salidas, y cómo se lee después el testimonio (aprobado con ADR-0068).
+- [`sketches/comment-step-and-testimony.html`](sketches/comment-step-and-testimony.html): el paso del comentario con el chequeo previo y las dos salidas, y cómo se lee después el testimonio (aprobado con ADR-0068).
 - Por dibujar: elegir la materia y el período (con la rama de Mi situación), cómo terminó, las frases del sujeto que corresponde (cuántas se ofrecen por vez es una decisión de esta pantalla), la cátedra opcional, las clases sin dar, y el evento institucional.
 
 ## Lo que esta épica todavía no resuelve

@@ -87,7 +87,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla.
 
 ### Del producto (15)
 
-Los flujos escritos en mermaid viven en su épica; la fila de acá queda como índice. Escritos: 05, 12 y 14 → [Reseñar](../epics/resenar/flujo.md).
+Los flujos escritos en mermaid viven en su épica; la fila de acá queda como índice. Escritos: 05, 12 y 14 → [Reseñar](../epics/write-a-review/flow.md).
 
 | # | Flujo | Recorrido |
 |---|---|---|
