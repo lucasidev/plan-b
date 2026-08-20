@@ -76,12 +76,12 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla, y no tiene
 | Pantalla | Ficha | Boceto | Estado |
 |---|---|---|---|
 | Ficha de cátedra | [`chair/README.md`](chair/README.md) | [`chair/sketch.html`](chair/sketch.html) | revisada el 2026-08-19; **hi-fi Boletín aprobado** (ADR-0071) |
-| Reseñar | [`epics/write-a-review/screens/write-review/README.md`](../../epics/write-a-review/screens/write-review/README.md) | [`sketch.html`](../../epics/write-a-review/screens/write-review/sketch.html) | borrador del 2026-08-19 (mid-fi, seis pasos y estados); revisada el 2026-08-19; hi-fi pendiente |
+| Reseñar | [`epics/write-a-review/screens/write-review/README.md`](../../epics/write-a-review/screens/write-review/README.md) | [`sketch.html`](../../epics/write-a-review/screens/write-review/sketch.html) | revisada el 2026-08-19; **hi-fi Boletín** (ADR-0071) |
 | Mi situación | [`epics/write-a-review/screens/my-status/README.md`](../../epics/write-a-review/screens/my-status/README.md) | [`sketch.html`](../../epics/write-a-review/screens/my-status/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Inicio | [`home/README.md`](home/README.md) | [`home/sketch.html`](home/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Explorar | [`explore/README.md`](explore/README.md) | [`explore/sketch.html`](explore/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Buscar | [`search/README.md`](search/README.md) | [`search/sketch.html`](search/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
-| Ficha de carrera | [`career/README.md`](career/README.md) | [`career/sketch.html`](career/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
+| Ficha de carrera | [`career/README.md`](career/README.md) | [`career/sketch.html`](career/sketch.html) | revisada el 2026-08-19; **hi-fi Boletín** (ADR-0071) |
 | Ficha de institución | [`institution/README.md`](institution/README.md) | [`institution/sketch.html`](institution/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Ficha de materia | [`subject/README.md`](subject/README.md) | [`subject/sketch.html`](subject/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Anonimato | [`anonymity/README.md`](anonymity/README.md) | [`anonymity/sketch.html`](anonymity/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
@@ -92,7 +92,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla, y no tiene
 | Mis aportes | [`my-contributions/README.md`](my-contributions/README.md) | [`my-contributions/sketch.html`](my-contributions/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Mi perfil | [`my-profile/README.md`](my-profile/README.md) | [`my-profile/sketch.html`](my-profile/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Verificar | [`verify/README.md`](verify/README.md) | [`verify/sketch.html`](verify/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
-| Dónde estudiarla | [`epics/choose-where-to-study/screens/where-to-study/README.md`](../../epics/choose-where-to-study/screens/where-to-study/README.md) | [`sketch.html`](../../epics/choose-where-to-study/screens/where-to-study/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
+| Dónde estudiarla | [`epics/choose-where-to-study/screens/where-to-study/README.md`](../../epics/choose-where-to-study/screens/where-to-study/README.md) | [`sketch.html`](../../epics/choose-where-to-study/screens/where-to-study/sketch.html) | revisada el 2026-08-19; **hi-fi Boletín** (ADR-0071) |
 | Método | [`epics/take-the-data/screens/method/README.md`](../../epics/take-the-data/screens/method/README.md) | [`sketch.html`](../../epics/take-the-data/screens/method/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Pedir | [`epics/request-a-career/screens/request/README.md`](../../epics/request-a-career/screens/request/README.md) | [`sketch.html`](../../epics/request-a-career/screens/request/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | La cola | [`epics/request-a-career/screens/queue/README.md`](../../epics/request-a-career/screens/queue/README.md) | [`sketch.html`](../../epics/request-a-career/screens/queue/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |

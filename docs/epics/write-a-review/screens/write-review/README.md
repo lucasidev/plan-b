@@ -1,6 +1,6 @@
 # Reseñar (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los seis pasos y sus estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con cuenta: el gate está en la acción (Ingresar / Registro con el motivo a la vista y vuelta), no en la lectura. Slug hoy `/reviews/write` (existe el editor texto-libre de la versión anterior; el acto de frases es otro modelo y el chasis se rehace).
+> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los seis pasos y sus estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); **hi-fi en la dirección Boletín** ([ADR-0071](../../../../decisions/0071-the-visual-language-is-a-bulletin.md), 2026-08-19; el mid-fi quedó en git). Con cuenta: el gate está en la acción (Ingresar / Registro con el motivo a la vista y vuelta), no en la lectura. Slug hoy `/reviews/write` (existe el editor texto-libre de la versión anterior; el acto de frases es otro modelo y el chasis se rehace).
 
 ## Quién la usa
 
