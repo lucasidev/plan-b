@@ -1,6 +1,6 @@
 # Registro (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) del formulario y sus estados; revisión adversarial pendiente antes del hi-fi. Pública: se llega y se completa sin cuenta, y es la puerta hacia una (declarás dónde estás, no elegís de un catálogo de marketing). Slug hoy `/sign-up` (del inventario). Épicas que la componen: [Que no me molesten](../../../epics/do-not-bother-me/README.md) (nada de lo que declarás acá se vuelve a preguntar), [Pedir una carrera](../../../epics/request-a-career/README.md) (institución y carrera precargadas si venís de un pedido confirmado), [Reseñar](../../../epics/write-a-review/README.md) (el año de ingreso no se pregunta acá: lo pregunta la primera reseña).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) del formulario y sus estados; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública: se llega y se completa sin cuenta, y es la puerta hacia una (declarás dónde estás, no elegís de un catálogo de marketing). Slug hoy `/sign-up` (del inventario). Épicas que la componen: [Que no me molesten](../../../epics/do-not-bother-me/README.md) (nada de lo que declarás acá se vuelve a preguntar), [Pedir una carrera](../../../epics/request-a-career/README.md) (institución y carrera precargadas si venís de un pedido confirmado), [Reseñar](../../../epics/write-a-review/README.md) (el año de ingreso no se pregunta acá: lo pregunta la primera reseña).
 
 ## Quién la usa
 
@@ -13,7 +13,7 @@
 ## Qué muestra
 
 - **Mail y contraseña.**
-- **La situación declarada**: curso, cursé y dejé, me recibí, docente. No es el `role` técnico de la cuenta, que sigue siendo `member`: las tres primeras arman una situación de alumno; "docente" abre un reclamo de identidad que después se prueba en Verificar, sin el cual no habilita nada ([T1-3](../../../epics/care-for-what-is-published/README.md#stories), [O7-8](../../../epics/reply/README.md#stories)).
+- **Quién sos acá**: estudiante (curso o cursé) o docente. No es el `role` técnico de la cuenta, que sigue siendo `member`: "docente" abre un reclamo de identidad que después se prueba en Verificar, sin el cual no habilita nada ([T1-3](../../../epics/care-for-what-is-published/README.md#stories), [O7-8](../../../epics/reply/README.md#stories)). Tu situación de alumno (seguís, te recibiste, te fuiste) no se pregunta acá: se pregunta después, de a una y una sola vez, en Mi situación.
 - **Institución y carrera**: precargadas y de solo lectura si venís de un pedido confirmado (O2-4); si no, se declaran acá. Cómo se eligen (catálogo cerrado o texto libre) queda abierto.
 - **El consentimiento informado** (Ley 25.326): una línea antes de mandar el formulario, con el aviso de privacidad público, según las Restricciones del [catálogo](../../../domain/user-stories.md#restricciones-no-son-stories-se-verifican-en-el-dod).
 

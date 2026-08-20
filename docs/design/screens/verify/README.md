@@ -1,6 +1,6 @@
 # Verificar (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los dos caminos y sus estados; revisión adversarial pendiente antes del hi-fi. Con cuenta: los dos caminos piden haber iniciado sesión antes de empezar. Slug hoy `/verify-teacher` (hoy solo docente; la constancia de alumno no tiene pantalla, del inventario). Épicas que la componen: [Cuidar lo publicado](../../../epics/care-for-what-is-published/README.md) (la constancia de alumno: señal, opcional y tardía), [Replicar](../../../epics/reply/README.md) (la identidad docente: permiso para responder).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los dos caminos y sus estados; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Con cuenta: los dos caminos piden haber iniciado sesión antes de empezar. Slug hoy `/verify-teacher` (hoy solo docente; la constancia de alumno no tiene pantalla, del inventario). Épicas que la componen: [Cuidar lo publicado](../../../epics/care-for-what-is-published/README.md) (la constancia de alumno: señal, opcional y tardía), [Replicar](../../../epics/reply/README.md) (la identidad docente: permiso para responder).
 
 ## Quién la usa
 
@@ -8,7 +8,7 @@
 
 ## Qué stories resuelve
 
-[T1-3](../../../epics/care-for-what-is-published/README.md#stories) (para el alumno, verificarse suma una señal, nunca una condición para hablar), [BO2-3](../../../epics/moderate-without-breaking-the-product/README.md#stories) (se ve lo mínimo, se compara contra lo declarado, el documento se destruye al resolver), [BO2-4](../../../epics/moderate-without-breaking-the-product/README.md#stories) (nunca hay camino de la constancia a tus aportes), [BO4-4](../../../epics/moderate-without-breaking-the-product/README.md#stories) (un rechazo pide motivo y no te marca: podés volver a intentar), [O7-8](../../../epics/reply/README.md#stories) (para el docente, verificar es el permiso de responder, no una señal), [BO2-6](../../../epics/moderate-without-breaking-the-product/README.md#stories) (la identidad docente se prueba contra la cátedra que decís tener, en su propia cola).
+[T1-3](../../../epics/care-for-what-is-published/README.md#stories) (para el alumno, verificarse suma una señal, nunca una condición para hablar) y [O7-8](../../../epics/reply/README.md#stories) (para el docente, verificar es el permiso de responder, no una señal). Del otro lado del mostrador, resueltas por [Verificaciones](../../../epics/moderate-without-breaking-the-product/screens/verifications/README.md): [BO2-3](../../../epics/moderate-without-breaking-the-product/README.md#stories) (se ve lo mínimo, se compara contra lo declarado, el documento se destruye al resolver), [BO2-4](../../../epics/moderate-without-breaking-the-product/README.md#stories) (nunca hay camino de la constancia a tus aportes), [BO4-4](../../../epics/moderate-without-breaking-the-product/README.md#stories) (un rechazo pide motivo y no te marca: podés volver a intentar) y [BO2-6](../../../epics/moderate-without-breaking-the-product/README.md#stories) (la identidad docente se prueba contra la cátedra que decís tener, en su propia cola).
 
 ## Qué muestra, paso por paso
 
@@ -16,7 +16,7 @@
 2. **Constancia de alumno**: subís lo mínimo que pruebe tu condición (qué documento sirve exactamente queda abierto). El aviso dice que alguien del equipo lo va a mirar una vez y que el documento se destruye al resolver (BO2-3), y que esto nunca abre un camino hacia tus aportes (BO2-4).
 3. **Identidad docente**: decís qué cátedra tenés (la materia y la cátedra del catálogo). El aviso dice que se compara contra lo que el catálogo ya sabe de esa cátedra (BO2-6), y que sin esto no se publica ninguna réplica (O7-8).
 
-**Estado "pendiente de revisión"**: para cualquiera de los dos caminos, mientras nadie lo miró todavía. **Estado "aprobada"**: para el alumno, la señal aparece en tu ficha y en Mis aportes; para el docente, Responder queda habilitado. **Estado "rechazada"**: para el alumno, el motivo a la vista y la posibilidad de volver a intentar sin quedar marcado (BO4-4); para el docente, el rechazo no habilita la réplica y no marca a nadie (BO2-6).
+**Estado "pendiente de revisión"**: para cualquiera de los dos caminos, mientras nadie lo miró todavía. **Estado "aprobada"**: para el alumno, la señal viaja con lo que aportás (cómo se muestra en la ficha sin identificarte es la pregunta abierta de T1-3); para el docente, Responder queda habilitado. **Estado "rechazada"**: para el alumno, el motivo a la vista y la posibilidad de volver a intentar sin quedar marcado (BO4-4); para el docente, el rechazo no habilita la réplica y no marca a nadie (BO2-6).
 
 ## Lo que no muestra nunca
 
@@ -32,5 +32,5 @@ Llega desde Mi perfil (la constancia, opcional) y desde Responder o la Ficha de 
 
 ## Lo que esta ficha deja abierto
 
-- **Qué documento sirve como constancia** de alumno.
-- **Si el docente sube evidencia o se verifica por otro canal**: el catálogo ya tiene `institutional_email_domains` para verificación automática por dominio (glosario, [Identidades y cuentas](../../../domain/ubiquitous-language.md#identidades-y-cuentas)); si eso alcanza o hace falta subir algo más no está resuelto.
+- **Qué documento sirve como constancia**, para el alumno y para el docente.
+- **Cómo se muestra la señal de verificación en la ficha del sujeto, sin identificar a nadie** (T1-3).

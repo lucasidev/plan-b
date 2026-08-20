@@ -1,6 +1,6 @@
 # Catálogo (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Sostener el catálogo](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de varias vistas (huecos, cargar el plan, cátedras, atar la canónica, publicar, editar, reforma, materias declaradas); revisión adversarial pendiente antes del hi-fi. Backoffice, rol catálogo (hoy Sofía). Slug hoy `/admin/universities`, `/admin/teachers`, `/admin/commissions` (existe el ABM; el contenido se rehace, del inventario).
+> Ficha de pantalla, dueña: la épica [Sostener el catálogo](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de varias vistas (huecos, cargar el plan, cátedras, atar la canónica, publicar, editar, reforma, materias declaradas); revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Backoffice, rol catálogo (hoy Sofía). Slug hoy `/admin/universities`, `/admin/teachers`, `/admin/commissions` (existe el ABM; el contenido se rehace, del inventario).
 
 ## Quién la usa
 

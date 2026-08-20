@@ -1,6 +1,6 @@
 # Correcciones (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Sostener el catálogo](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisión adversarial pendiente antes del hi-fi. Backoffice, rol catálogo (hoy Sofía). Sin slug hoy.
+> Ficha de pantalla, dueña: la épica [Sostener el catálogo](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Backoffice, rol catálogo (hoy Sofía). Sin slug hoy.
 
 ## Quién la usa
 

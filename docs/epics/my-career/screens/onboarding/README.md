@@ -1,6 +1,6 @@
 # Empezar (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Mi carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisión adversarial pendiente antes del hi-fi. Con cuenta: es el paso siguiente al Registro. Slug hoy `/onboarding/*` (existe el chasis: se rehace, muere "cargá tu historial", la carga del historial de la versión anterior en `frontend/src/app/onboarding/history/`).
+> Ficha de pantalla, dueña: la épica [Mi carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con cuenta: es el paso siguiente al Registro. Slug hoy `/onboarding/*` (existe el chasis: se rehace, muere "cargá tu historial", la carga del historial de la versión anterior en `frontend/src/app/onboarding/history/`).
 
 ## Quién la usa
 

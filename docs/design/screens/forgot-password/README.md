@@ -1,6 +1,6 @@
 # Recuperar (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html), corto: pedir el link, el mail, la contraseña nueva; revisión adversarial pendiente antes del hi-fi. Pública: se llega y se usa sin cuenta, para volver a la que ya tenías. Slug hoy `/forgot-password` (del inventario). Épicas que la componen: [Que no me molesten](../../../epics/do-not-bother-me/README.md) (la garantía que antes tenía un ID propio, O5-3: la cuenta con todo adentro vuelve con un link al mail).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html), corto: pedir el link, el mail, la contraseña nueva; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública: se llega y se usa sin cuenta, para volver a la que ya tenías. Slug hoy `/forgot-password` (del inventario). Épicas que la componen: [Que no me molesten](../../../epics/do-not-bother-me/README.md) (la garantía que antes tenía un ID propio, O5-3: la cuenta con todo adentro vuelve con un link al mail).
 
 ## Quién la usa
 

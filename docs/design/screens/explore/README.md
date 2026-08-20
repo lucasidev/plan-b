@@ -1,6 +1,6 @@
 # Explorar (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos lentes y los tres estados del vacío; revisión adversarial pendiente antes del hi-fi. Pública, se lee sin cuenta. Slug hoy `/careers`, `/universities` (hoy el browse rico es member-only: se adapta). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (el home real: dos lentes, carreras y universidades), [Pedir una carrera](../../../epics/request-a-career/README.md) (el vacío explicado, con Pedir al lado).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos lentes y los tres estados del vacío; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Slug hoy `/universities` (la lente de carreras no existe todavía; hoy el browse rico es member-only: se adapta). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (el home real: dos lentes, carreras y universidades), [Pedir una carrera](../../../epics/request-a-career/README.md) (el vacío explicado, con Pedir al lado).
 
 ## Quién la usa
 
