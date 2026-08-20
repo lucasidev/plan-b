@@ -1,6 +1,6 @@
 # ADR-0041: Rediseño UX post-claude-design (delta y plan de migración)
 
-- **Estado**: aceptado
+- **Estado**: parcialmente superado por [ADR-0071](0071-the-visual-language-is-a-bulletin.md) (2026-08-19): su paleta Apricot Soft deja de ser el contrato visual; su proceso y la decisión de tokens-en-globals siguen vigentes
 - **Fecha**: 2026-05-02
 
 ## Contexto
