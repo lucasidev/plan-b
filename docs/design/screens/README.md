@@ -75,7 +75,7 @@ No son pantallas: pasan adentro de la ficha, sin cambiar de pantalla, y no tiene
 
 | Pantalla | Ficha | Boceto | Estado |
 |---|---|---|---|
-| Ficha de cátedra | [`chair/README.md`](chair/README.md) | [`chair/sketch.html`](chair/sketch.html) | borrador aprobado el 2026-08-18 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
+| Ficha de cátedra | [`chair/README.md`](chair/README.md) | [`chair/sketch.html`](chair/sketch.html) | revisada el 2026-08-19; **hi-fi Boletín aprobado** (ADR-0071) |
 | Reseñar | [`epics/write-a-review/screens/write-review/README.md`](../../epics/write-a-review/screens/write-review/README.md) | [`sketch.html`](../../epics/write-a-review/screens/write-review/sketch.html) | borrador del 2026-08-19 (mid-fi, seis pasos y estados); revisada el 2026-08-19; hi-fi pendiente |
 | Mi situación | [`epics/write-a-review/screens/my-status/README.md`](../../epics/write-a-review/screens/my-status/README.md) | [`sketch.html`](../../epics/write-a-review/screens/my-status/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
 | Inicio | [`home/README.md`](home/README.md) | [`home/sketch.html`](home/sketch.html) | borrador del 2026-08-19 (mid-fi); revisada el 2026-08-19; hi-fi pendiente |
