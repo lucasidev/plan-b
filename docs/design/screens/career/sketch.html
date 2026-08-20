@@ -3,150 +3,191 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto: Ficha de carrera (mid-fi)</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Ficha de carrera (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
-  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
-  main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
-  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
-  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
-  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
-  .title{font-size:20px;font-weight:500;margin:0 0 2px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
-  .chip.g{background:var(--accs);border-color:#f3cdb7;color:var(--acci)}
-  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
-  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
-  .muted{color:var(--ink3);font-size:12px}
-  .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-  .bar{height:6px;border-radius:999px;background:var(--elev);overflow:hidden;margin:4px 0 0}
-  .bar i{display:block;height:100%;background:var(--ink4)}
-  .bar.g i{background:var(--acc)}
-  .sk{font-size:11px;color:var(--ink3)}
-  .warn{border-color:var(--warnline);background:var(--warnbg)}
-  .warn p{color:var(--warnink)}
-  .state{border-style:dashed;background:var(--elev)}
-  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-  h1,h2,h3,p{margin:0}
-  a{color:var(--acci)}
+  body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
+  .note { max-width: 1120px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
+  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
 </style>
 </head>
 <body>
-<main>
-  <p class="note">Boceto mid-fi de la pantalla Ficha de carrera (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+<p class="note">Boceto hi-fi de la pantalla Ficha de carrera (ficha: <code>README.md</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/design/design-system.md</code>); <code>globals.css</code> lo recibe con el primer slice del producto nuevo. El mid-fi anterior quedó en git. Los datos son ejemplo, con los números del canon.</p>
+<div style="width: 1120px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
 
-  <h2>La ficha, con cabecera derivada</h2>
-  <section class="pb" aria-label="Ficha de carrera: cabecera, listas por eje, trayectoria, co-cursada y plan">
-    <p class="eyebrow">Ficha de carrera · pública, sin cuenta</p>
-    <p class="title">Ingeniería en Sistemas · UNSTA</p>
-    <p class="muted" style="margin:0 0 4px">Se arma sumando las cursadas de las materias del plan, no se reseña directamente</p>
-    <p class="muted" style="margin:0 0 16px">612 voces, de 2021 a 2025 · lo último es de 2025, primer cuatrimestre · cobertura: 24 de 40 materias con voces</p>
+  <div style="display: flex; align-items: center; gap: 24px; padding: 14px 40px; border-bottom: 1px solid #e2dfd6; background: #fffefb">
+    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 20px">plan-b</div>
+    <div style="display: flex; gap: 18px; font-size: 13px; color: #494e57">
+      <span>Explorar</span><span>Método</span>
+    </div>
+    <div style="flex: 1; max-width: 360px; margin-left: auto; border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 14px; color: #a7adb5; font-size: 13px; background: #f7f5ef">Buscar una materia, carrera o docente…</div>
+    <div style="border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 16px; font-size: 13px; color: #494e57; font-weight: 500">Ingresar</div>
+  </div>
 
-    <div class="cols" style="margin:0 0 18px">
-      <div style="background:var(--elev);border-radius:12px;padding:12px 14px">
-        <p class="eyebrow" style="margin:0 0 2px">Exigencia · información</p>
-        <p style="font-size:22px;font-weight:500">5 de cada 10</p>
-        <p class="muted">dicen que es dura · 612 voces · encogido de 51% a 47%</p>
+  <div style="padding: 26px 40px 40px">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 16px">UNSTA</div>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 0 0 6px">
+      <div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b8089; margin: 0 0 8px">Ficha de carrera · se lee sin cuenta</div>
+        <h1 style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 40px; line-height: 1.05; margin: 0">Ingeniería en Sistemas</h1>
+        <div style="color: #494e57; font-size: 14px; margin-top: 8px">Se arma sumando las cursadas de las materias del plan, no se reseña directamente</div>
       </div>
-      <div style="background:var(--accs);border-radius:12px;padding:12px 14px">
-        <p class="eyebrow" style="margin:0 0 2px;color:var(--acci)">Gestión · alarma</p>
-        <p style="font-size:22px;font-weight:500;color:var(--acci)">6 de cada 10</p>
-        <p class="muted" style="color:var(--acci)">marcaron alguien fallando · 612 voces · encogido de 62% a 58%</p>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; text-align: right; padding-bottom: 6px">612 voces · 2021 a 2025<br>último: 2025, primer cuatrimestre · cobertura 24 de 40 materias</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 22px 0 8px">
+      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 20px 24px">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 10px">Exigencia · información</div>
+        <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 46px; line-height: 1">5<span style="font-size: 26px; font-weight: 500"> de cada 10</span></div>
+        <div style="color: #494e57; font-size: 14px; margin-top: 8px">dicen que es dura</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; margin-top: 4px">612 voces · 51% crudo, encogido a 47%</div>
+      </div>
+      <div style="background: #f5e4e0; border: 1px solid #e6c3bc; border-radius: 10px; padding: 20px 24px">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418; margin: 0 0 10px">Gestión · alarma</div>
+        <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 46px; line-height: 1; color: #6e1c12">6<span style="font-size: 26px; font-weight: 500"> de cada 10</span></div>
+        <div style="color: #6e1c12; font-size: 14px; margin-top: 8px">marcaron alguien fallando</div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8d2418; margin-top: 4px">612 voces · 62% crudo, encogido a 58%</div>
+      </div>
+    </div>
+    <div style="font-size: 12px; color: #7b8089; margin: 0 0 20px">El gate: la cabecera se publica solo cuando más de la mitad de las materias canónicas de la carrera tiene voces; si no, esta sección dice «todavía no derivamos» con la cobertura a la vista y se lee materia por materia.</div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0 0 16px">
+      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 12px">Exigencia · por materia del plan</div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Es dura de verdad</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">294 de 612 voces · encogido 44% · en 19 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 44%; background: #7b8089; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Es muchísimo contenido</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">202 de 612 voces · encogido 29% · en 17 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 29%; background: #7b8089; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">El final es exigente</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">159 de 612 voces · encogido 23% · en 14 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 23%; background: #7b8089; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 4px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Se aprueba yendo a clase</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">19% · en 8 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 19%; background: #7b8089; border-radius: 6px"></div></div>
+    </div>
+        <div style="font-size: 12px; color: #7b8089; margin-top: 12px">Cada frase dice en cuántas de las 40 materias del plan aparece. <a href="#">Ver las frases de exigencia</a>.</div>
+      </div>
+      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418; margin: 0 0 12px">Gestión · por materia del plan</div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Hay clases que no se dan</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">177 de 612 voces · encogido 25% · en 9 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 25%; background: #8d2418; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Te la estudiás solo</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">147 de 612 voces · encogido 21% · en 11 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 21%; background: #8d2418; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 10px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Contenido de hace diez años</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">17% · en 6 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 17%; background: #8d2418; border-radius: 6px"></div></div>
+    </div>
+        <div style="margin: 0 0 4px">
+      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">El final toma cosas que no se dieron</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">110 de 612 voces · encogido 15% · en 6 materias</span></div>
+      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 15%; background: #8d2418; border-radius: 6px"></div></div>
+    </div>
+        <div style="font-size: 12px; color: #7b8089; margin-top: 12px">Un problema en dos materias no es una carrera rota: por eso cada frase muestra su «en N materias». <a href="#">Ver las frases de gestión</a>.</div>
       </div>
     </div>
 
-    <div class="cols" style="margin:0 0 18px">
-      <section class="card">
-        <p class="eyebrow">Exigencia · por materia del plan</p>
-        <div style="margin:0 0 8px"><p class="row"><span>Es dura de verdad</span><span class="sk">294 de 612 voces · encogido 44% · en 19 materias</span></p><div class="bar"><i style="width:48%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>Es muchísimo contenido</span><span class="sk">202 de 612 voces · encogido 29% · en 17 materias</span></p><div class="bar"><i style="width:33%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>El final es exigente</span><span class="sk">159 de 612 voces · encogido 23% · en 14 materias</span></p><div class="bar"><i style="width:26%"></i></div></div>
-        <div style="margin:0 0 4px"><p class="row"><span>Se aprueba yendo a clase</span><span class="sk">19% · en 8 materias</span></p><div class="bar"><i style="width:19%"></i></div></div>
-        <p class="sk" style="margin-top:6px">Cada frase dice en cuántas de las 40 materias del plan aparece. <a href="#">Ver las frases de exigencia</a>.</p>
-      </section>
-      <section class="card">
-        <p class="eyebrow" style="color:var(--acci)">Gestión · por materia del plan</p>
-        <div style="margin:0 0 8px"><p class="row"><span>Hay clases que no se dan</span><span class="sk">177 de 612 voces · encogido 25% · en 9 materias</span></p><div class="bar g"><i style="width:29%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>Te la estudiás solo</span><span class="sk">147 de 612 voces · encogido 21% · en 11 materias</span></p><div class="bar g"><i style="width:24%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>Contenido de hace diez años</span><span class="sk">17% · en 6 materias</span></p><div class="bar g"><i style="width:17%"></i></div></div>
-        <div style="margin:0 0 4px"><p class="row"><span>El final toma cosas que no se dieron</span><span class="sk">110 de 612 voces · encogido 15% · en 6 materias</span></p><div class="bar g"><i style="width:18%"></i></div></div>
-        <p class="sk" style="margin-top:6px">Un problema en dos materias no es una carrera rota: por eso cada frase muestra su "en N materias". <a href="#">Ver las frases de gestión</a>.</p>
-      </section>
-    </div>
-
-    <p class="eyebrow" style="margin:0 0 8px">Trayectoria</p>
-    <section class="card" style="margin:0 0 18px">
-      <div class="cols">
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 22px 26px; margin: 0 0 16px">
+      <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 16px">Trayectoria</div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px">
         <div>
-          <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
-          <p class="row" style="margin-top:4px"><span class="sk">Duración real</span><span class="sk">7,3 años · mediana de 38 egresados</span></p>
-          <p class="row" style="margin-top:4px"><span class="sk">Brecha</span><span class="sk">2,3 años</span></p>
-          <p class="muted" style="margin-top:8px">Siempre de quienes se recibieron y reseñaron acá.</p>
+          <div style="display: flex; gap: 30px; margin: 0 0 14px">
+            <div>
+              <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 36px; line-height: 1">5</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin-top: 6px">nominal · años</div>
+            </div>
+            <div>
+              <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 36px; line-height: 1">7,3</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin-top: 6px">real · años, mediana de 38 egresados</div>
+            </div>
+            <div>
+              <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 36px; line-height: 1">2,3</div>
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin-top: 6px">brecha · años</div>
+            </div>
+          </div>
+          <div style="color: #494e57; font-size: 13px">Siempre de quienes se recibieron y reseñaron acá.</div>
         </div>
         <div>
-          <p class="muted" style="margin:0 0 6px">Cohorte 2016 a 2018 · 210 personas</p>
-          <p style="margin:0 0 8px"><span class="chip">se recibió 41% (encogido 35%)</span><span class="chip">se fue 22% (encogido 17%)</span><span class="chip">no dijo o sigue 37% (encogido 31%)</span></p>
-          <p class="muted" style="margin-top:4px">Cada proporción viaja con su propio encogimiento y por eso no suman 100; el corte depende de la nominal de esta oferta.</p>
-          <p class="muted" style="margin-top:6px">De los que se fueron, 6 de cada 10 se fueron en primero o segundo año del plan · 47 personas. <a href="#">Ver materia por materia</a>.</p>
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 10px">Cohorte 2016 a 2018 · 210 personas</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 10px">
+            <span style="border: 1px solid #e2dfd6; background: #fffefb; color: #494e57; border-radius: 999px; padding: 5px 14px; font-size: 13px">se recibió 41% <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089">(encogido 35%)</span></span>
+            <span style="border: 1px solid #e2dfd6; background: #fffefb; color: #494e57; border-radius: 999px; padding: 5px 14px; font-size: 13px">se fue 22% <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089">(encogido 17%)</span></span>
+            <span style="border: 1px solid #e2dfd6; background: #fffefb; color: #494e57; border-radius: 999px; padding: 5px 14px; font-size: 13px">no dijo o sigue 37% <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089">(encogido 31%)</span></span>
+          </div>
+          <div style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Cada proporción viaja con su propio encogimiento y por eso no suman 100; el corte depende de la nominal de esta oferta.</div>
+          <div style="font-size: 12px; color: #7b8089">De los que se fueron, 6 de cada 10 se fueron en primero o segundo año del plan · 47 personas. <a href="#">Ver materia por materia</a>.</div>
         </div>
       </div>
-      <p class="sk" style="margin-top:10px">Cohorte cerrada: entró hace al menos 1,5 veces la duración nominal. Quien no dijo queda como "no dijo", nunca se infiere.</p>
-    </section>
-
-    <p class="eyebrow" style="margin:0 0 8px">Co-cursada pública</p>
-    <section class="card" style="margin:0 0 18px">
-      <p class="row" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>Análisis Matemático II + Programación I · 2024, 2do cuatrimestre</span><span class="sk">40 juntas · 12 dejaron una</span></p>
-      <p class="row" style="padding:6px 0"><span>Estructuras de Datos + Bases de Datos I · 2024, 2do cuatrimestre</span><span class="sk">28 juntas · 6 dejaron una</span></p>
-      <p class="muted" style="margin-top:8px">Solo desde reseñas de la misma cuenta en el mismo período, nunca desde un plan marcado. <a href="#">Ver todos los pares</a>.</p>
-    </section>
-
-    <p class="eyebrow" style="margin:0 0 8px">El plan (40 materias)</p>
-    <section class="card" style="margin:0 0 18px">
-      <p class="muted" style="margin:0 0 4px">1° año</p>
-      <p style="margin:0 0 8px"><a href="#">Introducción a la Programación</a> · <a href="#">Análisis Matemático I</a> · <a href="#">Álgebra</a></p>
-      <p class="muted" style="margin:0 0 4px">2° año</p>
-      <p style="margin:0 0 8px"><a href="#">Análisis Matemático II</a> · <a href="#">Programación I</a> · <a href="#">Estructuras de Datos</a></p>
-      <p class="muted" style="margin:0 0 4px">3° año</p>
-      <p><a href="#">Bases de Datos I</a> · <a href="#">Sistemas Operativos</a> · <a href="#">Redes</a></p>
-      <p class="muted" style="margin-top:8px"><a href="#">Ver el plan completo</a>, con sus correlativas.</p>
-    </section>
-
-    <footer style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <span class="btn primary">Reseñar una cursada</span>
-      <span class="btn">Dónde estudiarla</span>
-      <span class="btn">Pedir si falta algo</span>
-      <span class="btn">Cómo se calcula</span>
-    </footer>
-    <p class="muted" style="margin-top:12px">O1-8, D04, ADR-0066. O1-1, O1-7, O4-8, O3-1, T3-6, T3-2. La cabecera espera el gate de cobertura; sin él, cobertura a la vista y lectura materia por materia.</p>
-  </section>
-
-  <h2>Estado: vacía, con el primero</h2>
-  <section class="pb" aria-label="Estado: carrera cargada, sin ninguna voz todavía">
-    <p class="eyebrow">Ficha de carrera · Ingeniería en Sistemas</p>
-    <div class="card state" style="max-width:340px">
-      <p class="eyebrow">Siglo 21</p>
-      <p style="font-weight:500;margin:0 0 2px">Cargada, sin voces todavía.</p>
-      <p class="muted" style="margin:0 0 8px">Duración nominal: 4 años (plan a distancia). Nada más: sin voces no hay proporción que mostrar, y la primera que se publique ya cuenta.</p>
-      <p class="muted">Sé la primera voz: <a href="#">reseñar una cursada acá</a>.</p>
+      <div style="border-top: 1px solid #eae7de; margin-top: 16px; padding-top: 12px; font-size: 12px; color: #7b8089">Cohorte cerrada: entró hace al menos 1,5 veces la duración nominal. Quien no dijo queda como «no dijo», nunca se infiere.</div>
     </div>
-    <p class="muted" style="margin-top:12px">T2-3, ADR-0066. Sin escalones ni nada que desbloquear: arranca vacía y la primera voz ya se publica.</p>
-  </section>
 
-  <h2>Estado: sin cabecera</h2>
-  <section class="pb" aria-label="Estado: cobertura todavía no pasó la mitad de las materias canónicas">
-    <p class="eyebrow">Ficha de carrera · Ingeniería en Sistemas de Información</p>
-    <div class="card" style="max-width:340px">
-      <p class="eyebrow">UNT</p>
-      <p style="font-weight:500;margin:0 0 2px">Todavía no derivamos la cabecera.</p>
-      <p class="muted" style="margin:0 0 10px">Cobertura: 9 de 42 materias con voces. Falta que más de la mitad tenga alguna voz.</p>
-      <p class="row"><span class="sk">Duración nominal</span><span class="sk">5 años</span></p>
-      <p class="muted" style="margin:6px 0 0">Cohorte 2023: todavía no cerró (nominal × 1,5).</p>
-      <p style="margin-top:10px"><a href="#">Leer materia por materia</a></p>
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px; margin: 0 0 16px">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 12px">Co-cursada pública</div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de"><span style="font-size: 14px">Análisis Matemático II + Programación I · 2024, 2do cuatrimestre</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; white-space: nowrap">40 juntas · 12 dejaron una</span></div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0"><span style="font-size: 14px">Estructuras de Datos + Bases de Datos I · 2024, 2do cuatrimestre</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; white-space: nowrap">28 juntas · 6 dejaron una</span></div>
+      <div style="font-size: 12px; color: #7b8089; margin-top: 8px">Solo desde reseñas de la misma cuenta en el mismo período, nunca desde un plan marcado. <a href="#">Ver todos los pares</a>.</div>
     </div>
-    <p class="muted" style="margin-top:12px">O1-8, D04. ADR-0066 punto 4: el gate es sobre las materias canónicas de la carrera, sumando todos sus planes; no es un piso, las listas de frases se publican desde la primera voz.</p>
-  </section>
-</main>
+
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px; margin: 0 0 16px">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 14px">El plan · 40 materias</div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 4px">1° año</div>
+      <div style="font-size: 14px; margin: 0 0 12px"><a href="#">Introducción a la Programación</a> · <a href="#">Análisis Matemático I</a> · <a href="#">Álgebra</a></div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 4px">2° año</div>
+      <div style="font-size: 14px; margin: 0 0 12px"><a href="#">Análisis Matemático II</a> · <a href="#">Programación I</a> · <a href="#">Estructuras de Datos</a></div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 4px">3° año</div>
+      <div style="font-size: 14px; margin: 0 0 4px"><a href="#">Bases de Datos I</a> · <a href="#">Sistemas Operativos</a> · <a href="#">Redes</a></div>
+      <div style="font-size: 12px; color: #7b8089; margin-top: 10px"><a href="#">Ver el plan completo</a>, con sus correlativas.</div>
+    </div>
+
+    <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: center; border-top: 1px solid #e2dfd6; padding-top: 18px; margin: 0 0 14px; font-size: 13px">
+      <a href="#" style="font-weight: 600">Reseñar una cursada</a>
+      <a href="#">Dónde estudiarla</a>
+      <a href="#">Pedir si falta algo</a>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px">
+      <div style="font-size: 13px; color: #494e57">¿Cómo calculamos esto? <a href="#">Método</a>: la fórmula del encogimiento y los sesgos declarados. El crudo se descarga sin cuenta.</div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; white-space: nowrap">CSV · al 19/8/2026</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width: 1120px; margin: 32px auto 0; padding: 0 16px; box-sizing: border-box">
+  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 10px">Estado · vacía, con el primero</div>
+  <div style="background: #eeece5; border-radius: 10px; padding: 20px 24px">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 10px">Ficha de carrera · Ingeniería en Sistemas</div>
+    <div style="max-width: 380px; background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px 22px">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Siglo 21</div>
+      <div style="font-size: 15px; font-weight: 500; margin: 0 0 6px">Cargada, sin voces todavía.</div>
+      <div style="color: #494e57; font-size: 13px; margin: 0 0 10px">Duración nominal: 4 años (plan a distancia). Nada más: sin voces no hay proporción que mostrar, y la primera que se publique ya cuenta.</div>
+      <div style="color: #494e57; font-size: 13px">Sé la primera voz: <a href="#">reseñar una cursada acá</a>.</div>
+    </div>
+    <div style="font-size: 12px; color: #7b8089; margin-top: 12px">Sin escalones ni nada que desbloquear: arranca vacía y la primera voz ya se publica.</div>
+  </div>
+</div>
+
+<div style="max-width: 1120px; margin: 20px auto 0; padding: 0 16px; box-sizing: border-box">
+  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 10px">Estado · sin cabecera</div>
+  <div style="background: #eeece5; border-radius: 10px; padding: 20px 24px">
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 10px">Ficha de carrera · Ingeniería en Sistemas de Información</div>
+    <div style="max-width: 380px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 22px">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">UNT</div>
+      <div style="font-size: 15px; font-weight: 500; margin: 0 0 6px">Todavía no derivamos la cabecera.</div>
+      <div style="color: #494e57; font-size: 13px; margin: 0 0 12px">Cobertura: 9 de 42 materias con voces. Falta que más de la mitad tenga alguna voz.</div>
+      <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: #494e57; margin: 0 0 6px"><span>Duración nominal</span><span style="font-family: 'IBM Plex Mono', monospace; color: #7b8089">5 años</span></div>
+      <div style="color: #7b8089; font-size: 12px; margin: 0 0 10px">Cohorte 2023: todavía no cerró (nominal × 1,5).</div>
+      <a href="#" style="font-size: 13px">Leer materia por materia</a>
+    </div>
+    <div style="font-size: 12px; color: #7b8089; margin-top: 12px">El gate es sobre las materias canónicas de la carrera, sumando todos sus planes; no es un piso: las listas de frases se publican desde la primera voz.</div>
+  </div>
+</div>
+
 </body>
 </html>
