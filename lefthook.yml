@@ -20,6 +20,11 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
+    docs-check:
+      # Señala, no bloquea (exit 0 sin --strict): coherencia de docs de producto
+      # (links, em-dashes, períodos codificados, una story por épica, mermaid). ADR-0070.
+      glob: "docs/**/*.{md,html}"
+      run: bun scripts/check-docs.ts
     backend-build:
       # Triggers restore which catches NU1608 (version conflicts) and NU1903
       # (CVE-vulnerable packages) because of <TreatWarningsAsErrors>true</>.

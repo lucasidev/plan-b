@@ -2,7 +2,7 @@
 
 Documento canónico del lenguaje visual de plan-b: paleta, tipografía, tokens y su mapping al frontend.
 
-> **Estado (2026-08-16)**: los tokens y la tipografía de este doc siguen vigentes (`frontend/src/app/globals.css` es lo que consume el producto). Lo que cambió es la fuente de las **pantallas**: el canvas de la versión anterior (`reference/`) quedó congelado con [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md), y no hay una referencia de pantallas que reemplace a ese canvas: el mapa de producto ([`map/`](map/README.md)) es un mid-fi orientativo, no un contrato de UX/UI. El hi-fi del producto nuevo no está fijado: hasta que lo esté, este doc es el único contrato visual, y cada pantalla se diseña desde su user story con estos tokens.
+> **Estado (2026-08-16)**: los tokens y la tipografía de este doc siguen vigentes (`frontend/src/app/globals.css` es lo que consume el producto). Lo que cambió es la fuente de las **pantallas**: el canvas de la versión anterior (`reference/`) quedó congelado con [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md), y no hay una referencia de pantallas que reemplace a ese canvas: el mapa de producto ([ático](../history/product-canvas/README.md)) es un mid-fi orientativo, no un contrato de UX/UI. El hi-fi del producto nuevo no está fijado: hasta que lo esté, este doc es el único contrato visual, y cada pantalla se diseña desde su user story con estos tokens.
 
 ## Snapshot
 

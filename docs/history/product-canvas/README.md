@@ -1,4 +1,6 @@
-# El mapa de producto (canvas mid-fi, orientativo)
+# El canvas del mapa de producto (ático desde el 2026-08-19)
+
+> **Absorbido.** Todo lo que este canvas definía vive versionado como texto: las stories en su épica ([`docs/epics/`](../../epics/README.md)), los flujos en mermaid, las 34 pantallas con ficha y boceto ([inventario](../../design/screens/README.md)), las reglas en los ADRs y en el [catálogo de frases](../../domain/phrases.md). Queda acá como registro de dónde salió; no se edita ni se vuelve a citar como fuente.
 
 `canvas.html` es el canvas del producto nuevo, vendorizado desde Claude Design el 2026-08-16. Es
 autocontenido (solo carga fuentes de Google): se abre en el browser directo, sin servidor. **La copia del repo
@@ -20,8 +22,8 @@ Lo que sí es fuente, portado del mapa a docs versionados:
 - [`docs/domain/user-stories.md`](../../domain/user-stories.md): las 93 stories con su "listo cuando" (esto es lo que se construye).
 - [`docs/domain/user-personas.md`](../../domain/user-personas.md): las 13 personas.
 - [`docs/epics/`](../../epics/README.md): los flujos del mapa, uno por uno, como diagramas en mermaid dentro de la épica que los contiene, con sus ramas, salidas y errores.
-- [`docs/design/screens/README.md`](../screens/README.md): el inventario de pantallas con su carpeta, su slug y las épicas que las componen; las fichas por pantalla son lo que se construye.
-- [`docs/design/product-map.md`](../product-map.md): el índice (los tres planos, cada flujo del mapa con el link a su épica, el estado contra el código; la auditoría del mapa está en [`docs/reviews/`](../../reviews/2026-08-16-product-map.md)).
+- [`docs/design/screens/README.md`](../../design/screens/README.md): el inventario de pantallas con su carpeta, su slug y las épicas que las componen; las fichas por pantalla son lo que se construye.
+- [`docs/design/product-map.md`](../../design/product-map.md): el índice (los tres planos, cada flujo del mapa con el link a su épica, el estado contra el código; la auditoría del mapa está en [`docs/reviews/`](../../reviews/2026-08-16-product-map.md)).
 
 El canvas se queda como referencia mid-fi de cómo se veían las pantallas hasta que cada una tenga su ficha y su boceto; después va al ático.
 
