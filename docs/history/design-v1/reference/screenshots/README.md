@@ -1,6 +1,6 @@
 # Screenshots del canvas
 
-> **Congeladas como historia (2026-08-16)**: son las capturas del diseño de la versión anterior ([ADR-0063](../../../../decisions/0063-the-product-is-a-pressure-instrument.md)). No se regeneran ni se toman como fuente para trabajo nuevo; quedan porque las US Done las embeben. La referencia vigente es el mapa de producto ([`../../map/`](../../../../design/map/README.md)).
+> **Congeladas como historia (2026-08-16)**: son las capturas del diseño de la versión anterior ([ADR-0063](../../../../decisions/0063-the-product-is-a-pressure-instrument.md)). No se regeneran ni se toman como fuente para trabajo nuevo; quedan porque las US Done las embeben. La referencia vigente es el mapa de producto ([`../../map/`](../../../product-canvas/README.md)).
 
 Capturas automáticas de cada artboard del canvas de design de la versión anterior. Fueron la fuente visual de verdad de cada US: cuando el código difería de la imagen, el código estaba mal (salvo decisión documentada).
 

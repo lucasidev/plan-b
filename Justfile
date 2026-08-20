@@ -164,6 +164,10 @@ frontend-lint-fix:
     cd frontend && bun run lint:fix
 
 # ═══════════════════════════════════════════════════════════════
+
+# Coherencia de la documentación de producto (ADR-0070): links, em-dashes, una story por épica
+check-docs:
+    bun scripts/check-docs.ts
 # Package management
 # ═══════════════════════════════════════════════════════════════
 
