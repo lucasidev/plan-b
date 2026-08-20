@@ -1,6 +1,6 @@
 # Error (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisión adversarial pendiente antes del hi-fi. Pública, se lee sin cuenta. Sin slug (aparece donde haga falta, no tiene ruta propia). Épicas que la componen: ninguna; el inventario la marca transversal.
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Sin slug (aparece donde haga falta, no tiene ruta propia). Épicas que la componen: ninguna; el inventario la marca transversal.
 
 ## Quién la usa
 

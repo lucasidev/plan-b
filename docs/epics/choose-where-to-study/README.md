@@ -50,6 +50,6 @@ Las que comparte con otras épicas viven en [`docs/design/screens/`](../../desig
 - **Cómo se lee la trayectoria para Silvia** sin vocabulario académico: el copy de nominal, real, brecha y las tres proporciones de la cohorte, sin abrir nada (O1-7). Es diseño de la Ficha de carrera.
 - **Dónde estudiarla con más de tres ofertas**: cuántas entran lado a lado en un celular y qué pasa con el resto (alfabético o por voces; el que quiere ordenar baja el CSV).
 - **Qué muestra Explorar** además de las dos lentes: si lista por cobertura, por voces o alfabético (O6-4 prohíbe cualquier orden por conveniencia).
-- **Inicio** no es de esta épica: es la vitrina (landing) y se diseña con su propio criterio cuando toque.
+- **Inicio** entra por esta épica (es la puerta a Explorar y Buscar) pero su identidad visual se diseña con criterio propio, aparte del producto.
 - **Si "más de dos años" es el umbral correcto para toda ficha** (T3-2) o depende del sujeto: una cátedra cambia de docente más rápido que una carrera cambia de plan.
 - **Cómo muestra la ficha los dos sentidos de un aspecto** (la frase y su contraria, T4-1 en [Reseñar](../write-a-review/README.md)): juntos como par, o cada una suelta en su lista ordenada por proporción.

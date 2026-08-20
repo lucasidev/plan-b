@@ -1,6 +1,6 @@
 # Verificaciones (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas y sus estados; revisión adversarial pendiente antes del hi-fi. Backoffice, rol verificación (Camila). Sin slug hoy (no confundir con `/verify-teacher`, la pantalla pública donde se sube la constancia o la evidencia docente).
+> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas y sus estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Backoffice, rol verificación (Camila). Sin slug hoy (no confundir con `/verify-teacher`, la pantalla pública donde se sube la constancia o la evidencia docente).
 
 ## Quién la usa
 

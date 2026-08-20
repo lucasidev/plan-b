@@ -1,6 +1,6 @@
 # Buscar (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la búsqueda y sus estados; revisión adversarial pendiente antes del hi-fi. Pública, se lee sin cuenta. Sin slug hoy (del inventario: el topbar tiene buscador y no lleva a ninguna pantalla). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (la búsqueda que entiende que lo que te recomiendan es una persona, O1-6), [Pedir una carrera](../../../epics/request-a-career/README.md) (el vacío explicado, con Pedir al lado).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la búsqueda y sus estados; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Sin slug hoy (del inventario: el topbar tiene buscador y no lleva a ninguna pantalla). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (la búsqueda que entiende que lo que te recomiendan es una persona, O1-6), [Pedir una carrera](../../../epics/request-a-career/README.md) (el vacío explicado, con Pedir al lado).
 
 ## Quién la usa
 
@@ -15,7 +15,7 @@ Quien lee, con un nombre suelto en la cabeza y no una carrera ("lo que me recomi
 1. **Una sola búsqueda**: un campo de texto que devuelve los cuatro sujetos con ficha (materia, cátedra, carrera en una institución, institución), mezclados y cada uno con su tipo a la vista.
 2. **El nombre de un docente lleva directo a su cátedra**: un docente no es una ficha, la cátedra sí (depende de que la cátedra exista como entidad, BO1-6).
 3. **Estado "resultados mezclados por sujeto"**: cada fila dice de qué sujeto es (materia, cátedra, carrera, institución) para no confundir una materia con la carrera que la contiene.
-4. **Estado "sin resultados"**: explica por qué con los tres estados del vacío (O2-1: no la cargamos todavía / cargada sin voces / cargada, todavía no derivamos) y ofrece [Pedir](../../../epics/request-a-career/screens/request/README.md).
+4. **Estado "sin resultados"**: si de verdad no hay nada cargado con ese nombre, la causa es una de dos, nunca un cero (O2-1): no la cargamos todavía (con [Pedir](../../../epics/request-a-career/screens/request/README.md)) o hay un error de tipeo. Si estuviera cargada, sin voces o sin cabecera, la búsqueda la devuelve igual, como resultado con su propio estado a la vista.
 5. **Sin cuenta** (O6-1): buscar y abrir cualquier resultado desde acá no pide login.
 
 ## Lo que no muestra nunca

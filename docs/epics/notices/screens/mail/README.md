@@ -1,6 +1,6 @@
 # Avisos (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Avisos](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los cinco mails y el apagado en Mi perfil; revisión adversarial pendiente antes del hi-fi. No es una pantalla del sitio con cuenta o pública: es el contenido de cinco mails distintos; la sección donde cada uno se apaga vive en Mi perfil, con cuenta. Sin slug (del inventario).
+> Ficha de pantalla, dueña: la épica [Avisos](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de los cinco mails y el apagado en Mi perfil; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. No es una pantalla del sitio con cuenta o pública: es el contenido de cinco mails distintos; la sección donde cada uno se apaga vive en Mi perfil, con cuenta. Sin slug (del inventario).
 
 ## Quién la usa
 

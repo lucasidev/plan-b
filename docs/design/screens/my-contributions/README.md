@@ -1,6 +1,6 @@
 # Mis aportes (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la lista y sus estados; revisión adversarial pendiente antes del hi-fi. Con cuenta: solo lo tuyo. Slug hoy `/reviews` (del inventario). Épicas que la componen: [Reseñar](../../../epics/write-a-review/README.md) (qué sumó cada frase, lo pendiente de vincular, lo a medias), [Deshacer](../../../epics/undo/README.md) (la puerta a Editar, de a uno), [Replicar](../../../epics/reply/README.md) (el aviso de que va a salir una réplica, con su plazo).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la lista y sus estados; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Con cuenta: solo lo tuyo. Slug hoy `/reviews` (del inventario). Épicas que la componen: [Reseñar](../../../epics/write-a-review/README.md) (qué sumó cada frase, lo pendiente de vincular, lo a medias), [Deshacer](../../../epics/undo/README.md) (la puerta a Editar, de a uno), [Replicar](../../../epics/reply/README.md) (el aviso de que va a salir una réplica, con su plazo).
 
 ## Quién la usa
 
@@ -8,7 +8,7 @@
 
 ## Qué stories resuelve
 
-[T3-4](../../../epics/write-a-review/README.md#stories) (las voces que sumó cada frase que marcaste, y cuántos la leyeron: es lo único que trae de vuelta), [T3-1](../../../epics/write-a-review/README.md#stories) junto con [D08](../../../reviews/2026-08-17-catalog-propagation.md) (lo pendiente de vincular no cuenta en ninguna ficha hasta que se vincula, y se ve pendiente acá mientras tanto), [T3-3](../../../epics/write-a-review/README.md#stories) (lo a medias queda guardado y aparece para retomar), [T2-2](../../../epics/reply/README.md#stories) (el aviso de que va a salir una réplica llega también acá, con su plazo), [O5-1](../../../epics/undo/README.md#stories) (la puerta a editar o borrar, de a uno).
+[T3-4](../../../epics/write-a-review/README.md#stories) (las voces que sumó cada frase que marcaste, y cuántos la leyeron: es lo único que trae de vuelta), [T3-1](../../../epics/write-a-review/README.md#stories) junto con [D08](../../../reviews/2026-08-17-catalog-propagation.md) (lo pendiente de vincular no cuenta en ninguna ficha hasta que se vincula, y se ve pendiente acá mientras tanto), [T3-3](../../../epics/write-a-review/README.md#stories) (lo a medias queda guardado y aparece para retomar), [T2-2](../../../epics/reply/README.md#stories) (el aviso de que va a salir una réplica llega también acá, con su plazo), [O5-1](../../../epics/undo/README.md#stories) (la puerta a editar o borrar, de a uno), [T1-2](../../../epics/care-for-what-is-published/README.md#stories) (tus correcciones de datos duros quedan acá, con qué corregiste y si ya se aplicó).
 
 ## Qué muestra
 
@@ -19,18 +19,19 @@ Una lista de tus aportes, cada uno con su estado, y tu situación declarada deba
 - **Comentario retenido**: tu comentario todavía lo está mirando alguien del equipo antes de publicarse; se dice acá, sin fecha de cuándo termina.
 - **Con réplica en plazo**: la cátedra va a responder a tu testimonio; se publica en la fecha que se muestra si no hacés nada, con las mismas tres salidas del mail (editar, borrar, pedir revisión: T2-2).
 - **A medias**: lo que empezaste a reseñar y no terminaste, con el paso donde quedó; retomar o descartar (T3-3).
+- **Corrección de dato**: cuando corregiste un dato duro de una ficha (T1-2), aparece acá con qué corregiste y si ya se aplicó ("corregiste la correlativa de Análisis Matemático II, aplicada").
 
-Cada aporte tiene **Editar** y **Borrar** (→ [Editar](../../../epics/undo/screens/edit/README.md)). Debajo de la lista, **tu situación declarada** (seguís, te recibiste, te fuiste, o todavía no dijiste) con el link para corregirla en Mi situación.
+Cada aporte tiene **Editar** y **Borrar** (→ [Editar](../../../epics/undo/screens/edit/README.md)). Debajo de la lista, **tus hechos de trayectoria** (el año de ingreso y tu situación: seguís, te recibiste, te fuiste, o todavía no dijiste), cada uno con Corregir y Borrar, en Editar.
 
 **Estado "sin aportes todavía"**: la pantalla explica qué es esta lista y ofrece Reseñar. **Estado "uno pendiente"** y **estado "uno con réplica en plazo"**: como se describen arriba, mezclados con el resto de la lista, no en una cola aparte.
 
 ## Lo que no muestra nunca
 
-Los votos que diste (abierto, más abajo); ningún aporte de otra cuenta; ninguna acción sobre lo que otro escribió.
+Ningún aporte de otra cuenta; ninguna acción sobre lo que otro escribió.
 
 ## Adónde va
 
-Llega desde: "Quedó registrada" al terminar de reseñar (de ahí T3-4 trae de vuelta), Mi perfil, el mail de [Avisos](../../../epics/notices/README.md) que avisa una réplica. Va a: [Editar](../../../epics/undo/screens/edit/README.md) (de a uno), Mi situación (corregir un hecho de trayectoria), Reseñar (otra materia), la ficha de la cátedra o de la materia de cada aporte.
+Llega desde: "Quedó registrada" al terminar de reseñar (de ahí T3-4 trae de vuelta), Mi perfil, el mail de [Avisos](../../../epics/notices/README.md) que avisa una réplica. Va a: [Editar](../../../epics/undo/screens/edit/README.md) (de a uno, también para corregir un hecho de trayectoria), Reseñar (otra materia), la ficha de la cátedra o de la materia de cada aporte.
 
 ## Decisiones que aplica
 

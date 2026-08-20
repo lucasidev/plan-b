@@ -1,6 +1,6 @@
 # Dónde estudiarla (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la comparación y sus tres estados; revisión adversarial pendiente antes del hi-fi. Pública, sin cuenta: se lee sin login, como toda pantalla de esta épica (O6-1). Slug hoy sin slug (del inventario).
+> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la comparación y sus tres estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Pública, sin cuenta: se lee sin login, como toda pantalla de esta épica (O6-1). Slug hoy sin slug (del inventario).
 
 ## Quién la usa
 

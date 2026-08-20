@@ -1,6 +1,6 @@
 # Método (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Llevarse el dato](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus bloques; revisión adversarial pendiente antes del hi-fi. Pública, sin cuenta: se lee y se descarga sin login (O6-1). Slug hoy sin slug (hoy es sección de la landing, del inventario).
+> Ficha de pantalla, dueña: la épica [Llevarse el dato](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus bloques; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Pública, sin cuenta: se lee y se descarga sin login (O6-1). Slug hoy sin slug (hoy es sección de la landing, del inventario).
 
 ## Quién la usa
 

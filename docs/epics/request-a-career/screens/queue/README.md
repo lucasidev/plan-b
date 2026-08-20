@@ -1,6 +1,6 @@
 # La cola (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Pedir una carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus estados; revisión adversarial pendiente antes del hi-fi. Pública: se lee sin cuenta. Slug hoy: sin slug.
+> Ficha de pantalla, dueña: la épica [Pedir una carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Pública: se lee sin cuenta. Slug hoy: sin slug.
 
 ## Quién la usa
 

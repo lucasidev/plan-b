@@ -1,6 +1,6 @@
 # Responder (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Replicar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisión adversarial pendiente antes del hi-fi. Con identidad verificada (docente o institucional): sin eso no hay campo de respuesta. Sin slug (del inventario).
+> Ficha de pantalla, dueña: la épica [Replicar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con identidad verificada (docente o institucional): sin eso no hay campo de respuesta. Sin slug (del inventario).
 
 ## Quién la usa
 

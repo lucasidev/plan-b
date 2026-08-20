@@ -1,6 +1,6 @@
 # Inicio (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la estructura de bloques de la landing; revisión adversarial pendiente antes del hi-fi. Pública, se lee sin cuenta. Slug hoy `/` (del inventario). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (la entrada: el inventario la marca «se diseña con criterio propio»).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la estructura de bloques de la landing; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Slug hoy `/` (del inventario). Épicas que la componen: [Elegir dónde estudiar](../../../epics/choose-where-to-study/README.md) (la entrada: el inventario la marca «se diseña con criterio propio»).
 
 ## Quién la usa
 
@@ -16,7 +16,7 @@ El inventario marca esta pantalla «se diseña con criterio propio»: lo que sig
 
 1. **Qué es plan-b, en palabras de lector**: lo que los alumnos ya saben porque lo vivieron, hoy disperso en grupos y pasillos, convertido en un dato que aguanta una discusión. Sin vocabulario de producto ni de tesis. Dicho también en tres pasos cortos: explorar o buscar, leer la ficha con sus voces, reseñar si cursaste.
 2. **La entrada a [Explorar](../explore/README.md) y [Buscar](../search/README.md)**: los dos caminos para llegar a una ficha.
-3. **Una muestra honesta**: una [ficha real](../chair/README.md), con sus voces, no un número inventado para la ocasión ("Análisis Matemático II · Cátedra Pérez, UNSTA: 7 de cada 10 marcaron alguien fallando · 41 voces"). Nada de testimonios destacados ni instituciones destacadas (O6-4): la muestra es una ficha, no un ranking de lo mejor.
+3. **Una muestra honesta**: una [ficha real](../chair/README.md), con sus voces, no un número inventado para la ocasión ("Análisis Matemático II · Cátedra Pérez, UNSTA: 6 de cada 10 marcaron alguien fallando · 41 voces"). Nada de testimonios destacados ni instituciones destacadas (O6-4): la muestra es una ficha, no un ranking de lo mejor.
 4. **El método al alcance**: link a [Método](../../../epics/take-the-data/screens/method/README.md), para quien quiere saber cómo se calculó eso antes de creerlo.
 5. **Pedir si no está**: link a [Pedir](../../../epics/request-a-career/screens/request/README.md), para quien ya intuye que su facultad no va a estar cargada.
 6. **Leer no pide cuenta**: lo dice acá mismo, antes de que alguien tenga que descubrirlo solo (O6-1).

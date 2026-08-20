@@ -1,6 +1,6 @@
 # Anonimato (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la página de lectura; revisión adversarial pendiente antes del hi-fi. Pública, se lee sin cuenta. Slug hoy `/about` (del inventario: hoy habla de otra cosa, se rehace). Épicas que la componen: [Reseñar](../../../epics/write-a-review/README.md) (la posición sobre el anonimato, dicha antes de escribir), [Moderar sin romper el producto](../../../epics/moderate-without-breaking-the-product/README.md) (la política pública de moderación y réplica).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la página de lectura; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Slug hoy `/about` (del inventario: hoy habla de otra cosa, se rehace). Épicas que la componen: [Reseñar](../../../epics/write-a-review/README.md) (la posición sobre el anonimato, dicha antes de escribir), [Moderar sin romper el producto](../../../epics/moderate-without-breaking-the-product/README.md) (la política pública de moderación y réplica).
 
 ## Quién la usa
 

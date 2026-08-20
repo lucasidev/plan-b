@@ -1,6 +1,6 @@
 # Equipo (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Cortar los accesos](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las altas, los roles y la baja; revisión adversarial pendiente antes del hi-fi. Backoffice, rol Admin (el único que entra). Sin slug hoy.
+> Ficha de pantalla, dueña: la épica [Cortar los accesos](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las altas, los roles y la baja; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Backoffice, rol Admin (el único que entra). Sin slug hoy.
 
 ## Quién la usa
 

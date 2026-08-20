@@ -1,6 +1,6 @@
 # Mi perfil (la pantalla)
 
-> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la cuenta y sus estados; revisión adversarial pendiente antes del hi-fi. Con cuenta: la propia. Slug hoy `/my-profile` (del inventario). Épicas que la componen: [Avisos](../../../epics/notices/README.md) (dónde se apaga cada mail), [Deshacer](../../../epics/undo/README.md) (la puerta a Baja), [Cuidar lo publicado](../../../epics/care-for-what-is-published/README.md) (la señal de verificado).
+> Ficha de pantalla compartida ([inventario](../README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la cuenta y sus estados; revisada el 2026-08-19 ([registro](../../../reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Con cuenta: la propia. Slug hoy `/my-profile` (del inventario). Épicas que la componen: [Avisos](../../../epics/notices/README.md) (dónde se apaga cada mail), [Deshacer](../../../epics/undo/README.md) (la puerta a Baja), [Cuidar lo publicado](../../../epics/care-for-what-is-published/README.md) (la señal de verificado).
 
 ## Quién la usa
 
@@ -14,7 +14,7 @@ Cualquier cuenta que quiere ver su mail y su situación, apagar un aviso, verifi
 
 - **Tu cuenta**: el mail, la situación declarada en Registro (curso, cursé y dejé, me recibí, docente), la carrera declarada.
 - **Tu situación**: un link a Mi situación (seguís, te recibiste, te fuiste, o todavía no dijiste).
-- **Los cinco avisos, cada uno con su interruptor**: cerró el período, cargamos lo que pediste, el resumen para docentes verificados, el aviso antes de una réplica, el reenganche anual. El apagado vive acá; la pantalla que dibuja cada mail es [Avisos](../../../epics/notices/README.md).
+- **Los cinco avisos**: tres con interruptor libre (cerró el período, cargamos lo que pediste, el resumen para docentes verificados), el aviso antes de una réplica siempre prendido (es tu palanca del plazo, no se apaga) y el reenganche anual fijo hasta que respondas. El apagado vive acá; la pantalla que dibuja cada mail es [Avisos](../../../epics/notices/README.md).
 - **La verificación**: si la hiciste, la señal con la fecha; si no, un link a Verificar.
 - **La puerta a Baja**: un link a [Baja](../../../epics/undo/screens/delete-account/README.md), sin el detalle de qué implica (eso lo dice esa pantalla, con sus palabras exactas, antes de confirmar).
 
@@ -22,7 +22,7 @@ Cualquier cuenta que quiere ver su mail y su situación, apagar un aviso, verifi
 
 ## Lo que no muestra nunca
 
-Nada público sale de acá: no hay perfil social, no se lista lo que aportaste para que lo vea otra cuenta (eso vive en la ficha de cada sujeto, sin tu nombre: O4-4). El reenganche anual, una vez contestado, no vuelve a ofrecerse (O6-2): ese interruptor en particular queda fijo, no es un toggle libre como los otros cuatro.
+Nada público sale de acá: no hay perfil social, no se lista lo que aportaste para que lo vea otra cuenta (eso vive en la ficha de cada sujeto, sin tu nombre: O4-4). El reenganche anual, una vez contestado, no vuelve a ofrecerse (O6-2): ese interruptor en particular queda fijo, no es un toggle libre como los otros tres (cerró el período, cargamos lo que pediste, el resumen para docentes verificados). El aviso antes de una réplica tampoco es un toggle libre: queda siempre prendido, es tu palanca del plazo.
 
 ## Adónde va
 

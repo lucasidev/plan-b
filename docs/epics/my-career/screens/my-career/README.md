@@ -1,6 +1,6 @@
 # Mi carrera (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Mi carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisión adversarial pendiente antes del hi-fi. Con cuenta: sin cuenta no se llega, aunque la co-cursada pública de la Ficha de carrera sí se lee sin cuenta (el gate está en la acción, no en la lectura). Slug hoy `/my-career` (existe el chasis; el contenido se rehace).
+> Ficha de pantalla, dueña: la épica [Mi carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con cuenta: sin cuenta no se llega, aunque la co-cursada pública de la Ficha de carrera sí se lee sin cuenta (el gate está en la acción, no en la lectura). Slug hoy `/my-career` (existe el chasis; el contenido se rehace).
 
 ## Quién la usa
 

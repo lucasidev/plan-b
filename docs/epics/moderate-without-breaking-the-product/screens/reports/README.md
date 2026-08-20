@@ -1,6 +1,6 @@
 # Reportes (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas y sus estados; revisión adversarial pendiente antes del hi-fi. Backoffice, rol moderación (Nahuel). Slug hoy `/admin/moderacion/reportes`, en castellano contra la convención de nombrar identificadores en inglés: se corrige al tocar la ruta.
+> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas y sus estados; revisada el 2026-08-19 ([registro](../../../../reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Backoffice, rol moderación (Nahuel). Slug hoy `/admin/moderacion/reportes`, en castellano contra la convención de nombrar identificadores en inglés: se corrige al tocar la ruta.
 
 ## Quién la usa
 

@@ -1,6 +1,6 @@
 # Revisión adversarial: las trece épicas y sus pantallas (2026-08-19)
 
-> Registro de revisión ([índice](README.md)). **Alcance**: las trece épicas de `docs/epics/` (README, flujo y sus 19 pantallas propias con ficha y boceto), la Ficha de cátedra, y la coherencia de los cuatro índices (épicas, catálogo, inventario de pantallas, mapa). **Método**: tres revisores en contexto fresco, cada uno con un lote y las mismas fuentes (tesis, ADR-0063 a 0070, D01-D10, glosario, catálogo de frases, personas); solo hallazgos verificables contra una fuente, con cita de los dos textos. **Aplicado** el 2026-08-19 (commit `docs(epics): the adversarial review of the thirteen epics lands; forty-six findings, forty fixed`). Las 14 pantallas compartidas escritas el mismo día **no entran en este alcance**: su revisión adversarial está pendiente, como declara cada ficha.
+> Registro de revisión ([índice](README.md)). **Alcance**: las trece épicas de `docs/epics/` (README, flujo y sus 19 pantallas propias con ficha y boceto), la Ficha de cátedra, y la coherencia de los cuatro índices (épicas, catálogo, inventario de pantallas, mapa). **Método**: tres revisores en contexto fresco, cada uno con un lote y las mismas fuentes (tesis, ADR-0063 a 0070, D01-D10, glosario, catálogo de frases, personas); solo hallazgos verificables contra una fuente, con cita de los dos textos. **Aplicado** el 2026-08-19 (commit `docs(epics): the adversarial review of the thirteen epics lands; forty-six findings, forty fixed`). Las 14 pantallas compartidas escritas el mismo día **no entran en este alcance**: su revisión es el [registro de compartidas](2026-08-19-shared-screens.md), del mismo día.
 
 Estados: **corregido** (el arreglo está aplicado, se dice cuál), **abierto** (real, registrado como pregunta abierta en la ficha o la épica que corresponde), **descartado** (no era un hallazgo, se dice por qué).
 
@@ -71,6 +71,6 @@ Conteos y unicidad (93 stories, cada una en una sola épica; los índices cierra
 
 ## Deuda que este registro deja explícita
 
-- **Las 14 pantallas compartidas** (`docs/design/screens/`) se escribieron el mismo día y no pasaron esta revisión: cada ficha lo declara. Es la próxima revisión.
+- **Las 14 pantallas compartidas** (`docs/design/screens/`) se escribieron el mismo día y no pasaron esta revisión: las revisó el [registro siguiente](2026-08-19-shared-screens.md).
 - **La verificación O6 por ficha** (las cuatro preguntas de la garantía) está hecha solo para la Ficha de cátedra; para el resto es parte de su revisión pendiente.
 - "Oferta" se usa en Sostener el catálogo sin entrada en el glosario (el glosario ya lo usa así en "Carrera canónica"): deuda de glosario anterior a este trabajo.
