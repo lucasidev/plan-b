@@ -1,6 +1,6 @@
 # ADR-0037: Changelog automation con auto-append on merge
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md) (2026-08-21): la automatización se retiró porque el changelog no tenía todavía un lector distinto de quien escribe los commits
 - **Fecha**: 2026-04-30
 
 ## Contexto

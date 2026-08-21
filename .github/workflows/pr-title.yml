@@ -1,9 +1,9 @@
 name: PR title (Conventional Commits)
 
 # Cuando un PR se mergea con "Squash and merge", el título del PR se vuelve el
-# único commit en main. El workflow de changelog auto-append (changelog.yml)
-# asume que ese commit es un Conventional Commit válido — si el título no lo
-# es, el cambio no aparece en CHANGELOG.md o aparece mal clasificado.
+# único commit en main, así que un título mal formado ensucia el historial para
+# siempre: es de esos commits que sale el changelog el día que se genere
+# (ADR-0074), y es lo que se lee para saber qué entró en cada PR.
 #
 # Lefthook commit-msg valida los commits localmente, pero no chequea PR titles.
 # Este workflow llena ese gap. Es la red de seguridad para Squash and merge

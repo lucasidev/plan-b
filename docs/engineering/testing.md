@@ -324,33 +324,9 @@ Una pregunta recurrente: ¿está bien que `e2e/helpers/mailpit.ts` lea Mailpit H
 
 **Atajos que aceptamos deliberadamente**: ningún E2E es 100% fiel al user real. Siempre hay alguno (el "click humano" del mail, el "esperar TTL" del rate limit, el tiempo físico). La regla práctica: que los atajos sean en la **interacción con sistemas externos** (mail provider, clock), no en el **comportamiento del producto**.
 
-## Changelog automation
+## Changelog
 
-Cubierto por [ADR-0037](../decisions/0037-changelog-automation-auto-append.md). Resumen:
-
-- **No editás `CHANGELOG.md` a mano**. Un workflow GHA (`changelog.yml`) corre en cada push a `main`, lee el último commit, lo parsea como Conventional Commit, y appendea un bullet a la sección `[Unreleased]`.
-- Para que tu cambio aparezca en el changelog, tu commit message debe ser un Conventional Commit válido. Lefthook commit-msg ya enforcea eso localmente.
-- Tipos que **aparecen** en el changelog (mapeo a Keep-a-Changelog):
-  - `feat`, `perf` → "Added"
-  - `fix` → "Fixed"
-  - `refactor` → "Changed"
-  - `revert` → "Removed"
-- Tipos que **no aparecen**: `docs`, `style`, `test`, `build`, `ci`, `chore`. El script los detecta y skipea silenciosamente.
-- **BREAKING CHANGE**: si el subject tiene `!:` o el body contiene `BREAKING CHANGE:`, el bullet aparece marcado `**(BREAKING)**`. No bumpea versión (versioning está deferred, ver más abajo).
-
-### PR titles para Squash and merge
-
-Cuando un PR se mergea con Squash, el título del PR se vuelve el commit en main. Ese título debe ser Conventional Commit válido (`feat(scope): descripción`) para que el workflow lo lea bien.
-
-[ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md) define Rebase and merge como default; usar Squash sólo si los commits del PR tienen WIP/fixup que no aporta historia. La red de seguridad para Squash es el workflow `pr-title.yml` (`amannn/action-semantic-pull-request`) que valida el title del PR como Conventional Commit antes de permitir merge.
-
-### Versioning
-
-Política completa en [ADR-0038](../decisions/0038-release-and-versioning-policy.md). Resumen:
-
-- Pre-deploy (estamos acá): no hay versiones, no hay releases, no hay tags-as-releases. CHANGELOG mantiene una `[Unreleased]` única.
-- Tags narrativos manuales para hitos (presentaciones, demos, pre-refactor) **están permitidos**. No son releases. Sin formato fijo, sin prefijo `v`. Ejemplo: `presentacion-fase-2-2026-05-15`.
-- Trigger para abrir la ADR de versioning real: primer deploy a entorno con URL accesible. Esquema recomendado para esa ADR futura: **semver** (`MAJOR.MINOR.PATCH`).
+No hay nada que testear: la automatización se retiró ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)). `CHANGELOG.md` está congelado y se genera de una pasada desde los commits el día que haya quien lo lea. Lo que sí sigue enforceado localmente es el formato del commit (lefthook `commit-msg`), que es lo que hace posible generarlo después.
 
 ## Cuando no sabés qué hacer
 

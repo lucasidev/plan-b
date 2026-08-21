@@ -32,9 +32,10 @@ lo que debe pasar siempre va a enforcement determinístico, no a disciplina.
   explícito en el chat antes de cada push/merge, y GitHub no permite aprobar el propio PR, así que
   exigir 1 review con un solo dev bloquea todo merge. Se evaluó y descartó el esquema de dos cuentas.
   **Cuando entre un segundo dev, subir a 1** (el review pasa a ser real).
-- **Bypass: solo la App `planb-ci-bot`** (para el push del changelog, ADR-0037). GitHub no permite
-  dar bypass a su app "GitHub Actions" en repos personales (ni API ni UI), así que `changelog.yml`
-  pushea con el App token + `[skip ci]`. Re-evaluación documentada en ADR-0043.
+- **Bypass: solo la App `planb-ci-bot`**, que hoy usa `dependabot-bun-lockfile.yml`. GitHub no
+  permite dar bypass a su app "GitHub Actions" en repos personales (ni API ni UI), de ahí la App
+  propia. El otro consumidor era `changelog.yml`, retirado por
+  [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md).
 
 ## Conventional Commits: todos los detalles
 
@@ -65,8 +66,7 @@ Rate limit 5/h por IP hasheada en Redis.
 ### Footer
 
 Tags especiales:
-- `BREAKING CHANGE: descripción`: marca breaking change. Aparece en CHANGELOG con `**(BREAKING)**`.
-- `[skip changelog]`: opt-out del auto-append (útil para reverts manuales o syncs).
+- `BREAKING CHANGE: descripción`: marca breaking change. Queda en el commit y lo levanta el generador de changelog cuando corra ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)).
 
 ### Reglas duras
 
@@ -275,7 +275,7 @@ No silenciar la regla "porque sí".
 ## Refs
 
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md): la decisión arquitectónica detrás de Rebase + Conventional Commits.
-- [ADR-0037](../decisions/0037-changelog-automation-auto-append.md): cómo los commits alimentan CHANGELOG.
+- [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera cuando hay quien lo lea, no en cada push.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy.
 - [docs/engineering/rollback.md](rollback.md): qué hacer cuando algo entra a main y rompe.
 - `.github/workflows/{commits,pr-title}.yml`: enforcement automatizado.
