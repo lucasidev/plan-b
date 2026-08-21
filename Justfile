@@ -163,6 +163,9 @@ frontend-lint:
 frontend-lint-fix:
     cd frontend && bun run lint:fix
 
+frontend-typecheck:
+    cd frontend && bunx tsc --noEmit
+
 # Biome sobre scripts/ con la config de la raíz. Usa el binario que ya instala
 # frontend en vez de `bunx biome`: desde la raíz no hay package.json, y ahí
 # `bunx biome` se baja y ejecuta un paquete de npm que se llama igual y no es
@@ -181,9 +184,17 @@ scripts-typecheck:
 
 # ═══════════════════════════════════════════════════════════════
 
-# Coherencia de la documentación de producto (ADR-0070): links, em-dashes, una story por épica
+# Coherencia de la documentación de producto (ADR-0070): links, em-dashes,
+# stories, pantallas, trazabilidad e idioma de los ADR.
 check-docs:
     bun scripts/check-docs.ts
+
+# Igual pero cortando: es la forma en que corre en CI, y la que usa `just ci`.
+# Interactivo señala y sigue, para no frenar un push por un doc a medio escribir.
+check-docs-strict:
+    bun scripts/check-docs.ts --strict
+
+# ═══════════════════════════════════════════════════════════════
 # Package management
 # ═══════════════════════════════════════════════════════════════
 
@@ -234,15 +245,18 @@ db-seed:
 # Stop containers, remove volumes, delete .env files
 teardown:
     bun scripts/compose.ts down -v
-    rm -f .env frontend/.env.local
+    bun scripts/remove-paths.ts .env frontend/.env.local
 
 clean:
     cd backend && dotnet clean
-    cd frontend && rm -rf node_modules .next .turbo
+    bun scripts/remove-paths.ts frontend/node_modules frontend/.next frontend/.turbo
 
 # ═══════════════════════════════════════════════════════════════
-# CI (same recipes the GitHub Actions workflow runs)
+# CI (las mismas gates que corre GitHub Actions, menos E2E)
 # ═══════════════════════════════════════════════════════════════
 
-ci: backend-build backend-test frontend-lint scripts-lint scripts-typecheck frontend-build frontend-test
+# Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
+# ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
+# con ci.yml, docs-links.yml y commits.yml.
+ci: backend-lint backend-build backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict frontend-build frontend-test
     @echo "✓ All quality gates passed"
