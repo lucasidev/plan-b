@@ -6,7 +6,7 @@ namespace Planb.Identity.Application.Seeding;
 /// Schema of a single persona entry. Data lives in
 /// <c>backend/host/Planb.Api/seed-data/personas.json</c> and is bound at startup via the
 /// Options pattern (<see cref="SeedPersonasOptions"/>). Source of truth for the catalog:
-/// <c>docs/domain/personas.md</c>.
+/// <c>docs/product/personas.md</c>.
 /// </summary>
 public sealed class PersonaConfig
 {

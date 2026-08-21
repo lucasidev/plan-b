@@ -277,6 +277,6 @@ No silenciar la regla "porque sí".
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md): la decisión arquitectónica detrás de Rebase + Conventional Commits.
 - [ADR-0037](../decisions/0037-changelog-automation-auto-append.md): cómo los commits alimentan CHANGELOG.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy.
-- [docs/operations/rollback.md](rollback.md): qué hacer cuando algo entra a main y rompe.
+- [docs/engineering/rollback.md](rollback.md): qué hacer cuando algo entra a main y rompe.
 - `.github/workflows/{commits,pr-title}.yml`: enforcement automatizado.
 - `lefthook.yml`: enforcement local (commit-msg, pre-commit format).

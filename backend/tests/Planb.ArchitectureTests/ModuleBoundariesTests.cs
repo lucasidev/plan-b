@@ -22,7 +22,7 @@ namespace Planb.ArchitectureTests;
 /// módulo (ver csproj) para que estén en el output y carguen.
 ///
 /// Si una regla es difícil de testear con NetArchTest (e.g. inspección de method bodies para
-/// <c>DateTime.UtcNow</c> directo), queda como nota en docs/testing/conventions.md y se chequea en
+/// <c>DateTime.UtcNow</c> directo), queda como nota en docs/engineering/testing.md y se chequea en
 /// review hasta que tengamos un Roslyn analyzer custom.
 /// </summary>
 public class ModuleBoundariesTests

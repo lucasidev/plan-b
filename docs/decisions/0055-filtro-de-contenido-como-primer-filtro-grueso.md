@@ -61,4 +61,4 @@ Rechazada por lo mismo que el punto 2 de la decisión: una cola inflada de falso
 
 - [ADR-0013](0013-embedding-gated-en-transiciones-a-published.md): razona sobre reseñas retenidas por filtro; depende de esta decisión.
 - [ADR-0010](0010-threshold-auto-hide-configurable-por-env-var.md): el otro camino a `UnderReview`, por acumulación de reportes. Los dos convergen en el mismo estado, y esa convergencia es la causa del agujero anotado arriba.
-- [`docs/domain/review-lifecycle.md`](../history/domain-v1/review-lifecycle.md): las transiciones completas del estado de una reseña.
+- [`docs/history/domain-v1/review-lifecycle.md`](../history/domain-v1/review-lifecycle.md): las transiciones completas del estado de una reseña.

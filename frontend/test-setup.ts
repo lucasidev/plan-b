@@ -6,7 +6,7 @@
  * - `cleanup()` after each test removes mounted React trees from the
  *   happy-dom DOM, preventing tests from leaking state across files.
  *
- * Convenciones de testing en docs/testing/conventions.md (ADR-0036).
+ * Convenciones de testing en docs/engineering/testing.md (ADR-0036).
  */
 
 import '@testing-library/jest-dom/vitest';

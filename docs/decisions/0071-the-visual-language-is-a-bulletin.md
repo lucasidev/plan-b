@@ -32,7 +32,7 @@ Ocho direcciones sobre la misma pantalla, exploradas el 2026-08-19 (los artboard
 
 ## Consecuencias
 
-- **[`docs/design/design-system.md`](../product/design-system.md) se reescribe** con esta paleta, tipografía y forma como contrato, en el mismo commit.
+- **[`docs/product/design-system.md`](../product/design-system.md) se reescribe** con esta paleta, tipografía y forma como contrato, en el mismo commit.
 - **El hi-fi de las pantallas clave aplica este contrato** (en el `sketch.html` de cada una, como fija [ADR-0070](0070-product-requirements-are-vertical-by-capability-and-design-is-text.md): git guarda el mid-fi).
 - **Los bocetos mid-fi existentes no se repintan**: son estructura, no contrato visual (sus fichas ya lo dicen), y quedaron con Apricot. Repintar 40 bocetos es ceremonia; el contrato lo marca este ADR.
 - **`frontend/src/app/globals.css` no se toca todavía**: sigue Apricot sirviendo al chasis en retiro. Los tokens nuevos aterrizan con el primer slice del producto nuevo (o un PR de tokens propio si conviene antes), y el design system documenta la transición para que el drift sea explícito y no accidente.

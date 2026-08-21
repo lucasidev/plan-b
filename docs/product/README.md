@@ -47,7 +47,7 @@ Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo i
 | [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
 | [Avisos](notices/README.md) | `notices/` | infraestructura transversal | todos | ninguno propio | 1 |
 
-93 stories y 34 pantallas en total.
+100 stories y 34 pantallas en total.
 
 ## Las 34 pantallas
 

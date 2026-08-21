@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Discovery del dominio (ver `docs/domain/eventstorming.md`) introdujo features de planificación: guardar simulaciones, compartirlas al corpus público, recibir recomendaciones. Hasta ese punto, el modelo del proyecto tenía 5 BCs: Identity, Academic, Enrollments, Reviews, Moderation. La pregunta: ¿dónde ponemos `SimulationDraft`?
+Discovery del dominio (ver `docs/history/domain-v1/eventstorming.md`) introdujo features de planificación: guardar simulaciones, compartirlas al corpus público, recibir recomendaciones. Hasta ese punto, el modelo del proyecto tenía 5 BCs: Identity, Academic, Enrollments, Reviews, Moderation. La pregunta: ¿dónde ponemos `SimulationDraft`?
 
 Dos opciones reales:
 

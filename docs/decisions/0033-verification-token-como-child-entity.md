@@ -115,11 +115,11 @@ Este ADR formaliza que en planb, las siguientes son child entities (no aggregate
 | `CommissionTeacher` | Commission | "asignación de teacher a commission" es parte del estado de Commission, no entity independiente |
 | `TeacherResponse` | Review | una response por review (UNIQUE), cascade natural si Review se remueve |
 
-Detalle completo + criterios en `docs/domain/tactical/aggregates.md`.
+Detalle completo + criterios en `docs/history/domain-v1/tactical/aggregates.md`.
 
 ## Cuándo revisitar
 
 - Si VerificationToken gana un purpose que tiene invariantes propias (ej. password reset con regla "no se puede reset si el user creó cuenta hace < 1 hora"), evaluar si ese purpose merece su propio aggregate. Mientras los tres purposes (UserEmailVerification, TeacherInstitutionalVerification, futuro PasswordReset) compartan invariantes, comparten el shape de entity.
 - Si emerge un caso donde necesitamos query directa de tokens (ej. "cuántos tokens active en el sistema" para metrics), agregar query service en Application/Contracts/. NO promover a aggregate por eso.
 
-Refs: [ADR-0008](0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0017](0017-persistence-ignorance.md), [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md). Ver también `docs/domain/tactical/aggregates.md` para el catálogo completo de aggregates / entities / VOs / projections.
+Refs: [ADR-0008](0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0017](0017-persistence-ignorance.md), [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md). Ver también `docs/history/domain-v1/tactical/aggregates.md` para el catálogo completo de aggregates / entities / VOs / projections.

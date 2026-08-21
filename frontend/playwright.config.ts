@@ -14,7 +14,7 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 /**
  * Playwright config — E2E suite del frontend.
  *
- * Convenciones (ADR-0036, docs/testing/conventions.md):
+ * Convenciones (ADR-0036, docs/engineering/testing.md):
  *   - Specs en `frontend/e2e/<área>/<flow>.spec.ts`.
  *   - Helpers reusables en `frontend/e2e/helpers/`.
  *   - Localmente: `just frontend-test-e2e` levanta su propio stack contra una base efímera

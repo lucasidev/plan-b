@@ -72,14 +72,14 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 
 - **Source of truth siempre Postgres**. Redis es solo derivación o ephemeral.
 - **Toda key tiene TTL explícito**. Convención: ≤ 30 días.
-- **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): los seis patrones (key shape, TTL, comandos, fallback) están en [`docs/architecture/redis-key-patterns.md`](../docs/engineering/redis-key-patterns.md). **Implementados hoy: solo los dos primeros** (refresh token revocation list y rate limiting sliding-window). Idempotency keys, hot reads cache, crowd insights cache y recently-viewed son diseño acordado sin código: antes de usarlos hay que escribirlos.
+- **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-como-cache-y-ephemeral-state.md)): los seis patrones (key shape, TTL, comandos, fallback) están en [`docs/engineering/redis-key-patterns.md`](../docs/engineering/redis-key-patterns.md). **Implementados hoy: solo los dos primeros** (refresh token revocation list y rate limiting sliding-window). Idempotency keys, hot reads cache, crowd insights cache y recently-viewed son diseño acordado sin código: antes de usarlos hay que escribirlos.
 - **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, la usan academic y moderation; planning también, mientras exista). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
 - **Degradación**: si Redis no responde, los handlers degradan (cache miss → DB; rate limiter no disponible → fail open con warning; refresh tokens no validables → 401 y user se relogea). No fallan completamente.
 - **Out of scope**: pub/sub (Wolverine outbox cubre messaging), vector search (pgvector), source of truth de cualquier dato persistente.
 
 ## Tests
 
-Convenciones detalladas en [`docs/testing/conventions.md`](../docs/engineering/testing.md). Resumen para backend:
+Convenciones detalladas en [`docs/engineering/testing.md`](../docs/engineering/testing.md). Resumen para backend:
 
 - **Domain unit** (xUnit + Shouldly): entidades / VOs / errors. Sin mocks, sin I/O. Vive en `modules/<m>/tests/Planb.<M>.Tests/Domain/`.
 - **Handler unit** (xUnit + NSubstitute + Shouldly): Wolverine handler + FluentValidation, deps mockeadas. Vive en `modules/<m>/tests/Planb.<M>.Tests/Features/<UseCase>/`.

@@ -9,7 +9,7 @@ namespace Planb.Identity.Infrastructure.Security;
 
 /// <summary>
 /// Redis-backed refresh token revocation list. Implements Patrón #1 of
-/// <c>docs/architecture/redis-key-patterns.md</c>.
+/// <c>docs/engineering/redis-key-patterns.md</c>.
 ///
 /// Key shapes:
 /// <list type="bullet">

@@ -29,7 +29,7 @@ Formato de cada entrada:
 - `lefthook.yml`: removido el step `e2e-zone`. Pre-push se queda con lint, typecheck, build, unit tests.
 - `.github/workflows/ci.yml`: gana un job `e2e` que **corre siempre** en cada PR (ports los services + steps que vivían en `e2e.yml`). Sin condicional, sin label, sin paths-filter.
 - Label `e2e` del repo: `gh label delete e2e`.
-- Régimen documentado en `docs/testing/conventions.md` sección "Política E2E: una sola regla".
+- Régimen documentado en `docs/engineering/testing.md` sección "Política E2E: una sola regla".
 
 **Prevención**:
 
@@ -53,7 +53,7 @@ Formato de cada entrada:
 - Si matchea zona E2E: chequea backend `:5000/health` + frontend `:3000`. Si no están arriba, falla con instrucciones (`just dev`). Si están arriba, corre `bunx playwright test`. Si la suite falla, el push se aborta.
 - Si NO matchea: skip transparente.
 
-Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El escape selectivo `SKIP_E2E_PRECHECK=1` se removió el 2026-05-23 porque se estaba volviendo rutina del asistente. **Update 2026-05-24**: el hook completo se removió. La política nueva es "E2E siempre en CI" (estándar industria), pre-push hook se queda con gates rápidos (lint/typecheck/build/unit). Detalle del reset en `docs/testing/conventions.md` sección "Política E2E: una sola regla".
+Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El escape selectivo `SKIP_E2E_PRECHECK=1` se removió el 2026-05-23 porque se estaba volviendo rutina del asistente. **Update 2026-05-24**: el hook completo se removió. La política nueva es "E2E siempre en CI" (estándar industria), pre-push hook se queda con gates rápidos (lint/typecheck/build/unit). Detalle del reset en `docs/engineering/testing.md` sección "Política E2E: una sola regla".
 
 **Prevención**:
 
@@ -90,7 +90,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 **Fix**: 
 
-- Lista cerrada de paths (zona E2E) en `docs/testing/conventions.md` sección "Cuándo un PR necesita E2E".
+- Lista cerrada de paths (zona E2E) en `docs/engineering/testing.md` sección "Cuándo un PR necesita E2E".
 - Auto-label vía GitHub Action en `.github/workflows/auto-label.yml` + `.github/labeler.yml`. Si el PR matchea la zona E2E, el label `e2e` se aplica solo (y se quita si en una iteración siguiente ya no aplica, gracias a `sync-labels: true`).
 - Recipe `just frontend-test-e2e-show` (headed + slowMo) para que correr E2E local sea cero fricción cognitiva.
 
@@ -137,7 +137,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 **Prevención**:
 
-- Aplicar label `e2e` cuando el PR toca cualquier código que pueda afectar lo que un E2E spec verifica. Lista por path en `docs/testing/conventions.md` (sección E2E).
+- Aplicar label `e2e` cuando el PR toca cualquier código que pueda afectar lo que un E2E spec verifica. Lista por path en `docs/engineering/testing.md` (sección E2E).
 - Cuando se corre E2E local pre-merge, correr la suite completa (`bunx playwright test` sin filtro), no solo el spec específico de la US tocada.
 - No reescribimos historia: los runs `E2E ❌` en commits intermedios de main quedan como evidencia.
 
@@ -259,7 +259,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 ## 2026-05-04 · Lychee CI fail por links a docs aún no mergeados
 
-**Síntoma**: CI workflow `Check links in markdown` (lychee) falló dos veces seguidas, en PRs distintos, por links a `docs/plan/stories/US-037-f.md` que el PR referenciaba pero que vivía en otra rama todavía no mergeada.
+**Síntoma**: CI workflow `Check links in markdown` (lychee) falló dos veces seguidas, en PRs distintos, por links a `docs/history/domain-v1/stories/US-037-f.md` que el PR referenciaba pero que vivía en otra rama todavía no mergeada.
 
 **Causa raíz**: lychee resuelve links relativos a archivos del repo. Si el doc destino no está en main, falla. Cuando dos PRs interdependientes (ej. US-037-b referenciando US-037-f que aún no mergeó) se trabajan en paralelo, el primero en mergear rompe lychee.
 
@@ -389,7 +389,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 **Prevención**:
 
-- Native browser dialogs (alert / confirm / prompt) en Playwright requieren handler explícito antes de la acción que los dispara. Documentar en `docs/testing/conventions.md`.
+- Native browser dialogs (alert / confirm / prompt) en Playwright requieren handler explícito antes de la acción que los dispara. Documentar en `docs/engineering/testing.md`.
 - Seeds asíncronos van en hook `beforeEach` con await blocking, no en setup global background.
 - Locators de validation messages atados a `getByRole('alert')` / `getByRole('status')` o `data-testid`, no a `getByText` sobre el message literal.
 
@@ -431,7 +431,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 - Antes de modelar algo como aggregate independiente, aplicar el test "¿se carga independientemente?". Si no, es child entity.
 - Si hay invariantes cross-objects (ej. "un solo X activo por Y"), eso es señal fuerte de que X debe ser child de Y.
-- Documentar en `docs/domain/tactical/aggregates.md` el patrón "child entity" con casos canónicos (VerificationToken, Prerequisite, CommissionTeacher).
+- Documentar en `docs/history/domain-v1/tactical/aggregates.md` el patrón "child entity" con casos canónicos (VerificationToken, Prerequisite, CommissionTeacher).
 
 ---
 

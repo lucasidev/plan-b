@@ -24,7 +24,7 @@ namespace Planb.Api.Infrastructure;
 /// <para>
 /// Es idempotente: <c>MigrateAsync</c> aplica solo lo pendiente, así que correrlo dos veces no hace
 /// nada la segunda. El deploy lo corre antes de <c>db-apply</c> (que crea el schema del outbox de
-/// Wolverine) y antes de levantar la versión nueva. Ver <c>docs/operations/deploy.md</c>.
+/// Wolverine) y antes de levantar la versión nueva. Ver <c>docs/engineering/deploy.md</c>.
 /// </para>
 /// </summary>
 [Description("Aplica las migraciones pendientes de EF Core de todos los módulos", Name = "migrate-db")]

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
  *
  * Datos de EJEMPLO, no del corpus: esto es marketing (la cara de venta), no la herramienta
  * real. Los códigos, docentes y números son ilustrativos y no salen del backend. Ver
- * `docs/domain/ubiquitous-language.md` > "datos demo". Reemplaza al `LastActivityPanel`
+ * `docs/product/language.md` > "datos demo". Reemplaza al `LastActivityPanel`
  * viejo, que fingía la actividad de una cuenta que el sign-in todavía no conoce.
  */
 export function HowItWorksPanel() {

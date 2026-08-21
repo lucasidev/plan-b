@@ -23,7 +23,7 @@ namespace Planb.Reviews.Infrastructure.Migrations
     /// vuelve como <c>false</c>, o sea que un <c>Up</c> posterior la leería como <c>Reports</c> y un
     /// moderador que desestime un reporte la republicaría hablando de una cursada que ya cambió. Si
     /// hay que rollbackear con filas en ese estado, exportarlas antes (ver
-    /// <c>docs/operations/rollback.md</c>).
+    /// <c>docs/engineering/rollback.md</c>).
     /// </remarks>
     public partial class ReplaceQuarantinedByContentFilterWithUnderReviewReason : Migration
     {

@@ -87,8 +87,8 @@ Operación **no se expone al user**. Si se llega a exponer en admin, el copy y l
 
 ## Refs
 
-- US-038 (hard delete original, shipped S2): [docs/plan/stories/US-038-b.md](../history/domain-v1/stories/US-038-b.md).
-- US-047 (Mi perfil, S4) cuya "Zona peligrosa" consume este patrón: [docs/plan/stories/US-047.md](../history/domain-v1/stories/US-047.md).
+- US-038 (hard delete original, shipped S2): [docs/history/domain-v1/stories/US-038-b.md](../history/domain-v1/stories/US-038-b.md).
+- US-047 (Mi perfil, S4) cuya "Zona peligrosa" consume este patrón: [docs/history/domain-v1/stories/US-047.md](../history/domain-v1/stories/US-047.md).
 - US-075 ("self-disable" original): **cancelada por este ADR**. El doc queda como histórico.
 - Ley 25.326 (Argentina, Protección de Datos Personales), art. 6 inc. 4: "Toda persona tiene derecho a obtener la supresión, rectificación, confidencialidad o actualización de los datos personales de los que sea titular."
 - ADR-0042 (audit log per-BC): el `UserDeletionLog` actual queda como audit del flow, no se mueve a un módulo central.

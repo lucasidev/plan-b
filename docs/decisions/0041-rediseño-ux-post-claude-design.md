@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Después de cerrar el requerimiento de auth + cleanup + StudentProfile en S1, hicimos una sesión completa de rediseño con claude-design (claude.ai/design). El bundle exportado vive en `docs/design/reference/` (versión vieja del mockup) y la nueva iteración produjo el design canvas `plan-b direcciones.html` con 12 secciones consolidadas:
+Después de cerrar el requerimiento de auth + cleanup + StudentProfile en S1, hicimos una sesión completa de rediseño con claude-design (claude.ai/design). El bundle exportado vive en `docs/history/design-v1/reference/` (versión vieja del mockup) y la nueva iteración produjo el design canvas `plan-b direcciones.html` con 12 secciones consolidadas:
 
 ⓪ Design System · ① Landing · ② Auth · ③ Onboarding · ④ Inicio · ⑤ Mi carrera · ⑥ Planificar · ⑦ Reseñas · ⑧ Rankings · ⑨ Búsqueda global · ⑩ Cuenta · ⑪ Soporte
 
@@ -223,7 +223,7 @@ El alcance por sprint está cerrado; el orden interno de cada sprint se afina al
 
 ## Refs
 
-- Bundle de claude-design: `docs/design/reference/` (vieja iteración) + el bundle exportado el 2026-05-02 con el canvas `plan-b direcciones.html` (no commiteado al repo, vive en el filesystem local de Lucas).
+- Bundle de claude-design: `docs/history/design-v1/reference/` (vieja iteración) + el bundle exportado el 2026-05-02 con el canvas `plan-b direcciones.html` (no commiteado al repo, vive en el filesystem local de Lucas).
 - ADR-0039 (Meilisearch).
 - ADR-0040 (Notifications BC).
 - US futuras: ver sección "Plan de migración" arriba; `user-stories.md` se actualiza en este mismo PR con las entries en backlog.

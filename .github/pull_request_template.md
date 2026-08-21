@@ -30,7 +30,7 @@ Closes US-NNN-x.
 <!--
 Tildá lo que aplica al PR. Si no aplica, dejalo unchecked y explicá por qué en "Notas".
 Si una capa relevante NO tiene test, eso debe estar explícito acá — no lo escondas.
-Convenciones: docs/testing/conventions.md.
+Convenciones: docs/engineering/testing.md.
 -->
 
 ### Backend

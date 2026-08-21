@@ -186,7 +186,7 @@ Ver [ADR-0022](../docs/decisions/0022-forms-react19-primitives-tanstack-form.md)
 
 ## Tests
 
-Convenciones detalladas en [`docs/testing/conventions.md`](../docs/engineering/testing.md). Resumen para frontend:
+Convenciones detalladas en [`docs/engineering/testing.md`](../docs/engineering/testing.md). Resumen para frontend:
 
 - **Utils / Schemas** (vitest + jsdom): helpers de `lib/` y zod schemas. Test co-localizado al source: `foo.ts` + `foo.test.ts`.
 - **Server Actions** (vitest, fetch / next/navigation mockeados): lógica de actions sin browser. Co-localizado: `actions.ts` + `actions.test.ts`.
@@ -274,6 +274,6 @@ just dev-frontend / frontend-build / frontend-lint / frontend-test
 - **No** usar imports relativos largos. Siempre `@/` alias.
 - **No** mezclar server state (TanStack Query) con ephemera UI (useState) en el mismo hook.
 - **No** poner lógica de dominio en componentes. Va en `features/<feature>/` (hooks, actions, schemas).
-- **No** tocar `globals.css` para agregar clases arbitrarias. Usar Tailwind utilities o `@theme` si es variable de diseño. Tokens documentados en [`docs/design/design-system.md`](../docs/product/design-system.md).
+- **No** tocar `globals.css` para agregar clases arbitrarias. Usar Tailwind utilities o `@theme` si es variable de diseño. Tokens documentados en [`docs/product/design-system.md`](../docs/product/design-system.md).
 - **No** saltear el guard del backend confiando solo en el guard del frontend. El layout guard es UX, no seguridad.
-- **No** construir contra nada que no sea la story. La UI de una US sale de su "listo cuando" y de la persona a la que sirve; los tokens, de `design-system.md`. El product-map (`docs/design/product-map.md`) es el índice orientativo de pantallas y flujos, no un contrato de UX/UI: la ficha de la pantalla (en su épica o en `docs/design/screens/`) es la referencia, y apartarse del índice no pide permiso. Las capturas del canvas de la versión anterior (`docs/design/reference/screenshots/`) están congeladas: no son referencia para trabajo nuevo.
+- **No** construir contra nada que no sea la story. La UI de una US sale de su "listo cuando" y de la persona a la que sirve; los tokens, de `design-system.md`. El product-map (`docs/product/map.md`) es el índice orientativo de pantallas y flujos, no un contrato de UX/UI: la ficha de la pantalla (en su épica o en `docs/design/screens/`) es la referencia, y apartarse del índice no pide permiso. Las capturas del canvas de la versión anterior (`docs/history/design-v1/reference/screenshots/`) están congeladas: no son referencia para trabajo nuevo.
