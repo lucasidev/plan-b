@@ -1,5 +1,5 @@
 <!--
-PR title: debe seguir Conventional Commits — el título es el commit message si mergeás con Squash, y release-please lo usa para generar el CHANGELOG.
+PR title: debe seguir Conventional Commits, porque el título es el commit message si mergeás con Squash, y de esos commits sale el changelog cuando se genere (ADR-0074).
 
   Formato: <type>(<scope>): <descripción>
   Types:   feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
@@ -67,7 +67,7 @@ al frontend, donde el coverage automatizado todavía está en construcción (US-
 
 <!--
 Si hay breaking, agregar línea `BREAKING CHANGE: descripción` en el body del primer commit relevante.
-El marker se conserva en el CHANGELOG con un tag **(BREAKING)** (ADR-0037).
+El marker queda en el commit y lo levanta el generador de changelog cuando corra (ADR-0074).
 Versioning (semver/calver/...) está deferred hasta primer deploy / Fase 6, así que un BREAKING
 hoy no bumpea versión: marca el cambio para que el reviewer y el changelog lo vean explícito.
 -->
@@ -98,6 +98,6 @@ Si abriste deuda técnica nueva (TODO, FIXME, "esto se arregla en US-XYZ"), link
 - [ ] No commiteé secrets, archivos de IDE, ni `.env`
 
 <!--
-Después del merge, un workflow GHA appendea el commit a la sección [Unreleased] del CHANGELOG.md
-a partir del Conventional Commit. No edites CHANGELOG.md a mano (ADR-0037).
+El CHANGELOG.md está congelado: no se appendea en cada merge ni se edita a mano. Se genera
+entero desde los commits el día que haya quien lo lea (ADR-0074).
 -->

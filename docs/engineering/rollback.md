@@ -43,21 +43,7 @@ git push origin main
 
 Esto crea un commit nuevo `Revert "<original title>"` que **deshace los cambios sin reescribir historia**. Auditable, reversible (podés revertir el revert para reaplicar el cambio).
 
-### Quirk con el changelog auto-append
-
-Nuestro workflow `changelog.yml` (ADR-0037) mapea commits `revert:` a la sección **"Removed"** del CHANGELOG. Eso deja rastro:
-
-```markdown
-## [Unreleased]
-
-### Added
-- foo (frontend): abc123
-
-### Removed
-- "feat(frontend): foo (commit abc123)": def456 **(BREAKING)**
-```
-
-Si el commit del revert no tiene type `revert:` (e.g. `Revert "feat(test): ..."`), el script no lo procesa porque no matchea el regex de Conventional Commits. Si querés que entre al CHANGELOG, editá el title:
+El commit del revert tiene que seguir Conventional Commits (`revert: <subject original>`). Si quedó como `Revert "feat(test): ..."` que genera git por default, corregilo antes de pushear: de esos commits sale el changelog cuando se genere ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)).
 
 ```bash
 git commit --amend -m "revert: feat(test): playwright e2e infra (US-T02)" --no-edit
@@ -119,7 +105,7 @@ git revert pre-academic-refactor..HEAD --no-edit  # revertir todo desde el tag
 git push origin main
 ```
 
-Estos tags **no son releases** y no aparecen en CHANGELOG.
+Estos tags **no son releases**.
 
 ## Lo que NO podemos rollbackear (todavía)
 
@@ -137,7 +123,7 @@ Después de revertir un commit problemático, antes de cerrar el incidente:
 - [ ] CI volvió a verde en main.
 - [ ] `git log origin/main` muestra el revert claramente attribuido.
 - [ ] Si el cambio rollbackeado era de migration: corrió `just migrate` localmente y la DB queda consistente.
-- [ ] Si el cambio rollbackeado tocaba CHANGELOG: el revert apareció en "Removed" automáticamente, o lo agregaste manualmente si el script no lo capturó.
+- [ ] El commit del revert sigue Conventional Commits (`revert:`), que es de donde va a salir el changelog cuando se genere.
 - [ ] Issue / PR / nota para investigar la causa raíz. El revert NO es la solución, sólo gana tiempo.
 
 ## Refs
@@ -146,5 +132,5 @@ Después de revertir un commit problemático, antes de cerrar el incidente:
 - [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md): cómo se manejan DBs en tests (no aplicable a prod, pero relevante para entender el modelo).
 - [ADR-0034](../decisions/0034-redis-como-cache-y-ephemeral-state.md): refresh token revocation (rollback de auth state).
 - [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): testing layers que protegen pre-merge.
-- [ADR-0037](../decisions/0037-changelog-automation-auto-append.md): cómo el revert entra al changelog.
+- [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera bajo demanda, así que un revert no necesita nada extra.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): tags narrativos como anchor.
