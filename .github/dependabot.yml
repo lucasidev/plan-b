@@ -44,8 +44,8 @@
 #     movimiento vitest tier 3 → tier 2.
 #
 # Schedule: lunes temprano. Cap de PRs abiertos por ecosistema para no inundar.
-# Conventional Commits prefix configurado para que cada PR pase pr-title.yml y
-# alimente el changelog auto-append correctamente.
+# Conventional Commits prefix configurado para que cada PR pase pr-title.yml: de
+# esos commits sale el changelog el día que se genere (ADR-0074).
 
 version: 2
 updates:
@@ -157,7 +157,10 @@ updates:
   # permite que el SDK se mantenga al día dentro de 10.0.x sin saltar a 11.0
   # sin review humano.
   - package-ecosystem: "dotnet-sdk"
-    directory: "/"
+    # backend/, no la raíz: dotnet-sdk no escanea recursivo y global.json vive ahí.
+    # Con directory "/" esta entrada no encontraba nada y no abrió un solo PR en
+    # tres meses, mientras el resto de los ecosystems funcionaba normal.
+    directory: "/backend"
     schedule:
       interval: "weekly"
       day: "monday"
