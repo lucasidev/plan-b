@@ -31,7 +31,7 @@ type Check = {
   hint?: string;
 };
 
-const ROOT = join(import.meta.dir, '..');
+const ROOT = join(import.meta.dirname, '..');
 const TOOL_VERSIONS_PATH = join(ROOT, '.tool-versions');
 const GLOBAL_JSON_PATH = join(ROOT, 'backend', 'global.json');
 

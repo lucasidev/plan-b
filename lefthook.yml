@@ -59,6 +59,15 @@ pre-push:
         - "backend/*.{cs,csproj,props,targets,sln,json}"
         - "backend/**/*.{cs,csproj,props,targets,sln,json}"
       run: cd backend && dotnet build --nologo --verbosity quiet
+    scripts-typecheck:
+      # El binario y los tipos salen de las deps de frontend (typeRoots relativo
+      # en scripts/tsconfig.json). El tsconfig entra al glob porque cambiarlo es
+      # justo lo que puede romper el chequeo.
+      glob:
+        - "scripts/*.ts"
+        - "scripts/**/*.ts"
+        - "scripts/tsconfig.json"
+      run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
     frontend-lint:
       glob:
         - "frontend/*.{ts,tsx,js,jsx,json}"

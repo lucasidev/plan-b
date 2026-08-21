@@ -173,6 +173,12 @@ scripts-lint:
 scripts-lint-fix:
     ./frontend/node_modules/.bin/biome check --write scripts
 
+# Typecheck de scripts/. Los tipos de node salen de las deps de frontend via
+# typeRoots relativo (scripts/tsconfig.json): no hace falta un package.json en
+# la raiz, y tsc es el mismo binario que ya usa el frontend.
+scripts-typecheck:
+    ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
+
 # ═══════════════════════════════════════════════════════════════
 
 # Coherencia de la documentación de producto (ADR-0070): links, em-dashes, una story por épica
@@ -238,5 +244,5 @@ clean:
 # CI (same recipes the GitHub Actions workflow runs)
 # ═══════════════════════════════════════════════════════════════
 
-ci: backend-build backend-test frontend-lint scripts-lint frontend-build frontend-test
+ci: backend-build backend-test frontend-lint scripts-lint scripts-typecheck frontend-build frontend-test
     @echo "✓ All quality gates passed"

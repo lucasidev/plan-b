@@ -51,7 +51,10 @@ function parseEnvFile(path: string): Record<string, string> {
   return vars;
 }
 
-function isRealSecret(v: string | undefined): boolean {
+// Type predicate y no `boolean`: la primera guarda ya descarta undefined, así
+// que decirlo en el tipo es lo que deja a `pick` devolver el valor existente
+// sin una aserción `!`.
+function isRealSecret(v: string | undefined): v is string {
   if (!v || v.length < MIN_SECRET_LENGTH) return false;
   return !PLACEHOLDER_PATTERNS.some((p) => p.test(v));
 }

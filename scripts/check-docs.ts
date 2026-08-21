@@ -22,7 +22,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { detectLanguage } from './lib/detect-language.ts';
 
-const ROOT = resolve(import.meta.dir, '..');
+const ROOT = resolve(import.meta.dirname, '..');
 const STRICT = process.argv.includes('--strict');
 const EMDASH = String.fromCharCode(0x2014);
 
