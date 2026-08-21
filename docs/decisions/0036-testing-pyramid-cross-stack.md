@@ -1,4 +1,4 @@
-# ADR-0036: Pirámide de testing cross-stack
+# ADR-0036: Cross-stack testing pyramid
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-30

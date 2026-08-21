@@ -12,14 +12,14 @@
 | Command | Disparado por | Efecto |
 |---|---|---|
 | `Open(reviewId, reporterId, reason, details?, clock)` | Member desde UI sobre una review | Factory; crea report en `Status='open'`. Valida `ReporterId != Review.AuthorId` (en app service) y unicidad `(ReviewId, ReporterId)`. Si `Reason='Other'`, requiere `details` no vacío. Emite `ReviewReported`. |
-| `Uphold(moderatorId, resolutionNote, clock)` | Moderator desde cola | Pasa a `Status='upheld'`. Emite `ReportUpheld`. Cross-BC: Reviews recibe el integration event y aplica policy `RemoveReviewOnReportUpheld` ([ADR-0011](../../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md)). |
+| `Uphold(moderatorId, resolutionNote, clock)` | Moderator desde cola | Pasa a `Status='upheld'`. Emite `ReportUpheld`. Cross-BC: Reviews recibe el integration event y aplica policy `RemoveReviewOnReportUpheld` ([ADR-0011](../../../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md)). |
 | `Dismiss(moderatorId, resolutionNote, clock)` | Moderator desde cola | Pasa a `Status='dismissed'`. Emite `ReportDismissed`. |
 
 ### 2. Events emitidos
 
 | Event | Cuándo | Consumido por |
 |---|---|---|
-| `ReviewReported` | Tras `Open` | Moderation (audit log, threshold de auto-quarantine en Reviews via [ADR-0010](../../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md)) |
+| `ReviewReported` | Tras `Open` | Moderation (audit log, threshold de auto-quarantine en Reviews via [ADR-0010](../../../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md)) |
 | `ReportUpheld` | Tras `Uphold` | Moderation local + traducido a `ReportUpheldIntegrationEvent` para Reviews (policy `RemoveReviewOnReportUpheld`); audit log |
 | `ReportDismissed` | Tras `Dismiss` | Moderation (audit log) |
 
@@ -51,5 +51,5 @@
 ## Refs
 
 - BC: [Moderation](../../strategic/bounded-contexts.md#moderation)
-- ADRs: [ADR-0010](../../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md), [ADR-0011](../../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md), [ADR-0031](../../../../decisions/0031-review-audit-log-como-projection.md)
+- ADRs: [ADR-0010](../../../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md), [ADR-0011](../../../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md), [ADR-0031](../../../../decisions/0031-review-audit-log-as-a-projection.md)
 - User Stories: [US-053](../../stories/US-053.md)

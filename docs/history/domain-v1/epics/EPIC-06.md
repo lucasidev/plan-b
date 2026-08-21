@@ -18,5 +18,5 @@ Un member que también es docente puede reclamar su identidad docente, verificar
 
 ## Decisiones que la condicionan
 
-- [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md): roles exclusivos, profiles como capacidades
-- [ADR-0033](../../../decisions/0033-verification-token-como-child-entity.md): VerificationToken como child entity
+- [ADR-0008](../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md): roles exclusivos, profiles como capacidades
+- [ADR-0033](../../../decisions/0033-verification-token-as-a-child-entity.md): VerificationToken como child entity

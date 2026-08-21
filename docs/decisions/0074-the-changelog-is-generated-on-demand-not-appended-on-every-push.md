@@ -1,4 +1,4 @@
-# ADR-0074: El changelog se genera cuando hay quien lo lea, no se appendea en cada push
+# ADR-0074: The changelog is generated when there is someone to read it, not appended on every push
 
 - **Estado**: aceptado
 - **Fecha**: 2026-08-21
@@ -30,7 +30,7 @@ Y funda la necesidad del changelog en algo que acá todavía no existe: **un lec
 **La automatización se retira. El changelog se genera de una sola pasada el día que haya quien lo lea.**
 
 1. **Se apagan `changelog.yml` y `scripts/append-changelog.ts`** con su suite de tests. `CHANGELOG.md` queda en el repo, congelado tal como está: es historia real de cuatro meses de trabajo y no se borra.
-2. **El changelog se genera bajo demanda** con [`git-cliff`](https://git-cliff.org/), que parsea Conventional Commits (ya enforceado por [ADR-0026](0026-git-workflow-github-flow-con-rebase.md)) y arma el archivo completo desde el historial entero en una pasada. No hay estado incremental que mantener ni CI que se rompa.
+2. **El changelog se genera bajo demanda** con [`git-cliff`](https://git-cliff.org/), que parsea Conventional Commits (ya enforceado por [ADR-0026](0026-git-workflow-github-flow-with-rebase.md)) y arma el archivo completo desde el historial entero en una pasada. No hay estado incremental que mantener ni CI que se rompa.
 3. **El disparador es el mismo que ya fijó [ADR-0038](0038-release-and-versioning-policy.md)**: el primer deploy. Antes de eso, si hace falta un snapshot (una entrega, una presentación), se genera con el mismo comando.
 4. **La regla de no editarlo a mano sigue**, y ahora por una razón más simple: no se edita porque se genera.
 
@@ -57,4 +57,4 @@ Y funda la necesidad del changelog en algo que acá todavía no existe: **un lec
 ## Refs
 
 - [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) y su [repo](https://github.com/olivierlacan/keep-a-changelog); [Common Changelog](https://common-changelog.org/); [git-cliff](https://git-cliff.org/); [changesets](https://github.com/changesets/changesets) y [towncrier](https://towncrier.readthedocs.io/en/stable/) como el camino cuando haya usuarios.
-- [ADR-0037](0037-changelog-automation-auto-append.md) (lo que esto supersede), [ADR-0038](0038-release-and-versioning-policy.md) (la política de versionado, intacta), [ADR-0026](0026-git-workflow-github-flow-con-rebase.md) (Conventional Commits, que es lo que hace posible generar después).
+- [ADR-0037](0037-changelog-automation-auto-append.md) (lo que esto supersede), [ADR-0038](0038-release-and-versioning-policy.md) (la política de versionado, intacta), [ADR-0026](0026-git-workflow-github-flow-with-rebase.md) (Conventional Commits, que es lo que hace posible generar después).

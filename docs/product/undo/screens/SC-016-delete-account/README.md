@@ -30,7 +30,7 @@ Llega desde Mi perfil. Antes de confirmar puede desviarse a [Editar](../SC-017-e
 
 ## Decisiones que aplica
 
-[ADR-0044](../../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (soft delete con anonimización, preserva el corpus, operación irreversible), D10 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): los hechos de trayectoria quedan exactos y ya anónimos), [ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (una baja no recalcula una cohorte ni generaliza un año a rango).
+[ADR-0044](../../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (soft delete con anonimización, preserva el corpus, operación irreversible), D10 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): los hechos de trayectoria quedan exactos y ya anónimos), [ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (una baja no recalcula una cohorte ni generaliza un año a rango).
 
 ## Lo que esta ficha deja abierto
 

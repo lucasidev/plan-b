@@ -5,9 +5,9 @@
 **Epic**: [EPIC-02: Identidad y autenticación](../epics/EPIC-02.md)
 **Priority**: High
 **Effort**: M
-**ADR refs**: [ADR-0044](../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md)
+**ADR refs**: [ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md)
 
-> US agregada mid-sprint en S4 (bonus, PR #125). Cambió el approach de baja de cuenta: de **hard delete** (US-038, S2) a **soft delete con anonimización irreversible del PII + preservación del corpus**. Canceló a [US-075](US-075.md) (self-disable reversible), que era el paso intermedio que sobraba. La decisión completa, con alternativas, vive en [ADR-0044](../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md).
+> US agregada mid-sprint en S4 (bonus, PR #125). Cambió el approach de baja de cuenta: de **hard delete** (US-038, S2) a **soft delete con anonimización irreversible del PII + preservación del corpus**. Canceló a [US-075](US-075.md) (self-disable reversible), que era el paso intermedio que sobraba. La decisión completa, con alternativas, vive en [ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md).
 
 ## Como member que se va de la plataforma, quiero dar de baja mi cuenta anonimizando mi identidad pero sin destruir las reseñas que aporté, para ejercer mi derecho de supresión (Ley 25.326) sin romper el corpus crowdsourced
 
@@ -25,12 +25,12 @@ El flow original de US-038 hacía hard delete del `User`. Al aterrizar Reviews (
 
 ## Out of scope
 
-- **Endpoint de backoffice para hard delete** (`DELETE /api/identity/users/{id}`, dueño del aggregate `User`): diferido. No hay "módulo admin" donde aterrizarlo: las features de backoffice viven en su módulo dueño ([ADR-0050](../../../decisions/0050-backoffice-como-corte-transversal.md)).
+- **Endpoint de backoffice para hard delete** (`DELETE /api/identity/users/{id}`, dueño del aggregate `User`): diferido. No hay "módulo admin" donde aterrizarlo: las features de backoffice viven en su módulo dueño ([ADR-0050](../../../decisions/0050-backoffice-is-a-cross-cutting-slice-not-a-module.md)).
 - **Rutina de hard delete batch** post-N-años para los rows anonimizados que sobreviven en la tabla: no en MVP (para la escala de plan-b es ruido).
 
 ## Refs
 
-- Decisión completa (contexto + alternativas A/B/C/D + consecuencias): [ADR-0044](../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md)
+- Decisión completa (contexto + alternativas A/B/C/D + consecuencias): [ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md)
 - US-038 (hard delete original, shipped S2): [US-038-b](US-038-b.md)
 - US-047 (Mi perfil, cuya "Zona peligrosa" dispara este flow): [US-047](US-047.md)
 - US-075 (self-disable reversible, cancelada por este trabajo): [US-075](US-075.md)

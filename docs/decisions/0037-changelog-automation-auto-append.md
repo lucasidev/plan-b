@@ -1,4 +1,4 @@
-# ADR-0037: Changelog automation con auto-append on merge
+# ADR-0037: Changelog automation with auto-append on merge
 
 - **Estado**: superado por [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md) (2026-08-21): la automatización se retiró porque el changelog no tenía todavía un lector distinto de quien escribe los commits
 - **Fecha**: 2026-04-30
@@ -9,7 +9,7 @@ Tres hechos:
 
 1. `CHANGELOG.md` existe en raíz, format Keep-a-Changelog, con una entrada `[Unreleased]` que tiene bullets manuales escritos en formato narrativo (resumen de Sprint 0 / Fase 1 / Fase 2).
 2. **No hay automatización**. Ni hook de Lefthook, ni step en CI, ni nada. Cada autor tiene que recordar editar el changelog en su PR. Nadie lo recuerda. La sección `[Unreleased]` está desactualizada respecto a los commits de las últimas 3 semanas.
-3. **Conventional Commits sí está enforceado** (Lefthook commit-msg via `bun scripts/check-commit-msg.ts`, [ADR-0026](0026-git-workflow-github-flow-con-rebase.md)). Cada commit ya carga la información necesaria para generar un bullet de changelog (`type`, `scope`, `description`, opcional `BREAKING CHANGE`).
+3. **Conventional Commits sí está enforceado** (Lefthook commit-msg via `bun scripts/check-commit-msg.ts`, [ADR-0026](0026-git-workflow-github-flow-with-rebase.md)). Cada commit ya carga la información necesaria para generar un bullet de changelog (`type`, `scope`, `description`, opcional `BREAKING CHANGE`).
 
 El gap es: tenemos el input estructurado (Conventional Commits) pero no la pipa que lo convierta en changelog. El costo de no tenerlo crece con cada sprint.
 
@@ -131,7 +131,7 @@ US-T05-i cubre:
 ## Refs
 
 - [ADR-0024](0024-dev-tooling-stack.md): tooling stack base + scripts en TS.
-- [ADR-0026](0026-git-workflow-github-flow-con-rebase.md): git workflow + Conventional Commits.
+- [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): git workflow + Conventional Commits.
 - [ADR-0036](0036-testing-pyramid-cross-stack.md): testing pyramid (companion).
 - [ADR-0038](0038-release-and-versioning-policy.md): release & versioning policy (companion).
 - Conventional Commits spec: https://www.conventionalcommits.org/

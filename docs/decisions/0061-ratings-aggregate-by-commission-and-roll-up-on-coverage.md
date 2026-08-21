@@ -29,7 +29,7 @@ Hace falta decidir dos cosas que se confunden pero son distintas: **sobre qué s
 
 3. **Carrera y universidad llevan puntaje calculado**, de abajo hacia arriba: la carrera promedia las materias de su plan que tienen puntaje, la universidad promedia sus carreras que tienen puntaje.
 
-4. **El gate de esos dos niveles es cobertura, no muestra.** Si el plan tiene 40 materias y solo 3 tienen puntaje, el de la carrera viaja `null` ([ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md)). Cuando el número sale, sale **junto a la cobertura que lo respalda**. Los niveles de abajo siguen con el piso de muestra de [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md), que cuenta personas y no reseñas ponderadas.
+4. **El gate de esos dos niveles es cobertura, no muestra.** Si el plan tiene 40 materias y solo 3 tienen puntaje, el de la carrera viaja `null` ([ADR-0054](0054-a-metric-without-backing-travels-null-never-zero.md)). Cuando el número sale, sale **junto a la cobertura que lo respalda**. Los niveles de abajo siguen con el piso de muestra de [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md), que cuenta personas y no reseñas ponderadas.
 
 **Lo que habilita el punto 2, y conviene decirlo:** [ADR-0060](0060-review-names-the-teacher-it-remembers.md) dejó que la reseña guarde **siempre** el nombre del docente que el alumno nombró, resuelto contra el catálogo o no. Eso convierte al corpus de reseñas en la única fuente del plantel histórico, que ningún registro publica. La vigencia es medible porque las reseñas reconstruyen lo que el catálogo no sabe.
 
@@ -79,7 +79,7 @@ Se argumentó a favor: nadie elige universidad con planb (ya está inscripto, la
 
 ## Refs
 
-- [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): piso de muestra y disclaimer de auto-reporte.
-- [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): la métrica sin sustento viaja `null`, nunca su valor neutro.
+- [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md): piso de muestra y disclaimer de auto-reporte.
+- [ADR-0054](0054-a-metric-without-backing-travels-null-never-zero.md): la métrica sin sustento viaja `null`, nunca su valor neutro.
 - [ADR-0060](0060-review-names-the-teacher-it-remembers.md): la reseña guarda siempre el nombre del docente, resuelto o no.
 - US: [US-098](../history/domain-v1/stories/US-098.md) implementa el agregado por comisión y su lectura en el picker.

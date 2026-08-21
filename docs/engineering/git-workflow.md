@@ -2,7 +2,7 @@
 
 Cómo se commitea, cómo se hace branching, cómo se resuelven conflictos, cómo se mergea. Sin excepciones.
 
-Vivieron antes en [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md) (decisión + rationale) pero el ADR no es operacional. Este doc es la bitácora paso a paso. Si algo de acá se contradice con el ADR, gana el ADR; el doc se actualiza.
+Vivieron antes en [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md) (decisión + rationale) pero el ADR no es operacional. Este doc es la bitácora paso a paso. Si algo de acá se contradice con el ADR, gana el ADR; el doc se actualiza.
 
 Motivación: durante US-T01..T04 cometí errores de naming de branches, PR titles, y resolución de race conditions de mergeo. Cada error fue chico pero acumulaba ruido. Esto los previene de raíz.
 
@@ -85,7 +85,9 @@ Tags especiales:
 - **type**: igual que Conventional Commits.
 - **scope-description**: descriptor en kebab-case del cambio, **en inglés**. Suficientemente específico como para identificar el branch entre 10 abiertos. Sin US numbers.
 
-**Por qué el título va en inglés y el cuerpo en español**: el nombre de la rama, el subject del commit y el título del PR son identificadores de una línea, del mismo lado que los identificadores del código. El body del commit, el body del PR y el contenido de los docs son prosa, del mismo lado que los comentarios y los docstrings. Decidido el 2026-07-30, después de contar: 31 de 34 branches ya estaban en inglés, y 42 de 59 títulos de ADR estaban en español. Lo primero se ratificó, lo segundo se migra aparte. El historial viejo no se reescribe.
+**Por qué el título va en inglés y el cuerpo en español**: el nombre de la rama, el subject del commit y el título del PR son identificadores de una línea, del mismo lado que los identificadores del código. El body del commit, el body del PR y el contenido de los docs son prosa, del mismo lado que los comentarios y los docstrings. Decidido el 2026-07-30, después de contar: 31 de 34 branches ya estaban en inglés, y 42 de 59 títulos de ADR estaban en español. Lo primero se ratificó; lo segundo se migró el 2026-08-21, y con eso los 74 ADR quedaron en inglés, filename y título. El historial viejo de commits no se reescribe.
+
+**Y lo chequea una máquina, no la memoria de nadie.** La regla vivía escrita en cinco lugares y verificada en ninguno, y el 2026-08-21 se rompió seis veces en una sesión. Ahora `scripts/check-commit-msg.ts` bloquea un subject que lee como español (lefthook en cada commit, y `commits.yml` sobre cada commit del PR) y avisa si el body lee como inglés; `scripts/check-docs.ts` hace lo propio con el filename y el título de cada ADR. El detector cuenta palabras función (`scripts/lib/detect-language.ts`): medido contra el repo entero marca 44 de los 48 títulos que estaban en español y los 5 subjects en español, con cero falsos positivos sobre 148 campos de ADR y 69 subjects. Lo que no puede decidir se calla, así que bloquear no cuesta nada.
 
 ### Ejemplos válidos
 
@@ -176,7 +178,7 @@ Si revertiste un commit y querés volver a aplicarlo después: NO basta con cher
 
 ### Estrategias permitidas (Fases 1-5)
 
-Per [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md):
+Per [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md):
 - **Rebase and merge**: default. Preserva commits atómicos. Historia lineal.
 - **Squash and merge**: sólo si el PR tiene WIP / fixup commits que no aportan al history.
 - **Merge commit (Create a merge commit)**: **deshabilitado en branch protection.** No usar.
@@ -274,7 +276,7 @@ No silenciar la regla "porque sí".
 
 ## Refs
 
-- [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md): la decisión arquitectónica detrás de Rebase + Conventional Commits.
+- [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): la decisión arquitectónica detrás de Rebase + Conventional Commits.
 - [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera cuando hay quien lo lea, no en cada push.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy.
 - [docs/engineering/rollback.md](rollback.md): qué hacer cuando algo entra a main y rompe.

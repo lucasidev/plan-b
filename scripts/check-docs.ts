@@ -20,6 +20,7 @@
 
 import { readdirSync, readFileSync, statSync, existsSync } from "node:fs";
 import { join, dirname, resolve, sep } from "node:path";
+import { detectLanguage } from "./lib/detect-language.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
 const STRICT = process.argv.includes("--strict");
@@ -206,9 +207,26 @@ for (const [sc, stories] of screenStories) {
   }
 }
 
+// 7. el filename y el título de un ADR son identificadores: van en inglés
+//    (docs/decisions/README.md; el cuerpo va en español). Los 60 que estaban en
+//    español se migraron el 2026-08-21, así que acá no hay excepciones ni número
+//    de corte: si un ADR nuevo sale en español, se canta.
+const ADR = /^\d{4}-[a-z0-9-]+\.md$/;
+const decisionsDir = join(ROOT, "docs", "decisions");
+for (const f of readdirSync(decisionsDir).filter((x) => ADR.test(x))) {
+  const slug = f.replace(/^\d+-/, "").replace(/\.md$/, "").replace(/-/g, " ");
+  const title = readFileSync(join(decisionsDir, f), "utf-8").match(/^# ADR-\d+: (.*)$/m)?.[1] ?? "";
+  if (detectLanguage(slug) === "es") {
+    findings.push({ file: `docs/decisions/${f}`, line: 0, rule: "adr-en-espanol", detail: "el filename es un identificador y va en inglés" });
+  }
+  if (title && detectLanguage(title) === "es") {
+    findings.push({ file: `docs/decisions/${f}`, line: 1, rule: "adr-en-espanol", detail: `el título va en inglés: "${title.slice(0, 60)}"` });
+  }
+}
+
 // salida
 if (findings.length === 0) {
-  console.log("check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid).");
+  console.log("check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid, idioma de ADR).");
   process.exit(0);
 }
 console.log(`check-docs: ${findings.length} hallazgo(s). Señala, no bloquea${STRICT ? " (modo --strict: bloquea)" : ""}.`);

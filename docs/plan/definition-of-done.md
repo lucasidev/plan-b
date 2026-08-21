@@ -42,7 +42,7 @@ El "listo cuando" de la story se suma a estos criterios generales, no los reempl
 - [ ] Commits siguen Conventional Commits (`type(scope): descripción`).
 - [ ] Branch nombrada según convención (`type/scope-description`, ej. `feat/identity-verify`).
 - [ ] PR abierta contra `main`, con descripción clara del cambio + link a la US.
-- [ ] Mergeada vía Rebase o Squash (nunca Merge commit en Fases 1-5, ver [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md)).
+- [ ] Mergeada vía Rebase o Squash (nunca Merge commit en Fases 1-5, ver [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md)).
 
 ## 6. Code review
 

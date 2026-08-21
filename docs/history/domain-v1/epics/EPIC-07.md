@@ -16,7 +16,7 @@ Moderadores ven cola de reseñas pendientes, resuelven reports (upheld / dismiss
 
 ## Decisiones que la condicionan
 
-- [ADR-0010](../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md): threshold auto-hide configurable por env var
-- [ADR-0011](../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade on uphold, sin reversión on restore
+- [ADR-0010](../../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md): threshold auto-hide configurable por env var
+- [ADR-0011](../../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md): cascade on uphold, sin reversión on restore
 - [ADR-0030](../../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md): cross-BC consistency vía Wolverine outbox
-- [ADR-0031](../../../decisions/0031-review-audit-log-como-projection.md): review audit log como projection
+- [ADR-0031](../../../decisions/0031-review-audit-log-as-a-projection.md): review audit log como projection

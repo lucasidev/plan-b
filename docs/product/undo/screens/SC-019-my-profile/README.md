@@ -32,7 +32,7 @@ Llega desde cualquier pantalla con cuenta, y desde los mails de [Avisos](../../.
 
 ## Decisiones que aplica
 
-[ADR-0048](../../../../decisions/0048-oficializacion-de-condicion-opt-in.md) (verificarse es opt-in, señal y no permiso), [ADR-0040](../../../../decisions/0040-notifications-como-bounded-context.md) (Notifications como bounded context: acá se apaga lo que esa infraestructura manda), [ADR-0044](../../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (lo que espera del otro lado de la puerta a Baja), [Que no me molesten](../../../do-not-bother-me/README.md) (US-169).
+[ADR-0048](../../../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (verificarse es opt-in, señal y no permiso), [ADR-0040](../../../../decisions/0040-notifications-as-a-new-bounded-context.md) (Notifications como bounded context: acá se apaga lo que esa infraestructura manda), [ADR-0044](../../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (lo que espera del otro lado de la puerta a Baja), [Que no me molesten](../../../do-not-bother-me/README.md) (US-169).
 
 ## Lo que esta ficha deja abierto
 

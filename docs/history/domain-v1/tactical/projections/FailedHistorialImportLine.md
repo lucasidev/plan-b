@@ -29,4 +29,4 @@ El worker que procesa el `HistorialImport`, durante el resolve del payload, va e
 ## Refs
 
 - BC: [Enrollments](../../strategic/bounded-contexts.md#enrollments)
-- ADRs: [ADR-0004](../../../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0006](../../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)
+- ADRs: [ADR-0004](../../../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md), [ADR-0006](../../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md)

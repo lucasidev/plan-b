@@ -2,7 +2,7 @@
 supersedes-partial: 0024
 ---
 
-# ADR-0027: Integration tests contra Postgres compartido con DB per-test
+# ADR-0027: Integration tests against a shared Postgres with a per-test DB
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-25

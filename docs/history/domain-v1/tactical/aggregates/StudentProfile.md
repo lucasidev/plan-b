@@ -53,5 +53,5 @@ Ninguno específico (usa enum simple para `Status` que se modela como columna).
 ## Refs
 
 - BC: [Identity](../../strategic/bounded-contexts.md#identity)
-- ADRs: [ADR-0008](../../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md)
+- ADRs: [ADR-0008](../../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md)
 - User Stories: [US-012-b](../../stories/US-012-b.md), [US-015](../../stories/US-015.md), [US-016](../../stories/US-016.md)

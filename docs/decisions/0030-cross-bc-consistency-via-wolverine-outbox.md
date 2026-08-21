@@ -1,4 +1,4 @@
-# ADR-0030: Cross-BC consistency vía Wolverine outbox
+# ADR-0030: Cross-BC consistency via the Wolverine outbox
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-25
@@ -7,7 +7,7 @@
 
 Discovery del dominio identificó múltiples flujos cross-BC donde un cambio en un BC debe propagarse a otro:
 
-- Edit destructive de `EnrollmentRecord` (Enrollments) debe invalidar la `Review` correspondiente (Reviews): ver [ADR-0032](0032-edit-destructive-enrollment-invalida-review.md).
+- Edit destructive de `EnrollmentRecord` (Enrollments) debe invalidar la `Review` correspondiente (Reviews): ver [ADR-0032](0032-destructive-enrollment-edit-invalidates-its-review.md).
 - `UserDisabled` (Identity) debe soft-flag las reviews del usuario para presentación (Reviews) y registrarse en el audit log (Moderation).
 - `TeacherProfileVerified` (Identity) debe habilitar la capability `review:respond` (Reviews).
 - `ReportUpheld` (Moderation) debe disparar `RemoveReview` (Reviews).
@@ -15,7 +15,7 @@ Discovery del dominio identificó múltiples flujos cross-BC donde un cambio en 
 
 Sin un patrón unificado, cada caso se cablea ad-hoc: handlers que llaman directamente al otro BC, transacciones que abarcan múltiples DbContexts, etc. Eso no escala.
 
-[ADR-0015](0015-wolverine-como-mediator-y-message-bus.md) ya estableció Wolverine como mediator + message bus + outbox durable. Falta formalizar **cómo** se usa para cross-BC consistency.
+[ADR-0015](0015-wolverine-as-mediator-message-bus-and-durable-outbox.md) ya estableció Wolverine como mediator + message bus + outbox durable. Falta formalizar **cómo** se usa para cross-BC consistency.
 
 ## Decisión
 
@@ -135,4 +135,4 @@ Contras: eventual consistency es más mental load para el dev. Pero está alinea
 - Si los integration events crecen a > 50 tipos, evaluar versioning explícito (V1 / V2 / etc.).
 - Si los BCs salen a microservicios, el outbox sigue siendo válido pero el transport cambia: Wolverine soporta Rabbit, Azure Service Bus, etc.
 
-Refs: [ADR-0014](0014-arquitectura-modular-monolith.md), [ADR-0015](0015-wolverine-como-mediator-y-message-bus.md), [ADR-0017](0017-persistence-ignorance.md).
+Refs: [ADR-0014](0014-modular-monolith-with-bounded-contexts-as-modules.md), [ADR-0015](0015-wolverine-as-mediator-message-bus-and-durable-outbox.md), [ADR-0017](0017-persistence-ignorance.md).

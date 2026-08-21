@@ -36,7 +36,7 @@ Llega desde: un link en cualquier ficha ("cómo te cubrimos"), y el mismo aviso 
 
 ## Decisiones que aplica
 
-[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 2 a 5: el chequeo previo, la exposición que se modera, se baja el texto nunca la voz, la réplica con las mismas reglas), [ADR-0009](../../../../decisions/0009-anonimato-como-regla-de-presentacion.md) (el anonimato es de presentación: la identidad se preserva siempre por dentro y nunca se expone en público), [THESIS.md](../../../../THESIS.md) ("Posición tomada"). Las [Restricciones del catálogo](../../../README.md) exigen esta política pública antes de que exista el primer reporte.
+[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 2 a 5: el chequeo previo, la exposición que se modera, se baja el texto nunca la voz, la réplica con las mismas reglas), [ADR-0009](../../../../decisions/0009-review-anonymity-is-a-presentation-rule.md) (el anonimato es de presentación: la identidad se preserva siempre por dentro y nunca se expone en público), [THESIS.md](../../../../THESIS.md) ("Posición tomada"). Las [Restricciones del catálogo](../../../README.md) exigen esta política pública antes de que exista el primer reporte.
 
 ## Lo que esta ficha deja abierto
 

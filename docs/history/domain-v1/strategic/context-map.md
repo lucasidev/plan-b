@@ -2,7 +2,7 @@
 
 Mapa de relaciones entre los 6 Bounded Contexts. Para cada par definimos el **patrón de integración** (en términos de Evans/Vernon) y el **mecanismo técnico** (synchronous reads, integration events, etc.).
 
-Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md)) pero las reglas de acoplamiento son las mismas que si fueran microservicios:
+Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md)) pero las reglas de acoplamiento son las mismas que si fueran microservicios:
 
 - **No se referencian aggregates de otros BCs por navegación EF Core**. Se usan IDs opacos.
 - **No se hacen FKs cross-schema** ([ADR-0017](../../../decisions/0017-persistence-ignorance.md)).
@@ -146,7 +146,7 @@ Los BCs viven todos en el mismo modular monolith ([ADR-0014](../../../decisions/
 
 ## Integration events globalmente
 
-Todos los integration events viajan por **Wolverine outbox** persistido en Postgres ([ADR-0015](../../../decisions/0015-wolverine-como-mediator-y-message-bus.md), ADR-0030). Esto da:
+Todos los integration events viajan por **Wolverine outbox** persistido en Postgres ([ADR-0015](../../../decisions/0015-wolverine-as-mediator-message-bus-and-durable-outbox.md), ADR-0030). Esto da:
 
 - **Atomicidad write+publish**: el aggregate se guarda y el event entra al outbox en la misma transacción EF Core.
 - **At-least-once delivery**: el dispatcher de Wolverine reintenta hasta confirmar consumo.

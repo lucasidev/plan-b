@@ -1,6 +1,6 @@
 # Verification Flows (planb)
 
-> **Describe la implementación actual, no la decisión vigente (2026-08-17)**: estos flows son los de `TeacherProfile` tal como está en el código, con sus dos caminos (email institucional automático, evidencia manual). La decisión vigente es otra: para el docente verificar es **permiso** de réplica y vive en una cola separada de la de constancias ([ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md), stories O7-8 y BO2-6); el camino por email institucional está deprecado desde [ADR-0048](../../decisions/0048-oficializacion-de-condicion-opt-in.md); y la verificación opcional del alumno por constancia es señal, no permiso ([THESIS.md](../../THESIS.md), T1-3, BO2-3, BO2-4). Este doc se reescribe con BO2-6; hasta entonces sirve para leer el código que existe.
+> **Describe la implementación actual, no la decisión vigente (2026-08-17)**: estos flows son los de `TeacherProfile` tal como está en el código, con sus dos caminos (email institucional automático, evidencia manual). La decisión vigente es otra: para el docente verificar es **permiso** de réplica y vive en una cola separada de la de constancias ([ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md), stories O7-8 y BO2-6); el camino por email institucional está deprecado desde [ADR-0048](../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md); y la verificación opcional del alumno por constancia es señal, no permiso ([THESIS.md](../../THESIS.md), T1-3, BO2-3, BO2-4). Este doc se reescribe con BO2-6; hasta entonces sirve para leer el código que existe.
 
 Flows completos de verificación de `TeacherProfile`. Un `member` reclama identidad de docente creando un `TeacherProfile`, pero ese profile no desbloquea la capacidad `review:respond` (UC-040) hasta verificarse. Hay dos caminos: email institucional (automático) o evidencia manual revisada por admin.
 
@@ -12,7 +12,7 @@ Cubre:
 - Invariantes del modelo y reglas de unicidad.
 - Política de retry después de rechazo.
 
-Este documento expande UC-030, UC-031, UC-032, UC-069. Ver también [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) para la separación entre rol y profile.
+Este documento expande UC-030, UC-031, UC-032, UC-069. Ver también [ADR-0008](../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md) para la separación entre rol y profile.
 
 ## States (conceptuales)
 
@@ -211,5 +211,5 @@ Esta migración está documentada pero no implementada.
 | Tipo       | Referencias                                                                                                                                         |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs        | UC-030 (iniciar claim), UC-031 (email institucional), UC-032 (evidencia manual), UC-040 (habilitado tras verified), UC-069 (admin resuelve manual). |
-| ADRs       | [ADR-0008](../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md).                                                                        |
+| ADRs       | [ADR-0008](../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md).                                                                        |
 | Data model | [TeacherProfile + Teacher + University.institutional_email_domains](../../engineering/data-model.md#context-identity).                                |

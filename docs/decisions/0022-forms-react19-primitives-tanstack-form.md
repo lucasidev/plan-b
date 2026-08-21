@@ -1,4 +1,4 @@
-# ADR-0022: Forms (React 19 primitives + TanStack Form para complejos)
+# ADR-0022: Forms (React 19 primitives, TanStack Form for complex ones)
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23

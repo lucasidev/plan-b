@@ -39,5 +39,5 @@ Handlers en Moderation que escuchan integration events y escriben rows. No hay e
 
 ## Refs
 
-- ADRs: [ADR-0031](../../../../decisions/0031-review-audit-log-como-projection.md)
+- ADRs: [ADR-0031](../../../../decisions/0031-review-audit-log-as-a-projection.md)
 - BC: [Moderation](../../strategic/bounded-contexts.md#moderation)

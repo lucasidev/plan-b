@@ -26,7 +26,7 @@ Tres preguntas. Si las tres son "sí", escribilo. Si alguna es "no", no amerita.
 
 Archivos numerados secuencialmente: `NNNN-titulo-corto.md`.
 
-**El título y el filename van en inglés. El cuerpo va en español rioplatense.**
+**El título y el filename van en inglés. El cuerpo va en español rioplatense.** Lo verifica `scripts/check-docs.ts` en cada push: un ADR nuevo cuyo título o filename lea como español sale como hallazgo. Los 60 que estaban en español se migraron el 2026-08-21, así que no hay excepciones ni número de corte.
 
 Es el mismo corte que rige el resto del repo, aplicado a los artefactos: el título es un identificador de una línea, del lado de los nombres de rama y los identificadores del código; el cuerpo es prosa, del lado de los comentarios y los docstrings.
 

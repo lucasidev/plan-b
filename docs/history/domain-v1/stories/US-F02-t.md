@@ -38,4 +38,4 @@ Como solo-dev y futuros colaboradores, quiero un Justfile con todas las operacio
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
 - Use Case: ninguno.
-- ADRs: [ADR-0024](../../../decisions/0024-dev-tooling-stack.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md)
+- ADRs: [ADR-0024](../../../decisions/0024-dev-tooling-stack.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md)

@@ -19,6 +19,6 @@ Visitor anónimo puede explorar el catálogo (universidades, carreras, planes, m
 
 ## Decisiones que la condicionan
 
-- [ADR-0001](../../../decisions/0001-multi-universidad-desde-dia-1.md): multi-universidad desde día 1
-- [ADR-0002](../../../decisions/0002-versionado-de-planes-de-estudio.md): versionado de planes de estudio
-- [ADR-0009](../../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato como regla de presentación
+- [ADR-0001](../../../decisions/0001-multi-university-as-root-domain-from-day-1.md): multi-universidad desde día 1
+- [ADR-0002](../../../decisions/0002-explicit-versioning-of-career-plans.md): versionado de planes de estudio
+- [ADR-0009](../../../decisions/0009-review-anonymity-is-a-presentation-rule.md): anonimato como regla de presentación

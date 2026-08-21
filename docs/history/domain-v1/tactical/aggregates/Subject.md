@@ -37,7 +37,7 @@ Sin integration events cross-BC.
 - `Hours > 0`, `Year >= 1`, `TermNumber >= 1`.
 - Sub-grafo de prerequisites no apunta a sí misma (invariante intra-aggregate).
 - Aciclicidad **global** del grafo de prerequisites del CareerPlan: invariante cross-aggregate, validada por domain service `IPrerequisiteGraphValidator` antes de invocar `AddPrerequisite`.
-- Prerequisite type ∈ `{para_cursar, para_rendir}` (ver [ADR-0003](../../../../decisions/0003-correlativas-con-dos-tipos.md)).
+- Prerequisite type ∈ `{para_cursar, para_rendir}` (ver [ADR-0003](../../../../decisions/0003-prerequisites-with-two-types.md)).
 
 ### 4. Cómo se carga / identifica
 
@@ -60,5 +60,5 @@ Ninguno específico (los prerequisites usan enums de tipo).
 ## Refs
 
 - BC: [Academic](../../strategic/bounded-contexts.md#academic)
-- ADRs: [ADR-0001](../../../../decisions/0001-multi-universidad-desde-dia-1.md), [ADR-0002](../../../../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../../../../decisions/0003-correlativas-con-dos-tipos.md)
+- ADRs: [ADR-0001](../../../../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0002](../../../../decisions/0002-explicit-versioning-of-career-plans.md), [ADR-0003](../../../../decisions/0003-prerequisites-with-two-types.md)
 - User Stories: [US-001](../../stories/US-001.md), [US-002](../../stories/US-002.md), [US-008](../../stories/US-008.md)

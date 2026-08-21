@@ -36,7 +36,7 @@ Llega desde que alguien se suma o se va del equipo, o desde que hace falta revis
 
 ## Decisiones que aplica
 
-D09 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): roles excluyentes, el Admin no se auto-asigna operativos, equipo mínimo de cuatro), [THESIS.md](../../../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../../../decisions/0050-backoffice-como-corte-transversal.md) (el gating es por rol en cada endpoint, no por estar en un módulo aparte: la base de que cada rol vea solo sus colas).
+D09 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): roles excluyentes, el Admin no se auto-asigna operativos, equipo mínimo de cuatro), [THESIS.md](../../../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../../../decisions/0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) (el gating es por rol en cada endpoint, no por estar en un módulo aparte: la base de que cada rol vea solo sus colas).
 
 ## Lo que esta ficha deja abierto
 

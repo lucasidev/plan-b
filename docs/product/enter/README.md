@@ -26,7 +26,7 @@ Además de la suya, esta épica sostiene stories de otras, que viven allá y se 
 
 ## Decisiones que aplica
 
-[THESIS.md](../../THESIS.md) (decisión 3: leer sin cuenta, producir con cuenta), [ADR-0048](../../decisions/0048-oficializacion-de-condicion-opt-in.md) (verificarse es opt-in y nunca por el mail: el registro no verifica a nadie), y las Restricciones del [catálogo](../README.md) (consentimiento informado, Ley 25.326).
+[THESIS.md](../../THESIS.md) (decisión 3: leer sin cuenta, producir con cuenta), [ADR-0048](../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (verificarse es opt-in y nunca por el mail: el registro no verifica a nadie), y las Restricciones del [catálogo](../README.md) (consentimiento informado, Ley 25.326).
 
 ## Pantallas
 

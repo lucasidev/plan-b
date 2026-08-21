@@ -54,7 +54,7 @@ stateDiagram-v2
 
 - **`reports`** (threshold de UC-019): los reports abiertos cruzaron el threshold. Desestimar el último report la devuelve a `published`. Es la transición del diagrama vía UC-051.
 - **`content_filter`** (UC-017/UC-018): el filtro de contenido la frenó al publicar o al editar. Desestimar un report sobre esta reseña NO la restaura: desestimar significa "este report no vale", no "publiquen este contenido", y son dos decisiones distintas que antes llegaban al mismo lugar (alcanzaba con que un tercero reportara una reseña frenada por el filtro para que el dismiss la publicara de rebote). El handler deja una entrada de audit log con `decision: not_restored` para que la decisión que no aplicó quede registrada. La única salida es que el autor edite (ver más abajo): el filtro reevalúa el texto nuevo, y si da clean la reseña pasa a `published`.
-- **`enrollment_changed`** ([ADR-0032](../../decisions/0032-edit-destructive-enrollment-invalida-review.md)): la cursada que respalda la reseña cambió de forma destructiva (por ejemplo, el alumno volvió a "cursando" después de haberla dado por aprobada) y la reseña quedó hablando de algo que ya no es cierto. Mismo comportamiento que `content_filter` frente a un dismiss de reports (no la restaura) y frente a una edición (el autor puede editarla para reflejar el nuevo estado real). **Sin escritor implementado todavía**: el modelo ya representa esta razón, pero el consumer cross-BC que la dispara (`EnrollmentRecordEdited` → `InvalidateReview`) no está construido.
+- **`enrollment_changed`** ([ADR-0032](../../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md)): la cursada que respalda la reseña cambió de forma destructiva (por ejemplo, el alumno volvió a "cursando" después de haberla dado por aprobada) y la reseña quedó hablando de algo que ya no es cierto. Mismo comportamiento que `content_filter` frente a un dismiss de reports (no la restaura) y frente a una edición (el autor puede editarla para reflejar el nuevo estado real). **Sin escritor implementado todavía**: el modelo ya representa esta razón, pero el consumer cross-BC que la dispara (`EnrollmentRecordEdited` → `InvalidateReview`) no está construido.
 
 **Nota sobre edición:** la edición (UC-018) se permite desde `published`, y desde `under_review` cuando la razón es `content_filter` o `enrollment_changed`: en ambos casos el filtro reevalúa el texto nuevo, y esa reevaluación decide si la reseña sale a `published` o se queda en `under_review` (con la razón siempre en `content_filter`, sea cual sea la razón de entrada). Por eso la edición desde `under_review` sí puede ser una transición real, a diferencia de la edición desde `published` que nunca cambia el estado. Se sigue sin poder editar cuando la razón es `reports`, ni en `removed`, para evitar edit-bombing como evasión de moderación (ver más abajo).
 
@@ -74,7 +74,7 @@ stateDiagram-v2
 
 ## Matriz de transiciones de `Review` con side effects
 
-> Los "enqueue de embedding" que aparecen en esta tabla describen el diseño de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): su revisión (2026-07-26) borró el pipeline hasta que exista un consumidor real, así que hoy ninguna de estas filas encola nada. La tabla se deja tal cual para cuando se retome.
+> Los "enqueue de embedding" que aparecen en esta tabla describen el diseño de [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md): su revisión (2026-07-26) borró el pipeline hasta que exista un consumidor real, así que hoy ninguna de estas filas encola nada. La tabla se deja tal cual para cuando se retome.
 
 | De → A                       | Trigger                                  | UC     | Side effects                                                                                                                                                                                |
 | ---------------------------- | ---------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -100,7 +100,7 @@ stateDiagram-v2
 
 ## Sequence diagrams
 
-> Los diagramas 1 y 4 incluyen un participante "Worker embeddings" que representa el diseño de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): ese worker no está construido (revisión 2026-07-26), así que hoy publicar o restaurar una reseña no dispara ningún enqueue real.
+> Los diagramas 1 y 4 incluyen un participante "Worker embeddings" que representa el diseño de [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md): ese worker no está construido (revisión 2026-07-26), así que hoy publicar o restaurar una reseña no dispara ningún enqueue real.
 
 ### 1. Happy path: publicación con filtro pass
 
@@ -214,9 +214,9 @@ Si después la Review se restaura (UC-052), los reports cascade-upheld **no** se
 
 ### Embedding solo sobre `published`
 
-> **Diseño diferido**: la revisión (2026-07-26) de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje de embeddings (extensión, worker, pipeline) hasta que exista un consumidor real. Lo que sigue describe cuándo se va a encolar el job el día que se construya, según [ADR-0013](../../decisions/0013-embedding-gated-en-transiciones-a-published.md).
+> **Diseño diferido**: la revisión (2026-07-26) de [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md) borró el andamiaje de embeddings (extensión, worker, pipeline) hasta que exista un consumidor real. Lo que sigue describe cuándo se va a encolar el job el día que se construya, según [ADR-0013](../../decisions/0013-embedding-generation-gated-on-transitions-to-published.md).
 
-El worker de generación de embeddings (ver [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md)) se enqueua en las transiciones hacia `published`:
+El worker de generación de embeddings (ver [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md)) se enqueua en las transiciones hacia `published`:
 
 - `null → published` (publicación con filtro pass).
 - `under_review → published` (dismiss de reports).
@@ -228,12 +228,12 @@ El worker de generación de embeddings (ver [ADR-0007](../../decisions/0007-pgve
 
 ### Anonimato en los sequence diagrams
 
-En ningún momento la API expone `enrollment.student_id` o datos derivados del autor en endpoints públicos. Ver [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md). Los moderadores sí pueden ver la identidad (vía audit log y rol de moderator) para detectar patrones de abuso.
+En ningún momento la API expone `enrollment.student_id` o datos derivados del autor en endpoints públicos. Ver [ADR-0009](../../decisions/0009-review-anonymity-is-a-presentation-rule.md). Los moderadores sí pueden ver la identidad (vía audit log y rol de moderator) para detectar patrones de abuso.
 
 ## Cross-references
 
 | Tipo       | Referencia                                                                                                                                                                                                 |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs        | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar).                                                                          |
-| ADRs       | [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md), [ADR-0032](../../decisions/0032-edit-destructive-enrollment-invalida-review.md). |
+| ADRs       | [ADR-0005](../../decisions/0005-review-anchored-to-the-enrollment-record.md), [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md), [ADR-0009](../../decisions/0009-review-anonymity-is-a-presentation-rule.md), [ADR-0032](../../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md). |
 | Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`](../../engineering/data-model.md#context-reviews--moderation).                                                             |

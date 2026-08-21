@@ -6,7 +6,7 @@
 **Priority**: Medium
 **Effort**: S
 **UC**: 
-**ADR refs**: [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md)
+**ADR refs**: [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md)
 
 ## Como dev, quiero workflows base que mantengan el repo sano sin esfuerzo manual
 
@@ -60,7 +60,7 @@ US-T05 dejó tres workflows core (`ci.yml` existente, `changelog.yml`, `pr-title
 ## Refs
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
-- ADRs: [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md)
+- ADRs: [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md)
 - Convenciones: [docs/testing/conventions.md](../../../engineering/testing.md)
 - Dependabot: https://docs.github.com/en/code-security/dependabot
 - Lychee: https://github.com/lycheeverse/lychee

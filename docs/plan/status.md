@@ -175,10 +175,10 @@ Todas Done al cierre del sprint.
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
-**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)):
-- [ADR-0039](../decisions/0039-meilisearch-como-motor-de-búsqueda-global.md): Meilisearch como motor de búsqueda global.
-- [ADR-0040](../decisions/0040-notifications-como-bounded-context.md): Notifications como BC nuevo.
-- [ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md): Delta del rediseño + plan de migración.
+**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md)):
+- [ADR-0039](../decisions/0039-meilisearch-as-the-global-search-engine.md): Meilisearch como motor de búsqueda global.
+- [ADR-0040](../decisions/0040-notifications-as-a-new-bounded-context.md): Notifications como BC nuevo.
+- [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md): Delta del rediseño + plan de migración.
 
 ### Scope cerrado en S2
 
@@ -199,7 +199,7 @@ Todas Done al cierre del sprint.
   - **6 US nuevas creadas para el backoffice**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-007 (importador CSV con preview/diff), US-006 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-005 (feed global de actividad reciente).
   - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-005), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-058 (deshabilitar member + tabs detalle).
   - **5 decisiones de scope zanjadas en el rediseño admin**: cola es por report (no por review, canvas manda), audit log per-BC (ADR-0042, cada módulo owns su projection con cross-BC views via Dapper UNION ALL), strike system+ocultar+banear all-in en US-085 (out de US-051), importador/merge/migración como US separadas, admin shell separado como bloqueante US-081.
-  - **1 ADR nuevo**: [ADR-0042](../decisions/0042-audit-log-per-bc-no-central.md) (audit log per-BC, no central; extiende ADR-0031).
+  - **1 ADR nuevo**: [ADR-0042](../decisions/0042-audit-log-per-bc-not-central.md) (audit log per-BC, no central; extiende ADR-0031).
   - PR `docs/backoffice-module` (este PR).
 
 ### Audit del estado del frontend vs canvas (2026-05-12 v3 full)
@@ -307,7 +307,7 @@ Suma final: **5 M + 2 S** (vs 4 M + 2 S planificado). El bonus M es US-038-bis, 
 
 Al implementar US-047 surgió la pregunta: si el alumno puede dar de baja la cuenta, ¿qué pasa con sus reseñas? La US-038 original definía hard delete (eliminar todo). Pero las reseñas son **corpus crowdsourced**: borrarlas castiga a los lectores futuros por una decisión del autor.
 
-Decisión: redactar [ADR-0044](../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (soft delete con anonimización del PII, patrón Reddit/Stack Overflow), cancelar US-075 (self-disable, era el paso intermedio que sobraba) y entregar **US-038-bis** end-to-end (backend `User.Deactivate` + anonimización SHA-256 + frontend `feature/deactivate-account` con modal anti-accidental). Las reseñas quedan publicadas como "Ex-miembro".
+Decisión: redactar [ADR-0044](../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (soft delete con anonimización del PII, patrón Reddit/Stack Overflow), cancelar US-075 (self-disable, era el paso intermedio que sobraba) y entregar **US-038-bis** end-to-end (backend `User.Deactivate` + anonimización SHA-256 + frontend `feature/deactivate-account` con modal anti-accidental). Las reseñas quedan publicadas como "Ex-miembro".
 
 ### Bonus técnico (no es US, pero entró en S4)
 
@@ -511,7 +511,7 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 
 ### Decisiones de scope tomadas al planificar (2026-07-20)
 
-- **US-016 no necesita todavía el BC `Planning`**: su propio AC dice "no persiste nada: solo computación de read models" ([ADR-0029](../decisions/0029-planning-bc-separado.md)). El aggregate `SimulationDraft` recién hace falta para guardar simulaciones (US-023), que [ADR-0028](../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md) define como premium. S10 es read models Dapper cross-schema, un domain service de cumplimiento de correlativas, y conectar el shell que ya existe.
+- **US-016 no necesita todavía el BC `Planning`**: su propio AC dice "no persiste nada: solo computación de read models" ([ADR-0029](../decisions/0029-planning-as-a-separate-bounded-context.md)). El aggregate `SimulationDraft` recién hace falta para guardar simulaciones (US-023), que [ADR-0028](../decisions/0028-optional-reviews-with-premium-features-as-reward.md) define como premium. S10 es read models Dapper cross-schema, un domain service de cumplimiento de correlativas, y conectar el shell que ya existe.
 - **El histograma de combinaciones similares entra completo**, con un riesgo asumido explícito: el AC lo define como exact match del subject set agrupando alumnos que cursaron la misma combinación, y con el corpus actual cada combinación va a tener muestras de 0 o 1 alumnos. Es una limitación de **volumen de datos, no de implementación**: el panel se va a ver vacío hasta que haya corpus real. Si se lo necesita poblado para una demo, sembrar enrollments realistas es trabajo aparte, a decidir por separado.
 - **Las premium de planificación quedan fuera**: US-023 (guardar draft), US-024 (compartir), US-025 (editar), US-026 (borrar), US-027 (ver públicas). Entran cuando el simulador base esté validado con usuarios reales, no antes.
 - **El backoffice restante se difiere a S11**: US-065 y US-067 quedaron **parciales** en S7 y US-081 nunca aterrizó su dashboard (los tres detectados en la auditoría de docs del 2026-07-20). Es valor para el operador, no para el alumno, así que va después del simulador.
@@ -521,7 +521,7 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 
 Las tres US entraron:
 
-- **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con el piso anti-reidentificación de [ADR-0047](../decisions/0047-pass-rate-publico-desde-historial-privado.md)) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
+- **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con el piso anti-reidentificación de [ADR-0047](../decisions/0047-public-pass-rate-from-private-enrollment-history.md)) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
 - **US-009-f** hecho: las superficies de error (404, 500, 403, loading, offline) con su diseño; el CTA de la 404 y la página offline apuntan a la landing pública.
 - **US-039-f** hecho en su core: hook `useOnlineStatus`, `OfflineBanner` global en el shell `(member)` con reintento y la transición "Conexión restablecida", más tests unit/component y el E2E con `context.setOffline`. **Deuda incremental**: el barrido de `disabled` por botón de mutación en cada feature (el hook queda listo para engancharlo) y la nota del patrón offline en `docs/engineering/testing.md`.
 
@@ -676,7 +676,7 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
   alumno en la misma pantalla, con el cambio ya persistido, 1 de cada 2 veces contra un build de
   producción. No era del alta sino de la navegación posterior, y le pegaba a los once sitios que
   todavía redirigían adentro del server action. Todos migrados; la revisión de
-  [ADR-0046](../decisions/0046-server-actions-como-mutaciones-puras.md) tiene la medición.
+  [ADR-0046](../decisions/0046-server-actions-as-pure-mutations.md) tiene la medición.
 
 ### Diferido a propósito
 

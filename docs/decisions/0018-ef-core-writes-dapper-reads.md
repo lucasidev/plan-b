@@ -1,4 +1,4 @@
-# ADR-0018: EF Core para writes, Dapper para reads complejos
+# ADR-0018: EF Core for writes, Dapper for complex reads
 
 - **Estado**: aceptado
 - **Fecha**: 2026-04-23

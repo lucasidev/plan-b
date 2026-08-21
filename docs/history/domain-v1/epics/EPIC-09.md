@@ -14,4 +14,4 @@ Admin crea moderadores, otros admins, staff universitario. No hay auto-registro 
 
 ## Decisiones que la condicionan
 
-- [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md): roles exclusivos, profiles como capacidades
+- [ADR-0008](../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md): roles exclusivos, profiles como capacidades

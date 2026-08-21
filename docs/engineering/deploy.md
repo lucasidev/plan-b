@@ -96,7 +96,7 @@ El backend no lee ningún `.env` en producción: la carga de `.env` está gatead
 
 **Todas las de la tabla son obligatorias de verdad, y el host lo verifica al arrancar.** Las de SMTP y los tres `LinkBaseUrl` viven hoy solo en `appsettings.Development.json`, así que en producción no tienen ningún default: el arranque falla con `DataAnnotation validation failed for 'VerificationEmailOptions' members: 'LinkBaseUrl'` y equivalentes. Es la trampa principal de este deploy y sale así de la corrida real, no de leer el código.
 
-El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens, umbral de auto-ocultado de moderación) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-configuración-de-entornos.md)).
+El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens, umbral de auto-ocultado de moderación) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-environment-configuration.md)).
 
 Los valores los carga Lucas en Dokploy. No están en el repo ni pasan por este doc.
 
@@ -117,6 +117,6 @@ Honestidad sobre el estado, para que nadie lea este doc como si estuviera probad
 ## Refs
 
 - [`rollback.md`](rollback.md): revertir código, schema y tags.
-- [ADR-0059](../decisions/0059-el-arranque-en-produccion-no-se-auto-repara.md): por qué el orden de estos pasos no es negociable y por qué el arranque falla en vez de repararse.
+- [ADR-0059](../decisions/0059-production-startup-does-not-self-repair.md): por qué el orden de estos pasos no es negociable y por qué el arranque falla en vez de repararse.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): por qué el workflow es manual y no dispara en cada merge.
-- [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md): qué llega a `main` y cómo.
+- [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): qué llega a `main` y cómo.

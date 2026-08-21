@@ -6,7 +6,7 @@
 **Priority**: Medium
 **Effort**: S
 **UC**: 
-**ADR refs**: [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md)
+**ADR refs**: [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md), [ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md)
 
 ## Como dev, quiero tests de arquitectura que enforcen los boundaries del modular monolith para que las reglas de ADRs no dependan de memoria humana
 
@@ -57,6 +57,6 @@ Las reglas duras del modular monolith vivían sólo en CLAUDE.md y ADRs. Si algu
 ## Refs
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
-- ADRs: [ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0015](../../../decisions/0015-wolverine-como-mediator-y-message-bus.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md), [ADR-0030](../../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md)
+- ADRs: [ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md), [ADR-0015](../../../decisions/0015-wolverine-as-mediator-message-bus-and-durable-outbox.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md), [ADR-0030](../../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md), [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md)
 - Convenciones: [docs/testing/conventions.md](../../../engineering/testing.md)
 - NetArchTest: https://github.com/BenMorris/NetArchTest

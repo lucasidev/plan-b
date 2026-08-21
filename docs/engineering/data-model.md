@@ -66,7 +66,7 @@ erDiagram
 
 ## Context: Identity
 
-Cuentas, roles y perfiles que capturan identidad del usuario en la plataforma. Ver [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) para la separación entre rol y profile.
+Cuentas, roles y perfiles que capturan identidad del usuario en la plataforma. Ver [ADR-0008](../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md) para la separación entre rol y profile.
 
 ```mermaid
 ---
@@ -143,7 +143,7 @@ Constraints adicionales:
 
 ### Entity: VerificationToken (child de User / TeacherProfile)
 
-Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-como-child-entity.md).
+Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).
 
 | Campo               | Tipo                              | Constraints                              | Notas                                              |
 | ------------------- | --------------------------------- | ---------------------------------------- | -------------------------------------------------- |
@@ -171,7 +171,7 @@ Constraints:
 
 ## Context: Academic Catalog
 
-Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, comisiones y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-universidad-desde-dia-1.md), [ADR-0002](../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../decisions/0003-correlativas-con-dos-tipos.md).
+Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, comisiones y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0002](../decisions/0002-explicit-versioning-of-career-plans.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
 
 ```mermaid
 ---
@@ -329,7 +329,7 @@ Un docente archivado no se puede asignar a comisiones nuevas (app-level). Sí se
 
 ### Entity: AcademicTerm
 
-Período lectivo genérico. Ver [ADR-0001](../decisions/0001-multi-universidad-desde-dia-1.md).
+Período lectivo genérico. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md).
 
 | Campo               | Tipo             | Constraints               | Notas                                                  |
 | ------------------- | ---------------- | ------------------------- | ------------------------------------------------------ |
@@ -378,7 +378,7 @@ Constraints:
 - `UNIQUE(subject_id, term_id, name)`. Sobre todas las filas, no solo las activas: archivar no libera el nombre porque la salida correcta es reactivar la comisión archivada, no crear una segunda con el mismo nombre.
 - CHECK `ck_commissions_capacity_positive`: `capacity IS NULL OR capacity > 0`.
 
-`schedules` es un array de `{day, start, end}` embebido en la fila, no una tabla hija ([ADR-0053](../decisions/0053-forma-de-las-colecciones-hijas-de-un-aggregate.md)): ninguna lectura expande las franjas a filas para joinear. `CommissionTeacher`, en cambio, sigue siendo tabla porque se joinea contra `teachers` para traer el nombre. El CHECK `end_time > start_time` que tenía la tabla de franjas no se puede escribir sobre un array jsonb; el invariante lo sostiene el aggregate, cuyo último bypass (`Commission.Hydrate`, usado por el seeder) ahora valida y tira.
+`schedules` es un array de `{day, start, end}` embebido en la fila, no una tabla hija ([ADR-0053](../decisions/0053-the-shape-of-child-collections-in-an-aggregate.md)): ninguna lectura expande las franjas a filas para joinear. `CommissionTeacher`, en cambio, sigue siendo tabla porque se joinea contra `teachers` para traer el nombre. El CHECK `end_time > start_time` que tenía la tabla de franjas no se puede escribir sobre un array jsonb; el invariante lo sostiene el aggregate, cuyo último bypass (`Commission.Hydrate`, usado por el seeder) ahora valida y tira.
 
 ### Entity: CommissionTeacher
 
@@ -404,7 +404,7 @@ Constraints:
 
 ## Context: Student History
 
-Historial académico del alumno. Ver [ADR-0004](../decisions/0004-enrollment-guarda-hechos.md) y [ADR-0006](../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md).
+Historial académico del alumno. Ver [ADR-0004](../decisions/0004-enrollment-record-stores-facts-not-derived-state.md) y [ADR-0006](../decisions/0006-jsonb-only-where-the-shape-is-variable.md).
 
 ```mermaid
 ---
@@ -475,7 +475,7 @@ Staging del parseo de PDF/texto.
 
 ## Context: Reviews & Moderation
 
-Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0005](../decisions/0005-reseña-anclada-al-enrollment.md) y [ADR-0009](../decisions/0009-anonimato-como-regla-de-presentacion.md).
+Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0005](../decisions/0005-review-anchored-to-the-enrollment-record.md) y [ADR-0009](../decisions/0009-review-anonymity-is-a-presentation-rule.md).
 
 ```mermaid
 ---
@@ -529,7 +529,7 @@ Constraints:
 - CHECK `ck_reviews_at_least_one_text`: `subject_text IS NOT NULL OR teacher_text IS NOT NULL`.
 - CHECK `ck_reviews_{subject,teacher}_text_length`: cada texto presente entra en el rango de `ReviewText` (50..2000). No es redundante con el aggregate: el value converter del read path hace `.Value` sobre el `Result`, así que una fila fuera de rango no da error de dominio, revienta al materializar y deja la reseña inutilizable para cualquier operación.
 
-`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0032](../decisions/0032-edit-destructive-enrollment-invalida-review.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
+`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0032](../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
 
 ### Entity: ReviewReport
 
@@ -594,7 +594,7 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 
 ## Context: Semantic Analytics
 
-**No existe.** La revisión del 2026-07-26 de [ADR-0007](../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje de pgvector (la extensión, el wiring de Npgsql y el handler stub) hasta que haya un consumidor real.
+**No existe.** La revisión del 2026-07-26 de [ADR-0007](../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md) borró el andamiaje de pgvector (la extensión, el wiring de Npgsql y el handler stub) hasta que haya un consumidor real.
 
 Este doc describía la tabla `ReviewEmbedding` con su unique y su índice HNSW como si estuvieran creados. Nunca lo estuvieron: no había tabla, ni entidad, ni repositorio, ni índice, ni pipeline. Se saca la descripción en lugar de dejarla marcada como pendiente, porque un modelo de datos que enumera columnas de una tabla inexistente se lee con la misma confianza que el resto del doc.
 
@@ -602,7 +602,7 @@ El diseño (tabla aparte para poder versionar modelos, el modelo elegido, el gat
 
 ## Context: Planning
 
-Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0029](../decisions/0029-planning-bc-separado.md)).
+Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0029](../decisions/0029-planning-as-a-separate-bounded-context.md)).
 
 ### Entity: SimulationDraft
 
@@ -642,7 +642,7 @@ Constraints:
 - `PRIMARY KEY (draft_id, subject_id)`: una materia no se repite en el mismo borrador.
 - Un draft tiene al menos un item (invariante del aggregate, no CHECK de DB).
 
-Esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. Sigue siendo tabla hija y no documento embebido: [ADR-0053](../decisions/0053-forma-de-las-colecciones-hijas-de-un-aggregate.md) evalúa el criterio por colección, y acá el feed público expande los items a filas para joinear contra `academic.subjects` y `academic.commissions` (nombre de la materia, nombre de la comisión, carga horaria). Ese join es justamente lo que no se puede hacer contra un array jsonb sin desarmarlo primero.
+Esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. Sigue siendo tabla hija y no documento embebido: [ADR-0053](../decisions/0053-the-shape-of-child-collections-in-an-aggregate.md) evalúa el criterio por colección, y acá el feed público expande los items a filas para joinear contra `academic.subjects` y `academic.commissions` (nombre de la materia, nombre de la comisión, carga horaria). Ese join es justamente lo que no se puede hacer contra un array jsonb sin desarmarlo primero.
 
 ## Apéndice A: Enums
 

@@ -22,7 +22,7 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 ## Decisiones que aplica
 
-[ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 1 y 6: el testimonio debajo de las frases, ordenado por votos; votar pide cuenta), D07 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): corregir pide cuenta, no aporte previo, y queda registrado quién), [ADR-0048](../../decisions/0048-oficializacion-de-condicion-opt-in.md) (aceptado y extendido por [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md): verificarse es señal, no permiso), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (cada frase marcada en el testimonio trae su eje: la que alarma es gestión, la que informa es exigencia).
+[ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 1 y 6: el testimonio debajo de las frases, ordenado por votos; votar pide cuenta), D07 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): corregir pide cuenta, no aporte previo, y queda registrado quién), [ADR-0048](../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (aceptado y extendido por [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md): verificarse es señal, no permiso), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (cada frase marcada en el testimonio trae su eje: la que alarma es gestión, la que informa es exigencia).
 
 ## Pantallas
 

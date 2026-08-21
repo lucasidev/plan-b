@@ -24,7 +24,7 @@ A diferencia del Big Picture, que captura la línea de tiempo y los hot spots, e
 
 Los tres momentos del Big Picture ([eventstorming.md](eventstorming.md)) reordenados acá como flujos reactivos: Onboarding (one-shot por alumno), Loop core (iterativo cada cuatrimestre) y Governance (paralelo, sin loop). Cada step muestra el sticky completo: quién dispara, qué command, qué aggregate, qué event, qué policy reactiva queda enganchada, qué read model se afecta y qué external system participa.
 
-Los pasos que mencionan pgvector o encolar un job de embedding describen el diseño de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md): su revisión (2026-07-26) borró ese pipeline hasta que exista un consumidor real, así que hoy esos pasos no disparan nada.
+Los pasos que mencionan pgvector o encolar un job de embedding describen el diseño de [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md): su revisión (2026-07-26) borró ese pipeline hasta que exista un consumidor real, así que hoy esos pasos no disparan nada.
 
 ### 1. Onboarding (Visitor → Member verificado → Alumno con StudentProfile)
 
@@ -203,11 +203,11 @@ Ver [`docs/decisions/0017-persistence-ignorance.md`](../../decisions/0017-persis
 - Software Design (level 3): [tactical/aggregates/](tactical/aggregates)
 - Domain events index: [tactical/domain-events.md](tactical/domain-events.md)
 - Outbox y eventual consistency: [ADR-0030](../../decisions/0030-cross-bc-consistency-via-wolverine-outbox.md)
-- Cascade rules de moderación: [ADR-0011](../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md)
-- Auto-quarantine threshold: [ADR-0010](../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md)
-- Edit destructive invalida Review: [ADR-0032](../../decisions/0032-edit-destructive-enrollment-invalida-review.md)
-- Embedding gating: [ADR-0013](../../decisions/0013-embedding-gated-en-transiciones-a-published.md)
-- Reseñas opcionales con premium features: [ADR-0028](../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)
-- Edit de Review bloqueado mientras la modera un reporte: [ADR-0012](../../decisions/0012-edicion-de-resena-solo-desde-published.md)
-- ReviewAuditLog como projection: [ADR-0031](../../decisions/0031-review-audit-log-como-projection.md)
-- Wolverine como mediator: [ADR-0015](../../decisions/0015-wolverine-como-mediator-y-message-bus.md)
+- Cascade rules de moderación: [ADR-0011](../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md)
+- Auto-quarantine threshold: [ADR-0010](../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md)
+- Edit destructive invalida Review: [ADR-0032](../../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md)
+- Embedding gating: [ADR-0013](../../decisions/0013-embedding-generation-gated-on-transitions-to-published.md)
+- Reseñas opcionales con premium features: [ADR-0028](../../decisions/0028-optional-reviews-with-premium-features-as-reward.md)
+- Edit de Review bloqueado mientras la modera un reporte: [ADR-0012](../../decisions/0012-review-editing-blocked-while-a-report-moderates-it.md)
+- ReviewAuditLog como projection: [ADR-0031](../../decisions/0031-review-audit-log-as-a-projection.md)
+- Wolverine como mediator: [ADR-0015](../../decisions/0015-wolverine-as-mediator-message-bus-and-durable-outbox.md)

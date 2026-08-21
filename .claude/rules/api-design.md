@@ -12,4 +12,4 @@ Estás tocando un endpoint. El scaffold completo está en el skill `slice-backen
 - **Ruta en inglés, REST**: `/api/{recurso}` en plural + verbo HTTP, no `/api/getX`. La identidad del user sale del JWT, no de la ruta ni del body.
 - **Carter**: el endpoint es `ICarterModule` y se descubre por convención, no lo registres a mano.
 
-Detalle: [ADR-0016](../../docs/decisions/0016-carter-para-endpoints-http.md) + skill `slice-backend`.
+Detalle: [ADR-0016](../../docs/decisions/0016-carter-for-http-endpoints.md) + skill `slice-backend`.

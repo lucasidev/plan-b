@@ -39,7 +39,7 @@ Llega desde el **Reportar** de cualquier ficha pública (acción inline sin cuen
 
 ## Decisiones que aplica
 
-[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 2 a 5: el chequeo previo, la exposición, bajar el texto nunca la voz, la réplica con las mismas reglas), [ADR-0010](../../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md) (superado: ningún umbral de reportes baja nada solo), D05 y D09 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md)), [THESIS.md](../../../../THESIS.md) ("Posición": se modera lo que expone a una persona, no lo que incomoda a la institución).
+[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 2 a 5: el chequeo previo, la exposición, bajar el texto nunca la voz, la réplica con las mismas reglas), [ADR-0010](../../../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md) (superado: ningún umbral de reportes baja nada solo), D05 y D09 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md)), [THESIS.md](../../../../THESIS.md) ("Posición": se modera lo que expone a una persona, no lo que incomoda a la institución).
 
 ## Lo que esta ficha deja abierto
 

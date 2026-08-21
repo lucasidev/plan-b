@@ -2,7 +2,7 @@
 
 Seis BCs definen el modelo de dominio. Cada uno tiene **lenguaje propio** (un mismo término puede significar cosas distintas en BCs distintos), **decisiones que lo gobiernan**, y un **contract con otros BCs** explícito.
 
-La división se materializa físicamente como módulos en `backend/modules/<context>/` (ver [ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md)).
+La división se materializa físicamente como módulos en `backend/modules/<context>/` (ver [ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md)).
 
 | BC | Carpeta | Propósito en una línea |
 |---|---|---|
@@ -25,8 +25,8 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md): roles mutuamente exclusivos (`member` / `moderator` / `admin` / `university_staff`) + profiles como unlockers de capabilities. Un docente que también es alumno tiene un solo `User`-`role=member` con dos profiles distintos.
-- [ADR-0009](../../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato de autores en presentación pública.
+- [ADR-0008](../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md): roles mutuamente exclusivos (`member` / `moderator` / `admin` / `university_staff`) + profiles como unlockers de capabilities. Un docente que también es alumno tiene un solo `User`-`role=member` con dos profiles distintos.
+- [ADR-0009](../../../decisions/0009-review-anonymity-is-a-presentation-rule.md): anonimato de autores en presentación pública.
 - ADR-0033: VerificationToken vive como child entity dentro de User (y dentro de TeacherProfile), no como aggregate independiente.
 
 **Lenguaje propio**:
@@ -52,9 +52,9 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0001](../../../decisions/0001-multi-universidad-desde-dia-1.md): multi-universidad desde día 1.
-- [ADR-0002](../../../decisions/0002-versionado-de-planes-de-estudio.md): versioning de planes (CareerPlan).
-- [ADR-0003](../../../decisions/0003-correlativas-con-dos-tipos.md): Prerequisites con dos tipos: `para_cursar` y `para_rendir`.
+- [ADR-0001](../../../decisions/0001-multi-university-as-root-domain-from-day-1.md): multi-universidad desde día 1.
+- [ADR-0002](../../../decisions/0002-explicit-versioning-of-career-plans.md): versioning de planes (CareerPlan).
+- [ADR-0003](../../../decisions/0003-prerequisites-with-two-types.md): Prerequisites con dos tipos: `para_cursar` y `para_rendir`.
 - ADR-0029: Planning BC separado (ergo Academic NO incluye SimulationDraft, aunque la simulación use materias del catálogo).
 
 **Lenguaje propio**:
@@ -82,8 +82,8 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0004](../../../decisions/0004-enrollment-guarda-hechos.md): EnrollmentRecord guarda hechos, no estados derivados. El estado del grafo (materia disponible / bloqueada) se computa al vuelo, no se persiste.
-- [ADR-0006](../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md): HistorialImport.raw_payload es JSONB (shape variable según `source_type`). EnrollmentRecord es columnas tipadas.
+- [ADR-0004](../../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md): EnrollmentRecord guarda hechos, no estados derivados. El estado del grafo (materia disponible / bloqueada) se computa al vuelo, no se persiste.
+- [ADR-0006](../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md): HistorialImport.raw_payload es JSONB (shape variable según `source_type`). EnrollmentRecord es columnas tipadas.
 - ADR-0032: Edit destructive de EnrollmentRecord (cambio a `cursando` cuando había Review) emite event cross-BC `EnrollmentRecordEdited` que Reviews consume para invalidar la reseña.
 
 **Lenguaje propio**:
@@ -102,20 +102,20 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 ## Reviews
 
-**Capacidad**: reseñas anclas a EnrollmentRecord. Una reseña dice cómo fue la experiencia de esa cursada específica: dificultad percibida, comentarios sobre materia, comentarios sobre docente. El BC también owns las **respuestas docentes**. Los **embeddings semánticos** son diseño diferido (ver la revisión 2026-07-26 de [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md)): no hay read model construido todavía.
+**Capacidad**: reseñas anclas a EnrollmentRecord. Una reseña dice cómo fue la experiencia de esa cursada específica: dificultad percibida, comentarios sobre materia, comentarios sobre docente. El BC también owns las **respuestas docentes**. Los **embeddings semánticos** son diseño diferido (ver la revisión 2026-07-26 de [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md)): no hay read model construido todavía.
 
 **Aggregates**: Review (con TeacherResponse como child).
 
-**Projections**: ReviewEmbedding (diseño diferido, no construida hoy: ver [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md)).
+**Projections**: ReviewEmbedding (diseño diferido, no construida hoy: ver [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md)).
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0005](../../../decisions/0005-reseña-anclada-al-enrollment.md): reseña anclada a EnrollmentRecord (no a User + Subject).
-- [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector pipeline diferido hasta que exista consumidor real (revisión 2026-07-26); el diseño (modelo, tabla, gating por volumen) sigue vigente para cuando se construya.
-- [ADR-0009](../../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato del autor en presentación pública.
-- [ADR-0011](../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade de reports al upheld; sin reversión al restore.
-- [ADR-0012](../../../decisions/0012-edicion-de-resena-solo-desde-published.md): edit bloqueado mientras la modera un reporte (desde `published`, y desde `under_review` si la cuarentena no vino de reportes).
-- [ADR-0013](../../../decisions/0013-embedding-gated-en-transiciones-a-published.md): embedding job en transiciones a `published`.
+- [ADR-0005](../../../decisions/0005-review-anchored-to-the-enrollment-record.md): reseña anclada a EnrollmentRecord (no a User + Subject).
+- [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md): pgvector pipeline diferido hasta que exista consumidor real (revisión 2026-07-26); el diseño (modelo, tabla, gating por volumen) sigue vigente para cuando se construya.
+- [ADR-0009](../../../decisions/0009-review-anonymity-is-a-presentation-rule.md): anonimato del autor en presentación pública.
+- [ADR-0011](../../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md): cascade de reports al upheld; sin reversión al restore.
+- [ADR-0012](../../../decisions/0012-review-editing-blocked-while-a-report-moderates-it.md): edit bloqueado mientras la modera un reporte (desde `published`, y desde `under_review` si la cuarentena no vino de reportes).
+- [ADR-0013](../../../decisions/0013-embedding-generation-gated-on-transitions-to-published.md): embedding job en transiciones a `published`.
 - ADR-0028: reseñas opcionales + premium features como reward (no gating del simulador).
 
 **Lenguaje propio**:
@@ -143,9 +143,9 @@ Las relaciones entre BCs se documentan en [`context-map.md`](context-map.md). Lo
 
 **Decisiones que lo gobiernan**:
 
-- [ADR-0010](../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md): threshold de auto-hide configurable por env var.
+- [ADR-0010](../../../decisions/0010-auto-hide-threshold-configurable-by-env-var.md): threshold de auto-hide configurable por env var.
 - ADR-0031: ReviewAuditLog como projection, no aggregate.
-- [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md) (referencial): moderators no tienen profiles académicos, no pueden reseñar ni responder; rol exclusivo evita conflicto de interés.
+- [ADR-0008](../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md) (referencial): moderators no tienen profiles académicos, no pueden reseñar ni responder; rol exclusivo evita conflicto de interés.
 
 **Lenguaje propio**:
 

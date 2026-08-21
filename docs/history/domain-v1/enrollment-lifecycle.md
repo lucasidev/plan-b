@@ -24,7 +24,7 @@ Este documento expande los UCs UC-013, UC-014, UC-015. Para el lifecycle dependi
 | `reprobada`  | Cursada terminada sin regularizar. Para intentar de nuevo, recursar (enrollment nuevo).            | Sí       |
 | `abandonada` | Alumno dejó de cursar antes de terminar.                                                           | Sí       |
 
-Los estados "disponible para cursar" y "bloqueada por correlativas" **no** son estados persistidos del EnrollmentRecord: son estados derivados que se computan en query cruzando historial + correlativas. Ver [ADR-0004](../../decisions/0004-enrollment-guarda-hechos.md).
+Los estados "disponible para cursar" y "bloqueada por correlativas" **no** son estados persistidos del EnrollmentRecord: son estados derivados que se computan en query cruzando historial + correlativas. Ver [ADR-0004](../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md).
 
 ## State machine
 
@@ -48,7 +48,7 @@ stateDiagram-v2
 
 **Nota sobre `regular → reprobada`:** no se modela como transición automática. La "caída de regularidad" (expiración del plazo para rendir final) varía por universidad y depende de fechas que no tenemos en el modelo. Si un alumno cae de regular, edita manualmente vía UC-015 para cambiarlo a `reprobada` o crea un enrollment de recursada.
 
-**Nota sobre recursada:** no hay transición desde `reprobada` ni desde ningún otro estado. Recursar una materia siempre significa **crear un EnrollmentRecord nuevo** con otro `term_id`. El enrollment viejo queda intacto como registro histórico. Esto permite que ambas cursadas tengan reseñas independientes (ver [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md)).
+**Nota sobre recursada:** no hay transición desde `reprobada` ni desde ningún otro estado. Recursar una materia siempre significa **crear un EnrollmentRecord nuevo** con otro `term_id`. El enrollment viejo queda intacto como registro histórico. Esto permite que ambas cursadas tengan reseñas independientes (ver [ADR-0005](../../decisions/0005-review-anchored-to-the-enrollment-record.md)).
 
 ## Matriz de transiciones con side effects
 
@@ -205,6 +205,6 @@ sequenceDiagram
 | Tipo                  | Referencias                                                                                                                                                                                                                                                                                                                      |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs                   | UC-013 (carga manual), UC-014 (import), UC-015 (edit), UC-017 (precondición: status != cursando).                                                                                                                                                                                                                                |
-| ADRs                  | [ADR-0002](../../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0006](../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md). |
+| ADRs                  | [ADR-0002](../../decisions/0002-explicit-versioning-of-career-plans.md), [ADR-0003](../../decisions/0003-prerequisites-with-two-types.md), [ADR-0004](../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md), [ADR-0005](../../decisions/0005-review-anchored-to-the-enrollment-record.md), [ADR-0006](../../decisions/0006-jsonb-only-where-the-shape-is-variable.md). |
 | Data model            | [EnrollmentRecord + HistorialImport](../../engineering/data-model.md#context-student-history).                                                                                                                                                                                                                                     |
 | Lifecycle dependiente | [review-lifecycle.md](review-lifecycle.md).                                                                                                                                                                                                                                                                                      |

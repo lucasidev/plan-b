@@ -18,6 +18,6 @@ Admin precarga y mantiene el catálogo académico: universities, careers, plans,
 
 ## Decisiones que la condicionan
 
-- [ADR-0001](../../../decisions/0001-multi-universidad-desde-dia-1.md): multi-universidad desde día 1
-- [ADR-0002](../../../decisions/0002-versionado-de-planes-de-estudio.md): versionado de planes de estudio
-- [ADR-0003](../../../decisions/0003-correlativas-con-dos-tipos.md): correlativas con dos tipos
+- [ADR-0001](../../../decisions/0001-multi-university-as-root-domain-from-day-1.md): multi-universidad desde día 1
+- [ADR-0002](../../../decisions/0002-explicit-versioning-of-career-plans.md): versionado de planes de estudio
+- [ADR-0003](../../../decisions/0003-prerequisites-with-two-types.md): correlativas con dos tipos
