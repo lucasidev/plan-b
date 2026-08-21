@@ -16,7 +16,7 @@ Lo que hay hoy, medido:
 
 Y lo que cuesta:
 
-- **Una GitHub App propia** (`planb-ci-bot`) con bypass del ruleset de `main`, que existe únicamente porque este workflow necesita pushear a una rama protegida y GitHub no permite darle ese bypass a la app de Actions en repos personales.
+- **Un bypass del ruleset de `main`**, que existe únicamente porque este workflow necesita pushear a una rama protegida y GitHub no permite darle ese bypass a su propia app de Actions en repos personales. La GitHub App `planb-ci-bot` que lo recibe no la trajo el changelog: ya existía para regenerar el lockfile de Dependabot ([ADR-0043](0043-github-app-for-bot-pushes-that-trigger-workflows.md), tres días antes). Lo que el changelog agregó fue el permiso.
 - **Un `[skip ci]`** en el mensaje del commit para no re-disparar CI sobre un cambio docs-only.
 - **Dos bugs en su primer live run**, documentados en [lessons-learned](../engineering/lessons-learned.md) (skipeaba commits que no debía; el skip-tag matcheaba en prosa).
 - **Un script de 14 KB con su suite de tests** para mantener.
@@ -48,7 +48,8 @@ Y funda la necesidad del changelog en algo que acá todavía no existe: **un lec
 
 ## Consecuencias
 
-- **La GitHub App `planb-ci-bot` se queda**: verificado que `dependabot-bun-lockfile.yml` la usa con el mismo secreto (`LOCKFILE_BOT_APP_ID`). Lo que se retira es un consumidor, no la App.
+- **La GitHub App `planb-ci-bot` se queda**: verificado que `dependabot-bun-lockfile.yml` la usa con el mismo secreto (`LOCKFILE_BOT_APP_ID`), y que sus 8 commits, el último del 2026-08-10, son todos de regenerar el lockfile. Lo que se retira es un consumidor, no la App.
+- **El bypass del ruleset sí se retira** (2026-08-21): era lo único que el changelog necesitaba de verdad, porque `main` es rama protegida. Sacarlo no puede romper a la App, que pushea a la rama del PR mientras el ruleset apunta solo a `~DEFAULT_BRANCH`, y baja el blast radius de su token: sin bypass no puede pushear, force-pushear ni borrar `main`. Es puerta de dos vías, se repone con un toggle.
 - **`CHANGELOG.md` deja de moverse.** Los scripts que reescriben paths en masa ya no lo van a pisar, que fue un problema real: dos veces en un mismo día un pase de mantenimiento le reescribió una línea histórica, falsificando qué path había tocado un commit viejo.
 - **Un commit a `main` deja de generar un segundo commit del bot**, y el historial de `main` queda más limpio.
 - **`git-cliff` no está instalado**: se agrega cuando se lo necesite, no ahora. Instalar una herramienta para no usarla sería el mismo error en versión más chica.

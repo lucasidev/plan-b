@@ -32,10 +32,14 @@ lo que debe pasar siempre va a enforcement determinístico, no a disciplina.
   explícito en el chat antes de cada push/merge, y GitHub no permite aprobar el propio PR, así que
   exigir 1 review con un solo dev bloquea todo merge. Se evaluó y descartó el esquema de dos cuentas.
   **Cuando entre un segundo dev, subir a 1** (el review pasa a ser real).
-- **Bypass: solo la App `planb-ci-bot`**, que hoy usa `dependabot-bun-lockfile.yml`. GitHub no
-  permite dar bypass a su app "GitHub Actions" en repos personales (ni API ni UI), de ahí la App
-  propia. El otro consumidor era `changelog.yml`, retirado por
-  [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md).
+- **Sin bypass: ningún actor** (desde el 2026-08-21). El único que había era la App
+  `planb-ci-bot`, y estaba ahí por `changelog.yml`, que era lo único que pusheaba a `main`;
+  al retirarlo ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md))
+  el permiso quedó sin dueño. **La App sigue viva y no lo necesita**: su trabajo es regenerar
+  el lockfile de Dependabot ([ADR-0043](../decisions/0043-github-app-for-bot-pushes-that-trigger-workflows.md))
+  y pushea a la rama del PR, no a `main`, que es la única que el ruleset protege. Sacarlo baja
+  el blast radius de su token: sin bypass, lo peor que puede hacer si se escapa es pushear a
+  una rama de PR, que igual necesita que un humano mergee.
 
 ## Conventional Commits: todos los detalles
 
