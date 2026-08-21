@@ -1,3 +1,9 @@
+# Los globs listan el nivel raíz aparte del anidado a propósito: `dir/**/*.ext`
+# exige al menos un directorio intermedio, así que sin la primera línea de cada
+# par un push que solo toca `Directory.Packages.props`, `global.json`,
+# `package.json` o `tsconfig.json` no dispara ningún hook. Son justo los
+# archivos donde un cambio tiene más alcance.
+
 pre-commit:
   parallel: true
   commands:
@@ -7,9 +13,17 @@ pre-commit:
       run: bunx biome check --write {staged_files}
       stage_fixed: true
     backend-format:
+      # Solo `whitespace`. Los pases `style` y `analyzers` cuestan 21s extra y
+      # no encuentran nada: el .editorconfig no declara ni una severidad, así
+      # que las reglas IDE/CA quedan en `silent`, por debajo del umbral `warn`
+      # que usan tanto el formatter como el build. Y si alguna vez se declaran
+      # severidades, `EnforceCodeStyleInBuild` + `TreatWarningsAsErrors`
+      # (Directory.Build.props) las vuelve error de compilación, o sea que
+      # backend-build las frena en pre-push. El formato de whitespace es lo
+      # único que ningún compilador mira.
       root: "backend/"
       glob: "*.cs"
-      run: dotnet format --include {staged_files}
+      run: dotnet format whitespace --include {staged_files}
       stage_fixed: true
 
 commit-msg:
@@ -23,28 +37,38 @@ pre-push:
     docs-check:
       # Señala, no bloquea (exit 0 sin --strict): coherencia de docs de producto
       # (links, em-dashes, períodos codificados, una story por épica, mermaid). ADR-0070.
-      glob: "docs/**/*.{md,html}"
+      glob:
+        - "docs/*.{md,html}"
+        - "docs/**/*.{md,html}"
       run: bun scripts/check-docs.ts
     backend-build:
-      # Triggers restore which catches NU1608 (version conflicts) and NU1903
-      # (CVE-vulnerable packages) because of <TreatWarningsAsErrors>true</>.
-      glob: "backend/**/*.{cs,csproj,props,targets,sln,json}"
+      # El restore que dispara este build es también el escaneo de
+      # vulnerabilidades: con NuGetAudit=true, NuGetAuditMode=all y
+      # NuGetAuditLevel=low (defaults del SDK) más TreatWarningsAsErrors=true
+      # sin exenciones, un paquete con CVE sale como `error NU1903` y corta el
+      # push. También cubre NU1608 (conflictos de versión).
+      glob:
+        - "backend/*.{cs,csproj,props,targets,sln,json}"
+        - "backend/**/*.{cs,csproj,props,targets,sln,json}"
       run: cd backend && dotnet build --nologo --verbosity quiet
-    backend-vulns:
-      glob: "backend/**/*.{csproj,props,sln,json}"
-      run: bun scripts/check-backend-vulns.ts
     frontend-lint:
-      glob: "frontend/**/*.{ts,tsx,js,jsx,json}"
+      glob:
+        - "frontend/*.{ts,tsx,js,jsx,json}"
+        - "frontend/**/*.{ts,tsx,js,jsx,json}"
       run: cd frontend && bun run lint
     frontend-typecheck:
-      glob: "frontend/**/*.{ts,tsx}"
+      glob:
+        - "frontend/*.{ts,tsx}"
+        - "frontend/**/*.{ts,tsx}"
       run: cd frontend && bunx tsc --noEmit
     frontend-test:
-      # Vitest unit/component (US-T01). Rápido (~3s con jsdom + sample suite).
+      # Vitest unit/component (US-T01), ~30s medidos.
       # E2E (Playwright) ya NO corre en pre-push: vive en CI como un job del
       # workflow `ci.yml` y corre siempre en cada PR. Si querés correrlo
       # local manualmente: `just frontend-test-e2e-show` (browser visible).
-      glob: "frontend/**/*.{ts,tsx}"
+      glob:
+        - "frontend/*.{ts,tsx}"
+        - "frontend/**/*.{ts,tsx}"
       run: cd frontend && bun run test
     frontend-react-doctor:
       # React Doctor scan acotado a los archivos que tu rama cambió vs main
@@ -54,5 +78,7 @@ pre-push:
       # `--no-score` evita la share URL y el roundtrip al score API.
       # Suppressions de design system + falsos positivos viven en
       # `frontend/react-doctor.config.json`.
-      glob: "frontend/**/*.{ts,tsx}"
+      glob:
+        - "frontend/*.{ts,tsx}"
+        - "frontend/**/*.{ts,tsx}"
       run: cd frontend && bunx react-doctor --diff origin/main --fail-on error --no-score --yes

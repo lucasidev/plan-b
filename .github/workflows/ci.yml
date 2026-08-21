@@ -43,7 +43,13 @@ jobs:
   backend:
     name: Backend (.NET 10)
     needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    # `!cancelled()` es lo que habilita a este job a correr aunque `changes`
+    # no haya terminado bien, y `result != 'success'` lo hace correr en ese
+    # caso: si el detector de paths se cae, se corre todo en vez de skipear.
+    # Sin esto un `changes` fallido deja el job en "skipped", y GitHub cuenta
+    # skipped como aprobado para un required check: el PR podía mergear sin
+    # haber corrido format, build ni tests.
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true') }}
     runs-on: ubuntu-latest
     # Local típico: restore+build+test ≈ 4-6 min. 15 min deja headroom para
     # primer run sin caches (restore largo) sin tolerar un hang real.
@@ -136,7 +142,13 @@ jobs:
   frontend:
     name: Frontend (Next.js 15 / Bun)
     needs: changes
-    if: needs.changes.outputs.frontend == 'true'
+    # `!cancelled()` es lo que habilita a este job a correr aunque `changes`
+    # no haya terminado bien, y `result != 'success'` lo hace correr en ese
+    # caso: si el detector de paths se cae, se corre todo en vez de skipear.
+    # Sin esto un `changes` fallido deja el job en "skipped", y GitHub cuenta
+    # skipped como aprobado para un required check: el PR podía mergear sin
+    # haber corrido format, build ni tests.
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.frontend == 'true') }}
     runs-on: ubuntu-latest
     # install+lint+typecheck+build+test local ≈ 3-5 min. 10 min de headroom.
     timeout-minutes: 10
