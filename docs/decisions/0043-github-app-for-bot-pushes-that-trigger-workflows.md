@@ -108,6 +108,12 @@ La regla operativa original ("App token solo si el push debe redisparar workflow
 fuerza: **si un ruleset bloquea el push, el workflow necesita una identidad bypasseable (la App),
 aunque no quiera redisparar nada; el no-retrigger se recupera con `[skip ci]`**.
 
+> **Actualización 2026-08-21: el bypass se retiró.** Con `changelog.yml` fuera ([ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md))
+> nada pushea a `main` desde CI, así que el bypass del ruleset quedó sin consumidor y se sacó.
+> **La App no se toca**: su motivo original, redisparar CI tras el push del lockfile, sigue
+> vigente y no necesita bypass porque pushea a la rama del PR. La tercera fuerza de arriba
+> sigue siendo cierta como regla; simplemente hoy no tiene ningún caso que la invoque.
+
 El razonamiento original (histórico, pre-ruleset): `changelog.yml` pushea pero NO quiere redisparar
 `ci.yml`/E2E sobre un commit docs-only, y la restricción del `GITHUB_TOKEN` (sus pushes no disparan
 workflows) daba eso gratis. Correcto mientras los pushes directos a main estuvieron permitidos.
