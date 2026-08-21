@@ -173,6 +173,8 @@ jobs:
         # El binario local, no `bunx biome`: desde la raíz no hay package.json y
         # `bunx biome` resuelve a otro paquete de npm que se llama igual.
         run: ./frontend/node_modules/.bin/biome check scripts
+      - name: Typecheck scripts
+        run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
       - name: Typecheck
         run: cd frontend && bunx tsc --noEmit
       - name: Build
