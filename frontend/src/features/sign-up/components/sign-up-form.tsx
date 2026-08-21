@@ -20,7 +20,7 @@ import { initialSignUpState, type SignUpFormState } from '../types';
  * specific to registration. The mockup's name field and "acepto términos"
  * checkbox are deliberately left out (US-010-f): backend's RegisterUser
  * command takes only email + password, no terms published. Documented in
- * docs/design/reference/README.md.
+ * docs/history/design-v1/reference/README.md.
  *
  * Cross-flow footer link navigates to `/sign-in`.
  */

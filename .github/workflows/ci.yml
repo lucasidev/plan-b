@@ -19,7 +19,7 @@ jobs:
   # Path-based gate para backend / frontend: cambios que solo tocan docs/,
   # workflows ajenos o config periférica skipean los jobs que no aplican.
   # **E2E NO usa este gate**: corre siempre. Razón documentada en
-  # docs/testing/conventions.md.
+  # docs/engineering/testing.md.
   changes:
     name: Detect changes
     runs-on: ubuntu-latest
@@ -164,7 +164,7 @@ jobs:
   # en CI en cada PR. Probamos antes con label-based + auto-labeler + detector
   # local de "zona E2E" y derivó en deuda combinatoria sin resolver el problema
   # real. Ahora: gate único, siempre activo, paralelizar con --shard si pasa
-  # de 10min. Ver docs/testing/conventions.md.
+  # de 10min. Ver docs/engineering/testing.md.
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest

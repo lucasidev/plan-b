@@ -18,7 +18,7 @@ import { extractTokenFromLatestMail } from './mailpit';
  * verify-email + onboarding por UI en cada spec de reseñas sería lento y frágil (más
  * superficie para flakear por algo ajeno a lo que el spec verifica).
  *
- * Por qué por API y no por SQL directo: `docs/testing/conventions.md` ("Dominio vs infra:
+ * Por qué por API y no por SQL directo: `docs/engineering/testing.md` ("Dominio vs infra:
  * cuándo un helper directo está OK") permite helpers de infra (Mailpit, Redis) pero no tocar
  * tablas de dominio (`users`, `student_profiles`, ...) directo. Si hiciera falta borrar algo
  * de dominio que la API no expone, la respuesta es exponer el endpoint, no pegarle a Postgres.

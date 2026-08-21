@@ -7,7 +7,7 @@
 #   - github-actions → versiones de actions usadas en .github/workflows/
 #   - docker       → base images en docker-compose.yml + frontend/Dockerfile
 #
-# Política de pinning por tier (ver docs/testing/conventions.md y la mención
+# Política de pinning por tier (ver docs/engineering/testing.md y la mención
 # en `.tool-versions`):
 #
 #   - **Tier 1 (framework core)**: deps que estructuran cómo está armado planb.

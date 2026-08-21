@@ -36,7 +36,7 @@ public interface IRefreshTokenStore
     /// in past the credential change. Idempotent: a user with no live refresh tokens is a no-op.
     ///
     /// Implementation reads the per-user secondary index documented in
-    /// <c>docs/architecture/redis-key-patterns.md</c> patrón #1 ("índice secundario").
+    /// <c>docs/engineering/redis-key-patterns.md</c> patrón #1 ("índice secundario").
     /// </summary>
     Task RevokeAllForUserAsync(UserId userId, CancellationToken ct = default);
 }

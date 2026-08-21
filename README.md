@@ -146,5 +146,5 @@ plan-b/
 Ver [`docs/`](docs) para el índice completo. Entradas principales:
 
 - [`docs/decisions/`](docs/decisions) — Decision Records (ADRs estilo MADR): decisiones de diseño con alternativas consideradas y consecuencias.
-- [`docs/domain/ubiquitous-language.md`](docs/product/language.md) — Glosario del dominio. Define qué significa cada término en código, UI y conversación.
+- [`docs/product/language.md`](docs/product/language.md) — Glosario del dominio. Define qué significa cada término en código, UI y conversación.
 - `docs/architecture/` — Diseño técnico (ERD, capas del backend, deploy, etc.). En construcción.

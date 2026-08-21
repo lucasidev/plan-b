@@ -49,7 +49,7 @@ const VERDICT_SCHEMA = {
 }
 
 function scanPrompt(a) {
-  return `En ${a.scope}, cruza el codigo con los tests existentes segun la piramide de testing (ADR-0036, ver docs/testing/conventions.md para la tabla de que test para que capa).
+  return `En ${a.scope}, cruza el codigo con los tests existentes segun la piramide de testing (ADR-0036, ver docs/engineering/testing.md para la tabla de que test para que capa).
 
 Reporta gaps OBJETIVOS de cobertura por capa:
 - Backend: un endpoint sin integration test (backend/tests/Planb.IntegrationTests/<Module>/); un aggregate o Value Object con logica de negocio sin domain unit test; un handler con ramas de decision sin cubrir.

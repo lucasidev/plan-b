@@ -7,7 +7,7 @@
 
 `ReviewAuditLog` registra el historial completo de eventos sobre una review: publicación, ediciones, reports, removals, restores, respuestas docentes. El moderador lo consulta (UC-053) para tener contexto al resolver casos.
 
-El data model original (`docs/architecture/data-model.md`) lo lista junto a otras entidades de Moderation. La pregunta es: ¿es un aggregate con su propio comportamiento, o una proyección / read model derivado de events?
+El data model original (`docs/engineering/data-model.md`) lo lista junto a otras entidades de Moderation. La pregunta es: ¿es un aggregate con su propio comportamiento, o una proyección / read model derivado de events?
 
 ## Decisión
 

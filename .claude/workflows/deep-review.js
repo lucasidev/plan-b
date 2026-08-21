@@ -33,12 +33,12 @@ const DIMENSIONS = [
   {
     key: 'invariants',
     focus:
-      'invariantes de dominio rotos: reglas del aggregate que el codigo saltea, estados invalidos que quedan permitidos. Las reglas del dominio estan en docs/domain/.',
+      'invariantes de dominio rotos: reglas del aggregate que el codigo saltea, estados invalidos que quedan permitidos. Las reglas del dominio estan en docs/product/.',
   },
   {
     key: 'tests',
     focus:
-      'cobertura segun la piramide (ADR-0036, docs/testing/conventions.md): el cambio tiene el test de la capa correcta? falta un test para un caso nuevo que introduce? NO pidas tests para casos imposibles ni cobertura por cobertura.',
+      'cobertura segun la piramide (ADR-0036, docs/engineering/testing.md): el cambio tiene el test de la capa correcta? falta un test para un caso nuevo que introduce? NO pidas tests para casos imposibles ni cobertura por cobertura.',
   },
 ]
 

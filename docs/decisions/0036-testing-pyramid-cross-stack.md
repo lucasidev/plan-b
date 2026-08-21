@@ -183,7 +183,7 @@ Considerada y descartada. La regla "% cubierto" optimiza para tests que ejercen 
 
 - Cada feature US nueva agrega tests en al menos 2 capas. PR review tiene un checklist concreto (ver `.github/pull_request_template.md`).
 - El gap "feature anda en mi máquina pero no hay nada en CI que lo valide" deja de existir gradualmente conforme aterrizan US-T01 a T05.
-- Convenciones documentadas en `docs/testing/conventions.md` + secciones de Testing en `backend/CLAUDE.md` y `frontend/CLAUDE.md`. Reviewers tienen una referencia para "esto debería tener test de qué tipo".
+- Convenciones documentadas en `docs/engineering/testing.md` + secciones de Testing en `backend/CLAUDE.md` y `frontend/CLAUDE.md`. Reviewers tienen una referencia para "esto debería tener test de qué tipo".
 - El spec ad-hoc de US-033 que corrimos manualmente queda documentado como caso de uso del setup permanente, y se migra a `frontend/e2e/auth/forgot-password.spec.ts` como parte de US-T02.
 
 ### Negativas
@@ -216,5 +216,5 @@ Las T-stories son **non-blocking**: pueden aterrizar en paralelo a features regu
 - [ADR-0024](0024-dev-tooling-stack.md): tooling stack (parcialmente superseded por esta ADR).
 - [ADR-0027](0027-integration-tests-shared-postgres.md): integration tests pattern (vigente).
 - [ADR-0037](0037-changelog-automation-auto-append.md): changelog automation (companion).
-- [docs/testing/conventions.md](../engineering/testing.md): living how-to.
+- [docs/engineering/testing.md](../engineering/testing.md): living how-to.
 - [.github/pull_request_template.md](../../.github/pull_request_template.md): checklist por PR.

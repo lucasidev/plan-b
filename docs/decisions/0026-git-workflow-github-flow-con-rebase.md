@@ -39,7 +39,7 @@ Ejemplos válidos:
 - `docs/adr-git-workflow`
 - `chore/bump-wolverine`
 
-**No incluir US numbers en el branch name.** El branch name describe el cambio técnico (scope); las US se referencian en el commit body y/o PR body. `feat/us033-forgot-password` o `feat/t04-architecture-tests` son inválidos: el reemplazo es `feat/identity-forgot-password`, `feat/backend-architecture-tests`. Ver `docs/operations/git-workflow.md` para tabla de anti-patterns y la bitácora operacional completa.
+**No incluir US numbers en el branch name.** El branch name describe el cambio técnico (scope); las US se referencian en el commit body y/o PR body. `feat/us033-forgot-password` o `feat/t04-architecture-tests` son inválidos: el reemplazo es `feat/identity-forgot-password`, `feat/backend-architecture-tests`. Ver `docs/engineering/git-workflow.md` para tabla de anti-patterns y la bitácora operacional completa.
 
 ### Convención de commit message
 
@@ -111,4 +111,4 @@ Descartada: lo más ruidoso sin upside en un proyecto chico. Útil en teams gran
 
 Relacionados: [ADR-0024](0024-dev-tooling-stack.md) (tooling incluye Conventional Commits via lefthook).
 
-**Operacional:** [`docs/operations/git-workflow.md`](../engineering/git-workflow.md) es la bitácora paso a paso del flow (commit / branch / conflict / merge). El ADR define la decisión + rationale; el doc operacional define el cómo. Si el doc se contradice con este ADR, gana el ADR; el doc se actualiza.
+**Operacional:** [`docs/engineering/git-workflow.md`](../engineering/git-workflow.md) es la bitácora paso a paso del flow (commit / branch / conflict / merge). El ADR define la decisión + rationale; el doc operacional define el cómo. Si el doc se contradice con este ADR, gana el ADR; el doc se actualiza.

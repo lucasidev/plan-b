@@ -10,22 +10,22 @@ export const meta = {
 // Cada unidad: un doc + contra que codigo se compara. Los agentes leen ambos en runtime.
 const DOCS = [
   {
-    doc: 'docs/domain/ubiquitous-language.md',
+    doc: 'docs/product/language.md',
     against:
       'las clases de dominio reales (Entity, Value Object, Error codes) en backend/modules/*/src/Planb.*.Domain/. Un termino del glosario que ya no existe como clase, o una clase de dominio central que el glosario define distinto de como se comporta el codigo.',
   },
   {
-    doc: 'docs/architecture/data-model.md',
+    doc: 'docs/engineering/data-model.md',
     against:
       'las entidades EF y su configuracion (tablas, columnas, schemas, relaciones) en backend/modules/*/src/Planb.*.Infrastructure/. Una tabla/columna/relacion que el ERD describe distinto de como esta en el codigo.',
   },
   {
-    doc: 'docs/domain/review-lifecycle.md',
+    doc: 'docs/history/domain-v1/review-lifecycle.md',
     against:
       'el aggregate Review y sus transiciones de estado reales. Un estado o transicion que el doc describe y el codigo no tiene, o al reves.',
   },
   {
-    doc: 'docs/domain/enrollment-lifecycle.md',
+    doc: 'docs/history/domain-v1/enrollment-lifecycle.md',
     against: 'el aggregate EnrollmentRecord y sus estados/transiciones reales.',
   },
   {

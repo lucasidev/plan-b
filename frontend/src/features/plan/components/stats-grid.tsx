@@ -110,7 +110,7 @@ export function SimulatorEvaluationPanel({
  *
  * El texto de "no hay dato" es siempre `NO_DATA_YET` ("sin datos"), nunca la abreviatura "s/d":
  * la app nunca define qué significa, y el glosario lo prohíbe explícito (desambiguación de
- * "sin datos" en docs/domain/ubiquitous-language.md).
+ * "sin datos" en docs/product/language.md).
  */
 function buildEvaluationItems(data: SimulationEvaluation): StatGridItem[] {
   const { combinationStats } = data;

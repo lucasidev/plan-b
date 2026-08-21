@@ -94,7 +94,7 @@ export function HistoryPeriodCard({ period }: { period: TranscriptPeriod }) {
 
 /**
  * Los cinco estados reales de `EnrollmentStatus` (glosario en
- * `docs/domain/ubiquitous-language.md`). Aprobada y reprobada mantienen los dos
+ * `docs/product/language.md`). Aprobada y reprobada mantienen los dos
  * colores que el canvas ya definía. Regular y cursando usan los mismos valores oklch
  * que ya viven en `globals.css` (`st-regularized`, `st-coursing`), copiados acá
  * inline porque este chip entero ya se arma con estilos inline, no utilities de

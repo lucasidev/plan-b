@@ -13,7 +13,7 @@ Tres modelos posibles:
 - **B: Atómico (registro = registro + reseña)**: cada `EnrollmentRecord` finalizado obliga a reseñar. Riesgo: fricción brutal en onboarding (un alumno avanzado cargando 30 cursadas pasadas no puede escribir 30 reseñas en una sentada).
 - **C: Capability gating**: el simulador queda gateado por un score de reciprocidad (ej. ≥ 80% de cursadas finalizadas con reseña). Riesgo: bloquear features core es agresivo y puede expulsar alumnos que aún no aportaron.
 
-Discovery del dominio (ver `docs/domain/eventstorming.md`) puso el dedo en una alternativa cuarta:
+Discovery del dominio (ver `docs/history/domain-v1/eventstorming.md`) puso el dedo en una alternativa cuarta:
 
 - **D: Reward additive**: el simulador queda **disponible para todos**. Reseñar desbloquea **features premium** (guardar simulación, ver simulaciones públicas de otros, recomendación). El alumno que no reseña no pierde acceso al producto core; solo no accede a features adicionales que se nutren del corpus.
 

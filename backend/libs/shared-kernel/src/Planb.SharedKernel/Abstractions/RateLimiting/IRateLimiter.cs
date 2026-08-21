@@ -1,7 +1,7 @@
 namespace Planb.SharedKernel.Abstractions.RateLimiting;
 
 /// <summary>
-/// Sliding-window rate limiter (Patrón #2 of <c>docs/architecture/redis-key-patterns.md</c>).
+/// Sliding-window rate limiter (Patrón #2 of <c>docs/engineering/redis-key-patterns.md</c>).
 ///
 /// Key shape is opaque to the caller: callers compose a stable string with the relevant
 /// dimensions (operation + IP hash, operation + email hash, etc.). Implementations may add

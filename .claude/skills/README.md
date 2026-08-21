@@ -18,4 +18,4 @@ De bencium se dejaron afuera a propósito: `relationship-design` (interfaces AI-
 
 ## Cómo conviven
 
-Un solo default se dispara al construir (`controlled`); `ui-typography` corre siempre en silencio; `web-design-guidelines` y `design-audit` son revisores que se invocan sobre algo que ya existe; `innovative`, `impact` y `design-taste-frontend` solo por pedido explícito. La UX/UI de cada pantalla se decide desde su user story y su persona (`docs/domain/`), con los tokens de `docs/design/design-system.md`; el mapa mid-fi es orientativo. Ningún skill decide qué se construye: eso lo dicen las stories.
+Un solo default se dispara al construir (`controlled`); `ui-typography` corre siempre en silencio; `web-design-guidelines` y `design-audit` son revisores que se invocan sobre algo que ya existe; `innovative`, `impact` y `design-taste-frontend` solo por pedido explícito. La UX/UI de cada pantalla se decide desde su user story y su persona (`docs/product/`), con los tokens de `docs/product/design-system.md`; el mapa mid-fi es orientativo. Ningún skill decide qué se construye: eso lo dicen las stories.

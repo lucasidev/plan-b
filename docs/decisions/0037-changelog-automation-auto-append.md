@@ -107,7 +107,7 @@ Contras:
 
 ### Negativas
 
-- Una pieza más de infra para entender. Mitigación: doc breve en `docs/testing/conventions.md`.
+- Una pieza más de infra para entender. Mitigación: doc breve en `docs/engineering/testing.md`.
 - El bot que commitea el changelog usa la identidad de GitHub Actions (`github-actions[bot]`). Los commits aparecen como tales en `git log`, lo cual contamina ligeramente la historia. Aceptable.
 - Si el script tiene un bug y commitea un changelog malformado, hay que arreglarlo a mano + push. Mitigación: el script tiene tests (cuando aterrice, US-T05).
 
@@ -126,7 +126,7 @@ US-T05-i cubre:
 - `.github/workflows/changelog.yml`: trigger push:main, ejecuta el script, commitea el cambio.
 - `scripts/append-changelog.ts`: lógica de parseo + insert.
 - `.github/workflows/pr-title.yml`: valida PR titles como Conventional Commit, red de seguridad para Squash and merge.
-- Updates en `docs/testing/conventions.md`, `CLAUDE.md` (root) y `.github/pull_request_template.md` para reflejar el flujo.
+- Updates en `docs/engineering/testing.md`, `CLAUDE.md` (root) y `.github/pull_request_template.md` para reflejar el flujo.
 
 ## Refs
 

@@ -22,7 +22,7 @@ export const COMMISSION_MODALITY_LABELS: Record<CommissionModality, string> = {
   Hibrida: 'Híbrida',
 };
 
-/** Espeja CommissionTeacherRole. Labels según el glosario (docs/domain/ubiquitous-language.md). */
+/** Espeja CommissionTeacherRole. Labels según el glosario (docs/product/language.md). */
 export const COMMISSION_TEACHER_ROLES = [
   'Lead',
   'Associate',

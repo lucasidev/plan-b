@@ -108,7 +108,7 @@ jobs:
 
   # Recordatorio en el log de la corrida, no un paso automático. Aplicar el schema desde un runner
   # de GitHub exigiría exponer la base de producción a internet; el paso corre en el host del deploy.
-  # Runbook: docs/operations/deploy.md
+  # Runbook: docs/engineering/deploy.md
   reminder:
     name: Siguiente paso
     needs: [backend]
@@ -120,4 +120,4 @@ jobs:
           echo "Imagen publicada. Antes de levantar la versión nueva:"
           echo "  1. db-apply con la imagen recién publicada (migraciones EF + schema de Wolverine)"
           echo "  2. recién ahí, apuntar el servicio a la imagen nueva"
-          echo "Pasos exactos en docs/operations/deploy.md"
+          echo "Pasos exactos en docs/engineering/deploy.md"

@@ -14,7 +14,7 @@ El índice del producto: qué pantallas hay y qué flujos las recorren, con el l
 
 Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Reportar, Corregir, Votar: las dibuja el flujo de su capacidad). **Cada pantalla vive en la capacidad que la hace existir** ([ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md)): su ficha y su boceto están ahí, no acá. Esta tabla es el índice derivado: dice dónde está cada una, con qué slug y quién más le aporta. **Una pantalla se nombra por lo que dice arriba**, en español y sin backticks; la URL es código, en inglés, y se fija al entrar a sprint (los slugs de acá se verificaron contra `frontend/src/app/` el 2026-08-19).
 
-### Elegir dónde estudiar · [`slices/choose-where-to-study/`](../product/choose-where-to-study/README.md)
+### Elegir dónde estudiar · [`product/choose-where-to-study/`](../product/choose-where-to-study/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -27,7 +27,7 @@ Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Repo
 | Ficha de cátedra | [`chair/`](../product/choose-where-to-study/screens/SC-002-chair/README.md) | pública | `/teachers/[id]` (propuesto `/chairs/[id]`: BO1-6) | La cátedra: cabecera, listas por eje, clases sin dar, serie, testimonios y réplica. | Reseñar, Cuidar lo publicado, Deshacer, Replicar | **hi-fi Boletín** |
 | Ficha de institución | [`institution/`](../product/reply/screens/SC-005-institution/README.md) | pública | `/universities/[slug]/careers` (el chasis; se rehace) | El sujeto evaluado: lo que se dice de ella, sus carreras, su cobertura, la serie, la comparación. | Replicar, Reseñar (el evento institucional) | mid-fi, revisada |
 
-### Reseñar · [`slices/write-a-review/`](../product/write-a-review/README.md)
+### Reseñar · [`product/write-a-review/`](../product/write-a-review/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -35,21 +35,21 @@ Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Repo
 | Mi situación | [`my-status/`](../product/write-a-review/screens/SC-014-my-status/README.md) | con cuenta | sin slug | La pregunta de trayectoria de a uno, sin plan marcado. | Avisos (el mail anual la trae) | mid-fi, revisada |
 | Anonimato | [`anonymity/`](../product/write-a-review/screens/SC-013-anonymity/README.md) | pública | `/about` (habla de otra cosa; se rehace) | Cómo te cubrimos: qué se publica y qué no, el chequeo, la verdad del grupo chico, la política. | Moderar sin romper el producto (la política de moderación) | mid-fi, revisada |
 
-### Pedir una carrera · [`slices/request-a-career/`](../product/request-a-career/README.md)
+### Pedir una carrera · [`product/request-a-career/`](../product/request-a-career/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Pedir | [`request/`](../product/request-a-career/screens/SC-010-request/README.md) | pública, sin cuenta | sin slug (hoy gateado al onboarding) | Pedir una carrera con el mail y nada más, confirmado por link. | nadie más | mid-fi, revisada |
 | La cola | [`queue/`](../product/request-a-career/screens/SC-009-queue/README.md) | pública | sin slug | Qué falta cargar: pedidos confirmados, cuáles ya están, cuánto se tarda. | Sostener el catálogo (la carga y su demora) | mid-fi, revisada |
 
-### Mi carrera · [`slices/my-career/`](../product/my-career/README.md)
+### Mi carrera · [`product/my-career/`](../product/my-career/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Mi carrera | [`my-career/`](../product/my-career/screens/SC-011-my-career/README.md) | con cuenta | `/my-career` (el contenido se rehace) | Tu plan con correlativas, lo reseñado como hecho, lo marcado como preferencia, la co-cursada filtrada. | Sostener el catálogo (la reforma del plan) | mid-fi, revisada |
 | Empezar | [`onboarding/`](../product/my-career/screens/SC-012-onboarding/README.md) | con cuenta | `/onboarding/*` (se rehace: muere «cargá tu historial») | Onboarding: marcás por dónde vas. Saltable y retomable. | Que no me molesten (la garantía) | mid-fi, revisada |
 
-### Deshacer · [`slices/undo/`](../product/undo/README.md)
+### Deshacer · [`product/undo/`](../product/undo/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -58,31 +58,31 @@ Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Repo
 | Baja | [`delete-account/`](../product/undo/screens/SC-016-delete-account/README.md) | con cuenta | sin slug | Dar de baja: anonimiza la identidad y preserva lo aportado. | nadie más | mid-fi, revisada |
 | Mi perfil | [`my-profile/`](../product/undo/screens/SC-019-my-profile/README.md) | con cuenta | `/my-profile` | Tu cuenta y por dónde vas; donde se apagan los avisos y se llega a la Baja. | Avisos (el apagado), Cuidar lo publicado (la señal) | mid-fi, revisada |
 
-### Replicar · [`slices/reply/`](../product/reply/README.md)
+### Replicar · [`product/reply/`](../product/reply/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Responder | [`respond/`](../product/reply/screens/SC-020-respond/README.md) | identidad verificada | sin slug | La réplica: mismo chequeo, no cita lo marcado, retenida el plazo desde el aviso. | Moderar sin romper el producto (la cola de retenidos) | mid-fi, revisada |
 
-### Cuidar lo publicado · [`slices/care-for-what-is-published/`](../product/care-for-what-is-published/README.md)
+### Cuidar lo publicado · [`product/care-for-what-is-published/`](../product/care-for-what-is-published/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Verificar | [`verify/`](../product/care-for-what-is-published/screens/SC-022-verify/README.md) | con cuenta | `/verify-teacher` (hoy solo docente) | La constancia de alumno (señal) y la identidad docente (permiso), cada una a su cola. | Replicar (la identidad docente habilita responder) | mid-fi, revisada |
 
-### Llevarse el dato · [`slices/take-the-data/`](../product/take-the-data/README.md)
+### Llevarse el dato · [`product/take-the-data/`](../product/take-the-data/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Método | [`method/`](../product/take-the-data/screens/SC-021-method/README.md) | pública | sin slug (hoy sección de la landing) | La fórmula, el catálogo de frases, los sesgos, qué no cubrimos, lo bajado, la descarga del crudo. | Elegir dónde estudiar (se llega desde toda ficha) | mid-fi, revisada |
 
-### Avisos · [`slices/notices/`](../product/notices/README.md)
+### Avisos · [`product/notices/`](../product/notices/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Avisos | [`mail/`](../product/notices/screens/SC-034-mail/README.md) | mail | sin slug | Los cinco mails que cierran el circuito, y dónde se apaga cada uno. | Reseñar, Pedir una carrera, Replicar, Sostener el catálogo | mid-fi, revisada |
 
-### Entrar · [`slices/enter/`](../product/enter/README.md)
+### Entrar · [`product/enter/`](../product/enter/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -91,7 +91,7 @@ Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Repo
 | Recuperar | [`forgot-password/`](../product/enter/screens/SC-024-forgot-password/README.md) | umbral | `/forgot-password` | La cuenta con todo adentro vuelve con un link al mail (garantía). | Que no me molesten | mid-fi, revisada |
 | Error | [`error/`](../product/enter/screens/SC-023-error/README.md) | pública | sin slug | Se rompió: qué pasó, qué hacer, y que lo tuyo no se perdió. | Reseñar (lo a medias se guarda) | mid-fi, revisada |
 
-### Sostener el catálogo · [`slices/sustain-the-catalog/`](../product/sustain-the-catalog/README.md)
+### Sostener el catálogo · [`product/sustain-the-catalog/`](../product/sustain-the-catalog/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -100,14 +100,14 @@ Treinta y cuatro, más tres acciones inline que pasan adentro de una ficha (Repo
 | Correcciones | [`corrections/`](../product/sustain-the-catalog/screens/SC-028-corrections/README.md) | backoffice | sin slug | Datos duros corregidos: valor viejo y nuevo, contrastados contra la fuente. | Cuidar lo publicado (de dónde llegan) | mid-fi, revisada |
 | Frases | [`phrases/`](../product/sustain-the-catalog/screens/SC-029-phrases/README.md) | backoffice | sin slug | El catálogo de frases: redacción, sujeto, eje; la cola de curaduría de las destiladas. | Llevarse el dato (Método lo publica entero) | mid-fi, revisada |
 
-### Moderar sin romper el producto · [`slices/moderate-without-breaking-the-product/`](../product/moderate-without-breaking-the-product/README.md)
+### Moderar sin romper el producto · [`product/moderate-without-breaking-the-product/`](../product/moderate-without-breaking-the-product/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Reportes | [`reports/`](../product/moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | backoffice | `/admin/moderacion/reportes` (castellano, contra la convención: se renombra) | Dos colas: lo reportado, que sigue publicado, y lo retenido por el chequeo previo. | Deshacer (reportar), Reseñar y Replicar (lo retenido), Llevarse el dato (lo contable) | mid-fi, revisada |
 | Verificaciones | [`verifications/`](../product/moderate-without-breaking-the-product/screens/SC-032-verifications/README.md) | backoffice | sin slug | Dos colas separadas: constancias de alumno e identidad docente. | Cuidar lo publicado, Replicar | mid-fi, revisada |
 
-### Cortar los accesos · [`slices/cut-the-access/`](../product/cut-the-access/README.md)
+### Cortar los accesos · [`product/cut-the-access/`](../product/cut-the-access/README.md)
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
@@ -174,4 +174,4 @@ Lo que no existe en ningún módulo del backend y es el corazón del build: el s
 
 ## Auditoría del mapa (2026-08-16)
 
-Los siete hallazgos de revisar el mapa contra sí mismo, contra la tesis y contra el repo viven con su estado en [`docs/reviews/2026-08-16-product-map.md`](../history/reviews/2026-08-16-product-map.md).
+Los siete hallazgos de revisar el mapa contra sí mismo, contra la tesis y contra el repo viven con su estado en [`docs/history/reviews/2026-08-16-product-map.md`](../history/reviews/2026-08-16-product-map.md).

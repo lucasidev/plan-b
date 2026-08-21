@@ -7,7 +7,7 @@ publish/
 
 # Código que genera Wolverine con `dotnet run -- codegen write`. Es output de build, no fuente: lo
 # produce el Dockerfile antes de publicar porque en Production el host arranca con
-# GeneratedCodeMode=Static y no arranca si falta (ver docs/operations/deploy.md).
+# GeneratedCodeMode=Static y no arranca si falta (ver docs/engineering/deploy.md).
 host/Planb.Api/Internal/Generated/
 
 # User / IDE artifacts

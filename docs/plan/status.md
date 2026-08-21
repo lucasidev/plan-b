@@ -33,7 +33,7 @@ Convenciones:
 - **Sufijo `-i` significa integrated**: `US-029-i`, `US-033-i`. Un solo PR que junta backend + frontend porque el requerimiento es chico y no es usable hasta tener las dos puntas. **Excepciones**: el namespace foundational `US-FNN-x` usa `-i` con sentido "infra" (`US-F03-i`, `US-F04-i`); fuera de F, también se permite `-i` con sentido "infra/scheduling" cuando el requerimiento es backend + DB schema (ej. `US-022-i` para Wolverine ScheduledJob + migrations). Cada doc lo aclara explícito en su header.
 - **Reglas duras**: parent y subdivisiones no coexisten. Si una US ya está en sprint o done, su archivo es la subdivisión correspondiente, NO el parent. Para integrated (`-i`), el doc único es la subdivisión.
 - Sprints: identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle. **Cadencia: S1/S2 fueron de 7 días flotantes; desde S3 lunes → sábado (6 días útiles).** El domingo queda como buffer/descanso.
-- Definition of Done por US: [`docs/domain/definition-of-done.md`](definition-of-done.md).
+- Definition of Done por US: [`docs/plan/definition-of-done.md`](definition-of-done.md).
 
 ---
 
@@ -51,8 +51,8 @@ Convenciones:
   - `actors-and-use-cases.md` + `use-cases/`: índice y 41 archivos individuales por UC.
   - `enrollment-lifecycle.md`, `review-lifecycle.md`, `verification-flows.md`: state machines.
   - `definition-of-done.md`: criterios mínimos por US.
-- **ERD consolidado** (`docs/architecture/data-model.md`): modelo de datos por bounded context.
-- **Documentos DDD táctico/estratégico** (`docs/domain/strategic/`, `docs/domain/tactical/`):
+- **ERD consolidado** (`docs/engineering/data-model.md`): modelo de datos por bounded context.
+- **Documentos DDD táctico/estratégico** (`docs/history/domain-v1/strategic/`, `docs/history/domain-v1/tactical/`):
   - `eventstorming.md`, `bounded-contexts.md`, `context-map.md`, `aggregates.md`, `domain-events.md`, `value-objects.md`.
 - **Catálogo de epics + user stories** (`docs/domain/epics/`, `docs/plan/stories/`): 11 epics (incluye EPIC-00 Foundations) y ~52 user stories en archivos individuales.
 
@@ -137,7 +137,7 @@ Todas Done al cierre del sprint.
 3. **`feat/identity-sign-out`** (US-029-i): endpoint + revocación de refresh + limpieza de cookies.
 4. **`feat/identity-forgot-password`** (US-033-i): forgot + reset + anti-enumeración + IRateLimiter Redis.
 5. **`test/...`** (T01..T06): testing pyramid + changelog automation + CI workflows + arch tests.
-6. **`docs/operations/git-workflow.md`** (workflow rules): bitácora paso a paso de commit / branching / conflict / merge.
+6. **`docs/engineering/git-workflow.md`** (workflow rules): bitácora paso a paso de commit / branching / conflict / merge.
 7. **`feat/identity-resend-verification`** (PR #52, US-021): endpoint con rate limit + UI button reusable.
 8. **`feat/identity-expire-unverified`** (PR #53, US-022): backend logic + scheduled job + migration con partial unique index.
 9. **`feat/academic-and-student-profile`** (PR #54, US-012-b): catálogo Academic mínimo (4 unis + 18 carreras IT + 18 planes) + StudentProfile child entity + endpoint + IValueObject marker.
@@ -186,7 +186,7 @@ Todas Done al cierre del sprint.
 - [US-044](../history/domain-v1/stories/US-044.md) + [US-044-a](../history/domain-v1/stories/US-044-a.md) + [US-044-b](../history/domain-v1/stories/US-044-b.md) + [US-044-c](../history/domain-v1/stories/US-044-c.md): **Inicio v2** port literal del mock V2Inicio. **Done.**
 - [US-045-a](../history/domain-v1/stories/US-045-a.md): **Mi carrera shell + 5 tabs** con stubs. **Done.**
 - **DevEx**: pre-push hook con gates rápidos (lint, typecheck, build, unit). E2E corre en CI siempre en cada PR como gate antes de merge (job `e2e` en `ci.yml`). Régimen del 2026-05-24 tras reset del approach overengineered de "zona E2E" con detector custom + auto-label (PR #87 histórico).
-- **Design pipeline**: canvas screenshots auto-generados via Playwright sobre `plan-b-direcciones.html`, embed en US frontend como mockup ref, doc canónico [`docs/design/design-system.md`](../product/design-system.md). PR #90 merged.
+- **Design pipeline**: canvas screenshots auto-generados via Playwright sobre `plan-b-direcciones.html`, embed en US frontend como mockup ref, doc canónico [`docs/product/design-system.md`](../product/design-system.md). PR #90 merged.
 - **Em-dash audit**: 210 docs sweep + auditoría manual de 73 files (titles, headings, comentarios) post regla absoluta.
 - **Audit canvas v3 app/landing/design-system + rediseño app (día 7, 2026-05-09)**:
   - Sync del canvas v2 con 3 HTMLs (design-system / landing / app) + 48 artboards totales. Pipeline de screenshots reescrita para iterar multi-HTML.
@@ -523,7 +523,7 @@ Las tres US entraron:
 
 - **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con el piso anti-reidentificación de [ADR-0047](../decisions/0047-pass-rate-publico-desde-historial-privado.md)) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
 - **US-009-f** hecho: las superficies de error (404, 500, 403, loading, offline) con su diseño; el CTA de la 404 y la página offline apuntan a la landing pública.
-- **US-039-f** hecho en su core: hook `useOnlineStatus`, `OfflineBanner` global en el shell `(member)` con reintento y la transición "Conexión restablecida", más tests unit/component y el E2E con `context.setOffline`. **Deuda incremental**: el barrido de `disabled` por botón de mutación en cada feature (el hook queda listo para engancharlo) y la nota del patrón offline en `docs/testing/conventions.md`.
+- **US-039-f** hecho en su core: hook `useOnlineStatus`, `OfflineBanner` global en el shell `(member)` con reintento y la transición "Conexión restablecida", más tests unit/component y el E2E con `context.setOffline`. **Deuda incremental**: el barrido de `disabled` por botón de mutación en cada feature (el hook queda listo para engancharlo) y la nota del patrón offline en `docs/engineering/testing.md`.
 
 ### Extra del sprint: vidrieras del producto + vocabulario de datos
 
@@ -686,7 +686,7 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
 
 ## Lo que viene
 
-El backlog pre-viraje se retiró el 2026-08-20: describía el producto anterior y el propio doc ya lo daba por caduco. **El backlog hoy son las 93 stories** de [`docs/product/`](../product/README.md), sin sprint asignado y sin estado: la planificación empieza eligiendo de ahí.
+El backlog pre-viraje se retiró el 2026-08-20: describía el producto anterior y el propio doc ya lo daba por caduco. **El backlog hoy son las 100 stories** de [`docs/product/`](../product/README.md), sin sprint asignado y sin estado: la planificación empieza eligiendo de ahí.
 
 Ninguna está planificada todavía. Cuando la primera entre a un sprint, su sección se escribe acá con el formato de [`story-template.md`](story-template.md): el ID y el link a la story, su contrato técnico, sus tareas y su estado.
 

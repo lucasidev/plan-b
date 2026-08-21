@@ -7,7 +7,7 @@ namespace Planb.Identity.Infrastructure.Security;
 
 /// <summary>
 /// Sliding-window-log rate limiter on Redis sorted sets. Implements Patrón #2 of
-/// <c>docs/architecture/redis-key-patterns.md</c>.
+/// <c>docs/engineering/redis-key-patterns.md</c>.
 ///
 /// Per call (atomic via a single Lua EVAL):
 /// <list type="number">
