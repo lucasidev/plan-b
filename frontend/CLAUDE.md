@@ -34,7 +34,7 @@ frontend/
     │   └── ...               write-review, browse-subjects, manage-teachers, etc.
     ├── components/
     │   ├── ui/               primitivas (Button, DisplayHeading, Lede, ...)
-    │   └── layout/           AuthSplit + auth-hero (copy del split), sidebar, header, footer
+    │   └── layout/           AuthShell/AuthSplit, AppShell, sidebar, topbar, avatar-menu, admin-*
     └── lib/
         ├── env.ts            zod-validated env (clientEnv + serverEnv())
         ├── session.ts        getSession() RSC helper, jose JWT verify
@@ -68,7 +68,7 @@ El route group `(auth)` no aparece en la URL (Next.js convention). Las páginas 
 - `/reset-password?token=` (pantalla del reset, US-033).
 - `/verify-email?token=` (pantalla de verificación post-mail, US-011).
 
-`sign-in` y `sign-up` montan `<AuthSplit>` con copy compartido (`components/layout/auth-hero.tsx`) más su heading propio. Cada flow es página separada con su layout: no hay tabs ni AuthView intermedio (deuda de S1 cerrada con US-036).
+`sign-in` y `sign-up` montan `<AuthShell>` (v2), que recibe título, subtítulo y pie por props: no hay módulo de copy compartido (el auth-hero que había se retiró al generalizar el copy, 122f2a5). Cada flow es página separada con su layout: no hay tabs ni AuthView intermedio (deuda de S1 cerrada con US-036).
 
 ## Features: vertical slice por use case
 
