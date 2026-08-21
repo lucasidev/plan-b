@@ -7,7 +7,7 @@
 
 El canvas del backoffice (2026-05-12) presentó el área de administración como una unidad visual: un shell propio, su sidenav y cuatro secciones (catálogo, docentes, moderación, ops). Esa unidad **visual** se filtró a los docs como si fuera una unidad **arquitectónica**, y quedaron dos afirmaciones que el código nunca respaldó:
 
-1. Que existe un "módulo admin" (`STATUS.md` lo llama así en seis lugares, uno de ellos "bloqueante de todo el resto del módulo admin").
+1. Que existe un "módulo admin" (`plan/status.md` lo llama así en seis lugares, uno de ellos "bloqueante de todo el resto del módulo admin").
 2. Que existe un namespace de API `/api/admin/...`, declarado en los criterios de aceptación de unas veinte user stories.
 
 Ninguna de las dos es cierta:
@@ -17,7 +17,7 @@ Ninguna de las dos es cierta:
 
 Lo grave es que **quince de esas US ya están Done**: se implementaron contra la ruta real y el AC quedó describiendo una ruta ficticia. El doc no quedó viejo, quedó falso, y sobrevivió así varios sprints porque nadie lo contrastó contra el código.
 
-La causa de fondo es un hueco en el lenguaje: [`ubiquitous-language.md`](../domain/ubiquitous-language.md) define **admin** como rol (`role = 'admin'`), que es correcto, pero nunca definió **backoffice**. Sin esa definición, "admin" se deslizó de rol a módulo sin que nada lo frenara. Los epics sí lo tenían bien ([EPIC-08](../history/domain-v1/epics/EPIC-08.md) dice "BC: Academic primario", [EPIC-09](../history/domain-v1/epics/EPIC-09.md) dice "Identity primario"), pero un epic no alcanza para frenar la deriva si el glosario calla.
+La causa de fondo es un hueco en el lenguaje: [`ubiquitous-language.md`](../product/language.md) define **admin** como rol (`role = 'admin'`), que es correcto, pero nunca definió **backoffice**. Sin esa definición, "admin" se deslizó de rol a módulo sin que nada lo frenara. Los epics sí lo tenían bien ([EPIC-08](../history/domain-v1/epics/EPIC-08.md) dice "BC: Academic primario", [EPIC-09](../history/domain-v1/epics/EPIC-09.md) dice "Identity primario"), pero un epic no alcanza para frenar la deriva si el glosario calla.
 
 ## Decisión
 
@@ -68,6 +68,6 @@ Es lo que el código viene haciendo desde US-060 sin que nadie lo hubiera escrit
 ## Refs
 
 - Código: `backend/modules/academic/src/Planb.Academic.Application/Features/AdminCareers/`, `AdminAcademicTerms/`, `frontend/src/app/(staff)/admin/`.
-- Glosario: [`ubiquitous-language.md`](../domain/ubiquitous-language.md), entradas **admin** (rol) y **backoffice**.
+- Glosario: [`ubiquitous-language.md`](../product/language.md), entradas **admin** (rol) y **backoffice**.
 - Epics que ya lo modelaban bien: [EPIC-08](../history/domain-v1/epics/EPIC-08.md), [EPIC-09](../history/domain-v1/epics/EPIC-09.md).
 - Boundaries de módulo: [ADR-0017](0017-persistence-ignorance.md).

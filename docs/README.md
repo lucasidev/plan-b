@@ -1,39 +1,60 @@
 # Documentación
 
-Esta carpeta organiza toda la documentación del proyecto planb, agrupada por propósito.
+Cinco carpetas, y **cada una responde una pregunta distinta**. Si no se puede decir qué pregunta responde una carpeta, no existe.
 
-## Estructura
+| | Pregunta | Contiene |
+|---|---|---|
+| [`THESIS.md`](THESIS.md) | **¿qué es y qué no hace?** | La tesis del producto y la posición que toma. Todo lo demás se lee contra esto. |
+| [`product/`](product) | **¿qué hace y para quién?** | El producto entero: las [personas](product/personas.md), el [glosario](product/language.md), las [frases](product/phrases.md), el [lenguaje visual](product/design-system.md), y una carpeta por **épica**, con sus stories, su flujo y sus pantallas adentro. |
+| [`engineering/`](engineering) | **¿cómo está construido?** | El [modelo de datos](engineering/data-model.md), las [claves de Redis](engineering/redis-key-patterns.md), las [convenciones de testing](engineering/testing.md) y los playbooks: [git](engineering/git-workflow.md), [rollback](engineering/rollback.md), [deploy](engineering/deploy.md), [lecciones](engineering/lessons-learned.md). |
+| [`decisions/`](decisions) | **¿por qué?** | Los ADRs, en orden cronológico. Antes de decidir algo estructural, buscar si ya hay uno. |
+| [`plan/`](plan) | **¿cuándo, y cuándo está listo?** | El tracker desde que Notion se soltó: los [sprints](plan/status.md) con el trabajo de cada story, el [Definition of Done](plan/definition-of-done.md) y el [formato de una story](plan/story-template.md). |
+| [`history/`](history) | **¿qué fue?** | El ático: todo lo que describía la versión anterior, incluidas sus 126 fichas, sus casos de uso y las revisiones ya cerradas. No se edita; se va con el código que describe. |
 
-| Directorio / doc | Contiene |
-|---|---|
-| [`decisions/`](decisions) | Decision Records (ADRs), decisiones de diseño con alternativas consideradas. |
-| [`domain/`](domain) | El producto, independiente de la tecnología: [la tesis](THESIS.md) manda; el [glosario](domain/ubiquitous-language.md), el [catálogo de frases](domain/phrases.md) (las que se ofrecen para marcar, con sujeto y eje), las [personas](domain/user-personas.md), el [catálogo de stories](domain/user-stories.md) con sus fichas `US-NNN`, el [template de US](domain/us-template.md) y el [Definition of Done](domain/definition-of-done.md). |
-| [`epics/`](epics) | La unidad vertical del producto: una carpeta por épica (lo que una persona viene a hacer) con sus stories (la letra completa, única copia), sus decisiones, su flujo en mermaid y las pantallas que solo existen para ella, con ficha y boceto ([ADR-0070](decisions/0070-product-docs-group-by-epic-one-story-per-epic-screens-owned-or-shared-and-design-as-text.md)). |
-| [`reviews/`](reviews) | Revisiones y auditorías: un registro por revisión, cada hallazgo con ID y estado (resuelto, cerrado, pendiente, descartado). Los ADRs y las stories los citan por ID. |
-| [`history/`](history) | El ático: lo que describía la versión anterior (actores y casos de uso, ciclos de vida, event storming, agregados, épicas y glosario v1). No se edita; se va con el código que describe. |
-| [`architecture/`](architecture) | Diseño técnico: [data-model](architecture/data-model.md) (ERD), [redis-key-patterns](architecture/redis-key-patterns.md). |
-| [`design/`](design) | Cómo se ve y cómo se recorre: [design-system](design/design-system.md) (el contrato visual: paleta, tipografía, tokens), [screens/](design/screens/README.md) (una carpeta por pantalla, con su ficha y su boceto), [product-map](design/product-map.md) (el índice de pantallas y flujos, orientativo) y el canvas del que salió todo, absorbido y en el [ático](history/product-canvas/README.md), orientativo). |
-| [`testing/`](testing) | Convenciones de testing cross-stack ([conventions.md](testing/conventions.md)). |
-| [`operations/`](operations) | Playbooks operativos (rollback, git-workflow) + [lessons-learned.md](operations/lessons-learned.md). |
-| [`THESIS.md`](THESIS.md) | La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto. |
-| [`STATUS.md`](STATUS.md) | Tracker operativo por sprints (cadencia, foco, estado). Es el tracker: el backlog vivo es el catálogo de stories y el status de cada US vive en su ficha. |
+## La unidad de `product/` es la épica
+
+Una **épica** es lo que alguien viene a hacer: Reseñar, Replicar, Moderar. Son catorce, y cada una contiene **todo lo suyo**, cortado en vertical:
+
+```
+product/
+├── personas.md            para quién es el producto
+├── language.md            el glosario
+├── phrases.md             las frases que se ofrecen para marcar
+├── design-system.md       el lenguaje visual
+└── write-a-review/                          una carpeta por épica
+    ├── README.md                            qué es, para quién, el índice de sus stories
+    ├── flow.md                              el recorrido, en mermaid
+    ├── stories/
+    │   ├── US-153-review-in-under-five-minutes.md
+    │   └── ...                              una story por archivo, con su criterio
+    └── screens/SC-015-write-review/
+        ├── README.md                        la ficha de la pantalla
+        └── sketch.html                      el boceto
+```
+
+Arriba, lo que es del producto entero y no se puede cortar sin duplicarlo (Lucía aparece en cinco épicas, el glosario en las catorce). Abajo, cada épica con lo que solo le pertenece a ella.
+
+**La flecha va en una sola dirección**: `plan/` cita a `product/` por ID y nunca copia el texto. La story no sabe en qué sprint va.
 
 ## Cuándo va cada cosa
 
-- **Nueva user story / epic** → `domain/user-stories/US-NNN.md` (plantilla: `us-template.md`), con su `Status` en el header; el sprint en `STATUS.md`. Convenciones de numeración + sprint en `domain/user-stories.md` y `STATUS.md`.
+- **Una story nueva** → `product/<épica>/stories/US-NNN-slug.md`, con su "listo cuando", más su fila en el índice del README de esa épica. El formato y las reglas del ID están en [`plan/story-template.md`](plan/story-template.md).
+- **Un requisito no funcional** (accesibilidad, legales, rendimiento) → las Restricciones de [`product/README.md`](product/README.md). No son stories: se verifican en el DoD, en todas.
+- **Planificar trabajo** → la sección del sprint en [`plan/status.md`](plan/status.md), citando el ID de la story y agregando lo de ejecución: contrato técnico, tareas, estado.
+- **Trabajo técnico sin producto atrás** (migrar EF, arreglar el CI) → una tarea en [`plan/status.md`](plan/status.md), sin ID de producto.
 - **Decisión con alternativas reales** → `decisions/NNNN-titulo.md`.
-- **Definición de término del dominio** → `domain/ubiquitous-language.md`.
-- **Flujo de una épica** (persona, disparador, pasos, salidas) → `epics/<epic>/flow.md`, en mermaid; la ficha y el boceto de una pantalla, en `epics/<epic>/screens/<screen>/` si solo esa épica la usa, o en `design/screens/<screen>/` si la componen varias; la letra de una story, en el README de su épica.
-- **Diagrama o descripción técnica** (ERD, topología, arquitectura) → `architecture/<nombre>.md`.
-- **Checklist operativo** (pre-deploy, post-incident) → `docs/<checklist>.md` directo.
-- **Lo que describía la versión anterior** → `history/`, sin editar.
-- **Idioma**: la prosa va en español rioplatense con su ortografía (ñ, tildes); los nombres de carpeta y archivo, los slugs y los títulos de una línea (ADR, commit, branch) van en inglés en kebab-case, como todo identificador del repo ([`decisions/README.md`](decisions/README.md), [`operations/git-workflow.md`](operations/git-workflow.md)). Un nombre visible va en español en el texto y en inglés en el path: Ficha de cátedra vive en `design/screens/chair/`, Reseñar en `epics/write-a-review/`. Castellano sin ñ ni tildes como identificador no es ninguno de los dos idiomas.
+- **Término del negocio** → [`product/language.md`](product/language.md).
+- **Flujo de una épica** → `product/<épica>/flow.md`, en mermaid. La ficha y el boceto de una pantalla, en `product/<épica>/screens/<screen>/` de la épica que la hace existir.
+- **Diagrama o descripción técnica** → [`engineering/`](engineering).
+- **Lo que describía la versión anterior** → [`history/`](history), sin editar.
+- **Idioma**: la prosa va en español rioplatense con su ortografía (ñ, tildes); los nombres de carpeta y archivo, los slugs y los títulos de una línea (ADR, commit, branch) van en inglés en kebab-case, como todo identificador del repo ([`decisions/README.md`](decisions/README.md), [`git-workflow.md`](engineering/git-workflow.md)). Un nombre visible va en español en el texto y en inglés en el path: Ficha de cátedra vive en `product/choose-where-to-study/screens/SC-002-chair/`, Reseñar en `product/write-a-review/`. Castellano sin ñ ni tildes como identificador no es ninguno de los dos idiomas.
 
 ## Qué NO va acá
 
-- Facts derivables del código (shape de entidades, imports, dependencias) → el código mismo.
-- Preferencias personales del desarrollador o del tooling → fuera del repo (dotfiles, configuración local del editor, etc.).
-- Cambios operativos (migraciones aplicadas, versiones instaladas) → `CHANGELOG.md` cuando exista.
+- Hechos derivables del código (shape de entidades, imports, dependencias) → el código mismo.
+- Preferencias personales del desarrollador o del tooling → fuera del repo.
+- Cambios operativos (migraciones aplicadas, versiones instaladas) → `CHANGELOG.md`.
+- Índices que duplican lo que la estructura de carpetas ya dice: se generan o no existen.
 
 ## Documentos externos referenciados
 

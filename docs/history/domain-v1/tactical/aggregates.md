@@ -59,7 +59,7 @@ Cuando un lean aggregate gana child entities relevantes o lifecycle complejo (ej
 ## Refs
 
 - BCs: [strategic/bounded-contexts.md](../strategic/bounded-contexts.md)
-- ERD: [architecture/data-model.md](../../../architecture/data-model.md)
+- ERD: [architecture/data-model.md](../../../engineering/data-model.md)
 - VOs: [value-objects.md](value-objects.md), [shared-kernel.md](shared-kernel.md)
 - Events: [domain-events.md](domain-events.md)
 - Hot spots EventStorming: [eventstorming.md](../eventstorming.md)

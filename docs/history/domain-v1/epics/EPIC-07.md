@@ -9,10 +9,10 @@ Moderadores ven cola de reseñas pendientes, resuelven reports (upheld / dismiss
 
 ## User Stories
 
-- [US-050](../../../domain/user-stories/US-050.md): Ver cola de reseñas under_review
-- [US-051](../../../domain/user-stories/US-051.md): Resolver report
-- [US-052](../../../domain/user-stories/US-052.md): Restaurar reseña removida
-- [US-053](../../../domain/user-stories/US-053.md): Ver audit log
+- [US-050](../stories/US-050.md): Ver cola de reseñas under_review
+- [US-051](../stories/US-051.md): Resolver report
+- [US-052](../stories/US-052.md): Restaurar reseña removida
+- [US-053](../stories/US-053.md): Ver audit log
 
 ## Decisiones que la condicionan
 

@@ -52,4 +52,4 @@
 
 - BC: [Moderation](../../strategic/bounded-contexts.md#moderation)
 - ADRs: [ADR-0010](../../../../decisions/0010-threshold-auto-hide-configurable-por-env-var.md), [ADR-0011](../../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md), [ADR-0031](../../../../decisions/0031-review-audit-log-como-projection.md)
-- User Stories: [US-053](../../../../domain/user-stories/US-053.md)
+- User Stories: [US-053](../../stories/US-053.md)

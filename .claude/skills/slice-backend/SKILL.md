@@ -7,7 +7,7 @@ Scaffoldeás un feature backend siguiendo el vertical slice del monolito. El pat
 
 ## Ejemplo canónico
 
-`backend/modules/enrollments/src/Planb.Enrollments.Application/Features/RegisterEnrollment/` es el slice más limpio y completo (US-013). Al armar uno nuevo, abrilo y copiá su forma. Tiene los 6 archivos:
+`backend/modules/enrollments/src/Planb.Enrollments.Application/Features/RegisterEnrollment/` es el requerimiento más limpio y completo (US-013). Al armar uno nuevo, abrilo y copiá su forma. Tiene los 6 archivos:
 
 - **`<UseCase>Command.cs`**: `public sealed record` con los inputs del caso de uso (no del HTTP body). Es el mensaje que consume el handler.
 - **`<UseCase>CommandHandler.cs`**: `public static class` con `Handle(command, deps..., CancellationToken ct)` que devuelve `Task<Result<Response>>`. Wolverine lo descubre por convención e inyecta las deps por parámetro (repos, query services, `IDateTimeProvider`). Contiene la lógica del caso de uso.

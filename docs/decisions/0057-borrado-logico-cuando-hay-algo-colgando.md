@@ -79,4 +79,4 @@ Rechazada porque no es implementable: las referencias que importan cruzan schema
 
 - [ADR-0044](0044-soft-delete-del-user-con-preservacion-de-corpus.md): el caso más elaborado (baja de cuenta con anonimización de PII y preservación del corpus de reseñas), que este ADR generaliza al resto.
 - [ADR-0052](0052-constraints-de-db-como-red-de-invariantes.md): por qué los UNIQUE viven en la base además del aggregate.
-- [`docs/architecture/data-model.md`](../architecture/data-model.md): qué marca lleva cada entidad.
+- [`docs/architecture/data-model.md`](../engineering/data-model.md): qué marca lleva cada entidad.

@@ -111,4 +111,4 @@ Descartada: lo más ruidoso sin upside en un proyecto chico. Útil en teams gran
 
 Relacionados: [ADR-0024](0024-dev-tooling-stack.md) (tooling incluye Conventional Commits via lefthook).
 
-**Operacional:** [`docs/operations/git-workflow.md`](../operations/git-workflow.md) es la bitácora paso a paso del flow (commit / branch / conflict / merge). El ADR define la decisión + rationale; el doc operacional define el cómo. Si el doc se contradice con este ADR, gana el ADR; el doc se actualiza.
+**Operacional:** [`docs/operations/git-workflow.md`](../engineering/git-workflow.md) es la bitácora paso a paso del flow (commit / branch / conflict / merge). El ADR define la decisión + rationale; el doc operacional define el cómo. Si el doc se contradice con este ADR, gana el ADR; el doc se actualiza.

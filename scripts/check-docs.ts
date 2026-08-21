@@ -7,9 +7,12 @@
  *  2. Em-dashes (U+2014) en docs/: la convención de prosa del repo no los usa.
  *  3. Períodos codificados ("2025 1C") como copy en docs de producto: ADR-0051 y el glosario
  *     ("nunca codificada en letras").
- *  4. Cada story del catálogo vigente vive como fila en EXACTAMENTE UNA épica (ADR-0070 §2),
- *     y el índice del catálogo dice lo mismo que las carpetas.
+ *  4. Las stories: una por archivo `US-NNN-slug.md` adentro de su épica, ID único en todo el
+ *     producto, y el índice de cada épica lista exactamente las que existen (ADR-0072).
  *  5. Bloques mermaid balanceados y sin comillas dobles (rompen el render).
+ *  6. Las pantallas: una carpeta `SC-NNN-slug` con ficha y boceto, ID único, los headings del
+ *     contrato (docs/plan/screen-template.md), y trazabilidad simétrica con las stories: si una
+ *     story dice resolverse en una pantalla, esa ficha tiene que listarla, y al revés.
  *
  * Señala, no bloquea: exit 0 siempre, salvo con --strict (para CI si algún día se quiere gate).
  * Uso: bun scripts/check-docs.ts [--strict]
@@ -54,7 +57,7 @@ for (const f of mds) {
       // los placeholders del template no son links reales
       if (core.includes("<") || core.includes("NNNN") || core.includes("US-NNN") || core === "...") continue;
       // el template es contenido de ejemplo, no un doc con links reales
-      if (rel(f) === "docs/domain/us-template.md") continue;
+      if (rel(f) === "docs/plan/story-template.md" || rel(f) === "docs/plan/screen-template.md") continue;
       if (!existsSync(resolve(dirname(f), decodeURIComponent(core)))) {
         findings.push({ file: rel(f), line: i + 1, rule: "link-roto", detail: target });
       }
@@ -66,7 +69,7 @@ for (const f of mds) {
 const CODED = /20\d\d[ -][12]C\b/;
 // las fichas US de la versión anterior son evidencia congelada (no se reescriben), y
 // lessons-learned documenta la lección de los em-dashes citando uno
-const EMDASH_EXEMPT = (f: string) => rel(f).startsWith("docs/domain/user-stories/") || rel(f) === "docs/operations/lessons-learned.md";
+const EMDASH_EXEMPT = (f: string) => rel(f).startsWith("docs/history/") || rel(f) === "docs/engineering/lessons-learned.md";
 for (const f of all.filter((x) => (x.endsWith(".md") || x.endsWith(".html")) && isDocs(x) && !isHistory(x))) {
   const lines = readFileSync(f, "utf-8").split("\n");
   lines.forEach((ln, i) => {
@@ -78,33 +81,48 @@ for (const f of all.filter((x) => (x.endsWith(".md") || x.endsWith(".html")) && 
   });
 }
 
-// 4. una story, una épica; y el índice del catálogo coincide
-const ROW = /^\| ((?:O|T|BO)\d-\d+) \|/;
-const rows = new Map<string, string[]>();
-const epicsDir = join(ROOT, "docs", "epics");
-if (existsSync(epicsDir)) {
-  for (const epic of readdirSync(epicsDir)) {
-    const readme = join(epicsDir, epic, "README.md");
-    if (!existsSync(readme)) continue;
-    for (const ln of readFileSync(readme, "utf-8").split("\n")) {
-      const m = ln.match(ROW);
-      if (m) rows.set(m[1], [...(rows.get(m[1]) ?? []), epic]);
+// 4. las stories: un archivo por story, ID único, y el índice de su épica las lista a todas
+const STORY = /^US-(\d+)-[a-z0-9-]+\.md$/;
+const seen = new Map<string, string>();
+const productDir = join(ROOT, "docs", "product");
+if (existsSync(productDir)) {
+  for (const epic of readdirSync(productDir)) {
+    const storiesDir = join(productDir, epic, "stories");
+    if (!existsSync(storiesDir)) continue;
+    const files = readdirSync(storiesDir).filter((f) => f.endsWith(".md"));
+    const idx = existsSync(join(productDir, epic, "README.md")) ? readFileSync(join(productDir, epic, "README.md"), "utf-8") : "";
+    for (const f of files) {
+      const m = f.match(STORY);
+      if (!m) {
+        findings.push({ file: `docs/product/${epic}/stories/${f}`, line: 0, rule: "story-mal-nombrada", detail: "el nombre tiene que ser US-NNN-slug-en-ingles.md" });
+        continue;
+      }
+      const id = `US-${m[1]}`;
+      // el ID identifica una sola story en todo el producto
+      const prev = seen.get(id);
+      if (prev) findings.push({ file: `docs/product/${epic}/stories/${f}`, line: 0, rule: "id-duplicado", detail: `${id} ya existe en ${prev}` });
+      else seen.set(id, `${epic}/stories/${f}`);
+      // el README de la épica es el índice: tiene que linkearla
+      if (!idx.includes(f)) {
+        findings.push({ file: `docs/product/${epic}/README.md`, line: 0, rule: "indice-incompleto", detail: `${id} tiene archivo y el índice de la épica no la lista` });
+      }
+    }
+    // y al revés: el índice no linkea stories que no existen
+    for (const m of idx.matchAll(/\(stories\/(US-\d+-[a-z0-9-]+\.md)\)/g)) {
+      if (!files.includes(m[1])) findings.push({ file: `docs/product/${epic}/README.md`, line: 0, rule: "indice-roto", detail: `linkea ${m[1]}, que no existe` });
     }
   }
 }
-for (const [id, epics] of rows) {
-  if (epics.length > 1) findings.push({ file: "docs/epics", line: 0, rule: "story-duplicada", detail: `${id} en ${epics.join(", ")}` });
-}
-const catalogPath = join(ROOT, "docs", "domain", "user-stories.md");
-if (existsSync(catalogPath)) {
-  const cat = readFileSync(catalogPath, "utf-8");
-  const idxSection = cat.split("## Índice por épica")[1]?.split("## Los temas")[0] ?? "";
-  const idxIds = new Set([...idxSection.matchAll(/\b((?:O|T|BO)\d-\d+)\b/g)].map((m) => m[1]));
-  for (const id of rows.keys()) {
-    if (!idxIds.has(id)) findings.push({ file: "docs/domain/user-stories.md", line: 0, rule: "indice-desincronizado", detail: `${id} está en su épica y no en el índice` });
-  }
-  for (const id of idxIds) {
-    if (!rows.has(id)) findings.push({ file: "docs/domain/user-stories.md", line: 0, rule: "indice-desincronizado", detail: `${id} está en el índice y en ninguna épica` });
+// el índice general declara cuántas stories tiene cada épica: que no mienta
+const indexPath = join(ROOT, "docs", "product", "README.md");
+if (existsSync(indexPath)) {
+  for (const ln of readFileSync(indexPath, "utf-8").split("\n")) {
+    const m = ln.match(/^\| \[[^\]]+\]\(([^/]+)\/README\.md\) \|[^|]*\|[^|]*\|[^|]*\| (\d+) \|/);
+    if (!m) continue;
+    const dir = join(productDir, m[1], "stories");
+    if (!existsSync(dir)) continue;
+    const real = readdirSync(dir).filter((f) => f.endsWith(".md")).length;
+    if (real !== Number(m[2])) findings.push({ file: "docs/product/README.md", line: 0, rule: "conteo-desincronizado", detail: `${m[1]}: el índice dice ${m[2]} stories, hay ${real} archivos` });
   }
 }
 
@@ -120,9 +138,77 @@ for (const f of mds.filter((x) => isDocs(x) && !isHistory(x))) {
   }
 }
 
+// 6. las pantallas: nombre SC-NNN-slug, ID único, contrato de ficha, y trazabilidad en las dos
+//    direcciones con las stories (ADR-0070; contrato en docs/plan/screen-template.md)
+const SCREEN = /^SC-(\d+)-[a-z0-9-]+$/;
+const CONTRATO = ["Quién la usa", "Qué stories resuelve", "Qué muestra", "Estados",
+                  "Lo que no muestra nunca", "Adónde va", "Decisiones que aplica",
+                  "Lo que esta ficha deja abierto"];
+const screenIds = new Map<string, string>();
+const screenStories = new Map<string, Set<string>>();   // SC-NNN -> stories que declara
+const storyScreens = new Map<string, Set<string>>();    // US-NNN -> pantallas que declara
+if (existsSync(productDir)) {
+  for (const epic of readdirSync(productDir)) {
+    const dir = join(productDir, epic, "screens");
+    if (!existsSync(dir)) continue;
+    for (const scr of readdirSync(dir)) {
+      const m = scr.match(SCREEN);
+      const ficha = join(dir, scr, "README.md");
+      if (!m) {
+        findings.push({ file: `docs/product/${epic}/screens/${scr}`, line: 0, rule: "pantalla-mal-nombrada", detail: "tiene que ser SC-NNN-slug-en-ingles" });
+        continue;
+      }
+      const id = `SC-${m[1]}`;
+      const prev = screenIds.get(id);
+      if (prev) findings.push({ file: `docs/product/${epic}/screens/${scr}`, line: 0, rule: "id-duplicado", detail: `${id} ya existe en ${prev}` });
+      else screenIds.set(id, `${epic}/screens/${scr}`);
+      if (!existsSync(join(dir, scr, "sketch.html"))) {
+        findings.push({ file: `docs/product/${epic}/screens/${scr}`, line: 0, rule: "pantalla-sin-boceto", detail: "falta sketch.html" });
+      }
+      if (!existsSync(ficha)) {
+        findings.push({ file: `docs/product/${epic}/screens/${scr}`, line: 0, rule: "pantalla-sin-ficha", detail: "falta README.md" });
+        continue;
+      }
+      const t = readFileSync(ficha, "utf-8");
+      const heads = [...t.matchAll(/^## (.+)$/gm)].map((x) => x[1].trim());
+      for (const h of CONTRATO) {
+        if (!heads.includes(h)) findings.push({ file: `docs/product/${epic}/screens/${scr}/README.md`, line: 0, rule: "ficha-sin-seccion", detail: `falta "## ${h}"` });
+      }
+      // solo la sección declarativa: una mención en el cuerpo ("acá NO se pregunta US-146") no
+      // significa que la pantalla resuelva esa story
+      const decl = t.split("## Qué stories resuelve")[1]?.split(/^## /m)[0] ?? "";
+      screenStories.set(id, new Set([...decl.matchAll(/\bUS-(\d+)\b/g)].map((x) => `US-${x[1]}`)));
+    }
+    // lo que cada story declara en "Dónde se resuelve"
+    const sdir = join(productDir, epic, "stories");
+    if (!existsSync(sdir)) continue;
+    for (const f of readdirSync(sdir).filter((x) => x.endsWith(".md"))) {
+      const id = f.match(/^(US-\d+)/)?.[1];
+      if (!id) continue;
+      const t = readFileSync(join(sdir, f), "utf-8");
+      const sec = t.split("## Dónde se resuelve")[1]?.split(/^## /m)[0] ?? "";
+      storyScreens.set(id, new Set([...sec.matchAll(/\bSC-(\d+)\b/g)].map((x) => `SC-${x[1]}`)));
+    }
+  }
+}
+// la story dice una pantalla que no la lista, o al revés: una de las dos miente
+for (const [story, screens] of storyScreens) {
+  for (const sc of screens) {
+    if (!screenIds.has(sc)) { findings.push({ file: `story ${story}`, line: 0, rule: "trazabilidad-rota", detail: `declara ${sc}, que no existe` }); continue; }
+    if (!screenStories.get(sc)?.has(story)) findings.push({ file: `docs/product/${screenIds.get(sc)}/README.md`, line: 0, rule: "trazabilidad-asimetrica", detail: `${story} dice resolverse acá y la ficha no la lista` });
+  }
+}
+for (const [sc, stories] of screenStories) {
+  for (const st of stories) {
+    if (storyScreens.has(st) && !storyScreens.get(st)!.has(sc)) {
+      findings.push({ file: `docs/product/${screenIds.get(sc)}/README.md`, line: 0, rule: "trazabilidad-asimetrica", detail: `lista ${st} y esa story no declara esta pantalla` });
+    }
+  }
+}
+
 // salida
 if (findings.length === 0) {
-  console.log("check-docs: limpio (links, em-dashes, períodos, stories 1:1, mermaid).");
+  console.log("check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid).");
   process.exit(0);
 }
 console.log(`check-docs: ${findings.length} hallazgo(s). Señala, no bloquea${STRICT ? " (modo --strict: bloquea)" : ""}.`);

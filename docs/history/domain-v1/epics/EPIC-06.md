@@ -9,12 +9,12 @@ Un member que también es docente puede reclamar su identidad docente, verificar
 
 ## User Stories
 
-- [US-030](../../../domain/user-stories/US-030.md): Iniciar claim de docente
-- [US-031](../../../domain/user-stories/US-031.md): Verificar docente por email institucional
-- [US-032](../../../domain/user-stories/US-032.md): Solicitar verificación manual
-- [US-040](../../../domain/user-stories/US-040.md): Responder reseña
-- [US-041](../../../domain/user-stories/US-041.md): Editar respuesta docente
-- [US-069](../../../domain/user-stories/US-069.md): Verificar TeacherProfile manual (admin)
+- [US-030](../stories/US-030.md): Iniciar claim de docente
+- [US-031](../stories/US-031.md): Verificar docente por email institucional
+- [US-032](../stories/US-032.md): Solicitar verificación manual
+- [US-040](../stories/US-040.md): Responder reseña
+- [US-041](../stories/US-041.md): Editar respuesta docente
+- [US-069](../stories/US-069.md): Verificar TeacherProfile manual (admin)
 
 ## Decisiones que la condicionan
 

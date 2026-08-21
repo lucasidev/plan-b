@@ -13,7 +13,7 @@ El 2026-08-16 quedó fijada una tesis nueva, con texto completo en [`docs/THESIS
 
 1. **`docs/THESIS.md` gobierna todo lo demás.** Sus cinco decisiones (dos números nunca promediados, atribución por frase, leer sin cuenta, la materia como unidad, el catálogo cargado por el equipo) son el marco contra el que se evalúa cualquier trabajo futuro. Un doc o un módulo que las contradiga está mal él, no la tesis.
 
-2. **El planificador se retira.** El módulo `planning` (simulaciones, borradores), la superficie `/plan` (evaluación de combinaciones, publicar plan, feed de comunidad) y las features de frontend que la sirven pertenecen a la versión anterior. La poda es trabajo consciente que se planifica en [`docs/STATUS.md`](../STATUS.md), no un borrado de pasada: mientras el código exista, los docs que lo espejan siguen siendo válidos como descripción de código.
+2. **El planificador se retira.** El módulo `planning` (simulaciones, borradores), la superficie `/plan` (evaluación de combinaciones, publicar plan, feed de comunidad) y las features de frontend que la sirven pertenecen a la versión anterior. La poda es trabajo consciente que se planifica en [`docs/plan/status.md`](../plan/status.md), no un borrado de pasada: mientras el código exista, los docs que lo espejan siguen siendo válidos como descripción de código.
 
 3. **El testimonio deja de ser texto libre con puntajes.** El modelo nuevo (frases predefinidas curadas, con atribución, de las que se derivan exigencia y gestión con encogimiento por muestra) se diseñará con sus propios ADRs. Este ADR no anticipa ese diseño; solo registra que el modelo anterior (reseña texto-libre + estrellas anclada a la cursada) queda en retiro con la versión anterior.
 
@@ -63,5 +63,5 @@ Con la convención del repo (el ADR viejo marca su `Estado`; el archivo nunca se
 ## Refs
 
 - [`docs/THESIS.md`](../THESIS.md): el texto completo de la tesis.
-- [`docs/STATUS.md`](../STATUS.md): cierre de S12 y planificación de la poda.
+- [`docs/plan/status.md`](../plan/status.md): cierre de S12 y planificación de la poda.
 - ADRs afectados: 0005, 0009, 0010, 0012, 0013, 0028, 0029, 0031, 0032, 0039, 0040, 0047, 0048, 0054, 0060, 0061.

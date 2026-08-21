@@ -55,4 +55,4 @@
 
 - BC: [Enrollments](../../strategic/bounded-contexts.md#enrollments)
 - ADRs: [ADR-0004](../../../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0032](../../../../decisions/0032-edit-destructive-enrollment-invalida-review.md)
-- User Stories: [US-030](../../../../domain/user-stories/US-030.md), [US-031](../../../../domain/user-stories/US-031.md), [US-032](../../../../domain/user-stories/US-032.md)
+- User Stories: [US-030](../../stories/US-030.md), [US-031](../../stories/US-031.md), [US-032](../../stories/US-032.md)

@@ -17,22 +17,22 @@ Es la base sobre la que se construyen todas las demás epics. Sin esto, no hay r
 
 ### Sprint 0 (Done)
 
-- [US-F01-b](../../../domain/user-stories/US-F01-b.md): Scaffolding modular monolith backend
-- [US-F01-f](../../../domain/user-stories/US-F01-f.md): Scaffolding frontend Next.js
-- [US-F02-t](../../../domain/user-stories/US-F02-t.md): Tooling: Justfile, Lefthook, Conventional Commits
-- [US-F03-i](../../../domain/user-stories/US-F03-i.md): Infra local: Docker Postgres pgvector + Mailpit
-- [US-F04-i](../../../domain/user-stories/US-F04-i.md): CI baseline GitHub Actions
-- [US-F05](../../../domain/user-stories/US-F05.md): ADRs base 0001-0033
-- [US-F06](../../../domain/user-stories/US-F06.md): DDD formalization (strategic + tactical + epics + user stories)
+- [US-F01-b](../stories/US-F01-b.md): Scaffolding modular monolith backend
+- [US-F01-f](../stories/US-F01-f.md): Scaffolding frontend Next.js
+- [US-F02-t](../stories/US-F02-t.md): Tooling: Justfile, Lefthook, Conventional Commits
+- [US-F03-i](../stories/US-F03-i.md): Infra local: Docker Postgres pgvector + Mailpit
+- [US-F04-i](../stories/US-F04-i.md): CI baseline GitHub Actions
+- [US-F05](../stories/US-F05.md): ADRs base 0001-0033
+- [US-F06](../stories/US-F06.md): DDD formalization (strategic + tactical + epics + user stories)
 
 ### Tooling post-S0 (T-series, Backlog)
 
-- [US-T01-f](../../../domain/user-stories/US-T01-f.md): Frontend unit/component testing infra (vitest + Testing Library)
-- [US-T02-f](../../../domain/user-stories/US-T02-f.md): Frontend E2E infra (Playwright permanente + CI on-demand)
-- [US-T03-b](../../../domain/user-stories/US-T03-b.md): Backend unit test layer split
-- [US-T04-b](../../../domain/user-stories/US-T04-b.md): Backend architecture tests con NetArchTest
-- [US-T05-i](../../../domain/user-stories/US-T05-i.md): Changelog auto-append + PR title validator
-- [US-T06-i](../../../domain/user-stories/US-T06-i.md): Tier 1 CI workflows (Dependabot + all-commits CC + docs-links)
+- [US-T01-f](../stories/US-T01-f.md): Frontend unit/component testing infra (vitest + Testing Library)
+- [US-T02-f](../stories/US-T02-f.md): Frontend E2E infra (Playwright permanente + CI on-demand)
+- [US-T03-b](../stories/US-T03-b.md): Backend unit test layer split
+- [US-T04-b](../stories/US-T04-b.md): Backend architecture tests con NetArchTest
+- [US-T05-i](../stories/US-T05-i.md): Changelog auto-append + PR title validator
+- [US-T06-i](../stories/US-T06-i.md): Tier 1 CI workflows (Dependabot + all-commits CC + docs-links)
 
 ## Decisiones que la condicionan
 

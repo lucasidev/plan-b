@@ -29,7 +29,7 @@ La pregunta de fondo es si el arranque debería resolver todo esto solo (migrar,
 
 **El arranque en producción no se repara a sí mismo. Falla fuerte y temprano, y los pasos previos son explícitos y ordenados.** Los tres flags se quedan como están.
 
-El orden queda: publicar imagen → backup → `migrate-db` → `db-apply` → apuntar el servicio → verificar `/health`. Está escrito en [`docs/operations/deploy.md`](../operations/deploy.md) con los comandos exactos.
+El orden queda: publicar imagen → backup → `migrate-db` → `db-apply` → apuntar el servicio → verificar `/health`. Está escrito en [`docs/operations/deploy.md`](../engineering/deploy.md) con los comandos exactos.
 
 Tres piezas concretas que salen de esto:
 
@@ -72,7 +72,7 @@ Sin verificar, porque necesita la infra real: la publicación a GHCR, el pull de
 
 ## Refs
 
-- [`docs/operations/deploy.md`](../operations/deploy.md): el runbook con los comandos.
-- [`docs/operations/rollback.md`](../operations/rollback.md): qué hacer cuando algo entra y rompe.
+- [`docs/operations/deploy.md`](../engineering/deploy.md): el runbook con los comandos.
+- [`docs/operations/rollback.md`](../engineering/rollback.md): qué hacer cuando algo entra y rompe.
 - [ADR-0035](0035-configuración-de-entornos.md): una sola casa por valor de configuración.
 - [ADR-0038](0038-release-and-versioning-policy.md): por qué la publicación de imágenes es manual.

@@ -65,5 +65,5 @@ Rechazada: el número se lee primero y el disclaimer después, si es que se lee.
 
 ## Refs
 
-- [`docs/domain/ubiquitous-language.md`](../domain/ubiquitous-language.md), fila "sin datos" de la tabla de desambiguación: el registro original de esta regla, que este ADR promueve a decisión.
+- [`docs/domain/ubiquitous-language.md`](../product/language.md), fila "sin datos" de la tabla de desambiguación: el registro original de esta regla, que este ADR promueve a decisión.
 - [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): el piso anti-reidentificación, que es un caso donde la métrica **existe** pero se oculta por privacidad. Es otro motivo para el null y conviene no confundirlos.

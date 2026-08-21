@@ -30,4 +30,4 @@ Si el cambio de diseño toca uno de estos, se regenera todo el set (el spec capt
 ## Después
 
 - Los PNG regenerados + `manifest.json` quedan como cambios en `docs/history/design-v1/reference/screenshots/`. Son artefactos versionados: entran en el commit del cambio de diseño.
-- El contrato visual (paleta, tipografía, mapping canvas a frontend) vive en `docs/design/design-system.md`. Si cambió la estructura del canvas, revisá que ese doc siga espejando.
+- El contrato visual (paleta, tipografía, mapping canvas a frontend) vive en `docs/product/design-system.md`. Si cambió la estructura del canvas, revisá que ese doc siga espejando.

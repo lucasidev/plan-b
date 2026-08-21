@@ -9,13 +9,13 @@ Visitor anónimo puede explorar el catálogo (universidades, carreras, planes, m
 
 ## User Stories
 
-- [US-001](../../../domain/user-stories/US-001.md): Explorar catálogo de universidades y carreras
-- [US-002](../../../domain/user-stories/US-002.md): Ver materia con sus reseñas
-- [US-003](../../../domain/user-stories/US-003.md): Ver docente con sus reseñas
-- [US-004](../../../domain/user-stories/US-004.md): Buscar materia o docente por texto libre
+- [US-001](../stories/US-001.md): Explorar catálogo de universidades y carreras
+- [US-002](../stories/US-002.md): Ver materia con sus reseñas
+- [US-003](../stories/US-003.md): Ver docente con sus reseñas
+- [US-004](../stories/US-004.md): Buscar materia o docente por texto libre
 
 ### Backlog
-- [US-034](../../../domain/user-stories/US-034.md): Stats públicas agregadas en hero
+- [US-034](../stories/US-034.md): Stats públicas agregadas en hero
 
 ## Decisiones que la condicionan
 

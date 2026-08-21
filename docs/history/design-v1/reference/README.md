@@ -56,7 +56,7 @@ Rioplatense informal: "vos", "che", "pediste", "buscá", "andá". Errores y logs
    - **Brand vocabulary** (`.h-display`, `.eyebrow`, `.lede`, `.h1`, `.h2`) → primitivas React en `frontend/src/components/ui/`. Cada una usa Tailwind utilities adentro pero expone una API limpia.
    - **Layouts macro** (`.auth`, `.sidebar`, `.topbar`, `.drawer`, `.plan-grid`, `.cal`, `.review`) → componentes de layout en `frontend/src/components/layout/`, construidos sobre las primitivas de arriba.
 4. **Primitivas** (`Logo`, `Pill`, `Stat`, `VerifiedBadge`, `DiffDots`, `Meter`) se rehacen 1:1 en `frontend/src/components/ui/` como React components.
-5. **Vistas grandes** (Plan, Simulator, Drawers de subject/professor, WriteReview) **NO se construyen acá**. Cada una se aterriza en el slice de su feature cuando llegue su US: `features/academic/`, `features/enrollments/`, `features/reviews/`, `features/planning/`.
+5. **Vistas grandes** (Plan, Simulator, Drawers de subject/professor, WriteReview) **NO se construyen acá**. Cada una se aterriza en el requerimiento de su feature cuando llegue su US: `features/academic/`, `features/enrollments/`, `features/reviews/`, `features/planning/`.
 
 Ver [ADR-0020](../../../decisions/0020-features-alineadas-con-modulos-backend.md) sobre features espejadas con módulos backend, y [ADR-0019](../../../decisions/0019-single-nextjs-app-con-route-groups.md) sobre route groups + auth guards.
 

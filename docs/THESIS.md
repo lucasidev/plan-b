@@ -1,10 +1,10 @@
 # La tesis de plan-b
 
-**Vigente desde**: 2026-08-16. **Registro del viraje**: [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md). **Estado de la poda**: [STATUS.md](STATUS.md).
+**Vigente desde**: 2026-08-16. **Registro del viraje**: [ADR-0063](decisions/0063-the-product-is-a-pressure-instrument.md). **Estado de la poda**: [STATUS.md](plan/status.md).
 
 Este documento es la tesis del producto: lo que plan-b es, lo que no hace, y la posición que toma. Todo lo demás del repo se lee contra esto. El código de hoy contiene la versión anterior (el planificador) en retiro; que un módulo exista no significa que la tesis lo respalde.
 
-> **Estado (2026-08-16)**: la tesis se cerró por capas, en orden: qué es, el problema, a quién sirve, [qué recabamos](#qué-recabamos) y [qué publicamos](#qué-publicamos) entero. Cada capa tiene su ADR con el porqué, las alternativas y las fuentes: la unidad de publicación ([ADR-0064](decisions/0064-phrases-with-voices-not-scores.md)), la atribución ([ADR-0065](decisions/0065-attribution-is-the-axis-not-a-split.md)), la derivación y sus cortes ([ADR-0066](decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)), la trayectoria y las comparaciones ([ADR-0067](decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)) y el comentario ([ADR-0068](decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)). Lo que sigue es propagarla al catálogo de stories y planificar contra ella.
+> **Estado (2026-08-16)**: la tesis se cerró por capas, en orden: qué es, el problema, a quién sirve, [qué recabamos](#qué-recabamos) y [qué publicamos](#qué-publicamos) entero. Cada capa tiene su ADR con el porqué, las alternativas y las fuentes: la unidad de publicación ([ADR-0064](decisions/0064-phrases-with-voices-not-scores.md)), la atribución ([ADR-0065](decisions/0065-attribution-is-the-axis-not-a-split.md)), la derivación y sus cortes ([ADR-0066](decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)), la trayectoria y las comparaciones ([ADR-0067](decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)) y el comentario ([ADR-0068](decisions/0068-comment-publishes-as-testimony-below-the-phrases.md)). Lo que sigue es propagarla a los [requisitos](product/README.md) y planificar contra ella.
 
 ---
 

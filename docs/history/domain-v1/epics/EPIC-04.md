@@ -10,16 +10,16 @@ Simular combinaciones de materias para el próximo cuatrimestre, guardarlas como
 ## User Stories
 
 ### Sprint S1 (shell + home placeholder)
-- [US-042-f](../../../domain/user-stories/US-042-f.md): AppShell del área autenticada (sidebar + topbar + avatar dropdown)
-- [US-043-f](../../../domain/user-stories/US-043-f.md): Home del dashboard (placeholder visual con datos hardcoded del mockup)
+- [US-042-f](../stories/US-042-f.md): AppShell del área autenticada (sidebar + topbar + avatar dropdown)
+- [US-043-f](../stories/US-043-f.md): Home del dashboard (placeholder visual con datos hardcoded del mockup)
 
 ### Backlog
-- [US-016](../../../domain/user-stories/US-016.md): Simular inscripción
-- [US-023](../../../domain/user-stories/US-023.md): Guardar simulación como draft privado
-- [US-024](../../../domain/user-stories/US-024.md): Compartir simulación al corpus público
-- [US-025](../../../domain/user-stories/US-025.md): Editar simulación
-- [US-026](../../../domain/user-stories/US-026.md): Borrar simulación
-- [US-027](../../../domain/user-stories/US-027.md): Ver simulaciones públicas de otros alumnos
+- [US-016](../stories/US-016.md): Simular inscripción
+- [US-023](../stories/US-023.md): Guardar simulación como draft privado
+- [US-024](../stories/US-024.md): Compartir simulación al corpus público
+- [US-025](../stories/US-025.md): Editar simulación
+- [US-026](../stories/US-026.md): Borrar simulación
+- [US-027](../stories/US-027.md): Ver simulaciones públicas de otros alumnos
 - "Recibir simulación recomendada" fue un placeholder post-MVP (US-028) que murió con el planificador (ADR-0063); el archivo `post-mvp.md` que lo guardaba se eliminó.
 
 ## Decisiones que la condicionan

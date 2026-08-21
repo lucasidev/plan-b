@@ -9,12 +9,12 @@ Admin precarga y mantiene el catálogo académico: universities, careers, plans,
 
 ## User Stories
 
-- [US-060](../../../domain/user-stories/US-060.md): Gestionar University
-- [US-061](../../../domain/user-stories/US-061.md): Gestionar Career + CareerPlan
-- [US-062](../../../domain/user-stories/US-062.md): Gestionar Subject + Prerequisite
-- [US-063](../../../domain/user-stories/US-063.md): Gestionar Teacher
-- [US-064](../../../domain/user-stories/US-064.md): Gestionar AcademicTerm
-- [US-065](../../../domain/user-stories/US-065.md): Gestionar Commission + CommissionTeacher
+- [US-060](../stories/US-060.md): Gestionar University
+- [US-061](../stories/US-061.md): Gestionar Career + CareerPlan
+- [US-062](../stories/US-062.md): Gestionar Subject + Prerequisite
+- [US-063](../stories/US-063.md): Gestionar Teacher
+- [US-064](../stories/US-064.md): Gestionar AcademicTerm
+- [US-065](../stories/US-065.md): Gestionar Commission + CommissionTeacher
 
 ## Decisiones que la condicionan
 
