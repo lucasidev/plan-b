@@ -34,21 +34,21 @@
  *     `bun scripts/run-e2e.ts --grep "guardar la combinación"`
  */
 
-import { spawnSync, type ChildProcess } from 'node:child_process';
+import { type ChildProcess, spawnSync } from 'node:child_process';
 import { detectContainerRuntime } from './detect-container.ts';
 import {
   BACKEND_PORT,
+  buildFrontend,
   FRONTEND,
   FRONTEND_ATTEMPTS,
   FRONTEND_PORT,
   HEALTH_ATTEMPTS,
-  POSTGRES_CONTAINER,
   killTree,
+  POSTGRES_CONTAINER,
   recreateDatabase,
   requireDevConnectionString,
   requireFreePorts,
   spawnBackend,
-  buildFrontend,
   spawnFrontend,
   waitForHttp,
   waitForSeed,
@@ -114,7 +114,12 @@ async function main(): Promise<number> {
   children.push(backend);
 
   if (
-    !(await waitForHttp(`http://localhost:${BACKEND_PORT}/health`, HEALTH_ATTEMPTS, 'backend', backend))
+    !(await waitForHttp(
+      `http://localhost:${BACKEND_PORT}/health`,
+      HEALTH_ATTEMPTS,
+      'backend',
+      backend,
+    ))
   ) {
     console.error(`El backend nunca respondió /health en ${HEALTH_ATTEMPTS}s.`);
     return 1;
@@ -141,7 +146,12 @@ async function main(): Promise<number> {
   children.push(frontend);
 
   if (
-    !(await waitForHttp(`http://localhost:${FRONTEND_PORT}`, FRONTEND_ATTEMPTS, 'frontend', frontend))
+    !(await waitForHttp(
+      `http://localhost:${FRONTEND_PORT}`,
+      FRONTEND_ATTEMPTS,
+      'frontend',
+      frontend,
+    ))
   ) {
     console.error(`El frontend nunca respondió en ${FRONTEND_ATTEMPTS}s.`);
     return 1;

@@ -13,8 +13,11 @@
  *
  * Override autodetect with `CONTAINER_CMD=docker` (or any other cmd).
  *
- * Used by the Justfile (`bun scripts/detect-container.ts`, prints the cmd)
- * and importable from other scripts via `detectContainerRuntime()`.
+ * Se importa desde los scripts que van a correr un comando de container
+ * (`detectContainerRuntime()`), y se corre como CLI para `just container-info`
+ * (`--info`). No se resuelve en una variable del Justfile: just evalúa las
+ * asignaciones antes de cualquier receta, así que el chequeo de daemon rompía
+ * también las recetas que no tocan un container.
  */
 
 import { execSync } from 'node:child_process';
@@ -94,9 +97,7 @@ export function detectContainerRuntime(): string {
   }
 
   if (installedButOff.length > 0) {
-    console.error(
-      `Runtime(s) instalados pero con daemon apagado: ${installedButOff.join(', ')}.`,
-    );
+    console.error(`Runtime(s) instalados pero con daemon apagado: ${installedButOff.join(', ')}.`);
     for (const c of installedButOff) printDaemonOffHint(c);
     console.error('');
     console.error('  Una vez arrancado, reintentá el comando.');
@@ -108,5 +109,21 @@ export function detectContainerRuntime(): string {
 }
 
 if (import.meta.main) {
-  process.stdout.write(detectContainerRuntime());
+  const runtime = detectContainerRuntime();
+  // `--info` es para la receta `container-info`: imprime lo mismo que imprimía
+  // cuando el runtime vivía en una variable del Justfile, sin depender de que
+  // el shell sepa interpolar (pwsh en Windows, sh en el resto).
+  if (process.argv.includes('--info')) {
+    process.stdout.write(
+      [
+        `Container runtime: ${runtime}`,
+        `Compose command:   ${runtime} compose`,
+        '',
+        'Override with: CONTAINER_CMD=docker just <recipe>',
+        '',
+      ].join('\n'),
+    );
+  } else {
+    process.stdout.write(runtime);
+  }
 }

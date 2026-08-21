@@ -13,8 +13,7 @@ import { detectLanguage } from './lib/detect-language.ts';
 const CONVENTIONAL_COMMIT_RE =
   /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .{1,72}/;
 
-const VALID_TYPES =
-  'feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert';
+const VALID_TYPES = 'feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert';
 
 // El subject va en inglés y el body en español: el primero es un identificador
 // de una línea, del mismo lado que los del código; el segundo es prosa, del

@@ -5,8 +5,11 @@
 set dotenv-load := true
 set windows-shell := ["pwsh", "-NoLogo", "-Command"]
 
-container_cmd := env("CONTAINER_CMD", `bun scripts/detect-container.ts`)
-compose := container_cmd + " compose"
+# El runtime del container NO vive en una variable de just: las asignaciones se
+# evaluan antes de correr cualquier receta, asi que el chequeo de daemon rompia
+# 39 de las 40 recetas cuando el daemon estaba apagado, incluidas las 32 que no
+# tocan un container. Ahora cada script que lo necesita lo detecta al correr.
+# El override CONTAINER_CMD=docker lo sigue leyendo detect-container.ts.
 
 # Default: list recipes
 default:
@@ -60,28 +63,25 @@ dev-frontend: infra-up
 # Start containers, reusing running ones. Auto-finds free ports if defaults busy.
 # Depends on _ensure-env so POSTGRES_PASSWORD and friends are guaranteed present.
 infra-up: _ensure-env
-    bun scripts/ensure-infra.ts {{container_cmd}}
+    bun scripts/ensure-infra.ts
 
 infra-down:
-    {{compose}} down
+    bun scripts/compose.ts down
 
 infra-status:
-    {{compose}} ps
+    bun scripts/compose.ts ps
 
 infra-logs service="":
-    bun scripts/infra-logs.ts {{container_cmd}} {{service}}
+    bun scripts/infra-logs.ts {{service}}
 
 # Reset: down + remove volumes + up
 infra-reset:
-    {{compose}} down -v
+    bun scripts/compose.ts down -v
     just infra-up
 
 # Show detected container runtime and compose command
 container-info:
-    @echo "Container runtime: {{container_cmd}}"
-    @echo "Compose command:   {{compose}}"
-    @echo ""
-    @echo "Override with: CONTAINER_CMD=docker just <recipe>"
+    @bun scripts/detect-container.ts --info
 
 # Validate toolchain: dotnet, bun, lefthook, playwright browsers, container runtime.
 # Reads pins from .tool-versions and backend/global.json, compares with installed.
@@ -147,9 +147,9 @@ frontend-test-e2e-show *args:
 dev-scratch:
     bun scripts/run-scratch.ts
 
-lint: backend-lint frontend-lint
+lint: backend-lint frontend-lint scripts-lint
 
-lint-fix: backend-lint-fix frontend-lint-fix
+lint-fix: backend-lint-fix frontend-lint-fix scripts-lint-fix
 
 backend-lint:
     cd backend && dotnet format --verify-no-changes
@@ -162,6 +162,16 @@ frontend-lint:
 
 frontend-lint-fix:
     cd frontend && bun run lint:fix
+
+# Biome sobre scripts/ con la config de la raíz. Usa el binario que ya instala
+# frontend en vez de `bunx biome`: desde la raíz no hay package.json, y ahí
+# `bunx biome` se baja y ejecuta un paquete de npm que se llama igual y no es
+# este (0.3.3, sin relación con @biomejs/biome).
+scripts-lint:
+    ./frontend/node_modules/.bin/biome check scripts
+
+scripts-lint-fix:
+    ./frontend/node_modules/.bin/biome check --write scripts
 
 # ═══════════════════════════════════════════════════════════════
 
@@ -217,7 +227,7 @@ db-seed:
 
 # Stop containers, remove volumes, delete .env files
 teardown:
-    {{compose}} down -v
+    bun scripts/compose.ts down -v
     rm -f .env frontend/.env.local
 
 clean:
@@ -228,5 +238,5 @@ clean:
 # CI (same recipes the GitHub Actions workflow runs)
 # ═══════════════════════════════════════════════════════════════
 
-ci: backend-build backend-test frontend-lint frontend-build frontend-test
+ci: backend-build backend-test frontend-lint scripts-lint frontend-build frontend-test
     @echo "✓ All quality gates passed"

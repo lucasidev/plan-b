@@ -31,45 +31,43 @@ export type Language = 'es' | 'en' | 'unknown';
  * votar inglés, silenciaba títulos españoles que la usaban de preposición
  * ("transiciones **a** published"). `todo` colisiona con el TODO del código.
  */
-const AMBIGUOUS = ['no', 'a', 'todo', 'solo'];
+const AMBIGUOUS = 'no a todo solo';
 
-// Deliberadamente cortas: nada de sustantivos ni verbos, que son los que viajan
-// como préstamo en la jerga técnica ("el commit", "la review", "el outbox").
-const SPANISH = new Set(
-  [
-    'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'lo', 'al', 'del',
-    'de', 'en', 'con', 'por', 'para', 'sin', 'sobre', 'entre', 'desde', 'hasta',
-    'que', 'se', 'su', 'sus', 'y', 'o', 'ni', 'es', 'son', 'está', 'están',
-    'como', 'pero', 'si', 'ya', 'cada', 'cuando', 'donde', 'porque',
-    'este', 'esta', 'esto', 'ese', 'esa', 'eso', 'nunca', 'siempre',
-    'más', 'menos', 'muy', 'toda', 'todos', 'todas', 'vez', 'hay',
-  ].filter((w) => !AMBIGUOUS.includes(w)),
-);
+// Listas deliberadamente cortas y sin sustantivos ni verbos: esos son los que
+// viajan como préstamo en la jerga técnica ("el commit", "la review", "el
+// outbox") y votarían el idioma equivocado.
+const SPANISH = `
+  el la los las un una unos unas lo al del de en con por para sin sobre entre
+  desde hasta que se su sus y o ni es son está están como pero si ya cada
+  cuando donde porque este esta esto ese esa eso nunca siempre más menos muy
+  toda todos todas vez hay
+`;
 
-const ENGLISH = new Set(
-  [
-    'the', 'an', 'of', 'in', 'on', 'with', 'without', 'for', 'from', 'to',
-    'by', 'at', 'into', 'over', 'under', 'between', 'across', 'until',
-    'and', 'or', 'not', 'nor', 'but', 'is', 'are', 'was', 'were', 'be',
-    'as', 'that', 'this', 'these', 'those', 'it', 'its', 'their', 'his', 'her',
-    'when', 'where', 'because', 'which', 'who', 'what', 'never', 'always',
-    'only', 'every', 'each', 'more', 'less', 'all', 'both', 'does', 'do',
-  ].filter((w) => !AMBIGUOUS.includes(w)),
-);
+const ENGLISH = `
+  the an of in on with without for from to by at into over under between
+  across until and or not nor but is are was were be as that this these those
+  it its their his her when where because which who what never always only
+  every each more less all both does do
+`;
+
+const words = (list: string) => new Set(list.trim().split(/\s+/));
+const ambiguous = words(AMBIGUOUS);
+const es = words(SPANISH).difference(ambiguous);
+const en = words(ENGLISH).difference(ambiguous);
 
 /**
  * Un solo voto de diferencia alcanza para decidir: medido, no sube ni un falso
  * positivo respecto de exigir dos, y sube el alcance de 35 a 44 sobre 48.
  */
 export function detectLanguage(text: string): Language {
-  const words = text.toLowerCase().split(/[^a-záéíóúüñ]+/);
-  let es = 0;
-  let en = 0;
-  for (const w of words) {
-    if (SPANISH.has(w)) es++;
-    if (ENGLISH.has(w)) en++;
+  const tokens = text.toLowerCase().split(/[^a-záéíóúüñ]+/);
+  let spanish = 0;
+  let english = 0;
+  for (const t of tokens) {
+    if (es.has(t)) spanish++;
+    if (en.has(t)) english++;
   }
-  if (es > en) return 'es';
-  if (en > es) return 'en';
+  if (spanish > english) return 'es';
+  if (english > spanish) return 'en';
   return 'unknown';
 }

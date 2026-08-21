@@ -84,12 +84,7 @@ function compareSemver(found: string, required: string): string {
   return 'match';
 }
 
-function checkTool(
-  tool: string,
-  versionCmd: string,
-  required: string,
-  installHint: string,
-): Check {
+function checkTool(tool: string, versionCmd: string, required: string, installHint: string): Check {
   const raw = tryRun(versionCmd);
   if (!raw) {
     return {
@@ -171,13 +166,23 @@ function checkContainerRuntime(): Check {
   const podman = tryRun('podman --version');
   const docker = tryRun('docker --version');
   if (podman) {
-    return { tool: 'container runtime', required: 'podman or docker', found: `podman (${podman})`, severity: 'ok' };
+    return {
+      tool: 'container runtime',
+      required: 'podman or docker',
+      found: `podman (${podman})`,
+      severity: 'ok',
+    };
   }
   if (docker) {
     // docker installed, verify daemon reachable
     const info = tryRun('docker info');
     if (info) {
-      return { tool: 'container runtime', required: 'podman or docker', found: `docker (${docker})`, severity: 'ok' };
+      return {
+        tool: 'container runtime',
+        required: 'podman or docker',
+        found: `docker (${docker})`,
+        severity: 'ok',
+      };
     }
     return {
       tool: 'container runtime',
@@ -222,9 +227,19 @@ async function main() {
   console.log('plan-b doctor — toolchain check\n');
 
   const checks: Check[] = [
-    checkTool('dotnet', 'dotnet --version', dotnetPin, 'install from https://dotnet.microsoft.com/download'),
+    checkTool(
+      'dotnet',
+      'dotnet --version',
+      dotnetPin,
+      'install from https://dotnet.microsoft.com/download',
+    ),
     checkTool('bun', 'bun --version', bunPin, 'install from https://bun.sh'),
-    checkTool('lefthook', 'lefthook version', lefthookPin, 'install via package manager (brew/apt/scoop) — see https://lefthook.dev'),
+    checkTool(
+      'lefthook',
+      'lefthook version',
+      lefthookPin,
+      'install via package manager (brew/apt/scoop) — see https://lefthook.dev',
+    ),
     checkContainerRuntime(),
     checkPlaywrightChromium(),
   ];
@@ -235,11 +250,15 @@ async function main() {
   const warnings = checks.filter((c) => c.severity === 'warn').length;
   console.log('');
   if (failures > 0) {
-    console.log(color('fail', `✗ ${failures} fatal issue(s). Fix above before running just dev / just test.`));
+    console.log(
+      color('fail', `✗ ${failures} fatal issue(s). Fix above before running just dev / just test.`),
+    );
     process.exit(1);
   }
   if (warnings > 0) {
-    console.log(color('warn', `⚠ ${warnings} warning(s). Tools functional but drift from pins — review.`));
+    console.log(
+      color('warn', `⚠ ${warnings} warning(s). Tools functional but drift from pins — review.`),
+    );
     process.exit(0);
   }
   console.log(color('ok', '✓ Toolchain OK. Ready to dev.'));

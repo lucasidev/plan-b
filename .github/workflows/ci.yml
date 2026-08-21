@@ -39,6 +39,11 @@ jobs:
             frontend:
               - 'frontend/**'
               - '.github/workflows/ci.yml'
+              # scripts/ no es frontend, pero biome vive en las deps de frontend
+              # y este es el único job que las instala. El lint de scripts va
+              # acá para no montar un job entero con su propio bun install.
+              - 'scripts/**'
+              - 'biome.json'
 
   backend:
     name: Backend (.NET 10)
@@ -164,6 +169,10 @@ jobs:
         run: cd frontend && bun install --frozen-lockfile
       - name: Lint
         run: cd frontend && bun run lint
+      - name: Lint scripts
+        # El binario local, no `bunx biome`: desde la raíz no hay package.json y
+        # `bunx biome` resuelve a otro paquete de npm que se llama igual.
+        run: ./frontend/node_modules/.bin/biome check scripts
       - name: Typecheck
         run: cd frontend && bunx tsc --noEmit
       - name: Build

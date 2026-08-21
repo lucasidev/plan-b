@@ -31,9 +31,10 @@ const COMPOSE_EXEC_TIMEOUT_MS = 5000;
 const COMPOSE_PS_TIMEOUT_MS = 10000;
 
 function detectContainerCmd(): string {
-  // Cuando viene desde `just infra-up`, el cmd ya está resuelto por
-  // detect-container.ts (Justfile lo pasa como argv[2]). Cuando se corre
-  // standalone (`bun scripts/ensure-infra.ts`), detectamos acá.
+  // El argumento sigue aceptándose para poder forzar el runtime desde afuera
+  // (`bun scripts/ensure-infra.ts docker`); el Justfile ya no lo pasa, porque
+  // tenerlo resuelto en una variable global rompía las recetas que no tocan un
+  // container. Sin argumento ni env var, se detecta acá.
   const override = process.argv[2] || process.env.CONTAINER_CMD;
   if (override) {
     process.env.CONTAINER_CMD = override;
@@ -164,11 +165,7 @@ function updateRootEnv(ports: ServicePorts) {
   });
 }
 
-async function waitForService(
-  name: string,
-  check: () => void | Promise<void>,
-  maxSeconds = 60,
-) {
+async function waitForService(name: string, check: () => void | Promise<void>, maxSeconds = 60) {
   console.error(`Waiting for ${name}...`);
   for (let i = 0; i < maxSeconds; i++) {
     try {
@@ -199,8 +196,7 @@ async function main() {
   guardSecrets();
 
   const running = getRunningPorts();
-  const allRunning =
-    running.postgres && running.redis && running.mailpitSmtp && running.mailpitUi;
+  const allRunning = running.postgres && running.redis && running.mailpitSmtp && running.mailpitUi;
 
   if (allRunning) {
     const p = running as ServicePorts;

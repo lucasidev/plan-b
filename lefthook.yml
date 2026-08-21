@@ -12,6 +12,14 @@ pre-commit:
       glob: "*.{ts,tsx,js,jsx,json,css}"
       run: bunx biome check --write {staged_files}
       stage_fixed: true
+    scripts-format:
+      # El binario que instala frontend, no `bunx biome`: desde la raíz no hay
+      # package.json y `bunx biome` baja otro paquete de npm que se llama igual.
+      glob:
+        - "scripts/*.ts"
+        - "scripts/**/*.ts"
+      run: ./frontend/node_modules/.bin/biome check --write {staged_files}
+      stage_fixed: true
     backend-format:
       # Solo `whitespace`. Los pases `style` y `analyzers` cuestan 21s extra y
       # no encuentran nada: el .editorconfig no declara ni una severidad, así

@@ -28,12 +28,12 @@ import { resolve } from 'node:path';
 import { detectContainerRuntime } from './detect-container.ts';
 import {
   BACKEND_PORT,
+  dropDatabase,
   FRONTEND_ATTEMPTS,
   FRONTEND_PORT,
   HEALTH_ATTEMPTS,
-  ROOT,
-  dropDatabase,
   killTree,
+  ROOT,
   recreateDatabase,
   requireDevConnectionString,
   requireFreePorts,
@@ -145,7 +145,12 @@ async function main(): Promise<number> {
   children.push(backend);
 
   if (
-    !(await waitForHttp(`http://localhost:${BACKEND_PORT}/health`, HEALTH_ATTEMPTS, 'backend', backend))
+    !(await waitForHttp(
+      `http://localhost:${BACKEND_PORT}/health`,
+      HEALTH_ATTEMPTS,
+      'backend',
+      backend,
+    ))
   ) {
     console.error(`El backend nunca respondió /health en ${HEALTH_ATTEMPTS}s.`);
     return 1;
@@ -161,7 +166,12 @@ async function main(): Promise<number> {
   children.push(frontend);
 
   if (
-    !(await waitForHttp(`http://localhost:${FRONTEND_PORT}`, FRONTEND_ATTEMPTS, 'frontend', frontend))
+    !(await waitForHttp(
+      `http://localhost:${FRONTEND_PORT}`,
+      FRONTEND_ATTEMPTS,
+      'frontend',
+      frontend,
+    ))
   ) {
     console.error(`El frontend nunca respondió en ${FRONTEND_ATTEMPTS}s.`);
     return 1;
