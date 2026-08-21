@@ -1,4 +1,4 @@
-name: Docs links
+name: Docs
 
 # Verifica que los links en archivos markdown del repo no estén rotos.
 # Tenemos ~40 docs entre ADRs, user-stories, epics, CLAUDE.md y conventions
@@ -15,12 +15,20 @@ on:
   pull_request:
     paths:
       - "**.md"
+      # check-docs mira mas que markdown: los bocetos de pantalla son html y el
+      # contrato de una pantalla exige que exista sketch.html.
+      - "docs/**"
+      - "scripts/check-docs.ts"
+      - "scripts/lib/detect-language.ts"
       - ".github/lychee.toml"
       - ".github/workflows/docs-links.yml"
   push:
     branches: [main]
     paths:
       - "**.md"
+      - "docs/**"
+      - "scripts/check-docs.ts"
+      - "scripts/lib/detect-language.ts"
       - ".github/lychee.toml"
 
 permissions:
@@ -55,3 +63,21 @@ jobs:
         with:
           args: --config .github/lychee.toml --no-progress './**/*.md'
           fail: true
+
+  # Job aparte del de lychee a proposito: lychee pega a URLs externas y puede
+  # flakear; este es determinista y local. Separados, una flakeada de un link
+  # externo no tapa la senal de este, y cada uno es un check context propio.
+  coherence:
+    name: Check docs coherence
+    runs-on: ubuntu-latest
+    # Run medido: ~1.5s sobre 230 docs. 3 min absorbe un checkout lento.
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.x
+      - name: Check docs coherence
+        # --strict: aca corta. En pre-push senala y sigue, para no frenar un push
+        # por un doc a medio escribir; el gate es el PR.
+        run: bun scripts/check-docs.ts --strict
