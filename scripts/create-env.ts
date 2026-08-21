@@ -87,7 +87,9 @@ function resolveSecrets(force: boolean): { secrets: Secrets; changed: boolean; d
 
   return {
     secrets: {
-      POSTGRES_PASSWORD: pick('POSTGRES_PASSWORD', existing.POSTGRES_PASSWORD, () => randomBase64Url(18)),
+      POSTGRES_PASSWORD: pick('POSTGRES_PASSWORD', existing.POSTGRES_PASSWORD, () =>
+        randomBase64Url(18),
+      ),
       REDIS_PASSWORD: pick('REDIS_PASSWORD', existing.REDIS_PASSWORD, () => randomBase64Url(18)),
       JWT_SECRET: pick('JWT__Secret', existingJwt, () => randomBase64Url(48)),
       SESSION_SECRET: pick('SESSION_SECRET', existing.SESSION_SECRET, () => randomBase64Url(32)),

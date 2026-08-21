@@ -15,7 +15,7 @@
 
 import { spawnSync } from 'node:child_process';
 import { detectContainerRuntime } from './detect-container.ts';
-import { POSTGRES_CONTAINER, dropDatabase } from './lib/dev-stack.ts';
+import { dropDatabase, POSTGRES_CONTAINER } from './lib/dev-stack.ts';
 
 interface OrphanDatabase {
   name: string;
@@ -37,7 +37,7 @@ function formatBytes(bytes: number): string {
 /** Lista las bases `planb_*` huérfanas (todo menos `planb`) con su tamaño en bytes. */
 function listOrphans(containerCmd: string): OrphanDatabase[] | undefined {
   const query =
-    "SELECT datname, pg_database_size(datname) FROM pg_database " +
+    'SELECT datname, pg_database_size(datname) FROM pg_database ' +
     "WHERE datname LIKE 'planb\\_%' AND datname <> 'planb' ORDER BY datname";
 
   const result = spawnSync(
@@ -93,7 +93,9 @@ function main(): number {
   }
 
   const totalBytes = orphans.reduce((sum, db) => sum + db.bytes, 0);
-  console.log(`Encontré ${orphans.length} base(s) huérfana(s), ${formatBytes(totalBytes)} en total:`);
+  console.log(
+    `Encontré ${orphans.length} base(s) huérfana(s), ${formatBytes(totalBytes)} en total:`,
+  );
   for (const db of orphans) {
     console.log(`  ${db.name} (${formatBytes(db.bytes)})`);
   }
@@ -112,7 +114,9 @@ function main(): number {
     }
   }
 
-  console.log(`Listo: ${dropped}/${orphans.length} base(s) borrada(s), ${formatBytes(totalBytes)} liberados.`);
+  console.log(
+    `Listo: ${dropped}/${orphans.length} base(s) borrada(s), ${formatBytes(totalBytes)} liberados.`,
+  );
   if (failed.length > 0) {
     console.error(`Fallaron: ${failed.join(', ')}`);
     return 1;

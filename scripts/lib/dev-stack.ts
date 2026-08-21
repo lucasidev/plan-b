@@ -104,7 +104,9 @@ export function withDatabase(connectionString: string, database: string): string
 export function requireDevConnectionString(): string | undefined {
   const value = process.env.ConnectionStrings__Planb;
   if (!value) {
-    console.error('Falta ConnectionStrings__Planb en el env. Corré `just setup` para generar .env.');
+    console.error(
+      'Falta ConnectionStrings__Planb en el env. Corré `just setup` para generar .env.',
+    );
   }
   return value;
 }
@@ -132,7 +134,19 @@ export function killTree(child: ChildProcess): void {
 function psql(containerCmd: string, database: string, sql: string) {
   return spawnSync(
     containerCmd,
-    ['exec', POSTGRES_CONTAINER, 'psql', '-U', 'planb', '-d', database, '-v', 'ON_ERROR_STOP=1', '-c', sql],
+    [
+      'exec',
+      POSTGRES_CONTAINER,
+      'psql',
+      '-U',
+      'planb',
+      '-d',
+      database,
+      '-v',
+      'ON_ERROR_STOP=1',
+      '-c',
+      sql,
+    ],
     { encoding: 'utf8' },
   );
 }

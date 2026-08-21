@@ -148,9 +148,7 @@ for (const { service, child } of children) {
   child.on('exit', (code, signal) => {
     pendingExits -= 1;
     const status = code !== null ? `code ${code}` : signal ? `signal ${signal}` : '?';
-    process.stdout.write(
-      `${service.color(`[${service.name}]`)} ${dim(`exited (${status})`)}\n`,
-    );
+    process.stdout.write(`${service.color(`[${service.name}]`)} ${dim(`exited (${status})`)}\n`);
     if (typeof code === 'number' && code !== 0 && firstFailureCode === 0) {
       firstFailureCode = code;
     }
@@ -158,9 +156,7 @@ for (const { service, child } of children) {
     // rest with it. Half the stack alone is rarely what anyone wants.
     if (!shuttingDown && pendingExits > 0) {
       shuttingDown = true;
-      process.stdout.write(
-        dim(`${service.name} exited first; stopping the rest...\n`),
-      );
+      process.stdout.write(dim(`${service.name} exited first; stopping the rest...\n`));
       killAll();
     }
     if (pendingExits === 0) process.exit(firstFailureCode);
