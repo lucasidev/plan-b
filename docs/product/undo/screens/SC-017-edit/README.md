@@ -32,7 +32,7 @@ Llega desde Mis aportes, por cada aporte. Guardar o borrar vuelve a Mis aportes;
 
 ## Decisiones que aplica
 
-[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario editado vuelve al chequeo previo), [ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (los hechos de trayectoria se borran de a uno), [ADR-0044](../../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md) (lo que se saca acá, antes de la baja de cuenta).
+[ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario editado vuelve al chequeo previo), [ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (los hechos de trayectoria se borran de a uno), [ADR-0044](../../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (lo que se saca acá, antes de la baja de cuenta).
 
 ## Lo que esta ficha deja abierto
 

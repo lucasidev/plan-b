@@ -27,13 +27,13 @@
 | **en curso** | El plan del período actual del alumno. Se edita en el planificador (tab "En curso"); no es un borrador. |
 | **borrador** | Plan de un período que **no es el actual** o es uno futuro. Crear y ajustar borradores es **simular**. Es el `SimulationDraft` cuando se persista (US-023); hoy vive solo en la sesión. |
 | **simular** | Armar y evaluar un borrador de un período no actual: elegir materias, ver carga/dificultad/cohorte sin inscribirse a nada. Es una **capacidad del planificador**, no su nombre. Los identificadores `EvaluateSimulation` y `/api/me/simulator/*` nombran esta acción. |
-| **simulación** | Combinación de materias que el alumno está considerando cursar el período que viene. Es una **intención**, no un hecho: no lo inscribe a nada ni queda registrada como cursada. Esa distinción entre futuro e pasado es la razón de que Planning sea un BC separado de Enrollments ([ADR-0029](../../decisions/0029-planning-bc-separado.md)). |
-| **SimulationDraft** | La simulación guardada. Aggregate del BC Planning. **Todavía no existe**: US-016 evalúa sin persistir nada; la persistencia llega con US-023, que es premium ([ADR-0028](../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)). |
+| **simulación** | Combinación de materias que el alumno está considerando cursar el período que viene. Es una **intención**, no un hecho: no lo inscribe a nada ni queda registrada como cursada. Esa distinción entre futuro e pasado es la razón de que Planning sea un BC separado de Enrollments ([ADR-0029](../../decisions/0029-planning-as-a-separate-bounded-context.md)). |
+| **SimulationDraft** | La simulación guardada. Aggregate del BC Planning. **Todavía no existe**: US-016 evalúa sin persistir nada; la persistencia llega con US-023, que es premium ([ADR-0028](../../decisions/0028-optional-reviews-with-premium-features-as-reward.md)). |
 | **materia disponible** | Materia del plan que el alumno puede cursar el próximo período: tiene todas sus correlativas `para_cursar` regularizadas o aprobadas, y no la aprobó, regularizó ni la está cursando. |
 | **materia bloqueada** | Materia que no puede cursar porque le falta alguna correlativa `para_cursar`. El sistema siempre informa **cuáles** faltan: "no podés" sin el motivo no le sirve al alumno para decidir qué hacer. |
 | **combinación** | El conjunto de materias de una simulación. Dos combinaciones son la misma si tienen exactamente las mismas materias, sin importar el orden en que se eligieron. |
 | **cohorte** (planificador) | Los alumnos que cursaron **exactamente la misma combinación** de materias en un mismo período. Se retira con el planificador: en el producto nuevo "cohorte" es la camada de ingreso (ver [El producto nuevo](../../product/language.md#el-producto-reseñar-y-publicar)). |
-| **muestra mínima** | Piso de alumnos por debajo del cual no se muestran las tasas de una cohorte (5, [ADR-0047](../../decisions/0047-pass-rate-publico-desde-historial-privado.md)). Con menos, el dato permitiría deducir el resultado académico de un compañero puntual. El **tamaño** de la muestra sí se muestra siempre: un porcentaje sin saber sobre cuántos casos se calculó es peor que no mostrar nada. |
+| **muestra mínima** | Piso de alumnos por debajo del cual no se muestran las tasas de una cohorte (5, [ADR-0047](../../decisions/0047-public-pass-rate-from-private-enrollment-history.md)). Con menos, el dato permitiría deducir el resultado académico de un compañero puntual. El **tamaño** de la muestra sí se muestra siempre: un porcentaje sin saber sobre cuántos casos se calculó es peor que no mostrar nada. |
 
 
 ## Reseñas y moderación (versión anterior, en retiro)
@@ -54,7 +54,7 @@
 
 ## Búsqueda semántica e infraestructura analítica
 
-> Diseño diferido: la revisión (2026-07-26) de [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md) borró el andamiaje (extensión pgvector, entidad, pipeline) hasta que exista un consumidor real. Los términos de esta sección describen ese diseño, no algo implementado hoy.
+> Diseño diferido: la revisión (2026-07-26) de [ADR-0007](../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md) borró el andamiaje (extensión pgvector, entidad, pipeline) hasta que exista un consumidor real. Los términos de esta sección describen ese diseño, no algo implementado hoy.
 
 | Término | Significado |
 |---|---|

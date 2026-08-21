@@ -9,7 +9,7 @@ Como quien ya aportó, quiero poder sacar lo mío y después irme, porque promet
 
 ## Listo cuando
 
-- Los aportes se borran de a uno antes (US-165); la baja de cuenta anonimiza la identidad y preserva lo que quedó aportado, incluidos los hechos de trayectoria, exactos ([ADR-0044](../../../decisions/0044-soft-delete-del-user-con-preservacion-de-corpus.md); D10, [registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md)), y la pantalla lo dice con esas palabras antes de confirmar.
+- Los aportes se borran de a uno antes (US-165); la baja de cuenta anonimiza la identidad y preserva lo que quedó aportado, incluidos los hechos de trayectoria, exactos ([ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md); D10, [registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md)), y la pantalla lo dice con esas palabras antes de confirmar.
 
 ## Dónde se resuelve
 

@@ -37,7 +37,7 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 
 ## Decisiones que la condicionan
 
-- [ADR-0008](../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md): roles exclusivos, profiles como capacidades
+- [ADR-0008](../../../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md): roles exclusivos, profiles como capacidades
 - [ADR-0023](../../../decisions/0023-auth-flow-jwt-cookie-layout-guards.md): auth flow JWT cookie + layout guards
-- [ADR-0033](../../../decisions/0033-verification-token-como-child-entity.md): VerificationToken como child entity
-- [ADR-0034](../../../decisions/0034-redis-como-cache-y-ephemeral-state.md): Redis para refresh tokens + rate limiting
+- [ADR-0033](../../../decisions/0033-verification-token-as-a-child-entity.md): VerificationToken como child entity
+- [ADR-0034](../../../decisions/0034-redis-as-cache-and-ephemeral-state.md): Redis para refresh tokens + rate limiting

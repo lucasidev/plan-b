@@ -97,4 +97,4 @@ El hosted service corre en `StartAsync` *después* de `DevMigrationsHostedServic
 - Aparece un caso de uso de auth nuevo (ej. password reset) que requiere otro estado de user → agregamos persona.
 - Una persona deja de ser usada en tests → la borramos del seeder y de acá.
 
-Refs: [ADR-0008](../decisions/0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0033](../decisions/0033-verification-token-como-child-entity.md).
+Refs: [ADR-0008](../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md), [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).

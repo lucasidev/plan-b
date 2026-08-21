@@ -38,7 +38,7 @@ Cada mail lleva a su destino: Reseñar, la ficha de la carrera pedida, Responder
 
 ## Decisiones que aplica
 
-[ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche anual, uno de los cuatro caminos para preguntar trayectoria), [ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el resumen sin fecha ni hora por reseña; el aviso antes de la réplica, con su plazo), [ADR-0040](../../../../decisions/0040-notifications-como-bounded-context.md) (Notifications como bounded context, infraestructura del primer bloque), D03 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): la confirmación de pedido o de reporte no es un aviso).
+[ADR-0067](../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche anual, uno de los cuatro caminos para preguntar trayectoria), [ADR-0068](../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el resumen sin fecha ni hora por reseña; el aviso antes de la réplica, con su plazo), [ADR-0040](../../../../decisions/0040-notifications-as-a-new-bounded-context.md) (Notifications como bounded context, infraestructura del primer bloque), D03 ([registro del 17](../../../../history/reviews/2026-08-17-catalog-propagation.md): la confirmación de pedido o de reporte no es un aviso).
 
 ## Lo que esta ficha deja abierto
 

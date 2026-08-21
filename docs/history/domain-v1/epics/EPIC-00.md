@@ -36,16 +36,16 @@ Es la base sobre la que se construyen todas las demás epics. Sin esto, no hay r
 
 ## Decisiones que la condicionan
 
-- [ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md): arquitectura modular monolith
-- [ADR-0015](../../../decisions/0015-wolverine-como-mediator-y-message-bus.md): Wolverine como mediator
-- [ADR-0016](../../../decisions/0016-carter-para-endpoints-http.md): Carter para endpoints HTTP
+- [ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md): arquitectura modular monolith
+- [ADR-0015](../../../decisions/0015-wolverine-as-mediator-message-bus-and-durable-outbox.md): Wolverine como mediator
+- [ADR-0016](../../../decisions/0016-carter-for-http-endpoints.md): Carter para endpoints HTTP
 - [ADR-0017](../../../decisions/0017-persistence-ignorance.md): persistence ignorance
 - [ADR-0018](../../../decisions/0018-ef-core-writes-dapper-reads.md): EF Core writes, Dapper reads
-- [ADR-0019](../../../decisions/0019-single-nextjs-app-con-route-groups.md): single Next.js app con route groups
-- [ADR-0020](../../../decisions/0020-features-alineadas-con-modulos-backend.md): features alineadas con módulos backend
+- [ADR-0019](../../../decisions/0019-single-nextjs-app-with-route-groups-per-actor.md): single Next.js app con route groups
+- [ADR-0020](../../../decisions/0020-frontend-features-aligned-with-backend-modules.md): features alineadas con módulos backend
 - [ADR-0024](../../../decisions/0024-dev-tooling-stack.md): dev tooling stack
-- [ADR-0025](../../../decisions/0025-dotnet-10-como-runtime-target.md): .NET 10 como runtime target
-- [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md): git workflow GitHub Flow con rebase
+- [ADR-0025](../../../decisions/0025-dotnet-10-as-the-backend-runtime-target.md): .NET 10 como runtime target
+- [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md): git workflow GitHub Flow con rebase
 - [ADR-0027](../../../decisions/0027-integration-tests-shared-postgres.md): integration tests shared Postgres
 - [ADR-0036](../../../decisions/0036-testing-pyramid-cross-stack.md): pirámide de testing cross-stack
 - [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md): changelog auto-append on merge

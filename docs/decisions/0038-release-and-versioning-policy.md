@@ -145,7 +145,7 @@ Contras:
 
 ## Refs
 
-- [ADR-0026](0026-git-workflow-github-flow-con-rebase.md): git workflow + Conventional Commits.
+- [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): git workflow + Conventional Commits.
 - [ADR-0037](0037-changelog-automation-auto-append.md): changelog automation (companion).
 - Semver: https://semver.org/spec/v2.0.0.html
 - Calver: https://calver.org/

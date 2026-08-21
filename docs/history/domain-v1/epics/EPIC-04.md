@@ -24,6 +24,6 @@ Simular combinaciones de materias para el próximo cuatrimestre, guardarlas como
 
 ## Decisiones que la condicionan
 
-- [ADR-0003](../../../decisions/0003-correlativas-con-dos-tipos.md): correlativas con dos tipos
-- [ADR-0028](../../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md): reseñas opcionales y premium features como reward
-- [ADR-0029](../../../decisions/0029-planning-bc-separado.md): Planning como BC separado
+- [ADR-0003](../../../decisions/0003-prerequisites-with-two-types.md): correlativas con dos tipos
+- [ADR-0028](../../../decisions/0028-optional-reviews-with-premium-features-as-reward.md): reseñas opcionales y premium features como reward
+- [ADR-0029](../../../decisions/0029-planning-as-a-separate-bounded-context.md): Planning como BC separado

@@ -1,4 +1,4 @@
-# ADR-0073: Replican personas con nombre y cargo, y el equipo las verifica contra el catálogo que él mismo carga
+# ADR-0073: People reply with a name and a position, and the team verifies them against the catalog it loads itself
 
 - **Estado**: aceptado
 - **Fecha**: 2026-08-20
@@ -11,7 +11,7 @@ La réplica es una de las cinco decisiones de la tesis: lo publicado necesita qu
 - **Del alumno, qué documento sirve queda abierto** en su propia ficha.
 - Y aparece una tercera figura que no está en ningún lado: **un área de la institución** (una secretaría, un departamento), que no es ni el docente ni la institución entera.
 
-Dos decisiones previas cierran el camino fácil. [ADR-0048](0048-oficializacion-de-condicion-opt-in.md) retiró la verificación por **email institucional** con dos razones que siguen valiendo: asume que la universidad da emails usables (falso en muchas universidades argentinas) y que controlar ese email prueba la condición (no la prueba). Y la tesis dice que **publicamos sobre instituciones que no nos delegaron nada**: cualquier mecanismo que exija su colaboración previa contradice la premisa del producto.
+Dos decisiones previas cierran el camino fácil. [ADR-0048](0048-standing-is-opt-in-and-decoupled-from-email.md) retiró la verificación por **email institucional** con dos razones que siguen valiendo: asume que la universidad da emails usables (falso en muchas universidades argentinas) y que controlar ese email prueba la condición (no la prueba). Y la tesis dice que **publicamos sobre instituciones que no nos delegaron nada**: cualquier mecanismo que exija su colaboración previa contradice la premisa del producto.
 
 Queda el problema en su forma difícil: **verificar sin pedirle permiso a quien tiene todo el incentivo de no dártelo.**
 
@@ -31,7 +31,7 @@ Queda el problema en su forma difícil: **verificar sin pedirle permiso a quien 
 
 ## Alternativas consideradas
 
-**A. Email institucional.** Ya se descartó en [ADR-0048](0048-oficializacion-de-condicion-opt-in.md), y sus razones no cambiaron: muchas universidades argentinas no dan emails usables, y tener uno no prueba el cargo. Un administrativo con mail del dominio no habla por la institución, y un titular de cátedra sin mail institucional sí es docente.
+**A. Email institucional.** Ya se descartó en [ADR-0048](0048-standing-is-opt-in-and-decoupled-from-email.md), y sus razones no cambiaron: muchas universidades argentinas no dan emails usables, y tener uno no prueba el cargo. Un administrativo con mail del dominio no habla por la institución, y un titular de cátedra sin mail institucional sí es docente.
 
 **B. Verificar contra la fuente pública de cada institución** (buscar a la persona en el programa de la materia o el organigrama publicado, cada vez). Pone la fuente de verdad afuera: depende de que cada universidad publique, de que siga publicando, y de que quien verifica sepa leer diez formatos distintos. **Es lo contrario del plano 1 de la tesis**, que dice que el dato base lo cargamos nosotros y no se crowdsourcea. Esas fuentes sirven como **insumo para cargar el catálogo**, que es otra cosa: se miran una vez, al cargar, no en cada verificación. Descartada como mecanismo de verificación.
 
@@ -50,7 +50,7 @@ Queda el problema en su forma difícil: **verificar sin pedirle permiso a quien 
 - **Nacen las stories que faltaban**: cargar el equipo docente y los cargos como parte del catálogo, y la verificación del cargo institucional, hoy inexistente pese a que dos stories la asumen.
 - **Una réplica puede quedar esperando a que el catálogo se ponga al día**, y eso es visible: el pedido entra a la cola de catálogo con su demora, como cualquier otro (US-212).
 - **La revalidación anual es una cola nueva y recurrente**: cada verificación vence al año y vuelve a la cola. Crece con el corpus, no con el uso, y hay que verla venir antes de que se acumule.
-- **La app y los datos los maneja el backoffice, de punta a punta**: nada de esto se resuelve solo ni por reputación. Es coherente con [ADR-0050](0050-backoffice-como-corte-transversal.md) y con la separación de roles que ya fija US-217.
+- **La app y los datos los maneja el backoffice, de punta a punta**: nada de esto se resuelve solo ni por reputación. Es coherente con [ADR-0050](0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) y con la separación de roles que ya fija US-217.
 
 ## Lo que este ADR no cierra
 
@@ -61,6 +61,6 @@ Queda el problema en su forma difícil: **verificar sin pedirle permiso a quien 
 
 ## Refs
 
-- [ADR-0068](0068-comment-publishes-as-testimony-below-the-phrases.md) (la réplica con nombre y rol, que es la premisa de este ADR), [ADR-0048](0048-oficializacion-de-condicion-opt-in.md) (el email institucional retirado), [ADR-0050](0050-backoffice-como-corte-transversal.md) (el backoffice como corte transversal), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md) (el eje decide la atribución, y por eso la institución responde por lo suyo y el docente por lo suyo).
+- [ADR-0068](0068-comment-publishes-as-testimony-below-the-phrases.md) (la réplica con nombre y rol, que es la premisa de este ADR), [ADR-0048](0048-standing-is-opt-in-and-decoupled-from-email.md) (el email institucional retirado), [ADR-0050](0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) (el backoffice como corte transversal), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md) (el eje decide la atribución, y por eso la institución responde por lo suyo y el docente por lo suyo).
 - [THESIS.md](../THESIS.md): el plano del catálogo ("lo cargamos nosotros, a mano y completo"), "publicamos sobre instituciones que no nos delegaron nada" y "el nombre del docente sí, porque responder es un acto público".
 - La épica [Replicar](../product/reply/README.md) y la pantalla [Verificar](../product/care-for-what-is-published/screens/SC-022-verify/README.md).

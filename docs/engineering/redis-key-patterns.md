@@ -1,6 +1,6 @@
 # Redis key patterns
 
-Catálogo canónico de patrones de keys, valores, TTLs y operaciones para los seis casos de uso autorizados por [ADR-0034](../decisions/0034-redis-como-cache-y-ephemeral-state.md). Si tu PR usa Redis y no encaja en ninguno de estos patrones, **antes** de inventar uno nuevo, abrir issue / discutir el ADR.
+Catálogo canónico de patrones de keys, valores, TTLs y operaciones para los seis casos de uso autorizados por [ADR-0034](../decisions/0034-redis-as-cache-and-ephemeral-state.md). Si tu PR usa Redis y no encaja en ninguno de estos patrones, **antes** de inventar uno nuevo, abrir issue / discutir el ADR.
 
 El "por qué" de Redis está en ADR-0034. Este doc es el "cómo": los shapes concretos.
 

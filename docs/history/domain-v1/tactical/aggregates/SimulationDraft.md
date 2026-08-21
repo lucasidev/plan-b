@@ -11,7 +11,7 @@
 
 | Command | Disparado por | Efecto |
 |---|---|---|
-| `Save(profileId, subjects, termId, clock)` | Member con StudentProfile activo (premium feature, ver [ADR-0028](../../../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md)) | Factory; crea draft privado. Valida subjects pertenecen al CareerPlan del profile y termId es futuro/vigente. Emite `SimulationDraftSaved`. |
+| `Save(profileId, subjects, termId, clock)` | Member con StudentProfile activo (premium feature, ver [ADR-0028](../../../../decisions/0028-optional-reviews-with-premium-features-as-reward.md)) | Factory; crea draft privado. Valida subjects pertenecen al CareerPlan del profile y termId es futuro/vigente. Emite `SimulationDraftSaved`. |
 | `Update(subjects)` | Owner del draft | Reemplaza la lista de subjects (validación equivalente a Save). Emite `SimulationDraftEdited`. |
 | `Share()` | Owner del draft | Cambia visibility a `Shared` (entra al corpus público anónimo). Emite `SimulationDraftShared`. |
 | `Unshare()` | Owner del draft | Vuelve a `Private`. Emite `SimulationDraftUnshared`. |
@@ -43,7 +43,7 @@ Sin integration events cross-BC en MVP. Recomendación de simulaciones (post-MVP
 - Lookup primario: por ID.
 - Lookup secundario: por `OwnerProfileId` (lista del owner), por `(TermId, Visibility=Shared)` (corpus público).
 - Carga eager: aggregate flat, la collection `Materias` es lista de `SubjectId`.
-- Persistencia: EF Core schema `planning`. Tabla `simulation_drafts` (con `subject_ids` como columna array de Postgres o JSONB según [ADR-0006](../../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)).
+- Persistencia: EF Core schema `planning`. Tabla `simulation_drafts` (con `subject_ids` como columna array de Postgres o JSONB según [ADR-0006](../../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md)).
 
 ### 5. Boundary
 
@@ -58,5 +58,5 @@ Sin integration events cross-BC en MVP. Recomendación de simulaciones (post-MVP
 ## Refs
 
 - BC: [Planning](../../strategic/bounded-contexts.md#planning)
-- ADRs: [ADR-0028](../../../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md), [ADR-0029](../../../../decisions/0029-planning-bc-separado.md)
+- ADRs: [ADR-0028](../../../../decisions/0028-optional-reviews-with-premium-features-as-reward.md), [ADR-0029](../../../../decisions/0029-planning-as-a-separate-bounded-context.md)
 - User Stories: [US-040](../../stories/US-040.md), [US-041](../../stories/US-041.md), [US-060](../../stories/US-060.md), [US-061](../../stories/US-061.md), [US-062](../../stories/US-062.md), [US-063](../../stories/US-063.md), [US-064](../../stories/US-064.md), [US-065](../../stories/US-065.md), [US-069](../../stories/US-069.md)

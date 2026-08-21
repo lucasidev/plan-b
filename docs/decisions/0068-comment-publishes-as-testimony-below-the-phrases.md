@@ -43,7 +43,7 @@ Dos pantallas, mostradas y aprobadas antes de escribir esto (el boceto del paso 
 
 **C. Pre-moderación humana de todo comentario.** Convierte la cola de Nahuel en el cuello del corpus y demora la publicación días. El chequeo automático con retención solo de lo que habla de la persona es proporcional. Descartada.
 
-**D. Auto-ocultar por cantidad de reportes** (lo de [ADR-0010](0010-threshold-auto-hide-configurable-por-env-var.md), en retiro). Es un botón de censura para el que organiza doce reportes. Descartada: nada baja solo, salvo el caso escrito de riesgo inmediato.
+**D. Auto-ocultar por cantidad de reportes** (lo de [ADR-0010](0010-auto-hide-threshold-configurable-by-env-var.md), en retiro). Es un botón de censura para el que organiza doce reportes. Descartada: nada baja solo, salvo el caso escrito de riesgo inmediato.
 
 **E. Ordenar por período, el más reciente primero.** Conserva la serie a la vista pero entierra lo que más gente confirmó, que es lo que "confirmar es más barato que elegir" quiere arriba. Descartada; el período se ve en cada testimonio y la ficha avisa si lo último es viejo.
 
@@ -54,7 +54,7 @@ Dos pantallas, mostradas y aprobadas antes de escribir esto (el boceto del paso 
 ## Consecuencias
 
 - **US-158 y US-179 ganan lo que les faltaba**: la retención de lo que habla de una persona, el plazo y la palanca antes de que salga la réplica, y la prohibición de citar lo marcado. **US-205** carga el criterio de exposición. **US-167** confirma el mail. **US-146** sigue: se publica marcando frases, sin escribir nada obligatorio.
-- **[ADR-0010](0010-threshold-auto-hide-configurable-por-env-var.md) queda superado**: en el producto nuevo ninguna cantidad de reportes baja nada sola.
+- **[ADR-0010](0010-auto-hide-threshold-configurable-by-env-var.md) queda superado**: en el producto nuevo ninguna cantidad de reportes baja nada sola.
 - **El chequeo previo es trabajo del sistema de frases**: la misma capacidad que destila comentarios clasifica "identifica por contexto" y "habla de la persona fuera de su acto". Es la única inteligencia con efecto en lo publicado, y nunca decide sola.
 - **La cola de moderación necesita su story de desborde** (US-212) y **verificación y moderación son roles excluyentes** (US-217, decidido en la propagación al catálogo): no son de esta decisión, y esta decisión las vuelve más urgentes porque ahora hay texto que moderar.
 - **La ficha muestra huecos honestos**: un texto retirado se ve como retirado. Es lo que hace creíble a US-181.
@@ -66,6 +66,6 @@ RateMyProfessors publica comentarios anónimos sobre docentes nombrados y remuev
 
 ## Refs
 
-- [THESIS.md](../THESIS.md), "Qué recabamos", "Qué publicamos" y "Posición". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la ficha muestra frases con voces, no textos, como cuerpo; el comentario alimenta la destilación); **completa** a 0064 y cierra "qué publicamos". [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: la sospecha en grupo chico se declara). [ADR-0009](0009-anonimato-como-regla-de-presentacion.md) (el anonimato como regla de presentación).
+- [THESIS.md](../THESIS.md), "Qué recabamos", "Qué publicamos" y "Posición". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la ficha muestra frases con voces, no textos, como cuerpo; el comentario alimenta la destilación); **completa** a 0064 y cierra "qué publicamos". [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: la sospecha en grupo chico se declara). [ADR-0009](0009-review-anonymity-is-a-presentation-rule.md) (el anonimato como regla de presentación).
 - Grupos B, C y D de la [revisión adversarial del catálogo](../history/reviews/2026-08-16-catalog.md).
 - Bocetos: el paso del comentario en [`docs/product/write-a-review/screens/SC-015-write-review/sketch.html`](../product/write-a-review/screens/SC-015-write-review/sketch.html); el testimonio leído en [`docs/product/choose-where-to-study/screens/SC-002-chair/sketch.html`](../product/choose-where-to-study/screens/SC-002-chair/sketch.html).

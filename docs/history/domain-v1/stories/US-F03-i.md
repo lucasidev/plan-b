@@ -31,7 +31,7 @@ Como solo-dev, quiero un `docker-compose.yml` que levante Postgres 17 con extens
 
 ## Notas de implementación
 
-- **Imagen Postgres con pgvector preinstalada**: la extensión se habilitaba en la migration inicial, pero la revisión (2026-07-26) de [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md) la sacó (`DropVectorExtension`) hasta que exista un consumidor real. El compose sigue usando la imagen `pgvector/pgvector:pg17`, pero hoy no se usa.
+- **Imagen Postgres con pgvector preinstalada**: la extensión se habilitaba en la migration inicial, pero la revisión (2026-07-26) de [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md) la sacó (`DropVectorExtension`) hasta que exista un consumidor real. El compose sigue usando la imagen `pgvector/pgvector:pg17`, pero hoy no se usa.
 - **Mailpit en lugar de Mailhog**: Mailpit tiene mejor UI web y mejor performance para tests de integración que envían N emails. Misma puerta SMTP (1025), drop-in.
 - **Autodetección podman/docker**: el script bun chequea cuál binario está disponible. Resuelve el caso típico de developers en Linux con podman default y CI/Mac con docker. Misma `compose` invocation independiente del backend.
 - **Shared Postgres en CI**: ADR-0027. Un solo container con schemas separados por test parallel run, reseteo via `TRUNCATE` por aggregate. Más rápido que spinear container por suite.
@@ -40,4 +40,4 @@ Como solo-dev, quiero un `docker-compose.yml` que levante Postgres 17 con extens
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
 - Use Case: ninguno.
-- ADRs: [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0027](../../../decisions/0027-integration-tests-shared-postgres.md)
+- ADRs: [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md), [ADR-0027](../../../decisions/0027-integration-tests-shared-postgres.md)

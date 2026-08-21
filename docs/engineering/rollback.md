@@ -128,9 +128,9 @@ Después de revertir un commit problemático, antes de cerrar el incidente:
 
 ## Refs
 
-- [ADR-0026](../decisions/0026-git-workflow-github-flow-con-rebase.md): git workflow.
+- [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): git workflow.
 - [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md): cómo se manejan DBs en tests (no aplicable a prod, pero relevante para entender el modelo).
-- [ADR-0034](../decisions/0034-redis-como-cache-y-ephemeral-state.md): refresh token revocation (rollback de auth state).
+- [ADR-0034](../decisions/0034-redis-as-cache-and-ephemeral-state.md): refresh token revocation (rollback de auth state).
 - [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): testing layers que protegen pre-merge.
 - [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera bajo demanda, así que un revert no necesita nada extra.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): tags narrativos como anchor.

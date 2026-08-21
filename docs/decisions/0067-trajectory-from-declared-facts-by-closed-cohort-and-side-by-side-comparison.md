@@ -7,7 +7,7 @@
 
 La tesis promete cuatro cosas que no salen de frases sino de trayectoria: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una ([THESIS.md](../THESIS.md), decisión 4). Las stories las reparten entre Valentina (US-127: nominal, real y de cuántos egresados sale), Silvia (US-133: duración real y cuántos se reciben, sin vocabulario), Matías (US-143: por par de materias, cuántos las llevaron juntas y cuántos dejaron una), Diego (US-152: en qué punto del plan se cae la mayoría), Claudia y la institución (US-177: la serie, "si mejoré desde que lo publicaron"), y las comparaciones de Dónde estudiarla (US-128: la misma carrera en varias instituciones; US-174: "en qué estoy peor que la de al lado").
 
-Lo que se recaba estaba cerrado ([ADR-0064](0064-phrases-with-voices-not-scores.md), punto 6): cuándo entraste, cuándo cursaste cada materia (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo; de a uno, nunca como inventario. Con eso solo se sabe en qué **año del plan** se fue el que se fue. No se sabe qué materias tumban gente, ni cuántos dejaron una de un par, ni la aprobación que [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md) llamaba "el dato más objetivo de la página": las tres dependen de un hecho que faltaba, **cómo terminó la cursada**.
+Lo que se recaba estaba cerrado ([ADR-0064](0064-phrases-with-voices-not-scores.md), punto 6): cuándo entraste, cuándo cursaste cada materia (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo; de a uno, nunca como inventario. Con eso solo se sabe en qué **año del plan** se fue el que se fue. No se sabe qué materias tumban gente, ni cuántos dejaron una de un par, ni la aprobación que [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md) llamaba "el dato más objetivo de la página": las tres dependen de un hecho que faltaba, **cómo terminó la cursada**.
 
 Y quedaban tres cabos: qué queda de 0047 (su definición de aprobación, su piso, su fuente privada); "brecha", que el mapa usa junto a los dos números y nadie definió; y el hallazgo G9 de la [revisión del catálogo](../history/reviews/2026-08-16-catalog.md): la co-cursada no puede salir del plan que la persona marcó para sí, que es privado y nadie consintió publicar.
 
@@ -47,7 +47,7 @@ Una tabla de hechos por cuenta (`entré`, `me fui`, `me recibí`, cada uno con a
 - Serie: cualquiera de las anteriores con `group by período`.
 - Encogimiento (0064): con `p = k/n` y `z = 1,96`, el límite inferior de Wilson es `(p + z²/2n − z·√(p(1−p)/n + z²/4n²)) / (1 + z²/n)`. Una función en la capa de lectura, publicada en Método tal cual.
 
-Los hechos sobreviven a la baja de la cuenta, exactos y sin cuenta ([ADR-0044](0044-soft-delete-del-user-con-preservacion-de-corpus.md)): una baja no recalcula una cohorte ni generaliza un año a rango; quien quiera sacar algo lo borra antes, de a uno.
+Los hechos sobreviven a la baja de la cuenta, exactos y sin cuenta ([ADR-0044](0044-soft-delete-of-the-user-with-corpus-preservation.md)): una baja no recalcula una cohorte ni generaliza un año a rango; quien quiera sacar algo lo borra antes, de a uno.
 
 Control de calidad, que es lo único que se parece a inteligencia y no lo es: **consistencia por cuenta** (`recibí ≥ entré`; períodos de cursada dentro de `[entré, recibí o me fui]`; un solo `entré` por carrera), y lo inconsistente no entra al agregado y Método publica cuántas cuentas quedaron afuera y por qué; **procedencia** (US-213): las cuentas que el anti-spam marca no suman a ninguna trayectoria; **reproceso**: cada corte recalcula todo desde los hechos, nada se acumula a mano.
 
@@ -72,10 +72,10 @@ Lo que ningún cálculo arregla, y se declara en cada dato: es **de quienes rese
 ## Consecuencias
 
 - **La reseña gana un toque** (cómo terminó), y la tesis lo dice en "qué recabamos". Es la única ampliación de esa capa.
-- **El reenganche por mail pasa a ser infraestructura**, junto con los avisos ([ADR-0040](0040-notifications-como-bounded-context.md)): sin él, el egreso y la duración real tardan años en aparecer. Aun con él, tardan.
+- **El reenganche por mail pasa a ser infraestructura**, junto con los avisos ([ADR-0040](0040-notifications-as-a-new-bounded-context.md)): sin él, el egreso y la duración real tardan años en aparecer. Aun con él, tardan.
 - **Las stories cambian de letra**: US-177 pierde el "1 a 5"; US-143, US-152, US-127 y US-133 dicen de dónde sale su dato; US-128 y US-174 dicen "lado a lado, sin ordenar"; US-180 gana la segunda tabla.
 - **"Brecha" tiene definición** (real menos nominal, en años) y **"cohorte" cambia de significado**: la del planificador ("misma combinación de materias") se retira con él; la nueva es la de siempre, los que entraron el mismo año.
-- **[ADR-0047](0047-pass-rate-publico-desde-historial-privado.md) queda superado del todo**: su definición de aprobación vive acá desde lo declarado; su piso murió en 0066; su fuente privada no existe en el producto nuevo.
+- **[ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md) queda superado del todo**: su definición de aprobación vive acá desde lo declarado; su piso murió en 0066; su fuente privada no existe en el producto nuevo.
 - **El catálogo necesita la carrera canónica** para que Dónde estudiarla sepa qué compara. Es trabajo del equipo, como todo el catálogo.
 - **Modelo de datos**: la tabla de hechos de trayectoria por cuenta, `terminó` en la reseña, la carrera canónica. Se registra cuando el modelo nuevo se diseñe; acá está el porqué.
 
@@ -86,5 +86,5 @@ La Secretaría de Políticas Universitarias publica el coeficiente **duración r
 ## Refs
 
 - [THESIS.md](../THESIS.md), decisión 4, "Qué recabamos" y "Qué publicamos". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la unidad y el encogimiento que acá se aplican a proporciones de personas), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso; el gate de la cabecera que Dónde estudiarla respeta). **Completa** a 0064.
-- [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): la definición de aprobación que sobrevive. [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): una cohorte abierta no publica un cero, no publica.
+- [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md): la definición de aprobación que sobrevive. [ADR-0054](0054-a-metric-without-backing-travels-null-never-zero.md): una cohorte abierta no publica un cero, no publica.
 - Hallazgos F2 (reenganche) y G9 (co-cursada) de la [revisión adversarial del catálogo](../history/reviews/2026-08-16-catalog.md).

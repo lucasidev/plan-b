@@ -13,4 +13,4 @@ University staff ve panel agregado de su universidad: reseñas por materia/docen
 
 ## Decisiones que la condicionan
 
-- [ADR-0009](../../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato como regla de presentación
+- [ADR-0009](../../../decisions/0009-review-anonymity-is-a-presentation-rule.md): anonimato como regla de presentación

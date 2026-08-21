@@ -15,6 +15,6 @@ El alumno carga y mantiene su historial: qué cursó, cuándo, con qué resultad
 
 ## Decisiones que la condicionan
 
-- [ADR-0004](../../../decisions/0004-enrollment-guarda-hechos.md): enrollment guarda hechos
-- [ADR-0006](../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md): JSONB solo donde el shape es variable
-- [ADR-0032](../../../decisions/0032-edit-destructive-enrollment-invalida-review.md): edit destructive enrollment invalida review
+- [ADR-0004](../../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md): enrollment guarda hechos
+- [ADR-0006](../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md): JSONB solo donde el shape es variable
+- [ADR-0032](../../../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md): edit destructive enrollment invalida review

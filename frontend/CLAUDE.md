@@ -55,7 +55,7 @@ Cada route group tiene su propio `layout.tsx` que hace el guard server-side usan
 - `(teacher)`: además chequea `session.teacherVerified`.
 - `(staff)`: rol en `{moderator, admin, university_staff}`.
 
-La autorización real se hace en el backend. El guard del frontend existe para UX y evitar requests rechazados. Ver [ADR-0019](../docs/decisions/0019-single-nextjs-app-con-route-groups.md) y [ADR-0023](../docs/decisions/0023-auth-flow-jwt-cookie-layout-guards.md).
+La autorización real se hace en el backend. El guard del frontend existe para UX y evitar requests rechazados. Ver [ADR-0019](../docs/decisions/0019-single-nextjs-app-with-route-groups-per-actor.md) y [ADR-0023](../docs/decisions/0023-auth-flow-jwt-cookie-layout-guards.md).
 
 ### Rutas dentro de `(auth)`
 
@@ -94,7 +94,7 @@ features/<feature>/
 - Tipos cross-feature (ej. `ProblemDetails` para parsear errores RFC 7807, `ResponseCookie` parser) viven en `lib/`, no se duplican en cada feature.
 - Las rutas (`src/app/(auth)/sign-in/page.tsx`, `src/app/(auth)/sign-up/page.tsx`, etc.) son thin wrappers que importan el form del feature. Cada flow auth tiene su propia ruta top-level (US-036); el backend mantiene endpoints separados (sign-in / register / verify-email) sin cambios.
 
-Ver [ADR-0020](../docs/decisions/0020-features-alineadas-con-modulos-backend.md).
+Ver [ADR-0020](../docs/decisions/0020-frontend-features-aligned-with-backend-modules.md).
 
 ## Data fetching: patrón unificado
 
@@ -140,7 +140,7 @@ export const reviewQueries = {
 
 4. **`ReactQueryStreamedHydration`** en `providers.tsx` para streaming de suspense.
 
-5. **Mutations via Server Actions = mutaciones puras** (regla dura, [ADR-0046](../docs/decisions/0046-server-actions-como-mutaciones-puras.md)). El action hace el write y devuelve `{ status }`; **NO** llama `revalidatePath`/`redirect()` adentro (eso embebe el re-render en el stream de la respuesta y cuelga intermitente en prod). El **cliente** reacciona al `status: 'success'` invalidando queries + `router.push`:
+5. **Mutations via Server Actions = mutaciones puras** (regla dura, [ADR-0046](../docs/decisions/0046-server-actions-as-pure-mutations.md)). El action hace el write y devuelve `{ status }`; **NO** llama `revalidatePath`/`redirect()` adentro (eso embebe el re-render en el stream de la respuesta y cuelga intermitente en prod). El **cliente** reacciona al `status: 'success'` invalidando queries + `router.push`:
 ```tsx
 useEffect(() => {
   if (state.status !== 'success') return;
@@ -148,7 +148,7 @@ useEffect(() => {
   router.push('/destino'); // flight GET normal, nunca se cuelga
 }, [state.status]);
 ```
-Si alguien "arregla" un action agregándole `revalidatePath`, reintroduce el bug. Ver [ADR-0046](../docs/decisions/0046-server-actions-como-mutaciones-puras.md).
+Si alguien "arregla" un action agregándole `revalidatePath`, reintroduce el bug. Ver [ADR-0046](../docs/decisions/0046-server-actions-as-pure-mutations.md).
 
 Ver [ADR-0021](../docs/decisions/0021-data-fetching-rsc-tanstack-query.md).
 

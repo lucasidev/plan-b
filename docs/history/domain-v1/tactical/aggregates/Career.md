@@ -47,5 +47,5 @@ Ninguno específico (usa strongly-typed IDs y primitives).
 ## Refs
 
 - BC: [Academic](../../strategic/bounded-contexts.md#academic)
-- ADRs: [ADR-0001](../../../../decisions/0001-multi-universidad-desde-dia-1.md)
+- ADRs: [ADR-0001](../../../../decisions/0001-multi-university-as-root-domain-from-day-1.md)
 - User Stories: [US-001](../../stories/US-001.md), [US-008](../../stories/US-008.md)

@@ -6,7 +6,7 @@
 **Priority**: Medium
 **Effort**: S
 **UC**: 
-**ADR refs**: [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md), [ADR-0038](../../../decisions/0038-release-and-versioning-policy.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md)
+**ADR refs**: [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md), [ADR-0038](../../../decisions/0038-release-and-versioning-policy.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md)
 
 ## Como dev, quiero que `CHANGELOG.md` se actualice solo a partir de Conventional Commits para que mantener el changelog no dependa de memoria humana
 
@@ -66,7 +66,7 @@
 
 - **Loop prevention**: el workflow `changelog.yml` ignora sus propios commits con `if: !startsWith(github.event.head_commit.message, 'docs(changelog):')`. GITHUB_TOKEN ya tiene una protección nativa (commits hechos con él no disparan workflows), pero el filtro `if` es belt-and-suspenders + visibilidad ("este run se skipeó porque…").
 - **Squash and merge**: cuando se mergea con Squash, el único commit en main es el título del PR. Si el título no es Conventional Commit, el script falla al parsear o mapea mal. `pr-title.yml` es la red de seguridad.
-- **Rebase and merge** (default per [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md)): preserva commits individuales. El workflow corre por cada commit pusheado a main individualmente: como cada uno es CC válido y el script es idempotente, no hay duplicación.
+- **Rebase and merge** (default per [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md)): preserva commits individuales. El workflow corre por cada commit pusheado a main individualmente: como cada uno es CC válido y el script es idempotente, no hay duplicación.
 - **Tests embebidos vs vitest**: el archivo `scripts/_test-append-changelog.ts` usa `bun` directo sin vitest API porque vitest todavía no está configurado para `scripts/` (esa setup vive en US-T01-f). Cuando aterrice US-T01, el archivo se renombra a `scripts/append-changelog.test.ts` y se reescribe con `describe`/`it`/`expect`.
 - **`CHANGELOG.md` limpio**: la sección `[Unreleased]` quedó vacía (sólo header). El script crea subsecciones `### Added` / `### Changed` / etc. on-demand cuando aterriza el primer bullet de cada tipo.
 - **Identidad del bot**: por defecto `github-actions[bot]`. Si querés que aparezca como vos, setear `commit_user_name` + `commit_user_email` en el step. No relevante para nuestro caso.
@@ -75,7 +75,7 @@
 ## Refs
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
-- ADRs: [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md), [ADR-0038](../../../decisions/0038-release-and-versioning-policy.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-con-rebase.md)
+- ADRs: [ADR-0037](../../../decisions/0037-changelog-automation-auto-append.md), [ADR-0038](../../../decisions/0038-release-and-versioning-policy.md), [ADR-0026](../../../decisions/0026-git-workflow-github-flow-with-rebase.md)
 - Convenciones: [docs/testing/conventions.md](../../../engineering/testing.md)
 - PR title validator: https://github.com/amannn/action-semantic-pull-request
 - git-auto-commit-action: https://github.com/stefanzweifel/git-auto-commit-action

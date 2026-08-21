@@ -2,7 +2,7 @@
 
 Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y su mapping al frontend. **El contrato es la dirección Boletín** ([ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md), 2026-08-19): papel frío, la evidencia primero, un solo color de alarma.
 
-> **Transición, explícita**: `frontend/src/app/globals.css` todavía sirve la paleta anterior (Apricot Soft, [ADR-0041](../decisions/0041-rediseño-ux-post-claude-design.md)) al chasis en retiro, y los bocetos mid-fi anteriores al ADR quedaron con ella (son estructura, no contrato). Los tokens de este doc aterrizan en `globals.css` con el primer slice del producto nuevo; el hi-fi de las pantallas clave ya los aplica.
+> **Transición, explícita**: `frontend/src/app/globals.css` todavía sirve la paleta anterior (Apricot Soft, [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md)) al chasis en retiro, y los bocetos mid-fi anteriores al ADR quedaron con ella (son estructura, no contrato). Los tokens de este doc aterrizan en `globals.css` con el primer slice del producto nuevo; el hi-fi de las pantallas clave ya los aplica.
 
 ## Los dos invariantes que la paleta carga
 

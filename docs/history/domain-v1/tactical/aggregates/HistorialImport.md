@@ -39,7 +39,7 @@ Sin integration events cross-BC.
 - Root ID: `HistorialImportId`.
 - Lookup primario: por ID.
 - Lookup secundario: por `StudentProfileId` (listar imports del profile), por `Status='pending'` (cola del worker).
-- Persistencia: EF Core schema `enrollments`. Tabla `historial_imports`. `RawPayload` y `Results` son JSONB ([ADR-0006](../../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)).
+- Persistencia: EF Core schema `enrollments`. Tabla `historial_imports`. `RawPayload` y `Results` son JSONB ([ADR-0006](../../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md)).
 
 ### 5. Boundary
 
@@ -53,6 +53,6 @@ Ninguno específico (los enums `Status` y `SourceType` se modelan como columnas)
 ## Refs
 
 - BC: [Enrollments](../../strategic/bounded-contexts.md#enrollments)
-- ADRs: [ADR-0004](../../../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0006](../../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)
+- ADRs: [ADR-0004](../../../../decisions/0004-enrollment-record-stores-facts-not-derived-state.md), [ADR-0006](../../../../decisions/0006-jsonb-only-where-the-shape-is-variable.md)
 - User Stories: [US-024](../../stories/US-024.md), [US-025](../../stories/US-025.md), [US-026](../../stories/US-026.md), [US-027](../../stories/US-027.md)
 - Post-MVP: "Recibir simulación recomendada" fue un placeholder que murió con el planificador (ADR-0063).

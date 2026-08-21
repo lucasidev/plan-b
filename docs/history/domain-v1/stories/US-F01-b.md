@@ -42,4 +42,4 @@ Como tech lead solo-dev, quiero el scaffolding completo del backend (.NET 10, mo
 
 - DoD: [Definition of Done](../../../plan/definition-of-done.md)
 - Use Case: ninguno.
-- ADRs: [ADR-0014](../../../decisions/0014-arquitectura-modular-monolith.md), [ADR-0015](../../../decisions/0015-wolverine-como-mediator-y-message-bus.md), [ADR-0016](../../../decisions/0016-carter-para-endpoints-http.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md), [ADR-0018](../../../decisions/0018-ef-core-writes-dapper-reads.md), [ADR-0025](../../../decisions/0025-dotnet-10-como-runtime-target.md)
+- ADRs: [ADR-0014](../../../decisions/0014-modular-monolith-with-bounded-contexts-as-modules.md), [ADR-0015](../../../decisions/0015-wolverine-as-mediator-message-bus-and-durable-outbox.md), [ADR-0016](../../../decisions/0016-carter-for-http-endpoints.md), [ADR-0017](../../../decisions/0017-persistence-ignorance.md), [ADR-0018](../../../decisions/0018-ef-core-writes-dapper-reads.md), [ADR-0025](../../../decisions/0025-dotnet-10-as-the-backend-runtime-target.md)

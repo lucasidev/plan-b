@@ -54,5 +54,5 @@ Un primer corte (2026-08-18) agrupó por "épica" y partió las pantallas en dos
 
 ## Refs
 
-- [THESIS.md](../THESIS.md); [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (el viraje); [ADR-0072](0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md) (la fuente única y el retiro de las fichas); [ADR-0071](0071-the-visual-language-is-a-bulletin.md) (el lenguaje visual, que vive en `product/`); [ADR-0041](0041-rediseño-ux-post-claude-design.md) (el rediseño anterior, antecedente de la alternativa F); [ADR-0020](0020-features-alineadas-con-modulos-backend.md) (el paralelo con el código).
+- [THESIS.md](../THESIS.md); [ADR-0063](0063-the-product-is-a-pressure-instrument.md) (el viraje); [ADR-0072](0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md) (la fuente única y el retiro de las fichas); [ADR-0071](0071-the-visual-language-is-a-bulletin.md) (el lenguaje visual, que vive en `product/`); [ADR-0041](0041-ux-redesign-after-claude-design.md) (el rediseño anterior, antecedente de la alternativa F); [ADR-0020](0020-frontend-features-aligned-with-backend-modules.md) (el paralelo con el código).
 - Fuentes citadas arriba: SAFe (Enov8), Scrum/Jira (monday.com), story mapping (Easy Agile), estructura de documentación (Archbee), entregables de UX (Toptal), docs-as-code (GitBook, Kong).

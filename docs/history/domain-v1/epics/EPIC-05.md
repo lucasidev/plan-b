@@ -16,10 +16,10 @@ Alumno publica su experiencia de cursada, otros leen, autor edita, terceros repo
 
 ## Decisiones que la condicionan
 
-- [ADR-0005](../../../decisions/0005-reseña-anclada-al-enrollment.md): reseña anclada al enrollment
-- [ADR-0007](../../../decisions/0007-pgvector-implementado-ui-gated-off.md): pgvector diferido hasta que exista consumidor real (revisión 2026-07-26)
-- [ADR-0009](../../../decisions/0009-anonimato-como-regla-de-presentacion.md): anonimato como regla de presentación
-- [ADR-0011](../../../decisions/0011-cascade-on-uphold-sin-reversion-on-restore.md): cascade on uphold, sin reversión on restore
-- [ADR-0012](../../../decisions/0012-edicion-de-resena-solo-desde-published.md): edición de reseña bloqueada mientras la modera un reporte
-- [ADR-0013](../../../decisions/0013-embedding-gated-en-transiciones-a-published.md): embedding gated en transiciones a published
-- [ADR-0028](../../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md): reseñas opcionales
+- [ADR-0005](../../../decisions/0005-review-anchored-to-the-enrollment-record.md): reseña anclada al enrollment
+- [ADR-0007](../../../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md): pgvector diferido hasta que exista consumidor real (revisión 2026-07-26)
+- [ADR-0009](../../../decisions/0009-review-anonymity-is-a-presentation-rule.md): anonimato como regla de presentación
+- [ADR-0011](../../../decisions/0011-cascade-on-uphold-with-no-reversal-on-restore.md): cascade on uphold, sin reversión on restore
+- [ADR-0012](../../../decisions/0012-review-editing-blocked-while-a-report-moderates-it.md): edición de reseña bloqueada mientras la modera un reporte
+- [ADR-0013](../../../decisions/0013-embedding-generation-gated-on-transitions-to-published.md): embedding gated en transiciones a published
+- [ADR-0028](../../../decisions/0028-optional-reviews-with-premium-features-as-reward.md): reseñas opcionales
