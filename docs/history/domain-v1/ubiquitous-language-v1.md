@@ -1,6 +1,6 @@
 # Ubiquitous language de la versión anterior (planificador con reseñas de texto)
 
-> **Historia (2026-08-17)**: estos términos describen la versión anterior del producto, que el código todavía contiene en retiro ([ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md), poda en [STATUS.md](../../STATUS.md)). Se sacaron del [glosario vigente](../../domain/ubiquitous-language.md) para que ese doc hable solo del producto de hoy. No se editan; se van cuando se vaya el código que nombran.
+> **Historia (2026-08-17)**: estos términos describen la versión anterior del producto, que el código todavía contiene en retiro ([ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md), poda en [STATUS.md](../../plan/status.md)). Se sacaron del [glosario vigente](../../product/language.md) para que ese doc hable solo del producto de hoy. No se editan; se van cuando se vaya el código que nombran.
 
 ## Historial del alumno
 
@@ -32,7 +32,7 @@
 | **materia disponible** | Materia del plan que el alumno puede cursar el próximo período: tiene todas sus correlativas `para_cursar` regularizadas o aprobadas, y no la aprobó, regularizó ni la está cursando. |
 | **materia bloqueada** | Materia que no puede cursar porque le falta alguna correlativa `para_cursar`. El sistema siempre informa **cuáles** faltan: "no podés" sin el motivo no le sirve al alumno para decidir qué hacer. |
 | **combinación** | El conjunto de materias de una simulación. Dos combinaciones son la misma si tienen exactamente las mismas materias, sin importar el orden en que se eligieron. |
-| **cohorte** (planificador) | Los alumnos que cursaron **exactamente la misma combinación** de materias en un mismo período. Se retira con el planificador: en el producto nuevo "cohorte" es la camada de ingreso (ver [El producto nuevo](#el-producto-nuevo-qué-recabamos)). |
+| **cohorte** (planificador) | Los alumnos que cursaron **exactamente la misma combinación** de materias en un mismo período. Se retira con el planificador: en el producto nuevo "cohorte" es la camada de ingreso (ver [El producto nuevo](../../product/language.md#el-producto-reseñar-y-publicar)). |
 | **muestra mínima** | Piso de alumnos por debajo del cual no se muestran las tasas de una cohorte (5, [ADR-0047](../../decisions/0047-pass-rate-publico-desde-historial-privado.md)). Con menos, el dato permitiría deducir el resultado académico de un compañero puntual. El **tamaño** de la muestra sí se muestra siempre: un porcentaje sin saber sobre cuántos casos se calculó es peor que no mostrar nada. |
 
 

@@ -5,11 +5,11 @@
 
 ## Contexto
 
-La tesis promete cuatro cosas que no salen de frases sino de trayectoria: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una ([THESIS.md](../THESIS.md), decisión 4). Las stories las reparten entre Valentina (O1-1: nominal, real y de cuántos egresados sale), Silvia (O1-7: duración real y cuántos se reciben, sin vocabulario), Matías (O3-1: por par de materias, cuántos las llevaron juntas y cuántos dejaron una), Diego (O4-8: en qué punto del plan se cae la mayoría), Claudia y la institución (O7-7: la serie, "si mejoré desde que lo publicaron"), y las comparaciones de Dónde estudiarla (O1-2: la misma carrera en varias instituciones; O7-3: "en qué estoy peor que la de al lado").
+La tesis promete cuatro cosas que no salen de frases sino de trayectoria: cuánto tarda la gente de verdad, dónde se cae la mayoría, qué se llevó junto y cuántos dejaron una ([THESIS.md](../THESIS.md), decisión 4). Las stories las reparten entre Valentina (US-127: nominal, real y de cuántos egresados sale), Silvia (US-133: duración real y cuántos se reciben, sin vocabulario), Matías (US-143: por par de materias, cuántos las llevaron juntas y cuántos dejaron una), Diego (US-152: en qué punto del plan se cae la mayoría), Claudia y la institución (US-177: la serie, "si mejoré desde que lo publicaron"), y las comparaciones de Dónde estudiarla (US-128: la misma carrera en varias instituciones; US-174: "en qué estoy peor que la de al lado").
 
 Lo que se recaba estaba cerrado ([ADR-0064](0064-phrases-with-voices-not-scores.md), punto 6): cuándo entraste, cuándo cursaste cada materia (viene con la reseña), si te fuiste cuándo, si te recibiste cuándo; de a uno, nunca como inventario. Con eso solo se sabe en qué **año del plan** se fue el que se fue. No se sabe qué materias tumban gente, ni cuántos dejaron una de un par, ni la aprobación que [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md) llamaba "el dato más objetivo de la página": las tres dependen de un hecho que faltaba, **cómo terminó la cursada**.
 
-Y quedaban tres cabos: qué queda de 0047 (su definición de aprobación, su piso, su fuente privada); "brecha", que el mapa usa junto a los dos números y nadie definió; y el hallazgo G9 de la [revisión del catálogo](../reviews/2026-08-16-catalog.md): la co-cursada no puede salir del plan que la persona marcó para sí, que es privado y nadie consintió publicar.
+Y quedaban tres cabos: qué queda de 0047 (su definición de aprobación, su piso, su fuente privada); "brecha", que el mapa usa junto a los dos números y nadie definió; y el hallazgo G9 de la [revisión del catálogo](../history/reviews/2026-08-16-catalog.md): la co-cursada no puede salir del plan que la persona marcó para sí, que es privado y nadie consintió publicar.
 
 Nada de esto pide inteligencia. Pide contabilidad sobre hechos sueltos unidos por cuenta, y disciplina para no inventar el hecho que falta.
 
@@ -21,7 +21,7 @@ La reseña lleva, además de la materia y el período, **cómo terminó**: la ap
 
 ### Cómo se consigue el hecho que no viene solo
 
-`Me fui (año)` y `me recibí (año)` no aparecen con ninguna reseña. Se piden con una pregunta, una vez, por cuatro caminos: en Reseñar, si el período declarado es viejo y la cuenta no dijo su situación ("¿seguís cursando?" → sí / me recibí, cuándo / me fui, cuándo); en Mi situación, en cualquier momento y sin plan marcado; por **reenganche por mail** a cuentas inactivas, una vez al año, con una sola pregunta respondible desde el mail sin entrar; y en la app, cuando `entré + nominal` ya pasó y la cuenta no dijo nada. `Entré (año)` se pregunta una sola vez, la primera vez que la cuenta reseña una carrera. Nada se pregunta dos veces (O6-2).
+`Me fui (año)` y `me recibí (año)` no aparecen con ninguna reseña. Se piden con una pregunta, una vez, por cuatro caminos: en Reseñar, si el período declarado es viejo y la cuenta no dijo su situación ("¿seguís cursando?" → sí / me recibí, cuándo / me fui, cuándo); en Mi situación, en cualquier momento y sin plan marcado; por **reenganche por mail** a cuentas inactivas, una vez al año, con una sola pregunta respondible desde el mail sin entrar; y en la app, cuando `entré + nominal` ya pasó y la cuenta no dijo nada. `Entré (año)` se pregunta una sola vez, la primera vez que la cuenta reseña una carrera. Nada se pregunta dos veces (US-169).
 
 **El silencio no se infiere.** Quien no dijo es "no dijo o sigue", y esa categoría se publica. No existe "si no reseñó en dos años, se fue" ni "reseñó una de quinto, se recibió".
 
@@ -32,7 +32,7 @@ La reseña lleva, además de la materia y el período, **cómo terminó**: la ap
 3. **Dónde se cae.** Por año del plan, sobre los que se fueron: `me fui − entré + 1` ("6 de cada 10 se fueron en primero o segundo"). Y por materia y período, desde cómo terminó: **abandono de cursada** (dejé sobre todos los que terminaron de alguna forma) y **aprobación** con la definición exacta de 0047, aprobé sobre aprobé más desaprobé, afuera dejé, regular y sigo. Con voces, con Wilson, con serie.
 4. **Co-cursada.** Solo desde reseñas, nunca desde el plan marcado: dos materias reseñadas por la misma cuenta en el mismo período. Por par y período: "40 personas las llevaron juntas; 12 dejaron una". Sin piso, como todo ([ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)). El sesgo (solo cuenta quien reseñó las dos) va en el método.
 5. **La serie.** Cualquier proporción publicada se muestra por el **período en que pasó** (el período de cursada, la fecha del evento), nunca por cuándo se reseñó; cada punto con sus voces y su encogimiento; sin suavizar y sin escala 1 a 5. Con la fecha de publicación y la de la réplica marcadas: es lo que Claudia y la institución necesitan para saber si movió.
-6. **Dónde estudiarla: la misma carrera, lado a lado, dato por dato.** Qué ofertas son "la misma carrera" lo decide el catálogo con una **carrera canónica** curada por nosotros ("Ingeniería en Sistemas" y "en Sistemas de Información" son una o no lo son porque lo decidimos, no por el nombre). Se muestran nominal, real, brecha, egreso de cohortes cerradas, las dos cabeceras (con su gate: "todavía no derivamos" si no llegó), la cobertura y las listas por eje. **Sin compuesto, sin ganador y sin ordenar por valor**: alfabético o por voces; el que quiere ordenar baja el CSV. Es lo único que mantiene "no es un ranking" verdadero. O7-3 se cumple así: frase por frase, no con un puesto.
+6. **Dónde estudiarla: la misma carrera, lado a lado, dato por dato.** Qué ofertas son "la misma carrera" lo decide el catálogo con una **carrera canónica** curada por nosotros ("Ingeniería en Sistemas" y "en Sistemas de Información" son una o no lo son porque lo decidimos, no por el nombre). Se muestran nominal, real, brecha, egreso de cohortes cerradas, las dos cabeceras (con su gate: "todavía no derivamos" si no llegó), la cobertura y las listas por eje. **Sin compuesto, sin ganador y sin ordenar por valor**: alfabético o por voces; el que quiere ordenar baja el CSV. Es lo único que mantiene "no es un ranking" verdadero. US-174 se cumple así: frase por frase, no con un puesto.
 7. **El CSV** gana una segunda tabla con los agregados de trayectoria: por carrera-institución y cohorte; por materia y período; por par y período; con las mismas reglas que la ficha (lo que se descarga es lo que se publica).
 
 ### Cómo se calcula
@@ -49,7 +49,7 @@ Una tabla de hechos por cuenta (`entré`, `me fui`, `me recibí`, cada uno con a
 
 Los hechos sobreviven a la baja de la cuenta, exactos y sin cuenta ([ADR-0044](0044-soft-delete-del-user-con-preservacion-de-corpus.md)): una baja no recalcula una cohorte ni generaliza un año a rango; quien quiera sacar algo lo borra antes, de a uno.
 
-Control de calidad, que es lo único que se parece a inteligencia y no lo es: **consistencia por cuenta** (`recibí ≥ entré`; períodos de cursada dentro de `[entré, recibí o me fui]`; un solo `entré` por carrera), y lo inconsistente no entra al agregado y Método publica cuántas cuentas quedaron afuera y por qué; **procedencia** (BO5-2): las cuentas que el anti-spam marca no suman a ninguna trayectoria; **reproceso**: cada corte recalcula todo desde los hechos, nada se acumula a mano.
+Control de calidad, que es lo único que se parece a inteligencia y no lo es: **consistencia por cuenta** (`recibí ≥ entré`; períodos de cursada dentro de `[entré, recibí o me fui]`; un solo `entré` por carrera), y lo inconsistente no entra al agregado y Método publica cuántas cuentas quedaron afuera y por qué; **procedencia** (US-213): las cuentas que el anti-spam marca no suman a ninguna trayectoria; **reproceso**: cada corte recalcula todo desde los hechos, nada se acumula a mano.
 
 Lo que ningún cálculo arregla, y se declara en cada dato: es **de quienes reseñaron**, nunca "la tasa de egreso de la carrera" (el disclaimer de 0047, ahora regla general del método); la duración real es de **los que se recibieron** (supervivencia); y **es lento**: egreso solo con cohortes cerradas, duración real solo cuando reseñen egresados. El reenganche por mail es lo que lo acorta.
 
@@ -65,7 +65,7 @@ Lo que ningún cálculo arregla, y se declara en cada dato: es **de quienes rese
 
 **E. Dónde estudiarla con un compuesto o ordenado por valor.** Es un ranking con otro nombre, y el producto dice que no lo es. Descartada; el CSV deja ordenar a quien quiera.
 
-**F. No recabar cómo terminó** y bajar O3-1 a "cuántos las llevaron juntas", sin aprobación ni abandono por materia. Un toque menos a cambio de perder los tres datos más citables por materia. Descartada.
+**F. No recabar cómo terminó** y bajar US-143 a "cuántos las llevaron juntas", sin aprobación ni abandono por materia. Un toque menos a cambio de perder los tres datos más citables por materia. Descartada.
 
 **G. Pedir el historial completo** para tener la trayectoria entera de una vez. Es el inventario que la tesis rechazó: nadie lo completa, y el que más tiene para contar es el que menos vuelve. Descartada.
 
@@ -73,7 +73,7 @@ Lo que ningún cálculo arregla, y se declara en cada dato: es **de quienes rese
 
 - **La reseña gana un toque** (cómo terminó), y la tesis lo dice en "qué recabamos". Es la única ampliación de esa capa.
 - **El reenganche por mail pasa a ser infraestructura**, junto con los avisos ([ADR-0040](0040-notifications-como-bounded-context.md)): sin él, el egreso y la duración real tardan años en aparecer. Aun con él, tardan.
-- **Las stories cambian de letra**: O7-7 pierde el "1 a 5"; O3-1, O4-8, O1-1 y O1-7 dicen de dónde sale su dato; O1-2 y O7-3 dicen "lado a lado, sin ordenar"; O8-1 gana la segunda tabla.
+- **Las stories cambian de letra**: US-177 pierde el "1 a 5"; US-143, US-152, US-127 y US-133 dicen de dónde sale su dato; US-128 y US-174 dicen "lado a lado, sin ordenar"; US-180 gana la segunda tabla.
 - **"Brecha" tiene definición** (real menos nominal, en años) y **"cohorte" cambia de significado**: la del planificador ("misma combinación de materias") se retira con él; la nueva es la de siempre, los que entraron el mismo año.
 - **[ADR-0047](0047-pass-rate-publico-desde-historial-privado.md) queda superado del todo**: su definición de aprobación vive acá desde lo declarado; su piso murió en 0066; su fuente privada no existe en el producto nuevo.
 - **El catálogo necesita la carrera canónica** para que Dónde estudiarla sepa qué compara. Es trabajo del equipo, como todo el catálogo.
@@ -87,4 +87,4 @@ La Secretaría de Políticas Universitarias publica el coeficiente **duración r
 
 - [THESIS.md](../THESIS.md), decisión 4, "Qué recabamos" y "Qué publicamos". [ADR-0064](0064-phrases-with-voices-not-scores.md) (la unidad y el encogimiento que acá se aplican a proporciones de personas), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso; el gate de la cabecera que Dónde estudiarla respeta). **Completa** a 0064.
 - [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): la definición de aprobación que sobrevive. [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): una cohorte abierta no publica un cero, no publica.
-- Hallazgos F2 (reenganche) y G9 (co-cursada) de la [revisión adversarial del catálogo](../reviews/2026-08-16-catalog.md).
+- Hallazgos F2 (reenganche) y G9 (co-cursada) de la [revisión adversarial del catálogo](../history/reviews/2026-08-16-catalog.md).

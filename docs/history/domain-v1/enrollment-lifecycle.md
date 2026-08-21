@@ -1,6 +1,6 @@
 # Enrollment Lifecycle (planb)
 
-> **En retiro (2026-08-16)**: este documento describe código que todavía existe y que [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../../STATUS.md).
+> **En retiro (2026-08-16)**: este documento describe código que todavía existe y que [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../../plan/status.md).
 
 Ciclo de vida del `EnrollmentRecord`, la entidad que representa una cursada específica de un alumno (par alumno × materia × cuatrimestre). Es el ancla del historial académico y la precondición del sistema de reseñas.
 
@@ -80,9 +80,9 @@ El `approval_method` dicta qué campos deben o no deben estar poblados. La razó
 | `final_libre`                                                               | **NULL**        | NOT NULL  | No cursó comisión, rindió libre en un cuatrimestre específico.        |
 | `equivalencia`                                                              | **NULL**        | **NULL**  | Reconocimiento académico sin cursada ni término.                      |
 
-**Por qué la comisión es opcional en las tres de cursada**, si semánticamente siempre hubo una: el historial académico que sube el alumno (SIU y equivalentes) lista materia, fecha, nota y condición, y en ningún lado la comisión. Exigirla hacía que el import de [US-014](../../domain/user-stories/US-014.md) no pudiera registrar ninguna materia aprobada cursando, que es el caso mayoritario de cualquier historial real. Sin comisión la cursada no es reseñable (el feed de pendientes filtra `commission_id IS NOT NULL` y el publish corta con `EnrollmentWithoutCommission`): el dato faltante degrada una función y no corrompe ninguna.
+**Por qué la comisión es opcional en las tres de cursada**, si semánticamente siempre hubo una: el historial académico que sube el alumno (SIU y equivalentes) lista materia, fecha, nota y condición, y en ningún lado la comisión. Exigirla hacía que el import de [US-014](stories/US-014.md) no pudiera registrar ninguna materia aprobada cursando, que es el caso mayoritario de cualquier historial real. Sin comisión la cursada no es reseñable (el feed de pendientes filtra `commission_id IS NOT NULL` y el publish corta con `EnrollmentWithoutCommission`): el dato faltante degrada una función y no corrompe ninguna.
 
-Estas invariantes están enforceadas como CHECKs en el data model (ver [data-model.md#entity-enrollmentrecord](../../architecture/data-model.md#entity-enrollmentrecord)).
+Estas invariantes están enforceadas como CHECKs en el data model (ver [data-model.md#entity-enrollmentrecord](../../engineering/data-model.md#entity-enrollmentrecord)).
 
 ## Reglas específicas del lifecycle
 
@@ -206,5 +206,5 @@ sequenceDiagram
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs                   | UC-013 (carga manual), UC-014 (import), UC-015 (edit), UC-017 (precondición: status != cursando).                                                                                                                                                                                                                                |
 | ADRs                  | [ADR-0002](../../decisions/0002-versionado-de-planes-de-estudio.md), [ADR-0003](../../decisions/0003-correlativas-con-dos-tipos.md), [ADR-0004](../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0006](../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md). |
-| Data model            | [EnrollmentRecord + HistorialImport](../../architecture/data-model.md#context-student-history).                                                                                                                                                                                                                                     |
+| Data model            | [EnrollmentRecord + HistorialImport](../../engineering/data-model.md#context-student-history).                                                                                                                                                                                                                                     |
 | Lifecycle dependiente | [review-lifecycle.md](review-lifecycle.md).                                                                                                                                                                                                                                                                                      |

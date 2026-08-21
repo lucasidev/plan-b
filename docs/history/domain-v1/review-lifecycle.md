@@ -1,6 +1,6 @@
 # Review Lifecycle (planb)
 
-> **En retiro (2026-08-16), con una parte que sobrevive**: la mitad de moderación (reportes, uphold/dismiss, cascadas) es la que BO2 y BO5 del mapa retoman; se porta al lifecycle del sistema nuevo cuando ese diseño exista. El resto (la reseña texto-libre y sus estados): este documento describe código que todavía existe y que [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../../STATUS.md).
+> **En retiro (2026-08-16), con una parte que sobrevive**: la mitad de moderación (reportes, uphold/dismiss, cascadas) es la que BO2 y BO5 del mapa retoman; se porta al lifecycle del sistema nuevo cuando ese diseño exista. El resto (la reseña texto-libre y sus estados): este documento describe código que todavía existe y que [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) declara en retiro con la versión anterior del producto. Sigue siendo válido como descripción de ese código mientras viva; se elimina con la poda registrada en [STATUS.md](../../plan/status.md).
 
 Ciclo de vida de una reseña desde su publicación hasta su eventual remoción o restauración. Cubre:
 
@@ -236,4 +236,4 @@ En ningún momento la API expone `enrollment.student_id` o datos derivados del a
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UCs        | UC-017 (publicar), UC-018 (editar), UC-019 (reportar), UC-050 (cola de moderación), UC-051 (resolver report), UC-052 (restaurar).                                                                          |
 | ADRs       | [ADR-0005](../../decisions/0005-reseña-anclada-al-enrollment.md), [ADR-0007](../../decisions/0007-pgvector-implementado-ui-gated-off.md), [ADR-0009](../../decisions/0009-anonimato-como-regla-de-presentacion.md), [ADR-0032](../../decisions/0032-edit-destructive-enrollment-invalida-review.md). |
-| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`](../../architecture/data-model.md#context-reviews--moderation).                                                             |
+| Data model | [`Review`, `ReviewReport`, `TeacherResponse`, `ReviewAuditLog`](../../engineering/data-model.md#context-reviews--moderation).                                                             |

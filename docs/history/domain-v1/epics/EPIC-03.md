@@ -9,9 +9,9 @@ El alumno carga y mantiene su historial: qué cursó, cuándo, con qué resultad
 
 ## User Stories
 
-- [US-013](../../../domain/user-stories/US-013.md): Cargar historial manual
-- [US-014](../../../domain/user-stories/US-014.md): Importar historial desde PDF/texto
-- [US-015](../../../domain/user-stories/US-015.md): Editar entrada del historial
+- [US-013](../stories/US-013.md): Cargar historial manual
+- [US-014](../stories/US-014.md): Importar historial desde PDF/texto
+- [US-015](../stories/US-015.md): Editar entrada del historial
 
 ## Decisiones que la condicionan
 

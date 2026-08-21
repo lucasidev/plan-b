@@ -97,7 +97,7 @@ Status quo.
 ## Cuándo NO migrar a App token (contra-caso documentado, re-evaluado)
 
 > **Re-evaluación 2026-07-10: el contra-caso caducó.** El ruleset de `main` (ver
-> [`git-workflow.md`](../operations/git-workflow.md)) bloquea todos los pushes directos a main, y
+> [`git-workflow.md`](../engineering/git-workflow.md)) bloquea todos los pushes directos a main, y
 > GitHub no permite dar bypass a su app "GitHub Actions" en repos personales (ni por API, que devuelve
 > 422 "must be part of the ruleset source or owner organization", ni por UI, donde no aparece en el
 > picker). O sea: el push con `GITHUB_TOKEN` de `changelog.yml` quedó bloqueado sin excepción posible.

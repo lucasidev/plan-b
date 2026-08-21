@@ -9,10 +9,10 @@ Alumno publica su experiencia de cursada, otros leen, autor edita, terceros repo
 
 ## User Stories
 
-- [US-017](../../../domain/user-stories/US-017.md): Publicar reseña
-- [US-018](../../../domain/user-stories/US-018.md): Editar reseña propia
-- [US-019](../../../domain/user-stories/US-019.md): Reportar reseña
-- [US-020](../../../domain/user-stories/US-020.md): Ver mis reports
+- [US-017](../stories/US-017.md): Publicar reseña
+- [US-018](../stories/US-018.md): Editar reseña propia
+- [US-019](../stories/US-019.md): Reportar reseña
+- [US-020](../stories/US-020.md): Ver mis reports
 
 ## Decisiones que la condicionan
 

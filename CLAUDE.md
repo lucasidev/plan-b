@@ -2,9 +2,9 @@
 
 Instrumento de presión estudiantil sobre las universidades argentinas: convierte lo que los alumnos saben por haberlo vivido (hoy disperso en grupos y pasillos) en datos agregados que aguantan una discusión. Dos ejes por cursada que nunca se mezclan (exigencia y gestión), publicados como frases con la proporción de voces que las sostiene y no como puntajes; la atribución la decide el eje (lo exigente es la carrera siendo dura, lo mal gestionado es alguien fallando); testimonio por frases curadas; lectura sin cuenta. Proyecto Final de la Tecnicatura Universitaria en Desarrollo y Calidad de Software (UNSTA).
 
-La tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). **El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro**: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md) y la poda se planifica en [`docs/STATUS.md`](docs/STATUS.md).
+La tesis completa, que gobierna todo lo demás: [`docs/THESIS.md`](docs/THESIS.md). **El código de este repo contiene además la versión anterior del producto (el planificador de cuatrimestre) en retiro**: el viraje está registrado en [ADR-0063](docs/decisions/0063-the-product-is-a-pressure-instrument.md) y la poda se planifica en [`docs/plan/status.md`](docs/plan/status.md).
 
-Detalle del dominio: [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md).
+Detalle del dominio: [`docs/product/language.md`](docs/product/language.md).
 
 ## Cultura de ingeniería
 
@@ -64,15 +64,16 @@ plan-b/
 │   └── tests/Planb.IntegrationTests/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/
-├── docs/
-│   ├── decisions/           ADRs (MADR), fuente de verdad de decisiones
-│   ├── domain/              Ubiquitous language, casos de uso, lifecycles
-│   ├── architecture/        ERD, data model
-│   ├── testing/             Convenciones cross-stack de testing (ADR-0036)
-│   ├── operations/          Playbooks operacionales (rollback, ...)
-│   ├── epics/               Una carpeta por épica: sus stories (única copia), flujo en mermaid, pantallas propias con ficha y boceto (ADR-0070)
-│   ├── reviews/             Revisiones y auditorías: hallazgos con ID y estado
-│   └── history/             El ático: lo que describía la versión anterior
+├── docs/                    Cinco carpetas, una pregunta cada una (ADR-0070)
+│   ├── THESIS.md            ¿qué es y qué no hace? La tesis gobierna todo lo demás
+│   ├── product/             ¿qué hace y para quién? Personas, glosario, frases, lenguaje
+│   │                        visual, y una carpeta por épica con TODO lo suyo adentro:
+│   │                        sus stories (una por archivo), su flujo en mermaid y sus
+│   │                        pantallas con ficha y boceto
+│   ├── engineering/         ¿cómo está construido? ERD, Redis, testing, git, rollback, deploy
+│   ├── decisions/           ¿por qué? ADRs (MADR), en orden cronológico
+│   ├── plan/                ¿cuándo? Los sprints con el trabajo de cada story, y el DoD
+│   └── history/             ¿qué fue? El ático de la versión anterior, sin editar
 ├── scripts/                 TS scripts (bun): no usar bash
 ├── Justfile                 Task runner (todas las operaciones comunes)
 ├── lefthook.yml             Git hooks
@@ -84,9 +85,9 @@ plan-b/
 - **Código en inglés** (clases, métodos, tablas, rutas, identificadores). **Comentarios y docstrings en español rioplatense** (así razona el equipo; el código no). **UI en español rioplatense**. Error messages internos en inglés.
 - **Conventional Commits** enforceado por lefthook commit-msg (`bun scripts/check-commit-msg.ts`). Formato: `type(scope): descripción`. Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert. Los commits alimentan `CHANGELOG.md` automáticamente vía un workflow GHA que appendea bullets a `[Unreleased]` en cada merge a main ([ADR-0037](docs/decisions/0037-changelog-automation-auto-append.md)). **No editar `CHANGELOG.md` a mano.**
 - **Versioning**: pre-deploy no hay versiones ni releases. Tags narrativos manuales (`presentacion-fase-2-...`) permitidos para hitos. Política completa en [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md); revisar cuando aterrice primer deploy.
-- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). **Sin US numbers en el branch name** (las US van en commit body o PR body). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md) (decisión) y [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md) (bitácora operacional con anti-patterns).
+- **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). **Sin US numbers en el branch name** (las US van en commit body o PR body). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-con-rebase.md) (decisión) y [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md) (bitácora operacional con anti-patterns).
 - **Decisiones con alternativas reales → ADR** en `docs/decisions/NNNN-titulo.md`. Ver [`docs/decisions/README.md`](docs/decisions/README.md) para criterios.
-- **Gestión del proyecto (US / epics / sprints)**: **el tracker es el repo**: [`docs/STATUS.md`](docs/STATUS.md) (sprints, foco, estado), [`docs/domain/user-stories.md`](docs/domain/user-stories.md) (el catálogo: el índice de stories por ID y las reglas; la letra de cada story vive en su épica, [`docs/epics/`](docs/epics/README.md)) y una ficha `US-NNN.md` por story en sprint, con su `Status` en el header. Notion se dejó de usar el 2026-08-18: no se sincroniza, no se crean pages, y lo que quedó ahí es historia. **Al mergear un PR, el que mergea actualiza el `Status` de la ficha y STATUS.md en el mismo PR.** Lecciones operativas en [`docs/operations/lessons-learned.md`](docs/operations/lessons-learned.md).
+- **Gestión del proyecto**: **la story vive en su épica** (`docs/product/<epic>/stories/US-NNN-slug.md`), con su criterio de aceptación y sin estado de gestión. El tracker es [`docs/plan/status.md`](docs/plan/status.md), que la **cita por ID** y le agrega el sprint, las tareas y el contrato técnico ([ADR-0072](docs/decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)). **El ID no cambia nunca y no lleva semántica**: la story no se parte por razones de ejecución, se parte el trabajo. Formato y reglas en [`docs/plan/story-template.md`](docs/plan/story-template.md). Notion se dejó de usar el 2026-08-18: no se sincroniza, no se crean pages, y lo que quedó ahí es historia. **Al mergear un PR, el que mergea actualiza el estado de la story en `status.md`, en el mismo PR.** Lecciones operativas en [`docs/engineering/lessons-learned.md`](docs/engineering/lessons-learned.md).
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
 - **Scripts en TypeScript** (`bun`), no en bash. Consistencia.
 - **No referenciar paths locales, proyectos privados externos, ni secrets en código/docs.**
@@ -112,14 +113,14 @@ just ci              # Las mismas gates que corre GitHub Actions
 Las cosas críticas para entender el sistema antes de programar:
 
 1. [`docs/THESIS.md`](docs/THESIS.md). La tesis del producto: qué es, qué no hace, la posición tomada. Todo lo demás se lee contra esto.
-2. [`docs/domain/ubiquitous-language.md`](docs/domain/ubiquitous-language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
-3. [`docs/architecture/data-model.md`](docs/architecture/data-model.md). ERD consolidado por bounded context.
+2. [`docs/product/language.md`](docs/product/language.md). Glosario de términos del dominio. Antes de inventar un nombre, chequear acá.
+3. [`docs/engineering/data-model.md`](docs/engineering/data-model.md). ERD consolidado por bounded context.
 4. [`docs/decisions/`](docs/decisions). ADRs (MADR) del proyecto. Antes de decidir algo estructural, buscar si ya hay un ADR relevante.
-5. [`docs/testing/conventions.md`](docs/testing/conventions.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
-6. [`docs/operations/rollback.md`](docs/operations/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
-7. [`docs/operations/git-workflow.md`](docs/operations/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
-8. [`docs/design/design-system.md`](docs/design/design-system.md). Contrato visual del producto (paleta, tipografía, tokens y su mapping al frontend). Antes de tocar visuales, chequear acá. Qué se construye lo dicen las user stories y las personas (cada story en su épica, [`docs/epics/`](docs/epics/README.md); el índice en [`docs/domain/user-stories.md`](docs/domain/user-stories.md); las personas en [`docs/domain/user-personas.md`](docs/domain/user-personas.md)); el [product-map](docs/design/product-map.md) es el índice orientativo de pantallas y flujos, no un contrato de UX/UI. Los canvas (el del producto y los de la versión anterior) están absorbidos y congelados en `docs/history/`.
-9. [`docs/STATUS.md`](docs/STATUS.md). Tracker operativo por sprints (cadencia, foco y estado de cada uno) + las convenciones del sistema de US: numeración `US-NNN[-x]` (sufijos `-b/-f/-i/-t`), la US como incremento de valor, y el parent (`US-NNN`) que se reemplaza por subdivisiones al entrar a sprint. Catálogo en [`docs/domain/user-stories.md`](docs/domain/user-stories.md), épicas en [`docs/epics/`](docs/epics/README.md), plantilla en [`docs/domain/us-template.md`](docs/domain/us-template.md), Definition of Done en [`docs/domain/definition-of-done.md`](docs/domain/definition-of-done.md).
+5. [`docs/engineering/testing.md`](docs/engineering/testing.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
+6. [`docs/engineering/rollback.md`](docs/engineering/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
+7. [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
+8. [`docs/product/design-system.md`](docs/product/design-system.md). Contrato visual del producto (paleta, tipografía, tokens y su mapping al frontend). Antes de tocar visuales, chequear acá. Qué se construye lo dicen las stories y las personas, que viven juntos en [`docs/product/`](docs/product/README.md): la letra de cada story en su épica, las [personas](docs/product/personas.md) y el índice de las 34 pantallas en [`docs/product/README.md`](docs/product/README.md). Los canvas y el mapa del que salió todo están congelados en [`docs/history/`](docs/history).
+9. [`docs/plan/status.md`](docs/plan/status.md). Tracker operativo por sprints: cadencia, foco, qué entró y qué quedó, y el trabajo de cada story planificada. El formato de una story y las reglas de su ID están en [`docs/plan/story-template.md`](docs/plan/story-template.md); el Definition of Done, en [`docs/plan/definition-of-done.md`](docs/plan/definition-of-done.md).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).
 

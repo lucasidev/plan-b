@@ -82,4 +82,4 @@ Se argumentó a favor: nadie elige universidad con planb (ya está inscripto, la
 - [ADR-0047](0047-pass-rate-publico-desde-historial-privado.md): piso de muestra y disclaimer de auto-reporte.
 - [ADR-0054](0054-metrica-sin-sustento-viaja-null-nunca-cero.md): la métrica sin sustento viaja `null`, nunca su valor neutro.
 - [ADR-0060](0060-review-names-the-teacher-it-remembers.md): la reseña guarda siempre el nombre del docente, resuelto o no.
-- US: [US-098](../domain/user-stories/US-098.md) implementa el agregado por comisión y su lectura en el picker.
+- US: [US-098](../history/domain-v1/stories/US-098.md) implementa el agregado por comisión y su lectura en el picker.

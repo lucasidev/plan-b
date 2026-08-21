@@ -9,8 +9,8 @@ Admin crea moderadores, otros admins, staff universitario. No hay auto-registro 
 
 ## User Stories
 
-- [US-067](../../../domain/user-stories/US-067.md): Crear cuentas staff
-- [US-058](../../../domain/user-stories/US-058.md): Deshabilitar cuenta member (compartido con EPIC-02)
+- [US-067](../stories/US-067.md): Crear cuentas staff
+- [US-058](../stories/US-058.md): Deshabilitar cuenta member (compartido con EPIC-02)
 
 ## Decisiones que la condicionan
 

@@ -7,7 +7,7 @@ import { clearForgotPasswordRateLimits } from '../helpers/redis';
  * E2E happy path + edge cases del flow forgot/reset password (US-033).
  *
  * Migrado del throwaway que escribí durante US-033. Cubre lo que en su
- * momento validamos a mano + lo que está en `docs/domain/user-stories/US-033-i.md`.
+ * momento validamos a mano + lo que está en `docs/history/domain-v1/stories/US-033-i.md`.
  *
  * Diseño:
  * - El happy path se concentra en validar el FLUJO completo (sign-in →

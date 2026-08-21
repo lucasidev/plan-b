@@ -12,7 +12,7 @@ Tres hechos forzaron la decisión:
 
 2. **El gap se hizo visible en US-033** (forgot/reset password). Es la primera US que toca múltiples páginas frontend con redirects, query params, banner temporal y server actions encadenadas. Para validarla antes de mergear hubo que escribir un Playwright spec ad-hoc, correrlo una vez, y borrarlo. Eso prueba que el feature anduvo en ese momento; no protege a la próxima persona que cambie la pieza.
 
-3. **Cada nueva US frontend va a tener este problema mientras no haya infra**. Sin testing institucionalizado, "QA" es eyeballeo manual en browser por slice. Eso escala mal: cuando un cambio en feature A rompe feature B, lo descubrimos cuando volvemos a tocar B (días o semanas después) en lugar de en el PR que rompe.
+3. **Cada nueva US frontend va a tener este problema mientras no haya infra**. Sin testing institucionalizado, "QA" es eyeballeo manual en browser por requerimiento. Eso escala mal: cuando un cambio en feature A rompe feature B, lo descubrimos cuando volvemos a tocar B (días o semanas después) en lugar de en el PR que rompe.
 
 [ADR-0024](0024-dev-tooling-stack.md) ya había elegido vitest + Playwright como tooling. Lo que falta es institucionalizar **qué se testea con qué, en qué capa, con qué convenciones, y cómo eso entra a CI**. Eso es esta ADR.
 
@@ -201,7 +201,7 @@ Considerada y descartada. La regla "% cubierto" optimiza para tests que ejercen 
 
 ## Implementación
 
-Las US para implementar esta decisión viven en `docs/domain/user-stories/` con prefijo `US-T`:
+Las US para implementar esta decisión viven en `docs/plan/stories/` con prefijo `US-T`:
 
 - **US-T01-f**: Frontend unit/component testing infra (vitest + Testing Library + sample tests por capa).
 - **US-T02-f**: Frontend E2E infra (Playwright config permanente + e2e helpers + migración del spec de US-033 + CI job on-demand).
@@ -216,5 +216,5 @@ Las T-stories son **non-blocking**: pueden aterrizar en paralelo a features regu
 - [ADR-0024](0024-dev-tooling-stack.md): tooling stack (parcialmente superseded por esta ADR).
 - [ADR-0027](0027-integration-tests-shared-postgres.md): integration tests pattern (vigente).
 - [ADR-0037](0037-changelog-automation-auto-append.md): changelog automation (companion).
-- [docs/testing/conventions.md](../testing/conventions.md): living how-to.
+- [docs/testing/conventions.md](../engineering/testing.md): living how-to.
 - [.github/pull_request_template.md](../../.github/pull_request_template.md): checklist por PR.

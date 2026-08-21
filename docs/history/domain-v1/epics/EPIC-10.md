@@ -9,7 +9,7 @@ University staff ve panel agregado de su universidad: reseñas por materia/docen
 
 ## User Stories
 
-- [US-008](../../../domain/user-stories/US-008.md): Ver dashboard institucional
+- [US-008](../stories/US-008.md): Ver dashboard institucional
 
 ## Decisiones que la condicionan
 

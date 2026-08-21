@@ -67,7 +67,7 @@ Aplicable en todas las etapas. Un git tag es un puntero a un commit; no implica 
 - **Sin formato fijo**. El nombre debe ser legible, idealmente con fecha si es presentación. Sin prefijo `v` (eso queda reservado para versiones futuras).
 - **Manual**. No hay automatización. Un humano decide cuándo y por qué.
 - **Pusheable**. `git push origin <tag>` para que aparezca en GitHub. Útil porque la pestaña "Tags" se vuelve la línea de tiempo del proyecto.
-- **No entran al CHANGELOG**. El CHANGELOG es una bitácora de commits/PRs, no de hitos del proyecto. Los hitos viven como tags + (opcionalmente) menciones en el README o en una sección "Highlights" de `docs/STATUS.md`.
+- **No entran al CHANGELOG**. El CHANGELOG es una bitácora de commits/PRs, no de hitos del proyecto. Los hitos viven como tags + (opcionalmente) menciones en el README o en una sección "Highlights" de `docs/plan/status.md`.
 - **No abren un GitHub Release**. Si quisieras notas adjuntas al hito, escribís un doc en `docs/` y lo linkeás. La pestaña "Releases" del repo se mantiene vacía hasta que cambiemos de etapa.
 
 **No autorizados (anti-patterns)**:

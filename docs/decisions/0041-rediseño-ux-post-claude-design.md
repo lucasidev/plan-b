@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Después de cerrar el slice de auth + cleanup + StudentProfile en S1, hicimos una sesión completa de rediseño con claude-design (claude.ai/design). El bundle exportado vive en `docs/design/reference/` (versión vieja del mockup) y la nueva iteración produjo el design canvas `plan-b direcciones.html` con 12 secciones consolidadas:
+Después de cerrar el requerimiento de auth + cleanup + StudentProfile en S1, hicimos una sesión completa de rediseño con claude-design (claude.ai/design). El bundle exportado vive en `docs/design/reference/` (versión vieja del mockup) y la nueva iteración produjo el design canvas `plan-b direcciones.html` con 12 secciones consolidadas:
 
 ⓪ Design System · ① Landing · ② Auth · ③ Onboarding · ④ Inicio · ⑤ Mi carrera · ⑥ Planificar · ⑦ Reseñas · ⑧ Rankings · ⑨ Búsqueda global · ⑩ Cuenta · ⑪ Soporte
 
@@ -189,27 +189,27 @@ Sin "v0.2" en el logo (era artefacto del canvas, no del producto).
 El alcance por sprint está cerrado; el orden interno de cada sprint se afina al planificar.
 
 **S2: Auth + Onboarding + Inicio + Mi carrera shell**
-- [US-036](../domain/user-stories/US-036.md): Auth rebuild (4 rutas separadas).
-- [US-037](../domain/user-stories/US-037.md): Onboarding 4 pasos.
-- [US-044](../domain/user-stories/US-044.md): Inicio v2 con pregunta dominante.
-- [US-045](../domain/user-stories/US-045.md): Mi carrera shell + 5 tabs con stub data. **Backend de Academic CRUD queda como deuda diferida**: se hace después del shell. Lucas decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
+- [US-036](../history/domain-v1/stories/US-036.md): Auth rebuild (4 rutas separadas).
+- [US-037](../history/domain-v1/stories/US-037.md): Onboarding 4 pasos.
+- [US-044](../history/domain-v1/stories/US-044.md): Inicio v2 con pregunta dominante.
+- [US-045](../history/domain-v1/stories/US-045.md): Mi carrera shell + 5 tabs con stub data. **Backend de Academic CRUD queda como deuda diferida**: se hace después del shell. Lucas decide en planning si entra en S2 o se difiere a S3 según cómo venga el sprint.
 
 **S3: Planificar + Mi perfil + self-disable**
-- [US-046](../domain/user-stories/US-046.md): Planificar shell + 2 tabs + nudge de promoción manual.
-- [US-047](../domain/user-stories/US-047.md): Mi perfil (view + edit + foto, acceso desde menú del avatar).
-- [US-075](../domain/user-stories/US-075.md): Member self-disable (zona peligrosa de Mi perfil).
+- [US-046](../history/domain-v1/stories/US-046.md): Planificar shell + 2 tabs + nudge de promoción manual.
+- [US-047](../history/domain-v1/stories/US-047.md): Mi perfil (view + edit + foto, acceso desde menú del avatar).
+- [US-075](../history/domain-v1/stories/US-075.md): Member self-disable (zona peligrosa de Mi perfil).
 
 **S4: Reseñas + Rankings**
-- [US-017](../domain/user-stories/US-017.md), [US-018](../domain/user-stories/US-018.md), [US-019](../domain/user-stories/US-019.md), [US-020](../domain/user-stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
-- [US-048](../domain/user-stories/US-048.md): Reseñas shell + 3 tabs.
-- [US-049](../domain/user-stories/US-049.md): Editor de reseña 6 campos numerados con preview vivo.
-- [US-057](../domain/user-stories/US-057.md): Rankings top 10 paginado.
+- [US-017](../history/domain-v1/stories/US-017.md), [US-018](../history/domain-v1/stories/US-018.md), [US-019](../history/domain-v1/stories/US-019.md), [US-020](../history/domain-v1/stories/US-020.md): Backend completo de reseñas (publicar / editar / reportar / ver mis reports).
+- [US-048](../history/domain-v1/stories/US-048.md): Reseñas shell + 3 tabs.
+- [US-049](../history/domain-v1/stories/US-049.md): Editor de reseña 6 campos numerados con preview vivo.
+- [US-057](../history/domain-v1/stories/US-057.md): Rankings top 10 paginado.
 
 **S5: Búsqueda global + Ajustes + Soporte**
-- [US-056](../domain/user-stories/US-056.md): Búsqueda global topbar dropdown (Meilisearch).
-- [US-072](../domain/user-stories/US-072.md): Ajustes (notificaciones / privacidad / idioma / tema).
-- [US-073](../domain/user-stories/US-073.md): Ayuda (FAQ + contacto soporte).
-- [US-074](../domain/user-stories/US-074.md): Sobre plan-b (página informacional + créditos).
+- [US-056](../history/domain-v1/stories/US-056.md): Búsqueda global topbar dropdown (Meilisearch).
+- [US-072](../history/domain-v1/stories/US-072.md): Ajustes (notificaciones / privacidad / idioma / tema).
+- [US-073](../history/domain-v1/stories/US-073.md): Ayuda (FAQ + contacto soporte).
+- [US-074](../history/domain-v1/stories/US-074.md): Sobre plan-b (página informacional + créditos).
 
 **Backlog open (sin sprint asignado)**:
 - US-001 a US-004 (catálogo público), US-013/14/15 (historial backend), US-016 + US-023..027 (simulación + planning storage backend), US-030 a US-032 + US-040/041 + US-069 (claim docente), US-050..053 (moderación), US-060..065 (backoffice catálogo), US-067 (cuentas staff), US-058 (admin/mod disable), US-008 (dashboard institucional).

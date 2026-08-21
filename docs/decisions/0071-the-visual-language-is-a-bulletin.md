@@ -32,8 +32,8 @@ Ocho direcciones sobre la misma pantalla, exploradas el 2026-08-19 (los artboard
 
 ## Consecuencias
 
-- **[`docs/design/design-system.md`](../design/design-system.md) se reescribe** con esta paleta, tipografía y forma como contrato, en el mismo commit.
-- **El hi-fi de las pantallas clave aplica este contrato** (en el `sketch.html` de cada una, como fija [ADR-0070](0070-product-docs-group-by-epic-one-story-per-epic-screens-owned-or-shared-and-design-as-text.md): git guarda el mid-fi).
+- **[`docs/design/design-system.md`](../product/design-system.md) se reescribe** con esta paleta, tipografía y forma como contrato, en el mismo commit.
+- **El hi-fi de las pantallas clave aplica este contrato** (en el `sketch.html` de cada una, como fija [ADR-0070](0070-product-requirements-are-vertical-by-capability-and-design-is-text.md): git guarda el mid-fi).
 - **Los bocetos mid-fi existentes no se repintan**: son estructura, no contrato visual (sus fichas ya lo dicen), y quedaron con Apricot. Repintar 40 bocetos es ceremonia; el contrato lo marca este ADR.
 - **`frontend/src/app/globals.css` no se toca todavía**: sigue Apricot sirviendo al chasis en retiro. Los tokens nuevos aterrizan con el primer slice del producto nuevo (o un PR de tokens propio si conviene antes), y el design system documenta la transición para que el drift sea explícito y no accidente.
 - **Instrument Serif sale del contrato** (la reemplaza Newsreader itálica); Geist y Plex Mono se conservan.
@@ -41,5 +41,5 @@ Ocho direcciones sobre la misma pantalla, exploradas el 2026-08-19 (los artboard
 
 ## Refs
 
-- [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md) (los invariantes que el contrato visual carga). [ADR-0070](0070-product-docs-group-by-epic-one-story-per-epic-screens-owned-or-shared-and-design-as-text.md) (dónde vive el hi-fi). [ADR-0041](0041-rediseño-ux-post-claude-design.md) (el contrato anterior).
-- Personas: Rocío y Silvia ([user-personas](../domain/user-personas.md)), las que esta dirección prioriza; Lucía, cuyo costo se asume y se compensa en el copy.
+- [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md) (los invariantes que el contrato visual carga). [ADR-0070](0070-product-requirements-are-vertical-by-capability-and-design-is-text.md) (dónde vive el hi-fi). [ADR-0041](0041-rediseño-ux-post-claude-design.md) (el contrato anterior).
+- Personas: Rocío y Silvia ([user-personas](../product/personas.md)), las que esta dirección prioriza; Lucía, cuyo costo se asume y se compensa en el copy.

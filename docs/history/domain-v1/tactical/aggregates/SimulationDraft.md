@@ -59,4 +59,4 @@ Sin integration events cross-BC en MVP. Recomendación de simulaciones (post-MVP
 
 - BC: [Planning](../../strategic/bounded-contexts.md#planning)
 - ADRs: [ADR-0028](../../../../decisions/0028-resenas-opcionales-y-premium-features-como-reward.md), [ADR-0029](../../../../decisions/0029-planning-bc-separado.md)
-- User Stories: [US-040](../../../../domain/user-stories/US-040.md), [US-041](../../../../domain/user-stories/US-041.md), [US-060](../../../../domain/user-stories/US-060.md), [US-061](../../../../domain/user-stories/US-061.md), [US-062](../../../../domain/user-stories/US-062.md), [US-063](../../../../domain/user-stories/US-063.md), [US-064](../../../../domain/user-stories/US-064.md), [US-065](../../../../domain/user-stories/US-065.md), [US-069](../../../../domain/user-stories/US-069.md)
+- User Stories: [US-040](../../stories/US-040.md), [US-041](../../stories/US-041.md), [US-060](../../stories/US-060.md), [US-061](../../stories/US-061.md), [US-062](../../stories/US-062.md), [US-063](../../stories/US-063.md), [US-064](../../stories/US-064.md), [US-065](../../stories/US-065.md), [US-069](../../stories/US-069.md)

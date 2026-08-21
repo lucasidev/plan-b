@@ -58,4 +58,4 @@ Ninguno específico hoy. Cuando se incorporen VerificationTokens propios, hereda
 
 - BC: [Identity](../../strategic/bounded-contexts.md#identity)
 - ADRs: [ADR-0008](../../../../decisions/0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0033](../../../../decisions/0033-verification-token-como-child-entity.md)
-- User Stories: [US-017](../../../../domain/user-stories/US-017.md), [US-018](../../../../domain/user-stories/US-018.md), [US-019](../../../../domain/user-stories/US-019.md), [US-020](../../../../domain/user-stories/US-020.md), [US-021-b](../../../../domain/user-stories/US-021-b.md), [US-021-f](../../../../domain/user-stories/US-021-f.md), [US-022-b](../../../../domain/user-stories/US-022-b.md), [US-022-i](../../../../domain/user-stories/US-022-i.md)
+- User Stories: [US-017](../../stories/US-017.md), [US-018](../../stories/US-018.md), [US-019](../../stories/US-019.md), [US-020](../../stories/US-020.md), [US-021-b](../../stories/US-021-b.md), [US-021-f](../../stories/US-021-f.md), [US-022-b](../../stories/US-022-b.md), [US-022-i](../../stories/US-022-i.md)

@@ -10,7 +10,7 @@ Sos un revisor senior hostil, en contexto fresco: no viste el razonamiento que p
 Mirá el diff (`git diff`, o el que se te indique) y buscá SOLO gaps de correctness:
 
 - Bugs, edge cases sin manejar, race conditions.
-- Invariantes de dominio rotos (ver `docs/domain/` + los ADRs relevantes).
+- Invariantes de dominio rotos (ver `docs/product/language.md` + los ADRs relevantes).
 - Casos que los tests verdes NO cubren (tests que pasan no prueban que esté bien).
 - Persistence ignorance violado (ADR-0017: no FK/navigation cross-module), auth/gating flojo, cross-BC mal resuelto.
 

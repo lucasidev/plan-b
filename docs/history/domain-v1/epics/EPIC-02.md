@@ -10,30 +10,30 @@ Registrarse, verificar email, loguearse, cerrar sesión, gestionar la cuenta bá
 ## User Stories
 
 ### Sprint S0 (done)
-- [US-010-b](../../../domain/user-stories/US-010-b.md): Register backend
-- [US-011-b](../../../domain/user-stories/US-011-b.md): Verify email backend
+- [US-010-b](../stories/US-010-b.md): Register backend
+- [US-011-b](../stories/US-011-b.md): Verify email backend
 
 ### Sprint S1 (current: auth slice end-to-end + cleanup)
 **Done:**
-- [US-010-f](../../../domain/user-stories/US-010-f.md): Register frontend (sign-up tab del AuthView)
-- [US-011-f](../../../domain/user-stories/US-011-f.md): Verify email frontend (rehecho con design system)
-- [US-028-b](../../../domain/user-stories/US-028-b.md): Login backend
-- [US-028-f](../../../domain/user-stories/US-028-f.md): Login frontend (sign-in tab del AuthView)
-- [US-029-i](../../../domain/user-stories/US-029-i.md): Sign-out integrated
+- [US-010-f](../stories/US-010-f.md): Register frontend (sign-up tab del AuthView)
+- [US-011-f](../stories/US-011-f.md): Verify email frontend (rehecho con design system)
+- [US-028-b](../stories/US-028-b.md): Login backend
+- [US-028-f](../stories/US-028-f.md): Login frontend (sign-in tab del AuthView)
+- [US-029-i](../stories/US-029-i.md): Sign-out integrated
 
 **Pending (added in S1 mid-sprint replan):**
-- [US-021-b](../../../domain/user-stories/US-021-b.md): Resend verification backend
-- [US-021-f](../../../domain/user-stories/US-021-f.md): Resend verification frontend
-- [US-022-b](../../../domain/user-stories/US-022-b.md): Expirar registros no verificados (backend)
-- [US-022-i](../../../domain/user-stories/US-022-i.md): Expirar registros no verificados (infra: migrations + scheduling)
-- [US-033-i](../../../domain/user-stories/US-033-i.md): Recuperación de contraseña (integrated)
+- [US-021-b](../stories/US-021-b.md): Resend verification backend
+- [US-021-f](../stories/US-021-f.md): Resend verification frontend
+- [US-022-b](../stories/US-022-b.md): Expirar registros no verificados (backend)
+- [US-022-i](../stories/US-022-i.md): Expirar registros no verificados (infra: migrations + scheduling)
+- [US-033-i](../stories/US-033-i.md): Recuperación de contraseña (integrated)
 
 ### Sprint S1 (perfil)
-- [US-012-b](../../../domain/user-stories/US-012-b.md): Crear StudentProfile (backend): frontend diferido a una US separada cuando aterrice JwtBearer middleware en backend
+- [US-012-b](../stories/US-012-b.md): Crear StudentProfile (backend): frontend diferido a una US separada cuando aterrice JwtBearer middleware en backend
 
 ### Backlog
-- [US-035](../../../domain/user-stories/US-035.md): Sign-in con Google (OAuth)
-- [US-058](../../../domain/user-stories/US-058.md): Deshabilitar cuenta member
+- [US-035](../stories/US-035.md): Sign-in con Google (OAuth)
+- [US-058](../stories/US-058.md): Deshabilitar cuenta member
 
 ## Decisiones que la condicionan
 

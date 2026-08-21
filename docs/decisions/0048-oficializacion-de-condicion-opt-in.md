@@ -51,7 +51,7 @@ La verificación de que el **email es tuyo** (el link de verify-email) se mantie
 ## Refs
 
 - Auditoría de impacto: 2026-07-17 (backend identity/academic/reviews/enrollments + frontend copy + docs).
-- US derivadas: [US-090-f](../domain/user-stories/US-090-f.md) (copy honesto), [US-091](../domain/user-stories/US-091.md) (oficialización por evidencia), [US-092](../domain/user-stories/US-092.md) (migrar verificación docente).
+- US derivadas: [US-090-f](../history/domain-v1/stories/US-090-f.md) (copy honesto), [US-091](../history/domain-v1/stories/US-091.md) (oficialización por evidencia), [US-092](../history/domain-v1/stories/US-092.md) (migrar verificación docente).
 - Código actual: `TeacherProfile.SubmitInstitutionalEmail` (verificación docente por dominio), `RegisterUserValidator` (registro abierto), `HistorialImport` (cursó self-reported).
 - Docs a reconciliar: US-031, `docs/domain/verification-flows.md`, `docs/architecture/data-model.md`, `docs/domain/ubiquitous-language.md`.
 - Decisiones relacionadas: [ADR-0001](0001-multi-universidad-desde-dia-1.md), [ADR-0008](0008-roles-exclusivos-profiles-como-capacidades.md), [ADR-0023](0023-auth-flow-jwt-cookie-layout-guards.md), [ADR-0033](0033-verification-token-como-child-entity.md).

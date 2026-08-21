@@ -7,7 +7,7 @@ paths:
 
 # Testing (planb)
 
-Estás tocando un test. Antes de escribirlo, mirá qué capa corresponde a tu cambio: la tabla completa "qué test para qué cambio" está en [`docs/testing/conventions.md`](../../docs/testing/conventions.md), la pirámide formal en [ADR-0036](../../docs/decisions/0036-testing-pyramid-cross-stack.md).
+Estás tocando un test. Antes de escribirlo, mirá qué capa corresponde a tu cambio: la tabla completa "qué test para qué cambio" está en [`docs/testing/conventions.md`](../../docs/engineering/testing.md), la pirámide formal en [ADR-0036](../../docs/decisions/0036-testing-pyramid-cross-stack.md).
 
 Lo que se olvida:
 

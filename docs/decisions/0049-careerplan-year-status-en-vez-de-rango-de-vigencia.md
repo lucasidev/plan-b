@@ -7,7 +7,7 @@
 
 [ADR-0002](0002-versionado-de-planes-de-estudio.md) decidió que `CareerPlan` versione con `version_label` ("Plan 2024"), `effective_from` y `effective_to` (rango de fechas), más un domain service que retira automáticamente el plan vigente anterior al crear uno nuevo (invariante cross-aggregate "solo un plan vigente por Career").
 
-Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno importa su historial en el onboarding y el sistema crea `Career`/`CareerPlan` a partir de lo que carga), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al de ADR-0002, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../domain/user-stories/US-061.md)).
+Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno importa su historial en el onboarding y el sistema crea `Career`/`CareerPlan` a partir de lo que carga), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al de ADR-0002, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../history/domain-v1/stories/US-061.md)).
 
 El código real (`backend/modules/academic/src/Planb.Academic.Domain/CareerPlans/CareerPlan.cs`) expone:
 
@@ -52,5 +52,5 @@ Formalizar el modelo ya implementado como la decisión vigente:
 ## Refs
 
 - Código: `backend/modules/academic/src/Planb.Academic.Domain/CareerPlans/CareerPlan.cs`, `CareerPlanStatus.cs`, `CareerPlanConfiguration.cs`.
-- User Stories: [US-088](../domain/user-stories/US-088.md) (origen de facto, crowdsourcing), [US-061](../domain/user-stories/US-061.md) (formalización, backoffice admin).
+- User Stories: [US-088](../history/domain-v1/stories/US-088.md) (origen de facto, crowdsourcing), [US-061](../history/domain-v1/stories/US-061.md) (formalización, backoffice admin).
 - ADR superado: [ADR-0002](0002-versionado-de-planes-de-estudio.md).

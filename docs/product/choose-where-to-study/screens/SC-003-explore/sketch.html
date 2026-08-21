@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Explorar (pantalla compartida)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
+  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:680px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .chip{display:inline-block;border-radius:999px;padding:4px 11px;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink2);margin:0 6px 8px 0}
+  .chip.on{border-color:var(--ink2);background:var(--elev);color:var(--ink);font-weight:500}
+  .chip.g{border-color:#f3cdb7}
+  .chip.g.on{background:var(--accs);border-color:var(--acc);color:var(--acci)}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .mark{background:#fdeacc;color:var(--warnink);border-radius:4px;padding:0 3px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:9px 12px;color:var(--ink3);font-size:14px}
+  .warn{border-color:var(--warnline);background:var(--warnbg)}
+  .warn p{color:var(--warnink)}
+  .steps{display:flex;gap:6px;margin:0 0 14px}
+  .steps span{height:4px;flex:1;border-radius:2px;background:var(--line)}
+  .steps span.done{background:var(--ink4)}
+  .steps span.now{background:var(--acc)}
+  .list p{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+  .list p:last-child{border-bottom:0}
+  .state{border-style:dashed;background:var(--elev)}
+  p{margin:0}
+  .bar{height:6px;border-radius:999px;background:var(--elev);overflow:hidden;margin:4px 0 0}
+  .bar i{display:block;height:100%;background:var(--ink4)}
+  .bar.g i{background:var(--acc)}
+  .sk{font-size:11px;color:var(--ink3)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de la pantalla Explorar (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md, no de este archivo. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Las dos lentes</h2>
+  <section class="pb" aria-label="Explorar: carreras y universidades, sin cuenta">
+    <p class="eyebrow">Explorar · pública, sin cuenta</p>
+    <p style="display:flex;gap:8px;margin:0 0 4px">
+      <span class="chip on">Carreras</span><span class="chip">Universidades</span>
+    </p>
+    <p class="muted" style="margin:0 0 4px">Orden alfabético (o por voces, si elegís). Nunca por conveniencia.</p>
+    <p class="muted" style="margin:0 0 12px">Cuál lente abre por default, y si hay filtros de provincia o modalidad, sigue abierto.</p>
+    <div class="list card">
+      <p class="row"><span>Ingeniería en Sistemas <span class="muted">· UNSTA</span></span><span class="sk">612 voces · 24 de 40 materias</span></p>
+      <p class="row"><span>Ingeniería en Sistemas <span class="muted">· UTN</span></span><span class="sk">480 voces · 31 de 44 materias</span></p>
+      <p class="row"><span>Tecnicatura Universitaria en Desarrollo y Calidad de Software <span class="muted">· UNSTA</span></span><span class="sk">58 voces · 6 de 14 materias con voces</span></p>
+      <p class="row"><span>Contador Público <span class="muted">· SIGLO 21</span></span><span class="sk">no la cargamos todavía</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">US-171: ni un puntaje ni un orden por conveniencia, en ninguna entrada.</p>
+  </section>
+
+  <section class="pb" aria-label="Explorar: universidades">
+    <p class="eyebrow">Explorar · lente Universidades</p>
+    <p class="muted" style="margin:0 0 4px">Voces sobre ella como sujeto · carreras cargadas. Nunca se mezcla con las voces de sus cursadas (ADR-0066).</p>
+    <div class="list card">
+      <p class="row"><span>UNSTA</span><span class="sk">1.340 voces · 3 carreras cargadas</span></p>
+      <p class="row"><span>SIGLO 21</span><span class="sk">cargada, sin voces todavía · 1 carrera cargada</span></p>
+      <p class="row"><span>UTN</span><span class="sk">sin voces como sujeto todavía · 1 carrera cargada</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">US-139, US-171. Cada institución con lo mínimo honesto: sus voces, no un puesto en una tabla.</p>
+  </section>
+
+  <h2>Estado: no la cargamos todavía</h2>
+  <section class="pb" aria-label="Estado: la carrera no está en el catálogo">
+    <div class="card warn">
+      <p style="font-weight:500;margin:0 0 4px">Contador Público · SIGLO 21</p>
+      <p style="margin:0 0 8px">Todavía no la cargamos: el vacío es nuestro, no de la facultad.</p>
+      <span class="btn acc">Pedir que la carguemos</span>
+    </div>
+    <p class="muted" style="margin-top:8px">US-139: uno de los tres estados del vacío, nunca un cero. Lleva a Pedir.</p>
+  </section>
+
+  <h2>Estado: cargada y todavía sin voces</h2>
+  <section class="pb" aria-label="Estado: cargada, sin voces todavía">
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 4px">Tecnicatura Universitaria en Gestión Ambiental · UNSTA</p>
+      <p class="muted" style="margin:0 0 8px">Está cargada: plan, materias y correlativas completos. Todavía nadie la reseñó; la primera voz ya se publica.</p>
+      <span class="btn">Ver la ficha</span>
+    </div>
+    <p class="muted" style="margin-top:8px">US-139, US-136: cargada sin voces no es lo mismo que no cargada.</p>
+  </section>
+
+  <h2>Estado: cargada, todavía no derivamos</h2>
+  <section class="pb" aria-label="Estado: con voces, sin cabecera todavía">
+    <div class="card">
+      <p style="font-weight:500;margin:0 0 4px">Tecnicatura Universitaria en Desarrollo y Calidad de Software · UNSTA</p>
+      <p class="muted" style="margin:0 0 4px">58 voces, pero todavía no pasó la mitad de las materias canónicas.</p>
+      <div class="bar"><i style="width:43%"></i></div>
+      <p class="sk" style="margin-top:4px">6 de 14 materias con voces</p>
+      <p class="muted" style="margin-top:8px">Se lee materia por materia mientras tanto.</p>
+    </div>
+    <p class="muted" style="margin-top:8px">US-134, US-139: la cobertura a la vista, nunca una cabecera armada con tres materias.</p>
+  </section>
+
+  <h2>Sin cuenta</h2>
+  <section class="pb" aria-label="Explorar y abrir cualquier ficha no pide cuenta">
+    <p style="color:var(--ink2)">Cambiar de lente, ordenar la lista y abrir cualquier ficha desde acá no pide cuenta. Solo la piden las acciones adentro de cada ficha: reseñar, votar, corregir un dato.</p>
+    <p class="muted" style="margin-top:8px">US-168: ninguna pantalla de lectura tiene login.</p>
+  </section>
+</main>
+</body>
+</html>

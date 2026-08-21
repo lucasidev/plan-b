@@ -8,7 +8,7 @@
 [ADR-0001](0001-multi-universidad-desde-dia-1.md) generalizó `AcademicTerm.kind` a
 `bimestral | cuatrimestral | semestral | anual` para soportar calendarios distintos, y descartó
 explícitamente la alternativa de atarlo a un solo kind porque SIGLO 21 (bimestral) está en el scope
-declarado. El [lenguaje ubicuo](../domain/ubiquitous-language.md) registra esa generalidad como el
+declarado. El [lenguaje ubicuo](../product/language.md) registra esa generalidad como el
 motivo del campo.
 
 Esa generalidad se sostenía en el dominio y se perdía en la capa de presentación:

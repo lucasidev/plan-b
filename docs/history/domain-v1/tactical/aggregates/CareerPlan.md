@@ -46,4 +46,4 @@ Ninguno específico.
 
 - BC: [Academic](../../strategic/bounded-contexts.md#academic)
 - ADRs: [ADR-0002](../../../../decisions/0002-versionado-de-planes-de-estudio.md) (superado), [ADR-0049](../../../../decisions/0049-careerplan-year-status-en-vez-de-rango-de-vigencia.md)
-- User Stories: [US-001](../../../../domain/user-stories/US-001.md), [US-008](../../../../domain/user-stories/US-008.md), [US-061](../../../../domain/user-stories/US-061.md)
+- User Stories: [US-001](../../stories/US-001.md), [US-008](../../stories/US-008.md), [US-061](../../stories/US-061.md)

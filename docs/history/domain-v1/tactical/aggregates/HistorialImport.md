@@ -54,5 +54,5 @@ Ninguno específico (los enums `Status` y `SourceType` se modelan como columnas)
 
 - BC: [Enrollments](../../strategic/bounded-contexts.md#enrollments)
 - ADRs: [ADR-0004](../../../../decisions/0004-enrollment-guarda-hechos.md), [ADR-0006](../../../../decisions/0006-jsonb-solo-donde-el-shape-es-variable.md)
-- User Stories: [US-024](../../../../domain/user-stories/US-024.md), [US-025](../../../../domain/user-stories/US-025.md), [US-026](../../../../domain/user-stories/US-026.md), [US-027](../../../../domain/user-stories/US-027.md)
+- User Stories: [US-024](../../stories/US-024.md), [US-025](../../stories/US-025.md), [US-026](../../stories/US-026.md), [US-027](../../stories/US-027.md)
 - Post-MVP: "Recibir simulación recomendada" fue un placeholder que murió con el planificador (ADR-0063).
