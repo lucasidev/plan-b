@@ -28,6 +28,9 @@ Las 5 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 Las filas con "tema del mapa" vienen de los grupos transversales del mapa (BO6 · Y quién nos mira a nosotros): son temas, no actividades, y cada uno de sus requisitos vive en la única épica que lo implementa. El índice del [catálogo](../README.md) conserva el tema como lista.
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 D09 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): verificación y moderación son roles excluyentes, el Admin no se auto-asigna roles operativos, equipo mínimo de cuatro), [THESIS.md](../../THESIS.md) ("Posición": el anonimato es mecanismo, no declaración), [ADR-0050](../../decisions/0050-backoffice-is-a-cross-cutting-slice-not-a-module.md) (el backoffice es un corte transversal sobre los módulos existentes; el gating es por rol en cada endpoint, no por estar en un módulo aparte: es la base técnica de que cada rol vea solo sus colas), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (separa qué se modera, lo retenido y lo reportado, de qué habilita una réplica, la identidad verificada: por qué Reportes y Verificaciones son colas distintas).

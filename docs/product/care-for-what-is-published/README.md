@@ -20,6 +20,9 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-189](stories/US-189-correct-a-hard-fact-inline.md) | Corregir un dato duro ahí mismo |
 | [US-190](stories/US-190-verify-my-student-status.md) | Verificarme sin que sea obligatorio |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (puntos 1 y 6: el testimonio debajo de las frases, ordenado por votos; votar pide cuenta), D07 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): corregir pide cuenta, no aporte previo, y queda registrado quién), [ADR-0048](../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (aceptado y extendido por [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md): verificarse es señal, no permiso), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (cada frase marcada en el testimonio trae su eje: la que alarma es gestión, la que informa es exigencia).

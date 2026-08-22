@@ -41,7 +41,7 @@ Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo i
 | [Replicar](reply/README.md) | `reply/` | O7 (+ US-179) | Claudia, Paredes, la institución | 9 | 1 |
 | [Llevarse el dato](take-the-data/README.md) | `take-the-data/` | O8 | Rocío | 8 | 1 |
 | [Cuidar lo publicado](care-for-what-is-published/README.md) | `care-for-what-is-published/` | T1 | quien ya aportó, quien vuelve | 3 | 1 |
-| [Entrar](enter/README.md) | `enter/` | el umbral (garantías de O6) | cualquiera que va a producir | 1 | 4 |
+| [Entrar](enter/README.md) | `enter/` | el umbral (garantías de O6) | cualquiera que va a producir | 4 | 4 |
 | [Sostener el catálogo](sustain-the-catalog/README.md) | `sustain-the-catalog/` | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 4 |
 | [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md) | `moderate-without-breaking-the-product/` | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 12 | 2 |
 | [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
@@ -125,6 +125,16 @@ Estas reglas son para las stories. Medidas contra INVEST (Wake), las tres C (Jef
 - **Trazable**: cita las decisiones que la gobiernan, y vive en una sola épica; el resto la cita por ID.
 - **Su criterio es la fuente del test**: al construirse, el "listo cuando" se traduce al test que lo verifica y el test cita el ID ([ADR-0072](../decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)).
 - **Sin estado de gestión**: Status, Sprint, Priority y Effort describen el trabajo, y viven en [`docs/plan/`](../plan/README.md).
+
+## Los escenarios: el criterio hecho ejecutable
+
+Cada épica tiene un `scenarios.md` que traduce el "listo cuando" de sus stories a Dado/Cuando/Entonces con **valores concretos**, más sus **casos negativos** y sus **casos borde**. Existe porque un criterio en prosa alcanza para acordar qué hace el producto y no alcanza para escribir el test que lo verifica: al intentar la traducción aparecen las preguntas que nadie había hecho, y esas quedan anotadas ahí mismo como **Falta decidir**.
+
+Tres cosas que conviene saber antes de usarlos:
+
+- **Los números salen de [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md)**, que fija el z del encogimiento (1,96), el denominador de una proporción (todas las voces de la cursada) y cuántas voces suma una persona (una por cursada). Sin esos tres, ninguna proporción publicada se puede calcular dos veces igual.
+- **Cada escenario declara sus propios datos en el "Dado". No hay fixture compartido, y no debería haberlo**: los nombres que se repiten entre épicas (Cátedra Pérez, Análisis Matemático II) son etiquetas para que se lea bien, no una entidad con un estado único. Dos escenarios pueden nombrar la misma cátedra con distinta cantidad de voces porque cada uno arma su caso.
+- **Son el aro externo, no el interno.** Están escritos al nivel de lo que se observa (una pantalla, una ficha, un mail), que es aceptación. El test unitario que sale de ellos es otra cosa, y su forma la descubre quien lo escriba.
 
 ## Qué tiene que cumplir una épica
 

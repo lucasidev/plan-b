@@ -28,6 +28,9 @@ Las 9 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 Las filas con "tema del mapa" vienen de los grupos transversales del mapa (T2 · Cuando el riesgo es real): son temas, no actividades, y cada uno de sus requisitos vive en la única épica que lo implementa. El índice del [catálogo](../README.md) conserva el tema como lista.
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 5: la réplica pasa el mismo chequeo, no cita lo marcado, retenida el plazo desde el aviso, solo identidad docente o institucional verificada, queda al lado con nombre y rol, no baja ni mueve conteos; punto 6: orden por votos), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la serie por el período en que pasó, sin suavizar, con publicación y réplica marcadas; la comparación lado a lado sin ordenar por valor), D06 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): el estado del canal, "sin réplica" y "docente sin identidad verificada", nunca "no quiso responder"), [ADR-0009](../../decisions/0009-review-anonymity-is-a-presentation-rule.md) (el anonimato como regla de presentación).

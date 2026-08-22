@@ -6,7 +6,7 @@
 
 Leer no pide cuenta; producir sí ([THESIS.md](../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a votar, corregir, reseñar o responder, con el motivo a la vista y con la vuelta a donde estaba. Además vive acá la pantalla de Error, porque es el chasis que sostiene a todas las demás cuando algo falla y no le pertenece a ninguna épica en particular.
 
-No tiene requisitos propios: cumple garantías de otras épicas ([Que no me molesten](../do-not-bother-me/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
+Sostiene garantías de otras épicas ([Que no me molesten](../do-not-bother-me/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
 
 ## Para quién
 
@@ -14,15 +14,21 @@ No tiene requisitos propios: cumple garantías de otras épicas ([Que no me mole
 
 ## Stories
 
-Una sola, y es la única de esta épica: el resto de lo que pasa en el umbral son garantías de otras épicas que se verifican acá.
+Cuatro. El resto de lo que pasa en el umbral sí son garantías de otras épicas que se verifican acá, pero cruzar el umbral es una acción concreta con su pantalla y su criterio, y eso es una story.
 
 | ID | De qué trata |
 |---|---|
 | [US-220](stories/US-220-recover-the-password-by-mail.md) | Recuperar la contraseña con un link al mail |
+| [US-228](stories/US-228-create-the-account-when-the-action-asks-for-it.md) | Crear la cuenta recién cuando la acción me la pide |
+| [US-229](stories/US-229-sign-in-and-land-back-on-what-i-was-doing.md) | Entrar y volver a lo que estaba haciendo |
+| [US-230](stories/US-230-understand-the-failure-without-losing-my-work.md) | Entender que se rompió sin perder lo que venía cargando |
 
 ### Las que cumple de otras épicas
 
 Además de la suya, esta épica sostiene stories de otras, que viven allá y se verifican acá: [US-168, US-169, US-170](../do-not-bother-me/README.md#stories) (las garantías), [US-142](../request-a-career/README.md#stories) (la precarga desde el pedido), [US-155](../write-a-review/README.md#stories) (el año de ingreso lo pregunta la primera reseña, no el registro), [US-161](../write-a-review/README.md#stories) (lo que quedó a medias no se pierde cuando algo falla).
+
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
 
 ## Decisiones que aplica
 

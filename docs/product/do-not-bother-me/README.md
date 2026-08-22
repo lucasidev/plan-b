@@ -23,6 +23,9 @@ Las 4 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-170](stories/US-170-skip-onboarding-and-still-use-it.md) | Saltear el onboarding y usar la app |
 | [US-171](stories/US-171-nothing-sponsored-or-featured.md) | Que no me vendan nada |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche por mail una vez al año, una sola pregunta; entré se pregunta una sola vez), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento).
