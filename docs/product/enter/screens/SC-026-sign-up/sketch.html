@@ -82,16 +82,16 @@
     <p class="muted" style="margin-top:8px">US-142: no se le vuelve a preguntar lo que ya dijo al pedir. Quién sos (estudiante o docente) sigue preguntándose, porque el pedido no la incluía.</p>
   </section>
 
-  <h2>Estado: el mail ya está registrado</h2>
-  <section class="pb" aria-label="Estado: mail ya registrado">
-    <div class="card warn">
-      <p style="font-weight:500;margin:0 0 4px">Ese mail ya tiene una cuenta.</p>
-      <p style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><span class="btn">Ingresar</span><span class="btn">Recuperar contraseña</span></p>
+  <h2>Estado: mandamos el mail (el mismo, exista o no la cuenta)</h2>
+  <section class="pb" aria-label="Estado: mandamos el mail">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Te mandamos un mail a esa dirección.</p>
+      <p class="muted">Abrilo para terminar. Si no llega en unos minutos, revisá el correo no deseado.</p>
     </div>
-    <p class="muted" style="margin-top:8px">Que no me molesten: el umbral te devuelve a la cuenta que ya existe, no te hace repetir el formulario entero.</p>
+    <p class="muted" style="margin-top:8px">ADR-0076: esta pantalla es idéntica exista o no una cuenta con ese mail. Si ya existe, el mail avisa que alguien quiso registrarse y ofrece Ingresar o Recuperar; si no, trae el link para terminar. La pantalla no lo dice porque acá tener cuenta significa haber aportado.</p>
   </section>
 
-  <h2>Al crear la cuenta</h2>
+  <h2>Al volver desde el link del mail</h2>
   <section class="pb" aria-label="Estado: cuenta creada, vuelta a la acción o a Empezar">
     <div class="card state">
       <p style="font-weight:500;margin:0 0 4px">Cuenta creada.</p>

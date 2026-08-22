@@ -11,12 +11,12 @@ Como quien acaba de leer una ficha y quiere aportar, quiero crear la cuenta ahí
 
 - Se crea con mail y contraseña, diciendo si curso o doy clases, y con el consentimiento informado a la vista antes de mandar (Ley 25.326).
 - Institución y carrera vienen precargadas y de solo lectura si llegué desde un pedido confirmado ([US-142](../../request-a-career/stories/US-142-get-notified-when-its-loaded.md)); si no, se declaran acá.
-- Un mail ya registrado no crea una segunda cuenta: avisa en la misma pantalla y ofrece Ingresar, sin perder lo que ya escribí.
+- La pantalla responde lo mismo exista o no la cuenta ("te mandamos un mail"), y es el mail el que resuelve: si estaba libre trae el link para terminar, y si ya tenía cuenta avisa e invita a Ingresar o Recuperar, sin crear nada ([ADR-0076](../../../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md)).
 
 ## Dónde se resuelve
 
 - [Registro](../screens/SC-026-sign-up/README.md): el formulario entero, sus dos estados y el consentimiento.
-- [Ingresar](../screens/SC-025-sign-in/README.md): a donde lleva el aviso de mail ya registrado.
+- [Avisos](../../notices/screens/SC-034-mail/README.md): el mail que resuelve la diferencia entre una dirección libre y una que ya tiene cuenta, que es lo único que la pantalla no dice.
 
 ## Notas
 
@@ -24,4 +24,4 @@ Esta story faltaba. Registro era una de las tres pantallas del producto que ning
 
 Lo que sí son garantías de otras épicas y no stories de acá: que leer no pida cuenta ([US-168](../../do-not-bother-me/stories/US-168-read-without-an-account.md)) y que el gate esté en la acción y no en la puerta.
 
-**Queda abierto**: decir "ese mail ya está registrado" revela que la cuenta existe, y [US-220](US-220-recover-the-password-by-mail.md) protege lo contrario en Recuperar ("sin decir nada más de la cuenta"). Las dos pantallas tratan el mismo dato con criterios opuestos y nadie lo decidió; la ficha de Registro declara ese estado, así que acá se escribe como está y la contradicción queda anotada.
+Al escribirla apareció una contradicción: Registro avisaba "ese mail ya está registrado" y con eso confirmaba que la cuenta existe, mientras [US-220](US-220-recover-the-password-by-mail.md) hace lo contrario a propósito. La resolvió [ADR-0076](../../../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md): las tres puertas responden igual, porque acá tener cuenta significa haber aportado, y esa asimetría hacía que ocultarlo en las otras dos no sirviera de nada.
