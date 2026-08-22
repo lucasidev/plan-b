@@ -48,6 +48,5 @@ Esta épica aporta a pantallas de otras: nada. Al revés sí: [Reseñar](../writ
 ## Lo que esta épica todavía no resuelve
 
 - **Si hay ingreso con proveedor externo** (Google, institucional): ninguna fuente lo decide, y el mail institucional como verificación está deprecado por ADR-0048.
-- **Si el registro pide confirmar el mail** (D03 fija la confirmación para pedidos y reportes, no para el registro).
 - **Cuánto dura el link de Recuperar**, y si pedirlo muchas veces tiene límite.
 - **Si Error distingue 404 de 500** en el copy.

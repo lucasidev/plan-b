@@ -12,7 +12,6 @@ Quien ya tiene cuenta y vuelve a producir: **Matías** (a votar, o a que quede r
 
 
 [US-220](../../stories/US-220-recover-the-password-by-mail.md) (desde acá se llega a Recuperar cuando la contraseña no entra).
-- [US-228](../../stories/US-228-create-the-account-when-the-action-asks-for-it.md): a donde lleva el aviso de mail ya registrado.
 - [US-229](../../stories/US-229-sign-in-and-land-back-on-what-i-was-doing.md): el motivo, el formulario y el estado de credenciales que no coinciden.
 
 ## Qué muestra

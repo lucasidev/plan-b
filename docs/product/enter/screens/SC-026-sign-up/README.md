@@ -21,7 +21,7 @@
 
 ## Estados
 
-**Estado "precargado desde el pedido"**: institución y carrera ya completas, con la nota de por qué. **Estado "mail ya registrado"**: aviso inline con link a Ingresar y a Recuperar.
+**Estado "precargado desde el pedido"**: institución y carrera ya completas, con la nota de por qué. **Estado "te mandamos un mail"**: el mismo, exista o no la cuenta. No hay estado que distinga un mail libre de uno ya registrado: eso lo resuelve el mail y no la pantalla ([ADR-0076](../../../../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md)).
 
 ## Lo que no muestra nunca
 

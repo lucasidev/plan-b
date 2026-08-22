@@ -8,7 +8,7 @@ Todos los que reciben un mail: **Ana** (avisan que cargaron lo que pidió), **Lu
 
 ## Qué stories resuelve
 
-No tiene requisitos propios: sostiene US-142, US-193 y US-201 ([Pedir una carrera](../../../request-a-career/README.md#stories) y [Sostener el catálogo](../../../sustain-the-catalog/README.md#stories)), US-149, US-152 y US-156 ([Reseñar](../../../write-a-review/README.md#stories)), US-175 y US-179 ([Replicar](../../../reply/README.md#stories)), US-169 ([Que no me molesten](../../../do-not-bother-me/README.md#stories)) y US-206 ([Moderar sin romper el producto](../../../moderate-without-breaking-the-product/README.md#stories)). La letra de cada uno vive en su épica; esta pantalla es la infraestructura que los cumple.
+No tiene requisitos propios: sostiene US-142, US-193 y US-201 ([Pedir una carrera](../../../request-a-career/README.md#stories) y [Sostener el catálogo](../../../sustain-the-catalog/README.md#stories)), US-149, US-152 y US-156 ([Reseñar](../../../write-a-review/README.md#stories)), US-175 y US-179 ([Replicar](../../../reply/README.md#stories)), US-228 ([Entrar](../../../enter/README.md#stories)), US-169 ([Que no me molesten](../../../do-not-bother-me/README.md#stories)) y US-206 ([Moderar sin romper el producto](../../../moderate-without-breaking-the-product/README.md#stories)). La letra de cada uno vive en su épica; esta pantalla es la infraestructura que los cumple.
 
 ## Qué muestra
 
