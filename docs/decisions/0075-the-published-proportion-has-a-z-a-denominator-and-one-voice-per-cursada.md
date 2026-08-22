@@ -54,4 +54,4 @@ El glosario ya resolvió el caso vecino (*"quien reseñó tres cursadas de una c
 
 - [ADR-0064](0064-phrases-with-voices-not-scores.md) (lo que esto precisa), [ADR-0054](0054-a-metric-without-backing-travels-null-never-zero.md) (una métrica sin sustento viaja null, que es la regla vecina para el caso de cero voces), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (cómo suben las voces a la carrera).
 - Wilson, E. B. (1927), *Probable Inference, the Law of Succession, and Statistical Inference*, JASA 22(158). El límite inferior es el que se publica.
-- [`product/phrases.md`](../product/phrases.md) (las 51 frases semilla, con su eje y su sentido: F01 y F02 son el par opuesto del punto 2).
+- [`product/phrases.md`](../product/phrases.md) (las 46 frases semilla, con su eje y su sentido: F01 y F02 son el par opuesto del punto 2).
