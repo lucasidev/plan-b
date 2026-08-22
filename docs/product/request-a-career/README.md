@@ -21,6 +21,9 @@ Las 4 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-141](stories/US-141-see-how-many-others-asked.md) | Ver cuántos más pidieron la misma carrera |
 | [US-142](stories/US-142-get-notified-when-its-loaded.md) | Recibir el aviso cuando la carguen |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 D03 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): el pedido confirma el mail por link como el reporte; un mail cuenta una vez por carrera), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los tres estados del vacío salen del gate de cobertura: sin voces, con voces sin cabecera), los tres planos del [mapa](../map.md) (el catálogo lo cargamos nosotros, entero o no está; no inventamos una ficha vacía), [Avisos](../notices/README.md) como infraestructura.

@@ -25,6 +25,9 @@ Las 8 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-186](stories/US-186-mark-where-a-testimony-was-removed.md) | Marcar el texto retirado |
 | [US-187](stories/US-187-declare-reprocessing-and-distilled-phrases.md) | Declarar el reproceso y la destilación |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (la fórmula de Wilson publicada tal cual en Método), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el CSV gana la segunda tabla de trayectoria; los chequeos de consistencia por cuenta publicados en el método; todo número "de los que reseñaron"), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el texto no va al CSV ni se exporta en bloque; las bajas se publican contables por categoría), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (cobertura declarada en todo dato derivado), [THESIS.md](../../THESIS.md) ("Posición": sin acuerdos con instituciones; el crudo se descarga sin registro), D09 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): la segunda capa de US-218, el lector externo, lee el registro ya disociado).

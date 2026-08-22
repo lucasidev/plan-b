@@ -6,6 +6,7 @@ Dos artefactos, dos lugares, y ninguno repite al otro.
 |---|---|---|---|
 | **La story** | `docs/product/<épica>/stories/US-NNN-slug.md` | qué quiere el usuario, cuándo está lista y en qué pantallas se resuelve | nada de estado, sprint, estimación ni implementación |
 | **La pantalla** | `docs/product/<épica>/screens/SC-NNN-slug/` | cómo se ve y cómo se recorre ([contrato](screen-template.md)) | qué tiene que lograr: eso lo dicen sus stories |
+| **Los escenarios** | `docs/product/<épica>/scenarios.md` | cada "listo cuando" en Dado/Cuando/Entonces con valores concretos, sus casos negativos y sus casos borde | nada nuevo: es el criterio hecho preciso, no un requisito más |
 | **La planificación** | acá, en [`status.md`](status.md) | en qué sprint entra, cómo va, en qué tareas se parte | nada de lo que el producto tiene que hacer: eso lo dice la story |
 
 ---
@@ -75,7 +76,7 @@ Una story entra a un sprint cuando está lista para construirse, y ahí se le de
 - [ ] backend: <qué>
 - [ ] frontend: <qué>
 
-**Escenarios de test**: uno por cada "listo cuando" de la story, en Given-When-Then, citando el ID.
+**Escenarios de test**: viven en el [`scenarios.md`](../product/README.md) de la épica, no acá. Un Dado/Cuando/Entonces con valores concretos no dice en qué sprint entra ni quién lo hace: es el criterio hecho preciso, así que vive con el criterio. El plan los cita por ID de story.
 
 **Edge cases**: los que apliquen (flujo abandonado, fallas de red, concurrencia, sesión que expira, datos vacíos, accesibilidad, tiempo).
 

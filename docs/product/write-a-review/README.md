@@ -40,6 +40,9 @@ Las 19 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 
 Las stories que citan "tema del mapa" en su nota vienen de los grupos transversales del mapa (T2 · Cuando el riesgo es real; T3 · Cuando el catálogo no alcanza; T4 · Y quien no está de acuerdo): son temas, no actividades, y cada una vive en la única épica que la implementa. El índice del [catálogo](../README.md) conserva el tema como lista.
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (la reseña: cursada, frases, comentario, votos; el evento aparte), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (cada frase trae su sujeto y su eje: nada se pregunta), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (cómo terminó; entré una vez; me fui / me recibí por cuatro caminos; el silencio no se infiere), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario con tope, el chequeo previo con dos salidas, el aviso de la sospecha, publicar con o sin comentario), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (la reseña es la única puerta de un hecho), D02 (clases sin dar), D08 (la pendiente de vincular no cuenta hasta vincularse). El catálogo de frases que se ofrece: [`phrases.md`](../phrases.md).

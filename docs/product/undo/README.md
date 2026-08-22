@@ -22,6 +22,9 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-166](stories/US-166-delete-my-account-anonymized-not-erased.md) | Dar de baja la cuenta y preservar el corpus anonimizado |
 | [US-167](stories/US-167-report-content-without-an-account.md) | Reportar contenido publicado sin registrarse |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0044](../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (la baja anonimiza y preserva lo aportado), D10 (los hechos de trayectoria sobreviven exactos y ya anónimos, [registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md)), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario editado vuelve al chequeo previo; reportar sin cuenta confirma el mail; nada baja solo por cantidad de reportes; se baja el texto, nunca la voz), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) ("quien quiera sacar algo lo borra antes, de a uno"), D05 (los reportes se agrupan por objetivo y ventana de 72 horas; el mail confirmado deduplica).

@@ -38,6 +38,9 @@ Las 15 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 
 Las stories con "tema del mapa" en sus notas vienen de los grupos transversales del mapa (BO4 · Cuando la carga no da abasto; BO5 · Cuando el corpus está bajo ataque): son temas, no actividades, y cada una vive en la única épica que la implementa. El índice del [catálogo](../README.md) conserva el tema como lista.
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 Los tres planos del [mapa de producto](../map.md) (el catálogo lo cargamos nosotros, a mano y completo; una carrera está cargada entera o no está), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la carrera canónica curada por nosotros; la duración nominal del plan), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (el eje de cada frase es la atribución: corregirlo reprocesa las fichas), [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (las frases semilla y las destiladas; la destilación es dato derivado), [ADR-0068](../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 7: el comentario alimenta la destilación siempre, se publique o no), D08 ([registro del 17](../../history/reviews/2026-08-17-catalog-propagation.md): la pendiente de vincular no cuenta ni entra a la cobertura hasta que el catálogo la vincula). El catálogo de frases con sus seis reglas: [`phrases.md`](../phrases.md).

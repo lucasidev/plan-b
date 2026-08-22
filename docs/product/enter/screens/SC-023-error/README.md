@@ -10,6 +10,8 @@ Cualquiera, en cualquier punto: quien lee sin cuenta y una ficha no carga, o qui
 
 [US-161](../../../write-a-review/README.md#stories) (lo que quedó a medias se guarda y se retoma; nada de lo que estabas escribiendo se pierde).
 
+- [US-230](../../stories/US-230-understand-the-failure-without-losing-my-work.md): el mensaje sin jerga, las dos salidas y el link para retomar.
+
 ## Qué muestra
 
 - **Qué pasó**: "No pudimos cargar esto", sin jerga técnica ni código de error a la vista.

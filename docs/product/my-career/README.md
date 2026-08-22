@@ -20,6 +20,9 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 | [US-144](stories/US-144-filter-pairings-by-my-own-plan.md) | Filtrar esas combinaciones contra lo que todavía falta cursar |
 | [US-145](stories/US-145-plan-on-paper-mark-it-yourself.md) | Armar el cuatrimestre en papel, sin planificador propio |
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo que marcás es preferencia privada, no dato), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la co-cursada: solo desde reseñas, por par y período; el sesgo declarado en Método), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: se publica desde la primera voz con sus voces), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta épica no lo revive, US-145).

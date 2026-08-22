@@ -13,6 +13,9 @@
  *  6. Las pantallas: una carpeta `SC-NNN-slug` con ficha y boceto, ID único, los headings del
  *     contrato (docs/plan/screen-template.md), y trazabilidad simétrica con las stories: si una
  *     story dice resolverse en una pantalla, esa ficha tiene que listarla, y al revés.
+ *  7. El filename y el título de un ADR van en inglés, como todo identificador del repo.
+ *  8. Toda pantalla la pide una story de su propia épica. La simetría del 6 no alcanza: una
+ *     pantalla citada solo por stories de otras épicas existe sin que nadie la haya pedido.
  *
  * Señala, no bloquea: exit 0 siempre, salvo con --strict (para CI si algún día se quiere gate).
  * Uso: bun scripts/check-docs.ts [--strict]
@@ -318,6 +321,30 @@ for (const [sc, stories] of screenStories) {
   }
 }
 
+// 8. toda pantalla tiene una story de SU épica que la pida (ADR-0070 punto 7).
+//    La simetría del punto 6 no alcanza: una pantalla puede estar citada solo por
+//    stories de otras épicas que pasan por ahí, y entonces existe sin que nadie la
+//    haya pedido. Le pasó a Recuperar, y de ahí salió US-220; le seguía pasando a
+//    Registro, Ingresar y Error hasta que aparecieron US-228, US-229 y US-230, y
+//    esto no lo cantaba nada. Las épicas sin carpeta `stories/` quedan afuera a
+//    propósito: son infraestructura transversal que declara no tener requisitos
+//    propios (Avisos), y su README lo dice.
+for (const [sc, ubicacion] of screenIds) {
+  const epic = ubicacion.split('/')[0];
+  if (!existsSync(join(productDir, epic, 'stories'))) continue;
+  const propias = [...storyScreens].filter(
+    ([us, pantallas]) => pantallas.has(sc) && seen.get(us)?.startsWith(`${epic}/`),
+  );
+  if (propias.length === 0) {
+    findings.push({
+      file: `docs/product/${ubicacion}/README.md`,
+      line: 0,
+      rule: 'pantalla-sin-story-duena',
+      detail: `${sc} no la pide ninguna story de ${epic}: existe sin requisito que la origine`,
+    });
+  }
+}
+
 // 7. el filename y el título de un ADR son identificadores: van en inglés
 //    (docs/decisions/README.md; el cuerpo va en español). Los 60 que estaban en
 //    español se migraron el 2026-08-21, así que acá no hay excepciones ni número
@@ -348,7 +375,7 @@ for (const f of readdirSync(decisionsDir).filter((x) => ADR.test(x))) {
 // salida
 if (findings.length === 0) {
   console.log(
-    'check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid, idioma de ADR).',
+    'check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid, idioma de ADR, pantalla sin dueña).',
   );
   process.exit(0);
 }

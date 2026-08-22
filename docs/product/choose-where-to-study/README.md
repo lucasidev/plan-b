@@ -35,6 +35,9 @@ Las 14 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 
 Las filas con "tema del mapa" vienen de los grupos transversales del mapa (T2 · Cuando el riesgo es real; T3 · Cuando el catálogo no alcanza): son temas, no actividades, y cada uno de sus requisitos vive en la única épica que lo implementa; el índice del [catálogo](../README.md) conserva el tema como lista. US-135 viene del grupo T1 ([Cuidar lo publicado](../care-for-what-is-published/README.md)), que sigue siendo épica: leer el testimonio es de quien lee; votarlo, de quien ya aportó.
 
+
+**Escenarios ejecutables**: el "listo cuando" de cada story traducido a Dado/Cuando/Entonces con valores concretos, con sus casos negativos y sus casos borde, en [`scenarios.md`](scenarios.md). Es lo que se lee antes de escribir el test.
+
 ## Decisiones que aplica
 
 [ADR-0064](../../decisions/0064-phrases-with-voices-not-scores.md) (frases con proporción de voces y encogimiento de Wilson; sin puntaje 1 a 5), [ADR-0065](../../decisions/0065-attribution-is-the-axis-not-a-split.md) (la cabecera son dos proporciones; la atribución la decide el eje), [ADR-0066](../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (la carrera y la institución se derivan sumando voces; la cabecera derivada espera el gate de cobertura; sin piso ni escalera), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (duración real como mediana de egresados, brecha, cohorte cerrada con "no dijo" visible, carrera canónica, lado a lado sin ordenar por valor), D04 (el denominador del gate son las materias canónicas de la carrera en todos sus planes). El catálogo de frases que se lee: [`phrases.md`](../phrases.md).
