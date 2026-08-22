@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-08-16 (viraje de tesis: entra [THESIS.md](../THESIS.md) con [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md), S12 cierra con US-097/098/099 canceladas, y la poda de la versión anterior queda registrada abajo, sin sprint asignado). Anterior: 2026-07-26 (cierre de S11: el planificador terminado de punta a punta, con la oferta de comisiones y sus horarios cargables desde el backoffice US-093, la comisión elegible y los choques reales US-096, los borradores persistidos con publicar US-023, y la capa social US-024/US-027. Queda acordada una revisión aggregate por aggregate de modelos de datos y motores, con los hallazgos listados al final de la sección de S11).
+**Última actualización**: 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
 
 ---
 
@@ -25,7 +25,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
 | S12 | 2026-07-31 a 2026-08-16 | **Cerrar el lazo que produce el corpus**: US-015 entró (el mecanismo de edición con su evento); US-097/098/099 se cancelaron cuando el viraje de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) retiró el planificador al que servían. | ■ Cerrado por viraje |
-| S13+ | next+ | **Se planifica contra la tesis nueva.** El backlog previo (búsqueda US-056, rankings US-057, Notifications US-077, backoffice restante, etc.) queda bajo revisión contra [THESIS.md](../THESIS.md): rankings muere por tesis, el backoffice y los importadores suben de prioridad ("el catálogo es nuestro"), el resto se re-evalúa. | ⏳ Pendiente |
+| **R0** | por definir | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | Planificado |
 
 Convenciones:
 
@@ -34,6 +34,80 @@ Convenciones:
 - **Reglas duras**: parent y subdivisiones no coexisten. Si una US ya está en sprint o done, su archivo es la subdivisión correspondiente, NO el parent. Para integrated (`-i`), el doc único es la subdivisión.
 - Sprints: identificados como `S1`, `S2`, etc. `S0 (pre-sprint)` agrupa retroactivamente todo el trabajo done previo a la formalización del sprint cycle. **Cadencia: S1/S2 fueron de 7 días flotantes; desde S3 lunes → sábado (6 días útiles).** El domingo queda como buffer/descanso.
 - Definition of Done por US: [`docs/plan/definition-of-done.md`](definition-of-done.md).
+
+---
+
+# El rework
+
+Desde el 2026-08-16 esto no es la continuación del planificador: es su reemplazo. [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) retiró el producto anterior y [`THESIS.md`](../THESIS.md) fija el nuevo. **Todo lo que está debajo de esta sección, de S0 a S12, es la historia del producto en retiro**, y se conserva sin editar.
+
+**Por qué la numeración cambia de prefijo.** Los sprints del rework son `R0`, `R1`, `R2`. No siguen a S12 porque no son su continuación, y no reinician en `S0` porque ese nombre ya está tomado por el pre-sprint de abril. El prefijo dice, sin nota al pie, que abajo hay otro producto.
+
+## Contra qué se planifica
+
+103 stories en 13 épicas, todas con sus escenarios ejecutables ([`docs/product/`](../product/README.md)), 34 pantallas con ficha y boceto, y un catálogo de 51 frases semilla. Eso es el producto ideado. Lo que sigue es cuánto de lo construido sirve.
+
+## El inventario: qué hay hoy
+
+Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, más 41 features de frontend.
+
+| Módulo | Sobrevive | Adapta | Se poda | Lo que falta |
+|---|---|---|---|---|
+| `identity` (196 .cs, 21 feats) | 13 | 8 | 1 | las colas de verificación manual (docente, cargo institucional, constancia) |
+| `academic` (333 .cs, 12 feats) | 5 | 5 | 2 | `CanonicalCareer` y `CanonicalSubject`, que son entidades nuevas y no un rename |
+| `reviews` (127 .cs, 12 feats) | 6 | 6 | 3 | `Phrase`, `MarkedPhrase`, `Voice`, `Outcome`, el testimonio |
+| `enrollments` (79 .cs, 5 feats) | 5 | 0 | 1 | nada: `EnrollmentRecord` es el ancla que la tesis sigue usando (ADR-0005) |
+| `moderation` (44 .cs, 4 feats) | 2 | 2 | 0 | las tres colas de verificación y la auditoría del equipo |
+| `planning` (101 .cs, 10 feats) | 0 | 0 | 10 | nada: se retira entero, salvo un rescate (ver R0) |
+
+**El corazón de la tesis no existe.** `phrase`, `frase` y `testimonio` dan **cero archivos** en el backend. Lo que reemplaza al puntaje no tiene una línea escrita.
+
+> **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. **Y hay una parte que se sabe mal**: los inventarios de `reviews`, `enrollments` y `academic` mapearon las features contra IDs del producto **viejo** (US-003, US-015, US-055, US-060 a US-064 y otros), que ya no existen. Ese mapeo se rehace en R0 antes de planificar R1. Los de `identity` y `planning` sí citaron IDs vigentes y están verificados a mano.
+
+---
+
+## R0 · Achicar antes de construir
+
+**Estado**: Planificado. **Rango**: por definir.
+
+**El foco**: el rework no empieza construyendo. Empieza sacando lo que el viraje dejó sin dueño y fijando los parámetros que ningún test puede asumir. Es el orden de [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) y del propio [CLAUDE.md](../../CLAUDE.md): antes de optimizar o construir algo, preguntar si debería existir.
+
+**Lo que R0 explícitamente NO hace**: nada del producto nuevo. Ni frases, ni voces, ni testimonio, ni réplica. Eso es R1 en adelante.
+
+### Tareas
+
+- [ ] **Cerrar los dos ADR en propuesto.** [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md) fija el z del encogimiento, el denominador de una proporción y cuántas voces suma una persona; sin eso ninguna proporción publicada se calcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
+
+- [ ] **Rescatar el evaluador de disponibilidad a `academic`, antes de tocar `planning`.** Mueve `SubjectAvailabilityEvaluator`, su interfaz, `SubjectAvailability`, `SubjectProgress`, `PrerequisiteEdge` y `AvailabilityStatus` de `planning/Domain/Availability/` a `academic/Domain/Availability/`. Es lógica de dominio pura, sin I/O. **No es una decisión de este plan**: la story US-144 ya lo dejó escrito en su propio criterio de aceptación.
+
+- [ ] **Podar `planning` entero.** Sus 10 features, el aggregate `SimulationDraft` con sus hijos, los servicios de horarios (`ScheduleClash`, `ScheduleClashDetector`, `ScheduledBlock`), las dos migraciones EF del schema `planning`, el wiring de DI en `Program.cs` (líneas 17-18, 124-125, 139, 198-199), las referencias a `PlanningDbContext` en `DevMigrationsHostedService` y `MigrateDbCommand`, los tests de integración de `Planning/`, y el feature `plan` del frontend con sus llamadas a `/api/planning/*`.
+
+- [ ] **Arreglar la fuga de enumeración en el registro.** Verificado en el código: `RegisterUserCommandHandler.cs:37-40` devuelve `EmailAlreadyInUse` cuando el mail ya tiene cuenta, que es exactamente lo que ADR-0076 prohíbe. Es la primera pieza del producto nuevo que se toca, y se toca porque es una fuga, no porque sea una feature.
+
+- [ ] **Rehacer el mapeo story del inventario** de `reviews`, `enrollments` y `academic` contra los IDs vigentes (US-127 a US-230). Sin esto, R1 se planifica contra referencias muertas.
+
+### Cómo se sabe que R0 está listo
+
+Cuatro cosas verificables, no una sensación:
+
+1. `grep -rn "Planning" backend --include="*.cs"` fuera de `docs/history` devuelve **cero**.
+2. `just ci` en verde: build, tests, lint, typecheck y docs.
+3. Los dos ADR están en **aceptado** o en **rechazado**, ninguno en propuesto.
+4. Existe un test que prueba que registrarse con un mail que ya tiene cuenta responde **igual** que con uno que no. Hoy ese test está en rojo, y es el primero del régimen nuevo.
+
+### Notas
+
+**El orden entre el rescate y la poda no es negociable**: si `planning` se borra antes de mover el evaluador, US-144 y US-145 se quedan sin la lógica que resuelve correlativas y hay que reescribirla.
+
+**La poda toca la base de datos.** Las dos migraciones del schema `planning` tienen su `Down`, así que son reversibles, pero si se corrieron hay datos. La política de rollback está en [`rollback.md`](../engineering/rollback.md).
+
+**No hay story que citar.** R0 es trabajo técnico sin producto atrás, que según [`story-template.md`](story-template.md) se anota como tarea de sprint y no inventa una US para justificarse.
+
+---
+
+## Lo anterior: el producto en retiro
+
+Todo lo que sigue, de S0 a S12, es el planificador de cuatrimestre. Se conserva como historia y no se edita.
 
 ---
 
