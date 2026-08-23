@@ -84,6 +84,8 @@ Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, má
 
 - [ ] **Arreglar la fuga de enumeración en el registro.** Verificado en el código: `RegisterUserCommandHandler.cs:37-40` devuelve `EmailAlreadyInUse` cuando el mail ya tiene cuenta, que es exactamente lo que ADR-0076 prohíbe. Es la primera pieza del producto nuevo que se toca, y se toca porque es una fuga, no porque sea una feature.
 
+- [ ] **Propagar ADR-0078** (el cuestionario recolecta en pares, la ficha reporta por temas): asignar el tema a las 46 frases y poblar las familias vacías en sesión de curaduría; reescribir las stories de Reseñar al flujo por temas; el Método suma los indicadores nuevos (prevalencia por tema, retrato, ¿responden?) con sus definiciones; y decidir la política de muestra chica (supresión, sin piso, o híbrida), que es compuerta de la ficha. Hasta esta propagación, stories y fichas describen la versión anterior.
+
 - [ ] **Rehacer el mapeo story del inventario** de `reviews`, `enrollments` y `academic` contra los IDs vigentes (US-127 a US-230). Sin esto, R1 se planifica contra referencias muertas.
 
 ### Cómo se sabe que R0 está listo
