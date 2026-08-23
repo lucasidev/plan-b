@@ -36,7 +36,7 @@ flowchart TD
 
 ## Pantallas
 
-Este flujo no dibuja pantallas del sitio: los cinco caminos son el contenido de cinco mails distintos, y todos viven en [Avisos](screens/SC-034-mail/README.md). Dónde se apaga cada uno es [Mi perfil](../undo/screens/SC-019-my-profile/README.md), de la épica Deshacer.
+Este flujo no dibuja pantallas del sitio: los cinco caminos son el contenido de cinco mails distintos, y todos viven en [Avisos](screens/SC-034-mail/README.md). Dónde se apaga cada uno es [Mi perfil](../student/undo/screens/SC-019-my-profile/README.md), de la épica Deshacer.
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 

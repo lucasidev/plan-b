@@ -7,8 +7,10 @@
  *  2. Em-dashes (U+2014) en docs/: la convención de prosa del repo no los usa.
  *  3. Períodos codificados ("2025 1C") como copy en docs de producto: ADR-0051 y el glosario
  *     ("nunca codificada en letras").
- *  4. Las stories: una por archivo `US-NNN-slug.md` adentro de su épica, ID único en todo el
- *     producto, y el índice de cada épica lista exactamente las que existen (ADR-0072).
+ *  4. Las stories: una carpeta `US-NNN-slug/` por story adentro de su épica (que vive en su
+ *     recorrido: student/, teacher/, team/; ADR-0077), con su `README.md` y su `scenarios.md`,
+ *     ID único en todo el producto, y el índice de cada épica lista exactamente las que
+ *     existen (ADR-0072). Las garantías son stories directas de guarantees/, mismo slice.
  *  5. Bloques mermaid balanceados y sin comillas dobles (rompen el render).
  *  6. Las pantallas: una carpeta `SC-NNN-slug` con ficha y boceto, ID único, los headings del
  *     contrato (docs/plan/screen-template.md), y trazabilidad simétrica con las stories: si una
@@ -100,15 +102,31 @@ for (const f of all.filter(
   });
 }
 
-// 4. las stories: un archivo por story, ID único, y el índice de su épica las lista a todas
-const STORY = /^US-(\d+)-[a-z0-9-]+\.md$/;
+// 4. las stories: una carpeta por story con su letra y sus casos, ID único, y el índice de su
+//    épica las lista a todas
+const STORY = /^US-(\d+)-[a-z0-9-]+$/;
 const seen = new Map<string, string>();
 const productDir = join(ROOT, 'docs', 'product');
+// las épicas son tramos de un recorrido (ADR-0077): viven un nivel adentro. Lo que no es
+// un tramo vive al nivel producto: guarantees/ (stories directas) y notices/ (solo pantallas).
+const JOURNEYS = ['student', 'reviewed', 'team'];
+const epicRels: string[] = [];
 if (existsSync(productDir)) {
-  for (const epic of readdirSync(productDir)) {
+  for (const j of JOURNEYS) {
+    const jd = join(productDir, j);
+    if (!existsSync(jd)) continue;
+    for (const e of readdirSync(jd, { withFileTypes: true }))
+      if (e.isDirectory()) epicRels.push(`${j}/${e.name}`);
+  }
+  if (existsSync(join(productDir, 'notices'))) epicRels.push('notices');
+}
+if (existsSync(productDir)) {
+  for (const epic of epicRels) {
     const storiesDir = join(productDir, epic, 'stories');
     if (!existsSync(storiesDir)) continue;
-    const files = readdirSync(storiesDir).filter((f) => f.endsWith('.md'));
+    const files = readdirSync(storiesDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
     const idx = existsSync(join(productDir, epic, 'README.md'))
       ? readFileSync(join(productDir, epic, 'README.md'), 'utf-8')
       : '';
@@ -119,7 +137,7 @@ if (existsSync(productDir)) {
           file: `docs/product/${epic}/stories/${f}`,
           line: 0,
           rule: 'story-mal-nombrada',
-          detail: 'el nombre tiene que ser US-NNN-slug-en-ingles.md',
+          detail: 'la carpeta tiene que llamarse US-NNN-slug-en-ingles',
         });
         continue;
       }
@@ -134,8 +152,18 @@ if (existsSync(productDir)) {
           detail: `${id} ya existe en ${prev}`,
         });
       else seen.set(id, `${epic}/stories/${f}`);
+      // la carpeta es el slice: la letra y los casos viven juntos
+      for (const parte of ['README.md', 'scenarios.md']) {
+        if (!existsSync(join(storiesDir, f, parte)))
+          findings.push({
+            file: `docs/product/${epic}/stories/${f}/`,
+            line: 0,
+            rule: 'slice-incompleto',
+            detail: `${id} no tiene su ${parte}`,
+          });
+      }
       // el README de la épica es el índice: tiene que linkearla
-      if (!idx.includes(f)) {
+      if (!idx.includes(`stories/${f}/`)) {
         findings.push({
           file: `docs/product/${epic}/README.md`,
           line: 0,
@@ -145,7 +173,7 @@ if (existsSync(productDir)) {
       }
     }
     // y al revés: el índice no linkea stories que no existen
-    for (const m of idx.matchAll(/\(stories\/(US-\d+-[a-z0-9-]+\.md)\)/g)) {
+    for (const m of idx.matchAll(/\(stories\/(US-\d+-[a-z0-9-]+)\/README\.md\)/g)) {
       if (!files.includes(m[1]))
         findings.push({
           file: `docs/product/${epic}/README.md`,
@@ -155,22 +183,74 @@ if (existsSync(productDir)) {
         });
     }
   }
+  // las garantías: stories directas en guarantees/, mismo slice y mismo ID único
+  const gdir = join(productDir, 'guarantees');
+  if (existsSync(gdir)) {
+    const gidx = existsSync(join(gdir, 'README.md'))
+      ? readFileSync(join(gdir, 'README.md'), 'utf-8')
+      : '';
+    for (const d of readdirSync(gdir, { withFileTypes: true }).filter((x) => x.isDirectory())) {
+      const m = d.name.match(STORY);
+      if (!m) {
+        findings.push({
+          file: `docs/product/guarantees/${d.name}`,
+          line: 0,
+          rule: 'story-mal-nombrada',
+          detail: 'la carpeta tiene que llamarse US-NNN-slug-en-ingles',
+        });
+        continue;
+      }
+      const id = `US-${m[1]}`;
+      const prev = seen.get(id);
+      if (prev)
+        findings.push({
+          file: `docs/product/guarantees/${d.name}`,
+          line: 0,
+          rule: 'id-duplicado',
+          detail: `${id} ya existe en ${prev}`,
+        });
+      else seen.set(id, `guarantees/${d.name}`);
+      for (const parte of ['README.md', 'scenarios.md']) {
+        if (!existsSync(join(gdir, d.name, parte)))
+          findings.push({
+            file: `docs/product/guarantees/${d.name}/`,
+            line: 0,
+            rule: 'slice-incompleto',
+            detail: `${id} no tiene su ${parte}`,
+          });
+      }
+      if (!gidx.includes(`${d.name}/README.md`)) {
+        findings.push({
+          file: 'docs/product/guarantees/README.md',
+          line: 0,
+          rule: 'indice-incompleto',
+          detail: `${id} tiene carpeta y el índice de garantías no la lista`,
+        });
+      }
+    }
+  }
 }
 // el índice general declara cuántas stories tiene cada épica: que no mienta
 const indexPath = join(ROOT, 'docs', 'product', 'README.md');
 if (existsSync(indexPath)) {
   for (const ln of readFileSync(indexPath, 'utf-8').split('\n')) {
-    const m = ln.match(/^\| \[[^\]]+\]\(([^/]+)\/README\.md\) \|[^|]*\|[^|]*\|[^|]*\| (\d+) \|/);
-    if (!m) continue;
-    const dir = join(productDir, m[1], 'stories');
+    // la fila de una tabla: la primera celda linkea la carpeta, la anteúltima es Stories
+    const cells = ln.split('|').map((x) => x.trim());
+    const m = cells[1]?.match(/^\[[^\]]+\]\(([^)]+)\/README\.md\)$/);
+    const num = cells[cells.length - 3];
+    if (!m || !num || !/^\d+$/.test(num)) continue;
+    const dir =
+      m[1] === 'guarantees' ? join(productDir, 'guarantees') : join(productDir, m[1], 'stories');
     if (!existsSync(dir)) continue;
-    const real = readdirSync(dir).filter((f) => f.endsWith('.md')).length;
-    if (real !== Number(m[2]))
+    const real = readdirSync(dir, { withFileTypes: true }).filter(
+      (d) => d.isDirectory() && STORY.test(d.name),
+    ).length;
+    if (real !== Number(num))
       findings.push({
         file: 'docs/product/README.md',
         line: 0,
         rule: 'conteo-desincronizado',
-        detail: `${m[1]}: el índice dice ${m[2]} stories, hay ${real} archivos`,
+        detail: `${m[1]}: el índice dice ${num} stories, hay ${real} carpetas`,
       });
   }
 }
@@ -215,8 +295,9 @@ const CONTRATO = [
 const screenIds = new Map<string, string>();
 const screenStories = new Map<string, Set<string>>(); // SC-NNN -> stories que declara
 const storyScreens = new Map<string, Set<string>>(); // US-NNN -> pantallas que declara
+const garantias = new Set<string>(); // las que aplican a las 34 y solo citan ejemplos
 if (existsSync(productDir)) {
-  for (const epic of readdirSync(productDir)) {
+  for (const epic of epicRels) {
     const dir = join(productDir, epic, 'screens');
     if (!existsSync(dir)) continue;
     for (const scr of readdirSync(dir)) {
@@ -274,20 +355,48 @@ if (existsSync(productDir)) {
       const decl = t.split('## Qué stories resuelve')[1]?.split(/^## /m)[0] ?? '';
       screenStories.set(id, new Set([...decl.matchAll(/\bUS-(\d+)\b/g)].map((x) => `US-${x[1]}`)));
     }
-    // lo que cada story declara en "Dónde se resuelve"
+  }
+}
+// lo que cada story declara en "Dónde se resuelve". Va en su propio loop: adentro del de
+// arriba, la épica sin carpeta `screens/` se salteaba entera y sus stories no entraban acá,
+// así que la trazabilidad no las miraba. Le pasaba a "Que no me molesten", que no tiene
+// pantalla propia y es la que más cruza: sus cuatro stories nunca se verificaron.
+if (existsSync(productDir)) {
+  for (const epic of epicRels) {
     const sdir = join(productDir, epic, 'stories');
     if (!existsSync(sdir)) continue;
-    for (const f of readdirSync(sdir).filter((x) => x.endsWith('.md'))) {
+    for (const d of readdirSync(sdir, { withFileTypes: true }).filter((x) => x.isDirectory())) {
+      const f = d.name;
       const id = f.match(/^(US-\d+)/)?.[1];
-      if (!id) continue;
-      const t = readFileSync(join(sdir, f), 'utf-8');
+      if (!id || !existsSync(join(sdir, f, 'README.md'))) continue;
+      const t = readFileSync(join(sdir, f, 'README.md'), 'utf-8');
       const sec = t.split('## Dónde se resuelve')[1]?.split(/^## /m)[0] ?? '';
+      // una garantía transversal se declara tal cual y no tiene pantalla propia: aplica a las
+      // 34, así que las que nombra son ejemplos ("donde más se juega"), nunca su lista entera
+      if (sec.includes('garantía transversal')) garantias.add(id);
+      storyScreens.set(id, new Set([...sec.matchAll(/\bSC-(\d+)\b/g)].map((x) => `SC-${x[1]}`)));
+    }
+  }
+  // las garantías declaran su "Dónde se resuelve" con ejemplos: entran al mapa igual,
+  // y la detección de abajo las exime de la simetría
+  const gdir = join(productDir, 'guarantees');
+  if (existsSync(gdir)) {
+    for (const d of readdirSync(gdir, { withFileTypes: true }).filter((x) => x.isDirectory())) {
+      const id = d.name.match(/^(US-\d+)/)?.[1];
+      if (!id || !existsSync(join(gdir, d.name, 'README.md'))) continue;
+      const t = readFileSync(join(gdir, d.name, 'README.md'), 'utf-8');
+      const sec = t.split('## Dónde se resuelve')[1]?.split(/^## /m)[0] ?? '';
+      garantias.add(id);
       storyScreens.set(id, new Set([...sec.matchAll(/\bSC-(\d+)\b/g)].map((x) => `SC-${x[1]}`)));
     }
   }
 }
-// la story dice una pantalla que no la lista, o al revés: una de las dos miente
+// la story dice una pantalla que no la lista, o al revés: una de las dos miente. Las garantías
+// quedan afuera en las dos direcciones: aplican a las 34, así que ni la ficha les debe una
+// entrada por mencionarlas ni ellas le deben una a cada pantalla que las honra. Exigirles
+// simetría es pedirles una lista que por definición no pueden cerrar.
 for (const [story, screens] of storyScreens) {
+  if (garantias.has(story)) continue;
   for (const sc of screens) {
     if (!screenIds.has(sc)) {
       findings.push({
@@ -309,6 +418,7 @@ for (const [story, screens] of storyScreens) {
 }
 for (const [sc, stories] of screenStories) {
   for (const st of stories) {
+    if (garantias.has(st)) continue;
     const declared = storyScreens.get(st);
     if (declared && !declared.has(sc)) {
       findings.push({
@@ -321,14 +431,15 @@ for (const [sc, stories] of screenStories) {
   }
 }
 
-// 8. toda pantalla tiene una story de SU épica que la pida (ADR-0070 punto 7).
-//    La simetría del punto 6 no alcanza: una pantalla puede estar citada solo por
-//    stories de otras épicas que pasan por ahí, y entonces existe sin que nadie la
-//    haya pedido. Le pasó a Recuperar, y de ahí salió US-220; le seguía pasando a
-//    Registro, Ingresar y Error hasta que aparecieron US-228, US-229 y US-230, y
-//    esto no lo cantaba nada. Las épicas sin carpeta `stories/` quedan afuera a
-//    propósito: son infraestructura transversal que declara no tener requisitos
-//    propios (Avisos), y su README lo dice.
+// 8. toda pantalla tiene una story de SU épica que la pida (ADR-0070 punto 7). La pantalla
+//    es de la épica del acto que la origina, y que otras épicas le pongan condiciones no la
+//    saca de ahí: Registro es de Entrar aunque cuatro épicas más le agreguen requisitos.
+//    La simetría del punto 6 no alcanza para verlo: una pantalla puede estar citada solo por
+//    stories de otras épicas que pasan por ahí, y entonces existe sin que nadie haya pedido
+//    el acto. Le pasó a Recuperar, y de ahí salió US-220; le seguía pasando a Registro,
+//    Ingresar y Error hasta que aparecieron US-228, US-229 y US-230, y esto no lo cantaba
+//    nada. Las épicas sin carpeta `stories/` quedan afuera a propósito: son infraestructura
+//    transversal que declara no tener requisitos propios (Avisos), y su README lo dice.
 for (const [sc, ubicacion] of screenIds) {
   const epic = ubicacion.split('/')[0];
   if (!existsSync(join(productDir, epic, 'stories'))) continue;
