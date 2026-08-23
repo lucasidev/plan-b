@@ -68,11 +68,24 @@ Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, má
 
 ## R0 · Achicar antes de construir
 
-**Estado**: Planificado. **Rango**: por definir.
+**Estado**: Planificado, con backlog operativo en GitHub: milestone **R0**, seis issues, 20 puntos. **Rango**: por definir (la cadencia la fija Lucas).
 
 **El foco**: el rework no empieza construyendo. Empieza sacando lo que el viraje dejó sin dueño y fijando los parámetros que ningún test puede asumir. Es el orden de [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) y del propio [CLAUDE.md](../../CLAUDE.md): antes de optimizar o construir algo, preguntar si debería existir.
 
 **Lo que R0 explícitamente NO hace**: nada del producto nuevo. Ni frases, ni voces, ni testimonio, ni réplica. Eso es R1 en adelante.
+
+### Secuencia
+
+| # | Issue | Pts | Qué gatea |
+|---|---|---|---|
+| 1 | [#348 · Cerrar ADR-0075 y ADR-0076](https://github.com/lucasidev/plan-b/issues/348) | 1 | R1 entero: no se planifica con parámetros en propuesto. Decisión de Lucas |
+| 2 | [#349 · Rescatar el evaluador a academic](https://github.com/lucasidev/plan-b/issues/349) | 3 | la poda: va antes, o US-144 pierde su lógica |
+| 3 | [#350 · Podar planning entero](https://github.com/lucasidev/plan-b/issues/350) | 5 | el criterio 1 de salida (cero Planning en backend) |
+| 4 | [#351 · Arreglar la fuga de enumeración](https://github.com/lucasidev/plan-b/issues/351) | 3 | nada: independiente; su test es el primero del régimen nuevo |
+| 5 | [#353 · Rehacer el mapeo del inventario](https://github.com/lucasidev/plan-b/issues/353) | 3 | la planificación de R1: sin esto se planifica contra referencias muertas |
+| 6 | [#352 · Propagar ADR-0078](https://github.com/lucasidev/plan-b/issues/352) | 5 | la ficha: la política de muestra chica se decide acá; la curaduría es sesión con Lucas |
+
+El 4 y el 5 no dependen de nadie y pueden correr en paralelo con el rescate y la poda. El 1 y la parte de curaduría del 6 son de Lucas; el resto es ejecutable.
 
 ### Tareas
 
