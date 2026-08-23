@@ -10,6 +10,8 @@ Tu plan de estudios con las correlativas resueltas: las materias, lo que ya rese
 
 **Lucía** (se anotó en cinco y dejó dos: no quiere repetir el error). **Matías** y **Diego** no la usan: no marcan ningún plan, y el producto funciona igual para ellos (US-170).
 
+Es un tramo propio y no un apéndice de [Elegir dónde estudiar](../choose-where-to-study/README.md) porque es otro momento del recorrido: Elegir es antes de entrar (Valentina decide dónde); esto es ya adentro (Lucía decide cómo seguir). Mismo lector, otra pregunta ([ADR-0077](../../../decisions/0077-the-product-docs-read-as-journeys.md), duda cerrada el 2026-08-23).
+
 ## Stories
 
 Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.

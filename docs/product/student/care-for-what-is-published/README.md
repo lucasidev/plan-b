@@ -10,6 +10,8 @@ Lo que pasa después de publicar, sin que nadie tenga que escribir de nuevo: sum
 
 **Matías** (ya aportó y quiere sumar su voz a lo que otro escribió, sin escribir de nuevo), quien vuelve con cuenta y encuentra un dato duro mal cargado (no hace falta haber aportado antes: D07), quien lee los testimonios y confía más en el que más gente confirmó, y quien ya aportó y quiere que lo suyo pese más probando su condición de alumno, sin que eso sea la puerta de entrada para hablar.
 
+Es un tramo propio y no parte de [Deshacer](../undo/README.md) porque el objeto es otro: Deshacer vuelve sobre **lo propio** (editar o borrar lo que conté); esto vuelve sobre **lo común** (la voz de otro, el dato de la ficha). Mismo actor, otro objeto ([ADR-0077](../../../decisions/0077-the-product-docs-read-as-journeys.md), duda cerrada el 2026-08-23).
+
 ## Stories
 
 Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.

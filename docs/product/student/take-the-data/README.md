@@ -10,6 +10,8 @@ Descargar el crudo sin registrarse: dos tablas (frases por sujeto y período con
 
 **Rocío** (necesita el crudo, no nuestras conclusiones; nos usa y a la vez nos audita). **Quien lee** (ve el texto retirado y la marca de destilada en cada ficha, US-185, US-186).
 
+La persona de este tramo no es la alumna: es **quien investiga**. Vive igual en `student/` como cierre del recorrido de lectura (leí, aporté, me llevo el dato para discutirlo afuera): un recorrido propio de un solo tramo sería una carpeta por pureza ([ADR-0077](../../../decisions/0077-the-product-docs-read-as-journeys.md), duda cerrada el 2026-08-23).
+
 ## Stories
 
 Las 8 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
