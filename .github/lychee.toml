@@ -21,9 +21,12 @@ max_concurrency = 8
 max_redirects = 5
 
 # Aceptar 200, 202 (accepted, lo usan CDNs como Atlassian para protección
-# anti-bot), 206 (partial), 304 (cached). Algunos sitios devuelven 403/429
-# como anti-bot — los marcamos como tolerables para no romper CI.
-accept = [200, 202, 206, 304]
+# anti-bot), 206 (partial), 304 (cached), y 403/429: los devuelven como
+# anti-bot sitios que citan los ADRs (Glassdoor, Taylor & Francis, ResearchGate,
+# scrum.org, ACM) y no significan que el link esté muerto (eso es 404/410). Este
+# comentario prometía tolerarlos desde el principio; la lista no los tenía, y el
+# primer PR que citó esos sitios falló por eso.
+accept = [200, 202, 206, 304, 403, 429]
 
 # Excluir el directorio node_modules (frontend) y vendored content.
 exclude_path = [
