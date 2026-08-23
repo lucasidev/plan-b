@@ -26,6 +26,8 @@ Tres preguntas. Si las tres son "sí", escribilo. Si alguna es "no", no amerita.
 
 Archivos numerados secuencialmente: `NNNN-titulo-corto.md`.
 
+**Una alternativa es una opción rival, no un complemento.** Si algo se puede hacer **además** de lo que se decide, no va en "Alternativas consideradas": ponerlo ahí lo condena, porque se lo descarta por comparación con la opción elegida cuando nunca estuvo compitiendo. Va en una sección aparte, del tipo "Lo que compone, no compite". Pasó en [ADR-0076](0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md): el rate limiting se escribió como *"en vez de"* la respuesta genérica, se descartó por eso, y volvió recién cuando un pase adversarial encontró el agujero que tapaba.
+
 **El título y el filename van en inglés. El cuerpo va en español rioplatense.** Lo verifica `scripts/check-docs.ts` en cada push: un ADR nuevo cuyo título o filename lea como español sale como hallazgo. Los 60 que estaban en español se migraron el 2026-08-21, así que no hay excepciones ni número de corte.
 
 Es el mismo corte que rige el resto del repo, aplicado a los artefactos: el título es un identificador de una línea, del lado de los nombres de rama y los identificadores del código; el cuerpo es prosa, del lado de los comentarios y los docstrings.
