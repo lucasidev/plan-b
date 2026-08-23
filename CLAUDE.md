@@ -66,10 +66,11 @@ plan-b/
 │   └── src/{app,features,components,lib}/
 ├── docs/                    Cinco carpetas, una pregunta cada una (ADR-0070)
 │   ├── THESIS.md            ¿qué es y qué no hace? La tesis gobierna todo lo demás
-│   ├── product/             ¿qué hace y para quién? Personas, glosario, frases, lenguaje
-│   │                        visual, y una carpeta por épica con TODO lo suyo adentro:
-│   │                        sus stories (una por archivo), su flujo en mermaid y sus
-│   │                        pantallas con ficha y boceto
+│   ├── product/             ¿qué hace y para quién? Leído como recorridos (ADR-0077):
+│   │                        student/, reviewed/ y team/, cada uno con sus tramos (las épicas)
+│   │                        y cada tramo con TODO lo suyo adentro: sus stories (una carpeta
+│   │                        cada una: letra + escenarios), su flujo y sus pantallas. Al nivel
+│   │                        producto: guarantees/ (valen en toda pantalla) y notices/ (canal)
 │   ├── engineering/         ¿cómo está construido? ERD, Redis, testing, git, rollback, deploy
 │   ├── decisions/           ¿por qué? ADRs (MADR), en orden cronológico
 │   ├── plan/                ¿cuándo? Los sprints con el trabajo de cada story, y el DoD
@@ -88,7 +89,7 @@ plan-b/
 - **Versioning**: pre-deploy no hay versiones ni releases. Tags narrativos manuales (`presentacion-fase-2-...`) permitidos para hitos. Política completa en [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md); revisar cuando aterrice primer deploy.
 - **No pusheos directos a `main`**. Flow PRs-only. Branches `type/scope-description` (ej. `feat/identity-register`, `fix/moderation-threshold`). **Sin US numbers en el branch name** (las US van en commit body o PR body). Merge strategy: **Rebase and merge** por default, **Squash and merge** si el PR tiene commits WIP, **nunca "Create a merge commit"** en esta fase. Ver [ADR-0026](docs/decisions/0026-git-workflow-github-flow-with-rebase.md) (decisión) y [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md) (bitácora operacional con anti-patterns).
 - **Decisiones con alternativas reales → ADR** en `docs/decisions/NNNN-title-in-english.md` (título y filename en inglés, cuerpo en español; lo chequea `check-docs`). Ver [`docs/decisions/README.md`](docs/decisions/README.md) para criterios.
-- **Gestión del proyecto**: **la story vive en su épica** (`docs/product/<epic>/stories/US-NNN-slug.md`), con su criterio de aceptación y sin estado de gestión. El tracker es [`docs/plan/status.md`](docs/plan/status.md), que la **cita por ID** y le agrega el sprint, las tareas y el contrato técnico ([ADR-0072](docs/decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)). **El ID no cambia nunca y no lleva semántica**: la story no se parte por razones de ejecución, se parte el trabajo. Formato y reglas en [`docs/plan/story-template.md`](docs/plan/story-template.md). Notion se dejó de usar el 2026-08-18: no se sincroniza, no se crean pages, y lo que quedó ahí es historia. **Al mergear un PR, el que mergea actualiza el estado de la story en `status.md`, en el mismo PR.** Lecciones operativas en [`docs/engineering/lessons-learned.md`](docs/engineering/lessons-learned.md).
+- **Gestión del proyecto**: **la story vive en su épica** (`docs/product/<journey>/<epic>/stories/US-NNN-slug/`, una carpeta con su letra y sus escenarios), con su criterio de aceptación y sin estado de gestión. El tracker es [`docs/plan/status.md`](docs/plan/status.md), que la **cita por ID** y le agrega el sprint, las tareas y el contrato técnico ([ADR-0072](docs/decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)). **El ID no cambia nunca y no lleva semántica**: la story no se parte por razones de ejecución, se parte el trabajo. Formato y reglas en [`docs/plan/story-template.md`](docs/plan/story-template.md). Notion se dejó de usar el 2026-08-18: no se sincroniza, no se crean pages, y lo que quedó ahí es historia. **Al mergear un PR, el que mergea actualiza el estado de la story en `status.md`, en el mismo PR.** Lecciones operativas en [`docs/engineering/lessons-learned.md`](docs/engineering/lessons-learned.md).
 - **Persistence ignorance** ([ADR-0017](docs/decisions/0017-persistence-ignorance.md)): el dominio no sabe ni le importa dónde se persisten los datos. No FKs cross-schema, no EF navigation cross-module.
 - **Scripts en TypeScript** (`bun`), no en bash: es lo que los hace correr igual en Windows, donde el shell del Justfile es pwsh y `rm -rf` no existe. Pasan por biome y `tsc` como el resto del código (`just scripts-lint`, `just scripts-typecheck`).
 - **No referenciar paths locales, proyectos privados externos, ni secrets en código/docs.**

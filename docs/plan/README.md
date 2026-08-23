@@ -12,7 +12,7 @@
 
 **La story dice qué quiere el usuario; el plan dice cuándo se hace y cómo va.**
 
-La story vive en su épica, en `product/<épica>/stories/US-NNN-slug.md`, y no tiene estado ni sprint ni estimación. Acá se la cita por ID y se le agrega todo lo de ejecución: en qué sprint entra, en qué tareas se parte, su contrato técnico, su estado.
+La story vive en su épica, en `product/<épica>/stories/US-NNN-slug/`, y no tiene estado ni sprint ni estimación. Acá se la cita por ID y se le agrega todo lo de ejecución: en qué sprint entra, en qué tareas se parte, su contrato técnico, su estado.
 
 **La referencia va en una sola dirección**: el plan cita al producto, nunca al revés. Si al planificar aparece un comportamiento que la story no tenía, la story está incompleta y se arregla allá, no acá.
 

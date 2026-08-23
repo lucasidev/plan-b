@@ -186,6 +186,11 @@ scripts-typecheck:
 
 # Coherencia de la documentación de producto (ADR-0070): links, em-dashes,
 # stories, pantallas, trazabilidad e idioma de los ADR.
+# El punto de partida de TDD/ATDD: el "listo cuando" y los escenarios de una
+# story, para escribir el test antes que el codigo (ADR-0072, ADR-0077)
+scenarios us:
+    bun scripts/show-scenarios.ts {{us}}
+
 check-docs:
     bun scripts/check-docs.ts
 

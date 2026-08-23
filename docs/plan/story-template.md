@@ -4,9 +4,9 @@ Dos artefactos, dos lugares, y ninguno repite al otro.
 
 | | Dónde vive | Qué dice | Qué NO dice |
 |---|---|---|---|
-| **La story** | `docs/product/<épica>/stories/US-NNN-slug.md` | qué quiere el usuario, cuándo está lista y en qué pantallas se resuelve | nada de estado, sprint, estimación ni implementación |
-| **La pantalla** | `docs/product/<épica>/screens/SC-NNN-slug/` | cómo se ve y cómo se recorre ([contrato](screen-template.md)) | qué tiene que lograr: eso lo dicen sus stories |
-| **Los escenarios** | `docs/product/<épica>/scenarios.md` | cada "listo cuando" en Dado/Cuando/Entonces con valores concretos, sus casos negativos y sus casos borde | nada nuevo: es el criterio hecho preciso, no un requisito más |
+| **La story** | `docs/product/<recorrido>/<épica>/stories/US-NNN-slug/` | una carpeta con todo lo suyo: `README.md` (qué quiere el usuario, cuándo está lista, en qué pantallas se resuelve), `scenarios.md` (sus casos) y su boceto | nada de estado, sprint ni estimación |
+| **La pantalla** | `docs/product/<recorrido>/<épica>/screens/SC-NNN-slug/` | cómo se ve y cómo se recorre ([contrato](screen-template.md)) | qué tiene que lograr: eso lo dicen sus stories |
+| **Los escenarios** | `docs/product/<recorrido>/<épica>/stories/US-NNN-slug/scenarios.md` | cada "listo cuando" en Dado/Cuando/Entonces con valores concretos, sus casos negativos y sus casos borde | nada nuevo: es el criterio hecho preciso, no un requisito más |
 | **La planificación** | acá, en [`status.md`](status.md) | en qué sprint entra, cómo va, en qué tareas se parte | nada de lo que el producto tiene que hacer: eso lo dice la story |
 
 ---
@@ -16,7 +16,7 @@ Dos artefactos, dos lugares, y ninguno repite al otro.
 ```markdown
 # US-NNN: <título corto en español, lo que la story pide>
 
-**Épica**: [Reseñar](../README.md)
+**Épica**: [Reseñar](../../README.md)
 **Del mapa**: O4-1
 
 ## Historia
@@ -30,7 +30,7 @@ Como <rol>, quiero <lo que quiere>, porque <por qué le importa>.
 
 ## Dónde se resuelve
 
-- [Reseñar](../screens/SC-015-write-review/README.md): <qué parte de esta story pasa en esa pantalla>
+- [Reseñar](../../screens/SC-015-write-review/README.md): <qué parte de esta story pasa en esa pantalla>
 
 <Las pantallas donde esta story ocurre, con una línea cada una. Si la story no tiene pantalla (una garantía, un mail, una regla de fondo), se dice acá por qué. La ficha de cada pantalla lista esta story del otro lado, y `check-docs` valida que las dos listas coincidan.>
 
@@ -39,7 +39,9 @@ Como <rol>, quiero <lo que quiere>, porque <por qué le importa>.
 <dependencias con otras stories, decisiones que la gobiernan, lo que deja abierto. Se omite si no hay.>
 ```
 
-**El nombre del archivo**: `US-NNN` (identificación, estable para siempre) más un slug en inglés kebab-case de 3 a 6 palabras que dice de qué trata, igual que los ADRs de este repo. La épica la dice la carpeta, no el nombre.
+**El nombre de la carpeta**: `US-NNN` (identificación, estable para siempre) más un slug en inglés kebab-case de 3 a 6 palabras que dice de qué trata, igual que los ADRs de este repo. La épica la dice la carpeta de arriba, no el nombre.
+
+**Qué hay adentro**: `README.md` es la letra (arriba), `scenarios.md` son sus casos, y `US-NNN.dc.html` es su boceto, que se compone con el de la épica en un solo canvas. El slice vertical del producto queda como el del código: el caso de uso con todo lo suyo junto, y no cada artefacto apilado con los de su tipo.
 
 ### Las reglas que la sostienen
 
@@ -63,7 +65,7 @@ Como <rol>, quiero <lo que quiere>, porque <por qué le importa>.
 Una story entra a un sprint cuando está lista para construirse, y ahí se le define el trabajo. Eso vive en [`status.md`](status.md), en la sección de su sprint:
 
 ```markdown
-### US-NNN · <título de la story>  → [ficha](../product/<épica>/stories/US-NNN-slug.md)
+### US-NNN · <título de la story>  → [la story](../product/<recorrido>/<épica>/stories/US-NNN-slug/README.md)
 
 **Estado**: Planificada | En curso | Done (PR #NN)
 **Effort**: S | M | L
@@ -76,7 +78,7 @@ Una story entra a un sprint cuando está lista para construirse, y ahí se le de
 - [ ] backend: <qué>
 - [ ] frontend: <qué>
 
-**Escenarios de test**: viven en el [`scenarios.md`](../product/README.md) de la épica, no acá. Un Dado/Cuando/Entonces con valores concretos no dice en qué sprint entra ni quién lo hace: es el criterio hecho preciso, así que vive con el criterio. El plan los cita por ID de story.
+**Escenarios de test**: viven en la carpeta de la story, en su `scenarios.md`, no acá. Un Dado/Cuando/Entonces con valores concretos no dice en qué sprint entra ni quién lo hace: es el criterio hecho preciso, así que vive pegado al criterio. El plan los cita por ID de story. Los que cruzan varias stories quedan en el `scenarios.md` de la épica.
 
 **Edge cases**: los que apliquen (flujo abandonado, fallas de red, concurrencia, sesión que expira, datos vacíos, accesibilidad, tiempo).
 

@@ -38,7 +38,7 @@ Arriba, lo que es del producto entero y no se puede cortar sin duplicarlo (Lucí
 
 ## Cuándo va cada cosa
 
-- **Una story nueva** → `product/<épica>/stories/US-NNN-slug.md`, con su "listo cuando", más su fila en el índice del README de esa épica. El formato y las reglas del ID están en [`plan/story-template.md`](plan/story-template.md).
+- **Una story nueva** → `product/<recorrido>/<épica>/stories/US-NNN-slug/README.md`, con su "listo cuando", su `scenarios.md` al lado, más su fila en el índice del README de esa épica. El formato y las reglas del ID están en [`plan/story-template.md`](plan/story-template.md).
 - **Un requisito no funcional** (accesibilidad, legales, rendimiento) → las Restricciones de [`product/README.md`](product/README.md). No son stories: se verifican en el DoD, en todas.
 - **Planificar trabajo** → la sección del sprint en [`plan/status.md`](plan/status.md), citando el ID de la story y agregando lo de ejecución: contrato técnico, tareas, estado.
 - **Trabajo técnico sin producto atrás** (migrar EF, arreglar el CI) → una tarea en [`plan/status.md`](plan/status.md), sin ID de producto.

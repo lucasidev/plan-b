@@ -1,13 +1,13 @@
 # Producto
 
-Acá se describe **qué hace el producto**. La unidad es la **épica**, cortada en vertical ([ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md)): lo que alguien viene a hacer (leer el escrutinio, reseñar, replicar, moderar), con **todo lo suyo adentro**: sus requisitos, su proceso y sus pantallas. No hay pantallas sin dueño ni carpeta de cosas compartidas: si una pantalla la tocan varias épicas, **pertenece a la que la hace existir** y las demás le aportan una acción y lo dicen en su propio README.
+Acá se describe **qué hace el producto**, leído como **recorridos**: el del alumno, el del reseñado y el del equipo. Cada recorrido se compone de **tramos** (las épicas de [ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md), cortadas en vertical): lo que alguien viene a hacer, con **todo lo suyo adentro**: sus requisitos, su proceso y sus pantallas. El orden de los tramos es el backbone: un e2e ("entrar y reseñar") es un segmento de esa fila, no una carpeta. Lo que no es un tramo vive al nivel producto: las [garantías](guarantees/README.md) (valen en toda pantalla) y [Avisos](notices/README.md) (el canal por el que los tres recorridos escriben). No hay pantallas sin dueño ni carpeta de cosas compartidas: si una pantalla la tocan varias épicas, **pertenece a la que la hace existir** y las demás le aportan una acción y lo dicen en su propio README.
 
-**Dos palabras, y no son la misma**: la **épica** es la carpeta; la **story** es un archivo adentro de ella, en `stories/`. Nada de acá tiene estado de gestión: el trabajo se planifica en [`docs/plan/`](../plan/README.md), que cita estos IDs y no los copia ([ADR-0072](../decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)).
+**Dos palabras, y no son la misma**: la **épica** es la carpeta; la **story** es una carpeta adentro de ella, en `stories/`, con su letra, sus escenarios y su boceto. Nada de acá tiene estado de gestión: el trabajo se planifica en [`docs/plan/`](../plan/README.md), que cita estos IDs y no los copia ([ADR-0072](../decisions/0072-the-story-lives-in-its-epic-and-the-plan-only-references-it.md)).
 
 ## Qué hay adentro
 
 ```
-docs/product/<capability>/
+docs/product/<journey>/<epic>/
 ├── README.md              qué es, para quién, SUS REQUISITOS con su criterio de hecho (única copia),
 │                          las decisiones que aplica, sus pantallas, lo que aporta a pantallas de otros,
 │                          y lo que todavía no resuelve
@@ -19,7 +19,7 @@ docs/product/<capability>/
                            archivo para las pantallas que definen el producto: git guarda el mid-fi)
 ```
 
-- **La story** (`stories/US-NNN-slug.md`) vive en su épica, una sola vez y para siempre, con su criterio de aceptación. No tiene estado de gestión: cuando se planifica, [`docs/plan/`](../plan/README.md) la cita por ID y le agrega el sprint, las tareas y el contrato técnico.
+- **La story** (`stories/US-NNN-slug/`) vive en su épica, con su letra, sus escenarios y su boceto adentro, una sola vez y para siempre, con su criterio de aceptación. No tiene estado de gestión: cuando se planifica, [`docs/plan/`](../plan/README.md) la cita por ID y le agrega el sprint, las tareas y el contrato técnico.
 - **El flujo** puede cruzar épicas: el pedido de Ana termina en la cola de Sofía. El handoff se dibuja como un nodo que nombra a la otra épica.
 - **La pantalla** tiene un solo lugar: su épica dueña. El [sitemap](map.md) es el índice derivado de las 34, con su slug y quién le aporta a cada una.
 - **El boceto** es de una pantalla, nunca de una story ni de una épica entera.
@@ -28,26 +28,45 @@ Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el
 
 Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo identificador del repo; el nombre visible de la épica va en español en el texto. Una épica de docs no es un feature de código: sus stories se implementan en uno o más slices de código cuando se planifican.
 
-## Índice
+## Índice: los recorridos y sus tramos
 
-| Épica | Carpeta | Grupo del mapa | Persona que la pide | Stories | Pantallas |
-|---|---|---|---|---|---|
-| [Elegir dónde estudiar](choose-where-to-study/README.md) | `choose-where-to-study/` | O1 (+ US-135, US-136, US-137, US-138) | Valentina, Silvia, quien lee | 14 | 8 |
-| [Pedir una carrera](request-a-career/README.md) | `request-a-career/` | O2 | Ana | 4 | 2 |
-| [Mi carrera](my-career/README.md) | `my-career/` | O3 | Lucía | 3 | 2 |
-| [Reseñar](write-a-review/README.md) | `write-a-review/` | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163, US-164) | Lucía, Matías, Diego | 19 | 3 |
-| [Deshacer](undo/README.md) | `undo/` | O5 | quien ya aportó; quien lee (reportar) | 3 | 4 |
-| [Que no me molesten](do-not-bother-me/README.md) | `do-not-bother-me/` | O6 | quien lee, quien vuelve | 4 | ninguna: es garantía |
-| [Replicar](reply/README.md) | `reply/` | O7 (+ US-179) | Claudia, Paredes, la institución | 9 | 1 |
-| [Llevarse el dato](take-the-data/README.md) | `take-the-data/` | O8 | Rocío | 8 | 1 |
-| [Cuidar lo publicado](care-for-what-is-published/README.md) | `care-for-what-is-published/` | T1 | quien ya aportó, quien vuelve | 3 | 1 |
-| [Entrar](enter/README.md) | `enter/` | el umbral (garantías de O6) | cualquiera que va a producir | 4 | 4 |
-| [Sostener el catálogo](sustain-the-catalog/README.md) | `sustain-the-catalog/` | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 4 |
-| [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md) | `moderate-without-breaking-the-product/` | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 12 | 2 |
-| [Cortar los accesos](cut-the-access/README.md) | `cut-the-access/` | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
-| [Avisos](notices/README.md) | `notices/` | infraestructura transversal | todos | ninguno propio | 1 |
+El orden de cada tabla es el orden del recorrido. El mapa completo, con los escenarios y el esfuerzo de cada story, se genera del repo.
 
-100 stories y 34 pantallas en total.
+### El recorrido del alumno
+
+| Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
+|---|---|---|---|---|
+| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-135, US-136, US-137, US-138) | Valentina, Silvia, quien lee | 14 | 8 |
+| [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
+| [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 4 | 4 |
+| [Mi carrera](student/my-career/README.md) | O3 | Lucía | 3 | 2 |
+| [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163, US-164) | Lucía, Matías, Diego | 19 | 3 |
+| [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 3 | 1 |
+| [Deshacer](student/undo/README.md) | O5 | quien ya aportó | 2 | 4 |
+| [Llevarse el dato](student/take-the-data/README.md) | O8 | Rocío | 8 | 1 |
+
+### El recorrido del reseñado
+
+| Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
+|---|---|---|---|---|
+| [Replicar](reviewed/reply/README.md) | O7 (+ US-179) | Claudia, Paredes, la institución | 9 | 2 |
+
+### El recorrido del equipo
+
+| Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
+|---|---|---|---|---|
+| [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 4 |
+| [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 12 | 2 |
+| [Cortar los accesos](team/cut-the-access/README.md) | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
+
+### Lo que no es un tramo
+
+| Nivel producto | Qué es | Stories | Pantallas |
+|---|---|---|---|
+| [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
+| [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
+
+103 stories (98 en tramos y 5 garantías) y 34 pantallas en total. Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor, y las tres stories de lectura que quedaron en Replicar) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
 ## Las 34 pantallas
 
@@ -55,51 +74,51 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 
 | ID | Épica dueña | Pantalla | Slug hoy |
 |---|---|---|---|
-| `SC-001` | Elegir dónde estudiar | [Ficha de carrera](choose-where-to-study/screens/SC-001-career/README.md) | sin slug hoy |
-| `SC-002` |  | [Ficha de cátedra](choose-where-to-study/screens/SC-002-chair/README.md) | sin slug hoy |
-| `SC-003` |  | [Explorar](choose-where-to-study/screens/SC-003-explore/README.md) | `/universities` |
-| `SC-004` |  | [Inicio](choose-where-to-study/screens/SC-004-home/README.md) | `/` |
-| `SC-005` |  | [Ficha de institución](reply/screens/SC-005-institution/README.md) | `/universities/[slug]/careers` |
-| `SC-006` |  | [Buscar](choose-where-to-study/screens/SC-006-search/README.md) | sin slug hoy |
-| `SC-007` |  | [Ficha de materia](choose-where-to-study/screens/SC-007-subject/README.md) | `/subjects/[id]` |
-| `SC-008` |  | [Dónde estudiarla](choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
-| `SC-009` | Pedir una carrera | [La cola](request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
-| `SC-010` |  | [Pedir](request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
-| `SC-011` | Mi carrera | [Mi carrera](my-career/screens/SC-011-my-career/README.md) | `/my-career` |
-| `SC-012` |  | [Empezar](my-career/screens/SC-012-onboarding/README.md) | `/onboarding/*` |
-| `SC-013` | Reseñar | [Anonimato](write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
-| `SC-014` |  | [Mi situación](write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
-| `SC-015` |  | [Reseñar](write-a-review/screens/SC-015-write-review/README.md) | `/reviews/write` |
-| `SC-016` | Deshacer | [Baja](undo/screens/SC-016-delete-account/README.md) | sin slug hoy |
-| `SC-017` |  | [Editar](undo/screens/SC-017-edit/README.md) | sin slug hoy |
-| `SC-018` |  | [Mis aportes](undo/screens/SC-018-my-contributions/README.md) | `/reviews` |
-| `SC-019` |  | [Mi perfil](undo/screens/SC-019-my-profile/README.md) | `/my-profile` |
-| `SC-020` | Replicar | [Responder](reply/screens/SC-020-respond/README.md) | sin slug hoy |
-| `SC-021` | Llevarse el dato | [Método](take-the-data/screens/SC-021-method/README.md) | sin slug hoy |
-| `SC-022` | Cuidar lo publicado | [Verificar](care-for-what-is-published/screens/SC-022-verify/README.md) | `/verify-teacher` |
-| `SC-023` | Entrar | [Error](enter/screens/SC-023-error/README.md) | sin slug hoy |
-| `SC-024` |  | [Recuperar](enter/screens/SC-024-forgot-password/README.md) | `/forgot-password` |
-| `SC-025` |  | [Ingresar](enter/screens/SC-025-sign-in/README.md) | `/sign-in` |
-| `SC-026` |  | [Registro](enter/screens/SC-026-sign-up/README.md) | `/sign-up` |
-| `SC-027` | Sostener el catálogo | [Catálogo](sustain-the-catalog/screens/SC-027-catalog/README.md) | `/admin/universities` |
-| `SC-028` |  | [Correcciones](sustain-the-catalog/screens/SC-028-corrections/README.md) | sin slug hoy |
-| `SC-029` |  | [Frases](sustain-the-catalog/screens/SC-029-phrases/README.md) | sin slug hoy |
-| `SC-030` |  | [Pedidos](sustain-the-catalog/screens/SC-030-requests/README.md) | sin slug hoy |
-| `SC-031` | Moderar sin romper el producto | [Reportes](moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | `/admin/moderacion/reportes` |
-| `SC-032` |  | [Verificaciones](moderate-without-breaking-the-product/screens/SC-032-verifications/README.md) | sin slug hoy |
-| `SC-033` | Cortar los accesos | [Equipo](cut-the-access/screens/SC-033-team/README.md) | sin slug hoy |
+| `SC-001` | Elegir dónde estudiar | [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) | sin slug hoy |
+| `SC-002` |  | [Ficha de cátedra](student/choose-where-to-study/screens/SC-002-chair/README.md) | sin slug hoy |
+| `SC-003` |  | [Explorar](student/choose-where-to-study/screens/SC-003-explore/README.md) | `/universities` |
+| `SC-004` |  | [Inicio](student/choose-where-to-study/screens/SC-004-home/README.md) | `/` |
+| `SC-005` |  | [Ficha de institución](reviewed/reply/screens/SC-005-institution/README.md) | `/universities/[slug]/careers` |
+| `SC-006` |  | [Buscar](student/choose-where-to-study/screens/SC-006-search/README.md) | sin slug hoy |
+| `SC-007` |  | [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md) | `/subjects/[id]` |
+| `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
+| `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
+| `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
+| `SC-011` | Mi carrera | [Mi carrera](student/my-career/screens/SC-011-my-career/README.md) | `/my-career` |
+| `SC-012` |  | [Empezar](student/my-career/screens/SC-012-onboarding/README.md) | `/onboarding/*` |
+| `SC-013` | Reseñar | [Anonimato](student/write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
+| `SC-014` |  | [Mi situación](student/write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
+| `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/write` |
+| `SC-016` | Deshacer | [Baja](student/undo/screens/SC-016-delete-account/README.md) | sin slug hoy |
+| `SC-017` |  | [Editar](student/undo/screens/SC-017-edit/README.md) | sin slug hoy |
+| `SC-018` |  | [Mis aportes](student/undo/screens/SC-018-my-contributions/README.md) | `/reviews` |
+| `SC-019` |  | [Mi perfil](student/undo/screens/SC-019-my-profile/README.md) | `/my-profile` |
+| `SC-020` | Replicar | [Responder](reviewed/reply/screens/SC-020-respond/README.md) | sin slug hoy |
+| `SC-021` | Llevarse el dato | [Método](student/take-the-data/screens/SC-021-method/README.md) | sin slug hoy |
+| `SC-022` | Cuidar lo publicado | [Verificar](student/care-for-what-is-published/screens/SC-022-verify/README.md) | `/verify-teacher` |
+| `SC-023` | Entrar | [Error](student/enter/screens/SC-023-error/README.md) | sin slug hoy |
+| `SC-024` |  | [Recuperar](student/enter/screens/SC-024-forgot-password/README.md) | `/forgot-password` |
+| `SC-025` |  | [Ingresar](student/enter/screens/SC-025-sign-in/README.md) | `/sign-in` |
+| `SC-026` |  | [Registro](student/enter/screens/SC-026-sign-up/README.md) | `/sign-up` |
+| `SC-027` | Sostener el catálogo | [Catálogo](team/sustain-the-catalog/screens/SC-027-catalog/README.md) | `/admin/universities` |
+| `SC-028` |  | [Correcciones](team/sustain-the-catalog/screens/SC-028-corrections/README.md) | sin slug hoy |
+| `SC-029` |  | [Frases](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | sin slug hoy |
+| `SC-030` |  | [Pedidos](team/sustain-the-catalog/screens/SC-030-requests/README.md) | sin slug hoy |
+| `SC-031` | Moderar sin romper el producto | [Reportes](team/moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | `/admin/moderacion/reportes` |
+| `SC-032` |  | [Verificaciones](team/moderate-without-breaking-the-product/screens/SC-032-verifications/README.md) | sin slug hoy |
+| `SC-033` | Cortar los accesos | [Equipo](team/cut-the-access/screens/SC-033-team/README.md) | sin slug hoy |
 | `SC-034` | Avisos | [Avisos](notices/screens/SC-034-mail/README.md) | sin slug hoy |
 
 ## Los temas del mapa que no son épicas
 
 Los grupos transversales del mapa agrupan por riesgo o por situación, no por lo que alguien viene a hacer; sus stories viven en la épica que las implementa. El tema se conserva acá como lista, para leerlas juntas:
 
-- **T2 · Cuando el riesgo es real (tres escenarios que rompen la promesa)**: US-158 → [Reseñar](write-a-review/README.md); US-179 → [Replicar](reply/README.md); US-136 → [Elegir dónde estudiar](choose-where-to-study/README.md); US-159 → [Reseñar](write-a-review/README.md).
-- **T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)**: US-160 → [Reseñar](write-a-review/README.md); US-137 → [Elegir dónde estudiar](choose-where-to-study/README.md); US-161 → [Reseñar](write-a-review/README.md); US-162 → [Reseñar](write-a-review/README.md); US-163 → [Reseñar](write-a-review/README.md); US-138 → [Elegir dónde estudiar](choose-where-to-study/README.md).
-- **T4 · Y quien no está de acuerdo (discrepar no es lo mismo que denunciar)**: US-164 → [Reseñar](write-a-review/README.md).
-- **BO4 · Cuando la carga no da abasto (operación diaria, no excepciones)**: US-200 → [Sostener el catálogo](sustain-the-catalog/README.md); US-201 → [Sostener el catálogo](sustain-the-catalog/README.md); US-202 → [Sostener el catálogo](sustain-the-catalog/README.md); US-211 → [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md); US-203 → [Sostener el catálogo](sustain-the-catalog/README.md); US-212 → [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md).
-- **BO5 · Cuando el corpus está bajo ataque (tres escenarios que rompen el producto)**: US-204 → [Sostener el catálogo](sustain-the-catalog/README.md); US-213 → [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md); US-214 → [Moderar sin romper el producto](moderate-without-breaking-the-product/README.md).
-- **BO6 · Y quién nos mira a nosotros (lo que le pedimos a las instituciones, aplicado adentro)**: US-218 → [Cortar los accesos](cut-the-access/README.md); US-219 → [Cortar los accesos](cut-the-access/README.md).
+- **T2 · Cuando el riesgo es real (tres escenarios que rompen la promesa)**: US-158 → [Reseñar](student/write-a-review/README.md); US-179 → [Replicar](reviewed/reply/README.md); US-136 → [Elegir dónde estudiar](student/choose-where-to-study/README.md); US-159 → [Reseñar](student/write-a-review/README.md).
+- **T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)**: US-160 → [Reseñar](student/write-a-review/README.md); US-137 → [Elegir dónde estudiar](student/choose-where-to-study/README.md); US-161 → [Reseñar](student/write-a-review/README.md); US-162 → [Reseñar](student/write-a-review/README.md); US-163 → [Reseñar](student/write-a-review/README.md); US-138 → [Elegir dónde estudiar](student/choose-where-to-study/README.md).
+- **T4 · Y quien no está de acuerdo (discrepar no es lo mismo que denunciar)**: US-164 → [Reseñar](student/write-a-review/README.md).
+- **BO4 · Cuando la carga no da abasto (operación diaria, no excepciones)**: US-200 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-201 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-202 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-211 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md); US-203 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-212 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md).
+- **BO5 · Cuando el corpus está bajo ataque (tres escenarios que rompen el producto)**: US-204 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-213 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md); US-214 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md).
+- **BO6 · Y quién nos mira a nosotros (lo que le pedimos a las instituciones, aplicado adentro)**: US-218 → [Cortar los accesos](team/cut-the-access/README.md); US-219 → [Cortar los accesos](team/cut-the-access/README.md).
 ---
 
 ## Restricciones: los requisitos no funcionales del producto
@@ -128,7 +147,7 @@ Estas reglas son para las stories. Medidas contra INVEST (Wake), las tres C (Jef
 
 ## Los escenarios: el criterio hecho ejecutable
 
-Cada épica tiene un `scenarios.md` que traduce el "listo cuando" de sus stories a Dado/Cuando/Entonces con **valores concretos**, más sus **casos negativos** y sus **casos borde**. Existe porque un criterio en prosa alcanza para acordar qué hace el producto y no alcanza para escribir el test que lo verifica: al intentar la traducción aparecen las preguntas que nadie había hecho, y esas quedan anotadas ahí mismo como **Falta decidir**.
+Cada story tiene un `scenarios.md` en su carpeta que traduce su "listo cuando" a Dado/Cuando/Entonces con **valores concretos**, más sus **casos negativos** y sus **casos borde**. Existe porque un criterio en prosa alcanza para acordar qué hace el producto y no alcanza para escribir el test que lo verifica: al intentar la traducción aparecen las preguntas que nadie había hecho, y esas quedan anotadas ahí mismo como **Falta decidir**.
 
 Tres cosas que conviene saber antes de usarlos:
 
@@ -139,7 +158,7 @@ Tres cosas que conviene saber antes de usarlos:
 ## Qué tiene que cumplir una épica
 
 - **Alguien la pide**: hay una persona concreta que viene a hacer eso. Si no se puede nombrar, no es una épica: es parte de otra.
-- **Tiene al menos una story con su criterio.** Una épica sin stories es un título. (Dos excepciones declaradas: **Avisos** y **Entrar** son infraestructura y cumplen requisitos de otras.)
+- **Tiene al menos una story con su criterio.** Una épica sin stories es un título. (Una excepción declarada: **Avisos** es infraestructura y cumple requisitos de otras. Entrar dejó de serlo el 2026-08-21, cuando US-228, US-229 y US-230 le dieron requisitos propios.)
 - **Tiene su proceso, o dice por qué no**: `flow.md` si hay recorrido; si es una garantía que se verifica en cada pantalla, lo declara.
 - **Es dueña de las pantallas que existen por ella**, y de ninguna más. Ninguna pantalla del producto queda sin dueño.
 - **Se lee sola**: contiene todo lo suyo y cita lo transversal, sin copiarlo.

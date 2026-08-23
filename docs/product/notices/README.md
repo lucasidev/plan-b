@@ -14,7 +14,7 @@ Todos los que reciben un mail: **Ana** (avisan que cargaron lo que pidió), **Lu
 
 ## Requisitos
 
-No tiene requisitos propios: sostiene [US-142](../request-a-career/README.md) y [US-193](../sustain-the-catalog/README.md) (el aviso cuando cargan lo pedido), [US-149](../write-a-review/README.md) (el aviso al cerrar el período), [US-156](../write-a-review/README.md) (el reenganche anual), [US-175](../reply/README.md) (el resumen al docente) y [US-179](../reply/README.md) (el aviso al autor antes de la réplica). Cada uno vive en su épica; esta carpeta es la infraestructura que los cumple.
+No tiene requisitos propios: sostiene [US-142](../student/request-a-career/README.md) y [US-193](../team/sustain-the-catalog/README.md) (el aviso cuando cargan lo pedido), [US-149](../student/write-a-review/README.md) (el aviso al cerrar el período), [US-156](../student/write-a-review/README.md) (el reenganche anual), [US-175](../reviewed/reply/README.md) (el resumen al docente) y [US-179](../reviewed/reply/README.md) (el aviso al autor antes de la réplica). Cada uno vive en su épica; esta carpeta es la infraestructura que los cumple.
 
 ## Decisiones que aplica
 
@@ -26,7 +26,7 @@ La que existe solo para esta épica vive acá, con su ficha y su boceto:
 
 - [**Avisos**](screens/SC-034-mail/README.md) (los cinco mails; no es una pantalla del sitio con cuenta o pública): cerró el período, cargamos lo que pediste, el resumen al docente, el aviso antes de la réplica, el reenganche anual; [boceto mid-fi](screens/SC-034-mail/sketch.html), con los cinco y el apagado en Mi perfil.
 
-Sus destinos son pantallas de otras épicas: [Reseñar](../write-a-review/README.md) y [Mi situación](../write-a-review/screens/SC-014-my-status/README.md) (las dos de Reseñar), [Responder](../reply/README.md) (de Replicar) y Empezar (de Mi carrera, cuando alguien se registra por primera vez desde "cargamos lo que pediste"). Donde cada aviso se apaga, [**Mi perfil**](../undo/screens/SC-019-my-profile/README.md).
+Sus destinos son pantallas de otras épicas: [Reseñar](../student/write-a-review/README.md) y [Mi situación](../student/write-a-review/screens/SC-014-my-status/README.md) (las dos de Reseñar), [Responder](../reviewed/reply/README.md) (de Replicar) y Empezar (de Mi carrera, cuando alguien se registra por primera vez desde "cargamos lo que pediste"). Donde cada aviso se apaga, [**Mi perfil**](../student/undo/screens/SC-019-my-profile/README.md).
 
 ## Lo que esta épica todavía no resuelve
 
