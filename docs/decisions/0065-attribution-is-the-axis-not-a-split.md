@@ -1,6 +1,6 @@
 # ADR-0065: Attribution is the axis, published as two proportions of voices, never a split
 
-- **Estado**: aceptado
+- **Estado**: aceptado; precisado por [ADR-0078](0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md) (la atribución por eje sigue, pero viaja como etiqueta de cada hecho; su publicación como cabecera dual se supera)
 - **Fecha**: 2026-08-16
 
 ## Contexto

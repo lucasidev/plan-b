@@ -1,6 +1,6 @@
 # ADR-0064: The product publishes phrases with their voices, not scores
 
-- **Estado**: aceptado
+- **Estado**: aceptado; precisado por [ADR-0078](0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md) (la unidad frase-con-voces sigue; la cabecera dual por eje se supera: el reporte pasa a temas)
 - **Fecha**: 2026-08-16
 
 ## Contexto
