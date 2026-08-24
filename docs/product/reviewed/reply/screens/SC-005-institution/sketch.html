@@ -3,148 +3,134 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto: Ficha de institución (mid-fi)</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Ficha de institución, dirección por temas (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#fbf3ec;--elev:#f6ebde;--card:#fff;--ink:#2a1d12;--ink2:#5c4631;--ink3:#9c7e62;--ink4:#c2a98e;--line:#f0e2d2;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c;--warnbg:#fff8ea;--warnline:#f3d7a3;--warnink:#7a4a00}
-  body{margin:0;background:#efe4d8;font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
-  main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
-  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
-  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
-  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
-  .title{font-size:20px;font-weight:500;margin:0 0 2px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:12px;border:1px solid var(--line);background:var(--elev);color:var(--ink2);margin:0 6px 6px 0}
-  .chip.g{background:var(--accs);border-color:#f3cdb7;color:var(--acci)}
-  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink2);background:var(--card)}
-  .btn.acc{border-color:var(--acc);color:var(--acci);background:var(--accs)}
-  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
-  .muted{color:var(--ink3);font-size:12px}
-  .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
-  .bar{height:6px;border-radius:999px;background:var(--elev);overflow:hidden;margin:4px 0 0}
-  .bar i{display:block;height:100%;background:var(--ink4)}
-  .bar.g i{background:var(--acc)}
-  .sk{font-size:11px;color:var(--ink3)}
-  .state{border-style:dashed;background:var(--elev)}
-  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-  .cols3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  h1,h2,h3,p{margin:0}
-  a{color:var(--acci)}
+  body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
+  .note { max-width: 680px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
+  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
 </style>
 </head>
 <body>
-<main>
-  <p class="note">Boceto mid-fi de la pantalla Ficha de institución (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+<p class="note">Boceto de dirección por temas (2026-08-24): la ficha muestra <strong>inteligencia sobre lo recolectado</strong> (prevalencia, retrato, serie, derivadas y trayectoria según el sujeto), nunca la lista de lo que respondieron. Fórmulas: <code>ADR-0075</code> (Wilson z = 1,96, una voz por cursada), <code>ADR-0078</code> (prevalencia y retrato), <code>ADR-0080</code> (sin piso, rupturas declaradas), <code>ADR-0066</code> (derivadas con cobertura), <code>ADR-0067</code> (trayectoria de hechos declarados). Generado por script sobre un corpus de ejemplo: ningún número está puesto a mano. La spec completa de la ficha se escribe aparte; esto fija la dirección.</p>
 
-  <h2>La ficha, tres cosas separadas</h2>
-  <section class="pb" aria-label="Ficha de institución: como sujeto, sus cursadas, su cobertura, la serie y la comparación">
-    <p class="eyebrow">Ficha de institución · pública, sin cuenta</p>
-    <p class="title">UNSTA</p>
-    <p class="muted" style="margin:0 0 4px">3 carreras cargadas · 1.340 voces sobre la institución como sujeto, de 2019 a 2025</p>
-    <p class="muted" style="margin:0 0 16px">Lo último es de 2025, primer cuatrimestre · sin aviso de período viejo por ahora</p>
+<div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
 
-    <p class="eyebrow" style="margin:0 0 8px">(a) Lo que se dice de ella como sujeto</p>
-    <div class="cols" style="margin:0 0 18px">
-      <section class="card">
-        <p class="eyebrow">Exigencia</p>
-        <div style="margin:0 0 4px"><p class="row"><span>El nivel académico es alto</span><span class="sk">777 de 1.340 voces · encogido 55%</span></p><div class="bar"><i style="width:58%"></i></div></div>
-        <p class="sk" style="margin-top:6px">La única frase de exigencia sobre la institución: información, no defecto.</p>
-      </section>
-      <section class="card">
-        <p class="eyebrow" style="color:var(--acci)">Gestión · institución, administración y centro</p>
-        <div style="margin:0 0 8px"><p class="row"><span>Cada trámite es una pelea</span><span class="sk">563 de 1.340 voces · encogido 39%</span></p><div class="bar g"><i style="width:42%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>El título tardó meses</span><span class="sk">469 de 1.340 voces · encogido 32%</span></p><div class="bar g"><i style="width:35%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>El sistema se cae cuando más se necesita</span><span class="sk">415 de 1.340 voces · encogido 29%</span></p><div class="bar g"><i style="width:31%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>El centro solo hace política</span><span class="sk">389 de 1.340 voces · encogido 27%</span></p><div class="bar g"><i style="width:29%"></i></div></div>
-        <div style="margin:0 0 8px"><p class="row"><span>Faltaron mesas de examen</span><span class="sk">295 de 1.340 voces · encogido 20%</span></p><div class="bar g"><i style="width:22%"></i></div></div>
-        <div style="margin:0 0 4px"><p class="row"><span>Te tratan como una persona</span><span class="sk">683 de 1.340 voces · encogido 48%</span></p><div class="bar"><i style="width:51%"></i></div></div>
-        <p class="sk" style="margin-top:6px">Acá entran los eventos institucionales: trámites, título, mesas, el sistema, el centro. Todas comparten el mismo denominador: las voces sobre la institución como sujeto.</p>
-      </section>
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 32px 16px; border-bottom: 1px solid #e2dfd6">
+    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 17px">plan-b</div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7b8089">Ficha de institución</div>
+  </div>
+
+  <div style="padding: 20px 32px 44px">
+
+  <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 28px; line-height: 1.12; margin: 0 0 4px">UNSTA</p>
+  <p style="font-size: 14px; color: #494e57; margin: 0 0 4px">Universidad del Norte Santo Tomás de Aquino · San Miguel de Tucumán</p>
+  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 8px">Tres cosas que nunca se mezclan (ADR-0066): lo que se dice de ella, sus cursadas, y su cobertura.</p>
+  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 22px">178 voces hablaron de la institución como sujeto · 2022 a 2026-C1</p>
+
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">1 · Lo que se dice de ella</h2>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">La prevalencia de los temas institucionales: trámites, costos, infraestructura, trato, sistemas.</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">trámites</span>
+      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">34,6%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">74 de 178</span></span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 35%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">17,5%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">41 de 178</span></span>
     </div>
-
-    <p class="eyebrow" style="margin:0 0 8px">(b) Sus cursadas: las carreras que da</p>
-    <section class="card" style="margin:0 0 18px">
-      <p class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><span><a href="#">Ingeniería en Sistemas</a></span><span class="sk">5 de cada 10 dicen que es dura · 6 de cada 10 marcaron alguien fallando · 612 voces · cobertura 24 de 40</span></p>
-      <p class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><span><a href="#">Tecnicatura en Desarrollo y Calidad de Software</a></span><span class="sk">cargada, con voces, todavía no derivamos (6 de 14 materias)</span></p>
-      <p class="row" style="padding:8px 0"><span><a href="#">Contador Público</a></span><span class="sk">todavía no derivamos · cobertura 12 de 38</span></p>
-      <p class="muted" style="margin-top:8px">(c) El estado de su catálogo, en una línea: 3 carreras cargadas, 1 con cabecera derivada, 2 sin derivar todavía.</p>
-    </section>
-
-    <p class="eyebrow" style="margin:0 0 8px">La serie · "cada trámite es una pelea", por período</p>
-    <section class="card" style="margin:0 0 18px">
-      <div style="display:flex;align-items:flex-end;gap:8px;height:56px;margin:6px 0 4px">
-        <div title="2022 · 10 de 30 voces (encogido 19%)" style="flex:1;background:var(--ink4);height:33%"></div>
-        <div title="2023, 1er cuatrimestre · 12 de 31 voces (encogido 24%)" style="flex:1;background:var(--acc);height:39%"></div>
-        <div title="2023, 2do cuatrimestre · 15 de 33 voces (encogido 30%)" style="flex:1;background:var(--acc);height:45%"></div>
-        <div title="2024, 1er cuatrimestre · 17 de 36 voces (encogido 32%)" style="flex:1;background:var(--acc);height:47%;outline:2px solid var(--acci);outline-offset:1px"></div>
-        <div title="2024, 2do cuatrimestre · 15 de 38 voces (encogido 26%)" style="flex:1;background:var(--acc);height:39%"></div>
-        <div title="2025 · 13 de 32 voces (encogido 26%)" style="flex:1;background:var(--ink4);height:41%"></div>
-      </div>
-      <p class="sk">2022 → 2025 · cada barra con sus voces al pasar · marcas: publicado (2024, 1er cuatrimestre), réplica (2024, 2do cuatrimestre). Sin suavizar; por el período en que pasó, no por cuándo se reseñó.</p>
-    </section>
-
-    <p class="eyebrow" style="margin:0 0 8px">La comparación · "cada trámite es una pelea"</p>
-    <section class="card" style="margin:0 0 18px">
-      <div class="cols3">
-        <div><p class="muted" style="margin:0 0 2px">Siglo 21</p><p style="font-weight:500">sin voces todavía</p></div>
-        <div><p class="muted" style="margin:0 0 2px">UNSTA</p><p style="font-weight:500">563 de 1.340 <span class="sk" style="font-weight:400">voces · encogido 39%</span></p></div>
-        <div><p class="muted" style="margin:0 0 2px">UNT</p><p style="font-weight:500">80 de 205 <span class="sk" style="font-weight:400">voces · encogido 33%</span></p></div>
-        <div><p class="muted" style="margin:0 0 2px">UTN</p><p style="font-weight:500">148 de 290 <span class="sk" style="font-weight:400">voces · encogido 45%</span></p></div>
-      </div>
-      <p class="muted" style="margin-top:10px">Orden alfabético, no por valor. Sin puesto ni compuesto: cada institución con su propia frase y su propia proporción. <a href="#">Comparar otra frase</a>.</p>
-    </section>
-
-    <div class="row" style="margin:0 0 8px">
-      <h3 style="font-weight:500;font-size:15px">Eventos institucionales <span class="muted">1</span></h3>
-      <p class="muted">ordenados por «a mí también me pasó»</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">infraestructura</span>
+      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">23,0%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">52 de 178</span></span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 23%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">16,0%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">38 de 178</span></span>
     </div>
-    <article class="card" style="margin:0 0 18px">
-      <p class="muted" style="margin:0 0 8px">2024, primer cuatrimestre · trámite de título · anónimo</p>
-      <p style="font-size:15px;line-height:1.55;margin:0 0 10px">«Presenté todo en marzo y el título salió en noviembre. Nadie me pudo decir en qué etapa estaba.»</p>
-      <p class="muted" style="margin:0 0 4px">Marcó</p>
-      <p style="margin:0 0 10px"><span class="chip g">El título tardó meses</span><span class="chip g">Cada trámite es una pelea</span></p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px">
-        <span class="btn acc">✓ A mí también me pasó · 14</span><span class="btn">Reportar</span>
-      </div>
-      <div style="border-top:1px solid var(--line);padding-top:10px">
-        <p style="font-size:12px;color:var(--ink2);margin:0 0 4px"><span style="font-weight:500">Respuesta de Secretaría Académica</span>, UNSTA · <span class="muted">identidad verificada · 20 de mayo</span></p>
-        <p style="font-size:14px;color:var(--ink2)">«Desde 2025 el trámite de título tiene seguimiento online con fecha estimada. Estamos revisando los casos anteriores a esa fecha.»</p>
-        <p class="muted" style="margin-top:6px">La respuesta queda al lado. No baja el testimonio ni mueve ningún conteo.</p>
-      </div>
-    </article>
-
-    <footer style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <span class="btn primary">Reseñar un evento</span>
-      <span class="btn">Cómo se calcula</span>
-      <span class="btn">Comparar instituciones</span>
-      <span class="muted" style="margin-left:auto">Esta lista se reprocesa · leída el 19 de agosto de 2026</span>
-    </footer>
-    <p class="muted" style="margin-top:12px">ADR-0066 (a, b y c nunca se mezclan). US-157, US-177, US-174, US-172, D06. La réplica pasa el mismo chequeo previo y no cita lo que el autor marcó como identificante (ADR-0068).</p>
-  </section>
-
-  <h2>Estado: vacía</h2>
-  <section class="pb" aria-label="Estado: institución cargada, sin voces ni eventos todavía">
-    <p class="eyebrow">Ficha de institución</p>
-    <div class="card state" style="max-width:340px">
-      <p class="title" style="font-size:16px">Siglo 21</p>
-      <p class="muted" style="margin:0 0 8px">Cargada, sin voces todavía: ni sobre sus carreras ni sobre ella como sujeto. Nada más: sin voces no hay proporción que mostrar, y no se inventa un cero.</p>
-      <p class="muted">Sé la primera voz: <a href="#">reseñar una cursada o un evento acá</a>.</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">costos</span>
+      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">20,5%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">47 de 178</span></span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 20%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">8,3%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">22 de 178</span></span>
     </div>
-    <p class="muted" style="margin-top:12px">ADR-0066. Sin escalones ni nada que desbloquear: arranca vacía y la primera voz ya se publica.</p>
-  </section>
-
-  <h2>Estado: sin eventos todavía</h2>
-  <section class="pb" aria-label="Estado: hay cursadas con voces pero ningún evento institucional reseñado">
-    <p class="eyebrow">Ficha de institución</p>
-    <div class="card" style="max-width:400px">
-      <p class="title" style="font-size:16px">UTN</p>
-      <p class="muted" style="margin:0 0 8px">Sus carreras ya tienen voces (480 en Ingeniería en Sistemas), pero todavía nadie reseñó un trámite, una mesa o el título.</p>
-      <p style="font-weight:500;margin:0 0 2px">Todavía no hay nada que decir de ella como sujeto.</p>
-      <p class="muted">No es un cero: es que nadie reseñó un evento institucional acá todavía.</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">sistemas</span>
+      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">16,5%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">39 de 178</span></span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 16%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">9,7%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">25 de 178</span></span>
     </div>
-    <p class="muted" style="margin-top:12px">ADR-0066 (a y b son cosas distintas: una institución puede tener cursadas con voces y ningún evento reseñado). US-139: tampoco se inventa un cero.</p>
-  </section>
-</main>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">trato</span>
+      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">7,8%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">21 de 178</span></span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 8%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">30,3%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">66 de 178</span></span>
+    </div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Su retrato</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 4px 18px 6px">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"El título tardó meses"</span>
+        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">trámites</span>
+        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 28%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">27,7% <span style="color: #a7adb5; font-size: 10px">61 de 178</span></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Te tratan como una persona"</span>
+        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">trato</span>
+        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 26%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">26,1% <span style="color: #a7adb5; font-size: 10px">58 de 178</span></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Los baños dan asco"</span>
+        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">infraestructura</span>
+        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 19%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">19,0% <span style="color: #a7adb5; font-size: 10px">44 de 178</span></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"El sistema se cae cuando más se necesita"</span>
+        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">sistemas</span>
+        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 15%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">15,5% <span style="color: #a7adb5; font-size: 10px">37 de 178</span></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Te cobran con costos ocultos"</span>
+        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">costos</span>
+        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 13%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">12,5% <span style="color: #a7adb5; font-size: 10px">31 de 178</span></span>
+      </div>
+  </div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">2 · Sus cursadas</h2>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">El agregado de lo que se vive cursando acá, con su cobertura a la vista; cada carrera tiene su ficha derivada.</p>
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Tecnicatura en Desarrollo de Software <span style="color: #7b8089; font-size: 12px">derivación abierta</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">310 voces · 14 de 22 materias</span></div>
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Abogacía <span style="color: #7b8089; font-size: 12px">derivación abierta</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">244 voces · 18 de 31 materias</span></div>
+    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Ingeniería Industrial <span style="color: #7b8089; font-size: 12px">todavía no deriva</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">61 voces · 7 de 36 materias</span></div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">3 · ¿Responden?</h2>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">La conducta del sujeto ante lo señalado es parte de su reputación (ADR-0078).</p>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 14px 18px">
+    <p style="font-size: 13px; margin: 0 0 4px"><b>Canal de réplica: sin respuesta.</b></p>
+    <p style="font-size: 12.5px; color: #7b8089; margin: 0">Se avisó a la institución el 2026-06-12. Lo señalado sigue publicado; la ficha dice "sin réplica", nunca "no quiso".</p>
+  </div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La serie</h2>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">La prevalencia negativa de trámites, por período. Sin suavizar, sin rótulo de tendencia.</p>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 16px 18px; display: flex; gap: 22px; justify-content: center">
+      <div style="text-align: center">
+        <div style="height: 64px; display: flex; align-items: flex-end; justify-content: center"><div style="width: 46px; height: 19px; background: #8d2418; border-radius: 3px 3px 0 0; opacity: 0.85"></div></div>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; margin: 6px 0 0">2023</p>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0">19,1% · 11 de 34</p>
+      </div>
+      <div style="text-align: center">
+        <div style="height: 64px; display: flex; align-items: flex-end; justify-content: center"><div style="width: 46px; height: 28px; background: #8d2418; border-radius: 3px 3px 0 0; opacity: 0.85"></div></div>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; margin: 6px 0 0">2024</p>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0">27,6% · 19 de 47</p>
+      </div>
+      <div style="text-align: center">
+        <div style="height: 64px; display: flex; align-items: flex-end; justify-content: center"><div style="width: 46px; height: 31px; background: #8d2418; border-radius: 3px 3px 0 0; opacity: 0.85"></div></div>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; margin: 6px 0 0">2025</p>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0">31,0% · 26 de 61</p>
+      </div>
+      <div style="text-align: center">
+        <div style="height: 64px; display: flex; align-items: flex-end; justify-content: center"><div style="width: 46px; height: 34px; background: #8d2418; border-radius: 3px 3px 0 0; opacity: 0.85"></div></div>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; margin: 6px 0 0">2026-C1</p>
+        <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0">34,5% · 18 de 36</p>
+      </div>
+  </div>
+  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">Si el vocabulario de un tema cambia, la serie declara la ruptura (ADR-0080).</p>
+
+  </div>
+</div>
 </body>
 </html>
