@@ -1,6 +1,6 @@
 # ADR-0078: The questionnaire collects in pairs, the ficha reports by theme
 
-- **Estado**: aceptado (2026-08-23)
+- **Estado**: aceptado (2026-08-23); su decisión abierta (la política de muestra chica) se cierra en [ADR-0080](0080-numbers-publish-without-floor-and-series-declare-their-breaks.md): sin piso, con rupturas declaradas
 - **Fecha**: 2026-08-23
 - **Precisa**: [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0065](0065-attribution-is-the-axis-not-a-split.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md), [ADR-0075](0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md)
 
