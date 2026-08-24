@@ -1,6 +1,6 @@
 # ADR-0075: The published proportion has a z, a denominator, and one voice per cursada
 
-- **Estado**: aceptado (2026-08-24; reescrito el 2026-08-21 tras un pase adversarial que rompió dos puntos de la primera versión: ver "Lo que rompió la primera versión")
+- **Estado**: aceptado (2026-08-24; reescrito el 2026-08-21 tras un pase adversarial que rompió dos puntos de la primera versión: ver "Lo que rompió la primera versión"); precisado por [ADR-0079](0079-the-subjects-are-the-real-fichas.md) (la regla del denominador no cambia, pero la lista de sujetos queda en las fichas reales: materia, cátedra, institución)
 - **Fecha**: 2026-08-21
 - **Precisa**: [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)
 
