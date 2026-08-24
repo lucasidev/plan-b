@@ -124,7 +124,7 @@ Cada feature cita un ID vigente o declara que no mapea. "Se rehace" significa qu
 
 | # | Issue | Pts | Qué gatea |
 |---|---|---|---|
-| 1 | [#348 · Cerrar ADR-0075 y ADR-0076](https://github.com/lucasidev/plan-b/issues/348) | 1 | R1 entero: no se planifica con parámetros en propuesto. Decisión de Lucas |
+| 1 | [#348 · Cerrar ADR-0075 y ADR-0076](https://github.com/lucasidev/plan-b/issues/348) | 1 | ✓ cerrado 2026-08-24: los dos aceptados |
 | 2 | [#349 · Rescatar el evaluador a academic](https://github.com/lucasidev/plan-b/issues/349) | 3 | la poda: va antes, o US-144 pierde su lógica |
 | 3 | [#350 · Podar planning entero](https://github.com/lucasidev/plan-b/issues/350) | 5 | el criterio 1 de salida (cero Planning en backend) |
 | 4 | [#351 · Arreglar la fuga de enumeración](https://github.com/lucasidev/plan-b/issues/351) | 3 | nada: independiente; su test es el primero del régimen nuevo |
@@ -135,7 +135,7 @@ El 4 y el 5 no dependen de nadie y pueden correr en paralelo con el rescate y la
 
 ### Tareas
 
-- [ ] **Cerrar los dos ADR en propuesto.** [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md) fija el z del encogimiento, el denominador de una proporción y cuántas voces suma una persona; sin eso ninguna proporción publicada se calcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
+- [x] **Cerrar los dos ADR en propuesto** (2026-08-24: los dos en aceptado). [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md) fija el z del encogimiento, el denominador de una proporción y cuántas voces suma una persona; sin eso ninguna proporción publicada se calcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
 
 - [x] **Rescatar el evaluador de disponibilidad a `academic`, antes de tocar `planning`.** Mueve `SubjectAvailabilityEvaluator`, su interfaz, `SubjectAvailability`, `SubjectProgress`, `PrerequisiteEdge` y `AvailabilityStatus` de `planning/Domain/Availability/` a `academic/Domain/Availability/`. Es lógica de dominio pura, sin I/O. **No es una decisión de este plan**: la story US-144 ya lo dejó escrito en su propio criterio de aceptación.
 
