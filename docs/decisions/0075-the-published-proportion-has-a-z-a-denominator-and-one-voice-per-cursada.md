@@ -1,6 +1,6 @@
 # ADR-0075: The published proportion has a z, a denominator, and one voice per cursada
 
-- **Estado**: propuesto (reescrito el 2026-08-21 tras un pase adversarial que rompió dos puntos de la primera versión: ver "Lo que rompió la primera versión")
+- **Estado**: aceptado (2026-08-24; reescrito el 2026-08-21 tras un pase adversarial que rompió dos puntos de la primera versión: ver "Lo que rompió la primera versión")
 - **Fecha**: 2026-08-21
 - **Precisa**: [ADR-0064](0064-phrases-with-voices-not-scores.md), [ADR-0066](0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)
 

@@ -1,6 +1,6 @@
 # ADR-0076: The three doors answer the same whether the account exists or not
 
-- **Estado**: propuesto (reescrito el 2026-08-21 tras un pase adversarial: ver "Lo que rompió la primera versión")
+- **Estado**: aceptado (2026-08-24; reescrito el 2026-08-21 tras un pase adversarial: ver "Lo que rompió la primera versión"; implementado en R0, ver Consecuencias)
 - **Fecha**: 2026-08-21
 - **Resuelve**: la contradicción entre [US-228](../product/student/enter/stories/US-228-create-the-account-when-the-action-asks-for-it/README.md) y [US-220](../product/student/enter/stories/US-220-recover-the-password-by-mail/README.md)
 
