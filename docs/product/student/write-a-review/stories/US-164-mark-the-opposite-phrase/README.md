@@ -9,11 +9,11 @@ Como quien está cursando, quiero marcar que a mí me pasó lo contrario de lo q
 
 ## Listo cuando
 
-- El catálogo ofrece frases en los dos sentidos para el mismo aspecto; reseñando esa cursada marco la que describe mi caso, cada frase publica su propia proporción de voces, y ninguna resta de la otra.
+- Donde el aspecto tiene dos sentidos reales, el catálogo ofrece el par junto ([ADR-0078](../../../../../decisions/0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md)); reseñando esa cursada marco el que describe mi caso, y mi marca nunca resta de la contraria: cada hecho cuenta por su lado. No todo aspecto tiene opuesto (regla 2 del [catálogo](../../../../phrases.md)).
 
 ## Dónde se resuelve
 
-- [Reseñar](../../screens/SC-015-write-review/README.md): el paso 4 ofrece los dos sentidos del mismo aspecto, y se marca el que describe tu caso.
+- [Reseñar](../../screens/SC-015-write-review/README.md): el paso de temas ofrece el par junto, y se marca el lado que describe tu caso; el contrario está a la vista, sin aviso aparte.
 - [Ficha de cátedra](../../../choose-where-to-study/screens/SC-002-chair/README.md): publica los dos sentidos juntos, cada uno con su propia proporción de voces.
 
 ## Notas

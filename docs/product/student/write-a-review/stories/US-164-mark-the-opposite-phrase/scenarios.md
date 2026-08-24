@@ -14,5 +14,5 @@ Entonces su voz suma a F17 y las dos frases opuestas conviven: F17 publica 1 de 
 
 ## Edge cases
 
-- Falta decidir: si al marcar una frase se avisa que existe el sentido contrario, o alcanza con que las dos estén a la vista.
-- Falta decidir: qué pasa si el catálogo todavía no tiene el sentido contrario de una frase destilada (US-199).
+- Cerrado (2026-08-24, con el flujo por temas): el par se ofrece junto, el contrario está al lado; no hay aviso aparte.
+- Cerrado (2026-08-24): la destilada entra sola o en par según la regla 2 del catálogo (el opuesto existe solo si es un hecho que alguien afirme); US-199 no exige el par al aprobar.

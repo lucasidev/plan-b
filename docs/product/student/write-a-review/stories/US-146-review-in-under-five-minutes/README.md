@@ -9,9 +9,9 @@ Como quien está cursando, quiero reseñarla en menos de cinco minutos, porque s
 
 ## Listo cuando
 
-- Se publica marcando frases, sin escribir nada obligatorio; el comentario es el último paso y es opcional.
+- Se publica marcando frases, sin escribir nada obligatorio; los micro-comentarios ("¿algo más de esto?", uno por tema) son opcionales ([ADR-0078](../../../../../decisions/0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md)).
 
 ## Dónde se resuelve
 
-- [Reseñar](../../screens/SC-015-write-review/README.md): se publica marcando frases, sin ningún campo de texto obligatorio; el comentario es el último paso y es opcional.
+- [Reseñar](../../screens/SC-015-write-review/README.md): se publica marcando frases por tema, sin ningún campo de texto obligatorio; cada tema cierra con su micro-comentario opcional.
 - [Ingresar](../../../enter/screens/SC-025-sign-in/README.md): nombrada como ejemplo de acción que dispara el umbral de cuenta antes de reseñar; el detalle de esta story vive en Reseñar, no ahí.

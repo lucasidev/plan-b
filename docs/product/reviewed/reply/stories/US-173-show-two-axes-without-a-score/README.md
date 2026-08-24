@@ -1,5 +1,7 @@
 # US-173: Mostrar los dos ejes sin puntaje
 
+> **Letra anterior a [ADR-0078](../../../../../decisions/0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md)**: la cabecera dual y las listas por eje que este "listo cuando" pide ya no existen (la ficha informa por tema; la atribución viaja en cada hecho). El espíritu sigue vigente: que se vea que doy bien mi materia, sin puntaje. La letra se reescribe con la spec de la ficha; el ID no cambia.
+
 **Épica**: [Replicar](../../README.md)
 **Del mapa**: O7-2
 
