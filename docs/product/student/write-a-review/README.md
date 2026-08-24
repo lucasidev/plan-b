@@ -58,11 +58,11 @@ Las que comparte con otras épicas: [**Ingresar**](../enter/screens/SC-025-sign-
 
 ## Lo que esta épica todavía no resuelve
 
-- **Cuántas frases se ofrecen por vez y en qué orden** (46 en el catálogo semilla; se ofrecen las del sujeto que corresponde: el boceto muestra las once de materia y las dieciocho de cátedra enteras, y eso no escala). Es diseño del paso de frases.
+- Cerrado (2026-08-24, [ADR-0078](../../../decisions/0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md)): las frases se ofrecen **por tema**, con los pares juntos y un presupuesto de 6 a 10 hechos por tema; el orden de los temas y qué colapsa por defecto es diseño del hi-fi (ficha de [Reseñar](screens/SC-015-write-review/README.md)).
 - **Qué pasa con la reseña a medias** (US-161: se guarda y se retoma) y **cuánto tiempo**.
 - **El evento institucional como pantalla propia o como rama de Reseñar**: el flujo lo dibuja como rama.
 - **Qué ve el autor cuando su materia pendiente se fusiona con otra** que no era la que quiso decir: si puede objetar o solo enterarse (US-160, US-197).
-- **Si al marcar una frase se avisa que existe el sentido contrario** (US-164), y qué pasa si el catálogo todavía no tiene el sentido contrario de una frase destilada (US-199 lo agrega; no está decidido si es obligatorio al aprobarla).
+- Cerrado (2026-08-24): el par se ofrece junto, el contrario está a la vista sin aviso aparte (US-164); y la destilada entra sola o en par según la regla 2 del [catálogo](../../phrases.md): US-199 no exige el par al aprobar.
 - **Qué hace el chequeo previo con texto que identifica a un tercero alumno** (ni al autor ni a un docente): si cae en "habla de una persona fuera de su acto" o pasa de largo (US-158).
 - **El copy exacto del aviso de la sospecha** (US-159): la tesis da las palabras; la ficha de la pantalla las fija.
 - **Si una cursada sin cátedra recordada pierde las frases de cátedra o hace falta una «cátedra sin identificar»** (la G2 del registro del 16 quedó superada): hoy el boceto ofrece solo las de materia.

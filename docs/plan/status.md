@@ -25,7 +25,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
 | S12 | 2026-07-31 a 2026-08-16 | **Cerrar el lazo que produce el corpus**: US-015 entró (el mecanismo de edición con su evento); US-097/098/099 se cancelaron cuando el viraje de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) retiró el planificador al que servían. | ■ Cerrado por viraje |
-| **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | Ejecutado, en PR |
+| **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | ✓ Hecho (mergeado el 2026-08-24, PR #354) |
+| **R1** | desde 2026-08-24 | **El acto de reseñar, de punta a punta**: una persona entra, reseña una cursada marcando frases por temas en menos de cinco minutos, y lo que marcó se ve en una ficha con sus voces. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | En curso |
 
 Convenciones:
 
@@ -165,6 +166,29 @@ Cuatro cosas verificables, no una sensación:
 **La poda toca la base de datos.** Las dos migraciones del schema `planning` tienen su `Down`, así que son reversibles, pero si se corrieron hay datos. La política de rollback está en [`rollback.md`](../engineering/rollback.md).
 
 **No hay story que citar.** R0 es trabajo técnico sin producto atrás, que según [`story-template.md`](story-template.md) se anota como tarea de sprint y no inventa una US para justificarse.
+
+---
+
+## R1 · El acto de reseñar, de punta a punta
+
+**Desde el 2026-08-24.** El primer sprint de construcción: el ciclo completo del corazón del producto, con lo mínimo que lo sostiene. Milestone [R1 · El acto de reseñar](https://github.com/lucasidev/plan-b/milestone/2). Fuera de alcance, dicho al planificar: el comentario largo con su chequeo (el testimonio de R1 son los micro-comentarios por tema y el chequeo llega con la moderación en R2), el evento institucional, la trayectoria más allá de cómo terminó, los borradores retomables, y la ficha completa (retrato, prevalencia y series piden su propia spec).
+
+| # | Issue | Pts | Depende de |
+|---|---|---|---|
+| 1 | [#355 · Propagar ADR-0078 a la spec de Reseñar](https://github.com/lucasidev/plan-b/issues/355) | 3 | nada |
+| 2 | [#356 · La cátedra como entidad en academic](https://github.com/lucasidev/plan-b/issues/356) | 5 | nada |
+| 3 | [#357 · El catálogo de frases a la base](https://github.com/lucasidev/plan-b/issues/357) | 2 | 1; el gate de aprobación del catálogo es de Lucas |
+| 4 | [#358 · El modelo nuevo de reseña](https://github.com/lucasidev/plan-b/issues/358) | 8 | 2, 3 |
+| 5 | [#359 · La pantalla Reseñar por temas](https://github.com/lucasidev/plan-b/issues/359) | 8 | 1, 4 |
+| 6 | [#360 · La ficha mínima de cátedra](https://github.com/lucasidev/plan-b/issues/360) | 5 | 4 |
+| 7 | [#361 · El E2E del ciclo completo](https://github.com/lucasidev/plan-b/issues/361) | 3 | 5, 6 |
+
+### Cómo se sabe que R1 está listo
+
+1. El E2E del ciclo pasa en CI: registro, reseñar una cursada marcando frases por tema, y la ficha de la cátedra muestra lo marcado con sus voces encogidas.
+2. El criterio de US-146 medido: el acto entero en menos de cinco minutos de flujo real.
+3. Los conteos publicados se recalculan a mano contra ADR-0075 y dan igual.
+4. Nada publicado expone quién reseñó (US-148), verificado en los reads.
 
 ---
 
