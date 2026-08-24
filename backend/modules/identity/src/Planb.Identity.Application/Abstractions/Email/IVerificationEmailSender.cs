@@ -26,6 +26,14 @@ public interface IVerificationEmailSender
     Task SendPasswordResetAsync(EmailAddress recipient, string token, CancellationToken ct = default);
 
     /// <summary>
+    /// Aviso al dueno de una casilla que ya tiene cuenta cuando alguien intenta registrarla de
+    /// nuevo (ADR-0076): la pantalla respondio igual que si estuviera libre, y la diferencia
+    /// viaja por aca. Sin token: no hay nada que consumir, solo las salidas (ingresar,
+    /// recuperar la contrasena).
+    /// </summary>
+    Task SendExistingAccountNoticeAsync(EmailAddress recipient, CancellationToken ct = default);
+
+    /// <summary>
     /// Envía el mail de verificación de identidad docente (US-031). El link apunta a la página
     /// <c>/verify-teacher</c> del frontend con el token crudo en el query string. Recipient es el
     /// email institucional ingresado por el docente.

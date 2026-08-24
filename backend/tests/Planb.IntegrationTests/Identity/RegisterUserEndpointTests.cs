@@ -29,7 +29,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
     [Fact]
-    public async Task Returns_201_with_user_payload_and_persists_user_and_token()
+    public async Task Returns_202_with_email_only_and_persists_user_and_token()
     {
         var email = FreshEmail("register");
 
@@ -37,16 +37,18 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             "/api/identity/register",
             new RegisterUserRequest(email, "valid-password-12c"));
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        // 202 y solo el email: la respuesta no trae id ni Location porque tiene que ser
+        // identica exista o no la cuenta (ADR-0076).
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var body = await response.Content.ReadFromJsonAsync<RegisterUserResponse>();
         body.ShouldNotBeNull();
         body.Email.ShouldBe(email);
-        body.Id.ShouldNotBe(Guid.Empty);
 
         using var scope = _fixture.Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
 
-        var user = await db.Users.SingleAsync(u => u.Id == new UserId(body.Id));
+        var emailVo = EmailAddress.Create(email).Value;
+        var user = await db.Users.SingleAsync(u => u.Email == emailVo);
         user.Email.Value.ShouldBe(email);
         user.EmailVerifiedAt.ShouldBeNull();
         user.Role.ShouldBe(UserRole.Member);
@@ -68,7 +70,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
             new RegisterUserRequest(email, "valid-password-12c"));
-        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
         summary.ShouldNotBeNull(
@@ -81,20 +83,38 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     }
 
     [Fact]
-    public async Task Returns_409_when_email_is_already_registered()
+    public async Task Registering_with_a_taken_email_responds_exactly_like_a_free_one()
     {
-        var email = FreshEmail("conflict");
+        // ADR-0076: las tres puertas responden igual exista o no la cuenta. Confirmar que un
+        // mail tiene cuenta es confirmar que esa persona aporto, y este endpoint era la puerta
+        // por la que se enumeraba. La pantalla no distingue; el mail que llega si.
+        var email = FreshEmail("enumeration");
 
-        (await _client.PostAsJsonAsync(
+        var first = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c")))
-            .StatusCode.ShouldBe(HttpStatusCode.Created);
+            new RegisterUserRequest(email, "valid-password-12c"));
+        await _mailpit.ClearAsync();
 
         var second = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "another-password-12"));
 
-        second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        second.StatusCode.ShouldBe(first.StatusCode);
+        (await second.Content.ReadAsStringAsync())
+            .ShouldBe(await first.Content.ReadAsStringAsync());
+
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var emailVo = EmailAddress.Create(email).Value;
+        (await db.Users.CountAsync(u => u.Email == emailVo)).ShouldBe(1);
+
+        var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
+        summary.ShouldNotBeNull(
+            "El dueno de la cuenta recibe el aviso de que alguien intento registrarse.");
+        summary.Subject.ShouldContain("Ya ten");
+        var detail = await _mailpit.GetMessageDetailAsync(summary.Id);
+        detail.ShouldNotBeNull();
+        detail.Html.ShouldNotContain("token=");
     }
 
     [Fact]

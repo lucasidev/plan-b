@@ -50,20 +50,22 @@ public class ExpireUnverifiedRegistrationsTests
             "/api/identity/register",
             new RegisterUserRequest(email, "valid-password-12c"));
         register.EnsureSuccessStatusCode();
-        var body = await register.Content.ReadFromJsonAsync<RegisterUserResponse>();
 
         // Back-date el created_at vía SQL directo. Esto evita acoplar el test al clock global
         // del host: el comando va a usar IDateTimeProvider real, calcula cutoff = now - 7d, y
-        // este user queda dentro del set de candidatos.
+        // este user queda dentro del set de candidatos. El id se resuelve por email porque la
+        // respuesta del registro no lo trae (ADR-0076).
         using var scope = _fixture.Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var emailVo = EmailAddress.Create(email).Value;
+        var user = await db.Users.SingleAsync(u => u.Email == emailVo);
         var newCreatedAt = DateTimeOffset.UtcNow - ageFromNow;
         await db.Database.ExecuteSqlRawAsync(
             "UPDATE identity.users SET created_at = {0} WHERE id = {1}",
             newCreatedAt,
-            body!.Id);
+            user.Id.Value);
 
-        return new UserId(body.Id);
+        return user.Id;
     }
 
     private async Task<User?> ReloadUserAsync(UserId id)
@@ -175,7 +177,7 @@ public class ExpireUnverifiedRegistrationsTests
             "/api/identity/register",
             new RegisterUserRequest(email, "different-password-12c"));
 
-        second.StatusCode.ShouldBe(HttpStatusCode.Created);
+        second.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         // Confirmamos que en la DB quedan dos rows con el mismo email: el expired (audit) y
         // el nuevo activo. El partial unique index permite esta coexistencia.

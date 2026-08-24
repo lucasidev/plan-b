@@ -24,7 +24,7 @@ const FOOT = (
  * (eyebrow "01 · Crear cuenta" + `CarnetPreview` a la izquierda) y delega el form
  * a `<SignUpForm>`.
  *
- * Happy path post-registro: POST /api/identity/register → 201 → redirect a
+ * Happy path post-registro: POST /api/identity/register → 202 (exista o no la cuenta, ADR-0076) → redirect a
  * `/sign-up/check-inbox?email=`. Migración al canvas v2 en US-059-f; el
  * comportamiento (endpoint, validación) no cambia. El link cross-flow "¿Ya tenés
  * cuenta? Ingresá" vive en el footer del shell.

@@ -22,10 +22,11 @@ public sealed class RegisterUserEndpoint : ICarterModule
             {
                 var result = await bus.InvokeAsync<Result<RegisterUserResponse>>(command, ct);
 
+                // 202 sin Location: la respuesta dice "revisa tu casilla" y nada mas. Un 201
+                // con la URL del usuario nuevo era distinguible del caso "ya tenia cuenta"
+                // (ADR-0076).
                 return result.IsSuccess
-                    ? Results.Created(
-                        $"/api/identity/users/{result.Value.Id}",
-                        result.Value)
+                    ? Results.Accepted(value: result.Value)
                     : ToProblem(result.Error);
             }
             catch (ValidationException ex)
@@ -40,9 +41,8 @@ public sealed class RegisterUserEndpoint : ICarterModule
         })
         .WithName("Identity_RegisterUser")
         .WithTags("Identity")
-        .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
-        .ProducesProblem(StatusCodes.Status400BadRequest)
-        .ProducesProblem(StatusCodes.Status409Conflict);
+        .Produces<RegisterUserResponse>(StatusCodes.Status202Accepted)
+        .ProducesProblem(StatusCodes.Status400BadRequest);
     }
 
     private static IResult ToProblem(Error error) => error.Type switch

@@ -34,12 +34,19 @@ public static class RegisterUserCommandHandler
         }
         var email = emailResult.Value;
 
+        // El hash se computa antes de mirar si el mail existe: BCrypt domina el tiempo de la
+        // request, y calcularlo solo para mails libres dejaria medir la diferencia por timing.
+        var passwordHash = passwords.Hash(command.Password);
+
         if (await users.ExistsByEmailAsync(email, ct))
         {
-            return UserErrors.EmailAlreadyInUse;
+            // ADR-0076: la respuesta no distingue. El dueno de la casilla recibe el aviso de
+            // que alguien intento registrarse, con sus salidas (ingresar, recuperar); aca no
+            // se crea nada y no se pisa nada.
+            await emailSender.SendExistingAccountNoticeAsync(email, ct);
+            return new RegisterUserResponse(email.Value);
         }
 
-        var passwordHash = passwords.Hash(command.Password);
         var userResult = User.Register(email, passwordHash, clock);
         if (userResult.IsFailure)
         {
@@ -63,6 +70,6 @@ public static class RegisterUserCommandHandler
 
         await emailSender.SendAsync(user.Email, rawToken, ct);
 
-        return new RegisterUserResponse(user.Id.Value, user.Email.Value);
+        return new RegisterUserResponse(user.Email.Value);
     }
 }

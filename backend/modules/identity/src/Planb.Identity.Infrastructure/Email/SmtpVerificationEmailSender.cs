@@ -64,6 +64,35 @@ public sealed class SmtpVerificationEmailSender : IVerificationEmailSender
         _logger.LogInformation("Verification email sent to {Recipient}", recipient.Value);
     }
 
+    public async Task SendExistingAccountNoticeAsync(EmailAddress recipient, CancellationToken ct = default)
+    {
+        // Los links del aviso salen del origin del link de reset: mismo frontend, rutas fijas
+        // del producto (/sign-in y /forgot-password). Una option nueva por cada link seria mas
+        // config por ambiente para las mismas tres URLs.
+        var origin = new Uri(_passwordReset.LinkBaseUrl).GetLeftPart(UriPartial.Authority);
+        var signInUrl = $"{origin}/sign-in";
+        var forgotUrl = $"{origin}/forgot-password";
+
+        var message = BuildMessage(
+            recipient,
+            subject: "Ya tenés una cuenta en planb",
+            htmlBody: $"""
+                <p>Alguien completó el registro de <strong>planb</strong> con esta dirección. Como ya tenés cuenta, no creamos ninguna nueva.</p>
+                <p>Si fuiste vos: <a href="{signInUrl}">Ingresar</a> o <a href="{forgotUrl}">Recuperar tu contraseña</a>.</p>
+                <p>Si no fuiste vos, no hace falta que hagas nada. Tu cuenta y lo que aportaste siguen igual.</p>
+                """,
+            textBody: $"""
+                Alguien completó el registro de planb con esta dirección. Como ya tenés cuenta, no creamos ninguna nueva.
+
+                Si fuiste vos, entrá a {signInUrl} o recuperá tu contraseña en {forgotUrl}.
+
+                Si no fuiste vos, no hace falta que hagas nada. Tu cuenta y lo que aportaste siguen igual.
+                """);
+
+        await SendMessageAsync(message, ct);
+        _logger.LogInformation("Existing-account notice sent to {Recipient}", recipient.Value);
+    }
+
     public async Task SendPasswordResetAsync(
         EmailAddress recipient, string token, CancellationToken ct = default)
     {

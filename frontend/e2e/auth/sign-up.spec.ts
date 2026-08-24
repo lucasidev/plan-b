@@ -29,8 +29,8 @@ function uniqueEmail(prefix: string): string {
 }
 
 test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)', () => {
-  // Solo el primer test crea un user nuevo; los otros dos no llegan a registrar nada (409 por
-  // email duplicado / token inválido), así que quedan en null y el cleanup skippea para ellos.
+  // Solo el primer test crea un user nuevo; los otros dos no llegan a registrar nada (email
+  // ya en el seed / token inválido), así que quedan en null y el cleanup skippea para ellos.
   let createdStudent: { email: string; password: string } | null = null;
 
   test.afterEach(async ({ request }) => {
@@ -54,7 +54,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.getByLabel(/repetí la contraseña/i).fill(password);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
 
-    // 3. Backend devuelve 201 → redirect a /sign-up/check-inbox?email=
+    // 3. Backend devuelve 202 (igual exista o no la cuenta, ADR-0076) → redirect a /sign-up/check-inbox?email=
     await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
     expect(new URL(page.url()).searchParams.get('email')).toBe(email);
 
@@ -83,16 +83,19 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await expect(page).toHaveURL(/\/onboarding\/welcome$/, { timeout: 15_000 });
   });
 
-  test('email duplicado en sign-up muestra error in-form', async ({ page }) => {
-    // Reusamos LUCIA: su email ya existe en el seed.
+  test('email duplicado en sign-up responde igual que uno libre (ADR-0076)', async ({ page }) => {
+    // Reusamos LUCIA: su email ya existe en el seed. La pantalla NO puede decirlo:
+    // confirmar que un mail tiene cuenta es confirmar que esa persona aportó. El
+    // backend responde 202 igual que con un mail libre y la diferencia viaja por
+    // el mail privado ("Ya tenés una cuenta").
     await page.goto('/sign-up');
     await page.getByLabel(/tu email/i).fill('lucia.mansilla@gmail.com');
     await page.getByLabel(/^contraseña$/i).fill('any-valid-pw-123');
     await page.getByLabel(/repetí la contraseña/i).fill('any-valid-pw-123');
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
 
-    // 409 → mensaje "ya existe una cuenta con ese email" debajo del campo email
-    await expect(page.getByText(/ya existe una cuenta con ese email/i)).toBeVisible();
+    await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });
+    await expect(page.getByText(/ya existe una cuenta con ese email/i)).not.toBeVisible();
   });
 
   test('verify-email con token inválido muestra mensaje de error + CTA registrarme', async ({

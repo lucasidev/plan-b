@@ -30,15 +30,14 @@ public class VerifyEmailEndpointTests : IClassFixture<RegisterApiFixture>
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register",
             new RegisterUserRequest(email, "valid-password-12c"));
-        register.StatusCode.ShouldBe(HttpStatusCode.Created);
-        var body = await register.Content.ReadFromJsonAsync<RegisterUserResponse>();
-        body.ShouldNotBeNull();
+        register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         using var scope = _fixture.Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-        var user = await db.Users.SingleAsync(u => u.Id == new UserId(body.Id));
+        var emailVo = EmailAddress.Create(email).Value;
+        var user = await db.Users.SingleAsync(u => u.Email == emailVo);
         var token = user.Tokens.Single(t => t.Purpose == TokenPurpose.UserEmailVerification);
-        return (body.Id, token.Token);
+        return (user.Id.Value, token.Token);
     }
 
     [Fact]

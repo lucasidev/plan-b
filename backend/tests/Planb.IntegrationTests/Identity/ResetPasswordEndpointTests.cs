@@ -60,16 +60,23 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
     /// straight out of the DB. Returns the user id and token so each test can drive the
     /// reset-password endpoint with a known-good initial state.
     /// </summary>
+    private async Task<Guid> UserIdByEmailAsync(string email)
+    {
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var emailVo = EmailAddress.Create(email).Value;
+        return (await db.Users.SingleAsync(u => u.Email == emailVo)).Id.Value;
+    }
+
     private async Task<(Guid UserId, string ResetToken)> ProvisionUserWithResetTokenAsync(
         string email, string password = "valid-password-12c")
     {
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register", new RegisterUserRequest(email, password));
-        register.StatusCode.ShouldBe(HttpStatusCode.Created);
-        var registerBody = await register.Content.ReadFromJsonAsync<RegisterUserResponse>();
-        registerBody.ShouldNotBeNull();
+        register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        var userId = await UserIdByEmailAsync(email);
 
-        var verifyToken = await ReadActiveTokenAsync(registerBody.Id, TokenPurpose.UserEmailVerification);
+        var verifyToken = await ReadActiveTokenAsync(userId, TokenPurpose.UserEmailVerification);
         var verify = await _client.PostAsJsonAsync(
             "/api/identity/verify-email", new VerifyEmailRequest(verifyToken));
         verify.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -78,8 +85,8 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
             "/api/identity/forgot-password", new RequestPasswordResetRequest(email));
         forgot.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var resetToken = await ReadActiveTokenAsync(registerBody.Id, TokenPurpose.PasswordReset);
-        return (registerBody.Id, resetToken);
+        var resetToken = await ReadActiveTokenAsync(userId, TokenPurpose.PasswordReset);
+        return (userId, resetToken);
     }
 
     private async Task<string> ReadActiveTokenAsync(Guid userId, TokenPurpose purpose)
@@ -152,9 +159,9 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
         var email = FreshEmail("wrong-purpose");
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register", new RegisterUserRequest(email, "valid-password-12c"));
-        var registerBody = await register.Content.ReadFromJsonAsync<RegisterUserResponse>();
-        registerBody.ShouldNotBeNull();
-        var verifyToken = await ReadActiveTokenAsync(registerBody.Id, TokenPurpose.UserEmailVerification);
+        register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+        var verifyToken = await ReadActiveTokenAsync(
+            await UserIdByEmailAsync(email), TokenPurpose.UserEmailVerification);
 
         var response = await _client.PostAsJsonAsync(
             "/api/identity/reset-password",
