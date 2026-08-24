@@ -11,7 +11,7 @@ Las frases que el producto ofrece para marcar al reseñar una cursada o un event
 3. **Ninguna frase admite dos lecturas.** "El final es otro nivel" se parte en una de exigencia y una de gestión.
 4. **El catálogo no se balancea ni se hace simétrico.** Recolectar e informar son capas separadas ([ADR-0078](../decisions/0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md)): este documento define qué se puede marcar, y nada más. Qué información se deriva de las marcas y cómo se presenta es la spec de la ficha, que no lee este catálogo como layout. Por eso cuántas frases hay de cada lado no es una variable a cuidar acá. Esto **deroga el balance-por-eje** que pedía el modelo de cabecera dual, muerto en ADR-0078.
 5. **Convivencia, trato y acoso entran como cualquier otra frase**, sin categoría aparte ([THESIS.md](../THESIS.md), "Qué recabamos").
-6. **Se redactan como las dice la gente**, en primera persona del plural o impersonal, cortas, sin adjetivos que juzguen a la persona: hablan del acto.
+6. **Se redactan como las dice la gente**, en primera persona del plural o impersonal, cortas, sin adjetivos que juzguen a la persona: hablan del acto. La prueba es el pasillo: si nadie lo diría así en un pasillo de facultad (suena a oficina, a informe o a literatura), se reescribe.
 
 ## Las frases
 
@@ -31,7 +31,7 @@ Cada frase tiene tres coordenadas ([ADR-0078](../decisions/0078-the-questionnair
 | F10 | Las correlativas tienen sentido | materia | organización | gestión | + | F11 | propuesta |
 | F11 | Las correlativas te traban | materia | organización | gestión | − | F10 | canvas |
 | F47 | Los materiales cuestan un ojo | materia | costos | exigencia | − | · | propuesta (sin antagonista) |
-| F59 | Cursarla es de tiempo completo, cuesta trabajar | materia | carga y vida | exigencia | − | · | propuesta (sin antagonista; habla de la cursada que reseñás, no de "la carrera": la carrera no se marca, se deriva) |
+| F59 | No se puede trabajar y cursarla | materia | carga y vida | exigencia | − | · | propuesta (sin antagonista; habla de la cursada que reseñás, no de "la carrera": la carrera no se marca, se deriva) |
 | F60 | Hay comisiones en varios turnos | materia | carga y vida | gestión | + | F61 | propuesta (Lucas: turnos para poder trabajar) |
 | F61 | Solo hay comisión en un horario | materia | carga y vida | gestión | − | F60 | propuesta |
 | F12 | Explican bien | cátedra | enseñanza | gestión | + | F13 | canvas |
@@ -40,7 +40,7 @@ Cada frase tiene tres coordenadas ([ADR-0078](../decisions/0078-the-questionnair
 | F15 | No responden consultas | cátedra | enseñanza | gestión | − | F14 | propuesta |
 | F16 | Te la estudiás solo | cátedra | enseñanza | gestión | − | · | canvas (la cátedra no enseña; no es la dificultad de la materia, que es F01) |
 | F21 | Ponen la nota que merecés | cátedra | evaluación | gestión | + | F22 | propuesta |
-| F22 | Tiene un techo de nota | cátedra | evaluación | gestión | − | F21 | propuesta (Lucas: "el no te pongo 10") |
+| F22 | Nunca te ponen un 10 | cátedra | evaluación | gestión | − | F21 | propuesta (Lucas: "el no te pongo 10") |
 | F23 | Corrigen con criterio claro | cátedra | evaluación | gestión | + | F24 | propuesta |
 | F24 | Los criterios de corrección cambian | cátedra | evaluación | gestión | − | F23 | propuesta |
 | F29 | Se puede promocionar | cátedra | evaluación | exigencia | + | · | propuesta |
@@ -59,7 +59,7 @@ Cada frase tiene tres coordenadas ([ADR-0078](../decisions/0078-the-questionnair
 | F34 | Faltaron mesas de examen | institución | cumplimiento | gestión | − | F33 | propuesta (evento) |
 | F48 | Los aranceles son claros y sin sorpresas | institución | costos | gestión | + | F49 | propuesta |
 | F49 | Te cobran con costos ocultos | institución | costos | gestión | − | F48 | propuesta |
-| F50 | El sistema de becas ayuda de verdad | institución | costos | gestión | + | F51 | propuesta |
+| F50 | Las becas llegan | institución | costos | gestión | + | F51 | propuesta |
 | F51 | Las becas son promesa y no llegan | institución | costos | gestión | − | F50 | propuesta |
 | F52 | Hay buenos espacios para estar y estudiar | institución | infraestructura | gestión | + | F53 | propuesta (biblioteca, SUM, bar, canchas, estacionamiento) |
 | F53 | No hay dónde estar entre clases | institución | infraestructura | gestión | − | F52 | propuesta |
@@ -69,18 +69,18 @@ Cada frase tiene tres coordenadas ([ADR-0078](../decisions/0078-the-questionnair
 | F57 | El wifi anda en toda la facultad | institución | infraestructura | gestión | + | F58 | propuesta |
 | F58 | El wifi no llega ni a las aulas | institución | infraestructura | gestión | − | F57 | propuesta |
 | F31 | El título tardó meses | institución | trámites | gestión | − | F32 | canvas (evento) |
-| F32 | El título salió en tiempo | institución | trámites | gestión | + | F31 | propuesta (evento) |
+| F32 | El título salió rápido | institución | trámites | gestión | + | F31 | propuesta (evento) |
 | F35 | Conseguí vacante | institución | trámites | gestión | + | F36 | propuesta |
 | F36 | No conseguí vacante | institución | trámites | gestión | − | F35 | propuesta (evento) |
 | F39 | Las equivalencias salieron | institución | trámites | gestión | + | F40 | propuesta (evento) |
 | F40 | Las equivalencias no avanzan | institución | trámites | gestión | − | F39 | propuesta (evento) |
-| F37 | El sistema anda | institución | sistemas | gestión | + | F38 | propuesta |
-| F38 | El sistema se cae cuando más se necesita | institución | sistemas | gestión | − | F37 | propuesta (evento) |
+| F37 | El sistema anda | institución | autogestión | gestión | + | F38 | propuesta |
+| F38 | El sistema se cae cuando más se necesita | institución | autogestión | gestión | − | F37 | propuesta (evento) |
 | F64 | Las prácticas profesionales existen de verdad | institución | promesa | gestión | + | F65 | propuesta |
 | F65 | Las prácticas prometidas no aparecen | institución | promesa | gestión | − | F64 | propuesta |
 | F66 | La bolsa de trabajo funciona | institución | promesa | gestión | + | F67 | propuesta |
 | F67 | La bolsa de trabajo es humo | institución | promesa | gestión | − | F66 | propuesta |
-| F41 | Te tratan como una persona | institución | trato | gestión | + | F44 | canvas |
+| F41 | Te atienden bien | institución | trato | gestión | + | F44 | canvas |
 | F44 | Te contestan mal o no te contestan | institución | trato | gestión | − | F41 | propuesta (Lucas: "administrativos maleducados/lentos") |
 | F42 | Cada trámite es una pelea | institución | trámites | gestión | − | F43 | canvas |
 | F43 | Los trámites salen rápido | institución | trámites | gestión | + | F42 | propuesta |
@@ -91,7 +91,7 @@ Cada frase tiene tres coordenadas ([ADR-0078](../decisions/0078-the-questionnair
 
 Cuántas frases hay por sujeto (fila) y tema (columna). Un punto es un hueco: esa combinación no tiene frase todavía, y no siempre debe tenerla (los baños no son de una cátedra).
 
-| Sujeto | enseñanza | evaluación | carga | organización | cumplimiento | trato | costos | carga y vida | infraestructura | trámites | sistemas | promesa | centro |
+| Sujeto | enseñanza | evaluación | carga | organización | cumplimiento | trato | costos | carga y vida | infraestructura | trámites | autogestión | promesa | centro |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | **materia** | 2 | 5 | 2 | 2 | · | · | 1 | 3 | · | · | · | · | · |
 | **cátedra** | 5 | 5 | 1 | · | 4 | 3 | · | 2 | · | · | · | · | · |
