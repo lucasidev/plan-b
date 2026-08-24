@@ -1,7 +1,7 @@
 import { apiFetch } from '@/lib/api-client';
 
 /**
- * POST /api/identity/register. Returns the raw Response so the action can
+ * POST /api/identity/register (202 exista o no la cuenta, ADR-0076). Returns the raw Response so the action can
  * branch on status and parse the JSON only when relevant.
  */
 

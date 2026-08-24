@@ -42,14 +42,16 @@ public sealed record AuthenticatedClient(
                 "/api/identity/register",
                 new { email, password });
             register.EnsureSuccessStatusCode();
-            var body = await register.Content.ReadFromJsonAsync<RegisterResponseDto>();
-            var userId = new UserId(body!.Id);
 
-            // 2) Force email verified directly via SQL: el test no quiere depender del flow
-            // verify-email completo (token parsing) cuando solo necesita una sesión válida.
+            // 2) Resolver el id por email y forzar verified via SQL: la respuesta del registro
+            // no trae id (ADR-0076: es identica exista o no la cuenta), y el test no quiere
+            // depender del flow verify-email completo cuando solo necesita una sesion valida.
+            UserId userId;
             using (var scope = fixture.Factory.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+                var emailVo = EmailAddress.Create(email).Value;
+                userId = (await db.Users.SingleAsync(u => u.Email == emailVo)).Id;
                 await db.Database.ExecuteSqlRawAsync(
                     "UPDATE identity.users SET email_verified_at = NOW() WHERE id = {0}",
                     userId.Value);
@@ -144,5 +146,4 @@ public sealed record AuthenticatedClient(
         return equalsAt < 0 ? string.Empty : keyValue[(equalsAt + 1)..];
     }
 
-    private sealed record RegisterResponseDto(Guid Id, string Email);
 }

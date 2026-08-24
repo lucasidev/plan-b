@@ -7,7 +7,7 @@ import type { SignUpFormState } from './types';
 
 /**
  * Sign-up server action. Validates with signUpSchema (Zod), calls
- * POST /api/identity/register, and on 201 redirects to /sign-up/check-inbox
+ * POST /api/identity/register, and on 202 redirects to /sign-up/check-inbox
  * via Next's redirect() (which throws NEXT_REDIRECT, short-circuiting return
  * semantics). On errors maps the backend's ProblemDetails / ValidationProblem
  * payloads to the SignUpFormState shape useActionState consumes.
@@ -42,18 +42,12 @@ export async function signUpAction(
     password: parsed.data.password,
   });
 
-  if (response.status === 201) {
+  // El backend responde 202 exista o no la cuenta (ADR-0076): la pantalla dice "revisá tu
+  // casilla" en los dos casos, y la diferencia viaja por mail. Por eso acá no hay rama 409.
+  if (response.ok) {
     return {
       status: 'success',
       redirectTo: `/sign-up/check-inbox?email=${encodeURIComponent(parsed.data.email)}`,
-    };
-  }
-
-  if (response.status === 409) {
-    return {
-      status: 'error',
-      message: 'Ya existe una cuenta con ese email',
-      field: 'email',
     };
   }
 

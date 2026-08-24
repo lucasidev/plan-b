@@ -158,7 +158,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
             "/api/identity/register",
             new { email = rawEmail, password = "valid-password-12c" });
 
-        register.StatusCode.ShouldBe(HttpStatusCode.Created);
+        register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 
     [Fact]
