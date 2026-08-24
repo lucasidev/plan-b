@@ -6,9 +6,10 @@ import { clearAllIdentityRateLimits } from '../helpers/redis';
 /**
  * E2E del flow resend verification (US-021).
  *
- * Cubre el path desde sign-in fallido (cuenta no verificada) → click en
- * el botón "Reenviar el link" → mail llega a Mailpit → cooldown timer
- * visible. Con MARTIN (Unverified) que vive en el seed.
+ * Cubre el path desde sign-in fallido → click en el botón "Reenviar el
+ * link" → mail llega a Mailpit → cooldown timer visible. Con MARTIN
+ * (Unverified) del seed. Desde ADR-0076 el sign-in responde el error
+ * genérico (no dice "sin verificar"), y el reenvío cuelga de ese error.
  *
  * El cooldown del backend es 60s (anti-flood, ADR-0023). Para no esperar
  * 60s en el test, validamos solo que el botón muestra el countdown y
