@@ -14,5 +14,6 @@ Entonces su voz suma a F17 y las dos frases opuestas conviven: F17 publica 1 de 
 
 ## Edge cases
 
-- Cerrado (2026-08-24, con el flujo por temas): el par se ofrece junto, el contrario está al lado; no hay aviso aparte.
+- Cerrado (2026-08-24, con el flujo por temas): el par es un solo control con dos salidas; el contrario está al lado, sin aviso aparte.
+- Los dos lados de un par son excluyentes en la misma reseña: marcar "Las clases se dan" cuando "Hay clases que no se dan" estaba marcada reemplaza la marca, nunca conviven (regla 2 del catálogo).
 - Cerrado (2026-08-24): la destilada entra sola o en par según la regla 2 del catálogo (el opuesto existe solo si es un hecho que alguien afirme); US-199 no exige el par al aprobar.

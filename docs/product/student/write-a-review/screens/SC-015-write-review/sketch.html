@@ -12,7 +12,7 @@
 </style>
 </head>
 <body>
-<p class="note">Boceto hi-fi de la pantalla Reseñar reescrito el 2026-08-24 al flujo por temas (ficha: <code>README.md</code>; <code>ADR-0078</code>, <code>ADR-0079</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>). Los cambios contra el boceto anterior (en git): la cátedra sube al paso 4, el paso de frases recorre temas con los pares juntos, la recolección es neutra (sin color de alarma: la alarma es lectura, de la ficha), y cada tema cierra con su micro-comentario. Los datos son ejemplo, con frases del catálogo vigente.</p>
+<p class="note">Boceto hi-fi de la pantalla Reseñar reescrito el 2026-08-24 al flujo por temas, iterado el mismo día: cada aspecto aparece una vez y el par son sus dos salidas excluyentes (se acabó leer cada idea dos veces) (ficha: <code>README.md</code>; <code>ADR-0078</code>, <code>ADR-0079</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>). Los cambios contra el boceto anterior (en git): la cátedra sube al paso 4, el paso de frases recorre temas con los pares juntos, la recolección es neutra (sin color de alarma: la alarma es lectura, de la ficha), y cada tema cierra con su micro-comentario. Los datos son ejemplo, con frases del catálogo vigente.</p>
 
 <div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
 
@@ -123,23 +123,26 @@
         <span style="font-weight: 600; font-size: 14px">Evaluación</span>
         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">cómo te evaluaron</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 6px">
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Ponen la nota que merecés</span>
-        <span style="border: 1px solid #191b1f; background: #eeece5; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">✓ Tiene un techo de nota</span>
+      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Ponen la nota que merecés</span>
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6; background: #eeece5; font-weight: 500">✓ Tiene un techo de nota</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 6px">
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Corrigen con criterio claro</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Los criterios de corrección cambian</span>
+      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Corrigen con criterio claro</span>
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Los criterios de corrección cambian</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 6px">
-        <span style="border: 1px solid #191b1f; background: #eeece5; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">✓ El final es exigente</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">El final toma cosas que no se dieron</span>
+      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 10px">
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se puede rendir libre y aprobar</span>
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Nadie aprueba libre</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px">
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se puede promocionar</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Nadie aprueba libre</span>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 6px">
+        <span style="border: 1px solid #191b1f; background: #eeece5; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; font-weight: 500">✓ El final es exigente</span>
+        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">El final toma cosas que no se dieron</span>
+        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se aprueba yendo a clase</span>
+        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se puede promocionar</span>
       </div>
-      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5; margin: 8px 0 0">¿Algo más de la evaluación? (opcional)</div>
+      <p style="font-size: 10.5px; color: #a7adb5; margin: 0 0 8px; font-family: 'IBM Plex Mono', monospace">ARRIBA: CADA ASPECTO UNA VEZ, DOS SALIDAS EXCLUYENTES · ABAJO: HECHOS SUELTOS, CO-MARCABLES</p>
+      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5">¿Algo más de la evaluación? (opcional)</div>
     </div>
 
     <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 14px 16px; margin: 0 0 12px">
@@ -147,12 +150,14 @@
         <span style="font-weight: 600; font-size: 14px">Trato</span>
         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">cómo te trataron</span>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 6px">
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Te tratan con respeto</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Hubo malos tratos</span>
+      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Te tratan con respeto</span>
+        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Hubo malos tratos</span>
       </div>
-      <div style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 8px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Hubo acoso</div>
-      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5; margin: 8px 0 0">¿Algo más del trato? (opcional)</div>
+      <div style="display: flex; gap: 6px; margin: 0 0 8px">
+        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Hubo acoso</span>
+      </div>
+      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5">¿Algo más del trato? (opcional)</div>
     </div>
 
     <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 0 0 14px">
