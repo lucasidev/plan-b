@@ -180,7 +180,7 @@ Cuatro cosas verificables, no una sensación:
 | 3 | [#357 · El catálogo de frases a la base](https://github.com/lucasidev/plan-b/issues/357) | 2 | 1; el gate de aprobación del catálogo es de Lucas |
 | 4 | [#358 · El modelo nuevo de reseña](https://github.com/lucasidev/plan-b/issues/358) | 8 | 2, 3 |
 | 5 | [#359 · La pantalla Reseñar por temas](https://github.com/lucasidev/plan-b/issues/359) | 8 | 1, 4 |
-| 6 | [#360 · La ficha mínima de cátedra](https://github.com/lucasidev/plan-b/issues/360) | 5 | 4 |
+| 6 | [#360 · La ficha mínima de cátedra](https://github.com/lucasidev/plan-b/issues/360) (redefinida el 2026-08-24: inteligencia, no lista: prevalencia por tema + retrato + serie) | 5 | 4 |
 | 7 | [#361 · El E2E del ciclo completo](https://github.com/lucasidev/plan-b/issues/361) | 3 | 5, 6 |
 
 ### Cómo se sabe que R1 está listo
