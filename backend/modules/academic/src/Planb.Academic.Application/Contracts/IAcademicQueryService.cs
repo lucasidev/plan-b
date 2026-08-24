@@ -129,7 +129,7 @@ public interface IAcademicQueryService
     /// <para>
     /// Existe porque ADR-0017 saca las FK cross-schema y deja la validación de referencias en el
     /// application layer, pero el contrato no exponía cómo preguntar "esta comisión es de esta materia
-    /// en este período?". Sin eso, Enrollments y Planning aceptaban cualquier <c>commission_id</c>: se
+    /// en este período?". Sin eso, Enrollments aceptaba cualquier <c>commission_id</c>: se
     /// podía registrar una cursada de una materia apuntando a la comisión de otra y después reseñar a
     /// un docente que nunca dio esa clase, porque el gate de publicar reseña valida que el docente
     /// esté en la comisión de la cursada y esa comisión nadie la había validado.

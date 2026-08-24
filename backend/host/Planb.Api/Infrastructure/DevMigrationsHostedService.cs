@@ -3,7 +3,6 @@ using Planb.Academic.Infrastructure.Persistence;
 using Planb.Enrollments.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Moderation.Infrastructure.Persistence;
-using Planb.Planning.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence;
 
 namespace Planb.Api.Infrastructure;
@@ -57,7 +56,6 @@ public sealed class DevMigrationsHostedService : IHostedService
         await MigrateAsync<EnrollmentsDbContext>(scope.ServiceProvider, "Enrollments", ct);
         await MigrateAsync<ReviewsDbContext>(scope.ServiceProvider, "Reviews", ct);
         await MigrateAsync<ModerationDbContext>(scope.ServiceProvider, "Moderation", ct);
-        await MigrateAsync<PlanningDbContext>(scope.ServiceProvider, "Planning", ct);
     }
 
     private async Task MigrateAsync<TContext>(

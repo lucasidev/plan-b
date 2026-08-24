@@ -10,7 +10,7 @@ namespace Planb.Academic.Domain.Subjects;
 /// pueden tener cientos de materias y no queremos cargarlas en bloque al hidratar el plan).
 ///
 /// <para>
-/// Cross-BC references desde Enrollments (US-013), Reviews y Planning son siempre via
+/// Cross-BC references desde Enrollments (US-013) y Reviews son siempre via
 /// <see cref="SubjectId"/> sin FK Postgres ni nav EF (ADR-0017). La validación de
 /// "este subject pertenece al plan X" vive en <c>IAcademicQueryService.IsSubjectInPlan</c>.
 /// </para>

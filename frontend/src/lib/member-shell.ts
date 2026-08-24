@@ -43,13 +43,6 @@ export const memberRoutes: readonly MemberRoute[] = [
     shortcut: '⌘2',
     futureUs: 'US-045',
   },
-  {
-    path: '/plan',
-    label: 'Planificar',
-    section: 'my-term',
-    shortcut: '⌘3',
-    futureUs: 'US-016',
-  },
 
   // Community
   { path: '/reviews', label: 'Reseñas', section: 'community', shortcut: '⌘4', futureUs: 'US-048' },
