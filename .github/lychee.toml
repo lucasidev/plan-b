@@ -26,7 +26,7 @@ max_redirects = 5
 # scrum.org, ACM) y no significan que el link esté muerto (eso es 404/410). Este
 # comentario prometía tolerarlos desde el principio; la lista no los tenía, y el
 # primer PR que citó esos sitios falló por eso.
-accept = [200, 202, 206, 304, 403, 429]
+accept = [200, 202, 206, 304, 400, 403, 429]
 
 # Excluir el directorio node_modules (frontend) y vendored content.
 exclude_path = [
