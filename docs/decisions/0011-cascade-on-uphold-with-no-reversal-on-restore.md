@@ -1,6 +1,6 @@
 # ADR-0011: Cascade on uphold, with no reversal on restore
 
-- **Estado**: aceptado
+- **Estado**: superado por [ADR-0068](0068-comment-publishes-as-testimony-below-the-phrases.md) (en el producto nuevo ninguna cantidad de reportes baja nada sola y nada se resuelve en cascada: lo reportado sigue publicado hasta que un humano resuelve caso por caso; la máquina de estados de la reseña texto-libre sobre la que operaba esta cascada se retira con [ADR-0063](0063-the-product-is-a-pressure-instrument.md))
 - **Fecha**: 2026-04-23
 
 ## Contexto
