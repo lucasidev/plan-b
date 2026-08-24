@@ -27,15 +27,14 @@ flowchart TD
   D4 --> D
   C --> D[¿Cómo terminó? aprobé, regular, desaprobé, la dejé, sigo · un toque, US-154]
   D -->|ya reseñé esta materia en otro período| D1[Segunda reseña: otro período, US-163]
-  D1 --> F
-  D --> F[Frases del sujeto que corresponde: marcar las que te pasaron<br/>los dos sentidos de cada aspecto, US-164]
-  F -->|leyó en la ficha algo que a él no le pasó| F1[Marca la frase del otro sentido: cada una publica su proporción,<br/>ninguna resta de la otra; discrepar no es reportar, US-164]
-  F1 --> G
-  F --> G[¿Cátedra? opcional]
-  F -->|viene del evento institucional: sin cátedra| H
-  G -->|marcó que hubo clases sin dar| G1[¿Cuántas? US-150]
+  D1 --> G
+  D --> G[¿Cátedra? opcional: la oferta de temas se arma sabiéndola, ADR-0079]
+  G --> F[Los temas, ADR-0078: en cada uno sus hechos, con el par junto<br/>donde el opuesto es real; marca binaria; todo se saltea]
+  F -->|leyó en la ficha algo que a él no le pasó| F1[Marca el otro lado del par: su marca nunca<br/>resta de la contraria; discrepar no es reportar, US-164]
+  F1 --> H
+  F -->|marcó que hubo clases sin dar| G1[¿Cuántas? US-150]
   G1 --> H
-  G --> H[Comentario, opcional, con tope]
+  F --> H[El micro-comentario de cada tema, opcional, con tope<br/>«¿algo más de esto?», ADR-0078]
   H --> H1{Chequeo previo, US-158}
   H1 -->|identifica por contexto| H2[Se marca la parte: decidís vos<br/>la réplica no podrá citarla]
   H2 --> I
@@ -43,8 +42,8 @@ flowchart TD
   H3 --> I
   H1 -->|nada que marcar| I[Aviso: no publicamos quién;<br/>en un grupo chico pueden sospechar]
   I --> J{Publicar}
-  J -->|con comentario| K([Publicada: suma voz a sus frases;<br/>el testimonio se lee debajo de las frases])
-  J -->|sin comentario| K2([Publicada: suma voz; sin testimonio])
+  J -->|con micro-comentarios| K([Publicada: suma voz a sus hechos;<br/>el testimonio son sus micro-comentarios, por tema])
+  J -->|sin texto| K2([Publicada: suma voz; sin testimonio])
   H -.->|cerré la pestaña| R[Queda guardada a medias: se retoma, US-161]
   R -.-> H
   K --> L[Mis aportes: lo que sumó cada frase y cuántos la leyeron, US-162]
@@ -73,4 +72,4 @@ flowchart TD
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 
-Cuántas frases se ofrecen por vez y en qué orden; cómo se ve la lista con los dos sentidos; el tope del comentario; el copy exacto del aviso de la sospecha; qué muestra Mis aportes al terminar.
+El orden de los temas y qué colapsa por defecto (la oferta por tema y los pares juntos ya los fija ADR-0078); el tope del micro-comentario; el copy exacto del aviso de la sospecha; qué muestra Mis aportes al terminar.
