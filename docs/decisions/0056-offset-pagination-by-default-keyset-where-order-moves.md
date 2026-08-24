@@ -69,6 +69,6 @@ Rechazada: no es paginación, es filtro. Resuelve navegar el archivo, no leer un
 
 ## Refs
 
-- [`DapperPublicSimulationsReader`](../../backend/modules/planning/src/Planb.Planning.Infrastructure/Persistence/Queries/DapperPublicSimulationsReader.cs): el keyset, con el desempate por id explicado en el propio SQL.
+- `DapperPublicSimulationsReader` fue el keyset de referencia, con el desempate por id explicado en su propio SQL; se retiró con el planificador (R0, 2026-08-23) y queda citable desde el historial de git.
 - [`DapperBrowseReviewsQueryService`](../../backend/modules/reviews/src/Planb.Reviews.Infrastructure/Persistence/Queries/DapperBrowseReviewsQueryService.cs) y [`DapperReportQueueReader`](../../backend/modules/moderation/src/Planb.Moderation.Infrastructure/Reading/DapperReportQueueReader.cs): los dos offset.
 - [ADR-0018](0018-ef-core-writes-dapper-reads.md): por qué estos tres listados son SQL a mano y no LINQ.

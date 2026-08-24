@@ -62,7 +62,53 @@ Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, má
 
 **El corazón de la tesis no existe.** `phrase`, `frase` y `testimonio` dan **cero archivos** en el backend. Lo que reemplaza al puntaje no tiene una línea escrita.
 
-> **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. **Y hay una parte que se sabe mal**: los inventarios de `reviews`, `enrollments` y `academic` mapearon las features contra IDs del producto **viejo** (US-003, US-015, US-055, US-060 a US-064 y otros), que ya no existen. Ese mapeo se rehace en R0 antes de planificar R1. Los de `identity` y `planning` sí citaron IDs vigentes y están verificados a mano.
+> **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. Los inventarios de `reviews`, `enrollments` y `academic` se **re-mapearon el 2026-08-23** contra los IDs vigentes (US-127 a US-230): el detalle queda abajo. El de `identity` ya citaba IDs vigentes; `planning` se retiró en R0.
+
+### El re-mapeo contra el catálogo vigente (issue #353)
+
+Cada feature cita un ID vigente o declara que no mapea. "Se rehace" significa que la necesidad sobrevive pero la forma actual no; "se va" que contradice el producto nuevo.
+
+**`reviews`**
+
+| Feature | Veredicto |
+|---|---|
+| PublishReview | Se rehace para US-146/US-147: la unidad pasa a la cursada con frases marcadas; el texto pasa a testimonio (US-135, ADR-0068) |
+| EditReview · DeleteOwnReview | US-165 (editar o borrar lo que conté) |
+| RespondToReview | Se rehace para US-172, con el chequeo previo y el plazo de US-179 |
+| EditTeacherResponse | Sin story vigente: editar la réplica se decide con Replicar (US-176, el estado del canal) |
+| GetMyPendingReviews | Se va: un checklist de cursadas pendientes contradice US-147 ("arranca eligiendo una, sin checklist") |
+| GetMyReviews | US-165, vía Mis aportes (SC-018) |
+| BrowseReviews | Se rehace: la lectura vive en las fichas (US-135, US-136), no en un browse global |
+| CastReviewVote | Se rehace para US-188, con la voz de ADR-0075 (una por persona y cursada, no un contador de útil) |
+| SubjectInsights · TeacherInsights | Se van: promedian dificultad y utilidad; los reemplaza la ficha de frases con voces (ADR-0064) |
+| ReconcileEnrollmentChanges | Tarea técnica sin story; se revisa contra la clave cuenta × materia × período (US-163) |
+
+**`enrollments`**
+
+| Feature | Veredicto |
+|---|---|
+| RegisterEnrollment | US-154 (cómo terminó) y US-163 (la clave por período); el registro de cursada sigue siendo el ancla (ADR-0005) |
+| UpdateEnrollment | US-165 |
+| HistorialImports | Sin story vigente: reseñar ya no pide historial masivo; si sobrevive, es para trayectoria (US-152) y se decide ahí |
+| GetMyTranscript | US-152, la lectura propia de trayectoria, vía Mi situación y Mis aportes |
+| SubjectPassRate | US-152 ("por materia muestra dónde se cae"), sobre la base de ADR-0047 |
+
+**`academic`**
+
+| Feature | Veredicto |
+|---|---|
+| Search | US-132, vigente |
+| PublicCatalog (11 endpoints) | La base de lectura de las fichas (US-127 a US-139): el dato sirve, la presentación se rehace |
+| AdminUniversities | US-191 y US-203 (qué cargar el primer día) |
+| AdminCareers | US-195 (la carrera canónica es entidad nueva, falta) |
+| AdminCareerPlans | US-191 y US-204 (la reforma no parte el corpus) |
+| AdminSubjects | US-197 (vincular declaradas a la canónica; la canónica falta) |
+| AdminPrerequisites | US-143 y US-144 (la co-cursada las consume) |
+| AdminAcademicTerms | Vigente como dato del período; sin story propia |
+| AdminTeachers | US-196 (la cátedra como entidad propia falta; el docente actual es su insumo) |
+| AdminCommissions | US-196 (cátedra ≠ comisión) |
+| CareerPlanImports | US-202 (fuente no oficial) y US-191 |
+| CareerPlanImportQueue | US-192 y US-200 (la cola por demanda, con su ritmo real) |
 
 ---
 
@@ -91,15 +137,15 @@ El 4 y el 5 no dependen de nadie y pueden correr en paralelo con el rescate y la
 
 - [ ] **Cerrar los dos ADR en propuesto.** [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md) fija el z del encogimiento, el denominador de una proporción y cuántas voces suma una persona; sin eso ninguna proporción publicada se calcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
 
-- [ ] **Rescatar el evaluador de disponibilidad a `academic`, antes de tocar `planning`.** Mueve `SubjectAvailabilityEvaluator`, su interfaz, `SubjectAvailability`, `SubjectProgress`, `PrerequisiteEdge` y `AvailabilityStatus` de `planning/Domain/Availability/` a `academic/Domain/Availability/`. Es lógica de dominio pura, sin I/O. **No es una decisión de este plan**: la story US-144 ya lo dejó escrito en su propio criterio de aceptación.
+- [x] **Rescatar el evaluador de disponibilidad a `academic`, antes de tocar `planning`.** Mueve `SubjectAvailabilityEvaluator`, su interfaz, `SubjectAvailability`, `SubjectProgress`, `PrerequisiteEdge` y `AvailabilityStatus` de `planning/Domain/Availability/` a `academic/Domain/Availability/`. Es lógica de dominio pura, sin I/O. **No es una decisión de este plan**: la story US-144 ya lo dejó escrito en su propio criterio de aceptación.
 
-- [ ] **Podar `planning` entero.** Sus 10 features, el aggregate `SimulationDraft` con sus hijos, los servicios de horarios (`ScheduleClash`, `ScheduleClashDetector`, `ScheduledBlock`), las dos migraciones EF del schema `planning`, el wiring de DI en `Program.cs` (líneas 17-18, 124-125, 139, 198-199), las referencias a `PlanningDbContext` en `DevMigrationsHostedService` y `MigrateDbCommand`, los tests de integración de `Planning/`, y el feature `plan` del frontend con sus llamadas a `/api/planning/*`.
+- [x] **Podar `planning` entero.** Sus 10 features, el aggregate `SimulationDraft` con sus hijos, los servicios de horarios (`ScheduleClash`, `ScheduleClashDetector`, `ScheduledBlock`), las dos migraciones EF del schema `planning`, el wiring de DI en `Program.cs` (líneas 17-18, 124-125, 139, 198-199), las referencias a `PlanningDbContext` en `DevMigrationsHostedService` y `MigrateDbCommand`, los tests de integración de `Planning/`, y el feature `plan` del frontend con sus llamadas a `/api/planning/*`.
 
-- [ ] **Arreglar la fuga de enumeración en el registro.** Verificado en el código: `RegisterUserCommandHandler.cs:37-40` devuelve `EmailAlreadyInUse` cuando el mail ya tiene cuenta, que es exactamente lo que ADR-0076 prohíbe. Es la primera pieza del producto nuevo que se toca, y se toca porque es una fuga, no porque sea una feature.
+- [x] **Arreglar la fuga de enumeración en el registro.** Verificado en el código: `RegisterUserCommandHandler.cs:37-40` devuelve `EmailAlreadyInUse` cuando el mail ya tiene cuenta, que es exactamente lo que ADR-0076 prohíbe. Es la primera pieza del producto nuevo que se toca, y se toca porque es una fuga, no porque sea una feature.
 
 - [ ] **Propagar ADR-0078** (el cuestionario recolecta en pares, la ficha reporta por temas): asignar el tema a las 46 frases y poblar las familias vacías en sesión de curaduría; reescribir las stories de Reseñar al flujo por temas; el Método suma los indicadores nuevos (prevalencia por tema, retrato, ¿responden?) con sus definiciones; y decidir la política de muestra chica (supresión, sin piso, o híbrida), que es compuerta de la ficha. Hasta esta propagación, stories y fichas describen la versión anterior.
 
-- [ ] **Rehacer el mapeo story del inventario** de `reviews`, `enrollments` y `academic` contra los IDs vigentes (US-127 a US-230). Sin esto, R1 se planifica contra referencias muertas.
+- [x] **Rehacer el mapeo story del inventario** de `reviews`, `enrollments` y `academic` contra los IDs vigentes (US-127 a US-230). Sin esto, R1 se planifica contra referencias muertas.
 
 ### Cómo se sabe que R0 está listo
 
