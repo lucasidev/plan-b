@@ -12,7 +12,7 @@
 </style>
 </head>
 <body>
-<p class="note">Boceto de dirección por temas (2026-08-24): la ficha muestra <strong>inteligencia sobre lo recolectado</strong> (prevalencia, retrato, serie, derivadas y trayectoria según el sujeto), nunca la lista de lo que respondieron. Fórmulas: <code>ADR-0075</code> (Wilson z = 1,96, una voz por cursada), <code>ADR-0078</code> (prevalencia y retrato), <code>ADR-0080</code> (sin piso, rupturas declaradas), <code>ADR-0066</code> (derivadas con cobertura), <code>ADR-0067</code> (trayectoria de hechos declarados). Generado por script sobre un corpus de ejemplo: ningún número está puesto a mano. La spec completa de la ficha se escribe aparte; esto fija la dirección.</p>
+<p class="note">Boceto de dirección por temas (2026-08-24): la ficha muestra <strong>inteligencia sobre lo recolectado</strong> (prevalencia, retrato, serie y lo propio de su sujeto), nunca la lista de lo que respondieron. Fórmulas: <code>ADR-0075</code> (Wilson z = 1,96, una voz por cursada), <code>ADR-0078</code> (prevalencia y retrato), <code>ADR-0080</code> (sin piso, rupturas), <code>ADR-0066</code> (derivadas con cobertura), <code>ADR-0067</code> (trayectoria). En la prevalencia cada dirección lleva su propia barra, y la leyenda de columnas va una vez (copy provisional). Generado por script sobre un corpus de ejemplo: ningún número está puesto a mano.</p>
 
 <div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
 
@@ -28,33 +28,36 @@
   <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 22px">96 voces · suma sus cursadas en todas las cátedras y períodos · 2022 a 2026-C1</p>
 
   <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La prevalencia, por tema</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Cuántas personas marcaron al menos un hecho del tema, en cada dirección. Una persona cuenta una vez por cursada.</p>
-    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
-      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">carga</span>
-      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">43,2%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">51 de 96</span></span>
-      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 43%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">7,3%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">12 de 96</span></span>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Cuántas personas marcaron al menos un hecho del tema, en cada dirección. Una persona cuenta una vez y puede estar en las dos columnas; por eso no suman 100.</p>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 10px 18px 6px">
+    <div style="display: flex; align-items: center; gap: 16px; padding: 2px 0 6px">
+      <span style="flex: 1"></span>
+      <span style="flex: 0 0 200px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em; color: #6e1c12">MARCARON ALGO EN CONTRA</span>
+      <span style="flex: 0 0 200px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em; color: #7b8089">MARCARON ALGO A FAVOR</span>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
-      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">evaluación</span>
-      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">31,3%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">39 de 96</span></span>
-      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 31%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">25,6%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">33 de 96</span></span>
+    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
+      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">carga</span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 43%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">43,2%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">51 de 96</span></span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">7,3%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">12 de 96</span></span>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
-      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">organización</span>
-      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">15,6%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">22 de 96</span></span>
-      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 16%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">5,0%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">9 de 96</span></span>
+    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
+      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">evaluación</span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 31%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">31,3%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">39 de 96</span></span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 26%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">25,6%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">33 de 96</span></span>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eae7de">
-      <span style="flex: 0 0 118px; font-weight: 600; font-size: 13.5px; text-transform: capitalize">enseñanza</span>
-      <span style="flex: 0 0 200px; text-align: right; font-size: 12px; color: #494e57">señalaron un problema: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">6,5%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">11 de 96</span></span>
-      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-      <span style="flex: 1; font-size: 12px; color: #7b8089">algo que funciona: <b style="font-family: 'IBM Plex Mono', monospace; font-weight: 500">22,9%</b> <span style="color: #a7adb5; font-family: 'IBM Plex Mono', monospace; font-size: 10px">30 de 96</span></span>
+    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
+      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">organización</span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 16%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">15,6%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">22 de 96</span></span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 5%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">5,0%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">9 de 96</span></span>
     </div>
+    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
+      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">enseñanza</span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">6,5%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">11 de 96</span></span>
+      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 23%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">22,9%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">30 de 96</span></span>
+    </div>
+  </div>
   <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">El retrato</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Los 5 hechos más sostenidos de esta materia, del signo que salgan. Selección mecánica por frecuencia encogida.</p>
+  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Los 5 hechos más sostenidos de esta materia, del signo que salgan.</p>
   <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 4px 18px 6px">
       <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
         <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Es dura de verdad"</span>
@@ -87,7 +90,7 @@
         <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">13,1% <span style="color: #a7adb5; font-size: 10px">19 de 96</span></span>
       </div>
   </div>
-  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">Dura y exigente no es mal llevada: la atribución viaja en cada hecho. El detalle completo, en el Método y el CSV.</p>
+  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">Dura y exigente no es mal llevada: la atribución viaja en cada hecho.</p>
   <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La trayectoria de la materia</h2>
   <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">De cómo terminó cada cursada declarada (ADR-0067). Siempre "de quienes reseñaron", nunca "la tasa de la materia".</p>
   <div style="display: flex; gap: 10px; flex-wrap: wrap">
@@ -101,11 +104,11 @@
     <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Cátedra González <span style="color: #7b8089; font-size: 12px">titular: L. González</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">31 voces</span></div>
     <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Sin cátedra recordada <span style="color: #7b8089; font-size: 12px">las marcas de materia cuentan igual</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">23 voces</span></div>
   <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Estado: cargada, sin voces todavía</h2>
-  <div style="background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px; margin: 0 0 22px; text-align: center">
+  <div style="background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px; margin: 0 0 8px; text-align: center">
     <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 15px; margin: 0 0 4px">Esta ficha arranca vacía.</p>
     <p style="font-size: 12.5px; color: #7b8089; margin: 0">La primera voz ya se publica: acá nunca hay un cero inventado (US-136, US-139).</p>
   </div>
-  <div style="border-top: 1px solid #e2dfd6; padding-top: 16px; text-align: right"><span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 8px 18px; font-size: 13px">¿La cursaste? Reseñala</span></div>
+  <div style="border-top: 1px solid #e2dfd6; margin-top: 18px; padding-top: 16px; text-align: right"><span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 8px 18px; font-size: 13px">¿La cursaste? Reseñala</span></div>
 
   </div>
 </div>
