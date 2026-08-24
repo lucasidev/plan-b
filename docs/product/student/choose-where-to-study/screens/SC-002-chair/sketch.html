@@ -3,183 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto hi-fi: Ficha de cátedra (Boletín)</title>
+<title>Boceto hi-fi: Ficha de cátedra, la mínima de R1 (Boletín)</title>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
-  .note { max-width: 1120px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
+  .note { max-width: 680px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
   a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
 </style>
 </head>
 <body>
-<p class="note">Boceto hi-fi de la pantalla Ficha de cátedra (ficha: <code>README.md</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>); <code>globals.css</code> lo recibe con el primer slice del producto nuevo. El mid-fi anterior quedó en git. Los datos son ejemplo, con los números del canon.</p>
-<div style="width: 1120px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
+<p class="note">Boceto hi-fi de la <strong>ficha mínima de cátedra</strong> (R1, issue #360): las frases con sus voces, leídas por tema, y nada más. La ficha completa (prevalencia, retrato, series, testimonios, réplica) espera su propia spec; este boceto muestra solo lo ya decidido: la proporción por frase con el encogimiento de Wilson y el crudo al lado (<code>ADR-0075</code>, <code>ADR-0078</code>), los pares juntos con cada lado su proporción (<code>US-164</code>), la alarma reservada a gestión (<code>design-system.md</code>), y los estados de pocas voces y sin voces (<code>US-136</code>, <code>US-139</code>). Lectura sin cuenta. Los números son ejemplo y están calculados de verdad (z = 1,96).</p>
 
-  <div style="display: flex; align-items: center; gap: 24px; padding: 14px 40px; border-bottom: 1px solid #e2dfd6; background: #fffefb">
-    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 20px">plan-b</div>
-    <div style="display: flex; gap: 18px; font-size: 13px; color: #494e57">
-      <span>Explorar</span><span>Método</span>
-    </div>
-    <div style="flex: 1; max-width: 360px; margin-left: auto; border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 14px; color: #a7adb5; font-size: 13px; background: #f7f5ef">Buscar una materia, carrera o docente…</div>
-    <div style="border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 16px; font-size: 13px; color: #494e57; font-weight: 500">Ingresar</div>
+<div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 32px 16px; border-bottom: 1px solid #e2dfd6">
+    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 17px">plan-b</div>
+    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7b8089">Ficha de cátedra</div>
   </div>
 
-  <div style="padding: 26px 40px 40px">
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 16px">UNSTA · Ingeniería en Sistemas · Análisis Matemático II</div>
+  <div style="padding: 20px 32px 44px">
 
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 0 0 6px">
-      <div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b8089; margin: 0 0 8px">Ficha de cátedra · se lee sin cuenta</div>
-        <h1 style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 40px; line-height: 1.05; margin: 0">Cátedra Pérez</h1>
-        <div style="color: #494e57; font-size: 14px; margin-top: 8px">titular: <strong style="font-weight: 600">Claudia Fernández</strong> · da Análisis Matemático II desde 2021 · la otra cátedra de la materia: Cátedra Gómez</div>
-      </div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; text-align: right; padding-bottom: 6px">41 voces · 2022 a 2025<br>reprocesado al 19/8/2026</div>
-    </div>
+  <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 28px; line-height: 1.12; margin: 0 0 4px">Cátedra Pérez</p>
+  <p style="font-size: 14px; color: #494e57; margin: 0 0 4px">Análisis Matemático II · UNSTA · titular: M. Pérez</p>
+  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 20px">42 voces · una por persona y cursada · períodos 2023 a 2026-C1 · lo último es de hace 2 meses</p>
 
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 22px 0 16px">
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 20px 24px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 10px">Exigencia · información</div>
-        <div style="display: flex; align-items: baseline; gap: 12px">
-          <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 46px; line-height: 1">4<span style="font-size: 26px; font-weight: 500"> de cada 10</span></div>
-        </div>
-        <div style="color: #494e57; font-size: 14px; margin-top: 8px">dicen que es dura</div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; margin-top: 4px">23 de 41 voces · 56% crudo, encogido a 41%</div>
-      </div>
-      <div style="background: #f5e4e0; border: 1px solid #e6c3bc; border-radius: 10px; padding: 20px 24px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418; margin: 0 0 10px">Gestión · alarma</div>
-        <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 46px; line-height: 1; color: #6e1c12">6<span style="font-size: 26px; font-weight: 500"> de cada 10</span></div>
-        <div style="color: #6e1c12; font-size: 14px; margin-top: 8px">marcaron alguien fallando</div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8d2418; margin-top: 4px">31 de 41 voces · 76% crudo, encogido a 61%</div>
-      </div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Evaluación</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 6px 18px 8px; margin: 0 0 18px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Tiene un techo de nota"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 25%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">25,0% <span style="color: #a7adb5; font-size: 10px">16 de 42</span></span>
     </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px; color: #494e57">"Ponen la nota que merecés"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">6,7% <span style="color: #a7adb5; font-size: 10px">6 de 42</span></span>
+    </div>
+    <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 6px 0 4px">EL PAR SE LEE JUNTO: CADA LADO CON SU PROPIA PROPORCIÓN, NINGUNA RESTA DE LA OTRA (US-164)</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"El final es exigente"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 31%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">31,2% <span style="color: #a7adb5; font-size: 10px">19 de 42</span></span>
+    </div>
+  </div>
 
-    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 0 0 16px">
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418; margin: 0 0 12px">Gestión · lo que más se marcó</div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Hay clases que no se dan</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">15 de 41 · encogido 24%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 24%; background: #8d2418; border-radius: 6px"></div></div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Enseñanza</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 6px 18px 8px; margin: 0 0 18px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Explican bien"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 52%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">51,6% <span style="color: #a7adb5; font-size: 10px">28 de 42</span></span>
     </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Te la estudiás solo</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">12 de 41 · encogido 18%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 18%; background: #8d2418; border-radius: 6px"></div></div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px; color: #494e57">"No se entiende nada"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 3%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">2,5% <span style="color: #a7adb5; font-size: 10px">3 de 42</span></span>
     </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">El final toma cosas que no se dieron <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; border: 1px solid #e2dfd6; border-radius: 999px; padding: 1px 7px">síntesis</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">9 de 41 · encogido 12%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 12%; background: #8d2418; border-radius: 6px"></div></div>
-    </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">No responden consultas</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">6 de 41 · encogido 7%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 7%; background: #8d2418; border-radius: 6px"></div></div>
-    </div>
-        <div style="font-size: 12px; color: #7b8089; margin-top: 12px">ver las 18 frases de gestión · <span style="color: #494e57">marcá la tuya reseñando esta cursada</span></div>
-      </div>
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 12px">Exigencia · lo que más se marcó</div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Es dura de verdad</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">20 de 41 · encogido 34%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 34%; background: #7b8089; border-radius: 6px"></div></div>
-    </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Es muchísimo contenido</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">15 de 41 · encogido 24%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 24%; background: #7b8089; border-radius: 6px"></div></div>
-    </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">El final es exigente</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">13 de 41 · encogido 20%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 20%; background: #7b8089; border-radius: 6px"></div></div>
-    </div>
-        <div style="margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; gap: 10px; align-items: baseline"><span style="font-size: 14px">Se aprueba yendo a clase</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">5 de 41 · encogido 5%</span></div>
-      <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 4px"><div style="height: 100%; width: 5%; background: #7b8089; border-radius: 6px"></div></div>
-    </div>
-        <div style="font-size: 12px; color: #7b8089; margin-top: 12px">La exigencia informa, no alarma: la carrera siendo dura se elige; la gestión se sufre.</div>
-      </div>
-    </div>
+  </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin: 0 0 16px">
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418; margin: 0 0 10px">Clases sin dar</div>
-        <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 34px; line-height: 1; color: #6e1c12">4</div>
-        <div style="color: #494e57; font-size: 13px; margin-top: 6px">la mediana por período; el rango declarado va de 2 a 8</div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; margin-top: 6px">12 voces declararon cuántas · 2024 a 2025</div>
-      </div>
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 18px 24px">
-        <div style="display: flex; justify-content: space-between; align-items: baseline">
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 10px">La serie · «marcaron alguien fallando», por período</div>
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089">sin suavizar · por el período en que pasó</div>
-        </div>
-        <div style="display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 8px"><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2022, 2do cuat. · 2 de 5 voces (40% crudo, encogido 12%)">
-      <div style="height: 36px; background: #b9867c; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">2/5</div>
-      <div style="height: 13px"></div>
-    </div><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2023, 1er cuat. · 4 de 6 voces (67% crudo, encogido 30%)">
-      <div style="height: 60px; background: #8d2418; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">4/6</div>
-      <div style="height: 13px"></div>
-    </div><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2023, 2do cuat. · 5 de 7 voces (71% crudo, encogido 36%)">
-      <div style="height: 63px; background: #8d2418; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">5/7</div>
-      <div style="height: 13px"></div>
-    </div><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2024, 1er cuat. · 8 de 9 voces (89% crudo, encogido 56%)">
-      <div style="height: 80px; background: #8d2418; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">8/9</div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #8d2418; margin-top: 2px">▲ publicado</div>
-    </div><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2024, 2do cuat. · 5 de 8 voces (63% crudo, encogido 31%)">
-      <div style="height: 56px; background: #8d2418; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">5/8</div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #8d2418; margin-top: 2px">▲ réplica</div>
-    </div><div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch" title="2025, 1er cuat. · 2 de 6 voces (33% crudo, encogido 10%)">
-      <div style="height: 29px; background: #b9867c; border-radius: 3px 3px 0 0"></div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #7b8089; margin-top: 4px; text-align: center">2/6</div>
-      <div style="height: 13px"></div>
-    </div></div>
-        <div style="font-size: 12px; color: #7b8089; margin-top: 8px">Cada barra: sus voces, el crudo y el encogido al pasar. Las marcas: cuándo se publicó la ficha y cuándo llegó la réplica.</div>
-      </div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Cumplimiento</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 6px 18px 8px; margin: 0 0 18px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Hay clases que no se dan"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 17%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">17,2% <span style="color: #a7adb5; font-size: 10px">12 de 42</span></span>
     </div>
-
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 22px 26px; margin: 0 0 16px">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 14px">
-        <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px">Testimonios <span style="color: #7b8089; font-weight: 400">12</span></div>
-        <div style="font-size: 12px; color: #7b8089">ordenados por «a mí también me pasó» · leer y reportar no piden cuenta</div>
-      </div>
-
-      <div style="border: 1px solid #e2dfd6; border-radius: 8px; padding: 16px 20px; margin: 0 0 12px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 8px">2024, primer cuatrimestre · Cátedra Pérez · anónimo</div>
-        <div style="font-family: 'Newsreader', serif; font-style: italic; font-size: 18px; line-height: 1.5; margin: 0 0 12px">«El titular faltó todo mayo y después tomó todo igual. Los prácticos los daba un ayudante que hacía lo que podía; el final fue sobre temas que nunca se dieron en clase.»</div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0 0 12px">
-          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089">Marcó:</span>
-          <span style="border: 1px solid #e6c3bc; background: #f5e4e0; color: #6e1c12; border-radius: 999px; padding: 3px 11px; font-size: 12px">Hay clases que no se dan</span>
-          <span style="border: 1px solid #e6c3bc; background: #f5e4e0; color: #6e1c12; border-radius: 999px; padding: 3px 11px; font-size: 12px">Toman lo que no dieron · síntesis</span>
-          <span style="border: 1px solid #e2dfd6; background: #eeece5; color: #494e57; border-radius: 999px; padding: 3px 11px; font-size: 12px">Es dura de verdad</span>
-        </div>
-        <div style="display: flex; gap: 10px; align-items: center; margin: 0 0 14px">
-          <span style="display: inline-flex; align-items: center; gap: 7px; border: 1px solid #e6c3bc; border-radius: 999px; padding: 6px 14px; font-size: 13px; color: #6e1c12; background: #fffefb; font-weight: 500">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#8d2418" stroke-width="2"><path d="M2 8.5 L6 12.5 L14 3.5"></path></svg>
-            A mí también me pasó · 12
-          </span>
-          <span style="font-size: 13px; color: #7b8089">Reportar</span>
-          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #a7adb5">votar pide cuenta · reportar no</span>
-        </div>
-        <div style="border-left: 2px solid #e2dfd6; padding: 10px 0 2px 18px; background: #f7f5ef; border-radius: 0 8px 8px 0; padding-right: 16px; padding-top: 12px; padding-bottom: 12px">
-          <div style="font-size: 13px; color: #494e57; margin: 0 0 4px"><strong style="font-weight: 600">Respuesta de Claudia Fernández</strong>, titular · <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px">identidad verificada · 3/6/2025</span></div>
-          <div style="font-size: 14px; color: #494e57">«En mayo de 2024 tuve licencia médica y la cátedra no consiguió reemplazo. Los temas del final estaban en la bibliografía. Desde 2025 el cronograma es público y se cumple.»</div>
-          <div style="font-size: 12px; color: #7b8089; margin-top: 6px">La respuesta queda al lado. No baja el testimonio ni mueve ningún conteo.</div>
-        </div>
-      </div>
-
-      <div style="border: 1px dashed #e2dfd6; border-radius: 8px; padding: 14px 20px; background: #eeece5; margin: 0 0 12px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 6px">2023, segundo cuatrimestre · Cátedra Pérez</div>
-        <div style="font-size: 13px; color: #494e57">Este texto se retiró: hablaba de una persona fuera de su acto público. Sus frases siguen contando.</div>
-        <div style="margin-top: 8px"><span style="border: 1px solid #e6c3bc; background: #f5e4e0; color: #6e1c12; border-radius: 999px; padding: 2px 10px; font-size: 12px">Hay clases que no se dan</span></div>
-      </div>
-
-      <div style="font-size: 13px; color: #7b8089">ver los 12 testimonios · el último es de 2025, 1er cuatrimestre</div>
+    <p style="font-size: 12px; color: #7b8089; margin: 4px 0 8px; padding-left: 2px">¿Cuántas? mediana 3, entre 1 y 6 por cuatrimestre, de 12 voces (D02: nunca tu número solo)</p>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px; color: #494e57">"Las clases se dan"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 12%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">11,7% <span style="color: #a7adb5; font-size: 10px">9 de 42</span></span>
     </div>
+  </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid #e2dfd6; padding-top: 18px">
-      <div style="font-size: 13px; color: #494e57">¿Cómo calculamos esto? <a href="#">Método</a>: la fórmula del encogimiento, el catálogo entero de frases y los sesgos declarados. El crudo se descarga sin cuenta.</div>
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; white-space: nowrap">CSV · dos tablas · al 19/8/2026</div>
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Trato</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 6px 18px 8px; margin: 0 0 8px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Te tratan con respeto"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 59%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">58,9% <span style="color: #a7adb5; font-size: 10px">31 de 42</span></span>
     </div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Hubo acoso"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 3%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">2,5% <span style="color: #a7adb5; font-size: 10px">3 de 42</span></span>
+    </div>
+  </div>
+  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0 0 18px">EL COLOR DE ALARMA SOLO EN GESTIÓN NEGATIVA; EXIGENCIA Y LO POSITIVO, NEUTROS. NINGÚN RESUMEN POR EJE NI POR TEMA EN LA MÍNIMA.</p>
+
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Estado: pocas voces (otro ejemplo de fila)</h2>
+  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 6px 18px 8px; margin: 0 0 18px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0">
+      <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px">"Los criterios de corrección cambian"</span>
+      <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5"><span style="display: block; width: 21%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
+      <span style="flex: 0 0 118px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">20,8% <span style="color: #a7adb5; font-size: 10px">2 de 3</span></span>
+    </div>
+    <p style="font-size: 12px; color: #7b8089; margin: 0 0 8px">Encogido de 67%: pocas voces. Sube solo a medida que crece el corpus (Wilson, z = 1,96, en el Método).</p>
+  </div>
+
+  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Estado: cargada, sin voces todavía</h2>
+  <div style="background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px; margin: 0 0 22px; text-align: center">
+    <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 15px; margin: 0 0 4px">Esta ficha arranca vacía.</p>
+    <p style="font-size: 12.5px; color: #7b8089; margin: 0">Nadie reseñó todavía a esta cátedra. La primera voz ya se publica: acá nunca hay un cero inventado (US-136, US-139).</p>
+  </div>
+
+  <div style="border-top: 1px solid #e2dfd6; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+    <p style="font-size: 12px; color: #7b8089; margin: 0">Los testimonios y la réplica llegan con la moderación y la spec de la ficha (fuera de la mínima).</p>
+    <span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 8px 18px; font-size: 13px; white-space: nowrap">¿La cursaste? Reseñala</span>
+  </div>
+
   </div>
 </div>
 </body>
