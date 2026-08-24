@@ -29,7 +29,7 @@ export async function signInAction(
   if (!parsed.success) {
     return {
       status: 'error',
-      kind: 'invalid_credentials',
+      kind: 'unknown',
       message: parsed.error.issues[0].message,
     };
   }
@@ -45,25 +45,21 @@ export async function signInAction(
   }
 
   if (response.status === 401) {
+    // ADR-0076: el backend responde 401 tanto para credenciales malas como para una cuenta
+    // sin verificar, para no revelar que el mail tiene cuenta. Por eso el reenvío de
+    // verificación cuelga de acá, del mensaje que ve todo el mundo, con el email que la
+    // persona ya tipeó (echoarlo a su propio cliente no agrega información).
     return {
       status: 'error',
       kind: 'invalid_credentials',
-      message: 'Email o contraseña incorrectos',
+      message: 'El mail o la contraseña no coinciden.',
+      email: parsed.data.email,
     };
   }
 
   if (response.status === 403) {
     const body = (await response.json().catch(() => null)) as ProblemDetails | null;
     const code = body?.title ?? '';
-    if (code === 'identity.account.email_not_verified') {
-      return {
-        status: 'error',
-        kind: 'email_not_verified',
-        message:
-          'Tu cuenta todavía no está verificada. Revisá el mail que te mandamos al registrarte.',
-        email: parsed.data.email,
-      };
-    }
     if (code === 'identity.account.disabled') {
       return {
         status: 'error',

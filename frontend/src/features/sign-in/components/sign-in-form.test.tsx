@@ -64,8 +64,8 @@ describe('SignInForm', () => {
   it('renderiza alert con el mensaje cuando el action devuelve status: error', async () => {
     actionMock.mockResolvedValue({
       status: 'error',
-      kind: 'invalid_credentials',
-      message: 'Email o contraseña incorrectos',
+      kind: 'account_disabled',
+      message: 'Tu cuenta fue suspendida.',
     });
     const user = userEvent.setup();
     render(<SignInForm />);
@@ -75,14 +75,14 @@ describe('SignInForm', () => {
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent(/email o contraseña incorrectos/i);
+    expect(alert).toHaveTextContent(/tu cuenta fue suspendida/i);
   });
 
-  it('muestra el botón de resend cuando el kind es email_not_verified', async () => {
+  it('ofrece el reenvío de verificación bajo el error genérico (ADR-0076)', async () => {
     actionMock.mockResolvedValue({
       status: 'error',
-      kind: 'email_not_verified',
-      message: 'Tu cuenta todavía no está verificada.',
+      kind: 'invalid_credentials',
+      message: 'El mail o la contraseña no coinciden.',
       email: 'lucia@test.com',
     });
     const user = userEvent.setup();
@@ -92,7 +92,7 @@ describe('SignInForm', () => {
     await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
-    expect(await screen.findByText(/no llegó el mail/i)).toBeInTheDocument();
+    expect(await screen.findByText(/te registraste hace poco/i)).toBeInTheDocument();
     // The resend button must be present after the error.
     expect(screen.getByRole('button', { name: /reenviar el link/i })).toBeInTheDocument();
   });

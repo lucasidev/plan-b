@@ -111,8 +111,10 @@ public class SignInCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_returns_EmailNotVerified_when_password_correct_but_email_unverified()
+    public async Task Handle_returns_InvalidCredentials_when_password_correct_but_email_unverified()
     {
+        // ADR-0076: el mail sin verificar responde igual que una credencial mala, para que el
+        // login no revele que la cuenta existe.
         var deps = NewDeps();
         var user = User.Register(Email(), "hashed", deps.Clock).Value;
         user.ClearDomainEvents();
@@ -123,7 +125,7 @@ public class SignInCommandHandlerTests
         var result = await Invoke(deps, new SignInCommand(user.Email.Value, "correct-password"));
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(UserErrors.EmailNotVerified);
+        result.Error.ShouldBe(UserErrors.InvalidCredentials);
         deps.Jwt.DidNotReceive().IssueTokens(Arg.Any<User>());
     }
 

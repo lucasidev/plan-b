@@ -328,15 +328,18 @@ public class UserTests
     }
 
     [Fact]
-    public void Authenticate_returns_email_not_verified_when_password_is_correct_but_email_pending()
+    public void Authenticate_returns_invalid_credentials_when_email_pending_even_with_right_password()
     {
+        // ADR-0076: "sin verificar" no se distingue de "credenciales invalidas". Con la
+        // contrasena correcta pero el mail sin confirmar, el login NO puede decir
+        // email_not_verified: seria el oraculo que deja enumerar cuentas.
         var clock = new FixedClock(T0);
         var user = User.Register(Email(), "hashed", clock).Value;
 
         var result = user.Authenticate(_ => true, clock);
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(UserErrors.EmailNotVerified);
+        result.Error.ShouldBe(UserErrors.InvalidCredentials);
         user.DomainEvents.OfType<UserSignedInDomainEvent>().ShouldBeEmpty();
     }
 

@@ -13,15 +13,14 @@ export type SignInUserPayload = {
 
 /**
  * `kind` discriminator lets the form react to specific failure modes
- * (e.g. show resend hint when email_not_verified) without re-parsing the
+ * (e.g. ofrecer el reenvío bajo invalid_credentials) without re-parsing the
  * message. Anti-enumeration: invalid_credentials is returned for both
  * wrong-email and wrong-password (mirrors the backend's UserErrors).
  *
- * `email` is set only when `kind === 'email_not_verified'`. The form uses it to inject
- * the email into the resend button (US-021) without requiring a controlled input. The
- * backend does not confirm whether it is a real account (anti-enumeration), but by this
- * point the user already typed their email, so echoing it back to their own client adds
- * no extra information.
+ * `email` viaja con `invalid_credentials` para que el form pueda ofrecer el reenvío de
+ * verificación (US-021) sin un input controlado. El backend no confirma si es una cuenta real
+ * (ADR-0076: el mail sin verificar responde igual que una credencial mala), pero a esta altura
+ * la persona ya tipeó su email, así que devolvérselo a su propio cliente no agrega información.
  */
 export type SignInFormState =
   | { status: 'idle' }
@@ -30,12 +29,12 @@ export type SignInFormState =
   | { status: 'success'; redirectTo: string }
   | {
       status: 'error';
-      kind: 'invalid_credentials' | 'account_disabled' | 'unknown';
+      kind: 'account_disabled' | 'unknown';
       message: string;
     }
   | {
       status: 'error';
-      kind: 'email_not_verified';
+      kind: 'invalid_credentials';
       message: string;
       email: string;
     };

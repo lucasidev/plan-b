@@ -52,6 +52,8 @@ Estas no son alternativas: no se elige entre ellas y la decisión, se suman. Van
 - **Queda una pregunta abierta que este ADR no resuelve**: si el link de confirmación deja la sesión abierta al volver, para que quien venía disparando una acción la complete sin escribir la contraseña de nuevo. Es UX del flujo, se decide al construir [US-229](../product/student/enter/stories/US-229-sign-in-and-land-back-on-what-i-was-doing/README.md).
 - **La respuesta genérica tiene que serlo también en el tiempo**: si crear una cuenta tarda notoriamente más que no crearla, el reloj contesta lo que la pantalla calla. Es una nota de implementación, no un requisito de producto, y va al plan.
 
+- **Implementado en R0 (2026-08-24)**, en tres piezas con su test: (1) el registro responde 202 idéntico exista o no la cuenta, sin id ni Location, y el hash de la contraseña se computa antes de mirar si el mail existe para cerrar el canal de timing; al dueño de una casilla ya registrada le llega el aviso "Ya tenés una cuenta", sin token. (2) el sign-in deja de ser un oráculo: un mail sin verificar responde `invalid_credentials` igual que una credencial mala (antes daba un 403 `email_not_verified` distinguible, que permitía registrar el mail ajeno con contraseña propia y averiguar por el login si tenía cuenta); el reenvío de verificación pasa a colgar del error genérico, que lo ven todos. (3) el registro gana el límite por casilla de destino del punto 5, que al excederse responde el mismo 202 en vez de un 429 visible.
+
 ## Lo que rompió la primera versión
 
 Esta decisión se escribió el 2026-08-21 y se atacó el mismo día, antes de aceptarla. Dos cosas no aguantaron.
