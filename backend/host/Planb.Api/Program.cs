@@ -14,8 +14,6 @@ using Planb.Identity.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Security;
 using Planb.Moderation.Application;
 using Planb.Moderation.Infrastructure;
-using Planb.Planning.Application;
-using Planb.Planning.Infrastructure;
 using Planb.Reviews.Application;
 using Planb.Reviews.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -121,9 +119,6 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Moderation.Infrastru
     Planb.Moderation.Infrastructure.DependencyInjection.ConfigureModerationDbContext(
         opts, connectionString));
 
-builder.Services.AddDbContextWithWolverineIntegration<Planb.Planning.Infrastructure.Persistence.PlanningDbContext>(opts =>
-    Planb.Planning.Infrastructure.DependencyInjection.ConfigurePlanningDbContext(
-        opts, connectionString));
 
 // ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox + FluentValidation middleware)
@@ -136,7 +131,6 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Planb.Enrollments.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Reviews.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Moderation.Application.DependencyInjection).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Planb.Planning.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
@@ -195,8 +189,6 @@ builder.Services.AddReviewsInfrastructure(builder.Configuration);
 builder.Services.AddModerationApplication();
 builder.Services.AddModerationInfrastructure(builder.Configuration);
 
-builder.Services.AddPlanningApplication();
-builder.Services.AddPlanningInfrastructure();
 
 // JwtBearer middleware (cierre del workaround pre-JWT). Endpoints /api/me/* leen el UserId
 // del claim `sub` validado por este middleware, no del body/query. Token llega desde el

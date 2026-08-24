@@ -2,7 +2,7 @@ namespace Planb.Identity.Application.Contracts;
 
 /// <summary>
 /// Vista cross-BC del <c>StudentProfile</c> de un user. Diseñado para que otros bounded contexts
-/// (Enrollments, Reviews, Planning) validen identidad estudiantil + acceso a su plan sin tener
+/// (Enrollments, Reviews) validen identidad estudiantil + acceso a su plan sin tener
 /// que hidratar el aggregate completo ni hacer JOIN cross-schema (ADR-0017).
 ///
 /// <para>

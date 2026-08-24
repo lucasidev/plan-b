@@ -5,7 +5,7 @@ namespace Planb.Academic.Application.Contracts;
 /// activa.
 ///
 /// <para>
-/// Contrato cross-BC. Lo consumen Enrollments y Planning para validar un <c>commission_id</c> que les
+/// Contrato cross-BC. Lo consume Enrollments para validar un <c>commission_id</c> que le
 /// llega del cliente: ADR-0017 saca las FK cross-schema y por eso deja esa validación en el
 /// application layer, pero hasta ahora no había forma de preguntarla y nadie la hacía.
 /// </para>
