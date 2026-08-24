@@ -1,6 +1,6 @@
 # ADR-0066: Derived cards sum voices and gate on coverage, not on a floor
 
-- **Estado**: aceptado
+- **Estado**: aceptado; precisado por [ADR-0078](0078-the-questionnaire-collects-in-pairs-the-ficha-reports-by-theme.md) (el gate de cobertura y la suma de voces siguen; lo gateado ya no es una cabecera dual sino la derivación, que reporta por temas)
 - **Fecha**: 2026-08-16
 
 ## Contexto
