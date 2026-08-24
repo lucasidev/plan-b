@@ -25,7 +25,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S10 | 2026-07-21 a 2026-07-26 | **El simulador de cuatrimestre (US-016)**: conectar catálogo + correlativas + historial + reseñas en la feature que da nombre al producto. Más US-009-f (errores globales) y US-039-f (offline). Extra: vidrieras del producto (landing + sign-in) y vocabulario de datos de prueba/demo. | ✓ Done |
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
 | S12 | 2026-07-31 a 2026-08-16 | **Cerrar el lazo que produce el corpus**: US-015 entró (el mecanismo de edición con su evento); US-097/098/099 se cancelaron cuando el viraje de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) retiró el planificador al que servían. | ■ Cerrado por viraje |
-| **R0** | por definir | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | Planificado |
+| **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | Ejecutado, en PR |
 
 Convenciones:
 
