@@ -1,22 +1,51 @@
+using System.Security.Cryptography;
+using System.Text;
 using Carter;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Planb.SharedKernel.Abstractions.RateLimiting;
 using Planb.SharedKernel.Primitives;
 using Wolverine;
 
 namespace Planb.Identity.Application.Features.RegisterUser;
 
+/// <summary>
+/// POST /api/identity/register.
+///
+/// Rate limit por CASILLA DE DESTINO (ADR-0076 punto 5): sin el, cualquiera manda cien
+/// registros a la direccion de otro y esa persona recibe cien avisos de "alguien quiso
+/// registrarse". La clave hashea el mail de destino, no la IP. Cuando se excede la ventana la
+/// respuesta sigue siendo el MISMO 202: un 429 visible volveria a delatar (frenar antes para un
+/// mail y no para otro dice cual tiene cuenta). El limite se traga el mail extra en silencio;
+/// no protege el dato, protege la casilla.
+///
+/// Ventana amplia (10/dia) para no romper reintentos legitimos de una persona que no vio el mail.
+/// </summary>
 public sealed class RegisterUserEndpoint : ICarterModule
 {
+    private const int MaxRegistrationsPerWindow = 10;
+    private static readonly TimeSpan Window = TimeSpan.FromDays(1);
+
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/api/identity/register", async (
             RegisterUserRequest request,
+            IRateLimiter rateLimiter,
             IMessageBus bus,
             CancellationToken ct) =>
         {
+            var mailboxKey = $"identity:ratelimit:register:{HashEmail(request.Email)}";
+            var rateCheck = await rateLimiter.TryAcquireAsync(
+                mailboxKey, Window, MaxRegistrationsPerWindow, ct);
+            if (!rateCheck.Allowed)
+            {
+                // Mismo 202 que el happy path: la casilla ya recibio demasiados avisos y este se
+                // descarta, pero la respuesta no puede revelar que se descarto (ADR-0076).
+                return Results.Accepted(value: new RegisterUserResponse(request.Email));
+            }
+
             var command = new RegisterUserCommand(request.Email, request.Password);
             try
             {
@@ -72,4 +101,15 @@ public sealed class RegisterUserEndpoint : ICarterModule
             detail: error.Message,
             statusCode: StatusCodes.Status500InternalServerError),
     };
+
+    /// <summary>
+    /// SHA-256 hex del mail de destino, normalizado. Mantiene PII fuera de las claves de Redis
+    /// (regla de redis-key-patterns.md) y hace que el limite sea por casilla, no por IP.
+    /// </summary>
+    private static string HashEmail(string email)
+    {
+        var normalized = email.Trim().ToLowerInvariant();
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(normalized));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
+    }
 }

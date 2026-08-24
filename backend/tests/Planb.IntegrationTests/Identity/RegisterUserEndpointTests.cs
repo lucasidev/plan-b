@@ -83,6 +83,32 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     }
 
     [Fact]
+    public async Task Registering_past_the_mailbox_limit_still_answers_202_and_does_not_leak()
+    {
+        // ADR-0076 punto 5: el limite es por casilla de destino. Al bombardear un mail, la
+        // respuesta sigue siendo 202 (el mail extra se descarta en silencio): un 429 visible
+        // volveria a delatar que esa casilla es especial. Contrato HTTP estable; la ausencia
+        // del mail la garantiza el rate limiter, con su propio test unitario.
+        var email = FreshEmail("mailbox-flood");
+
+        HttpStatusCode? distinct = null;
+        for (var i = 0; i < 14; i++)
+        {
+            var r = await _client.PostAsJsonAsync(
+                "/api/identity/register",
+                new RegisterUserRequest(email, "valid-password-12c"));
+            if (r.StatusCode != HttpStatusCode.Accepted)
+            {
+                distinct = r.StatusCode;
+                break;
+            }
+        }
+
+        distinct.ShouldBeNull(
+            $"Todo intento sobre la misma casilla responde 202; apareció {distinct}.");
+    }
+
+    [Fact]
     public async Task Registering_with_a_taken_email_responds_exactly_like_a_free_one()
     {
         // ADR-0076: las tres puertas responden igual exista o no la cuenta. Confirmar que un

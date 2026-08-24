@@ -90,11 +90,12 @@ public class CreateStudentProfileEndpointTests
             new { email, password = "valid-password-12c" });
         register.EnsureSuccessStatusCode();
 
-        // Sin email_verified_at update: sign-in rechaza.
+        // Sin email_verified_at update, el sign-in rechaza con 401 invalid_credentials
+        // (ADR-0076: un mail sin verificar no se distingue de una credencial mala).
         var signIn = await bootstrap.PostAsJsonAsync(
             "/api/identity/sign-in",
             new { email, password = "valid-password-12c" });
-        signIn.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        signIn.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
 
         // El endpoint /api/me/student-profiles sin sesión también rechaza con 401.
         var unauthedResp = await bootstrap.PostAsJsonAsync(

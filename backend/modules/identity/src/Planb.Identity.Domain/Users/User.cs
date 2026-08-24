@@ -203,11 +203,14 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Validates a sign-in attempt. Order matters for anti-enumeration: the password is
-    /// checked first, so a wrong password always returns <see cref="UserErrors.InvalidCredentials"/>
-    /// regardless of account state. Only when the password is correct does the response reveal
-    /// whether the account is disabled or unverified — and at that point the caller already had
-    /// the credentials, so leaking state is acceptable in exchange for a useful UX message.
+    /// Validates a sign-in attempt. Para no ser un oraculo de enumeracion (ADR-0076), un mail
+    /// sin verificar responde <see cref="UserErrors.InvalidCredentials"/>, exactamente igual que
+    /// una contrasena equivocada o una cuenta inexistente: en este producto tener cuenta es haber
+    /// aportado, y distinguir "sin verificar" aca dejaba averiguarlo registrando el mail ajeno con
+    /// una contrasena propia y probando a ingresar. Quien se registro y no confirmo vuelve por el
+    /// reenvio de verificacion, no por un login que lo delata. La cuenta deshabilitada si se
+    /// revela, pero solo con la contrasena correcta en mano: a esa altura quien pregunta ya probo
+    /// ser el dueno, y necesita el motivo por el que no entra.
     ///
     /// The hash verification is delegated to the caller via <paramref name="verifyHash"/> so the
     /// domain stays unaware of the hashing algorithm (lives in the infrastructure layer behind
@@ -223,14 +226,14 @@ public sealed class User : Entity<UserId>, IAggregateRoot
             return UserErrors.InvalidCredentials;
         }
 
+        if (!IsEmailVerified)
+        {
+            return UserErrors.InvalidCredentials;
+        }
+
         if (IsDisabled)
         {
             return UserErrors.AccountDisabled;
-        }
-
-        if (!IsEmailVerified)
-        {
-            return UserErrors.EmailNotVerified;
         }
 
         Raise(new UserSignedInDomainEvent(Id, clock.UtcNow));

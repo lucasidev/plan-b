@@ -84,9 +84,9 @@ export function SignInForm() {
       {state.status === 'error' && (
         <AuthErrorBanner>
           <p>{state.message}</p>
-          {state.kind === 'email_not_verified' && (
+          {state.kind === 'invalid_credentials' && (
             <div className="text-ink-2" style={{ marginTop: 8 }}>
-              <p style={{ marginBottom: 6 }}>¿No llegó el mail?</p>
+              <p style={{ marginBottom: 6 }}>¿Te registraste hace poco y no confirmaste el mail?</p>
               <ResendVerificationButton email={state.email} variant="inline" />
             </div>
           )}

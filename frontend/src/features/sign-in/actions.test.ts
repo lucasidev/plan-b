@@ -10,11 +10,10 @@ import { initialSignInState } from './types';
  *   - `@/lib/forward-set-cookies` -> no-op; we test the action flow, not the cookie
  *     parsing (that has its own module).
  *
- * We cover the five branches the action exposes through SignInFormState.kind:
- *   - invalid input (Zod) -> invalid_credentials with the schema's message
+ * We cover the branches the action exposes through SignInFormState.kind:
+ *   - invalid input (Zod) -> unknown with the schema's message
  *   - 200                 -> redirect to /home (NEXT_REDIRECT)
- *   - 401                 -> invalid_credentials
- *   - 403 + email_not_verified -> email_not_verified
+ *   - 401                 -> invalid_credentials (con email, para el reenvío; ADR-0076)
  *   - 403 + account_disabled   -> account_disabled
  *   - 500 / others        -> unknown
  */
@@ -52,7 +51,7 @@ beforeEach(() => {
 });
 
 describe('signInAction', () => {
-  it('devuelve invalid_credentials cuando Zod rechaza el input', async () => {
+  it('devuelve unknown cuando Zod rechaza el input', async () => {
     const result = await signInAction(
       initialSignInState,
       formData({ email: '', password: 'una-contrase-segura' }),
@@ -60,7 +59,7 @@ describe('signInAction', () => {
 
     expect(result.status).toBe('error');
     if (result.status === 'error') {
-      expect(result.kind).toBe('invalid_credentials');
+      expect(result.kind).toBe('unknown');
       // Zod's first issue is the empty-email one.
       expect(result.message).toMatch(/email/i);
     }
@@ -97,28 +96,11 @@ describe('signInAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.kind).toBe('invalid_credentials');
-      expect(result.message).toBe('Email o contraseña incorrectos');
-    }
-  });
-
-  it('mapea 403 con title=email_not_verified al kind correspondiente', async () => {
-    const body = { title: 'identity.account.email_not_verified', detail: 'whatever' };
-    signInMock.mockResolvedValue(
-      new Response(JSON.stringify(body), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      }),
-    );
-
-    const result = await signInAction(
-      initialSignInState,
-      formData({ email: 'lucia@test.com', password: 'doce-chars-1' }),
-    );
-
-    expect(result.status).toBe('error');
-    if (result.status === 'error') {
-      expect(result.kind).toBe('email_not_verified');
-      expect(result.message).toMatch(/verificada/i);
+      expect(result.message).toBe('El mail o la contraseña no coinciden.');
+      // ADR-0076: el 401 lleva el email tipeado para poder ofrecer el reenvío de verificación.
+      if (result.kind === 'invalid_credentials') {
+        expect(result.email).toBe('lucia@test.com');
+      }
     }
   });
 

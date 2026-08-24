@@ -86,15 +86,19 @@ public class SignInEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
-    public async Task Returns_403_email_not_verified_for_martin()
+    public async Task Returns_401_invalid_credentials_for_martin_unverified()
     {
+        // ADR-0076: Martin tiene la cuenta sin verificar, pero el login responde 401
+        // invalid_credentials (no 403 email_not_verified) con su propia contrasena correcta:
+        // distinguirlo dejaba averiguar que el mail tiene cuenta.
         var response = await _client.PostAsJsonAsync(
             "/api/identity/sign-in",
             new SignInRequest(TestPersonas.MartinEmail, TestPersonas.MartinPassword));
 
-        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
         var body = await response.Content.ReadAsStringAsync();
-        body.ShouldContain("identity.account.email_not_verified");
+        body.ShouldContain("identity.signin.invalid_credentials");
+        body.ShouldNotContain("email_not_verified");
     }
 
     [Fact]
