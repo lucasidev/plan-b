@@ -12,9 +12,11 @@ import { breadcrumbsForPath } from '@/lib/member-shell';
 /**
  * `(member)` area topbar per `docs/design/reference/components/shell.jsx::Topbar`.
  *
- * Client because it derives breadcrumbs from `usePathname()`. The search bar is
- * visible per AC but NOT functional (explicit debt from US-042-f to a future
- * global-search US). Click does nothing for now.
+ * Client because it derives breadcrumbs from `usePathname()`.
+ *
+ * La barra de búsqueda funciona: pega a `GET /api/search` y encuentra materias, docentes y
+ * cátedras. El comentario que decía acá que era un stub sin función quedó de US-042-f y siguió
+ * escrito mucho después de que la búsqueda aterrizara.
  *
  * El botón "+ Escribir reseña" del slot derecho lleva a `/reviews/new`, la pantalla de reseñar
  * una cursada (US-146, ADR-0082). Vive siempre en el topbar y se llega desde cualquier vista del

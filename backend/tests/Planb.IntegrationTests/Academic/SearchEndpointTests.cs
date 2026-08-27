@@ -134,5 +134,43 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldNotBe(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task Finds_a_chair_by_its_name_with_its_subject_as_sublabel()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        // El seed tiene tres cátedras sobre 211 Fundamentos de Control de Calidad: Pérez,
+        // González y Ruiz.
+        var response = await client.GetAsync("/api/search?q=perez");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+
+        // Buscar un apellido tiene que poder llevar a la cátedra y no solo a la persona: lo que el
+        // producto publica es de la cátedra (ADR-0083), así que si la búsqueda no la devuelve, su
+        // ficha es inalcanzable salvo tipeando un UUID.
+        var chair = body!.Items.SingleOrDefault(i => i.Type == "chair");
+        chair.ShouldNotBeNull();
+        chair!.Label.ShouldBe("Pérez");
+
+        // La materia como sublabel es lo que distingue a dos cátedras con el mismo apellido.
+        chair.Sublabel.ShouldBe("Fundamentos de Control de Calidad");
+
+        // Y el docente sigue apareciendo: son cosas distintas, la persona y el equipo que dicta.
+        body.Items.ShouldContain(i => i.Type == "teacher" && i.Label == "Martín Pérez");
+    }
+
+    [Fact]
+    public async Task A_chair_search_tolerates_missing_accents()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        // Nadie tipea el acento al buscar: "gonzalez" tiene que encontrar a "González".
+        var response = await client.GetAsync("/api/search?q=gonzalez");
+
+        var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+        body!.Items.ShouldContain(i => i.Type == "chair" && i.Label == "González");
+    }
+
     private sealed record ProblemTitle(string Title);
 }

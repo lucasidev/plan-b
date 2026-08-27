@@ -219,4 +219,17 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<int>> ListTermYearsAsync(
         IReadOnlyList<Guid> termIds, CancellationToken ct = default);
+
+    /// <summary>
+    /// Las cátedras que un docente integra o integró, con la materia de cada una.
+    ///
+    /// <para>
+    /// Es el camino de la persona al sujeto: lo que el producto publica es de la cátedra, no del
+    /// docente (ADR-0083), así que su ficha tiene que poder llevar ahí. Trae también las que ya no
+    /// integra, marcadas, porque el plantel se versiona por período y borrarlas de la vista sería
+    /// contar mal su historia.
+    /// </para>
+    /// </summary>
+    Task<IReadOnlyList<TeacherChairItem>> ListChairsByTeacherAsync(
+        Guid teacherId, CancellationToken ct = default);
 }

@@ -7,10 +7,17 @@ using Planb.Academic.Application.Features.Search;
 namespace Planb.Academic.Infrastructure.Reading;
 
 /// <summary>
-/// Dapper read de la búsqueda de catálogo (US-004): materias + docentes en una sola lista rankeada.
-/// Cada rama (subjects, teachers) calcula el mismo trío de ranking (exact > prefix > similitud
+/// Dapper read de la búsqueda de catálogo (US-004, US-132): materias, docentes y cátedras en una
+/// sola lista rankeada. Cada rama calcula el mismo trío de ranking (exact > prefix > similitud
 /// trigram) y se unen con UNION ALL; el ORDER BY corre sobre el conjunto combinado, así un docente
 /// puede rankear por encima de una materia y viceversa según la relevancia, no por tipo.
+///
+/// <para>
+/// La rama de cátedras existe porque la cátedra es el sujeto de lo que el producto publica
+/// (ADR-0083): buscar un apellido tiene que poder llevar a lo que se dice de cursar con esa
+/// cátedra, no solo a la persona. Su sublabel es la materia que dicta, que es lo que distingue a
+/// dos cátedras con el mismo apellido.
+/// </para>
 ///
 /// Todo pasa por <c>unaccent()</c> (búsqueda insensible a acentos, clave en español: "veronica"
 /// matchea "Verónica", "anal" matchea "Análisis"). El umbral <c>similarity &gt; 0.2</c> tolera typos.
@@ -74,6 +81,25 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                        OR academic.immutable_unaccent(lower(t.first_name || ' ' || t.last_name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
                        OR academic.immutable_unaccent(lower(t.first_name)) % academic.immutable_unaccent(lower(@Term))
                        OR academic.immutable_unaccent(lower(t.last_name)) % academic.immutable_unaccent(lower(@Term)))
+
+                UNION ALL
+
+                SELECT
+                    'chair'                                         AS type,
+                    c.id                                            AS id,
+                    c.name                                          AS label,
+                    sub.name                                        AS sublabel,
+                    0                                               AS rank_exact,
+                    (academic.immutable_unaccent(lower(c.name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')::int
+                                                                    AS rank_prefix,
+                    similarity(academic.immutable_unaccent(lower(c.name)), academic.immutable_unaccent(lower(@Term)))
+                                                                    AS sim
+                FROM academic.chairs c
+                JOIN academic.subjects sub ON sub.id = c.subject_id
+                WHERE c.is_active
+                  AND sub.is_active
+                  AND (academic.immutable_unaccent(lower(c.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
+                       OR academic.immutable_unaccent(lower(c.name)) % academic.immutable_unaccent(lower(@Term)))
             ) combined
             ORDER BY rank_exact DESC, rank_prefix DESC, sim DESC, label ASC
             LIMIT @Limit;";

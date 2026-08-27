@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CatalogTopbar } from '@/features/browse-catalog';
 import type { ChairFacts } from '../types';
 import { ItemRow } from './item-row';
 
@@ -18,6 +19,9 @@ export function ChairFactsSheet({ facts }: { facts: ChairFacts }) {
     // la columna, el crema del Boletín pinta 560px y el resto de la página queda con el fondo del
     // chasis anterior, que es de otra paleta.
     <div data-surface="bulletin" className="min-h-screen w-full">
+      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
+          búsqueda y no hay cómo seguir buscando ni volver. */}
+      <CatalogTopbar />
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
 

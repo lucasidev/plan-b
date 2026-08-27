@@ -57,6 +57,38 @@ public class ChairCatalogTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
+    public async Task A_teacher_carries_the_chairs_they_are_part_of()
+    {
+        // Martín Pérez es el titular vigente de la cátedra Pérez de 211.
+        var perez = Guid.Parse("00000006-0000-4000-a000-00000000000b");
+
+        var response = await _client.GetAsync($"/api/academic/teachers/{perez}/chairs");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var chairs = await response.Content.ReadFromJsonAsync<List<TeacherChairItem>>();
+
+        // Es el camino de la persona al sujeto: lo que se publica es de la cátedra, así que la
+        // ficha de un docente tiene que poder llevar ahí.
+        chairs.ShouldNotBeNull();
+        var chair = chairs!.Single();
+        chair.ChairName.ShouldBe("Pérez");
+        chair.SubjectCode.ShouldBe("211");
+        chair.SubjectName.ShouldBe("Fundamentos de Control de Calidad");
+        chair.Role.ShouldBe("Lead");
+        chair.IsCurrent.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task A_teacher_without_chairs_returns_an_empty_list()
+    {
+        var response = await _client.GetAsync($"/api/academic/teachers/{Guid.NewGuid()}/chairs");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var chairs = await response.Content.ReadFromJsonAsync<List<TeacherChairItem>>();
+        chairs.ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task ListChairs_returns_empty_for_unknown_subject()
     {
         var response = await _client.GetAsync($"/api/academic/subjects/{Guid.NewGuid()}/chairs");

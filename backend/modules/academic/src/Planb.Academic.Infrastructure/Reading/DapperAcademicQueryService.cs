@@ -519,4 +519,33 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { TermIds = termIds.ToArray() }, cancellationToken: ct));
         return rows.AsList();
     }
+
+    public async Task<IReadOnlyList<TeacherChairItem>> ListChairsByTeacherAsync(
+        Guid teacherId, CancellationToken ct = default)
+    {
+        // Vigente es no tener período de salida: el plantel se cierra poniendo `until_term_id`,
+        // no borrando la fila, para que la ficha de la cátedra sepa a quién atribuirle cada año.
+        // Las vigentes primero, y dentro de cada grupo por materia, que es como se las busca.
+        const string sql = @"
+            SELECT
+                c.id                          AS ChairId,
+                c.name                        AS ChairName,
+                s.id                          AS SubjectId,
+                s.name                        AS SubjectName,
+                s.code                        AS SubjectCode,
+                cm.role                       AS Role,
+                (cm.until_term_id IS NULL)    AS IsCurrent
+            FROM academic.chair_members cm
+            JOIN academic.chairs c ON c.id = cm.chair_id
+            JOIN academic.subjects s ON s.id = c.subject_id
+            WHERE cm.teacher_id = @TeacherId
+              AND c.is_active = true
+              AND s.is_active = true
+            ORDER BY (cm.until_term_id IS NULL) DESC, s.name ASC, c.name ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<TeacherChairItem>(
+            new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
+        return rows.AsList();
+    }
 }
