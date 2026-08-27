@@ -4,21 +4,21 @@
 
 ## Camino feliz
 
-**E1.** Dado el testimonio de Matías sobre Cátedra Pérez (Análisis Matemático II, Ingeniería en Sistemas, UNSTA, 2024, primer cuatrimestre), que marcó la frase F18 "Hay clases que no se dan" con 12 de 40 voces (18,1%, ADR-0075), y Claudia Fernández con identidad docente verificada como titular de Cátedra Pérez
-Cuando Claudia manda su respuesta y se cumple el plazo de retención sin que Matías la edite, la borre ni pida revisión
-Entonces la respuesta se publica al lado del testimonio de Matías, firmada "Claudia Fernández, titular, identidad verificada", con la fecha de publicación.
+**E1.** Dado que la Ficha de Cátedra Pérez (Análisis Matemático II, Ingeniería en Sistemas, UNSTA) publica, entre sus conteos, el ítem "Podían preguntar sin quedar mal" con moda "No · 66 %" sobre 25 de 38 voces (ADR-0083), y Claudia Fernández con identidad docente verificada como titular de Cátedra Pérez
+Cuando Claudia manda su respuesta desde Responder
+Entonces la respuesta se publica al instante en el bloque "Qué respondió la cátedra" de la ficha, firmada "Claudia Fernández, titular, identidad verificada", con la fecha de publicación.
 
-**E2.** Dado que la respuesta de Claudia Fernández ya se publicó al lado del testimonio de Matías
+**E2.** Dado que la respuesta de Claudia Fernández ya se publicó
 Cuando se mira la Ficha de Cátedra Pérez
-Entonces el testimonio de Matías sigue completo y visible como estaba, y F18 sigue con sus mismas 12 de 40 voces (18,1%): la respuesta no bajó el testimonio ni movió ningún conteo.
+Entonces "Podían preguntar sin quedar mal" sigue con sus mismas 25 de 38 voces (66 %): la respuesta no movió ningún conteo.
 
 ## Negativos
 
 **N1.** Dado que Claudia Fernández todavía no tiene identidad docente verificada
-Cuando intenta responder al testimonio de Matías sobre Cátedra Pérez
-Entonces la réplica no se publica: Responder no le muestra campo de respuesta hasta que la verificación se apruebe (US-178).
+Cuando intenta entrar a Responder
+Entonces no ve ningún campo de respuesta: la pantalla la deriva a Verificar antes de poder escribir nada (US-178).
 
 ## Edge cases
 
-- Claudia responde a la ficha de la cátedra en general, sin apuntar a un testimonio puntual: esta story no describe dónde queda esa réplica dentro de la ficha.
-- El testimonio de Matías se borra después de que la respuesta de Claudia ya se publicó (no durante el plazo de US-179, sino después): qué pasa con la réplica publicada. **Falta decidir** (abierto en el README de la épica).
+- Claudia nombra a un estudiante puntual en su respuesta: como no hay chequeo previo (no hay testimonio que citar ni autor anónimo que proteger), esta story no dice qué pasa con ese texto. **Falta decidir** (linda con el canal de reclamos de [Moderar sin romper el producto](../../../../team/moderate-without-breaking-the-product/README.md)).
+- La longitud máxima de la respuesta no está definida.

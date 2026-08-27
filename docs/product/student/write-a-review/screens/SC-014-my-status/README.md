@@ -1,6 +1,8 @@
 # Mi situación (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con cuenta. Sin slug todavía (el mapa la tenía como "diseñada, sin construir"): se fija en inglés al entrar a sprint.
+> **Concepto rebasado el 2026-08-25**: esta pantalla existía para declarar la trayectoria (me recibí, me fui, en qué año), y ese dato ya no se recaba: solo se reseña la cursada ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)), y la duración real y el egreso salen de la serie oficial SPU, no de declaraciones propias ([ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md)). La ficha queda como referencia hasta decidir si la pantalla se retira del índice o gana otro propósito.
+
+> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: la letra de abajo describe el modelo anterior. Con [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con cuenta. Sin slug todavía (el mapa la tenía como "diseñada, sin construir"): se fija en inglés al entrar a sprint.
 
 ## Quién la usa
 
@@ -12,7 +14,7 @@ US-152 (la pregunta por cuatro caminos: esta pantalla es uno; los otros son el p
 
 ## Qué muestra
 
-La pregunta de trayectoria de a uno, sin plan marcado: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere ([ADR-0067](../../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)).
+La pregunta de trayectoria de a uno, sin plan marcado: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Esto no es un ítem del catálogo de la cursada ([`phrases.md`](../../../../phrases.md)): es un hecho aparte, de a uno, nunca como inventario. Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere.
 
 Una sola tarjeta: la pregunta, cuatro salidas (sigo / me recibí, en… / me fui, en… / ahora no), el año cuando hace falta, y una línea que dice qué se hace con eso (cuántos se reciben, cuántos se van y cuándo, de cohortes cerradas, sin tu nombre) y que no se va a volver a preguntar.
 
@@ -26,13 +28,13 @@ Sin decidir todavía: este borrador no especifica qué queda afuera de esta pant
 
 ## Adónde va
 
-A Mi perfil (desde donde se abre) o a la pantalla desde la que vino. Aparece embebida en el paso 2 de Reseñar cuando el período es viejo.
+A Mi perfil (desde donde se abre) o a la pantalla desde la que vino. Aparece embebida en el paso 2 de Reseñar ("Cuándo y con quién") cuando el período es viejo.
 
 ## Decisiones que aplica
 
-[ADR-0067](../../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (sin esto no se sabe dónde se cae la mayoría ni cuánto tarda la gente de verdad: el silencio no se infiere).
+[ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (el plan marcado es preferencia privada, no un hecho de trayectoria), [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (la duración real y el egreso por cohorte salen del relevamiento oficial, no de lo que declara cada cuenta: es lo que dejó rebasado el concepto de esta pantalla). Ningún ADR vigente fija que los hechos de trayectoria se pregunten de a uno, nunca como inventario, ni que el silencio no se infiera: es decisión pendiente.
 
 ## Lo que esta ficha deja abierto
 
-- **Desde dónde se abre** además de Mi perfil: si la app la ofrece sola cuando pasó entré más la duración nominal (ADR-0067 lo nombra como camino) y cómo.
+- **Desde dónde se abre** además de Mi perfil: si la app la ofrece sola cuando pasó entré más la duración nominal (camino nombrado en US-152) y cómo.
 - **Si "me fui" pide el año o el período**, y qué pasa con quien se fue y volvió (dos hechos, no uno).

@@ -8,13 +8,13 @@
 Cuando Valentina elige cómo ordenarlas,
 Entonces solo puede elegir entre alfabético o por voces (nunca "recomendado" ni "destacado"), y ninguna institución aparece remarcada ni fija arriba de la lista por haber pagado algo.
 
-**E2.** Dado que "Ingeniería en Sistemas" está cargada en dos instituciones, con la cabecera de gestión de UNSTA encogida de 100% a 51,0% sobre 4 voces, y la cabecera de gestión de Siglo 21 encogida de 30% a 18,1% sobre 12 de 40 voces (ADR-0075),
+**E2.** Dado que "Ingeniería en Sistemas" está cargada en dos instituciones, con la Cátedra Pérez de UNSTA mostrando "Casi nunca · 59 %" en "¿Contestaba las preguntas en clase?" sobre 40 voces, y la cátedra equivalente de Siglo 21 mostrando "A veces · 44 %" sobre 62 voces (ADR-0083),
 Cuando Valentina abre Dónde estudiarla para compararlas,
-Entonces las dos ofertas aparecen ordenadas alfabético o por voces, nunca por cuál cabecera tiene el número más alto o más bajo, y ninguna lleva una etiqueta de "mejor opción" ni aparece remarcada.
+Entonces las dos ofertas aparecen ordenadas alfabético o por voces, nunca por cuál moda es más alta o más baja, y ninguna lleva una etiqueta de "mejor opción" ni aparece remarcada.
 
 ## Negativos
 
-**N1.** Dado que Inicio elige al azar una ficha real para mostrar como muestra, por ejemplo "Análisis Matemático II, Cátedra Pérez, UNSTA: 6 de cada 10 marcaron alguien fallando, 41 voces", cuando se hace ese sorteo, entonces NO depende de cuál cátedra tiene el número más alto, más bajo o más voces: es al azar entre las que pasan el gate de cobertura, nunca por el valor del número.
+**N1.** Dado que Inicio elige al azar una ficha real para mostrar como muestra, por ejemplo "Análisis Matemático II, Cátedra Pérez, UNSTA: 'Casi nunca · 59 %' en si contestaba las preguntas en clase, 40 voces", cuando se hace ese sorteo, entonces NO depende de cuál cátedra tiene el número más alto, más bajo o más voces: es al azar entre las que pasan el gate de cobertura, nunca por el valor del número.
 
 **N2.** Dado que una institución (UNSTA, Siglo 21, UTN Facultad Regional Tucumán, UNT o USPT) le paga o le propone un acuerdo a plan-b, cuando se renderiza cualquier listado del producto, entonces esa institución NO aparece remarcada, con una marca de "destacado" ni ordenada por delante de las demás por esa razón: no existe ningún mecanismo de eso en el producto.
 

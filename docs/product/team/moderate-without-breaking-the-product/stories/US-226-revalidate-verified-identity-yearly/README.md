@@ -5,7 +5,7 @@
 
 ## Historia
 
-Como quien verifica, quiero que toda identidad verificada vuelva a la cola al año de aprobada, porque un cargo no es permanente y una réplica publicada puede quedar firmada con algo que ya dejó de ser cierto.
+Como quien verifica, quiero que toda identidad verificada vuelva a la cola al año de aprobada, porque un cargo no es permanente y una respuesta publicada puede quedar firmada con algo que ya dejó de ser cierto.
 
 ## Listo cuando
 
@@ -18,4 +18,4 @@ Como quien verifica, quiero que toda identidad verificada vuelva a la cola al a�
 
 ## Notas
 
-depende de US-210 y US-225 (son las dos identidades que revalida). Pregunta abierta de [ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md), sin decidir acá: qué pasa con la réplica ya publicada si la persona no renueva (si el canal vuelve a declararse vacío, o si el cargo se publica con la fecha en que se verificó).
+depende de US-210 y US-225 (son las dos identidades que revalida). Pregunta abierta de [ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md), sin decidir acá: qué pasa con la respuesta ya publicada si la persona no renueva (si el canal vuelve a declararse vacío, o si el cargo se publica con la fecha en que se verificó).

@@ -3,114 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto hi-fi: Ficha de materia, dirección por temas (Boletín)</title>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Ficha de materia (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
-  .note { max-width: 680px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
-  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
-</style>
+  .note { max-width: 452px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; line-height: 1.6; }
+
+    body { margin: 0; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+    .serif { font-family: 'Newsreader', Georgia, serif; }
+    .mono { font-family: 'IBM Plex Mono', Consolas, monospace; }
+    .lbl { font-size: 12px; color: #7b8089; margin: 0 0 8px; }
+    .card { background: #fffefb; border: 1px solid #e2dfd6; border-radius: 12px; padding: 16px; }
+    .stat-l { font-size: 12px; color: #494e57; margin: 0; }
+    .stat-v { font-size: 21px; font-weight: 500; margin: 2px 0 0; font-family: 'Newsreader', Georgia, serif; }
+  </style>
 </head>
 <body>
-<p class="note">Boceto de dirección por temas (2026-08-24): la ficha muestra <strong>inteligencia sobre lo recolectado</strong> (prevalencia, retrato, serie y lo propio de su sujeto), nunca la lista de lo que respondieron. Fórmulas: <code>ADR-0075</code> (Wilson z = 1,96, una voz por cursada), <code>ADR-0078</code> (prevalencia y retrato), <code>ADR-0080</code> (sin piso, rupturas), <code>ADR-0066</code> (derivadas con cobertura), <code>ADR-0067</code> (trayectoria). En la prevalencia cada dirección lleva su propia barra, y la leyenda de columnas va una vez (copy provisional). Generado por script sobre un corpus de ejemplo: ningún número está puesto a mano.</p>
+<p class="note">Boceto rehecho el 2026-08-25 (<code>ADR-0083</code>, <code>ADR-0085</code>): la materia como derivada de sus cátedras: intentos y qué habilita, dispersión entre cátedras (¿es la materia o una cátedra?), y sus cátedras ordenadas por voces, nunca por sus números. Los números de reseñas salen computados de un corpus de ejemplo (modas, distribuciones y comparaciones con intervalos); los datos oficiales son ejemplo verosímil de la serie SPU/CONEAU. Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>).</p>
+<div style="width: 420px; max-width: 100%; margin: 0 auto; background: #f7f5ef; padding: 16px; box-sizing: border-box; border: 1px solid #e2dfd6; border-radius: 12px">
 
-<div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
-
-  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 32px 16px; border-bottom: 1px solid #e2dfd6">
-    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 17px">plan-b</div>
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7b8089">Ficha de materia</div>
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 4px 2px 14px">
+    <span class="serif" style="font-style: italic; font-weight: 600; font-size: 16px">plan-b</span>
+    <span class="mono" style="font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: #7b8089">Ficha de materia</span>
   </div>
 
-  <div style="padding: 20px 32px 44px">
+  <div style="margin-bottom: 18px">
+    <p class="serif" style="font-weight: 600; font-size: 24px; margin: 0 0 2px">Análisis Matemático II</p>
+    <p style="font-size: 13px; color: #494e57; margin: 0 0 4px">Ingeniería en Sistemas · Cs. Exactas · UNT · 2° año</p>
+    <p class="mono" style="font-size: 11px; color: #7b8089; margin: 0">111 voces en 3 cátedras · 2023 a 2026</p>
+  </div>
 
-  <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 28px; line-height: 1.12; margin: 0 0 4px">Análisis Matemático II</p>
-  <p style="font-size: 14px; color: #494e57; margin: 0 0 4px">UNSTA · 2° año · correlativas: Análisis Matemático I, Álgebra I</p>
-  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 22px">96 voces · suma sus cursadas en todas las cátedras y períodos · 2022 a 2026-C1</p>
-
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La prevalencia, por tema</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Cuántas personas marcaron al menos un hecho del tema, en cada dirección. Una persona cuenta una vez y puede estar en las dos columnas; por eso no suman 100.</p>
-  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 10px 18px 6px">
-    <div style="display: flex; align-items: center; gap: 16px; padding: 2px 0 6px">
-      <span style="flex: 1"></span>
-      <span style="flex: 0 0 200px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em; color: #6e1c12">MARCARON ALGO EN CONTRA</span>
-      <span style="flex: 0 0 200px; font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: 0.04em; color: #7b8089">MARCARON ALGO A FAVOR</span>
+  <div class="card" style="margin-bottom: 20px">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+      <div><p class="stat-l">Intentos para aprobarla</p><p class="stat-v">2,1</p></div>
+      <div><p class="stat-l">Habilita</p><p class="stat-v">9 materias</p></div>
+      <div><p class="stat-l">Llegan (aprobada o regular)</p><p class="stat-v">6 de 10</p></div>
+      <div><p class="stat-l">Se puede rendir libre</p><p class="stat-v">Casi nadie</p></div>
     </div>
-    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
-      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">carga</span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 43%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">43,2%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">51 de 96</span></span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">7,3%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">12 de 96</span></span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
-      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">evaluación</span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 31%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">31,3%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">39 de 96</span></span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 26%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">25,6%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">33 de 96</span></span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
-      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">organización</span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 16%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">15,6%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">22 de 96</span></span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 5%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">5,0%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">9 de 96</span></span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 16px; padding: 9px 0; border-top: 1px solid #eae7de">
-      <span style="flex: 1; font-weight: 600; font-size: 13.5px; text-transform: capitalize">enseñanza</span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 7%; height: 6px; border-radius: 3px; background: #8d2418"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">6,5%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">11 de 96</span></span>
-      <span style="flex: 0 0 200px; display: flex; align-items: center; gap: 8px; justify-content: flex-start"><span style="display: inline-block; width: 64px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 23%; height: 6px; border-radius: 3px; background: #7b8089"></span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; min-width: 48px; text-align: right">22,9%</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">30 de 96</span></span>
-    </div>
+    <p style="font-size: 12px; color: #7b8089; margin: 12px 0 0; border-top: 1px solid #eae7de; padding-top: 10px">Es la materia que más frena esta carrera: la traba de 2,1 intentos alcanza a las 9 materias que la esperan.</p>
   </div>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">El retrato</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Los 5 hechos más sostenidos de esta materia, del signo que salgan.</p>
-  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 4px 18px 6px">
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Es dura de verdad"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">carga</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 40%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">40,2% <span style="color: #a7adb5; font-size: 10px">48 de 96</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"El final es exigente"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">evaluación</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 33%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">33,3% <span style="color: #a7adb5; font-size: 10px">41 de 96</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Es muchísimo contenido"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">carga</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 29%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">29,4% <span style="color: #a7adb5; font-size: 10px">37 de 96</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Se aprueba yendo a clase"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">evaluación</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 22%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">21,9% <span style="color: #a7adb5; font-size: 10px">29 de 96</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Las correlativas te traban"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">organización</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 13%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">13,1% <span style="color: #a7adb5; font-size: 10px">19 de 96</span></span>
-      </div>
-  </div>
-  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">Dura y exigente no es mal llevada: la atribución viaja en cada hecho.</p>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La trayectoria de la materia</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">De cómo terminó cada cursada declarada (ADR-0067). Siempre "de quienes reseñaron", nunca "la tasa de la materia".</p>
-  <div style="display: flex; gap: 10px; flex-wrap: wrap">
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">La aprobaron</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">44,2%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">52 de 96 cursadas</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">La dejaron</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">11,4%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">17 de 96 cursadas</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Recursadas</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">14,8%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">21 de 96 voces con 2+ períodos</p></div>
-  </div>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Sus cátedras</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">La materia se cursa con una cátedra; cada una tiene su propia ficha con su propio corpus.</p>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Cátedra Pérez <span style="color: #7b8089; font-size: 12px">titular: M. Pérez</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">42 voces</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Cátedra González <span style="color: #7b8089; font-size: 12px">titular: L. González</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">31 voces</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Sin cátedra recordada <span style="color: #7b8089; font-size: 12px">las marcas de materia cuentan igual</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">23 voces</span></div>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Estado: cargada, sin voces todavía</h2>
-  <div style="background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px; margin: 0 0 8px; text-align: center">
-    <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 15px; margin: 0 0 4px">Esta ficha arranca vacía.</p>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 0">La primera voz ya se publica: acá nunca hay un cero inventado (US-136, US-139).</p>
-  </div>
-  <div style="border-top: 1px solid #e2dfd6; margin-top: 18px; padding-top: 16px; text-align: right"><span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 8px 18px; font-size: 13px">¿La cursaste? Reseñala</span></div>
 
+  <p class="lbl">¿Es la materia o es una cátedra?</p>
+  <div class="card" style="margin-bottom: 20px">
+    <p class="serif" style="font-size: 18px; font-weight: 500; line-height: 1.3; margin: 0 0 10px">Las clases perdidas y el no-se-entiende son de una cátedra: Pérez.</p>
+    <div style="display: flex; flex-direction: column; gap: 7px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="flex: 0 0 76px; font-size: 12.5px; color: #494e57">Pérez</span>
+        <span style="flex: 1; height: 7px; border-radius: 4px; background: #eeece5; overflow: hidden"><span style="display: block; width: 56%; height: 100%; background: #8d2418"></span></span>
+        <span class="mono" style="font-size: 12px">56 %</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="flex: 0 0 76px; font-size: 12.5px; color: #494e57">Ruiz</span>
+        <span style="flex: 1; height: 7px; border-radius: 4px; background: #eeece5; overflow: hidden"><span style="display: block; width: 14%; height: 100%; background: #7b8089"></span></span>
+        <span class="mono" style="font-size: 12px">14 %</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="flex: 0 0 76px; font-size: 12.5px; color: #494e57">González</span>
+        <span style="flex: 1; height: 7px; border-radius: 4px; background: #eeece5; overflow: hidden"><span style="display: block; width: 7%; height: 100%; background: #7b8089"></span></span>
+        <span class="mono" style="font-size: 12px">7 %</span>
+      </div>
+    </div>
+    <p style="font-size: 12px; color: #7b8089; margin: 10px 0 0">Voces que contaron 3 o más clases sin dictar. Lo que sí es de la materia: el peso del contenido (73 % lo marca en las tres cátedras).</p>
   </div>
+
+  <p class="lbl">Sus cátedras</p>
+  <div class="card" style="margin-bottom: 20px; padding-top: 5px; padding-bottom: 5px">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">Pérez</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">42 voces · última hace 2 meses</p></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a7adb5" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">Ruiz</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">38 voces · última hace 1 mes</p></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a7adb5" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">González</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">31 voces · última hace 3 semanas</p></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a7adb5" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 11px 0">
+      <div><p style="font-size: 14px; margin: 0; color: #7b8089">Paz (2026)</p><p style="font-size: 12px; color: #a7adb5; margin: 2px 0 0">3 reseñas · con 7 más se publica</p></div>
+    </div>
+  </div>
+  <p class="mono" style="font-size: 10px; color: #a7adb5; margin: -12px 0 20px 2px">ordenadas por cantidad de voces, nunca por sus números</p>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px">
+    <span style="font-size: 12px; color: #7b8089"><span style="text-decoration: underline">¿Cómo calculamos esto?</span> · <span style="text-decoration: underline">Bajar los datos</span></span>
+    <span style="background: #191b1f; color: #fffefb; border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 500; white-space: nowrap">¿La cursaste? Reseñala</span>
+  </div>
+
 </div>
 </body>
 </html>

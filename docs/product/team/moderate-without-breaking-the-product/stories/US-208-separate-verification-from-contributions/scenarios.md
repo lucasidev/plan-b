@@ -5,7 +5,7 @@
 ## Camino feliz
 
 **E1.** Dado que Camila está revisando la constancia de Matías en la cola de constancias de Verificaciones.
-Cuando intenta llegar a sus reseñas o votos por cualquier camino de la interfaz, incluida una URL directa a Mis aportes de esa cuenta.
+Cuando intenta llegar a sus reseñas por cualquier camino de la interfaz, incluida una URL directa a Mis aportes de esa cuenta.
 Entonces no encuentra ningún link ni acceso: desde la cola de constancias no hay ningún camino hacia los aportes de esa cuenta.
 
 **E2.** Dado que Claudia Fernández pide verificar que es titular de Cátedra Pérez, Análisis Matemático II, UNSTA.

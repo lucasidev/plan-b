@@ -1,5 +1,7 @@
 # US-167: Reportar algo sin registrarme
 
+> **Concepto rebasado el 2026-08-25**: ver la nota en [README.md](README.md). Estos escenarios describen el modelo anterior (testimonio publicado) y quedan como registro histórico hasta que se decida el reemplazo.
+
 > Los casos de [US-167](README.md), para escribir el test antes que el código. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
 
 ## Camino feliz

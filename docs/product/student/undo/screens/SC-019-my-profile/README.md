@@ -13,8 +13,7 @@ Cualquier cuenta que quiere ver su mail y su situación, apagar un aviso, verifi
 ## Qué muestra
 
 - **Tu cuenta**: el mail, la situación declarada en Registro (curso, cursé y dejé, me recibí, docente), la carrera declarada.
-- **Tu situación**: un link a Mi situación (seguís, te recibiste, te fuiste, o todavía no dijiste).
-- **Los cinco avisos**: tres con interruptor libre (cerró el período, cargamos lo que pediste, el resumen para docentes verificados), el aviso antes de una réplica siempre prendido (es tu palanca del plazo, no se apaga) y el reenganche anual fijo hasta que respondas. El apagado vive acá; la pantalla que dibuja cada mail es [Avisos](../../../../notices/README.md).
+- **Los tres avisos**, todos con interruptor libre: cerró el período, cargamos lo que pediste, y el resumen para el reseñado verificado ("tu ficha juntó reseñas nuevas"). El apagado vive acá; la pantalla que dibuja cada mail es [Avisos](../../../../notices/README.md). (El aviso previo a una réplica y el reenganche anual de trayectoria murieron con el modelo del 2026-08-25: no hay testimonio que replicar ni trayectoria que declarar.)
 - **La verificación**: si la hiciste, la señal con la fecha; si no, un link a Verificar.
 - **La puerta a Baja**: un link a [Baja](../SC-016-delete-account/README.md), sin el detalle de qué implica (eso lo dice esa pantalla, con sus palabras exactas, antes de confirmar).
 
@@ -24,11 +23,11 @@ Cualquier cuenta que quiere ver su mail y su situación, apagar un aviso, verifi
 
 ## Lo que no muestra nunca
 
-Nada público sale de acá: no hay perfil social, no se lista lo que aportaste para que lo vea otra cuenta (eso vive en la ficha de cada sujeto, sin tu nombre: US-148). El reenganche anual, una vez contestado, no vuelve a ofrecerse (US-169): ese interruptor en particular queda fijo, no es un toggle libre como los otros tres (cerró el período, cargamos lo que pediste, el resumen para docentes verificados). El aviso antes de una réplica tampoco es un toggle libre: queda siempre prendido, es tu palanca del plazo.
+Nada público sale de acá: no hay perfil social, no se lista lo que aportaste para que lo vea otra cuenta (eso vive en la ficha de cada sujeto, sin tu nombre: US-148). Lo que ya respondiste no vuelve a ofrecerse (US-169: que no me molesten).
 
 ## Adónde va
 
-Llega desde cualquier pantalla con cuenta, y desde los mails de [Avisos](../../../../notices/README.md) (todos apuntan también acá). Va a: Mi situación, Verificar, [Baja](../SC-016-delete-account/README.md).
+Llega desde cualquier pantalla con cuenta, y desde los mails de [Avisos](../../../../notices/README.md) (todos apuntan también acá). Va a: Verificar y [Baja](../SC-016-delete-account/README.md).
 
 ## Decisiones que aplica
 

@@ -14,5 +14,5 @@ Como quien verifica, quiero no poder ver qué reseñó la persona cuya constanci
 
 ## Dónde se resuelve
 
-- [Verificaciones](../../screens/SC-032-verifications/README.md): no hay ningún link desde la cola de constancias a las reseñas o votos de esa cuenta, ni por URL directa.
+- [Verificaciones](../../screens/SC-032-verifications/README.md): no hay ningún link desde la cola de constancias a las reseñas de esa cuenta, ni por URL directa.
 - [Verificar](../../../../student/care-for-what-is-published/screens/SC-022-verify/README.md): el aviso dice que subir la constancia nunca abre un camino hacia los aportes de la cuenta.

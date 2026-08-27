@@ -1,18 +1,15 @@
 # US-157: Reseñar un evento institucional
 
-> Los casos de [US-157](README.md), para escribir el test antes que el código. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
+> **Concepto rebasado el 2026-08-25**: ver la nota en el [README](README.md). No hay escenarios vigentes dentro de esta épica: la rama de "evento institucional" ya no existe en Reseñar.
 
 ## Camino feliz
 
-**E1.** Dado que a Matías le tardaron ocho meses en entregarle el título en UNSTA, algo que no es de ninguna materia.
-Cuando entra a Reseñar, elige la salida "es un trámite, el título, una mesa: un evento, no una materia", declara cuándo pasó, marca la frase F31 (El título tardó meses) y agrega un comentario opcional.
-Entonces la reseña se publica sin materia ni cátedra, y F31 junto con el comentario van a la Ficha de institución de UNSTA, sumando una voz igual que si fuera una cursada.
+Ninguno vigente en esta épica. El camino original (elegir "es un trámite, el título, una mesa" en el paso 1) ya no existe: [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) mueve esa necesidad al instrumento administrativo, todavía sin pantalla propia.
 
 ## Negativos
 
-**N1.** Dado que Matías eligió la salida de evento institucional, Cuando el flujo avanza, Entonces el paso "¿Con qué cátedra la cursaste?" y la pregunta de clases sin dar no aparecen: un evento no tiene cátedra.
+No aplica: no hay flujo que probar dentro de esta épica.
 
 ## Edge cases
 
-- Si no recuerda la fecha exacta del evento, puede declarar el período aproximado en vez del día puntual.
-- Falta decidir: si el evento institucional queda como una pantalla propia o como esta misma pantalla con otras frases (el boceto lo deja como salida del paso 1, sin resolver).
+No aplica.

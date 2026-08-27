@@ -9,15 +9,16 @@ Como quien está eligiendo, quiero saber si lo que dice la ficha de la carrera v
 
 ## Listo cuando
 
-- Todo dato derivado muestra su cobertura ("22 de 40 materias con voces") y cada frase derivada dice en cuántas materias aparece.
-- La cabecera de carrera e institución aparece solo cuando más de la mitad de las materias canónicas de la carrera tiene voces (sobre todos sus planes: D04).
-- Debajo de eso la ficha muestra la cobertura, dice que todavía no derivamos y deja leer materia por materia; nunca un cero ni una cabecera armada con tres materias.
+- La Ficha de carrera muestra siempre cuánta cobertura tiene ("23 de 51 materias"), nunca oculta detrás de un umbral.
+- Lo que "qué frena la cursada" todavía no incluye es porque esas materias no llegaron al piso de 10 reseñas en ninguna de sus cátedras, y la ficha lo dice ("las 28 restantes todavía no juntan las 10 reseñas del piso").
+- Ningún dato derivado se arma con menos de 10 reseñas en una cátedra.
 
 ## Dónde se resuelve
 
-- [Ficha de carrera](../../screens/SC-001-career/README.md): el gate de cobertura decide si aparece la cabecera derivada; debajo, la cobertura queda siempre a la vista.
-- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada oferta comparada muestra su propio gate y su propia cobertura antes de la cabecera.
+- [Ficha de carrera](../../screens/SC-001-career/README.md): la cobertura es una sección propia, siempre a la vista; "qué frena la cursada" muestra solo lo que ya alcanzó el piso.
+- [Ficha de materia](../../screens/SC-007-subject/README.md): la cátedra que todavía no llega al piso se lista con su cuenta y cuánto le falta, sin sumar a los números de la materia.
+- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada oferta comparada muestra su propia cobertura.
 
 ## Notas
 
-P1
+P1. Esta story ya no depende de un gate que oculte una cabecera derivada: [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) retiró esa mecánica. La cobertura es una sección honesta que se muestra siempre; el piso de 10 reseñas por cátedra ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)) es lo único que de verdad condiciona qué entra a un número.

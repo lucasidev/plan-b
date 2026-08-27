@@ -4,26 +4,26 @@
 
 ## Camino feliz
 
-**E1.** Dado que Ingeniería en Sistemas está cargada como carrera canónica en UNSTA (nominal 5 años, real 7,5 años de 40 egresados, brecha 2,5 años, 850 voces, cobertura 22 de 40 materias) y en UTN (nominal 5 años, real 6,5 años de 22 egresados, brecha 1,5 años, 1200 voces, cobertura 30 de 40 materias)
+**E1.** Dado que Ingeniería en Sistemas está cargada como carrera canónica en UNT (dura en la realidad 8,4 años, egresa 14 % por cohorte, plan 2016, ingreso irrestricto, según 412 reseñas y 45 % de las materias), en UTN (7,1 años, 21 %, plan 2008, curso de ingreso, según 96 reseñas y 18 % de las materias) y en UNSTA (6,2 años, 34 %, plan 2021, examen con arancel, 7 reseñas)
 Cuando alguien entra a Dónde estudiarla
-Entonces ve las dos ofertas lado a lado, cada una con su nominal, su real, su brecha, su cobertura y su cabecera derivada (las dos pasan el gate porque las dos superan la mitad de sus materias canónicas), sin ninguna columna que las combine en un solo número.
+Entonces ve las tres tarjetas lado a lado, cada una con sus propios datos oficiales y sus propias señales de reseñas, sin ninguna columna que las combine en un solo número.
 
-**E2.** Dado esas mismas dos ofertas
+**E2.** Dado esas mismas tres ofertas
 Cuando se arma la comparación
-Entonces el orden es alfabético (UNSTA antes que UTN) o por voces (UTN con 1200 antes que UNSTA con 850), nunca por cuál tiene la brecha más chica.
+Entonces el orden es alfabético (UNSTA, UNT, UTN) o por voces (UNT con 412 antes que UTN con 96 antes que UNSTA con 7), nunca por cuál tiene mejor duración o mejor egreso.
 
-**E3.** Dado que alguien quiere ordenar las dos ofertas por su propia brecha en vez de alfabético o por voces
+**E3.** Dado que alguien quiere ordenar las tres ofertas por su propio egreso en vez de alfabético o por voces
 Cuando busca esa opción dentro de Dónde estudiarla
 Entonces no existe ahí: tiene que bajar el CSV desde Método para ordenar como quiera.
 
 ## Negativos
 
-**N1.** Dado que UTN tiene menos brecha que UNSTA (1,5 contra 2,5 años)
+**N1.** Dado que UNSTA egresa más que las otras dos (34 % contra 14 % y 21 %)
 Cuando se muestra la comparación
-Entonces ninguna de las dos aparece marcada como "mejor", "recomendada" ni con un ícono de ganador: los números se leen solos.
+Entonces ninguna de las tres aparece marcada como "mejor", "recomendada" ni con un ícono de ganador: los datos se leen solos.
 
 ## Edge cases
 
-- Solo Ingeniería en Sistemas en UNSTA está cargada todavía, ninguna otra institución la ofrece en el catálogo: Dónde estudiarla dice que no hay con qué comparar todavía, en vez de mostrar una comparación de una sola columna.
-- Ingeniería en Sistemas en Siglo 21 está cargada pero sin ninguna voz: aparece en la comparación con su duración nominal y "todavía sin voces", sin inventar un cero.
-- Contador Público en una tercera institución tiene solo 15 de 40 materias con voces: esa oferta se compara igual, pero sin cabecera derivada, mostrando "todavía no derivamos" con su cobertura al lado.
+- Solo Ingeniería en Sistemas en UNT está cargada todavía, ninguna otra institución la ofrece en el catálogo: Dónde estudiarla dice que no hay con qué comparar todavía, en vez de mostrar una comparación de una sola tarjeta.
+- Ingeniería en Sistemas en una cuarta institución está cargada pero sin ningún dato oficial relevado todavía: su tarjeta lo dice en vez de dejar un espacio en blanco.
+- UNSTA, con solo 7 reseñas, no llega al piso: su tarjeta no muestra chips de señales de reseñas y dice "7 reseñas. No alcanza el piso para mostrar cómo se cursa"; sus datos oficiales (6,2 años, 34 %, plan 2021, examen con arancel) se muestran igual, porque no dependen de reseñas.

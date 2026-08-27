@@ -5,7 +5,7 @@
 
 ## Historia
 
-Como quien reseña, quiero retomar lo que empecé a escribir, porque cerré la pestaña en el medio y no lo voy a hacer dos veces.
+Como quien reseña, quiero retomar lo que empecé a responder, porque cerré la pestaña en el medio y no lo voy a hacer dos veces.
 
 ## Listo cuando
 

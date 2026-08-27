@@ -4,26 +4,25 @@
 
 ## Camino feliz
 
-**E1.** Dado que el plan de Ingeniería en Sistemas en UNSTA dura nominalmente 5 años, y 40 egresados declararon tanto el año en que entraron como el año en que se recibieron, con una mediana de 7,5 años entre esas dos fechas
-Cuando se mira la trayectoria en la Ficha de carrera
-Entonces se muestran los dos números uno al lado del otro: duración nominal 5 años, duración real 7,5 años (mediana de 40 egresados).
+**E1.** Dado que Ingeniería en Sistemas en UNT dura 5 años en el papel y, según la serie del Ministerio de Educación (SPU, 2015-2024), 8,4 años en la realidad
+Cuando se mira el bloque de datos oficiales en la Ficha de carrera
+Entonces se muestran los dos números uno al lado del otro, "Dura en el papel: 5 años" y "Dura en la realidad: 8,4 años", con "Fuente: Ministerio de Educación (SPU) · serie 2015-2024" al pie del bloque.
 
-**E2.** Dado esos mismos 5 años nominales y 7,5 reales
-Cuando se calcula la brecha
-Entonces se muestra una brecha de 2,5 años, y el texto dice que sale de esos mismos 40 egresados.
+**E2.** Dado que Ingeniería en Sistemas en UTN todavía no tiene ninguna cursada reseñada
+Cuando se mira su Ficha de carrera
+Entonces el bloque de datos oficiales se muestra igual, porque no depende de reseñas: solo "qué frena la cursada" y la cobertura dicen que la carrera arranca vacía.
 
-**E3.** Dado que la duración real muestra 7,5 años
-Cuando se lee el texto que la acompaña
-Entonces dice "de los que se recibieron y reseñaron acá": nadie que sigue cursando ni nadie que se fue entra en ese número.
+**E3.** Dado que la Ficha de carrera muestra "Dura en la realidad: 8,4 años"
+Cuando se lee ese dato
+Entonces nunca aparece sin su fuente y su período al lado: ningún dato oficial se publica sin decir de dónde sale.
 
 ## Negativos
 
-**N1.** Dado que un estudiante reseñó varias materias de Ingeniería en Sistemas en UNSTA pero nunca declaró que se recibió
-Cuando se calcula la duración real
-Entonces ese estudiante no entra en la mediana de 7,5 años ni en el total de 40 egresados: solo cuentan quienes declararon las dos fechas.
+**N1.** Dado que una carrera todavía no tiene relevamiento oficial cargado
+Cuando se arma su Ficha de carrera
+Entonces el bloque no inventa un número ni lo calcula a partir de reseñas propias: dice que ese dato todavía no está relevado.
 
 ## Edge cases
 
-- Todavía nadie declaró haberse recibido de una carrera recién cargada: la duración real no se publica como 0 años, viaja como sin datos (ADR-0054), y se dice que hace falta que egresados declaren las dos fechas.
-- Un solo egresado declaró las dos fechas: la mediana es ese único valor, se publica igual, sin piso, y el texto dice que sale de un solo egresado.
-- La misma carrera en dos instituciones (US-128) tiene su propia brecha cada una: UNSTA con 2,5 años, UTN con 1,5 años (nominal 5, real 6,5 de 22 egresados); no existe una brecha compartida entre las dos.
+- La misma carrera en tres instituciones (US-128) tiene su propia duración real cada una, con su propia fuente: UNT 8,4 años, UTN 7,1 años, UNSTA 6,2 años (Dónde estudiarla); no existe una duración real compartida entre las tres.
+- Un plan reformado, con dos planes coexistiendo: a cuál de los dos corresponde "dura en el papel" cuando los dos están vigentes queda abierto (US-204).

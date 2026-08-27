@@ -24,7 +24,7 @@ docs/product/<journey>/<epic>/
 - **La pantalla** tiene un solo lugar: su épica dueña. El [sitemap](map.md) es el índice derivado de las 34, con su slug y quién le aporta a cada una.
 - **El boceto** es de una pantalla, nunca de una story ni de una épica entera.
 
-Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el [glosario](language.md), las [personas](personas.md), el [catálogo de frases](phrases.md), los [ADRs](../decisions/README.md), las [revisiones](../history/reviews/README.md) y el [design system](design-system.md) (el lenguaje visual: tokens y tipografía, no una pantalla). La épica los cita.
+Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el [glosario](language.md), las [personas](personas.md), el [catálogo de ítems](phrases.md), los [ADRs](../decisions/README.md), las [revisiones](../history/reviews/README.md) y el [design system](design-system.md) (el lenguaje visual: tokens y tipografía, no una pantalla). La épica los cita.
 
 Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo identificador del repo; el nombre visible de la épica va en español en el texto. Una épica de docs no es un feature de código: sus stories se implementan en uno o más slices de código cuando se planifican.
 
@@ -36,27 +36,27 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-135, US-136, US-137, US-138) | Valentina, Silvia, quien lee | 14 | 8 |
+| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138) | Valentina, Silvia, quien lee | 12 | 8 |
 | [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
 | [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 4 | 4 |
 | [Mi carrera](student/my-career/README.md) | O3 | Lucía | 3 | 2 |
-| [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163, US-164) | Lucía, Matías, Diego | 19 | 3 |
-| [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 3 | 1 |
+| [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 18 | 3 |
+| [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 2 | 1 |
 | [Deshacer](student/undo/README.md) | O5 | quien ya aportó | 2 | 4 |
-| [Llevarse el dato](student/take-the-data/README.md) | O8 | Rocío | 8 | 1 |
+| [Llevarse el dato](student/take-the-data/README.md) | O8 | Rocío | 7 | 1 |
 
 ### El recorrido del reseñado
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Replicar](reviewed/reply/README.md) | O7 (+ US-179) | Claudia, Paredes, la institución | 9 | 2 |
+| [Responder](reviewed/reply/README.md) | O7 | Claudia, Paredes, la institución | 6 | 2 |
 
 ### El recorrido del equipo
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
 | [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 4 |
-| [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 12 | 2 |
+| [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 9 | 2 |
 | [Cortar los accesos](team/cut-the-access/README.md) | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
 
 ### Lo que no es un tramo
@@ -66,7 +66,7 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 | [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
 | [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
 
-103 stories (98 en tramos y 5 garantías) y 34 pantallas en total. Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor, y las tres stories de lectura que quedaron en Replicar) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
+92 stories (87 en tramos y 5 garantías) y 34 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
 ## Las 34 pantallas
 
@@ -93,7 +93,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-017` |  | [Editar](student/undo/screens/SC-017-edit/README.md) | sin slug hoy |
 | `SC-018` |  | [Mis aportes](student/undo/screens/SC-018-my-contributions/README.md) | `/reviews` |
 | `SC-019` |  | [Mi perfil](student/undo/screens/SC-019-my-profile/README.md) | `/my-profile` |
-| `SC-020` | Replicar | [Responder](reviewed/reply/screens/SC-020-respond/README.md) | sin slug hoy |
+| `SC-020` | Responder | [Responder](reviewed/reply/screens/SC-020-respond/README.md) | sin slug hoy |
 | `SC-021` | Llevarse el dato | [Método](student/take-the-data/screens/SC-021-method/README.md) | sin slug hoy |
 | `SC-022` | Cuidar lo publicado | [Verificar](student/care-for-what-is-published/screens/SC-022-verify/README.md) | `/verify-teacher` |
 | `SC-023` | Entrar | [Error](student/enter/screens/SC-023-error/README.md) | sin slug hoy |
@@ -113,9 +113,8 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 
 Los grupos transversales del mapa agrupan por riesgo o por situación, no por lo que alguien viene a hacer; sus stories viven en la épica que las implementa. El tema se conserva acá como lista, para leerlas juntas:
 
-- **T2 · Cuando el riesgo es real (tres escenarios que rompen la promesa)**: US-158 → [Reseñar](student/write-a-review/README.md); US-179 → [Replicar](reviewed/reply/README.md); US-136 → [Elegir dónde estudiar](student/choose-where-to-study/README.md); US-159 → [Reseñar](student/write-a-review/README.md).
-- **T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)**: US-160 → [Reseñar](student/write-a-review/README.md); US-137 → [Elegir dónde estudiar](student/choose-where-to-study/README.md); US-161 → [Reseñar](student/write-a-review/README.md); US-162 → [Reseñar](student/write-a-review/README.md); US-163 → [Reseñar](student/write-a-review/README.md); US-138 → [Elegir dónde estudiar](student/choose-where-to-study/README.md).
-- **T4 · Y quien no está de acuerdo (discrepar no es lo mismo que denunciar)**: US-164 → [Reseñar](student/write-a-review/README.md).
+- **T2 · Cuando el riesgo es real (los escenarios que rompen la promesa)**: US-158 → [Reseñar](student/write-a-review/README.md); US-136 → [Elegir dónde estudiar](student/choose-where-to-study/README.md); US-159 → [Reseñar](student/write-a-review/README.md).
+- **T3 · Cuando el catálogo no alcanza (el dato existe pero no me sirve como está)**: US-160 → [Reseñar](student/write-a-review/README.md); US-161 → [Reseñar](student/write-a-review/README.md); US-162 → [Reseñar](student/write-a-review/README.md); US-163 → [Reseñar](student/write-a-review/README.md); US-138 → [Elegir dónde estudiar](student/choose-where-to-study/README.md).
 - **BO4 · Cuando la carga no da abasto (operación diaria, no excepciones)**: US-200 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-201 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-202 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-211 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md); US-203 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-212 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md).
 - **BO5 · Cuando el corpus está bajo ataque (tres escenarios que rompen el producto)**: US-204 → [Sostener el catálogo](team/sustain-the-catalog/README.md); US-213 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md); US-214 → [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md).
 - **BO6 · Y quién nos mira a nosotros (lo que le pedimos a las instituciones, aplicado adentro)**: US-218 → [Cortar los accesos](team/cut-the-access/README.md); US-219 → [Cortar los accesos](team/cut-the-access/README.md).
@@ -129,7 +128,7 @@ Que nadie los perciba no los hace menores: que las constancias se destruyan al r
 
 - **Accesibilidad y celular.** La lectura es pública y la mayoría llega desde el teléfono: las fichas, Método, Dónde estudiarla y el CSV se leen y se usan en un celular chico, y cumplen WCAG 2.2 AA (contraste, teclado, lectores de pantalla, texto que escala). Una ficha que solo se lee en escritorio no está terminada.
 - **Datos personales (Ley 25.326).** Consentimiento informado al registrarse, aviso de privacidad público, y los derechos de acceso, rectificación y supresión resueltos por US-165 y US-166 (borrar de a uno; la baja anonimiza y preserva lo aportado, ADR-0044). Las constancias se destruyen al resolver (US-207). Nada publicado trae nombre, cuenta ni perfil (US-159).
-- **La política de moderación y réplica es pública.** El criterio escrito de US-205 (qué es exposición, qué no lo es, el único caso de riesgo inmediato), el chequeo previo (US-158) y las reglas de la réplica (US-179, US-178) se publican donde se publica el método, antes de que exista el primer reporte. Nahuel aplica lo que cualquiera puede leer.
+- **La política de curaduría y respuesta es pública.** Qué hace el equipo con el campo libre que no se publica (destilar ítems, escribir notas sin nombres, [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), el criterio del filtro grueso ([ADR-0055](../decisions/0055-content-filter-is-a-coarse-first-pass-not-a-verdict.md)) y las reglas de la respuesta del reseñado (US-178) se publican donde se publica el método. El equipo aplica lo que cualquiera puede leer.
 - **Rendimiento y disponibilidad de lo público.** Lo que se lee sin cuenta es lo que la mesa cita: las fichas cargan rápido y se cachean; una caída de lo público es una caída del producto, y el CSV siempre está.
 
 ## Las reglas de escritura de una story
@@ -151,7 +150,7 @@ Cada story tiene un `scenarios.md` en su carpeta que traduce su "listo cuando" a
 
 Tres cosas que conviene saber antes de usarlos:
 
-- **Los números salen de [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md)**, que fija el z del encogimiento (1,96), el denominador de una proporción (todas las voces de la cursada) y cuántas voces suma una persona (una por cursada). Sin esos tres, ninguna proporción publicada se puede calcular dos veces igual.
+- **Los números salen de [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)**: la moda y la distribución son conteos crudos con su denominador (quienes respondieron ese ítem), y las comparaciones usan intervalos de Wilson como maquinaria interna para decidir qué se publica (el ADR fija la regla de intervalos; el valor de z lo fija el código, no un ADR). La tercera es de [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md): una persona suma una voz por cursada. Sin esos tres, ningún dato publicado se puede recalcular dos veces igual.
 - **Cada escenario declara sus propios datos en el "Dado". No hay fixture compartido, y no debería haberlo**: los nombres que se repiten entre épicas (Cátedra Pérez, Análisis Matemático II) son etiquetas para que se lea bien, no una entidad con un estado único. Dos escenarios pueden nombrar la misma cátedra con distinta cantidad de voces porque cada uno arma su caso.
 - **Son el aro externo, no el interno.** Están escritos al nivel de lo que se observa (una pantalla, una ficha, un mail), que es aceptación. El test unitario que sale de ellos es otra cosa, y su forma la descubre quien lo escriba.
 

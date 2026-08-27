@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Lo que pasa cuando lo que alguien busca no está. El vacío se explica en sus tres estados y ninguno es un cero ("no la cargamos todavía", "cargada y todavía sin voces", "cargada, con voces, todavía no derivamos la cabecera"); se puede pedir la carga sin cuenta, con el mail y nada más, y el pedido cuenta cuando ese mail se confirma por link; la cola es pública y ordenada por pedidos confirmados; y cuando se carga llega el aviso con el link a la ficha, que se lee sin cuenta. Es el único plano donde alguien sin cobertura tiene lugar: el pedido es un dato público, y cuánta gente reclama que se cargue algo dice dónde la comunidad quiere que se mire y no llegamos.
+Lo que pasa cuando lo que alguien busca no está. El vacío se explica en sus tres estados y ninguno es un cero ("no la cargamos todavía", "cargada, sin llegar todavía al piso", "cargada, con voces publicadas, todavía no derivamos la cabecera"); se puede pedir la carga sin cuenta, con el mail y nada más, y el pedido cuenta cuando ese mail se confirma por link; la cola es pública y ordenada por pedidos confirmados; y cuando se carga llega el aviso con el link a la ficha, que se lee sin cuenta. Es el único plano donde alguien sin cobertura tiene lugar: el pedido es un dato público, y cuánta gente reclama que se cargue algo dice dónde la comunidad quiere que se mire y no llegamos.
 
 ## Para quién
 
@@ -26,7 +26,7 @@ Las 4 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 ## Decisiones que aplica
 
-D03 ([registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md): el pedido confirma el mail por link como el reporte; un mail cuenta una vez por carrera), [ADR-0066](../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los tres estados del vacío salen del gate de cobertura: sin voces, con voces sin cabecera), los tres planos del [mapa](../../map.md) (el catálogo lo cargamos nosotros, entero o no está; no inventamos una ficha vacía), [Avisos](../../notices/README.md) como infraestructura.
+D03 ([registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md): el pedido confirma el mail por link como el reporte; un mail cuenta una vez por carrera), [ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (el piso de 10 reseñas por privacidad) y [ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md) (los tres estados del vacío salen del piso y de la cobertura que condiciona todo agregado: sin llegar al piso, con voces publicadas sin cabecera; el umbral exacto de cobertura no lo fija ningún ADR vigente), los tres planos del [mapa](../../map.md) (el catálogo lo cargamos nosotros, entero o no está; no inventamos una ficha vacía), [Avisos](../../notices/README.md) como infraestructura.
 
 ## Pantallas
 

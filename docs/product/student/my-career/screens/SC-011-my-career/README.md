@@ -13,9 +13,9 @@ US-143 (por par de materias y período, cuántas personas las reseñaron juntas 
 ## Qué muestra
 
 1. **El plan de la carrera declarada**, con sus correlativas (qué pide cada materia para cursarla).
-2. **Lo que ya reseñaste, con cómo terminó**: viene marcado solo, porque es un hecho ([ADR-0067](../../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)); no se toca a mano.
+2. **Lo que ya reseñaste, con cómo terminó**: viene marcado solo, porque es un hecho ([ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)); no se toca a mano.
 3. **Lo que marcás aparte, materia por materia, como que te falta o considerás**: preferencia privada, y la pantalla lo dice con esas palabras, no se recaba, no se publica, no entra a ningún agregado ([ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)).
-4. **La pestaña de co-cursada**: por par de materias y período, cuántas personas las llevaron juntas y cuántas dejaron una, solo desde reseñas, nunca desde el plan marcado (ADR-0067); filtrada a las materias que todavía podés cursar, cruzando lo reseñado y lo marcado (US-144). Sin piso: se publica desde la primera voz ([ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)).
+4. **La pestaña de co-cursada**: por par de materias y período, cuántas personas las llevaron juntas y cuántas dejaron una, solo desde reseñas, nunca desde el plan marcado (ADR-0069); filtrada a las materias que todavía podés cursar, cruzando lo reseñado y lo marcado (US-144). Con el mismo piso de privacidad que protege cualquier conteo agregado ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)).
 
 ## Estados
 
@@ -31,7 +31,7 @@ A la Ficha de materia (correlativas: qué pide y qué abre) y a Reseñar. Llega 
 
 ## Decisiones que aplica
 
-[ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo marcado es preferencia privada, no dato), [ADR-0067](../../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la co-cursada: solo desde reseñas, por par y período), [ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: se publica desde la primera voz), [ADR-0063](../../../../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta pantalla no arma horarios, solo entrega los números).
+[ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo marcado es preferencia privada, no dato), [ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (la reseña de la cursada es la única fuente, cuenta × materia × período; el piso de 10 reseñas), [ADR-0063](../../../../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta pantalla no arma horarios, solo entrega los números). Que más allá de ese piso no haya escalones de desbloqueo por volumen es regla del corpus, hoy sin ADR propio que la fije.
 
 ## Lo que esta ficha deja abierto
 

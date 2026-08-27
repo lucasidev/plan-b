@@ -6,7 +6,7 @@
 
 **E1.** Dado que Claudia Fernández pide verificar que es titular de Cátedra Pérez, Análisis Matemático II, UNSTA
 Cuando Camila compara ese pedido contra lo que el catálogo tiene cargado de Cátedra Pérez (titular Claudia Fernández, activa desde 2021) y lo aprueba, con su nombre y la fecha
-Entonces Claudia queda con identidad docente verificada y Responder le habilita el campo para escribir la réplica.
+Entonces Claudia queda con identidad docente verificada y Responder le habilita el campo para escribir la respuesta.
 
 **E2.** Dado que Matías subió su constancia de alumno regular, y por separado Claudia pidió verificar su identidad docente
 Cuando Camila trabaja las colas de Verificaciones

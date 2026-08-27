@@ -9,7 +9,7 @@ Como quien dejó la carrera, quiero que no me traten como a un fracaso, porque m
 
 ## Listo cuando
 
-- La reseña de quien dejó suma voces igual que cualquier otra y sus frases van al mismo conteo; lo publicado no dice cómo terminó ni quién la escribió.
+- La reseña de quien dejó suma voces igual que cualquier otra y sus respuestas van al mismo conteo; lo publicado no dice cómo terminó ni quién la escribió.
 
 ## Dónde se resuelve
 

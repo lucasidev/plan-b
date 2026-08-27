@@ -1,5 +1,7 @@
 # US-167: Reportar algo sin registrarme
 
+> **Concepto rebasado el 2026-08-25**: esta garantía depende de que haya testimonios publicados para reportar. [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) retira la publicación de texto libre (el campo libre no se publica nunca) y declara que "el módulo de moderación se achica a casi nada: sin texto publicado no hay reportes de contenido que arbitrar". Falta decidir si esta garantía sigue viva sobre otro contenido publicado (la respuesta del reseñado firmada, una nota editorial) o se retira.
+
 **Épica**: [Deshacer](../README.md)
 **Del mapa**: O5-4
 

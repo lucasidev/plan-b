@@ -5,12 +5,12 @@
 
 ## Historia
 
-Como quien verifica, quiero una cola de identidad docente separada de la de constancias, porque para el alumno verificarse es una señal y para el docente es el permiso de publicar una réplica con su nombre.
+Como quien verifica, quiero una cola de identidad docente separada de la de constancias, porque para el alumno verificarse es una señal y para el docente es el permiso de publicar una respuesta con su nombre.
 
 ## Listo cuando
 
-- La identidad docente se prueba contra el equipo docente que el catálogo tiene cargado para esa cátedra, en su propia cola; sin eso no se publica ninguna réplica.
-- Aprobar o rechazar queda con autor y fecha; rechazar no habilita la réplica y no marca a nadie.
+- La identidad docente se prueba contra el equipo docente que el catálogo tiene cargado para esa cátedra, en su propia cola; sin eso no se publica ninguna respuesta.
+- Aprobar o rechazar queda con autor y fecha; rechazar no habilita la respuesta y no marca a nadie.
 
 ## Dónde se resuelve
 

@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a votar, corregir, reseñar o responder, con el motivo a la vista y con la vuelta a donde estaba. Además vive acá la pantalla de Error, porque es el chasis que sostiene a todas las demás cuando algo falla y no le pertenece a ninguna épica en particular.
+Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además vive acá la pantalla de Error, porque es el chasis que sostiene a todas las demás cuando algo falla y no le pertenece a ninguna épica en particular.
 
 Sostiene garantías de otras épicas ([Que no me molesten](../../guarantees/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
 
@@ -43,7 +43,7 @@ Estas pantallas viven en esta épica, con su ficha y su boceto:
 - [**Recuperar**](screens/SC-024-forgot-password/README.md) (umbral): la cuenta con todo adentro vuelve con un link al mail; [boceto](screens/SC-024-forgot-password/sketch.html).
 - [**Error**](screens/SC-023-error/README.md) (pública): qué pasó, qué hacer, y que lo tuyo no se perdió; [boceto](screens/SC-023-error/sketch.html).
 
-Esta épica aporta a pantallas de otras: nada. Al revés sí: [Reseñar](../write-a-review/README.md), [Cuidar lo publicado](../care-for-what-is-published/README.md), [Replicar](../../reviewed/reply/README.md) y [Pedir una carrera](../request-a-career/README.md) disparan el umbral desde sus acciones, y cada uno lo dice en su README.
+Esta épica aporta a pantallas de otras: nada. Al revés sí: [Reseñar](../write-a-review/README.md), [Cuidar lo publicado](../care-for-what-is-published/README.md), [Responder](../../reviewed/reply/README.md) y [Pedir una carrera](../request-a-career/README.md) disparan el umbral desde sus acciones, y cada uno lo dice en su README.
 
 ## Lo que esta épica todavía no resuelve
 

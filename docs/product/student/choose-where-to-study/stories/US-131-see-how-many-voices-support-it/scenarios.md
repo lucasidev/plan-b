@@ -4,25 +4,25 @@
 
 ## Camino feliz
 
-**E1.** Dado que "Hay clases que no se dan" en Cátedra Pérez tiene 15 de 41 voces (encogido a 24%, ADR-0075) sostenidas entre 2022 y 2025
-Cuando se muestra esa frase en la Ficha de Cátedra Pérez
-Entonces al lado de la frase se leen las tres cosas juntas: 15 de 41 voces, el período 2022 a 2025, y el encogimiento a 24%.
+**E1.** Dado que "¿Se dictaron las clases?" en Cátedra Pérez tiene moda "Faltaron muchas · 41 %" sobre 37 voces
+Cuando se muestra ese ítem en la Ficha de Cátedra Pérez
+Entonces al lado de la moda se lee "de 37", y la distribución completa (casi todas 27 %, faltaron algunas 32 %, faltaron muchas 41 %) trae el mismo denominador.
 
-**E2.** Dado que Cátedra Molina (Álgebra I, UNSTA), recién cargada, tiene "Es dura de verdad" marcada por 1 de 1 voz (encogido a 20,7%, ADR-0075)
-Cuando se muestra esa frase
-Entonces se publica igual, con su voz (1 de 1), su encogimiento (20,7%) y su período, sin esperar a que aparezca una segunda voz.
+**E2.** Dado que Cátedra Molina (Álgebra I, UNT) recién pasó el piso, con "¿Salías de la clase entendiendo?" en moda "Casi nunca" sobre sus 10 primeras voces
+Cuando se muestra ese ítem
+Entonces se publica igual, con "de 10" al lado, sin esperar a que existan más voces que las que hacen falta para pasar el piso.
 
 ## Negativos
 
-**N1.** Dado que F01 "Es dura de verdad" tiene 15 de 41 voces en Cátedra Domínguez, y llega una voz nueva que reseña esa cursada marcando solo F02 "Se aprueba yendo a clase" (el sentido opuesto, sin marcar F01)
-Cuando se recalcula F01
-Entonces su proporción no se queda en 15 de 41: pasa a ser 15 de 42, porque el denominador es compartido por toda la cursada y crece con cada voz nueva, aunque nadie le haya sacado una marca a F01 (ADR-0075).
+**N1.** Dado que un ítem de "qué hizo la cátedra" tiene distinto número de voces que otro de "qué les pasó a los que cursaron", en la misma Ficha de Cátedra Pérez, porque no todos contestan todo
+Cuando se muestran los dos
+Entonces cada uno lleva su propio "de N": el denominador de un ítem no se completa con las voces de otro ítem de la misma cursada.
 
-**N2.** Dado cualquier frase publicada en cualquier ficha
-Cuando se muestra su proporción
-Entonces nunca aparece un porcentaje solo, sin sus voces y sin su período al lado: los tres viajan siempre juntos.
+**N2.** Dado cualquier ítem publicado en cualquier ficha
+Cuando se muestra su moda
+Entonces nunca aparece un porcentaje solo, sin su "de N" al lado.
 
 ## Edge cases
 
-- Una frase con 4 de 4 voces (encogido a 51,0%, ADR-0075): se publica con el mismo formato que una con miles de voces, sin destacarse como "confiable" ni advertirse como "poco confiable" más allá de mostrar el número real.
-- Dos frases distintas de la misma ficha, una sostenida desde 2022 y la otra recién desde 2024: cada una muestra su propio período, no el período general de la ficha.
+- Una cátedra recién pasó el piso, con exactamente 10 voces en total: sus ítems se publican con el mismo formato que una cátedra con cientos, sin destacarse como "reciente" ni advertirse como "poco confiable" más allá de mostrar el número real.
+- Dos ítems distintos de la misma ficha, uno con 37 voces y otro con 34 porque no todos contestan todo: cada uno muestra su propio "de N", nunca el total de voces de la cursada entera.

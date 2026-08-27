@@ -14,7 +14,7 @@ Entonces ve esa corrección listada ("corregiste la correlativa de Análisis Mat
 
 ## Negativos
 
-**N1.** Dado que Valentina no inició sesión, cuando toca la fila de la correlativa de Análisis Matemático II para corregirla, entonces el sistema no le muestra ningún campo editable y la lleva a Ingresar con un motivo del tipo "para corregir este dato, necesitás una cuenta": corregir pide cuenta igual que votar.
+**N1.** Dado que Valentina no inició sesión, cuando toca la fila de la correlativa de Análisis Matemático II para corregirla, entonces el sistema no le muestra ningún campo editable y la lleva a Ingresar con un motivo del tipo "para corregir este dato, necesitás una cuenta": corregir pide cuenta igual que reseñar.
 
 **N2.** Dado que Valentina ya propuso el cambio de "Álgebra" a "Análisis Matemático I", cuando cualquiera lee la Ficha de materia de Análisis Matemático II en ese momento, entonces todavía ve "Álgebra": la ficha no cambia para nadie hasta que Sofía contrasta la corrección contra la fuente y la aplica (US-194, fuera de esta story).
 

@@ -4,22 +4,22 @@
 
 ## Camino feliz
 
-**E1.** Dado que Reportes tiene 40 reportes (contenido ya publicado y denunciado después) y 30 retenidos (contenido que el chequeo previo frenó antes de publicar, que todavía nadie leyó).
+**E1.** Dado que Reportes tiene 40 comentarios del campo libre que el filtro grueso marcó, todavía sin revisar, y 12 reclamos institucionales pendientes.
 Cuando Nahuel abre la cola.
-Entonces ve cuánto se tarda, en promedio, en resolver cada uno y qué cantidad queda para después, con los reportes y los retenidos mostrados en secciones separadas.
+Entonces ve cuánto se tarda, en promedio, en resolver cada uno y qué cantidad queda para después, con el campo libre filtrado y los reclamos mostrados en secciones separadas.
 
-**E2.** Dado esa misma cola, con 40 reportados y 30 retenidos.
+**E2.** Dado esa misma cola, con 40 del campo libre y 12 reclamos.
 Cuando Nahuel decide qué mirar primero.
-Entonces la cola le prioriza los 30 retenidos por sobre los 40 reportados: lo retenido no está publicado y lo reportado sigue publicado mientras espera, así que lo sin publicar va primero.
+Entonces la cola no lo obliga a un único orden entre las dos secciones: cada una prioriza puertas adentro por su propio criterio (el campo libre, por ejemplo, nada llega a curaduría hasta que se libera; los reclamos, ninguno baja un dato solo).
 
 ## Negativos
 
 **N1.** Dado la misma cola desbordada.
 Cuando se arma el orden de trabajo dentro de cada sección.
-Entonces nunca se ordena estrictamente por fecha de llegada: ni el más viejo de los retenidos ni el más viejo de los reportados van primero solo por antigüedad, el criterio es sin publicar antes que reportado.
+Entonces nunca se ordena estrictamente por fecha de llegada solo por antigüedad, sin ningún otro criterio.
 
 ## Edge cases
 
-- Cómo se calcula exactamente "cuánto se tarda", y si usa el mismo cálculo que Pedidos (US-200), no está decidido (README de la épica). **Falta decidir**.
-- Una cola sin nada pendiente, ni reportes ni retenidos: la story no dice si se muestra un estado especial o simplemente la cola vacía. **Falta decidir**.
-- Hoy hay un solo moderador (Nahuel); si el equipo escalara a un segundo moderador, qué pasa cuando dos abren el mismo reporte a la vez no está resuelto en ninguna story de la épica. **Falta decidir**.
+- Cómo se calcula exactamente "cuánto se tarda", y si usa el mismo cálculo que Pedidos (US-200 de [Sostener el catálogo](../../../sustain-the-catalog/README.md)), no está decidido (README de la épica). **Falta decidir**.
+- Una cola sin nada pendiente, ni campo libre filtrado ni reclamos: la story no dice si se muestra un estado especial o simplemente la cola vacía. **Falta decidir**.
+- Hoy hay un solo moderador (Nahuel); si el equipo escalara a un segundo moderador, qué pasa cuando dos abren el mismo caso a la vez no está resuelto en ninguna story de la épica. **Falta decidir**.

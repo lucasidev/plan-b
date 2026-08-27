@@ -5,7 +5,7 @@
 ## Camino feliz
 
 **E1.** Dado que es la primera vez que la cuenta de Lucía reseña una materia de Ingeniería en Sistemas.
-Cuando llega al paso 2 (¿Cuándo la cursaste?), contesta que entró en 2023, y más tarde reseña una segunda materia de la misma carrera.
+Cuando llega al paso 2 (Cuándo y con quién), contesta que entró en 2023, y más tarde reseña una segunda materia de la misma carrera.
 Entonces la primera vez el paso 2 le preguntó el año de ingreso; la segunda vez no se lo vuelve a preguntar, porque ya está contestado.
 
 ## Negativos

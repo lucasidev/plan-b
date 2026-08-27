@@ -6,23 +6,23 @@
 
 **E1.** Dado que la Ficha de cátedra Pérez se reprocesó por última vez el 19 de agosto de 2026
 Cuando alguien la lee ese mismo día
-Entonces ve, en el pie de la ficha, "esta lista se reprocesa" junto con la fecha exacta con la que se está leyendo ("leída el 19/8/2026"), no una fecha de cuándo se reseñó.
+Entonces ve, en el pie de la ficha, "este catálogo se reprocesa" junto con la fecha exacta con la que se está leyendo ("leída el 19/8/2026"), no una fecha de cuándo se reseñó.
 
-**E2.** Dado que "Toman lo que no dieron" es una frase destilada de comentarios, aprobada por quien cura las frases con sujeto materia y eje gestión
-Cuando se muestra en la lista de frases de gestión de una ficha
-Entonces aparece marcada como "síntesis" al lado de su proporción, distinta de una frase semilla como "Hay clases que no se dan" (F18), que no lleva esa marca.
+**E2.** Dado que "Toman lo que no dieron" es un ítem destilado del campo libre, aprobado por quien cura el catálogo, en la capa de conducta observable
+Cuando se muestra en el bloque de conducta observable de una ficha
+Entonces aparece marcado como "síntesis" al lado de su moda y su distribución, distinto de un ítem semilla como "¿Se dictaron las clases?", que no lleva esa marca.
 
 **E3.** Dado que "Toman lo que no dieron" tiene, en un período dado, sus propias voces sobre el total de esa cursada
 Cuando Rocío descarga el CSV
-Entonces la fila de esa frase lleva la misma marca de destilada que se ve en la ficha.
+Entonces la fila de ese ítem lleva la misma marca de destilado que se ve en la ficha.
 
 ## Negativos
 
-**N1.** Dado que "Toman lo que no dieron" todavía está en la cola de curaduría de Frases, sin sujeto ni eje asignado
+**N1.** Dado que "Toman lo que no dieron" todavía está en la cola de curaduría de Frases, sin capa asignada
 Cuando alguien reseña la Cátedra Pérez
-Entonces esa frase no se ofrece para marcar y no aparece en ninguna ficha ni en el CSV: recién se ofrece, marcada como destilada, después de que quien cura las frases la apruebe con sujeto y eje (US-199).
+Entonces ese ítem no se ofrece para responder y no aparece en ninguna ficha ni en el CSV: recién se ofrece, marcado como destilado, después de que quien cura el catálogo lo apruebe con su capa (US-199).
 
 ## Edge cases
 
-- El comentario retirado de Matías (2023, segundo cuatrimestre) sigue alimentando el pipeline de destilación aunque nadie pueda leerlo en ninguna ficha (ADR-0068, punto 7).
-- Quien cura las frases corrige el eje de "Hay clases que no se dan" (F18): la corrección reprocesa todas las fichas que usan F18, y Método declara el cambio con autor y fecha (US-198). **Falta decidir**: cómo se versiona el catálogo para que una cita puntual de Rocío sea exactamente reproducible más allá de declarar la fecha de lectura.
+- El campo libre de Matías (2023, segundo cuatrimestre) sigue alimentando el pipeline de destilación aunque nadie pueda leerlo nunca en ninguna ficha (ADR-0084).
+- Quien cura el catálogo corrige la capa de "¿Se dictaron las clases?": la corrección reprocesa todas las fichas que usan ese ítem, y Método declara el cambio con autor y fecha (US-198). **Falta decidir**: cómo se versiona el catálogo para que una cita puntual de Rocío sea exactamente reproducible más allá de declarar la fecha de lectura.

@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Poder sacar lo que aportaste, y poder reportar lo que otro publicó sobre vos, sin hacerte cuenta en el sitio que te difama. Editar o borrar un aporte desde Mis aportes, con el comentario editado volviendo a pasar el chequeo previo antes de republicarse; dar de baja la cuenta, que anonimiza la identidad y preserva lo que dejaste aportado (hechos de trayectoria incluidos, exactos): lo que querés sacar lo borrás antes, de a uno, y lo que queda publicado sigue siendo corpus; y reportar algo publicado con el mail y nada más, confirmado por link, resuelto por una persona. A diferencia de O6, esta no es una garantía: se construye. Las pantallas Editar y Baja todavía no existen, y sin ellas reseñar algo incómodo es irreversible.
+Poder sacar lo que aportaste, y poder reportar lo que otro publicó sobre vos, sin hacerte cuenta en el sitio que te difama. Editar o borrar un aporte desde Mis aportes: la reseña entera, o una respuesta de a una (un ítem de conducta observable o de vivencia), sin testimonios ni réplicas que citar; los conteos de los ítems tocados se recalculan hacia atrás, y la reseña lo dice. El campo libre se edita directo, sin ningún chequeo previo, porque nunca se publica. Dar de baja la cuenta anonimiza la identidad y preserva las reseñas que dejaste (sus conteos y su tasa de finalización, exactos): lo que querés sacar lo borrás antes, de a uno, y lo que queda publicado sigue siendo corpus. Y reportar algo publicado con el mail y nada más, confirmado por link, resuelto por una persona. A diferencia de O6, esta no es una garantía: se construye. Las pantallas Editar y Baja todavía no existen, y sin ellas reseñar algo incómodo es irreversible.
 
 ## Para quién
 
@@ -26,7 +26,7 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 ## Decisiones que aplica
 
-[ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (la baja anonimiza y preserva lo aportado), D10 (los hechos de trayectoria sobreviven exactos y ya anónimos, [registro del 17](../../../history/reviews/2026-08-17-catalog-propagation.md)), [ADR-0068](../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (el comentario editado vuelve al chequeo previo; reportar sin cuenta confirma el mail; nada baja solo por cantidad de reportes; se baja el texto, nunca la voz), [ADR-0067](../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) ("quien quiera sacar algo lo borra antes, de a uno"), D05 (los reportes se agrupan por objetivo y ventana de 72 horas; el mail confirmado deduplica).
+[ADR-0044](../../../decisions/0044-soft-delete-of-the-user-with-corpus-preservation.md) (la baja anonimiza y preserva lo aportado: lo que quieras sacar lo borrás antes, de a uno), [ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (la reseña de tres capas: se edita o borra entera, o una respuesta de a una; el contexto no se publica), [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) (el campo libre se edita sin chequeo previo, porque nunca se publica), el reporte sin cuenta confirmado por mail y que nada baje solo por cantidad de reportes (reglas del producto, hoy sin ADR propio que las fije), D05 (los reportes se agrupan por objetivo y ventana de 72 horas; el mail confirmado deduplica).
 
 ## Pantallas
 
@@ -39,6 +39,5 @@ Las que comparte con otras épicas: [**Mis aportes**](screens/SC-018-my-contribu
 
 ## Lo que esta épica todavía no resuelve
 
-- **Qué pasa con una réplica ya publicada si el autor borra el testimonio después del plazo**: ADR-0068 solo cubre el plazo de aviso, no lo que pasa después.
 - **Cuánto tiempo se guarda un aporte a medias** antes de descartarlo (US-161).
-- **Si Editar permite cambiar el período o la materia de una reseña publicada**, o solo las frases y el comentario.
+- **Si Editar permite cambiar el período, la cátedra o el modo de cursada de una reseña publicada**, o solo las respuestas a los ítems y el campo libre.

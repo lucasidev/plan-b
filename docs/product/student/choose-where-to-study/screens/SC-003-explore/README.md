@@ -23,11 +23,11 @@
 El vacío en sus tres estados (US-139), ninguno es un cero:
 - **"No la cargamos todavía"**: no existe en el catálogo. Con el link a Pedir al lado.
 - **"Cargada y todavía sin voces"**: existe, nadie reseñó todavía.
-- **"Cargada, todavía no derivamos"**: tiene voces pero no pasó la mitad de las materias canónicas; se ve la cobertura a la vista ("22 de 40 materias con voces").
+- **"Cargada, con cobertura parcial"**: tiene voces, pero todavía mide una parte de sus materias o cátedras; se ve la cobertura real a la vista ("22 de 40 materias con voces"), sin ocultar lo que ya se puede sostener.
 
 ## Lo que no muestra nunca
 
-Ranking, puntaje ni orden por conveniencia (US-171); ninguna institución patrocinada, destacada ni remarcada; ninguna entrada mostrada como un cero cuando en realidad está cargada sin voces o cargada sin cabecera todavía (US-139).
+Ranking, puntaje ni orden por conveniencia (US-171); ninguna institución patrocinada, destacada ni remarcada; ninguna entrada mostrada como un cero cuando en realidad está cargada sin voces o cargada con cobertura parcial (US-139).
 
 ## Adónde va
 
@@ -35,7 +35,7 @@ Llega desde: [Inicio](../SC-004-home/README.md), un link, o vuelve desde [Buscar
 
 ## Decisiones que aplica
 
-[ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los tres estados del vacío salen del gate de cobertura: sin voces, con voces y sin cabecera), [ADR-0064](../../../../../decisions/0064-phrases-with-voices-not-scores.md) (lo mínimo honesto es voces y cobertura, nunca un puntaje). Las garantías de [Que no me molesten](../../../../guarantees/README.md) que se verifican acá: sin cuenta (US-168), sin orden por conveniencia (US-171).
+[ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (los tres estados del vacío: sin voces, con voces y con cobertura parcial siempre a la vista, nunca oculta detrás de un umbral), [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) (lo mínimo honesto es voces y cobertura, nunca un puntaje). Las garantías de [Que no me molesten](../../../../guarantees/README.md) que se verifican acá: sin cuenta (US-168), sin orden por conveniencia (US-171).
 
 ## Lo que esta ficha deja abierto
 

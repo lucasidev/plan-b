@@ -13,4 +13,4 @@ Como quien está cursando, quiero reseñar una materia sola, porque no llego con
 
 ## Dónde se resuelve
 
-- [Reseñar](../../screens/SC-015-write-review/README.md): el paso 1 arranca eligiendo una sola materia, sin checklist del período entero.
+- [Reseñar](../../screens/SC-015-write-review/README.md): el paso 1 (Qué cursaste) arranca eligiendo una sola materia, sin checklist del período entero.

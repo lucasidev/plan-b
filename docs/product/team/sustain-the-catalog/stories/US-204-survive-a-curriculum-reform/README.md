@@ -5,7 +5,7 @@
 
 ## Historia
 
-Como quien carga el catálogo, quiero saber qué pasa con lo reseñado cuando la facultad reforma el plan, porque la gente cursó el plan viejo y lo que marcó no deja de ser cierto.
+Como quien carga el catálogo, quiero saber qué pasa con lo reseñado cuando la facultad reforma el plan, porque la gente cursó el plan viejo y lo que respondió no deja de ser cierto.
 
 ## Listo cuando
 

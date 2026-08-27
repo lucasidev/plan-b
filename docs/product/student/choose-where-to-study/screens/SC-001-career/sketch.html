@@ -3,96 +3,85 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto hi-fi: Ficha de carrera, dirección por temas (Boletín)</title>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Ficha de carrera (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
-  .note { max-width: 680px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
-  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
-</style>
+  .note { max-width: 452px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; line-height: 1.6; }
+
+    body { margin: 0; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+    .serif { font-family: 'Newsreader', Georgia, serif; }
+    .mono { font-family: 'IBM Plex Mono', Consolas, monospace; }
+    .lbl { font-size: 12px; color: #7b8089; margin: 0 0 8px; }
+    .card { background: #fffefb; border: 1px solid #e2dfd6; border-radius: 12px; padding: 16px; }
+    .stat-l { font-size: 12px; color: #494e57; margin: 0; }
+    .stat-v { font-size: 21px; font-weight: 500; margin: 2px 0 0; font-family: 'Newsreader', Georgia, serif; }
+  </style>
 </head>
 <body>
-<p class="note">Boceto de dirección por temas (2026-08-24): la ficha muestra <strong>inteligencia sobre lo recolectado</strong> (prevalencia, retrato, serie y lo propio de su sujeto), nunca la lista de lo que respondieron. Fórmulas: <code>ADR-0075</code> (Wilson z = 1,96, una voz por cursada), <code>ADR-0078</code> (prevalencia y retrato), <code>ADR-0080</code> (sin piso, rupturas), <code>ADR-0066</code> (derivadas con cobertura), <code>ADR-0067</code> (trayectoria). En la prevalencia cada dirección lleva su propia barra, y la leyenda de columnas va una vez (copy provisional). Generado por script sobre un corpus de ejemplo: ningún número está puesto a mano.</p>
+<p class="note">Boceto rehecho el 2026-08-25 (<code>ADR-0085</code>): datos oficiales con fuente (dura en el papel vs en la realidad, egreso por cohorte), qué frena la cursada según reseñas (tapones con el grafo de correlativas), nota de curaduría sin nombres (<code>ADR-0084</code>) y cobertura como sección propia. Los números de reseñas salen computados de un corpus de ejemplo (modas, distribuciones y comparaciones con intervalos); los datos oficiales son ejemplo verosímil de la serie SPU/CONEAU. Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>).</p>
+<div style="width: 420px; max-width: 100%; margin: 0 auto; background: #f7f5ef; padding: 16px; box-sizing: border-box; border: 1px solid #e2dfd6; border-radius: 12px">
 
-<div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
-
-  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 32px 16px; border-bottom: 1px solid #e2dfd6">
-    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 17px">plan-b</div>
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7b8089">Ficha de carrera · derivada</div>
-  </div>
-
-  <div style="padding: 20px 32px 44px">
-
-  <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 28px; line-height: 1.12; margin: 0 0 4px">Tecnicatura Universitaria en Desarrollo de Software</p>
-  <p style="font-size: 14px; color: #494e57; margin: 0 0 4px">UNSTA · plan 2023 · 3 años nominales</p>
-  <p style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 22px">Ficha derivada: suma las voces de sus materias (ADR-0066) · 310 voces</p>
-
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La cobertura, primero</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">Cuánto del plan tiene voces. La derivación espera a pasar la mitad; hasta entonces la carrera se lee materia por materia.</p>
-  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 14px">
-    <span style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 24px">14 de 22</span>
-    <span style="font-size: 12.5px; color: #494e57">materias canónicas con voces (64%): la derivación está abierta. Cada dato dice en cuántas materias aparece: lo sistémico y lo local se distinguen con un número.</span>
-  </div>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Lo que se repite en sus materias</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">El retrato derivado: los hechos más sostenidos sumando las cursadas del plan, cada uno con su alcance.</p>
-  <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 4px 18px 6px">
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Hay clases que no se dan"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">en 9 de 14 mat.</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 22%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">22,5% <span style="color: #a7adb5; font-size: 10px">84 de 310</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Es muchísimo contenido"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">en 8 de 14</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 19%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">18,6% <span style="color: #a7adb5; font-size: 10px">71 de 310</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Explican bien"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">en 7 de 14</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 17%; height: 6px; border-radius: 3px; background: #7b8089"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">17,1% <span style="color: #a7adb5; font-size: 10px">66 de 310</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"El final es exigente"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">en 6 de 14</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 15%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">14,8% <span style="color: #a7adb5; font-size: 10px">58 de 310</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #eae7de">
-        <span style="flex: 1; font-family: 'Newsreader', serif; font-style: italic; font-size: 15px">"Nunca te ponen un 10"</span>
-        <span style="flex: 0 0 92px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; text-transform: uppercase">en 3 de 14</span>
-        <span style="display: inline-block; width: 90px; height: 6px; border-radius: 3px; background: #eeece5; vertical-align: middle"><span style="display: block; width: 8%; height: 6px; border-radius: 3px; background: #8d2418"></span></span>
-        <span style="flex: 0 0 110px; text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 12px">8,0% <span style="color: #a7adb5; font-size: 10px">34 de 310</span></span>
-      </div>
-  </div>
-  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">"En 9 de 14 materias" es lo sistémico; "en 3 de 14", lo local de algunas cátedras.</p>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">La trayectoria</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">De hechos declarados, por cohortes cerradas (ADR-0067). El silencio no se infiere: quien no dijo es "no dijo".</p>
-  <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 10px">
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Duración nominal</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">3 años</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">la del plan</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Duración real</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">4,5 años</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">mediana de 41 egresados que dijeron</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">La brecha</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">+1,5 años</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">real contra nominal</p></div>
-  </div>
-  <div style="display: flex; gap: 10px; flex-wrap: wrap">
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Se recibió</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">28,8%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">34 de 89 · cohortes cerradas</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Se fue</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">18,8%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">24 de 89</p></div>
-    <div style="flex: 1; min-width: 130px; background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px"><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #7b8089; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 4px">Sigue o no dijo</p><p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0">25,7%</p><p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 2px 0 0">31 de 89</p></div>
-  </div>
-  <p style="font-size: 11.5px; color: #a7adb5; margin: 8px 0 0">Dónde se cae: 2° año concentra el abandono de cursada. Todo "de quienes reseñaron".</p>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Sus materias</h2>
-  <p style="font-size: 12px; color: #7b8089; margin: 0 0 6px">La carrera se lee materia por materia; estas son las de más voces.</p>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Análisis Matemático II <span style="color: #7b8089; font-size: 12px">2° año</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">96 voces</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Estructuras de Datos <span style="color: #7b8089; font-size: 12px">2° año</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">58 voces</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Programación I <span style="color: #7b8089; font-size: 12px">1° año</span></span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">54 voces</span></div>
-  <h2 style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 26px 0 4px">Estado: la derivación todavía no abre</h2>
-  <div style="background: #fffefb; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 18px; text-align: center">
-    <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 15px; margin: 0 0 4px">Todavía no derivamos esta carrera.</p>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 0">6 de 22 materias tienen voces (27%): menos de la mitad. Hasta entonces, se lee materia por materia; nada se inventa (ADR-0066).</p>
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 4px 2px 14px">
+    <span class="serif" style="font-style: italic; font-weight: 600; font-size: 16px">plan-b</span>
+    <span class="mono" style="font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: #7b8089">Ficha de carrera</span>
   </div>
 
+  <div style="margin-bottom: 18px">
+    <p class="serif" style="font-weight: 600; font-size: 24px; margin: 0 0 2px">Ingeniería en Sistemas</p>
+    <p style="font-size: 13px; color: #494e57; margin: 0">Facultad de Ciencias Exactas · UNT</p>
   </div>
+
+  <p class="lbl">Datos oficiales</p>
+  <div class="card" style="margin-bottom: 6px">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+      <div><p class="stat-l">Dura en el papel</p><p class="stat-v">5 años</p></div>
+      <div><p class="stat-l">Dura en la realidad</p><p class="stat-v">8,4 años</p></div>
+      <div><p class="stat-l">Plan vigente</p><p class="stat-v">2016</p></div>
+      <div><p class="stat-l">Egresan por cohorte</p><p class="stat-v">14 %</p></div>
+    </div>
+  </div>
+  <p class="mono" style="font-size: 10.5px; color: #a7adb5; margin: 0 0 20px 2px">Fuente: Ministerio de Educación (SPU) · serie 2015-2024</p>
+
+  <p class="lbl">Qué frena la cursada · según reseñas</p>
+  <div class="card" style="margin-bottom: 20px; padding-top: 5px; padding-bottom: 5px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">Análisis Matemático II</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">habilita 9 materias · 111 voces</p></div>
+      <span class="mono" style="font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #f5e4e0; color: #6e1c12; white-space: nowrap">2,1 intentos</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">Bases de Datos</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">habilita 6 materias · 90 voces</p></div>
+      <span class="mono" style="font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #eeece5; color: #494e57; white-space: nowrap">1,8 intentos</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0">
+      <div><p style="font-size: 14px; margin: 0">Física II</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">habilita 4 materias · 86 voces</p></div>
+      <span class="mono" style="font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #eeece5; color: #494e57; white-space: nowrap">1,8 intentos</span>
+    </div>
+  </div>
+
+  <p class="lbl">De la curaduría</p>
+  <div class="card" style="margin-bottom: 6px">
+    <p class="serif" style="font-style: italic; font-size: 15px; line-height: 1.5; margin: 0">«En los comentarios de este año se repite que el práctico y el teórico van por caminos distintos en las materias de segundo año.»</p>
+  </div>
+  <p class="mono" style="font-size: 10.5px; color: #a7adb5; margin: 0 0 20px 2px; line-height: 1.6">Nota del equipo, leída de comentarios que no se publican · sin nombres · 08-2026</p>
+
+  <p class="lbl">Cuánto de esta carrera está medido</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px">
+      <span style="font-size: 14px">23 de 51 materias</span>
+      <span class="mono" style="font-size: 12.5px; color: #494e57">45 %</span>
+    </div>
+    <div style="height: 6px; border-radius: 3px; background: #eeece5; overflow: hidden">
+      <div style="width: 45%; height: 100%; background: #191b1f"></div>
+    </div>
+    <p style="font-size: 12px; color: #7b8089; margin: 10px 0 0">Las 28 restantes todavía no juntan las 10 reseñas del piso.</p>
+  </div>
+
+  <div style="display: flex; gap: 8px">
+    <span style="flex: 1; font-size: 13px; padding: 10px; border: 1px solid #e2dfd6; border-radius: 8px; background: #fffefb; text-align: center">Ver las 51 materias</span>
+    <span style="flex: 1; font-size: 13px; padding: 10px; border-radius: 8px; background: #191b1f; color: #fffefb; text-align: center; font-weight: 500">Reseñá tu cursada</span>
+  </div>
+
 </div>
 </body>
 </html>

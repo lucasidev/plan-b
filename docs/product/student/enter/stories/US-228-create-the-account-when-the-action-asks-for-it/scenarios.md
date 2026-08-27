@@ -4,7 +4,7 @@
 
 ## Camino feliz
 
-**E1.** Dado que Matías leyó la Ficha de Cátedra Pérez sin cuenta y quiere votar un testimonio, y llegó a Registro desde ahí.
+**E1.** Dado que Matías leyó la Ficha de Cátedra Pérez sin cuenta y quiere reseñar esa cursada, y llegó a Registro desde ahí.
 Cuando completa mail y contraseña, marca que cursa, y manda el formulario.
 Entonces la cuenta se crea y el consentimiento informado estaba a la vista antes de mandar, en una línea con el link al aviso de privacidad (Ley 25.326).
 

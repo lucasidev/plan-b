@@ -1,47 +1,41 @@
 # Responder (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Replicar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html); revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Con identidad verificada (docente o institucional): sin eso no hay campo de respuesta. Sin slug.
+> Ficha de pantalla, dueña: la épica [Responder](../../README.md). **Estado**: cuerpo reescrito el 2026-08-26 al modelo de [ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) (no existe testimonio ni chequeo previo ni plazo de retención: la respuesta apunta a los números agregados de la ficha y se publica al mandarla). **El [boceto](sketch.html) todavía dibuja el modelo anterior** (responder a un testimonio puntual, con la parte marcada como no citable, un chequeo previo y un plazo de retención antes de publicarse): queda desactualizado hasta su propio rehecho; esta pasada corrige vocabulario y afirmaciones en el texto, no el boceto. Con identidad verificada (docente o institucional): sin eso no hay campo de respuesta. Sin slug.
 
 ## Quién la usa
 
-**Claudia** (da bien su materia; le conviene que se publique y le da miedo que se publique). La institución, cuando responde con identidad verificada (el mecanismo todavía no está definido). **Prof. Paredes** nunca entra acá: su silencio se lee en la Ficha de cátedra, no en esta pantalla. El flujo completo: [`flow.md`](../../flow.md).
+**Claudia** (da bien su materia; le conviene que se publique y le da miedo que se publique). La institución, con identidad verificada sobre un cargo normalizado. **Prof. Paredes** nunca entra acá: su silencio se lee en la Ficha de cátedra, no en esta pantalla. El flujo completo: [`flow.md`](../../flow.md).
 
 ## Qué stories resuelve
 
-US-172 (dueña): la réplica se publica al lado del testimonio, con nombre y rol, solo desde identidad verificada; no baja el testimonio ni mueve conteos. US-178 (sin verificar primero, no hay Responder). US-179 (el chequeo previo, el plazo, y lo que el autor puede hacer mientras tanto). US-176 (por qué existe esta pantalla: si nadie la usa, la ficha declara el estado del canal, nunca "no quiso responder"). US-210 (sin identidad verificada, el aviso deriva a Verificar en vez de abrir el campo de respuesta). US-209 (si la respuesta habla de alguien fuera de su acto, queda retenida en Reportes hasta que alguien la mire). La letra completa: [README de la épica](../../README.md#stories).
+US-172 (dueña): la respuesta se publica al mandarla, con nombre y rol (o cargo), solo desde identidad verificada; no mueve ningún conteo. US-178 (sin verificar primero, no hay Responder). US-176 (por qué existe esta pantalla incluso cuando nadie la usa: si nadie respondió, la ficha declara el estado del canal, nunca "no quiso responder"). [US-227](../../stories/US-227-claim-an-institutional-position-to-reply/README.md) (sin cargo verificado no hay campo de respuesta, y la respuesta se firma con nombre y cargo). US-210 (de [Moderar sin romper el producto](../../../../team/moderate-without-breaking-the-product/README.md): sin identidad docente verificada, en vez del campo de respuesta hay un aviso para ir primero a Verificar). La letra completa: [README de la épica](../../README.md#stories).
 
-
-[US-227](../../stories/US-227-claim-an-institutional-position-to-reply/README.md) (sin cargo verificado no hay campo de respuesta, y la réplica se firma con nombre y cargo).
 ## Qué muestra
 
-1. **El testimonio, a la vista**: período, cátedra, el comentario entre comillas, las frases que marcó. La parte que el autor dejó marcada como identificante se ve resaltada, con el aviso de que la respuesta no la puede citar.
-2. **Tu respuesta**: un campo con tope, con el mismo chequeo previo que corre sobre un comentario (US-179, ADR-0068 punto 5): si cita la parte marcada, se avisa antes de mandarla; si habla de una persona fuera de su acto, queda retenida para que alguien la mire.
-3. **El plazo**: al mandarla, la pantalla dice cuándo se publica si nadie hace nada: "se publica el <fecha> si quien lo escribió no lo edita ni lo borra". Nunca dice quién es esa persona.
+1. **Los números a los que se responde**: los conteos ya publicados de la ficha (moda y distribución por ítem, la comparación con las hermanas si la hay), a la vista mientras se escribe. No hay ningún comentario ni testimonio individual que mostrar: no existe ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+2. **Tu respuesta**: un campo con tope. Se publica apenas se manda: no hay chequeo previo ni plazo de retención, porque no hay ningún testimonio que citar ni ningún autor anónimo que proteger.
 
-**Al publicarse**: la respuesta queda al lado del testimonio, con tu nombre, tu rol e "identidad verificada"; no baja el testimonio ni mueve ningún conteo (así se ve en la Ficha de cátedra, no en esta pantalla).
+**Al publicarse**: la respuesta queda en la ficha con tu nombre, tu rol o cargo, "identidad verificada" y la fecha; no mueve ningún conteo (así se ve en la Ficha de cátedra, no en esta pantalla).
 
 ## Estados
 
-- **Identidad no verificada todavía**: en vez del campo de respuesta, un aviso para ir primero a Verificar (US-210, US-178); sin eso no hay Responder.
-- **Retenida por el chequeo**: la respuesta habla de alguien fuera de su acto; queda en la cola de Reportes hasta que alguien la mire (US-209), y se dice acá.
-- **El autor borró el testimonio**: la respuesta que ibas a mandar, o ya mandaste, no se publica: ya no hay a qué responder.
-- **Publicada**: se ve cómo queda, igual que en la Ficha de cátedra.
+- **Identidad no verificada todavía**: en vez del campo de respuesta, un aviso para ir primero a Verificar (US-178, US-227); sin eso no hay Responder.
+- **Publicada**: se ve cómo queda, igual que en la ficha correspondiente.
 
 ## Lo que no muestra nunca
 
-Quién escribió el testimonio, en ningún estado; un botón para bajar el testimonio o para que la réplica cuente como voto; fecha u hora de cuándo se aportó el testimonio (lo mismo que el resumen al docente tampoco dice, ADR-0068).
+Ningún testimonio ni comentario individual al que responder, en ningún estado: no existe ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)); un botón para bajar o mover ningún conteo, ni para que la respuesta cuente como voto; fecha u hora de cuándo se cargó cada reseña.
 
 ## Adónde va
 
-Llega desde el resumen periódico de [Avisos](../../../../notices/README.md) o desde la Ficha de cátedra. Si la identidad no está verificada, deriva a Verificar. Publicada, vuelve a la Ficha de cátedra, al lado del testimonio.
+Llega desde la Ficha de cátedra o de institución (o desde un aviso, cuyo disparador exacto es un hueco declarado en el README de la épica). Si la identidad no está verificada, deriva a Verificar. Publicada, vuelve a la ficha correspondiente.
 
 ## Decisiones que aplica
 
-[ADR-0068](../../../../../decisions/0068-comment-publishes-as-testimony-below-the-phrases.md) (punto 5: la réplica pasa el mismo chequeo, no cita lo marcado, retenida el plazo desde el aviso, solo identidad verificada, queda al lado sin bajar ni mover conteos), D06 ([registro del 17](../../../../../history/reviews/2026-08-17-catalog-propagation.md): el estado del canal, nunca "no quiso responder").
+[ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) (el texto libre no se publica nunca: no hay testimonio al que responder, ni chequeo previo, ni plazo), D06 ([registro del 17](../../../../../history/reviews/2026-08-17-catalog-propagation.md): el estado del canal, nunca "no quiso responder").
 
 ## Lo que esta ficha deja abierto
 
-- **Cuánto dura el plazo**: US-179 dice "un plazo desde el aviso"; el número falta en toda la épica.
-- **Cómo se verifica la identidad institucional**: US-210 solo describe la cola del docente contra la cátedra.
-- **Qué resuelve "pedir revisión"** cuando el autor lo elige en el plazo: el flujo lo deja sin escribir.
-- **Qué pasa con la réplica ya publicada si el testimonio se borra después** del plazo.
+- **El layout completo de esta pantalla**: el boceto vigente todavía dibuja el modelo anterior (pasos con testimonio, chequeo y plazo); esta ficha corrige vocabulario y afirmaciones en el texto, no el boceto, que espera su propio rehecho.
+- **Si hay un tope de longitud para la respuesta.**
+- **Qué evento dispara el aviso que deja la fecha en "avisada el [fecha]"**: hueco declarado en el README de la épica.

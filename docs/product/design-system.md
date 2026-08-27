@@ -2,12 +2,12 @@
 
 Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y su mapping al frontend. **El contrato es la dirección Boletín** ([ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md), 2026-08-19): papel frío, la evidencia primero, un solo color de alarma.
 
-> **Transición, explícita**: `frontend/src/app/globals.css` todavía sirve la paleta anterior (Apricot Soft, [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md)) al chasis en retiro, y los bocetos mid-fi anteriores al ADR quedaron con ella (son estructura, no contrato). Los tokens de este doc aterrizan en `globals.css` con el primer slice del producto nuevo; el hi-fi de las pantallas clave ya los aplica.
+> **Transición, explícita**: `frontend/src/app/globals.css` todavía sirve la paleta anterior (Apricot Soft, [ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md)) al chasis en retiro, y los bocetos mid-fi anteriores al ADR quedaron con ella (son estructura, no contrato). Los tokens de este doc aterrizan en `globals.css` con el primer slice del producto nuevo; el hi-fi de las pantallas clave ya los aplica.
 
 ## Los dos invariantes que la paleta carga
 
-1. **Gestión = alarma, exigencia = información** ([ADR-0065](../decisions/0065-attribution-is-the-axis-not-a-split.md)): el rojo oxidado es SOLO para "alguien fallando". La exigencia y todo lo demás van en tinta neutra. No hay acento decorativo: si algo está en rojo, está alarmando.
-2. **Toda proporción publicada viaja con sus voces y su encogimiento** ([ADR-0064](../decisions/0064-phrases-with-voices-not-scores.md)): el estilo nunca muestra un número pelado.
+1. **El rojo es solo la opción negativa publicada** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): en una distribución, el segmento de la opción negativa; en un badge de moda, solo cuando la moda ES la opción negativa. Nada más se pinta: no hay semáforos, no hay umbrales editoriales, y la recolección (Reseñar) va sin rojo: la alarma es lectura, no captura.
+2. **Todo conteo publicado viaja con sus voces** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): el estilo nunca muestra un número pelado, y la síntesis de un ítem es su moda literal con la distribución al lado, jamás un promedio.
 
 ## Paleta
 
@@ -35,15 +35,15 @@ Los estados del dominio (`--color-st-*`: aprobada, regular, cursando, desaprobad
 |---|---|---|---|
 | Títulos y números publicados | **Newsreader** (serif) | H1-H3 de fichas, las proporciones de cabecera, los números grandes | El dato con la voz del informe. Nunca por debajo de ~18px. |
 | Cuerpo y UI | **Geist** | Todo lo demás: párrafos, botones, forms, listas | En celular y cuerpos chicos manda Geist, siempre. |
-| Etiquetas y metadatos | **IBM Plex Mono** | Eyebrows, "k de N voces · encogido X%", períodos, chips de sistema | Uppercase con tracking solo en eyebrows. |
-| Citas (testimonios) | Newsreader itálica | El comentario entre comillas | Reemplaza a Instrument Serif. |
+| Etiquetas y metadatos | **IBM Plex Mono** | Eyebrows, "34 de 42 voces · 2023 a 2026", períodos, fuentes de datos oficiales, chips de sistema | Uppercase con tracking solo en eyebrows. |
+| Citas (notas de curaduría) | Newsreader itálica | La nota editorial entre comillas, con su procedencia en mono | Reemplaza a Instrument Serif. |
 
 ## Forma
 
 - **Radios**: 4px (chico), 6px (base), 10px (tarjetas grandes), 999px (chips y píldoras).
 - **Bordes**: 1px `--color-line`; la alarma bordea con `#e6c3bc`.
 - **Sombras**: mínimas (`0 1px 2px rgb(25 27 31 / 6%)` en tarjetas, y solo si el fondo no alcanza). La jerarquía la hacen el tipo y el espacio, no la elevación.
-- **Barras de proporción**: alto 6-8px, track `--color-bg-elev`, fill alarma (gestión) o `--color-ink-3` (exigencia); el ancho es el encogido, nunca el crudo.
+- **Barras de distribución**: alto 6-8px, segmentos por opción separados por 1px; la opción negativa en alarma, las intermedias en `--color-ink-3`/`--color-ink-4`, la positiva en el gris más claro. El ancho de cada segmento es su conteo crudo (suman 100 entre quienes respondieron).
 
 ## Mapping al frontend (cuando aterrice)
 

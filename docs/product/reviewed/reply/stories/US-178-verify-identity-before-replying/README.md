@@ -1,15 +1,15 @@
 # US-178: Verificar identidad antes de responder
 
-**Épica**: [Replicar](../../README.md)
+**Épica**: [Responder](../../README.md)
 **Del mapa**: O7-8
 
 ## Historia
 
-Como el docente, quiero probar que soy yo antes de responder, porque si cualquiera firma con mi nombre, mi réplica no vale nada.
+Como el docente, quiero probar que soy yo antes de responder, porque si cualquiera firma con mi nombre, mi respuesta no vale nada.
 
 ## Listo cuando
 
-- La réplica no se publica sin identidad docente o institucional verificada contra el catálogo; esa verificación vive en una cola separada de la de constancias de alumno, y para el docente verificar es permiso, no señal.
+- La respuesta no se publica sin identidad docente verificada contra el catálogo; esa verificación vive en una cola separada de la de constancias de alumno, y para el docente verificar es permiso, no señal.
 
 ## Dónde se resuelve
 

@@ -9,10 +9,10 @@ Como quien está eligiendo, quiero ver cómo calculan cada número, para poder d
 
 ## Listo cuando
 
-- Método publica la fórmula del encogimiento (el límite inferior de Wilson, tal cual) y cómo se suman las voces y se derivan las fichas.
-- Publica el catálogo de frases entero, con el sujeto y el eje de cada una.
-- Publica los sesgos declarados: de quienes reseñaron; la duración real, de los que se recibieron; la co-cursada, de quien reseñó las dos.
+- Método publica cómo se arma cada conteo: la moda (la opción literal más votada), la distribución completa por opción, y cuándo se publica una comparación entre cátedras hermanas (intervalos de Wilson, publicados solo si no se tocan).
+- Publica el catálogo de ítems entero, con sus opciones y la capa a la que pertenece cada uno (qué hizo la cátedra / qué te pasó a vos).
+- Publica las reglas declaradas: el piso de 10 reseñas por cátedra, cómo se arma la cobertura, y los sesgos (todo dato de reseñas es de quienes reseñaron; los datos oficiales citan su fuente y su período).
 
 ## Dónde se resuelve
 
-- [Método](../../../take-the-data/screens/SC-021-method/README.md): la fórmula del encogimiento, cómo se derivan las fichas sumando voces, el catálogo de frases entero y los sesgos declarados se publican acá.
+- [Método](../../../take-the-data/screens/SC-021-method/README.md): la moda, la distribución, la regla de comparación entre hermanas, el catálogo de ítems entero, el piso, la cobertura y los sesgos declarados se publican acá.

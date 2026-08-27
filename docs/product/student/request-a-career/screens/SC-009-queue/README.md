@@ -29,7 +29,7 @@ A la ficha de la carrera ya cargada; a [Pedir](../SC-010-request/README.md) si t
 
 ## Decisiones que aplica
 
-[ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (nunca un cero: la cola explica el vacío en vez de mostrarlo vacío), los [tres planos](../../../../map.md#los-tres-planos) del mapa de producto (el pedido es un dato público; cuánta gente reclama dice dónde mirar).
+[ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (nunca un cero: la cola explica el vacío en vez de mostrarlo vacío), los [tres planos](../../../../map.md#los-tres-planos) del mapa de producto (el pedido es un dato público; cuánta gente reclama dice dónde mirar).
 
 ## Lo que esta ficha deja abierto
 

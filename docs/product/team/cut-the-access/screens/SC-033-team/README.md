@@ -16,7 +16,7 @@ US-215 (cada rol ve solo sus colas, ni por acceso directo), US-216 (cada acción
 - **Dar de alta**: mail y un rol para elegir. El propio Admin no aparece como destino de ningún rol operativo.
 - **Cada rol, sus colas**: qué ve cada uno (catálogo entra a Pedidos, Catálogo, Correcciones y Frases; moderación a Reportes; verificación a Verificaciones) y qué no: ninguno llega a la cola de otro, ni por URL directa (US-215).
 - **El registro**: quién hizo qué, con autor y fecha, en las cuatro colas operativas; las referencias que guarda están armadas para que ningún rol, actuando solo, pueda reconstruir un cruce (US-216, US-217).
-- **El registro público**: la primera capa, construible ahora, en agregado y sin contenido (cuántos textos se bajaron, cuántos quedaron retenidos, por categoría). La segunda capa, una persona externa leyendo el registro ya disociado, es una decisión de gobierno y esta pantalla no la resuelve (US-218).
+- **El registro público**: la primera capa, construible ahora, en agregado y sin contenido (cuántas notas editoriales se publicaron y se retiraron, cuántos ítems destilados se aprobaron y se descartaron, y cuántos reclamos de instituciones se resolvieron, por categoría, sin contenido). La segunda capa, una persona externa leyendo el registro ya disociado, es una decisión de gobierno y esta pantalla no la resuelve (US-218).
 
 ## Estados
 

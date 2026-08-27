@@ -11,7 +11,7 @@
 [US-171](../../../../guarantees/README.md#stories) (nada destacado, patrocinado ni ordenado por conveniencia, tampoco en la muestra que elige la landing), [US-168](../../../../guarantees/README.md#stories) (leer, acá y en todo lo público, no pide cuenta).
 
 
-[US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) (la razón de que esta pantalla exista: entender qué es esto viendo una ficha real, con la muestra al azar entre las que pasan el gate de cobertura).
+[US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) (la razón de que esta pantalla exista: entender qué es esto viendo una ficha real, con la muestra al azar entre las que ya pasaron el piso de publicación).
 
 [US-222](../../stories/US-222-browse-what-there-is-to-study/README.md) (desde acá se entra a explorar sin saber qué buscar).
 ## Qué muestra
@@ -20,7 +20,7 @@ Su identidad visual se diseña con criterio propio: lo que sigue es la estructur
 
 1. **Qué es plan-b, en palabras de lector**: lo que los alumnos ya saben porque lo vivieron, hoy disperso en grupos y pasillos, convertido en un dato que aguanta una discusión. Sin vocabulario de producto ni de tesis. Dicho también en tres pasos cortos: explorar o buscar, leer la ficha con sus voces, reseñar si cursaste.
 2. **La entrada a [Explorar](../SC-003-explore/README.md) y [Buscar](../SC-006-search/README.md)**: los dos caminos para llegar a una ficha.
-3. **Una muestra honesta**: una [ficha real](../SC-002-chair/README.md), con sus voces, no un número inventado para la ocasión ("Análisis Matemático II · Cátedra Pérez, UNSTA: 6 de cada 10 marcaron alguien fallando · 41 voces"). Nada de testimonios destacados ni instituciones destacadas (US-171): la muestra es una ficha, no un ranking de lo mejor.
+3. **Una muestra honesta**: una [ficha real](../SC-002-chair/README.md), con sus voces, no un número inventado para la ocasión ("Cátedra Pérez, Análisis Matemático II · UNT: de cada 10 que la cursan, llegan 4 · 42 voces"). Nada de hechos elegidos a mano ni instituciones destacadas (US-171): la muestra es una ficha entera, no un ranking de lo mejor ni de lo peor.
 4. **El método al alcance**: link a [Método](../../../take-the-data/screens/SC-021-method/README.md), para quien quiere saber cómo se calculó eso antes de creerlo.
 5. **Pedir si no está**: link a [Pedir](../../../request-a-career/screens/SC-010-request/README.md), para quien ya intuye que su facultad no va a estar cargada.
 6. **Leer no pide cuenta**: lo dice acá mismo, antes de que alguien tenga que descubrirlo solo (US-168).
@@ -31,7 +31,7 @@ Por decidir: esta pantalla es mayormente estática; no tiene definido acá un es
 
 ## Lo que no muestra nunca
 
-Ninguna institución destacada, patrocinada ni ordenada por conveniencia (US-171); ningún testimonio elegido como destacado nuestro; ningún puntaje ni ranking (ADR-0064); ningún login ni muro antes de leer cualquiera de sus bloques (US-168).
+Ninguna institución destacada, patrocinada ni ordenada por conveniencia (US-171); ningún hecho de la muestra elegido a mano: la ficha sale sorteada entera, no un fragmento curado; ningún puntaje ni ranking (ADR-0083); ningún login ni muro antes de leer cualquiera de sus bloques (US-168).
 
 ## Adónde va
 
@@ -39,9 +39,9 @@ Es la puerta de entrada: no llega desde ninguna otra pantalla del producto, sino
 
 ## Decisiones que aplica
 
-[ADR-0063](../../../../../decisions/0063-the-product-is-a-pressure-instrument.md) (qué es plan-b: ni ranking ni buscador de carreras, sin acuerdos con instituciones), [ADR-0064](../../../../../decisions/0064-phrases-with-voices-not-scores.md) (la muestra es una ficha con frases y voces, nunca un puntaje). Las garantías de [Que no me molesten](../../../../guarantees/README.md) que se verifican acá: no pide cuenta para leer (US-168), nada destacado ni patrocinado (US-171).
+[ADR-0063](../../../../../decisions/0063-the-product-is-a-pressure-instrument.md) (qué es plan-b: ni ranking ni buscador de carreras, sin acuerdos con instituciones), [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) (la muestra es una ficha con conteos y voces, nunca un puntaje). Las garantías de [Que no me molesten](../../../../guarantees/README.md) que se verifican acá: no pide cuenta para leer (US-168), nada destacado ni patrocinado (US-171).
 
 ## Lo que esta ficha deja abierto
 
 - **La identidad visual de la landing** (tipografía, tono): distinta de la del producto, todavía no se dibujó; el mid-fi de acá es solo la estructura de bloques.
-- **Cuántas fichas entran en el sorteo y cada cuánto rota**: [US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) ya cierra el criterio (al azar entre las que pasan el gate de cobertura, nunca por el valor del número), pero no dice si el sorteo es por visita, por día, ni si se excluye la que el visitante ya vio.
+- **Cuántas fichas entran en el sorteo y cada cuánto rota**: [US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) ya cierra el criterio (al azar entre las que ya pasaron el piso de publicación, nunca por el valor del número), pero no dice si el sorteo es por visita, por día, ni si se excluye la que el visitante ya vio.

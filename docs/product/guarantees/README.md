@@ -29,7 +29,7 @@ Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y
 
 ## Decisiones que aplica
 
-[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0067](../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (el reenganche por mail una vez al año, una sola pregunta; entré se pregunta una sola vez), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento).
+[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
 
 ## Pantallas
 
@@ -39,15 +39,15 @@ Esta épica no tiene pantallas propias: es la garantía que se verifica en cada 
 
 Cada [ficha de pantalla](README.md) nueva responde estas cuatro preguntas antes de darse por revisada, y la respuesta queda escrita en su propia ficha y en el checklist del [Definition of Done](../../plan/definition-of-done.md):
 
-- **¿Esta pantalla exige cuenta para leer?** Tiene que ser no, salvo que sea una acción (votar, corregir, reseñar, responder) y nunca una lectura (US-168).
+- **¿Esta pantalla exige cuenta para leer?** Tiene que ser no, salvo que sea una acción (corregir, reseñar, responder) y nunca una lectura (US-168).
 - **¿Le vuelve a preguntar algo que la cuenta ya declaró?** Tiene que ser no; lo único que puede reaparecer es el hecho que nunca contestó, y una sola vez al año, por mail (US-169).
 - **¿Deja de funcionar si no hay plan marcado?** Tiene que ser no, salvo la pantalla que necesita saber qué cursás (US-170).
 - **¿Destaca, patrocina u ordena algo por conveniencia?** Tiene que ser no, en ningún listado (US-171).
 - **¿Reportar lo que esta pantalla publica exige cuenta?** Tiene que ser no: donde algo está publicado, se puede reportar sin registrarse (US-167).
 
-La [Ficha de cátedra](../student/choose-where-to-study/screens/SC-002-chair/README.md) ya las responde: se lee sin cuenta, no repite ninguna pregunta, no depende de ningún plan marcado y ordena por votos, nunca por conveniencia. Las fichas escritas el 2026-08-19 tienen esta verificación pendiente: es parte de su revisión adversarial.
+La [Ficha de cátedra](../student/choose-where-to-study/screens/SC-002-chair/README.md) ya las responde: se lee sin cuenta, no repite ninguna pregunta, no depende de ningún plan marcado y ordena por voces, nunca por conveniencia. Las fichas escritas el 2026-08-19 tienen esta verificación pendiente: es parte de su revisión adversarial.
 
 ## Lo que esta épica todavía no resuelve
 
 - **Cómo se audita US-171 en Explorar** cuando haya que elegir un orden de verdad (alfabético, por voces, por cobertura): cualquiera que no sea neutro puede leerse como conveniencia.
-- **Si una pantalla de lectura puede tener una acción con cuenta adentro** (votar, corregir) sin violar US-168: hoy la respuesta es sí, porque el gate está en la acción y no en la pantalla, pero el límite exacto entre "pantalla de lectura con una acción" y "pantalla que pide cuenta" no está escrito.
+- **Si una pantalla de lectura puede tener una acción con cuenta adentro** (corregir, reseñar) sin violar US-168: hoy la respuesta es sí, porque el gate está en la acción y no en la pantalla, pero el límite exacto entre "pantalla de lectura con una acción" y "pantalla que pide cuenta" no está escrito.

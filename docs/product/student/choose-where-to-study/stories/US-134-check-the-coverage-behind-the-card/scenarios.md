@@ -4,26 +4,26 @@
 
 ## Camino feliz
 
-**E1.** Dado que Ingeniería en Sistemas en UNSTA tiene 22 de 40 materias canónicas con al menos una voz
+**E1.** Dado que Ingeniería en Sistemas en UNT tiene 23 de 51 materias canónicas con al menos una cátedra que pasó el piso de 10 reseñas
 Cuando se muestra su Ficha de carrera
-Entonces la cobertura se lee como "22 de 40 materias con voces" al lado de la cabecera derivada, porque 22 es más de la mitad de 40 y la cabecera se publica.
+Entonces la cobertura se lee como "23 de 51 materias" con su 45 %, y el texto dice que las 28 restantes todavía no juntan las 10 reseñas del piso.
 
-**E2.** Dado que "Hay clases que no se dan" aparece marcada en cursadas de 12 materias distintas del plan de Ingeniería en Sistemas en UNSTA, sobre un total de 850 voces de toda la carrera (ADR-0066)
-Cuando se muestra esa frase en la lista derivada de la carrera
-Entonces dice "en 12 materias", además de sus voces y su proporción.
+**E2.** Dado que "Análisis Matemático II" tiene 111 voces sumando sus tres cátedras que pasaron el piso
+Cuando se muestra en "qué frena la cursada"
+Entonces aparece con esas 111 voces y sus 2,1 intentos promedio, sin importar que la carrera entera tenga solo 45 % de cobertura.
 
-**E3.** Dado que Contador Público en una institución nueva tiene solo 15 de 40 materias canónicas con voces (menos de la mitad)
+**E3.** Dado que Contador Público en una institución recién cargada tiene solo un puñado de sus materias canónicas con al menos una cátedra que pasó el piso
 Cuando se arma su Ficha de carrera
-Entonces la cabecera con las dos proporciones no se publica: en su lugar dice "todavía no derivamos", muestra "15 de 40 materias con voces" y deja entrar materia por materia.
+Entonces la cobertura se muestra igual, honesta y baja (el número real de materias medidas sobre el total del plan), y "qué frena la cursada" lista lo poco que ya se puede sostener con esas pocas, sin ocultar la sección ni esperar a un umbral más alto.
 
 ## Negativos
 
-**N1.** Dado una carrera con apenas 3 de 40 materias con voces
+**N1.** Dado una carrera con apenas 1 de 51 materias con una cátedra que pasó el piso
 Cuando se arma su ficha
-Entonces nunca se muestra una cabecera derivada con esas 3 materias, ni un 0% en ningún lado: el gate lo impide siempre, sin excepción por lo alto o lo bajo que sea el número que esas 3 materias darían.
+Entonces esa única materia igual aparece si frena la cursada, y la cobertura muestra "1 de 51 materias" tal cual: ningún umbral oculta la sección por ser un número bajo.
 
 ## Edge cases
 
-- Ingeniería Industrial en UNSTA con exactamente 20 de 40 materias con voces (la mitad justa): no pasa el gate, porque el criterio es "más de la mitad", no "la mitad o más".
 - Un plan reformado que coexiste con el plan viejo: el denominador de cobertura es uno solo, la unión de materias canónicas de los dos planes (D04), no dos coberturas separadas.
-- La materia electiva Legislación Profesional, con 10 voces propias, publica sus propias frases igual (por ejemplo, F03 "Es muchísimo contenido" en 3 de 10, 10,8% encogido, ADR-0075), sin que esa materia sola alcance para mover el gate de cobertura de la carrera: cobertura cuenta materias con al menos una voz, no cuánta voz tiene cada una.
+- Una materia con una sola cátedra que junta exactamente 10 reseñas: ya cuenta como medida ("entra en el 23 de 51"), aunque su margen sobre el piso sea el mínimo.
+- Una materia con dos cátedras, una que pasó el piso (12 reseñas) y otra que no (4 reseñas): la materia cuenta como medida por la que sí pasó, y las 4 reseñas de la otra no aportan a ningún número todavía (US-138).

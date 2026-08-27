@@ -15,6 +15,7 @@ Como quien lee, quiero buscar por materia, carrera o docente, porque lo que me r
 
 - [Buscar](../../screens/SC-006-search/README.md): la pantalla entera. Una sola búsqueda devuelve los cuatro sujetos con ficha.
 - [Ficha de cátedra](../../screens/SC-002-chair/README.md): el destino cuando lo buscado es un docente, porque un docente no es una ficha, la cátedra sí.
+- [Ficha de materia](../../screens/SC-007-subject/README.md): el destino cuando lo buscado es una materia.
 
 ## Notas
 

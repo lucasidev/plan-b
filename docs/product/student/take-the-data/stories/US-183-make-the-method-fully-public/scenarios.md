@@ -4,32 +4,32 @@
 
 ## Camino feliz
 
-**E1.** Dado que en una cátedra recién cargada 4 personas de 4 marcaron "Es dura de verdad" (F01, sujeto materia, eje exigencia) en su única cursada reseñada
+**E1.** Dado que en la Cátedra Pérez, con 40 voces, 24 respondieron "Casi nunca" en "¿Salías de la clase entendiendo el tema?" (ítem I09, capa vivencia)
 Cuando Valentina entra a Método antes de citar ese número
-Entonces encuentra el límite inferior del intervalo de Wilson escrito tal cual, con sus tres variables (p, n, z = 1,96), y puede recalcular que lo publicado es 51,0%, no 100%.
+Entonces encuentra el badge de moda tal cual se publica ("Casi nunca · 60 %"): un conteo directo sobre quienes respondieron, sin ninguna fórmula de ajuste, porque el piso de 10 reseñas ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)) ya filtró las muestras chicas.
 
-**E2.** Dado que el catálogo tiene 46 frases semilla, cada una con su sujeto y su eje (por ejemplo, F01 "Es dura de verdad": materia, exigencia; F27 "Hubo acoso": cátedra, gestión, sin categoría aparte ni canal privado)
+**E2.** Dado que el catálogo tiene ítems semilla agrupados en tres capas (contexto, qué hizo la cátedra, qué te pasó a vos), cada uno con su código estable y sus opciones (por ejemplo, I01 "¿Contestaba las preguntas en clase?": Siempre · A veces · Casi nunca · Nadie preguntaba)
 Cuando Rocío entra a Método
-Entonces ve el catálogo entero, cada frase con su sujeto y su eje a la vista, incluida F27 al lado de cualquier otra.
+Entonces ve el catálogo entero, cada ítem con su capa y sus opciones a la vista, incluida la capa de vivencia al lado de la de conducta observable.
 
-**E3.** Dado que en el período 2024, primer cuatrimestre de la Cátedra Pérez, 40 personas reseñaron o votaron esa cursada: 12 marcaron "Hay clases que no se dan" (F18) y otras marcaron "Las clases se dan" (F17, su sentido opuesto)
-Cuando Método explica cómo se calcula cada proporción
-Entonces declara que F18 (12 de 40, 18,1%) y F17 comparten el mismo denominador (las 40 voces de esa cursada en ese período, marcaran o no cada frase), que sus proporciones no tienen por qué sumar 100% y que nunca se restan entre sí; y las dos viajan con sus voces y su período al lado.
+**E3.** Dado que en el período 2024, primer cuatrimestre de la Cátedra Pérez, 40 personas respondieron "¿Se dictaron las clases?": 24 "Casi todas", 12 "Faltaron algunas" y 4 "Faltaron muchas"
+Cuando Método explica cómo se calcula cada distribución
+Entonces declara que las tres opciones comparten el mismo denominador (las 40 voces que respondieron ese ítem en esa cursada y período) y que sus conteos suman el total de quienes respondieron, nunca a un juicio aparte; y las tres viajan con sus voces y su período al lado.
 
-**E4.** Dado que "Es dura de verdad" (F01, materia, exigencia) tiene, sumando todos los períodos y las dos cátedras de Análisis Matemático II (Pérez y Gómez) en UNSTA, 37 voces de 100
-Cuando se compara ese dato con el de F01 dentro de una sola cátedra y un solo período
-Entonces cada uno muestra su propio n y su propio período (37 de 100, encogido a 28,2%, para toda la materia; un número distinto para un solo período de una sola cátedra): son denominadores de niveles distintos, y ninguno se confunde con el otro.
+**E4.** Dado que "¿Salías de la clase entendiendo el tema?" (I09), sumando todos los períodos y las dos cátedras de Análisis Matemático II (Pérez y Gómez) en UNSTA, tiene 60 voces con "Casi nunca" de 100 que respondieron
+Cuando se compara ese dato con el mismo ítem dentro de una sola cátedra y un solo período
+Entonces cada uno muestra su propio n y su propio período (60 de 100 para toda la materia; un número distinto para un solo período de una sola cátedra): son denominadores de niveles distintos, y ninguno se confunde con el otro.
 
 ## Negativos
 
-**N1.** Dado que ADR-0064 mencionaba "el promedio bayesiano con prior hacia 0,5" como equivalente
-Cuando alguien busca esa fórmula alternativa en Método
-Entonces no la encuentra publicada: ADR-0075 cerró que se publica una sola fórmula, el límite inferior de Wilson con z = 1,96, no dos conviviendo.
+**N1.** Dado que alguien busca una fórmula de ajuste (encogimiento, promedio bayesiano) aplicada a la moda o a la distribución que se publica en una ficha
+Cuando la busca en Método
+Entonces no la encuentra: lo publicado es el conteo directo de quienes respondieron, sin ajuste; el intervalo de Wilson solo corre puertas adentro, para decidir si el contraste entre cátedras hermanas se publica (ADR-0083).
 
-**N2.** Dado que "Hay clases que no se dan" (F18) se publica en la Cátedra Pérez
-Cuando se muestra su proporción en cualquier ficha o en el CSV
-Entonces nunca aparece sin sus voces (12 de 40) ni sin su período (2024, primer cuatrimestre) al lado: no hay un número pelado.
+**N2.** Dado que "¿Se dictaron las clases?" se publica en la Cátedra Pérez
+Cuando se muestra su moda o su distribución en cualquier ficha o en el CSV
+Entonces nunca aparece sin sus voces (por ejemplo, 24 de 40) ni sin su período (2024, primer cuatrimestre) al lado: no hay un número pelado.
 
 ## Edge cases
 
-- "Se puede rendir libre y aprobar" (F08, materia, gestión) todavía no la marcó nadie en ninguna cursada: igual aparece en el catálogo entero de Método, porque el catálogo se publica completo aunque una frase no tenga uso todavía.
+- "¿Tomó temas que no estaban en el programa?" todavía no la respondió nadie en ninguna cursada: igual aparece en el catálogo entero de Método, porque el catálogo se publica completo aunque un ítem no tenga uso todavía.

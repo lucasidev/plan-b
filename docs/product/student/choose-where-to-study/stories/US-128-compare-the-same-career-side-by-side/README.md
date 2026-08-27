@@ -9,13 +9,13 @@ Como quien está eligiendo, quiero comparar la misma carrera en varias instituci
 
 ## Listo cuando
 
-- Las ofertas de la misma carrera canónica se ven lado a lado, dato por dato: nominal, real, brecha, egreso de cohortes cerradas, las dos cabeceras con su gate, la cobertura y las listas por eje.
+- Las ofertas de la misma carrera canónica se ven lado a lado, una tarjeta por institución: los mismos datos oficiales medidos igual para todas (dura en la realidad, egreso por cohorte, plan del año, régimen de ingreso) y, aparte, las señales de reseñas propias de cada una, sin cruzarse entre instituciones.
 - Sin compuesto, sin ganador y sin ordenar por valor: alfabético o por voces.
-- El que quiere ordenar baja el CSV.
+- El que quiere ordenar distinto baja el CSV.
 
 ## Dónde se resuelve
 
-- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): la pantalla entera. Las ofertas de la carrera canónica lado a lado, dato por dato, sin compuesto ni ganador y sin ordenar por valor.
+- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): la pantalla entera. Una tarjeta por institución, con sus datos oficiales y sus propias señales de reseñas, sin compuesto ni ganador y sin ordenar por valor.
 
 ## Notas
 

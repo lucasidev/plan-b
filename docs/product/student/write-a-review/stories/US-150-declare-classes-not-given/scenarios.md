@@ -1,25 +1,19 @@
-# US-150: Declarar cuántas clases no se dieron
+# US-150: Declarar que faltaron clases
 
-> Los casos de [US-150](README.md), para escribir el test antes que el código. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
+> **Concepto rebasado el 2026-08-25**: ver la nota en el [README](README.md). Estos escenarios describen el comportamiento vigente del ítem "¿Se dictaron las clases?", no la declaración numérica original.
 
 ## Camino feliz
 
-**E1.** Dado que Matías cursó la cátedra Pérez de Análisis Matemático II y en el paso 4 marca la frase F18 (Hay clases que no se dan).
-Cuando avanza al paso 5.
-Entonces el sistema le muestra la pregunta "¿cuántas, más o menos?" en rangos, y Matías declara "6".
-
-**E2.** Dado que en la cátedra Pérez de Análisis Matemático II, período 2026-C1, 12 personas (entre ellas Matías, con 6) marcaron F18 y declararon cuántas clases faltaron, con mediana 4 y rango entre 2 y 8.
-Cuando se visita la Ficha de cátedra.
-Entonces se publica "clases sin dar: 4, entre 2 y 8, 12 voces", nunca un valor único.
+**E1.** Dado que Matías cursó la cátedra Pérez de Análisis Matemático II y en el paso 4 responde "Faltaron muchas" al ítem "¿Se dictaron las clases?".
+Cuando envía la reseña y la cátedra ya tiene 10 reseñas o más.
+Entonces "Faltaron muchas" entra a la distribución de ese ítem en la Ficha de cátedra, con su proporción y sus voces, junto con "Casi todas" y "Faltaron algunas".
 
 ## Negativos
 
-**N1.** Dado que Lucía cursó la misma cátedra Pérez pero no marcó la frase F18 en el paso 4, Cuando avanza al paso 5, Entonces la pregunta "¿cuántas, más o menos?" no le aparece.
-
-**N2.** Dado que en un período nadie declaró cuántas clases faltaron en una cátedra, Cuando se visita su Ficha de cátedra, Entonces la sección "clases sin dar" no se publica: ni un cero, ni un valor por defecto.
+**N1.** Dado que Lucía cursó la misma cátedra Pérez pero saltea el ítem "¿Se dictaron las clases?", Cuando envía su reseña, Entonces esa reseña no entra al denominador de ese ítem: no suma ni a "Faltaron muchas" ni a ninguna otra opción.
 
 ## Edge cases
 
-- Si en el paso 5 elige "no me acuerdo / no aparece" para la cátedra, no le aparece la pregunta de clases sin dar: no hay cátedra a la que colgarla.
-- Al destildar "Hay clases que no se dan" en Editar, el número declarado se borra junto con la frase (D02).
-- Si las declaraciones no convergen (por ejemplo, algunas personas dicen 2 y otras 15), se publica igual el rango completo, nunca un promedio ni un valor único.
+- Ya no existe una pregunta de seguimiento ("¿cuántas, más o menos?") ni un valor numérico que declarar: la única señal es la opción elegida.
+- Si en el paso 2 la cátedra queda en "No sé", el paso 4 completo no se ofrece: tampoco este ítem.
+- Ninguna ficha publica un promedio, mediana o rango de clases faltantes: solo la distribución de las tres opciones.

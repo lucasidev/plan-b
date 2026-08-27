@@ -19,11 +19,11 @@ Quien lee, con un nombre suelto en la cabeza y no una carrera ("lo que me recomi
 ## Estados
 
 - **"Resultados mezclados por sujeto"**: cada fila dice de qué sujeto es (materia, cátedra, carrera, institución) para no confundir una materia con la carrera que la contiene.
-- **"Sin resultados"**: si de verdad no hay nada cargado con ese nombre, la causa es una de dos, nunca un cero (US-139): no la cargamos todavía (con [Pedir](../../../request-a-career/screens/SC-010-request/README.md)) o hay un error de tipeo. Si estuviera cargada, sin voces o sin cabecera, la búsqueda la devuelve igual, como resultado con su propio estado a la vista.
+- **"Sin resultados"**: si de verdad no hay nada cargado con ese nombre, la causa es una de dos, nunca un cero (US-139): no la cargamos todavía (con [Pedir](../../../request-a-career/screens/SC-010-request/README.md)) o hay un error de tipeo. Si estuviera cargada, sin voces o con cobertura parcial, la búsqueda la devuelve igual, como resultado con su propio estado a la vista.
 
 ## Lo que no muestra nunca
 
-Ninguna ficha de "docente": no existe como entidad con ficha propia, siempre resuelve a su cátedra; ningún resultado mostrado como un cero cuando en realidad está cargado sin voces o sin cabecera todavía (US-139); ningún orden entre resultados por conveniencia.
+Ninguna ficha de "docente": no existe como entidad con ficha propia, siempre resuelve a su cátedra; ningún resultado mostrado como un cero cuando en realidad está cargado sin voces o con cobertura parcial todavía (US-139); ningún orden entre resultados por conveniencia.
 
 ## Adónde va
 
@@ -31,7 +31,7 @@ Llega desde: el buscador del topbar de cualquier pantalla (hoy no lleva a ningun
 
 ## Decisiones que aplica
 
-[ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (los tres estados del vacío salen del gate de cobertura). La cátedra como entidad de la que depende US-132 la carga US-196, en [Sostener el catálogo](../../../../team/sustain-the-catalog/README.md#stories). La garantía de [Que no me molesten](../../../../guarantees/README.md) que se verifica acá: sin cuenta (US-168).
+[ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (los tres estados del vacío: sin voces, con voces y con cobertura parcial siempre a la vista). La cátedra como entidad de la que depende US-132 la carga US-196, en [Sostener el catálogo](../../../../team/sustain-the-catalog/README.md#stories). La garantía de [Que no me molesten](../../../../guarantees/README.md) que se verifica acá: sin cuenta (US-168).
 
 ## Lo que esta ficha deja abierto
 

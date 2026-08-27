@@ -9,9 +9,9 @@ Como quien investiga, quiero descargar el crudo sin registrarme, porque ustedes 
 
 ## Listo cuando
 
-- El CSV sale agregado: una fila por (frase, sujeto, período) con sus voces y su eje.
-- Una segunda tabla trae los agregados de trayectoria: por carrera-institución y cohorte; por materia y período; por par y período.
-- Lo que se descarga es lo que se publica, ni más fino ni más grueso: nunca nombre, cuenta ni perfil, y los testimonios no se exportan en bloque.
+- El CSV sale agregado: una fila por (ítem, opción, sujeto, período) con sus voces.
+- Una segunda tabla trae la tasa de finalización por materia y período, y la co-cursada por par de materias y período.
+- Lo que se descarga es lo que se publica, ni más fino ni más grueso: nunca nombre, cuenta ni perfil, ni respuestas individuales ni desenlaces individuales.
 
 ## Dónde se resuelve
 

@@ -20,4 +20,4 @@ Como quien carga el catálogo, quiero atar el cargo textual de una institución 
 
 **Queda abierto**: la lista concreta de cargos (cuáles son) no está definida: se arma al cargar las primeras instituciones, no de escritorio ([ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)).
 
-**Alimenta**: la verificación del cargo institucional en [Replicar](../../../../reviewed/reply/README.md), que hoy no tiene story propia pese a que dos stories la asumen.
+**Alimenta**: la verificación del cargo institucional que pide [US-227](../../../../reviewed/reply/stories/US-227-claim-an-institutional-position-to-reply/README.md), en [Responder](../../../../reviewed/reply/README.md).

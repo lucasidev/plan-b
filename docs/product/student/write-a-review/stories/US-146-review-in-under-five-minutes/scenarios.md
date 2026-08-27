@@ -1,18 +1,18 @@
-# US-146: Reseñar en menos de cinco minutos
+# US-146: Reseñar en menos de dos minutos
 
 > Los casos de [US-146](README.md), para escribir el test antes que el código. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
 
 ## Camino feliz
 
 **E1.** Dado que Lucía entra a Reseñar para Análisis Matemático II, período 2026-C1.
-Cuando marca "la aprobé" como cómo terminó, elige "no me acuerdo / no aparece" en cátedra, marca la frase F02 (Se aprueba yendo a clase) en el tema evaluación y no escribe ningún micro-comentario.
-Entonces la reseña se publica igual: en ningún paso el sistema le exigió escribir texto, y todos los "¿algo más de esto?" quedaron vacíos, sin reclamo.
+Cuando responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde un solo ítem del paso 5 ("Sí" a si pudo seguir el ritmo), deja todos los demás ítems sin responder y no escribe nada en el campo libre del paso 6.
+Entonces la reseña se envía igual: en ningún paso el sistema le exigió responder un ítem ni escribir texto, y saltear no le bloqueó el envío.
 
 ## Negativos
 
-**N1.** Dado que Lucía llega al paso de publicar sin haber marcado ninguna frase (de ningún tema), Cuando intenta publicar, Entonces el sistema no la deja: pide marcar al menos una frase antes de publicar, porque los micro-comentarios solos no alcanzan para reemplazar esa marca.
+**N1.** Dado que Lucía llega al paso 6 sin haber elegido una materia, un período o cómo terminó, Cuando intenta enviar, Entonces el sistema no la deja: esos tres son los únicos pasos obligatorios, porque sin ellos no hay una cursada concreta a la que atarle la reseña.
 
 ## Edge cases
 
-- Doble click en "Publicar reseña": no genera dos reseñas para la misma cuenta, materia y período; publica una sola vez (envío duplicado).
-- Micro-comentario que supera su tope de longitud (el valor exacto está abierto en la ficha de la pantalla): no se puede publicar hasta acortarlo.
+- Doble click en "Enviar la reseña": no genera dos reseñas para la misma cuenta, materia y período; envía una sola vez (envío duplicado).
+- Campo libre que supera su tope de longitud (el valor exacto está abierto en la ficha de la pantalla): no se puede enviar hasta acortarlo.

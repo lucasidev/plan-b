@@ -3,218 +3,158 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto hi-fi: Reseñar por temas, todos sus pasos (Boletín)</title>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Reseñar una cursada (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
-  .note { max-width: 680px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
-  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
-</style>
+  .note { max-width: 452px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; line-height: 1.6; }
+
+    body { margin: 0; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+    .serif { font-family: 'Newsreader', Georgia, serif; }
+    .mono { font-family: 'IBM Plex Mono', Consolas, monospace; }
+    .lbl { font-size: 12px; color: #7b8089; margin: 0 0 8px; }
+    .card { background: #fffefb; border: 1px solid #e2dfd6; border-radius: 12px; padding: 16px; }
+    .bar { height: 3px; border-radius: 2px; background: #eeece5; overflow: hidden; margin-bottom: 14px; }
+    .q { font-size: 14px; margin: 0 0 8px; }
+    .opts { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .opt { font-size: 13px; padding: 8px 14px; border-radius: 999px; border: 1px solid #e2dfd6; background: #fffefb; }
+    .opt-on { background: #191b1f; color: #fffefb; border-color: #191b1f; font-weight: 500; }
+    .opt-mute { color: #7b8089; }
+  </style>
 </head>
 <body>
-<p class="note">Boceto hi-fi de la pantalla Reseñar reescrito el 2026-08-24 al flujo por temas, iterado el mismo día: cada aspecto aparece una vez y el par son sus dos salidas excluyentes (se acabó leer cada idea dos veces) (ficha: <code>README.md</code>; <code>ADR-0078</code>, <code>ADR-0079</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>). Los cambios contra el boceto anterior (en git): la cátedra sube al paso 4, el paso de frases recorre temas con los pares juntos, la recolección es neutra (sin color de alarma: la alarma es lectura, de la ficha), y cada tema cierra con su micro-comentario. Los datos son ejemplo, con frases del catálogo vigente.</p>
+<p class="note">Boceto rehecho el 2026-08-25 al modelo de tres capas (<code>ADR-0082</code>, <code>ADR-0084</code>): contexto que no se publica, conducta observable de la cátedra en frecuencias gruesas, vivencia en primera persona, y un único campo libre que no se publica. El contrato de publicación (agregado, piso de 10, nunca individual) se dice antes de Enviar. Los números de reseñas salen computados de un corpus de ejemplo (modas, distribuciones y comparaciones con intervalos); los datos oficiales son ejemplo verosímil de la serie SPU/CONEAU. Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>).</p>
+<div style="width: 420px; max-width: 100%; margin: 0 auto; background: #f7f5ef; padding: 16px; box-sizing: border-box; border: 1px solid #e2dfd6; border-radius: 12px">
 
-<div style="width: 680px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
-
-  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 32px 16px; border-bottom: 1px solid #e2dfd6">
-    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 17px">plan-b</div>
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7b8089">Reseñar</div>
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 4px 2px 14px">
+    <span class="serif" style="font-style: italic; font-weight: 600; font-size: 16px">plan-b</span>
+    <span class="mono" style="font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: #7b8089">Reseñar una cursada</span>
   </div>
 
-  <div style="padding: 8px 32px 44px">
+  <p class="serif" style="font-weight: 600; font-size: 24px; margin: 0 0 4px">Contá tu cursada</p>
+  <p style="font-size: 13px; color: #494e57; margin: 0 0 20px">Un minuto y medio. Saltear también vale, y nada sale con tu nombre.</p>
 
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 1 · elegir la materia</h2>
-  <section aria-label="Paso 1: elegir la materia" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
+  <p class="lbl">Paso 1 · Qué cursaste</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div class="bar"><div style="width: 17%; height: 100%; background: #191b1f"></div></div>
+    <div style="border: 1px solid #e2dfd6; background: #f7f5ef; border-radius: 8px; padding: 9px 13px; font-size: 13px; margin-bottom: 12px">análisis mate</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eae7de">
+      <div><p style="font-size: 14px; margin: 0">Análisis Matemático II</p><p style="font-size: 12px; color: #7b8089; margin: 2px 0 0">Cs. Exactas · UNT · 2° año</p></div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a7adb5" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
     </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 12px">¿Qué materia cursaste?</p>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; color: #a7adb5; font-size: 13px; margin: 0 0 10px">Buscá en tu plan o escribila</div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Análisis Matemático II</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">2° año</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; color: #7b8089"><span>Álgebra I</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">ya la reseñaste · 2025-C2</span></div>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 14px 0 0; border-top: 1px dashed #e2dfd6; padding-top: 10px">¿Fue un trámite, el título, una mesa? <a href="#">Eso es un evento, no una materia</a></p>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 2 · el período (y el año de ingreso, una sola vez)</h2>
-  <section aria-label="Paso 2: el período" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0 2px">
+      <div><p style="font-size: 14px; margin: 0; color: #494e57">Análisis Matemático I</p><p style="font-size: 12px; color: #a7adb5; margin: 2px 0 0">ya la reseñaste · 2024</p></div>
     </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 12px">¿Cuándo la cursaste?</p>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px">
-      <span style="border: 1px solid #191b1f; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 500">2026-C1</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">2025-C2</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">2025-C1</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">otro</span>
-    </div>
-    <div style="border-top: 1px solid #e2dfd6; padding-top: 12px">
-      <p style="font-size: 13px; margin: 0 0 8px">¿En qué año entraste a la carrera? <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">SE PREGUNTA UNA SOLA VEZ</span></p>
-      <div style="display: flex; gap: 8px">
-        <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 8px; padding: 7px 16px; font-size: 13px; color: #a7adb5">2023</span>
-        <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 14px; font-size: 12.5px; color: #7b8089">Prefiero no decirlo</span>
-      </div>
-    </div>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 3 · cómo terminó</h2>
-  <section aria-label="Paso 3: cómo terminó" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-    </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 12px">¿Cómo terminó?</p>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px">
-      <span style="border: 1px solid #191b1f; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 500">La aprobé</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">Me quedó regular</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">La desaprobé</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">La dejé</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">Sigo cursando</span>
-    </div>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 0">Esto no se publica con tu reseña: alimenta las estadísticas de la materia, sin vos.</p>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 4 · la cátedra (antes de las frases: la oferta de temas se arma sabiéndola)</h2>
-  <section aria-label="Paso 4: la cátedra" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-    </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 4px">¿Con qué cátedra la cursaste?</p>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 0 0 12px">Opcional. Si la recordás, tus marcas también le suman a su ficha.</p>
-    <div style="background: #fffefb; border: 1px solid #191b1f; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span style="font-weight: 500">✓ Cátedra Pérez</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">titular: M. Pérez</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; margin: 0 0 6px"><span>Cátedra González</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #a7adb5">titular: L. González</span></div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #7b8089">No me acuerdo / no aparece</div>
-    <p style="font-size: 12px; color: #a7adb5; margin: 10px 0 0">Sin cátedra, el paso siguiente no ofrece sus hechos; tus marcas de materia cuentan igual.</p>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 5 · los temas (el corazón: pares juntos, marca binaria, todo se saltea, sin color de alarma)</h2>
-  <section aria-label="Paso 5: los temas" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #e2dfd6"></span>
-    </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 4px">¿Qué te pasó con esta cursada?</p>
-    <p style="font-size: 12.5px; color: #7b8089; margin: 0 0 14px">Marcá lo que viviste, por tema. Todo se puede saltear; lo que no marcás no dice nada.</p>
-
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 14px 16px; margin: 0 0 10px">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 10px">
-        <span style="font-weight: 600; font-size: 14px">Evaluación</span>
-        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">cómo te evaluaron</span>
-      </div>
-      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Ponen la nota que merecés</span>
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6; background: #eeece5; font-weight: 500">✓ Nunca te ponen un 10</span>
-      </div>
-      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Corrigen con criterio claro</span>
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Los criterios de corrección cambian</span>
-      </div>
-      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 10px">
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se puede rendir libre y aprobar</span>
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Nadie aprueba libre</span>
-      </div>
-      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 6px">
-        <span style="border: 1px solid #191b1f; background: #eeece5; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; font-weight: 500">✓ El final es exigente</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">El final toma cosas que no se dieron</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se aprueba yendo a clase</span>
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Se puede promocionar</span>
-      </div>
-      <p style="font-size: 10.5px; color: #a7adb5; margin: 0 0 8px; font-family: 'IBM Plex Mono', monospace">ARRIBA: CADA ASPECTO UNA VEZ, DOS SALIDAS EXCLUYENTES · ABAJO: HECHOS SUELTOS, CO-MARCABLES</p>
-      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5">¿Algo más de la evaluación? (opcional)</div>
-    </div>
-
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 14px 16px; margin: 0 0 12px">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 10px">
-        <span style="font-weight: 600; font-size: 14px">Trato</span>
-        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5">cómo te trataron</span>
-      </div>
-      <div style="display: flex; border: 1px solid #e2dfd6; border-radius: 8px; overflow: hidden; margin: 0 0 6px">
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Te tratan con respeto</span>
-        <span style="flex: 1; text-align: center; padding: 8px 8px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic; border-left: 1px solid #e2dfd6">Hubo malos tratos</span>
-      </div>
-      <div style="display: flex; gap: 6px; margin: 0 0 8px">
-        <span style="border: 1px solid #e2dfd6; border-radius: 7px; padding: 7px 10px; font-size: 12.5px; font-family: 'Newsreader', serif; font-style: italic">Hubo acoso</span>
-      </div>
-      <div style="border: 1px dashed #e2dfd6; border-radius: 7px; padding: 8px 12px; font-size: 12px; color: #a7adb5">¿Algo más del trato? (opcional)</div>
-    </div>
-
-    <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 0 0 14px">
-      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; letter-spacing: 0.04em">SIGUEN</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 3px 12px; font-size: 11.5px">Enseñanza</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 3px 12px; font-size: 11.5px">Cumplimiento</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 3px 12px; font-size: 11.5px">Carga</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 3px 12px; font-size: 11.5px">Alrededor de la cursada</span>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2dfd6; padding-top: 12px">
-      <span style="font-size: 12.5px; color: #7b8089">2 frases marcadas</span>
-      <span>
-        <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 8px; padding: 7px 16px; font-size: 13px">Saltear lo que queda</span>
-        <span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 7px 16px; font-size: 13px">Seguir</span>
-      </span>
-    </div>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Paso 6 · revisar y publicar (el chequeo previo corre sobre cada micro-comentario)</h2>
-  <section aria-label="Paso 6: revisar y publicar" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 20px">
-    <div style="display: flex; gap: 6px; margin: 0 0 14px">
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-      <span style="height: 4px; flex: 1; border-radius: 2px; background: #191b1f"></span>
-    </div>
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 12px">Revisar y publicar</p>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 12px 14px; margin: 0 0 10px">
-      <p style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #a7adb5; margin: 0 0 6px; letter-spacing: 0.04em">TU COMENTARIO EN EVALUACIÓN</p>
-      <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 14px; margin: 0">Los parciales fueron imposibles y <span style="background: #f5e4e0; color: #6e1c12; padding: 0 3px; border-radius: 3px; font-style: normal">soy el único que rindió en silla de ruedas</span></p>
-      <p style="font-size: 12px; color: #7b8089; margin: 8px 0 0">Lo resaltado puede identificarte. Lo dejás o lo sacás; la réplica no podrá citarlo.</p>
-    </div>
-    <div style="background: #fffefb; border: 1px solid #e2dfd6; border-left: 3px solid #8d2418; border-radius: 0 10px 10px 0; padding: 10px 14px; margin: 0 0 14px">
-      <p style="font-size: 12.5px; color: #494e57; margin: 0">No publicamos quién sos. En una comisión chica, igual pueden sospechar: es el precio de reclamar, y preferimos decírtelo.</p>
-    </div>
-    <div style="text-align: right">
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 8px; padding: 8px 18px; font-size: 13px">Publicar sin los comentarios</span>
-      <span style="border: 1px solid #191b1f; background: #191b1f; color: #f7f5ef; border-radius: 8px; padding: 8px 18px; font-size: 13px">Publicar reseña</span>
-    </div>
-  </section>
-
-  <h2 style="font-size: 13px; font-weight: 500; color: #7b8089; letter-spacing: 0.02em; margin: 28px 0 10px">Al terminar · qué sumó tu voz (US-162)</h2>
-  <section aria-label="Al terminar" style="background: #eeece5; border-radius: 10px; padding: 20px 22px; margin: 0 0 8px">
-    <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 22px; margin: 0 0 12px">Quedó registrada</p>
-    <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px; margin: 0 0 4px">"Nunca te ponen un 10" <span style="font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 12px">ahora la sostienen 16 de 42 voces</span></p>
-    <p style="font-family: 'Newsreader', serif; font-style: italic; font-size: 14.5px; margin: 0 0 14px">"El final es exigente" <span style="font-family: 'IBM Plex Mono', monospace; font-style: normal; font-size: 12px">ahora la sostienen 19 de 42 voces</span></p>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap">
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">Ver la ficha de Cátedra Pérez</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">Reseñar otra materia</span>
-      <span style="border: 1px solid #e2dfd6; background: #fffefb; border-radius: 999px; padding: 7px 16px; font-size: 13px">Mis aportes</span>
-    </div>
-  </section>
-
   </div>
+
+  <p class="lbl">Paso 2 · Cuándo y con quién</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div class="bar"><div style="width: 33%; height: 100%; background: #191b1f"></div></div>
+    <p class="q">¿Cuándo la cursaste?</p>
+    <div class="opts">
+      <span class="opt opt-on">2026-C1</span><span class="opt">2025-C2</span><span class="opt">2025-C1</span><span class="opt">otro</span>
+    </div>
+    <p class="q">¿Con qué cátedra?</p>
+    <div class="opts">
+      <span class="opt opt-on">Pérez</span><span class="opt">González</span><span class="opt">Ruiz</span><span class="opt opt-mute">No sé</span>
+    </div>
+    <p class="q">¿Cómo cursaste?</p>
+    <div class="opts" style="margin-bottom: 2px">
+      <span class="opt opt-on">Presencial</span><span class="opt">A distancia</span><span class="opt">Mezcla</span>
+    </div>
+  </div>
+
+  <p class="lbl">Paso 3 · Cómo terminó</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div class="bar"><div style="width: 50%; height: 100%; background: #191b1f"></div></div>
+    <p class="q">¿Cómo terminó esa cursada?</p>
+    <div class="opts">
+      <span class="opt">La aprobé</span><span class="opt opt-on">Me quedó regular</span><span class="opt">La recursé</span><span class="opt">La dejé</span>
+    </div>
+    <p class="q">¿Cuántas veces la cursaste, contando esta?</p>
+    <div class="opts" style="margin-bottom: 12px">
+      <span class="opt">Una</span><span class="opt opt-on">Dos</span><span class="opt">Tres o más</span>
+    </div>
+    <p style="font-size: 12px; color: #7b8089; margin: 0; border-top: 1px solid #eae7de; padding-top: 10px">Esto no se publica con tu reseña: sirve para leer bien los números.</p>
+  </div>
+
+  <p class="lbl">Paso 4 · Qué hizo la cátedra</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div class="bar"><div style="width: 67%; height: 100%; background: #191b1f"></div></div>
+    <p class="q">¿Contestaba las preguntas que le hacían en clase?</p>
+    <div class="opts">
+      <span class="opt">Siempre</span><span class="opt">A veces</span><span class="opt opt-on">Casi nunca</span><span class="opt opt-mute">Nadie preguntaba</span>
+    </div>
+    <p class="q">¿Se dictaron las clases?</p>
+    <div class="opts">
+      <span class="opt">Casi todas</span><span class="opt">Faltaron algunas</span><span class="opt opt-on">Faltaron muchas</span>
+    </div>
+    <p class="q">¿El práctico daba lo mismo que el teórico?</p>
+    <div class="opts">
+      <span class="opt">Sí</span><span class="opt">Había diferencias</span><span class="opt opt-on">Eran dos materias distintas</span>
+    </div>
+    <p class="q">¿Respondía consultas fuera de clase?</p>
+    <div class="opts">
+      <span class="opt">Sí</span><span class="opt opt-on">A veces</span><span class="opt">No había forma</span>
+    </div>
+    <p class="q">¿Avisó la fecha del parcial con anticipación?</p>
+    <div class="opts">
+      <span class="opt">Más de 2 semanas</span><span class="opt opt-on">1 a 2 semanas</span><span class="opt">Menos de una semana</span><span class="opt">Nos enteramos de casualidad</span>
+    </div>
+    <p class="q">¿Entregó el programa al inicio?</p>
+    <div class="opts">
+      <span class="opt opt-on">Sí</span><span class="opt">Tarde</span><span class="opt">Nunca lo vi</span>
+    </div>
+    <p class="q">¿Tomó temas que no estaban en el programa?</p>
+    <div class="opts" style="margin-bottom: 2px">
+      <span class="opt">No</span><span class="opt">Alguno</span><span class="opt opt-on">Varios</span>
+    </div>
+  </div>
+
+  <p class="lbl">Paso 5 · Qué te pasó a vos</p>
+  <div class="card" style="margin-bottom: 20px">
+    <div class="bar"><div style="width: 83%; height: 100%; background: #191b1f"></div></div>
+    <p class="q">¿Salías de la clase entendiendo el tema?</p>
+    <div class="opts">
+      <span class="opt">Casi siempre</span><span class="opt">A veces</span><span class="opt opt-on">Casi nunca</span>
+    </div>
+    <p class="q">¿El material alcanzaba para preparar el parcial?</p>
+    <div class="opts">
+      <span class="opt">Sí</span><span class="opt opt-on">Había que buscar por afuera</span><span class="opt">No servía</span>
+    </div>
+    <p class="q">¿Pudiste seguir el ritmo?</p>
+    <div class="opts">
+      <span class="opt">Sí</span><span class="opt opt-on">Con esfuerzo</span><span class="opt">Me quedé atrás</span>
+    </div>
+    <p class="q">¿Sentías que podías preguntar sin quedar mal?</p>
+    <div class="opts" style="margin-bottom: 2px">
+      <span class="opt">Sí</span><span class="opt">Depende del día</span><span class="opt opt-on">No</span>
+    </div>
+  </div>
+
+  <p class="lbl">Paso 6 · Lo último</p>
+  <div class="card">
+    <div class="bar"><div style="width: 100%; height: 100%; background: #191b1f"></div></div>
+    <p class="q">¿Algo que no te preguntamos y deberíamos?</p>
+    <div style="border: 1px solid #e2dfd6; background: #f7f5ef; border-radius: 8px; padding: 11px 13px; color: #a7adb5; font-size: 13px; min-height: 58px; margin-bottom: 8px">Contalo con tus palabras…</div>
+    <p style="font-size: 12px; color: #7b8089; margin: 0 0 16px">Esto no se publica: lo lee el equipo para mejorar las preguntas.</p>
+    <div style="border-top: 1px solid #eae7de; padding-top: 12px">
+      <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 9px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#494e57" stroke-width="2.5" style="flex: none; position: relative; top: 2px"><path d="M5 13l4 4 10-10"/></svg>
+        <span style="font-size: 13.5px; flex: 1">Tus respuestas se suman al total de la cátedra</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 9px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#494e57" stroke-width="2.5" style="flex: none; position: relative; top: 2px"><path d="M5 13l4 4 10-10"/></svg>
+        <span style="font-size: 13.5px; flex: 1">Nunca se muestra una reseña individual, ni cómo terminó nadie</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 14px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6e1c12" stroke-width="2" style="flex: none; position: relative; top: 2px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <span style="font-size: 13.5px; flex: 1; color: #494e57">Esta cátedra junta 3 reseñas: con 7 más se publica</span>
+      </div>
+    </div>
+    <div style="background: #191b1f; color: #fffefb; border-radius: 8px; padding: 11px; text-align: center; font-size: 14px; font-weight: 500">Enviar la reseña</div>
+  </div>
+
 </div>
 </body>
 </html>

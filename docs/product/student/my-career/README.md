@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Tu plan de estudios con las correlativas resueltas: las materias, lo que ya reseñaste con cómo terminó (que viene marcado solo, porque es un hecho) y lo que marcás aparte como que te falta o considerás (una preferencia privada que no se recaba ni se publica, [ADR-0069](../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)). Con esas dos cosas se filtra la pestaña de co-cursada: por par de materias y período, cuántas personas las llevaron juntas y cuántas dejaron una, siempre desde reseñas y nunca desde lo que alguien marcó para sí ([ADR-0067](../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)). Incluye el onboarding (Empezar), donde marcás por dónde vas la primera vez. El producto no arma horarios: entrega los números, y volver a marcar en el plan lo que vas a cursar es el paso siguiente, en papel ([ADR-0063](../../../decisions/0063-the-product-is-a-pressure-instrument.md): el planificador propio se retira, y esta épica no lo revive).
+Tu plan de estudios con las correlativas resueltas: las materias, lo que ya reseñaste con cómo terminó (que viene marcado solo, porque es un hecho) y lo que marcás aparte como que te falta o considerás (una preferencia privada que no se recaba ni se publica, [ADR-0069](../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)). Con esas dos cosas se filtra la pestaña de co-cursada: por par de materias y período, cuántas personas las llevaron juntas y cuántas dejaron una, siempre desde reseñas y nunca desde lo que alguien marcó para sí. Incluye el onboarding (Empezar), donde marcás por dónde vas la primera vez. El producto no arma horarios: entrega los números, y volver a marcar en el plan lo que vas a cursar es el paso siguiente, en papel ([ADR-0063](../../../decisions/0063-the-product-is-a-pressure-instrument.md): el planificador propio se retira, y esta épica no lo revive).
 
 ## Para quién
 
@@ -27,7 +27,7 @@ Las 3 de esta épica. Cada una en su archivo, con su criterio de aceptación; el
 
 ## Decisiones que aplica
 
-[ADR-0069](../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo que marcás es preferencia privada, no dato), [ADR-0067](../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la co-cursada: solo desde reseñas, por par y período; el sesgo declarado en Método), [ADR-0066](../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md) (sin piso: se publica desde la primera voz con sus voces), [ADR-0063](../../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta épica no lo revive, US-145).
+[ADR-0069](../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (lo que marcás es preferencia privada, no dato), [ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (la reseña de la cursada es la única fuente, cuenta × materia × período; el piso de 10 reseñas por privacidad), [ADR-0063](../../../decisions/0063-the-product-is-a-pressure-instrument.md) (el planificador se retira: esta épica no lo revive, US-145). Que más allá de ese piso no haya escalones de desbloqueo por volumen es regla del corpus, hoy sin ADR propio que la fije.
 
 ## Pantallas
 

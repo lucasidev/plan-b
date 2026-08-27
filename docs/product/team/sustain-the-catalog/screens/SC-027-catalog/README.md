@@ -8,14 +8,14 @@
 
 ## Qué stories resuelve
 
-US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean publicar), US-196 (la cátedra como entidad propia, con su titular) (el equipo docente de la cátedra, con el nombre de cada integrante, contra el que se verifica a quien pide replicar), US-224 (el cargo institucional atado a la lista corta de cargos genéricos, nunca al nombre textual), US-195 (atar la oferta a su carrera canónica, con autor y fecha), US-202 (la fuente que no existe o se contradice, marcada, sin bloquear la carga), US-201 (editar una oferta publicada y avisar a quien la tiene marcada), US-204 (los dos planes conviviendo cuando la facultad reforma), US-197 (la cola de materias declaradas, para vincular o fusionar contra la canónica). La letra de cada una: [README de la épica](../../README.md#stories).
+US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean publicar), US-196 (la cátedra como entidad propia, con su titular) (el equipo docente de la cátedra, con el nombre de cada integrante, contra el que se verifica a quien pide responder), US-224 (el cargo institucional atado a la lista corta de cargos genéricos, nunca al nombre textual), US-195 (atar la oferta a su carrera canónica, con autor y fecha), US-202 (la fuente que no existe o se contradice, marcada, sin bloquear la carga), US-201 (editar una oferta publicada y avisar a quien la tiene marcada), US-204 (los dos planes conviviendo cuando la facultad reforma), US-197 (la cola de materias declaradas, para vincular o fusionar contra la canónica). La letra de cada una: [README de la épica](../../README.md#stories).
 
 ## Qué muestra
 
 Para una oferta que se está cargando por primera vez:
 
 1. **Huecos primero**: la pantalla abre listando las ofertas por cuántos campos les faltan, no por las que ya están casi listas; entre los huecos, dos bloquean publicar y se marcan aparte, la duración nominal del plan y la carrera canónica (US-191).
-2. **Cargar el plan**: duración nominal (sin ella no hay brecha ni cohorte cerrada, ADR-0067) y materias canónicas del plan, con su año; el contador de huecos baja a medida que se completa.
+2. **Cargar el plan**: duración nominal (sin ella no hay brecha ni cohorte cerrada, ADR-0085) y materias canónicas del plan, con su año; el contador de huecos baja a medida que se completa.
 3. **Cátedras**: se cargan como entidad propia, el equipo docente a cargo de una materia con su titular, no como comisión; persisten entre períodos (US-196).
 4. **Atar la carrera canónica**: buscar una carrera canónica existente o declarar una nueva; la decisión queda con quién la tomó y cuándo (US-195). Es lo que permite que Dónde estudiarla compare esta oferta con las de otras instituciones.
 5. **Publicar**: bloqueado mientras falte un hueco bloqueante, aunque el resto esté cargado (US-191); resueltos los dos, el botón se habilita.
@@ -42,7 +42,7 @@ Llega desde [Pedidos](../SC-030-requests/README.md) (cada fila abre la oferta qu
 
 ## Decisiones que aplica
 
-[ADR-0067](../../../../../decisions/0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md) (la carrera canónica curada por nosotros, la duración nominal del plan), los tres planos del [mapa de producto](../../../../map.md) (el catálogo lo cargamos nosotros, a mano y completo), D04 ([registro del 17](../../../../../history/reviews/2026-08-17-catalog-propagation.md): con dos planes, la cobertura se mide sobre las materias canónicas de la carrera, la unión de los dos).
+[ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (la carrera canónica curada por nosotros, que es lo que hace comparable la misma carrera entre instituciones; la duración nominal del plan, contra la que se lee la duración real relevada de la fuente oficial), los tres planos del [mapa de producto](../../../../map.md) (el catálogo lo cargamos nosotros, a mano y completo), D04 ([registro del 17](../../../../../history/reviews/2026-08-17-catalog-propagation.md): con dos planes, la cobertura se mide sobre las materias canónicas de la carrera, la unión de los dos).
 
 ## Lo que esta ficha deja abierto
 

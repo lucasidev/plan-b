@@ -8,9 +8,9 @@
 Cuando Sofía carga el plan nuevo.
 Entonces Plan 2019 no se borra ni se reemplaza: los dos planes coexisten, cada uno con su año.
 
-**E2.** Dado que "Análisis Matemático I" es la materia canónica de "Ingeniería en Sistemas" (UNSTA) tanto en el Plan 2019 como en el Plan 2024: bajo el Plan 2019 acumuló 70 voces de reseñas cursadas entre 2019 y 2023 (38 de ellas marcaron F01 "Es dura de verdad"), y bajo el Plan 2024 acumuló 50 voces de reseñas cursadas desde 2024 (22 marcaron F01).
+**E2.** Dado que "Análisis Matemático I" es la materia canónica de "Ingeniería en Sistemas" (UNSTA) tanto en el Plan 2019 como en el Plan 2024: bajo el Plan 2019 acumuló 70 voces de reseñas cursadas entre 2019 y 2023, y bajo el Plan 2024 acumuló 50 voces de reseñas cursadas desde 2024.
 Cuando alguien abre la Ficha de materia de "Análisis Matemático I".
-Entonces las reseñas de las dos épocas se suman en la misma ficha: 120 voces en total, 60 marcaron F01, 50% en crudo publicado con su encogimiento en 41,2%, porque cada reseña quedó pegada al período en que se cursó y a la materia canónica, no a la fila del plan.
+Entonces las reseñas de las dos épocas se suman en la misma ficha: 120 voces en total, porque cada reseña quedó pegada al período en que se cursó y a la materia canónica, no a la fila del plan.
 
 ## Negativos
 

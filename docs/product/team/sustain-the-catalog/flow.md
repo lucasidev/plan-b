@@ -32,17 +32,19 @@ flowchart TD
 
 Pantalla: [Correcciones](screens/SC-028-corrections/README.md).
 
-### BO-9: destilar y clasificar frases nuevas
+### BO-9: curar el catálogo de ítems
 
 ```mermaid
 flowchart TD
-  A([Los comentarios de muchas reseñas se acumulan]) --> B[La máquina propone una frase]
+  A([Los comentarios del campo libre de muchas reseñas se acumulan]) --> B[La máquina propone un ítem]
   B --> C[Frases: cola de curaduría con los comentarios<br/>de los que salió, US-199]
   C --> D{Se aprueba o se descarta}
   D -->|se descarta| E([No se ofrece: no queda rastro público])
-  D -->|se aprueba| F[Se le asigna sujeto y eje, US-199]
-  F --> G([Recién ahora se ofrece para marcar,<br/>marcada como destilada, US-187])
-  H([Alguien corrige el eje de una frase existente, US-198]) --> I([Reprocesa las fichas afectadas])
+  D -->|se aprueba| F[Se le asigna capa, opciones y código estable, US-199]
+  F --> G([Recién ahora se ofrece para responder,<br/>marcado como destilado, US-187])
+  H([Alguien edita un ítem existente, US-198]) --> I{¿Cambia el significado?}
+  I -->|no, solo el texto| J([Misma serie: no hace falta código nuevo])
+  I -->|sí| K([Código nuevo: la serie declara el corte])
 ```
 
 Pantalla: [Frases](screens/SC-029-phrases/README.md).
@@ -83,15 +85,15 @@ Pantalla: [Catálogo](screens/SC-027-catalog/README.md).
 - **No se publica a medias**: mientras falte un hueco bloqueante, duración nominal o carrera canónica, la oferta no sale aunque el resto esté cargado (US-191).
 - **Una materia declarada puede vincularse a una canónica existente o volverse una nueva**, y en los dos casos queda registrado quién lo hizo (US-197).
 - **Aplicar una corrección queda registrado con quién la aprobó** (US-194): no es un cambio anónimo del catálogo.
-- **Una frase destilada que se descarta no se ofrece nunca** ni deja rastro en la lista pública (US-199).
-- **Corregir el eje de una frase reprocesa las fichas que la usan** (US-198): nunca es un cambio aislado.
+- **Un ítem destilado que se descarta no se ofrece nunca** ni deja rastro en la lista pública (US-199).
+- **Editar un ítem sin cambiar su significado mantiene la misma serie; cambiar el significado pide código nuevo y un corte declarado** (US-198): nunca se reescribe la historia.
 - **El primer día no hay pedidos**: la cola arranca con un criterio explícito, no vacía esperando demanda (US-203).
 - **La fuente del dato no existe o se contradice**: se marca de dónde salió y la ficha lo muestra cuando no es oficial (US-202); no bloquea cargar, declara el origen.
 - **Algo publicado tenía un error y ya lo usan**: se edita la oferta publicada y los que la tienen marcada se enteran de qué cambió (US-201); no hay que despublicar para corregir.
 - **La materia del plan viejo que nadie vinculó todavía** sigue sosteniendo las reseñas hechas con ella: no desaparece con la reforma (US-204).
-- **Un pedido de réplica sobre una cátedra sin equipo docente cargado no se rechaza**: se convierte en trabajo de catálogo y se resuelve cuando el dato está (US-225).
+- **Un pedido para responder sobre una cátedra sin equipo docente cargado no se rechaza**: se convierte en trabajo de catálogo y se resuelve cuando el dato está (US-210).
 - **El cargo institucional se publica normalizado, nunca con el nombre textual de la institución**: se ata a la lista corta de cargos genéricos del catálogo (US-224).
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 
-Cómo se prioriza entre varios huecos bloqueantes a la vez; el criterio para decidir si dos ofertas son la misma carrera canónica; cuántos comentarios hacen falta para que la máquina proponga una frase.
+Cómo se prioriza entre varios huecos bloqueantes a la vez; el criterio para decidir si dos ofertas son la misma carrera canónica; cuántos comentarios hacen falta para que la máquina proponga un ítem.

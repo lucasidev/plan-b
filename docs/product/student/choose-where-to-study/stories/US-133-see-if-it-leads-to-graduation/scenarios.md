@@ -4,28 +4,25 @@
 
 ## Camino feliz
 
-**E1.** Dado que Silvia entra a la Ficha de carrera de Ingeniería en Sistemas en UNSTA (nominal 5 años, real 7,5 años de 40 egresados, brecha 2,5 años)
-Cuando mira la trayectoria sin hacer clic en nada
-Entonces ya lee, escrito en palabras simples, que el plan dice 5 años y a la gente le toma 7,5, una diferencia de 2,5 años, sin tener que abrir ningún acordeón ni saber qué es una cohorte.
+**E1.** Dado que Silvia entra a la Ficha de carrera de Ingeniería en Sistemas en UNT, con "egresan por cohorte: 14 %" como dato oficial
+Cuando mira el bloque de datos oficiales sin hacer clic en nada
+Entonces ya lee, en una línea simple, que de cada camada que entra egresa el 14 %, con su fuente al pie ("Ministerio de Educación (SPU) · serie 2015-2024"), sin tener que abrir ningún acordeón ni saber qué es una cohorte.
 
-**E2.** Dado que la cohorte que entró a Ingeniería en Sistemas en UNSTA entre 2012 y 2016 ya cerró (entró hace más de 1,5 veces la duración nominal de 5 años) y tiene 40 personas que reseñaron acá: 12 se recibieron (18,1%), 18 se fueron (30,7%) y 10 no dijo o sigue (14,2%), todos con encogimiento de ADR-0075
-Cuando Silvia mira esa parte de la ficha
-Entonces lee las tres proporciones en una sola línea, sin abrir nada.
+**E2.** Dado que Silvia compara Ingeniería en Sistemas en las tres instituciones en Dónde estudiarla (UNT 14 %, UTN 21 %, UNSTA 34 %)
+Cuando lee las tres tarjetas
+Entonces cada una muestra su propio "egresan por cohorte" con la misma fuente y la misma forma, sin que ninguna aparezca marcada como mejor.
 
-**Falta decidir**: los tres conteos crudos son una partición y suman 40 de 40, pero encogidos suman 63%, no 100%. ADR-0064 manda encoger cada proporción por separado, y eso es correcto para frases independientes (marcar F01 no excluye marcar F02); acá en cambio recibirse, irse y seguir son excluyentes. O la trayectoria no se encoge como una frase, o Método explica por qué una partición no cierra en 100%. No lo resuelve ninguna story.
-
-**E3.** Dado esos mismos números
-Cuando Silvia los lee
-Entonces cada uno dice explícitamente que sale "de los que reseñaron acá", nunca "de todos los que cursaron la carrera".
+**E3.** Dado que "egresan por cohorte" se muestra en la ficha
+Cuando Silvia lo lee
+Entonces el número no depende de nada que ella tenga que declarar ni entender: es un dato oficial, con su fuente dicha, no un cálculo sobre reseñas propias.
 
 ## Negativos
 
-**N1.** Dado que la cohorte que entró en 2023 a Ingeniería en Sistemas en UNSTA todavía no cumplió 1,5 veces la duración nominal
-Cuando se arma la ficha
-Entonces esa cohorte no publica ni egreso ni abandono todavía: para cerrar este año (2026) tendría que haber entrado en 2018 o antes (2026 menos 1,5 veces los 5 años de duración nominal).
+**N1.** Dado que una carrera todavía no tiene "egresan por cohorte" relevado
+Cuando se arma su Ficha de carrera
+Entonces el dato no se completa con un cálculo propio ni con un cero: dice que ese dato todavía no está relevado.
 
 ## Edge cases
 
-- Nadie de una cohorte cerrada declaró cómo terminó (ni se recibió ni dijo que se fue): las tres proporciones se publican igual, con "no dijo o sigue" cerca del 100% de esa cohorte, en vez de ocultarse.
-- Una cohorte chica (por ejemplo, 8 personas que entraron en 2013): se agrupa con una cohorte contigua y se dice que se agrupó, en vez de publicar una proporción de una cohorte de 8 personas sola (ADR-0067).
-- Cómo explicarle a Silvia qué es una "cohorte" sin vocabulario académico: la propia épica lo deja abierto. **Falta decidir**.
+- Cómo explicarle a Silvia qué es una "cohorte" si en algún momento se agrega el detalle metodológico detrás del número: la propia épica lo deja abierto.
+- La misma carrera con dos fuentes oficiales que discrepan levemente entre sí (por ejemplo SPU y CONEAU): cuál prevalece, o si se muestran las dos, no está resuelto en esta story. **Falta decidir**.
