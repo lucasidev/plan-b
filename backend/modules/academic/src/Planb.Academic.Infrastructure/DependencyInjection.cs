@@ -17,6 +17,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Chairs;
 using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
@@ -74,6 +75,9 @@ public static class DependencyInjection
         // US-093: admin CRUD de comisiones
         services.AddScoped<ICommissionRepository, CommissionRepository>();
         services.AddScoped<IAdminCommissionReader, DapperAdminCommissionReader>();
+
+        // US-196: cátedras
+        services.AddScoped<IChairRepository, ChairRepository>();
 
         // US-060: admin CRUD de universidades
         services.AddScoped<IUniversityRepository, UniversityRepository>();

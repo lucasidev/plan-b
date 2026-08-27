@@ -36,7 +36,7 @@ public interface IAcademicQueryService
     /// <summary>
     /// Lista las carreras activas de una universidad (mismo criterio de soft delete que
     /// <see cref="ListUniversitiesAsync"/>). Para el segundo dropdown de la cascada
-    /// (US-037). Devuelve lista vacía si la uni no existe (no 404 — el caller ya validó la
+    /// (US-037). Devuelve lista vacía si la uni no existe (no 404: el caller ya validó la
     /// uni en el dropdown previo, una uni inválida es input adversarial y devolver vacío es
     /// correcto sin filtrar info).
     /// </summary>
@@ -159,6 +159,20 @@ public interface IAcademicQueryService
         Guid termId, Guid universityId, CancellationToken ct = default);
 
     /// <summary>
+    /// True si ese período lectivo existe en el catálogo, sin mirar de qué universidad es.
+    ///
+    /// <para>
+    /// La usa el acto de reseñar (US-146): la reseña ancla a un período y sin FK cross-schema
+    /// (ADR-0017) nada impide que llegue un Guid inventado, que dejaría el dato fuera de toda serie.
+    /// Es la versión débil de <see cref="IsAcademicTermInUniversityAsync"/>: se conforma con que el
+    /// período exista porque en ese flujo la universidad todavía no está resuelta (la materia llega
+    /// sola, sin su plan ni su carrera). Cuando ese camino tenga la universidad a mano, esta se
+    /// reemplaza por la fuerte y la coherencia queda cerrada.
+    /// </para>
+    /// </summary>
+    Task<bool> AcademicTermExistsAsync(Guid termId, CancellationToken ct = default);
+
+    /// <summary>
     /// Devuelve los dominios de email institucional de la universidad a la que pertenece el docente
     /// (US-031). Caller: el flow de verificación de claim docente (Identity) valida que el dominio
     /// del email institucional ingresado esté en esta lista antes de generar el token. Lista vacía
@@ -175,4 +189,34 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<PublicPrerequisiteEdge>> ListPrerequisitesByCareerPlanAsync(
         Guid careerPlanId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Lista las cátedras activas de una materia, cada una con su titular vigente (US-196). Caller:
+    /// el picker de cátedra de Reseñar (elegir "cursé con Pérez" antes de calificar la cursada).
+    /// Materia inexistente o sin cátedras cargadas devuelve lista vacía (no 404), mismo criterio que
+    /// <see cref="ListCommissionsBySubjectAndTermAsync"/> para un catálogo público. Orden por
+    /// nombre de cátedra.
+    /// </summary>
+    Task<IReadOnlyList<ChairListItem>> ListChairsBySubjectAsync(
+        Guid subjectId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Una cátedra por id, con su materia y su titular vigente. Null si no existe o está inactiva.
+    ///
+    /// <para>
+    /// Es el camino inverso de <see cref="ListChairsBySubjectAsync"/> y lo pide la ficha de cátedra,
+    /// que se abre por link sin pasar por la materia. La materia viene incluida porque es lo que le
+    /// permite a reviews pedir las cátedras hermanas sin conocer el schema de academic.
+    /// </para>
+    /// </summary>
+    Task<ChairDetailItem?> GetChairByIdAsync(Guid chairId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Los años de una lista de períodos, de menor a mayor. Sirve para decir de cuándo son las
+    /// voces que una ficha publica ("repartidas entre 2023 y 2026"), que es parte del sustento del
+    /// dato y no un adorno: un conteo sin su ventana temporal no dice si describe a la cátedra de
+    /// hoy o a la de hace cinco años.
+    /// </summary>
+    Task<IReadOnlyList<int>> ListTermYearsAsync(
+        IReadOnlyList<Guid> termIds, CancellationToken ct = default);
 }

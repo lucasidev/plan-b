@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Chairs;
 using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
@@ -50,6 +51,7 @@ public sealed class AcademicSeeder
         await SeedAcademicTermsAsync(now, ct);
         await SeedTeachersAsync(now, ct);
         await SeedCommissionsAsync(now, ct);
+        await SeedChairsAsync(now, ct);
 
         if (_db.ChangeTracker.HasChanges())
         {
@@ -314,6 +316,36 @@ public sealed class AcademicSeeder
         if (inserted > 0)
         {
             _logger.LogInformation("AcademicSeeder: inserted {Count} commissions", inserted);
+        }
+    }
+
+    private async Task SeedChairsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.Chairs
+            .AsNoTracking()
+            .Select(c => c.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in AcademicSeedData.Chairs)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.Chairs.Add(Chair.Hydrate(
+                record.Id,
+                record.SubjectId,
+                record.Name,
+                record.Members.Select(m => (m.TeacherId, m.Role, m.SinceTermId, (AcademicTermId?)null)),
+                isActive: true,
+                createdAt: now,
+                updatedAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: inserted {Count} chairs", inserted);
         }
     }
 }
