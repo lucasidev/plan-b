@@ -4,15 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 // El catálogo se consume del `api.ts` del alta y no se duplica acá: son los mismos endpoints y la
 // misma queryKey, así que abrir el editor sobre una cursada recién cargada ni siquiera refetchea.
 import { addEnrollmentQueries } from '@/features/add-enrollment/api';
@@ -29,12 +20,6 @@ import {
 type Props = {
   enrollment: EnrollmentToEdit;
   universityId: string;
-  /**
-   * Si esta cursada tiene una reseña publicada anclada. Lo resuelve la page contra
-   * `GET /api/reviews/me`, y decide si la vuelta a "cursando" pide confirmación: sin reseña
-   * publicada el consumer de Reviews no hace nada, así que advertir sería inventar una consecuencia.
-   */
-  hasPublishedReview: boolean;
 };
 
 /**
@@ -42,13 +27,13 @@ type Props = {
  * dos diferencias que vienen del hecho de estar editando y no creando:
  *
  *   1. La materia no está: el PATCH no la acepta. Cambiar de materia no es corregir una cursada.
- *   2. Volver el estado a "cursando" teniendo una reseña publicada pide confirmación explícita,
- *      porque esa edición manda la reseña a revisión (ADR-0063). Es el único caso destructivo que
- *      existe hoy: la nota y el método dejan la reseña vieja, pero no la contradicen.
+ *   2. Ya no pide confirmación al volver a "cursando": esa advertencia existía porque la reseña
+ *      del modelo anterior se anclaba a la cursada, y volver atrás la mandaba a revisión. La
+ *      reseña vigente se ancla a cuenta, materia y período, así que editar la cursada no la toca.
  *
  * El backend revalida todo el juego de invariantes sobre el estado resultante; el form solo guía.
  */
-export function EditEnrollmentForm({ enrollment, universityId, hasPublishedReview }: Props) {
+export function EditEnrollmentForm({ enrollment, universityId }: Props) {
   const [state, formAction] = useActionState<EditEnrollmentFormState, FormData>(
     submitEditEnrollmentAction,
     initialEditEnrollmentState,
@@ -61,7 +46,6 @@ export function EditEnrollmentForm({ enrollment, universityId, hasPublishedRevie
   );
   const [termId, setTermId] = useState<string>(enrollment.termId ?? '');
   const [commissionId, setCommissionId] = useState<string>(enrollment.commissionId ?? '');
-  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const terms = useQuery(addEnrollmentQueries.academicTerms(universityId));
 
@@ -80,12 +64,6 @@ export function EditEnrollmentForm({ enrollment, universityId, hasPublishedRevie
       showCommission ? termId : null,
     ),
   );
-
-  // La edición destructiva: la cursada vuelve a estar en curso y hay una reseña publicada colgando
-  // de ella. Es exactamente la condición que el backend usa para publicar el evento, así que la
-  // advertencia no puede desincronizarse de lo que realmente pasa.
-  const isDestructive =
-    enrollment.status !== 'InProgress' && status === 'InProgress' && hasPublishedReview;
 
   // ADR-0046: el action es mutación pura y la navegación la hace el cliente cuando ve el status.
   // El porqué de `navigateAfterMutation` y no `router.push` está medido en su docstring.
@@ -106,200 +84,155 @@ export function EditEnrollmentForm({ enrollment, universityId, hasPublishedRevie
   }
 
   return (
-    <>
-      <form ref={formRef} action={formAction} className="flex flex-col" noValidate>
-        <input type="hidden" name="enrollmentId" value={enrollment.id} />
+    <form ref={formRef} action={formAction} className="flex flex-col" noValidate>
+      <input type="hidden" name="enrollmentId" value={enrollment.id} />
 
-        <div
-          className="border border-line rounded-lg bg-bg-card"
-          style={{ padding: '12px 14px', marginBottom: 18 }}
+      <div
+        className="border border-line rounded-lg bg-bg-card"
+        style={{ padding: '12px 14px', marginBottom: 18 }}
+      >
+        <p className="font-mono text-ink-3" style={{ fontSize: 10.5, margin: '0 0 2px' }}>
+          {enrollment.subjectCode}
+        </p>
+        <p className="text-ink" style={{ fontSize: 14, fontWeight: 500, margin: 0 }}>
+          {enrollment.subjectName}
+        </p>
+        <p className="text-ink-4" style={{ fontSize: 11.5, lineHeight: 1.5, marginTop: 6 }}>
+          La materia no se puede cambiar. Si cargaste la que no era, borrala y cargá la correcta.
+        </p>
+      </div>
+
+      <Field id="status" label="Estado">
+        <select
+          id="status"
+          name="status"
+          required
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className={selectClass}
+          style={selectStyle}
         >
-          <p className="font-mono text-ink-3" style={{ fontSize: 10.5, margin: '0 0 2px' }}>
-            {enrollment.subjectCode}
-          </p>
-          <p className="text-ink" style={{ fontSize: 14, fontWeight: 500, margin: 0 }}>
-            {enrollment.subjectName}
-          </p>
-          <p className="text-ink-4" style={{ fontSize: 11.5, lineHeight: 1.5, marginTop: 6 }}>
-            La materia no se puede cambiar. Si cargaste la que no era, borrala y cargá la correcta.
-          </p>
-        </div>
+          <option value="Passed">Aprobada</option>
+          <option value="Regularized">Regular (regularicé, falta final)</option>
+          <option value="InProgress">Cursando</option>
+          <option value="Failed">Reprobada</option>
+          <option value="Dropped">Abandonada</option>
+        </select>
+      </Field>
 
-        <Field id="status" label="Estado">
+      {showApprovalMethod && (
+        <Field id="approvalMethod" label="Forma de aprobación">
           <select
-            id="status"
-            name="status"
+            id="approvalMethod"
+            name="approvalMethod"
             required
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            value={approvalMethod}
+            onChange={(e) => setApprovalMethod(e.target.value)}
             className={selectClass}
             style={selectStyle}
           >
-            <option value="Passed">Aprobada</option>
-            <option value="Regularized">Regular (regularicé, falta final)</option>
-            <option value="InProgress">Cursando</option>
-            <option value="Failed">Reprobada</option>
-            <option value="Dropped">Abandonada</option>
+            <option value="Coursework">Cursada (regular + final)</option>
+            <option value="Promotion">Promoción</option>
+            <option value="FinalExam">Final</option>
+            <option value="IndependentFinalExam">Final libre</option>
+            <option value="CreditTransfer">Equivalencia</option>
           </select>
+          {fieldError === 'approvalMethod' && <FieldError>{formError}</FieldError>}
         </Field>
+      )}
 
-        {showApprovalMethod && (
-          <Field id="approvalMethod" label="Forma de aprobación">
+      {showTerm && (
+        <Field id="term" label="Cuatrimestre">
+          <select
+            id="term"
+            name="termId"
+            required={status === 'InProgress' || approvalMethod === 'IndependentFinalExam'}
+            className={selectClass}
+            style={selectStyle}
+            value={termId}
+            onChange={(e) => {
+              setTermId(e.target.value);
+              // La comisión se identifica por (materia, cuatrimestre): la que estaba elegida no
+              // existe en el cuatrimestre nuevo, así que se limpia en vez de viajar inválida.
+              setCommissionId('');
+            }}
+          >
+            <option value="">Elegí un cuatrimestre</option>
+            {(terms.data ?? []).map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.label}
+              </option>
+            ))}
+          </select>
+          {fieldError === 'termId' && <FieldError>{formError}</FieldError>}
+        </Field>
+      )}
+
+      {showCommission && (
+        <Field id="commission" label="Comisión / cátedra">
+          {commissions.isLoading ? (
+            <p className="text-ink-3" style={{ fontSize: 13, padding: '2px 0' }}>
+              Buscando comisiones…
+            </p>
+          ) : (commissions.data ?? []).length === 0 ? (
+            <p className="text-ink-3" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
+              No hay comisiones cargadas para esta materia y cuatrimestre. Podés guardar igual; vas
+              a poder reseñarla cuando se cargue la comisión.
+            </p>
+          ) : (
             <select
-              id="approvalMethod"
-              name="approvalMethod"
-              required
-              value={approvalMethod}
-              onChange={(e) => setApprovalMethod(e.target.value)}
+              id="commission"
+              name="commissionId"
               className={selectClass}
               style={selectStyle}
+              value={commissionId}
+              onChange={(e) => setCommissionId(e.target.value)}
             >
-              <option value="Coursework">Cursada (regular + final)</option>
-              <option value="Promotion">Promoción</option>
-              <option value="FinalExam">Final</option>
-              <option value="IndependentFinalExam">Final libre</option>
-              <option value="CreditTransfer">Equivalencia</option>
-            </select>
-            {fieldError === 'approvalMethod' && <FieldError>{formError}</FieldError>}
-          </Field>
-        )}
-
-        {showTerm && (
-          <Field id="term" label="Cuatrimestre">
-            <select
-              id="term"
-              name="termId"
-              required={status === 'InProgress' || approvalMethod === 'IndependentFinalExam'}
-              className={selectClass}
-              style={selectStyle}
-              value={termId}
-              onChange={(e) => {
-                setTermId(e.target.value);
-                // La comisión se identifica por (materia, cuatrimestre): la que estaba elegida no
-                // existe en el cuatrimestre nuevo, así que se limpia en vez de viajar inválida.
-                setCommissionId('');
-              }}
-            >
-              <option value="">Elegí un cuatrimestre</option>
-              {(terms.data ?? []).map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
+              <option value="">Elegí tu comisión</option>
+              {(commissions.data ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {commissionLabel(c)}
                 </option>
               ))}
             </select>
-            {fieldError === 'termId' && <FieldError>{formError}</FieldError>}
-          </Field>
-        )}
+          )}
+          {fieldError === 'commissionId' && <FieldError>{formError}</FieldError>}
+        </Field>
+      )}
 
-        {showCommission && (
-          <Field id="commission" label="Comisión / cátedra">
-            {commissions.isLoading ? (
-              <p className="text-ink-3" style={{ fontSize: 13, padding: '2px 0' }}>
-                Buscando comisiones…
-              </p>
-            ) : (commissions.data ?? []).length === 0 ? (
-              <p className="text-ink-3" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
-                No hay comisiones cargadas para esta materia y cuatrimestre. Podés guardar igual;
-                vas a poder reseñarla cuando se cargue la comisión.
-              </p>
-            ) : (
-              <select
-                id="commission"
-                name="commissionId"
-                className={selectClass}
-                style={selectStyle}
-                value={commissionId}
-                onChange={(e) => setCommissionId(e.target.value)}
-              >
-                <option value="">Elegí tu comisión</option>
-                {(commissions.data ?? []).map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {commissionLabel(c)}
-                  </option>
-                ))}
-              </select>
-            )}
-            {fieldError === 'commissionId' && <FieldError>{formError}</FieldError>}
-          </Field>
-        )}
+      {showGrade && (
+        <Field id="grade" label="Nota final (0 a 10)">
+          <input
+            id="grade"
+            name="grade"
+            type="number"
+            inputMode="decimal"
+            step="0.01"
+            min={0}
+            max={10}
+            required={showGrade}
+            className={selectClass}
+            style={selectStyle}
+            placeholder="7.5"
+            defaultValue={enrollment.grade ?? ''}
+            aria-label="Nota final (0 a 10)"
+          />
+          {fieldError === 'grade' && <FieldError>{formError}</FieldError>}
+        </Field>
+      )}
 
-        {showGrade && (
-          <Field id="grade" label="Nota final (0 a 10)">
-            <input
-              id="grade"
-              name="grade"
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              min={0}
-              max={10}
-              required={showGrade}
-              className={selectClass}
-              style={selectStyle}
-              placeholder="7.5"
-              defaultValue={enrollment.grade ?? ''}
-              aria-label="Nota final (0 a 10)"
-            />
-            {fieldError === 'grade' && <FieldError>{formError}</FieldError>}
-          </Field>
-        )}
+      {formError && !fieldError && (
+        <p
+          role="alert"
+          className="text-sm rounded border border-line bg-bg-card text-st-failed-fg"
+          style={{ padding: 12, marginBottom: 14 }}
+        >
+          {formError}
+        </p>
+      )}
 
-        {formError && !fieldError && (
-          <p
-            role="alert"
-            className="text-sm rounded border border-line bg-bg-card text-st-failed-fg"
-            style={{ padding: 12, marginBottom: 14 }}
-          >
-            {formError}
-          </p>
-        )}
-
-        {/* Aviso antes de guardar, para que el diálogo no aparezca de la nada. La consecuencia en
-            sí la explica el diálogo, que es donde el alumno decide. */}
-        {isDestructive && (
-          <p
-            className="rounded border border-line bg-bg-card text-ink-2"
-            style={{ padding: 12, fontSize: 12.5, lineHeight: 1.55, marginBottom: 6 }}
-          >
-            Este cambio afecta la reseña que publicaste de esta cursada. Te vamos a pedir que lo
-            confirmes.
-          </p>
-        )}
-
-        <SubmitButton destructive={isDestructive} onDestructiveClick={() => setConfirmOpen(true)} />
-      </form>
-
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Esto va a poner tu reseña en revisión</DialogTitle>
-            <DialogDescription>
-              Marcaste {enrollment.subjectName} como "cursando" otra vez. Tu reseña publicada de esa
-              cursada pasa a revisión hasta que la corrijas: no se borra, y podés editarla y volver
-              a publicarla cuando quieras.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button type="button" variant="secondary" onClick={() => setConfirmOpen(false)}>
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                // Se cierra al confirmar y no al terminar: si el guardado falla, el error se
-                // muestra en el form, y un diálogo abierto encima lo taparía.
-                setConfirmOpen(false);
-                // requestSubmit y no submit(): dispara el action del form igual que el botón, así
-                // que `useActionState` y `useFormStatus` siguen viendo el envío.
-                formRef.current?.requestSubmit();
-              }}
-            >
-              Guardar igual
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+      <SubmitButton />
+    </form>
   );
 }
 
@@ -351,18 +284,11 @@ const selectStyle: React.CSSProperties = {
  * `preventDefault` porque así el form nunca llega a enviarse sin que el alumno haya confirmado, ni
  * siquiera por Enter en un campo de texto.
  */
-function SubmitButton({
-  destructive,
-  onDestructiveClick,
-}: {
-  destructive: boolean;
-  onDestructiveClick: () => void;
-}) {
+function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button
-      type={destructive ? 'button' : 'submit'}
-      onClick={destructive ? onDestructiveClick : undefined}
+      type="submit"
       disabled={pending}
       className={cn(
         'w-full inline-flex items-center justify-center gap-2',

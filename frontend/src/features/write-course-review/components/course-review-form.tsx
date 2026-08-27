@@ -82,7 +82,7 @@ export function CourseReviewForm({ instrument, subjects, terms }: CourseReviewFo
 
   useEffect(() => {
     if (state.status !== 'success') return;
-    router.push('/reviews?published=1');
+    router.push('/reviews/mine?published=1');
   }, [state, router]);
 
   const filteredSubjects = useMemo(() => {

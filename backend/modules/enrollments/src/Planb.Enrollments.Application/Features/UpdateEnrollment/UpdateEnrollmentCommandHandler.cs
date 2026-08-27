@@ -1,12 +1,10 @@
 using Planb.Academic.Application.Contracts;
 using Planb.Enrollments.Application.Abstractions.Persistence;
-using Planb.Enrollments.Application.IntegrationEvents;
 using Planb.Enrollments.Application.Services;
 using Planb.Enrollments.Domain.EnrollmentRecords;
 using Planb.Identity.Application.Contracts;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
-using Wolverine;
 
 namespace Planb.Enrollments.Application.Features.UpdateEnrollment;
 
@@ -40,7 +38,6 @@ public static class UpdateEnrollmentCommandHandler
         IIdentityQueryService identity,
         IAcademicQueryService academic,
         IDateTimeProvider clock,
-        IMessageBus bus,
         CancellationToken ct)
     {
         var profile = await identity.GetStudentProfileForUserAsync(command.UserId, ct);
@@ -73,8 +70,6 @@ public static class UpdateEnrollmentCommandHandler
             return placementCheck.Error;
         }
 
-        var previousStatus = record.Status;
-
         var updateResult = record.Update(
             command.CommissionId,
             command.TermId,
@@ -92,26 +87,6 @@ public static class UpdateEnrollmentCommandHandler
         if (changed)
         {
             await unitOfWork.SaveChangesAsync(ct);
-
-            // La edición destructiva es una sola hoy: volver la cursada a Cursando deja a cualquier
-            // reseña anclada hablando de algo que todavía no terminó (ADR-0063). Se publica después
-            // del SaveChanges y va por el outbox durable de Wolverine, así que el cambio de la
-            // cursada y la entrega del evento no se pueden separar (ADR-0030).
-            //
-            // Cambiar la nota o el método también deja stale a la reseña, pero de una forma que no
-            // invalida lo que dice, así que no entra acá: ampliarlo es una decisión aparte y no un
-            // detalle de implementación de esta.
-            if (previousStatus != EnrollmentStatus.InProgress
-                && record.Status == EnrollmentStatus.InProgress)
-            {
-                await bus.PublishAsync(new EnrollmentRecordEditedIntegrationEvent(
-                    Guid.NewGuid(),
-                    record.Id.Value,
-                    record.StudentProfileId,
-                    previousStatus.ToString(),
-                    record.Status.ToString(),
-                    clock.UtcNow));
-            }
         }
 
         return new UpdateEnrollmentResponse(

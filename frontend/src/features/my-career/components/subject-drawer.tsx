@@ -5,7 +5,6 @@ import {
   type PlannedSubject,
   type PlanYear,
 } from '@/features/my-career/data/plan';
-import { reviewCountForSubject, topReviewsForSubject } from '@/features/my-career/data/reviews';
 import { teachersForSubject } from '@/features/my-career/data/teachers';
 import {
   approvedCodes,
@@ -13,10 +12,8 @@ import {
   missingCorrelativas,
   stateLabel,
 } from '@/features/my-career/lib/subject-status';
-import { NO_DATA_YET } from '@/lib/copy';
 import { cn } from '@/lib/utils';
 import { PrerequisiteChip } from './prerequisite-chip';
-import { ReviewCard } from './review-card';
 import { StatCell } from './stat-cell';
 
 type Props = {
@@ -40,14 +37,7 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
   const approved = approvedCodes(plan);
   const teachers = teachersForSubject(subject.code);
   const activeTeachers = teachers.filter((t) => t.subjects.includes(subject.code));
-  const totalReviews = reviewCountForSubject(subject.code);
-  const reviews = topReviewsForSubject(subject.code, 3);
   const subjectCommissions = commissionsForSubject(subject.code);
-
-  const rating =
-    activeTeachers.length > 0
-      ? activeTeachers.reduce((acc, t) => acc + t.rating.overall, 0) / activeTeachers.length
-      : null;
 
   // Prerequisites this subject "needs" (its declared correlativas).
   const needsCodes = subject.correlativas;
@@ -65,23 +55,17 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Header subject={subject} totalTeachers={activeTeachers.length} totalReviews={totalReviews} />
+      <Header subject={subject} totalTeachers={activeTeachers.length} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4">
-        {/* Left col: reviews + prerequisites */}
+        {/* Left col: prerequisites */}
         <div className="flex flex-col gap-3.5">
-          <ReviewsCard subjectCode={subject.code} reviews={reviews} totalReviews={totalReviews} />
           <CorrelativasCard needs={needs} unlocks={unlocks} />
         </div>
 
         {/* Right col: stats + teachers + student situation */}
         <div className="flex flex-col gap-3.5">
-          <StatsCard
-            rating={rating}
-            totalReviews={totalReviews}
-            commissionCount={subjectCommissions.length}
-            modality={subject.modality}
-          />
+          <StatsCard commissionCount={subjectCommissions.length} modality={subject.modality} />
           <TeachersCard teachers={teachers} subjectCode={subject.code} />
           <SituationCard subject={subject} unlocked={unlocked} missing={missing} />
         </div>
@@ -93,11 +77,9 @@ export function SubjectDrawer({ subject, plan = defaultPlan }: Props) {
 function Header({
   subject,
   totalTeachers,
-  totalReviews,
 }: {
   subject: PlannedSubject & { year: number };
   totalTeachers: number;
-  totalReviews: number;
 }) {
   return (
     <div>
@@ -114,8 +96,8 @@ function Header({
       </div>
       <h1 className="font-display font-semibold text-3xl text-ink leading-tight">{subject.name}</h1>
       <p className="text-sm text-ink-3 mt-2">
-        {subject.year}° año · {modalityLabel(subject.modality)} · {totalTeachers} docentes ·{' '}
-        {totalReviews} reseñas · estado {stateLabel[subject.state].toLowerCase()}
+        {subject.year}° año · {modalityLabel(subject.modality)} · {totalTeachers} docentes · estado{' '}
+        {stateLabel[subject.state].toLowerCase()}
       </p>
     </div>
   );
@@ -123,48 +105,6 @@ function Header({
 
 function modalityLabel(modality: PlannedSubject['modality']): string {
   return modality === 'anual' ? 'Anual' : modality === '1c' ? '1er cuatri' : '2do cuatri';
-}
-
-function ReviewsCard({
-  subjectCode,
-  reviews,
-  totalReviews,
-}: {
-  subjectCode: string;
-  reviews: ReturnType<typeof topReviewsForSubject>;
-  totalReviews: number;
-}) {
-  return (
-    <div className="bg-bg-card border border-line rounded-lg p-5 shadow-card">
-      <div className="flex justify-between items-center mb-3">
-        <h2 className="font-display font-semibold text-base text-ink">
-          Reseñas <small className="text-ink-3 font-normal ml-1">{totalReviews} · top útiles</small>
-        </h2>
-      </div>
-      {reviews.length === 0 ? (
-        <div className="py-6 text-center text-sm text-ink-3">
-          <p>Aún no hay reseñas para esta materia.</p>
-          <button type="button" className="mt-2 text-accent-ink hover:text-accent-hover text-sm">
-            Sé el primero en reseñar →
-          </button>
-        </div>
-      ) : (
-        <>
-          {reviews.map((r, i) => (
-            <ReviewCard key={r.id} review={r} isLast={i === reviews.length - 1} />
-          ))}
-          <div className="pt-3 mt-2 border-t border-line">
-            <Link
-              href={`/reviews?subjectCode=${subjectCode}`}
-              className="text-accent-ink hover:text-accent-hover text-sm"
-            >
-              Ver las {totalReviews} reseñas →
-            </Link>
-          </div>
-        </>
-      )}
-    </div>
-  );
 }
 
 function CorrelativasCard({
@@ -212,13 +152,9 @@ function CorrelativasCard({
 }
 
 function StatsCard({
-  rating,
-  totalReviews,
   commissionCount,
   modality,
 }: {
-  rating: number | null;
-  totalReviews: number;
   commissionCount: number;
   modality: PlannedSubject['modality'];
 }) {
@@ -226,11 +162,6 @@ function StatsCard({
     <div className="bg-bg-card border border-line rounded-lg p-5 shadow-card">
       <h2 className="font-display font-semibold text-base text-ink mb-3">En números</h2>
       <div className="grid grid-cols-2 gap-3.5">
-        <StatCell
-          value={rating != null ? `★ ${rating.toFixed(1)}` : NO_DATA_YET}
-          label="rating promedio"
-        />
-        <StatCell value={String(totalReviews)} label="reseñas" />
         <StatCell value={String(commissionCount)} label="comisiones" />
         <StatCell value={modalityLabel(modality)} label="modalidad" />
       </div>
@@ -285,12 +216,7 @@ function TeachersCard({
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[11.5px] text-ink-2 font-mono">
-                    ★ {t.rating.overall.toFixed(1)}
-                  </span>
-                  <span className="text-ink-3">›</span>
-                </div>
+                <span className="shrink-0 text-ink-3">›</span>
               </Link>
             );
           })}
@@ -321,8 +247,8 @@ function SituationCard({
       >
         <h2 className="font-display font-semibold text-base text-ink mb-1.5">Tu situación</h2>
         <p className="text-sm text-ink-2 leading-relaxed">
-          La tenés aprobada con nota <strong>{subject.grade}</strong>. Si querés, podés mirar
-          reseñas de otros para tu reseña propia.
+          La tenés aprobada con nota <strong>{subject.grade}</strong>. Si la cursaste, contala: lo
+          que sepas de esa cátedra se suma a sus conteos.
         </p>
       </div>
     );

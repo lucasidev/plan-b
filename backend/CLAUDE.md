@@ -1,6 +1,6 @@
 # Backend (planb)
 
-.NET 10 modular monolith. 6 módulos (bounded contexts) + SharedKernel + Host. `planning` pertenece a la versión anterior del producto, en retiro ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)).
+.NET 10 modular monolith. 4 módulos (bounded contexts) + SharedKernel + Host. `planning` y `moderation` se podaron con la versión anterior del producto ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)): el planificador no existe, y la moderación de contenido público no tiene qué moderar porque el modelo vigente no publica texto ([ADR-0084](../docs/decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 
 Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions) para ADRs.
 
@@ -53,7 +53,7 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 ## Modular monolith: reglas físicas
 
-- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`, `moderation`, y `planning`, que se dropea con la poda). Misma connection string, schemas distintos.
+- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`). Misma connection string, schemas distintos.
 - **No EF navigation cross-module**: un `Review` no tiene `.Subject` cargado con JOIN. Si necesita data de Subject, el handler pide `IAcademicQueryService.GetSubjectByIdAsync(subjectId)` (de `Planb.Academic.Application.Contracts`).
 - **No FKs cross-schema**: las referencias son UUIDs sin constraint. La validación se hace en el application layer. Ver [ADR-0017](../docs/decisions/0017-persistence-ignorance.md).
 - **Cross-module communication**:
@@ -73,7 +73,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 - **Source of truth siempre Postgres**. Redis es solo derivación o ephemeral.
 - **Toda key tiene TTL explícito**. Convención: ≤ 30 días.
 - **Casos canónicos** ([ADR-0034](../docs/decisions/0034-redis-as-cache-and-ephemeral-state.md)): los seis patrones (key shape, TTL, comandos, fallback) están en [`docs/engineering/redis-key-patterns.md`](../docs/engineering/redis-key-patterns.md). **Implementados hoy: solo los dos primeros** (refresh token revocation list y rate limiting sliding-window). Idempotency keys, hot reads cache, crowd insights cache y recently-viewed son diseño acordado sin código: antes de usarlos hay que escribirlos.
-- **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, la usan academic y moderation; planning también, mientras exista). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
+- **No usar Redis raw** en handlers. Se consume detrás de una abstracción: `IRefreshTokenStore` (Identity, específica del módulo) o `IRateLimiter` (SharedKernel, `Abstractions/RateLimiting/`: es cross-cutting, hoy la usa academic). Las implementaciones inyectan `IConnectionMultiplexer` de StackExchange.Redis directamente; no hay un wrapper propio.
 - **Degradación**: si Redis no responde, los handlers degradan (cache miss → DB; rate limiter no disponible → fail open con warning; refresh tokens no validables → 401 y user se relogea). No fallan completamente.
 - **Out of scope**: pub/sub (Wolverine outbox cubre messaging), vector search (pgvector), source of truth de cualquier dato persistente.
 

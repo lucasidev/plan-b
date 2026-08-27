@@ -1,20 +1,13 @@
-import { NO_DATA_YET } from '@/lib/copy';
-import type { TeacherDetail, TeacherInsights } from '../types';
+import type { TeacherDetail } from '../types';
 
 /**
- * Teacher detail header (US-003): avatar (photo or initials) + "Docente" eyebrow + name + title +
- * bio, with the stats row (rating, reseñas, dificultad, recomiendan). Mirrors the top of the mockup
- * `ProfessorDetail`. Names arrive already title-cased from the API (the storage is lowercase).
+ * Encabezado de la ficha de un docente (US-003): avatar (foto o iniciales) + "Docente" + nombre +
+ * título + bio. Los nombres llegan ya capitalizados de la API (en la base están en minúscula).
  *
- * No "respuestas públicas" stat yet: that is the teacher response feature (US-040), still ahead.
+ * Sin fila de estadísticas: lo que el producto publica es de la cátedra (ADR-0083), y las cátedras
+ * que esta persona integra están abajo, cada una con link a sus conteos.
  */
-export function TeacherHeader({
-  teacher,
-  insights,
-}: {
-  teacher: TeacherDetail;
-  insights: TeacherInsights;
-}) {
+export function TeacherHeader({ teacher }: { teacher: TeacherDetail }) {
   const fullName = `${teacher.firstName} ${teacher.lastName}`;
   const initials = `${teacher.firstName.charAt(0)}${teacher.lastName.charAt(0)}`.toUpperCase();
 
@@ -34,44 +27,6 @@ export function TeacherHeader({
       {teacher.bio && (
         <p className="max-w-2xl text-[14px] leading-relaxed text-ink-2">{teacher.bio}</p>
       )}
-
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-4">
-        <Stat
-          label="Rating"
-          value={
-            insights.averageOverallRating !== null
-              ? insights.averageOverallRating.toFixed(1)
-              : NO_DATA_YET
-          }
-          suffix={insights.averageOverallRating !== null ? '/5' : undefined}
-          sub="promedio"
-        />
-        <Stat
-          label="Reseñas"
-          value={String(insights.totalCount)}
-          sub={insights.totalCount === 1 ? 'publicada' : 'publicadas'}
-        />
-        <Stat
-          label="Dificultad"
-          value={
-            insights.averageDifficulty !== null
-              ? insights.averageDifficulty.toFixed(1)
-              : NO_DATA_YET
-          }
-          suffix={insights.averageDifficulty !== null ? '/5' : undefined}
-          sub="promedio"
-        />
-        <Stat
-          label="Recomiendan"
-          value={
-            insights.recommendPercentage !== null
-              ? insights.recommendPercentage.toFixed(0)
-              : NO_DATA_YET
-          }
-          suffix={insights.recommendPercentage !== null ? '%' : undefined}
-          sub="de la cursada"
-        />
-      </div>
     </header>
   );
 }
@@ -101,29 +56,6 @@ function Avatar({
       className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-bg-elev font-display text-lg font-semibold text-ink-2"
     >
       {initials}
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  suffix,
-  sub,
-}: {
-  label: string;
-  value: string;
-  suffix?: string;
-  sub?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1 bg-bg-card px-4 py-3.5">
-      <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-4">{label}</span>
-      <span className="text-[22px] font-semibold leading-none text-ink tabular-nums">
-        {value}
-        {suffix && <span className="ml-0.5 text-[13px] font-normal text-ink-3">{suffix}</span>}
-      </span>
-      {sub && <span className="text-[11px] text-ink-3">{sub}</span>}
     </div>
   );
 }

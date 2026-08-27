@@ -64,11 +64,11 @@ Rechazada: no es paginación, es filtro. Resuelve navegar el archivo, no leer un
 
 **A vigilar**
 
-- Si el feed de reseñas gana un orden "más recientes primero" como default real (hoy es `created_at DESC` pero el volumen por materia es chico), pasa a cumplir el criterio de keyset y hay que migrarlo. Es el candidato más probable a cambiar de lado.
 - `COUNT(*) OVER ()` deja de ser gratis cuando el `WHERE` no está indexado y el scan es grande. Con volumen real, medir antes de asumir que el total sale gratis.
+- **Los tres listados que motivaron esta decisión ya no existen** (poda de R0 y R2). La regla sigue en pie, pero hoy la sostiene un solo listado paginado, y hasta que el producto vuelva a tener un feed público el corolario del keyset no tiene consumidor. Si pasa un sprint más así, vale preguntarse si la mitad "keyset" de esta decisión no es diseño para un futuro hipotético.
 
 ## Refs
 
-- `DapperPublicSimulationsReader` fue el keyset de referencia, con el desempate por id explicado en su propio SQL; se retiró con el planificador (R0, 2026-08-23) y queda citable desde el historial de git.
-- [`DapperBrowseReviewsQueryService`](../../backend/modules/reviews/src/Planb.Reviews.Infrastructure/Persistence/Queries/DapperBrowseReviewsQueryService.cs) y [`DapperReportQueueReader`](../../backend/modules/moderation/src/Planb.Moderation.Infrastructure/Reading/DapperReportQueueReader.cs): los dos offset.
-- [ADR-0018](0018-ef-core-writes-dapper-reads.md): por qué estos tres listados son SQL a mano y no LINQ.
+- [`DapperImportQueueReader`](../../backend/modules/academic/src/Planb.Academic.Infrastructure/Reading/DapperImportQueueReader.cs): el único listado paginado que queda, offset, y es exactamente el caso de vista de gestión que la decisión manda a offset.
+- Los tres listados de la tabla de arriba se retiraron: el feed de simulaciones (`DapperPublicSimulationsReader`, el keyset de referencia con su desempate por id) con el planificador en R0; el feed de reseñas y la cola de moderación con la poda del modelo anterior en R2 ([ADR-0063](0063-the-product-is-a-pressure-instrument.md), [ADR-0084](0084-free-text-feeds-curation-and-is-never-published.md)). Los tres quedan citables desde el historial de git.
+- [ADR-0018](0018-ef-core-writes-dapper-reads.md): por qué estos listados son SQL a mano y no LINQ.

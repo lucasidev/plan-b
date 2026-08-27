@@ -134,7 +134,7 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
       .click();
     await page.getByRole('button', { name: /^No$/ }).last().click();
     await page.getByRole('button', { name: /enviar la reseña/i }).click();
-    await expect(page).toHaveURL(/\/reviews\?published=1$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine\?published=1$/, { timeout: 30_000 });
 
     // ---- 4. Con la décima, la ficha publica. Y se lee sin sesión: esa es la mitad de la tesis.
     await context.clearCookies();

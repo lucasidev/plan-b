@@ -4,7 +4,6 @@ import { DisplayHeading } from '@/components/ui/display-heading';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { EditEnrollmentForm } from '@/features/edit-enrollment';
 import { fetchTranscriptServer } from '@/features/my-career/api.server';
-import { fetchMyReviewsServer } from '@/features/my-reviews/api.server';
 import { apiFetch } from '@/lib/api-client';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
@@ -48,7 +47,6 @@ export default async function EditTranscriptEntryPage({
   // Si hay una reseña publicada anclada a esta cursada, volverla a "cursando" la manda a revisión
   // (ADR-0063). El form lo necesita para decidir si pide confirmación, y sin reseña publicada no
   // hay nada que confirmar: el consumer de Reviews no toca las que no están publicadas.
-  const hasPublishedReview = await findPublishedReviewFor(enrollmentId);
 
   return (
     <div className="px-6 py-9 max-w-[640px] mx-auto">
@@ -74,7 +72,6 @@ export default async function EditTranscriptEntryPage({
           grade: entry.grade,
         }}
         universityId={planSummary.universityId}
-        hasPublishedReview={hasPublishedReview}
       />
 
       <div className="mt-6">
@@ -108,21 +105,6 @@ async function fetchCareerPlanSummary(careerPlanId: string): Promise<CareerPlanS
     return null;
   } catch {
     return null;
-  }
-}
-
-/**
- * Degrada a `false` si el listado de reseñas falla: sin poder confirmar que hay una reseña
- * publicada, la alternativa sería advertir sobre una consecuencia que quizás no existe. El backend
- * hace lo correcto igual (publica el evento o no según el dato real); lo único que se pierde es el
- * diálogo.
- */
-async function findPublishedReviewFor(enrollmentId: string): Promise<boolean> {
-  try {
-    const { items } = await fetchMyReviewsServer();
-    return items.some((r) => r.enrollmentId === enrollmentId && r.status === 'Published');
-  } catch {
-    return false;
   }
 }
 

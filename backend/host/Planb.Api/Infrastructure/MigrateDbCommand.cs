@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.Enrollments.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence;
-using Planb.Moderation.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence;
 
 namespace Planb.Api.Infrastructure;
@@ -43,7 +42,6 @@ public sealed class MigrateDbCommand : JasperFxAsyncCommand<NetCoreInput>
         await MigrateAsync<AcademicDbContext>(sp, "Academic");
         await MigrateAsync<EnrollmentsDbContext>(sp, "Enrollments");
         await MigrateAsync<ReviewsDbContext>(sp, "Reviews");
-        await MigrateAsync<ModerationDbContext>(sp, "Moderation");
 
         return true;
     }

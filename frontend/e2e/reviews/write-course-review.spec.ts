@@ -82,7 +82,7 @@ test.describe('Reseñar una cursada (US-146)', () => {
     await expect(page.getByText(/nunca se muestra una reseña individual/i)).toBeVisible();
 
     await page.getByRole('button', { name: /enviar la reseña/i }).click();
-    await expect(page).toHaveURL(/\/reviews\?published=1$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine\?published=1$/, { timeout: 30_000 });
 
     // Una voz por cuenta, materia y período: la misma cursada, otra vez, avisa en vez de duplicar.
     await page.goto('/reviews/new');

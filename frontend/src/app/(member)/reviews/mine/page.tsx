@@ -14,9 +14,18 @@ export const dynamic = 'force-dynamic';
  * El cuestionario baja acá porque el editor lo necesita para dibujar las preguntas. Si todavía no
  * hay uno publicado, la lista se ve igual pero sin poder corregir: mostrar lo aportado no depende
  * de que exista un cuestionario vigente.
+ *
+ * Es también donde aterriza quien acaba de contar una cursada (`?published=1`): el acuse va acá y
+ * no en la pantalla de contar porque lo que confirma es que la reseña ya está en la lista, con su
+ * botón de corregir al lado.
  */
-export default async function MyCourseReviewsPage() {
-  const [reviews, instrument] = await Promise.all([
+export default async function MyCourseReviewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ published?: string }>;
+}) {
+  const [{ published }, reviews, instrument] = await Promise.all([
+    searchParams,
     fetchMyCourseReviewsServer(),
     fetchCurrentInstrumentServer(),
   ]);
@@ -30,6 +39,16 @@ export default async function MyCourseReviewsPage() {
           publican los conteos de todos juntos.
         </p>
       </div>
+
+      {published === '1' && (
+        <p
+          role="status"
+          className="mb-3 rounded-lg border border-line bg-bg-elev px-3.5 py-2.5 text-[13px] leading-relaxed text-ink"
+        >
+          Listo, quedó contada. Se suma a los conteos de su cátedra; acá la podés corregir o sacar
+          cuando quieras.
+        </p>
+      )}
 
       <MyReviewsList reviews={reviews} instrument={instrument} />
     </div>

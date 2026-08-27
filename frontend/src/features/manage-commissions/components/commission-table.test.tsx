@@ -10,7 +10,7 @@ import { CommissionTable } from './commission-table';
 
 // CommissionRow usa useRouter (refresh tras el toggle) y llama a los actions: se mockean los dos para
 // que el render corra en jsdom sin un App Router real ni un fetch real (mismo patrón que
-// delete-review-modal.test.tsx).
+// preview-table.test.tsx).
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));

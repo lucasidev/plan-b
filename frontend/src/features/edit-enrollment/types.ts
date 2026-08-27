@@ -4,7 +4,7 @@ import type { EnrollmentStatus } from '@/features/my-career/types';
  * La cursada tal como está guardada, para precargar el form. La arma la page resolviendo el
  * `enrollmentId` de la ruta contra el historial (GET /api/me/enrollment-records): la lista ya trae
  * todo lo que el editor necesita y es corta, así que un endpoint por id sería prematuro. Mismo
- * criterio que `edit-review`.
+ * criterio que `my-course-reviews`, donde corregir una reseña también se precarga del listado.
  */
 export type EnrollmentToEdit = {
   id: string;

@@ -244,6 +244,28 @@ Desde el 2026-08-27. Milestone [R2](https://github.com/lucasidev/plan-b/mileston
 
 **Sucesor previsto**: con el aggregate anterior muerto, `CourseReview` puede reclamar el nombre `Review`. Ese renaming es tarea propia y no entra en R2.
 
+### Lo hecho hasta ahora (2026-08-27)
+
+**La ficha de materia deriva de sus cátedras** (#363): `GET /api/reviews/subjects/{id}/facts` y `/subjects/{id}` reemplazado entero. La materia no promedia a sus cátedras: las muestra por separado, porque la pregunta que contesta es si lo que pasó es de la materia o de la cátedra que te tocó. Publica dónde las cátedras se separan (los ítems donde sus intervalos de Wilson no se tocan) y en qué coinciden todas, más la ventana temporal, el total de voces y cuántas cátedras publican. Los intentos van con la moda y la cola abierta ("tres o más") dicha aparte en vez de promediada: promediar una escala con último tramo abierto censura justamente lo que importa.
+
+**Se llega a la cátedra desde donde se la busca** (#364): la ficha dejó de alcanzarse tipeando un UUID. Entran links desde la ficha de materia, desde la ficha del docente (sus cátedras, vigentes y pasadas, cada una con su rol) y desde el buscador global.
+
+**Editar y borrar lo que conté** (#365): `PUT` y `DELETE /api/reviews/cursadas/{id}`, con `/reviews/mine` en el frontend. Corregir manda el set completo y no un delta, así que dejar de contestar algo lo saca del denominador de su ítem, que es la mitad de por qué alguien corrige. Una reseña ajena responde **404 y no 403**: decir "existe pero no es tuya" ya es contarle a alguien que otra persona reseñó esa cursada. El read de "mis aportes" es el único del producto que devuelve respuestas de a una, y solo hacia su autor: sin eso, corregir una obligaría a contestar las catorce preguntas de nuevo.
+
+**La poda entró entera** (#367, 2026-08-27). Se fueron `Review`, `ReviewVote`, `TeacherResponse` y `ReviewAuditLog` con sus tablas (migración `DropPreviousReviewModel`), sus doce features, el filtro de contenido, el módulo `moderation` completo, sus 24 tests de integración, y del frontend las ocho features del modelo anterior más la ficha de docente, que publicaba rating promedio, dificultad, porcentaje de recomendación, histograma, el listado de reseñas con sus votos y la respuesta del docente. Hoy esa ficha dice quién es la persona y a qué cátedras pertenece, cada una con link a sus conteos: lo que el producto publica es de la cátedra, no del docente ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
+
+Se fue también lo que quedó sin dueño al sacar el aggregate: el corpus de prueba (`SeedCorpus` con sus autores fantasma, sus cursadas y sus votos) y los dos seeders que lo alimentaban, el evento `EnrollmentRecordEditedIntegrationEvent` (existía para mandar a revisión la reseña anclada a una cursada, y la reseña vigente no se ancla a la cursada), y los dos integration events de identity, que publicaban al vacío desde que sus consumidores murieron. Los architecture tests bajaron a 4 bounded contexts.
+
+**Lo que la poda dejó al descubierto, y no es parte de ella**:
+
+- **Borrar la cuenta ya no toca las reseñas.** El consumidor que lo hacía era del modelo anterior. Hoy la posición del producto es que quien quiera sacar lo suyo lo saca antes de darse de baja (es lo que dice la pantalla Mis aportes), pero eso deja el texto libre de una cuenta borrada en la base. Decidir si eso está bien es una story, no un detalle de la poda.
+- **`just dev` arranca sin una sola reseña.** El corpus que se fue era del modelo anterior; el vigente no tiene el suyo, así que en dev las fichas dicen "junta 0". Los tests no dependen de él (crean lo suyo por API), pero mostrar el producto sí.
+- **`my-career` sigue siendo la pantalla del planificador**, con su plan, sus correlativas y sus docentes mockeados. La poda le sacó los puntajes (el ★ 4.4, las dimensiones sobre 5, el contador de reseñas y las tarjetas de reseña mockeadas), porque una pantalla viva no puede mostrar lo que el producto decidió no publicar. Lo demás sigue en pie y es candidato a su propia poda.
+
+**Verificado** (2026-08-27, contra infraestructura real): backend compilando sin warnings, `dotnet format` limpio, **709 tests unitarios + architecture** y **327 de integración en verde** (Reviews 27, Academic 154, Identity 105, Enrollments 41), **696 tests de frontend**, `bun run build` de producción, y `check-docs --strict` limpio. En el browser: se contó una cursada por la pantalla real, aterrizó en Mis aportes con su acuse, y los conteos de la cátedra se movieron de 30 a 31 voces. La ficha de docente quedó con nombre y cátedras, sin un solo número sobre la persona.
+
+**Lo que falta de R2**: #366 (la landing sigue vendiendo el planificador retirado) y #368 (el E2E de los dos recorridos).
+
 ### Cómo se sabe que R2 está listo
 
 1. Un visitante **sin cuenta** llega a la ficha de una cátedra partiendo de la landing, sin tipear un UUID.

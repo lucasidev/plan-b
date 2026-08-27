@@ -2,14 +2,12 @@ import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type { TeacherChair } from './components/teacher-chairs';
-import type { TeacherDetail, TeacherInsights, TeacherReviewsPage } from './types';
-import { TEACHER_REVIEWS_PAGE_SIZE } from './types';
+import type { TeacherDetail } from './types';
 
 /**
- * Server fetchers for the public teacher page (US-003). The page is server-rendered (RSC):
- * metadata + insights + the requested page of reviews are all fetched here. The endpoints are
- * public (AllowAnonymous); `apiFetchAuthenticated` forwards the session cookie when present but
- * works fine without one, so anonymous visitors get the same data.
+ * Server fetchers de la ficha pública de un docente (US-003, US-132). La página es server-rendered
+ * y los dos endpoints son públicos (AllowAnonymous): `apiFetchAuthenticated` reenvía la cookie de
+ * sesión si la hay, pero anda igual sin ninguna, así que un visitante anónimo ve lo mismo.
  */
 
 /**
@@ -35,35 +33,6 @@ export async function fetchTeacherServer(
     throw new Error(`Teacher fetch failed: ${response.status}`);
   }
   return { kind: 'ok', teacher: (await response.json()) as TeacherDetail };
-}
-
-/** Crowd insights (aggregates). Always 200 for a valid teacherId (no reviews = zeros/nulls). */
-export async function fetchTeacherInsightsServer(teacherId: string): Promise<TeacherInsights> {
-  const response = await apiFetchAuthenticated(
-    `/api/reviews/teacher-insights?teacherId=${teacherId}`,
-    { cache: 'no-store' },
-  );
-  if (!response.ok) {
-    throw new Error(`Teacher insights fetch failed: ${response.status}`);
-  }
-  return (await response.json()) as TeacherInsights;
-}
-
-/** Paginated published reviews where the teacher was the reviewed one (shared BrowseReviews). */
-export async function fetchTeacherReviewsServer(
-  teacherId: string,
-  page: number,
-): Promise<TeacherReviewsPage> {
-  const params = new URLSearchParams({
-    teacherId,
-    page: String(page),
-    pageSize: String(TEACHER_REVIEWS_PAGE_SIZE),
-  });
-  const response = await apiFetchAuthenticated(`/api/reviews?${params}`, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Teacher reviews fetch failed: ${response.status}`);
-  }
-  return (await response.json()) as TeacherReviewsPage;
 }
 
 /**

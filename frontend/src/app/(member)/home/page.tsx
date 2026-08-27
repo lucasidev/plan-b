@@ -4,13 +4,11 @@ import { Lede } from '@/components/ui/lede';
 import { CurrentSubjectsCard } from '@/features/home/components/current-subjects-card';
 import { MovementsCard } from '@/features/home/components/movements-card';
 import { NextPeriodCard } from '@/features/home/components/next-period-card';
-import { PendingReviewsCard } from '@/features/home/components/pending-reviews-card';
 import { PeriodProgressCard } from '@/features/home/components/period-progress-card';
 import { UpcomingSubjectsCard } from '@/features/home/components/upcoming-subjects-card';
 import { activeSubjects } from '@/features/home/data/active-subjects';
 import { movements } from '@/features/home/data/movements';
 import { currentPeriod } from '@/features/home/data/period';
-import { pendingReviews } from '@/features/home/data/to-review';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
 
@@ -55,7 +53,6 @@ export default async function HomePage() {
         </div>
 
         <aside aria-label="Pendientes y actividad reciente" className="flex flex-col gap-[14px]">
-          <PendingReviewsCard reviews={pendingReviews} year={currentPeriod.year} />
           <NextPeriodCard nextYear={currentPeriod.year + 1} />
           <MovementsCard movements={movements} />
         </aside>

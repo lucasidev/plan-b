@@ -1,7 +1,7 @@
 /**
  * DTOs del historial académico (GET /api/me/enrollment-records, US-045-e). Mirrors the backend's
  * GetMyTranscriptResponse + TranscriptPeriod + TranscriptEntry records field-for-field (camelCase
- * via JsonOptions), mismo criterio que `pending-reviews/types.ts`.
+ * via JsonOptions), mismo criterio que `my-course-reviews/types.ts`.
  */
 
 /** Mirrors the backend's EnrollmentStatus enum. Cinco valores reales del dominio. */

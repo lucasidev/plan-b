@@ -1,6 +1,6 @@
 # Data Model. planb
 
-> **Este documento describe el código actual, y hoy conviven dos modelos.** El del producto vigente ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)) ya aterrizó en parte: la [cátedra](#entity-chair-la-cátedra) en el catálogo académico, y el [instrumento con la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas) en su propio contexto. El anterior (la `Review` con ratings y texto publicado, `TeacherResponse`, la moderación de contenido, `Planning`) sigue descripto porque sigue en el código, en retiro: se poda como tarea propia, no como daño colateral.
+> **Este documento describe el código actual, y desde R2 hay un solo modelo de reseña.** El del producto vigente ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)): la [cátedra](#entity-chair-la-cátedra) en el catálogo académico, y el [instrumento con la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas) en su propio contexto. El anterior (la `Review` con ratings y texto publicado, `TeacherResponse`, la moderación de contenido y el planificador) se podó y ya no está descripto acá: vive en el historial de git.
 
 Modelo de datos completo del sistema, organizado por bounded contexts. Cada sección tiene un diagrama ER en Mermaid con las relaciones del contexto, seguido de la especificación de cada entidad (campos, tipos, constraints) y las invariantes que se aplican transversalmente.
 
@@ -12,10 +12,8 @@ El "por qué" de las decisiones estructurales está en los ADRs referenciados. E
 - [Context: Identity](#context-identity)
 - [Context: Academic Catalog](#context-academic-catalog)
 - [Context: Student History](#context-student-history)
-- [Context: Reviews & Moderation](#context-reviews--moderation)
 - [Context: el instrumento y la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas)
 - [Context: Semantic Analytics](#context-semantic-analytics)
-- [Context: Planning](#context-planning)
 - [Apéndice A: Enums](#apéndice-a-enums)
 - [Apéndice B: Invariantes transversales](#apéndice-b-invariantes-transversales)
 
@@ -47,14 +45,16 @@ erDiagram
     Commission ||--o{ EnrollmentRecord : in
     StudentProfile ||--o{ HistorialImport : imports
 
-    EnrollmentRecord ||--o| Review : "reviewed as"
-    User ||--o{ Review : authors
-    Review ||--o{ ReviewReport : receives
-    Review ||--o| TeacherResponse : "responded by"
-    Review ||--o{ ReviewAuditLog : audits
+    Subject ||--o{ Chair : "taught by"
+    Chair }o--o{ Teacher : "through ChairMember"
 
-    StudentProfile ||--o{ SimulationDraft : plans
-    SimulationDraft ||--o{ SimulationDraftItem : contains
+    User ||--o{ CourseReview : authors
+    Subject ||--o{ CourseReview : about
+    AcademicTerm ||--o{ CourseReview : during
+    Chair ||--o{ CourseReview : about
+    CourseReview ||--o{ ItemAnswer : contains
+    Item ||--o{ ItemAnswer : answered
+    Instrument }o--o{ Item : "through InstrumentItem"
 ```
 
 **Contextos:**
@@ -64,8 +64,6 @@ erDiagram
 | Identity             | User, StudentProfile, TeacherProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
 | Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
 | Student History      | EnrollmentRecord, HistorialImport                                                                           | Historial de cursadas del alumno                                |
-| Reviews & Moderation | Review, ReviewReport, TeacherResponse, ReviewAuditLog                                                       | Reseñas, reportes, respuestas, auditoría                        |
-| Planning             | SimulationDraft, SimulationDraftItem                                                                        | Simulaciones de cuatrimestre del alumno                         |
 
 ## Context: Identity
 
@@ -510,132 +508,12 @@ Staging del parseo de PDF/texto.
 
 - `StudentProfile.career_id.career.university_id = Subject.career_plan.career.university_id` para un `EnrollmentRecord`: el alumno cursa materias de su propia universidad/plan.
 - `Commission.subject_id = EnrollmentRecord.subject_id` y `Commission.term_id = EnrollmentRecord.term_id`: la comisión del enrollment corresponde a la materia y cuatrimestre del enrollment.
-- Una Review solo puede existir sobre enrollments con `status != 'cursando'`.
-
-## Context: Reviews & Moderation
-
-Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) y [ADR-0009](../decisions/0009-review-anonymity-is-a-presentation-rule.md).
-
-```mermaid
----
-config:
-    layout: elk
----
-erDiagram
-    User ||--o{ ReviewReport : "as reporter"
-    User ||--o{ ReviewReport : "as moderator"
-    User ||--o{ ReviewAuditLog : actor
-    EnrollmentRecord ||--o| Review : "reviewed as"
-    Teacher ||--o{ Review : "reviewed as docente"
-    Review ||--o{ ReviewReport : receives
-    Review ||--o| TeacherResponse : "responded by"
-    Review ||--o{ ReviewAuditLog : audits
-    Teacher ||--o{ TeacherResponse : authors
-```
-
-### Entity: Review
-
-Reseña anclada a una cursada finalizada.
-
-| Campo                           | Tipo                        | Constraints                     | Notas                                          |
-| ------------------------------- | --------------------------- | ------------------------------- | ---------------------------------------------- |
-| `id`                            | UUID                        | PK                              |                                                |
-| `enrollment_id`                 | UUID                        | FK → EnrollmentRecord, NOT NULL | Una reseña por cursada, ver el índice de abajo |
-| `author_user_id`                | UUID                        | FK → User, NOT NULL             | Autor. Nunca se serializa (ADR-0009)           |
-| `reviewed_teacher_id`           | UUID                        | FK → Teacher, NOT NULL          |                                                |
-| `difficulty_rating`             | SMALLINT                    | NOT NULL                        | 1..5                                           |
-| `overall_rating`                | SMALLINT                    | NOT NULL                        | 1..5                                           |
-| `hours_per_week`                | INT                         | NULL                            | 0..30                                          |
-| `tags`                          | TEXT[]                      | NOT NULL                        | Subconjunto del set permitido                  |
-| `would_recommend_course`        | BOOLEAN                     | NOT NULL                        |                                                |
-| `would_retake_teacher`          | BOOLEAN                     | NOT NULL                        |                                                |
-| `subject_text`                  | TEXT                        | NULL                            | Sobre la cursada                               |
-| `teacher_text`                  | TEXT                        | NULL                            | Sobre el docente                               |
-| `final_grade`                   | NUMERIC(4,2)                | NULL                            | 0..10                                          |
-| `status`                        | ENUM `review_status`        | NOT NULL, DEFAULT `'published'` |                                                |
-| `under_review_reason`           | ENUM `under_review_reason`  | NULL                             | Por qué está UnderReview, ver abajo            |
-| `created_at`                    | TIMESTAMPTZ                 | NOT NULL                        |                                                |
-| `updated_at`                    | TIMESTAMPTZ                 | NOT NULL                        | `> created_at` marca "editada" en el feed      |
-| `deleted_at`                    | TIMESTAMPTZ                 | NULL                            | Soft delete (US-055)                           |
-| `deleted_reason`                | ENUM `review_deleted_reason`| NULL                            |                                                |
-
-Constraints:
-
-- `UNIQUE(enrollment_id) WHERE status <> 'Deleted'`: una reseña viva por cursada. Parcial y no total porque una reseña borrada libera la cursada para volver a reseñarla. Ojo con el corolario: por eso el autor no puede borrar una reseña que moderación removió (sería la salida de escape para republicarla limpia), y el handler corta con `reviews.review.cannot_delete_removed`.
-- CHECK: `difficulty_rating BETWEEN 1 AND 5`, `overall_rating BETWEEN 1 AND 5`.
-- CHECK: `hours_per_week IS NULL OR hours_per_week BETWEEN 0 AND 30`.
-- CHECK: `final_grade IS NULL OR final_grade BETWEEN 0 AND 10`.
-- CHECK `ck_reviews_at_least_one_text`: `subject_text IS NOT NULL OR teacher_text IS NOT NULL`.
-- CHECK `ck_reviews_{subject,teacher}_text_length`: cada texto presente entra en el rango de `ReviewText` (50..2000). No es redundante con el aggregate: el value converter del read path hace `.Value` sobre el `Result`, así que una fila fuera de rango no da error de dominio, revienta al materializar y deja la reseña inutilizable para cualquier operación.
-
-`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
-
-### Entity: ReviewReport
-
-Reporte de un usuario sobre una reseña.
-
-| Campo             | Tipo                        | Constraints                |
-| ----------------- | --------------------------- | -------------------------- |
-| `id`              | UUID                        | PK                         |
-| `review_id`       | UUID                        | FK → Review, NOT NULL      |
-| `reporter_id`     | UUID                        | FK → User, NOT NULL        |
-| `reason`          | ENUM `review_report_reason` | NOT NULL                   |
-| `details`         | TEXT                        | NULL                       |
-| `status`          | ENUM `review_report_status` | NOT NULL, DEFAULT `'open'` |
-| `moderator_id`    | UUID                        | FK → User, NULL            |
-| `resolution_note` | TEXT                        | NULL                       |
-| `created_at`      | TIMESTAMPTZ                 | NOT NULL                   |
-| `resolved_at`     | TIMESTAMPTZ                 | NULL                       |
-
-Constraints:
-
-- `UNIQUE(review_id, reporter_id)`.
-- CHECK: `status != 'open'` → `moderator_id NOT NULL AND resolved_at NOT NULL`.
-
-### Entity: TeacherResponse
-
-Respuesta pública del docente reseñado a una reseña.
-
-| Campo           | Tipo                           | Constraints                     |
-| --------------- | ------------------------------ | ------------------------------- |
-| `id`            | UUID                           | PK                              |
-| `review_id`     | UUID                           | FK → Review, NOT NULL, UNIQUE   |
-| `teacher_id`    | UUID                           | FK → Teacher, NOT NULL          |
-| `response_text` | TEXT                           | NOT NULL                        |
-| `status`        | ENUM `teacher_response_status` | NOT NULL, DEFAULT `'published'` |
-| `created_at`    | TIMESTAMPTZ                    | NOT NULL                        |
-| `updated_at`    | TIMESTAMPTZ                    | NOT NULL                        |
-
-### Entity: ReviewAuditLog
-
-Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del `changes` según la acción.
-
-| Campo       | Tipo                       | Constraints               |
-| ----------- | -------------------------- | ------------------------- |
-| `id`        | UUID                       | PK                        |
-| `review_id` | UUID                       | FK → Review, NOT NULL     |
-| `action`    | ENUM `review_audit_action` | NOT NULL                  |
-| `actor_id`  | UUID                       | FK → User, NOT NULL       |
-| `changes`   | JSONB                      | NULL                      |
-| `at`        | TIMESTAMPTZ                | NOT NULL, DEFAULT `now()` |
-
-### Invariantes cross-table (enforced en app)
-
-- `Review.reviewed_teacher_id` debe existir en `CommissionTeacher` para la `Commission` del `EnrollmentRecord.commission_id`.
-- `Review` solo se puede crear si `EnrollmentRecord.status != 'cursando'`.
-- `TeacherResponse.teacher_id = Review.reviewed_teacher_id`: solo el docente reseñado responde.
-- `TeacherResponse` solo puede crearse si existe un `TeacherProfile` con `teacher_id = TeacherResponse.teacher_id` y `verified_at NOT NULL`.
-- `ReviewReport.moderator_id` debe apuntar a un User con `role IN ('moderator','admin')`.
-- `ReviewAuditLog`: cuando `action = 'edited'`, `changes` contiene estructura `{before: {...}, after: {...}}`.
-- Una reseña `removed` por moderación no la puede borrar su autor: el índice único es parcial sobre `status <> 'Deleted'`, así que borrarla liberaría la cursada y le permitiría republicar el mismo texto como fila nueva, sin los reportes upheld encima.
-- Desestimar el último report solo restaura a `published` si `under_review_reason = 'reports'`; no restaura si la razón es `content_filter` o `enrollment_changed`.
-- Todos los endpoints públicos que serializan Review omiten `enrollment.student_id` y cualquier referencia al User autor. El anonimato es regla de la capa de presentación.
 
 ## Context: el instrumento y la reseña de tres capas
 
-**El modelo del producto vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), en el mismo schema `reviews` que la reseña anterior mientras esa se retira. Cuatro tablas del catálogo (qué se pregunta) y dos de la reseña (qué se respondió).
+**El modelo del producto vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), y desde R2 lo único que vive en el schema `reviews`. Cuatro tablas del catálogo (qué se pregunta) y dos de la reseña (qué se respondió).
 
-Las seis conviven con `Review` y sus satélites, que son del producto en retiro ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) y se podan como tarea propia. Nacen aparte a propósito: `CourseReview` no es una versión de `Review`, es otra cosa, y convertirla habría dejado un período largo donde una misma tabla era mitad un modelo y mitad el otro.
+Nacieron aparte de `Review` a propósito: `CourseReview` no era una versión de la reseña anterior, era otra cosa, y convertirla habría dejado un período largo donde una misma tabla era mitad un modelo y mitad el otro. La anterior (`Review`, `ReviewVote`, `TeacherResponse`, `ReviewAuditLog`) y el schema `moderation` entero se podaron en R2 con la migración `DropPreviousReviewModel` ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): moderaban y publicaban contenido que el modelo vigente no produce ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Su forma queda en el historial de git.
 
 ### Entity: Item
 
@@ -758,50 +636,6 @@ Este doc describía la tabla `ReviewEmbedding` con su unique y su índice HNSW c
 
 El diseño (tabla aparte para poder versionar modelos, el modelo elegido, el gating por volumen) sigue vigente en el ADR para cuando la feature se retome.
 
-## Context: Planning
-
-Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)).
-
-### Entity: SimulationDraft
-
-| Campo           | Tipo                            | Constraints                              | Notas                                              |
-| --------------- | ------------------------------- | ---------------------------------------- | -------------------------------------------------- |
-| `id`            | UUID                            | PK                                       |                                                    |
-| `owner_profile_id` | UUID                         | NOT NULL                                 | FK lógica a `identity.student_profile.id` (no FK constraint cross-schema, [ADR-0017](../decisions/0017-persistence-ignorance.md)) |
-| `term_id`       | UUID                            | NOT NULL                                 | FK lógica a `academic.academic_term.id`            |
-| `status`        | ENUM `simulation_draft_status`  | NOT NULL, DEFAULT `'draft'`              | `draft`, `active` o `archived`. Un solo `active` por (owner, term) |
-| `visibility`    | ENUM `simulation_visibility`    | NOT NULL, DEFAULT `'private'`            | `private` o `shared`                               |
-| `label`         | TEXT                            | NULL                                     | Nombre opcional dado por el alumno                 |
-| `created_at`    | TIMESTAMPTZ                     | NOT NULL                                 |                                                    |
-| `updated_at`    | TIMESTAMPTZ                     | NOT NULL                                 |                                                    |
-| `shared_at`     | TIMESTAMPTZ                     | NULL                                     | Set cuando visibility pasa a 'shared'              |
-
-Constraints:
-
-- CHECK `ck_simulation_drafts_shared_requires_shared_at`: `visibility='shared'` ⇒ `shared_at NOT NULL`. El feed público desreferencia `shared_at` y ordena por él, así que una sola fila mal formada tiraba el feed entero de la carrera.
-- CHECK: `visibility='private'` ⇒ `shared_at IS NULL`.
-- `UNIQUE(owner_profile_id, term_id) WHERE status = 'active'`: un solo plan vigente por (alumno, período). El aggregate no puede sostenerlo solo (cruza filas): con Read Committed dos promotes concurrentes leen ambos "no hay ninguno activo" y commitean los dos.
-- Índice `(owner_profile_id, term_id, status)`: sirve el listado propio y el lookup del activo al publicar.
-
-Hard delete permitido (drafts privados no tienen valor de retención).
-
-### Entity: SimulationDraftItem
-
-Cada materia que compone la simulación, con la comisión que el alumno eligió para cursarla (US-096).
-
-| Campo           | Tipo | Constraints                        | Notas                                        |
-| --------------- | ---- | ---------------------------------- | -------------------------------------------- |
-| `draft_id`      | UUID | FK → SimulationDraft, NOT NULL     | Cascade delete                               |
-| `subject_id`    | UUID | NOT NULL                           | FK lógica a `academic.subject.id`            |
-| `commission_id` | UUID | NULL                               | FK lógica a `academic.commission.id`. Null cuando el alumno todavía no eligió comisión: la materia cuenta para carga y dificultad, pero no para choques |
-
-Constraints:
-
-- `PRIMARY KEY (draft_id, subject_id)`: una materia no se repite en el mismo borrador.
-- Un draft tiene al menos un item (invariante del aggregate, no CHECK de DB).
-
-Esta entidad reemplazó a la columna `subject_ids UUID[]` que el modelo declaraba antes de US-023, porque cada materia pasó a llevar su comisión elegida. Sigue siendo tabla hija y no documento embebido: [ADR-0053](../decisions/0053-the-shape-of-child-collections-in-an-aggregate.md) evalúa el criterio por colección, y acá el feed público expande los items a filas para joinear contra `academic.subjects` y `academic.commissions` (nombre de la materia, nombre de la comisión, carga horaria). Ese join es justamente lo que no se puede hacer contra un array jsonb sin desarmarlo primero.
-
 ## Apéndice A: Enums
 
 Nombres y valores de todos los enums del modelo.
@@ -822,14 +656,6 @@ Nombres y valores de todos los enums del modelo.
 | `import_source_type`          | `pdf`, `text`, `manual`                                                               |
 | `import_status`               | `pending`, `parsing`, `parsed`, `failed`, `confirmed`                                 |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
-| `review_status`               | `published`, `under_review`, `removed`, `deleted`                                     |
-| `review_deleted_reason`       | `self`, `moderator`                                                                   |
-| `review_report_reason`        | `spam`, `datos_personales`, `lenguaje_inapropiado`, `difamacion`, `off_topic`, `otro` |
-| `review_report_status`        | `open`, `upheld`, `dismissed`                                                         |
-| `teacher_response_status`     | `published`, `removed`                                                                |
-| `review_audit_action`         | `edited`, `deleted`, `reported`, `moderator_decision`, `response_published`           |
-| `simulation_draft_status`     | `draft`, `active`, `archived`                                                         |
-| `simulation_visibility`       | `private`, `shared`                                                                   |
 | `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 
 ## Apéndice B: Invariantes transversales
@@ -860,24 +686,15 @@ Responsable: servicios de inscripción, validadores al crear commission.
 
 Ningún endpoint público serializa:
 
-- `Review.enrollment.student_id`
-- `Review.enrollment.student.user_id`
-- `ReviewReport.reporter_id` (excepto al propio reporter en sus endpoints)
-- `User.email` de terceros
+- `CourseReview.account_id`, ni ninguna otra forma de llegar de una respuesta a quien la escribió.
+- `CourseReview.free_text`, que no se publica nunca y solo lo relee su autor ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+- `ItemAnswer` de a una: lo que sale publicado son conteos, y solo pasado el piso de la cátedra ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
+- `User.email` de terceros.
 
 Responsable: DTOs de la capa API, tests de integración que verifican ausencia de estos campos.
 
-### Integridad de moderación
-
-- Una reseña con `status = 'removed'` no se lista en endpoints públicos.
-- Una reseña con `status = 'under_review'` no se lista en endpoints públicos.
-- Los reportes resueltos (`upheld`) deben coincidir con `Review.status = 'removed'` del correspondiente review.
-
-Responsable: servicio de moderación, queries públicas.
-
 ### Verificación de docentes
 
-- `TeacherResponse` solo se crea si existe `TeacherProfile` verificado vinculado al `teacher_id` y al User.
 - `institutional_email` debe tener un dominio presente en `Teacher.university.institutional_email_domains`.
 
-Responsable: servicio de claim/verificación, endpoint de respuesta a reseñas.
+Responsable: servicio de claim/verificación.
