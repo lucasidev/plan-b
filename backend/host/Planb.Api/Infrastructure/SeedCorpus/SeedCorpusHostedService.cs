@@ -126,7 +126,8 @@ public sealed class SeedCorpusHostedService : IHostedService
             .ToList();
 
         // Cursadas sin aprobar (Reprobada/Abandonada, sin reseña): denominador del pass-rate
-        // (ADR-0047). approval_method y grade van null (lo exige el CHECK del aggregate).
+        // (funcionalidad de la versión anterior del producto, en retiro: ADR-0063). approval_method
+        // y grade van null (lo exige el CHECK del aggregate).
         var failureSpecs = SeedCorpusData.Failures
             .Where(f => authors.ContainsKey(f.AuthorKey))
             .Select(f => new EnrollmentSpec(

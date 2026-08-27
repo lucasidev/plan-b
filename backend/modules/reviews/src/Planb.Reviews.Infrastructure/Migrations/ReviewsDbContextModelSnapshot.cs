@@ -61,6 +61,143 @@ namespace Planb.Reviews.Infrastructure.Migrations
                     b.ToTable("review_audit_log", "reviews");
                 });
 
+            modelBuilder.Entity("Planb.Reviews.Domain.Catalog.Instrument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("ValidFrom")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valid_from");
+
+                    b.Property<DateTimeOffset?>("ValidUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("valid_until");
+
+                    b.Property<short>("Version")
+                        .HasColumnType("smallint")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code", "Version")
+                        .IsUnique()
+                        .HasDatabaseName("ux_instruments_code_version");
+
+                    b.ToTable("instruments", "reviews");
+                });
+
+            modelBuilder.Entity("Planb.Reviews.Domain.Catalog.Item", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Help")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("help");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Layer")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("layer");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("subject");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ux_items_code");
+
+                    b.ToTable("items", "reviews");
+                });
+
+            modelBuilder.Entity("Planb.Reviews.Domain.CourseReviews.CourseReview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("account_id");
+
+                    b.Property<Guid?>("ChairId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("chair_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("FreeText")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("free_text");
+
+                    b.Property<Guid>("InstrumentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("instrument_id");
+
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("subject_id");
+
+                    b.Property<Guid>("TermId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("term_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId", "SubjectId", "TermId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_course_reviews_account_subject_term");
+
+                    b.ToTable("course_reviews", "reviews");
+                });
+
             modelBuilder.Entity("Planb.Reviews.Domain.Reviews.Review", b =>
                 {
                     b.Property<Guid>("Id")
@@ -312,6 +449,99 @@ namespace Planb.Reviews.Infrastructure.Migrations
                         {
                             t.ExcludeFromMigrations();
                         });
+                });
+
+            modelBuilder.Entity("Planb.Reviews.Domain.Catalog.Instrument", b =>
+                {
+                    b.OwnsMany("Planb.Reviews.Domain.Catalog.InstrumentItem", "Items", b1 =>
+                        {
+                            b1.Property<Guid>("instrument_id")
+                                .HasColumnType("uuid")
+                                .HasColumnName("instrument_id");
+
+                            b1.Property<Guid>("ItemId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("item_id");
+
+                            b1.Property<short>("Order")
+                                .HasColumnType("smallint")
+                                .HasColumnName("order");
+
+                            b1.HasKey("instrument_id", "ItemId");
+
+                            b1.ToTable("instrument_items", "reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("instrument_id");
+                        });
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Planb.Reviews.Domain.Catalog.Item", b =>
+                {
+                    b.OwnsMany("Planb.Reviews.Domain.Catalog.ItemOption", "Options", b1 =>
+                        {
+                            b1.Property<Guid>("item_id")
+                                .HasColumnType("uuid")
+                                .HasColumnName("item_id");
+
+                            b1.Property<short>("Value")
+                                .HasColumnType("smallint")
+                                .HasColumnName("value");
+
+                            b1.Property<string>("Label")
+                                .IsRequired()
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("label");
+
+                            b1.Property<short>("Order")
+                                .HasColumnType("smallint")
+                                .HasColumnName("order");
+
+                            b1.Property<string>("Valence")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("valence");
+
+                            b1.HasKey("item_id", "Value");
+
+                            b1.ToTable("item_options", "reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("item_id");
+                        });
+
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("Planb.Reviews.Domain.CourseReviews.CourseReview", b =>
+                {
+                    b.OwnsMany("Planb.Reviews.Domain.CourseReviews.ItemAnswer", "Answers", b1 =>
+                        {
+                            b1.Property<Guid>("course_review_id")
+                                .HasColumnType("uuid")
+                                .HasColumnName("course_review_id");
+
+                            b1.Property<Guid>("ItemId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("item_id");
+
+                            b1.Property<short>("OptionValue")
+                                .HasColumnType("smallint")
+                                .HasColumnName("option_value");
+
+                            b1.HasKey("course_review_id", "ItemId");
+
+                            b1.ToTable("course_review_answers", "reviews");
+
+                            b1.WithOwner()
+                                .HasForeignKey("course_review_id");
+                        });
+
+                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("Planb.Reviews.Domain.Reviews.Review", b =>

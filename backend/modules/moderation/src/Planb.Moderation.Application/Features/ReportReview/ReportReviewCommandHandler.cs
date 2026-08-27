@@ -22,7 +22,8 @@ namespace Planb.Moderation.Application.Features.ReportReview;
 ///   <item>Reject a duplicate report by the same reporter =&gt; 409.</item>
 ///   <item>Create the report (details-length invariant =&gt; 400) and persist.</item>
 ///   <item>Count open reports. Always publish <see cref="ReviewReportedIntegrationEvent"/>;
-///         if the count reached the configured threshold (ADR-0010), also publish
+///         if the count reached the configured threshold (behavior of the previous version of
+///         the product, retired with ADR-0063), also publish
 ///         <see cref="ReviewQuarantineRequestedIntegrationEvent"/> so the Reviews context
 ///         hides the review.</item>
 /// </list>

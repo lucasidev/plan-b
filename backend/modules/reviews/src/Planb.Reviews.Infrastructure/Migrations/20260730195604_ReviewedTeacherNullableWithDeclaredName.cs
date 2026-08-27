@@ -11,8 +11,9 @@ namespace Planb.Reviews.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // ADR-0060: el id pasa a nullable (la reseña puede nombrar un docente sin resolver).
-            // Relajar un NOT NULL a nullable no pierde datos, así que no necesita backfill.
+            // Decisión de la versión anterior del producto, retirada con ADR-0063: el id pasa a
+            // nullable (la reseña puede nombrar un docente sin resolver). Relajar un NOT NULL a
+            // nullable no pierde datos, así que no necesita backfill.
             migrationBuilder.AlterColumn<Guid>(
                 name: "reviewed_teacher_id",
                 schema: "reviews",

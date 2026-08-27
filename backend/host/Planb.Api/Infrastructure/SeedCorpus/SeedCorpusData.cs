@@ -127,7 +127,8 @@ public static class SeedCorpusData
 
     /// <summary>
     /// Autores fantasma que solo reprobaron/abandonaron (sin reseña). Existen para alimentar el
-    /// denominador del pass-rate (ADR-0047) y que la aprobación histórica no de 100% en todo.
+    /// denominador del pass-rate (funcionalidad de la versión anterior del producto, en retiro:
+    /// ADR-0063) y que la aprobación histórica no de 100% en todo.
     /// Perfiles distintos de los autores de reseñas, así no hay colisión en el UNIQUE
     /// (profile, subject, term).
     /// </summary>
@@ -356,7 +357,8 @@ public static class SeedCorpusData
 
     /// <summary>
     /// Cursadas sin aprobar (Reprobada/Abandonada), sin reseña, por <see cref="FailureAuthors"/>.
-    /// Alimentan el denominador del pass-rate (ADR-0047). Curado para un spread realista: 101
+    /// Alimentan el denominador del pass-rate (funcionalidad de la versión anterior del producto,
+    /// en retiro: ADR-0063). Curado para un spread realista: 101
     /// (Algoritmos y Paradigmas, el filtro del primer año) queda bajo, 111 (Desarrollo de Software)
     /// alto, y 102 (Álgebra I) queda bajo el gate de muestra (demuestra el estado "datos
     /// insuficientes"). Cada (autor, materia) es único.

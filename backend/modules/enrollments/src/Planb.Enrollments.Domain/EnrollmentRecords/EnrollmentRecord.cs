@@ -105,7 +105,8 @@ public sealed class EnrollmentRecord : Entity<EnrollmentRecordId>, IAggregateRoo
     /// <para>
     /// Lo que NO se puede cambiar acá: el alumno y la materia. Cambiar cualquiera de los dos no es
     /// editar esta cursada, es cargar otra, y arrastraría la reseña anclada a un `EnrollmentRecord`
-    /// que ya no habla de lo mismo (ADR-0005).
+    /// que ya no habla de lo mismo (decisión de la versión anterior del producto, retirada con
+    /// ADR-0063).
     /// </para>
     /// </summary>
     public Result<bool> Update(

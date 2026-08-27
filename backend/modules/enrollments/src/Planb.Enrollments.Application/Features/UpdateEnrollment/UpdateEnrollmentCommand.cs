@@ -17,7 +17,8 @@ namespace Planb.Enrollments.Application.Features.UpdateEnrollment;
 /// <para>
 /// El alumno y la materia no viajan porque no se pueden cambiar: cambiar cualquiera de los dos no
 /// es editar esta cursada sino cargar otra, y arrastraría la reseña anclada a un
-/// <c>EnrollmentRecord</c> que ya no habla de lo mismo (ADR-0005).
+/// <c>EnrollmentRecord</c> que ya no habla de lo mismo (decisión de la versión anterior del
+/// producto, retirada con ADR-0063).
 /// </para>
 /// </summary>
 public sealed record UpdateEnrollmentCommand(

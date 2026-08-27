@@ -5,7 +5,8 @@ namespace Planb.Moderation.Application.Abstractions.Persistence;
 /// <summary>
 /// Write + minimal-read repository for <see cref="ReviewReport"/>. The two read helpers
 /// support the report flow: the duplicate pre-check (one report per reviewer per review)
-/// and the open-count used to decide auto-hide (ADR-0010 threshold).
+/// and the open-count used to decide auto-hide (threshold mechanism of the previous version
+/// of the product, retired with ADR-0063).
 /// </summary>
 public interface IReviewReportRepository
 {
@@ -20,7 +21,8 @@ public interface IReviewReportRepository
 
     /// <summary>
     /// Todos los reports <see cref="ReviewReportStatus.Open"/> de una reseña (US-051). El uphold los
-    /// cascadea a Upheld juntos (ADR-0011); el dismiss lo usa para saber si queda alguno abierto.
+    /// cascadea a Upheld juntos (mecanismo de la versión anterior del producto, en retiro:
+    /// ADR-0063); el dismiss lo usa para saber si queda alguno abierto.
     /// </summary>
     Task<IReadOnlyList<ReviewReport>> GetOpenByReviewAsync(
         Guid reviewId, CancellationToken ct = default);

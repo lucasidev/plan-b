@@ -9,9 +9,10 @@ namespace Planb.Moderation.Application.Features.ResolveReport;
 
 /// <summary>
 /// Handler del uphold (US-051). Carga el report (404 si no existe), verifica que esté Open (409 si otro
-/// moderador lo resolvió antes), cascadea a Upheld TODOS los reports open de la reseña (ADR-0011) con
-/// la misma nota, persiste, y publica <see cref="ReviewRemovalRequestedIntegrationEvent"/> para que
-/// Reviews remueva la reseña (+ audit) en su propio scope transaccional (outbox).
+/// moderador lo resolvió antes), cascadea a Upheld TODOS los reports open de la reseña (mecanismo de
+/// la versión anterior del producto, en retiro: ADR-0063) con la misma nota, persiste, y publica
+/// <see cref="ReviewRemovalRequestedIntegrationEvent"/> para que Reviews remueva la reseña (+ audit)
+/// en su propio scope transaccional (outbox).
 /// </summary>
 public static class UpholdReportCommandHandler
 {

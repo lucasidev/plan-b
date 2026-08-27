@@ -7,7 +7,8 @@ using Planb.Enrollments.Application.Features.SubjectPassRate;
 namespace Planb.Enrollments.Infrastructure.Reading;
 
 /// <summary>
-/// Dapper read de la aprobación histórica (ADR-0047). Una query agregada sobre
+/// Dapper read de la aprobación histórica (funcionalidad de la versión anterior del producto, en
+/// retiro: ADR-0063). Una query agregada sobre
 /// <c>enrollments.enrollment_records</c> contando aprobadas (no equivalencia) y reprobadas de la
 /// materia. El gate de muestra mínima (anti re-identificación + ruido estadístico) se aplica acá:
 /// con menos de <see cref="MinSampleSize"/> cursadas con verdicto, <c>PassRate</c> va null y la UI
@@ -19,7 +20,10 @@ namespace Planb.Enrollments.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperSubjectPassRateReader : ISubjectPassRateReader
 {
-    /// <summary>Muestra mínima para mostrar el número (anti re-identificación). Ver ADR-0047.</summary>
+    /// <summary>
+    /// Muestra mínima para mostrar el número (anti re-identificación). Funcionalidad de la versión
+    /// anterior del producto, en retiro: ver ADR-0063.
+    /// </summary>
     public const int MinSampleSize = 5;
 
     private readonly string _connectionString;

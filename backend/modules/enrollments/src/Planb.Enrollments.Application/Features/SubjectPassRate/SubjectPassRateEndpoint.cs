@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Routing;
 namespace Planb.Enrollments.Application.Features.SubjectPassRate;
 
 /// <summary>
-/// GET /api/enrollments/subjects/{subjectId}/pass-rate (ADR-0047): aprobación histórica de una
-/// materia. Público: es un stat de comunidad, agregado y anonimizado (nunca expone cursadas
+/// GET /api/enrollments/subjects/{subjectId}/pass-rate (funcionalidad de la versión anterior del
+/// producto, en retiro: ADR-0063): aprobación histórica de una materia. Público: es un stat de
+/// comunidad, agregado y anonimizado (nunca expone cursadas
 /// individuales). Una materia sin cursadas (o id inexistente) devuelve <c>SampleSize 0</c> +
 /// <c>PassRate null</c>, no 404: la existencia de la materia la resuelve la página vía academic.
 /// </summary>

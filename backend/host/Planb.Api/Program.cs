@@ -231,6 +231,12 @@ builder.Services.AddHostedService<DevSeedHostedService>();
 // (mismo motivo que el seed de Identity: necesita schema academic existente).
 builder.Services.AddHostedService<AcademicSeedHostedService>();
 
+// Catálogo del instrumento (ADR-0082): los ítems del cuestionario y su versión vigente. Es catálogo
+// de referencia, no corpus de demo, así que va gateado por IsDevelopment() solo: sin él no hay qué
+// responder, y los integration tests corren en Development sin PLANB_SEED_CORPUS.
+builder.Services.AddScoped<Planb.Reviews.Application.Seeding.CatalogSeeder>();
+builder.Services.AddHostedService<CatalogSeedHostedService>();
+
 // Seed corpus (devex, sin US): autores fantasma + cursadas + reseñas + votos para que el
 // corpus de reseñas sea consumible y demostrable en `just dev` sin armar datos a mano. Cruza
 // identity/enrollments/reviews; el host orquesta. Gateado por IsDevelopment() Y el env var

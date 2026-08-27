@@ -8,7 +8,7 @@ namespace Planb.Reviews.Infrastructure.Migrations
     /// Reemplaza <c>quarantined_by_content_filter</c> (bool) por <c>under_review_reason</c> (enum
     /// persistido como text, mismo patrón que <c>status</c> y <c>deleted_reason</c>): el bool solo
     /// distinguía dos causas de <c>UnderReview</c> y no dejaba lugar para la tercera (invalidación
-    /// por cambio de cursada, ADR-0032). Ver <c>Planb.Reviews.Domain.Reviews.UnderReviewReason</c>.
+    /// por cambio de cursada, ADR-0063). Ver <c>Planb.Reviews.Domain.Reviews.UnderReviewReason</c>.
     /// </summary>
     /// <remarks>
     /// El orden importa: se agrega la columna nueva, se backfillea desde la vieja, y recién
