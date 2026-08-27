@@ -26,10 +26,17 @@ public sealed record SubjectFacts(
 /// La distribución de un ítem agregada sobre las cátedras que publican.
 ///
 /// <para>
-/// Es distribución y no promedio a propósito. El boceto de la pantalla pedía "2,1 intentos", pero
-/// ADR-0083 rechaza exactamente esa forma por su nombre ("2,4 sobre 3 no significa nada"), y acá
-/// además el promedio sería irreproducible: la última opción es abierta ("tres o más"), así que
-/// promediarla subestima siempre y por un margen que nadie puede recalcular.
+/// Es distribución y no promedio a propósito. El boceto de la pantalla pedía "2,1 intentos", y esa
+/// forma no sobrevive por dos razones distintas: en una escala de opiniones el promedio no
+/// significa nada (lo que ADR-0083 descarta como "2,4 sobre 3"), y acá, donde la aritmética sí
+/// sería válida, la última opción es abierta ("tres o más"), así que el promedio subestima siempre
+/// y por un margen que nadie puede recalcular.
+/// </para>
+///
+/// <para>
+/// <see cref="OpenEnded"/> es esa opción abierta, cuando el ítem tiene una. Viaja aparte del resto
+/// de la distribución para que la ficha pueda decirla sola: es la gente a la que le costó, o sea
+/// justo la que el dato existe para hacer visible.
 /// </para>
 /// </summary>
 public sealed record ItemDistribution(
@@ -37,7 +44,8 @@ public sealed record ItemDistribution(
     string ModeLabel,
     int ModePercent,
     int Total,
-    IReadOnlyList<PublishedOption> Options);
+    IReadOnlyList<PublishedOption> Options,
+    PublishedOption? OpenEnded);
 
 /// <summary>
 /// Un ítem donde las cátedras difieren de verdad: la respuesta depende de con quién te toque.

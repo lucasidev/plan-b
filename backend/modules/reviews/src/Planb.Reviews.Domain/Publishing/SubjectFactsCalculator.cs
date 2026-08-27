@@ -114,6 +114,13 @@ public static class SubjectFactsCalculator
 
         var mode = options.OrderByDescending(o => o.Count).ThenBy(o => o.Order).First();
 
+        // La opción abierta viaja aparte para que la ficha pueda decirla sola. Hoy solo el ítem de
+        // intentos tiene una; el día que haya un segundo, esto pide un flag en el catálogo en vez
+        // de una constante por ítem.
+        var openEnded = string.Equals(itemCode, PublishingRules.AttemptsItemCode, StringComparison.Ordinal)
+            ? options.FirstOrDefault(o => o.Value == PublishingRules.AttemptsOpenEndedValue)
+            : null;
+
         return new ItemDistribution(
             itemCode,
             mode.Label,
@@ -121,7 +128,11 @@ public static class SubjectFactsCalculator
             total,
             options
                 .Select(o => new PublishedOption(o.Label, Percent(o.Count, total), o.Valence))
-                .ToList());
+                .ToList(),
+            openEnded is null
+                ? null
+                : new PublishedOption(
+                    openEnded.Label, Percent(openEnded.Count, total), openEnded.Valence));
     }
 
     /// <summary>

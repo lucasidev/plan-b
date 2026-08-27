@@ -28,7 +28,13 @@ export interface SubjectSpan {
   toYear: number;
 }
 
-/** La distribución de un ítem, con su moda. Nunca un promedio. */
+/**
+ * La distribución de un ítem, con su moda. Nunca un promedio.
+ *
+ * `openEnded` es la opción abierta del ítem ("tres o más"), cuando tiene una. Viene separada del
+ * resto para que la ficha la diga sola: es la gente a la que le costó, que es justo la que un
+ * promedio taparía.
+ */
 export interface Distribution {
   code: string;
   text: string;
@@ -36,6 +42,7 @@ export interface Distribution {
   modePercent: number;
   total: number;
   options: Slice[];
+  openEnded: Slice | null;
 }
 
 export interface Slice {
