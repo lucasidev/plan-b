@@ -70,6 +70,10 @@ internal sealed class CatalogRepository : ICatalogRepository
             i => i.Code == normalized && i.ValidUntil == null, ct);
     }
 
+    public Task<Instrument?> GetInstrumentByIdAsync(
+        InstrumentId id, CancellationToken ct = default) =>
+        _db.Instruments.FirstOrDefaultAsync(i => i.Id == id, ct);
+
     // Mismo criterio de normalización que Item.Create / Instrument.Create: trim + mayúsculas. Sin
     // esto, un lookup con distinta capitalización que la persistida no encontraría la fila.
     private static string NormalizeCode(string code) => code.Trim().ToUpperInvariant();
