@@ -1,72 +1,38 @@
-import Link from 'next/link';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { InsightsPanel, ReviewsSection, SubjectHeader } from '@/features/view-subject';
-import {
-  fetchSubjectInsightsServer,
-  fetchSubjectPassRateServer,
-  fetchSubjectReviewsServer,
-  fetchSubjectServer,
-} from '@/features/view-subject/api.server';
-import { getSession } from '@/lib/session';
+import { fetchSubjectFactsServer, SubjectFactsSheet } from '@/features/subject-facts';
 
-// Public, per-request (reads ?page and the live review corpus). Anonymous visitors welcome.
+// Los conteos cambian con cada reseña nueva: se sirve fresca en vez de prerenderizada.
 export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ id: string }>;
-type SearchParams = Promise<{ page?: string }>;
 
-export async function generateMetadata({ params }: { params: Params }) {
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params;
-  const subject = await fetchSubjectServer(id);
+  const facts = await fetchSubjectFactsServer(id);
+
   return {
-    title: subject ? `${subject.code} · ${subject.name} · planb` : 'Materia · planb',
+    title: facts ? `${facts.subjectCode} · ${facts.subjectName} · planb` : 'Materia · planb',
   };
 }
 
 /**
- * /subjects/[id] (US-002). Public subject detail: metadata + crowd insights (avg overall
- * rating, distribution, difficulty, hours, % recommend) + the paginated list of published,
- * anonymized reviews. Server-rendered; pagination is link-based via `?page=N`.
+ * /subjects/[id] (SC-007, US-129). **Pública, sin cuenta.**
  *
- * 404 when the subject id does not exist. A subject with zero published reviews still renders
- * (metadata + empty state), per the US-002 AC.
+ * Reemplaza a la ficha del modelo anterior, que publicaba promedio de rating, histograma de
+ * estrellas, dificultad, porcentaje de recomendación y la lista de reseñas de texto libre. Eso lo
+ * prohíben ADR-0083 (la ficha publica conteos, nunca puntajes) y ADR-0084 (el texto libre no se
+ * publica jamás).
+ *
+ * Lo que muestra en su lugar sale de sus cátedras: una materia no se reseña, se deriva.
  */
-export default async function SubjectPage({
-  params,
-  searchParams,
-}: {
-  params: Params;
-  searchParams: SearchParams;
-}) {
+export default async function SubjectPage({ params }: { params: Params }) {
   const { id } = await params;
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number.parseInt(pageParam ?? '1', 10) || 1);
+  const facts = await fetchSubjectFactsServer(id);
 
-  const subject = await fetchSubjectServer(id);
-  if (!subject) {
+  if (!facts) {
     notFound();
   }
 
-  const [insights, reviews, session, passRate] = await Promise.all([
-    fetchSubjectInsightsServer(id),
-    fetchSubjectReviewsServer(id, page),
-    getSession(),
-    fetchSubjectPassRateServer(id),
-  ]);
-  // Votar requiere sesión. Un visitante anónimo ve los conteos; los botones lo mandan a /sign-in.
-  const canVote = session !== null;
-
-  return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <Link
-        href="/"
-        className="font-mono text-[11px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
-      >
-        ← plan-b
-      </Link>
-      <SubjectHeader subject={subject} insights={insights} passRate={passRate} />
-      {insights.totalCount > 0 && <InsightsPanel insights={insights} />}
-      <ReviewsSection reviews={reviews} canVote={canVote} />
-    </main>
-  );
+  return <SubjectFactsSheet facts={facts} />;
 }
