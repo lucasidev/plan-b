@@ -26,7 +26,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | S11 | 2026-07-23 a 2026-07-26 | **Terminar el planificador**: oferta de comisiones con horarios (US-093, absorbe el pendiente de US-065), choques y comparador reales (US-096), borradores persistidos con promote (US-023, absorbe US-025/026), compartir al corpus y feed público (US-024/US-027). Regla: la landing no promete nada que la herramienta no haga. | ✓ Done |
 | S12 | 2026-07-31 a 2026-08-16 | **Cerrar el lazo que produce el corpus**: US-015 entró (el mecanismo de edición con su evento); US-097/098/099 se cancelaron cuando el viraje de tesis ([THESIS.md](../THESIS.md), [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) retiró el planificador al que servían. | ■ Cerrado por viraje |
 | **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | ✓ Hecho (mergeado el 2026-08-24, PR #354) |
-| **R1** | desde 2026-08-24 | **El acto de reseñar, de punta a punta**: una persona entra, reseña una cursada marcando frases por temas en menos de cinco minutos, y lo que marcó se ve en una ficha con sus voces. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | En curso |
+| **R1** | 2026-08-24 a 2026-08-27 | **El acto de reseñar, de punta a punta**: una persona reseña una cursada en tres capas, y al cruzar el piso de 10 la ficha de la cátedra publica sus conteos. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | ✓ Hecho (mergeado el 2026-08-27, PR [#362](https://github.com/lucasidev/plan-b/pull/362)) |
+| **R2** | desde 2026-08-27 | **El producto habla con una voz, y lo que dice se encuentra y se deshace**: la ficha de materia deriva de sus cátedras, se llega a la cátedra desde donde se la busca, se puede corregir y borrar lo aportado, la landing dice lo que el producto hace, y el aggregate de reseña anterior se poda con su moderación. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), issues #363 a #368, 42 pts. | En curso |
 
 Convenciones:
 
@@ -221,6 +222,40 @@ El contrato visual Boletín ([ADR-0071](../decisions/0071-the-visual-language-is
 4. Nada publicado expone quién reseñó ni cómo terminó nadie (US-148), verificado en los reads. **Cumplido**: `The_payload_never_carries_who_reviewed_or_how_anyone_finished` mira el JSON crudo y exige que no viajen cuentas, ids de reseña, texto libre ni ningún ítem de la capa de contexto.
 
 ---
+
+---
+
+## R2 · El producto habla con una voz
+
+Desde el 2026-08-27. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), 42 pts.
+
+**Por qué este hilo.** R1 dejó el producto con dos caras contradictorias vivas, y la vieja es la única que se ve: `/chairs/{id}` no tiene un solo link entrante (la ficha se alcanza tipeando un UUID), la ficha de materia publica promedios y testimonios, la landing vende el planificador retirado, y lo que R1 escribe no se puede corregir ni borrar. R2 cierra el ciclo de vida del dato nuevo y mata al anterior.
+
+| # | Issue | Pts | Depende de |
+|---|---|---|---|
+| 1 | [#363 · La ficha de materia deriva de sus cátedras](https://github.com/lucasidev/plan-b/issues/363) | 8 | nada |
+| 2 | [#364 · Se llega a la cátedra desde donde se la busca](https://github.com/lucasidev/plan-b/issues/364) | 5 | 1 |
+| 3 | [#365 · Editar y borrar lo que conté](https://github.com/lucasidev/plan-b/issues/365) | 8 | nada |
+| 4 | [#366 · La landing dice lo que el producto hace](https://github.com/lucasidev/plan-b/issues/366) | 5 | 1 |
+| 5 | [#367 · Se poda el aggregate de reseña anterior y su moderación](https://github.com/lucasidev/plan-b/issues/367) | 13 | 1, 3, 4 |
+| 6 | [#368 · El E2E del camino a la ficha y del deshacer](https://github.com/lucasidev/plan-b/issues/368) | 3 | todos |
+
+**La poda entra entera, no apagada.** Se retiran `Review`, `ReviewVote` y `TeacherResponse` con sus tablas, sus doce features y el módulo `moderation` completo, que modera contenido público que el modelo nuevo no produce ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Son ~113 archivos `.cs` y 8 features de frontend. La razón de hacerlo ahora y no después: estamos pre-deploy y no existe una sola reseña v1 de una persona real, así que el argumento de preservar el corpus que sostenía a ese aggregate todavía no aplica, y cada sprint que pasa aplica más.
+
+**Sucesor previsto**: con el aggregate anterior muerto, `CourseReview` puede reclamar el nombre `Review`. Ese renaming es tarea propia y no entra en R2.
+
+### Cómo se sabe que R2 está listo
+
+1. Un visitante **sin cuenta** llega a la ficha de una cátedra partiendo de la landing, sin tipear un UUID.
+2. **Ninguna pantalla pública muestra un promedio, una estrella ni un testimonio**, y ningún endpoint los sirve.
+3. Quien reseñó corrige y borra su reseña, y los conteos de la ficha cambian en consecuencia.
+4. El E2E cubre los dos recorridos y pasa en CI.
+
+### Lo que R2 deja afuera a propósito
+
+- **El backoffice de cátedras**: hoy `Chair` tiene dominio, migración y read público, pero cero features de escritura, así que las cátedras existen solo por el seed. Es el techo real del producto y el candidato más fuerte para R3.
+- **Método y el CSV** ([US-130](../product/student/take-the-data/README.md)): la promesa de transparencia de [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md) sigue sin superficie.
+- **Todo [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)**: unidad académica, datos oficiales relevados, carrera y materia canónica. Las fichas prometen datos con fuente que ninguna story de backoffice se compromete todavía a cargar.
 
 ## Lo anterior: el producto en retiro
 
