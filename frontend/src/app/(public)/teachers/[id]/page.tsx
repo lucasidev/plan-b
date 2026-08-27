@@ -2,11 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { fetchMyTeacherClaimsServer } from '@/features/teacher-claim/api.server';
 import {
+  TeacherChairs,
   TeacherHeader,
   TeacherInsightsPanel,
   TeacherReviewsSection,
 } from '@/features/view-teacher';
 import {
+  fetchTeacherChairsServer,
   fetchTeacherInsightsServer,
   fetchTeacherReviewsServer,
   fetchTeacherServer,
@@ -57,10 +59,11 @@ export default async function TeacherPage({
   }
   const teacher = result.teacher;
 
-  const [insights, reviews, session] = await Promise.all([
+  const [insights, reviews, session, chairs] = await Promise.all([
     fetchTeacherInsightsServer(id),
     fetchTeacherReviewsServer(id, page),
     getSession(),
+    fetchTeacherChairsServer(id),
   ]);
   // Votar requiere sesión. Un visitante anónimo ve los conteos; los botones lo mandan a /sign-in.
   const canVote = session !== null;
@@ -77,6 +80,7 @@ export default async function TeacherPage({
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
       <BackLink />
       <TeacherHeader teacher={teacher} insights={insights} />
+      <TeacherChairs chairs={chairs} />
       {insights.totalCount > 0 && <TeacherInsightsPanel insights={insights} />}
       <TeacherReviewsSection reviews={reviews} canVote={canVote} canRespond={canRespond} />
     </main>

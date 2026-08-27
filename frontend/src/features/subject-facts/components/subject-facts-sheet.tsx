@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CatalogTopbar } from '@/features/browse-catalog';
 import type { Distribution, SubjectChair, SubjectFacts } from '../types';
 
 /**
@@ -14,6 +15,9 @@ import type { Distribution, SubjectChair, SubjectFacts } from '../types';
 export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
   return (
     <div data-surface="bulletin" className="min-h-screen w-full">
+      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
+          búsqueda y no hay cómo seguir buscando ni volver. */}
+      <CatalogTopbar />
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
 

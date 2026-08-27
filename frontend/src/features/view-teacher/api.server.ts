@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
+import type { TeacherChair } from './components/teacher-chairs';
 import type { TeacherDetail, TeacherInsights, TeacherReviewsPage } from './types';
 import { TEACHER_REVIEWS_PAGE_SIZE } from './types';
 
@@ -63,4 +64,23 @@ export async function fetchTeacherReviewsServer(
     throw new Error(`Teacher reviews fetch failed: ${response.status}`);
   }
   return (await response.json()) as TeacherReviewsPage;
+}
+
+/**
+ * Las cátedras que el docente integra o integró (US-132). Es el camino de la persona al sujeto:
+ * lo que el producto publica es de la cátedra, no del docente.
+ *
+ * Devuelve lista vacía cuando no integra ninguna: la ficha simplemente no muestra la sección, en
+ * vez de un bloque con un mensaje de que no hay nada.
+ */
+export async function fetchTeacherChairsServer(teacherId: string): Promise<TeacherChair[]> {
+  const response = await apiFetchAuthenticated(`/api/academic/teachers/${teacherId}/chairs`, {
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Teacher chairs fetch failed: ${response.status}`);
+  }
+
+  return (await response.json()) as TeacherChair[];
 }

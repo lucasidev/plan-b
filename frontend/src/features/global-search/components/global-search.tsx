@@ -14,19 +14,26 @@ import type { SearchResultItem } from '../types';
  * liviano sobre las primitivas del design system (sin cmdk): input + dropdown de resultados live,
  * debounce 250ms, navegación por teclado y atajo ⌘K. Pega a `GET /api/search` vía TanStack Query.
  *
- * Materias (`type: 'subject'`) y docentes (`type: 'teacher'`) en una sola lista rankeada; el href y
- * el badge salen del `type`.
+ * Materias, docentes y cátedras en una sola lista rankeada; el href y el badge salen del `type`.
+ * La cátedra lleva a su ficha, que es donde vive lo que se publica de cursar con ella.
  *
  * Gate `mounted`: la búsqueda vive en el topbar, fuera de cualquier HydrationBoundary; sin el flag
  * la query correría server-side bajo ReactQueryStreamedHydration y el fetch relativo fallaría.
  */
+const HREF_BY_TYPE: Record<SearchResultItem['type'], (id: string) => string> = {
+  subject: (id) => `/subjects/${id}`,
+  teacher: (id) => `/teachers/${id}`,
+  chair: (id) => `/chairs/${id}`,
+};
+
 function hrefFor(item: SearchResultItem): string {
-  return item.type === 'teacher' ? `/teachers/${item.id}` : `/subjects/${item.id}`;
+  return HREF_BY_TYPE[item.type](item.id);
 }
 
 const TYPE_LABEL: Record<SearchResultItem['type'], string> = {
   subject: 'Materia',
   teacher: 'Docente',
+  chair: 'Cátedra',
 };
 
 export function GlobalSearch() {
@@ -109,8 +116,8 @@ export function GlobalSearch() {
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={showDropdown && items.length > 0 ? optionId(active) : undefined}
-          placeholder="Buscar materia o docente..."
-          aria-label="Buscar materia o docente"
+          placeholder="Buscar materia, cátedra o docente..."
+          aria-label="Buscar materia, cátedra o docente"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);

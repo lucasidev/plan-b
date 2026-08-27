@@ -1,3 +1,5 @@
+export type { TeacherChair } from './components/teacher-chairs';
+export { TeacherChairs } from './components/teacher-chairs';
 export { TeacherHeader } from './components/teacher-header';
 export { TeacherInsightsPanel } from './components/teacher-insights-panel';
 export { TeacherReviewsSection } from './components/teacher-reviews-section';
