@@ -178,10 +178,11 @@ public class TeacherReviewsEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     /// <summary>
-    /// ADR-0060: una reseña que nombra un docente sin resolver (<c>reviewed_teacher_id</c> null) no
-    /// cuenta en el agregado de NINGÚN docente, porque no se sabe de quién habla. Hoy no hay ningún
-    /// endpoint que produzca ese estado (el único camino de publish llega con un id ya resuelto de
-    /// un picker), así que se construye directamente vía el aggregate, mismo patrón que
+    /// Comportamiento de la versión anterior del producto, en retiro (ADR-0063): una reseña que
+    /// nombra un docente sin resolver (<c>reviewed_teacher_id</c> null) no cuenta en el agregado de
+    /// NINGÚN docente, porque no se sabe de quién habla. Hoy no hay ningún endpoint que produzca ese
+    /// estado (el único camino de publish llega con un id ya resuelto de un picker), así que se
+    /// construye directamente vía el aggregate, mismo patrón que
     /// <see cref="GetTeacher_returns_410_when_soft_deleted"/> para un estado sin endpoint admin.
     /// </summary>
     [Fact]

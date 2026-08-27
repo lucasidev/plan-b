@@ -8,7 +8,8 @@ using Xunit;
 namespace Planb.IntegrationTests.Enrollments;
 
 /// <summary>
-/// Tests de GET /api/enrollments/subjects/{id}/pass-rate (ADR-0047): aprobación histórica.
+/// Tests de GET /api/enrollments/subjects/{id}/pass-rate (funcionalidad de la versión anterior del
+/// producto, en retiro: ADR-0063): aprobación histórica.
 /// Público. Definición: aprobadas (Aprobada no-Equivalencia) / (aprobadas + reprobadas), con gate
 /// de muestra mínima (N &lt; 5 -&gt; null).
 ///

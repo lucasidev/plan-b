@@ -224,7 +224,7 @@ public class EditReviewEndpointTests
     /// permanente como si fuera un requisito: una reseña frenada por el filtro entra a UnderReview
     /// con cero reportes, la cola de moderación se arma desde los reportes, así que nadie la revisa
     /// nunca, y el autor tampoco podía corregirla. El propio texto del segundo edit era una
-    /// disculpa. ADR-0032 además promete esta salida.
+    /// disculpa. ADR-0063 además promete esta salida.
     /// </para>
     ///
     /// <para>
