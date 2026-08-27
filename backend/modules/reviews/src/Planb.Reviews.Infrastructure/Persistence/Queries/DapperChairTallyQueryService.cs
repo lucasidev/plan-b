@@ -192,4 +192,120 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
 
     /// <summary>El texto de un ítem, para que la respuesta pueda enunciarlo en castellano.</summary>
     private sealed record ItemTextRow(string Code, string Text);
+
+    public async Task<SubjectTallies> GetPerChairAsync(
+        IReadOnlyList<(Guid ChairId, string ChairName)> chairs,
+        CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(chairs);
+        if (chairs.Count == 0)
+        {
+            return new SubjectTallies([], [], new Dictionary<string, string>(StringComparer.Ordinal));
+        }
+
+        // Los conteos de todas las cátedras en un solo viaje, discriminados por cátedra: la ficha
+        // de materia necesita verlas separadas para poder contrastarlas, no sumadas.
+        //
+        // El recorrido arranca en el producto cartesiano de cátedras por opciones, y las respuestas
+        // entran por LEFT JOIN. Es lo que hace que una opción sin elegir devuelva 0 en vez de
+        // desaparecer, y que una cátedra sin una sola reseña siga apareciendo en el resultado.
+        const string sql = @"
+            SELECT
+                c.chair_id AS ChairId,
+                count(r.id)::int AS ReviewCount,
+                max(r.created_at) AS LastReviewedAt
+            FROM unnest(@ChairIds) AS c(chair_id)
+            LEFT JOIN reviews.course_reviews r ON r.chair_id = c.chair_id
+            GROUP BY c.chair_id;
+
+            SELECT
+                c.chair_id AS ChairId,
+                i.code     AS ItemCode,
+                i.layer    AS Layer,
+                o.value    AS Value,
+                o.""order""  AS ""Order"",
+                o.label    AS Label,
+                o.valence  AS Valence,
+                count(a.course_review_id)::int AS Count
+            FROM unnest(@ChairIds) AS c(chair_id)
+            CROSS JOIN reviews.items i
+            JOIN reviews.item_options o ON o.item_id = i.id
+            LEFT JOIN reviews.course_review_answers a
+                ON a.item_id = i.id
+               AND a.option_value = o.value
+               AND a.course_review_id IN (
+                   SELECT id FROM reviews.course_reviews WHERE chair_id = c.chair_id)
+            WHERE i.is_active = true
+            GROUP BY c.chair_id, i.code, i.layer, o.value, o.""order"", o.label, o.valence
+            ORDER BY c.chair_id, i.code, o.""order"";
+
+            SELECT DISTINCT term_id
+            FROM reviews.course_reviews
+            WHERE chair_id = ANY(@ChairIds);
+
+            SELECT i.code AS Code, i.text AS Text
+            FROM reviews.items i
+            WHERE i.is_active = true;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var grid = await db.QueryMultipleAsync(new CommandDefinition(
+            sql,
+            new { ChairIds = chairs.Select(c => c.ChairId).ToArray() },
+            cancellationToken: ct));
+
+        var counts = (await grid.ReadAsync<ChairCountRow>())
+            .ToDictionary(r => r.ChairId, r => r);
+        var tallyRows = (await grid.ReadAsync<ChairTallyRow>())
+            .GroupBy(r => r.ChairId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+        var termIds = (await grid.ReadAsync<Guid>()).AsList();
+        var texts = (await grid.ReadAsync<ItemTextRow>())
+            .ToDictionary(r => r.Code, r => r.Text, StringComparer.Ordinal);
+
+        // Se recorre la lista pedida y no la que volvió: el orden y la nómina los decide quien
+        // pregunta, y una cátedra sin filas tiene que salir igual, con sus conteos en cero.
+        var contributions = chairs
+            .Select(chair =>
+            {
+                counts.TryGetValue(chair.ChairId, out var count);
+                tallyRows.TryGetValue(chair.ChairId, out var rows);
+
+                return new ChairContribution(
+                    chair.ChairId,
+                    chair.ChairName,
+                    count?.ReviewCount ?? 0,
+                    ToTallies((rows ?? []).Select(r => r.ToTallyRow())),
+                    AsOffset(count?.LastReviewedAt));
+            })
+            .ToList();
+
+        return new SubjectTallies(contributions, termIds, texts);
+    }
+
+    /// <summary>
+    /// Npgsql devuelve timestamptz como DateTime (Kind=Utc), no como DateTimeOffset: pedirlo
+    /// directo tira InvalidCastException. Se lee crudo y se envuelve acá.
+    /// </summary>
+    private static DateTimeOffset? AsOffset(DateTime? raw) =>
+        raw is { } value
+            ? new DateTimeOffset(DateTime.SpecifyKind(value, DateTimeKind.Utc))
+            : null;
+
+    /// <summary>Cuántas reseñas junta una cátedra y cuándo entró la última.</summary>
+    private sealed record ChairCountRow(Guid ChairId, int ReviewCount, DateTime? LastReviewedAt);
+
+    /// <summary>Fila plana del conteo por cátedra, antes de agruparse por ítem.</summary>
+    private sealed record ChairTallyRow(
+        Guid ChairId,
+        string ItemCode,
+        string Layer,
+        short Value,
+        short Order,
+        string Label,
+        string Valence,
+        int Count)
+    {
+        public TallyRow ToTallyRow() =>
+            new(ItemCode, Layer, Value, Order, Label, Valence, Count);
+    }
 }

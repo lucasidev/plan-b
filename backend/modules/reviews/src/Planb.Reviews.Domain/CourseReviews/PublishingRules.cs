@@ -42,4 +42,15 @@ public static class PublishingRules
     /// </summary>
     public static readonly IReadOnlySet<short> OutcomeValuesReachingTheEnd =
         new HashSet<short> { 1, 2 };
+
+    /// <summary>
+    /// El ítem del que sale cuántas veces se cursa una materia antes de aprobarla.
+    ///
+    /// <para>
+    /// Se publica como distribución y nunca como promedio: su última opción es abierta ("tres o
+    /// más"), así que promediarla subestima siempre y por un margen que nadie puede recalcular.
+    /// Es el mismo motivo por el que ADR-0083 descarta "2,4 sobre 3".
+    /// </para>
+    /// </summary>
+    public const string AttemptsItemCode = "COURSE_ATTEMPTS";
 }

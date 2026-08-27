@@ -28,7 +28,37 @@ public interface IChairTallyQueryService
         Guid chairId,
         IReadOnlyList<Guid> siblingChairIds,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Los conteos de varias cátedras, cada una por separado. Es lo que alimenta la ficha de la
+    /// materia, que existe para contestar si algo es de la materia o de la cátedra que te tocó: esa
+    /// pregunta necesita ver a cada una aparte, no la suma.
+    ///
+    /// <para>
+    /// Devuelve una entrada por cada cátedra pedida, incluidas las que no tienen una sola reseña:
+    /// que una cátedra no junte voces es información que la ficha publica ("junta 3, con 7 más se
+    /// publica"), no una fila para omitir.
+    /// </para>
+    /// </summary>
+    Task<SubjectTallies> GetPerChairAsync(
+        IReadOnlyList<(Guid ChairId, string ChairName)> chairs,
+        CancellationToken ct = default);
 }
+
+/// <summary>
+/// Lo que la base contó para una materia: sus cátedras por separado, los períodos que cubren esas
+/// reseñas y el texto de cada ítem.
+///
+/// <para>
+/// Los períodos viajan sueltos y no por cátedra porque lo que la ficha dice es de la materia
+/// entera ("111 voces en 3 cátedras, de 2023 a 2026"): de cuándo son las voces de cada cátedra ya
+/// lo cuenta su propia ficha.
+/// </para>
+/// </summary>
+public sealed record SubjectTallies(
+    IReadOnlyList<ChairContribution> Chairs,
+    IReadOnlyList<Guid> TermIds,
+    IReadOnlyDictionary<string, string> ItemTexts);
 
 /// <summary>
 /// Lo que la base contó para una cátedra: cuántas reseñas junta, cómo se repartieron las respuestas
