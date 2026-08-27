@@ -25,7 +25,7 @@ flowchart TD
 
 ## Salidas y errores
 
-- **Sin plan marcado, todo sigue igual** (US-170): reseñar, leer y votar no dependen de haber marcado nada en Mi carrera.
+- **Sin plan marcado, todo sigue igual** (US-170): reseñar y leer no dependen de haber marcado nada en Mi carrera.
 - **Sin cuenta no se llega a Mi carrera**; la co-cursada pública de la Ficha de carrera sí se lee sin cuenta (el gate está en la acción, no en la lectura).
 - **La facultad reformó el plan**: los dos planes coexisten con su año, y la reseña sigue pegada al período y a la materia canónica, no a la fila de un plan en particular (US-204).
 - **Lo marcado no es un hecho**: se puede cambiar en cualquier momento sin que quede rastro público ni entre a ningún agregado.

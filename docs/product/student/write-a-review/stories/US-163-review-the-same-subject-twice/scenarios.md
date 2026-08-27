@@ -4,8 +4,8 @@
 
 ## Camino feliz
 
-**E1.** Dado que Lucía ya reseñó Programación I en el período 2024-C1 (la desaprobó).
-Cuando recursa la materia y la reseña de nuevo en el período 2025-C1 (la aprueba).
+**E1.** Dado que Lucía ya reseñó Programación I en el período 2024-C1 (la recursó).
+Cuando vuelve a cursar la materia y la reseña de nuevo en el período 2025-C1 (la aprueba).
 Entonces el sistema acepta la segunda reseña porque el período es otro: cuenta × materia × período son claves distintas, y ambas cuentan como aportes independientes.
 
 ## Negativos

@@ -5,13 +5,14 @@
 
 ## Historia
 
-Como quien está eligiendo, quiero ver sobre cuántas voces se calcula, porque una proporción sostenida por dos voces miente.
+Como quien está eligiendo, quiero ver sobre cuántas voces se calcula, porque un número sostenido por pocas voces no pesa lo mismo que uno sostenido por miles.
 
 ## Listo cuando
 
-- Cada proporción publicada muestra sus voces, su período y su encogimiento al lado, desde la primera voz.
+- Cada ítem publicado muestra su propio "de N" (cuántas voces lo respondieron), al lado de su moda y de su distribución completa.
+- Ninguna proporción se publica sin ese denominador al lado.
 
 ## Dónde se resuelve
 
-- [Ficha de cátedra](../../screens/SC-002-chair/README.md): cada proporción se publica con sus voces, su período y su encogimiento al lado.
-- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada proporción de la comparación viaja con sus propias voces y su propio encogimiento.
+- [Ficha de cátedra](../../screens/SC-002-chair/README.md): cada ítem se publica con su moda, su distribución y su "de N" voces.
+- [Ficha de carrera](../../screens/SC-001-career/README.md), [Ficha de materia](../../screens/SC-007-subject/README.md) y [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada dato derivado (qué frena la cursada, las estadísticas de la materia, las tarjetas de comparación) muestra sus propias voces.

@@ -5,11 +5,11 @@
 ## Camino feliz
 
 **E1.** Dado que Prof. Paredes pidió verificar que es titular de Cátedra Ibáñez (Física II, UNSTA) y ese pedido todavía está pendiente de resolver
-Cuando alguien entra a la Ficha de Cátedra Ibáñez y no hay ninguna réplica
-Entonces el estado del canal se muestra como "sin réplica", nunca como "no quiso responder".
+Cuando alguien entra a la Ficha de Cátedra Ibáñez y nadie respondió todavía
+Entonces el estado del canal se muestra como "Sin respuesta · avisada el [fecha]", nunca como "no quiso responder".
 
 **E2.** Dado que el titular de Cátedra Gómez (la otra cátedra de Análisis Matemático II en UNSTA) nunca se registró ni pidió verificar su identidad
-Cuando alguien entra a la Ficha de Cátedra Gómez y no hay ninguna réplica
+Cuando alguien entra a la Ficha de Cátedra Gómez y nadie respondió todavía
 Entonces el estado del canal se muestra como "docente sin identidad verificada", porque nunca se le pudo avisar.
 
 ## Negativos
@@ -21,4 +21,4 @@ Entonces en ningún caso aparece el texto "no quiso responder" ni ninguna frase 
 ## Edge cases
 
 - Prof. Paredes deja Cátedra Ibáñez (se retira o lo reemplazan) sin que nadie asuma su lugar todavía: qué estado muestra el canal en ese momento. **Falta decidir**: ninguna story de esta épica lo cubre.
-- La identidad verificada de un docente vence al año (US-226) y no la renueva: si el canal vuelve a mostrarse como "docente sin identidad verificada" pese a que antes sí respondió. **Falta decidir** (abierto en el README de la épica).
+- La identidad verificada de un docente vence al año (US-226 de [Moderar sin romper el producto](../../../../team/moderate-without-breaking-the-product/README.md)) y no la renueva: si el canal vuelve a mostrarse como "docente sin identidad verificada" pese a que antes sí respondió. **Falta decidir** (abierto en el README de la épica).

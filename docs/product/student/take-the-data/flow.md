@@ -4,28 +4,26 @@
 
 ```mermaid
 flowchart TD
-  A([Explorar o Ficha de carrera]) --> B[Método: la fórmula del encogimiento tal cual<br/>y cómo se suman las voces, US-130, US-183]
-  B --> C[El catálogo de frases entero, con sujeto, eje<br/>y cuál es destilada, US-187]
-  C --> D[Los sesgos declarados: de quienes reseñaron,<br/>la duración real, la co-cursada, US-182]
+  A([Explorar o Ficha de carrera]) --> B[Método: la regla de comparación tal cual<br/>y cómo se suman las voces, US-130, US-183]
+  B --> C[El catálogo de ítems entero, con su capa<br/>y cuál es destilado, US-187]
+  C --> D[Los sesgos declarados: de quienes reseñaron y la co-cursada;<br/>la duración real y el egreso, dato oficial, US-182]
   D --> E[Qué no cubrimos: carreras cargadas, en cola y pedidas<br/>cobertura por plan, cuentas afuera por inconsistencia, US-182]
-  E --> F[Cuánto se bajó del corpus y por qué, por categoría<br/>sin contenido, US-181]
-  F --> G[La postura sin acuerdos con instituciones, US-185]
+  E --> G[La postura sin acuerdos con instituciones, US-185]
+  G --> M([Ninguna causa afirmada, US-184])
   G --> H{Descargar sin cuenta, US-180}
-  H --> I([Tabla 1: frase, sujeto, período, voces, eje])
-  H --> J([Tabla 2: trayectoria por carrera-institución y cohorte<br/>por materia y período, por par y período])
+  H --> I([Tabla 1: ítem, opción, sujeto, período, voces])
+  H --> J([Tabla 2: tasa de finalización por materia y período,<br/>co-cursada por par y período])
   I --> K([Lo discute afuera])
   J --> K
-  A --> L[En la ficha: el texto retirado se ve como retirado<br/>con su categoría, sin contenido, US-186]
-  L --> M([Ninguna causa afirmada, US-184])
 ```
 
 De B a G es una sola pantalla hoy: [Método](screens/SC-021-method/README.md) (si se parte en varias todavía está abierto, ver su ficha).
 
 ## Salidas y errores
 
-- **Lo que se descarga es lo que se publica**, ni más fino ni más grueso: nunca nombre, cuenta ni perfil, y los testimonios no se exportan en bloque.
+- **Lo que se descarga es lo que se publica**, ni más fino ni más grueso: nunca nombre, cuenta ni perfil, y el campo libre no se exporta en bloque, porque nunca se publica.
 - **Cuentas afuera por inconsistencia**: se publica cuántas, y no entran a ningún agregado.
-- **El texto retirado** se ve como retirado con su categoría; sus frases siguen contando (US-181, US-186).
+- **US-181 y US-186 (concepto rebasado el 2026-08-25)**: dependían de testimonios publicados que después se retiraban; [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md) retira la publicación del campo libre, así que no hay nada que "retirar" después de publicado. Falta decidir el reemplazo.
 - **Ninguna ficha afirma una causa** (US-184); la descarga es sin cuenta y sin registro (THESIS, "Posición").
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide

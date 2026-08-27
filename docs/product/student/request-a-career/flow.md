@@ -6,7 +6,7 @@
 flowchart TD
   A([Ana busca su carrera o su facultad]) --> B[Explorar / Buscar → Elegir dónde estudiar]
   B -->|no la cargamos todavía| C1[El vacío explicado: es nuestro, no de su facultad, US-139]
-  B -->|cargada, sin voces| C2[La primera voz ya se publica,<br/>con sus voces y su encogimiento → Reseñar, US-136]
+  B -->|cargada, sin llegar al piso| C2[Arranca vacía o juntando reseñas,<br/>el piso a la vista → Reseñar, US-136]
   B -->|cargada con voces, sin cabecera| C3[La cobertura a la vista: todavía no derivamos, US-134]
   C3 --> C3a([Se lee materia por materia])
   C1 --> D[Pedir: solo el mail, sin cuenta, US-140]

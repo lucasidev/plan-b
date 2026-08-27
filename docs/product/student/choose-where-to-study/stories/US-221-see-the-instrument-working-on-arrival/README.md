@@ -10,7 +10,7 @@ Como quien lee, quiero entender qué es esto viendo un dato real y no una explic
 ## Listo cuando
 
 - La entrada muestra una ficha real con sus voces, no un ejemplo inventado ni un número de muestra.
-- La ficha de la muestra sale al azar entre las que ya pasan el gate de cobertura: no se elige por tener el número más alto, ni el más bajo, ni por institución.
+- La ficha de la muestra sale al azar entre las que ya pasaron el piso de publicación: no se elige por tener el número más alto, ni el más bajo, ni por institución.
 - Se dice qué es plan-b sin vocabulario de producto ni de tesis, y desde ahí se llega a explorar, a buscar y al método.
 
 ## Dónde se resuelve
@@ -21,4 +21,4 @@ Como quien lee, quiero entender qué es esto viendo un dato real y no una explic
 
 Es la story que faltaba: [Inicio](../../screens/SC-004-home/README.md) estaba diseñada desde el [mapa](../../../../map.md) ("la vitrina: qué es plan-b y la puerta a Explorar y Buscar") y ninguna story la pedía, así que la sostenía sólo una garantía transversal ([US-171](../../../../guarantees/README.md#stories)), que vale para las 34 pantallas y no justifica ninguna.
 
-**Por qué al azar entre las que pasan el gate**: elegir la de más voces es un destacado disfrazado y elegir cualquiera puede caer en una de tres voces, que muestra el instrumento débil justo donde tiene que convencer. El gate de cobertura ya existe para las derivadas ([ADR-0066](../../../../../decisions/0066-derived-cards-sum-voices-and-gate-on-coverage-not-a-floor.md)): reusarlo acá resuelve la tensión con [US-171](../../../../guarantees/README.md#stories) sin inventar un mecanismo nuevo.
+**Por qué al azar entre las que pasaron el piso**: elegir la de más voces es un destacado disfrazado, y elegir cualquiera al azar entre todas puede caer en una cátedra que todavía está juntando sus primeras reseñas, sin nada que mostrar. El piso de publicación ya existe para las cátedras ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): reusarlo acá resuelve la tensión con [US-171](../../../../guarantees/README.md#stories) sin inventar un mecanismo nuevo.

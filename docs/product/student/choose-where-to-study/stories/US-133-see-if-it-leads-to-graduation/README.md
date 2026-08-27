@@ -9,13 +9,14 @@ Como quien paga y no cursa, quiero saber si esto termina en un título, porque p
 
 ## Listo cuando
 
-- Duración real, brecha y las tres proporciones de la cohorte cerrada (se recibió, se fue, no dijo o sigue) se leen sin abrir nada ni saber vocabulario académico, y cada una dice que sale de quienes reseñaron.
+- La ficha muestra cuánto egresa por cohorte como dato oficial, en una línea simple, sin abrir nada ni saber vocabulario académico.
+- El dato dice de dónde sale (la fuente oficial) y de qué período, nunca infiere ni publica el desenlace de una persona puntual.
 
 ## Dónde se resuelve
 
-- [Ficha de carrera](../../screens/SC-001-career/README.md): la cohorte cerrada con sus tres proporciones (se recibió, se fue, no dijo o sigue) se lee sin abrir nada.
-- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): la misma cohorte cerrada se repite por oferta, para comparar sin vocabulario académico.
+- [Ficha de carrera](../../screens/SC-001-career/README.md): "egresan por cohorte" se lee en el bloque de datos oficiales, sin abrir nada.
+- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): el mismo dato se repite por institución, para comparar sin vocabulario académico.
 
 ## Notas
 
-depende de US-155, US-156
+Ya no depende de US-155 ni de US-156: con [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) "cuánto egresa por cohorte" es relevamiento oficial (serie SPU/CONEAU), no un cálculo sobre quién declaró haberse recibido o haberse ido.

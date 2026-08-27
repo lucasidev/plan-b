@@ -9,7 +9,7 @@ Como quien ya tiene cuenta y quedó con una acción a medias, quiero entrar y qu
 
 ## Listo cuando
 
-- Cuando llegué disparando una acción, la pantalla dice con esas mismas palabras por qué estoy acá ("para votar esta reseña, necesitás una cuenta").
+- Cuando llegué disparando una acción, la pantalla dice con esas mismas palabras por qué estoy acá ("para reseñar esta cursada, necesitás una cuenta").
 - Al entrar, la sesión se abre y vuelvo al lugar exacto del que venía, con la acción que me trajo completada; si no venía de ninguna, al lugar por defecto.
 - Un mail o una contraseña que no coinciden avisan sin borrar lo que escribí y sin decir cuál de los dos falló.
 

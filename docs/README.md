@@ -5,7 +5,7 @@ Cinco carpetas, y **cada una responde una pregunta distinta**. Si no se puede de
 | | Pregunta | Contiene |
 |---|---|---|
 | [`THESIS.md`](THESIS.md) | **¿qué es y qué no hace?** | La tesis del producto y la posición que toma. Todo lo demás se lee contra esto. |
-| [`product/`](product) | **¿qué hace y para quién?** | El producto entero: las [personas](product/personas.md), el [glosario](product/language.md), las [frases](product/phrases.md), el [lenguaje visual](product/design-system.md), y una carpeta por **épica**, con sus stories, su flujo y sus pantallas adentro. |
+| [`product/`](product) | **¿qué hace y para quién?** | El producto entero: las [personas](product/personas.md), el [glosario](product/language.md), el [catálogo de ítems](product/phrases.md), el [lenguaje visual](product/design-system.md), y una carpeta por **épica**, con sus stories, su flujo y sus pantallas adentro. |
 | [`engineering/`](engineering) | **¿cómo está construido?** | El [modelo de datos](engineering/data-model.md), las [claves de Redis](engineering/redis-key-patterns.md), las [convenciones de testing](engineering/testing.md) y los playbooks: [git](engineering/git-workflow.md), [rollback](engineering/rollback.md), [deploy](engineering/deploy.md), [lecciones](engineering/lessons-learned.md). |
 | [`decisions/`](decisions) | **¿por qué?** | Los ADRs, en orden cronológico. Antes de decidir algo estructural, buscar si ya hay uno. |
 | [`plan/`](plan) | **¿cuándo, y cuándo está listo?** | El tracker desde que Notion se soltó: los [sprints](plan/status.md) con el trabajo de cada story, el [Definition of Done](plan/definition-of-done.md) y el [formato de una story](plan/story-template.md). |
@@ -13,19 +13,19 @@ Cinco carpetas, y **cada una responde una pregunta distinta**. Si no se puede de
 
 ## La unidad de `product/` es la épica
 
-Una **épica** es lo que alguien viene a hacer: Reseñar, Replicar, Moderar. Son catorce, y cada una contiene **todo lo suyo**, cortado en vertical:
+Una **épica** es lo que alguien viene a hacer: Reseñar, Responder, Moderar. Son catorce, y cada una contiene **todo lo suyo**, cortado en vertical:
 
 ```
 product/
 ├── personas.md            para quién es el producto
 ├── language.md            el glosario
-├── phrases.md             las frases que se ofrecen para marcar
+├── phrases.md             el catálogo de ítems que se preguntan
 ├── design-system.md       el lenguaje visual
 └── write-a-review/                          una carpeta por épica
     ├── README.md                            qué es, para quién, el índice de sus stories
     ├── flow.md                              el recorrido, en mermaid
     ├── stories/
-    │   ├── US-153-review-in-under-five-minutes.md
+    │   ├── US-146-review-in-under-five-minutes/
     │   └── ...                              una story por archivo, con su criterio
     └── screens/SC-015-write-review/
         ├── README.md                        la ficha de la pantalla

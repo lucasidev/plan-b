@@ -13,14 +13,14 @@ Cuando vuelve más tarde y lo abre de nuevo,
 Entonces retoma exactamente donde había quedado, no arranca de cero.
 
 **E3.** Dado que Matías nunca marcó ningún plan en Mi carrera,
-Cuando entra a una Ficha de cátedra y aprieta "a mí también me pasó" en un testimonio,
-Entonces el voto se registra igual: esa acción no depende de tener un plan marcado.
+Cuando entra a una Ficha de materia y corrige un dato duro (US-189),
+Entonces la corrección se registra igual: esa acción no depende de tener un plan marcado.
 
 ## Negativos
 
 **N1.** Dado que Lucía nunca marcó su plan en Mi carrera, cuando abre la pestaña de co-cursada filtrada a lo que todavía puede cursar, entonces esa pestaña puntual NO puede filtrar y lo dice de manera explícita, en vez de simular un resultado con datos que no tiene: es la única pantalla que sí necesita el plan marcado.
 
-**N2.** Dado que Matías salteó Empezar sin abrir ni un paso, cuando vuelve más tarde a leer o a votar, entonces la app NO lo redirige de nuevo a Empezar ni le bloquea nada hasta que lo termine.
+**N2.** Dado que Matías salteó Empezar sin abrir ni un paso, cuando vuelve más tarde a leer o a reseñar, entonces la app NO lo redirige de nuevo a Empezar ni le bloquea nada hasta que lo termine.
 
 ## Edge cases
 

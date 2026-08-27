@@ -13,4 +13,4 @@ Como quien reseña, quiero que la primera vez me pregunten cuándo entré, y una
 
 ## Dónde se resuelve
 
-- [Reseñar](../../screens/SC-015-write-review/README.md): el paso 2 pregunta el año de ingreso la primera vez que la cuenta reseña esa carrera, una sola vez, con "prefiero no decirlo".
+- [Reseñar](../../screens/SC-015-write-review/README.md): el paso 2 (Cuándo y con quién) pregunta el año de ingreso la primera vez que la cuenta reseña esa carrera, una sola vez, con "prefiero no decirlo".

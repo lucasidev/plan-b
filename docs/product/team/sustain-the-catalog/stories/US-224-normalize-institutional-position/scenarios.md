@@ -8,8 +8,8 @@
 Cuando Sofía carga el cargo de cada institución.
 Entonces las tres quedan atadas al mismo cargo genérico "Área de alumnos", y ninguna se publica con su nombre textual original.
 
-**E2.** Dado que alguien responde una réplica desde el cargo "Área de alumnos" de UNSTA, cargado a partir del textual "Departamento de Alumnos".
-Cuando esa réplica se publica en la ficha pública.
+**E2.** Dado que alguien responde desde el cargo "Área de alumnos" de UNSTA, cargado a partir del textual "Departamento de Alumnos".
+Cuando esa respuesta se publica en la ficha pública.
 Entonces se lee "Área de alumnos, UNSTA", nunca "Departamento de Alumnos".
 
 **E3.** Dado que la lista corta de cargos genéricos hoy tiene "Área de alumnos" y "Secretaría académica", y ninguno cubre el puesto de una institución nueva que se está cargando, "Oficina de Becas".

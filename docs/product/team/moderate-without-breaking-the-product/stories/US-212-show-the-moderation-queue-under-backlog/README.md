@@ -5,15 +5,15 @@
 
 ## Historia
 
-Como quien modera, quiero ver la cola cuando tiene cuarenta reportes y treinta retenidos, porque a cinco minutos cada uno son seis horas de una persona y lo retenido no se publica hasta que alguien lo mire.
+Como quien modera, quiero ver la cola de Reportes cuando el campo libre filtrado y los reclamos se acumulan, porque a cinco minutos cada uno son horas de una persona, y nada se resuelve solo por vencimiento.
 
 ## Listo cuando
 
-- La cola dice cuánto se tarda y qué queda para después, separa lo retenido (que todavía nadie leyó) de lo reportado (que sigue publicado), y prioriza lo que está sin publicar, no el orden de llegada.
+- La cola dice cuánto se tarda y qué queda para después, y prioriza según el criterio de cada guardia, no el orden de llegada.
 
 ## Dónde se resuelve
 
-- [Reportes](../../screens/SC-031-reports/README.md): con la cola desbordada, dice cuánto se tarda y qué queda para después, priorizando lo sin publicar por sobre el orden de llegada.
+- [Reportes](../../screens/SC-031-reports/README.md): con la cola desbordada, dice cuánto se tarda y qué queda para después.
 
 ## Notas
 

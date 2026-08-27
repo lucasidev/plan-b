@@ -1,6 +1,6 @@
 # Escenarios de Reseñar
 
-> Traducción ejecutable del "listo cuando" de cada story, para escribir el test antes que el código. Los números salen de ADR-0075. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
+> Traducción ejecutable del "listo cuando" de cada story, para escribir el test antes que el código. Los números salen de [ADR-0083](../../../decisions/0083-the-ficha-publishes-counts-not-scores.md). Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
 
 Los casos de cada story viven con ella, en su carpeta:
 
@@ -22,6 +22,5 @@ Los casos de cada story viven con ella, en su carpeta:
 - [US-161](stories/US-161-resume-a-draft-review/scenarios.md)
 - [US-162](stories/US-162-see-the-impact-of-my-review/scenarios.md)
 - [US-163](stories/US-163-review-the-same-subject-twice/scenarios.md)
-- [US-164](stories/US-164-mark-the-opposite-phrase/scenarios.md)
 
 Este archivo queda para los escenarios que cruzan varias stories de la épica, que no son de ninguna en particular.

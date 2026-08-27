@@ -10,7 +10,7 @@ Entonces el resultado dice "no la cargamos todavía" (nunca "sin resultados" a s
 
 **E2.** Dado que "Licenciatura en Psicología, UNSTA" se cargó la semana pasada y todavía ninguna cursada la reseñó,
 Cuando Ana entra a su Ficha de carrera,
-Entonces la ficha dice que arranca vacía y que la primera voz ya se publica, sin escalones: nunca "0%" ni una sección en blanco sin explicación.
+Entonces la ficha dice que arranca vacía y muestra el piso de publicación (10 reseñas por cátedra, [ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): nunca "0%" ni una sección en blanco sin explicación.
 
 **E3.** Dado que "Ingeniería en Sistemas, UNSTA" está cargada y tiene voces en 22 de sus 40 materias canónicas (menos de la mitad),
 Cuando Ana entra a su Ficha de carrera,
@@ -20,9 +20,9 @@ Entonces la cabecera dice "todavía no derivamos" con "22 de 40 materias con voc
 
 **N1.** Dado que "Licenciatura en Psicología, UNSTA" está cargada y sin voces, cuando se renderiza su Ficha de carrera, entonces NO muestra ninguna proporción en 0% ni una cabecera vacía sin texto: tiene que decir explícitamente que arranca vacía.
 
-**N2.** Dado que "Contador Público, Siglo 21" todavía no está cargada (está en la cola, no en el catálogo), cuando Ana la busca, entonces el resultado NO dice "cargada, sin voces todavía" (eso implicaría que ya existe en el catálogo): dice "no la cargamos todavía", con el link a Pedir.
+**N2.** Dado que "Contador Público, Siglo 21" todavía no está cargada (está en la cola, no en el catálogo), cuando Ana la busca, entonces el resultado NO dice "cargada, sin llegar al piso" (eso implicaría que ya existe en el catálogo): dice "no la cargamos todavía", con el link a Pedir.
 
 ## Edge cases
 
-- La transición de "cargada, sin voces" a "cargada, con voces, todavía no derivamos" ocurre con la primera reseña que entra: no hay un cuarto estado intermedio entre los tres que la ficha distingue.
+- La transición de "cargada, sin llegar al piso" a "cargada, con voces, todavía no derivamos" ocurre cuando la cátedra llega al piso de 10 reseñas: no hay un cuarto estado intermedio entre los tres que la ficha distingue.
 - Buscar devuelve una carrera cargada sin voces o sin cabecera como un resultado normal, con su propio estado a la vista, nunca como "sin resultados": eso queda reservado para cuando de verdad no hay nada con ese nombre.

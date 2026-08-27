@@ -40,6 +40,7 @@
 </style>
 </head>
 <body>
+<p class="note"><strong>Este boceto dibuja el modelo anterior</strong> (publica el encogimiento de Wilson y la política de réplica y moderación de texto) y quedó rebasado el 2026-08-25: ver <code>ADR-0082</code> a <code>ADR-0085</code>. La ficha de pantalla (<code>README.md</code>) ya describe el modelo vigente; el boceto se rehace cuando la pantalla entre a sprint.</p>
 <main>
   <p class="note">Boceto mid-fi de la pantalla Método (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md, no de este archivo. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
 
@@ -53,7 +54,7 @@
     </div>
     <p class="muted" style="margin:8px 0 0">p = la proporción cruda (voces que marcaron la frase, sobre voces del sujeto). n = las voces. z = 1,96 (95% de confianza). Se aplica a cada proporción por separado, nunca a un número global.</p>
     <p class="muted" style="margin-top:8px">Ejemplo: 2 de 2 voces marcan una frase; la proporción publicada no es 100%, es 34%. Es correcto, no un error: con dos voces no sabemos más que eso.</p>
-    <p class="muted" style="margin-top:8px">US-130, US-183. ADR-0064.</p>
+    <p class="muted" style="margin-top:8px">US-130, US-183. ADR-0083.</p>
   </section>
 
   <h2>Cómo se derivan las fichas</h2>
@@ -67,7 +68,7 @@
       <p class="row" style="margin-top:6px"><span>Institución</span><span class="sk">tres cosas separadas: como sujeto, sus cursadas, su cobertura</span></p>
     </div>
     <p class="muted" style="margin-top:8px">No se deduplica por persona ni se promedian proporciones por materia: la proporción de una frase en cualquier nivel es voces que la marcaron sobre voces del nivel.</p>
-    <p class="muted" style="margin-top:8px">US-130, US-183. ADR-0066.</p>
+    <p class="muted" style="margin-top:8px">US-130, US-183. ADR-0085.</p>
   </section>
 
   <h2>El catálogo de frases</h2>
@@ -89,7 +90,7 @@
       <p class="row"><span>Toman lo que no dieron <span class="chip" style="padding:1px 7px;font-size:11px;margin:0 0 0 4px">síntesis</span></span><span class="sk">destilada de comentarios, validada por las voces</span></p>
       <p class="muted" style="margin-top:6px">No es cita de nadie: la propone la máquina, la valida la gente marcándola, y se reprocesa a medida que entran reseñas.</p>
     </div>
-    <p class="muted" style="margin-top:8px">US-187, US-130. ADR-0064, ADR-0065.</p>
+    <p class="muted" style="margin-top:8px">US-187, US-130.</p>
   </section>
 
   <h2>Los sesgos declarados</h2>
@@ -126,7 +127,7 @@
       <p class="row" style="margin-top:8px;font-weight:500"><span>Total, este trimestre</span><span class="sk">21 de 3.240 comentarios</span></p>
     </div>
     <p class="muted" style="margin-top:8px">Se baja el texto, nunca la voz: las frases marcadas de esas reseñas siguen contando. Nunca se publica el contenido retirado.</p>
-    <p class="muted" style="margin-top:8px">US-181. ADR-0068.</p>
+    <p class="muted" style="margin-top:8px">US-181. ADR-0084.</p>
   </section>
 
   <h2>La política de moderación y réplica</h2>
@@ -161,7 +162,7 @@
     </div>
     <p class="muted" style="margin:10px 0">Lo que no viene: nombre, cuenta, perfil, y los testimonios no se exportan en bloque. Lo que se descarga es lo que se publica, ni más fino ni más grueso.</p>
     <p style="display:flex;gap:8px;flex-wrap:wrap"><span class="btn primary">Descargar el CSV</span></p>
-    <p class="muted" style="margin-top:8px">US-180. ADR-0067, ADR-0068.</p>
+    <p class="muted" style="margin-top:8px">US-180. ADR-0082, ADR-0084.</p>
   </section>
 </main>
 </body>

@@ -12,12 +12,12 @@ Entonces la asignación es imposible: la opción no está disponible, no es algo
 Cuando el Admin intenta asignarle también el rol moderación
 Entonces también es imposible, en el mismo sentido que E1.
 
-**E3.** Dado que el registro guarda, por separado, la acción de Camila aprobando la constancia de un alumno (con su nombre real) y la acción de Nahuel bajando un testimonio de esa misma cátedra
+**E3.** Dado que el registro guarda, por separado, la acción de Camila aprobando la constancia de un alumno (con su nombre real) y la acción de Nahuel leyendo el campo libre de esa misma cátedra para destilar un ítem
 Cuando Nahuel o Camila leen el registro con su propio rol
-Entonces ninguno de los dos encuentra ahí una referencia que le permita unir ese nombre real con ese testimonio o esa cuenta: las referencias que ve un rol no alcanzan para reconstruir el cruce.
+Entonces ninguno de los dos encuentra ahí una referencia que le permita unir ese nombre real con esa reseña o esa cuenta: las referencias que ve un rol no alcanzan para reconstruir el cruce.
 
 **E4.** Dado que el Admin está en Equipo
-Cuando intenta asignarse a sí mismo el rol catálogo, curaduría de frases, moderación o verificación
+Cuando intenta asignarse a sí mismo el rol catálogo, curaduría, moderación o verificación
 Entonces la asignación es imposible: el Admin no se auto-asigna ningún rol operativo.
 
 ## Negativos

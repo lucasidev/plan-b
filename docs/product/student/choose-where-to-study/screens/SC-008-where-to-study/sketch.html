@@ -3,231 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Boceto hi-fi: Dónde estudiarla (Boletín)</title>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Boceto hi-fi: Una carrera en tu ciudad (Boletín)</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Geist:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   body { margin: 0; background: #eceae4; padding: 24px 16px 48px; font-family: 'Geist', system-ui, sans-serif; }
-  .note { max-width: 1120px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; }
-  a { color: #6e1c12; text-decoration: none; border-bottom: 1px solid #e6c3bc; } a:hover { color: #8d2418; border-bottom-color: #8d2418; }
-</style>
+  .note { max-width: 452px; margin: 0 auto 16px; font-size: 12px; color: #7b8089; line-height: 1.6; }
+
+    body { margin: 0; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.5; }
+    .serif { font-family: 'Newsreader', Georgia, serif; }
+    .mono { font-family: 'IBM Plex Mono', Consolas, monospace; }
+    .card { background: #fffefb; border: 1px solid #e2dfd6; border-radius: 12px; padding: 16px; }
+    .stat-l { font-size: 12px; color: #494e57; margin: 0; }
+    .stat-v { font-size: 19px; font-weight: 500; margin: 2px 0 0; font-family: 'Newsreader', Georgia, serif; }
+    .chip-neg { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #f5e4e0; color: #6e1c12; }
+    .chip-neu { font-size: 12px; padding: 4px 10px; border-radius: 6px; background: #eeece5; color: #494e57; }
+  </style>
 </head>
 <body>
-<p class="note">Boceto hi-fi de la pantalla Dónde estudiarla (ficha: <code>README.md</code>). Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>); <code>globals.css</code> lo recibe con el primer slice del producto nuevo. El mid-fi anterior quedó en git. Los datos son ejemplo, con los números del canon.</p>
-<div style="width: 1120px; max-width: 100%; margin: 0 auto; background: #f7f5ef; color: #191b1f; font-family: 'Geist', system-ui, sans-serif; font-size: 14px; line-height: 1.55; box-sizing: border-box">
+<p class="note">Boceto rehecho el 2026-08-25 (<code>ADR-0085</code>): la misma carrera en las instituciones de la ciudad, comparada solo con datos oficiales medidos igual para todas (el régimen de ingreso al lado del egreso); las señales de reseñas van por institución y no se cruzan; sin piso alcanzado, silencio honesto. Los números de reseñas salen computados de un corpus de ejemplo (modas, distribuciones y comparaciones con intervalos); los datos oficiales son ejemplo verosímil de la serie SPU/CONEAU. Contrato visual: Boletín (<code>ADR-0071</code>, <code>docs/product/design-system.md</code>).</p>
+<div style="width: 420px; max-width: 100%; margin: 0 auto; background: #f7f5ef; padding: 16px; box-sizing: border-box; border: 1px solid #e2dfd6; border-radius: 12px">
 
-  <div style="display: flex; align-items: center; gap: 24px; padding: 14px 40px; border-bottom: 1px solid #e2dfd6; background: #fffefb">
-    <div style="font-family: 'Newsreader', serif; font-style: italic; font-weight: 600; font-size: 20px">plan-b</div>
-    <div style="display: flex; gap: 18px; font-size: 13px; color: #494e57">
-      <span>Explorar</span><span>Método</span>
+  <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 4px 2px 14px">
+    <span class="serif" style="font-style: italic; font-weight: 600; font-size: 16px">plan-b</span>
+    <span class="mono" style="font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: #7b8089">Una carrera en tu ciudad</span>
+  </div>
+
+  <div style="margin-bottom: 18px">
+    <p class="serif" style="font-weight: 600; font-size: 24px; margin: 0 0 2px">Ingeniería en Sistemas</p>
+    <p style="font-size: 13px; color: #494e57; margin: 0">3 instituciones la dictan en Tucumán</p>
+  </div>
+
+  <div class="card" style="margin-bottom: 12px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px">
+      <span style="font-size: 15px; font-weight: 500">UNT · Cs. Exactas</span>
+      <span class="mono" style="font-size: 11px; color: #7b8089">pública</span>
     </div>
-    <div style="flex: 1; max-width: 360px; margin-left: auto; border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 14px; color: #a7adb5; font-size: 13px; background: #f7f5ef">Buscar una materia, carrera o docente…</div>
-    <div style="border: 1px solid #e2dfd6; border-radius: 999px; padding: 7px 16px; font-size: 13px; color: #494e57; font-weight: 500">Ingresar</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px">
+      <div><p class="stat-l">Dura en la realidad</p><p class="stat-v">8,4 años</p></div>
+      <div><p class="stat-l">Egresan por cohorte</p><p class="stat-v">14 %</p></div>
+      <div><p class="stat-l">Plan del año</p><p class="stat-v">2016</p></div>
+      <div><p class="stat-l">Para entrar</p><p class="stat-v">Irrestricto</p></div>
+    </div>
+    <p class="mono" style="font-size: 11px; color: #7b8089; margin: 0 0 8px; border-top: 1px solid #eae7de; padding-top: 10px">Según 412 reseñas · 45 % de las materias</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px">
+      <span class="chip-neg">Trámites: 11 a 20 días</span>
+      <span class="chip-neg">3 materias tapón</span>
+    </div>
   </div>
 
-  <div style="padding: 26px 40px 48px">
-
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7b8089; margin: 0 0 16px">Explorar · Ingeniería en Sistemas</div>
-
-    <section aria-label="Comparar Ingeniería en Sistemas: UNSTA y UTN lado a lado">
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b8089; margin: 0 0 8px">Dónde estudiarla · pública, sin cuenta</div>
-      <h1 style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 40px; line-height: 1.05; margin: 0">Ingeniería en Sistemas</h1>
-      <p style="color: #494e57; font-size: 14px; margin: 10px 0 22px; max-width: 800px">2 ofertas cargadas con cabecera derivada (hay una tercera más abajo, todavía sin cabecera, y una cuarta, sin voces todavía) · orden alfabético · sin compuesto, sin ganador. <a href="#">Bajar el CSV para ordenar distinto</a>.</p>
-
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 4px 24px 22px; margin: 0 0 10px">
-        <table style="width: 100%; border-collapse: collapse; table-layout: fixed">
-          <colgroup>
-            <col style="width: 23%"><col style="width: 38.5%"><col style="width: 38.5%">
-          </colgroup>
-          <thead>
-            <tr>
-              <th scope="col" style="text-align: left; padding: 16px 16px 14px; border-bottom: 1px solid #e2dfd6"></th>
-              <th scope="col" style="text-align: left; padding: 16px 16px 14px; border-bottom: 1px solid #e2dfd6; border-left: 1px solid #eae7de">
-                <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 21px">UNSTA</div>
-                <div style="font-size: 13px; margin-top: 2px"><a href="#">Ver la ficha de la carrera</a></div>
-              </th>
-              <th scope="col" style="text-align: left; padding: 16px 16px 14px; border-bottom: 1px solid #e2dfd6; border-left: 1px solid #eae7de">
-                <div style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 21px">UTN</div>
-                <div style="font-size: 13px; margin-top: 2px"><a href="#">Ver la ficha de la carrera</a></div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="padding: 12px 16px; font-size: 14px; color: #494e57">Duración nominal</td>
-              <td style="padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">5 años</td>
-              <td style="padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">5,5 años</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px; color: #494e57">Duración real</td>
-              <td style="padding: 8px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">7,3 años · mediana de 38 egresados</td>
-              <td style="padding: 8px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">7,1 años · mediana de 26 egresados</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px; color: #494e57">Brecha</td>
-              <td style="padding: 8px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">2,3 años</td>
-              <td style="padding: 8px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">1,6 años</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="padding: 4px 16px 16px; font-size: 12px; color: #7b8089; border-bottom: 1px solid #eae7de">De los que se recibieron y reseñaron acá.</td>
-            </tr>
-            <tr>
-              <td style="padding: 14px 16px 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #7b8089">Cohorte</td>
-              <td style="padding: 14px 16px 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-left: 1px solid #eae7de">2016 a 2018 · 210 personas</td>
-              <td style="padding: 14px 16px 6px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-left: 1px solid #eae7de">2015 a 2017 · 260 personas</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 16px; font-size: 14px; color: #494e57">Se recibió</td>
-              <td style="padding: 6px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">41% (encogido 35%)</td>
-              <td style="padding: 6px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">35% (encogido 29%)</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 16px; font-size: 14px; color: #494e57">Se fue</td>
-              <td style="padding: 6px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">22% (encogido 17%)</td>
-              <td style="padding: 6px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-left: 1px solid #eae7de">18% (encogido 14%)</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 16px 14px; font-size: 14px; color: #494e57; border-bottom: 1px solid #eae7de">No dijo o sigue</td>
-              <td style="padding: 6px 16px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-bottom: 1px solid #eae7de; border-left: 1px solid #eae7de">37% (encogido 31%)</td>
-              <td style="padding: 6px 16px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; border-bottom: 1px solid #eae7de; border-left: 1px solid #eae7de">47% (encogido 41%)</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="padding: 8px 16px 18px; font-size: 12px; color: #7b8089; border-bottom: 1px solid #eae7de">De quienes entraron esos años y reseñaron acá. Cada proporción viaja con su propio encogimiento y por eso no suman 100; el corte depende de la nominal de esta oferta.</td>
-            </tr>
-            <tr style="background: #f7f5ef">
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #7b8089; vertical-align: top">Exigencia</td>
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: #494e57; border-left: 1px solid #eae7de">5 de cada 10 dicen que es dura · 612 voces</td>
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: #494e57; border-left: 1px solid #eae7de">4 de cada 10 dicen que es dura · 480 voces</td>
-            </tr>
-            <tr style="background: #f5e4e0">
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: #8d2418; vertical-align: top">Gestión</td>
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: #6e1c12; border-left: 1px solid #e6c3bc">6 de cada 10 marcaron alguien fallando · 612 voces</td>
-              <td style="padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: #6e1c12; border-left: 1px solid #e6c3bc">5 de cada 10 marcaron alguien fallando · 480 voces</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 16px 18px; font-size: 14px; color: #494e57; border-bottom: 1px solid #e2dfd6">Cobertura</td>
-              <td style="padding: 12px 16px 18px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-bottom: 1px solid #e2dfd6; border-left: 1px solid #eae7de">24 de 40 materias con voces</td>
-              <td style="padding: 12px 16px 18px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-bottom: 1px solid #e2dfd6; border-left: 1px solid #eae7de">31 de 44 materias con voces</td>
-            </tr>
-            <tr>
-              <td colspan="3" style="padding: 20px 16px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089">Exigencia</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px">Es dura de verdad</td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">294 de 612 voces · encogido 44% · en 19 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 44%; background: #7b8089; border-radius: 6px"></div></div>
-              </td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">211 de 480 voces · encogido 40% · en 21 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 40%; background: #7b8089; border-radius: 6px"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px">Es muchísimo contenido</td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">202 de 612 voces · encogido 29% · en 17 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 29%; background: #7b8089; border-radius: 6px"></div></div>
-              </td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">173 de 480 voces · encogido 32% · en 15 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 32%; background: #7b8089; border-radius: 6px"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px 16px; font-size: 14px; border-bottom: 1px solid #e2dfd6">El final es exigente</td>
-              <td style="padding: 8px 16px 16px; border-left: 1px solid #eae7de; border-bottom: 1px solid #e2dfd6">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">159 de 612 voces · encogido 23% · en 14 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 23%; background: #7b8089; border-radius: 6px"></div></div>
-              </td>
-              <td style="padding: 8px 16px 16px; border-left: 1px solid #eae7de; border-bottom: 1px solid #e2dfd6">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #a7adb5">sin voces todavía</div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3" style="padding: 20px 16px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8d2418">Gestión</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px">Hay clases que no se dan</td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">177 de 612 voces · encogido 25% · en 9 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 25%; background: #8d2418; border-radius: 6px"></div></div>
-              </td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">149 de 480 voces · encogido 27% · en 13 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 27%; background: #8d2418; border-radius: 6px"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px; font-size: 14px">Te la estudiás solo</td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">147 de 612 voces · encogido 21% · en 11 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 21%; background: #8d2418; border-radius: 6px"></div></div>
-              </td>
-              <td style="padding: 8px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">106 de 480 voces · encogido 19% · en 12 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 19%; background: #8d2418; border-radius: 6px"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px 16px 16px; font-size: 14px">Las correlativas te traban</td>
-              <td style="padding: 8px 16px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #a7adb5">sin voces todavía</div>
-              </td>
-              <td style="padding: 8px 16px 16px; border-left: 1px solid #eae7de">
-                <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089">91 de 480 voces · encogido 16% · en 10 materias</div>
-                <div style="height: 7px; background: #eeece5; border-radius: 6px; margin-top: 5px"><div style="height: 100%; width: 16%; background: #8d2418; border-radius: 6px"></div></div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 14px 16px 4px; font-size: 12px; color: #7b8089; border-top: 1px solid #e2dfd6">Voces de</td>
-              <td style="padding: 14px 16px 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-top: 1px solid #e2dfd6; border-left: 1px solid #eae7de">2021 a 2025</td>
-              <td style="padding: 14px 16px 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7b8089; border-top: 1px solid #e2dfd6; border-left: 1px solid #eae7de">2021 a 2025</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="color: #7b8089; font-size: 12px; margin: 0 0 8px">Mismo denominador entre exigencia y gestión de cada oferta. Ninguna columna de total ni oferta remarcada.</p>
-    </section>
-
-    <div style="margin: 40px 0 16px; padding-top: 26px; border-top: 1px solid #e2dfd6; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089">Estado · una oferta sin cabecera</div>
-    <section aria-label="Estado: una oferta sin cabecera, cobertura a la vista">
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #a7adb5; margin: 0 0 12px">Dónde estudiarla · Ingeniería en Sistemas</div>
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 20px 24px; max-width: 360px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">UNT</div>
-        <p style="font-size: 13px; color: #7b8089; margin: 0 0 12px">En esa institución la oferta se llama Ingeniería en Sistemas de Información.</p>
-        <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 18px; margin: 0 0 6px">Todavía no derivamos la cabecera.</p>
-        <p style="font-size: 13px; color: #7b8089; margin: 0 0 16px">Cobertura: 9 de 42 materias con voces. Falta que más de la mitad tenga alguna voz.</p>
-        <div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #494e57; margin: 0 0 6px"><span>Duración nominal</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #191b1f">5 años</span></div>
-        <p style="font-size: 12px; color: #7b8089; margin: 0 0 16px">Cohorte 2023: todavía no cerró (nominal × 1,5).</p>
-        <a href="#">Leer materia por materia</a>
-      </div>
-      <p style="color: #7b8089; font-size: 12px; margin: 14px 0 0; max-width: 720px">La misma carrera canónica que UNSTA y UTN, decidida por el catálogo: "Ingeniería en Sistemas" y "en Sistemas de Información" son una porque lo decidimos, no por el nombre.</p>
-    </section>
-
-    <div style="margin: 40px 0 16px; padding-top: 26px; border-top: 1px solid #e2dfd6; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089">Estado · una oferta sin voces</div>
-    <section aria-label="Estado: una oferta recién cargada, sin ninguna voz">
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #a7adb5; margin: 0 0 12px">Dónde estudiarla · Ingeniería en Sistemas</div>
-      <div style="background: #eeece5; border: 1px dashed #e2dfd6; border-radius: 10px; padding: 20px 24px; max-width: 360px">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089; margin: 0 0 8px">Siglo 21</div>
-        <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 18px; margin: 0 0 6px">Cargada, sin voces todavía.</p>
-        <p style="font-size: 13px; color: #494e57; margin: 0 0 12px">Duración nominal: 4 años (plan a distancia). Nada más: sin voces no hay proporción que mostrar, y no se inventa un cero.</p>
-        <p style="font-size: 13px; color: #494e57; margin: 0">Sé la primera voz: <a href="#">reseñar una cursada acá</a>.</p>
-      </div>
-      <p style="color: #7b8089; font-size: 12px; margin: 14px 0 0">No hay piso: una oferta sin voces no se saca de la comparación, se muestra como lo que es.</p>
-    </section>
-
-    <div style="margin: 40px 0 16px; padding-top: 26px; border-top: 1px solid #e2dfd6; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #7b8089">Estado · solo una oferta cargada</div>
-    <section aria-label="Estado: la carrera canónica todavía existe en una sola institución">
-      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #a7adb5; margin: 0 0 12px">Dónde estudiarla · Tecnicatura Universitaria en Desarrollo y Calidad de Software</div>
-      <div style="background: #fffefb; border: 1px solid #e2dfd6; border-radius: 10px; padding: 20px 24px; max-width: 420px">
-        <p style="font-family: 'Newsreader', serif; font-weight: 600; font-size: 18px; margin: 0 0 6px">No hay con qué comparar todavía.</p>
-        <p style="font-size: 13px; color: #494e57; margin: 0 0 14px">Esta carrera canónica hoy solo está cargada en UNSTA. Cuando otra institución la sume, aparece acá lado a lado.</p>
-        <a href="#">Ver la ficha de la carrera en UNSTA</a>
-      </div>
-      <p style="color: #7b8089; font-size: 12px; margin: 14px 0 0">Comparar necesita al menos dos ofertas de la misma carrera canónica.</p>
-    </section>
-
+  <div class="card" style="margin-bottom: 12px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px">
+      <span style="font-size: 15px; font-weight: 500">UTN · Regional Tucumán</span>
+      <span class="mono" style="font-size: 11px; color: #7b8089">pública</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px">
+      <div><p class="stat-l">Dura en la realidad</p><p class="stat-v">7,1 años</p></div>
+      <div><p class="stat-l">Egresan por cohorte</p><p class="stat-v">21 %</p></div>
+      <div><p class="stat-l">Plan del año</p><p class="stat-v">2008</p></div>
+      <div><p class="stat-l">Para entrar</p><p class="stat-v">Curso de ingreso</p></div>
+    </div>
+    <p class="mono" style="font-size: 11px; color: #7b8089; margin: 0 0 8px; border-top: 1px solid #eae7de; padding-top: 10px">Según 96 reseñas · 18 % de las materias</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 6px">
+      <span class="chip-neg">Plan de hace 18 años</span>
+      <span class="chip-neu">Trámites: 5 a 10 días</span>
+    </div>
   </div>
+
+  <div class="card" style="margin-bottom: 8px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px">
+      <span style="font-size: 15px; font-weight: 500; color: #494e57">UNSTA</span>
+      <span class="mono" style="font-size: 11px; color: #7b8089">privada</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px">
+      <div><p class="stat-l">Dura en la realidad</p><p class="stat-v">6,2 años</p></div>
+      <div><p class="stat-l">Egresan por cohorte</p><p class="stat-v">34 %</p></div>
+      <div><p class="stat-l">Plan del año</p><p class="stat-v">2021</p></div>
+      <div><p class="stat-l">Para entrar</p><p class="stat-v">Examen · arancel</p></div>
+    </div>
+    <p style="font-size: 13px; color: #7b8089; margin: 0; border-top: 1px solid #eae7de; padding-top: 10px">7 reseñas. No alcanza el piso para mostrar cómo se cursa.</p>
+  </div>
+
+  <p class="mono" style="font-size: 10.5px; color: #a7adb5; margin: 0 0 20px 2px; line-height: 1.6">Datos oficiales: SPU y CONEAU, medidos igual para las tres. Las señales de reseñas van por institución y no se cruzan.</p>
+
+  <div style="display: flex; gap: 8px">
+    <span style="flex: 1; font-size: 13px; padding: 10px; border: 1px solid #e2dfd6; border-radius: 8px; background: #fffefb; text-align: center">Ver cada institución</span>
+    <span style="flex: 1; font-size: 13px; padding: 10px; border-radius: 8px; background: #191b1f; color: #fffefb; text-align: center; font-weight: 500">Reseñá tu cursada</span>
+  </div>
+
 </div>
 </body>
 </html>

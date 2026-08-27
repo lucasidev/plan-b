@@ -1,6 +1,6 @@
 # Escenarios de Entrar
 
-> Traducción ejecutable del "listo cuando" de cada story, para escribir el test antes que el código. Los números salen de ADR-0075. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
+> Traducción ejecutable del "listo cuando" de cada story, para escribir el test antes que el código. Los números salen de ADR-0083. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
 
 Los casos de cada story viven con ella, en su carpeta:
 

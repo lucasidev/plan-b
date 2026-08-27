@@ -4,7 +4,7 @@
 
 ## Quién la usa
 
-Cualquier cuenta que olvidó su contraseña y quiere volver a lo que ya tiene adentro: sus reseñas, sus votos, lo pendiente de vincular. **Matías**, **Lucía**, **Diego**, **Claudia**.
+Cualquier cuenta que olvidó su contraseña y quiere volver a lo que ya tiene adentro: sus reseñas y lo pendiente de vincular. **Matías**, **Lucía**, **Diego**, **Claudia**.
 
 ## Qué stories resuelve
 
@@ -23,7 +23,7 @@ No tiene un requisito con ID propio en el catálogo vigente: es la garantía que
 
 ## Lo que no muestra nunca
 
-Ninguna pregunta ya declarada (situación, institución, carrera); ningún aviso de que algo se perdió: la garantía es que todo vuelve exactamente igual, con las reseñas, los votos y lo pendiente donde estaban.
+Ninguna pregunta ya declarada (situación, institución, carrera); ningún aviso de que algo se perdió: la garantía es que todo vuelve exactamente igual, con las reseñas y lo pendiente donde estaban.
 
 ## Adónde va
 

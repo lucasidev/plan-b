@@ -10,7 +10,7 @@ Como quien carga el catálogo, quiero cargar la cátedra como el equipo docente 
 ## Listo cuando
 
 - La cátedra es una entidad propia (materia más equipo docente, con su titular), persiste entre períodos, y es la lista que Reseñar ofrece cuando el alumno la recuerda.
-- Cada integrante del equipo se carga con su nombre, y ese dato nunca se completa a partir de lo que declara quien pide replicar: es contra lo cargado que después se lo verifica ([ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)).
+- Cada integrante del equipo se carga con su nombre, y ese dato nunca se completa a partir de lo que declara quien pide verificarse: es contra lo cargado que después se lo verifica ([ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)).
 
 ## Dónde se resuelve
 

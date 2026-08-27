@@ -6,7 +6,7 @@
 
 **E1.** Dado que Diego dejó Ingeniería en Sistemas y no tiene ninguna cursada activa declarada.
 Cuando entra a Reseñar y elige una sola materia que cursó antes de irse, Análisis Matemático II.
-Entonces completa y publica la reseña sin que el sistema le pida estar cursando actualmente ni reseñar ninguna otra materia.
+Entonces completa y envía la reseña sin que el sistema le pida estar cursando actualmente ni reseñar ninguna otra materia.
 
 ## Negativos
 

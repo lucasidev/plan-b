@@ -39,6 +39,7 @@
 </style>
 </head>
 <body>
+<p class="note"><strong>Este boceto dibuja el modelo anterior</strong> (lista frases marcadas, votos y hechos de trayectoria) y quedó rebasado el 2026-08-25: ver <code>ADR-0082</code> a <code>ADR-0085</code>. La ficha de pantalla (<code>README.md</code>) ya describe el modelo vigente; el boceto se rehace cuando la pantalla entre a sprint.</p>
 <main>
   <p class="note">Boceto mid-fi de la pantalla Baja (ficha: <code>README.md</code>). Orientativo: la UI final sale de las stories y de design-system.md. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
 
@@ -69,7 +70,7 @@
 
     <div class="card" style="margin-top:12px;background:var(--elev);border-style:dashed">
       <p style="font-size:13px;color:var(--ink2);margin:0 0 6px">Por qué no se borra todo junto: se borra de a uno porque cada aporte es una decisión tuya (US-165); lo que no borraste queda, exacto y anónimo (D10).</p>
-      <p style="font-size:13px;color:var(--ink2)">Los agregados se recalculan desde los hechos, así que borrar sí mueve números hacia atrás (ADR-0067, registro del 17).</p>
+      <p style="font-size:13px;color:var(--ink2)">Los agregados se recalculan desde los hechos: borrar un aporte antes de la baja sí mueve números hacia atrás; la baja en sí no mueve ninguno, porque lo que no borraste queda publicado, exacto (ADR-0044, registro del 17).</p>
     </div>
   </section>
 

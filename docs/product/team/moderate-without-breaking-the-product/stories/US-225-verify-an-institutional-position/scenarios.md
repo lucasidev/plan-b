@@ -6,7 +6,7 @@
 
 **E1.** Dado que Sofía cargó el cargo genérico "Secretaría Académica" para UNSTA en el catálogo (US-224), y Marcela Sosa pide verificar que tiene ese cargo en UNSTA.
 Cuando Camila revisa el pedido en la cola de cargo institucional, separada de constancias y de identidad docente.
-Entonces compara el cargo declarado contra los cargos que el catálogo ya tiene cargados para UNSTA y, al coincidir, lo aprueba: sin esa aprobación, Responder no le habilita el campo para escribir la réplica institucional.
+Entonces compara el cargo declarado contra los cargos que el catálogo ya tiene cargados para UNSTA y, al coincidir, lo aprueba: sin esa aprobación, Responder no le habilita el campo para escribir la respuesta institucional.
 
 **E2.** Dado que alguien pide verificar el cargo "Oficina de Becas" en una institución que todavía no tiene ese cargo cargado en el catálogo.
 Cuando Camila revisa el pedido.
@@ -14,7 +14,7 @@ Entonces no lo rechaza: lo pasa como trabajo de catálogo para que Sofía lo car
 
 **E3.** Dado que Camila aprueba el cargo de Marcela Sosa el 2026-08-21.
 Cuando esa decisión se guarda.
-Entonces queda con autor "Camila" y fecha "2026-08-21"; y si en cambio lo hubiera rechazado, la réplica institucional seguiría sin habilitarse y la cuenta de Marcela no quedaría marcada de ninguna forma.
+Entonces queda con autor "Camila" y fecha "2026-08-21"; y si en cambio lo hubiera rechazado, la respuesta institucional seguiría sin habilitarse y la cuenta de Marcela no quedaría marcada de ninguna forma.
 
 ## Negativos
 
@@ -25,5 +25,5 @@ Entonces no puede: solo elige entre los cargos genéricos de la lista corta del 
 ## Edge cases
 
 - Dos personas piden verificarse con el mismo cargo genérico en la misma institución, por ejemplo dos "Secretaría Académica" de UNSTA: la story no dice si eso está permitido. **Falta decidir**.
-- Todavía no existe la story del lado de quien tiene el cargo pidiendo verificarse, análoga a US-178 para el docente (nota de la story). Los pasos exactos de ese pedido quedan fuera de esta traducción.
+- Del lado de quien tiene el cargo pidiendo verificarse, la story es [US-227](../../../../reviewed/reply/stories/US-227-claim-an-institutional-position-to-reply/README.md), de la épica [Responder](../../../../reviewed/reply/README.md); acá solo se traducen los escenarios de quien aprueba o rechaza.
 - El cargo de Marcela Sosa vence al año y vuelve a la misma cola de cargo institucional para revisarse de nuevo (US-226), no a una cola aparte.

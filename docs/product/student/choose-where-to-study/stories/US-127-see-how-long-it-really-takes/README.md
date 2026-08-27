@@ -9,15 +9,15 @@ Como quien está eligiendo, quiero ver cuánto tarda de verdad, para no creerle 
 
 ## Listo cuando
 
-- La ficha muestra la duración nominal del plan y la real: la mediana de años entre entré y me recibí, de los egresados que declararon los dos.
-- Muestra la brecha en años y de cuántos egresados sale.
-- Cada número dice "de los que se recibieron y reseñaron acá".
+- La ficha muestra dos números uno al lado del otro: cuánto dura en el papel (la duración del plan) y cuánto dura en la realidad.
+- Los dos son datos oficiales, con su fuente y su período dichos al lado, nunca un cálculo propio sobre lo que declaró quien reseñó.
+- Se muestran aunque la carrera todavía no tenga ninguna cursada reseñada: no dependen de voces.
 
 ## Dónde se resuelve
 
-- [Ficha de carrera](../../screens/SC-001-career/README.md): la trayectoria muestra la duración nominal y la real (mediana de años entre entré y me recibí), con la brecha y de cuántos egresados sale.
-- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): la misma terna (nominal, real, brecha) se repite por oferta, lado a lado, para comparar entre instituciones.
+- [Ficha de carrera](../../screens/SC-001-career/README.md): el bloque de datos oficiales muestra dura en el papel contra dura en la realidad, con su fuente.
+- [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): dura en la realidad se repite por institución, lado a lado, para comparar.
 
 ## Notas
 
-depende de US-155, US-156
+Ya no depende de US-155 ni de US-156 (preguntar el año de ingreso o si te recibiste): con [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) la duración real es relevamiento oficial (serie SPU/CONEAU), no un cálculo sobre lo que declaró quien reseñó.

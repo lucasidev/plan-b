@@ -8,13 +8,13 @@
 Cuando Rocío entra a Método
 Entonces ve los tres números (86, 61, 214) y, al entrar a la Ficha de carrera de Ingeniería en Sistemas (UNSTA), la cobertura "24 de 40 materias con voces".
 
-**E2.** Dado que el método declara que todo dato es de quienes reseñaron, que la duración real es solo de los que se recibieron y que la co-cursada es solo de quien reseñó las dos materias
-Cuando Rocío lee el bloque "Los sesgos declarados" de Método
-Entonces encuentra las tres aclaraciones: que ningún número es "la tasa de la carrera", que la duración real deja afuera a quien no se recibió, y que la co-cursada no sale del plan que alguien marcó para sí, que es privado.
+**E2.** Dado que el método declara que los conteos de ítems son de quienes reseñaron, que la co-cursada es solo de quien reseñó las dos materias, y que la duración real y el egreso por cohorte son dato oficial con su fuente al lado
+Cuando Rocío lee el bloque "Los sesgos declarados" y el bloque de datos oficiales de Método
+Entonces encuentra las aclaraciones: que ningún conteo de ítems es "la tasa de la carrera", que la co-cursada no sale del plan que alguien marcó para sí, que es privado, y que la duración real y el egreso citan su fuente oficial en vez de salir de una encuesta propia.
 
-**E3.** Dado que 142 cuentas de 9.400 quedaron afuera de todo agregado de trayectoria por inconsistencia (por ejemplo, una cuenta con "me recibí" antes que "entré")
+**E3.** Dado que 142 cuentas de 9.400 quedaron afuera de todo agregado propio por inconsistencia (por ejemplo, una cuenta con "me recibí" antes que "entré")
 Cuando Rocío entra a Método
-Entonces ve "142 de 9.400" cuentas afuera por inconsistencia, y esas 142 cuentas no suman ni al numerador ni al denominador de ningún agregado publicado (por ejemplo, la duración real de Ingeniería en Sistemas).
+Entonces ve "142 de 9.400" cuentas afuera por inconsistencia, y esas 142 cuentas no suman ni al numerador ni al denominador de ningún agregado publicado que salga de nuestras propias reseñas (por ejemplo, la tasa de finalización de Análisis Matemático II).
 
 ## Negativos
 

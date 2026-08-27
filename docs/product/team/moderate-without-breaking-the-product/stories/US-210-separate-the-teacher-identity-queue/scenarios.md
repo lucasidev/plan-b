@@ -6,7 +6,7 @@
 
 **E1.** Dado que Sofía cargó el equipo docente de Cátedra Pérez con Claudia Fernández como titular, activa desde 2021, y Claudia pide verificar que es la titular de esa cátedra.
 Cuando Camila revisa el pedido en la cola de identidad docente, separada de la de constancias.
-Entonces compara el nombre declarado contra el titular que el catálogo tiene cargado para Cátedra Pérez y, al coincidir, lo aprueba: sin esa aprobación, Responder no le habilita ningún campo para escribir la réplica.
+Entonces compara el nombre declarado contra el titular que el catálogo tiene cargado para Cátedra Pérez y, al coincidir, lo aprueba: sin esa aprobación, Responder no le habilita ningún campo para escribir la respuesta.
 
 **E2.** Dado que Camila aprueba la identidad docente de Claudia Fernández el 2026-08-21.
 Cuando esa decisión se guarda.

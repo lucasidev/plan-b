@@ -5,16 +5,16 @@
 
 ## Historia
 
-Como quien ya aportó, quiero ver qué cambió con lo que conté, porque es lo único que me trae de vuelta la próxima vez.
+Como quien ya aportó, quiero ver qué cambió con lo que respondí, porque es lo único que me trae de vuelta la próxima vez.
 
 ## Listo cuando
 
-- Mis aportes muestran las voces que sumó cada frase que marqué en esa cátedra y cuántos la leyeron.
+- Mis aportes muestra, por cada ítem que respondiste en esa cátedra, la opción que elegiste y las voces que suma ahora esa opción.
 
 ## Dónde se resuelve
 
-- [Reseñar](../../screens/SC-015-write-review/README.md): al terminar, muestra qué frases sumaron tu voz y cuánto.
-- [Mis aportes](../../../undo/screens/SC-018-my-contributions/README.md): trae de vuelta las voces que sumó cada frase marcada y cuántas lecturas tuvo el testimonio.
+- [Reseñar](../../screens/SC-015-write-review/README.md): al terminar, muestra que tu respuesta ya se sumó al total.
+- [Mis aportes](../../../undo/screens/SC-018-my-contributions/README.md): trae de vuelta, ítem por ítem, la opción que respondiste y las voces que suma ahora.
 - [Editar](../../../undo/screens/SC-017-edit/README.md): parte del mismo dato que ya mostró Mis aportes antes de llegar a editar.
 
 ## Notas

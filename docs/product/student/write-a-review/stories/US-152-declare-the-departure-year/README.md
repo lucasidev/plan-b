@@ -9,8 +9,8 @@ Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos a
 
 ## Listo cuando
 
-- La ficha muestra en qué año del plan se fue la mayoría de los que se fueron.
-- Por materia muestra dónde se cae: abandono de cursada y aprobación, desde cómo terminó.
+- La ficha de carrera muestra en qué año del plan se fue la mayoría de los que se fueron.
+- Por cátedra y por materia se publica la tasa de finalización agregada, desde cómo terminó cada cursada ("de cada 10 que la cursan, llegan 4", [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) punto 6).
 - "Me fui / me recibí" se pregunta una sola vez, por cuatro caminos (Reseñar con período viejo, Mi situación, la app cuando pasó entré + nominal, el mail anual); quien no contesta queda como "no dijo", nunca se infiere.
 
 ## Dónde se resuelve
@@ -19,7 +19,7 @@ Como quien dejó la carrera, quiero decir en qué año me fui, porque cuántos a
 - [Mi situación](../../screens/SC-014-my-status/README.md): la pregunta de trayectoria sola, otro de los cuatro caminos.
 - [Avisos](../../../../notices/screens/SC-034-mail/README.md): el reenganche anual por mail es el cuarto camino; esa ficha lo referencia como US-156, la pregunta compartida que manda ese mismo mail.
 - [Ficha de carrera](../../../choose-where-to-study/screens/SC-001-career/README.md): muestra en qué año del plan se fue la mayoría de los que se fueron.
-- [Ficha de materia](../../../choose-where-to-study/screens/SC-007-subject/README.md): muestra dónde se cae, por materia y período, desde cómo terminó la cursada.
+- [Ficha de materia](../../../choose-where-to-study/screens/SC-007-subject/README.md): muestra la tasa de finalización, por materia y período, desde cómo terminó la cursada.
 
 El tercer camino ("la app cuando pasó entré más la duración nominal") todavía no tiene pantalla asignada: la propia ficha de [Mi situación](../../screens/SC-014-my-status/README.md) lo deja abierto.
 

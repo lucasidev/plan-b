@@ -4,13 +4,13 @@
 
 ## Camino feliz
 
-**E1.** Dado que Matías está leyendo la Ficha de Cátedra Pérez sin sesión y toca "a mí también me pasó" sobre el testimonio de Lucía.
+**E1.** Dado que Matías está leyendo la Ficha de Cátedra Pérez sin sesión y toca "¿La cursaste? Reseñala".
 Cuando el gate lo manda a Ingresar.
-Entonces la pantalla dice arriba, con esas palabras, por qué está ahí: "para votar esta reseña, necesitás una cuenta".
+Entonces la pantalla dice arriba, con esas palabras, por qué está ahí: "para reseñar una cursada, necesitás una cuenta".
 
-**E2.** Dado que Matías está en Ingresar habiendo venido de votar ese testimonio.
+**E2.** Dado que Matías está en Ingresar habiendo venido de reseñar Análisis Matemático II con la Cátedra Pérez.
 Cuando entra con sus credenciales correctas.
-Entonces vuelve a la Ficha de Cátedra Pérez, en el mismo testimonio, con el voto ya aplicado: no tiene que buscarlo de nuevo ni tocar otra vez.
+Entonces vuelve a Reseñar con la materia y la cátedra ya elegidas, en el paso donde estaba: no tiene que buscarlas de nuevo ni empezar el flujo otra vez.
 
 **E3.** Dado que Matías entra desde el link de Ingresar del pie, sin venir de ninguna acción.
 Cuando entra con sus credenciales correctas.
@@ -26,5 +26,5 @@ Entonces el aviso dice que el mail o la contraseña no coinciden, sin decir cuá
 
 - La sesión expira entre que llega a Ingresar y que manda el formulario.
 - Entra en otra pestaña y vuelve a la primera, que todavía cree que no hay sesión.
-- La acción que lo trajo ya no es posible cuando vuelve: el testimonio que iba a votar se bajó mientras tanto (US-186).
+- La acción que lo trajo ya no es posible cuando vuelve: esa misma cursada ya la reseñó desde otra sesión, y el flujo lo lleva a su reseña en vez de abrir una nueva (una voz por cuenta, materia y período).
 - Ingresa con una cuenta dada de baja y anonimizada (US-166).

@@ -7,7 +7,7 @@ Las personas del producto, portadas del mapa de producto (canvas `plan-b mapa`, 
 Tres reglas que el mapa fija sobre este conjunto:
 
 - **No son segmentos.** No hay tamaño de mercado ni porcentaje: hay una tensión cada una, y si dos comparten tensión, sobra una.
-- **Cinco no son alumnos que cursan, y eso es del pivote.** Sin ellas lo publicado no tiene a quién servirle, la réplica no tiene dueño, y el que se fue o el que paga quedan afuera de un producto que los afecta.
+- **Cinco no son alumnos que cursan, y eso es del pivote.** Sin ellas lo publicado no tiene a quién servirle, la respuesta no tiene dueño, y el que se fue o el que paga quedan afuera de un producto que los afecta.
 - **Ninguna quiere el producto.** Quieren decidir, que quede registrado, o llevar un dato a una reunión. El producto es el medio, y confundirlo con el fin es lo que infló la versión anterior.
 
 ## Las nueve de negocio
@@ -18,7 +18,7 @@ Nadie en su familia terminó una carrera, así que no tiene a quién preguntarle
 
 **La contradicción**: desconfía de los rankings y a la vez necesita uno. Si le mostramos un número redondo lo descarta; si le mostramos de qué está hecho, lo usa.
 
-**Decisión que produce**: por ella la lectura es pública y el método es criticable; la cabecera son dos proporciones que se leen en dos segundos, no un puntaje; y Dónde estudiarla compara lado a lado sin ganador. Si el gate estuviera antes del valor, se va y no vuelve.
+**Decisión que produce**: por ella la lectura es pública y el método es criticable; arriba de la ficha se lee la fama por convergencia, en dos segundos, nunca un puntaje; y Dónde estudiarla compara lado a lado sin ganador. Si el gate estuviera antes del valor, se va y no vuelve.
 
 ### Lucía, 23 · "Se anotó en cinco y dejó dos"
 
@@ -26,7 +26,7 @@ Cuarto año, veinte horas de trabajo. Tiene más para contar que nadie y menos t
 
 **La contradicción**: quiere que exista el dato pero no quiere producirlo. Aportaría si le costara lo que cuesta mandar un mensaje.
 
-**Decisión que produce**: por ella se marcan frases en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y lo que marca en su plan para filtrar la co-cursada es preferencia privada, no un dato que le pedimos.
+**Decisión que produce**: por ella se responden ítems cerrados en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y lo que marca en su plan para filtrar la co-cursada es preferencia privada, no un dato que le pedimos.
 
 ### Matías, 26 · "Reclamó solo y no sirvió de nada"
 
@@ -34,7 +34,7 @@ Cursó una materia donde faltaron seis clases. Fue a hablar, le dijeron que era 
 
 **La contradicción**: está convencido de que no cambia nada y aun así quiere que quede registrado. Le da lo mismo el producto: quiere el número.
 
-**Decisión que produce**: por él el gate llega en la acción y no en la puerta, el onboarding es saltable y retomable, y el comentario se publica como testimonio: lo que quiere es que quede.
+**Decisión que produce**: por él el gate llega en la acción y no en la puerta, el onboarding es saltable y retomable, y su reseña queda: suma a los conteos, y si escribe en el campo libre, alimenta los ítems que se destilan más adelante. Lo que quiere es que quede.
 
 ### Ana, 21 · "Su facultad no está y sospecha del vacío"
 
@@ -42,7 +42,7 @@ Buscó la suya, no apareció, y lo primero que pensó fue que el sitio es chico 
 
 **La contradicción**: quiere usar algo que todavía no la cubre. Si el vacío no se explica, no vuelve; si se explica, empuja para que se cargue.
 
-**Decisión que produce**: por ella no hay ficha vacía ni número inventado: el vacío se explica en sus tres estados (no la cargamos / cargada sin voces / cargada, todavía no derivamos, con la cobertura a la vista), y la cola de pedidos es pública.
+**Decisión que produce**: por ella no hay ficha vacía ni número inventado: el vacío se explica en sus tres estados (no la cargamos / cargada, sin llegar todavía al piso / cargada, con voces publicadas, todavía no derivamos, con la cobertura a la vista), y la cola de pedidos es pública.
 
 ### Claudia, 44 · "Da bien su materia y nadie lo ve"
 
@@ -50,7 +50,7 @@ Docente desde 2016, la cátedra más elegida de su materia. Es la primera vez qu
 
 **La contradicción**: le conviene que se publique y le da miedo que se publique. Sabe que responder con nombre la expone, y que no responder la expone más.
 
-**Decisión que produce**: por ella existe la réplica, con nombre y rol: pide identidad verificada (permiso, en su propia cola), pasa el mismo chequeo previo que el aporte, no cita lo que el autor marcó como identificante, espera un plazo desde el aviso, y queda al lado del testimonio sin bajarlo ni mover conteos. Si publicamos, tiene que poder contestar.
+**Decisión que produce**: por ella existe la respuesta del reseñado, firmada con nombre y cargo: pide identidad verificada (permiso, en su propia cola), y responde a los números agregados de su ficha, nunca a una reseña individual. Si publicamos, tiene que poder contestar.
 
 ### Rocío, 31 · "Necesita el crudo, no nuestras conclusiones"
 
@@ -58,7 +58,7 @@ Trabaja en un centro de estudiantes. Tiene que llevar un dato a una reunión y q
 
 **La contradicción**: nos usa y a la vez nos audita. Si no puede ver cómo calculamos, no nos cita; si puede, nos defiende.
 
-**Decisión que produce**: por ella el método es público (la fórmula, el catálogo de frases con sujeto y eje, los sesgos), la cobertura se declara y el crudo se descarga sin registro, agregado y en dos tablas (frases con voces y eje; trayectoria), sin testimonios: no existe un crudo con más que la ficha.
+**Decisión que produce**: por ella el método es público (la regla de comparación, el catálogo de ítems, los sesgos), la cobertura se declara y el crudo se descarga sin registro, agregado por ítem con voces y período, sin reseñas individuales: no existe un crudo con más que la ficha.
 
 ### Diego, 28 · "Dejó en tercero y nadie le preguntó por qué"
 
@@ -74,7 +74,7 @@ Financia una privada para su hija. No entiende de planes ni de correlativas, y n
 
 **La contradicción**: es la que pone la plata y la que menos derecho siente a opinar. Si le mostramos la interfaz del alumno, se va en diez segundos.
 
-**Decisión que produce**: por ella la duración real (la mediana de los que se recibieron, contra la del plan, con la brecha en años) y las tres proporciones de la cohorte cerrada (se recibió, se fue, no dijo o sigue) están arriba en la ficha, en palabras y no en vocabulario académico, y siempre dicen que salen de quienes reseñaron.
+**Decisión que produce**: por ella la duración real (dato oficial: dura en el papel contra dura en la realidad, con la brecha en años) y el egreso por cohorte (dato oficial: se recibió, se fue, sigue) están arriba en la ficha, en palabras y no en vocabulario académico, siempre con la fuente dicha al lado.
 
 ### Prof. Paredes, 58 · "Lo nombraron y no piensa contestar"
 
@@ -82,7 +82,7 @@ Da la misma materia desde 2009. Se enteró de que hay conteos sobre su cátedra 
 
 **La contradicción**: su silencio no es indiferencia, es una posición. Y tiene razón en algo: nadie nos delegó esto.
 
-**Decisión que produce**: por él la respuesta es opcional y nunca se presume. La ficha declara el estado del canal ("sin réplica"; "docente sin identidad verificada" si nunca se le pudo avisar), no "no quiso responder".
+**Decisión que produce**: por él la respuesta es opcional y nunca se presume. La ficha declara el estado del canal ("sin respuesta"; "docente sin identidad verificada" si nunca se le pudo avisar), no "no quiso responder".
 
 ## Las cuatro del equipo
 
@@ -94,21 +94,21 @@ Carga planes, correlativas, la duración nominal, las cátedras (el equipo docen
 
 **Qué necesita**: ver los huecos antes que los logros (empezando por los que bloquean lo publicado: la duración nominal y la carrera canónica), priorizar por cuánta gente lo pidió, y avisarle a los que esperan cuando termina.
 
-### Nahuel, 34 · equipo, comunidad
+### Nahuel, 34 · equipo, moderación
 
-Modera reportes y mira lo que el chequeo previo retuvo, así que ve testimonios enteros y decide qué se baja. No verifica: quien ve nombres reales es otra persona (Camila), y US-217 hace que no puedan ser la misma. Cada vez que baja un texto está tocando la promesa central del producto por el otro lado: cada testimonio que se baja de más es uno que no se vuelve a escribir.
+Mira el filtro grueso del campo libre antes de que pase a curaduría (agresión dirigida, dato personal de un tercero), el canal de reclamos institucionales contra un dato ya publicado, y la alarma de cuentas correlacionadas que intentan inflar un conteo. Nada de lo que revisa es texto publicado: el campo libre nunca se publica, así que no hay nada que bajar de la vista pública, solo decidir si algo pasa filtrado o directo. No verifica: quien ve nombres reales es otra persona (Camila), y US-217 hace que no puedan ser la misma.
 
-> "Si yo filtro un nombre, no rompo una regla: rompo la única razón por la que alguien contó algo incómodo."
+> "Si libero de más, algo que identifica a alguien llega a la curaduría. Si retengo de más, se pierde la única voz que lo iba a contar."
 
-**Qué necesita**: el criterio escrito de qué es exposición, que quede registrado qué bajó y por qué, y que la cola de retenidos no lo convierta en el cuello del corpus: lo retenido es la excepción, no todo comentario.
+**Qué necesita**: el criterio escrito de qué dispara el filtro, que sus tres colas no se le mezclen, y que ningún reclamo ni alarma baje un dato solo, sin que él lo revise.
 
 ### Camila, 27 · equipo, verificación
 
-Verifica constancias de alumno y la identidad de los docentes que quieren replicar, así que es la única que ve nombres reales de gente que confió en que sería anónima. No modera y no llega a los aportes: US-217 corta ese camino por construcción, no por buena voluntad, y US-208 le cierra la puerta desde la cola de constancias.
+Verifica constancias de alumno y la identidad de los docentes que quieren responder, así que es la única que ve nombres reales de gente que confió en que sería anónima. No modera y no llega a los aportes: US-217 corta ese camino por construcción, no por buena voluntad, y US-208 le cierra la puerta desde la cola de constancias.
 
 > "Veo el nombre, comparo con lo declarado, destruyo el documento. Si algún día pudiera ver qué reseñó, ese día el anonimato sería una promesa."
 
-**Qué necesita**: ver lo mínimo para decidir, que quede registrado que lo vio, y que nadie más pueda; y para el docente, atarlo a la cátedra del catálogo, porque para él verificar es el permiso de replicar.
+**Qué necesita**: ver lo mínimo para decidir, que quede registrado que lo vio, y que nadie más pueda; y para el docente, atarlo a la cátedra del catálogo, porque para él verificar es el permiso de responder.
 
 ### Admin · equipo, accesos
 
