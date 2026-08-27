@@ -3,6 +3,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
+using Planb.Academic.Domain.Chairs;
 using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
@@ -25,6 +26,7 @@ public sealed class AcademicDbContext : DbContext
     public DbSet<CareerPlanImport> CareerPlanImports => Set<CareerPlanImport>();
     public DbSet<Teacher> Teachers => Set<Teacher>();
     public DbSet<Commission> Commissions => Set<Commission>();
+    public DbSet<Chair> Chairs => Set<Chair>();
 
     public AcademicDbContext(DbContextOptions<AcademicDbContext> options) : base(options) { }
 
@@ -40,5 +42,6 @@ public sealed class AcademicDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CareerPlanImportConfiguration());
         modelBuilder.ApplyConfiguration(new TeacherConfiguration());
         modelBuilder.ApplyConfiguration(new CommissionConfiguration());
+        modelBuilder.ApplyConfiguration(new ChairConfiguration());
     }
 }

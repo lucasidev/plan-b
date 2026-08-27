@@ -334,6 +334,18 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 sql, new { TermId = termId, UniversityId = universityId }, cancellationToken: ct));
     }
 
+    public async Task<bool> AcademicTermExistsAsync(Guid termId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT EXISTS (
+                SELECT 1 FROM academic.academic_terms WHERE id = @TermId
+            );";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.ExecuteScalarAsync<bool>(
+            new CommandDefinition(sql, new { TermId = termId }, cancellationToken: ct));
+    }
+
     public async Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
         Guid commissionId, CancellationToken ct = default)
     {
@@ -429,6 +441,82 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         using IDbConnection db = new NpgsqlConnection(_connectionString);
         var rows = await db.QueryAsync<PublicPrerequisiteEdge>(
             new CommandDefinition(sql, new { CareerPlanId = careerPlanId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<IReadOnlyList<ChairListItem>> ListChairsBySubjectAsync(
+        Guid subjectId, CancellationToken ct = default)
+    {
+        // El titular vigente es el chair_member con role = 'Lead' y until_term_id IS NULL: a lo
+        // sumo uno por cátedra (invariante del aggregate, Chair.AddMember), así que el LEFT JOIN no
+        // duplica filas. Sin titular nombrado, teacher_id sale null y con él los campos de nombre;
+        // la cátedra aparece igual. initcap pasa el nombre lowercase del storage a title case.
+        const string sql = @"
+            SELECT
+                c.id                   AS Id,
+                c.name                 AS Name,
+                cm.teacher_id          AS LeadTeacherId,
+                initcap(t.first_name)  AS LeadFirstName,
+                initcap(t.last_name)   AS LeadLastName
+            FROM academic.chairs c
+            LEFT JOIN academic.chair_members cm
+                ON cm.chair_id = c.id AND cm.role = 'Lead' AND cm.until_term_id IS NULL
+            LEFT JOIN academic.teachers t ON t.id = cm.teacher_id
+            WHERE c.subject_id = @SubjectId AND c.is_active = true
+            ORDER BY c.name ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<ChairListItem>(
+            new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<ChairDetailItem?> GetChairByIdAsync(
+        Guid chairId, CancellationToken ct = default)
+    {
+        // Mismo LEFT JOIN del titular vigente que ListChairsBySubjectAsync, más la materia, que la
+        // ficha necesita para presentarse y para pedir sus hermanas. Una cátedra desactivada no
+        // resuelve: su ficha deja de existir para el lector, aunque sus reseñas sigan guardadas.
+        const string sql = @"
+            SELECT
+                c.id                   AS Id,
+                c.name                 AS Name,
+                s.id                   AS SubjectId,
+                s.name                 AS SubjectName,
+                s.code                 AS SubjectCode,
+                cm.teacher_id          AS LeadTeacherId,
+                initcap(t.first_name)  AS LeadFirstName,
+                initcap(t.last_name)   AS LeadLastName
+            FROM academic.chairs c
+            JOIN academic.subjects s ON s.id = c.subject_id
+            LEFT JOIN academic.chair_members cm
+                ON cm.chair_id = c.id AND cm.role = 'Lead' AND cm.until_term_id IS NULL
+            LEFT JOIN academic.teachers t ON t.id = cm.teacher_id
+            WHERE c.id = @ChairId AND c.is_active = true;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<ChairDetailItem>(
+            new CommandDefinition(sql, new { ChairId = chairId }, cancellationToken: ct));
+    }
+
+    public async Task<IReadOnlyList<int>> ListTermYearsAsync(
+        IReadOnlyList<Guid> termIds, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(termIds);
+        if (termIds.Count == 0)
+        {
+            return [];
+        }
+
+        const string sql = @"
+            SELECT DISTINCT year
+            FROM academic.academic_terms
+            WHERE id = ANY(@TermIds)
+            ORDER BY year ASC;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        var rows = await db.QueryAsync<int>(
+            new CommandDefinition(sql, new { TermIds = termIds.ToArray() }, cancellationToken: ct));
         return rows.AsList();
     }
 }

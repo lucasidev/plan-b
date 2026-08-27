@@ -2,6 +2,7 @@ using Planb.Academic.Domain;
 using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Chairs;
 using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
@@ -567,6 +568,12 @@ public static class AcademicSeedData
         new TeacherRecord(Tid("08"), Unsta.Id, "roberto", "páez", "Jefe de Trabajos Prácticos"),
         new TeacherRecord(Tid("09"), Unsta.Id, "verónica", "ledesma", "Profesora Titular"),
         new TeacherRecord(Tid("0a"), Unsta.Id, "hernán", "quiroga", "Profesor Adjunto"),
+
+        // Titulares de las cátedras del seed (US-196, ver sección Chairs más abajo): ninguno de
+        // los diez docentes de arriba tiene estos apellidos, así que se agregan acá.
+        new TeacherRecord(Tid("0b"), Unsta.Id, "martín", "pérez", "Profesor Titular"),
+        new TeacherRecord(Tid("0c"), Unsta.Id, "patricia", "gonzález", "Profesora Titular"),
+        new TeacherRecord(Tid("0d"), Unsta.Id, "sergio", "ruiz", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -705,6 +712,34 @@ public static class AcademicSeedData
     /// <summary>Franja horaria del seed (US-096): hora en punto, minutos siempre en cero.</summary>
     private static CommissionScheduleRecord Slot(DayOfWeek day, int startHour, int endHour) =>
         new(day, new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
+
+    // ====================================================================
+    // Chairs (UNSTA): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
+    // (SC-002-chair/sketch.html) usa "Análisis Matemático II", que no es una materia del plan real
+    // de la TUDCS sembrado acá: se sustituye por Fundamentos de Control de Calidad (211), la
+    // primera materia cuatrimestral de 2do año del plan. Tres cátedras con sus titulares, nombradas
+    // como el alumno las recuerda ("cursé con Pérez"): Pérez, González y Ruiz, mismos nombres que
+    // usa ese mockup. Ningún docente ya sembrado tiene esos apellidos (ver sección Teachers), así
+    // que sus titulares son los tres agregados ahí. since_term_id de cada titular apunta al período
+    // más viejo del seed (2024-1c).
+    //
+    // Convención de UUIDs:
+    //   - Chairs: 00000008-0000-4000-a000-0000000000NN
+    // ====================================================================
+    private static readonly SubjectId ControlDeCalidadSubjectId = Sid("12");
+
+    public static IReadOnlyList<ChairRecord> Chairs { get; } = new[]
+    {
+        new ChairRecord(Chid("01"), ControlDeCalidadSubjectId, "Pérez",
+            new[] { new ChairMemberRecord(Tid("0b"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("02"), ControlDeCalidadSubjectId, "González",
+            new[] { new ChairMemberRecord(Tid("0c"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("03"), ControlDeCalidadSubjectId, "Ruiz",
+            new[] { new ChairMemberRecord(Tid("0d"), ChairMemberRole.Lead, Atid("01")) }),
+    };
+
+    private static ChairId Chid(string nn) =>
+        new(Guid.Parse($"00000008-0000-4000-a000-0000000000{nn}"));
 }
 
 /// <summary>Datos planos de una University del seed.</summary>
@@ -793,3 +828,17 @@ public sealed record CommissionTeacherRecord(TeacherId TeacherId, CommissionTeac
 
 /// <summary>Franja horaria del seed (US-096): día + horas nativas, listas para <c>Commission.Hydrate</c>.</summary>
 public sealed record CommissionScheduleRecord(DayOfWeek Day, TimeOnly Start, TimeOnly End);
+
+/// <summary>
+/// Cátedra del seed con su equipo embebido (US-196). UUIDs determinísticos. <see cref="Name"/> se
+/// guarda tal cual (display-ready, sin lowercase), igual que <c>Chair.Name</c>: es como el alumno
+/// la recuerda.
+/// </summary>
+public sealed record ChairRecord(
+    ChairId Id,
+    SubjectId SubjectId,
+    string Name,
+    IReadOnlyList<ChairMemberRecord> Members);
+
+/// <summary>Miembro del equipo de una cátedra del seed: docente, rol y desde qué período lectivo.</summary>
+public sealed record ChairMemberRecord(TeacherId TeacherId, ChairMemberRole Role, AcademicTermId SinceTermId);
