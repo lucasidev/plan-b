@@ -53,4 +53,21 @@ public static class PublishingRules
     /// </para>
     /// </summary>
     public const string AttemptsItemCode = "COURSE_ATTEMPTS";
+
+    /// <summary>
+    /// El valor de la opción ABIERTA de ese ítem ("tres o más").
+    ///
+    /// <para>
+    /// Es la que hace irreproducible cualquier promedio, porque quien la cursó cinco veces y quien
+    /// la cursó tres marcan lo mismo. Por eso la ficha la publica <b>aparte y a la vista</b> en vez
+    /// de dejarla al final de la distribución: es justo la gente que el dato existe para mostrar,
+    /// y la que un promedio taparía.
+    /// </para>
+    ///
+    /// <para>
+    /// Vive acá y no en la pantalla porque cuál opción es abierta lo sabe el catálogo, no quien
+    /// dibuja: suponer "la última" sería cierto en este ítem y falso en casi todos los demás.
+    /// </para>
+    /// </summary>
+    public const short AttemptsOpenEndedValue = 3;
 }

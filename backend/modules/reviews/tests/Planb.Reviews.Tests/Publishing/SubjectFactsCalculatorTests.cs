@@ -239,13 +239,44 @@ public class SubjectFactsCalculatorTests
         facts.Attempts.ModeLabel.ShouldBe("Una");
         facts.Attempts.ModePercent.ShouldBe(60);
 
-        // La distribución entera, en el orden en que se ofreció: es lo que reemplaza al promedio
-        // que ADR-0083 rechaza. "Tres o más" es una categoría abierta y promediarla no significa
-        // nada; que el 15 % la haya marcado, sí.
+        // La distribución entera, en el orden en que se ofreció: es lo que reemplaza al promedio.
         facts.Attempts.Options.Count.ShouldBe(3);
         facts.Attempts.Options[0].Label.ShouldBe("Una");
         facts.Attempts.Options[2].Label.ShouldBe("Tres o más");
         facts.Attempts.Options[2].Percent.ShouldBe(15);
+    }
+
+    [Fact]
+    public void The_open_ended_option_travels_apart_so_the_ficha_can_say_it_alone()
+    {
+        var perez = new ChairContribution(
+            Guid.NewGuid(), "Pérez", 40, [Attempts(once: 24, twice: 10, more: 6)], null);
+
+        var facts = SubjectFactsCalculator.Calculate([perez]);
+
+        // "Tres o más" es la opción abierta: quien la cursó cinco veces y quien la cursó tres
+        // marcan lo mismo. Viaja separada del resto para que la ficha la diga sola, porque es
+        // justo la gente a la que le costó y la que un promedio taparía.
+        facts.Attempts!.OpenEnded.ShouldNotBeNull();
+        facts.Attempts.OpenEnded!.Label.ShouldBe("Tres o más");
+        facts.Attempts.OpenEnded.Percent.ShouldBe(15);
+
+        // Y sigue estando en la distribución: se dice dos veces a propósito, una en la afirmación
+        // y otra en el detalle auditable.
+        facts.Attempts.Options.ShouldContain(o => o.Label == "Tres o más" && o.Percent == 15);
+    }
+
+    [Fact]
+    public void An_item_without_an_open_ended_option_carries_no_tail()
+    {
+        // La conducta de la cátedra no tiene categoría abierta: ninguna opción dice "o más".
+        var facts = SubjectFactsCalculator.Calculate(
+        [
+            Chair("Pérez", reviewCount: 40, (Conduct, 30, 40)),
+        ]);
+
+        // Y el ítem de intentos ni siquiera se contestó acá, así que no hay distribución alguna.
+        facts.Attempts.ShouldBeNull();
     }
 
     [Fact]

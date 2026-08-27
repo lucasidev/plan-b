@@ -78,7 +78,11 @@ public static class GetSubjectFactsQueryHandler
                     a.Options
                         .Select(o => new SliceView(
                             o.Label, o.Percent, o.Valence == OptionValence.Negative))
-                        .ToList())
+                        .ToList(),
+                    a.OpenEnded is { } tail
+                        ? new SliceView(
+                            tail.Label, tail.Percent, tail.Valence == OptionValence.Negative)
+                        : null)
                 : null,
             Completion: facts.Completion is { } c
                 ? new SubjectCompletionView(c.OutOfTen, c.Reaching, c.Total)

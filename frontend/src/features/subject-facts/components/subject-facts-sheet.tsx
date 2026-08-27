@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type { SubjectChair, SubjectFacts } from '../types';
+import type { Distribution, SubjectChair, SubjectFacts } from '../types';
 
 /**
  * La ficha de una materia (SC-007, US-129, ADR-0085).
@@ -93,22 +93,65 @@ function Numbers({ facts }: { facts: SubjectFacts }) {
           value={`${facts.enablesCount} ${facts.enablesCount === 1 ? 'materia' : 'materias'}`}
           note="según el plan de la carrera"
         />
-        {facts.attempts && (
-          <div className="col-span-2 rounded-xl border border-line bg-bg-card p-4">
-            <p className="mb-1 text-[12px] text-ink-3">{facts.attempts.text}</p>
-            <p className="mb-2 font-serif text-[18px] font-medium text-ink">
-              {facts.attempts.modeLabel}, el {facts.attempts.modePercent} %
-            </p>
-            <p className="text-[11px] text-ink-4" style={{ fontFamily: 'var(--font-mono)' }}>
-              {facts.attempts.options
-                .map((o) => `${o.label.toLowerCase()} ${o.percent}`)
-                .join(' · ')}{' '}
-              · de {facts.attempts.total}
-            </p>
-          </div>
-        )}
+        {facts.attempts && <Attempts attempts={facts.attempts} />}
       </div>
     </section>
+  );
+}
+
+/**
+ * Los intentos: la moda y, aparte, la cola.
+ *
+ * El boceto pedía acá un promedio ("2,1 intentos") y no sobrevive: la última opción del ítem es
+ * abierta ("tres o más"), así que promediarla subestima siempre y por un margen que nadie puede
+ * recalcular. Pero publicar la distribución sola tampoco alcanzaba: obliga a leer tres números y
+ * hacer la cuenta en la cabeza para darse cuenta de lo único que importa.
+ *
+ * Así que se dicen las dos cosas por separado: lo que le pasa a la mayoría, y **cuántos quedaron
+ * en la cola**. Esa segunda frase es el dato que la materia existe para publicar, porque no
+ * importa cuánto tarda el que va bien sino a cuántos les cuesta.
+ */
+function Attempts({ attempts }: { attempts: Distribution }) {
+  return (
+    <div className="col-span-2 rounded-xl border border-line bg-bg-card p-4">
+      <p className="mb-1.5 text-[12px] text-ink-3">{attempts.text}</p>
+
+      <p className="mb-1 font-serif text-[20px] font-medium text-ink">
+        {attempts.modeLabel}, el {attempts.modePercent} %
+      </p>
+
+      {attempts.openEnded && attempts.openEnded.percent > 0 && (
+        <p className="mb-2 text-[14px] leading-snug text-ink-2">
+          Pero <b className="font-medium text-ink">{attempts.openEnded.percent} de cada 100</b>{' '}
+          marcaron «{attempts.openEnded.label.toLowerCase()}».
+        </p>
+      )}
+
+      {/* La cola va del tono más oscuro para que la barra diga lo mismo que el texto de arriba.
+          No va en alarma: cursar tres veces no es una falta de nadie, es un hecho que el dato
+          existe para mostrar, y el rojo acá significaría algo que no queremos decir. */}
+      <div className="mb-2 flex h-2.5 gap-px overflow-hidden rounded-[5px]">
+        {attempts.options.map((option, index) => (
+          <span
+            key={option.label}
+            style={{
+              width: `${option.percent}%`,
+              background:
+                option.label === attempts.openEnded?.label
+                  ? 'var(--color-ink-2)'
+                  : index % 2 === 0
+                    ? 'var(--color-line)'
+                    : 'var(--color-ink-4)',
+            }}
+          />
+        ))}
+      </div>
+
+      <p className="text-[11px] text-ink-4" style={{ fontFamily: 'var(--font-mono)' }}>
+        {attempts.options.map((o) => `${o.label.toLowerCase()} ${o.percent}`).join(' · ')} · de{' '}
+        {attempts.total}
+      </p>
+    </div>
   );
 }
 

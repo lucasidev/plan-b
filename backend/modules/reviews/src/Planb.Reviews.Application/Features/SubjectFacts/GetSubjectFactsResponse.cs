@@ -34,9 +34,15 @@ public sealed record SubjectSpanView(int FromYear, int ToYear);
 /// La distribución de un ítem, con su moda y sus tramos.
 ///
 /// <para>
-/// Es distribución y no promedio: la ficha de pantalla pedía "2,1 intentos", pero ADR-0083 descarta
-/// esa forma por su nombre, y acá el promedio sería además irreproducible porque la última opción
-/// es abierta ("tres o más").
+/// Es distribución y no promedio: la ficha de pantalla pedía "2,1 intentos", y esa forma no
+/// sobrevive porque la última opción del ítem es abierta ("tres o más"), así que el promedio
+/// subestima siempre y por un margen que nadie puede recalcular.
+/// </para>
+///
+/// <para>
+/// <see cref="OpenEnded"/> es justamente esa opción, separada del resto para que la pantalla la
+/// diga sola. Es la gente a la que le costó: la que el promedio taparía y el dato existe para
+/// mostrar.
 /// </para>
 /// </summary>
 public sealed record DistributionView(
@@ -45,7 +51,8 @@ public sealed record DistributionView(
     string ModeLabel,
     int ModePercent,
     int Total,
-    IReadOnlyList<SliceView> Options);
+    IReadOnlyList<SliceView> Options,
+    SliceView? OpenEnded);
 
 public sealed record SliceView(string Label, int Percent, bool IsNegative);
 
