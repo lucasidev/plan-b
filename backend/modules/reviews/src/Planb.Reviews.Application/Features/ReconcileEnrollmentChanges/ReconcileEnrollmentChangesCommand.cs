@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Application.Features.ReconcileEnrollmentChanges;
 
 /// <summary>
-/// Barrido de recuperación del evento de edición de cursada (US-015, ADR-0032): busca reseñas
+/// Barrido de recuperación del evento de edición de cursada (US-015, ADR-0063): busca reseñas
 /// publicadas cuya cursada volvió a estar en curso y les aplica la cuarentena que el evento no
 /// llegó a aplicar.
 ///

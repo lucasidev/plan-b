@@ -73,9 +73,10 @@ public static class ReviewErrors
     /// <summary>
     /// El docente indicado no existe como persona en el catálogo de Academic. Cross-BC vía
     /// <c>IAcademicQueryService.GetTeacherByIdAsync</c>. Reemplaza a
-    /// <c>TeacherNotInEnrollmentCommission</c> (retirado, ADR-0060): ya no se exige que el docente
-    /// esté en el plantel actual de la commission de la cursada (eso afirma el presente y una
-    /// cursada vieja habla del pasado), pero la identidad del docente sigue atada al catálogo.
+    /// <c>TeacherNotInEnrollmentCommission</c> (retirado junto con la versión anterior del
+    /// producto, ADR-0063): ya no se exige que el docente esté en el plantel actual de la
+    /// commission de la cursada (eso afirma el presente y una cursada vieja habla del pasado),
+    /// pero la identidad del docente sigue atada al catálogo.
     /// </summary>
     public static readonly Error ReviewedTeacherNotFound =
         Error.Validation(
@@ -83,8 +84,9 @@ public static class ReviewErrors
             "The reviewed teacher does not exist in the catalog.");
 
     /// <summary>
-    /// Invariante del aggregate (ADR-0060): el nombre del docente reseñado nunca es vacío, aunque
-    /// su id no esté resuelto. Es lo mínimo que el alumno declaró.
+    /// Invariante del aggregate (decisión de la versión anterior del producto, retirada con
+    /// ADR-0063): el nombre del docente reseñado nunca es vacío, aunque su id no esté resuelto. Es
+    /// lo mínimo que el alumno declaró.
     /// </summary>
     public static readonly Error ReviewedTeacherNameRequired =
         Error.Validation(
@@ -185,7 +187,7 @@ public static class ReviewErrors
     /// <para>
     /// No aplica a la cuarentena del filtro automático ni a la invalidación por cambio de cursada:
     /// en la primera no hay reportes de los que escaparse (republicar el mismo texto lo vuelve a
-    /// frenar); en la segunda, ADR-0032 ya prevé borrar como una salida válida para el alumno. El
+    /// frenar); en la segunda, ADR-0063 ya prevé borrar como una salida válida para el alumno. El
     /// autor puede borrar la suya en ambos casos.
     /// </para>
     /// </summary>

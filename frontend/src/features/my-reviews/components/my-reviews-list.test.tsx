@@ -56,7 +56,7 @@ function renderList(items: MyReview[]) {
   return render(<MyReviewsList />, { wrapper });
 }
 
-describe('MyReviewsList: edición desde cuarentena (ADR-0012, revisión 2026-07-29)', () => {
+describe('MyReviewsList: edición desde cuarentena (ADR-0063, revisión 2026-07-29)', () => {
   it('habilita Editar solo para ContentFilter y EnrollmentChanged, no para Reports, y explica cada una', () => {
     renderList([
       review({ id: 'rev-filter', status: 'UnderReview', underReviewReason: 'ContentFilter' }),

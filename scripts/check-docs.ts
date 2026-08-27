@@ -70,6 +70,9 @@ for (const f of mds) {
       // el template es contenido de ejemplo, no un doc con links reales
       if (rel(f) === 'docs/plan/story-template.md' || rel(f) === 'docs/plan/screen-template.md')
         continue;
+      // el ático está congelado y sus links apuntan a estados pasados del repo
+      // (los ADRs rebasados se borran, 2026-08-25); la historia completa vive en git
+      if (isHistory(f)) continue;
       if (!existsSync(resolve(dirname(f), decodeURIComponent(core)))) {
         findings.push({ file: rel(f), line: i + 1, rule: 'link-roto', detail: target });
       }

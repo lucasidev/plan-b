@@ -6,7 +6,8 @@ namespace Planb.Reviews.Application.Abstractions.ContentFilter;
 /// inspección humana. El filter NO es la última palabra de moderación, es una heurística que
 /// alivia la cola del moderator humano: cuando el filter marca <c>Triggered</c>, el
 /// moderator decide; cuando marca <c>Clean</c>, la review queda publicada y solo entra a
-/// moderation si llegan reports (ver ADR-0010 + US-019).
+/// moderation si llegan reports (mecanismo de la versión anterior del producto, en retiro:
+/// ADR-0063; ver US-019).
 ///
 /// Implementación inicial (US-017): regex de blacklist + length validators. Cuando crezca el
 /// corpus de falsos positivos / falsos negativos, ahí evaluamos una capa adicional (ML

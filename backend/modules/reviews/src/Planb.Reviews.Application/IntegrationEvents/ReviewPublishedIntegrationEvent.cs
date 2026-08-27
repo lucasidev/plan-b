@@ -7,7 +7,7 @@ namespace Planb.Reviews.Application.IntegrationEvents;
 /// (filter de contenido la marcó clean).
 ///
 /// <list type="bullet">
-///   <item><b>Semantic Analytics</b>: iba a disparar el embedding job (ADR-0007, ADR-0013) que
+///   <item><b>Semantic Analytics</b>: iba a disparar el embedding job (ADR-0007, ADR-0063) que
 ///         computa el vector de la reseña para la búsqueda semántica + las crowd insights. El
 ///         andamiaje se borró: no hay consumidor real todavía (ver revisión de ADR-0007).</item>
 ///   <item><b>Notifications</b> (futuro): el docente reseñado verificado puede recibir mail.</item>

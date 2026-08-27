@@ -1,5 +1,7 @@
 # Data Model. planb
 
+> **Este documento describe el código actual, y hoy conviven dos modelos.** El del producto vigente ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)) ya aterrizó en parte: la [cátedra](#entity-chair-la-cátedra) en el catálogo académico, y el [instrumento con la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas) en su propio contexto. El anterior (la `Review` con ratings y texto publicado, `TeacherResponse`, la moderación de contenido, `Planning`) sigue descripto porque sigue en el código, en retiro: se poda como tarea propia, no como daño colateral.
+
 Modelo de datos completo del sistema, organizado por bounded contexts. Cada sección tiene un diagrama ER en Mermaid con las relaciones del contexto, seguido de la especificación de cada entidad (campos, tipos, constraints) y las invariantes que se aplican transversalmente.
 
 El "por qué" de las decisiones estructurales está en los ADRs referenciados. Este documento describe el "qué".
@@ -11,6 +13,7 @@ El "por qué" de las decisiones estructurales está en los ADRs referenciados. E
 - [Context: Academic Catalog](#context-academic-catalog)
 - [Context: Student History](#context-student-history)
 - [Context: Reviews & Moderation](#context-reviews--moderation)
+- [Context: el instrumento y la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas)
 - [Context: Semantic Analytics](#context-semantic-analytics)
 - [Context: Planning](#context-planning)
 - [Apéndice A: Enums](#apéndice-a-enums)
@@ -171,7 +174,7 @@ Constraints:
 
 ## Context: Academic Catalog
 
-Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, comisiones y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0002](../decisions/0002-explicit-versioning-of-career-plans.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
+Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, comisiones y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0049](../decisions/0049-career-plan-versions-by-year-and-status.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
 
 ```mermaid
 ---
@@ -394,9 +397,45 @@ Constraints:
 
 - `PRIMARY KEY (commission_id, teacher_id)`.
 
+### Entity: Chair (la cátedra)
+
+El equipo docente a cargo de una materia, con su titular ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md), US-196). **No es una `Commission`**: la comisión es la oferta de un período (horario y cupo) y muere con él; la cátedra persiste entre períodos, y una materia puede tener varias en paralelo, que es lo que la ficha compara. La reseña la referencia por id, cross-BC y sin FK.
+
+| Campo        | Tipo         | Constraints            | Notas                                            |
+| ------------ | ------------ | ---------------------- | ------------------------------------------------ |
+| `id`         | UUID         | PK                     |                                                  |
+| `subject_id` | UUID         | NOT NULL               | Ref a Subject sin FK (cross-aggregate, ADR-0017) |
+| `name`       | VARCHAR(100) | NOT NULL               | Cómo la nombra el alumno: casi siempre el apellido del titular |
+| `is_active`  | BOOLEAN      | NOT NULL               | Soft delete (ADR-0057)                           |
+| `created_at` | TIMESTAMPTZ  | NOT NULL               |                                                  |
+| `updated_at` | TIMESTAMPTZ  | NOT NULL               |                                                  |
+
+Constraints:
+
+- `UNIQUE(subject_id, name)` (`ux_chairs_subject_name`), sobre todas las filas: archivar no libera el nombre.
+
+### Entity: ChairMember
+
+Un docente en el equipo, con su rol y **el tramo en el que estuvo**.
+
+| Campo           | Tipo                  | Constraints          | Notas                                        |
+| --------------- | --------------------- | -------------------- | -------------------------------------------- |
+| `chair_id`      | UUID                  | FK → Chair, NOT NULL | ON DELETE CASCADE (intra-aggregate)          |
+| `teacher_id`    | UUID                  | NOT NULL             | Ref a Teacher sin FK                         |
+| `role`          | VARCHAR(32)           | NOT NULL             | `Lead`, `Associate`, `PracticalLead`, `Assistant`, `Guest` |
+| `since_term_id` | UUID                  | NOT NULL             | Desde qué período está                       |
+| `until_term_id` | UUID                  | NULL                 | NULL = sigue en el equipo                    |
+
+Constraints:
+
+- `PRIMARY KEY (chair_id, teacher_id, since_term_id)`. El período de inicio entra en la clave porque un docente puede irse y volver, y cada tramo es una fila propia.
+
+El tramo no es adorno: la ficha publica reseñas de varios años y el equipo cambia. Sin `since`/`until`, la ficha le atribuiría al titular de hoy lo que se dictó hace tres años. Los invariantes que el aggregate sostiene (un docente vigente por vez, a lo sumo un titular vigente) no tienen red en la base, porque validar solapamientos de tramos exige ordenar períodos: los valida `Chair`, y `Hydrate` tira si el manifiesto del seeder viene incoherente.
+
 ### Invariantes cross-table (enforced en app)
 
 - `Career.university_id = Teacher.university_id` para los teachers asignados (vía `CommissionTeacher`) a comisiones de subjects de esa carrera.
+- `Chair.subject_id` existe y está activa; los `ChairMember.teacher_id` existen, están activos y son de la misma universidad que la materia.
 - `Subject.term_kind = AcademicTerm.kind` cuando se crea una `Commission`.
 - `Subject.career_plan.career.university_id = AcademicTerm.university_id` para una `Commission`.
 - `Prerequisite`: ambos subjects pertenecen al mismo `career_plan_id`.
@@ -475,7 +514,7 @@ Staging del parseo de PDF/texto.
 
 ## Context: Reviews & Moderation
 
-Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0005](../decisions/0005-review-anchored-to-the-enrollment-record.md) y [ADR-0009](../decisions/0009-review-anonymity-is-a-presentation-rule.md).
+Reseñas, reportes, respuestas de docentes y auditoría. Ver [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) y [ADR-0009](../decisions/0009-review-anonymity-is-a-presentation-rule.md).
 
 ```mermaid
 ---
@@ -529,7 +568,7 @@ Constraints:
 - CHECK `ck_reviews_at_least_one_text`: `subject_text IS NOT NULL OR teacher_text IS NOT NULL`.
 - CHECK `ck_reviews_{subject,teacher}_text_length`: cada texto presente entra en el rango de `ReviewText` (50..2000). No es redundante con el aggregate: el value converter del read path hace `.Value` sobre el `Result`, así que una fila fuera de rango no da error de dominio, revienta al materializar y deja la reseña inutilizable para cualquier operación.
 
-`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0032](../decisions/0032-destructive-enrollment-edit-invalidates-its-review.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
+`under_review_reason` distingue por qué una reseña está `UnderReview`: `content_filter` (el filtro la frenó al publicar o editar), `reports` (el threshold de reports abiertos), o `enrollment_changed` (la cursada que la respalda cambió de forma destructiva, [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md); sin escritor implementado todavía). Antes era un bool que solo alcanzaba para las primeras dos causas y las dejaba indistinguibles del status; sin esa distinción, desestimar un report sobre una reseña frenada por el filtro la publicaba de rebote.
 
 ### Entity: ReviewReport
 
@@ -592,6 +631,125 @@ Log inmutable de cambios sobre una reseña. Usa JSONB por la heterogeneidad del 
 - Desestimar el último report solo restaura a `published` si `under_review_reason = 'reports'`; no restaura si la razón es `content_filter` o `enrollment_changed`.
 - Todos los endpoints públicos que serializan Review omiten `enrollment.student_id` y cualquier referencia al User autor. El anonimato es regla de la capa de presentación.
 
+## Context: el instrumento y la reseña de tres capas
+
+**El modelo del producto vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), en el mismo schema `reviews` que la reseña anterior mientras esa se retira. Cuatro tablas del catálogo (qué se pregunta) y dos de la reseña (qué se respondió).
+
+Las seis conviven con `Review` y sus satélites, que son del producto en retiro ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)) y se podan como tarea propia. Nacen aparte a propósito: `CourseReview` no es una versión de `Review`, es otra cosa, y convertirla habría dejado un período largo donde una misma tabla era mitad un modelo y mitad el otro.
+
+### Entity: Item
+
+Una pregunta del cuestionario con sus opciones cerradas. Es la unidad de lo que se recolecta y de lo que la ficha publica como conteo.
+
+| Campo        | Tipo         | Constraints | Notas                                                        |
+| ------------ | ------------ | ----------- | ------------------------------------------------------------ |
+| `id`         | UUID         | PK          |                                                              |
+| `code`       | VARCHAR(60)  | NOT NULL    | La identidad **semántica**: `CHAIR_ANSWERS_IN_CLASS`         |
+| `text`       | VARCHAR(200) | NOT NULL    | La pregunta como la lee el estudiante                        |
+| `help`       | VARCHAR(500) | NULL        | Aclaración opcional                                          |
+| `layer`      | VARCHAR(20)  | NOT NULL    | `Context`, `ChairConduct`, `StudentExperience`               |
+| `subject`    | VARCHAR(20)  | NOT NULL    | A qué ficha aterriza: `Chair`, `Subject`, `Institution`      |
+| `is_active`  | BOOLEAN      | NOT NULL    | Retirado no se borra: lo respondido sigue contando           |
+| `created_at` | TIMESTAMPTZ  | NOT NULL    |                                                              |
+| `updated_at` | TIMESTAMPTZ  | NOT NULL    |                                                              |
+
+Constraints:
+
+- `UNIQUE(code)` (`ux_items_code`).
+
+**El código es la identidad, no el texto.** Afinar la redacción sin cambiar lo que se pregunta es un update: misma serie histórica, respuestas viejas comparables. Si cambia el **significado**, no se edita: se crea un ítem nuevo con código nuevo y el anterior se retira, y eso es lo que declara la ruptura de la serie. La distinción es editorial y la sostiene quien cura; el modelo la hace posible separando las dos columnas.
+
+### Entity: ItemOption
+
+| Campo     | Tipo         | Constraints         | Notas                                                     |
+| --------- | ------------ | ------------------- | --------------------------------------------------------- |
+| `item_id` | UUID         | FK → Item, NOT NULL | ON DELETE CASCADE (intra-aggregate)                       |
+| `value`   | SMALLINT     | NOT NULL            | Lo que se persiste en la respuesta. **Nunca se recicla**  |
+| `order`   | SMALLINT     | NOT NULL            | Orden en que se muestran                                  |
+| `label`   | VARCHAR(120) | NOT NULL            | La etiqueta literal que la ficha repite cuando es la moda |
+| `valence` | VARCHAR(20)  | NOT NULL            | `None`, `Positive`, `Neutral`, `Negative`                 |
+
+Constraints:
+
+- `PRIMARY KEY (item_id, value)`, con `value` explícitamente **no identity**: es un valor de negocio que elige quien cura el ítem, y la convención de EF lo habría hecho autoincremental (se detectó leyendo la migración generada).
+
+Invariantes que sostiene el aggregate: al menos dos opciones; valores y órdenes únicos; **a lo sumo una negativa** (el rojo de la ficha marca una sola cosa); y ninguna valencia distinta de `None` si el ítem es de capa `Context`, porque el contexto no se publica dato por dato.
+
+### Entity: Instrument
+
+Una versión del cuestionario: qué ítems se ofrecen y en qué orden.
+
+| Campo         | Tipo        | Constraints | Notas                                    |
+| ------------- | ----------- | ----------- | ---------------------------------------- |
+| `id`          | UUID        | PK          |                                          |
+| `code`        | VARCHAR(40) | NOT NULL    | `STUDENT_COURSE`                         |
+| `version`     | SMALLINT    | NOT NULL    | Solo avanza                              |
+| `valid_from`  | TIMESTAMPTZ | NOT NULL    |                                          |
+| `valid_until` | TIMESTAMPTZ | NULL        | NULL = es la versión que se ofrece hoy   |
+
+Constraints:
+
+- `UNIQUE(code, version)` (`ux_instruments_code_version`).
+
+Que no queden dos versiones vigentes del mismo código lo valida el application layer: es el único que ve las dos filas.
+
+### Entity: InstrumentItem
+
+| Campo           | Tipo     | Constraints               | Notas                               |
+| --------------- | -------- | ------------------------- | ----------------------------------- |
+| `instrument_id` | UUID     | FK → Instrument, NOT NULL | ON DELETE CASCADE                   |
+| `item_id`       | UUID     | NOT NULL                  | Ref a Item sin FK (cross-aggregate) |
+| `order`         | SMALLINT | NOT NULL                  | Orden en que se pregunta            |
+
+Constraints:
+
+- `PRIMARY KEY (instrument_id, item_id)`.
+
+No lleva marca de obligatorio: **saltear siempre vale**, así que no habría dónde ponerla. Tampoco lleva condición: los ítems condicionales no existen en el catálogo vigente y se agregan el día que un ítem real los pida.
+
+### Entity: CourseReview
+
+Una voz sobre una cursada: la unidad de todo lo que el producto publica.
+
+| Campo           | Tipo          | Constraints | Notas                                                       |
+| --------------- | ------------- | ----------- | ----------------------------------------------------------- |
+| `id`            | UUID          | PK          | Nunca se publica: existe para que su autor la edite o borre |
+| `account_id`    | UUID          | NOT NULL    | Ref a User sin FK. **Nunca se publica**                     |
+| `subject_id`    | UUID          | NOT NULL    | Ref a Subject sin FK                                        |
+| `term_id`       | UUID          | NOT NULL    | El período en que **cursó**, no en que reseñó               |
+| `chair_id`      | UUID          | NULL        | NULL = no recuerda la cátedra, y es una respuesta legítima  |
+| `instrument_id` | UUID          | NOT NULL    | La versión con la que respondió                             |
+| `free_text`     | VARCHAR(2000) | NULL        | **No se publica nunca** (ADR-0084)                          |
+| `created_at`    | TIMESTAMPTZ   | NOT NULL    |                                                             |
+| `updated_at`    | TIMESTAMPTZ   | NOT NULL    |                                                             |
+
+Constraints:
+
+- `UNIQUE(account_id, subject_id, term_id)` (`ux_course_reviews_account_subject_term`): **una voz por cuenta, materia y período**. Es lo que impide que una persona pese como muchas en el mismo dato, y la red de base del error `already_reviewed`.
+
+### Entity: ItemAnswer
+
+| Campo              | Tipo     | Constraints                | Notas                                    |
+| ------------------ | -------- | -------------------------- | ---------------------------------------- |
+| `course_review_id` | UUID     | FK → CourseReview, NOT NULL | ON DELETE CASCADE                        |
+| `item_id`          | UUID     | NOT NULL                   | Ref a Item sin FK                        |
+| `option_value`     | SMALLINT | NOT NULL                   | El valor de la opción, no su texto       |
+
+Constraints:
+
+- `PRIMARY KEY (course_review_id, item_id)`, con `option_value` **no identity** por la misma razón que `item_options.value`.
+
+**Saltear no deja fila.** Un ítem sin responder simplemente no está en esta tabla, y por eso no cuenta en ningún denominador: el denominador de un ítem son las reseñas que lo respondieron, no las que existen. Guardar un "no dijo" explícito sería la misma información con una fila de más, y abriría la puerta a contarlo como si fuera una respuesta.
+
+Se guarda el **valor** y no la etiqueta porque la etiqueta puede afinarse después sin tocar lo respondido: es lo que mantiene comparable la serie.
+
+### Invariantes cross-table (enforced en app)
+
+- La materia y el período de una `CourseReview` existen en el catálogo; la cátedra, si se declaró, es una de las de esa materia (si no, el dato aterrizaría en la ficha equivocada).
+- Cada `ItemAnswer` apunta a un ítem que **el instrumento de esa reseña ofrece**, y a un valor que **ese ítem admite**. El aggregate recibe el juego de pares válidos armado desde el catálogo y rechaza cualquier otro.
+- Una opción que ya tiene respuestas no se borra ni cambia de valor al re-editar el ítem: las reseñas viejas la apuntan.
+- Ningún read público devuelve una `CourseReview` individual, ni su `free_text`, ni su contexto dato por dato. Lo que se publica son conteos agregados, y el piso de 10 reseñas por cátedra protege a quien reseñó, no a la institución.
+
 ## Context: Semantic Analytics
 
 **No existe.** La revisión del 2026-07-26 de [ADR-0007](../decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md) borró el andamiaje de pgvector (la extensión, el wiring de Npgsql y el handler stub) hasta que haya un consumidor real.
@@ -602,7 +760,7 @@ El diseño (tabla aparte para poder versionar modelos, el modelo elegido, el gat
 
 ## Context: Planning
 
-Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0029](../decisions/0029-planning-as-a-separate-bounded-context.md)).
+Simulaciones tentativas guardadas por alumnos. BC introducido en discovery DDD (ver [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)).
 
 ### Entity: SimulationDraft
 

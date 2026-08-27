@@ -7,9 +7,10 @@ using Xunit;
 namespace Planb.Reviews.Tests.Reviews;
 
 /// <summary>
-/// Domain unit tests de <see cref="Review.Publish"/> enfocados en ADR-0060: el docente reseñado
-/// puede nombrarse sin resolver (<c>ReviewedTeacherId</c> null), pero el nombre declarado
-/// (<c>ReviewedTeacherName</c>) nunca es vacío, esté o no resuelto el id.
+/// Domain unit tests de <see cref="Review.Publish"/> enfocados en una decisión de la versión
+/// anterior del producto (en retiro, ADR-0063): el docente reseñado puede nombrarse sin resolver
+/// (<c>ReviewedTeacherId</c> null), pero el nombre declarado (<c>ReviewedTeacherName</c>) nunca es
+/// vacío, esté o no resuelto el id.
 /// </summary>
 public class ReviewPublishTests
 {

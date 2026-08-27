@@ -2,7 +2,7 @@ namespace Planb.Reviews.Application.Constants;
 
 /// <summary>
 /// Canonical set of review tags (US-089). These mirror the editor taxonomy that ships in the
-/// frontend (<c>features/write-review/data/mocks.ts</c>, flagged as provisional in ADR-0041);
+/// frontend (<c>features/write-review/data/mocks.ts</c>, flagged as provisional in ADR-0071);
 /// they are user-facing content values, not code identifiers, so they stay in Spanish. The
 /// validator rejects any tag outside this set so the corpus the US-002 crowd insights aggregate
 /// over stays clean. When the definitive taxonomy lands, this single constant changes.

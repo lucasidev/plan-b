@@ -18,7 +18,7 @@ namespace Planb.Reviews.Application.Features.EditReview;
 ///   <item>Load the review; if missing, NotFound. Editable states: Published, y UnderReview
 ///         cuando la razón es ContentFilter o EnrollmentChanged (esa reevaluación del filtro es
 ///         la única salida de esas dos cuarentenas). Bloqueado cuando la razón es Reports, y en
-///         Removed: InvalidStatusTransition. Ver la revisión 2026-07-29 de ADR-0012.</item>
+///         Removed: InvalidStatusTransition. Ver la revisión 2026-07-29 de ADR-0063.</item>
 ///   <item>Cross-check ownership via enrollments: the enrollment behind the review must
 ///         belong to the current user's profile. We do not rely on a "user id" column in
 ///         the review row.</item>

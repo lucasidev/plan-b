@@ -16,7 +16,7 @@ namespace Planb.Reviews.Application.IntegrationEvents;
 /// <para>
 /// <c>StatusAfter</c> lets consumers decide whether to act: if the edit triggered the
 /// content filter the review is now <c>UnderReview</c>, and once the embedding pipeline
-/// exists its consumer can skip the recompute until moderation rules (ADR-0013).
+/// exists its consumer can skip the recompute until moderation rules (ADR-0063).
 /// </para>
 /// </summary>
 public sealed record ReviewEditedIntegrationEvent(

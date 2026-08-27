@@ -8,7 +8,7 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 /// event mappea para notificar a moderation queue.
 ///
 /// El embedding job (pipeline en pausa, ver revisión de ADR-0007) no se dispara hasta que la
-/// review pase a <c>Published</c>: diseño de ADR-0013 (embedding gated en transiciones a
+/// review pase a <c>Published</c>: diseño de ADR-0063 (embedding gated en transiciones a
 /// published).
 /// </summary>
 public sealed record ReviewQuarantinedDomainEvent(

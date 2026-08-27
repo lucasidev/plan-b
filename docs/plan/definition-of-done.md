@@ -51,7 +51,7 @@ El "listo cuando" de la story se suma a estos criterios generales, no los reempl
 
 ## 7. Restricciones del producto
 
-- [ ] Cumple las [restricciones del producto](../product/README.md#restricciones-los-requisitos-no-funcionales-del-producto): accesibilidad y celular en lo público, datos personales (Ley 25.326), política de moderación y réplica publicada, rendimiento y disponibilidad de lo público. No son criterio de una story: se sostienen en todas.
+- [ ] Cumple las [restricciones del producto](../product/README.md#restricciones-los-requisitos-no-funcionales-del-producto): accesibilidad y celular en lo público, datos personales (Ley 25.326), política de curaduría y respuesta publicada, rendimiento y disponibilidad de lo público. No son criterio de una story: se sostienen en todas.
 
 ## 8. Demo / verificación funcional
 

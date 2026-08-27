@@ -340,5 +340,5 @@ No hay nada que testear: la automatización se retiró ([ADR-0074](../decisions/
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): git workflow + Conventional Commits.
 - [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md): integration tests pattern.
 - [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): pirámide de testing cross-stack.
-- [ADR-0037](../decisions/0037-changelog-automation-auto-append.md): changelog auto-append.
+- [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): changelog auto-append.
 - [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy (pre-deploy = no versiones; tags narrativos permitidos).

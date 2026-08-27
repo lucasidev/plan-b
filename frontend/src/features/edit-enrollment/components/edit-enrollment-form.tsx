@@ -43,7 +43,7 @@ type Props = {
  *
  *   1. La materia no está: el PATCH no la acepta. Cambiar de materia no es corregir una cursada.
  *   2. Volver el estado a "cursando" teniendo una reseña publicada pide confirmación explícita,
- *      porque esa edición manda la reseña a revisión (ADR-0032). Es el único caso destructivo que
+ *      porque esa edición manda la reseña a revisión (ADR-0063). Es el único caso destructivo que
  *      existe hoy: la nota y el método dejan la reseña vieja, pero no la contradicen.
  *
  * El backend revalida todo el juego de invariantes sobre el estado resultante; el form solo guía.

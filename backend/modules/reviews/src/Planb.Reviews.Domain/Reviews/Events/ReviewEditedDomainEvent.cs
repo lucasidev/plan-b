@@ -12,7 +12,7 @@ namespace Planb.Reviews.Domain.Reviews.Events;
 /// <c>StatusAfter</c> permite distinguir el caso "el edit pasó el filter" (Published) del
 /// caso "el edit triggereó el filter y la review pasó a UnderReview". Cuando el pipeline de
 /// embedding exista, el consumer decide qué hacer en cada caso (encolar igual, skipear si
-/// UnderReview) según ADR-0013.
+/// UnderReview) según ADR-0063.
 /// </para>
 /// </summary>
 public sealed record ReviewEditedDomainEvent(

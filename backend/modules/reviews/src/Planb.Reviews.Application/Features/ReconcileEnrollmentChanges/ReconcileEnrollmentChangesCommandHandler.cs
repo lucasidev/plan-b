@@ -14,7 +14,7 @@ namespace Planb.Reviews.Application.Features.ReconcileEnrollmentChanges;
 ///
 /// <para>
 /// La dirección de la pregunta no es casual: Reviews ya referencia a Enrollments porque la reseña
-/// se ancla a la cursada (ADR-0005), así que preguntar para este lado es gratis. Al revés cerraría
+/// se ancla a la cursada (ADR-0082), así que preguntar para este lado es gratis. Al revés cerraría
 /// un ciclo de assemblies.
 /// </para>
 ///

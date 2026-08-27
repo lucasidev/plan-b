@@ -12,9 +12,10 @@ namespace Planb.Reviews.Domain.Reviews;
 
 /// <summary>
 /// Aggregate root del bounded context Reviews. Reseña anclada a una cursada finalizada
-/// (un <c>EnrollmentRecord</c> del módulo Enrollments). ADR-0005: el ancla es por
-/// cursada, no por usuario, así una recursada con la misma cátedra puede tener su
-/// propia reseña (UNIQUE por enrollment_id, no por user_id + subject_id).
+/// (un <c>EnrollmentRecord</c> del módulo Enrollments): el ancla es por cursada, no por
+/// usuario, así una recursada con la misma cátedra puede tener su propia reseña (UNIQUE por
+/// enrollment_id, no por user_id + subject_id). Esta forma de anclar es la de la versión
+/// anterior del producto, retirada con ADR-0063.
 ///
 /// <para>
 /// El aggregate no conoce EnrollmentRecord ni Teacher como navigation properties. Solo
@@ -48,23 +49,25 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// <para>
     /// Se guarda el user y no el student profile porque el user sobrevive a la baja (soft delete con
     /// anonimización) y el profile no. Y no se resuelve conservando el profile porque ese row ata
-    /// carrera + año de ingreso a una persona, que es justo el cuasi-identificador que el piso
-    /// anti-reidentificación de ADR-0047 trata de evitar: conservarlo sería peor para privacidad.
+    /// carrera + año de ingreso a una persona, que es justo el tipo de cuasi-identificador que un
+    /// piso anti-reidentificación trata de evitar: conservarlo sería peor para privacidad.
     /// </para>
     /// </summary>
     public Guid AuthorUserId { get; private set; }
 
     /// <summary>
-    /// Identidad del docente reseñado, resuelta contra el catálogo de Academic. Nullable desde
-    /// ADR-0060: la reseña puede nombrar un docente que todavía no está resuelto (el alumno sabe a
-    /// quién tuvo, pero el catálogo o el proceso de resolución todavía no lo linkearon). Cuando es
+    /// Identidad del docente reseñado, resuelta contra el catálogo de Academic. Nullable (decisión
+    /// de la versión anterior del producto, retirada con ADR-0063): la reseña puede nombrar un
+    /// docente que todavía no está resuelto (el alumno sabe a quién tuvo, pero el catálogo o el
+    /// proceso de resolución todavía no lo linkearon). Cuando es
     /// null, <see cref="ReviewedTeacherName"/> es lo único que hay para identificarlo, y ningún
     /// agregado de docente cuenta la reseña (no se sabe de quién habla).
     /// </summary>
     public Guid? ReviewedTeacherId { get; private set; }
 
     /// <summary>
-    /// Nombre del docente tal como lo declaró el alumno (ADR-0060). Siempre presente, esté o no
+    /// Nombre del docente tal como lo declaró el alumno (decisión de la versión anterior del
+    /// producto, retirada con ADR-0063). Siempre presente, esté o no
     /// resuelto <see cref="ReviewedTeacherId"/>: es lo mínimo que el alumno aportó, y el invariante
     /// del aggregate es que nunca viaja vacío. Hoy coincide con el nombre del <c>Teacher</c>
     /// resuelto porque el único camino de publish llega con un id ya elegido de un picker; cuando
@@ -127,7 +130,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// <para>
     /// Reemplaza al bool <c>QuarantinedByContentFilter</c>, que solo distinguía dos causas
     /// (filtro de contenido vs threshold de reports) y no dejaba lugar para la tercera: una
-    /// reseña invalidada porque la cursada que la respalda cambió (ADR-0032). Con solo dos
+    /// reseña invalidada porque la cursada que la respalda cambió (ADR-0063). Con solo dos
     /// causas indistinguibles del status, <see cref="RestoreFromReports"/> (que se dispara
     /// cuando un moderador cierra el último report) republicaba cualquier UnderReview, incluida
     /// la que el filtro había frenado y sobre la que nadie decidió nada. Alcanzaba con que un
@@ -166,8 +169,9 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     ///   - no existe ya una Review para este enrollment (idempotency en el repo).
     ///
     /// Las invariantes que valida acá son las del aggregate: al menos uno de los dos textos
-    /// presente (CHECK del data-model), el nombre del docente reseñado nunca vacío (ADR-0060: el
-    /// id puede ser null, el nombre no) y los value objects de cada campo numérico ya validados al
+    /// presente (CHECK del data-model), el nombre del docente reseñado nunca vacío (decisión de la
+    /// versión anterior del producto, retirada con ADR-0063: el id puede ser null, el nombre no) y
+    /// los value objects de cada campo numérico ya validados al
     /// construirse.
     ///
     /// <paramref name="initialStatus"/> debe ser <see cref="ReviewStatus.Published"/>
@@ -263,7 +267,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// <see cref="UnderReviewReason"/> is <see cref="Reviews.UnderReviewReason.ContentFilter"/> or
     /// <see cref="Reviews.UnderReviewReason.EnrollmentChanged"/>: editing re-runs the content
     /// filter on the new text, and that is the only way out of those two quarantines. Editing
-    /// stays blocked when the reason is <see cref="Reviews.UnderReviewReason.Reports"/> (ADR-0012,
+    /// stays blocked when the reason is <see cref="Reviews.UnderReviewReason.Reports"/> (ADR-0063,
     /// anti edit-bombing): a moderator is actively looking at open reports, and letting the author
     /// rewrite the content mid-review would let them dodge the decision. Removed reviews are
     /// sealed; Deleted reviews are gone for the author.
@@ -418,8 +422,9 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
     /// <summary>
     /// Auto-quarantine driven by crowd reports (US-019). When the open report count for a
-    /// review crosses the configurable threshold (ADR-0010), Moderation publishes a
-    /// quarantine request that the Reviews consumer applies through this method.
+    /// review crosses the configurable threshold (behavior of the previous version of the
+    /// product, retired with ADR-0063), Moderation publishes a quarantine request that the
+    /// Reviews consumer applies through this method.
     ///
     /// Idempotent and narrow: only a <see cref="ReviewStatus.Published"/> review moves to
     /// <see cref="ReviewStatus.UnderReview"/>. A review already UnderReview, Removed, or
@@ -445,13 +450,13 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
     /// <summary>
     /// Quarantine driven by the student editing the cursada the review is anchored to (US-015,
-    /// ADR-0032). The review talks about a cursada that finished; if that cursada goes back to
+    /// ADR-0063). The review talks about a cursada that finished; if that cursada goes back to
     /// in-progress, what the review claims stopped being true and it cannot stay published as is.
     ///
     /// <para>
     /// The reason is <see cref="Reviews.UnderReviewReason.EnrollmentChanged"/> and not
     /// <see cref="Reviews.UnderReviewReason.Reports"/>, which is what lets the author edit their
-    /// way out of it: per the 2026-07-29 revision of ADR-0012 only a reports quarantine blocks
+    /// way out of it: per the 2026-07-29 revision of ADR-0063 only a reports quarantine blocks
     /// editing. Nobody reported this review; the ground under it moved.
     /// </para>
     ///

@@ -17,7 +17,7 @@ type Params = Promise<{ reviewId: string }>;
  *
  * If the review does not belong to the current user (or does not exist), the page
  * returns 404 instead of leaking the distinction to the caller. Editable states, per la
- * revisión 2026-07-29 de ADR-0012: <c>Published</c>, y <c>UnderReview</c> cuando la cuarentena
+ * revisión 2026-07-29 de ADR-0063: <c>Published</c>, y <c>UnderReview</c> cuando la cuarentena
  * no la pusieron los reportes. El backend devuelve 409 en los otros casos (cuarentena por
  * reportes, o removida). We do NOT block the page render in that case: the
  * student gets to see the editor pre-loaded and the error surface comes through the

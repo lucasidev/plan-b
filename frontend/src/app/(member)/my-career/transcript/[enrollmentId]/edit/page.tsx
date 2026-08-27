@@ -46,7 +46,7 @@ export default async function EditTranscriptEntryPage({
   }
 
   // Si hay una reseña publicada anclada a esta cursada, volverla a "cursando" la manda a revisión
-  // (ADR-0032). El form lo necesita para decidir si pide confirmación, y sin reseña publicada no
+  // (ADR-0063). El form lo necesita para decidir si pide confirmación, y sin reseña publicada no
   // hay nada que confirmar: el consumer de Reviews no toca las que no están publicadas.
   const hasPublishedReview = await findPublishedReviewFor(enrollmentId);
 

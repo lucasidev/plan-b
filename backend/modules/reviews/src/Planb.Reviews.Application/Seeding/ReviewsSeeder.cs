@@ -73,8 +73,9 @@ public sealed class ReviewsSeeder
                 finalGrade = gradeResult.Value;
             }
 
-            // ADR-0060: el nombre declarado sale del catálogo, mismo criterio que
-            // PublishReviewCommandHandler (el corpus de prueba siempre nombra un docente resuelto).
+            // Decisión de la versión anterior del producto, retirada con ADR-0063: el nombre
+            // declarado sale del catálogo, mismo criterio que PublishReviewCommandHandler (el
+            // corpus de prueba siempre nombra un docente resuelto).
             var teacher = await _academic.GetTeacherByIdAsync(spec.ReviewedTeacherId, ct);
             if (teacher is null)
             {
