@@ -16,10 +16,12 @@ import { breadcrumbsForPath } from '@/lib/member-shell';
  * visible per AC but NOT functional (explicit debt from US-042-f to a future
  * global-search US). Click does nothing for now.
  *
- * The "+ Escribir reseña" button in the right slot links to `/reviews/new`, which is
- * today a stub (lands with US-017). Per the `plan-b.html` mockup lines 146-156: the
- * button always lives in the topbar, accessible from any view of the authenticated
- * area.
+ * El botón "+ Escribir reseña" del slot derecho lleva a `/reviews/new`, la pantalla de reseñar
+ * una cursada (US-146, ADR-0082). Vive siempre en el topbar y se llega desde cualquier vista del
+ * área autenticada: reseñar es el acto principal del producto, no una pantalla escondida.
+ *
+ * El badge cuenta cursadas pendientes de reseñar, que es una lectura del modelo anterior; se
+ * rehace cuando esa cuenta salga del modelo nuevo.
  */
 export function Topbar() {
   const pathname = usePathname();
@@ -45,9 +47,8 @@ export function Topbar() {
  * arrives. We don't suspend: blocking the whole shell on this read would be a
  * regression every page.
  *
- * The link points to `/reviews?tab=pending`: that is the natural source ("pick the
- * cursada to review"). When there are no pendings the user lands on the empty state
- * and the badge disappears.
+ * El link va a `/reviews/new`, que es reseñar una cursada eligiéndola a mano. El badge sigue
+ * contando pendientes del modelo anterior y se rehace cuando esa cuenta salga del modelo nuevo.
  *
  * La data la siembra el layout de `(member)` (prefetch + HydrationBoundary con este mismo
  * queryKey), así que el badge sale bien desde el primer paint.
@@ -71,7 +72,7 @@ function WriteReviewButton() {
 
   return (
     <Link
-      href="/reviews?tab=pending"
+      href="/reviews/new"
       prefetch
       className={
         'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap bg-ink text-white border border-ink rounded-pill shadow-card transition-colors hover:bg-[#1a110a] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft'
