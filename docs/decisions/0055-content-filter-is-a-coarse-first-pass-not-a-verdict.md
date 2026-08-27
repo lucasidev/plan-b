@@ -9,7 +9,7 @@ Las reseñas de planb son texto libre que un alumno escribe sobre una materia y 
 
 Moderar solo por reporte no alcanza como única defensa: el reporte llega **después** de que el contenido ya se publicó y alguien lo leyó, y depende de que ese alguien se tome el trabajo. Hace falta algo que actúe en el momento de publicar.
 
-La decisión de qué es ese algo se tomó y está implementada, pero quedó registrada en el docstring de `RegexReviewContentFilter`. Ahí la lee quien abre esa clase, no quien está por decidir algo relacionado. Y hay un ADR que ya se apoya en ella: [ADR-0013](0013-embedding-generation-gated-on-transitions-to-published.md) razona sobre reseñas que pasan por `UnderReview` "retenidas por filtro", o sea que un ADR aceptado depende de una decisión que no estaba escrita.
+La decisión de qué es ese algo se tomó y está implementada, pero quedó registrada en el docstring de `RegexReviewContentFilter`. Ahí la lee quien abre esa clase, no quien está por decidir algo relacionado. Y hay un ADR que ya se apoya en ella: el que ataba la generación de embeddings a las transiciones a `Published` razona sobre reseñas que pasan por `UnderReview` "retenidas por filtro", o sea que un ADR aceptado depende de una decisión que no estaba escrita.
 
 ## Decisión
 
@@ -59,6 +59,6 @@ Rechazada por lo mismo que el punto 2 de la decisión: una cola inflada de falso
 
 ## Refs
 
-- [ADR-0013](0013-embedding-generation-gated-on-transitions-to-published.md): razona sobre reseñas retenidas por filtro; depende de esta decisión.
-- [ADR-0010](0010-auto-hide-threshold-configurable-by-env-var.md): el otro camino a `UnderReview`, por acumulación de reportes. Los dos convergen en el mismo estado, y esa convergencia es la causa del agujero anotado arriba.
+- La generación de embeddings atada a las transiciones a `Published`: razona sobre reseñas retenidas por filtro y depende de esta decisión. Su ADR se retiró con la versión anterior.
+- El otro camino a `UnderReview`, la acumulación de reportes hasta el threshold: su ADR también se retiró. Los dos convergen en el mismo estado, y esa convergencia es la causa del agujero anotado arriba.
 - [`docs/history/domain-v1/review-lifecycle.md`](../history/domain-v1/review-lifecycle.md): las transiciones completas del estado de una reseña.

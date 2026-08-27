@@ -89,4 +89,4 @@ Rechazada: mueve una garantía de integridad de datos a una configuración de co
 
 - [ADR-0017](0017-persistence-ignorance.md): sin FK cross-schema. Este ADR es sobre constraints **intra**-schema, que ADR-0017 explícitamente mantiene.
 - [ADR-0033](0033-verification-token-as-a-child-entity.md): el invariante de un token activo por purpose, que acá recibe su red.
-- [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md): el pass rate público, que es lo que los duplicados de cursada ensucian.
+- [ADR-0083](0083-the-ficha-publishes-counts-not-scores.md): el pass rate público, que es lo que los duplicados de cursada ensucian.

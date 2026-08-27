@@ -9,7 +9,7 @@
 
 Al implementar US-015 apareció un evento donde esa regla no se puede aplicar.
 
-`Enrollments` publica que el alumno editó una cursada; `Reviews` reacciona poniendo en revisión la reseña anclada a ella. Aplicando ADR-0045 al pie de la letra, el tipo tendría que vivir en `Planb.Reviews.Application` y `Enrollments` importarlo. Pero **una reseña se ancla a un `EnrollmentRecord`** ([ADR-0005](0005-review-anchored-to-the-enrollment-record.md)), así que `Planb.Reviews.Application` ya referencia a `Planb.Enrollments.Application`. Poner el tipo del lado de Reviews cerraría exactamente el ciclo que ADR-0045 existe para evitar.
+`Enrollments` publica que el alumno editó una cursada; `Reviews` reacciona poniendo en revisión la reseña anclada a ella. Aplicando ADR-0045 al pie de la letra, el tipo tendría que vivir en `Planb.Reviews.Application` y `Enrollments` importarlo. Pero **una reseña se ancla a un `EnrollmentRecord`** (el anclaje del modelo anterior, que es el que este código implementa), así que `Planb.Reviews.Application` ya referencia a `Planb.Enrollments.Application`. Poner el tipo del lado de Reviews cerraría exactamente el ciclo que ADR-0045 existe para evitar.
 
 Podría leerse como un choque entre dos ADRs. No lo es, y mirando los dos casos juntos se ve por qué: **no son la misma clase de evento.**
 
@@ -45,7 +45,7 @@ El codebase ya los venía nombrando distinto sin que nadie lo hubiera hecho expl
 
 Invertir o cortar esa referencia y dejar el evento del lado de Reviews, como manda la regla existente.
 
-Descartada porque esa dependencia **no es un accidente de implementación**: existe porque la reseña se ancla al `EnrollmentRecord` ([ADR-0005](0005-review-anchored-to-the-enrollment-record.md)), que es una decisión de dominio tomada y vigente. Reacomodar el modelo para que entre la ubicación de un tipo de evento es la cola moviendo al perro.
+Descartada porque esa dependencia **no es un accidente de implementación**: existe porque la reseña se ancla al `EnrollmentRecord`, que era la decisión de dominio vigente cuando se escribió este ADR. Reacomodar el modelo para que entre la ubicación de un tipo de evento es la cola moviendo al perro.
 
 ### B. Todos los eventos cross-módulo en `SharedKernel`
 
@@ -83,5 +83,5 @@ Descartada porque los precedentes ahora se contradicen a simple vista: dos event
 
 - [ADR-0045](0045-owned-by-receiver-for-cross-module-integration-events.md): la regla original, que este ADR complementa sin superar.
 - [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md): el transporte (outbox durable de Wolverine) es el mismo para las dos clases.
-- [ADR-0005](0005-review-anchored-to-the-enrollment-record.md): el anclaje que crea la dependencia `Reviews → Enrollments`.
-- [ADR-0032](0032-destructive-enrollment-edit-invalidates-its-review.md): el caso que destapó la distinción.
+- El anclaje de la reseña al `EnrollmentRecord`: la decisión del modelo anterior que crea la dependencia `Reviews → Enrollments`. Su ADR se retiró con esa versión, y hoy la reseña ancla a la cursada ([ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md)).
+- La edición destructiva de una cursada que invalida su reseña: el caso que destapó la distinción. Su ADR también se retiró con la versión anterior.
