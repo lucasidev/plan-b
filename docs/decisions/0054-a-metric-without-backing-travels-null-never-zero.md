@@ -26,7 +26,7 @@ Tres consecuencias que forman parte de la decisión:
 
 ### Dónde aplica hoy
 
-Pass rate de una materia (con el piso anti-reidentificación de [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md)), dificultad y demás insights de materia y docente, choques del planificador cuando no hay ninguna comisión elegida, cohorte de combinación del simulador, y el contexto del autor en el detalle de moderación.
+Pass rate de una materia (con su muestra mínima, cinco cursadas con verdicto, que fija el código de la versión anterior y no ningún ADR: [ADR-0063](0063-the-product-is-a-pressure-instrument.md) la deja en retiro), dificultad y demás insights de materia y docente, choques del planificador cuando no hay ninguna comisión elegida, cohorte de combinación del simulador, y el contexto del autor en el detalle de moderación.
 
 ## Alternativas consideradas
 
@@ -66,4 +66,4 @@ Rechazada: el número se lee primero y el disclaimer después, si es que se lee.
 ## Refs
 
 - [`docs/product/language.md`](../product/language.md), fila "sin datos" de la tabla de desambiguación: el registro original de esta regla, que este ADR promueve a decisión.
-- [ADR-0047](0047-public-pass-rate-from-private-enrollment-history.md): el piso anti-reidentificación, que es un caso donde la métrica **existe** pero se oculta por privacidad. Es otro motivo para el null y conviene no confundirlos.
+- [ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md): el piso de publicación de la ficha, diez reseñas por cátedra, que es un caso donde la métrica **existe** pero se oculta para proteger a quien reseñó. Es otro motivo para el null y conviene no confundirlos.

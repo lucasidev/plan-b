@@ -5,7 +5,7 @@
 
 ## Contexto
 
-[ADR-0031](0031-review-audit-log-as-a-projection.md) estableció `ReviewAuditLog` como projection local del módulo Moderation que escucha events de Reviews + TeacherResponse + Identity (limitado a UserDisabled). En ese momento el alcance del audit log era **per-review**: el moderator abre el detalle de UNA reseña y ve su timeline.
+[ADR-0063](0063-the-product-is-a-pressure-instrument.md) estableció `ReviewAuditLog` como projection local del módulo Moderation que escucha events de Reviews + TeacherResponse + Identity (limitado a UserDisabled). En ese momento el alcance del audit log era **per-review**: el moderator abre el detalle de UNA reseña y ve su timeline.
 
 El canvas v2 (2026-05-09, post-zip-admin) introduce dos vistas nuevas que extienden el alcance:
 
@@ -14,7 +14,7 @@ El canvas v2 (2026-05-09, post-zip-admin) introduce dos vistas nuevas que extien
 
 Sumado a lo anterior, las US-055, US-058, US-072, US-007, US-006, US-084, US-085 introducen entre 15 y 20 nuevas acciones que necesitan audit log (`review.deleted_by_self`, `plan.imported`, `subject.merged`, `plan.migration.applied`, `strike.issued`, `strike.decayed`, `strike.cancelled`, `review.edit_requested`, `review.edit_completed`, `review.edit_deadline_expired`, `review.upheld_with_ban`, `user.banned_from_moderation`, `user.password_changed`, `user.self_disabled`, `university.created`, `university.archived`, `careerplan.created`, `subject.edited`, `teacher.created`, `commission.created`, etc.).
 
-La pregunta arquitectónica: ¿se mantiene el patrón per-BC de ADR-0031 (cada módulo tiene su propia projection local) o se crea un módulo central `Audit` que consuma events de todos los BCs y persista todo en una sola tabla `audit_log`?
+La pregunta arquitectónica: ¿se mantiene el patrón per-BC de ADR-0063 (cada módulo tiene su propia projection local) o se crea un módulo central `Audit` que consuma events de todos los BCs y persista todo en una sola tabla `audit_log`?
 
 ## Decisión
 
@@ -28,7 +28,7 @@ Cada BC con eventos auditables tiene su propio audit log:
 
 | Módulo | Projection | Tabla |
 |---|---|---|
-| Moderation | `ReviewAuditLog` (ADR-0031, existente) | `moderation.review_audit_log` |
+| Moderation | `ReviewAuditLog` (ADR-0063, existente) | `moderation.review_audit_log` |
 | Identity | `UserAuditLog` (nueva) | `identity.user_audit_log` |
 | Moderation | `ModerationActionLog` (nueva) | `moderation.action_log` (decisiones de moderators sobre reports, edits, bans) |
 | Academic | `CatalogAuditLog` (nueva) | `academic.catalog_audit_log` (afilia uni, importa plan, merge subjects, migración) |
@@ -99,7 +99,7 @@ Contras: sigue siendo SPOF, sigue acoplando a contratos públicos de events, sig
 
 Cada feature escribe su audit log directo a su tabla, sin projector centralizado por BC. Equivalente a "tener audit log pero sin patrón".
 
-Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event nuevo. Mismo contra que ADR-0031 ya descartó para Reviews.
+Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event nuevo. Mismo contra que ADR-0063 ya descartó para Reviews.
 
 ## Consecuencias
 
@@ -111,7 +111,7 @@ Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event 
 - Diff `before/after` tipado en cada BC (Reviews sabe interpretar `ReviewEdited.changes`, Academic sabe interpretar `PlanImported.diff`, etc.). Central tendría que ser opaco o serializar/deserializar shapes.
 - Política de retención configurable per-BC. Cada uno decide.
 - Falla aislada de proyección: bug en `UserAuditLog` no rompe `ReviewAuditLog`.
-- Replica el patrón ya establecido en ADR-0031. No introduce paradigma nuevo.
+- Replica el patrón ya establecido en ADR-0063. No introduce paradigma nuevo.
 
 **Negativas**:
 
@@ -122,8 +122,8 @@ Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event 
 
 **No-decisión explícita**:
 
-- No definimos cuándo Reviews / Moderation deben separar sus projections (ej. `ReviewLifecycleAuditLog` vs `ReviewModerationAuditLog`). ADR-0031 ya menciona el split cuando el projector se vuelve un blob. Aplica per-BC: cada uno decide su nivel de granularidad.
-- No definimos si los audit logs son inmutables a nivel DB (sin UPDATE, sin DELETE). ADR-0031 lo deja como convención del projector. Aplica acá: cada BC respeta append-only en su projection.
+- No definimos cuándo Reviews / Moderation deben separar sus projections (ej. `ReviewLifecycleAuditLog` vs `ReviewModerationAuditLog`). ADR-0063 ya menciona el split cuando el projector se vuelve un blob. Aplica per-BC: cada uno decide su nivel de granularidad.
+- No definimos si los audit logs son inmutables a nivel DB (sin UPDATE, sin DELETE). ADR-0063 lo deja como convención del projector. Aplica acá: cada BC respeta append-only en su projection.
 
 ## Cuándo revisitar
 
@@ -135,5 +135,5 @@ Contras: lógica esparcida, fácil olvidar agregar entry cuando se agrega event 
 
 - [ADR-0017](0017-persistence-ignorance.md): persistence ignorance. Permite read models con Dapper cross-schema.
 - [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md): integration events vía Wolverine outbox. Mecanismo por el cual cada BC publica sus events para que sus propios projectors (y otros BCs interesados) los consuman.
-- [ADR-0031](0031-review-audit-log-as-a-projection.md): primer audit log per-BC. Este ADR formaliza y extiende el patrón a otros BCs.
+- [ADR-0063](0063-the-product-is-a-pressure-instrument.md): primer audit log per-BC. Este ADR formaliza y extiende el patrón a otros BCs.
 - US relacionadas: [US-053](../history/domain-v1/stories/US-053.md), [US-086](../history/domain-v1/stories/US-086.md), [US-005](../history/domain-v1/stories/US-005.md), [US-058](../history/domain-v1/stories/US-058.md), [US-081](../history/domain-v1/stories/US-081.md).

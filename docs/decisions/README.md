@@ -39,7 +39,7 @@ Cada ADR con:
 ```markdown
 # NNNN: Título
 
-- **Estado**: propuesto | aceptado | aceptado, extendido por NNNN | rechazado | superado por NNNN | parcialmente superado por NNNN (qué parte) | deprecado por NNNN
+- **Estado**: propuesto | aceptado
 - **Fecha**: YYYY-MM-DD
 
 ## Contexto
@@ -57,23 +57,18 @@ Positivas, negativas, advertencias.
 
 ## Cuando una decisión cambia
 
-**Una decisión nueva va en un ADR nuevo, nunca como sección adentro del viejo.** El viejo se taguea en su `Estado` apuntando al nuevo.
+**Esta carpeta contiene solo decisiones vigentes.** Cuando una decisión cambia, se escribe el ADR nuevo y el viejo **se borra en el mismo commit**, con todas sus referencias en el repo apuntadas al reemplazo o reescritas (decidido el 2026-08-25: los rebasados no se taguean, se van; un lector que abre la carpeta lee solo verdad).
 
-La razón es que un ADR que sigue diciendo `aceptado` mientras el código hace otra cosa es documentación que miente, y el lector no tiene cómo enterarse: llega al doc, lee la decisión, y no hay nada que le avise. Esconder el cambio adentro de una sección al final del archivo es la misma mentira con más pasos, porque el `Estado` de arriba es lo primero que se lee.
+Para que el borrado no pierda nada:
 
-**Y se taguea en el mismo commit que crea el nuevo.** No es un paso posterior: si el ADR nuevo supersede, depreca o extiende a otros, esos otros cambian su `Estado` en el mismo diff, con el link. Es lo que hace que la cadena de ADRs sea la verdad completa, y no solo el último. Es el paso que más fácil se saltea, porque el ADR nuevo se escribe con la cabeza en la decisión y los viejos quedan diciendo `aceptado`.
-
-Los estados, para no inventar uno cada vez: `aceptado` (vigente), `superado por NNNN` (hay decisión que lo reemplaza; si es una parte, `parcialmente superado por NNNN (qué parte)`), `deprecado por NNNN` (murió sin reemplazo directo, típicamente porque el producto que lo necesitaba se retiró), y `aceptado, extendido por NNNN` (sigue vigente y otro ADR lo amplía o lo revalida). Es la escalera estándar de los ADRs (propuesto → aceptado → superado / deprecado, con extensiones), y el cuerpo del ADR viejo no se edita en ninguno de los casos: es historia.
+- **El ADR nuevo consolida todo lo que sigue vigente** del que reemplaza: lo vivo se absorbe, no se deja huérfano en un archivo muerto.
+- **El camino recorrido entra como alternativas consideradas** del nuevo: las formas que se probaron y murieron son la mitad del valor del registro, contadas donde se las va a leer.
+- **La numeración no se recicla**: los números de los borrados quedan huecos. El número es identificador, no índice; la arqueología, si alguna vez hace falta, está en git.
 
 Distinguir dos cosas que se confunden:
 
 - **Corrección**: el ADR dice algo que siempre estuvo mal (un status code mal transcripto, un nombre equivocado). Se arregla en el lugar, sin ADR nuevo.
-- **Decisión nueva**: cambió lo que decidimos. ADR nuevo, y el viejo tagueado.
-
-Dos detalles que importan:
-
-- **Si el título del ADR viejo dejó de ser cierto, se corrige el título.** El filename se conserva, porque los links del repo apuntan a él, y se agrega una línea `- **Nota**` explicando por qué el slug quedó viejo. Un título que miente es peor que un `Estado` que miente: se lee en el índice, en los links y en las referencias cruzadas.
-- **En la supersesión parcial, decir qué parte.** "Parcialmente superado por NNNN" sin decir cuál parte obliga a leer los dos ADRs enteros para saber qué sigue vigente.
+- **Decisión nueva**: cambió lo que decidimos. ADR nuevo, y el viejo borrado con sus referencias corregidas.
 
 ## Referencias
 

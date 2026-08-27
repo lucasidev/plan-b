@@ -5,7 +5,7 @@
 
 ## Contexto
 
-La pantalla de tu plan (el mapa la llama Mi carrera; en el código es `/my-career`) muestra el plan de estudios de la carrera que declaraste, con sus correlativas, y una pestaña de co-cursada. La story US-144 pide "ver esas combinaciones contra lo que me falta", y para resolver correlativas hace falta saber qué materias aprobaste o regularizaste en **todo** el plan. La tesis solo sabe de vos lo que declaraste al reseñar (cuándo cursaste, cómo terminó) y dice de los hechos de trayectoria: "de a uno, cuando aparecen, nunca como inventario" ([THESIS.md](../THESIS.md), "Qué recabamos"; [ADR-0067](0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md)). Era la decisión D01 de la [propagación del 17](../history/reviews/2026-08-17-catalog-propagation.md).
+La pantalla de tu plan (el mapa la llama Mi carrera; en el código es `/my-career`) muestra el plan de estudios de la carrera que declaraste, con sus correlativas, y una pestaña de co-cursada. La story US-144 pide "ver esas combinaciones contra lo que me falta", y para resolver correlativas hace falta saber qué materias aprobaste o regularizaste en **todo** el plan. La tesis solo sabe de vos lo que declaraste al reseñar (cuándo cursaste, cómo terminó) y dice de los hechos de trayectoria: "de a uno, cuando aparecen, nunca como inventario" ([THESIS.md](../THESIS.md), "Qué recabamos", en su redacción de entonces). Era la decisión D01 de la [propagación del 17](../history/reviews/2026-08-17-catalog-propagation.md).
 
 ## Decisión
 
@@ -24,10 +24,10 @@ Con esto US-144 se construye sin reabrir "qué recabamos", y la reseña sigue si
 ## Consecuencias
 
 - **US-144** se reescribe: el filtro sale de lo que reseñaste (hecho) más lo que marcaste como que te falta (preferencia); resolver correlativas contra el plan es lo que hoy hace `SubjectAvailabilityEvaluator` en `planning`, que se rescata a `academic` antes de podar. **US-145** ("volver a marcar lo que curso") es esa misma preferencia.
-- **El modelo de datos** guarda la preferencia aparte de los hechos de trayectoria y de las reseñas, y ninguna lectura pública la toca. Un hecho entra al corpus solo por la reseña o por las preguntas de trayectoria de 0067.
+- **El modelo de datos** guarda la preferencia aparte de los hechos de trayectoria y de las reseñas, y ninguna lectura pública la toca. Un hecho entra al corpus solo por la reseña y su contexto ([ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md)).
 - **El glosario** gana "marcar el plan" con esta definición, y "corral" (la palabra del mapa) no se usa.
 - **La pantalla del plan** se define para su ficha en `docs/product/my-career/screens/`: el plan con correlativas, lo reseñado con cómo terminó, la marca privada de lo que falta, y la co-cursada filtrada.
 
 ## Refs
 
-- [THESIS.md](../THESIS.md), "Qué recabamos" (cerrado; esta decisión no lo amplía). [ADR-0067](0067-trajectory-from-declared-facts-by-closed-cohort-and-side-by-side-comparison.md): la co-cursada sale solo de reseñas, nunca del plan marcado (esta decisión lo confirma: la marca es preferencia). D01 en la [revisión del 17](../history/reviews/2026-08-17-catalog-propagation.md).
+- [THESIS.md](../THESIS.md), "Qué recabamos" (cerrado; esta decisión no lo amplía). La co-cursada sale solo de reseñas, nunca del plan marcado, y esta decisión lo confirma: la marca es preferencia. El ADR que lo fijaba se retiró con el modelo anterior y ninguno vigente lo reemplaza. D01 en la [revisión del 17](../history/reviews/2026-08-17-catalog-propagation.md).

@@ -19,6 +19,21 @@ La forma está y funciona, pero el criterio nunca se escribió. Quien agregue un
 
 El motivo es que esos ids son **referencias públicas del proyecto**: los specs E2E los usan como constantes (`const TERM_ID = '00000005-0000-4000-a000-000000000005'`), los tests de integración los usan como fixtures, y la documentación los cita. Con ids random, cada `just infra-reset` invalidaría todo eso.
 
+**El registro de prefijos vive acá, y se actualiza al agregar un tipo.** Sin esta lista, "y así" no alcanza: el 2026-08-26 dos tipos nuevos que se agregaron el mismo día (las cátedras en `academic`, los ítems del cuestionario en `reviews`) eligieron los dos el `00000008`, y quedaron dos filas de tablas distintas con el mismo UUID. No rompió nada porque viven en schemas separados y nada las relaciona, pero un fixture que cite ese id ya no dice cuál de las dos es.
+
+| Prefijo | Tipo | Módulo |
+|---|---|---|
+| `00000001` | universidades | academic |
+| `00000002` | carreras | academic |
+| `00000003` | planes | academic |
+| `00000004` | materias | academic |
+| `00000005` | períodos lectivos | academic |
+| `00000006` | docentes | academic |
+| `00000007` | comisiones | academic |
+| `00000008` | cátedras | academic |
+| `00000010` | ítems del cuestionario | reviews |
+| `00000011` | instrumentos | reviews |
+
 ### 2. Idempotente por id, no por "está vacía la tabla"
 
 Cada seeder lee los ids que ya existen y saltea esos; no chequea si la tabla está vacía ni borra nada. Así, correrlo sobre una base ya sembrada no hace nada, y agregar una fila nueva al manifiesto la inserta sin tocar lo demás.

@@ -2,11 +2,11 @@
 
 - **Estado**: aceptado
 - **Fecha**: 2026-08-21
-- **Supersede**: [ADR-0037](0037-changelog-automation-auto-append.md)
+- **Supersede**: la automatización del changelog por auto-append (retirada de la carpeta por rebasada)
 
 ## Contexto
 
-[ADR-0037](0037-changelog-automation-auto-append.md) montó un workflow que, en cada push a `main`, appendea los commits del rango a la sección `[Unreleased]` de `CHANGELOG.md`. Funcionó como se diseñó. La pregunta que nunca se hizo es si hacía falta.
+La decisión anterior montó un workflow que, en cada push a `main`, appendea los commits del rango a la sección `[Unreleased]` de `CHANGELOG.md`. Funcionó como se diseñó. La pregunta que nunca se hizo es si hacía falta.
 
 Lo que hay hoy, medido:
 
@@ -58,4 +58,4 @@ Y funda la necesidad del changelog en algo que acá todavía no existe: **un lec
 ## Refs
 
 - [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) y su [repo](https://github.com/olivierlacan/keep-a-changelog); [Common Changelog](https://common-changelog.org/); [git-cliff](https://git-cliff.org/); [changesets](https://github.com/changesets/changesets) y [towncrier](https://towncrier.readthedocs.io/en/stable/) como el camino cuando haya usuarios.
-- [ADR-0037](0037-changelog-automation-auto-append.md) (lo que esto supersede), [ADR-0038](0038-release-and-versioning-policy.md) (la política de versionado, intacta), [ADR-0026](0026-git-workflow-github-flow-with-rebase.md) (Conventional Commits, que es lo que hace posible generar después).
+- La automatización por auto-append (lo que esto supersede, ya fuera de la carpeta), [ADR-0038](0038-release-and-versioning-policy.md) (la política de versionado, intacta), [ADR-0026](0026-git-workflow-github-flow-with-rebase.md) (Conventional Commits, que es lo que hace posible generar después).

@@ -11,7 +11,7 @@ El flujo concreto es:
 
 1. `Moderation` recibe un reporte de una reseña.
 2. Cuenta cuantos reportes abiertos tiene esa reseña en el modulo `moderation`.
-3. Si llega al threshold (ADR-0010), decide que la reseña debe ocultarse.
+3. Si llega al threshold (configurable por env var), decide que la reseña debe ocultarse.
 4. El ocultamiento es responsabilidad de `Reviews` (el aggregate `Review` expone `QuarantineByReports`).
 
 Para que `Moderation` dispare el ocultamiento sin un acoplamiento directo tipo "llamo a un servicio de Reviews", usa un integration event via el outbox de Wolverine. Eso es correcto. La pregunta es: **en que assembly vive el tipo del evento?**
@@ -80,7 +80,7 @@ Requiere que `Reviews.Application.Contracts` exponga una interfaz de escritura c
 
 ## Refs
 
-- ADR-0010: threshold de auto-hide configurable por env var.
+- El threshold de auto-hide se configura por env var; el ADR que lo fijaba ya no existe.
 - ADR-0015: Wolverine como mediator; el outbox durable es el canal de entrega.
 - ADR-0017: persistence ignorance + contratos de lectura cross-BC.
 - `Planb.Reviews.Application/IntegrationEvents/ReviewQuarantineRequestedIntegrationEvent.cs`: el tipo del evento con su justificacion inline.

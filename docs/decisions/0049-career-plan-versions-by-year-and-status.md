@@ -5,9 +5,9 @@
 
 ## Contexto
 
-[ADR-0002](0002-explicit-versioning-of-career-plans.md) decidió que `CareerPlan` versione con `version_label` ("Plan 2024"), `effective_from` y `effective_to` (rango de fechas), más un domain service que retira automáticamente el plan vigente anterior al crear uno nuevo (invariante cross-aggregate "solo un plan vigente por Career").
+La decisión anterior sobre versionado de planes (retirada de la carpeta por rebasada) hacía que `CareerPlan` versionara con `version_label` ("Plan 2024"), `effective_from` y `effective_to` (rango de fechas), más un domain service que retira automáticamente el plan vigente anterior al crear uno nuevo (invariante cross-aggregate "solo un plan vigente por Career").
 
-Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno importa su historial en el onboarding y el sistema crea `Career`/`CareerPlan` a partir de lo que carga), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al de ADR-0002, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../history/domain-v1/stories/US-061.md)).
+Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno importa su historial en el onboarding y el sistema crea `Career`/`CareerPlan` a partir de lo que carga), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al anterior, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../history/domain-v1/stories/US-061.md)).
 
 El código real (`backend/modules/academic/src/Planb.Academic.Domain/CareerPlans/CareerPlan.cs`) expone:
 
@@ -26,11 +26,11 @@ Formalizar el modelo ya implementado como la decisión vigente:
 - El estado del plan es `Status` (`Active`/`Deprecated`), seteado explícitamente por el admin (acciones `Deprecate`, `Reactivate`), no inferido de un rango de fechas ni de un domain service de overlap.
 - "**Plan vigente**" pasa a significar `Status == Active`. Ya no existe la noción de `effective_to IS NULL`.
 - `Label` es un campo editorial opcional, sin peso en la unicidad ni en el lifecycle.
-- El caso que motivó ADR-0002 (planes paralelos: los alumnos viejos siguen en el plan que cursaron, los nuevos entran al plan actualizado) se sigue cubriendo: un plan `Deprecated` conserva sus `StudentProfile` asociados y convive con el plan `Active` nuevo. No hace falta un rango de fechas para eso, alcanza con el estado.
+- El caso que motivaba el modelo anterior (planes paralelos: los alumnos viejos siguen en el plan que cursaron, los nuevos entran al plan actualizado) se sigue cubriendo: un plan `Deprecated` conserva sus `StudentProfile` asociados y convive con el plan `Active` nuevo. No hace falta un rango de fechas para eso, alcanza con el estado.
 
 ## Alternativas consideradas
 
-- **A. Migrar al modelo de rangos de ADR-0002** (`version_label` + `effective_from`/`effective_to` + domain service de overlap). Descartada: agrega invariantes de fechas (`effective_to >= effective_from`, exclusión de solapamiento) y un domain service cross-aggregate que retira automáticamente el plan anterior, sin que ningún caller real lo haya necesitado. La complejidad no se paga sola.
+- **A. Migrar al modelo de rangos de la decisión anterior** (`version_label` + `effective_from`/`effective_to` + domain service de overlap). Descartada: agrega invariantes de fechas (`effective_to >= effective_from`, exclusión de solapamiento) y un domain service cross-aggregate que retira automáticamente el plan anterior, sin que ningún caller real lo haya necesitado. La complejidad no se paga sola.
 - **B. `year` + `status` (elegida)**. Cubre el mismo caso de negocio (planes paralelos vigente/histórico) con menos superficie: un enum de dos valores y transiciones explícitas en vez de un rango de fechas y un efecto automático al crear.
 
 ## Consecuencias
@@ -47,10 +47,10 @@ Formalizar el modelo ya implementado como la decisión vigente:
 - Se pierde precisión temporal: no hay una fecha exacta de corte entre "vigente" e "histórico", solo el estado. Si en el futuro aparece un caller real que necesite saber "qué plan era el vigente en tal fecha exacta", se agrega esa fecha puntualmente (no se rearma todo el rango).
 - Dos planes `Active` simultáneos para la misma Career no están prohibidos por una invariante del aggregate, a diferencia del domain service de overlap que se descarta acá. Si aparece esa necesidad, se agrega como invariante puntual.
 
-**Este ADR supersede a [ADR-0002](0002-explicit-versioning-of-career-plans.md)**, que queda como registro histórico de la decisión original (no se implementó tal cual). `StudentProfile.career_id` sigue apuntando al `CareerPlan`, eso no cambió.
+**Este ADR supersede a la decisión anterior de versionado de planes**, que no se implementó tal cual y ya no está en la carpeta. `StudentProfile.career_id` sigue apuntando al `CareerPlan`, eso no cambió.
 
 ## Refs
 
 - Código: `backend/modules/academic/src/Planb.Academic.Domain/CareerPlans/CareerPlan.cs`, `CareerPlanStatus.cs`, `CareerPlanConfiguration.cs`.
 - User Stories: [US-088](../history/domain-v1/stories/US-088.md) (origen de facto, crowdsourcing), [US-061](../history/domain-v1/stories/US-061.md) (formalización, backoffice admin).
-- ADR superado: [ADR-0002](0002-explicit-versioning-of-career-plans.md).
+- Decisión superada: el versionado de planes por rango de fechas, retirado de la carpeta.

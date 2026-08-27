@@ -5,7 +5,7 @@
 
 ## Contexto
 
-[ADR-0037](0037-changelog-automation-auto-append.md) decide cómo se mantiene `CHANGELOG.md` (auto-append en cada merge a main). Lo que ese ADR no decide, y este sí, es **cuándo cortás versión, cuándo taggeás, qué se considera un release**.
+[ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md) decide cómo se mantiene `CHANGELOG.md` (auto-append en cada merge a main). Lo que ese ADR no decide, y este sí, es **cuándo cortás versión, cuándo taggeás, qué se considera un release**.
 
 Sin esta política la automatización del changelog flota en el aire: el reviewer no sabe si "BREAKING CHANGE" en un PR debería bumpear algo, el dev no sabe si etiquetar un commit como hito, vos no sabés cuándo es momento de "cortar la versión".
 
@@ -24,7 +24,7 @@ La política se divide en tres etapas, con triggers explícitos para pasar de un
 | Versioning | No existe. El repo no tiene número de versión. |
 | Releases | No existen. El concepto no aplica todavía. |
 | Tags como release | No se hacen. |
-| `CHANGELOG.md` | Una sola sección `[Unreleased]` que crece con cada merge a main vía auto-append (ADR-0037). |
+| `CHANGELOG.md` | Una sola sección `[Unreleased]` que crece con cada merge a main vía auto-append (ADR-0074). |
 | GitHub Releases | No se crean. La pestaña "Releases" del repo queda vacía. |
 | Tags como hito narrativo | **Permitidos**. Manuales. Sin formato fijo. Sirven para marcar puntos importantes del proyecto: presentaciones a docente, demos, refactor pre-points. Ver "Tags como hito" abajo. |
 
@@ -72,7 +72,7 @@ Aplicable en todas las etapas. Un git tag es un puntero a un commit; no implica 
 
 **No autorizados (anti-patterns)**:
 
-- Tag por cada merge a main. Eso es el modelo release-please, descartado en ADR-0037 por overkill pre-deploy.
+- Tag por cada merge a main. Eso es el modelo release-please, descartado en ADR-0074 por overkill pre-deploy.
 - Tag para "yo creo que esto está estable". Sin un evento concreto detrás, el tag no aporta. Es ego, no es marca útil.
 
 ## Cuándo se considera "suficiente" para bumpear versión
@@ -124,7 +124,7 @@ Descartada: premature optimization de proceso.
 
 ### B. Tag por cada merge a main (modelo release-please)
 
-Considerado en ADR-0037 y descartado allá. Re-confirmado acá: ruido visual sin valor concreto pre-deploy.
+Considerado en ADR-0074 y descartado allá. Re-confirmado acá: ruido visual sin valor concreto pre-deploy.
 
 ### C. Esta política (la elegida)
 
@@ -146,7 +146,7 @@ Contras:
 ## Refs
 
 - [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): git workflow + Conventional Commits.
-- [ADR-0037](0037-changelog-automation-auto-append.md): changelog automation (companion).
+- [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): changelog automation (companion).
 - Semver: https://semver.org/spec/v2.0.0.html
 - Calver: https://calver.org/
 - Keep a Changelog: https://keepachangelog.com/en/1.1.0/
