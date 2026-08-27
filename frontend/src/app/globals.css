@@ -87,3 +87,44 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/*
+ * Boletín: el contrato visual del producto vigente (ADR-0071, docs/product/design-system.md).
+ * Papel frío, la evidencia primero, y un solo color de alarma que marca la dirección negativa de
+ * un dato publicado y nada más.
+ *
+ * Se sirve scopeado en vez de reemplazar los tokens de :root a propósito. Apricot sigue vistiendo
+ * al chasis de la versión anterior, que todavía funciona y se poda como tarea propia (ADR-0063):
+ * pisar los valores globales le cambiaría la cara a esas pantallas de una, sin que nadie lo haya
+ * decidido. Las pantallas del producto nuevo se envuelven en [data-surface='bulletin'] y heredan
+ * estos valores; las utilities de Tailwind (bg-bg, text-ink) resuelven contra ellos porque son las
+ * mismas variables, redefinidas más adentro del árbol.
+ *
+ * Cuando el chasis viejo se pode, estos valores se promueven a @theme y este bloque se borra.
+ */
+[data-surface='bulletin'] {
+  --color-bg: #f7f5ef;
+  --color-bg-elev: #eeece5;
+  --color-bg-card: #fffefb;
+
+  --color-ink: #191b1f;
+  --color-ink-2: #494e57;
+  --color-ink-3: #7b8089;
+  --color-ink-4: #a7adb5;
+
+  --color-line: #e2dfd6;
+  --color-line-2: #eae7de;
+
+  /* El único acento, y es la alarma. No hay acento decorativo: si algo está en rojo, alarma. */
+  --color-alarm: #8d2418;
+  --color-alarm-soft: #f5e4e0;
+  --color-alarm-ink: #6e1c12;
+  --color-alarm-hover: #741d10;
+
+  /* Sombras mínimas: la jerarquía la hacen el tipo y el espacio, no la elevación. */
+  --shadow-card: 0 1px 2px rgb(25 27 31 / 6%);
+  --shadow-card-h: 0 2px 6px rgb(25 27 31 / 8%);
+
+  background: var(--color-bg);
+  color: var(--color-ink);
+}

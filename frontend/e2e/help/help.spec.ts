@@ -32,26 +32,26 @@ test.describe('Ayuda (US-073)', () => {
   });
 
   test('FAQ renderea las 5 preguntas y permite expandir una', async ({ page }) => {
-    // 5 entries del FAQ.
-    await expect(page.getByRole('button', { name: /cómo funciona el período/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /cómo armar un borrador/i })).toBeVisible();
+    // Las 5 entries del FAQ, reescritas al producto vigente (ADR-0082 a ADR-0084).
+    await expect(page.getByRole('button', { name: /qué se reseña/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /por qué no hay puntaje/i })).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /cómo se calcula la dificultad/i }),
+      page.getByRole('button', { name: /por qué lo que contás es anónimo/i }),
     ).toBeVisible();
     await expect(
-      page.getByRole('button', { name: /por qué tus reseñas son anónimas/i }),
+      page.getByRole('button', { name: /qué pasa con lo que escribís al final/i }),
     ).toBeVisible();
     await expect(page.getByRole('button', { name: /atajos del teclado/i })).toBeVisible();
 
     // El primer item arranca cerrado; al click, se expande y muestra la respuesta.
-    const firstTrigger = page.getByRole('button', { name: /cómo funciona el período/i });
+    const firstTrigger = page.getByRole('button', { name: /qué se reseña/i });
     await expect(firstTrigger).toHaveAttribute('aria-expanded', 'false');
     await firstTrigger.click();
     await expect(firstTrigger).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByText(/cuatrimestre académico actual/i)).toBeVisible();
+    await expect(page.getByText(/una materia que hiciste, en un período/i)).toBeVisible();
 
     // Click en otro item cierra el primero y abre el nuevo (single-open behavior).
-    const secondTrigger = page.getByRole('button', { name: /cómo armar un borrador/i });
+    const secondTrigger = page.getByRole('button', { name: /por qué no hay puntaje/i });
     await secondTrigger.click();
     await expect(firstTrigger).toHaveAttribute('aria-expanded', 'false');
     await expect(secondTrigger).toHaveAttribute('aria-expanded', 'true');
