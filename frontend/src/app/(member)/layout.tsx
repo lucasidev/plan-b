@@ -1,9 +1,6 @@
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/app-shell';
 import { OfflineBanner } from '@/components/layout/offline-banner';
-import { pendingReviewsQueries } from '@/features/pending-reviews';
-import { fetchPendingReviewsServer } from '@/features/pending-reviews/api.server';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
@@ -22,12 +19,7 @@ import { fetchStudentProfile } from '@/lib/student-profile';
  *  3. **AppShell**: wraps every page in the route group with the chrome (sidebar +
  *     topbar + avatar dropdown). Any route under `app/(member)/` inherits the shell.
  *     The pages only write their main content.
- *
- * Prefetchea acá el conteo de reseñas pendientes porque el badge del topbar vive en el shell, o
- * sea fuera de cualquier HydrationBoundary de página. Sin esto su query nunca estaba hidratada y
- * dependía enteramente del flag `mounted` del topbar para no ejecutar un fetcher de cliente (path
- * relativo) durante el SSR. Hidratarla acá le da el badge correcto en el primer paint en todas las
- * pantallas del área, en vez de aparecer después de montar.
+
  */
 export default async function MemberLayout({ children }: { children: React.ReactNode }) {
   const session = await getSession();
@@ -44,20 +36,12 @@ export default async function MemberLayout({ children }: { children: React.React
     .filter(Boolean)
     .join(' · ');
 
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: pendingReviewsQueries.list().queryKey,
-    queryFn: fetchPendingReviewsServer,
-  });
-
   return (
     <>
       <OfflineBanner />
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <AppShell email={session.email} contextLabel={contextLabel}>
-          {children}
-        </AppShell>
-      </HydrationBoundary>
+      <AppShell email={session.email} contextLabel={contextLabel}>
+        {children}
+      </AppShell>
     </>
   );
 }

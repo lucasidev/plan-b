@@ -12,8 +12,6 @@ using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Security;
-using Planb.Moderation.Application;
-using Planb.Moderation.Infrastructure;
 using Planb.Reviews.Application;
 using Planb.Reviews.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -115,10 +113,6 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Reviews.Infrastructu
     Planb.Reviews.Infrastructure.DependencyInjection.ConfigureReviewsDbContext(
         opts, connectionString));
 
-builder.Services.AddDbContextWithWolverineIntegration<Planb.Moderation.Infrastructure.Persistence.ModerationDbContext>(opts =>
-    Planb.Moderation.Infrastructure.DependencyInjection.ConfigureModerationDbContext(
-        opts, connectionString));
-
 
 // ------------------------------------------------------------------
 // Wolverine (mediator + message bus + outbox + FluentValidation middleware)
@@ -130,7 +124,6 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Planb.Academic.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Enrollments.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Reviews.Application.DependencyInjection).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Planb.Moderation.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
     opts.Policies.AutoApplyTransactions();
@@ -186,9 +179,6 @@ builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 builder.Services.AddReviewsApplication();
 builder.Services.AddReviewsInfrastructure(builder.Configuration);
 
-builder.Services.AddModerationApplication();
-builder.Services.AddModerationInfrastructure(builder.Configuration);
-
 
 // JwtBearer middleware (cierre del workaround pre-JWT). Endpoints /api/me/* leen el UserId
 // del claim `sub` validado por este middleware, no del body/query. Token llega desde el
@@ -236,17 +226,6 @@ builder.Services.AddHostedService<AcademicSeedHostedService>();
 // responder, y los integration tests corren en Development sin PLANB_SEED_CORPUS.
 builder.Services.AddScoped<Planb.Reviews.Application.Seeding.CatalogSeeder>();
 builder.Services.AddHostedService<CatalogSeedHostedService>();
-
-// Seed corpus (devex, sin US): autores fantasma + cursadas + reseñas + votos para que el
-// corpus de reseñas sea consumible y demostrable en `just dev` sin armar datos a mano. Cruza
-// identity/enrollments/reviews; el host orquesta. Gateado por IsDevelopment() Y el env var
-// PLANB_SEED_CORPUS (default off): SOLO lo prende `just dev`, así los integration tests (que corren
-// en Development) NO reciben el corpus y sus asserts de conteo quedan intactos. Va último: depende
-// de los seeds de Identity (personas) y Academic (catálogo) ya aplicados.
-builder.Services.AddScoped<Planb.Identity.Application.Seeding.AuthorsSeeder>();
-builder.Services.AddScoped<Planb.Enrollments.Application.Seeding.EnrollmentsSeeder>();
-builder.Services.AddScoped<Planb.Reviews.Application.Seeding.ReviewsSeeder>();
-builder.Services.AddHostedService<Planb.Api.Infrastructure.SeedCorpus.SeedCorpusHostedService>();
 
 // ------------------------------------------------------------------
 // Traducción de violaciones de UNIQUE a 409. Ver UniqueViolationExceptionHandler: los índices

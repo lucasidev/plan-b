@@ -61,7 +61,6 @@ export function TeacherList({ teachers: input = teachers }: Props) {
 }
 
 function TeacherCard({ teacher }: { teacher: Teacher }) {
-  const ratingTone = teacher.rating.overall >= 4 ? 'good' : 'neutral';
   return (
     <Link
       href={`/my-career/teacher/${teacher.id}`}
@@ -78,45 +77,7 @@ function TeacherCard({ teacher }: { teacher: Teacher }) {
             {teacher.subjects.join(' · ')}
           </div>
         </div>
-        <div className="text-right shrink-0">
-          <div className="font-mono text-lg font-semibold text-ink leading-none">
-            {teacher.rating.overall.toFixed(1)}
-          </div>
-          <div className="text-[10px] text-ink-3 mt-0.5">
-            /5 · {teacher.rating.reviewCount} reseñas
-          </div>
-        </div>
       </div>
-      <RatingBar value={teacher.rating.overall} tone={ratingTone} />
     </Link>
-  );
-}
-
-type RatingBarProps = {
-  value: number;
-  tone: 'good' | 'neutral';
-};
-
-function RatingBar({ value, tone }: RatingBarProps) {
-  const pct = Math.max(0, Math.min(100, (value / 5) * 100));
-  // Visual wrapper + hidden semantic meter. The native <meter> has per-browser styling
-  // that is hard to override consistently, so we leave it invisible (sr-only) to keep
-  // the accessible semantics while rendering the custom bar with divs. Resolves
-  // react-doctor/prefer-tag-over-role without breaking the visual.
-  return (
-    <div className="h-1.5 rounded-full bg-bg-elev overflow-hidden">
-      <meter
-        className="sr-only"
-        value={value}
-        min={0}
-        max={5}
-        aria-label={`Rating ${value} de 5`}
-      />
-      <div
-        aria-hidden
-        className={cn('h-full rounded-full', tone === 'good' ? 'bg-st-approved-fg' : 'bg-ink-3')}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
   );
 }

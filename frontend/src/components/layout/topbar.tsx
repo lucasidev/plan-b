@@ -1,12 +1,9 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { GlobalSearch } from '@/features/global-search';
-import { pendingReviewsQueries } from '@/features/pending-reviews';
 import { breadcrumbsForPath } from '@/lib/member-shell';
 
 /**
@@ -22,8 +19,6 @@ import { breadcrumbsForPath } from '@/lib/member-shell';
  * una cursada (US-146, ADR-0082). Vive siempre en el topbar y se llega desde cualquier vista del
  * área autenticada: reseñar es el acto principal del producto, no una pantalla escondida.
  *
- * El badge cuenta cursadas pendientes de reseñar, que es una lectura del modelo anterior; se
- * rehace cuando esa cuenta salga del modelo nuevo.
  */
 export function Topbar() {
   const pathname = usePathname();
@@ -43,35 +38,14 @@ export function Topbar() {
 }
 
 /**
- * Topbar CTA "Escribir reseña". Per the US-048 AC, when the student has pending
- * cursadas the button shows an accent badge with the count. Lookup is a background
- * `useQuery` so the topbar mounts immediately and the badge fades in once the data
- * arrives. We don't suspend: blocking the whole shell on this read would be a
- * regression every page.
+ * Topbar CTA "Escribir reseña": el acto principal del producto, siempre a un clic desde cualquier
+ * pantalla del área autenticada.
  *
- * El link va a `/reviews/new`, que es reseñar una cursada eligiéndola a mano. El badge sigue
- * contando pendientes del modelo anterior y se rehace cuando esa cuenta salga del modelo nuevo.
- *
- * La data la siembra el layout de `(member)` (prefetch + HydrationBoundary con este mismo
- * queryKey), así que el badge sale bien desde el primer paint.
- *
- * El flag `mounted` se queda igual, y no es redundante: `enabled` no afecta la lectura de la
- * cache hidratada, pero sí impide que el queryFn corra server-side si algún día el prefetch del
- * layout no está (falla, o alguien monta el topbar en otro lado). Ese queryFn usa un path relativo
- * `/api/...` que en Node no resuelve, y su fallo rompía la RSC de la página a la que se estaba
- * navegando. Hydration-safe: server y primer render de cliente ven enabled=false.
+ * Sin badge de pendientes. El que había contaba cursadas sin reseñar del modelo anterior, y esa
+ * cuenta se retiró con él: un checklist de pendientes contradice el modelo vigente, donde reseñar
+ * arranca eligiendo una cursada y no tachando una lista.
  */
 function WriteReviewButton() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const { data } = useQuery({
-    ...pendingReviewsQueries.list(),
-    staleTime: 30 * 1000,
-    enabled: mounted,
-  });
-  const count = data?.items.length ?? 0;
-
   return (
     <Link
       href="/reviews/new"
@@ -83,24 +57,6 @@ function WriteReviewButton() {
     >
       <Plus size={13} aria-hidden />
       Escribir reseña
-      {count > 0 && (
-        <>
-          <span className="sr-only">{`${count} cursadas pendientes`}</span>
-          <span
-            aria-hidden
-            className="bg-accent text-white"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 10.5,
-              padding: '1px 6px',
-              borderRadius: 999,
-              marginLeft: 2,
-            }}
-          >
-            {count}
-          </span>
-        </>
-      )}
     </Link>
   );
 }

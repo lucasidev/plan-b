@@ -58,15 +58,8 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
-function renderForm(overrides: { hasPublishedReview?: boolean } = {}) {
-  return render(
-    <EditEnrollmentForm
-      enrollment={PASSED}
-      universityId="uni-1"
-      hasPublishedReview={overrides.hasPublishedReview ?? false}
-    />,
-    { wrapper },
-  );
+function renderForm() {
+  return render(<EditEnrollmentForm enrollment={PASSED} universityId="uni-1" />, { wrapper });
 }
 
 describe('EditEnrollmentForm', () => {
@@ -94,9 +87,9 @@ describe('EditEnrollmentForm', () => {
     expect(screen.getByText(/la materia no se puede cambiar/i)).toBeInTheDocument();
   });
 
-  it('guarda directo cuando el cambio no toca ninguna reseña publicada', async () => {
+  it('guarda al volver la cursada a en curso, sin confirmación de por medio', async () => {
     const user = userEvent.setup();
-    renderForm({ hasPublishedReview: false });
+    renderForm();
 
     await user.selectOptions(
       await screen.findByRole('combobox', { name: /estado/i }),
@@ -104,71 +97,11 @@ describe('EditEnrollmentForm', () => {
     );
     await user.click(screen.getByRole('button', { name: /guardar cambios/i }));
 
+    // El diálogo que había acá advertía que la reseña iba a revisión, y existía porque la reseña
+    // del modelo anterior colgaba de la cursada. La vigente se ancla a cuenta, materia y período,
+    // así que este cambio no toca ninguna: no hay nada que confirmar.
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
-  });
-
-  it('pide confirmación antes de mandar la reseña publicada a revisión', async () => {
-    const user = userEvent.setup();
-    renderForm({ hasPublishedReview: true });
-
-    await user.selectOptions(
-      await screen.findByRole('combobox', { name: /estado/i }),
-      'InProgress',
-    );
-    await user.click(screen.getByRole('button', { name: /guardar cambios/i }));
-
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText(/va a poner tu reseña en revisión/i)).toBeInTheDocument();
-    // La puerta importa por lo que NO pasa: nada se guardó todavía.
-    expect(submitMock).not.toHaveBeenCalled();
-  });
-
-  it('cancelar la confirmación deja la cursada como estaba', async () => {
-    const user = userEvent.setup();
-    renderForm({ hasPublishedReview: true });
-
-    await user.selectOptions(
-      await screen.findByRole('combobox', { name: /estado/i }),
-      'InProgress',
-    );
-    await user.click(screen.getByRole('button', { name: /guardar cambios/i }));
-    await user.click(screen.getByRole('button', { name: /^cancelar$/i }));
-
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(submitMock).not.toHaveBeenCalled();
-  });
-
-  it('confirmar guarda y vuelve al historial', async () => {
-    const user = userEvent.setup();
-    renderForm({ hasPublishedReview: true });
-
-    await user.selectOptions(
-      await screen.findByRole('combobox', { name: /estado/i }),
-      'InProgress',
-    );
-    await user.click(screen.getByRole('button', { name: /guardar cambios/i }));
-    await user.click(screen.getByRole('button', { name: /guardar igual/i }));
-
     await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(navigateMock).toHaveBeenCalledWith('/my-career?tab=transcript'));
-  });
-
-  it('no pide confirmación si la cursada ya estaba en curso', async () => {
-    const user = userEvent.setup();
-    render(
-      <EditEnrollmentForm
-        enrollment={{ ...PASSED, status: 'InProgress', approvalMethod: null, grade: null }}
-        universityId="uni-1"
-        hasPublishedReview
-      />,
-      { wrapper },
-    );
-
-    await screen.findByRole('combobox', { name: /estado/i });
-    await user.click(screen.getByRole('button', { name: /guardar cambios/i }));
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    await waitFor(() => expect(submitMock).toHaveBeenCalledTimes(1));
   });
 });

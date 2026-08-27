@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { PlannedSubject, PlanYear } from '@/features/my-career/data/plan';
-import { reviewCountForSubject } from '@/features/my-career/data/reviews';
 import { teachersForSubject } from '@/features/my-career/data/teachers';
 import {
   distinctYears,
@@ -160,11 +159,6 @@ function SubjectCard({ subject }: { subject: SubjectWithYear }) {
     teachers.length === 0
       ? 'Sin docentes asignados'
       : teachers.map((t) => t.name.split(',')[0]).join(' · ');
-  const reviewCount = reviewCountForSubject(subject.code);
-  const rating =
-    teachers.length > 0
-      ? (teachers.reduce((acc, t) => acc + t.rating.overall, 0) / teachers.length).toFixed(1)
-      : null;
 
   return (
     <Link
@@ -180,15 +174,10 @@ function SubjectCard({ subject }: { subject: SubjectWithYear }) {
         <span className="font-mono text-[10.5px] text-ink-3">{subject.code}</span>
         <ModalityBadge modality={subject.modality} />
         <span className="flex-1" />
-        {rating != null && (
-          <span className="font-mono text-sm font-semibold text-ink">{rating} ★</span>
-        )}
       </div>
       <div className="text-sm font-medium text-ink leading-snug">{subject.name}</div>
       <div className="text-xs text-ink-3 flex flex-wrap gap-x-2">
         <span>{teachersLabel}</span>
-        <span>·</span>
-        <span>{reviewCount} reseñas</span>
         <span>·</span>
         <span>{subject.year}° año</span>
         <span>·</span>

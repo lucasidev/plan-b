@@ -5,7 +5,7 @@ import type { AdminUniversityRow } from '@/features/manage-universities';
  * Paso 1 del selector universidad + término de "Comisiones · término" (US-093): la oferta es por
  * término, y un término pertenece a una sola universidad, así que sin elegir universidad primero no
  * hay contra qué listar. Son Links puros (sin estado cliente): cada fila navega a
- * `?universityId=` y la RSC re-fetchea, mismo criterio que FilterChips en moderate-reports.
+ * `?universityId=` y la RSC re-fetchea.
  */
 export function UniversityPicker({ universities }: { universities: AdminUniversityRow[] }) {
   if (universities.length === 0) {

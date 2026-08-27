@@ -98,7 +98,7 @@ Tags especiales:
 ```
 feat/identity-forgot-password
 feat/identity-resend-verification
-fix/moderation-threshold
+fix/reviews-publishing-floor
 docs/adr-git-workflow
 docs/rollback-policy
 docs/git-workflow-rules

@@ -45,9 +45,7 @@ export const memberRoutes: readonly MemberRoute[] = [
   },
 
   // Community
-  // Apunta a Mis aportes, la pantalla del modelo vigente (US-165). La de `/reviews` es del modelo
-  // anterior y sigue existiendo por URL hasta que se pode, pero sale de la navegación: dejarla acá
-  // sería ofrecerle al alumno la superficie que estamos retirando.
+  // Mis aportes: lo que esta cuenta contó, para poder corregirlo o borrarlo (US-165).
   {
     path: '/reviews/mine',
     label: 'Mis aportes',
@@ -94,8 +92,8 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   if (pathname === '/reviews/new') {
     return ['Comunidad', 'Contar una cursada'];
   }
-  if (pathname.startsWith('/reviews/write/')) {
-    return ['Comunidad', 'Nueva reseña'];
+  if (pathname === '/reviews/mine') {
+    return ['Comunidad', 'Mis aportes'];
   }
   if (pathname === '/teacher-claim') {
     return ['Comunidad', 'Soy docente'];
