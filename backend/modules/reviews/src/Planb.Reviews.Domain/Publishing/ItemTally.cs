@@ -1,0 +1,50 @@
+using Planb.Reviews.Domain.Catalog;
+
+namespace Planb.Reviews.Domain.Publishing;
+
+/// <summary>
+/// Los conteos crudos de un ítem para un sujeto: cuántas personas eligieron cada opción. Es lo que
+/// la base devuelve y la entrada de todo lo que la ficha calcula.
+///
+/// <para>
+/// El denominador (<see cref="Total"/>) son las respuestas a ESE ítem, no las reseñas del sujeto:
+/// lo salteado no cuenta (ADR-0082), así que dos ítems de la misma cátedra pueden tener
+/// denominadores distintos y eso es correcto.
+/// </para>
+/// </summary>
+public sealed record ItemTally(
+    string ItemCode,
+    ItemLayer Layer,
+    IReadOnlyList<OptionTally> Options)
+{
+    /// <summary>Cuántas personas respondieron este ítem.</summary>
+    public int Total => Options.Sum(o => o.Count);
+
+    /// <summary>
+    /// La opción más elegida: lo que la ficha publica como badge, con su etiqueta literal
+    /// (ADR-0083). Ante empate gana la de menor orden, que es una regla arbitraria pero estable:
+    /// lo importante es que dos lecturas de los mismos datos den lo mismo.
+    /// </summary>
+    public OptionTally? Mode =>
+        Options.Count == 0
+            ? null
+            : Options.OrderByDescending(o => o.Count).ThenBy(o => o.Order).First();
+
+    /// <summary>Cuántos eligieron la opción negativa del ítem, si tiene una.</summary>
+    public int NegativeCount =>
+        Options.Where(o => o.Valence == OptionValence.Negative).Sum(o => o.Count);
+
+    /// <summary>
+    /// El intervalo de la proporción negativa. Es lo que se compara contra las cátedras hermanas
+    /// para decidir si el contraste se publica.
+    /// </summary>
+    public WilsonInterval? NegativeInterval => WilsonInterval.For(NegativeCount, Total);
+}
+
+/// <summary>Los conteos de una opción: su etiqueta, su lado y cuántos la eligieron.</summary>
+public sealed record OptionTally(
+    short Value,
+    short Order,
+    string Label,
+    OptionValence Valence,
+    int Count);

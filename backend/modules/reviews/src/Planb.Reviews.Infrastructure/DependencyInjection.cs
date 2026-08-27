@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Planb.Reviews.Application.Abstractions.ContentFilter;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Application.Contracts;
+using Planb.Reviews.Domain.Catalog;
+using Planb.Reviews.Domain.CourseReviews;
 using Planb.Reviews.Infrastructure.ContentFilter;
 using Planb.Reviews.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence.Queries;
@@ -19,7 +21,7 @@ public static class DependencyInjection
     /// outbox.
     ///
     /// El andamiaje del embedding worker (pgvector, feature-flag) se removió: no hay
-    /// consumidor real todavía (ver revisión de ADR-0007; ADR-0013 define cuándo se retoma).
+    /// consumidor real todavía (ver revisión de ADR-0007; ADR-0063 define cuándo se retoma).
     /// </summary>
     public static IServiceCollection AddReviewsInfrastructure(
         this IServiceCollection services,
@@ -30,6 +32,12 @@ public static class DependencyInjection
         services.AddScoped<IReviewAuditLogRepository, ReviewAuditLogRepository>();
         services.AddScoped<IReviewVoteRepository, ReviewVoteRepository>();
 
+        // Write-side del catálogo del instrumento (US-198, ADR-0082).
+        services.AddScoped<ICatalogRepository, CatalogRepository>();
+
+        // Write-side de la reseña de tres capas (US-146, ADR-0082).
+        services.AddScoped<ICourseReviewRepository, CourseReviewRepository>();
+
         // Cross-schema reads for US-048 (tabs Pendientes, Mías and Explorar). Scoped to
         // match the request lifetime; the Dapper services open their own connection per
         // call so there is no shared state to leak across calls.
@@ -39,6 +47,10 @@ public static class DependencyInjection
 
         // Crowd insights agregados de una materia (US-002).
         services.AddScoped<ISubjectInsightsQueryService, DapperSubjectInsightsQueryService>();
+        services.AddScoped<ICurrentInstrumentQueryService, DapperCurrentInstrumentQueryService>();
+
+        // Los conteos que alimentan la ficha de cátedra (US-147, ADR-0083).
+        services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();
 
         // Crowd insights agregados de un docente (US-003).
         services.AddScoped<ITeacherInsightsQueryService, DapperTeacherInsightsQueryService>();

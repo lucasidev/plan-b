@@ -11,8 +11,9 @@ namespace Planb.IntegrationTests.Reviews;
 /// Tests integration de US-017 (publicar reseña). Cubre:
 ///   - Happy Path Published: filter clean → 201 Created, Status="Published".
 ///   - Happy Path UnderReview: filter triggered por palabra de blacklist → 201, Status="UnderReview".
-///   - 201 cuando el docente reseñado no dictó ESTA comisión puntual (ADR-0060: ya no se exige;
-///     solo se exige que exista como persona en el catálogo).
+///   - 201 cuando el docente reseñado no dictó ESTA comisión puntual (decisión de la versión
+///     anterior del producto, retirada con ADR-0063: ya no se exige; solo se exige que exista
+///     como persona en el catálogo).
 ///   - 400 cuando el docente reseñado no existe en ningún lado del catálogo.
 ///   - 401 sin auth (RequireAuthorization rechaza antes del handler).
 ///   - 404 cuando el enrollment no es del user.
@@ -92,12 +93,12 @@ public class PublishReviewEndpointTests
     }
 
     /// <summary>
-    /// ADR-0060, uno de los dos tests "corazón del cambio": el docente reseñado ya no tiene que
-    /// estar en el plantel ACTUAL de la comisión de la cursada. Castro es un docente real del
-    /// catálogo, pero de OTRA comisión (la comisión "Noche" de 223 Desarrollo Back End): antes esto
-    /// rebotaba 400 (TeacherNotInEnrollmentCommission, retirado); ahora publica igual, porque su
-    /// identidad sigue atada al catálogo (existe como Teacher), que es lo único que se sigue
-    /// verificando.
+    /// Uno de los dos tests "corazón del cambio" (decisión de la versión anterior del producto,
+    /// retirada con ADR-0063): el docente reseñado ya no tiene que estar en el plantel ACTUAL de
+    /// la comisión de la cursada. Castro es un docente real del catálogo, pero de OTRA comisión
+    /// (la comisión "Noche" de 223 Desarrollo Back End): antes esto rebotaba 400
+    /// (TeacherNotInEnrollmentCommission, retirado); ahora publica igual, porque su identidad
+    /// sigue atada al catálogo (existe como Teacher), que es lo único que se sigue verificando.
     /// </summary>
     [Fact]
     public async Task Returns_201_when_teacher_did_not_teach_this_specific_commission()
@@ -129,8 +130,9 @@ public class PublishReviewEndpointTests
     }
 
     /// <summary>
-    /// La validación que sí se mantiene (ADR-0060: "que el docente exista como persona" queda
-    /// atada al catálogo): un id que no corresponde a ningún Teacher sigue rebotando.
+    /// La validación que sí se mantiene ("que el docente exista como persona" queda atada al
+    /// catálogo, decisión de la versión anterior del producto que sigue en pie: ADR-0063): un id
+    /// que no corresponde a ningún Teacher sigue rebotando.
     /// </summary>
     [Fact]
     public async Task Returns_400_when_reviewed_teacher_does_not_exist_in_the_catalog()
