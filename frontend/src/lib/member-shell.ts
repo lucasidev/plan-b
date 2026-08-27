@@ -45,7 +45,15 @@ export const memberRoutes: readonly MemberRoute[] = [
   },
 
   // Community
-  { path: '/reviews', label: 'Reseñas', section: 'community', shortcut: '⌘4', futureUs: 'US-048' },
+  // Apunta a Mis aportes, la pantalla del modelo vigente (US-165). La de `/reviews` es del modelo
+  // anterior y sigue existiendo por URL hasta que se pode, pero sale de la navegación: dejarla acá
+  // sería ofrecerle al alumno la superficie que estamos retirando.
+  {
+    path: '/reviews/mine',
+    label: 'Mis aportes',
+    section: 'community',
+    shortcut: '⌘4',
+  },
 
   // Other (Settings, Help, About plan-b, per the `soporte-v2-ayuda.png` mockup that
   // groups the three items under "OTROS" at the bottom of the v2 sidebar). My profile
@@ -83,6 +91,9 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   // Known patterns for dynamic routes that do not fit into memberRoutes (because they
   // have [param] or nested levels). The topbar shows a friendly copy instead of the raw
   // URL slug.
+  if (pathname === '/reviews/new') {
+    return ['Comunidad', 'Contar una cursada'];
+  }
   if (pathname.startsWith('/reviews/write/')) {
     return ['Comunidad', 'Nueva reseña'];
   }

@@ -38,4 +38,15 @@ public interface ICatalogRepository
     /// a la que queda atada cada reseña nueva. Null si ese código todavía no se publicó.
     /// </summary>
     Task<Instrument?> GetCurrentInstrumentAsync(string code, CancellationToken ct = default);
+
+    /// <summary>
+    /// Un cuestionario por id, con sus ítems, aunque ya no sea el vigente. Null si no existe.
+    ///
+    /// <para>
+    /// Lo pide editar una reseña (US-165): se valida contra el cuestionario con el que se
+    /// respondió y no contra el de hoy, porque si el catálogo cambió desde entonces, corregir una
+    /// respuesta vieja no puede exigirle al autor que conteste preguntas que no le hicieron.
+    /// </para>
+    /// </summary>
+    Task<Instrument?> GetInstrumentByIdAsync(InstrumentId id, CancellationToken ct = default);
 }

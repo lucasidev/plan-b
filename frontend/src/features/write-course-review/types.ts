@@ -2,30 +2,17 @@
  * DTOs de la pantalla Reseñar (US-146, ADR-0082). Espejan lo que devuelve el backend: el
  * cuestionario vigente, las materias del plan del alumno, sus períodos y las cátedras de la
  * materia elegida.
+ *
+ * Los tipos del cuestionario se reexportan de `components/instrument`: los comparte con corregir
+ * una reseña, que dibuja las mismas preguntas.
  */
 
-/** Una opción de respuesta. No trae valencia: la recolección va sin alarma (ADR-0071). */
-export type InstrumentOption = {
-  value: number;
-  label: string;
-};
-
-/** Las tres capas de la reseña. Ordenan los pasos de la pantalla. */
-export type ItemLayer = 'Context' | 'ChairConduct' | 'StudentExperience';
-
-export type InstrumentItem = {
-  code: string;
-  text: string;
-  help: string | null;
-  layer: ItemLayer;
-  options: readonly InstrumentOption[];
-};
-
-export type CurrentInstrument = {
-  code: string;
-  version: number;
-  items: readonly InstrumentItem[];
-};
+export type {
+  CurrentInstrument,
+  InstrumentItem,
+  InstrumentOption,
+  ItemLayer,
+} from '@/components/instrument';
 
 export type SubjectOption = {
   id: string;

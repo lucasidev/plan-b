@@ -1,6 +1,6 @@
 'use client';
 
-import type { InstrumentItem } from '../types';
+import type { InstrumentItem } from './types';
 
 type ItemQuestionProps = {
   item: InstrumentItem;

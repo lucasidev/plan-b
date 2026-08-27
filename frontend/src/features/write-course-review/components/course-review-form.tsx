@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useMemo, useState } from 'react';
+import { ItemQuestion } from '@/components/instrument';
 import { publishCourseReviewAction } from '../actions';
 import type {
   AnswerDraft,
@@ -12,7 +13,6 @@ import type {
   TermOption,
 } from '../types';
 import { initialPublishState } from '../types';
-import { ItemQuestion } from './item-question';
 
 type CourseReviewFormProps = {
   instrument: CurrentInstrument;
