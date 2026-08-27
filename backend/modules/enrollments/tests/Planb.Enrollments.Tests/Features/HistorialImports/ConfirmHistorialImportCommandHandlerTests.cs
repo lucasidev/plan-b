@@ -219,8 +219,9 @@ public class ConfirmHistorialImportCommandHandlerTests
     /// El vector de inflado del pass rate público: el confirm usaba <c>item.SubjectId</c> crudo del
     /// body sin consultar Academic, así que cualquier usuario autenticado podía confirmar materias
     /// de otra universidad (o Guids inventados) y mover el porcentaje de aprobación anónimo de una
-    /// materia ajena. El piso de muestra de ADR-0047 no protege: cada período distinto suma otra
-    /// fila al denominador de la misma materia.
+    /// materia ajena. El piso de muestra (funcionalidad de la versión anterior del producto, en
+    /// retiro: ADR-0063) no protege: cada período distinto suma otra fila al denominador de la
+    /// misma materia.
     /// </summary>
     [Fact]
     public async Task Handle_SubjectOutsideStudentPlan_ReturnsSubjectNotInPlan()

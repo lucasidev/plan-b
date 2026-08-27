@@ -64,8 +64,9 @@ public static class ConfirmHistorialImportCommandHandler
         //
         // Sin esto entraba cualquier Guid: el handler usaba item.SubjectId e item.TermId crudos y ni
         // siquiera consultaba Academic. Era el vector para inflar el pass rate público (que es
-        // anónimo) de una materia ajena, y el piso de muestra de ADR-0047 no protegía porque cada
-        // período distinto suma una fila más al denominador de la misma materia.
+        // anónimo; funcionalidad de la versión anterior del producto, en retiro: ADR-0063) de una
+        // materia ajena, y el piso de muestra no protegía porque cada período distinto suma una
+        // fila más al denominador de la misma materia.
         //
         // Lo que NO se exige es que el item exista en import.Payload: el preview es editable a
         // propósito (el parser se puede comer una materia), y validar contra el plan del alumno ya

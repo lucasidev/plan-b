@@ -4,7 +4,7 @@ namespace Planb.Enrollments.Application.IntegrationEvents;
 
 /// <summary>
 /// El alumno editó una cursada de forma que invalida lo que una reseña anclada a ella afirmaba
-/// (US-015, ADR-0032). Hoy eso significa un único caso: la cursada volvió a <c>Cursando</c>, así
+/// (US-015, ADR-0063). Hoy eso significa un único caso: la cursada volvió a <c>Cursando</c>, así
 /// que la reseña habla de algo que todavía no terminó.
 ///
 /// <para>
@@ -12,7 +12,7 @@ namespace Planb.Enrollments.Application.IntegrationEvents;
 /// de Enrollments (la cursada cambió), no un <em>pedido</em> de los que gobierna ADR-0045
 /// ("cuarentená esta reseña"). Que Reviews reaccione es decisión de Reviews, y mañana puede
 /// reaccionar otro módulo sin tocar este tipo. Además, ubicarlo del lado de Reviews cerraría un
-/// ciclo de assemblies: como una reseña se ancla a una cursada (ADR-0005),
+/// ciclo de assemblies: como una reseña se ancla a una cursada (ADR-0082),
 /// <c>Planb.Reviews.Application</c> ya referencia a <c>Planb.Enrollments.Application</c>.
 /// </para>
 /// </summary>

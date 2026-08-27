@@ -65,8 +65,9 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasIndex(r => r.AuthorUserId)
             .HasDatabaseName("ix_reviews_author_user_id");
 
-        // ADR-0060: nullable. La reseña puede nombrar un docente que todavía no está resuelto
-        // contra el catálogo; ReviewedTeacherName (abajo) es lo que siempre está.
+        // Nullable (decisión de la versión anterior del producto, retirada con ADR-0063): la
+        // reseña puede nombrar un docente que todavía no está resuelto contra el catálogo;
+        // ReviewedTeacherName (abajo) es lo que siempre está.
         builder.Property(r => r.ReviewedTeacherId)
             .HasColumnName("reviewed_teacher_id");
 

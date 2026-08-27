@@ -94,7 +94,7 @@ public static class UpdateEnrollmentCommandHandler
             await unitOfWork.SaveChangesAsync(ct);
 
             // La edición destructiva es una sola hoy: volver la cursada a Cursando deja a cualquier
-            // reseña anclada hablando de algo que todavía no terminó (ADR-0032). Se publica después
+            // reseña anclada hablando de algo que todavía no terminó (ADR-0063). Se publica después
             // del SaveChanges y va por el outbox durable de Wolverine, así que el cambio de la
             // cursada y la entrega del evento no se pueden separar (ADR-0030).
             //

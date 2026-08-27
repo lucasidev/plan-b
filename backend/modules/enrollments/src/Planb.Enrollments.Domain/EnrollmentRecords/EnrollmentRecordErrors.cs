@@ -51,8 +51,9 @@ public static class EnrollmentRecordErrors
     /// historial real.
     /// </para>
     /// <para>
-    /// La comisión sigue siendo el vínculo con el docente, pero desde ADR-0060 su ausencia ya no
-    /// bloquea el publish (una cursada sin comisión puede reseñarse igual). Lo que persiste es
+    /// La comisión sigue siendo el vínculo con el docente, pero su ausencia ya no bloquea el
+    /// publish (una cursada sin comisión puede reseñarse igual; decisión de la versión anterior
+    /// del producto, retirada con ADR-0063). Lo que persiste es
     /// <c>DapperPendingReviewsQueryService</c>, que sigue filtrando <c>commission_id IS NOT NULL</c>
     /// al armar el listado de "pendientes de reseñar": una cursada sin comisión no aparece ahí como
     /// sugerencia, aunque publicarla directamente por <c>enrollmentId</c> ya funcione. O sea que el
