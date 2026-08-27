@@ -56,12 +56,12 @@ Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, má
 |---|---|---|---|---|
 | `identity` (196 .cs, 21 feats) | 13 | 8 | 1 | las colas de verificación manual (docente, cargo institucional, constancia) |
 | `academic` (333 .cs, 12 feats) | 5 | 5 | 2 | `CanonicalCareer` y `CanonicalSubject`, que son entidades nuevas y no un rename |
-| `reviews` (127 .cs, 12 feats) | 6 | 6 | 3 | `Phrase`, `MarkedPhrase`, `Voice`, `Outcome`, el testimonio |
-| `enrollments` (79 .cs, 5 feats) | 5 | 0 | 1 | nada: `EnrollmentRecord` es el ancla que la tesis sigue usando (ADR-0005) |
+| `reviews` (127 .cs, 12 feats) | 6 | 6 | 3 | el catálogo de ítems versionado, la respuesta por opción, el contexto de la cursada, el campo libre |
+| `enrollments` (79 .cs, 5 feats) | 5 | 0 | 1 | nada: `EnrollmentRecord` es el ancla que la tesis sigue usando (ADR-0082) |
 | `moderation` (44 .cs, 4 feats) | 2 | 2 | 0 | las tres colas de verificación y la auditoría del equipo |
 | `planning` (101 .cs, 10 feats) | 0 | 0 | 10 | nada: se retira entero, salvo un rescate (ver R0) |
 
-**El corazón de la tesis no existe.** `phrase`, `frase` y `testimonio` dan **cero archivos** en el backend. Lo que reemplaza al puntaje no tiene una línea escrita.
+**El corazón de la tesis no existe.** El catálogo de ítems, la respuesta por opción y el instrumento versionado dan **cero archivos** en el backend. Lo que reemplaza al puntaje no tiene una línea escrita.
 
 > **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. Los inventarios de `reviews`, `enrollments` y `academic` se **re-mapearon el 2026-08-23** contra los IDs vigentes (US-127 a US-230): el detalle queda abajo. El de `identity` ya citaba IDs vigentes; `planning` se retiró en R0.
 
@@ -73,26 +73,26 @@ Cada feature cita un ID vigente o declara que no mapea. "Se rehace" significa qu
 
 | Feature | Veredicto |
 |---|---|
-| PublishReview | Se rehace para US-146/US-147: la unidad pasa a la cursada con frases marcadas; el texto pasa a testimonio (US-135, ADR-0068) |
+| PublishReview | Se rehace para US-146/US-147: la unidad pasa a la reseña de tres capas ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)); el campo libre no se publica ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)) |
 | EditReview · DeleteOwnReview | US-165 (editar o borrar lo que conté) |
 | RespondToReview | Se rehace para US-172, con el chequeo previo y el plazo de US-179 |
-| EditTeacherResponse | Sin story vigente: editar la réplica se decide con Replicar (US-176, el estado del canal) |
+| EditTeacherResponse | Sin story vigente: editar la respuesta del reseñado se decide con Responder (US-176, el estado del canal) |
 | GetMyPendingReviews | Se va: un checklist de cursadas pendientes contradice US-147 ("arranca eligiendo una, sin checklist") |
 | GetMyReviews | US-165, vía Mis aportes (SC-018) |
 | BrowseReviews | Se rehace: la lectura vive en las fichas (US-135, US-136), no en un browse global |
-| CastReviewVote | Se rehace para US-188, con la voz de ADR-0075 (una por persona y cursada, no un contador de útil) |
-| SubjectInsights · TeacherInsights | Se van: promedian dificultad y utilidad; los reemplaza la ficha de frases con voces (ADR-0064) |
+| CastReviewVote | Se rehace para US-188, con la voz de ADR-0082 (una por persona y cursada, no un contador de útil) |
+| SubjectInsights · TeacherInsights | Se van: promedian dificultad y utilidad; los reemplaza la ficha de frases con voces (ADR-0083) |
 | ReconcileEnrollmentChanges | Tarea técnica sin story; se revisa contra la clave cuenta × materia × período (US-163) |
 
 **`enrollments`**
 
 | Feature | Veredicto |
 |---|---|
-| RegisterEnrollment | US-154 (cómo terminó) y US-163 (la clave por período); el registro de cursada sigue siendo el ancla (ADR-0005) |
+| RegisterEnrollment | US-154 (cómo terminó) y US-163 (la clave por período); el registro de cursada sigue siendo el ancla (ADR-0082) |
 | UpdateEnrollment | US-165 |
 | HistorialImports | Sin story vigente: reseñar ya no pide historial masivo; si sobrevive, es para trayectoria (US-152) y se decide ahí |
 | GetMyTranscript | US-152, la lectura propia de trayectoria, vía Mi situación y Mis aportes |
-| SubjectPassRate | US-152 ("por materia muestra dónde se cae"), sobre la base de ADR-0047 |
+| SubjectPassRate | US-152 ("por materia muestra dónde se cae"), sobre la base de ADR-0083 |
 
 **`academic`**
 
@@ -119,7 +119,7 @@ Cada feature cita un ID vigente o declara que no mapea. "Se rehace" significa qu
 
 **El foco**: el rework no empieza construyendo. Empieza sacando lo que el viraje dejó sin dueño y fijando los parámetros que ningún test puede asumir. Es el orden de [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) y del propio [CLAUDE.md](../../CLAUDE.md): antes de optimizar o construir algo, preguntar si debería existir.
 
-**Lo que R0 explícitamente NO hace**: nada del producto nuevo. Ni frases, ni voces, ni testimonio, ni réplica. Eso es R1 en adelante.
+**Lo que R0 explícitamente NO hace**: nada del producto nuevo. Ni ítems, ni conteos, ni respuesta del reseñado. Eso es R1 en adelante.
 
 ### Secuencia
 
@@ -136,7 +136,7 @@ El 4 y el 5 no dependen de nadie y pueden correr en paralelo con el rescate y la
 
 ### Tareas
 
-- [x] **Cerrar los dos ADR en propuesto** (2026-08-24: los dos en aceptado). [ADR-0075](../decisions/0075-the-published-proportion-has-a-z-a-denominator-and-one-voice-per-cursada.md) fija el z del encogimiento, el denominador de una proporción y cuántas voces suma una persona; sin eso ninguna proporción publicada se calcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
+- [x] **Cerrar los dos ADR en propuesto** (2026-08-24: los dos en aceptado). [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md) fija cómo se publica cada dato (la moda, la distribución, el denominador de cada ítem y cuántas voces suma una persona); sin eso ningún dato publicado se recalcula dos veces igual. [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) fija que las tres puertas responden igual exista o no la cuenta. Los dos son decisión de Lucas, y son la compuerta de todo lo demás: **R1 no puede empezar con parámetros en propuesto**.
 
 - [x] **Rescatar el evaluador de disponibilidad a `academic`, antes de tocar `planning`.** Mueve `SubjectAvailabilityEvaluator`, su interfaz, `SubjectAvailability`, `SubjectProgress`, `PrerequisiteEdge` y `AvailabilityStatus` de `planning/Domain/Availability/` a `academic/Domain/Availability/`. Es lógica de dominio pura, sin I/O. **No es una decisión de este plan**: la story US-144 ya lo dejó escrito en su propio criterio de aceptación.
 
@@ -145,8 +145,8 @@ El 4 y el 5 no dependen de nadie y pueden correr en paralelo con el rescate y la
 - [x] **Arreglar la fuga de enumeración en el registro.** Verificado en el código: `RegisterUserCommandHandler.cs:37-40` devuelve `EmailAlreadyInUse` cuando el mail ya tiene cuenta, que es exactamente lo que ADR-0076 prohíbe. Es la primera pieza del producto nuevo que se toca, y se toca porque es una fuga, no porque sea una feature.
 
 - [x] **Propagar ADR-0078, parte hecha (2026-08-24)**: el tema asignado a las 46 frases y las cuatro familias pobladas en sesión de curaduría (el catálogo quedó re-estructurado en una tabla con las tres coordenadas, 67 frases, sujetos = las fichas reales, y el balance-por-eje derogado); y la tesis, el glosario y el CLAUDE.md propagados. La tesis publicaba "por eje" con cabecera dual dos días después de decidir lo contrario: el documento raíz va primero en toda propagación futura.
-- [x] **Cerrar las dos decisiones de medición que gateaban la ficha** (2026-08-24, [ADR-0080](../decisions/0080-numbers-publish-without-floor-and-series-declare-their-breaks.md)): muestra chica sin piso (confirmando el punto 9 de la tesis: Wilson es la defensa, no un umbral) y las series de prevalencia declaran sus rupturas cuando el vocabulario de un tema cambia. Con esto el método se puede escribir completo.
-- [ ] **Propagar ADR-0078, lo que queda** (pasa a R1): reescribir las stories de Reseñar al flujo por temas y las fichas de pantalla que citan la cabecera dual (SC-002, US-173); y el Método suma los indicadores nuevos (prevalencia por tema, retrato, ¿responden?) con las definiciones que ADR-0075 y ADR-0080 ya fijan.
+- [x] **Cerrar las dos decisiones de medición que gateaban la ficha** (2026-08-24): muestra chica sin piso y series con rupturas declaradas. Rebasadas al día siguiente por el modelo vigente: el piso volvió con otra razón (privacidad del que reseña, [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)) y las rupturas quedaron, por código de ítem.
+- [x] **El modelo se rehizo entero el 2026-08-25** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)): catálogo de tres capas, ficha de conteos, texto libre sin publicar, tres instrumentos. Propagado ese día: tesis, glosario, catálogo ([phrases.md](../product/phrases.md)), design system, los 6 bocetos a sus pantallas, y 25 ADRs rebasados borrados con sus referencias corregidas. **Queda el barrido de stories y screens** (mapa completo relevado por agentes el 2026-08-25: épicas de réplica y moderación a transformar, 4 stories muertas, vocabulario viejo en ~40 archivos): es el primer trabajo de R1.
 
 - [x] **Rehacer el mapeo story del inventario** de `reviews`, `enrollments` y `academic` contra los IDs vigentes (US-127 a US-230). Sin esto, R1 se planifica contra referencias muertas.
 
@@ -171,24 +171,54 @@ Cuatro cosas verificables, no una sensación:
 
 ## R1 · El acto de reseñar, de punta a punta
 
-**Desde el 2026-08-24.** El primer sprint de construcción: el ciclo completo del corazón del producto, con lo mínimo que lo sostiene. Milestone [R1 · El acto de reseñar](https://github.com/lucasidev/plan-b/milestone/2). Fuera de alcance, dicho al planificar: el comentario largo con su chequeo (el testimonio de R1 son los micro-comentarios por tema y el chequeo llega con la moderación en R2), el evento institucional, la trayectoria más allá de cómo terminó, los borradores retomables, y la ficha completa (retrato, prevalencia y series piden su propia spec).
+**Desde el 2026-08-24; contratos rehechos el 2026-08-25 al modelo vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). El primer sprint de construcción: el ciclo completo del corazón del producto, con lo mínimo que lo sostiene. Milestone [R1 · El acto de reseñar](https://github.com/lucasidev/plan-b/milestone/2). Fuera de alcance, dicho al planificar: el instrumento administrativo y el relevamiento oficial (piden su propio sprint), la unidad académica más allá del campo en cátedra, la respuesta del reseñado, las notas de curaduría, los borradores retomables, y las capas 3 y 4 del análisis (Rasch, cruces con series oficiales).
 
 | # | Issue | Pts | Depende de |
 |---|---|---|---|
-| 1 | [#355 · Propagar ADR-0078 a la spec de Reseñar](https://github.com/lucasidev/plan-b/issues/355) | 3 | nada |
-| 2 | [#356 · La cátedra como entidad en academic](https://github.com/lucasidev/plan-b/issues/356) | 5 | nada |
-| 3 | [#357 · El catálogo de frases a la base](https://github.com/lucasidev/plan-b/issues/357) | 2 | 1; el gate de aprobación del catálogo es de Lucas |
-| 4 | [#358 · El modelo nuevo de reseña](https://github.com/lucasidev/plan-b/issues/358) | 8 | 2, 3 |
-| 5 | [#359 · La pantalla Reseñar por temas](https://github.com/lucasidev/plan-b/issues/359) | 8 | 1, 4 |
-| 6 | [#360 · La ficha mínima de cátedra](https://github.com/lucasidev/plan-b/issues/360) (redefinida el 2026-08-24: inteligencia, no lista: prevalencia por tema + retrato + serie) | 5 | 4 |
+| 1 | [#355 · Propagar el modelo a la spec de Reseñar](https://github.com/lucasidev/plan-b/issues/355) | 3 | nada; incluye el barrido de stories y screens que los agentes mapearon el 2026-08-25 |
+| 2 | [#356 · La cátedra como entidad en academic](https://github.com/lucasidev/plan-b/issues/356) | 5 | nada; el titular por período queda registrado para el corte "cambio de titular" |
+| 3 | [#357 · El catálogo de ítems versionado a la base](https://github.com/lucasidev/plan-b/issues/357) | 2 | 1; ítems con código estable, opciones, instrumento con vigencias ([phrases.md](../product/phrases.md) es la fuente editorial) |
+| 4 | [#358 · La reseña de tres capas](https://github.com/lucasidev/plan-b/issues/358) | 8 | 2, 3; respuestas por opción atadas a la versión del instrumento + contexto no publicado + campo libre no publicado + una voz por cuenta × materia × período |
+| 5 | [#359 · La pantalla Reseñar](https://github.com/lucasidev/plan-b/issues/359) | 8 | 1, 4; el boceto vigente es el sketch de SC-015 |
+| 6 | [#360 · La ficha mínima de cátedra](https://github.com/lucasidev/plan-b/issues/360) (redefinida el 2026-08-25: conteos con moda y distribución, fama por convergencia, tasa de finalización agregada, piso de 10) | 5 | 4 |
 | 7 | [#361 · El E2E del ciclo completo](https://github.com/lucasidev/plan-b/issues/361) | 3 | 5, 6 |
+
+### Lo hecho hasta ahora (2026-08-26)
+
+El **dominio de las tres piezas de datos está escrito, compilando y con sus tests unitarios**:
+
+- **La cátedra** (#356): `Chair` en `academic`, con su equipo docente versionado por período (`ChairMember` lleva desde y hasta). Ese tramo no es adorno: sin él, una ficha que publica reseñas de 2023 a 2026 le atribuiría al titular de hoy lo que se dictó hace tres años. Queda dicho en el código que la cátedra no es la comisión: la comisión muere con su período, la cátedra persiste y es la que la ficha compara. Infraestructura, migración y 27 tests de dominio, listos.
+- **El catálogo del instrumento** (#357): `Item` con sus opciones y `Instrument` versionado, en `reviews`. Lo que hace cumplible al modelo es separar el **código** (identidad semántica, estable) del **texto** (se afina sin cortar la serie): cambiar el significado exige código nuevo. Los invariantes que protegen la ficha viven en el aggregate: a lo sumo una opción negativa por ítem (el rojo marca una sola cosa), los ítems de contexto no llevan valencia (no se publican dato por dato), y una opción ya respondida no se borra ni se reusa.
+- **La reseña** (#358): `CourseReview`, entidad **nueva**, no una mutación de la `Review` anterior: no es una versión de aquella sino otra cosa, y nacer aparte evita el período en que una misma clase sería mitad un modelo y mitad el otro (la vieja se poda como tarea propia, ADR-0063). Guarda las respuestas por opción atadas a la versión del instrumento, el contexto que no se publica y el campo libre que no se publica nunca. Saltear no deja fila: por eso lo salteado no cuenta en ningún denominador.
+
+Además, de la cátedra ya está el read público que la pantalla Reseñar necesita (`GET /api/academic/subjects/{id}/chairs`, con el titular vigente de cada una) y el seed de tres cátedras de ejemplo.
+
+**Verificado contra infraestructura real** (2026-08-26, no solo compilando): las dos migraciones aplican; el catálogo siembra sus 14 ítems con sus opciones y valencias y publica el instrumento `STUDENT_COURSE` v1; las tres cátedras quedan con su titular; el endpoint responde con los datos correctos. **762 tests unitarios y 392 de integración en verde**, `dotnet format` limpio y `check-docs --strict` limpio.
+
+Dos cosas que aparecieron al verificar y quedaron arregladas: los ids del seed de cátedras y de ítems colisionaban (los dos usaban el prefijo `00000008`), y la causa era que [ADR-0058](../decisions/0058-deterministic-seed-in-code-gated-by-environment.md) decía "y así" en vez de listar los prefijos asignados; ahora lleva la tabla completa. La suite de integración, además, se cuelga cuando la máquina está saturada (varios procesos compilando en paralelo): no es un defecto del código, y correrla sola pasa entera.
+
+**El acto de reseñar funciona de punta a punta** (2026-08-26, probado contra la base real, no solo compilando): `GET /api/reviews/instrument` devuelve el cuestionario vigente con sus ítems y opciones en orden (sin la valencia: la recolección va sin alarma, teñir una opción mientras alguien responde es sugerirle la respuesta), y `POST /api/reviews/cursadas` publica una reseña que guarda solo lo respondido (los ítems salteados no dejan fila, así que no cuentan en ningún denominador). Verificadas sus reglas: 409 al reseñar dos veces la misma cursada, y 400 con su código propio para una opción inventada, un ítem que el instrumento no ofrece, y una cátedra que no es de esa materia.
+
+**El cálculo editorial de la ficha** (#360) está escrito como lógica pura, separada del SQL: entran conteos crudos y sale lo publicable (el piso de 10, la moda con su etiqueta literal, la distribución por opción, la convergencia que forma la fama, la tasa de finalización agregada y los contrastes contra las hermanas filtrados por intervalos de Wilson que no se tocan). Está separado a propósito: las reglas de publicación **son** el producto, y tienen que poder probarse con casos borde sin levantar una base.
+
+**La pantalla Reseñar existe y funciona** (#359, 2026-08-26): `/reviews/new` en el frontend real, no un boceto. Trae las materias del plan del alumno, los períodos de su universidad, y las cátedras de la materia apenas la elige; contesta el cuestionario vigente agrupado por sus tres capas, con saltear como salida visible; y antes de enviar dice qué se publica y qué no. **Probada de punta a punta en el browser**: se eligió materia, período y cátedra, se respondieron cuatro ítems, se envió, y la reseña quedó en la base con exactamente esas cuatro respuestas (los ítems salteados no dejaron fila). Ninguna opción se pinta de alarma mientras se responde, aunque el catálogo sepa cuál es la negativa: alarmar es lectura, no captura.
+
+El contrato visual Boletín ([ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md)) aterrizó **scopeado** en `globals.css` (`[data-surface='bulletin']`) en vez de reemplazar los tokens globales: Apricot sigue vistiendo al chasis de la versión anterior, y pisarlo le habría cambiado la cara a esas pantallas sin que nadie lo decidiera. Cuando ese chasis se pode, los valores se promueven y el scope se borra.
+
+**La ficha de cátedra publica** (#360, 2026-08-26): `GET /api/reviews/chairs/{id}/facts` y `/chairs/{id}` en el frontend, pública y sin cuenta, que es la mitad de la tesis (se recolecta con cuenta y se publica sin ella). El read cuenta y el dominio decide: la query Dapper devuelve conteos crudos por ítem y opción, incluidas las opciones que nadie eligió (un cero es información), y el calculador resuelve qué de eso se publica. Verificado contra la base con un corpus real de 30 reseñas: la moda con su etiqueta literal, la distribución completa, la fama cuando cuatro ítems convergen, la tasa de finalización agregada y el único contraste contra las hermanas que sobrevivió la regla de los intervalos. La ventana temporal se agregó al leer el boceto: un conteo sin decir de cuándo son sus voces no distingue a la cátedra de hoy de la de hace cinco años.
+
+**El E2E del ciclo completo pasa** (#361, 2026-08-26): la cátedra arranca sin voces, junta nueve y dice "con 1 más se publica" sin adelantar un solo conteo, la décima se hace **por la pantalla real**, y recién ahí aparecen la moda y la distribución. El tramo de lectura corre **sin sesión**: si la ficha pidiera login, la presión que el producto existe para ejercer no llegaría a nadie.
+
+**Lo que la ficha todavía no muestra**, y no es olvido: el bloque de la respuesta firmada de la cátedra (US-172, US-176 y US-177, de la épica Responder, fuera de R1); el contraste de la tasa de finalización contra las hermanas ("en González llegan 9 de cada 10"), que el calculador no computa; el "sin picos de carga" de la dispersión temporal; y los links a Método y a Bajar los datos, cuyas pantallas todavía no existen. Un link a una pantalla inexistente es peor que no ofrecerla.
+
+**Sobre cómo se verifica la suite de integración**: son 410 tests y tardan ~29 minutos, así que **no entran en una sola corrida**. Se corre por área (`--filter "FullyQualifiedName~Planb.IntegrationTests.<Area>"`): Reviews 90, Academic 150, Identity 105, Enrollments 41, Moderation 24. Esto no es una preferencia: una corrida cortada por timeout reporta lo parcial como **verde** ("Superado: 116, Con error: 0" sobre 410) sin ninguna señal de que faltó el 70%. Todo "Superado: N" se compara contra los `[Fact]` declarados antes de darlo por bueno.
 
 ### Cómo se sabe que R1 está listo
 
-1. El E2E del ciclo pasa en CI: registro, reseñar una cursada marcando frases por tema, y la ficha de la cátedra muestra lo marcado con sus voces encogidas.
-2. El criterio de US-146 medido: el acto entero en menos de cinco minutos de flujo real.
-3. Los conteos publicados se recalculan a mano contra ADR-0075 y dan igual.
-4. Nada publicado expone quién reseñó (US-148), verificado en los reads.
+1. El E2E del ciclo pasa en CI: registro, reseñar una cursada respondiendo ítems de las tres capas, y la ficha de la cátedra muestra sus conteos (moda y distribución) recién al cruzar el piso de 10 reseñas. **Cumplido local** (`e2e/reviews/chair-facts.spec.ts`, 55 E2E en verde); **en CI todavía no**, porque el trabajo no está pusheado.
+2. El criterio de US-146 medido: el acto entero en menos de dos minutos de flujo real. **Sin medir con personas**: lo único verificado es que la máquina no es el cuello (el E2E hace el acto entero, con login, en 15 segundos) y que el flujo son cinco pasos y catorce preguntas de opción, sin escritura obligatoria. Medirlo de verdad pide gente cursando, no un spec.
+3. Los conteos publicados se recalculan a mano contra ADR-0083 y dan igual, incluida la tasa de finalización agregada. **Cumplido**: los porcentajes esperados están calculados a mano en `GetChairFactsEndpointTests` (moda 80 % sobre 10 respuestas, finalización 7 de 10, cuatro ítems convergiendo) y el test falla si el código deja de darlos.
+4. Nada publicado expone quién reseñó ni cómo terminó nadie (US-148), verificado en los reads. **Cumplido**: `The_payload_never_carries_who_reviewed_or_how_anyone_finished` mira el JSON crudo y exige que no viajen cuentas, ids de reseña, texto libre ni ningún ítem de la capa de contexto.
 
 ---
 
@@ -206,7 +236,7 @@ Todo lo que sigue, de S0 a S12, es el planificador de cuatrimestre. Se conserva 
 
 ### Entregables documentales
 
-- **33 ADRs** (`docs/decisions/`) cubriendo decisiones de dominio, arquitectura, frontend, tooling, workflow y outcomes recientes del DDD discovery (ADR-0028 a ADR-0033).
+- **33 ADRs** (`docs/decisions/`) cubriendo decisiones de dominio, arquitectura, frontend, tooling, workflow y outcomes recientes del DDD discovery (ADR-0063 a ADR-0033).
 - **Documentos de dominio** (`docs/domain/`):
   - `ubiquitous-language.md`: glosario.
   - `actors-and-use-cases.md` + `use-cases/`: índice y 41 archivos individuales por UC.
@@ -244,11 +274,11 @@ Todo lo que sigue, de S0 a S12, es el planificador de cuatrimestre. Se conserva 
 
 ### ADRs nuevos del discovery DDD reciente
 
-- ADR-0028 Reseñas opcionales + premium features como reward (no gating del simulador).
-- ADR-0029 Bounded Context Planning separado.
+- ADR-0063 Reseñas opcionales + premium features como reward (no gating del simulador).
+- ADR-0063 Bounded Context Planning separado.
 - ADR-0030 Cross-BC consistency vía Wolverine outbox.
-- ADR-0031 ReviewAuditLog como projection.
-- ADR-0032 Edit destructive de EnrollmentRecord invalida Review.
+- ADR-0063 ReviewAuditLog como projection.
+- ADR-0063 Edit destructive de EnrollmentRecord invalida Review.
 - ADR-0033 VerificationToken como child entity (no aggregate independiente).
 - ADR-0034 Redis como cache + ephemeral state.
 
@@ -336,10 +366,10 @@ Todas Done al cierre del sprint.
 
 **Contexto**: Fase 2 cerró en S1. Frontend de US-012 (form "agregar carrera") quedó diferido a una US separada cuando aterrice el JwtBearer middleware en backend.
 
-**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md)):
+**Sesión de rediseño UX (post-S1, 2026-05-02)** generó 3 ADRs (ver [ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md)):
 - [ADR-0039](../decisions/0039-meilisearch-as-the-global-search-engine.md): Meilisearch como motor de búsqueda global.
 - [ADR-0040](../decisions/0040-notifications-as-a-new-bounded-context.md): Notifications como BC nuevo.
-- [ADR-0041](../decisions/0041-ux-redesign-after-claude-design.md): Delta del rediseño + plan de migración.
+- [ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md): Delta del rediseño + plan de migración.
 
 ### Scope cerrado en S2
 
@@ -360,7 +390,7 @@ Todas Done al cierre del sprint.
   - **6 US nuevas creadas para el backoffice**: US-081 (admin shell + dashboard ops + componentes AdmTable/AdmFilters), US-007 (importador CSV con preview/diff), US-006 (merge de Subjects duplicados), US-084 (migración asistida de plan), US-086 (audit log per-user, tab del detalle de usuario, cross-BC), US-005 (feed global de actividad reciente).
   - **9 US existentes actualizadas** con mockup refs admin + AC visual del canvas: US-050 (reescrita: cola-de-reports en vez de cola-de-reviews), US-051 (recortada a uphold/dismiss + AC visual del detalle con 2 opciones live + 3 placeholder pointing a US-085), US-053 (pattern siblings con US-086/US-005), US-060 (gestionar University), US-061 (Career + CareerPlan), US-062 (Subject + Prerequisite + correlativas), US-063 (Teacher), US-065 (Commission), US-058 (deshabilitar member + tabs detalle).
   - **5 decisiones de scope zanjadas en el rediseño admin**: cola es por report (no por review, canvas manda), audit log per-BC (ADR-0042, cada módulo owns su projection con cross-BC views via Dapper UNION ALL), strike system+ocultar+banear all-in en US-085 (out de US-051), importador/merge/migración como US separadas, admin shell separado como bloqueante US-081.
-  - **1 ADR nuevo**: [ADR-0042](../decisions/0042-audit-log-per-bc-not-central.md) (audit log per-BC, no central; extiende ADR-0031).
+  - **1 ADR nuevo**: [ADR-0042](../decisions/0042-audit-log-per-bc-not-central.md) (audit log per-BC, no central; extiende ADR-0063).
   - PR `docs/backoffice-module` (este PR).
 
 ### Audit del estado del frontend vs canvas (2026-05-12 v3 full)
@@ -672,7 +702,7 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 
 ### Decisiones de scope tomadas al planificar (2026-07-20)
 
-- **US-016 no necesita todavía el BC `Planning`**: su propio AC dice "no persiste nada: solo computación de read models" ([ADR-0029](../decisions/0029-planning-as-a-separate-bounded-context.md)). El aggregate `SimulationDraft` recién hace falta para guardar simulaciones (US-023), que [ADR-0028](../decisions/0028-optional-reviews-with-premium-features-as-reward.md) define como premium. S10 es read models Dapper cross-schema, un domain service de cumplimiento de correlativas, y conectar el shell que ya existe.
+- **US-016 no necesita todavía el BC `Planning`**: su propio AC dice "no persiste nada: solo computación de read models" ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)). El aggregate `SimulationDraft` recién hace falta para guardar simulaciones (US-023), que [ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md) define como premium. S10 es read models Dapper cross-schema, un domain service de cumplimiento de correlativas, y conectar el shell que ya existe.
 - **El histograma de combinaciones similares entra completo**, con un riesgo asumido explícito: el AC lo define como exact match del subject set agrupando alumnos que cursaron la misma combinación, y con el corpus actual cada combinación va a tener muestras de 0 o 1 alumnos. Es una limitación de **volumen de datos, no de implementación**: el panel se va a ver vacío hasta que haya corpus real. Si se lo necesita poblado para una demo, sembrar enrollments realistas es trabajo aparte, a decidir por separado.
 - **Las premium de planificación quedan fuera**: US-023 (guardar draft), US-024 (compartir), US-025 (editar), US-026 (borrar), US-027 (ver públicas). Entran cuando el simulador base esté validado con usuarios reales, no antes.
 - **El backoffice restante se difiere a S11**: US-065 y US-067 quedaron **parciales** en S7 y US-081 nunca aterrizó su dashboard (los tres detectados en la auditoría de docs del 2026-07-20). Es valor para el operador, no para el alumno, así que va después del simulador.
@@ -682,7 +712,7 @@ También desbloquea la Fase 6 del cronograma (focus group), cuya sesión guiada 
 
 Las tres US entraron:
 
-- **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con el piso anti-reidentificación de [ADR-0047](../decisions/0047-public-pass-rate-from-private-enrollment-history.md)) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
+- **US-016** hecho: módulo `Planning` con el endpoint de evaluación de la combinación (materias disponibles/bloqueadas por correlativas + carga semanal + dificultad ponderada por reseñas + pass-rate de la cohorte con su muestra mínima anti re-identificación, fijada en el código) y el panel de métricas del `/plan` cableado a datos reales. Lo que queda mock en `/plan` es "En curso"/"Borradores", que es US-023 (premium, fuera de scope).
 - **US-009-f** hecho: las superficies de error (404, 500, 403, loading, offline) con su diseño; el CTA de la 404 y la página offline apuntan a la landing pública.
 - **US-039-f** hecho en su core: hook `useOnlineStatus`, `OfflineBanner` global en el shell `(member)` con reintento y la transición "Conexión restablecida", más tests unit/component y el E2E con `context.setOffline`. **Deuda incremental**: el barrido de `disabled` por botón de mutación en cada feature (el hook queda listo para engancharlo) y la nota del patrón offline en `docs/engineering/testing.md`.
 
@@ -771,7 +801,7 @@ planificador, y las tres US que quedaban vivas eran hijas de su lazo:
   extracción de datos del planificador. La tesis lo dice sin vueltas: nadie llega con ganas de
   inventariar su cuatrimestre.
 - **US-098 (valoración por comisión en el picker) se cancela**: el picker donde iba a mostrarse
-  se retira con el planificador. La doctrina de su ADR (gate por cobertura, ADR-0061) queda
+  se retira con el planificador. La doctrina de su ADR (gate por cobertura, ADR-0085) queda
   heredada al diseño nuevo.
 - **US-099 (reseña simple al importar historial) se cancela como US, y es la única que muere con
   honores**: su intuición ("una sola pregunta, confirmar es más barato que elegir") es la
@@ -810,17 +840,17 @@ La causa está antes: el módulo Enrollments tiene cuatro features y ninguna mod
 
 | US | Qué entrega |
 |---|---|
-| [US-015](../history/domain-v1/stories/US-015.md) | El `PATCH` de una cursada propia, con revalidación de invariantes y el evento que manda a `under_review` la reseña afectada (ADR-0032). Enabler del resto. |
+| [US-015](../history/domain-v1/stories/US-015.md) | El `PATCH` de una cursada propia, con revalidación de invariantes y el evento que manda a `under_review` la reseña afectada (ADR-0063). Enabler del resto. |
 | [US-097](../history/domain-v1/stories/US-097.md) | El momento del cierre: qué cursadas están pendientes, qué se le pregunta al alumno (incluido el método de aprobación) y el handoff a la reseña. |
 | [US-098](../history/domain-v1/stories/US-098.md) | El agregado por (materia, comisión) y su lectura en el picker, con la vigencia del plantel medida contra `reviewed_teacher_name`. |
 | [US-099](../history/domain-v1/stories/US-099.md) | La reseña simple, una sola pregunta y sin docente, ofrecida al confirmar el import de historial. Siembra corpus el día uno en vez de esperar un cuatrimestre. |
 
 ### Decisiones de producto que definen el sprint
 
-- **La unidad de decisión es (materia, comisión), no (materia, docente).** El alumno se inscribe en una comisión; el docente es lo que esa comisión tiene este cuatrimestre. El riesgo de que el agregado envejezca cuando el docente cambia se mide, no se esconde: cada reseña guarda siempre el nombre del docente que nombró (ADR-0060), así que las reseñas reconstruyen el plantel histórico que el catálogo no tiene.
+- **La unidad de decisión es (materia, comisión), no (materia, docente).** El alumno se inscribe en una comisión; el docente es lo que esa comisión tiene este cuatrimestre. El riesgo de que el agregado envejezca cuando el docente cambia se mide, no se esconde: cada reseña guarda siempre el nombre del docente que nombró (ADR-0082), así que las reseñas reconstruyen el plantel histórico que el catálogo no tiene.
 - **La app planifica, no lleva el historial.** El registro académico oficial vive en la plataforma de la universidad. Lo que ella no da, y esto sí, es la complejidad de una materia, la carga resultante de juntar varias, y las valoraciones.
 - **El método de aprobación se pregunta en el cierre, nunca en la carga retroactiva.** En el cierre el alumno se acuerda; tres años después inventaría.
-- **La reseña de carga tardía no nombra docente, y es decisión.** De una materia vieja se recuerda cuánto costó, no cuál de los tres docentes tocó. Eso además deja sin entradas la cola de resolución de referencias del punto 4 de ADR-0060, que por ahora no hace falta construir.
+- **La reseña de carga tardía no nombra docente, y es decisión.** De una materia vieja se recuerda cuánto costó, no cuál de los tres docentes tocó. Eso además deja sin entradas la cola de resolución de referencias del punto 4 de ADR-0082, que por ahora no hace falta construir.
 
 ### Avance
 
@@ -916,7 +946,7 @@ El loop core del producto.
 - Implementar Moderation module: aggregate ReviewReport, projection ReviewAuditLog, mod queue.
 - Implementar Planning module: aggregate SimulationDraft, queries para "available subjects".
 - Cross-BC integration events vía Wolverine outbox (ADR-0030).
-- Edit destructive de EnrollmentRecord invalida Review (ADR-0032).
+- Edit destructive de EnrollmentRecord invalida Review (ADR-0063).
 
 **Frontend**:
 - Simulador interactivo (UC-016): selección visual de materias, cálculo de métricas en cliente o server, feedback inmediato.

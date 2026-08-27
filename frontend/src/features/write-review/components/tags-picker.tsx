@@ -6,7 +6,7 @@ import { REVIEW_TAGS } from '../data/mocks';
  * Editor field 4 (US-049): quick tags in a multi-chip selector. Mirrors the mockup.
  *
  *  - Tags come from the fixed set in `mocks.REVIEW_TAGS` (flagged as an example in
- *    ADR-0041; the final taxonomy lands in a separate US).
+ *    ADR-0071; the final taxonomy lands in a separate US).
  *  - Click → toggle. Visually: pill chip, on = accent border + accent-soft bg + accent
  *    ink with a ✓ prefix; off = line border + bg-bg-card + ink-2.
  *  - Implementation: each chip is a `<label>` wrapping an sr-only `<input type="checkbox">`.

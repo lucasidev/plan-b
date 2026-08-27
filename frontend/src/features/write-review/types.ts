@@ -1,6 +1,6 @@
 /**
  * Editor types (US-049). Aligned with the post-claude-design UX rework
- * (ADR-0041): one review per enrollment with six numbered fields.
+ * (ADR-0071): one review per enrollment with six numbered fields.
  *
  * When the backend rework lands (the upcoming US that replaces the legacy US-017
  * model), these types attach to the real DTOs. For now they are pure mocks with a

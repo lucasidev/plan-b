@@ -33,6 +33,10 @@ exclude_path = [
   "node_modules",
   "frontend/node_modules",
   "frontend/.next",
+  # El ático (docs/history/) va sin editar: registra lo que fue, incluidas sus referencias a
+  # ADRs que existían entonces y hoy están borrados. Reescribir esos links para que resuelvan
+  # falsificaría el registro, que es justo lo que el ático existe para evitar.
+  "docs/history",
 ]
 
 # Patterns de URLs externos que toleramos sin chequear (rate limits frecuentes,

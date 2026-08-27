@@ -12,7 +12,7 @@ import { MyReviewsHeader } from './my-reviews-header';
 /**
  * Por qué una reseña `UnderReview` está frenada, y qué puede hacer el autor al respecto.
  * `ContentFilter` y `EnrollmentChanged` se resuelven editando (ver `canEditReview`); `Reports`
- * espera a un moderador. Ver la revisión 2026-07-29 de ADR-0012.
+ * espera a un moderador. Ver la revisión 2026-07-29 de ADR-0063.
  */
 const UNDER_REVIEW_REASON_COPY: Record<UnderReviewReason, string> = {
   ContentFilter:
@@ -23,7 +23,7 @@ const UNDER_REVIEW_REASON_COPY: Record<UnderReviewReason, string> = {
 };
 
 /**
- * Regla de edición (ADR-0012, revisión 2026-07-29): además de `Published`, se puede editar
+ * Regla de edición (ADR-0063, revisión 2026-07-29): además de `Published`, se puede editar
  * desde `UnderReview` cuando el filtro automático o un cambio de cursada la frenaron, porque
  * en esos dos casos editar es la única salida de la cuarentena. Sigue bloqueada cuando la
  * frenó un report (el moderador tiene que resolverlo primero) o cuando ya está `Removed`.

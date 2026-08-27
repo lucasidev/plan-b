@@ -10,7 +10,8 @@ namespace Planb.Reviews.Application.IntegrationEvents;
 /// acyclic while still letting Moderation drive the auto-hide.
 ///
 /// Emitted by Moderation when the open report count for the review reaches the configured
-/// auto-hide threshold (ADR-0010). Consumed by <c>ReviewQuarantineRequestedHandler</c>,
+/// auto-hide threshold (behavior of the previous version of the product, retired with ADR-0063).
+/// Consumed by <c>ReviewQuarantineRequestedHandler</c>,
 /// which transitions a Published review to UnderReview and writes the audit-log entry.
 ///
 /// <c>TriggeredByUserId</c> is the reporter whose report tipped the count over the

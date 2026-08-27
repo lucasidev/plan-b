@@ -16,11 +16,13 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 ///         NotFound, mismo mensaje que enrollment-no-owned, antienumeration).</item>
 ///   <item>Traer el <see cref="EnrollmentSummary"/>. Validar ownership (StudentProfileId del
 ///         enrollment coincide con el del user actual) y status (no <c>Cursando</c>). Una cursada
-///         sin commission puede reseñarse (ADR-0060): ya no es requisito para escribir.</item>
+///         sin commission puede reseñarse (decisión de la versión anterior del producto, retirada
+///         con ADR-0063): ya no es requisito para escribir.</item>
 ///   <item>Resolver la identidad del docente reseñado contra Academic. Ya no se exige que esté en
-///         el plantel actual de la commission de la cursada (ADR-0060: eso afirma el presente, y
-///         una cursada vieja habla del pasado); sí se exige que exista como persona en el catálogo,
-///         de donde sale el nombre declarado.</item>
+///         el plantel actual de la commission de la cursada (decisión de la versión anterior del
+///         producto, retirada con ADR-0063: eso afirma el presente, y una cursada vieja habla del
+///         pasado); sí se exige que exista como persona en el catálogo, de donde sale el nombre
+///         declarado.</item>
 ///   <item>Idempotency: si ya existe Review para ese enrollment → 409 Conflict.</item>
 ///   <item>Construir los VOs (DifficultyRating, ReviewText opcionales, FinalGrade opcional).</item>
 ///   <item>Correr el filter de contenido. Clean → Published; Triggered → UnderReview.</item>
@@ -50,7 +52,8 @@ public static class PublishReviewCommandHandler
         }
 
         // 2) Enrollment + ownership + status. Una cursada sin commission puede reseñarse
-        // (ADR-0060): se retiró el chequeo que lo bloqueaba.
+        // (decisión de la versión anterior del producto, retirada con ADR-0063): se retiró el
+        // chequeo que lo bloqueaba.
         var enrollment = await enrollments.GetEnrollmentByIdAsync(command.EnrollmentId, ct);
         if (enrollment is null || enrollment.StudentProfileId != profile.Id)
         {
@@ -62,8 +65,9 @@ public static class PublishReviewCommandHandler
             return ReviewErrors.EnrollmentStillOngoing;
         }
 
-        // 3) El docente reseñado tiene que existir como persona en el catálogo (ADR-0060: la
-        // identidad sigue atada a Academic). Ya no se exige que esté en el plantel de ESTA
+        // 3) El docente reseñado tiene que existir como persona en el catálogo (decisión de la
+        // versión anterior del producto, retirada con ADR-0063: la identidad sigue atada a
+        // Academic). Ya no se exige que esté en el plantel de ESTA
         // commission puntual: ver ReviewErrors.TeacherNotInEnrollmentCommission (retirado). El
         // nombre declarado sale de acá porque hoy el único camino de publish llega con un id ya
         // resuelto (el picker de US-065); cuando exista un camino para nombrar un docente sin

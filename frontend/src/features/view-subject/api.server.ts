@@ -54,9 +54,9 @@ export async function fetchSubjectReviewsServer(
 }
 
 /**
- * Aprobación histórica de la materia (ADR-0047). Agrega el historial de enrollments; el backend
- * aplica el gate de muestra mínima (devuelve passRate null si N es bajo). Materia sin cursadas =
- * sampleSize 0 + passRate null.
+ * Aprobación histórica de la materia (funcionalidad de la versión anterior del producto, en
+ * retiro: ADR-0063). Agrega el historial de enrollments; el backend aplica el gate de muestra
+ * mínima (devuelve passRate null si N es bajo). Materia sin cursadas = sampleSize 0 + passRate null.
  */
 export async function fetchSubjectPassRateServer(subjectId: string): Promise<SubjectPassRate> {
   const response = await apiFetchAuthenticated(`/api/enrollments/subjects/${subjectId}/pass-rate`, {

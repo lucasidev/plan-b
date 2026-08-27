@@ -62,9 +62,10 @@ export type SubjectReviewsPage = {
 };
 
 /**
- * Aprobación histórica de la materia (ADR-0047). `passRate` es el porcentaje (0-100) o `null`
- * cuando la muestra es menor al gate mínimo (anti re-identificación): la UI muestra "pocos datos".
- * `sampleSize` es el denominador (cursadas con verdicto), para el disclaimer.
+ * Aprobación histórica de la materia (funcionalidad de la versión anterior del producto, en
+ * retiro: ADR-0063). `passRate` es el porcentaje (0-100) o `null` cuando la muestra es menor al
+ * gate mínimo (anti re-identificación; el número lo fija el código del backend, no un ADR): la UI
+ * muestra "pocos datos". `sampleSize` es el denominador (cursadas con verdicto), para el disclaimer.
  */
 export type SubjectPassRate = {
   passRate: number | null;

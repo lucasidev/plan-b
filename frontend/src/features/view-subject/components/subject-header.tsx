@@ -7,9 +7,10 @@ import type { SubjectDetail, SubjectInsights, SubjectPassRate } from '../types';
  * row (reseñas, dificultad, carga, recomiendan, aprobación histórica). Mirrors the top of the
  * mockup `SubjectDetail`.
  *
- * "Aprobación histórica" (ADR-0047) agrega el historial de enrollments. El backend aplica el gate
- * de muestra mínima: con pocos datos `passRate` viene null y se muestra "pocos datos" en vez del
- * número. El disclaimer es obligatorio: el dato es self-reported y direccional, no autoritativo.
+ * "Aprobación histórica" (funcionalidad de la versión anterior, en retiro: ADR-0063) agrega el
+ * historial de enrollments. El backend aplica el gate de muestra mínima: con pocos datos
+ * `passRate` viene null y se muestra "pocos datos" en vez del número. El disclaimer es
+ * obligatorio: el dato es self-reported y direccional, no autoritativo.
  */
 export function SubjectHeader({
   subject,

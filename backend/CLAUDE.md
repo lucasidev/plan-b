@@ -81,7 +81,7 @@ Ambos viven en `Infrastructure/` del módulo. Ver [ADR-0018](../docs/decisions/0
 
 Convenciones detalladas en [`docs/engineering/testing.md`](../docs/engineering/testing.md). Resumen para backend:
 
-- **Domain unit** (xUnit + Shouldly): entidades / VOs / errors. Sin mocks, sin I/O. Vive en `modules/<m>/tests/Planb.<M>.Tests/Domain/`.
+- **Domain unit** (xUnit + Shouldly): entidades / VOs / errors. Sin mocks, sin I/O. Vive en `modules/<m>/tests/Planb.<M>.Tests/<CarpetaDelDominio>/`, espejando cómo está agrupado el dominio y sin carpeta `Domain/` intermedia: `Chairs/ChairTests.cs` porque el aggregate vive en `Domain/Chairs/`, y `Catalog/ItemTests.cs` porque `Item` e `Instrument` comparten `Domain/Catalog/`.
 - **Handler unit** (xUnit + NSubstitute + Shouldly): Wolverine handler + FluentValidation, deps mockeadas. Vive en `modules/<m>/tests/Planb.<M>.Tests/Features/<UseCase>/`.
 - **Integration** (xUnit + WebApplicationFactory + Postgres/Redis/Mailpit reales): endpoints, repos EF, Dapper queries. `Planb.IntegrationTests` corre contra el Postgres compartido que levanta `just infra-up`. Cada test class crea un database propio con nombre random (`planb_<label>_<guid>`) y lo dropea al terminar: isolation real sin el costo de un container por test. Ver [ADR-0027](../docs/decisions/0027-integration-tests-shared-postgres.md).
 - **Architecture** (NetArchTest, aterrizó con US-T04): reglas de boundary cross-módulo. Falla en CI si alguien rompe la convención (e.g. endpoint inyectando `DbContext`).

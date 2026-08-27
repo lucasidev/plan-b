@@ -48,9 +48,10 @@ public static class RespondToReviewCommandHandler
             return ToResponse(review);
         }
 
-        // ADR-0060: una reseña que nombra un docente sin resolver (ReviewedTeacherId null) no se
-        // puede responder, porque no hay id contra el cual verificar que quien responde es ese
-        // docente. Es una capacidad que se pierde hasta que alguien resuelva la referencia.
+        // Decisión de la versión anterior del producto, retirada con ADR-0063: una reseña que
+        // nombra un docente sin resolver (ReviewedTeacherId null) no se puede responder, porque no
+        // hay id contra el cual verificar que quien responde es ese docente. Es una capacidad que
+        // se pierde hasta que alguien resuelva la referencia.
         if (review.ReviewedTeacherId is null)
         {
             return ReviewErrors.NotVerifiedTeacherForReview;

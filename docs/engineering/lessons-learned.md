@@ -334,7 +334,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 **Causa raíz**: el diseño inicial priorizaba reutilización de código (un layout, dos forms) sobre claridad de UX. Cada flow auth tiene su propia intención y propio estado mental del user; meterlos en tabs hace que el user dude qué tab está mirando.
 
-**Fix**: US-036 (auth rebuild). Cuatro rutas separadas (`/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`), cada una con layout dedicado. Componente `AuthView` eliminado. Documentado en ADR-0041.
+**Fix**: US-036 (auth rebuild). Cuatro rutas separadas (`/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`), cada una con layout dedicado. Componente `AuthView` eliminado. Documentado en ADR-0071.
 
 **Prevención**:
 
@@ -397,7 +397,7 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 ## 2026-04-30 · Changelog automation: dos bugs en su primer live run
 
-**Síntoma**: el workflow `changelog.yml` (ADR-0037) corrió por primera vez en el merge de PR #28 y se comportó mal de dos formas. Skipeó todos los commits del PR aunque ninguno tenía el opt-out marcado, y de los 3 commits del PR (Rebase merge) solo el último entró al CHANGELOG.
+**Síntoma**: el workflow `changelog.yml` (ADR-0074) corrió por primera vez en el merge de PR #28 y se comportó mal de dos formas. Skipeó todos los commits del PR aunque ninguno tenía el opt-out marcado, y de los 3 commits del PR (Rebase merge) solo el último entró al CHANGELOG.
 
 **Causa raíz**: dos bugs distintos en `scripts/append-changelog.ts`.
 
@@ -569,13 +569,13 @@ Escape hatch: solo `git push --no-verify` (salta TODOS los pre-push hooks). El e
 
 ## 2026-04-25 · Filenames y line endings cross-platform Windows / Linux CI
 
-**Síntoma**: dos síntomas relacionados que aparecieron al ir y venir entre Windows local y CI Linux. (1) El link al ADR-0005 (`reseñas-...md`) rompía en algunos clones del repo: tres commits sucesivos (`bb2cc03`, `877bf2c`, `b492308`) renombraron el archivo y no terminaban de converger. (2) PRs con diffs de "todas las líneas cambiaron" sin haber tocado más de 2 líneas reales.
+**Síntoma**: dos síntomas relacionados que aparecieron al ir y venir entre Windows local y CI Linux. (1) El link a un ADR de filename acentuado (`reseñas-...md`) rompía en algunos clones del repo: tres commits sucesivos (`bb2cc03`, `877bf2c`, `b492308`) renombraron el archivo y no terminaban de converger. (2) PRs con diffs de "todas las líneas cambiaron" sin haber tocado más de 2 líneas reales.
 
 **Causa raíz**: Windows + Git + Linux CI es terreno minado para cualquier carácter no-ASCII en filenames (la ñ se codificaba inconsistente entre NFD y NFC, y `core.precomposeunicode` no estaba alineado entre máquinas) y para line endings (yo escribo CRLF por default; CI espera LF; sin `.gitattributes` Git serializaba lo que cada máquina escribía).
 
 **Fix**:
 
-- Filename ADR-0005 convergió a encoding NFC consistente (commit `b492308`).
+- Ese filename convergió a encoding NFC consistente (commit `b492308`).
 - `.gitattributes` con `* text=auto eol=lf` + `git add --renormalize .` para resetear todo el repo a LF (commit `4e7c809`).
 
 **Prevención**:

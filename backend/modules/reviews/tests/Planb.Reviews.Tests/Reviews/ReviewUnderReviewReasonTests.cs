@@ -83,7 +83,7 @@ public class ReviewUnderReviewReasonTests
 
         review.Status.ShouldBe(ReviewStatus.UnderReview);
         // La razón importa por sus consecuencias: solo la cuarentena por reportes bloquea editar
-        // (revisión 2026-07-29 de ADR-0012), así que marcarla como Reports le sacaría al autor la
+        // (revisión 2026-07-29 de ADR-0063), así que marcarla como Reports le sacaría al autor la
         // única salida que tiene cuando nadie lo reportó.
         review.UnderReviewReason.ShouldBe(UnderReviewReason.EnrollmentChanged);
     }
@@ -200,7 +200,7 @@ public class ReviewUnderReviewReasonTests
     }
 
     /// <summary>
-    /// Lo deliberado (ADR-0012, anti edit-bombing): mientras la razón sea reports, el autor no
+    /// Lo deliberado (ADR-0063, anti edit-bombing): mientras la razón sea reports, el autor no
     /// puede editar. Si se permitiera, podría reescribir la reseña para burlar al moderador antes
     /// de que resuelva los reports abiertos.
     /// </summary>

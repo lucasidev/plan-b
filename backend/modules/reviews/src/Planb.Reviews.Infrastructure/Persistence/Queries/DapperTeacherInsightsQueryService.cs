@@ -14,8 +14,9 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// invariante que el feed y los insights de materia.
 ///
 /// <para>
-/// ADR-0060: <c>reviewed_teacher_id</c> es nullable (la reseña puede nombrar un docente sin
-/// resolver). El filtro <c>reviewed_teacher_id = @TeacherId</c> ya excluye esas filas de forma
+/// Decisión de la versión anterior del producto, retirada con ADR-0063: <c>reviewed_teacher_id</c>
+/// es nullable (la reseña puede nombrar un docente sin resolver). El filtro
+/// <c>reviewed_teacher_id = @TeacherId</c> ya excluye esas filas de forma
 /// natural (NULL nunca iguala a un Guid concreto en SQL), y es deliberado, no un efecto
 /// colateral: no se sabe de quién habla una reseña sin resolver, así que no puede sumar al
 /// agregado de ningún docente.

@@ -19,7 +19,7 @@ export const MOCK_ENROLLMENT_CONTEXT: EnrollmentContext = {
 
 /**
  * Pre-selectable tag set from the canvas (`V2_TAGS` in `v2-screens-4.jsx`). Marked as
- * an example in ADR-0041: the definitive set is decided in a separate US. Kept readonly
+ * an example in ADR-0071: the definitive set is decided in a separate US. Kept readonly
  * so the chip selector type-checks against it.
  */
 export const REVIEW_TAGS = [

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Review editor schema (US-049). ADR-0041 model (post-claude-design):
+ * Review editor schema (US-049). ADR-0071 model (post-claude-design):
  *
  *  - Overall rating 1..5 stars (required).
  *  - Difficulty 1..5 steps (required).

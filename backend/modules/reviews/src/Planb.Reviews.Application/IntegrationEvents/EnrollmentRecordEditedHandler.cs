@@ -7,14 +7,14 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Reviews.Application.IntegrationEvents;
 
 /// <summary>
-/// Consumer of <see cref="EnrollmentRecordEditedIntegrationEvent"/> (US-015, ADR-0032). Enrollments
+/// Consumer of <see cref="EnrollmentRecordEditedIntegrationEvent"/> (US-015, ADR-0063). Enrollments
 /// publishes the fact that a cursada went back to in-progress; Reviews decides what that means for
 /// the review anchored to it, which is that it can no longer stay published: it describes a cursada
 /// that, as far as the record now says, has not finished.
 ///
 /// <para>
 /// The quarantine reason is <c>EnrollmentChanged</c>, not <c>Reports</c>, and that difference is the
-/// whole point: per the 2026-07-29 revision of ADR-0012 only a reports quarantine blocks editing, so
+/// whole point: per the 2026-07-29 revision of ADR-0063 only a reports quarantine blocks editing, so
 /// the author can fix the review (or the cursada) and get it back out. Nobody reported this review.
 /// </para>
 ///
