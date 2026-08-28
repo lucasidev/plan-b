@@ -1,4 +1,4 @@
-import { type APIRequestContext, expect, test } from '@playwright/test';
+import { type APIRequestContext, expect, type Page, test } from '@playwright/test';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
@@ -57,6 +57,30 @@ async function publishByApi(
     },
   });
   expect(published.status(), `publicar para ${student.email}`).toBe(201);
+}
+
+/**
+ * El texto que la página le muestra a una persona: todo el body menos los scripts y estilos, y
+ * menos el bloque de preguntas de la entrada.
+ *
+ * **Sin el bloque de preguntas** porque ahí el copy cita un puntaje ("3,8 sobre 5") justamente
+ * para explicar por qué el producto no publica ninguno. Contarlo como hallazgo obligaría a sacar
+ * el ejemplo que hace entender la respuesta.
+ *
+ * **Sin scripts** porque `textContent` los incluye, y el JS minificado que Next inyecta trae
+ * números y barras que matchean cualquier patrón. Y `textContent` en vez de `innerText` porque
+ * `innerText` depende del layout: con la página a medio pintar devuelve de menos, que es
+ * exactamente cómo este chequeo llegó a estar en verde sin haber mirado nada.
+ */
+async function visibleText(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const clone = document.body.cloneNode(true) as HTMLElement;
+    clone.querySelector('#faq')?.remove();
+    for (const node of clone.querySelectorAll('script, style, noscript')) {
+      node.remove();
+    }
+    return clone.textContent ?? '';
+  });
 }
 
 test.describe('El camino a la ficha, sin cuenta (R2)', () => {
@@ -141,7 +165,21 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
 
     for (const path of publicPages) {
       await page.goto(path);
-      const body = await page.locator('body').innerText();
+
+      // Se espera a que el esqueleto de carga se vaya y a que haya texto de verdad. Sin esto el
+      // chequeo lee la página a medio pintar y pasa por no haber visto nada, que es la peor forma
+      // de estar en verde: así estuvo este mismo test hasta que corrió contra un build.
+      await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 30_000 });
+      // El piso lo marca la ficha de docente, que es la página con menos texto del producto
+      // justamente porque no publica nada sobre la persona: quien es y a qué cátedras pertenece.
+      await expect
+        .poll(async () => (await visibleText(page)).length, {
+          timeout: 30_000,
+          message: `${path} no renderizó nada que revisar`,
+        })
+        .toBeGreaterThan(100);
+
+      const body = await visibleText(page);
 
       // La estrella y el "sobre 5" son la forma en que el modelo anterior publicaba un puntaje.
       expect(body, `${path} muestra una estrella`).not.toMatch(/★/);
