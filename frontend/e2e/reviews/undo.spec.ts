@@ -1,0 +1,146 @@
+import { type APIRequestContext, expect, test } from '@playwright/test';
+import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
+
+/**
+ * E2E de deshacer lo aportado (criterio de salida de R2, punto 3): corregir y borrar una reseña, y
+ * ver que los conteos de la ficha se mueven en consecuencia.
+ *
+ * Lo que protege, y ningún unit test puede: que el ciclo de vida del dato **cierre**. Un producto
+ * que recolecta y no deja sacar lo aportado le pide a alguien que confíe sin salida; el mecanismo
+ * de salida solo sirve si de verdad mueve lo publicado, y eso cruza cuatro pantallas y dos módulos.
+ *
+ * El caso más filoso está al final: la reseña que se borra es la que hizo cruzar el piso, así que
+ * borrarla hace que la ficha **deje de publicar**. Es el peor escenario del deshacer y el que más
+ * fácil se rompe.
+ */
+
+const SUBJECT_ID = '00000004-0000-4000-a000-000000000012';
+const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
+const CHAIR_RUIZ = '00000008-0000-4000-a000-000000000003';
+
+const TERMS = [
+  '00000005-0000-4000-a000-000000000001',
+  '00000005-0000-4000-a000-000000000002',
+  '00000005-0000-4000-a000-000000000003',
+  '00000005-0000-4000-a000-000000000004',
+  '00000005-0000-4000-a000-000000000005',
+  '00000005-0000-4000-a000-000000000006',
+];
+
+/** Las nueve que dejan a Ruiz al borde del piso. Fixture, no el flujo bajo prueba. */
+async function publishByApi(
+  request: APIRequestContext,
+  student: CreatedStudent,
+  termId: string,
+): Promise<void> {
+  const signIn = await request.post('/api/identity/sign-in', {
+    data: { email: student.email, password: student.password },
+  });
+  expect(signIn.ok(), `sign-in de ${student.email}`).toBeTruthy();
+
+  const published = await request.post('/api/reviews/cursadas', {
+    data: {
+      subjectId: SUBJECT_ID,
+      termId,
+      chairId: CHAIR_RUIZ,
+      // Las nueve aprueban: así el desenlace de la décima se ve solo en el conteo.
+      answers: [
+        { itemCode: 'COURSE_OUTCOME', optionValue: 1 },
+        { itemCode: 'CHAIR_ANSWERS_IN_CLASS', optionValue: 3 },
+      ],
+      freeText: null,
+    },
+  });
+  expect(published.status(), `publicar para ${student.email}`).toBe(201);
+}
+
+test.describe('Deshacer lo aportado (US-165, US-166)', () => {
+  test.setTimeout(300_000);
+
+  const students: CreatedStudent[] = [];
+
+  test.afterEach(async ({ request }) => {
+    for (const student of students) {
+      await deleteStudent(request, student);
+    }
+    students.length = 0;
+  });
+
+  test('corregir mueve los conteos y borrar los devuelve bajo el piso', async ({
+    page,
+    context,
+    request,
+  }) => {
+    for (let i = 0; i < 9; i++) {
+      const student = await createStudent(request, { emailPrefix: `e2e-undo-${i}` });
+      students.push(student);
+      await publishByApi(request, student, TERMS[i % TERMS.length]);
+    }
+
+    const author = await createStudent(request, { emailPrefix: 'e2e-undo-author' });
+    students.push(author);
+
+    await context.clearCookies();
+    await page.goto('/sign-in');
+    await page.getByLabel(/tu email/i).fill(author.email);
+    await page.getByLabel(/^contraseña$/i).fill(author.password);
+    await page.getByRole('button', { name: /^entrar$/i }).click();
+    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+
+    // ── 1. La décima, por la pantalla real, con un desenlace que no llega ──────────────────
+    await page.goto('/reviews/new');
+    await page.getByRole('searchbox', { name: /materia/i }).fill('Fundamentos');
+    await page.getByRole('button', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
+    await page.getByRole('button', { name: /^2025-C1$/ }).click();
+    await page.getByRole('button', { name: /^Ruiz$/ }).click();
+    await page.getByRole('button', { name: /^La recurs/ }).click();
+    await page.getByRole('button', { name: /enviar la reseña/i }).click();
+    await expect(page).toHaveURL(/\/reviews\/mine\?published=1$/, { timeout: 30_000 });
+
+    // Aterriza en Mis aportes, con lo suyo a la vista y sus dos salidas.
+    await expect(page.getByRole('heading', { name: SUBJECT_NAME })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^borrar$/i })).toBeVisible();
+
+    // La décima hizo cruzar el piso: la ficha publica, y con 9 de 10 llegando (la del autor no).
+    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await expect(page.getByText(/de cada 10 que la cursan, llegan 9/i)).toBeVisible({
+      timeout: 30_000,
+    });
+
+    // ── 2. Corregir el desenlace, y el conteo se mueve ────────────────────────────────────
+    await page.goto('/reviews/mine');
+    await page.getByRole('button', { name: /^corregir$/i }).click();
+    await expect(page.getByText(/está cargado lo que contestaste/i)).toBeVisible();
+
+    // Lo contestado viene precargado: por eso corregir una sola respuesta no obliga a rehacer las
+    // catorce. Se cambia el desenlace y nada más.
+    await page.getByRole('button', { name: /^La aprob/ }).click();
+    await page.getByRole('button', { name: /guardar la corrección/i }).click();
+    await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible({
+      timeout: 30_000,
+    });
+
+    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await expect(page.getByText(/de cada 10 que la cursan, llegan 10/i)).toBeVisible({
+      timeout: 30_000,
+    });
+
+    // ── 3. Borrarla la saca de los conteos, y la ficha deja de publicar ───────────────────
+    await page.goto('/reviews/mine');
+    await page.getByRole('button', { name: /^borrar$/i }).click();
+    await expect(page.getByText(/sus respuestas dejan de contar/i)).toBeVisible();
+    await page.getByRole('button', { name: /sí, borrarla/i }).click();
+    await expect(page.getByText(/todavía no contaste ninguna cursada/i)).toBeVisible({
+      timeout: 30_000,
+    });
+
+    // Nueve voces otra vez: bajo el piso, la ficha vuelve a decir cuánto le falta y no publica un
+    // solo conteo. Es lo que hace del borrar una salida real y no un gesto.
+    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await expect(page.getByText(/Junta 9 reseñas: con 1 más se publica/i)).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByText(/de cada 10 que la cursan/i)).toHaveCount(0);
+  });
+});

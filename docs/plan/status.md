@@ -264,7 +264,19 @@ Se fue también lo que quedó sin dueño al sacar el aggregate: el corpus de pru
 
 **Verificado** (2026-08-27, contra infraestructura real): backend compilando sin warnings, `dotnet format` limpio, **709 tests unitarios + architecture** y **327 de integración en verde** (Reviews 27, Academic 154, Identity 105, Enrollments 41), **696 tests de frontend**, `bun run build` de producción, y `check-docs --strict` limpio. En el browser: se contó una cursada por la pantalla real, aterrizó en Mis aportes con su acuse, y los conteos de la cátedra se movieron de 30 a 31 voces. La ficha de docente quedó con nombre y cátedras, sin un solo número sobre la persona.
 
-**Lo que falta de R2**: #366 (la landing sigue vendiendo el planificador retirado) y #368 (el E2E de los dos recorridos).
+**La entrada dice lo que el producto hace** (#366, 2026-08-27): `/` vendía el planificador retirado («planificá tu cuatrimestre, comparás comisiones»), cerraba con «empezá a planificar el cuatrimestre que viene», y mostraba un simulador con estrellas y un testimonio inventado. Ahora **muestra el instrumento funcionando sobre una ficha real**: `GET /api/reviews/chairs/sample` sortea una cátedra entre las que ya publican y devuelve su ficha, la misma que sirve `/chairs/{id}`. El sorteo lo hace la base y pasa por el piso de publicación: elegir la de más voces sería un destacado disfrazado, y elegir cualquiera podría caer en una que todavía no tiene nada que mostrar (US-171). Cuando ninguna publica, la entrada lo dice en vez de inventar un ejemplo.
+
+Entran además los dos caminos a una ficha (el catálogo público y el mismo buscador que usa el producto adentro), los tres pasos, y las preguntas reescritas: dos de ellas contestan lo que el producto decidió **no** hacer. **No entran** los links a Método y a Pedir que la ficha SC-004 pide: esas pantallas no existen, y un link a una pantalla inexistente es peor que no ofrecerla.
+
+**El E2E de los dos recorridos** (#368, 2026-08-27):
+
+- **El camino a la ficha sin cuenta**: de la entrada al buscador, a la ficha de materia, a los conteos de una cátedra, sin tipear un UUID. El spec verifica al final que **nunca hubo cookie de sesión**: si algún tramo pidiera login, la presión que el producto existe para ejercer no llegaría a nadie.
+- **Deshacer lo aportado**: nueve reseñas por API dejan a la cátedra al borde del piso, la décima se hace por la pantalla real y la ficha empieza a publicar; corregir el desenlace mueve el conteo (de 9 a 10 de cada 10), y borrarla devuelve la ficha **bajo el piso**, donde deja de publicar. Es el peor escenario del deshacer y el que más fácil se rompe.
+- **El chequeo que protege la poda**: las cuatro superficies públicas se recorren buscando una estrella, un «x sobre 5», un «rating promedio» y un testimonio entrecomillado. Si alguien reintroduce un puntaje en cualquiera, esto lo agarra.
+
+Dos specs quedaron mintiendo por lo que la poda retiró y se reescribieron: el de la landing (asertaba el copy del planificador) y el de editar una cursada, que probaba la confirmación «esto va a poner tu reseña en revisión». Ese mecanismo ya no existe (la reseña vigente no se ancla a la cursada), así que ahora prueba lo contrario: que guardar **no** advierta sobre reseñas. Una advertencia que describe una consecuencia inexistente enseña a desconfiar de los avisos del producto.
+
+**Verificado al cierre de R2** (2026-08-27, contra infraestructura real): **709 tests unitarios y de arquitectura**, **328 de integración** corridos por área (Reviews 28, Academic 154, Identity 105, Enrollments 41), **695 de frontend**, **51 E2E** (3 en `test.fixme` previos), `dotnet format` y `check-docs --strict` limpios.
 
 ### Cómo se sabe que R2 está listo
 
