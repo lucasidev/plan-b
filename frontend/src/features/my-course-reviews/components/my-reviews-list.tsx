@@ -28,7 +28,17 @@ export function MyReviewsList({
 }) {
   const [editing, setEditing] = useState<string | null>(null);
 
-  if (reviews.length === 0) {
+  // Lo borrado sale de la lista acá mismo, sin esperar a que el servidor vuelva a contestar.
+  //
+  // No es un adorno: el borrado responde 204 y el refresh que sigue lee por otra conexión, así que
+  // hay una ventana en la que esa lectura todavía devuelve la reseña recién borrada. Cuando eso
+  // pasaba, el panel de confirmación se cerraba y la tarjeta seguía ahí: al que borró le queda que
+  // no pasó nada, y lo más probable es que lo intente otra vez y reciba «esa reseña ya no está».
+  // Lo vio el E2E del deshacer, con el 204 y el read siguiente en el log del backend.
+  const [removed, setRemoved] = useState<string[]>([]);
+  const visible = reviews.filter((review) => !removed.includes(review.id));
+
+  if (visible.length === 0) {
     return (
       <div className="rounded-xl border border-line bg-bg-card p-6">
         <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
@@ -51,7 +61,7 @@ export function MyReviewsList({
 
   return (
     <div className="flex flex-col gap-2.5">
-      {reviews.map((review) =>
+      {visible.map((review) =>
         editing === review.id && instrument ? (
           <ReviewEditor
             key={review.id}
@@ -65,6 +75,7 @@ export function MyReviewsList({
             review={review}
             canEdit={instrument !== null}
             onEdit={() => setEditing(review.id)}
+            onRemoved={() => setRemoved((prev) => [...prev, review.id])}
           />
         ),
       )}
@@ -76,10 +87,12 @@ function ReviewCard({
   review,
   canEdit,
   onEdit,
+  onRemoved,
 }: {
   review: MyCourseReview;
   canEdit: boolean;
   onEdit: () => void;
+  onRemoved: () => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -94,6 +107,9 @@ function ReviewCard({
         return;
       }
       setConfirming(false);
+      // Primero se saca de la vista, y después se pide la lista de nuevo: el refresh trae los
+      // conteos al día, pero no puede ser lo que decide si la tarjeta desaparece.
+      onRemoved();
       router.refresh();
     });
   }

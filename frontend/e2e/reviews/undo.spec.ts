@@ -27,12 +27,18 @@ const TERMS = [
   '00000005-0000-4000-a000-000000000006',
 ];
 
-/** Las nueve que dejan a Ruiz al borde del piso. Fixture, no el flujo bajo prueba. */
+/**
+ * Las nueve que dejan a Ruiz al borde del piso. Fixture, no el flujo bajo prueba.
+ *
+ * Devuelve el id de la reseña porque el cleanup tiene que borrarla: dar de baja la cuenta **no**
+ * borra lo que aportó (esa es la posición del producto, se saca antes de a uno), así que sin esto
+ * cada corrida le dejaría nueve voces más a Ruiz y el reintento arrancaría sobre el piso.
+ */
 async function publishByApi(
   request: APIRequestContext,
   student: CreatedStudent,
   termId: string,
-): Promise<void> {
+): Promise<string> {
   const signIn = await request.post('/api/identity/sign-in', {
     data: { email: student.email, password: student.password },
   });
@@ -52,14 +58,37 @@ async function publishByApi(
     },
   });
   expect(published.status(), `publicar para ${student.email}`).toBe(201);
+
+  const body = (await published.json()) as { id: string };
+  return body.id;
+}
+
+/** Saca del corpus lo que sembró el fixture, para que la corrida siguiente empiece de cero. */
+async function unpublishByApi(
+  request: APIRequestContext,
+  student: CreatedStudent,
+  reviewId: string,
+): Promise<void> {
+  const signIn = await request.post('/api/identity/sign-in', {
+    data: { email: student.email, password: student.password },
+  });
+  if (!signIn.ok()) return;
+
+  await request.delete(`/api/reviews/cursadas/${reviewId}`);
 }
 
 test.describe('Deshacer lo aportado (US-165, US-166)', () => {
   test.setTimeout(300_000);
 
   const students: CreatedStudent[] = [];
+  const seeded: { student: CreatedStudent; reviewId: string }[] = [];
 
   test.afterEach(async ({ request }) => {
+    for (const { student, reviewId } of seeded) {
+      await unpublishByApi(request, student, reviewId);
+    }
+    seeded.length = 0;
+
     for (const student of students) {
       await deleteStudent(request, student);
     }
@@ -74,7 +103,8 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     for (let i = 0; i < 9; i++) {
       const student = await createStudent(request, { emailPrefix: `e2e-undo-${i}` });
       students.push(student);
-      await publishByApi(request, student, TERMS[i % TERMS.length]);
+      const reviewId = await publishByApi(request, student, TERMS[i % TERMS.length]);
+      seeded.push({ student, reviewId });
     }
 
     const author = await createStudent(request, { emailPrefix: 'e2e-undo-author' });
