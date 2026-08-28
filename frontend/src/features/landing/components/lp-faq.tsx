@@ -2,29 +2,38 @@ const FAQ_ITEMS = [
   {
     question: '¿plan-b está afiliada con mi universidad?',
     answer:
-      'No. Es un proyecto independiente hecho por alumnos. Las universidades no operan ni moderan el contenido: el equipo de plan-b cura los datos académicos.',
+      'No. Es un proyecto independiente hecho por alumnos. Las universidades no lo operan ni deciden qué se publica.',
   },
   {
-    question: '¿Pueden los profesores ver quién los reseñó?',
+    question: '¿Por qué no hay estrellas ni puntaje?',
     answer:
-      'No. Las reseñas son anónimas hacia afuera. Internamente verificamos que cursaste, pero esa data no sale del backend.',
+      'Porque un puntaje se discute y un conteo no. «3,8 sobre 5» no dice nada verificable; «ocho de cada diez marcaron que faltaron muchas clases, sobre 31 cursadas» sí, y se puede desarmar hasta la opción que cada uno eligió.',
   },
   {
-    question: '¿Tengo que cargar todo mi historial?',
+    question: '¿Cualquiera puede escribir sobre una cátedra?',
     answer:
-      'Sí, esa es la base. Sin historial no podés reseñar ni armar un plan útil. Tarda 2 minutos.',
+      'Hace falta cuenta, y va una sola voz por cuenta, materia y período: la misma cursada no se cuenta dos veces. Hacia afuera nada lleva tu nombre, y nunca se muestra una reseña sola.',
   },
   {
-    question: '¿Qué pasa con las reseñas viejas si cambia el profesor?',
+    question: '¿Por qué algunas cátedras no muestran nada?',
     answer:
-      'Quedan asociadas al docente y al cuatrimestre en el que se cursó. Una reseña de 2021 con otro profe es eso, no se mezcla.',
+      'Porque todavía no juntaron diez reseñas. Con menos, un conteo diría más de quién se acordó de escribir que de cómo se cursa ahí, y además haría reconocible a quien escribió.',
+  },
+  {
+    question: '¿Puedo borrar lo que conté?',
+    answer:
+      'Sí, en Mis aportes, y también corregirlo. Lo que saques deja de contar y los conteos de la ficha se mueven hacia atrás.',
   },
 ] as const;
 
 /**
- * Sección FAQ de la landing pública (US-054-f). Port de la sección `#faq` de
- * `Landing` (docs/design/reference/canvas-mocks/landing.jsx, líneas 542-575).
- * Las 4 preguntas se muestran siempre expandidas (el mock no usa acordeón).
+ * Las preguntas de la entrada. Se muestran siempre expandidas: son cinco, y esconderlas detrás de
+ * un acordeón le pediría a alguien que ya desconfía que haga clic para enterarse de lo que le
+ * importa.
+ *
+ * Dos contestan lo que el producto decidió **no** hacer (no hay puntaje, no se publica bajo el
+ * piso). Están acá y no en Método porque Método todavía no existe como pantalla, y porque son
+ * exactamente las dos que hacen dudar a quien llega.
  */
 export function LpFaq() {
   return (

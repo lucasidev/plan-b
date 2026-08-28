@@ -1,4 +1,4 @@
-import type { PublishedItem } from '../types';
+import type { PublishedItem } from './types';
 
 /**
  * Un ítem publicado: qué se preguntó, qué contestó la mayoría (badge con la etiqueta literal), la

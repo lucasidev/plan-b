@@ -1,6 +1,6 @@
 # Inicio (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de la estructura de bloques de la landing; revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Slug hoy `/`. Épicas que la componen: [Elegir dónde estudiar](../../README.md) (la entrada; su identidad visual se diseña con criterio propio, aparte del producto).
+> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: construida el 2026-08-27 (R2). El [boceto mid-fi](sketch.html) quedó rebasado en su contenido: su ejemplo de ficha es de la medición anterior al 2026-08-25 ([ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)), y lo que vale de él es la estructura de bloques. Pública, se lee sin cuenta. Slug `/`.
 
 ## Quién la usa
 
@@ -27,7 +27,7 @@ Su identidad visual se diseña con criterio propio: lo que sigue es la estructur
 
 ## Estados
 
-Por decidir: esta pantalla es mayormente estática; no tiene definido acá un estado de carga o error propio, salvo el de la muestra del punto 3 (qué ficha se elige y si eso tarda). Se relaciona con lo que "Qué muestra la muestra" deja abierto más abajo.
+**Con muestra** (lo normal apenas una cátedra publica) y **sin muestra**: cuando ninguna cruzó el piso, la pantalla lo dice y explica por qué («una cátedra publica sus conteos recién cuando junta 10 reseñas»), en vez de mostrar un ejemplo inventado. Es el estado real de un producto que recién empieza a juntar voces, y la entrada existe justamente para no maquillarlo.
 
 ## Lo que no muestra nunca
 
@@ -41,7 +41,15 @@ Es la puerta de entrada: no llega desde ninguna otra pantalla del producto, sino
 
 [ADR-0063](../../../../../decisions/0063-the-product-is-a-pressure-instrument.md) (qué es plan-b: ni ranking ni buscador de carreras, sin acuerdos con instituciones), [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md) (la muestra es una ficha con conteos y voces, nunca un puntaje). Las garantías de [Que no me molesten](../../../../guarantees/README.md) que se verifican acá: no pide cuenta para leer (US-168), nada destacado ni patrocinado (US-171).
 
+## Lo construido (R2, 2026-08-27)
+
+Están los bloques 1, 2, 3 y 6: qué es plan-b, los dos caminos (Explorar hacia el catálogo público y el mismo buscador que usa el producto adentro), la muestra sorteada con su ficha real, los tres pasos, y que leer no pide cuenta dicho en el hero.
+
+**El sorteo es por visita** y lo hace la base (`ORDER BY random()` sobre las cátedras que cruzaron el piso), no la pantalla: dejarlo del lado del llamador permitiría ordenarlo «por las mejores» sin que se note. De la ficha sorteada se enfrentan la finalización y los dos primeros ítems **en el orden de la ficha** (alfabético por código), no una selección; el resto se ve entrando.
+
+**No están los bloques 4 y 5** (Método y Pedir): sus pantallas todavía no existen, y un link a una pantalla inexistente es peor que no ofrecerla. Las dos preguntas que Método contestaría y que más hacen dudar a quien llega (por qué no hay puntaje, por qué algunas cátedras no muestran nada) se contestan mientras tanto en las preguntas de la propia entrada.
+
 ## Lo que esta ficha deja abierto
 
-- **La identidad visual de la landing** (tipografía, tono): distinta de la del producto, todavía no se dibujó; el mid-fi de acá es solo la estructura de bloques.
-- **Cuántas fichas entran en el sorteo y cada cuánto rota**: [US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) ya cierra el criterio (al azar entre las que ya pasaron el piso de publicación, nunca por el valor del número), pero no dice si el sorteo es por visita, por día, ni si se excluye la que el visitante ya vio.
+- **La identidad visual de la landing** (tipografía, tono): se construyó con los tokens del producto y el contrato Boletín para el bloque de la muestra, no con una identidad propia. Sigue sin dibujarse.
+- **Cada cuánto rota la muestra**: hoy sortea en cada visita. Queda abierto si conviene fijarla por día (para que dos personas que comparten el link vean lo mismo) y si se excluye la que el visitante ya vio.
