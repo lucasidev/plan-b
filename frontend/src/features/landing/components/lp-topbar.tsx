@@ -33,11 +33,11 @@ export function LpTopbar({ isLoggedIn }: Props) {
       <Logo size={16} />
       <span className="flex-1" />
       <nav className="flex items-center text-ink-2" style={{ gap: 24, fontSize: 13 }}>
-        <a href="#features" className={NAV_LINK_CLASSES}>
-          Cómo funciona
+        <a href="#sample" className={NAV_LINK_CLASSES}>
+          Una ficha
         </a>
-        <a href="#data" className={NAV_LINK_CLASSES}>
-          Datos
+        <a href="#how" className={NAV_LINK_CLASSES}>
+          Cómo funciona
         </a>
         <a href="#faq" className={NAV_LINK_CLASSES}>
           Preguntas

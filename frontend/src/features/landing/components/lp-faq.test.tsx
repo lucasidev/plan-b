@@ -10,15 +10,16 @@ describe('LpFaq', () => {
     ).toBeInTheDocument();
   });
 
-  it('renderiza las 4 preguntas del FAQ', () => {
+  it('renderiza las cinco preguntas', () => {
     render(<LpFaq />);
+    expect(screen.getAllByText(/^¿/)).toHaveLength(5);
+  });
 
-    expect(screen.getByText('¿plan-b está afiliada con mi universidad?')).toBeInTheDocument();
-    expect(screen.getByText('¿Pueden los profesores ver quién los reseñó?')).toBeInTheDocument();
-    expect(screen.getByText('¿Tengo que cargar todo mi historial?')).toBeInTheDocument();
-    expect(
-      screen.getByText('¿Qué pasa con las reseñas viejas si cambia el profesor?'),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText(/^¿/)).toHaveLength(4);
+  // Las dos que contestan lo que el producto decidió NO hacer. Si alguien las saca, la entrada
+  // vuelve a dejar sin respuesta las dos cosas que más hacen dudar a quien llega.
+  it('contesta por qué no hay puntaje y por qué algunas cátedras no muestran nada', () => {
+    render(<LpFaq />);
+    expect(screen.getByText(/¿Por qué no hay estrellas ni puntaje\?/)).toBeInTheDocument();
+    expect(screen.getByText(/¿Por qué algunas cátedras no muestran nada\?/)).toBeInTheDocument();
   });
 });

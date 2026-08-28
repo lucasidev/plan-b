@@ -1,3 +1,5 @@
+import type { PublishedItem } from '@/components/facts';
+
 /**
  * La ficha de una cátedra tal como baja del backend (US-147, ADR-0083).
  *
@@ -42,23 +44,6 @@ export interface FameItem {
   text: string;
   negativeLabel: string;
   percent: number;
-}
-
-/** Un ítem publicado: su moda como badge y su distribución completa por opción. */
-export interface PublishedItem {
-  code: string;
-  text: string;
-  modeLabel: string;
-  modePercent: number;
-  modeIsNegative: boolean;
-  total: number;
-  distribution: DistributionSlice[];
-}
-
-export interface DistributionSlice {
-  label: string;
-  percent: number;
-  isNegative: boolean;
 }
 
 /** De cada diez que la cursan, cuántas llegan. Solo agregada, nunca por persona. */

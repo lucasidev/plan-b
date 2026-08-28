@@ -143,6 +143,26 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
     /// viene del SQL y se respeta: es el orden en que se ofrecieron al responder, y la ficha dibuja
     /// la distribución en ese mismo orden.
     /// </summary>
+    public async Task<Guid?> PickPublishingChairAsync(
+        int minimumReviews, CancellationToken ct = default)
+    {
+        // `random()` y no un orden estable: el sorteo tiene que ser sorteo. Con `HAVING` sobre el
+        // conteo se descartan las que todavía no cruzaron el piso, que es el mismo piso que la
+        // ficha usa para decidir si publica; una cátedra que no publica no tendría nada que mostrar.
+        const string sql = @"
+            SELECT chair_id
+            FROM reviews.course_reviews
+            WHERE chair_id IS NOT NULL
+            GROUP BY chair_id
+            HAVING count(*) >= @MinimumReviews
+            ORDER BY random()
+            LIMIT 1;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<Guid?>(
+            new CommandDefinition(sql, new { MinimumReviews = minimumReviews }, cancellationToken: ct));
+    }
+
     private static List<ItemTally> ToTallies(IEnumerable<TallyRow> rows) =>
         rows
             .GroupBy(r => r.ItemCode, StringComparer.Ordinal)

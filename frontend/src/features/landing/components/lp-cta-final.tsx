@@ -2,16 +2,18 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * Banda de CTA final de la landing pública (US-054-f). Port de la última
- * `<section>` de `Landing` (docs/design/reference/canvas-mocks/landing.jsx,
- * líneas 577-606): fondo oscuro (`bg-ink`), heading + CTA hacia `/sign-up`.
+ * La banda final de la entrada. Cierra con la única acción que pide cuenta: contar una cursada.
+ *
+ * Antes cerraba con "empezá a planificar el cuatrimestre que viene", que era el producto retirado
+ * (ADR-0063). Y sigue sin ser un muro: quien no quiere cuenta ya leyó todo lo de arriba, que es la
+ * mayor parte del producto (US-168).
  */
 export function LpCtaFinal() {
   return (
     <section className="bg-ink" style={{ padding: '48px 48px 40px' }}>
       <div
         className="flex flex-wrap items-center justify-between"
-        style={{ maxWidth: 1280, margin: '0 auto', gap: 32 }}
+        style={{ maxWidth: 920, margin: '0 auto', gap: 32 }}
       >
         <div>
           <h2
@@ -23,10 +25,11 @@ export function LpCtaFinal() {
               color: 'var(--color-bg)',
             }}
           >
-            Empezá a planificar el cuatrimestre que viene.
+            ¿Cursaste alguna? Contala.
           </h2>
           <p className="text-ink-4" style={{ marginTop: 8, fontSize: 14, maxWidth: '56ch' }}>
-            30 segundos para registrarte. 2 minutos para cargar historial. Después la app es tuya.
+            Un minuto y medio, marcando opciones. Lo tuyo se suma a los conteos de tu cátedra y no
+            se publica solo: nadie ve una reseña sola, ni con tu nombre ni sin él.
           </p>
         </div>
         <Link

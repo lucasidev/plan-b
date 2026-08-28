@@ -43,6 +43,25 @@ public interface IChairTallyQueryService
     Task<SubjectTallies> GetPerChairAsync(
         IReadOnlyList<(Guid ChairId, string ChairName)> chairs,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// Una cátedra al azar entre las que ya publican, para la muestra de la entrada (US-221).
+    /// Devuelve null cuando ninguna cruzó el piso todavía.
+    ///
+    /// <para>
+    /// El sorteo lo hace la base y no el llamador a propósito: elegir en memoria obligaría a
+    /// traerse la lista entera de cátedras que publican para descartarla, y sobre todo dejaría el
+    /// criterio del sorteo donde alguien puede ordenarlo "por las mejores" sin que se note. Acá el
+    /// único orden posible es el azar.
+    /// </para>
+    ///
+    /// <para>
+    /// Al azar y no por cantidad de voces es la decisión de US-221: la de más voces sería un
+    /// destacado disfrazado, y cualquiera entre todas podría caer en una que todavía junta las
+    /// primeras y no tiene nada que mostrar.
+    /// </para>
+    /// </summary>
+    Task<Guid?> PickPublishingChairAsync(int minimumReviews, CancellationToken ct = default);
 }
 
 /// <summary>

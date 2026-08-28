@@ -25,11 +25,8 @@ describe('LpTopbar', () => {
 
   it('muestra el nav interno hacia las anclas de la landing', () => {
     render(<LpTopbar isLoggedIn={false} />);
-    expect(screen.getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute(
-      'href',
-      '#features',
-    );
-    expect(screen.getByRole('link', { name: 'Datos' })).toHaveAttribute('href', '#data');
+    expect(screen.getByRole('link', { name: 'Una ficha' })).toHaveAttribute('href', '#sample');
+    expect(screen.getByRole('link', { name: 'Cómo funciona' })).toHaveAttribute('href', '#how');
     expect(screen.getByRole('link', { name: 'Preguntas' })).toHaveAttribute('href', '#faq');
   });
 });

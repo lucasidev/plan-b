@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { LpCtaFinal } from './lp-cta-final';
 
 describe('LpCtaFinal', () => {
-  it('renderiza el heading de cierre', () => {
+  it('cierra invitando a contar una cursada, no a planificar', () => {
     render(<LpCtaFinal />);
     expect(
-      screen.getByRole('heading', { name: /empezá a planificar el cuatrimestre que viene/i }),
+      screen.getByRole('heading', { name: /¿cursaste alguna\? contala/i }),
     ).toBeInTheDocument();
   });
 

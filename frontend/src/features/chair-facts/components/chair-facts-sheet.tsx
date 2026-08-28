@@ -1,7 +1,7 @@
 import Link from 'next/link';
+import { ItemRow } from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
 import type { ChairFacts } from '../types';
-import { ItemRow } from './item-row';
 
 /**
  * La ficha de una cátedra (SC-002, US-147, ADR-0083): lo que el producto publica.

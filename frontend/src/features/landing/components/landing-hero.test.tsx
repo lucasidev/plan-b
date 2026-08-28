@@ -1,34 +1,55 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { LandingHero } from './landing-hero';
 
+// El hero monta el buscador global, que necesita router y QueryClient. Se le dan los dos en vez de
+// mockear el buscador entero: lo que se prueba acá es el copy de la entrada, y el buscador de
+// verdad tiene su propio recorrido en el E2E, contra el catálogo real.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+
+function renderHero() {
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      <LandingHero />
+    </QueryClientProvider>,
+  );
+}
+
 describe('LandingHero', () => {
-  it('renderiza el heading principal con el copy "pasaron por ahí"', () => {
-    render(<LandingHero />);
+  it('renderiza el heading principal con la tesis en palabras de lector', () => {
+    renderHero();
     const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent(/pasaron por ahí/i);
+    expect(heading).toHaveTextContent(/una anécdota/i);
+    // El número del título es el piso de publicación real, no una cifra retórica.
+    expect(heading).toHaveTextContent(/diez, un hecho/i);
   });
 
-  it('muestra el link "Crear cuenta gratis" hacia /sign-up', () => {
-    render(<LandingHero />);
-    expect(screen.getByRole('link', { name: /crear cuenta gratis/i })).toHaveAttribute(
+  // Los dos CTA de la entrada son de lectura y ninguno de registro: quien llega todavía no sabe
+  // qué es esto, y pedirle cuenta antes de mostrarle un dato invierte el orden de la tesis.
+  it('sus dos CTA llevan a leer, no a registrarse', () => {
+    renderHero();
+    expect(screen.getByRole('link', { name: /explorar carreras y materias/i })).toHaveAttribute(
       'href',
-      '/sign-up',
+      '/universities',
     );
-  });
-
-  it('muestra el link "Ver cómo funciona" hacia #features', () => {
-    render(<LandingHero />);
-    expect(screen.getByRole('link', { name: /ver cómo funciona/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /ver una ficha de verdad/i })).toHaveAttribute(
       'href',
-      '#features',
+      '#sample',
     );
+    expect(screen.queryByRole('link', { name: /crear cuenta/i })).not.toBeInTheDocument();
   });
 
-  it('muestra las propuestas de valor del producto', () => {
-    render(<LandingHero />);
-    expect(screen.getByText('Verificado')).toBeInTheDocument();
-    expect(screen.getByText('Anónimo')).toBeInTheDocument();
-    expect(screen.getByText('Independiente')).toBeInTheDocument();
+  it('dice que leer no pide cuenta, sin que haya que descubrirlo', () => {
+    renderHero();
+    expect(screen.getByText(/leer no pide cuenta/i)).toBeInTheDocument();
+  });
+
+  // ADR-0083: la entrada no promete un puntaje porque el producto no publica ninguno.
+  it('no promete puntajes ni el planificador retirado', () => {
+    const { container } = renderHero();
+    expect(container.textContent).not.toMatch(/planific|comisión|comisiones|puntaje de|★/i);
   });
 });
