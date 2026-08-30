@@ -7,9 +7,8 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Soy docente · planb' };
 
 /**
- * /teacher-claim (US-030). Donde un member reclama identidad sobre un docente del catálogo. Es el
- * destino al que el layout (teacher) manda a los members todavía no verificados: desde acá reclaman
- * y, una vez verificados (US-031), desbloquean responder reseñas.
+ * /teacher-claim (US-030). Donde un member reclama identidad sobre un docente del catálogo: desde
+ * acá reclaman y, una vez verificados (US-031), desbloquean responder reseñas.
  */
 export default async function TeacherClaimPage() {
   const claims = await fetchMyTeacherClaimsServer();
