@@ -602,14 +602,15 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///   <item>El año, si viene, debe estar en [<see cref="MinEnrollmentYear"/>, año actual del
     ///         clock]. Es nullable: el profile que <see cref="VerifyEmail"/> materializa desde una
     ///         declaración de carrera hecha en el registro todavía no tiene esa respuesta.</item>
-    ///   <item>No puede haber dos StudentProfiles activos del mismo user para la misma carrera.
-    ///         Un mismo user sí puede tener profiles activos en carreras distintas (ej. doble
-    ///         titulación).</item>
+    ///   <item>Un user no puede tener más de un StudentProfile activo, sin importar la carrera:
+    ///         el invariante es la cuenta, no la carrera (una cuenta declara una única carrera
+    ///         vigente). Para pasarse a otra, primero hay que dar de baja el activo (path de
+    ///         deactivación todavía no implementado).</item>
     /// </list>
     /// El handler valida ANTES que el <paramref name="careerPlanId"/> exista en Academic via
     /// <c>IAcademicQueryService</c> (ADR-0017: no FK cross-schema). El <paramref name="careerId"/>
-    /// se denormaliza acá desde el plan para que el constraint UNIQUE(user_id, career_id) sea
-    /// evaluable en DB sin JOIN cross-schema.
+    /// se denormaliza acá desde el plan porque el aggregate necesita comparar carreras sin
+    /// JOIN cross-schema (aunque el constraint UNIQUE(user_id) de abajo ya no lo requiera).
     /// </summary>
     public Result<StudentProfile> AddStudentProfile(
         Guid careerPlanId,
@@ -654,9 +655,12 @@ public sealed class User : Entity<UserId>, IAggregateRoot
             return UserErrors.EnrollmentYearOutOfRange;
         }
 
-        var hasActiveForCareer = _studentProfiles.Any(sp =>
-            sp.CareerId == careerId && sp.IsActive);
-        if (hasActiveForCareer)
+        // El invariante es "una cuenta, un perfil activo": no importa si la carrera nueva es
+        // la misma que ya tiene activa o una distinta (bug real: dos pestañas declarando
+        // carreras distintas en simultáneo dejaban dos profiles activos, y el read de "la"
+        // carrera del user quedaba indeterminado).
+        var hasActiveProfile = _studentProfiles.Any(sp => sp.IsActive);
+        if (hasActiveProfile)
         {
             return UserErrors.DuplicateStudentProfile;
         }

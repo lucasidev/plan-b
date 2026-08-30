@@ -15,7 +15,8 @@ namespace Planb.IntegrationTests.Identity;
 ///   - El endpoint POST /api/me/student-profiles persiste el StudentProfile en DB.
 ///   - La denormalización del CareerId desde el plan funciona contra el seed real de Academic.
 ///   - Los AC del aggregate (verified, year range, no duplicates) bubble-up a HTTP status correctos.
-///   - El re-intento sobre la misma carrera retorna 409.
+///   - El re-intento retorna 409, sin importar si la carrera nueva es la misma que ya tiene
+///     activa o una distinta (el invariante es la cuenta, no la carrera).
 ///
 /// Auth: post-JwtBearer middleware. Cada test arma un user autenticado con
 /// <see cref="AuthenticatedClient.CreateAsync"/>; el endpoint deriva el UserId del JWT en
@@ -114,7 +115,7 @@ public class CreateStudentProfileEndpointTests
     }
 
     [Fact]
-    public async Task Returns_409_when_user_already_has_active_profile_for_same_career()
+    public async Task Returns_409_when_user_already_has_active_profile()
     {
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, $"create-profile-dup.{Guid.NewGuid():N}@planb.local");
@@ -132,7 +133,32 @@ public class CreateStudentProfileEndpointTests
 
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
         var body = await second.Content.ReadAsStringAsync();
-        body.ShouldContain("identity.student_profile.duplicate_for_career");
+        body.ShouldContain("identity.student_profile.duplicate");
+    }
+
+    /// <summary>
+    /// Regresión del bug de dos StudentProfiles activos simultáneos: una cuenta con dos
+    /// pestañas abiertas podía declarar una carrera en cada una y las dos devolvían 201. El
+    /// invariante es "una cuenta, un perfil activo", no "un perfil activo por carrera".
+    /// </summary>
+    [Fact]
+    public async Task Returns_409_when_user_already_has_active_profile_for_different_career()
+    {
+        var auth = await AuthenticatedClient.CreateAsync(
+            _fixture, $"create-profile-dup-other-career.{Guid.NewGuid():N}@planb.local");
+
+        var first = await auth.Client.PostAsJsonAsync(
+            "/api/me/student-profiles",
+            new { careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value, enrollmentYear = 2024 });
+        first.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var second = await auth.Client.PostAsJsonAsync(
+            "/api/me/student-profiles",
+            new { careerPlanId = AcademicSeedData.Careers[3].Plan.Id.Value, enrollmentYear = 2024 });
+
+        second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+        var body = await second.Content.ReadAsStringAsync();
+        body.ShouldContain("identity.student_profile.duplicate");
     }
 
     [Fact]

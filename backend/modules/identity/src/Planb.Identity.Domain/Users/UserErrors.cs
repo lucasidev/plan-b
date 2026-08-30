@@ -210,14 +210,15 @@ public static class UserErrors
             "Enrollment year must be between 2010 and the current year.");
 
     /// <summary>
-    /// Un user solo puede tener un StudentProfile activo por carrera. Si quiere cambiar el plan
-    /// de la misma carrera, primero deberá deactivar el activo (path de deactivación todavía
-    /// no implementado).
+    /// Un user solo puede tener un StudentProfile activo, sin importar la carrera: no importa
+    /// si la carrera nueva es la misma que ya tiene activa o una distinta. Si quiere cambiar
+    /// de carrera, primero deberá deactivar el activo (path de deactivación todavía no
+    /// implementado).
     /// </summary>
     public static readonly Error DuplicateStudentProfile =
         Error.Conflict(
-            "identity.student_profile.duplicate_for_career",
-            "User already has an active student profile for that career.");
+            "identity.student_profile.duplicate",
+            "User already has an active student profile.");
 
     /// <summary>
     /// User no encontrado por Id. Llega al handler solo si el JWT fue válido pero el user fue

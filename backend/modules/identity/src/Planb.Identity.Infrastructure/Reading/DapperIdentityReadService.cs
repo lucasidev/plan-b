@@ -54,10 +54,15 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
         UserId userId,
         CancellationToken ct = default)
     {
-        // El modelo MVP tiene 1 StudentProfile por user (UNIQUE constraint en user_id +
-        // career_id, y de hecho enforce 1-a-1 a nivel aggregate en User.AddStudentProfile).
-        // Si en algún momento permitimos múltiples (cambio de carrera con histórico), este
-        // endpoint cambia a devolver el "current" según un campo nuevo.
+        // El modelo tiene 1 StudentProfile activo por user (UNIQUE constraint en user_id
+        // filtrado por status='Active', y de hecho enforce 1-a-1 a nivel aggregate en
+        // User.AddStudentProfile). Si en algún momento permitimos múltiples (cambio de carrera
+        // con histórico), este endpoint cambia a devolver el "current" según un campo nuevo.
+        // ORDER BY + LIMIT 1: con el invariante de arriba no debería haber más de una fila
+        // activa, pero un LIMIT 1 sin ORDER BY es una bomba silenciosa (Postgres no garantiza
+        // qué fila devuelve si el invariante alguna vez se rompe de nuevo, como pasó con el
+        // índice viejo por carrera). DESC porque ante dos filas activas el perfil más nuevo es
+        // la señal más consistente con "lo último que la cuenta declaró".
         // US-047: el SELECT trae también los nuevos campos editables del perfil + JOIN con
         // users para el header de Mi perfil (email + "miembro desde"). Filtramos por user
         // no-deactivated y profile activo (status='Active') para no devolver basura post-deactivate.
@@ -92,6 +97,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
             WHERE sp.user_id = @UserId
               AND sp.status = 'Active'
               AND u.deactivated_at IS NULL
+            ORDER BY sp.created_at DESC
             LIMIT 1;";
 
         using IDbConnection db = new NpgsqlConnection(_connectionString);

@@ -217,17 +217,19 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
                 .IsRequired()
                 .HasDefaultValue(true);
 
-            // Partial unique: un mismo user no puede tener dos profiles activos para la misma
-            // carrera. Postgres-specific. El filter "status = 'Active'" garantiza que un perfil
-            // Inactive (cuando ese estado exista) no bloquee el alta de uno nuevo activo para
-            // la misma carrera.
+            // Partial unique: un mismo user no puede tener más de un profile activo, sin
+            // importar la carrera (el invariante es la cuenta, no la carrera: ver
+            // User.AddStudentProfile). Postgres-specific. El filter "status = 'Active'"
+            // garantiza que un perfil Inactive (cuando ese estado exista) no bloquee el alta
+            // de uno nuevo activo.
             //
-            // Usamos nombres mixtos: "user_id" es shadow property (declarada arriba), "CareerId"
-            // es CLR property. Si pasáramos "career_id" EF crearía un nuevo shadow property con
-            // ese nombre en lugar de mapear a la columna existente.
-            profiles.HasIndex("user_id", nameof(StudentProfile.CareerId))
+            // Reemplaza al índice compuesto (user_id, career_id) que solo frenaba el duplicado
+            // dentro de la MISMA carrera: dos pestañas declarando carreras distintas en
+            // simultáneo pasaban las dos, y el read de "la" carrera del user quedaba
+            // indeterminado (bug real).
+            profiles.HasIndex("user_id")
                 .IsUnique()
-                .HasDatabaseName("ux_student_profiles_user_career_active")
+                .HasDatabaseName("ux_student_profiles_user_active")
                 .HasFilter("status = 'Active'");
         });
 
