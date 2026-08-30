@@ -832,7 +832,7 @@ public class UserTests
     }
 
     [Fact]
-    public void AddStudentProfile_fails_when_active_profile_for_same_career_already_exists()
+    public void AddStudentProfile_fails_when_user_already_has_any_active_profile()
     {
         var clock = new FixedClock(T0);
         var user = VerifiedActiveUser(clock);
@@ -847,8 +847,12 @@ public class UserTests
         user.StudentProfiles.Count.ShouldBe(1);
     }
 
+    /// <summary>
+    /// El invariante es la cuenta, no la carrera: dos pestañas declarando carreras distintas
+    /// en simultáneo no pueden dejar dos profiles activos (bug real que motivó este test).
+    /// </summary>
     [Fact]
-    public void AddStudentProfile_allows_two_active_profiles_for_distinct_careers()
+    public void AddStudentProfile_fails_when_active_profile_exists_for_different_career()
     {
         var clock = new FixedClock(T0);
         var user = VerifiedActiveUser(clock);
@@ -856,8 +860,9 @@ public class UserTests
         user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock).IsSuccess.ShouldBeTrue();
         var second = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), 2024, clock);
 
-        second.IsSuccess.ShouldBeTrue();
-        user.StudentProfiles.Count.ShouldBe(2);
+        second.IsFailure.ShouldBeTrue();
+        second.Error.ShouldBe(UserErrors.DuplicateStudentProfile);
+        user.StudentProfiles.Count.ShouldBe(1);
     }
 
     [Fact]
