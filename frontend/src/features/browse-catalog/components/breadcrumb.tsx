@@ -11,6 +11,10 @@ export type CrumbItem = {
  * hacia arriba en la jerarquía. Cada page arma sus propios `items` con lo que efectivamente pudo
  * resolver (ver comentario en `app/(public)/careers/[id]/plans/page.tsx` sobre el nivel que no
  * puede resolver nombre de carrera/universidad con los endpoints públicos actuales).
+ *
+ * Manda el `href`, no la posición: quien tiene `href` es un link, tenga o no algo a la derecha. La
+ * condición miraba también `!isLast` y se comía el href del último, así que una página que resuelve
+ * un solo nivel (Planes de estudio, que no puede nombrar carrera ni universidad) quedaba sin salida.
  */
 export function CatalogBreadcrumb({ items }: { items: CrumbItem[] }) {
   if (items.length === 0) return null;
@@ -25,7 +29,7 @@ export function CatalogBreadcrumb({ items }: { items: CrumbItem[] }) {
         const isLast = index === items.length - 1;
         return (
           <span key={item.label}>
-            {item.href && !isLast ? (
+            {item.href ? (
               <Link href={item.href} className="hover:text-ink hover:underline">
                 {item.label}
               </Link>

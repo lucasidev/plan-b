@@ -5,40 +5,37 @@ import { usePathname } from 'next/navigation';
 import { Fragment } from 'react';
 import { cn } from '@/lib/utils';
 
-/** Roles que operan el backoffice: admin (todo) o moderador (solo moderación). */
-export type BackofficeRole = 'admin' | 'moderator';
-
 /**
  * Nav del backoffice (port de `admin-shell.jsx::ADM_NAV`). Los items con `href` navegan a páginas
- * reales; `roles` restringe qué rol ve el link vivo (Docentes es admin-only, Reportes lo ve también el
- * moderador). El resto se muestra inerte para fidelidad del shell, hasta que aterrice cada vista.
+ * reales; el resto se muestra inerte para fidelidad del shell.
+ *
+ * Un item inerte dice por qué lo está, y eso importa: Carreras y Materias SÍ existen, pero cuelgan
+ * de una universidad (`/admin/universities/[id]/careers`, y las materias de su plan), así que no hay
+ * ruta de primer nivel a la que linkear. Anunciarlas como "Próximamente" le miente justo a la
+ * persona cuyo trabajo es cargarlas, así que llevan `hint` con dónde se gestionan. Lo que todavía no
+ * está construido no lleva `hint` y cae en el "Próximamente" por defecto.
  */
-type NavItem = { label: string; href?: string; roles?: BackofficeRole[] };
+type NavItem = { label: string; href?: string; hint?: string };
+
+const DENTRO_DE_UNA_UNIVERSIDAD = 'Se gestionan dentro de cada universidad';
 
 const NAV: { group: string; items: NavItem[] }[] = [
   { group: 'General', items: [{ label: 'Dashboard' }] },
   {
     group: 'Datos académicos',
     items: [
-      { label: 'Universidades', href: '/admin/universities', roles: ['admin'] },
-      { label: 'Carreras' },
-      { label: 'Materias' },
-      { label: 'Docentes', href: '/admin/teachers', roles: ['admin'] },
-      { label: 'Comisiones', href: '/admin/commissions', roles: ['admin'] },
+      { label: 'Universidades', href: '/admin/universities' },
+      { label: 'Carreras', hint: DENTRO_DE_UNA_UNIVERSIDAD },
+      { label: 'Materias', hint: DENTRO_DE_UNA_UNIVERSIDAD },
+      { label: 'Docentes', href: '/admin/teachers' },
+      { label: 'Comisiones', href: '/admin/commissions' },
       { label: 'Importador' },
-    ],
-  },
-  {
-    group: 'Moderación',
-    items: [
-      { label: 'Reportes', href: '/admin/moderacion/reportes', roles: ['admin', 'moderator'] },
-      { label: 'Usuarios' },
     ],
   },
   { group: 'Operación', items: [{ label: 'Migraciones' }, { label: 'Audit log' }] },
 ];
 
-export function AdminSidebar({ email, role }: { email: string; role: BackofficeRole }) {
+export function AdminSidebar({ email }: { email: string }) {
   const pathname = usePathname();
   const initials = email.slice(0, 2).toUpperCase();
 
@@ -61,7 +58,7 @@ export function AdminSidebar({ email, role }: { email: string; role: BackofficeR
               {g.group}
             </div>
             {g.items.map((it) => {
-              const live = Boolean(it.href && (!it.roles || it.roles.includes(role)));
+              const live = Boolean(it.href);
               const active = live && pathname.startsWith(it.href as string);
               const className = cn(
                 'flex items-center gap-2 rounded-md px-2 py-1.5 text-[12.5px]',
@@ -74,7 +71,7 @@ export function AdminSidebar({ email, role }: { email: string; role: BackofficeR
                   {it.label}
                 </Link>
               ) : (
-                <span key={it.label} className={className} title="Próximamente">
+                <span key={it.label} className={className} title={it.hint ?? 'Próximamente'}>
                   {it.label}
                 </span>
               );

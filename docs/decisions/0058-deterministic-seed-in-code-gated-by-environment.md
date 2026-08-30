@@ -43,7 +43,7 @@ Corolario: **el seeder no actualiza filas existentes**. Cambiar el nombre de una
 ### 3. Dos niveles de gate
 
 - **Nivel 1, `IsDevelopment()`**: lo aplican todos los seeders internamente. Producción no siembra nada. El archivo `seed-data/personas.json` además solo se registra en Development y no se empaqueta en el deploy.
-- **Nivel 2, la variable `PLANB_SEED_CORPUS`**: solo el corpus de demostración (autores fantasma, cursadas y reseñas). Lo prende `just dev` y nadie más.
+- **Nivel 2, la variable `PLANB_SEED_CORPUS`**: solo el corpus de demostración (autores fantasma, cursadas y reseñas). Lo prende `just dev` y nadie más. **Está decidido y no construido**: el tooling la manda, y al 2026-08-30 ningún código del backend la lee, así que los dos niveles siembran lo mismo. Lo construye el issue #374.
 
 El segundo nivel existe por una razón que no es obvia: **los integration tests corren en Development**. Sin él recibirían el corpus de demo y cualquier assert de conteo ("esta materia tiene 2 reseñas") se rompería contra los datos de la demo.
 

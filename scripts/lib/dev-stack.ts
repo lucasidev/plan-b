@@ -244,9 +244,11 @@ export async function waitForSeed(): Promise<boolean> {
 }
 
 /**
- * Levanta el backend contra `connectionString`. `seedCorpus` decide si además siembra el corpus de
- * demo (`'1'`) o no (`''`): E2E lo deja vacío para no ensuciarle los asserts de conteo a los specs,
- * scratch lo prende porque su punto es tener datos para explorar.
+ * Levanta el backend contra `connectionString`. `seedCorpus` viaja como `PLANB_SEED_CORPUS`: E2E lo
+ * deja vacío para no ensuciarle los asserts de conteo a los specs, scratch lo prende porque su punto
+ * es tener datos para explorar. Hoy la diferencia no se nota: ningún código del backend lee esa
+ * variable todavía, así que los dos modos siembran lo mismo (personas y catálogo, sin reseñas). El
+ * seeder que la va a leer es el del issue #374.
  */
 export function spawnBackend(connectionString: string, seedCorpus: string): ChildProcess {
   return spawn('dotnet', ['run', '--no-build', '--project', 'host/Planb.Api'], {

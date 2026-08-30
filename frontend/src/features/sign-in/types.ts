@@ -5,10 +5,11 @@
  * Next.js only allows async function exports from such files.
  */
 
+/** Cuerpo del 200 de sign-in. `role` viaja como lo escribe el enum de C#: PascalCase. */
 export type SignInUserPayload = {
   userId: string;
   email: string;
-  role: 'member' | 'moderator' | 'admin' | 'university_staff';
+  role: string;
 };
 
 /**

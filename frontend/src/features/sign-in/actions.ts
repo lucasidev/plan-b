@@ -2,14 +2,16 @@
 
 import type { ProblemDetails } from '@/lib/api-problem';
 import { forwardSetCookies } from '@/lib/forward-set-cookies';
+import { roleHomePath } from '@/lib/role-home-path';
+import { normalizeRole } from '@/lib/session';
 import { signIn } from './api';
 import { signInSchema } from './schema';
-import type { SignInFormState } from './types';
+import type { SignInFormState, SignInUserPayload } from './types';
 
 /**
  * Sign-in server action. Validates with signInSchema, calls
  * POST /api/identity/sign-in, forwards Set-Cookie headers (planb_session,
- * planb_refresh) on 200, then redirects to /home.
+ * planb_refresh) on 200, then redirects to wherever that rol entra.
  *
  * Per frontend/CLAUDE.md, this file is `'use server'` at the top so it
  * can only export async functions. Types and the initial state live in
@@ -40,8 +42,24 @@ export async function signInAction(
   });
 
   if (response.status === 200) {
+    // El destino sale del rol, no de una constante: `/home` es solo el del alumno, y mandar
+    // ahí a cualquier otro lo deja rebotando entre el guard de `(member)` y el de `(auth)`.
+    const payload = (await response.json().catch(() => null)) as SignInUserPayload | null;
+    const role = payload?.role ? normalizeRole(payload.role) : null;
+
+    if (!role) {
+      // El backend autenticó, pero el rol no tiene ninguna pantalla en el producto de hoy.
+      // Las cookies NO se reenvían: dejarlas puestas produce una cuenta fantasma, que entra
+      // bien y a la que después ningún guard reconoce, sin decir nunca por qué.
+      return {
+        status: 'error',
+        kind: 'unknown',
+        message: 'Esa cuenta no tiene acceso a la aplicación.',
+      };
+    }
+
     await forwardSetCookies(response);
-    return { status: 'success', redirectTo: '/home' };
+    return { status: 'success', redirectTo: roleHomePath(role) };
   }
 
   if (response.status === 401) {

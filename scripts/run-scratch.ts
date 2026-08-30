@@ -11,9 +11,9 @@
  * la base, el spawn de backend/frontend y la espera al DevSeed. Lo que cambia:
  *   - Base propia, `planb_scratch`, nunca `planb_e2e`: así una corrida de este modo no le pisa la
  *     base a una corrida de E2E que esté en curso (o viceversa).
- *   - Sí siembra el corpus de demo (`PLANB_SEED_CORPUS=1`): alguien explorando a mano necesita
- *     personas, cursadas y reseñas para mirar, a diferencia de los tests, que arman sus propios
- *     datos.
+ *   - Pide el corpus de demo (`PLANB_SEED_CORPUS=1`), pero hoy eso no agrega nada: ningún seeder
+ *     genera reseñas, así que se explora sobre las personas y el catálogo, con las fichas en cero.
+ *     Construir el corpus es el issue #374.
  *   - No corre ninguna suite: una vez arriba, imprime las URLs y las personas sembradas, y queda
  *     esperando. La única salida es Ctrl+C.
  *   - Al cortar, a diferencia de E2E (que deja `planb_e2e` en pie para poder inspeccionar un

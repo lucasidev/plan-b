@@ -124,18 +124,6 @@ describe('createSubjectAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('rechaza a un usuario con rol moderator, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
-
-    const result = await createSubjectAction(
-      initialManageSubjectState,
-      formData({ ...VALID_SUBJECT, planId: PLAN_ID }),
-    );
-
-    expect(result.status).toBe('error');
-    expect(apiFetchMock).not.toHaveBeenCalled();
-  });
-
   it('rechaza sin planId, sin llamar al backend', async () => {
     const result = await createSubjectAction(initialManageSubjectState, formData(VALID_SUBJECT));
 
@@ -412,7 +400,7 @@ describe('updateSubjectAction', () => {
 
 describe('deactivateSubjectAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
+    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'member' });
 
     const result = await deactivateSubjectAction(SUBJECT_ID);
 
@@ -769,7 +757,7 @@ describe('addPrerequisiteAction', () => {
 
 describe('removePrerequisiteAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
+    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'member' });
 
     const result = await removePrerequisiteAction(SUBJECT_ID, REQUIRED_SUBJECT_ID, 'ToEnroll');
 

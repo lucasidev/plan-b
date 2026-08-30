@@ -109,18 +109,6 @@ describe('createTermAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('rechaza a un usuario con rol moderator, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
-
-    const result = await createTermAction(
-      initialManageTermState,
-      formData({ ...VALID_TERM, universityId: UNIVERSITY_ID }),
-    );
-
-    expect(result.status).toBe('error');
-    expect(apiFetchMock).not.toHaveBeenCalled();
-  });
-
   it('rechaza sin universityId, sin llamar al backend', async () => {
     const result = await createTermAction(initialManageTermState, formData(VALID_TERM));
 
