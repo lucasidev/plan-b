@@ -1,14 +1,13 @@
 using JasperFx.CommandLine;
 using Microsoft.EntityFrameworkCore;
 using Planb.Academic.Infrastructure.Persistence;
-using Planb.Enrollments.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence;
 
 namespace Planb.Api.Infrastructure;
 
 /// <summary>
-/// `dotnet Planb.Api.dll migrate-db`: aplica las migraciones pendientes de EF Core de los seis
+/// `dotnet Planb.Api.dll migrate-db`: aplica las migraciones pendientes de EF Core de los tres
 /// módulos y termina.
 ///
 /// <para>
@@ -16,7 +15,7 @@ namespace Planb.Api.Infrastructure;
 /// si el entorno no es Development (a propósito: un arranque que migra solo es un arranque que hace
 /// DDL sin que nadie lo haya decidido, y con más de una réplica es una carrera). Y el otro camino
 /// habitual, <c>dotnet ef database update</c>, no sirve acá: pide el SDK y las herramientas de EF,
-/// que la imagen de runtime no tiene, y habría que correrlo seis veces con el nombre de cada
+/// que la imagen de runtime no tiene, y habría que correrlo tres veces con el nombre de cada
 /// DbContext.
 /// </para>
 /// <para>
@@ -40,7 +39,6 @@ public sealed class MigrateDbCommand : JasperFxAsyncCommand<NetCoreInput>
         // migración depende de otra de otro módulo.
         await MigrateAsync<IdentityDbContext>(sp, "Identity");
         await MigrateAsync<AcademicDbContext>(sp, "Academic");
-        await MigrateAsync<EnrollmentsDbContext>(sp, "Enrollments");
         await MigrateAsync<ReviewsDbContext>(sp, "Reviews");
 
         return true;

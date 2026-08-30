@@ -298,26 +298,6 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
 
     private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
 
-    public async Task<CommissionPlacement?> GetCommissionPlacementAsync(
-        Guid commissionId, CancellationToken ct = default)
-    {
-        // Sin filtro de is_active: se proyecta el flag y decide el caller. Un alta nueva lo rechaza,
-        // pero una cursada histórica puede legítimamente apuntar a una comisión ya archivada, y
-        // meter el filtro acá le quitaría al caller la posibilidad de distinguir los dos casos.
-        const string sql = @"
-            SELECT
-                id         AS CommissionId,
-                subject_id AS SubjectId,
-                term_id    AS TermId,
-                is_active  AS IsActive
-            FROM academic.commissions
-            WHERE id = @CommissionId;";
-
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
-        return await db.QuerySingleOrDefaultAsync<CommissionPlacement>(
-            new CommandDefinition(sql, new { CommissionId = commissionId }, cancellationToken: ct));
-    }
-
     public async Task<bool> IsAcademicTermInUniversityAsync(
         Guid termId, Guid universityId, CancellationToken ct = default)
     {

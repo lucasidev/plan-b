@@ -15,7 +15,7 @@ public class GetSubjectEndpointTests
 {
     private readonly RegisterApiFixture _fixture;
 
-    // Seed determinístico de Academic (mismas ids que los tests de Enrollments/Reviews).
+    // Seed determinístico de Academic (mismas ids que los tests de Reviews).
     private static readonly Guid Subject101 = Guid.Parse("00000004-0000-4000-a000-000000000001");
 
     public GetSubjectEndpointTests(RegisterApiFixture fixture)

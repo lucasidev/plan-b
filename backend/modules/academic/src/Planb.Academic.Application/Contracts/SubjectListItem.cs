@@ -1,9 +1,9 @@
 namespace Planb.Academic.Application.Contracts;
 
 /// <summary>
-/// DTO para el listado de materias de un CareerPlan. Caller principal: el form de carga de
-/// historial (US-013) que necesita un select con las materias del plan del alumno. Caller
-/// secundario (futuro): backoffice admin de catálogo.
+/// DTO para el listado de materias de un CareerPlan. Pensado originalmente para el form de
+/// carga de historial (US-013, retirado por ADR-0086), que necesitaba un select con las materias
+/// del plan del alumno. Caller futuro: backoffice admin de catálogo.
 ///
 /// <para>
 /// Incluye <see cref="CareerPlanId"/> para que el cliente pueda asociar la lista al plan

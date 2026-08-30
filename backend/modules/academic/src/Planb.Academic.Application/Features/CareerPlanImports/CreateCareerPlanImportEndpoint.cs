@@ -18,7 +18,6 @@ namespace Planb.Academic.Application.Features.CareerPlanImports;
 ///   <item><b>application/json</b>: { universityId, careerName, planYear, studentEnrollmentYear,
 ///         rawText } cuando el alumno pega el texto.</item>
 /// </list>
-/// Mismo patrón que el endpoint de US-014, adaptado al contexto del plan.
 /// </summary>
 public sealed class CreateCareerPlanImportEndpoint : ICarterModule
 {

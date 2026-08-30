@@ -7,10 +7,7 @@ using UglyToad.PdfPig.Exceptions;
 namespace Planb.Academic.Infrastructure.Pdf;
 
 /// <summary>
-/// Impl con <c>UglyToad.PdfPig</c>. Replicada del módulo Enrollments (US-014) porque a la fecha
-/// no hay un proyecto compartido donde alojarla. TODO: cuando aterrice una tercera US que pida
-/// extraction de PDF, consolidar las 2 impls en <c>libs/shared-kernel</c> o un nuevo proyecto
-/// <c>Planb.Infrastructure.Common.Pdf</c>.
+/// Impl con <c>UglyToad.PdfPig</c>.
 /// </summary>
 internal sealed class PdfPigPdfTextExtractor : IPdfTextExtractor
 {

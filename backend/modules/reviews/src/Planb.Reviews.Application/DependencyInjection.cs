@@ -8,7 +8,7 @@ public static class DependencyInjection
     public static IServiceCollection AddReviewsApplication(this IServiceCollection services)
     {
         // FluentValidation: descubre validators internos del assembly (PublishReviewValidator es
-        // internal sealed, sigue el patrón de Identity/Enrollments).
+        // internal sealed, sigue el patrón de Identity).
         services.AddValidatorsFromAssembly(
             typeof(DependencyInjection).Assembly,
             includeInternalTypes: true);

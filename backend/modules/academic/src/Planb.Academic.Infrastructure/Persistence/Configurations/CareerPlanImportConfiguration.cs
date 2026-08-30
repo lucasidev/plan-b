@@ -60,7 +60,7 @@ internal sealed class CareerPlanImportConfiguration : IEntityTypeConfiguration<C
             .HasMaxLength(20)
             .IsRequired();
 
-        // payload: JSONB con resultado del parser. Igual pattern que HistorialImport (US-014).
+        // payload: JSONB con resultado del parser.
         builder.Property(i => i.Payload)
             .HasColumnName("payload")
             .HasColumnType("jsonb")

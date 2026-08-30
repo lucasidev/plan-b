@@ -8,7 +8,7 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Academic.Application.Features.CareerPlanImports;
 
 /// <summary>
-/// Worker async para procesar imports de plan (US-088). Mismo pattern que el de US-014.
+/// Worker async para procesar imports de plan (US-088).
 /// Carga aggregate → MarkParsing → extrae texto → parsea → MarkParsed o MarkFailed → SaveChanges.
 /// Timeout 60s via linked CancellationTokenSource.
 /// </summary>

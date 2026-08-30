@@ -20,7 +20,7 @@ type Props = {
 /**
  * `(member)` area sidebar per `docs/design/reference/components/shell.jsx::Sidebar`.
  *
- * Groups navigation links in three sections (Mi cuatrimestre, Comunidad, Cuenta). The
+ * Groups navigation links in two sections (Comunidad, Otros). The
  * active item is highlighted based on `usePathname()`, with a startsWith fallback for
  * future sub-routes (`/subjects/[id]` keeps "Materias" lit).
  *

@@ -487,8 +487,9 @@ public static class AcademicSeedData
     // ====================================================================
     // AcademicTerms (UNSTA cuatrimestrales 2024-2026)
     //
-    // Cobertura: 6 cuatrimestres consecutivos (2024-1c hasta 2026-2c). Cubre los EnrollmentRecord
-    // mockeados en el tab Historial + el cuatrimestre actual donde se cargaría una materia nueva.
+    // Cobertura: 6 cuatrimestres consecutivos (2024-1c hasta 2026-2c). Cubre las reseñas de
+    // cursada mockeadas (CatalogSeedData) + el cuatrimestre actual donde se cargaría una materia
+    // nueva.
     // Las fechas son aproximaciones del calendario académico UNSTA típico.
     //
     // Convención de UUIDs:

@@ -10,7 +10,7 @@ namespace Planb.Academic.Application.Features.CareerPlanImports;
 
 /// <summary>
 /// Handler del POST /api/me/career-plan-imports (US-088). Crea el aggregate en estado Pending
-/// y encola el procesamiento async via Wolverine. Mismo pattern que CreateHistorialImport.
+/// y encola el procesamiento async via Wolverine.
 /// </summary>
 public static class CreateCareerPlanImportCommandHandler
 {

@@ -4,8 +4,8 @@ import type { Career, CareerPlan, University } from './types';
 
 /**
  * Co-located fetchers + queryOptions para el picker de carrera. Pegan a los tres endpoints
- * públicos de Academic que ya usaba `features/onboarding`; viven acá porque con ADR-0086 la
- * carrera se declara en el registro, que no es el onboarding.
+ * públicos de Academic. Viven acá porque con ADR-0086 la carrera se declara al registrarse y se
+ * corrige desde Mi perfil, que son los dos lugares donde el picker se monta.
  *
  * **Relative paths**: fetchers go through `clientApiFetch` with a `/api/...` path (not
  * `apiFetch` with the absolute NEXT_PUBLIC_API_URL) because they run client-side from the

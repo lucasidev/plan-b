@@ -6,8 +6,6 @@ using JasperFx.Resources;
 using Planb.Academic.Application;
 using Planb.Academic.Infrastructure;
 using Planb.Api.Infrastructure;
-using Planb.Enrollments.Application;
-using Planb.Enrollments.Infrastructure;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
@@ -105,10 +103,6 @@ builder.Services.AddDbContextWithWolverineIntegration<Planb.Academic.Infrastruct
     Planb.Academic.Infrastructure.DependencyInjection.ConfigureAcademicDbContext(
         opts, connectionString));
 
-builder.Services.AddDbContextWithWolverineIntegration<Planb.Enrollments.Infrastructure.Persistence.EnrollmentsDbContext>(opts =>
-    Planb.Enrollments.Infrastructure.DependencyInjection.ConfigureEnrollmentsDbContext(
-        opts, connectionString));
-
 builder.Services.AddDbContextWithWolverineIntegration<Planb.Reviews.Infrastructure.Persistence.ReviewsDbContext>(opts =>
     Planb.Reviews.Infrastructure.DependencyInjection.ConfigureReviewsDbContext(
         opts, connectionString));
@@ -122,7 +116,6 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Identity.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Academic.Application.DependencyInjection).Assembly);
-    opts.Discovery.IncludeAssembly(typeof(Planb.Enrollments.Application.DependencyInjection).Assembly);
     opts.Discovery.IncludeAssembly(typeof(Planb.Reviews.Application.DependencyInjection).Assembly);
 
     opts.PersistMessagesWithPostgresql(connectionString, schemaName: "wolverine");
@@ -132,9 +125,9 @@ builder.Host.UseWolverine(opts =>
     // son in-memory por default: la entrega es "lo saco del outbox y lo pongo en una Channel". Si el
     // proceso se cae entre esas dos cosas, el mensaje se pierde sin rastro.
     //
-    // Eso no es teórico acá: los dos imports (historial y plan de carrera) son fire-and-forget con
-    // el usuario esperando en un polling. Un restart en el momento equivocado dejaba el import en
-    // Pending para siempre, con la pantalla girando contra un worker que ya no existe. Con colas
+    // Eso no es teórico acá: el import de plan de carrera es fire-and-forget con el usuario
+    // esperando en un polling. Un restart en el momento equivocado dejaba el import en Pending
+    // para siempre, con la pantalla girando contra un worker que ya no existe. Con colas
     // durables el envelope sobrevive al restart y Wolverine lo reentrega.
     opts.Policies.UseDurableLocalQueues();
 
@@ -172,9 +165,6 @@ builder.Services.AddIdentityInfrastructure(builder.Configuration);
 
 builder.Services.AddAcademicApplication();
 builder.Services.AddAcademicInfrastructure(builder.Configuration);
-
-builder.Services.AddEnrollmentsApplication();
-builder.Services.AddEnrollmentsInfrastructure(builder.Configuration);
 
 builder.Services.AddReviewsApplication();
 builder.Services.AddReviewsInfrastructure(builder.Configuration);

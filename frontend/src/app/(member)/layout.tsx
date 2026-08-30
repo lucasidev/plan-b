@@ -11,12 +11,7 @@ import { fetchStudentProfile } from '@/lib/student-profile';
  *     role is not `member`. Real authorization still happens in the backend
  *     (ADR-0023); this guard is UX to avoid rejected requests and flashes.
  *
- *  2. **Onboarding guard (US-037-f)**: if the user does not have a StudentProfile yet,
- *     redirects to `/onboarding/welcome` to complete the flow. Without a profile, the
- *     `(member)` screens (Inicio, Mi carrera, etc.) don't make sense because there is
- *     no associated career.
- *
- *  3. **AppShell**: wraps every page in the route group with the chrome (sidebar +
+ *  2. **AppShell**: wraps every page in the route group with the chrome (sidebar +
  *     topbar + avatar dropdown). Any route under `app/(member)/` inherits the shell.
  *     The pages only write their main content.
 
@@ -26,15 +21,17 @@ export default async function MemberLayout({ children }: { children: React.React
   if (!session) redirect('/sign-in');
   if (session.role !== 'member') redirect('/sign-in');
 
+  // No hay guard de perfil: toda cuenta declara su carrera al registrarse y el perfil nace al
+  // verificar el mail (ADR-0086), así que faltar es la excepción, no un paso pendiente. Cuando
+  // falta, el shell se muestra igual sin etiqueta y Mi perfil ofrece declararla: mandar a una
+  // pantalla obligatoria antes de dejar leer o aportar es lo que la garantía US-170 prohíbe.
   const profile = await fetchStudentProfile();
-  if (!profile) redirect('/onboarding/welcome');
 
-  // Real chrome label (US-012 debt): "UNSTA · Carrera" del profile, en vez del hardcode. La uni
-  // es el slug/acrónimo; el CSS del sidebar ya hace uppercase. filter(Boolean) cubre el caso
-  // defensivo de labels null (career colgada): muestra lo que haya.
-  const contextLabel = [profile.universityShortName, profile.careerName]
-    .filter(Boolean)
-    .join(' · ');
+  // "UNSTA · Carrera" del profile. La uni es el slug/acrónimo; el CSS del sidebar ya hace
+  // uppercase. filter(Boolean) cubre labels null (career colgada): muestra lo que haya.
+  const contextLabel = profile
+    ? [profile.universityShortName, profile.careerName].filter(Boolean).join(' · ')
+    : '';
 
   return (
     <>

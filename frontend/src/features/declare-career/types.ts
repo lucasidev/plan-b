@@ -1,7 +1,7 @@
 /**
- * Response shapes for the public catalog endpoints consumed by `CareerPicker` (mismos
- * endpoints que usaba `features/onboarding`). Replicadas acá desde el shape del backend para
- * que el cliente las consuma sin importar tipos del backend (cross-language boundary).
+ * Response shapes for the public catalog endpoints consumed by `CareerPicker`. Replicadas acá
+ * desde el shape del backend para que el cliente las consuma sin importar tipos del backend
+ * (cross-language boundary).
  */
 
 export type University = {
@@ -30,3 +30,14 @@ export type CareerPlan = {
   // US-088: crowdsourced plans have isOfficial=false with the "No oficial" badge.
   isOfficial: boolean;
 };
+
+/**
+ * Estado del server action que declara la carrera. `success` es terminal: la pantalla
+ * se refresca y pasa a mostrar el perfil ya creado.
+ */
+export type DeclareCareerFormState =
+  | { status: 'idle' }
+  | { status: 'success' }
+  | { status: 'error'; message: string };
+
+export const initialDeclareCareerState: DeclareCareerFormState = { status: 'idle' };

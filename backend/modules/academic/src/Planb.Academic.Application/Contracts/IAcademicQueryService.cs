@@ -54,9 +54,10 @@ public interface IAcademicQueryService
 
     /// <summary>
     /// Devuelve true si la materia (<paramref name="subjectId"/>) pertenece al plan
-    /// (<paramref name="careerPlanId"/>). Caller: handler de US-013 (cargar enrollment)
-    /// que necesita validar que el alumno no esté cargando una materia que no está en su
-    /// plan, sin abrir nav properties cross-schema (ADR-0017).
+    /// (<paramref name="careerPlanId"/>). Pensado originalmente para el handler de US-013
+    /// (cargar enrollment, retirado por ADR-0086), que necesitaba validar que el alumno no
+    /// estuviera cargando una materia que no está en su plan, sin abrir nav properties
+    /// cross-schema (ADR-0017).
     /// </summary>
     Task<bool> IsSubjectInPlanAsync(
         Guid subjectId, Guid careerPlanId, CancellationToken ct = default);
@@ -66,11 +67,12 @@ public interface IAcademicQueryService
     /// el dropdown muestre las materias agrupadas por año/cuatrimestre de manera natural.
     ///
     /// <para>
-    /// Dos callers con necesidades opuestas frente al soft delete de US-062, por eso el flag:
-    /// el catálogo público (US-001) NO debe mostrar materias archivadas, pero el historial del
-    /// alumno (form de US-013 e import de PDF) SÍ tiene que verlas, porque el alumno pudo cursar
-    /// una materia que después se archivó y necesita poder registrarla igual. Default `false`
-    /// (el caso público, que es el que no debe filtrarse por olvido).
+    /// Pensado para dos callers con necesidades opuestas frente al soft delete de US-062, por eso
+    /// el flag: el catálogo público (US-001) NO debe mostrar materias archivadas, pero el
+    /// historial del alumno (form de US-013 e import de PDF, retirados por ADR-0086) SÍ tenía que
+    /// verlas, porque el alumno pudo cursar una materia que después se archivó y necesitaba poder
+    /// registrarla igual. Default `false` (el caso público, que es el que no debe filtrarse por
+    /// olvido).
     /// </para>
     /// </summary>
     Task<IReadOnlyList<SubjectListItem>> ListSubjectsByCareerPlanAsync(
@@ -85,9 +87,9 @@ public interface IAcademicQueryService
     Task<SubjectDetailItem?> GetSubjectByIdAsync(Guid subjectId, CancellationToken ct = default);
 
     /// <summary>
-    /// Lista los períodos lectivos de una universidad. Caller: select del form de US-013
-    /// para asociar la cursada a un term. Orden DESC por (year, number) para mostrar los
-    /// más recientes primero (el caso más frecuente).
+    /// Lista los períodos lectivos de una universidad. Pensado originalmente para el select del
+    /// form de US-013 (retirado por ADR-0086) para asociar la cursada a un term. Orden DESC por
+    /// (year, number) para mostrar los más recientes primero (el caso más frecuente).
     /// </summary>
     Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(
         Guid universityId, CancellationToken ct = default);
@@ -121,27 +123,6 @@ public interface IAcademicQueryService
     /// docente del editor de reseña (elegir a quién reseñar). Nombres en title case para display.
     /// </summary>
     Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
-        Guid commissionId, CancellationToken ct = default);
-
-    /// <summary>
-    /// Ubicación de una comisión en el catálogo (materia, período, activa). Null si no existe.
-    ///
-    /// <para>
-    /// Existe porque ADR-0017 saca las FK cross-schema y deja la validación de referencias en el
-    /// application layer, pero el contrato no exponía cómo preguntar "esta comisión es de esta materia
-    /// en este período?". Sin eso, Enrollments aceptaba cualquier <c>commission_id</c>: se
-    /// podía registrar una cursada de una materia apuntando a la comisión de otra y después reseñar a
-    /// un docente que nunca dio esa clase, porque el gate de publicar reseña valida que el docente
-    /// esté en la comisión de la cursada y esa comisión nadie la había validado.
-    /// </para>
-    ///
-    /// <para>
-    /// Devuelve la ubicación y no un bool para que cada caller distinga, con una sola lectura, entre
-    /// "no existe", "es de otra materia", "es de otro período" y "está archivada", y devuelva el
-    /// error que corresponde en lugar de uno genérico.
-    /// </para>
-    /// </summary>
-    Task<CommissionPlacement?> GetCommissionPlacementAsync(
         Guid commissionId, CancellationToken ct = default);
 
     /// <summary>

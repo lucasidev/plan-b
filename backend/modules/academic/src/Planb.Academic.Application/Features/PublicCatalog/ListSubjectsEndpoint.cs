@@ -9,9 +9,9 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 /// <summary>
 /// GET /api/academic/subjects?careerPlanId={id} — listado de materias de un plan.
 ///
-/// Caller: select de materias en el form de cargar historial (US-013-f). El alumno ya tiene su
-/// <see cref="careerPlanId"/> derivado de su <c>StudentProfile</c>, así que el endpoint asume
-/// caller informado.
+/// Pensado originalmente para el select de materias en el form de cargar historial (US-013-f,
+/// retirado por ADR-0086). El alumno ya tiene su <see cref="careerPlanId"/> derivado de su
+/// <c>StudentProfile</c>, así que el endpoint asume caller informado.
 ///
 /// Misma convención de errores que <see cref="ListCareersEndpoint"/>: id faltante o vacío → 400,
 /// id inexistente → 200 con lista vacía.
@@ -20,9 +20,9 @@ public sealed class ListSubjectsEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        // `includeArchived` lo usa el historial del alumno (US-013): si cursó una materia que
-        // después se archivó, tiene que poder elegirla igual. El catálogo público omite el flag y
-        // recibe solo las activas (US-062).
+        // `includeArchived` lo usaba el historial del alumno (US-013, retirado por ADR-0086): si
+        // cursó una materia que después se archivó, tenía que poder elegirla igual. El catálogo
+        // público omite el flag y recibe solo las activas (US-062).
         app.MapGet("/api/academic/subjects", async (
             Guid? careerPlanId,
             bool? includeArchived,

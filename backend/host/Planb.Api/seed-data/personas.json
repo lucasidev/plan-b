@@ -13,12 +13,6 @@
         }
       },
       {
-        "Email": "mateo.gimenez@hotmail.com",
-        "Password": "mateo.gimenez.12",
-        "State": "VerifiedActive",
-        "DisplayName": "Mateo Giménez"
-      },
-      {
         "Email": "paula.suspendida@planb.local",
         "Password": "paula.suspendida.12",
         "State": "Disabled",

@@ -12,11 +12,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Planb.Reviews.Domain\Planb.Reviews.Domain.csproj" />
     <ProjectReference Include="..\..\..\identity\src\Planb.Identity.Application\Planb.Identity.Application.csproj" />
-    <ProjectReference Include="..\..\..\enrollments\src\Planb.Enrollments.Application\Planb.Enrollments.Application.csproj" />
     <!-- Cross-BC (US-017): IAcademicQueryService para validar que el docente reseñado dictaba la
          comisión del enrollment. Estaba en uso sin estar declarada: compilaba de rebote porque
-         Enrollments.Application referencia Academic.Application, así que la dependencia real de
-         Reviews viajaba escondida en la de otro módulo y desaparecía si ese otro la soltaba. -->
+         Enrollments.Application (retirado, ADR-0086) referenciaba Academic.Application, así que la
+         dependencia real de Reviews viajaba escondida en la de otro módulo y desaparecía si ese
+         otro la soltaba. -->
     <ProjectReference Include="..\..\..\academic\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -66,9 +66,6 @@ public static class UpdateCommissionCommandHandler
             assignments.Add((teacher.Id, item.Role));
         }
 
-        // TODO(US-093): rechazar el cambio de modality si la comisión ya tiene inscriptos (409,
-        // cross-BC Enrollments). Diferido: requiere un read a Enrollments que hoy no existe.
-
         // Reconfiguración atómica: valida metadata + docentes + horarios y solo entonces muta (o no
         // muta nada si algo falla). Un fallo tardío no puede dejar el aggregate a medias, porque
         // Wolverine commitea la transacción aunque el handler devuelva Result.Failure (no es una

@@ -35,13 +35,6 @@ export const LUCIA: Persona = {
   state: 'VerifiedActive',
 };
 
-export const MATEO: Persona = {
-  email: 'mateo.gimenez@hotmail.com',
-  password: 'mateo.gimenez.12',
-  displayName: 'Mateo Giménez',
-  state: 'VerifiedActive',
-};
-
 export const PAULA: Persona = {
   email: 'paula.suspendida@planb.local',
   password: 'paula.suspendida.12',
@@ -63,5 +56,3 @@ export const ADMIN: Persona = {
   displayName: 'Lautaro Maza',
   state: 'VerifiedActive',
 };
-
-export const ALL_PERSONAS = [LUCIA, MATEO, PAULA, MARTIN, ADMIN] as const;

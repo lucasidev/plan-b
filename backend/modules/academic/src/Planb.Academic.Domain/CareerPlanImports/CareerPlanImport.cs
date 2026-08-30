@@ -5,9 +5,8 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Academic.Domain.CareerPlanImports;
 
 /// <summary>
-/// Aggregate del flujo "Importar plan de estudios" (US-088). Vive en el bounded context Academic
-/// (no Enrollments, distinto al <c>HistorialImport</c> de US-014: ese es del historial del
-/// alumno, esto es del catálogo).
+/// Aggregate del flujo "Importar plan de estudios" (US-088). Vive en el bounded context Academic:
+/// es del catálogo (plan de estudios), no del historial del alumno.
 ///
 /// <para>
 /// Captura quién hizo el upload (<see cref="UploadedByUserId"/>), el contexto que el alumno
@@ -20,7 +19,7 @@ namespace Planb.Academic.Domain.CareerPlanImports;
 /// <para>
 /// Lifecycle: <c>Pending</c> → <c>Parsing</c> → <c>Parsed</c> → <c>Approved</c> (terminal) o
 /// <c>Rejected</c> (terminal, con motivo). Pending/Parsing pueden transitar a <c>Failed</c>
-/// (terminal). Mismo pattern que <c>HistorialImport</c>.
+/// (terminal).
 /// </para>
 /// </summary>
 public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoot
@@ -85,10 +84,9 @@ public sealed class CareerPlanImport : Entity<CareerPlanImportId>, IAggregateRoo
     }
 
     /// <summary>
-    /// El worker toma el job. Acepta volver desde <see cref="CareerPlanImportStatus.Parsing"/>
-    /// (mismo criterio que <c>HistorialImport.MarkParsing</c>): estar ya en Parsing significa que
-    /// el proceso anterior se cayó a mitad, y rechazar la redelivery dejaba el import trabado ahí
-    /// para siempre.
+    /// El worker toma el job. Acepta volver desde <see cref="CareerPlanImportStatus.Parsing"/>:
+    /// estar ya en Parsing significa que el proceso anterior se cayó a mitad, y rechazar la
+    /// redelivery dejaba el import trabado ahí para siempre.
     /// </summary>
     public Result MarkParsing(IDateTimeProvider clock)
     {
