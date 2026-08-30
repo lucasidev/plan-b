@@ -62,17 +62,19 @@ Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), "Qué recabamos" y "
 | **Dónde estudiarla** | La misma carrera canónica en las instituciones de una ciudad, lado a lado con **datos oficiales medidos igual para todas** (incluido el régimen de ingreso al lado del egreso); las señales de reseñas van por institución y no se cruzan. Sin compuesto, sin ganador. |
 | **Nombre de pantalla** | Una pantalla se nombra por lo que dice arriba, en español, con mayúscula inicial y sin backticks: Mis aportes, Dónde estudiarla, Método, Reseñar, Ficha de cátedra. **Los backticks son código**: la URL va en inglés y con slug (`/reviews/write`) y se fija cuando la pantalla entra a sprint. |
 
-## Producto, landing y datos
+## Producto, Inicio y datos
 
-La distinción que se venía mezclando: los **datos de prueba** llenan la **aplicación** real (las herramientas funcionando); los **datos demo** ilustran esas herramientas en la **landing** (venta). No se cruzan: la landing no lee datos del backend.
+La pantalla que se venía llamando "landing" **se llama Inicio**, y es una herramienta como cualquier otra: desde el 2026-08-27 muestra una ficha de cátedra real, leída del backend, no un ejemplo dibujado. Que sea la puerta de entrada no la vuelve marketing.
+
+Con eso desaparece la distinción que este glosario sostenía: no hay dos clases de dato, hay uno. Los **datos de prueba** llenan el producto entero, Inicio incluido.
 
 | Término | Significado |
 |---|---|
 | **producto / aplicación** | El sistema real, plan-b (backend + frontend). Contiene las herramientas y los features de plataforma. Se prueba y se muestra cargándole datos de prueba. |
 | **herramienta** | Feature de valor que un actor (alumno, docente, staff) usa para su tarea: reseñar, las fichas, comparar, curaduría, gestión de catálogo. Se nombran como las nombra la app. No es cualquier feature: los de plataforma (registro, login, recuperar contraseña, gestión de cuenta) habilitan el uso pero no son herramientas. |
-| **landing** | La cara de venta del producto (marketing). Ilustra las herramientas con datos demo y puede idealizar. Es pública, pero eso no la define: hay herramientas públicas también (catálogo, fichas). Lo que la separa es que ilustra, no ejecuta. |
+| **Inicio** | La pantalla en `/`, pública, que dice qué es plan-b y abre a explorar y buscar ([SC-004](student/choose-where-to-study/screens/SC-004-home/README.md)). Muestra una ficha de verdad, con sus conteos o con lo que le falta para publicar: si no hay ninguna que haya cruzado el piso, lo dice, en vez de dibujar una que convenga. **No se le dice "la landing"**: ese nombre traía la promesa de que ilustra y no ejecuta, y hace rato que ejecuta. En código el identificador es `home`, como su propia ficha ([SC-004](student/choose-where-to-study/screens/SC-004-home/README.md)); hoy la sirve `features/landing`, que quedó con el nombre viejo. |
 | **datos de prueba** | Datos sembrados en la DB para probar y mostrar la aplicación real funcionando (desarrollo, tests, defensa ante el tribunal). Los consumen los endpoints reales. Hoy se siembran las personas y el catálogo; **reseñas no siembra ninguno**, así que las fichas arrancan en cero (issue #374). La variable `PLANB_SEED_CORPUS` viaja desde el tooling pero todavía no la lee ningún código del backend. |
-| **datos demo** | Datos de ejemplo hardcodeados en la UI de la landing (componentes `demo-*`), para ilustrar las herramientas. Marketing: no viven en el backend, no se fetchean, no pretenden exactitud. |
+| **datos demo** | Ya no existen. Eran ejemplos hardcodeados en la UI para ilustrar las herramientas, y se fueron con el rehacer de Inicio: **no queda un solo componente `demo-*`** en el código. El término se conserva acá para que nadie los reintroduzca: mostrar un número inventado es lo que la tesis le reprocha a un folleto. |
 
 ## Identidades y cuentas
 
