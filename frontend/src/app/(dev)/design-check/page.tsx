@@ -3,7 +3,6 @@ import { AuthSplit } from '@/components/layout/auth-split';
 import {
   Button,
   Card,
-  DiffDots,
   DisplayHeading,
   Eyebrow,
   Lede,
@@ -109,17 +108,11 @@ export default function DesignCheckPage() {
         </Card>
       </Section>
 
-      <Section title="Meters & dots">
+      <Section title="Meters">
         <div className="grid gap-3 max-w-md">
           <Meter value={62} label="Aprobación esperada" sub="62%" />
-          <Meter value={4.1} max={5} label="Carga real" sub="4.1/5" tone="warm" />
+          <Meter value={41} label="Cobertura de la carrera" sub="41%" tone="warm" />
           <Meter value={88} label="Recursarán" sub="alta" tone="danger" />
-          <div className="flex items-center gap-3 text-sm">
-            <span className="font-mono text-ink-3 text-xs uppercase tracking-wide">dificultad</span>
-            <DiffDots value={2} />
-            <DiffDots value={3.4} />
-            <DiffDots value={5} />
-          </div>
         </div>
       </Section>
 
@@ -144,16 +137,7 @@ export default function DesignCheckPage() {
         <div className="border border-line rounded overflow-hidden h-[600px]">
           <AuthSplit
             heading={AUTH_SPLIT_DEMO_HEADING}
-            description="plan-b es la app donde alumnos de UNSTA planifican su cuatrimestre, comparan comisiones y dejan reseñas verificadas. Sin nombres, sin filtros."
-            quote={{
-              text: '"Iba a anotarme con el primero que tenía horario libre. Acá vi que había una comisión con 4.1★ vs 3.4★. Esperé un cuatri."',
-              attribution: 'Anónimo · 4° año Sistemas',
-            }}
-            stats={[
-              { value: '340', label: 'alumnos verificados' },
-              { value: '1.2k', label: 'reseñas' },
-              { value: '3', label: 'carreras' },
-            ]}
+            description="Lo que sabés de una materia porque la cursaste vive suelto en grupos y pasillos. Acá se junta: cuántos dicen lo mismo, de qué años, y cuántos son."
           >
             <div className="space-y-4">
               <Eyebrow>Form column</Eyebrow>

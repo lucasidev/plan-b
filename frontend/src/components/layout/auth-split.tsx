@@ -1,4 +1,4 @@
-import { InlineStars, Logo } from '@/components/ui';
+import { Logo } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -8,8 +8,6 @@ type Props = {
   heading: React.ReactNode;
   /** Hero description paragraph. ~38ch. */
   description?: React.ReactNode;
-  /** Optional testimonial card on a frosted-glass panel. */
-  quote?: { text: string; attribution: string };
   /** Optional metric strip at the bottom of the hero column. */
   stats?: Array<{ label: string; value: string }>;
 };
@@ -19,17 +17,17 @@ type Props = {
  * `.auth-side` from docs/design/reference/styles.css.
  *
  * Left column: apricot gradient with two radial glows, padding 48 56,
- * three rows top→bottom (logo+hero, quote, stats) via flex justify-between.
+ * dos bloques top→bottom (logo+hero, stats) via flex justify-between.
  * Right column: plain bg, content centered vertically, padding 48 64,
  * max-width 520.
  */
-export function AuthSplit({ children, heading, description, quote, stats }: Props) {
+export function AuthSplit({ children, heading, description, stats }: Props) {
   return (
     <main className="min-h-screen grid bg-bg grid-cols-1 lg:grid-cols-[1.1fr_1fr]">
       {/*
         Hero column anchors top-down with fixed gaps between blocks instead
         of justify-between. justify-between stretches the gaps with the
-        viewport height, which was making the quote and stats float to
+        viewport height, which was making the hero and stats float to
         unpredictable positions on tall screens. Fixed gaps keep the
         block heights stable across viewports, matching the right-column
         anchor.
@@ -69,41 +67,6 @@ export function AuthSplit({ children, heading, description, quote, stats }: Prop
             </p>
           )}
         </div>
-
-        {quote && (
-          // Visual block of the hero quote, with specific transparent values that
-          // don't fit Tailwind utilities without a custom plugin. Once ADR-005x on
-          // extending the Tailwind theme lands, migrate to classes.
-          // react-doctor-disable-next-line no-inline-exhaustive-style, react-doctor/no-inline-exhaustive-style
-          <div
-            className="relative z-10 backdrop-blur-[6px]"
-            style={{
-              marginTop: 64,
-              background: 'rgba(255,255,255,0.6)',
-              border: '1px solid rgba(255,255,255,0.6)',
-              borderRadius: 12,
-              padding: '18px 20px',
-              fontSize: 14,
-              lineHeight: 1.5,
-              color: 'var(--color-ink-2)',
-              maxWidth: '38ch',
-            }}
-          >
-            <InlineStars>{quote.text}</InlineStars>
-            <div
-              style={{
-                marginTop: 10,
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--color-ink-3)',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {quote.attribution}
-            </div>
-          </div>
-        )}
 
         {stats && stats.length > 0 && (
           <div
