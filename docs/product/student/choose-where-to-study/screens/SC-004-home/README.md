@@ -8,7 +8,7 @@
 
 ## Qué stories resuelve
 
-[US-171](../../../../guarantees/README.md#stories) (nada destacado, patrocinado ni ordenado por conveniencia, tampoco en la muestra que elige la landing), [US-168](../../../../guarantees/README.md#stories) (leer, acá y en todo lo público, no pide cuenta).
+[US-171](../../../../guarantees/README.md#stories) (nada destacado, patrocinado ni ordenado por conveniencia, tampoco en la muestra de ficha que elige), [US-168](../../../../guarantees/README.md#stories) (leer, acá y en todo lo público, no pide cuenta).
 
 
 [US-221](../../stories/US-221-see-the-instrument-working-on-arrival/README.md) (la razón de que esta pantalla exista: entender qué es esto viendo una ficha real, con la muestra al azar entre las que ya pasaron el piso de publicación).
@@ -16,7 +16,7 @@
 [US-222](../../stories/US-222-browse-what-there-is-to-study/README.md) (desde acá se entra a explorar sin saber qué buscar).
 ## Qué muestra
 
-Su identidad visual se diseña con criterio propio: lo que sigue es la estructura de bloques que tiene que estar, no la identidad visual (tipografía, tono) que va a tener la landing.
+Su identidad visual se diseña con criterio propio: lo que sigue es la estructura de bloques que tiene que estar, no la identidad visual (tipografía, tono) que va a tener esta pantalla.
 
 1. **Qué es plan-b, en palabras de lector**: lo que los alumnos ya saben porque lo vivieron, hoy disperso en grupos y pasillos, convertido en un dato que aguanta una discusión. Sin vocabulario de producto ni de tesis. Dicho también en tres pasos cortos: explorar o buscar, leer la ficha con sus voces, reseñar si cursaste.
 2. **La entrada a [Explorar](../SC-003-explore/README.md) y [Buscar](../SC-006-search/README.md)**: los dos caminos para llegar a una ficha.
@@ -51,5 +51,5 @@ Están los bloques 1, 2, 3 y 6: qué es plan-b, los dos caminos (Explorar hacia 
 
 ## Lo que esta ficha deja abierto
 
-- **La identidad visual de la landing** (tipografía, tono): se construyó con los tokens del producto y el contrato Boletín para el bloque de la muestra, no con una identidad propia. Sigue sin dibujarse.
+- **La identidad visual de Inicio** (tipografía, tono): se construyó con los tokens del producto y el contrato Boletín para el bloque de la muestra, no con una identidad propia. Sigue sin dibujarse.
 - **Cada cuánto rota la muestra**: hoy sortea en cada visita. Queda abierto si conviene fijarla por día (para que dos personas que comparten el link vean lo mismo) y si se excluye la que el visitante ya vio.
