@@ -285,7 +285,7 @@ test('Lucía recovers her password from sign-in', async ({ page }) => {
 
 Reglas:
 - Helpers en `e2e/helpers/`: no copiar parsing de mail por test.
-- Personas (`LUCIA`, `MATEO`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
+- Personas (`LUCIA`, `PAULA`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
 - Cada test es independiente: limpia rate limits (Mailpit y Redis se comparten dentro de una corrida). La base **no** hace falta restaurarla: cada corrida arranca de una base nueva.
 - **E2E corre siempre en CI** en cada PR como gate antes de merge (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).

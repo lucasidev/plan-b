@@ -34,7 +34,7 @@ Cursó una materia donde faltaron seis clases. Fue a hablar, le dijeron que era 
 
 **La contradicción**: está convencido de que no cambia nada y aun así quiere que quede registrado. Le da lo mismo el producto: quiere el número.
 
-**Decisión que produce**: por él el gate llega en la acción y no en la puerta, el onboarding es saltable y retomable, y su reseña queda: suma a los conteos, y si escribe en el campo libre, alimenta los ítems que se destilan más adelante. Lo que quiere es que quede.
+**Decisión que produce**: por él el gate llega en la acción y no en la puerta, nada le pide completar algo antes de reseñar, y su reseña queda: suma a los conteos, y si escribe en el campo libre, alimenta los ítems que se destilan más adelante. Lo que quiere es que quede.
 
 ### Ana, 21 · "Su facultad no está y sospecha del vacío"
 

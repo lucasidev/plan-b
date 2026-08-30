@@ -65,9 +65,9 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 | [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
 | [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
 
-92 stories (87 en tramos y 5 garantías) y 34 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
+90 stories (85 en tramos y 5 garantías) y 32 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
-## Las 34 pantallas
+## Las 32 pantallas
 
 Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo el índice por ID y slug de URL, que es lo único que no se deduce de la estructura de carpetas (los slugs se verificaron contra `frontend/src/app/` el 2026-08-19). **Una pantalla se nombra por lo que dice arriba**, en español; la URL es código, en inglés, y se fija al construirla.
 

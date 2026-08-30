@@ -11,7 +11,7 @@ Basado en los principios de DDD (Eric Evans). Cuando aparecen nuevos términos e
 - **Identificadores en código** (clases, tablas, propiedades): inglés. C# → `PascalCase`, SQL → `snake_case`, TypeScript → `camelCase`.
 - **Strings de UI**: español rioplatense.
 - **Mensajes de error internos** (logs, excepciones, códigos de error): inglés.
-- **Documentación y ADRs**: narrativa en español, nombres de entidades en inglés cuando referencia al modelo (ej. "el `EnrollmentRecord` tiene estado `aprobada`").
+- **Documentación y ADRs**: narrativa en español, nombres de entidades en inglés cuando referencia al modelo (ej. "el `CareerPlan` tiene estado `active`").
 
 ## El producto: reseñar y publicar
 
@@ -60,7 +60,7 @@ Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), "Qué recabamos" y "
 | **Cohorte** | Las cuentas que entraron a una carrera el mismo año. En el producto vigente es sobre todo el corte de los **datos oficiales** ("egresan por cohorte: 14 %", serie SPU). |
 | **Carrera canónica** | El nombre bajo el que el catálogo declara que dos ofertas de distintas instituciones son la misma carrera, para mostrarlas lado a lado. Lo decide el equipo, no el parecido del nombre. |
 | **Dónde estudiarla** | La misma carrera canónica en las instituciones de una ciudad, lado a lado con **datos oficiales medidos igual para todas** (incluido el régimen de ingreso al lado del egreso); las señales de reseñas van por institución y no se cruzan. Sin compuesto, sin ganador. |
-| **Nombre de pantalla** | Una pantalla se nombra por lo que dice arriba, en español, con mayúscula inicial y sin backticks: Mi carrera, Dónde estudiarla, Método, Reseñar, Ficha de cátedra. **Los backticks son código**: la URL va en inglés y con slug (`/reviews/write`) y se fija cuando la pantalla entra a sprint. |
+| **Nombre de pantalla** | Una pantalla se nombra por lo que dice arriba, en español, con mayúscula inicial y sin backticks: Mis aportes, Dónde estudiarla, Método, Reseñar, Ficha de cátedra. **Los backticks son código**: la URL va en inglés y con slug (`/reviews/write`) y se fija cuando la pantalla entra a sprint. |
 
 ## Producto, landing y datos
 
@@ -127,7 +127,7 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 | **alumno** | "Un rol de usuario" | Se refiere a un `member` con `StudentProfile`. El rol es `member`. |
 | **rol** | "Algo que un usuario puede tener varios a la vez" | Un `User` tiene exactamente un `role` del enum. Los profiles suman **capacidades**, no roles. |
 | **carrera** | "Un plan de estudios específico" | `Career` es el concepto estable. `CareerPlan` es la versión específica. Un alumno cursa una `Career` bajo un `CareerPlan` determinado. |
-| **comisión** | "Cursada del alumno" | `Commission` es la oferta (materia + cuatrimestre + docentes). `EnrollmentRecord` es la cursada específica del alumno en esa comisión. |
+| **comisión** | "Cursada del alumno" | `Commission` es la oferta (materia + cuatrimestre + docentes). La cursada es lo que declara la reseña (materia, cátedra y período), no una entidad propia: el producto no lleva un historial del alumno ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). |
 | **cuatrimestre** | Como sinónimo de cualquier período | `AcademicTerm` generaliza a bimestral/cuatrimestral/semestral/anual. "Cuatrimestre" es un `AcademicTerm` con `kind='cuatrimestral'`. Vale también para el código: concatenar una "c" fija al formatear un período asume la cadencia de UNSTA y rompe la generalidad que compró [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md). |
 | **anónimo** | "Los datos del autor no existen en DB" | El anonimato es de **presentación**, no de storage. La identidad siempre se preserva internamente. |
 | **cohorte** | "La misma combinación de materias" (la acepción del planificador, retirada con él) | La camada de ingreso: las cuentas que entraron a una carrera en una institución el mismo año. |

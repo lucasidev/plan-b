@@ -20,7 +20,7 @@ Tres mecanismos (`is_active`, un `status` del ciclo de vida, y `DELETE`) sobre e
 
 El costo de no tenerlo escrito no es estético. Se manifestó dos veces:
 
-- El catálogo público **no filtraba `is_active`** en universidades ni carreras. Archivar una universidad no tenía ningún efecto visible y un alumno podía seguir haciendo onboarding contra ella. La columna existía, la acción del admin existía, y no significaba nada.
+- El catálogo público **no filtraba `is_active`** en universidades ni carreras. Archivar una universidad no tenía ningún efecto visible y un alumno podía seguir declarándola al registrarse. La columna existía, la acción del admin existía, y no significaba nada.
 - Un docente archivado **se podía asignar a comisiones nuevas**, porque el handler chequeaba `subject.IsActive` y no `teacher.IsActive`. Archivar lo sacaba de la búsqueda y lo devolvía a la superficie por la puerta de atrás.
 
 Los dos son la misma falla: soft delete es un contrato entre la escritura y **todas** las lecturas, y sin el contrato escrito las lecturas se olvidan de cumplirlo.

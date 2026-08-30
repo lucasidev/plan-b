@@ -8,7 +8,7 @@
 
 ## Qué stories resuelve
 
-US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean publicar), US-196 (la cátedra como entidad propia, con su titular) (el equipo docente de la cátedra, con el nombre de cada integrante, contra el que se verifica a quien pide responder), US-224 (el cargo institucional atado a la lista corta de cargos genéricos, nunca al nombre textual), US-195 (atar la oferta a su carrera canónica, con autor y fecha), US-202 (la fuente que no existe o se contradice, marcada, sin bloquear la carga), US-201 (editar una oferta publicada y avisar a quien la tiene marcada), US-204 (los dos planes conviviendo cuando la facultad reforma), US-197 (la cola de materias declaradas, para vincular o fusionar contra la canónica). La letra de cada una: [README de la épica](../../README.md#stories).
+US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean publicar), US-196 (la cátedra como entidad propia, con su titular) (el equipo docente de la cátedra, con el nombre de cada integrante, contra el que se verifica a quien pide responder), US-224 (el cargo institucional atado a la lista corta de cargos genéricos, nunca al nombre textual), US-195 (atar la oferta a su carrera canónica, con autor y fecha), US-202 (la fuente que no existe o se contradice, marcada, sin bloquear la carga), US-201 (editar una oferta publicada y avisar a quienes declararon esa carrera), US-204 (los dos planes conviviendo cuando la facultad reforma), US-197 (la cola de materias declaradas, para vincular o fusionar contra la canónica). La letra de cada una: [README de la épica](../../README.md#stories).
 
 ## Qué muestra
 
@@ -22,7 +22,7 @@ Para una oferta que se está cargando por primera vez:
 
 **La fuente sin oficializar** (US-202): un campo admite marcarse "fuente: no oficial" cuando la facultad no publica el plan o publica versiones que no coinciden; no bloquea cargar, y la ficha pública lo muestra.
 
-**Editar una oferta publicada** (US-201): cualquier campo se puede corregir después de publicada; guardar dispara el aviso a quienes la tienen marcada, con qué cambió.
+**Editar una oferta publicada** (US-201): cualquier campo se puede corregir después de publicada; guardar dispara el aviso a las cuentas que declararon esa carrera, con qué cambió.
 
 **Cuando la facultad reforma el plan** (US-204): el plan nuevo no reemplaza al viejo, coexisten con su año; cada reseña ya hecha queda pegada al período y a la materia canónica, no a la fila del plan, así que reformar no parte el corpus en dos (D04).
 

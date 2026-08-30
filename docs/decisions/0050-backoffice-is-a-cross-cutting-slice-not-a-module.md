@@ -12,7 +12,7 @@ El canvas del backoffice (2026-05-12) presentó el área de administración como
 
 Ninguna de las dos es cierta:
 
-- Los bounded contexts son cinco: `identity`, `academic`, `enrollments`, `reviews`, `moderation` (`backend/modules/`). No hay ni hubo un módulo `admin`.
+- Los bounded contexts son tres: `identity`, `academic`, `reviews` (`backend/modules/`). No hay ni hubo un módulo `admin`.
 - `/api/admin` no aparece en una sola línea de código (`grep -rn "/api/admin" backend/ frontend/src/` devuelve cero). Las features de backoffice ya implementadas exponen la API de su módulo: `Planb.Academic.Application/Features/AdminCareers/CreateCareerEndpoint.cs` mapea `/api/academic/universities/{universityId}/careers`, no `/api/admin/...`.
 
 Lo grave es que **quince de esas US ya están Done**: se implementaron contra la ruta real y el AC quedó describiendo una ruta ficticia. El doc no quedó viejo, quedó falso, y sobrevivió así varios sprints porque nadie lo contrastó contra el código.

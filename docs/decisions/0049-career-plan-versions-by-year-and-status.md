@@ -7,7 +7,7 @@
 
 La decisión anterior sobre versionado de planes (retirada de la carpeta por rebasada) hacía que `CareerPlan` versionara con `version_label` ("Plan 2024"), `effective_from` y `effective_to` (rango de fechas), más un domain service que retira automáticamente el plan vigente anterior al crear uno nuevo (invariante cross-aggregate "solo un plan vigente por Career").
 
-Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno importa su historial en el onboarding y el sistema crea `Career`/`CareerPlan` a partir de lo que carga), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al anterior, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../history/domain-v1/stories/US-061.md)).
+Ese modelo nunca tuvo un caller real. Lo primero que se implementó fue el crowdsourcing (US-088: el alumno cargaba un plan de estudios propio y el sistema creaba `Career`/`CareerPlan` a partir de lo que subía), que no necesitaba fechas de vigencia: alcanzaba con saber el año del plan. El backoffice de carreras y planes (US-061, admin) se construyó sobre ese mismo modelo simplificado en vez de migrar al anterior, formalizando de facto el cambio (ver la nota de modelo del 2026-07-18 en [US-061](../history/domain-v1/stories/US-061.md)).
 
 El código real (`backend/modules/academic/src/Planb.Academic.Domain/CareerPlans/CareerPlan.cs`) expone:
 

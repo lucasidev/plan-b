@@ -11,7 +11,6 @@ El "por qué" de las decisiones estructurales está en los ADRs referenciados. E
 - [Overview](#overview)
 - [Context: Identity](#context-identity)
 - [Context: Academic Catalog](#context-academic-catalog)
-- [Context: Student History](#context-student-history)
 - [Context: el instrumento y la reseña de tres capas](#context-el-instrumento-y-la-reseña-de-tres-capas)
 - [Context: Semantic Analytics](#context-semantic-analytics)
 - [Apéndice A: Enums](#apéndice-a-enums)
@@ -41,10 +40,6 @@ erDiagram
     StudentProfile }o--|| CareerPlan : "enrolled in"
     TeacherProfile }o--|| Teacher : "claims"
 
-    StudentProfile ||--o{ EnrollmentRecord : owns
-    Commission ||--o{ EnrollmentRecord : in
-    StudentProfile ||--o{ HistorialImport : imports
-
     Subject ||--o{ Chair : "taught by"
     Chair }o--o{ Teacher : "through ChairMember"
 
@@ -63,7 +58,6 @@ erDiagram
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Identity             | User, StudentProfile, TeacherProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
 | Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
-| Student History      | EnrollmentRecord, HistorialImport                                                                           | Historial de cursadas del alumno                                |
 
 ## Context: Identity
 
@@ -439,76 +433,6 @@ El tramo no es adorno: la ficha publica reseñas de varios años y el equipo cam
 - `Prerequisite`: ambos subjects pertenecen al mismo `career_plan_id`.
 - `Career.university_id = Commission.subject.career_plan.career.university_id = AcademicTerm.university_id = Teacher.university_id` (coherencia universitaria total).
 
-## Context: Student History
-
-Historial académico del alumno. Ver [ADR-0004](../decisions/0004-enrollment-record-stores-facts-not-derived-state.md) y [ADR-0006](../decisions/0006-jsonb-only-where-the-shape-is-variable.md).
-
-```mermaid
----
-config:
-    layout: elk
----
-erDiagram
-    StudentProfile ||--o{ EnrollmentRecord : owns
-    Subject ||--o{ EnrollmentRecord : of
-    Commission ||--o{ EnrollmentRecord : in
-    AcademicTerm ||--o{ EnrollmentRecord : during
-    StudentProfile ||--o{ HistorialImport : imports
-```
-
-### Entity: EnrollmentRecord
-
-Cursada específica del alumno.
-
-| Campo             | Tipo                     | Constraints                   | Notas                     |
-| ----------------- | ------------------------ | ----------------------------- | ------------------------- |
-| `id`              | UUID                     | PK                            |                           |
-| `student_id`      | UUID                     | FK → StudentProfile, NOT NULL |                           |
-| `subject_id`      | UUID                     | FK → Subject, NOT NULL        |                           |
-| `commission_id`   | UUID                     | FK → Commission, NULL         | Null para equivalencias   |
-| `term_id`         | UUID                     | FK → AcademicTerm, NULL       | Null para equivalencias   |
-| `status`          | ENUM `enrollment_status` | NOT NULL                      |                           |
-| `approval_method` | ENUM `approval_method`   | NULL                          | Solo si status='aprobada' |
-| `grade`           | NUMERIC(4,2)             | NULL                          | 0..10                     |
-| `created_at`      | TIMESTAMPTZ              | NOT NULL                      |                           |
-| `updated_at`      | TIMESTAMPTZ              | NOT NULL                      |                           |
-
-Constraints:
-
-- `UNIQUE(student_id, subject_id, term_id)` con `NULLS NOT DISTINCT`: sin eso el índice no restringe nada cuando `term_id` es nulo (en Postgres dos NULL son distintos entre sí) y convivían N cursadas iguales sin período, que es exactamente lo que ensucia el pass rate público.
-- `UNIQUE(student_id, subject_id) WHERE approval_method = 'equivalencia'`: una sola equivalencia por materia, independiente del período (que ahí siempre es nulo).
-- CHECK: `status = 'aprobada'` → `grade NOT NULL AND approval_method NOT NULL`.
-- CHECK: `status = 'regular'` → `grade NOT NULL AND approval_method IS NULL`.
-- CHECK: `status IN ('cursando','reprobada','abandonada')` → `grade IS NULL AND approval_method IS NULL`.
-- CHECK: `approval_method = 'equivalencia'` → `commission_id IS NULL AND term_id IS NULL`.
-- CHECK: `approval_method = 'final_libre'` → `commission_id IS NULL AND term_id IS NOT NULL` (rindió libre en un cuatrimestre específico sin cursar comisión).
-- CHECK `ck_enrollment_records_cursada_requires_term`: `approval_method IN ('cursada','promocion','final')` → `term_id NOT NULL`. **La comisión NO se exige**: el historial académico que sube el alumno no dice en qué comisión cursó, así que exigirla hacía imposible importar cualquier materia aprobada cursando (US-014). Sin comisión la cursada no es reseñable, que es una función menos, no un dato falso.
-- CHECK: `grade BETWEEN 0 AND 10`.
-
-### Entity: HistorialImport
-
-Staging del parseo de PDF/texto.
-
-| Campo         | Tipo                      | Constraints                   | Notas                               |
-| ------------- | ------------------------- | ----------------------------- | ----------------------------------- |
-| `id`          | UUID                      | PK                            |                                     |
-| `student_id`  | UUID                      | FK → StudentProfile, NOT NULL |                                     |
-| `source_type` | ENUM `import_source_type` | NOT NULL                      |                                     |
-| `raw_payload` | JSONB                     | NOT NULL                      | Output crudo del parser             |
-| `status`      | ENUM `import_status`      | NOT NULL, DEFAULT `'pending'` |                                     |
-| Error       | TEXT                      | NULL                          | Mensaje de error si status='failed' |
-| `parsed_at`   | TIMESTAMPTZ               | NULL                          | Timestamp de parseo exitoso         |
-| `confirmed_at`| TIMESTAMPTZ               | NULL                          | Timestamp del confirm del alumno    |
-| `created_at`  | TIMESTAMPTZ               | NOT NULL                      |                                     |
-| `updated_at`  | TIMESTAMPTZ               | NOT NULL                      |                                     |
-
-`MarkParsing` acepta volver desde `parsing` además de `pending`: estar ya en `parsing` significa que el worker anterior se cayó a mitad del parseo, y rechazar esa redelivery dejaba el import trabado en ese estado para siempre, con el frontend polleando algo que no iba a cambiar nunca. Del lado del transporte, las colas locales de Wolverine son durables (`UseDurableLocalQueues`) para que el mensaje sobreviva al restart en vez de perderse entre el outbox y la cola en memoria.
-
-### Invariantes cross-table (enforced en app)
-
-- `StudentProfile.career_id.career.university_id = Subject.career_plan.career.university_id` para un `EnrollmentRecord`: el alumno cursa materias de su propia universidad/plan.
-- `Commission.subject_id = EnrollmentRecord.subject_id` y `Commission.term_id = EnrollmentRecord.term_id`: la comisión del enrollment corresponde a la materia y cuatrimestre del enrollment.
-
 ## Context: el instrumento y la reseña de tres capas
 
 **El modelo del producto vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), y desde R2 lo único que vive en el schema `reviews`. Cuatro tablas del catálogo (qué se pregunta) y dos de la reseña (qué se respondió).
@@ -651,10 +575,6 @@ Nombres y valores de todos los enums del modelo.
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
 | `commission_modality`         | `presencial`, `virtual`, `hibrida`                                                    |
 | `commission_teacher_role`     | `titular`, `adjunto`, `jtp`, `ayudante`, `invitado`                                   |
-| `enrollment_status`           | `cursando`, `regular`, `aprobada`, `reprobada`, `abandonada`                          |
-| `approval_method`             | `cursada`, `promocion`, `final`, `final_libre`, `equivalencia`                        |
-| `import_source_type`          | `pdf`, `text`, `manual`                                                               |
-| `import_status`               | `pending`, `parsing`, `parsed`, `failed`, `confirmed`                                 |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
 | `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 
@@ -668,19 +588,6 @@ Reglas que atraviesan múltiples contextos y no caben en una sola sección. La m
 - `User.role = 'member'` → puede tener 0, 1 o 2 profiles (Student, Teacher, o ambos).
 
 Responsable: servicios de registro, claim de profile, cambio de rol admin.
-
-### Coherencia universitaria
-
-Un `EnrollmentRecord` con `commission_id` y `term_id` no nulos debe satisfacer:
-
-```
-EnrollmentRecord.student.career_plan.career.university
-  == Subject.career_plan.career.university
-  == Commission.term.university
-  == CommissionTeacher.teacher.university (para cada teacher de la comisión)
-```
-
-Responsable: servicios de inscripción, validadores al crear commission.
 
 ### Anonimato en serialización
 

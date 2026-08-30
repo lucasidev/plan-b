@@ -14,9 +14,8 @@ Como quien carga el catálogo, quiero saber qué pasa con lo reseñado cuando la
 ## Dónde se resuelve
 
 - [Catálogo](../../screens/SC-027-catalog/README.md): el plan nuevo no reemplaza al viejo, coexisten con su año; cada reseña ya hecha queda pegada al período y a la materia canónica, no a la fila del plan.
-- [Ficha de carrera](../../../../student/choose-where-to-study/screens/SC-001-career/README.md): abierto si el plan lista los dos años o solo el vigente, mientras el gate de cobertura ya los une.
+- [Ficha de carrera](../../../../student/choose-where-to-study/screens/SC-001-career/README.md): los dos planes coexisten con su año; si lista los dos años o solo el vigente queda abierto ahí, mientras el gate de cobertura ya los une. (Antes esto se resolvía también en Mi carrera, pantalla cerrada con [ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md).)
 - [Dónde estudiarla](../../../../student/choose-where-to-study/screens/SC-008-where-to-study/README.md): abierto si ofertas de la misma institución en dos planes se comparan como una columna o como dos.
-- [Ficha de carrera](../../../../student/choose-where-to-study/screens/SC-001-career/README.md): los dos planes coexisten con su año; cómo se ve en pantalla queda abierto ahí. (Antes esto se resolvía también en Mi carrera, pantalla cerrada con [ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md).)
 
 ## Notas
 

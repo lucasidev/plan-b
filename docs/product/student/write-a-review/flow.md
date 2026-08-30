@@ -8,8 +8,7 @@ flowchart TD
   A2([Mail anual a la cuenta inactiva: ¿te recibiste?, US-156]) -->|responde desde el mail, sin entrar| G3
   A2 -->|responde desde el mail| G4
   M([Matías leyó una ficha y quiere que quede registrado]) --> M1[Ingresar / Registro: el gate está en la acción, con el motivo a la vista y vuelta a donde iba]
-  M1 --> M2[Empezar: marcás por dónde vas; saltable y retomable, US-170]
-  M2 --> B
+  M1 --> B
   B -->|la materia no está en el plan cargado| B2[Se acepta igual: queda pendiente de vincular<br/>no cuenta hasta que el catálogo la vincula, US-160]
   B2 --> C
   B -->|ya la reseñaste en otro período| B3[Se acepta una segunda vez: el período es otro, US-163]
@@ -44,8 +43,7 @@ flowchart TD
 - [Reseñar](screens/SC-015-write-review/README.md): los seis pasos completos, de elegir la materia a enviar (nodos B, B2, B3, C, D, E, F, H, I, K, R).
 - [Mi situación](screens/SC-014-my-status/README.md): la pregunta de trayectoria, embebida en el paso 2 cuando el período es viejo (nodos G2, G3, G4, G5).
 - [Anonimato](screens/SC-013-anonymity/README.md): qué se publica y qué no, el campo libre y el piso, dicho antes de escribir; no es un paso propio del diagrama, se linkea desde el paso 6 y desde cualquier ficha.
-- [Ingresar / Registro](../enter/screens/SC-025-sign-in/README.md): el gate que cruza Matías antes de llegar a Reseñar (nodo M1); ver también [Registro](../enter/screens/SC-026-sign-up/README.md).
-- Empezar: el onboarding que sigue al gate, saltable y retomable (nodo M2).
+- [Ingresar / Registro](../enter/screens/SC-025-sign-in/README.md): el gate que cruza Matías antes de llegar a Reseñar (nodo M1), directo y sin paso intermedio ([ADR-0086](../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)); ver también [Registro](../enter/screens/SC-026-sign-up/README.md).
 - [Mis aportes](../undo/screens/SC-018-my-contributions/README.md): a donde vuelve la reseña publicada, con lo que sumó cada ítem (nodo L).
 - [Avisos](../../notices/screens/SC-034-mail/README.md): los dos mails que disparan el flujo, el del cierre de período y el reenganche anual (nodos A, A2).
 

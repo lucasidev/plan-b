@@ -32,7 +32,7 @@ Ningún puntaje ni escala 1 a 5 ([ADR-0083](../../../../../decisions/0083-the-fi
 
 ## Adónde va
 
-Llega desde: la Ficha de carrera (el plan), Buscar, Mi carrera (correlativas). Va a: la Ficha de cátedra de cada cátedra que la da, la Ficha de carrera, Mi carrera, Reseñar (con cuenta) y Método (cómo se calcula).
+Llega desde: la Ficha de carrera (el plan), Buscar. Va a: la Ficha de cátedra de cada cátedra que la da, la Ficha de carrera, Reseñar (con cuenta) y Método (cómo se calcula).
 
 ## Decisiones que aplica
 
@@ -42,5 +42,5 @@ Llega desde: la Ficha de carrera (el plan), Buscar, Mi carrera (correlativas). V
 
 - **De dónde sale "se puede rendir libre"**: si es un dato del catálogo académico, algo que se pregunta, o una frecuencia derivada de las reseñas.
 - **Cuántas cátedras se listan** cuando son muchas, y si "sus cátedras" pagina.
-- **Si muestra co-cursada propia** (los pares de materias donde participa esta materia) o eso queda solo en la Ficha de carrera y en Mi carrera.
+- **Si muestra co-cursada propia** (los pares de materias donde participa esta materia) o eso queda solo en la Ficha de carrera.
 - **Acciones inline que no están en el R1 mínimo**: corregir un dato duro (de Cuidar lo publicado) todavía no están bocetadas en esta ficha.

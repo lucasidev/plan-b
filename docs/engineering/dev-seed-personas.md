@@ -2,7 +2,7 @@
 
 > No confundir con [`user-personas.md`](../product/personas.md), que son las personas de **producto**. Esto son identidades fijas de desarrollo.
 
-Cuatro identidades fijas que el `DevSeedHostedService` deja seteadas al levantar el host en Development. Cada una cubre un camino concreto del flujo de auth (login happy path, login con cuenta deshabilitada, login con email no verificado, alumno entrando por primera vez). Sirven para:
+Tres identidades fijas que el `DevSeedHostedService` deja seteadas al levantar el host en Development. Cada una cubre un camino concreto del flujo de auth (login happy path, login con cuenta deshabilitada, login con email no verificado). Sirven para:
 
 - Probar manualmente el flujo en `/sign-in` sin tener que registrar + verificar a mano cada vez.
 - Tests de integración que necesitan un user "ya existente" sin pasar por el ciclo completo.
@@ -27,18 +27,7 @@ Alumna avanzada de 3° año Sistemas, con historial cargado. Es la persona con l
 
 **La usamos para**: login happy path y cualquier flujo post-login que necesite un alumno con perfil e historial.
 
-### Mateo Giménez
-
-| | |
-|---|---|
-| Email | `mateo.gimenez@hotmail.com` |
-| Password | `mateo.gimenez.12` |
-| Estado | verified, member |
-| Rol | `member` |
-
-Alumno recién entrando: 1° año, 0 créditos, sin historial. Su valor es probar la app desde cero.
-
-**La usamos para**: onboarding (cuando exista), creación de StudentProfile, primera planificación de cuatri sin historial previo.
+**Hubo también un alumno recién entrando (Mateo Giménez), y se fue el 2026-08-30** con el onboarding que cubría. Existía solo para probar "usuario sin profile va a onboarding"; con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) esa pantalla se retiró (la cuenta se crea en el Registro y desde ahí se lee y se reseña, sin paso intermedio), así que la persona se quedó sin camino que cubrir. Vuelve si aparece un caso de uso real para un alumno recién registrado sin nada más declarado.
 
 ### Paula Suárez (suspendida)
 

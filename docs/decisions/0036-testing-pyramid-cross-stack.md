@@ -113,7 +113,7 @@ frontend/
 │   │   ├── sign-in.spec.ts
 │   │   └── forgot-password.spec.ts             ← uno por user flow
 │   └── helpers/
-│       ├── personas.ts                         ← Lucía, Mateo, etc.
+│       ├── personas.ts                         ← Lucía, Paula, etc.
 │       ├── mailpit.ts                          ← extract token, list mails
 │       └── redis.ts                            ← clear rate limits
 ├── playwright.config.ts                        ← permanente

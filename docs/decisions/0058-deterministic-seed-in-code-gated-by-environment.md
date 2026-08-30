@@ -5,7 +5,7 @@
 
 ## Contexto
 
-planb necesita datos para existir: sin universidad, carrera, plan y materias no hay onboarding, y sin reseñas no hay nada que mirar. Ese corpus se siembra hoy con hosted services por módulo (`AcademicSeedHostedService`, `DevSeedHostedService`, `SeedCorpusHostedService`), con ids hardcodeados y con dos niveles de gate por entorno.
+planb necesita datos para existir: sin universidad, carrera, plan y materias no hay qué elegir al registrarse ni qué reseñar, y sin reseñas no hay nada que mirar. Ese corpus se siembra hoy con hosted services por módulo (`AcademicSeedHostedService`, `DevSeedHostedService`, `SeedCorpusHostedService`), con ids hardcodeados y con dos niveles de gate por entorno.
 
 La forma está y funciona, pero el criterio nunca se escribió. Quien agregue un módulo con datos propios tiene que deducirlo leyendo tres seeders, y las tres decisiones que lo componen (ids fijos, idempotencia, gates) se leen como detalles de implementación cuando en realidad cada una resuelve un problema concreto que ya nos mordió.
 

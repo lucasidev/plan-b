@@ -16,7 +16,7 @@ Eventos disparadores definidos (4 triggers iniciales):
 
 Esos 4 son el primer set. Más triggers van a aparecer (respuesta de docente verificado a una reseña tuya, claim de docente aprobado, etc.): la arquitectura tiene que soportar agregar tipos sin re-trabajo.
 
-Hoy el backend tiene 5 módulos (identity, academic, enrollments, reviews, moderation). Notifications cruza varios:
+Hoy el backend tiene 3 módulos (identity, academic, reviews). Notifications cruza varios:
 
 - **Reviews** sabe cuándo se publica una reseña (triggers 1, 2).
 - **Moderation** sabe cuándo una reseña se reporta o recibe acción (trigger 3).

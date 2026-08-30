@@ -5,7 +5,7 @@
 
 ## Contexto
 
-Planb tiene 5 bounded contexts claramente identificados en el ubiquitous language: Identity, Academic, Enrollments, Reviews, Moderation. El código del backend tiene que reflejar esa división con mecanismos que hagan que los límites no dependan de la disciplina del equipo, sino de la estructura del proyecto.
+Planb tiene 3 bounded contexts claramente identificados en el ubiquitous language: Identity, Academic, Reviews. El código del backend tiene que reflejar esa división con mecanismos que hagan que los límites no dependan de la disciplina del equipo, sino de la estructura del proyecto.
 
 Es un proyecto de un solo developer, MVP del tamaño de una tecnicatura, sin plan de extracción a microservicios. Necesita rigor DDD sin ceremonia innecesaria.
 
@@ -21,14 +21,12 @@ backend/
 ├── modules/
 │   ├── identity/       (Domain + Application + Infrastructure + Tests = 4 csprojs)
 │   ├── academic/       (idem)
-│   ├── enrollments/
-│   ├── reviews/
-│   └── moderation/
+│   └── reviews/        (idem)
 ├── host/Planb.Api/         (composición, DI wiring, Program.cs)
 └── tests/Planb.IntegrationTests/
 ```
 
-Total: ~22 csprojs.
+Total: ~16 csprojs.
 
 Cada módulo expone comunicación cross-module vía:
 - **PublicContracts** (folder en `Application/` con types `public sealed`): interfaces sincrónicas para reads.
@@ -61,7 +59,7 @@ Descartada porque mezcla las capas dentro del mismo ensamblado. El discernimient
 
 **Negativas:**
 
-- ~22 csprojs en la solution. Build times más largos (~mitigado con build incremental).
+- ~16 csprojs en la solution. Build times más largos (~mitigado con build incremental).
 - Cross-module operations requieren arquitectura (PublicContracts, integration events). No se puede tomar un atajo con un join EF Core.
 - Ceremonia inicial de setup más alta.
 

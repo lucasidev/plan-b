@@ -14,7 +14,7 @@ El "por qué" de Redis está en ADR-0034. Este doc es el "cómo": los shapes con
 <module>:<purpose>:<identifier>
 ```
 
-- **module**: el bounded context que escribe la key (`identity`, `academic`, `enrollments`, `reviews`). Sirve para namespacear: si en el futuro segmentamos por servidor Redis, el prefijo es la unidad de migración.
+- **module**: el bounded context que escribe la key (`identity`, `academic`, `reviews`). Sirve para namespacear: si en el futuro segmentamos por servidor Redis, el prefijo es la unidad de migración.
 - **purpose**: tipo de uso del key (`refresh`, `ratelimit`, `idempotency`, `cache`, `insights`). Si ves un purpose nuevo en código, debería corresponder a uno de los seis patrones del ADR.
 - **identifier**: lo que distingue una instancia de otra. Hash de token, ID de usuario, código de materia, etc. **Nunca PII en plano** (email, nombre): siempre hash o ID interno.
 

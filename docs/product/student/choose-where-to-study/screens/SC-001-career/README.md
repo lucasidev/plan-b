@@ -42,6 +42,6 @@ Llega desde: Explorar, Buscar, La cola (cuando se carga lo que alguien pidió), 
 
 - **Cómo se ven las materias del plan** detrás de "Ver las materias": agrupadas por año o por correlativas, y si el listado es de esta misma ficha o una vista aparte.
 - **Cuántas materias entran en "qué frena la cursada"** antes de "ver todas", y si esa lista tiene su propio tope o se arma con todo lo que haya alcanzado el piso.
-- **La co-cursada pública** (, [US-143](../../stories/US-143-check-which-subjects-to-take-together/README.md)): el boceto vigente no la incluye acá; si vuelve a esta ficha o queda solo en Mi carrera es pregunta abierta.
+- **La co-cursada pública** ([US-143](../../stories/US-143-check-which-subjects-to-take-together/README.md)): vive acá, pública y sin filtrar ([ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)); el boceto vigente todavía no la dibuja.
 - **Qué pasa con "el plan" cuando hay reforma** (US-204): si esta sección lista los dos planes o solo el vigente, mientras la cobertura ya los une (D04, sobre el denominador de materias canónicas).
 - **El tercer estado del vacío** que describe [US-139](../../../request-a-career/stories/US-139-tell-apart-the-three-empty-states/README.md) ("todavía no derivamos la cabecera") quedó desactualizado por este mismo cambio: acá no hay una cabecera que ocultar, la cobertura se muestra siempre. Reconciliar esa story es trabajo de su propia épica.

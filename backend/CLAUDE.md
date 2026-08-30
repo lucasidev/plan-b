@@ -1,6 +1,6 @@
 # Backend (planb)
 
-.NET 10 modular monolith. 4 módulos (bounded contexts) + SharedKernel + Host. `planning` y `moderation` se podaron con la versión anterior del producto ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)): el planificador no existe, y la moderación de contenido público no tiene qué moderar porque el modelo vigente no publica texto ([ADR-0084](../docs/decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+.NET 10 modular monolith. 3 módulos (bounded contexts) + SharedKernel + Host. `planning` y `moderation` se podaron con la versión anterior del producto ([ADR-0063](../docs/decisions/0063-the-product-is-a-pressure-instrument.md)): el planificador no existe, y la moderación de contenido público no tiene qué moderar porque el modelo vigente no publica texto ([ADR-0084](../docs/decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 
 Ver también [`../CLAUDE.md`](../CLAUDE.md) para contexto general y [`../docs/decisions/`](../docs/decisions) para ADRs.
 
@@ -53,7 +53,7 @@ Separación estricta: **endpoint sabe HTTP; handler sabe dominio**. Handler no r
 
 ## Modular monolith: reglas físicas
 
-- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `enrollments`, `reviews`). Misma connection string, schemas distintos.
+- **DbContext por módulo**: `IdentityDbContext`, `AcademicDbContext`, etc. Cada uno con schema propio (`identity`, `academic`, `reviews`). Misma connection string, schemas distintos.
 - **No EF navigation cross-module**: un `Review` no tiene `.Subject` cargado con JOIN. Si necesita data de Subject, el handler pide `IAcademicQueryService.GetSubjectByIdAsync(subjectId)` (de `Planb.Academic.Application.Contracts`).
 - **No FKs cross-schema**: las referencias son UUIDs sin constraint. La validación se hace en el application layer. Ver [ADR-0017](../docs/decisions/0017-persistence-ignorance.md).
 - **Cross-module communication**:

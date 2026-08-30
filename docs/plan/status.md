@@ -48,7 +48,7 @@ Desde el 2026-08-16 esto no es la continuación del planificador: es su reemplaz
 
 ## Contra qué se planifica
 
-103 stories en 13 épicas, todas con sus escenarios ejecutables ([`docs/product/`](../product/README.md)), 34 pantallas con ficha y boceto, y un catálogo de 46 frases semilla (7 de exigencia y 39 de gestión: el desbalance está sin resolver). Eso es el producto ideado. Lo que sigue es cuánto de lo construido sirve.
+103 stories en 13 épicas, todas con sus escenarios ejecutables ([`docs/product/`](../product/README.md)), 34 pantallas con ficha y boceto (hoy 32: dos se retiraron con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)), y un catálogo de 46 frases semilla (7 de exigencia y 39 de gestión: el desbalance está sin resolver). Eso es el producto ideado. Lo que sigue es cuánto de lo construido sirve.
 
 ## El inventario: qué hay hoy
 
@@ -65,7 +65,7 @@ Medido el 2026-08-21 sobre 880 archivos `.cs` en 6 módulos con 64 features, má
 
 **El corazón de la tesis no existe.** El catálogo de ítems, la respuesta por opción y el instrumento versionado dan **cero archivos** en el backend. Lo que reemplaza al puntaje no tiene una línea escrita.
 
-> **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. Los inventarios de `reviews`, `enrollments` y `academic` se **re-mapearon el 2026-08-23** contra los IDs vigentes (US-127 a US-230): el detalle queda abajo. El de `identity` ya citaba IDs vigentes; `planning` se retiró en R0.
+> **Confianza del inventario.** Los veredictos por feature salen de una pasada de cinco agentes sobre el código, con `file:line`. Sirven como dirección, no como contrato. Los inventarios de `reviews`, `enrollments` y `academic` se **re-mapearon el 2026-08-23** contra los IDs vigentes (US-127 a US-230): el detalle queda abajo. El de `identity` ya citaba IDs vigentes. Tres de los seis módulos medidos ya no existen: `planning` se retiró en R0, `moderation` en R2 y `enrollments` en R3, así que sus filas y sus tablas de features quedan como la foto del 2026-08-21, no como el estado de hoy.
 
 ### El re-mapeo contra el catálogo vigente (issue #353)
 
@@ -261,7 +261,7 @@ Se fue también lo que quedó sin dueño al sacar el aggregate: el corpus de pru
 
 - **Borrar la cuenta ya no toca las reseñas.** El consumidor que lo hacía era del modelo anterior. Hoy la posición del producto es que quien quiera sacar lo suyo lo saca antes de darse de baja (es lo que dice la pantalla Mis aportes), pero eso deja el texto libre de una cuenta borrada en la base. Decidir si eso está bien es una story, no un detalle de la poda.
 - **`just dev` arranca sin una sola reseña.** El corpus que se fue era del modelo anterior; el vigente no tiene el suyo, así que en dev las fichas dicen "junta 0". Los tests no dependen de él (crean lo suyo por API), pero mostrar el producto sí.
-- **`my-career` sigue siendo la pantalla del planificador**, con su plan, sus correlativas y sus docentes mockeados. La poda le sacó los puntajes (el ★ 4.4, las dimensiones sobre 5, el contador de reseñas y las tarjetas de reseña mockeadas), porque una pantalla viva no puede mostrar lo que el producto decidió no publicar. Lo demás sigue en pie y es candidato a su propia poda.
+- **`my-career` sigue siendo la pantalla del planificador**, con su plan, sus correlativas y sus docentes mockeados. La poda le sacó los puntajes (el ★ 4.4, las dimensiones sobre 5, el contador de reseñas y las tarjetas de reseña mockeadas), porque una pantalla viva no puede mostrar lo que el producto decidió no publicar. Lo demás siguió en pie hasta R3, que la borró entera con el módulo que la alimentaba.
 
 **Verificado** (2026-08-27, contra infraestructura real): backend compilando sin warnings, `dotnet format` limpio, **709 tests unitarios + architecture** y **327 de integración en verde** (Reviews 27, Academic 154, Identity 105, Enrollments 41), **696 tests de frontend**, `bun run build` de producción, y `check-docs --strict` limpio. En el browser: se contó una cursada por la pantalla real, aterrizó en Mis aportes con su acuse, y los conteos de la cátedra se movieron de 30 a 31 voces. La ficha de docente quedó con nombre y cátedras, sin un solo número sobre la persona.
 
@@ -309,6 +309,20 @@ Desde el 2026-08-29. Milestone [R3](https://github.com/lucasidev/plan-b/mileston
 | 7 | [#376 · El E2E de cargar una cátedra y ver su dato](https://github.com/lucasidev/plan-b/issues/376) | 3 | todos |
 
 **La balanza.** 21 de los 47 puntos construyen capacidad que el producto no tiene (cargar cátedras, la co-cursada, Método) y 26 limpian y sostienen. R0 fue poda pura y R2 fue mayormente hablar con una voz sola.
+
+### Lo hecho hasta ahora (2026-08-30)
+
+**La carrera se declara al registrarse** (#371, primera mitad). El onboarding era el único lugar donde nacía el `StudentProfile`, y sin perfil no se reseña, así que la declaración se mudó al alta antes de poder borrar nada. No podía nacer ahí mismo: `AddStudentProfile` exige el mail verificado, y ese orden de guards es cicatriz de un bug real. La intención queda en dos columnas nullables del `User` y `VerifyEmail` la materializa, con la cadena de guards corriendo igual que antes. El año de ingreso se volvió opcional, y no como concesión: US-155 ya decía que si no lo contestás queda como "no dijo", mientras el backend lo tenía `NOT NULL`.
+
+El plan se resuelve **antes** de preguntar si el mail existe: al revés, un plan inventado devolvía 400 con un mail libre y 202 con uno ocupado, y el status code delataba si una casilla tiene cuenta, que es lo que [ADR-0076](../decisions/0076-the-three-doors-answer-the-same-whether-the-account-exists-or-not.md) no quiere que se pueda averiguar.
+
+**Nadie que no sea alumno podía entrar.** Un pase de QA recorriendo el producto como sus personas encontró que de los cuatro roles solo `member` llegaba a alguna pantalla: el sign-in mandaba a `/home` fijo, que es del alumno, así que un admin rebotaba entre el guard de `(member)` y el de `(auth)`, en bucle y con la sesión creada. Moderación se había retirado en R2 dejando su rol apuntando a una cola que no existe, y `university_staff` nunca tuvo pantalla. Los dos salieron del frontend; el enum del backend los conserva, que es donde el rol está persistido.
+
+**La poda** (#371, segunda mitad). Se fue el módulo `enrollments` entero (86 archivos `.cs`, 4 proyectos, 41 tests de integración), `/my-career`, `/onboarding` completo, seis features de frontend y los redirects legacy. Con ellos, lo que se quedó sin la razón por la que existía: el evaluador de disponibilidad que una poda anterior había rescatado de `planning` para el filtro de Mi carrera, dos métodos del contrato cross-módulo de Identity, y la persona sembrada que solo cubría "usuario sin profile va a onboarding".
+
+**Inicio dejó de ser el planificador.** La revisión adversarial del diff encontró que la poda borraba Mi carrera y dejaba en pie `/home`, que es la pantalla de aterrizaje del alumno y mostraba semana del cuatrimestre, nota parcial, porcentaje de asistencia y un `4★` en sus datos mockeados. El chequeo anti-puntaje del E2E solo recorre rutas públicas, así que nada lo agarraba. Quedó saludo, una línea y los tres caminos a lo que el producto hace.
+
+**Un bug de dominio que nadie había visto**: el aggregate admitía un `StudentProfile` activo por carrera, no por cuenta, y el read servía cualquiera de los dos con un `LIMIT 1` sin `ORDER BY`. Dos pestañas con carreras distintas dejaban la cuenta con dos perfiles y las materias que veías dependían de lo que devolviera Postgres ese request. El invariante quedó en las tres capas, con su índice y su migración.
 
 **Lo que R3 decidió antes de planificar.** La épica Mi carrera era la única del catálogo con la revisión adversarial pendiente. Se hizo ([registro del 2026-08-29](../history/reviews/2026-08-29-my-career-epic.md), nueve hallazgos) y encontró que la épica no estaba bloqueada por falta de revisión, sino apoyada en un supuesto que el código contradecía. La revisión propuso arreglar la forma del seguimiento; la pregunta que faltaba era si el producto debía hacer seguimiento, y la tesis ya la contestaba ("ni una app de gestión académica", "no planifica tu cuatrimestre"). [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) cerró la épica entera con sus dos pantallas, US-144 y US-145, y reemplazó a ADR-0069. Sobrevivió US-143, la co-cursada, que se mudó a Elegir dónde estudiar porque su dato no necesita saber nada de quien lo lee: es la pieza 3 de este sprint.
 
