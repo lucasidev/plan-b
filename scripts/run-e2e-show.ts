@@ -18,7 +18,7 @@
  *
  * Args extra se forwardean a `playwright test` (filtros, `--grep`, specs específicos, etc.).
  *
- * Ej: `bun scripts/run-e2e-show.ts e2e/auth/onboarding.spec.ts`
+ * Ej: `bun scripts/run-e2e-show.ts e2e/auth/sign-up.spec.ts`
  *     `bun scripts/run-e2e-show.ts --grep "happy path"`
  *     `PLAYWRIGHT_SLOWMO=500 bun scripts/run-e2e-show.ts`
  */

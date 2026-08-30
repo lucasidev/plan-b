@@ -24,6 +24,7 @@ export async function signUpAction(
     email: formData.get('email')?.toString() ?? '',
     password: formData.get('password')?.toString() ?? '',
     confirm: formData.get('confirm')?.toString() ?? '',
+    careerPlanId: formData.get('careerPlanId')?.toString() ?? '',
   };
 
   const parsed = signUpSchema.safeParse(raw);
@@ -33,13 +34,17 @@ export async function signUpAction(
     return {
       status: 'error',
       message: issue.message,
-      field: path === 'email' || path === 'password' || path === 'confirm' ? path : undefined,
+      field:
+        path === 'email' || path === 'password' || path === 'confirm' || path === 'careerPlanId'
+          ? path
+          : undefined,
     };
   }
 
   const response = await registerUser({
     email: parsed.data.email,
     password: parsed.data.password,
+    careerPlanId: parsed.data.careerPlanId,
   });
 
   // El backend responde 202 exista o no la cuenta (ADR-0076): la pantalla dice "revisá tu
@@ -53,6 +58,19 @@ export async function signUpAction(
 
   if (response.status === 400) {
     const body = (await response.json().catch(() => null)) as ValidationProblemDetails | null;
+
+    // El plan de estudios no existe (borrado, o un id inventado): el handler lo detecta como
+    // regla de dominio (Result<T>.Failure, no shape del command), así que llega como
+    // ProblemDetails plano (title = código, detail = copy interna), no en el diccionario
+    // `errors` de FluentValidation que maneja la rama genérica de abajo.
+    if (body?.title === 'identity.registration.career_plan_not_found') {
+      return {
+        status: 'error',
+        message: 'No encontramos ese plan de estudios. Volvé a elegirlo.',
+        field: 'careerPlanId',
+      };
+    }
+
     const fieldName = body?.errors ? Object.keys(body.errors)[0] : undefined;
     const message =
       (fieldName && body?.errors?.[fieldName]?.[0]) ||
@@ -66,7 +84,9 @@ export async function signUpAction(
         ? 'email'
         : lowered?.includes('password')
           ? 'password'
-          : undefined,
+          : lowered?.includes('careerplanid')
+            ? 'careerPlanId'
+            : undefined,
     };
   }
 

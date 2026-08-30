@@ -11,7 +11,9 @@ export type StudentProfile = {
   userId: string;
   careerId: string;
   careerPlanId: string;
-  enrollmentYear: number;
+  /** ADR-0086: la carrera se declara al registrarse y el año de ingreso ya no se pide ahí,
+   * así que puede no estar. */
+  enrollmentYear: number | null;
   status: string;
   /** Display labels resueltos cross-schema en el backend. Nullable defensivo (LEFT JOIN). La
    * universidad es el slug/acrónimo ("unsta"); la carrera es el nombre completo. */

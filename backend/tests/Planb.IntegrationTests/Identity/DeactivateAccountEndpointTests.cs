@@ -156,7 +156,12 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         using var bootstrap = _fixture.Factory.CreateClient();
         var register = await bootstrap.PostAsJsonAsync(
             "/api/identity/register",
-            new { email = rawEmail, password = "valid-password-12c" });
+            new
+            {
+                email = rawEmail,
+                password = "valid-password-12c",
+                careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value,
+            });
 
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }

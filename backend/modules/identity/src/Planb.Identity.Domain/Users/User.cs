@@ -24,6 +24,19 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
 
+    /// <summary>
+    /// Carrera declarada durante el registro (mudanza de la declaración de carrera al alta): el
+    /// <see cref="StudentProfile"/> todavía no puede nacer en ese momento porque
+    /// <see cref="AddStudentProfile"/> exige el mail verificado, así que estos dos campos guardan
+    /// la intención hasta que <see cref="VerifyEmail"/> la materialice. Se limpian ahí (con o sin
+    /// éxito de la materialización), y también en <see cref="Deactivate"/> y
+    /// <see cref="ExpireRegistration"/>. Null si el registro no declaró carrera, o si ya se resolvió.
+    /// </summary>
+    public Guid? PendingCareerPlanId { get; private set; }
+
+    /// <summary>CareerId denormalizado del plan pendiente. Ver <see cref="PendingCareerPlanId"/>.</summary>
+    public Guid? PendingCareerId { get; private set; }
+
     private readonly List<VerificationToken> _tokens = new();
     public IReadOnlyCollection<VerificationToken> Tokens => _tokens.AsReadOnly();
 
@@ -68,6 +81,41 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         };
         user.Raise(new UserRegisteredDomainEvent(user.Id, email, now));
         return user;
+    }
+
+    /// <summary>
+    /// Declara, durante el registro, el plan de carrera que el user va a cursar (mudanza de la
+    /// declaración de carrera al alta: antes vivía solo en POST /api/me/student-profiles, con
+    /// sesión ya iniciada). No crea el <see cref="StudentProfile"/> todavía: <see cref="AddStudentProfile"/>
+    /// exige <see cref="IsEmailVerified"/>, y un user recién registrado nunca lo está. Esta llamada
+    /// solo deja la intención guardada en <see cref="PendingCareerPlanId"/> / <see cref="PendingCareerId"/>;
+    /// <see cref="VerifyEmail"/> es quien la materializa apenas el mail se confirma.
+    ///
+    /// El handler de registro resuelve <paramref name="careerPlanId"/> contra Academic (cross-BC
+    /// read, ADR-0017) y deriva <paramref name="careerId"/> del plan antes de llegar acá; el
+    /// aggregate solo valida que ninguno de los dos venga vacío.
+    /// </summary>
+    public Result DeclareCareerAtRegistration(
+        Guid careerPlanId, Guid careerId, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (careerPlanId == Guid.Empty || careerId == Guid.Empty)
+        {
+            return UserErrors.CareerDeclarationInvalid;
+        }
+
+        // Pasado este punto la declaración va por AddStudentProfile: la ventana de
+        // "declarar en el registro" se cierra en el momento en que el mail se confirma.
+        if (IsEmailVerified)
+        {
+            return UserErrors.CareerAlreadyDeclared;
+        }
+
+        PendingCareerPlanId = careerPlanId;
+        PendingCareerId = careerId;
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
     }
 
     /// <summary>
@@ -198,6 +246,25 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         token.Consume(now);
         EmailVerifiedAt = now;
         UpdatedAt = now;
+
+        // Si el registro declaró carrera (ADR-0086), acá es la primera vez que el
+        // aggregate puede crear el StudentProfile: AddStudentProfile exige EmailNotVerified=false, y
+        // hasta la línea de arriba todavía lo era. El resultado de esa llamada NO puede volver a
+        // fallar la verificación del mail: si lo hiciera, un problema del catálogo (por ejemplo el
+        // plan se borró entre el registro y el click del link) dejaría la cuenta inverificable para
+        // siempre, sin ninguna pantalla donde arreglarlo. Tampoco hay rama de error alcanzable en la
+        // práctica: no puede existir un profile previo antes de esta primera verificación
+        // (DuplicateStudentProfile no aplica) y el año viaja null (EnrollmentYearOutOfRange no corre
+        // sin año). Los dos pendientes se limpian pase lo que pase, para no reintentar la
+        // materialización en un VerifyEmail idempotente posterior.
+        if (PendingCareerPlanId.HasValue && PendingCareerId.HasValue)
+        {
+            AddStudentProfile(
+                PendingCareerPlanId.Value, PendingCareerId.Value, enrollmentYear: null, clock);
+            PendingCareerPlanId = null;
+            PendingCareerId = null;
+        }
+
         Raise(new UserEmailVerifiedDomainEvent(Id, now));
         return Result.Success();
     }
@@ -484,6 +551,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///   <item>Invalida cualquier token activo (no tiene sentido un verification token vivo en un
     ///         registro expirado; si después se re-registra el mismo email, el partial unique
     ///         index permite el INSERT y un token nuevo se emite desde Register).</item>
+    ///   <item>Limpia la declaración de carrera pendiente, si la hubo, por el mismo motivo que los
+    ///         tokens: un registro expirado no va a verificarse nunca.</item>
     ///   <item>Levanta <see cref="UnverifiedRegistrationExpiredDomainEvent"/>.</item>
     /// </list>
     /// </summary>
@@ -505,6 +574,11 @@ public sealed class User : Entity<UserId>, IAggregateRoot
             Raise(new VerificationTokenInvalidatedDomainEvent(Id, token.Id, token.Purpose, now));
         }
 
+        // Mismo argumento que invalidar los tokens: no tiene sentido una declaración de carrera
+        // pendiente sobre un registro que ya no va a verificarse nunca.
+        PendingCareerPlanId = null;
+        PendingCareerId = null;
+
         UpdatedAt = now;
         Raise(new UnverifiedRegistrationExpiredDomainEvent(Id, Email, now));
         return Result.Success();
@@ -525,7 +599,9 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///         no debería poder crear profiles aún).</item>
     ///   <item>Solo users con <see cref="UserRole.Member"/> tienen profiles. Staff
     ///         (moderator/admin/university_staff) no aplican (ADR-0008).</item>
-    ///   <item>El año debe estar en [<see cref="MinEnrollmentYear"/>, año actual del clock].</item>
+    ///   <item>El año, si viene, debe estar en [<see cref="MinEnrollmentYear"/>, año actual del
+    ///         clock]. Es nullable: el profile que <see cref="VerifyEmail"/> materializa desde una
+    ///         declaración de carrera hecha en el registro todavía no tiene esa respuesta.</item>
     ///   <item>No puede haber dos StudentProfiles activos del mismo user para la misma carrera.
     ///         Un mismo user sí puede tener profiles activos en carreras distintas (ej. doble
     ///         titulación).</item>
@@ -538,7 +614,7 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     public Result<StudentProfile> AddStudentProfile(
         Guid careerPlanId,
         Guid careerId,
-        int enrollmentYear,
+        int? enrollmentYear,
         IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
@@ -569,7 +645,11 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         }
 
         var now = clock.UtcNow;
-        if (enrollmentYear < MinEnrollmentYear || enrollmentYear > now.Year)
+        // Nullable a propósito: el profile que VerifyEmail materializa desde una declaración de
+        // carrera hecha en el registro todavía no tiene año (esa pregunta no se hizo en el form de
+        // alta), y no hay por qué inventarle un valor. Cuando SÍ viene, el rango sigue obligatorio.
+        if (enrollmentYear.HasValue &&
+            (enrollmentYear.Value < MinEnrollmentYear || enrollmentYear.Value > now.Year))
         {
             return UserErrors.EnrollmentYearOutOfRange;
         }
@@ -649,7 +729,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///   <item><see cref="PasswordHash"/> blank (sentinel <c>"DEACTIVATED"</c> para mantener
     ///         la columna NOT NULL sin pasar por un hash bcrypt válido).</item>
     ///   <item><see cref="DeactivatedAt"/> = now.</item>
-    ///   <item>Limpia tokens y student profiles (PII parcial).</item>
+    ///   <item>Limpia tokens, student profiles y la declaración de carrera pendiente (PII parcial:
+    ///         dice qué carrera estudiaba la persona dada de baja).</item>
     ///   <item>Levanta <see cref="UserAccountDeactivatedDomainEvent"/>. El translator a
     ///         integration event notifica a otros BCs para que anonimicen referencias
     ///         (preserva corpus crowdsourced; ver ADR-0044).</item>
@@ -676,6 +757,8 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         DeactivatedAt = now;
         _tokens.Clear();
         _studentProfiles.Clear();
+        PendingCareerPlanId = null;
+        PendingCareerId = null;
         UpdatedAt = now;
 
         Raise(new UserAccountDeactivatedDomainEvent(Id, now));

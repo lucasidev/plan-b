@@ -46,7 +46,7 @@ public sealed class RegisterUserEndpoint : ICarterModule
                 return Results.Accepted(value: new RegisterUserResponse(request.Email));
             }
 
-            var command = new RegisterUserCommand(request.Email, request.Password);
+            var command = new RegisterUserCommand(request.Email, request.Password, request.CareerPlanId);
             try
             {
                 var result = await bus.InvokeAsync<Result<RegisterUserResponse>>(command, ct);

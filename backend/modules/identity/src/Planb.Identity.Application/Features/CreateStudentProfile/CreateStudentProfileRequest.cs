@@ -6,4 +6,4 @@ namespace Planb.Identity.Application.Features.CreateStudentProfile;
 /// </summary>
 public sealed record CreateStudentProfileRequest(
     Guid CareerPlanId,
-    int EnrollmentYear);
+    int? EnrollmentYear);

@@ -28,7 +28,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | ✓ Hecho (mergeado el 2026-08-24, PR #354) |
 | **R1** | 2026-08-24 a 2026-08-27 | **El acto de reseñar, de punta a punta**: una persona reseña una cursada en tres capas, y al cruzar el piso de 10 la ficha de la cátedra publica sus conteos. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | ✓ Hecho (mergeado el 2026-08-27, PR [#362](https://github.com/lucasidev/plan-b/pull/362)) |
 | **R2** | 2026-08-27 a 2026-08-28 | **El producto habla con una voz, y lo que dice se encuentra y se deshace**: la ficha de materia deriva de sus cátedras, se llega a la cátedra desde donde se la busca, se puede corregir y borrar lo aportado, la landing dice lo que el producto hace, y el aggregate de reseña anterior se poda con su moderación. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), issues #363 a #368, 42 pts. | ✓ Hecho (mergeado el 2026-08-28, PR [#369](https://github.com/lucasidev/plan-b/pull/369)) |
-| **R3** | desde 2026-08-29 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 42 pts. | En curso |
+| **R3** | desde 2026-08-29 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | En curso |
 
 Convenciones:
 
@@ -294,27 +294,27 @@ Dos specs quedaron mintiendo por lo que la poda retiró y se reescribieron: el d
 
 ## R3 · El catálogo crece y el número se puede auditar
 
-Desde el 2026-08-29. Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), 42 pts.
+Desde el 2026-08-29. Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), 47 pts.
 
 **Por qué este hilo.** R2 dejó el producto hablando con una voz sola, y con un techo: las cátedras existen **solo porque las siembra el seed**, así que todo lo que R1 y R2 construyeron opera sobre tres filas cargadas a mano. Y lo que publica no dice cómo lo calculó, aunque la tesis prometa "un dato que aguanta una discusión". R3 levanta el techo, publica un dato que el producto no tenía, y explica todo lo que dice.
 
 | # | Issue | Pts | Depende de |
 |---|---|---|---|
 | 1 | [#370 · La cátedra se carga desde el backoffice](https://github.com/lucasidev/plan-b/issues/370) | 8 | nada; el dominio de `Chair` ya está entero, faltan los features y la pantalla |
-| 2 | [#371 · Se poda el seguimiento de carrera](https://github.com/lucasidev/plan-b/issues/371) | 13 | nada; primero **muda** la declaración de carrera al Registro, y después poda `/onboarding`, `/my-career` y `enrollments` |
+| 2 | [#371 · Se poda el seguimiento de carrera](https://github.com/lucasidev/plan-b/issues/371) | 18 | nada; primero **muda** la declaración de carrera al Registro, después poda `/onboarding`, `/my-career` y `enrollments`, y cierra los 17 ADRs que citan el módulo |
 | 3 | [#372 · La ficha publica con qué se llevó la materia](https://github.com/lucasidev/plan-b/issues/372) | 5 | se verifica con 5; el modelo ya lo soporta, es un self-join |
 | 4 | [#373 · Método publica cómo se calcula cada número](https://github.com/lucasidev/plan-b/issues/373) | 5 | nada; el dato ya existe entero, es pantalla y copy |
 | 5 | [#374 · El corpus de prueba del modelo vigente](https://github.com/lucasidev/plan-b/issues/374) | 3 | 1 |
 | 6 | [#375 · Los huecos que dejaron las podas](https://github.com/lucasidev/plan-b/issues/375) | 5 | el renaming `CourseReview` → `Review` se lleva 3 él solo |
 | 7 | [#376 · El E2E de cargar una cátedra y ver su dato](https://github.com/lucasidev/plan-b/issues/376) | 3 | todos |
 
-**La balanza.** 21 de los 42 puntos construyen capacidad que el producto no tiene (cargar cátedras, la co-cursada, Método) y 21 limpian y sostienen. R0 fue poda pura y R2 fue mayormente hablar con una voz sola.
+**La balanza.** 21 de los 47 puntos construyen capacidad que el producto no tiene (cargar cátedras, la co-cursada, Método) y 26 limpian y sostienen. R0 fue poda pura y R2 fue mayormente hablar con una voz sola.
 
 **Lo que R3 decidió antes de planificar.** La épica Mi carrera era la única del catálogo con la revisión adversarial pendiente. Se hizo ([registro del 2026-08-29](../history/reviews/2026-08-29-my-career-epic.md), nueve hallazgos) y encontró que la épica no estaba bloqueada por falta de revisión, sino apoyada en un supuesto que el código contradecía. La revisión propuso arreglar la forma del seguimiento; la pregunta que faltaba era si el producto debía hacer seguimiento, y la tesis ya la contestaba ("ni una app de gestión académica", "no planifica tu cuatrimestre"). [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) cerró la épica entera con sus dos pantallas, US-144 y US-145, y reemplazó a ADR-0069. Sobrevivió US-143, la co-cursada, que se mudó a Elegir dónde estudiar porque su dato no necesita saber nada de quien lo lee: es la pieza 3 de este sprint.
 
 De ahí salen también la pieza 2 (el código del seguimiento sigue vivo) y la reformulación de [US-170](../product/guarantees/US-170-use-it-without-being-asked-for-anything-first/README.md), que garantizaba que se podía saltear un onboarding que ya no existe y ahora garantiza que ninguna pantalla pida completar algo antes de dejar leer o reseñar.
 
-**Lo que el relevamiento corrigió antes de empezar.** La poda se estimó primero en 8 puntos como un borrado, y al relevarla apareció que `/onboarding/career` es el **único lugar donde se crea el `StudentProfile`**: borrarlo sin más deja al producto sin forma de crear un perfil de estudiante, y sin perfil no se reseña. La declaración de carrera se muda al Registro, que es donde la ficha SC-026 ya la ponía, y recién después se poda. Son 13 puntos, y R3 pasa de 37 a 42, el mismo tamaño que R2.
+**Lo que el relevamiento corrigió antes de empezar.** La poda se estimó primero en 8 puntos como un borrado, y al relevarla apareció que `/onboarding/career` es el **único lugar donde se crea el `StudentProfile`**: borrarlo sin más deja al producto sin forma de crear un perfil de estudiante, y sin perfil no se reseña. La declaración de carrera se muda al Registro, que es donde la ficha SC-026 ya la ponía, y recién después se poda. Son 13 puntos. Y al relevar los docs aparecieron **17 ADRs vigentes** que citan el módulo (uno, ADR-0004, es enteramente sobre `EnrollmentRecord`), más el walkthrough de `git-workflow.md`, construido entero sobre la feature que se poda: con eso son 18, y R3 pasa de 37 a 47.
 
 ### Cómo se sabe que R3 está listo
 

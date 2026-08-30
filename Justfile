@@ -128,7 +128,7 @@ frontend-test-e2e *args:
 # E2E con browser visible y slowMo (ver el flow correr en pantalla).
 # Usalo para inspección visual o cuando un spec falla y querés mirar.
 # Acepta los mismos args que playwright test (filtros, --grep, etc.).
-# Ej: just frontend-test-e2e-show e2e/auth/onboarding.spec.ts
+# Ej: just frontend-test-e2e-show e2e/auth/sign-up.spec.ts
 #     just frontend-test-e2e-show --grep "happy path"
 # Wrapped en TS porque pwsh (default Windows shell del Justfile) no entiende
 # la sintaxis bash `VAR=value cmd`. El script setea PLAYWRIGHT_SLOWMO via

@@ -814,6 +814,23 @@ public class UserTests
         user.StudentProfiles.ShouldBeEmpty();
     }
 
+    /// <summary>
+    /// Nullable a propósito (mudanza de la declaración de carrera al registro): el profile que
+    /// VerifyEmail materializa desde esa declaración no tiene año, y el guard de rango de
+    /// <see cref="User.AddStudentProfile"/> solo corre cuando el año viene.
+    /// </summary>
+    [Fact]
+    public void AddStudentProfile_accepts_a_null_enrollment_year()
+    {
+        var clock = new FixedClock(T0);
+        var user = VerifiedActiveUser(clock);
+
+        var result = user.AddStudentProfile(Guid.NewGuid(), Guid.NewGuid(), null, clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.EnrollmentYear.ShouldBeNull();
+    }
+
     [Fact]
     public void AddStudentProfile_fails_when_active_profile_for_same_career_already_exists()
     {

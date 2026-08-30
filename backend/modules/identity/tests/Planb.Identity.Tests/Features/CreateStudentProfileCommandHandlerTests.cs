@@ -184,4 +184,35 @@ public class CreateStudentProfileCommandHandlerTests
 
         await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
+
+    /// <summary>
+    /// EnrollmentYear es opcional (mudanza de la declaración de carrera al registro): este endpoint
+    /// sigue aceptando el año cuando el alumno lo carga a mano, pero también acepta que no venga.
+    /// </summary>
+    [Fact]
+    public async Task Handle_creates_profile_with_null_enrollment_year_when_year_is_not_provided()
+    {
+        var deps = NewDeps();
+        var user = VerifiedActiveUser(deps.Clock);
+        var careerPlanId = Guid.NewGuid();
+        var careerId = Guid.NewGuid();
+
+        deps.Users.FindByIdAsync(Arg.Any<UserId>(), Arg.Any<CancellationToken>())
+            .Returns(user);
+        deps.Academic.GetCareerPlanByIdAsync(careerPlanId, Arg.Any<CancellationToken>())
+            .Returns(new CareerPlanSummary(careerPlanId, careerId, Guid.NewGuid(), 2024));
+
+        var result = await CreateStudentProfileCommandHandler.Handle(
+            new CreateStudentProfileCommand(user.Id, careerPlanId, null),
+            deps.Users,
+            deps.UnitOfWork,
+            deps.Academic,
+            deps.Publisher,
+            deps.Clock,
+            CancellationToken.None);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.EnrollmentYear.ShouldBeNull();
+        user.StudentProfiles.ShouldHaveSingleItem().EnrollmentYear.ShouldBeNull();
+    }
 }

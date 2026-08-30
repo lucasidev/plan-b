@@ -196,7 +196,7 @@ public sealed class IdentitySeeder
         if (result.IsFailure)
         {
             _log.LogWarning(
-                "AddStudentProfile failed for {Email}: {Error}. Persona sin profile, va a onboarding tras sign-in.",
+                "AddStudentProfile failed for {Email}: {Error}. Persona sin profile: va a onboarding tras sign-in, salvo que haya declarado la carrera al registrarse, en cuyo caso el profile nace solo al verificar el mail.",
                 persona.Email, result.Error.Code);
         }
     }

@@ -239,4 +239,37 @@ public static class UserErrors
         Error.NotFound(
             "identity.student_profile.career_plan_not_found",
             "Career plan referenced by the student profile was not found in the academic catalog.");
+
+    // -- Career declaration at registration (mudanza de la declaración de carrera al alta) -------
+
+    /// <summary>
+    /// <see cref="User.DeclareCareerAtRegistration"/> se llamó con un CareerPlanId o un CareerId
+    /// vacío. El handler de registro ya resolvió el plan contra Academic antes de llegar acá, así
+    /// que este error es defensa en profundidad, no el camino esperado.
+    /// </summary>
+    public static readonly Error CareerDeclarationInvalid =
+        Error.Validation(
+            "identity.career_declaration.invalid",
+            "Career plan and career ids are required to declare a career at registration.");
+
+    /// <summary>
+    /// <see cref="User.DeclareCareerAtRegistration"/> se llamó sobre un user ya verificado. Pasado
+    /// ese punto la declaración va por <see cref="User.AddStudentProfile"/> (US-012): la ventana
+    /// de "declarar en el registro" se cierra en el momento en que el mail se confirma.
+    /// </summary>
+    public static readonly Error CareerAlreadyDeclared =
+        Error.Validation(
+            "identity.career_declaration.already_declared",
+            "Career was already declared for this account, or the account is already verified.");
+
+    /// <summary>
+    /// El CareerPlanId enviado a POST /api/identity/register no existe en el catálogo Academic.
+    /// Error.Validation (400), no NotFound: un 404 sobre este endpoint se lee como "la ruta no
+    /// existe", y el handler lo resuelve antes de mirar si el mail ya tiene cuenta (ver el
+    /// comentario en RegisterUserCommandHandler) para no abrir una fuga de enumeración.
+    /// </summary>
+    public static readonly Error RegistrationCareerPlanNotFound =
+        Error.Validation(
+            "identity.registration.career_plan_not_found",
+            "Career plan referenced by the registration was not found in the academic catalog.");
 }

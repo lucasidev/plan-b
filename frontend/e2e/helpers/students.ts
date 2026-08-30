@@ -15,8 +15,8 @@ import { extractTokenFromLatestMail } from './mailpit';
  * fresco), así que no hace falta pool: siempre alcanza la misma oferta sembrada.
  *
  * Por qué por API y no por UI: esto es setup, no el flujo bajo prueba. Repetir sign-up +
- * verify-email + onboarding por UI en cada spec de reseñas sería lento y frágil (más
- * superficie para flakear por algo ajeno a lo que el spec verifica).
+ * verify-email por UI en cada spec de reseñas sería lento y frágil (más superficie para
+ * flakear por algo ajeno a lo que el spec verifica).
  *
  * Por qué por API y no por SQL directo: `docs/engineering/testing.md` ("Dominio vs infra:
  * cuándo un helper directo está OK") permite helpers de infra (Mailpit, Redis) pero no tocar
@@ -33,7 +33,6 @@ import { extractTokenFromLatestMail } from './mailpit';
 
 /** Plan TUDCS 2018 sembrado por el seed (mismo que usan LUCIA/MATEO en personas.json). */
 const DEFAULT_CAREER_PLAN_ID = '00000003-0000-4000-a000-000000000003';
-const DEFAULT_ENROLLMENT_YEAR = 2024;
 
 /** Cumple el mínimo de 12 caracteres (RegisterUserValidator, NIST 800-63B). */
 const STUDENT_PASSWORD = 'e2e-student-pw-1234';
@@ -52,7 +51,6 @@ export interface CreateStudentOptions {
    */
   emailPrefix?: string;
   careerPlanId?: string;
-  enrollmentYear?: number;
 }
 
 function uniqueEmail(prefix: string): string {
@@ -67,8 +65,8 @@ async function ensureOk(response: APIResponse, step: string, email: string): Pro
 
 /**
  * Decodifica el claim `sub` (userId) del JWT en la cookie `planb_session` que dejó el sign-in.
- * Mismo truco que `auth/onboarding.spec.ts`: no valida firma, solo lee el payload, porque acá
- * lo único que hace falta es el id para poder reportarlo en `CreatedStudent`.
+ * No valida firma, solo lee el payload: acá lo único que hace falta es el id para poder
+ * reportarlo en `CreatedStudent`.
  */
 async function readUserIdFromSession(request: APIRequestContext): Promise<string | null> {
   const state = await request.storageState();
@@ -85,9 +83,12 @@ async function readUserIdFromSession(request: APIRequestContext): Promise<string
 }
 
 /**
- * Registra un alumno descartable con email único, lo verifica, y le crea el StudentProfile.
- * Devuelve las credenciales (para loguearlo por UI en el spec) y los ids (para debug /
- * cleanup). Usar con `deleteStudent` en un `test.afterEach` para no dejar estado detrás.
+ * Registra un alumno descartable con email único (la carrera se declara en el propio
+ * register, vía `careerPlanId` en el body: ADR-0086) y lo verifica. El backend crea el
+ * StudentProfile como parte de ese flujo, así que acá no hay POST aparte: solo lo leemos
+ * con GET /api/me/student-profile para devolver su id. Devuelve las credenciales (para
+ * loguearlo por UI en el spec) y los ids (para debug / cleanup). Usar con `deleteStudent`
+ * en un `test.afterEach` para no dejar estado detrás.
  */
 export async function createStudent(
   request: APIRequestContext,
@@ -97,7 +98,7 @@ export async function createStudent(
   const password = STUDENT_PASSWORD;
 
   const registerResp = await request.post('/api/identity/register', {
-    data: { email, password },
+    data: { email, password, careerPlanId: opts.careerPlanId ?? DEFAULT_CAREER_PLAN_ID },
   });
   await ensureOk(registerResp, 'register', email);
 
@@ -113,13 +114,8 @@ export async function createStudent(
     throw new Error(`createStudent(${email}): could not read userId from session cookie`);
   }
 
-  const profileResp = await request.post('/api/me/student-profiles', {
-    data: {
-      careerPlanId: opts.careerPlanId ?? DEFAULT_CAREER_PLAN_ID,
-      enrollmentYear: opts.enrollmentYear ?? DEFAULT_ENROLLMENT_YEAR,
-    },
-  });
-  await ensureOk(profileResp, 'create student-profile', email);
+  const profileResp = await request.get('/api/me/student-profile');
+  await ensureOk(profileResp, 'get student-profile', email);
   const profile = (await profileResp.json()) as { id: string };
 
   return { email, password, userId, studentProfileId: profile.id };

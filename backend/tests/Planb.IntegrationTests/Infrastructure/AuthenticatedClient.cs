@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence;
 
@@ -35,12 +36,15 @@ public sealed record AuthenticatedClient(
         RegisterApiFixture fixture, string email, string password = "valid-password-12c",
         UserRole? role = null)
     {
-        // 1) Register.
+        // 1) Register. La carrera es obligatoria en el alta (ADR-0086), pero el profile que
+        // declara acá no llega a nacer: el paso 2 fuerza email_verified_at por SQL y saltea
+        // User.VerifyEmail, que es quien lo materializa. Los tests que necesitan un profile
+        // lo crean por POST /api/me/student-profiles.
         using (var bootstrap = fixture.Factory.CreateClient())
         {
             var register = await bootstrap.PostAsJsonAsync(
                 "/api/identity/register",
-                new { email, password });
+                new { email, password, careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value });
             register.EnsureSuccessStatusCode();
 
             // 2) Resolver el id por email y forzar verified via SQL: la respuesta del registro

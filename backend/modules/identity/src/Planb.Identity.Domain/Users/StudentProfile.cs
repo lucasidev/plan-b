@@ -30,7 +30,7 @@ public sealed class StudentProfile
     public StudentProfileId Id { get; private set; }
     public Guid CareerPlanId { get; private set; }
     public Guid CareerId { get; private set; }
-    public int EnrollmentYear { get; private set; }
+    public int? EnrollmentYear { get; private set; }
     public StudentProfileStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? UpdatedAt { get; private set; }
@@ -49,7 +49,7 @@ public sealed class StudentProfile
         StudentProfileId id,
         Guid careerPlanId,
         Guid careerId,
-        int enrollmentYear,
+        int? enrollmentYear,
         DateTimeOffset createdAt)
     {
         Id = id;

@@ -1,10 +1,11 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { AuthErrorBanner, PasswordField, TextField } from '@/components/ui';
 import { GoogleIcon } from '@/components/ui/icons/google';
+import { CareerPicker } from '@/features/declare-career';
 import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
@@ -21,6 +22,10 @@ import { initialSignUpState, type SignUpFormState } from '../types';
  * checkbox are deliberately left out (US-010-f): backend's RegisterUser
  * command takes only email + password, no terms published. Documented in
  * docs/history/design-v1/reference/README.md.
+ *
+ * **La carrera se declara acá** (ADR-0086): el `<CareerPicker>` vive entre los campos de
+ * cuenta y el CTA. Es el único momento en que se pregunta: el `StudentProfile` nace solo
+ * cuando el mail se verifica, sin pantalla intermedia.
  *
  * Cross-flow footer link navigates to `/sign-in`.
  */
@@ -43,10 +48,17 @@ export function SignUpForm() {
     emailRef.current?.focus();
   }, []);
 
+  const [careerPlanId, setCareerPlanId] = useState('');
+
   const fieldError = (field: 'email' | 'password' | 'confirm') =>
     state.status === 'error' && state.field === field ? state.message : undefined;
 
-  const formError = state.status === 'error' && !state.field ? state.message : undefined;
+  // El picker no tiene slot propio de error: un error de careerPlanId (plan faltante, o el
+  // "no encontramos ese plan" del backend) cae en el banner general, igual que uno sin campo.
+  const fieldHasOwnSlot =
+    state.status === 'error' &&
+    (state.field === 'email' || state.field === 'password' || state.field === 'confirm');
+  const formError = state.status === 'error' && !fieldHasOwnSlot ? state.message : undefined;
 
   return (
     <form action={formAction} className="flex flex-col" noValidate>
@@ -84,6 +96,8 @@ export function SignUpForm() {
           error={fieldError('confirm')}
         />
       </div>
+
+      <CareerPicker value={careerPlanId} onChange={setCareerPlanId} />
 
       {formError && <AuthErrorBanner>{formError}</AuthErrorBanner>}
 

@@ -86,7 +86,7 @@ function ViewMode({ profile, onEdit }: { profile: MyProfile; onEdit: () => void 
         <Row label="Año cursando">
           {profile.yearOfStudy ? `${profile.yearOfStudy}° año` : <Empty />}
         </Row>
-        <Row label="Año de ingreso">{profile.enrollmentYear}</Row>
+        <Row label="Año de ingreso">{profile.enrollmentYear ?? '-'}</Row>
         <Row label="Legajo">{profile.legajo ?? <Empty />}</Row>
         <Row label="Estado">{profile.regularStudent ? 'Regular' : 'Libre'}</Row>
       </dl>
