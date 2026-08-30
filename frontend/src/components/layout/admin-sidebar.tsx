@@ -20,7 +20,6 @@ type NavItem = { label: string; href?: string; hint?: string };
 const DENTRO_DE_UNA_UNIVERSIDAD = 'Se gestionan dentro de cada universidad';
 
 const NAV: { group: string; items: NavItem[] }[] = [
-  { group: 'General', items: [{ label: 'Dashboard' }] },
   {
     group: 'Datos académicos',
     items: [
