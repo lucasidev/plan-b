@@ -585,15 +585,15 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Año mínimo de inscripción aceptado en US-012. La universidad puede no haber existido en la
+    /// Año mínimo de inscripción aceptado. La universidad puede no haber existido en la
     /// plataforma antes de 2010. Cualquier valor menor se rechaza para evitar tipos de inputs
     /// degenerados desde forms abiertos al member.
     /// </summary>
     public const int MinEnrollmentYear = 2010;
 
     /// <summary>
-    /// Crea un <see cref="StudentProfile"/> activo asociando al user con un CareerPlan + año de
-    /// ingreso (US-012). Aggregate-level invariants:
+    /// Crea un <see cref="StudentProfile"/> activo asociando al user con un CareerPlan y, si se
+    /// dijo, su año de ingreso. Aggregate-level invariants:
     /// <list type="bullet">
     ///   <item>El user debe estar verificado y no disabled / expired (un member sin verificar
     ///         no debería poder crear profiles aún).</item>
