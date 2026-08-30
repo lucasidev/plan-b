@@ -1,6 +1,6 @@
 # ADR-0019: A single Next.js app with route groups per actor
 
-- **Estado**: aceptado, con los roles del backoffice reducidos (ver [Revisión](#revisión-2026-08-30))
+- **Estado**: aceptado, con dos de los cinco route groups retirados (ver [Revisión](#revisión-2026-08-30))
 - **Fecha**: 2026-04-23
 
 ## Contexto
@@ -81,5 +81,9 @@ El guard del frontend existe para:
 
 ## Revisión (2026-08-30)
 
-La decisión se mantiene; cambió a quién deja pasar `(staff)`. Un pase de QA encontró que de los cuatro roles solo `member` podía usar la aplicación: moderación se retiró en R2 y su rol quedó sin ninguna pantalla, cayendo en un 404, y `university_staff` nunca tuvo la suya. Los dos salieron del frontend, así que `(staff)` hoy admite solo `admin` y el guard fino que cada sección repetía se borró por redundante. El enum del backend los conserva, que es donde está persistido el rol; vuelven al frontend cuando vuelva la feature, con su pantalla.
+La decisión se mantiene: un solo Next.js con un route group por actor. Cambió el reparto, porque dos de los cinco actores del árbol de arriba no tienen hoy nada detrás.
+
+**`(staff)` admite solo `admin`.** Un pase de QA encontró que de los cuatro roles solo `member` podía usar la aplicación: moderación se retiró en R2 y su rol quedó sin ninguna pantalla, cayendo en un 404, y `university_staff` nunca tuvo la suya. Los dos salieron del frontend, y el guard fino que cada sección repetía se borró por redundante. El enum del backend los conserva, que es donde está persistido el rol; vuelven al frontend cuando vuelva la feature, con su pantalla.
+
+**`(teacher)` se retiró entero.** Tenía su `layout.tsx` con el guard y ninguna página, así que ni siquiera llegaba a ejecutarse: sin rutas debajo, un route group no existe. Su guard leía `session.teacherVerified`, un campo que el backend nunca emitió porque el aggregate `TeacherProfile` no está construido, y que por eso viajaba siempre `undefined` en el tipo de la sesión: el guard mandaba a `/teacher-claim` en el 100% de los casos posibles. La pantalla de reclamo sigue en pie, en `(member)`, que es donde se llega a ella. El grupo vuelve cuando exista qué poner adentro, que es responder reseñas (US-031 y la épica Responder).
 

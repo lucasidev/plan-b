@@ -6,19 +6,11 @@ import { serverEnv } from './env';
  * Session shape derived from the JWT payload issued by the backend
  * (see modules/identity/Planb.Identity.Infrastructure/Security/JwtIssuer).
  * See ADR-0023 for the auth flow design.
- *
- * `hasTeacherProfile` and `teacherVerified` aren't carried in the access
- * JWT yet (the TeacherProfile aggregate isn't implemented). Leaving them
- * in the type but always undefined keeps the (teacher) layout guards
- * type-correct and lets the backend start populating them later without
- * any frontend structural change.
  */
 export type Session = {
   userId: string;
   email: string;
   role: 'member' | 'admin';
-  hasTeacherProfile?: boolean;
-  teacherVerified?: boolean;
 };
 
 const ACCESS_COOKIE = 'planb_session';
