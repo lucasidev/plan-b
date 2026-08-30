@@ -294,7 +294,7 @@ describe('updateUniversityAction', () => {
 
 describe('deactivateUniversityAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
+    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'member' });
 
     const result = await deactivateUniversityAction(UNIVERSITY_ID);
 

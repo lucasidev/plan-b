@@ -141,8 +141,9 @@ frontend-test-e2e-show *args:
 # querés mirar/probar algo y no te interesa que quede guardado.
 #
 # Igual que E2E, pisa los puertos de siempre y necesita el stack de dev ABAJO. A diferencia de
-# E2E: sí siembra el corpus de demo (personas, cursadas, reseñas) y no corre ningún test, queda
-# arriba imprimiendo las URLs y las personas sembradas hasta que cortás con Ctrl+C. Ahí dropea la
+# E2E: no corre ningún test, queda arriba imprimiendo las URLs y las personas sembradas hasta que
+# cortás con Ctrl+C. Siembra las personas y el catálogo, pero NO reseñas: todavía no hay quien las
+# genere, así que las fichas dicen "junta 0" (issue #374). Ahí dropea la
 # base: no deja rastro en la base de dev ni en ninguna otra.
 dev-scratch:
     bun scripts/run-scratch.ts

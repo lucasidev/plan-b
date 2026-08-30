@@ -12,7 +12,7 @@ import { initialSignInState } from './types';
  *
  * We cover the branches the action exposes through SignInFormState.kind:
  *   - invalid input (Zod) -> unknown with the schema's message
- *   - 200                 -> redirect to /home (NEXT_REDIRECT)
+ *   - 200                 -> el destino sale del rol que viene en el cuerpo
  *   - 401                 -> invalid_credentials (con email, para el reenvío; ADR-0076)
  *   - 403 + account_disabled   -> account_disabled
  *   - 500 / others        -> unknown
@@ -36,6 +36,7 @@ vi.mock('@/lib/forward-set-cookies', () => ({
   forwardSetCookies: vi.fn(async () => undefined),
 }));
 
+import { forwardSetCookies } from '@/lib/forward-set-cookies';
 import { signIn } from './api';
 
 const signInMock = vi.mocked(signIn);
@@ -66,8 +67,15 @@ describe('signInAction', () => {
     expect(signInMock).not.toHaveBeenCalled();
   });
 
-  it('devuelve /home como destino cuando el backend responde 200', async () => {
-    signInMock.mockResolvedValue(new Response(null, { status: 200 }));
+  function okResponse(role: string): Response {
+    return new Response(JSON.stringify({ userId: 'u-1', email: 'x@test.com', role }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  it('manda al alumno a su inicio', async () => {
+    signInMock.mockResolvedValue(okResponse('Member'));
 
     await expect(
       signInAction(
@@ -83,6 +91,36 @@ describe('signInAction', () => {
       email: 'lucia@test.com',
       password: 'doce-chars-1',
     });
+  });
+
+  it('manda al admin al backoffice, no al área de alumno', async () => {
+    // El destino fijo `/home` dejaba al admin rebotando entre el guard de (member), que lo
+    // echaba por no ser alumno, y el de (auth), que lo devolvía por tener sesión.
+    signInMock.mockResolvedValue(okResponse('Admin'));
+
+    await expect(
+      signInAction(
+        initialSignInState,
+        formData({ email: 'admin@planb.local', password: 'doce-chars-1' }),
+      ),
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/admin',
+    });
+  });
+
+  it('no deja la sesión puesta cuando el rol no tiene ninguna pantalla', async () => {
+    // Moderación se retiró en R2. Reenviar la cookie dejaría una cuenta que entra bien y a la
+    // que después ningún guard reconoce, sin decir nunca por qué.
+    signInMock.mockResolvedValue(okResponse('Moderator'));
+
+    const result = await signInAction(
+      initialSignInState,
+      formData({ email: 'moderador@planb.local', password: 'doce-chars-1' }),
+    );
+
+    expect(result.status).toBe('error');
+    expect(forwardSetCookies).not.toHaveBeenCalled();
   });
 
   it('mapea 401 a invalid_credentials con mensaje genérico', async () => {

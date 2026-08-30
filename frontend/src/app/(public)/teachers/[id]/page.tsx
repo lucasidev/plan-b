@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CatalogTopbar } from '@/features/browse-catalog';
 import { TeacherChairs, TeacherHeader } from '@/features/view-teacher';
 import { fetchTeacherChairsServer, fetchTeacherServer } from '@/features/view-teacher/api.server';
 
@@ -27,6 +27,9 @@ export async function generateMetadata({ params }: { params: Params }) {
  *
  * 404 cuando el id no existe. Un docente dado de baja (410 de la API) muestra el aviso "ya no
  * figura" en vez de un 404.
+ *
+ * Lleva el `CatalogTopbar` por el mismo motivo que las fichas de materia y de cátedra: una ficha sin
+ * él es una calle sin salida, sin buscador y sin puerta para entrar.
  */
 export default async function TeacherPage({ params }: { params: Params }) {
   const { id } = await params;
@@ -42,37 +45,30 @@ export default async function TeacherPage({ params }: { params: Params }) {
   const chairs = await fetchTeacherChairsServer(id);
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <BackLink />
-      <TeacherHeader teacher={teacher} />
-      <TeacherChairs chairs={chairs} />
-    </main>
-  );
-}
-
-function BackLink() {
-  return (
-    <Link
-      href="/"
-      className="font-mono text-[11px] text-ink-3 underline-offset-2 hover:text-ink-2 hover:underline"
-    >
-      ← plan-b
-    </Link>
+    <>
+      <CatalogTopbar />
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+        <TeacherHeader teacher={teacher} />
+        <TeacherChairs chairs={chairs} />
+      </main>
+    </>
   );
 }
 
 function RemovedNotice() {
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <BackLink />
-      <section className="rounded-lg border border-line bg-bg-card p-10 text-center">
-        <p className="font-display text-lg font-semibold text-ink m-0">
-          Este docente ya no figura en el catálogo.
-        </p>
-        <p className="mt-2 text-sm text-ink-3">
-          Lo que se contó de sus cátedras se conserva, pero el perfil fue dado de baja.
-        </p>
-      </section>
-    </main>
+    <>
+      <CatalogTopbar />
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+        <section className="rounded-lg border border-line bg-bg-card p-10 text-center">
+          <p className="font-display text-lg font-semibold text-ink m-0">
+            Este docente ya no figura en el catálogo.
+          </p>
+          <p className="mt-2 text-sm text-ink-3">
+            Lo que se contó de sus cátedras se conserva, pero el perfil fue dado de baja.
+          </p>
+        </section>
+      </main>
+    </>
   );
 }

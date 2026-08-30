@@ -1,6 +1,6 @@
 # ADR-0023: Auth flow (JWT in an httpOnly cookie, guards in RSC layouts)
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con el destino post sign-in derivado del rol (ver [Revisión](#revisión-2026-08-30))
 - **Fecha**: 2026-04-23
 
 ## Contexto
@@ -112,3 +112,7 @@ Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente n
 - Si aparecen requirements de SSO institucional (ej. integración con UNSTA campus).
 - Si agregamos MFA (TOTP, WebAuthn).
 - Si migramos Redis a un store Edge-compatible y el middleware pattern se vuelve viable.
+
+## Revisión (2026-08-30)
+
+El patrón de guards se mantiene. Lo que faltaba era que el destino saliera del rol: el sign-in devolvía `/home` fijo, que es el área del alumno, así que un admin entraba, el guard de `(member)` lo echaba a `/sign-in` por no ser alumno y el de `(auth)` lo devolvía a `/home` por tener sesión. Un bucle, con la sesión ya creada y ninguna pantalla donde caer. Ahora los dos lados leen el mismo `roleHomePath`, y un rol que el producto no reconoce no llega a dejar cookie puesta.

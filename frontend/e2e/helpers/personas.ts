@@ -64,12 +64,4 @@ export const ADMIN: Persona = {
   state: 'VerifiedActive',
 };
 
-/** Cuenta staff rol Moderator (US-067): solo la sección de moderación del backoffice. */
-export const MODERADOR: Persona = {
-  email: 'moderador@planb.local',
-  password: 'moderador.planb.local.12',
-  displayName: 'Elena Ferro',
-  state: 'VerifiedActive',
-};
-
-export const ALL_PERSONAS = [LUCIA, MATEO, PAULA, MARTIN, ADMIN, MODERADOR] as const;
+export const ALL_PERSONAS = [LUCIA, MATEO, PAULA, MARTIN, ADMIN] as const;

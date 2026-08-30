@@ -16,7 +16,7 @@ import { serverEnv } from './env';
 export type Session = {
   userId: string;
   email: string;
-  role: 'member' | 'moderator' | 'admin' | 'university_staff';
+  role: 'member' | 'admin';
   hasTeacherProfile?: boolean;
   teacherVerified?: boolean;
 };
@@ -28,15 +28,26 @@ const ACCESS_COOKIE = 'planb_session';
 // mapping so we read both shapes and pick whichever shows up.
 const ROLE_CLAIM_URI = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
 
-// Backend roles come from the C# UserRole enum (PascalCase). We normalize to
-// the snake_case shape that the rest of the frontend uses (route group names,
-// guards, copy). UniversityStaff → university_staff.
+// Los roles llegan del enum UserRole de C# (PascalCase) y acá se normalizan a la forma que usa
+// el resto del frontend (nombres de route group, guards, copy).
+//
+// El enum del backend tiene además `Moderator` y `UniversityStaff`, que este mapa NO reconoce a
+// propósito: moderación se retiró en R2 y ninguno de los dos tiene hoy una sola pantalla. Un token
+// con esos roles no produce sesión (ver el chequeo de abajo), que es lo que queremos: sin área a
+// donde entrar, reconocerlo dejaría a la persona dando vueltas entre guards. Vuelven cuando vuelva
+// la feature, con su pantalla y su entrada en `roleHomePath`.
 const ROLE_MAP: Record<string, Session['role']> = {
   Member: 'member',
-  Moderator: 'moderator',
   Admin: 'admin',
-  UniversityStaff: 'university_staff',
 };
+
+/**
+ * Traduce el rol tal como viaja en el cuerpo del sign-in (PascalCase) al del frontend. Devuelve
+ * `null` para un rol que el producto no reconoce, y el llamador decide qué hacer con eso.
+ */
+export function normalizeRole(rawRole: string): Session['role'] | null {
+  return ROLE_MAP[rawRole] ?? null;
+}
 
 /**
  * Reads and validates the current session from the httpOnly cookie set by

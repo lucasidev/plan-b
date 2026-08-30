@@ -99,18 +99,6 @@ describe('createCareerAction', () => {
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
-  it('rechaza a un usuario con rol moderator, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
-
-    const result = await createCareerAction(
-      initialManageCareerState,
-      formData({ ...VALID_CAREER, universityId: UNIVERSITY_ID }),
-    );
-
-    expect(result.status).toBe('error');
-    expect(apiFetchMock).not.toHaveBeenCalled();
-  });
-
   it('rechaza sin universityId, sin llamar al backend', async () => {
     const result = await createCareerAction(initialManageCareerState, formData(VALID_CAREER));
 
@@ -377,7 +365,7 @@ describe('updateCareerAction', () => {
 
 describe('deactivateCareerAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
+    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'member' });
 
     const result = await deactivateCareerAction(CAREER_ID);
 
@@ -673,7 +661,7 @@ describe('createPlanAction', () => {
 
 describe('deprecatePlanAction', () => {
   it('rechaza a un usuario sin rol admin, sin llamar al backend', async () => {
-    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'moderator' });
+    getSessionMock.mockResolvedValue({ ...ADMIN_SESSION, role: 'member' });
 
     const result = await deprecatePlanAction(PLAN_ID);
 

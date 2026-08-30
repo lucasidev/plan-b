@@ -1,6 +1,6 @@
 # ADR-0019: A single Next.js app with route groups per actor
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con los roles del backoffice reducidos (ver [Revisión](#revisión-2026-08-30))
 - **Fecha**: 2026-04-23
 
 ## Contexto
@@ -78,3 +78,8 @@ El guard del frontend existe para:
 **Cuándo revisitar:**
 
 - Si el backoffice crece hasta justificar su propio equipo con su propio ciclo de deploy independiente (improbable en el horizonte de este proyecto).
+
+## Revisión (2026-08-30)
+
+La decisión se mantiene; cambió a quién deja pasar `(staff)`. Un pase de QA encontró que de los cuatro roles solo `member` podía usar la aplicación: moderación se retiró en R2 y su rol quedó sin ninguna pantalla, cayendo en un 404, y `university_staff` nunca tuvo la suya. Los dos salieron del frontend, así que `(staff)` hoy admite solo `admin` y el guard fino que cada sección repetía se borró por redundante. El enum del backend los conserva, que es donde está persistido el rol; vuelven al frontend cuando vuelva la feature, con su pantalla.
+
