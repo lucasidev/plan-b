@@ -12,5 +12,5 @@ public sealed record StudentProfileCreatedDomainEvent(
     StudentProfileId StudentProfileId,
     Guid CareerPlanId,
     Guid CareerId,
-    int EnrollmentYear,
+    int? EnrollmentYear,
     DateTimeOffset OccurredAt) : IDomainEvent;

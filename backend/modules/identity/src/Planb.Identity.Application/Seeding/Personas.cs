@@ -35,10 +35,13 @@ public sealed class PersonaConfig
 
     /// <summary>
     /// Optional StudentProfile to attach at seed time. Si está presente, después de aplicar el
-    /// estado (verified / disabled / unverified) el seeder le agrega el profile. Sirve para
-    /// que personas como Lucía aterricen directo en /home tras el sign-in (el guard del
-    /// frontend redirige a /onboarding/welcome si no hay profile). Mateo deliberadamente NO
-    /// trae profile para cubrir el path de "user nuevo va a onboarding" en E2E specs.
+    /// estado (verified / disabled / unverified) el seeder le agrega el profile directamente sobre
+    /// el aggregate, sin pasar por el registro real (que es donde ahora se declara la carrera).
+    /// Sirve para que personas como Lucía aterricen directo en /home tras el sign-in (el guard del
+    /// frontend redirige a /onboarding/welcome si no hay profile). Mateo deliberadamente NO trae
+    /// profile para cubrir el path de "user nuevo va a onboarding" en E2E specs: el onboarding
+    /// sigue existiendo, y ahora convive con declarar la carrera al registrarse (ahí el profile
+    /// nace solo, sin onboarding, apenas se verifica el mail).
     /// </summary>
     public PersonaStudentProfile? StudentProfile { get; init; }
 }
@@ -56,9 +59,8 @@ public sealed class PersonaStudentProfile
     [Required]
     public Guid CareerId { get; init; }
 
-    [Required]
     [Range(1990, 2100)]
-    public int EnrollmentYear { get; init; }
+    public int? EnrollmentYear { get; init; }
 }
 
 public enum PersonaState

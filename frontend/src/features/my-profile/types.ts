@@ -7,7 +7,9 @@ export type MyProfile = {
   userId: string;
   careerId: string;
   careerPlanId: string;
-  enrollmentYear: number;
+  /** ADR-0086: la carrera se declara al registrarse y el año de ingreso ya no se pide ahí,
+   * así que puede no estar. */
+  enrollmentYear: number | null;
   status: string;
   displayName: string | null;
   yearOfStudy: number | null;

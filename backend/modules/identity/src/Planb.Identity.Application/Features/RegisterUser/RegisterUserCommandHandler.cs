@@ -1,3 +1,4 @@
+using Planb.Academic.Application.Contracts;
 using Planb.Identity.Application.Abstractions.Email;
 using Planb.Identity.Application.Abstractions.Persistence;
 using Planb.Identity.Application.Abstractions.Security;
@@ -20,6 +21,7 @@ public static class RegisterUserCommandHandler
         RegisterUserCommand command,
         IUserRepository users,
         IIdentityUnitOfWork unitOfWork,
+        IAcademicQueryService academic,
         IPasswordHasher passwords,
         ITokenGenerator tokenGenerator,
         IVerificationEmailSender emailSender,
@@ -33,6 +35,18 @@ public static class RegisterUserCommandHandler
             return emailResult.Error;
         }
         var email = emailResult.Value;
+
+        // El plan se resuelve ANTES del hash y del exists. No es un detalle de orden: es una
+        // defensa de seguridad de la misma clase que la que ADR-0076 ya cerró. Si el plan se
+        // validara después del exists, un plan inválido daría 400 con un mail libre pero 202 con
+        // un mail ocupado (esa rama corta antes de llegar a mirar el plan): mandando un plan
+        // inventado, el status code delataría si esa casilla tiene cuenta. Validar acá hace que un
+        // plan inválido responda siempre 400, sin importar el estado del mail.
+        var plan = await academic.GetCareerPlanByIdAsync(command.CareerPlanId, ct);
+        if (plan is null)
+        {
+            return UserErrors.RegistrationCareerPlanNotFound;
+        }
 
         // El hash se computa antes de mirar si el mail existe: BCrypt domina el tiempo de la
         // request, y calcularlo solo para mails libres dejaria medir la diferencia por timing.
@@ -53,6 +67,12 @@ public static class RegisterUserCommandHandler
             return userResult.Error;
         }
         var user = userResult.Value;
+
+        var declareResult = user.DeclareCareerAtRegistration(plan.Id, plan.CareerId, clock);
+        if (declareResult.IsFailure)
+        {
+            return declareResult.Error;
+        }
 
         var rawToken = tokenGenerator.Generate();
         var tokenResult = user.IssueVerificationToken(

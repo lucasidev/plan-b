@@ -70,6 +70,15 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasColumnName("updated_at")
             .IsRequired();
 
+        // Mudanza de la declaración de carrera al registro: los dos quedan en null hasta que el
+        // registro declara carrera, y se limpian de nuevo apenas VerifyEmail los materializa
+        // (o antes, si el registro se da de baja o expira).
+        builder.Property(u => u.PendingCareerPlanId)
+            .HasColumnName("pending_career_plan_id");
+
+        builder.Property(u => u.PendingCareerId)
+            .HasColumnName("pending_career_id");
+
         builder.Ignore(u => u.DomainEvents);
 
         builder.OwnsMany(u => u.Tokens, tokens =>
@@ -170,9 +179,12 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
                 .HasColumnName("career_id")
                 .IsRequired();
 
+            // Nullable: mudanza de la declaración de carrera al registro. El profile que
+            // VerifyEmail materializa desde esa declaración todavía no tiene año (esa pregunta no
+            // se hizo en el form de alta); el que nace desde POST /api/me/student-profiles sí puede
+            // traerlo, pero ya no es obligatorio.
             profiles.Property(p => p.EnrollmentYear)
-                .HasColumnName("enrollment_year")
-                .IsRequired();
+                .HasColumnName("enrollment_year");
 
             profiles.Property(p => p.Status)
                 .HasColumnName("status")

@@ -39,7 +39,7 @@ just frontend-test-e2e            # Playwright headless, levanta su propio stack
 just frontend-test-e2e-show       # Playwright con browser visible y slowMo (ver el flow correr)
 ```
 
-Ambos recipes aceptan args, ej: `just frontend-test-e2e-show e2e/auth/onboarding.spec.ts`.
+Ambos recipes aceptan args, ej: `just frontend-test-e2e-show e2e/auth/sign-up.spec.ts`.
 
 ### CI
 

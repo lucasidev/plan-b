@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.Identity.Application.Features.RegisterUser;
 using Planb.Identity.Application.Features.VerifyEmail;
 using Planb.Identity.Domain.Users;
@@ -25,11 +26,14 @@ public class VerifyEmailEndpointTests : IClassFixture<RegisterApiFixture>
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
+    // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
+    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan.Id.Value;
+
     private async Task<(Guid UserId, string Token)> RegisterAndCaptureTokenAsync(string email)
     {
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         using var scope = _fixture.Factory.Services.CreateScope();

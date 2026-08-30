@@ -71,7 +71,7 @@ export default async function MyCareerPage({
             Tu carrera
           </DisplayHeading>
           <p className="text-sm text-ink-3">
-            Ingreso {profile.enrollmentYear} · cargá tu historial para ver stats reales
+            Ingreso {profile.enrollmentYear ?? '-'} · cargá tu historial para ver stats reales
           </p>
         </div>
         <button

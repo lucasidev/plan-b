@@ -8,10 +8,16 @@ public class RegisterUserValidatorTests
 {
     private readonly RegisterUserValidator _validator = new();
 
+    private static RegisterUserCommand ValidCommand(
+        string email = "lucas@unsta.edu.ar",
+        string? password = null,
+        Guid? careerPlanId = null) =>
+        new(email, password ?? new string('a', 12), careerPlanId ?? Guid.NewGuid());
+
     [Fact]
-    public void Valid_email_and_password_passes()
+    public void Valid_email_password_and_career_plan_passes()
     {
-        var cmd = new RegisterUserCommand("lucas@unsta.edu.ar", new string('a', 12));
+        var cmd = ValidCommand();
 
         _validator.TestValidate(cmd).ShouldNotHaveAnyValidationErrors();
     }
@@ -21,7 +27,7 @@ public class RegisterUserValidatorTests
     [InlineData("   ")]
     public void Empty_email_fails(string email)
     {
-        var cmd = new RegisterUserCommand(email, new string('a', 12));
+        var cmd = ValidCommand(email: email);
 
         _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Email);
     }
@@ -31,7 +37,7 @@ public class RegisterUserValidatorTests
     {
         var local = new string('a', 250);
         var email = $"{local}@x.io"; // 256 chars
-        var cmd = new RegisterUserCommand(email, new string('a', 12));
+        var cmd = ValidCommand(email: email);
 
         _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Email);
     }
@@ -42,7 +48,7 @@ public class RegisterUserValidatorTests
     [InlineData("eleven_chrs")] // 11 chars, just under the floor
     public void Short_password_fails(string password)
     {
-        var cmd = new RegisterUserCommand("lucas@unsta.edu.ar", password);
+        var cmd = ValidCommand(password: password);
 
         _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.Password);
     }
@@ -50,10 +56,16 @@ public class RegisterUserValidatorTests
     [Fact]
     public void Password_at_minimum_length_passes()
     {
-        var cmd = new RegisterUserCommand(
-            "lucas@unsta.edu.ar",
-            new string('a', RegisterUserValidator.MinPasswordLength));
+        var cmd = ValidCommand(password: new string('a', RegisterUserValidator.MinPasswordLength));
 
         _validator.TestValidate(cmd).ShouldNotHaveValidationErrorFor(c => c.Password);
+    }
+
+    [Fact]
+    public void Empty_career_plan_id_fails()
+    {
+        var cmd = ValidCommand(careerPlanId: Guid.Empty);
+
+        _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.CareerPlanId);
     }
 }

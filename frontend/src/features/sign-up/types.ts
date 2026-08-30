@@ -18,7 +18,7 @@ export type SignUpFormState =
   | {
       status: 'error';
       message: string;
-      field?: 'email' | 'password' | 'confirm';
+      field?: 'email' | 'password' | 'confirm' | 'careerPlanId';
     };
 
 export const initialSignUpState: SignUpFormState = { status: 'idle' };

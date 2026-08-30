@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.Identity.Application.Features.RegisterUser;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence;
@@ -28,6 +29,9 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
+    // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
+    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan.Id.Value;
+
     [Fact]
     public async Task Returns_202_with_email_only_and_persists_user_and_token()
     {
@@ -35,7 +39,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
 
         // 202 y solo el email: la respuesta no trae id ni Location porque tiene que ser
         // identica exista o no la cuenta (ADR-0076).
@@ -69,7 +73,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
@@ -96,7 +100,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         {
             var r = await _client.PostAsJsonAsync(
                 "/api/identity/register",
-                new RegisterUserRequest(email, "valid-password-12c"));
+                new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
             if (r.StatusCode != HttpStatusCode.Accepted)
             {
                 distinct = r.StatusCode;
@@ -118,12 +122,12 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var first = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         await _mailpit.ClearAsync();
 
         var second = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "another-password-12"));
+            new RegisterUserRequest(email, "another-password-12", ValidCareerPlanId));
 
         second.StatusCode.ShouldBe(first.StatusCode);
         (await second.Content.ReadAsStringAsync())
@@ -148,7 +152,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     {
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(FreshEmail("short-password"), "short"));
+            new RegisterUserRequest(FreshEmail("short-password"), "short", ValidCareerPlanId));
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -158,7 +162,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     {
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest("not-an-email", "valid-password-12c"));
+            new RegisterUserRequest("not-an-email", "valid-password-12c", ValidCareerPlanId));
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }

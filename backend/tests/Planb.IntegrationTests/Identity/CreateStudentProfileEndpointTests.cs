@@ -87,7 +87,12 @@ public class CreateStudentProfileEndpointTests
         var email = $"create-profile-unverified.{Guid.NewGuid():N}@planb.local";
         var register = await bootstrap.PostAsJsonAsync(
             "/api/identity/register",
-            new { email, password = "valid-password-12c" });
+            new
+            {
+                email,
+                password = "valid-password-12c",
+                careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value,
+            });
         register.EnsureSuccessStatusCode();
 
         // Sin email_verified_at update, el sign-in rechaza con 401 invalid_credentials

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.Identity.Application.Features.RegisterUser;
 using Planb.Identity.Application.Features.RequestPasswordReset;
 using Planb.Identity.Application.Features.ResetPassword;
@@ -55,6 +56,9 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
+    // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
+    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan.Id.Value;
+
     /// <summary>
     /// Sign up + verify a fresh user, then trigger forgot-password and read the raw token
     /// straight out of the DB. Returns the user id and token so each test can drive the
@@ -72,7 +76,7 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
         string email, string password = "valid-password-12c")
     {
         var register = await _client.PostAsJsonAsync(
-            "/api/identity/register", new RegisterUserRequest(email, password));
+            "/api/identity/register", new RegisterUserRequest(email, password, ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var userId = await UserIdByEmailAsync(email);
 
@@ -158,7 +162,8 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
         // Register a user but DON'T verify; use the email-verification token in reset-password.
         var email = FreshEmail("wrong-purpose");
         var register = await _client.PostAsJsonAsync(
-            "/api/identity/register", new RegisterUserRequest(email, "valid-password-12c"));
+            "/api/identity/register",
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var verifyToken = await ReadActiveTokenAsync(
             await UserIdByEmailAsync(email), TokenPurpose.UserEmailVerification);

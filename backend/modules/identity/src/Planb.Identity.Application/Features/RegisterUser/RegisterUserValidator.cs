@@ -21,5 +21,8 @@ internal sealed class RegisterUserValidator : AbstractValidator<RegisterUserComm
             .NotEmpty()
             .MinimumLength(MinPasswordLength)
             .MaximumLength(MaxPasswordLength);
+
+        RuleFor(c => c.CareerPlanId)
+            .NotEmpty();
     }
 }

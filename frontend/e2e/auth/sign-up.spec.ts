@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { extractTokenFromLatestMail } from '../helpers/mailpit';
 import { deleteStudent } from '../helpers/students';
 
@@ -19,6 +19,9 @@ import { deleteStudent } from '../helpers/students';
  * siempre, verificado); el propio comentario viejo ya dudaba ("endpoint puede no existir,
  * ignorar"). Con eso el user de esta prueba quedaba activo para siempre en cada corrida.
  *
+ * Desde ADR-0086 el registro pide también la carrera (`<CareerPicker>` entre los campos de
+ * cuenta y el CTA), así que el registro por UI ahora completa esa cascada antes de submitear.
+ *
  * Errores in-form (password corta, email inválido) se cubren a nivel
  * vitest en `features/sign-up/components/sign-up-form.test.tsx`. Acá nos
  * concentramos en el flow cross-stack (DB + mail + redirects).
@@ -26,6 +29,32 @@ import { deleteStudent } from '../helpers/students';
 
 function uniqueEmail(prefix: string): string {
   return `${prefix}.${Date.now()}.${Math.random().toString(36).slice(2, 8)}@planb.local`;
+}
+
+/**
+ * Completa la cascada Universidad → Carrera → Plan del `<CareerPicker>` que vive en
+ * `/sign-up`. Cada nivel espera a que el `<select>` de abajo se habilite:
+ * la carrera se pide recién con la universidad elegida, y el plan con la carrera.
+ */
+async function fillCareerCascade(page: Page): Promise<void> {
+  await page.getByLabel(/^universidad$/i).waitFor();
+  await page
+    .getByLabel(/^universidad$/i)
+    .selectOption({ label: 'Universidad del Norte Santo Tomás de Aquino' });
+
+  await page.waitForFunction(() => {
+    const sel = document.querySelector('select[name="careerId"]') as HTMLSelectElement | null;
+    return sel ? sel.options.length > 1 : false;
+  });
+  await page
+    .getByLabel(/^carrera$/i)
+    .selectOption({ label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software' });
+
+  await page.waitForFunction(() => {
+    const sel = document.querySelector('select[name="careerPlanId"]') as HTMLSelectElement | null;
+    return sel ? sel.options.length > 1 : false;
+  });
+  await page.getByLabel(/plan de estudios/i).selectOption({ index: 1 });
 }
 
 test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)', () => {
@@ -39,7 +68,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     createdStudent = null;
   });
 
-  test('alumno nuevo se registra, verifica el mail y aterriza en onboarding', async ({ page }) => {
+  test('alumno nuevo se registra, verifica el mail y aterriza en /home', async ({ page }) => {
     const email = uniqueEmail('e2e-signup');
     const password = 'e2e-test-pw-1234';
     createdStudent = { email, password };
@@ -48,10 +77,11 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.goto('/sign-up');
     await expect(page.getByRole('heading', { name: /empezá en 30 segundos/i })).toBeVisible();
 
-    // 2. Submit con email + password + confirm
+    // 2. Submit con email + password + confirm + la cascada de carrera
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByLabel(/repetí la contraseña/i).fill(password);
+    await fillCareerCascade(page);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
 
     // 3. Backend devuelve 202 (igual exista o no la cuenta, ADR-0076) → redirect a /sign-up/check-inbox?email=
@@ -72,15 +102,14 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: /entrá a tu cuenta/i })).toBeVisible();
 
-    // 7. Login con la cuenta recién creada. Guard de (member) lo manda a
-    //    /onboarding/welcome porque el alumno todavía no tiene StudentProfile
-    //    (US-037-f). El flow completo de onboarding hasta /home queda
-    //    cubierto por `onboarding.spec.ts`; este spec verifica solo el chain
-    //    sign-up → verify → sign-in.
+    // 7. Login con la cuenta recién creada, que aterriza directo en /home: la
+    //    carrera se declaró en el alta y el StudentProfile ya nació al verificar
+    //    el mail, así que no hay pantalla intermedia que completar. Es la
+    //    garantía US-170 verificada de punta a punta.
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/onboarding\/welcome$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
   });
 
   test('email duplicado en sign-up responde igual que uno libre (ADR-0076)', async ({ page }) => {
@@ -92,6 +121,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await page.getByLabel(/tu email/i).fill('lucia.mansilla@gmail.com');
     await page.getByLabel(/^contraseña$/i).fill('any-valid-pw-123');
     await page.getByLabel(/repetí la contraseña/i).fill('any-valid-pw-123');
+    await fillCareerCascade(page);
     await page.getByRole('button', { name: /crear mi cuenta/i }).click();
 
     await expect(page).toHaveURL(/\/sign-up\/check-inbox/, { timeout: 15_000 });

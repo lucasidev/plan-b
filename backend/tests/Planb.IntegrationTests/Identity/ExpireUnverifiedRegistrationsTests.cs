@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.Identity.Application.Features.ExpireUnverifiedRegistrations;
 using Planb.Identity.Application.Features.RegisterUser;
 using Planb.Identity.Application.Features.SignIn;
@@ -44,11 +45,14 @@ public class ExpireUnverifiedRegistrationsTests
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
+    // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
+    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan.Id.Value;
+
     private async Task<UserId> RegisterAndBackdateAsync(string email, TimeSpan ageFromNow)
     {
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         register.EnsureSuccessStatusCode();
 
         // Back-date el created_at vía SQL directo. Esto evita acoplar el test al clock global
@@ -103,7 +107,7 @@ public class ExpireUnverifiedRegistrationsTests
         var email = FreshEmail("expire-verified");
         await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c"));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
 
         // Verificarlo: tomar el token de la DB y consumirlo via aggregate (atajo, evitamos
         // ir por el endpoint de verify-email que requiere mock de clock o un email parsing).
@@ -175,7 +179,7 @@ public class ExpireUnverifiedRegistrationsTests
 
         var second = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "different-password-12c"));
+            new RegisterUserRequest(email, "different-password-12c", ValidCareerPlanId));
 
         second.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 

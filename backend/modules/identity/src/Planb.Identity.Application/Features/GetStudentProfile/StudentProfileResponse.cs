@@ -18,7 +18,7 @@ public sealed record StudentProfileResponse
     public Guid UserId { get; init; }
     public Guid CareerId { get; init; }
     public Guid CareerPlanId { get; init; }
-    public int EnrollmentYear { get; init; }
+    public int? EnrollmentYear { get; init; }
     public string Status { get; init; } = null!;
     // US-047: campos editables desde Mi perfil. Nullable si el user nunca editó.
     public string? DisplayName { get; init; }
