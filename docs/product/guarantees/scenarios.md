@@ -7,7 +7,7 @@ Los casos de cada garantía viven con ella, en su carpeta:
 - [US-167](US-167-report-content-without-an-account/scenarios.md)
 - [US-168](US-168-read-without-an-account/scenarios.md)
 - [US-169](US-169-never-asked-twice/scenarios.md)
-- [US-170](US-170-skip-onboarding-and-still-use-it/scenarios.md)
+- [US-170](US-170-use-it-without-being-asked-for-anything-first/scenarios.md)
 - [US-171](US-171-nothing-sponsored-or-featured/scenarios.md)
 
 Este archivo queda para los escenarios que cruzan varias garantías, que no son de ninguna en particular.

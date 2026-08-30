@@ -36,10 +36,9 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138) | Valentina, Silvia, quien lee | 12 | 8 |
+| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 13 | 8 |
 | [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
 | [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 4 | 4 |
-| [Mi carrera](student/my-career/README.md) | O3 | Lucía | 3 | 2 |
 | [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 18 | 3 |
 | [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 2 | 1 |
 | [Deshacer](student/undo/README.md) | O5 | quien ya aportó | 2 | 4 |
@@ -84,8 +83,6 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
 | `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
 | `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
-| `SC-011` | Mi carrera | [Mi carrera](student/my-career/screens/SC-011-my-career/README.md) | `/my-career` |
-| `SC-012` |  | [Empezar](student/my-career/screens/SC-012-onboarding/README.md) | `/onboarding/*` |
 | `SC-013` | Reseñar | [Anonimato](student/write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
 | `SC-014` |  | [Mi situación](student/write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
 | `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/write` |

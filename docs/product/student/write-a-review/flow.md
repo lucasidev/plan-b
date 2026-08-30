@@ -45,7 +45,7 @@ flowchart TD
 - [Mi situación](screens/SC-014-my-status/README.md): la pregunta de trayectoria, embebida en el paso 2 cuando el período es viejo (nodos G2, G3, G4, G5).
 - [Anonimato](screens/SC-013-anonymity/README.md): qué se publica y qué no, el campo libre y el piso, dicho antes de escribir; no es un paso propio del diagrama, se linkea desde el paso 6 y desde cualquier ficha.
 - [Ingresar / Registro](../enter/screens/SC-025-sign-in/README.md): el gate que cruza Matías antes de llegar a Reseñar (nodo M1); ver también [Registro](../enter/screens/SC-026-sign-up/README.md).
-- [Empezar](../my-career/screens/SC-012-onboarding/README.md): el onboarding que sigue al gate, saltable y retomable (nodo M2).
+- Empezar: el onboarding que sigue al gate, saltable y retomable (nodo M2).
 - [Mis aportes](../undo/screens/SC-018-my-contributions/README.md): a donde vuelve la reseña publicada, con lo que sumó cada ítem (nodo L).
 - [Avisos](../../notices/screens/SC-034-mail/README.md): los dos mails que disparan el flujo, el del cierre de período y el reenganche anual (nodos A, A2).
 
@@ -56,7 +56,7 @@ flowchart TD
 - **Ya reseñó esta materia**: se acepta una segunda si el período es otro (la reseña es cuenta × materia × período); la cátedra, que es opcional, no entra en la clave.
 - **Cerró la pestaña**: la reseña a medias se guarda y aparece para retomar (US-161).
 - **El contrato antes de enviar**: en el paso 6 se dice, con estas palabras o parecidas, que la respuesta se suma al total de la cátedra, que ninguna reseña individual se muestra jamás (ni cómo terminó nadie), y el estado del piso de esa cátedra ("junta 3 reseñas: con 7 más se publica"). No es un chequeo que retenga nada: el campo libre nunca se publica, así que no hay texto público que revisar antes de enviar (US-148, US-159, [ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
-- **Sin cuenta**: no se llega a Reseñar; el gate está en la acción (Ingresar / Registro, con el motivo a la vista y vuelta a donde ibas), no en la lectura. Empezar se puede saltear: todo funciona sin plan marcado (US-170), y marcar el plan es preferencia privada ([ADR-0069](../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md)).
+- **Sin cuenta**: no se llega a Reseñar; el gate está en la acción (Ingresar / Registro, con el motivo a la vista y vuelta a donde ibas), no en la lectura. Nada se pide antes: del Registro se sale directo a leer o a reseñar, sin pasos intermedios (US-170, [ADR-0086](../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)).
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 

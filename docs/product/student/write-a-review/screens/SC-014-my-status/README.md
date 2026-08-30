@@ -14,7 +14,7 @@ US-152 (la pregunta por cuatro caminos: esta pantalla es uno; los otros son el p
 
 ## Qué muestra
 
-La pregunta de trayectoria de a uno, sin plan marcado: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Esto no es un ítem del catálogo de la cursada ([`phrases.md`](../../../../phrases.md)): es un hecho aparte, de a uno, nunca como inventario. Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere.
+La pregunta de trayectoria de a uno: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Esto no es un ítem del catálogo de la cursada ([`phrases.md`](../../../../phrases.md)): es un hecho aparte, de a uno, nunca como inventario. Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere.
 
 Una sola tarjeta: la pregunta, cuatro salidas (sigo / me recibí, en… / me fui, en… / ahora no), el año cuando hace falta, y una línea que dice qué se hace con eso (cuántos se reciben, cuántos se van y cuándo, de cohortes cerradas, sin tu nombre) y que no se va a volver a preguntar.
 
@@ -32,7 +32,7 @@ A Mi perfil (desde donde se abre) o a la pantalla desde la que vino. Aparece emb
 
 ## Decisiones que aplica
 
-[ADR-0069](../../../../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (el plan marcado es preferencia privada, no un hecho de trayectoria), [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (la duración real y el egreso por cohorte salen del relevamiento oficial, no de lo que declara cada cuenta: es lo que dejó rebasado el concepto de esta pantalla). Ningún ADR vigente fija que los hechos de trayectoria se pregunten de a uno, nunca como inventario, ni que el silencio no se infiera: es decisión pendiente.
+[ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (el producto no hace seguimiento de carrera: esta pregunta suelta es lo único que se pregunta de trayectoria, y de a uno), [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) (la duración real y el egreso por cohorte salen del relevamiento oficial, no de lo que declara cada cuenta: es lo que dejó rebasado el concepto de esta pantalla). Ningún ADR vigente fija que los hechos de trayectoria se pregunten de a uno, nunca como inventario, ni que el silencio no se infiera: es decisión pendiente.
 
 ## Lo que esta ficha deja abierto
 

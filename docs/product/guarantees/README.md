@@ -4,7 +4,7 @@
 
 ## Qué es
 
-El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en primera persona y que, aun así, tienen que cumplirse en toda pantalla nueva. No se construyen (no hay una US que las cierre): se verifican, pantalla por pantalla, contra un checklist. Son la decisión 3 de la tesis dicha como lista de chequeo (leer no pide cuenta), más que nada ya declarado se vuelva a preguntar, que el producto funcione sin un plan marcado, y que nada esté destacado ni patrocinado. Recuperar la contraseña estaba acá como una quinta garantía y salió el 2026-08-20: no es transversal, es una acción con su pantalla, así que vive como story propia de Entrar ([US-220](../student/enter/stories/US-220-recover-the-password-by-mail/README.md)).
+El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en primera persona y que, aun así, tienen que cumplirse en toda pantalla nueva. No se construyen (no hay una US que las cierre): se verifican, pantalla por pantalla, contra un checklist. Son la decisión 3 de la tesis dicha como lista de chequeo (leer no pide cuenta), más que nada ya declarado se vuelva a preguntar, que nada se pida antes de dejar leer o reseñar, y que nada esté destacado ni patrocinado. Recuperar la contraseña estaba acá como una quinta garantía y salió el 2026-08-20: no es transversal, es una acción con su pantalla, así que vive como story propia de Entrar ([US-220](../student/enter/stories/US-220-recover-the-password-by-mail/README.md)).
 
 ## Para quién
 
@@ -20,7 +20,7 @@ Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y
 |---|---|
 | [US-168](US-168-read-without-an-account/README.md) | Leer sin necesitar cuenta |
 | [US-169](US-169-never-asked-twice/README.md) | No repetir lo que ya dije |
-| [US-170](US-170-skip-onboarding-and-still-use-it/README.md) | Saltear el onboarding y usar la app |
+| [US-170](US-170-use-it-without-being-asked-for-anything-first/README.md) | Usarlo sin que me pidan nada antes |
 | [US-171](US-171-nothing-sponsored-or-featured/README.md) | Que no me vendan nada |
 | [US-167](US-167-report-content-without-an-account/README.md) | Reportar contenido publicado sin registrarse |
 
@@ -29,11 +29,11 @@ Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y
 
 ## Decisiones que aplica
 
-[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0069](../../decisions/0069-the-marked-plan-is-a-private-preference-not-a-fact.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
+[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
 
 ## Pantallas
 
-Esta épica no tiene pantallas propias: es la garantía que se verifica en cada pantalla de las demás. Las que cita para verificarse viven en sus épicas dueñas: todas las públicas del [mapa](../map.md) (US-168, US-171), [Reseñar](../student/write-a-review/README.md) y [Empezar](../student/my-career/README.md) (US-169, US-170), [**Ingresar**](../student/enter/screens/SC-025-sign-in/README.md), [**Registro**](../student/enter/screens/SC-026-sign-up/README.md) y [**Recuperar**](../student/enter/screens/SC-024-forgot-password/README.md) (el umbral: el gate en la acción, vuelta a donde ibas).
+Esta épica no tiene pantallas propias: es la garantía que se verifica en cada pantalla de las demás. Las que cita para verificarse viven en sus épicas dueñas: todas las públicas del [mapa](../map.md) (US-168, US-171), [Reseñar](../student/write-a-review/README.md) (US-169; US-170 se cumple por construcción desde [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md): no hay onboarding ni plan que marcar), [**Ingresar**](../student/enter/screens/SC-025-sign-in/README.md), [**Registro**](../student/enter/screens/SC-026-sign-up/README.md) y [**Recuperar**](../student/enter/screens/SC-024-forgot-password/README.md) (el umbral: el gate en la acción, vuelta a donde ibas).
 
 ## Cómo se verifica
 
@@ -41,11 +41,11 @@ Cada [ficha de pantalla](README.md) nueva responde estas cuatro preguntas antes 
 
 - **¿Esta pantalla exige cuenta para leer?** Tiene que ser no, salvo que sea una acción (corregir, reseñar, responder) y nunca una lectura (US-168).
 - **¿Le vuelve a preguntar algo que la cuenta ya declaró?** Tiene que ser no; lo único que puede reaparecer es el hecho que nunca contestó, y una sola vez al año, por mail (US-169).
-- **¿Deja de funcionar si no hay plan marcado?** Tiene que ser no, salvo la pantalla que necesita saber qué cursás (US-170).
+- **¿Pide completar algo antes de dejar leer o reseñar?** Tiene que ser no: ningún trámite previo a lo que la persona vino a hacer (US-170).
 - **¿Destaca, patrocina u ordena algo por conveniencia?** Tiene que ser no, en ningún listado (US-171).
 - **¿Reportar lo que esta pantalla publica exige cuenta?** Tiene que ser no: donde algo está publicado, se puede reportar sin registrarse (US-167).
 
-La [Ficha de cátedra](../student/choose-where-to-study/screens/SC-002-chair/README.md) ya las responde: se lee sin cuenta, no repite ninguna pregunta, no depende de ningún plan marcado y ordena por voces, nunca por conveniencia. Las fichas escritas el 2026-08-19 tienen esta verificación pendiente: es parte de su revisión adversarial.
+La [Ficha de cátedra](../student/choose-where-to-study/screens/SC-002-chair/README.md) ya las responde: se lee sin cuenta, no repite ninguna pregunta, no pide completar nada antes y ordena por voces, nunca por conveniencia. Las fichas escritas el 2026-08-19 tienen esta verificación pendiente: es parte de su revisión adversarial.
 
 ## Lo que esta épica todavía no resuelve
 

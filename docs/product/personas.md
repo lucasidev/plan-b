@@ -26,7 +26,7 @@ Cuarto año, veinte horas de trabajo. Tiene más para contar que nadie y menos t
 
 **La contradicción**: quiere que exista el dato pero no quiere producirlo. Aportaría si le costara lo que cuesta mandar un mensaje.
 
-**Decisión que produce**: por ella se responden ítems cerrados en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y lo que marca en su plan para filtrar la co-cursada es preferencia privada, no un dato que le pedimos.
+**Decisión que produce**: por ella se responden ítems cerrados en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y la co-cursada que le sirve sale sola de las reseñas, sin que el producto le pida nada de su carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)).
 
 ### Matías, 26 · "Reclamó solo y no sirvió de nada"
 

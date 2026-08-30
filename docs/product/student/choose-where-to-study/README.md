@@ -14,7 +14,7 @@ Leer el escrutinio sin cuenta para decidir dónde estudiar. La ficha de una cát
 
 Las 12 de esta épica. Cada una en su archivo, con su criterio de aceptación; el estado y el sprint viven en [`docs/plan/`](../../../plan/README.md), que las cita por ID.
 
-> US-127 y US-133 no salen de reseñas: son datos oficiales, relevados contra fuente pública (SPU/CONEAU) y publicados siempre con su fuente y su fecha ([ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md)). US-143 (Mi carrera) y US-152 (Reseñar) sí salen de lo que declara quien reseña, pero de la capa de contexto (cuándo cursaste, cómo terminó), no del catálogo de ítems ([ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): se preguntan de a uno, en el momento en que aparecen, nunca como inventario, y el silencio no se infiere.
+> US-127 y US-133 no salen de reseñas: son datos oficiales, relevados contra fuente pública (SPU/CONEAU) y publicados siempre con su fuente y su fecha ([ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md)). US-143 (la co-cursada) y US-152 (Reseñar) sí salen de lo que declara quien reseña, pero de la capa de contexto (cuándo cursaste, cómo terminó), no del catálogo de ítems ([ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): se preguntan de a uno, en el momento en que aparecen, nunca como inventario, y el silencio no se infiere.
 
 | ID | De qué trata |
 |---|---|
@@ -30,6 +30,7 @@ Las 12 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 | [US-134](stories/US-134-check-the-coverage-behind-the-card/README.md) | Saber para cuánta carrera vale un dato |
 | [US-136](stories/US-136-understand-being-the-first-voice/README.md) | Entender la ficha vacía cuando llego primero |
 | [US-138](stories/US-138-understand-why-weight-differs-by-level/README.md) | Entender por qué un dato aparece en una ficha y no en otra |
+| [US-143](stories/US-143-check-which-subjects-to-take-together/README.md) | Saber qué materias se pueden llevar juntas |
 
 Las filas con "tema del mapa" vienen de los grupos transversales del mapa (T2 · Cuando el riesgo es real; T3 · Cuando el catálogo no alcanza): son temas, no actividades, y cada uno de sus requisitos vive en la única épica que lo implementa; el índice del [catálogo](../../README.md) conserva el tema como lista.
 
@@ -50,7 +51,7 @@ Las que comparte con otras épicas: [**Inicio**](screens/SC-004-home/README.md) 
 ## Lo que esta épica todavía no resuelve
 
 - **Cómo se leen los datos oficiales para Silvia** sin vocabulario académico: el copy de "dura en el papel", "dura en la realidad" y "egresan por cohorte", sin abrir nada (US-133). Es diseño de la Ficha de carrera.
-- **Si la co-cursada pública** (US-143, de [Mi carrera](../my-career/README.md)) vuelve a la Ficha de carrera o queda solo en Mi carrera: el boceto vigente de la Ficha de carrera no la incluye.
+- **Cómo se dibuja la co-cursada** (US-143) en la Ficha de carrera y en la Ficha de materia: el boceto vigente de las dos no la incluye. La duda de dónde vive se cerró con [ADR-0086](../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md): vive acá, pública y sin filtrar, porque la pantalla que la filtraba a tu plan se retiró con la épica Mi carrera.
 - **Qué acciones de lectura entran además de reseñar**: corregir un dato (de otra épica) todavía no están bocetadas en la Ficha de cátedra ni en la Ficha de materia, aunque sus stories dueñas las sigan pidiendo ahí.
 - **Dónde estudiarla con más de tres ofertas**: cuántas entran lado a lado en un celular y qué pasa con el resto (alfabético o por voces; el que quiere ordenar baja el CSV).
 - **Qué muestra Explorar** además de las dos lentes: si lista por cobertura, por voces o alfabético (US-171 prohíbe cualquier orden por conveniencia).

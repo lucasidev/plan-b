@@ -22,7 +22,7 @@ Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Repor
 | Explorar | [`explore/`](student/choose-where-to-study/screens/SC-003-explore/README.md) | pública | `/universities` (la lente de carreras no existe todavía) | El home real: dos lentes, carreras y universidades; el vacío en sus tres estados. | Pedir una carrera (el vacío explicado) | mid-fi, revisada |
 | Buscar | [`search/`](student/choose-where-to-study/screens/SC-006-search/README.md) | pública | sin slug (el topbar busca y no lleva a ninguna pantalla) | Los cuatro sujetos con ficha; un docente lleva a su cátedra; si no está, explica por qué. | Pedir una carrera | mid-fi, revisada |
 | Dónde estudiarla | [`where-to-study/`](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | pública | sin slug | Comparar las ofertas de la misma carrera canónica, lado a lado, sin ganador. | Llevarse el dato (el CSV para ordenar) | **hi-fi Boletín** |
-| Ficha de carrera | [`career/`](student/choose-where-to-study/screens/SC-001-career/README.md) | pública | sin slug (lo más cercano hoy: `/careers/[id]/plans`) | La carrera en una institución: cabecera con gate, estructura por correlativas, cobertura, trayectoria, co-cursada, el plan. | Mi carrera, Pedir una carrera, Reseñar | **hi-fi Boletín** |
+| Ficha de carrera | [`career/`](student/choose-where-to-study/screens/SC-001-career/README.md) | pública | sin slug (lo más cercano hoy: `/careers/[id]/plans`) | La carrera en una institución: cabecera con gate, estructura por correlativas, cobertura, trayectoria, co-cursada, el plan. | Pedir una carrera, Reseñar | **hi-fi Boletín** |
 | Ficha de materia | [`subject/`](student/choose-where-to-study/screens/SC-007-subject/README.md) | pública | `/subjects/[id]` | La materia: dispersión entre cátedras, correlativas, dónde se cae. | Cuidar lo publicado (corregir), Deshacer (reportar), Reseñar | mid-fi, revisada |
 | Ficha de cátedra | [`chair/`](student/choose-where-to-study/screens/SC-002-chair/README.md) | pública | `/teachers/[id]` (propuesto `/chairs/[id]`: BO1-6) | La cátedra: cabecera con gate, fama por convergencia, los dos bloques (qué hizo, qué te pasó) con moda y distribución, comparación entre hermanas, tasa de finalización, serie, respuesta del reseñado. | Reseñar, Cuidar lo publicado, Deshacer, Responder | **hi-fi Boletín** |
 | Ficha de institución | [`institution/`](reviewed/reply/screens/SC-005-institution/README.md) | pública | `/universities/[slug]/careers` (el chasis; se rehace) | El sujeto evaluado: lo que se dice de ella, sus carreras, su cobertura, la serie, las notas de curaduría. | Responder, Reseñar (el evento institucional) | mid-fi, revisada |
@@ -32,7 +32,7 @@ Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Repor
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Reseñar | [`write-review/`](student/write-a-review/screens/SC-015-write-review/README.md) | con cuenta | `/reviews/write` (existe el editor texto-libre: otro modelo) | El acto: la cursada (materia, cátedra, período), cómo terminó, los ítems de conducta observable y de vivencia, el campo libre que no se publica. | Cuando el catálogo no alcanza es una rama suya | **hi-fi Boletín** |
-| Mi situación | [`my-status/`](student/write-a-review/screens/SC-014-my-status/README.md) | con cuenta | sin slug | La pregunta de trayectoria de a uno, sin plan marcado. | Avisos (el mail anual la trae) | mid-fi, revisada |
+| Mi situación | [`my-status/`](student/write-a-review/screens/SC-014-my-status/README.md) | con cuenta | sin slug | La pregunta de trayectoria de a uno, nunca como inventario. | Avisos (el mail anual la trae) | mid-fi, revisada |
 | Anonimato | [`anonymity/`](student/write-a-review/screens/SC-013-anonymity/README.md) | pública | `/about` (habla de otra cosa; se rehace) | Cómo te cubrimos: qué se publica y qué no, por qué ya no hay chequeo previo (el campo libre nunca se publica), la verdad del grupo chico, la política. | Moderar sin romper el producto (la política de moderación) | mid-fi, revisada |
 
 ### Pedir una carrera · [`product/request-a-career/`](student/request-a-career/README.md)
@@ -41,13 +41,6 @@ Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Repor
 |---|---|---|---|---|---|---|
 | Pedir | [`request/`](student/request-a-career/screens/SC-010-request/README.md) | pública, sin cuenta | sin slug (hoy gateado al onboarding) | Pedir una carrera con el mail y nada más, confirmado por link. | nadie más | mid-fi, revisada |
 | La cola | [`queue/`](student/request-a-career/screens/SC-009-queue/README.md) | pública | sin slug | Qué falta cargar: pedidos confirmados, cuáles ya están, cuánto se tarda. | Sostener el catálogo (la carga y su demora) | mid-fi, revisada |
-
-### Mi carrera · [`product/my-career/`](student/my-career/README.md)
-
-| Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
-|---|---|---|---|---|---|---|
-| Mi carrera | [`my-career/`](student/my-career/screens/SC-011-my-career/README.md) | con cuenta | `/my-career` (el contenido se rehace) | Tu plan con correlativas, lo reseñado como hecho, lo marcado como preferencia, la co-cursada filtrada. | Sostener el catálogo (la reforma del plan) | mid-fi, revisada |
-| Empezar | [`onboarding/`](student/my-career/screens/SC-012-onboarding/README.md) | con cuenta | `/onboarding/*` (se rehace: muere «cargá tu historial») | Onboarding: marcás por dónde vas. Saltable y retomable. | Que no me molesten (la garantía) | mid-fi, revisada |
 
 ### Deshacer · [`product/undo/`](student/undo/README.md)
 
@@ -124,7 +117,7 @@ Cada flujo del mapa vive, como diagrama en mermaid con sus ramas, salidas y erro
 | 01 | Valentina tiene que elegir en dos meses | [Elegir dónde estudiar](student/choose-where-to-study/flow.md) |
 | 02 | Ana busca la suya y no está | [Pedir una carrera](student/request-a-career/flow.md) |
 | 03 | Matías vuelve, y esta vez completa | [Reseñar](student/write-a-review/flow.md) (la entrada: Ingresar / Registro → Empezar → Reseñar; la primera reseña pregunta el año de ingreso) |
-| 04 | Lucía no quiere repetir el error | [Mi carrera](student/my-career/flow.md) |
+| 04 | Lucía no quiere repetir el error | la co-cursada en la [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) y en la [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md); el recorrido propio se cerró con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) |
 | 05 | Lucía reseña, y le lleva cinco minutos | [Reseñar](student/write-a-review/flow.md) |
 | 06 | Claudia contesta, con nombre porque es público | [Responder](reviewed/reply/flow.md) |
 | 07 | Rocío se lleva el dato | [Llevarse el dato](student/take-the-data/flow.md) |
@@ -167,7 +160,7 @@ Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el
 |---|---|---|---|
 | Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (existe gateado al onboarding) | La cola, Error |
 | Umbral | Ingresar, Registro, Recuperar (auth completo) | | |
-| Con cuenta | Empezar, Mi carrera, Mis aportes, Mi perfil (chasis del onboarding, mi carrera y mis reseñas) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
+| Con cuenta | Mis aportes, Mi perfil (Empezar y Mi carrera se retiran: [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
 | Backoffice | Catálogo (backoffice) (ABM completo), Reportes (backoffice) (cola de moderación) | Pedidos (backoffice) (el endpoint de cola existe; la pantalla no) | Correcciones (backoffice), Verificaciones (backoffice), Equipo (backoffice), Frases (backoffice) |
 
 Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de ítems (catálogo versionado, conteos, moda, distribución, convergencia), el piso de publicación por cátedra, la cola pública de pedidos, la verificación de alumno por constancia, y las seis pantallas diseñadas sin construir (Responder, Buscar, Editar, Mi situación, Baja, Avisos).
