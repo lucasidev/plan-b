@@ -67,7 +67,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Método | [`method/`](student/take-the-data/screens/SC-021-method/README.md) | pública | sin slug (hoy sección de Inicio) | El catálogo de ítems, la regla de comparación entre hermanas, el piso, los sesgos, qué no cubrimos, las fuentes oficiales, la descarga del CSV agregado. | Elegir dónde estudiar (se llega desde toda ficha) | mid-fi, revisada |
+| Método | [`method/`](student/take-the-data/screens/SC-021-method/README.md) | pública | sin slug (hoy sección de la landing) | El catálogo de ítems, la regla de comparación entre hermanas, el piso, los sesgos, qué no cubrimos, las fuentes oficiales, la descarga del CSV agregado. | Elegir dónde estudiar (se llega desde toda ficha) | mid-fi, revisada |
 
 ### Avisos · [`product/notices/`](../product/notices/README.md)
 
@@ -158,7 +158,7 @@ Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el
 
 | Carril | Existe (chasis) | Adaptar | Nuevo de cero |
 |---|---|---|---|
-| Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de Inicio), Anonimato (about existe, habla de otra cosa), Pedir (no hay implementación en el código todavía) | La cola, Error |
+| Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (no hay implementación en el código todavía) | La cola, Error |
 | Umbral | Ingresar, Registro, Recuperar (auth completo) | | |
 | Con cuenta | Mis aportes, Mi perfil (Empezar y Mi carrera se retiran: [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
 | Backoffice | Catálogo (backoffice) (ABM completo), Reportes (backoffice) (cola de moderación) | Pedidos (backoffice) (el endpoint de cola existe; la pantalla no) | Correcciones (backoffice), Verificaciones (backoffice), Equipo (backoffice), Frases (backoffice) |
