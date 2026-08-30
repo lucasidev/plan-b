@@ -109,6 +109,26 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return rows.AsList();
     }
 
+    public async Task<CareerDetailItem?> GetCareerByIdAsync(
+        Guid careerId, CancellationToken ct = default)
+    {
+        // Una carrera desactivada no resuelve: su ficha deja de existir para el lector, mismo
+        // criterio que GetSubjectByIdAsync/GetChairByIdAsync.
+        const string sql = @"
+            SELECT
+                c.id             AS Id,
+                c.name           AS Name,
+                c.duration_years AS DurationYears,
+                u.name           AS UniversityName
+            FROM academic.careers c
+            JOIN academic.universities u ON u.id = c.university_id
+            WHERE c.id = @CareerId AND c.is_active = true;";
+
+        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        return await db.QuerySingleOrDefaultAsync<CareerDetailItem>(
+            new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
+    }
+
     public async Task<IReadOnlyList<CareerPlanListItem>> ListCareerPlansByCareerAsync(
         Guid careerId, CancellationToken ct = default)
     {
