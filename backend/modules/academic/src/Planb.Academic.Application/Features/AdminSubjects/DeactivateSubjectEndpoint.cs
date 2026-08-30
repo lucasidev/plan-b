@@ -9,7 +9,7 @@ namespace Planb.Academic.Application.Features.AdminSubjects;
 
 /// <summary>
 /// DELETE /api/academic/subjects/{id:guid} (admin, US-062). Soft delete: preserva la integridad
-/// histórica (EnrollmentRecord/Review/Commission anclan al id sin FK cross-schema, ADR-0017).
+/// histórica (Review/Commission anclan al id sin FK cross-schema, ADR-0017).
 ///
 /// <para>
 /// A diferencia del resto del CRUD admin de Academic (Career/AcademicTerm/CareerPlan), acá el 409

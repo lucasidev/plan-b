@@ -118,7 +118,7 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
         // contra un rango invertido: la grilla muestra "22:00 a 18:00" y nadie se entera.
         //
         // El proyecto ya replicaba sus CHECK por este mismo motivo en Subject ("los inserts via seed
-        // bypassean Subject.Create"), Review, EnrollmentRecord, AcademicTerm y Prerequisite.
+        // bypassean Subject.Create"), Review, AcademicTerm y Prerequisite.
         //
         // El no-solape entre franjas queda afuera a propósito: necesitaría un EXCLUDE con btree_gist,
         // y la extensión no se justifica para un invariante que hoy solo el seeder puede violar.

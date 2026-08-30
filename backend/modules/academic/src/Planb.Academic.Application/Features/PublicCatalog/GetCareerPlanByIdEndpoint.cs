@@ -9,8 +9,9 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 /// <summary>
 /// GET /api/academic/career-plans/{id} — devuelve el <see cref="CareerPlanSummary"/> de un plan.
 ///
-/// Caller: el frontend de US-013-f que necesita resolver el <c>universityId</c> a partir del
-/// <c>careerPlanId</c> del student (para pedir los <c>academic-terms</c> filtrados por uni).
+/// Pensado originalmente para el frontend de US-013-f (retirado por ADR-0086), que necesitaba
+/// resolver el <c>universityId</c> a partir del <c>careerPlanId</c> del student (para pedir los
+/// <c>academic-terms</c> filtrados por uni).
 /// Identity ya tiene el <c>careerPlanId</c> en el <c>StudentProfile</c>, pero no expone el
 /// <c>universityId</c> en su response. Antes que cargar Identity con un JOIN cross-schema
 /// (prohibido por ADR-0017), exponemos esta lookup en Academic.

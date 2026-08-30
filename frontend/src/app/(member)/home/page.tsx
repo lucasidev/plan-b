@@ -1,62 +1,43 @@
-import { DisplayHeading } from '@/components/ui/display-heading';
-import { Eyebrow } from '@/components/ui/eyebrow';
-import { Lede } from '@/components/ui/lede';
-import { CurrentSubjectsCard } from '@/features/home/components/current-subjects-card';
-import { MovementsCard } from '@/features/home/components/movements-card';
-import { NextPeriodCard } from '@/features/home/components/next-period-card';
-import { PeriodProgressCard } from '@/features/home/components/period-progress-card';
-import { UpcomingSubjectsCard } from '@/features/home/components/upcoming-subjects-card';
-import { activeSubjects } from '@/features/home/data/active-subjects';
-import { movements } from '@/features/home/data/movements';
-import { currentPeriod } from '@/features/home/data/period';
+import { HomePaths } from '@/features/home/components/home-paths';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { getSession } from '@/lib/session';
 
 /**
- * Home v2 (US-044, complete). Literal port of the mock
- * `docs/design/reference/canvas-mocks/v2-screens.jsx::V2Inicio`.
+ * Inicio (`/home`). Con el seguimiento de carrera podado (ADR-0086) ya no hay plan,
+ * período, materias en curso ni movimientos que mostrar acá: la pantalla saluda, dice
+ * en una línea qué es este lugar, y ofrece los tres caminos a lo que el producto sí
+ * hace hoy (`HomePaths`: leer fichas, contar una cursada, ver lo aportado). No pide ni
+ * inventa ningún número: no hay fetch de conteos propios todavía, así que no se
+ * muestra ninguno.
  *
- * Structure: header (eyebrow + greeting + subtitle stats) + period progress card +
- * 2-col grid (En curso + Más adelante on the left; Reseñá lo que cursaste + Pensando
- * en lo que viene + Movimientos on the right).
+ * El guard de `(member)/layout.tsx` ya filtró sesión y rol; esta página asume los dos.
  *
- * The `(member)/layout.tsx` guard already redirects to onboarding if the user has no
- * StudentProfile (US-037-f). This page assumes session + active profile.
+ * `data-surface="bulletin"` va en el contenedor de ancho completo y no en la columna,
+ * mismo criterio documentado en `ChairFactsSheet`
+ * (`features/chair-facts/components/chair-facts-sheet.tsx`): el `<main>` del AppShell
+ * no lleva la superficie, así que si el atributo lo lleva solo la columna de 560px, el
+ * resto del área queda con el fondo del chasis anterior (Apricot), que es otra paleta.
  */
 export default async function HomePage() {
   const session = await getSession();
   const firstName = session ? greetingNameFromEmail(session.email) : 'alumno';
 
-  const cursando = activeSubjects.filter((s) => s.week > 0);
-  const futuras = activeSubjects.filter((s) => s.week === 0);
-
   return (
-    <div className="px-6 py-9 max-w-[1200px] mx-auto">
-      <Eyebrow>Inicio</Eyebrow>
-      <DisplayHeading size={56} className="mt-2 mb-3">
-        Hola {firstName}.
-      </DisplayHeading>
-      <Lede className="mb-8 max-w-[640px]">
-        Vas por la semana {currentPeriod.weekOfYear} del año. {cursando.length} materias cursando,{' '}
-        {futuras.length} arrancan más adelante.
-      </Lede>
-
-      <PeriodProgressCard period={currentPeriod} />
-
-      <section
-        aria-label="Bloques secundarios del Inicio"
-        className="grid grid-cols-1 lg:grid-cols-[1.55fr_1fr] gap-4"
-      >
-        <div className="flex flex-col gap-[14px]">
-          <CurrentSubjectsCard subjects={cursando} />
-          <UpcomingSubjectsCard subjects={futuras} />
+    <div data-surface="bulletin" className="min-h-full w-full">
+      <div className="mx-auto w-full max-w-[560px] px-4 py-8">
+        <div className="mb-[18px]">
+          <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Inicio</p>
+          <h1 className="mt-1.5 font-serif text-[24px] font-semibold leading-tight text-ink">
+            Hola {firstName}.
+          </h1>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-ink-2">
+            Leé lo que ya vivieron otros en cada materia y cátedra. Cuando curses algo, contalo vos
+            también.
+          </p>
         </div>
 
-        <aside aria-label="Pendientes y actividad reciente" className="flex flex-col gap-[14px]">
-          <NextPeriodCard nextYear={currentPeriod.year + 1} />
-          <MovementsCard movements={movements} />
-        </aside>
-      </section>
+        <HomePaths />
+      </div>
     </div>
   );
 }

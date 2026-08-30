@@ -1,9 +1,8 @@
 namespace Planb.Academic.Domain.CareerPlanImports;
 
 /// <summary>
-/// Confianza del parser por item. Mismas semánticas que <c>ParseConfidence</c> de
-/// <c>HistorialImport</c>: High = todos los campos clave detectados, Medium = la mayoría,
-/// Low = solo el código.
+/// Confianza del parser por item. High = todos los campos clave detectados, Medium = la
+/// mayoría, Low = solo el código.
 /// </summary>
 public enum SubjectParseConfidence
 {

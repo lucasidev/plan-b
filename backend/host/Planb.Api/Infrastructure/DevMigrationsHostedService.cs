@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Planb.Academic.Infrastructure.Persistence;
-using Planb.Enrollments.Infrastructure.Persistence;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence;
 
@@ -52,7 +51,6 @@ public sealed class DevMigrationsHostedService : IHostedService
 
         await MigrateAsync<IdentityDbContext>(scope.ServiceProvider, "Identity", ct);
         await MigrateAsync<AcademicDbContext>(scope.ServiceProvider, "Academic", ct);
-        await MigrateAsync<EnrollmentsDbContext>(scope.ServiceProvider, "Enrollments", ct);
         await MigrateAsync<ReviewsDbContext>(scope.ServiceProvider, "Reviews", ct);
     }
 

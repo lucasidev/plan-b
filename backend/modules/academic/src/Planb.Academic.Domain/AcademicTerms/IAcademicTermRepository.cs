@@ -5,7 +5,8 @@ namespace Planb.Academic.Domain.AcademicTerms;
 /// <summary>
 /// Repo del aggregate AcademicTerm. US-064 suma el write-side (Add + read-por-id + check de
 /// unicidad) para el CRUD admin. Los reads de listado del backoffice van por el reader Dapper;
-/// el listado público (US-013) va por <c>IAcademicQueryService.ListAcademicTermsByUniversityAsync</c>.
+/// el listado público va por <c>IAcademicQueryService.ListAcademicTermsByUniversityAsync</c>
+/// (pensado originalmente para el form de historial de US-013, retirado por ADR-0086).
 /// </summary>
 public interface IAcademicTermRepository
 {

@@ -10,8 +10,8 @@ namespace Planb.Academic.Domain.AcademicTerms;
 /// terms cuatrimestrales tiene materias cuatrimestrales y materias anuales).
 ///
 /// <para>
-/// Cross-BC: <see cref="AcademicTermId"/> se usa en EnrollmentRecord (US-013), Commission y
-/// SimulationDraft. Como con Subject, las refs son UUIDs sin FK ni nav cross-schema; la
+/// Cross-BC: <see cref="AcademicTermId"/> se usa en Commission y SimulationDraft. Como con
+/// Subject, las refs son UUIDs sin FK ni nav cross-schema; la
 /// validación de existencia vive en <c>IAcademicQueryService</c> cuando algún caller la
 /// necesite (hoy solo se valida via listing a la hora de mostrar dropdowns).
 /// </para>
@@ -148,8 +148,8 @@ public sealed class AcademicTerm : Entity<AcademicTermId>, IAggregateRoot
         string label,
         IDateTimeProvider clock)
     {
-        // No floor por año: hay terms históricos legítimos para EnrollmentRecord de
-        // alumnos viejos. Sí frenamos años negativos/cero y > 2 décadas en el futuro.
+        // No floor por año: hay terms históricos legítimos para cursadas viejas que se reseñan
+        // hoy. Sí frenamos años negativos/cero y > 2 décadas en el futuro.
         var currentYear = clock.UtcNow.Year;
         if (year <= 0 || year > currentYear + 20)
         {

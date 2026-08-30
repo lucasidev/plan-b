@@ -13,10 +13,10 @@ type Props = {
 };
 
 /**
- * Picker de Universidad → Carrera → Plan de estudios. Extraído de
- * `features/onboarding/components/career-form.tsx`: con ADR-0086 la carrera se declara en el
- * registro y no en el onboarding, así que el picker vive en su propio feature y cada
- * consumidor pone alrededor lo suyo (el `<form>`, el submit, el resto de los campos).
+ * Picker de Universidad → Carrera → Plan de estudios. Vive en su propio feature porque tiene dos
+ * consumidores con formularios distintos: el registro, donde la carrera se declara (ADR-0086), y
+ * Mi perfil, que es donde se arregla si falta. Cada uno pone alrededor lo suyo (el `<form>`, el
+ * submit, el resto de los campos).
  *
  * **Componente controlado**: el padre es dueño del `careerPlanId` final (`value` +
  * `onChange`) y decide qué hacer con él (acá siempre queda en el DOM como

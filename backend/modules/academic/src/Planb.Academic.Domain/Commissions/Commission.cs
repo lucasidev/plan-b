@@ -6,9 +6,9 @@ namespace Planb.Academic.Domain.Commissions;
 
 /// <summary>
 /// Aggregate root del bounded context Academic (US-065). Oferta concreta de una Subject en un
-/// AcademicTerm: la comisión que un alumno cursa. El <c>EnrollmentRecord</c> la referencia por
-/// <see cref="CommissionId"/> y la <c>Review</c> ancla su <c>docente_reseñado_id</c> a uno de los
-/// <see cref="Teachers"/> de la comisión del enrollment (cross-BC, sin FK; ADR-0017).
+/// AcademicTerm: la comisión que un alumno cursa. La <c>Review</c> ancla su
+/// <c>docente_reseñado_id</c> a uno de los <see cref="Teachers"/> de la comisión del enrollment
+/// (cross-BC, sin FK; ADR-0017).
 ///
 /// <para>
 /// Invariantes internos del aggregate (validados acá): nombre no vacío, capacity &gt; 0 cuando
@@ -31,7 +31,7 @@ public sealed class Commission : Entity<CommissionId>, IAggregateRoot
     public string? Notes { get; private set; }
 
     /// <summary>
-    /// Soft delete (US-093). EnrollmentRecord y Review anclan a la comisión por id sin FK
+    /// Soft delete (US-093). Review ancla a la comisión por id sin FK
     /// cross-schema (ADR-0017), así que no hay hard delete: mismo criterio que Subject.IsActive /
     /// Teacher.IsActive.
     /// </summary>

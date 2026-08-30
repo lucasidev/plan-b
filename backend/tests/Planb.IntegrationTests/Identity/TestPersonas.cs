@@ -10,9 +10,6 @@ internal static class TestPersonas
     public const string LuciaEmail = "lucia.mansilla@gmail.com";
     public const string LuciaPassword = "lucia.mansilla.12";
 
-    public const string MateoEmail = "mateo.gimenez@hotmail.com";
-    public const string MateoPassword = "mateo.gimenez.12";
-
     public const string PaulaEmail = "paula.suspendida@planb.local";
     public const string PaulaPassword = "paula.suspendida.12";
 

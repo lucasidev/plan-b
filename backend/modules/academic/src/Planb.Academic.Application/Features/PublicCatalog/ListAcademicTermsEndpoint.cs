@@ -9,9 +9,9 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 /// <summary>
 /// GET /api/academic/academic-terms?universityId={id} — listado de períodos lectivos de una uni.
 ///
-/// Caller: select de term en el form de cargar historial (US-013-f). El alumno tiene su
-/// <c>StudentProfile.universityId</c> implícito (derivado del plan); el frontend resuelve la
-/// uni y la pasa acá.
+/// Pensado originalmente para el select de term en el form de cargar historial (US-013-f,
+/// retirado por ADR-0086). El alumno tiene su <c>StudentProfile.universityId</c> implícito
+/// (derivado del plan); el frontend resuelve la uni y la pasa acá.
 ///
 /// Misma convención de errores que los otros endpoints del catálogo.
 /// </summary>

@@ -18,7 +18,7 @@ internal sealed class CourseReviewConfiguration : IEntityTypeConfiguration<Cours
             .HasConversion(id => id.Value, value => new CourseReviewId(value));
 
         // Cross-aggregate refs (ADR-0017): UUIDs sin FK Postgres. AccountId, SubjectId y TermId
-        // viven en otros schemas (identity, academic, enrollments). ChairId también es cross-schema
+        // viven en otros schemas (identity, academic). ChairId también es cross-schema
         // y encima opcional: null es "No sé", una respuesta legítima (ver docstring de ChairId).
         builder.Property(r => r.AccountId)
             .HasColumnName("account_id")

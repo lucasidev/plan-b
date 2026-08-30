@@ -6,16 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CareerPicker } from './career-picker';
 
 /**
- * Component tests del `CareerPicker` (adaptado de
- * `features/onboarding/components/career-form.test.tsx`). El componente es
- * controlado (`value` + `onChange`) así que estos tests lo envuelven en `ControlledPicker`,
- * que sostiene el `careerPlanId` en `useState` para poder observar cómo el `<select>` "Plan
- * de estudios" refleja lo que el picker le pasa a `onChange` (auto-selección por precarga,
- * o el reset al cambiar de padre).
+ * Component tests del `CareerPicker`. El componente es controlado (`value` + `onChange`), así que
+ * estos tests lo envuelven en `ControlledPicker`, que sostiene el `careerPlanId` en `useState`
+ * para poder observar cómo el `<select>` "Plan de estudios" refleja lo que el picker le pasa a
+ * `onChange`: elegir un plan, y el reset al cambiar de carrera.
  *
- * A diferencia del `CareerForm` de onboarding, acá no hace falta mockear `next/navigation`:
- * `CareerPicker` no lee `useSearchParams()` por sí mismo, recibe los valores iniciales por
- * props (así lo puede montar cualquier consumidor, no solo uno que sepa de search params).
+ * No hace falta mockear `next/navigation`: el picker no lee search params ni navega, solo avisa
+ * hacia arriba. Eso es lo que lo deja montar en el registro y en Mi perfil sin cambiarle nada.
  *
  * Lo que NO testeamos acá (vive en otros tests / E2E):
  * - el picker montado adentro de un `<form>` real con submit (E2E de sign-up)

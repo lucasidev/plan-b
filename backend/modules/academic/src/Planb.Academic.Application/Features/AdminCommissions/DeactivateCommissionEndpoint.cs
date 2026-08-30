@@ -9,8 +9,8 @@ namespace Planb.Academic.Application.Features.AdminCommissions;
 
 /// <summary>
 /// POST /api/academic/commissions/{id:guid}/deactivate (admin, US-093). Soft delete: preserva la
-/// integridad histórica (EnrollmentRecord/Review anclan a la comisión por id sin FK cross-schema,
-/// ADR-0017). Gateado a rol Admin.
+/// integridad histórica (Review ancla a la comisión por id sin FK cross-schema, ADR-0017).
+/// Gateado a rol Admin.
 /// </summary>
 public sealed class DeactivateCommissionEndpoint : ICarterModule
 {

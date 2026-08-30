@@ -2,17 +2,14 @@ import type { APIRequestContext, APIResponse } from '@playwright/test';
 import { extractTokenFromLatestMail } from './mailpit';
 
 /**
- * Crea y borra alumnos descartables para los specs E2E que le mutan datos al alumno
- * (enrollments, reseñas).
+ * Crea y borra alumnos descartables para los specs E2E que le mutan datos al alumno.
  *
- * Por qué existe: las personas fijas de `personas.ts` (LUCIA, MATEO, ...) son compartidas por
- * toda la suite. Un spec que le crea un enrollment a LUCIA deja esa fila para siempre, y
- * `enrollment_records` tiene UNIQUE(student_profile_id, subject_id, term_id): la comisión
- * usada no se puede reusar. La suite de reseñas rotaba sobre un pool fijo de ~7 combinaciones
- * sembradas buscando la primera libre; una corrida agotaba casi todo el pool y la siguiente,
- * sin resetear la infra, fallaba con "every seeded commission offering already used". Con un
- * alumno nuevo por test el UNIQUE nunca colisiona (cada `student_profile_id` es un UUID
- * fresco), así que no hace falta pool: siempre alcanza la misma oferta sembrada.
+ * Por qué existe: las personas fijas de `personas.ts` son compartidas por toda la suite, y una
+ * reseña queda pegada a su autor para siempre. Hay una sola voz por cuenta, materia y período,
+ * así que un spec que reseña con una persona fija le quema esa combinación a los que vengan
+ * después: la suite rotaba sobre un pool sembrado buscando la primera libre, y una corrida lo
+ * agotaba. Con un alumno nuevo por test la combinación nunca colisiona, así que no hace falta
+ * pool: siempre alcanza la misma materia sembrada.
  *
  * Por qué por API y no por UI: esto es setup, no el flujo bajo prueba. Repetir sign-up +
  * verify-email por UI en cada spec de reseñas sería lento y frágil (más superficie para
@@ -31,7 +28,7 @@ import { extractTokenFromLatestMail } from './mailpit';
  * las credenciales que devolvió `createStudent`) y recién ahí llama al DELETE con esa sesión.
  */
 
-/** Plan TUDCS 2018 sembrado por el seed (mismo que usan LUCIA/MATEO en personas.json). */
+/** Plan TUDCS 2018 sembrado por el seed (el mismo que usa Lucía en personas.json). */
 const DEFAULT_CAREER_PLAN_ID = '00000003-0000-4000-a000-000000000003';
 
 /** Cumple el mínimo de 12 caracteres (RegisterUserValidator, NIST 800-63B). */

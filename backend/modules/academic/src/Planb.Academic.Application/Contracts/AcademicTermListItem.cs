@@ -1,9 +1,9 @@
 namespace Planb.Academic.Application.Contracts;
 
 /// <summary>
-/// DTO para el listado de períodos lectivos de una universidad. Caller principal: el form de
-/// carga de historial (US-013) que necesita un select con los terms en los que el alumno
-/// cursó/aprobó cada materia.
+/// DTO para el listado de períodos lectivos de una universidad. Pensado originalmente para el
+/// form de carga de historial (US-013, retirado por ADR-0086), que necesitaba un select con los
+/// terms en los que el alumno cursó/aprobó cada materia.
 ///
 /// <para>
 /// <see cref="Label"/> es la representación human-readable del período (ej. "2026-C1"); el

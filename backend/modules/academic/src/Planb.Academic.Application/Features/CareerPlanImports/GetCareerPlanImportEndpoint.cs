@@ -10,7 +10,7 @@ namespace Planb.Academic.Application.Features.CareerPlanImports;
 
 /// <summary>
 /// GET /api/me/career-plan-imports/{id}. El frontend pollea hasta ver el aggregate en
-/// Parsed/Failed/Approved. Mismo patrón que el GET de US-014.
+/// Parsed/Failed/Approved.
 /// </summary>
 public sealed class GetCareerPlanImportEndpoint : ICarterModule
 {

@@ -6,7 +6,8 @@ namespace Planb.Academic.Application.Features.AdminAcademicTerms;
 /// Read-side del listado de períodos lectivos de una universidad para el backoffice (admin,
 /// US-064). No es cross-BC: lo consume el propio módulo Academic, por eso vive en el feature y no
 /// en Contracts/IAcademicQueryService (que expone <c>ListAcademicTermsByUniversityAsync</c> para
-/// el catálogo público, consumido por el form de historial de US-013).
+/// el catálogo público, pensado originalmente para el form de historial de US-013, retirado por
+/// ADR-0086).
 /// </summary>
 public interface IAdminAcademicTermReader
 {

@@ -10,9 +10,9 @@ namespace Planb.Academic.Domain.Subjects;
 /// pueden tener cientos de materias y no queremos cargarlas en bloque al hidratar el plan).
 ///
 /// <para>
-/// Cross-BC references desde Enrollments (US-013) y Reviews son siempre via
-/// <see cref="SubjectId"/> sin FK Postgres ni nav EF (ADR-0017). La validación de
-/// "este subject pertenece al plan X" vive en <c>IAcademicQueryService.IsSubjectInPlan</c>.
+/// Cross-BC references desde Reviews son siempre via <see cref="SubjectId"/> sin FK Postgres ni
+/// nav EF (ADR-0017). La validación de "este subject pertenece al plan X" vive en
+/// <c>IAcademicQueryService.IsSubjectInPlan</c>.
 /// </para>
 ///
 /// <para>
@@ -46,7 +46,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     public bool IsOfficial { get; private set; }
 
     /// <summary>
-    /// Soft delete (US-062). No hay hard delete: EnrollmentRecord, Review y Commission referencian
+    /// Soft delete (US-062). No hay hard delete: Review y Commission referencian
     /// la materia por id sin FK cross-schema, así que borrarla de verdad dejaría filas colgadas
     /// (mismo criterio que <c>Career.IsActive</c>).
     /// </summary>
@@ -106,8 +106,7 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     /// <summary>
     /// Edición del catálogo (US-062, admin). Replace del form completo, mismas reglas que
     /// <see cref="Create"/>. El plan NO se puede mover: cambiar de plan rompería las correlativas
-    /// ya cargadas (que asumen mismo plan) y los EnrollmentRecord que apuntan a esta materia; para
-    /// eso está la migración asistida de plan (US-084).
+    /// ya cargadas (que asumen mismo plan); para eso está la migración asistida de plan (US-084).
     /// </summary>
     public Result Update(
         string code,

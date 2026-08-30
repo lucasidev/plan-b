@@ -4,8 +4,7 @@ namespace Planb.Academic.Domain.Commissions;
 
 /// <summary>
 /// Strongly-typed identifier para <see cref="Commission"/> (US-065). Mismo pattern que TeacherId:
-/// previene mezclar UUIDs entre aggregates/bounded contexts en compile-time. El EnrollmentRecord
-/// referencia la comisión por este id (cross-BC, sin FK Postgres, ADR-0017).
+/// previene mezclar UUIDs entre aggregates/bounded contexts en compile-time.
 /// </summary>
 public readonly record struct CommissionId : IValueObject
 {

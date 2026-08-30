@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
 import { DisplayHeading } from '@/components/ui/display-heading';
 import { Lede } from '@/components/ui/lede';
 import { DeactivateAccountButton } from '@/features/deactivate-account';
+import { DeclareCareerCard } from '@/features/declare-career';
 import { fetchMyProfile, MyProfileForm } from '@/features/my-profile';
 
 export const metadata = {
@@ -16,15 +16,12 @@ export const dynamic = 'force-dynamic';
  * delegates view/edit mode to the client. Danger zone at the foot with the deactivate
  * account CTA (ADR-0044, US-038-bis frontend).
  *
- * If the user has no active profile (degenerate case post-onboarding or
- * post-deactivate), we redirect to /onboarding/welcome. The (member) layout already
- * guards this, but this is defense in depth.
+ * Sin perfil activo, la pantalla ofrece declarar la carrera en vez de mandar a otro lado: es
+ * el único lugar del producto donde se puede arreglar ese estado, y llegar acá no exige nada
+ * (la garantía US-170 prohíbe pedir que completes algo para dejarte leer o aportar).
  */
 export default async function MyProfilePage() {
   const profile = await fetchMyProfile();
-  if (!profile) {
-    redirect('/onboarding/welcome');
-  }
 
   return (
     <div className="flex flex-col gap-10 py-6">
@@ -33,12 +30,14 @@ export default async function MyProfilePage() {
         <Lede>Tus datos académicos y la baja de cuenta.</Lede>
       </header>
 
-      <MyProfileForm profile={profile} />
+      {profile ? <MyProfileForm profile={profile} /> : <DeclareCareerCard />}
 
-      <section className="max-w-2xl">
-        <h2 className="text-base font-semibold text-ink-1 mb-2">Zona peligrosa</h2>
-        <DeactivateAccountButton email={profile.email} />
-      </section>
+      {profile && (
+        <section className="max-w-2xl">
+          <h2 className="text-base font-semibold text-ink-1 mb-2">Zona peligrosa</h2>
+          <DeactivateAccountButton email={profile.email} />
+        </section>
+      )}
     </div>
   );
 }

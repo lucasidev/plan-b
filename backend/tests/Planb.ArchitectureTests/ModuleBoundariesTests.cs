@@ -7,7 +7,7 @@ namespace Planb.ArchitectureTests;
 
 /// <summary>
 /// Architecture tests que enforcean los boundaries del modular monolith (ADR-0014, ADR-0017) en
-/// LOS 4 bounded contexts. US-T07-b generaliza las reglas que US-T04-b había hardcodeado a Identity:
+/// LOS 3 bounded contexts. US-T07-b generaliza las reglas que US-T04-b había hardcodeado a Identity:
 /// cada regla es ahora un <see cref="TheoryAttribute"/> sobre los módulos. Reemplazan reglas que
 /// antes vivían solo en CLAUDE.md y dependían de review humano.
 ///
@@ -23,9 +23,9 @@ namespace Planb.ArchitectureTests;
 public class ModuleBoundariesTests
 {
     private static readonly string[] AllModules =
-        ["Identity", "Academic", "Enrollments", "Reviews"];
+        ["Identity", "Academic", "Reviews"];
 
-    /// <summary>Los 4 bounded contexts. Cada uno tiene <c>Planb.{Name}.Domain</c> y <c>.Application</c>.</summary>
+    /// <summary>Los 3 bounded contexts. Cada uno tiene <c>Planb.{Name}.Domain</c> y <c>.Application</c>.</summary>
     public static TheoryData<string> Modules => [.. AllModules];
 
     private static Assembly DomainOf(string module) => Assembly.Load($"Planb.{module}.Domain");

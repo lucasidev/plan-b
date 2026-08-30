@@ -22,29 +22,25 @@
 export type MemberRoute = {
   readonly path: string;
   readonly label: string;
-  readonly section: 'my-term' | 'community' | 'other';
+  readonly section: 'community' | 'other';
   readonly shortcut?: string;
   /** Future US that will replace this stub with real content. Display only. */
   readonly futureUs?: string;
 };
 
 export const memberRoutes: readonly MemberRoute[] = [
-  // My term
+  // La sección "Mi cuatrimestre" se retiró con Mi carrera (ADR-0086): agrupaba las pantallas del
+  // planificador, y la tesis dice que el producto no planifica tu cuatrimestre. Inicio queda con
+  // Mis aportes, que es lo que esta cuenta hace acá.
+  //
+  // El nombre de la sección es una decisión de copy sin ficha que la respalde: "Comunidad" cubre
+  // Mis aportes mejor que Inicio.
   {
     path: '/home',
     label: 'Inicio',
-    section: 'my-term',
+    section: 'community',
     shortcut: '⌘1',
   },
-  {
-    path: '/my-career',
-    label: 'Mi carrera',
-    section: 'my-term',
-    shortcut: '⌘2',
-    futureUs: 'US-045',
-  },
-
-  // Community
   // Mis aportes: lo que esta cuenta contó, para poder corregirlo o borrarlo (US-165).
   {
     path: '/reviews/mine',
@@ -65,7 +61,6 @@ export const memberSections: ReadonlyArray<{
   readonly key: MemberRoute['section'];
   readonly label: string;
 }> = [
-  { key: 'my-term', label: 'Mi cuatrimestre' },
   { key: 'community', label: 'Comunidad' },
   { key: 'other', label: 'Otros' },
 ] as const;

@@ -3,9 +3,9 @@ namespace Planb.Academic.Application.Contracts;
 /// <summary>
 /// Metadata completa de una materia, por id. Caller: la página pública de materia (US-002),
 /// que muestra code/name/año + carga horaria + descripción arriba de los agregados y la lista
-/// de reseñas. Distinto de <see cref="SubjectListItem"/> (usado en selects del form de US-013):
-/// este trae los campos de detalle (<see cref="WeeklyHours"/>, <see cref="TotalHours"/>,
-/// <see cref="Description"/>) que el listado no necesita.
+/// de reseñas. Distinto de <see cref="SubjectListItem"/> (usado en selects del form de US-013,
+/// retirado por ADR-0086): este trae los campos de detalle (<see cref="WeeklyHours"/>,
+/// <see cref="TotalHours"/>, <see cref="Description"/>) que el listado no necesita.
 /// </summary>
 public sealed record SubjectDetailItem(
     Guid Id,
