@@ -38,6 +38,9 @@ public static class DependencyInjection
         // Los conteos que alimentan las fichas de cátedra y de materia (US-147, US-148, ADR-0083).
         services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();
 
+        // Cuánto de una carrera está medido, para su ficha (US-134).
+        services.AddScoped<ICareerCoverageQueryService, DapperCareerCoverageQueryService>();
+
         return services;
     }
 

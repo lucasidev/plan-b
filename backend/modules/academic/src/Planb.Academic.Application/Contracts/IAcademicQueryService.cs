@@ -44,6 +44,14 @@ public interface IAcademicQueryService
         Guid universityId, CancellationToken ct = default);
 
     /// <summary>
+    /// Devuelve la identidad completa de una carrera por id, con el nombre de su universidad ya
+    /// resuelto, o <c>null</c> si no existe o está inactiva. Caller: la ficha pública de carrera
+    /// (reviews, US-134), que necesita presentarse sola sin pasar por el listado de una
+    /// universidad puntual.
+    /// </summary>
+    Task<CareerDetailItem?> GetCareerByIdAsync(Guid careerId, CancellationToken ct = default);
+
+    /// <summary>
     /// Lista los planes de una carrera. Tercer dropdown de la cascada (US-037). Mismo
     /// criterio que ListCareersByUniversityAsync: lista vacía para career inexistente.
     /// El caller filtra Status = 'current' del lado cliente (no acá, para que un futuro

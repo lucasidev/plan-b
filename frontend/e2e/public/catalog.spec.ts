@@ -66,4 +66,29 @@ test.describe('Catálogo público (US-001)', () => {
       timeout: 30_000,
     });
   });
+
+  test('desde la lista de carreras se llega a la ficha, y de ahí a sus planes', async ({
+    page,
+  }) => {
+    // La ficha de carrera se construyó después que la lista, y la lista seguía saltándosela para
+    // ir directo a los planes: una pantalla a la que solo se llega tipeando la URL es una que
+    // nadie lee. Este test es el que sostiene que esté enganchada.
+    await page.goto(`/universities/${UNSTA_SLUG}/careers`);
+    await page
+      .getByRole('link', { name: /tecnicatura universitaria en desarrollo y calidad de software/i })
+      .click();
+
+    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
+    await expect(
+      page.getByRole('heading', {
+        name: /tecnicatura universitaria en desarrollo y calidad de software/i,
+        level: 1,
+      }),
+    ).toBeVisible();
+
+    await page.getByRole('link', { name: /ver las \d+ materias/i }).click();
+    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}/plans$`), {
+      timeout: 30_000,
+    });
+  });
 });
