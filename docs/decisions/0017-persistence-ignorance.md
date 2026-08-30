@@ -21,9 +21,9 @@ En un modular monolith con módulos aislados (ADR-0014), la tentación natural e
 Planb adopta persistence ignorance de forma estricta. Consecuencias operativas:
 
 1. **No FKs cross-schema** a nivel Postgres. Las referencias cross-module son solo columnas UUID sin constraint.
-2. **Validación de referencias en application layer**: antes de crear un aggregate que referencia otro, el handler consulta vía PublicContracts del otro módulo (`IEnrollmentQueryService.ExistsAndIsFinalizedAsync`).
+2. **Validación de referencias en application layer**: antes de crear un aggregate que referencia otro, el handler consulta vía PublicContracts del otro módulo (`IAcademicQueryService.GetSubjectByIdAsync`).
 3. **FKs intra-módulo sí** se mantienen (ej. `TeacherResponse.review_id → Review.id` dentro del schema `reviews`). Son detalle del adapter del módulo, coherentes con persistence ignorance porque no cruzan los boundaries.
-4. **Los aggregates conocen IDs, no referencias objeto**. `Review.EnrollmentId` es un value object `EnrollmentId`, no un `Enrollment navigation`.
+4. **Los aggregates conocen IDs, no referencias objeto**. `CourseReview.SubjectId` es un `Guid` plano, no un `Subject navigation`.
 5. **EF Core y Dapper viven solo en Infrastructure**, detrás de interfaces definidas en Application (`IReviewRepository`, `IReviewQueryService`).
 6. **El DbContext no cruza la frontera**: handlers consumen repositorios, no `DbContext` directamente.
 
@@ -31,13 +31,13 @@ Planb adopta persistence ignorance de forma estricta. Consecuencias operativas:
 
 ### A. FKs cross-schema en Postgres como red de seguridad
 
-Postgres permite FKs entre schemas. El adapter Postgres de Reviews declara `enrollment_id REFERENCES enrollments.enrollment_record(id)`. Postgres rechaza inserts inválidos.
+Postgres permite FKs entre schemas. El adapter Postgres de Reviews declara `subject_id REFERENCES academic.subjects(id)`. Postgres rechaza inserts inválidos.
 
 Descartada porque:
 
 - La validación está duplicada: en el handler (correcto) y en el DB (redundante).
 - Crea acoplamiento tácito: ciertas garantías del sistema dependen de que el adapter sea Postgres. Si se reemplaza por Notion o un archivo, esas garantías desaparecen silenciosamente.
-- Las migraciones de módulos quedan acopladas: migrar Enrollments requiere coordinar con Reviews.
+- Las migraciones de módulos quedan acopladas: migrar Academic requiere coordinar con Reviews.
 
 ### B. Híbrido: FKs para "referencias fuertes", sin FKs para "referencias débiles"
 

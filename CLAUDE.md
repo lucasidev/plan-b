@@ -54,10 +54,9 @@ plan-b/
 ├── backend/                 Modular monolith (.NET 10)
 │   ├── libs/shared-kernel/  Result<T>, Error, abstractions
 │   ├── host/Planb.Api/      Program.cs, DI, endpoints compose
-│   ├── modules/             4 bounded contexts
+│   ├── modules/             3 bounded contexts
 │   │   ├── identity/        User, StudentProfile, TeacherProfile
 │   │   ├── academic/        University, Career, Subject, Teacher, Chair, Commission
-│   │   ├── enrollments/     EnrollmentRecord, HistorialImport
 │   │   └── reviews/         Instrument, Item, CourseReview
 │   └── tests/Planb.IntegrationTests/
 ├── frontend/                Next.js 15 App Router
@@ -119,7 +118,7 @@ Las cosas críticas para entender el sistema antes de programar:
 5. [`docs/engineering/testing.md`](docs/engineering/testing.md). Qué test escribir para qué cambio, dónde vive, cómo correrlo. Pirámide formal en [ADR-0036](docs/decisions/0036-testing-pyramid-cross-stack.md).
 6. [`docs/engineering/rollback.md`](docs/engineering/rollback.md). Qué hacer cuando algo entra a main y rompe. Política "revert first, investigate after" + comandos exactos para code, DB schema y tags narrativos.
 7. [`docs/engineering/git-workflow.md`](docs/engineering/git-workflow.md). Reglas duras de commit, branching, conflict y merge. TL;DR table + anti-patterns observados. Complementa ADR-0026.
-8. [`docs/product/design-system.md`](docs/product/design-system.md). Contrato visual del producto (paleta, tipografía, tokens y su mapping al frontend). Antes de tocar visuales, chequear acá. Qué se construye lo dicen las stories y las personas, que viven juntos en [`docs/product/`](docs/product/README.md): la letra de cada story en su épica, las [personas](docs/product/personas.md) y el índice de las 34 pantallas en [`docs/product/README.md`](docs/product/README.md). Los canvas y el mapa del que salió todo están congelados en [`docs/history/`](docs/history).
+8. [`docs/product/design-system.md`](docs/product/design-system.md). Contrato visual del producto (paleta, tipografía, tokens y su mapping al frontend). Antes de tocar visuales, chequear acá. Qué se construye lo dicen las stories y las personas, que viven juntos en [`docs/product/`](docs/product/README.md): la letra de cada story en su épica, las [personas](docs/product/personas.md) y el índice de las 32 pantallas en [`docs/product/README.md`](docs/product/README.md). Los canvas y el mapa del que salió todo están congelados en [`docs/history/`](docs/history).
 9. [`docs/plan/status.md`](docs/plan/status.md). Tracker operativo por sprints: cadencia, foco, qué entró y qué quedó, y el trabajo de cada story planificada. El formato de una story y las reglas de su ID están en [`docs/plan/story-template.md`](docs/plan/story-template.md); el Definition of Done, en [`docs/plan/definition-of-done.md`](docs/plan/definition-of-done.md).
 
 Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.md`](frontend/CLAUDE.md).

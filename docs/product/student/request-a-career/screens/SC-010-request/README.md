@@ -1,6 +1,6 @@
 # Pedir (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Pedir una carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus estados; revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Pública, sin cuenta: pedir no pide registrarse. Slug hoy: sin slug (hoy el pedido está gateado al onboarding, `frontend/src/app/onboarding/career/`; esta pantalla se separa y se rehace).
+> Ficha de pantalla, dueña: la épica [Pedir una carrera](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de sus estados; revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-epics-and-screens.md)); hi-fi pendiente. Pública, sin cuenta: pedir no pide registrarse. Slug hoy: sin slug (no hay implementación en el código todavía).
 
 ## Quién la usa
 

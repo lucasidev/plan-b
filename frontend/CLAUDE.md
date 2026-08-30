@@ -24,9 +24,9 @@ frontend/
     │   ├── (public)/         landing, catálogo, reseñas, docentes (sin auth)
     │   ├── (auth)/           sign-in, sign-up, verify-email
     │   ├── (member)/         alumno autenticado (guard en layout)
-    │   ├── (teacher)/        docente verificado (guard chequea teacherVerified)
-    │   └── (staff)/          moderator, admin, university_staff
+    │   └── (staff)/          backoffice de catálogo (solo admin)
     ├── features/             flat: una carpeta por use case
+    │   ├── declare-career/   el picker Universidad → Carrera → Plan, en el registro y en Mi perfil
     │   ├── sign-up/          (US-010-f)
     │   ├── sign-in/          (US-028-f)
     │   ├── verify-email/     (US-011-f)
@@ -38,6 +38,7 @@ frontend/
     └── lib/
         ├── env.ts            zod-validated env (clientEnv + serverEnv())
         ├── session.ts        getSession() RSC helper, jose JWT verify
+        ├── role-home-path.ts  a dónde entra cada rol; lo leen el sign-in y el guard de (auth)
         ├── api-client.ts     fetch wrapper (apiFetch)
         ├── api-problem.ts    RFC 7807 ProblemDetails / ValidationProblemDetails
         ├── forward-set-cookies.ts  re-emite Set-Cookie del backend al user-agent
@@ -50,10 +51,9 @@ frontend/
 Cada route group tiene su propio `layout.tsx` que hace el guard server-side usando `getSession()`:
 
 - `(public)`: sin guard.
-- `(auth)`: redirige a `/home` si YA hay sesión (evita re-login).
-- `(member)`: redirige a `/sign-in` si no hay sesión o rol no es `member`.
-- `(teacher)`: además chequea `session.teacherVerified`.
-- `(staff)`: rol en `{moderator, admin, university_staff}`.
+- `(auth)`: si YA hay sesión, rebota a donde entra ese rol (`lib/role-home-path.ts`). Mandar a todos a `/home` dejaba al admin rebotando entre este guard y el de `(member)`.
+- `(member)`: redirige a `/sign-in` si no hay sesión o el rol no es `member`. **No** exige perfil: toda cuenta declara su carrera al registrarse (ADR-0086) y el perfil nace al verificar el mail.
+- `(staff)`: solo `admin`. Moderación se retiró en R2 y su rol se fue con ella; `university_staff` nunca tuvo pantalla propia. Los dos salieron del union de `Session`, así que un token con esos roles no produce sesión.
 
 La autorización real se hace en el backend. El guard del frontend existe para UX y evitar requests rechazados. Ver [ADR-0019](../docs/decisions/0019-single-nextjs-app-with-route-groups-per-actor.md) y [ADR-0023](../docs/decisions/0023-auth-flow-jwt-cookie-layout-guards.md).
 

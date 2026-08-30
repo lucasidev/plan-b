@@ -76,14 +76,12 @@ Rechazada: mueve una garantía de integridad de datos a una configuración de co
 
 **Negativas**
 
-- `NULLS NOT DISTINCT` en el unique de cursadas convierte "sin cuatrimestre conocido" en un solo bucket por (alumno, materia): un alumno que cursó dos veces la misma materia sin saber ninguno de los dos períodos no puede cargar la segunda. Se eligió así porque esa segunda fila es indistinguible de un duplicado (el dato no lleva la diferencia), y admitirla es admitir duplicados sin límite ni forma de detectarlos, que es lo que ensucia el pass rate público. La salida es informar el período, que hoy exige un alta nueva porque no existe edición de cursadas.
 - Un CHECK nuevo puede fallar al migrar si hay datos viejos que lo violan. Es una característica, no un defecto, pero obliga a mirar los datos antes de agregarlo.
 - El orden de escritura dentro de una transacción pasa a importar donde antes no importaba (ver alternativa C).
 
 ## Cuándo revisitar
 
 - Si aparece un invariante de no-solape con consecuencias reales fuera del seeder, evaluar `btree_gist` y un `EXCLUDE`.
-- Si aterriza la edición de cursadas, revisar el trade-off de `NULLS NOT DISTINCT`: con una forma de corregir el período, rechazar la segunda carga deja de ser un callejón.
 
 ## Refs
 

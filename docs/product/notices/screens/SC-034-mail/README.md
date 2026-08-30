@@ -19,7 +19,7 @@ Los mails, cada uno con su asunto, su cuerpo y su acción:
 3. **Tu ficha juntó reseñas nuevas**: al reseñado (docente o institución con identidad verificada) le avisa que hay conteos nuevos publicados sobre su ficha, sin fecha ni hora por reseña: ningún aviso permite inferir cuándo aportó alguien.
 4. **El reenganche anual**: una sola pregunta (¿te recibiste? ¿cuándo?), respondible con un click desde el mail, sin entrar a la app (US-156); responderla la apaga para siempre (US-169), no responderla la vuelve a mandar el año que viene.
 
-Por el mismo canal sale otro mail que no es aviso de cuenta y no se apaga: el aviso de qué cambió a quienes tienen marcada una oferta corregida (US-201).
+Por el mismo canal sale otro mail que no es aviso de cuenta y no se apaga: el aviso de qué cambió a quienes declararon la carrera de una oferta corregida (US-201).
 
 **En Mi perfil**: la lista de los mails de cuenta, que se prenden y apagan; y el aviso de que lo único que puede volver a ofrecerse es el hecho que nunca se contestó.
 

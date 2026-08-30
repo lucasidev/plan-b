@@ -61,7 +61,7 @@ flowchart TD
   D -->|la fuente no existe o se contradice| D1[Se marca de dónde salió el dato:<br/>la ficha lo muestra si no es oficial, US-202]
   D1 --> E
   D --> E[Algo ya publicado tenía un error]
-  E -->|cuarenta personas ya lo tienen marcado| F([Se edita la oferta publicada:<br/>los que la tienen marcada se enteran de qué cambió, US-201])
+  E -->|cuarenta cuentas ya declararon esa carrera| F([Se edita la oferta publicada:<br/>quienes declararon esa carrera se enteran de qué cambió, US-201])
 ```
 
 Pantallas: [Pedidos](screens/SC-030-requests/README.md) (nodos A a C1) y [Catálogo](screens/SC-027-catalog/README.md) (nodos D a F).
@@ -89,7 +89,7 @@ Pantalla: [Catálogo](screens/SC-027-catalog/README.md).
 - **Editar un ítem sin cambiar su significado mantiene la misma serie; cambiar el significado pide código nuevo y un corte declarado** (US-198): nunca se reescribe la historia.
 - **El primer día no hay pedidos**: la cola arranca con un criterio explícito, no vacía esperando demanda (US-203).
 - **La fuente del dato no existe o se contradice**: se marca de dónde salió y la ficha lo muestra cuando no es oficial (US-202); no bloquea cargar, declara el origen.
-- **Algo publicado tenía un error y ya lo usan**: se edita la oferta publicada y los que la tienen marcada se enteran de qué cambió (US-201); no hay que despublicar para corregir.
+- **Algo publicado tenía un error y ya lo usan**: se edita la oferta publicada y las cuentas que declararon esa carrera se enteran de qué cambió (US-201); no hay que despublicar para corregir.
 - **La materia del plan viejo que nadie vinculó todavía** sigue sosteniendo las reseñas hechas con ella: no desaparece con la reforma (US-204).
 - **Un pedido para responder sobre una cátedra sin equipo docente cargado no se rechaza**: se convierte en trabajo de catálogo y se resuelve cuando el dato está (US-210).
 - **El cargo institucional se publica normalizado, nunca con el nombre textual de la institución**: se ata a la lista corta de cargos genéricos del catálogo (US-224).

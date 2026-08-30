@@ -1,6 +1,6 @@
 # ADR-0009: Review anonymity is a presentation rule, not a storage rule
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con la cadena de identidad actualizada (ver [Revisión](#revisión-2026-08-30))
 - **Fecha**: 2026-04-22
 
 ## Contexto
@@ -60,3 +60,11 @@ Las reseñas con `is_anonymous = true` se muestran sin autor, las demás con aut
 - DTOs de reseña en la capa API jamás incluyen `student_id`, `user_id`, `email`, ni el objeto anidado `StudentProfile`.
 - Tests de integración que verifican la ausencia de estos campos en respuestas públicas.
 - Code review específicamente atento a cambios en serializadores de Review.
+
+## Revisión (2026-08-30)
+
+La decisión se mantiene: el anonimato es una regla de presentación, la identidad se retiene siempre y la capa pública nunca la serializa. Lo que cambió es la cadena técnica que describía cómo se llega de una reseña a su autor.
+
+Este ADR fue escrito contra el modelo anterior, donde la reseña (`Review`) se anclaba a una cursada (`Review.enrollment_id → EnrollmentRecord.student_id → StudentProfile.user_id → User`), tres saltos con dos tablas que ya no existen: el modelo de reseña se rehizo (`CourseReview`, [ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md)) y `EnrollmentRecord` se podó con el módulo `enrollments` entero ([ADR-0086](0086-the-product-informs-it-does-not-track-your-degree.md)).
+
+Hoy la cadena es un solo salto: `CourseReview.account_id` referencia a `User` directo, sin `EnrollmentRecord` ni `StudentProfile` en el medio. El invariante que este ADR protege está vigente y restated en [`docs/engineering/data-model.md`](../engineering/data-model.md#anonimato-en-serialización): ningún endpoint público serializa `CourseReview.account_id`, ni ninguna otra forma de llegar de una reseña a quien la escribió.

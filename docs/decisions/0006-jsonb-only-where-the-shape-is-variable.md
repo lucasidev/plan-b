@@ -11,11 +11,11 @@ La tentación común: poner metadata de reseñas en JSONB "por las dudas" para e
 
 ## Decisión
 
-**Todas las entidades core van con columnas tipadas**: Review, EnrollmentRecord, User, Career, Subject, etc. Los campos "metadata" que puedan surgir (ej. `would_recommend`, `weekly_hours`, `exam_type`) se agregan como columnas nullable con enums cuando aplique.
+**Todas las entidades core van con columnas tipadas**: Review, User, Career, Subject, etc. Los campos "metadata" que puedan surgir (ej. `would_recommend`, `weekly_hours`, `exam_type`) se agregan como columnas nullable con enums cuando aplique.
 
 **JSONB se usa solo en dos lugares donde el shape es genuinamente variable:**
 
-1. **`HistorialImport.raw_payload`**: staging del output del parser de PDF/texto antes de normalizar a `EnrollmentRecord`. El formato del historial académico varía por universidad y por versión del sistema de gestión. Guardar el crudo permite reprocesar si el parser cambia o falla.
+1. **`CareerPlanImport.Payload`**: staging del output del parser de PDF/texto de un plan de estudios, antes de que el admin lo apruebe y se materialicen `CareerPlan` y sus `Subject`. El formato del plan varía por universidad y por versión del documento. Guardar el crudo permite reprocesar si el parser cambia o falla.
 
 2. **`ReviewAuditLog.changes`**: diff de cambios sobre una reseña. La estructura varía según la acción (edit, report, remove, restore): un edit tiene `before/after` de campos; un report tiene `reason` y `reporter_id`; un remove tiene `reason_code` y `moderator_id`. El log se consume como timeline, rara vez se consulta por dentro.
 
@@ -31,7 +31,7 @@ Permite agregar campos sin ALTER TABLE. Descartada por:
 - **ALTER TABLE ADD COLUMN nullable** en Postgres ≥11 es metadata-only: O(1), no reescribe filas. El costo de "evitar migración" es efectivamente cero.
 
 ### B. Sin JSONB en absoluto
-Forzar columnas tipadas incluso en HistorialImport y ReviewAuditLog. Descartada porque en esos dos casos el shape genuinamente varía y columnas serían o demasiadas (todas nullable) o insuficientes para capturar formatos desconocidos.
+Forzar columnas tipadas incluso en CareerPlanImport y ReviewAuditLog. Descartada porque en esos dos casos el shape genuinamente varía y columnas serían o demasiadas (todas nullable) o insuficientes para capturar formatos desconocidos.
 
 ## Consecuencias
 

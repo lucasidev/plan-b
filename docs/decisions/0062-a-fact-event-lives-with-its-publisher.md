@@ -1,6 +1,6 @@
 # ADR-0062: A fact event lives with its publisher; a request event lives with its receiver
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con el caso que lo motivó retirado (ver [Revisión](#revisión-2026-08-30))
 - **Fecha**: 2026-07-31
 
 ## Contexto
@@ -85,3 +85,11 @@ Descartada porque los precedentes ahora se contradicen a simple vista: dos event
 - [ADR-0030](0030-cross-bc-consistency-via-wolverine-outbox.md): el transporte (outbox durable de Wolverine) es el mismo para las dos clases.
 - El anclaje de la reseña al `EnrollmentRecord`: la decisión del modelo anterior que crea la dependencia `Reviews → Enrollments`. Su ADR se retiró con esa versión, y hoy la reseña ancla a la cursada ([ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md)).
 - La edición destructiva de una cursada que invalida su reseña: el caso que destapó la distinción. Su ADR también se retiró con la versión anterior.
+
+## Revisión (2026-08-30)
+
+La regla se mantiene: un evento-hecho vive en el publisher, un evento-pedido vive en el receptor, y el criterio es preguntar si tiene sentido que dos módulos reaccionen distinto. Lo que se retira es el caso concreto que la motivó.
+
+`Enrollments` (el módulo) y `EnrollmentRecordEditedIntegrationEvent` (el evento-hecho que este ADR usa como ejemplo central, incluida la fila de la tabla "Dónde aplica hoy") se podaron enteros con el módulo `enrollments` ([ADR-0086](0086-the-product-informs-it-does-not-track-your-degree.md)): ya no hay un `Reviews → Enrollments` que desacoplar, porque no queda ningún lado del acoplamiento. La dependencia que este ADR cita como motivo de la excepción (`Planb.Reviews.Application` referenciando `Planb.Enrollments.Application` porque la reseña se anclaba a un `EnrollmentRecord`) tampoco existe: se cerró antes, con el propio anclaje, cuando la reseña pasó a apuntar a la cursada ([ADR-0082](0082-the-review-captures-the-cursada-in-three-layers.md)).
+
+El criterio de clasificación (hecho vs. pedido) queda como guía para el próximo evento-hecho cross-módulo real; hoy no hay ninguno vigente que lo ejemplifique.

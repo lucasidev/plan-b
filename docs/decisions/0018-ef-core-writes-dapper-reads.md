@@ -53,7 +53,7 @@ Mínima abstracción, perf pura. Descartada porque:
 Alternativa JSONB-first. Buena integración con Wolverine. Descartada porque:
 
 - Planb tiene un schema altamente relacional (correlativas, agregaciones, joins cross-entity). Document DB no encaja bien.
-- Ya elegimos JSONB selectivamente para los casos correctos (`HistorialImport.raw_payload`, `ReviewAuditLog.changes`).
+- Ya elegimos JSONB selectivamente para los casos correctos (`CareerPlanImport.Payload`, `ReviewAuditLog.changes`).
 
 ## Consecuencias
 

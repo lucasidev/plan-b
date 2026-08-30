@@ -208,32 +208,41 @@ git branch -d <tu-branch>           # local
 
 ## Workflow completo: ejemplo
 
-Imaginá que vas a empezar US-013 (Cargar historial manual):
+Un caso real del propio historial del repo: así se vería implementar `fcef6d77` (declarar la carrera al crear la cuenta, US-012) en su propia rama:
 
 ```bash
 # 1. Sincronizar main
 git checkout main
 git pull origin main
 
-# 2. Crear branch (NO incluye "us013" en el nombre)
-git checkout -b feat/enrollments-historial-manual
+# 2. Crear branch (NO incluye "us012" ni el ID de la story en el nombre)
+git checkout -b feat/identity-declare-career-at-registration
 
 # 3. Trabajar, commitear con CC válidos
-git add modules/enrollments/...
+git add backend/modules/identity/src/Planb.Identity.Application/Features/CreateStudentProfile/... \
+        frontend/src/features/declare-career/...
 git commit -m "$(cat <<'EOF'
-feat(enrollments): cargar historial manual (US-013)
+feat(identity): declare the career when the account is created
 
-Endpoint POST /api/enrollments/historial que acepta una lista de
-materias aprobadas + fechas. Persiste como EnrollmentRecord con
-source=manual.
+ADR-0086 cerró la épica Mi carrera y con ella el onboarding, que era el
+único lugar donde nacía el StudentProfile. La decisión ya estaba
+commiteada y el código todavía la contradecía; este commit la ejecuta en
+la mitad que no se puede podar sin dejar al producto sin ninguna forma de
+crear un perfil.
+
+La carrera se declara en el registro y el perfil nace al verificar el
+mail. No podía nacer en el alta: AddStudentProfile exige el mail
+verificado, y ese orden de guards es cicatriz de un bug real (el
+comentario de IsDeactivated documenta que el agujero anterior dejaba
+recrear el perfil que la baja acababa de borrar). [...]
 EOF
 )"
 
 # 4. Pushear + abrir PR
-git push -u origin feat/enrollments-historial-manual
+git push -u origin feat/identity-declare-career-at-registration
 gh pr create --base main \
-  --title "feat(enrollments): cargar historial manual (US-013)" \
-  --body "Closes US-013. ..."
+  --title "feat(identity): declare the career when the account is created" \
+  --body "Closes US-012. ..."
 
 # 5. Si CI rojo o pediste cambios:
 #    - editar archivos
@@ -252,7 +261,7 @@ gh pr merge --rebase
 # 8. Limpieza
 git checkout main
 git pull origin main
-git branch -d feat/enrollments-historial-manual
+git branch -d feat/identity-declare-career-at-registration
 ```
 
 ## Anti-patterns observados (history)

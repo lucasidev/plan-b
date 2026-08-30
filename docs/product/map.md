@@ -2,7 +2,7 @@
 
 El índice del producto: qué pantallas hay y qué flujos las recorren, con el link a donde vive cada cosa. Lo que el canvas `plan-b mapa` (2026-08-16) definía como pantallas, flujos, planos y reglas ya tiene casa en el repo: cada pantalla con su ficha y su boceto adentro de la capacidad que la hace existir, los flujos en mermaid dentro de esa misma capacidad, en [`docs/product/`](../product/README.md), y las reglas en los ADRs y en el [catálogo de ítems](../product/phrases.md). Los requisitos viven en el README de su capacidad ([índice](README.md)) y las personas en [`user-personas.md`](../product/personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
-**Estado**: orientativo. Es la estructura que el mapa propone, útil para entender qué vistas necesita el producto; **no fija el diseño final ni la UX/UI**: eso lo fija la ficha de cada pantalla cuando se escribe, desde sus requisitos y sus personas. El canvas del que salió todo está en el [ático](../history/product-canvas/README.md) desde el 2026-08-19: las 34 pantallas tienen ficha y boceto, y ninguna imagen ni canvas es fuente (ADR-0070).
+**Estado**: orientativo. Es la estructura que el mapa propone, útil para entender qué vistas necesita el producto; **no fija el diseño final ni la UX/UI**: eso lo fija la ficha de cada pantalla cuando se escribe, desde sus requisitos y sus personas. El canvas del que salió todo está en el [ático](../history/product-canvas/README.md) desde el 2026-08-19: las 32 pantallas tienen ficha y boceto, y ninguna imagen ni canvas es fuente (ADR-0070).
 
 ## Los tres planos
 
@@ -12,7 +12,7 @@ El índice del producto: qué pantallas hay y qué flujos las recorren, con el l
 
 ## Las pantallas (el sitemap)
 
-Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Reportar, Corregir: las dibuja el flujo de su capacidad). **Cada pantalla vive en la capacidad que la hace existir** ([ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md)): su ficha y su boceto están ahí, no acá. Esta tabla es el índice derivado: dice dónde está cada una, con qué slug y quién más le aporta. **Una pantalla se nombra por lo que dice arriba**, en español y sin backticks; la URL es código, en inglés, y se fija al entrar a sprint (los slugs de acá se verificaron contra `frontend/src/app/` el 2026-08-19).
+Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar, Corregir: las dibuja el flujo de su capacidad). **Cada pantalla vive en la capacidad que la hace existir** ([ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md)): su ficha y su boceto están ahí, no acá. Esta tabla es el índice derivado: dice dónde está cada una, con qué slug y quién más le aporta. **Una pantalla se nombra por lo que dice arriba**, en español y sin backticks; la URL es código, en inglés, y se fija al entrar a sprint (los slugs de acá se verificaron contra `frontend/src/app/` el 2026-08-19).
 
 ### Elegir dónde estudiar · [`product/choose-where-to-study/`](student/choose-where-to-study/README.md)
 
@@ -39,7 +39,7 @@ Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Repor
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Pedir | [`request/`](student/request-a-career/screens/SC-010-request/README.md) | pública, sin cuenta | sin slug (hoy gateado al onboarding) | Pedir una carrera con el mail y nada más, confirmado por link. | nadie más | mid-fi, revisada |
+| Pedir | [`request/`](student/request-a-career/screens/SC-010-request/README.md) | pública, sin cuenta | sin slug (no hay implementación en el código todavía) | Pedir una carrera con el mail y nada más, confirmado por link. | nadie más | mid-fi, revisada |
 | La cola | [`queue/`](student/request-a-career/screens/SC-009-queue/README.md) | pública | sin slug | Qué falta cargar: pedidos confirmados, cuáles ya están, cuánto se tarda. | Sostener el catálogo (la carga y su demora) | mid-fi, revisada |
 
 ### Deshacer · [`product/undo/`](student/undo/README.md)
@@ -116,7 +116,7 @@ Cada flujo del mapa vive, como diagrama en mermaid con sus ramas, salidas y erro
 |---|---|---|
 | 01 | Valentina tiene que elegir en dos meses | [Elegir dónde estudiar](student/choose-where-to-study/flow.md) |
 | 02 | Ana busca la suya y no está | [Pedir una carrera](student/request-a-career/flow.md) |
-| 03 | Matías vuelve, y esta vez completa | [Reseñar](student/write-a-review/flow.md) (la entrada: Ingresar / Registro → Empezar → Reseñar; la primera reseña pregunta el año de ingreso) |
+| 03 | Matías vuelve, y esta vez completa | [Reseñar](student/write-a-review/flow.md) (la entrada: Ingresar / Registro → Reseñar, sin paso intermedio; la primera reseña pregunta el año de ingreso) |
 | 04 | Lucía no quiere repetir el error | la co-cursada en la [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) y en la [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md); el recorrido propio se cerró con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) |
 | 05 | Lucía reseña, y le lleva cinco minutos | [Reseñar](student/write-a-review/flow.md) |
 | 06 | Claudia contesta, con nombre porque es público | [Responder](reviewed/reply/flow.md) |
@@ -158,7 +158,7 @@ Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el
 
 | Carril | Existe (chasis) | Adaptar | Nuevo de cero |
 |---|---|---|---|
-| Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (existe gateado al onboarding) | La cola, Error |
+| Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (no hay implementación en el código todavía) | La cola, Error |
 | Umbral | Ingresar, Registro, Recuperar (auth completo) | | |
 | Con cuenta | Mis aportes, Mi perfil (Empezar y Mi carrera se retiran: [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
 | Backoffice | Catálogo (backoffice) (ABM completo), Reportes (backoffice) (cola de moderación) | Pedidos (backoffice) (el endpoint de cola existe; la pantalla no) | Correcciones (backoffice), Verificaciones (backoffice), Equipo (backoffice), Frases (backoffice) |

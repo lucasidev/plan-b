@@ -7,7 +7,6 @@
 
 Discovery del dominio identificó múltiples flujos cross-BC donde un cambio en un BC debe propagarse a otro:
 
-- Edit destructive de `EnrollmentRecord` (Enrollments) debe invalidar la `Review` correspondiente (Reviews): ver [ADR-0063](0063-the-product-is-a-pressure-instrument.md).
 - `UserDisabled` (Identity) debe soft-flag las reviews del usuario para presentación (Reviews) y registrarse en el audit log (Moderation).
 - `TeacherProfileVerified` (Identity) debe habilitar la capability `review:respond` (Reviews).
 - `ReportUpheld` (Moderation) debe disparar `RemoveReview` (Reviews).

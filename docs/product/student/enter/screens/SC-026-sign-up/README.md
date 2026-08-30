@@ -29,7 +29,7 @@ El año de ingreso (US-155: lo pregunta la primera reseña); ninguna pregunta de
 
 ## Adónde va
 
-Llega desde: Ingresar ("¿no tenés cuenta?"), el mail "cargamos lo que pediste" de [Avisos](../../../../notices/README.md), y el mismo gate en la acción que trae a Ingresar. Al crear la cuenta, vuelve a la acción que disparó el gate si había una, o sigue a Empezar (el onboarding, saltable: US-170).
+Llega desde: Ingresar ("¿no tenés cuenta?"), el mail "cargamos lo que pediste" de [Avisos](../../../../notices/README.md), y el mismo gate en la acción que trae a Ingresar. Al crear la cuenta, vuelve a la acción que disparó el gate si había una, o sigue directo a leer o a reseñar: no hay paso intermedio ([ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md), US-170).
 
 ## Decisiones que aplica
 

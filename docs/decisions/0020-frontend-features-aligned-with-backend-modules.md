@@ -21,9 +21,7 @@ Tres patrones comunes de organización del código de features:
 src/features/
 ├── identity/       espeja modules/identity/       (auth, profiles)
 ├── academic/       espeja modules/academic/       (catalog browsing)
-├── enrollments/    espeja modules/enrollments/    (historial, simulator)
-├── reviews/        espeja modules/reviews/        (publish, read, respond)
-└── moderation/     espeja modules/moderation/     (queue, resolve, audit)
+└── reviews/        espeja modules/reviews/        (publish, read, respond)
 ```
 
 Cada feature interna:

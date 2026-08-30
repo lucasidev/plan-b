@@ -8,7 +8,7 @@ El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en 
 
 ## Para quién
 
-**Quien lee** (Valentina, Silvia, Rocío, y cualquiera sin cuenta), **quien vuelve** (cualquier cuenta, cuando vuelve a leer o a corregir), y **Matías**: por él el gate llega en la acción y no en la puerta, y el onboarding es saltable.
+**Quien lee** (Valentina, Silvia, Rocío, y cualquiera sin cuenta), **quien vuelve** (cualquier cuenta, cuando vuelve a leer o a corregir), y **Matías**: por él el gate llega en la acción y no en la puerta, y nada le pide completar algo antes de leer o reseñar.
 
 ## Las garantías
 
@@ -29,7 +29,7 @@ Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y
 
 ## Decisiones que aplica
 
-[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (marcar el plan es preferencia privada y opcional: sin ella, todo lo demás sigue funcionando), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
+[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (el producto no marca el plan ni sabe por dónde va tu carrera: nada de eso se pregunta antes de dejar leer o reseñar), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
 
 ## Pantallas
 
