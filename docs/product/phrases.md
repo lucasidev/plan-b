@@ -6,12 +6,12 @@ Los ítems que el producto pregunta al reseñar una cursada, con sus opciones, y
 
 ## Las reglas
 
-1. **Cada ítem nace de una inquietud real**: algo que un estudiante quiere saber antes de meterse, o quiere contar al salir. Si no traza a eso, no entra.
+1. **Cada ítem nace de una inquietud real**: algo que un estudiante quiere saber antes de meterse, o quiere decir al salir. Si no traza a eso, no entra.
 2. **Se pregunta lo que la memoria puede responder**: frecuencias y estados gruesos ("casi nunca", "faltaron muchas"), jamás conteos finos (días exactos, cantidad de fechas). La precisión que el recuerdo no tiene produce datos que parecen duros y son ruido.
 3. **Conducta observable y vivencia van separadas** y no se suman: lo que cualquiera en el aula vio, y lo que te pasó a vos.
 4. **El contexto no se publica**: controla el sesgo de lectura y alimenta solo agregados (la tasa de finalización, los intentos).
 5. **Saltear siempre vale**: quien saltea no cuenta en el denominador de ese ítem. Nada es obligatorio.
-6. **La prueba es el pasillo**: si nadie lo contaría así en un pasillo de facultad, se reescribe.
+6. **La prueba es el pasillo**: si nadie lo diría así en un pasillo de facultad, se reescribe.
 7. **La opción negativa está escrita de antemano**: es la única que carga el rojo en la ficha, y el badge de la moda repite la opción literal, nunca una etiqueta nuestra.
 
 ## La reseña de una cursada
@@ -69,6 +69,6 @@ No se le pregunta a nadie: se verifica contra fuente pública, con fecha y fuent
 
 ## Lo que este catálogo todavía no resuelve
 
-- **El maltrato y el acoso**: cómo entra al instrumento (ítem directo, campo propio, o solo por el campo libre hacia la curaduría) sigue siendo decisión abierta de producto. Hasta decidirse, el campo libre recibe lo que alguien quiera contar, y no se publica.
+- **El maltrato y el acoso**: cómo entra al instrumento (ítem directo, campo propio, o solo por el campo libre hacia la curaduría) sigue siendo decisión abierta de producto. Hasta decidirse, el campo libre recibe lo que alguien quiera decir, y no se publica.
 - **La segunda curaduría del administrativo**: la semilla de arriba no pasó por la pasada de inquietudes reales que sí pasó la de cursada.
 - **La carga a la base** (issue #357) asigna códigos estables y versiona el instrumento; este documento queda como fuente editorial y espeja lo cargado.

@@ -91,7 +91,7 @@ function BelowFloor({ facts }: { facts: ChairFacts }) {
     <div className="rounded-xl border border-line bg-bg-card p-4">
       <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
         {none
-          ? 'Todavía nadie contó cómo es cursar acá.'
+          ? 'Todavía nadie reseñó cómo es cursar acá.'
           : `Junta ${facts.reviewCount} ${facts.reviewCount === 1 ? 'reseña' : 'reseñas'}: con ${facts.reviewsMissingToPublish} más se publica.`}
       </p>
       <p className="text-[12.5px] leading-relaxed text-ink-3">
@@ -164,8 +164,8 @@ function Completion({ facts }: { facts: ChairFacts }) {
           )}
         </div>
         <p className="text-[12.5px] leading-relaxed text-ink-3">
-          Aprobada o regular, sobre {c.total} cursadas contadas. Ninguna reseña muestra cómo terminó
-          nadie: esto es el conteo.
+          Aprobada o regular, sobre {c.total} cursadas reseñadas. Ninguna reseña muestra cómo
+          terminó nadie: esto es el conteo.
         </p>
       </div>
     </section>

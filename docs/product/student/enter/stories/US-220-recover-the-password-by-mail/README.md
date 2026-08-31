@@ -20,4 +20,4 @@ Como quien olvidó su contraseña, quiero volver a entrar con un link al mail, p
 
 ## Notas
 
-Era la story `O5-3` de Deshacer. Al armar el catálogo del producto nuevo se absorbió como una frase adentro de las garantías de [Que no me molesten](../../../../guarantees/README.md), y eso dejó a Recuperar como la única pantalla del producto que ninguna story pedía. Vuelve como story porque **no es una garantía transversal**: esas se verifican en las 34 pantallas y no se construyen, y esto es una acción concreta, con su pantalla y su criterio. Es también la primera story propia de Entrar, que hasta acá solo cumplía las de otras épicas.
+Era la story `O5-3` de Deshacer. Al armar el catálogo del producto nuevo se absorbió como una frase adentro de las garantías de [Que no me molesten](../../../../guarantees/README.md), y eso dejó a Recuperar como la única pantalla del producto que ninguna story pedía. Vuelve como story porque **no es una garantía transversal**: esas se verifican en las 33 pantallas y no se construyen, y esto es una acción concreta, con su pantalla y su criterio. Es también la primera story propia de Entrar, que hasta acá solo cumplía las de otras épicas.

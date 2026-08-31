@@ -31,7 +31,7 @@ Ranking, puntaje ni orden por conveniencia (US-171); ninguna institución patroc
 
 ## Adónde va
 
-Llega desde: [Inicio](../SC-004-home/README.md), un link, o vuelve desde [Buscar](../SC-006-search/README.md). Va a: [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Dónde estudiarla](../SC-008-where-to-study/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md), [Buscar](../SC-006-search/README.md).
+Llega desde: [La entrada](../SC-004-entrance/README.md), un link, o vuelve desde [Buscar](../SC-006-search/README.md). Va a: [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Dónde estudiarla](../SC-008-where-to-study/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md), [Buscar](../SC-006-search/README.md).
 
 ## Decisiones que aplica
 

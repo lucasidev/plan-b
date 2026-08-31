@@ -22,7 +22,7 @@ Nadie en su familia terminó una carrera, así que no tiene a quién preguntarle
 
 ### Lucía, 23 · "Se anotó en cinco y dejó dos"
 
-Cuarto año, veinte horas de trabajo. Tiene más para contar que nadie y menos tiempo que nadie.
+Cuarto año, veinte horas de trabajo. Tiene más para decir que nadie y menos tiempo que nadie.
 
 **La contradicción**: quiere que exista el dato pero no quiere producirlo. Aportaría si le costara lo que cuesta mandar un mensaje.
 
@@ -64,7 +64,7 @@ Trabaja en un centro de estudiantes. Tiene que llevar un dato a una reunión y q
 
 Cursó tres años de ingeniería y abandonó. Tiene la explicación completa de por qué se va la gente, y ya no le sirve de nada tenerla.
 
-**La contradicción**: es el que más tiene para contar y el que menos razón tiene para volver. Todo lo que sabe se pierde el día que cierra sesión por última vez.
+**La contradicción**: es el que más tiene para decir y el que menos razón tiene para volver. Todo lo que sabe se pierde el día que cierra sesión por última vez.
 
 **Decisión que produce**: por él aportar no exige estar cursando, y reseñar una materia sola alcanza. El que se fue no va a inventariar cinco años; su año de salida se le pregunta una vez, y si no vuelve, por mail. Y lo publicado no dice cómo terminó ni quién escribió: su reseña suma igual que la de cualquiera.
 
@@ -98,7 +98,7 @@ Carga planes, correlativas, la duración nominal, las cátedras (el equipo docen
 
 Mira el filtro grueso del campo libre antes de que pase a curaduría (agresión dirigida, dato personal de un tercero), el canal de reclamos institucionales contra un dato ya publicado, y la alarma de cuentas correlacionadas que intentan inflar un conteo. Nada de lo que revisa es texto publicado: el campo libre nunca se publica, así que no hay nada que bajar de la vista pública, solo decidir si algo pasa filtrado o directo. No verifica: quien ve nombres reales es otra persona (Camila), y US-217 hace que no puedan ser la misma.
 
-> "Si libero de más, algo que identifica a alguien llega a la curaduría. Si retengo de más, se pierde la única voz que lo iba a contar."
+> "Si libero de más, algo que identifica a alguien llega a la curaduría. Si retengo de más, se pierde la única voz que lo iba a decir."
 
 **Qué necesita**: el criterio escrito de qué dispara el filtro, que sus tres colas no se le mezclen, y que ningún reclamo ni alarma baje un dato solo, sin que él lo revise.
 

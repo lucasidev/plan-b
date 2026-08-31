@@ -34,7 +34,7 @@ frontend/
     │   └── ...               write-review, browse-subjects, manage-teachers, etc.
     ├── components/
     │   ├── ui/               primitivas (Button, DisplayHeading, Lede, ...)
-    │   └── layout/           AuthShell/AuthSplit, AppShell, sidebar, topbar, avatar-menu, admin-*
+    │   └── layout/           AuthShell (dos columnas) / AuthCard (transición), AppShell, sidebar, topbar, avatar-menu, admin-*
     └── lib/
         ├── env.ts            zod-validated env (clientEnv + serverEnv())
         ├── session.ts        getSession() RSC helper, jose JWT verify

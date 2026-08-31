@@ -19,9 +19,11 @@ type Props = {
 };
 
 /**
- * Shell v2 del route group `(auth)`. Port de `AuthShell`
- * (docs/design/reference/canvas-mocks/auth.jsx). Reemplaza a `AuthSplit` (hero
- * de marketing pre-canvas-v2) en las vistas migradas (US-059-f).
+ * Shell de las pantallas del route group `(auth)` que **piden algo** (sign-in, sign-up). Port de
+ * `AuthShell` (docs/design/reference/canvas-mocks/auth.jsx, US-059-f).
+ *
+ * Las que no piden nada y solo dicen qué pasó (check-inbox, verify-email) van en `AuthCard`: su
+ * columna izquierda existe para convencer, y no hay a quién convencer cuando la persona ya entró.
  *
  * Grid 1.05fr/1fr: panel izquierdo con eyebrow numerado + contenido de producto
  * por vista (`leftPanel`); columna derecha con header (logo + "institucional") + form

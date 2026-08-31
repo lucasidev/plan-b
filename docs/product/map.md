@@ -18,7 +18,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Inicio | [`home/`](student/choose-where-to-study/screens/SC-004-home/README.md) | pública | `/` | La vitrina: qué es plan-b y la puerta a Explorar y Buscar. | identidad visual propia (ADR-0071) | mid-fi, revisada |
+| La entrada | [`entrance/`](student/choose-where-to-study/screens/SC-004-entrance/README.md) | pública | `/` | La vitrina: qué es plan-b y la puerta a Explorar y Buscar. No se llama Inicio: Inicio es `/home`, el aterrizaje de la aplicación con cuenta. | identidad visual propia (ADR-0071) | mid-fi, revisada |
 | Explorar | [`explore/`](student/choose-where-to-study/screens/SC-003-explore/README.md) | pública | `/universities` (la lente de carreras no existe todavía) | El home real: dos lentes, carreras y universidades; el vacío en sus tres estados. | Pedir una carrera (el vacío explicado) | mid-fi, revisada |
 | Buscar | [`search/`](student/choose-where-to-study/screens/SC-006-search/README.md) | pública | sin slug (el topbar busca y no lleva a ninguna pantalla) | Los cuatro sujetos con ficha; un docente lleva a su cátedra; si no está, explica por qué. | Pedir una carrera | mid-fi, revisada |
 | Dónde estudiarla | [`where-to-study/`](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | pública | sin slug | Comparar las ofertas de la misma carrera canónica, lado a lado, sin ganador. | Llevarse el dato (el CSV para ordenar) | **hi-fi Boletín** |

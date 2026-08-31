@@ -49,7 +49,7 @@ export default async function WriteCourseReviewPage() {
             Todavía no hay cuestionario publicado
           </h1>
           <p className="mt-2 text-[13.5px] text-ink-2">
-            Sin preguntas no hay nada que contar. Volvé en un rato.
+            Sin preguntas no hay nada que reseñar. Volvé en un rato.
           </p>
         </div>
       ) : (

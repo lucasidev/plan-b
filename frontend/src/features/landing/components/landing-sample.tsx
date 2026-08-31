@@ -67,7 +67,7 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
             De cada 10 que la cursan, llegan {sample.completion.outOfTen}.
           </p>
           <p className="m-0 mt-1 text-[12px] leading-relaxed text-ink-3">
-            Aprobada o regular, sobre {sample.completion.total} cursadas contadas. Ninguna reseña
+            Aprobada o regular, sobre {sample.completion.total} cursadas reseñadas. Ninguna reseña
             muestra cómo terminó nadie: esto es el conteo.
           </p>
         </div>

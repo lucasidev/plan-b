@@ -4,7 +4,7 @@
 
 ## Quién la usa
 
-Quien está por reseñar y duda si conviene contar algo incómodo (**Matías**, **Lucía**), y **Claudia** y **Paredes** (quieren saber qué protege a quien reseña y qué no los expone a ellos, nombrados en su rol).
+Quien está por reseñar y duda si conviene decir algo incómodo (**Matías**, **Lucía**), y **Claudia** y **Paredes** (quieren saber qué protege a quien reseña y qué no los expone a ellos, nombrados en su rol).
 
 ## Qué stories resuelve
 

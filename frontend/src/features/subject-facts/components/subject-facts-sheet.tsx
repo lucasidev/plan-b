@@ -60,7 +60,7 @@ function Identity({ facts }: { facts: SubjectFacts }) {
 
 /**
  * La materia arranca vacía hasta que alguna de sus cátedras cruce el piso. No es un cero: es que
- * todavía no hay nada que contar, y se dice con esas palabras.
+ * todavía no hay nada que mostrar, y se dice con esas palabras.
  */
 function Empty({ facts }: { facts: SubjectFacts }) {
   return (
@@ -89,7 +89,7 @@ function Numbers({ facts }: { facts: SubjectFacts }) {
           <Cell
             label="Llegan a aprobada o regular"
             value={`${facts.completion.outOfTen} de 10`}
-            note={`sobre ${facts.completion.total} cursadas contadas`}
+            note={`sobre ${facts.completion.total} cursadas reseñadas`}
           />
         )}
         <Cell

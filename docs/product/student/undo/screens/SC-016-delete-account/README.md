@@ -4,7 +4,7 @@
 
 ## Quién la usa
 
-Quien ya aportó y quiere irse: Matías o Lucía cuando dejan la carrera y no vuelven más, Diego cuando ya contó por qué se fue y no le queda nada más para decir. El flujo completo: [`flow.md`](../../flow.md).
+Quien ya aportó y quiere irse: Matías o Lucía cuando dejan la carrera y no vuelven más, Diego cuando ya dijo por qué se fue y no le queda nada más para decir. El flujo completo: [`flow.md`](../../flow.md).
 
 ## Qué stories resuelve
 

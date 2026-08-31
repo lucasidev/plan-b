@@ -31,7 +31,7 @@ export const FAQ: readonly FaqEntry[] = [
   },
   {
     id: 'anonymity',
-    question: 'Por qué lo que contás es anónimo',
+    question: 'Por qué tu reseña es anónima',
     answer:
       'Para que digas lo que viviste sin miedo a que te lo cobren. Tu nombre no aparece en ningún lado, nunca se muestra una reseña sola, y nadie de la facultad puede ver quién respondió qué. Una cátedra tampoco publica nada hasta juntar diez reseñas: con dos o tres, adivinar quién habló es fácil.',
   },

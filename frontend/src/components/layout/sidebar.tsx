@@ -20,7 +20,7 @@ type Props = {
 /**
  * `(member)` area sidebar per `docs/design/reference/components/shell.jsx::Sidebar`.
  *
- * Groups navigation links in two sections (Comunidad, Otros). The
+ * Groups navigation links in two sections: la primaria sin encabezado y "Otros" al pie. The
  * active item is highlighted based on `usePathname()`, with a startsWith fallback for
  * future sub-routes (`/subjects/[id]` keeps "Materias" lit).
  *
@@ -85,24 +85,28 @@ function SectionGroup({
   items,
   pathname,
 }: {
-  label: string;
+  label?: string;
   items: ReadonlyArray<{ path: string; label: string; shortcut?: string }>;
   pathname: string;
 }) {
   return (
     <>
-      <div
-        className="text-ink-4"
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          padding: '14px 6px 6px',
-        }}
-      >
-        {label}
-      </div>
+      {/* Sin label no hay encabezado ni su espacio: un div vacío dejaría el hueco de 26px que
+          separaba los grupos, y la navegación primaria arrancaría flotando bajo el logo. */}
+      {label && (
+        <div
+          className="text-ink-4"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            padding: '14px 6px 6px',
+          }}
+        >
+          {label}
+        </div>
+      )}
       {items.map((item) => (
         <NavItem key={item.path} {...item} active={isActive(pathname, item.path)} />
       ))}

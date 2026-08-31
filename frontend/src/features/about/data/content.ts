@@ -12,7 +12,7 @@
 export const ABOUT_HEADLINE = 'Estamos haciendo la app que nos hubiera gustado tener.';
 
 export const ABOUT_LEDE =
-  'plan-b es una herramienta de planificación académica hecha por estudiantes, para estudiantes.';
+  'plan-b junta lo que los alumnos ya saben por haberlo vivido y lo publica como datos que aguantan una discusión.';
 
 /**
  * Manifesto as blocks. Each item is a paragraph. The last one carries the disclaimer in
@@ -26,11 +26,11 @@ export type ManifestoBlock = {
 export const ABOUT_MANIFESTO: readonly ManifestoBlock[] = [
   {
     kind: 'paragraph',
-    text: 'La universidad te da un PDF con materias y una fecha de inscripción. Lo que pasa entre medio: qué cursar, con quién, en qué orden, cuántas juntas se aguantan, lo resolvés solo o preguntando en grupos de WhatsApp.',
+    text: 'La universidad te da un PDF con materias y una fecha de inscripción. Lo que pasa adentro de cada cursada (si se dan las clases, si se puede preguntar, cómo corrigen) lo averiguás en grupos de WhatsApp, y se pierde el día que ese grupo se archiva.',
   },
   {
     kind: 'paragraph',
-    text: 'plan-b junta esa info en un lugar. Tu plan, las reseñas reales de quienes ya cursaron, los choques de horario, los docentes que recomiendan tus compañeros. Para que decidir tu próximo cuatrimestre deje de ser una apuesta.',
+    text: 'plan-b junta eso y lo publica como conteos: qué contestó la mayoría, cómo se repartió el resto, cuántas voces lo sostienen. Nunca un puntaje ni un ranking, porque un puntaje se discute y un conteo no. Y ninguna cátedra publica nada hasta juntar diez reseñas, para que no se pueda deducir quién dijo qué.',
   },
   {
     kind: 'disclaimer',
@@ -51,15 +51,15 @@ export type RoadmapItem = {
 export const ABOUT_ROADMAP: readonly RoadmapItem[] = [
   {
     when: 'Ahora',
-    what: 'Reseñas validadas, planificador con detección de choques, rankings.',
+    what: 'Fichas de cátedra, materia y carrera con sus conteos, que se leen sin cuenta. Reseñar una cursada, y corregir o borrar lo que aportaste.',
   },
   {
-    when: 'Próximo mes',
-    what: 'Importación automática del SIU. Comparador de comisiones lado a lado.',
+    when: 'Próximo',
+    what: 'Que la cátedra y la institución puedan responder a los números de su ficha, con nombre y cargo.',
   },
   {
     when: 'Más adelante',
-    what: 'Recomendaciones personalizadas según tu plan y desempeño.',
+    what: 'Bajarte los datos crudos para analizarlos por tu cuenta, sin pasar por nuestras conclusiones.',
   },
 ] as const;
 
@@ -95,5 +95,6 @@ export const ABOUT_REPO_URL = 'https://github.com/lucasidev/plan-b';
 export const ABOUT_UNIVERSITIES: readonly string[] = [
   'Universidad del Norte Santo Tomás de Aquino (UNSTA)',
   'Universidad Siglo 21',
-  'Universidad San Pablo-T (USPT)',
+  'Universidad Nacional de Tucumán (UNT)',
+  'Universidad Tecnológica Nacional - Facultad Regional Tucumán',
 ] as const;
