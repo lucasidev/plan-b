@@ -25,7 +25,27 @@ public sealed record GetSubjectFactsResponse(
     int EnablesCount,
     IReadOnlyList<SpreadView> Spread,
     IReadOnlyList<SharedView> Shared,
+    IReadOnlyList<TakenWithView> TakenWith,
     IReadOnlyList<SubjectChairView> Chairs);
+
+/// <summary>
+/// Con qué otra materia se llevó esta, en un período, y cómo les fue a los que las llevaron juntas
+/// (US-143).
+///
+/// <para>
+/// Es el dato que la lapicera no puede calcular: armar el horario lo resuelve cualquiera, saber que
+/// 18 de 40 dejaron una de las dos no lo resuelve nadie solo. Tiene su propio piso por par y
+/// período, así que un par puede no publicar aunque la materia sí.
+/// </para>
+/// </summary>
+public sealed record TakenWithView(
+    Guid SubjectId,
+    string SubjectName,
+    string SubjectCode,
+    int TogetherCount,
+    int DroppedCount,
+    bool IsPublished,
+    int MissingToPublish);
 
 /// <summary>Entre qué años se cursó lo que esta ficha resume.</summary>
 public sealed record SubjectSpanView(int FromYear, int ToYear);

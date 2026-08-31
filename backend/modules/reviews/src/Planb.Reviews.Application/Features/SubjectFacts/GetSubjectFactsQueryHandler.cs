@@ -21,6 +21,7 @@ public static class GetSubjectFactsQueryHandler
         GetSubjectFactsQuery query,
         IAcademicQueryService academic,
         IChairTallyQueryService tallies,
+        ISubjectPairQueryService pairs,
         CancellationToken ct)
     {
         var subject = await academic.GetSubjectByIdAsync(query.SubjectId, ct);
@@ -46,7 +47,25 @@ public static class GetSubjectFactsQueryHandler
             ? await academic.ListTermYearsAsync(counted.TermIds, ct)
             : [];
 
-        return Present(subject, facts, counted, enables, years);
+        // Con qué otras materias se llevó esta (US-143). Sale solo de las reseñas, con su propio
+        // piso por par y período: no depende de que la materia publique, porque es un dato de la
+        // combinación y no de la materia.
+        var counts = await pairs.ListForSubjectAsync(subject.Id, ct);
+        var takenWith = SubjectPairCalculator.Calculate(
+            counts
+                .Select(t => new SubjectPairCalculator.Tally(
+                    t.OtherSubjectId, t.TermId, t.TogetherCount, t.DroppedCount))
+                .ToList());
+
+        // Los nombres de las otras materias se le piden al contrato de academic en lote, no con un
+        // JOIN cross-schema (ADR-0087).
+        var labels = await academic.GetLabelsAsync(
+            takenWith.Select(p => p.OtherSubjectId).Distinct().ToArray(),
+            [],
+            [],
+            ct);
+
+        return Present(subject, facts, counted, enables, years, takenWith, labels);
     }
 
     private static GetSubjectFactsResponse Present(
@@ -54,7 +73,9 @@ public static class GetSubjectFactsQueryHandler
         Domain.Publishing.SubjectFacts facts,
         SubjectTallies counted,
         int enables,
-        IReadOnlyList<int> years)
+        IReadOnlyList<int> years,
+        IReadOnlyList<SubjectPairCalculator.PairFacts> takenWith,
+        CatalogLabels labels)
     {
         var text = (string code) => counted.ItemTexts.TryGetValue(code, out var t) ? t : code;
 
@@ -88,6 +109,16 @@ public static class GetSubjectFactsQueryHandler
                 ? new SubjectCompletionView(c.OutOfTen, c.Reaching, c.Total)
                 : null,
             EnablesCount: enables,
+            TakenWith: takenWith
+                .Select(p => new TakenWithView(
+                    p.OtherSubjectId,
+                    labels.Subjects.TryGetValue(p.OtherSubjectId, out var l) ? l.Name : "Sin vincular",
+                    labels.Subjects.TryGetValue(p.OtherSubjectId, out var c) ? c.Code : string.Empty,
+                    p.TogetherCount,
+                    p.DroppedCount,
+                    p.IsPublished,
+                    p.MissingToPublish))
+                .ToList(),
             Spread: facts.Spread
                 .Select(s => new SpreadView(
                     s.ItemCode,

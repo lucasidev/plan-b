@@ -44,6 +44,9 @@ public static class DependencyInjection
         // Las cátedras que una cuenta reseñó, con sus voces, para Inicio (US-231).
         services.AddScoped<IMyReviewedChairsQueryService, DapperMyReviewedChairsQueryService>();
 
+        // Con qué otras materias se llevó una, para su ficha (US-143).
+        services.AddScoped<ISubjectPairQueryService, DapperSubjectPairQueryService>();
+
         return services;
     }
 
