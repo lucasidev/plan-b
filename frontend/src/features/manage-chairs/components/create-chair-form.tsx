@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useRef } from 'react';
+import { useHydrated } from '@/lib/use-hydrated';
 import { createChairAction } from '../actions';
 import { initialManageChairState } from '../types';
 
@@ -10,9 +11,15 @@ import { initialManageChairState } from '../types';
  *
  * El action es una mutación pura y no revalida ni redirige adentro ([ADR-0046]): la pantalla
  * reacciona al `status: 'success'` refrescando, que es lo que trae la cátedra nueva al listado.
+ *
+ * El submit arranca deshabilitado hasta hidratar (`useHydrated`). Sin eso hay una ventana real en
+ * la que el browser manda el form como POST nativo: la cátedra se crea, pero el resultado nunca
+ * llega al estado del cliente, así que ni el refresh ni el mensaje de error ocurren y quien carga
+ * ve que no pasó nada.
  */
 export function CreateChairForm({ subjectId }: { subjectId: string }) {
   const [state, action, pending] = useActionState(createChairAction, initialManageChairState);
+  const hydrated = useHydrated();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -40,7 +47,7 @@ export function CreateChairForm({ subjectId }: { subjectId: string }) {
         />
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || !hydrated}
           className="rounded-lg px-3.5 py-2 text-[13px] font-medium disabled:opacity-60"
           style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
         >
