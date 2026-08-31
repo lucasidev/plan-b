@@ -27,7 +27,7 @@ Ninguna ficha de "docente": no existe como entidad con ficha propia, siempre res
 
 ## Adónde va
 
-Llega desde: el buscador del topbar de cualquier pantalla (hoy no lleva a ninguna pantalla propia: es lo que esta ficha empieza a fijar), [Inicio](../SC-004-home/README.md). Va a: [Ficha de materia](../SC-007-subject/README.md), [Ficha de cátedra](../SC-002-chair/README.md), [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md).
+Llega desde: el buscador del topbar de cualquier pantalla (hoy no lleva a ninguna pantalla propia: es lo que esta ficha empieza a fijar), [La entrada](../SC-004-entrance/README.md). Va a: [Ficha de materia](../SC-007-subject/README.md), [Ficha de cátedra](../SC-002-chair/README.md), [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md).
 
 ## Decisiones que aplica
 

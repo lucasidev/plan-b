@@ -22,7 +22,7 @@ export async function fetchCurrentInstrumentServer(): Promise<CurrentInstrument 
   return (await response.json()) as CurrentInstrument;
 }
 
-/** Las materias del plan del alumno: es contra lo que elige qué cursada contar. */
+/** Las materias del plan del alumno: es contra lo que elige qué cursada reseñar. */
 export async function fetchPlanSubjectsServer(careerPlanId: string): Promise<SubjectOption[]> {
   const response = await apiFetch(
     `/api/academic/subjects?careerPlanId=${encodeURIComponent(careerPlanId)}`,

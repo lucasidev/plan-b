@@ -20,7 +20,7 @@ const FAQ_ITEMS = [
       'Porque todavía no juntaron diez reseñas. Con menos, un conteo diría más de quién se acordó de escribir que de cómo se cursa ahí, y además haría reconocible a quien escribió.',
   },
   {
-    question: '¿Puedo borrar lo que conté?',
+    question: '¿Puedo borrar mi reseña?',
     answer:
       'Sí, en Mis aportes, y también corregirlo. Lo que saques deja de contar y los conteos de la ficha se mueven hacia atrás.',
   },

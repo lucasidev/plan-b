@@ -1,6 +1,6 @@
 /**
- * El cuestionario tal como lo dibuja la UI, compartido por las dos pantallas que lo usan: contar
- * una cursada por primera vez y corregir lo que se contó.
+ * El cuestionario tal como lo dibuja la UI, compartido por las dos pantallas que lo usan: reseñar
+ * una cursada por primera vez y corregir lo que se reseñó.
  *
  * Vive acá y no en un feature porque los dos lo necesitan idéntico, y a esta altura el tipo no
  * sabe nada de publicar ni de corregir: es solo qué se pregunta y qué se puede contestar.

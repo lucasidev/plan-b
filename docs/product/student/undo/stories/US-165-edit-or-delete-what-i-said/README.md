@@ -1,11 +1,11 @@
-# US-165: Editar o borrar lo que conté
+# US-165: Editar o borrar mi reseña
 
 **Épica**: [Deshacer](../../README.md)
 **Del mapa**: O5-1
 
 ## Historia
 
-Como quien ya aportó, quiero editar o borrar lo que conté, porque me expuse más de lo que quería.
+Como quien ya aportó, quiero editar o borrar mi reseña, porque me expuse más de lo que quería.
 
 ## Listo cuando
 

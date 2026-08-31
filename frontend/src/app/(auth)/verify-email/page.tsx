@@ -1,19 +1,10 @@
-import { AuthSplit } from '@/components/layout/auth-split';
-import { DisplayHeading } from '@/components/ui';
+import { AuthCard } from '@/components/layout/auth-card';
 import { verifyEmail } from '@/features/verify-email/api';
 import { VerifyEmailResult } from '@/features/verify-email/components/verify-email-result';
 
 type Props = {
   searchParams: Promise<{ token?: string }>;
 };
-
-// Hoisted heading to avoid a new ref on every render
-// (react-doctor/jsx-no-jsx-as-prop rule).
-const HEADING = (
-  <DisplayHeading>
-    Verificá tu <em>cuenta</em>
-  </DisplayHeading>
-);
 
 /**
  * Verify-email route (US-011-f). Server component: reads `token` from the
@@ -24,22 +15,21 @@ const HEADING = (
  * navigation, not on every client render.
  *
  * If the URL has no token, we render the missing_token state without
- * even hitting the backend — that's a wrong arrival, not a verification
+ * even hitting the backend: that's a wrong arrival, not a verification
  * attempt.
  *
- * Wrapped in AuthSplit (no AuthView, no tabs) because verifying isn't a
- * sign-in / sign-up flow — it's a one-off landing.
+ * Va en `AuthCard`, el shell de las pantallas de transición, y no en el de dos columnas: es un
+ * aterrizaje de una sola vez. Además el shell viejo le ponía un hero encima ("Verificá tu cuenta"
+ * + "estamos confirmando tu email") sobre un resultado que ya dice "¡Listo! Tu cuenta quedó
+ * verificada": dos títulos para un solo hecho.
  */
 export default async function VerifyEmailPage({ searchParams }: Props) {
   const { token } = await searchParams;
   const result = token ? await verifyEmail(token) : ({ kind: 'missing_token' } as const);
 
   return (
-    <AuthSplit
-      heading={HEADING}
-      description="Estamos confirmando tu email para activar tu cuenta de plan-b."
-    >
+    <AuthCard>
       <VerifyEmailResult result={result} />
-    </AuthSplit>
+    </AuthCard>
   );
 }

@@ -10,7 +10,7 @@ Lo que pasa después de publicar, sin que nadie tenga que escribir de nuevo: arr
 
 Quien vuelve con cuenta y encuentra un dato duro mal cargado (no hace falta haber aportado antes: D07), y quien ya aportó y quiere que lo suyo pese más probando su condición de alumno, sin que eso sea la puerta de entrada para hablar.
 
-Es un tramo propio y no parte de [Deshacer](../undo/README.md) porque el objeto es otro: Deshacer vuelve sobre **lo propio** (editar o borrar lo que conté); esto vuelve sobre **lo común** (la voz de otro, el dato de la ficha). Mismo actor, otro objeto ([ADR-0077](../../../decisions/0077-the-product-docs-read-as-journeys.md), duda cerrada el 2026-08-23).
+Es un tramo propio y no parte de [Deshacer](../undo/README.md) porque el objeto es otro: Deshacer vuelve sobre **lo propio** (editar o borrar mi reseña); esto vuelve sobre **lo común** (la voz de otro, el dato de la ficha). Mismo actor, otro objeto ([ADR-0077](../../../decisions/0077-the-product-docs-read-as-journeys.md), duda cerrada el 2026-08-23).
 
 ## Stories
 

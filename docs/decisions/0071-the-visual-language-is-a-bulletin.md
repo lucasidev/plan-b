@@ -21,7 +21,7 @@ Las 34 pantallas tienen ficha y boceto mid-fi revisados; el paso siguiente es el
 Ocho direcciones sobre la misma pantalla, exploradas el 2026-08-19 (los artboards quedan en el canvas de exploración; no son fuente: la fuente es este ADR y el design system).
 
 - **A. Apricot Soft (lo implementado)**: cálido, cero costo de adopción. Descartada: el terracota decorativo compite con el terracota-alarma, y el conjunto se lee más diario personal que instrumento.
-- **C. Instrumento** (mono en todo número, panel de medición): honesto con la tesis pero frío para quien viene a contar; el azul institucional traía un segundo acento a domar. Descartada.
+- **C. Instrumento** (mono en todo número, panel de medición): honesto con la tesis pero frío para quien viene a reseñar; el azul institucional traía un segundo acento a domar. Descartada.
 - **D. Cartel** (negro, amarillo, números enormes): la presión visible, pero el volumen visual se lee como juicio y tensiona el "no juzga lo que mide". Descartada.
 - **E. Pizarrón** (oscura): dark-only invierte el trabajo de contraste y castiga capturas e impresión. Descartada.
 - **F. Cuaderno** (hoja rayada, resaltador): el mundo material del alumno, pero infantiliza el dato. Descartada.

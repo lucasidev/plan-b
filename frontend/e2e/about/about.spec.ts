@@ -22,7 +22,7 @@ test.describe('Sobre plan-b (US-074)', () => {
         level: 1,
       }),
     ).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(/herramienta de planificación académica/i)).toBeVisible();
+    await expect(page.getByText(/datos que aguantan una discusión/i)).toBeVisible();
   });
 
   test('cards principales renderean (manifiesto + equipo + roadmap + universidades + open source)', async ({

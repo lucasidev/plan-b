@@ -1,4 +1,4 @@
-# US-165: Editar o borrar lo que conté
+# US-165: Editar o borrar mi reseña
 
 > Los casos de [US-165](README.md), para escribir el test antes que el código. Cada escenario cita el ID de su story: es lo que el test tiene que nombrar.
 

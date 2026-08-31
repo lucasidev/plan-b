@@ -15,10 +15,10 @@ Como quien lee, quiero entender qué es esto viendo un dato real y no una explic
 
 ## Dónde se resuelve
 
-- [Inicio](../../screens/SC-004-home/README.md): los cuatro bloques (qué es, la entrada a Explorar y Buscar, la muestra honesta y el método al alcance).
+- [La entrada](../../screens/SC-004-entrance/README.md): los cuatro bloques (qué es, la entrada a Explorar y Buscar, la muestra honesta y el método al alcance).
 
 ## Notas
 
-Es la story que faltaba: [Inicio](../../screens/SC-004-home/README.md) estaba diseñada desde el [mapa](../../../../map.md) ("la vitrina: qué es plan-b y la puerta a Explorar y Buscar") y ninguna story la pedía, así que la sostenía sólo una garantía transversal ([US-171](../../../../guarantees/README.md#stories)), que vale para las 34 pantallas y no justifica ninguna.
+Es la story que faltaba: [La entrada](../../screens/SC-004-entrance/README.md) estaba diseñada desde el [mapa](../../../../map.md) ("la vitrina: qué es plan-b y la puerta a Explorar y Buscar") y ninguna story la pedía, así que la sostenía sólo una garantía transversal ([US-171](../../../../guarantees/README.md#stories)), que vale para las 33 pantallas y no justifica ninguna.
 
 **Por qué al azar entre las que pasaron el piso**: elegir la de más voces es un destacado disfrazado, y elegir cualquiera al azar entre todas puede caer en una cátedra que todavía está juntando sus primeras reseñas, sin nada que mostrar. El piso de publicación ya existe para las cátedras ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)): reusarlo acá resuelve la tensión con [US-171](../../../../guarantees/README.md#stories) sin inventar un mecanismo nuevo.

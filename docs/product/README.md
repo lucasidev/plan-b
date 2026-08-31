@@ -76,7 +76,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-001` | Elegir dónde estudiar | [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) | sin slug hoy |
 | `SC-002` |  | [Ficha de cátedra](student/choose-where-to-study/screens/SC-002-chair/README.md) | sin slug hoy |
 | `SC-003` |  | [Explorar](student/choose-where-to-study/screens/SC-003-explore/README.md) | `/universities` |
-| `SC-004` |  | [Inicio](student/choose-where-to-study/screens/SC-004-home/README.md) | `/` |
+| `SC-004` |  | [La entrada](student/choose-where-to-study/screens/SC-004-entrance/README.md) | `/` |
 | `SC-005` |  | [Ficha de institución](reviewed/reply/screens/SC-005-institution/README.md) | `/universities/[slug]/careers` |
 | `SC-006` |  | [Buscar](student/choose-where-to-study/screens/SC-006-search/README.md) | sin slug hoy |
 | `SC-007` |  | [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md) | `/subjects/[id]` |

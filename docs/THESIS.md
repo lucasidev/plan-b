@@ -90,7 +90,7 @@ Rehecho el 2026-08-25. La base son [ADR-0082](decisions/0082-the-review-captures
 Nada de esto es neutral.
 
 - El nombre del alumno NUNCA aparece. El de la cátedra sí, porque dictar es un acto público y responder también: la respuesta del reseñado se publica con nombre, contra los números agregados de su ficha.
-- Aportar pide cuenta, no constancia: si todos se tienen que verificar, el muro queda antes del valor y no hay corpus. El que prueba su condición de alumno suma una señal que viaja con el dato: verificarse pesa, no habilita. Y jamás mostramos quién es nadie; sin eso, el que más tiene para contar es el que más tiene para perder.
+- Aportar pide cuenta, no constancia: si todos se tienen que verificar, el muro queda antes del valor y no hay corpus. El que prueba su condición de alumno suma una señal que viaja con el dato: verificarse pesa, no habilita. Y jamás mostramos quién es nadie; sin eso, el que más tiene para decir es el que más tiene para perder.
 - El anonimato es mecanismo, no declaración: ninguna reseña individual se muestra, ni cómo terminó nadie; el texto libre no se publica; y una cátedra no publica hasta juntar 10 reseñas, porque en un grupo chico el titular deduce quién dijo qué. Ese piso protege al que reseña, no a la institución, y el contrato se le dice en la cara antes de enviar.
 - La ficha se ve antes de reseñar. Cegarla sería fricción contra el que aporta gratis; el contrapeso del contagio es mostrar la dispersión temporal de las reseñas, siempre.
 

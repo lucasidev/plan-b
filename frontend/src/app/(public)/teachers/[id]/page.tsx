@@ -65,7 +65,7 @@ function RemovedNotice() {
             Este docente ya no figura en el catálogo.
           </p>
           <p className="mt-2 text-sm text-ink-3">
-            Lo que se contó de sus cátedras se conserva, pero el perfil fue dado de baja.
+            Lo que se reseñó de sus cátedras se conserva, pero el perfil fue dado de baja.
           </p>
         </section>
       </main>

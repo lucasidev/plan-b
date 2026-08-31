@@ -8,7 +8,7 @@ type HomePath = {
 };
 
 /**
- * Los tres caminos a lo que el producto hace hoy (ADR-0086): leer fichas, contar una
+ * Los tres caminos a lo que el producto hace hoy (ADR-0086): leer fichas, reseñar una
  * cursada, y ver lo que ya aportaste. Ninguno vive en el sidebar del área (member, ver
  * `lib/member-shell.ts`, que solo lista Inicio y Mis aportes), así que esta lista es la
  * única puerta a `/universities` y a `/reviews/new` dentro de la app ya logueada.
@@ -26,13 +26,13 @@ const PATHS: readonly HomePath[] = [
   },
   {
     href: '/reviews/new',
-    title: 'Contar una cursada',
+    title: 'Reseñar una cursada',
     body: 'Un minuto y medio, marcando opciones.',
   },
   {
     href: '/reviews/mine',
     title: 'Mis aportes',
-    body: 'Lo que contaste hasta ahora, para corregirlo o sacarlo.',
+    body: 'Lo que reseñaste hasta ahora, para corregirlo o sacarlo.',
   },
 ];
 

@@ -48,7 +48,7 @@ test.describe('Reseñar una cursada (US-146)', () => {
     // Se llega como llega un alumno: por el botón que vive en el topbar de toda pantalla.
     await page.getByRole('link', { name: /escribir reseña/i }).click();
     await expect(page).toHaveURL(/\/reviews\/new$/, { timeout: 30_000 });
-    await expect(page.getByRole('heading', { name: /contá tu cursada/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /reseñá tu cursada/i })).toBeVisible();
 
     // Paso 1: la materia. Hasta elegirla, la pantalla no sabe qué cátedras mostrar.
     await expect(page.getByText(/elegí primero la materia/i)).toBeVisible();

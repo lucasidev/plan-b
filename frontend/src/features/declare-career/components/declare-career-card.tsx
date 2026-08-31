@@ -32,7 +32,7 @@ export function DeclareCareerCard() {
       <h2 className="text-base font-semibold text-ink-1">Todavía no sabemos qué cursás</h2>
       <p className="mt-1 text-sm text-ink-3">
         Con tu carrera podemos mostrarte tus materias y sus cátedras. Es lo único que te
-        preguntamos: el resto sale de lo que cuentes.
+        preguntamos: el resto sale de lo que reseñes.
       </p>
 
       <form action={formAction} className="mt-5 space-y-4">
