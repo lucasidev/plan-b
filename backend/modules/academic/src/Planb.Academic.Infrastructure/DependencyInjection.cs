@@ -28,6 +28,7 @@ using Planb.Academic.Infrastructure.Persistence;
 using Planb.Academic.Infrastructure.Persistence.Repositories;
 using Planb.Academic.Infrastructure.Reading;
 using Planb.Academic.Infrastructure.Seeding;
+using Planb.Academic.Application.Features.AdminChairs;
 
 namespace Planb.Academic.Infrastructure;
 
@@ -78,6 +79,9 @@ public static class DependencyInjection
 
         // US-196: cátedras
         services.AddScoped<IChairRepository, ChairRepository>();
+
+        // Las cátedras de una materia para el backoffice, con su equipo y sus tramos (US-196).
+        services.AddScoped<IAdminChairReader, DapperAdminChairReader>();
 
         // US-060: admin CRUD de universidades
         services.AddScoped<IUniversityRepository, UniversityRepository>();
