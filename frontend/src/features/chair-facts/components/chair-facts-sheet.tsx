@@ -231,16 +231,19 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
 }
 
 /**
- * El pie. El boceto lleva además "¿Cómo calculamos esto?" hacia Método y "Bajar los datos" hacia
- * el CSV: las dos pantallas son de otra épica (Llevarse los datos) y todavía no existen, así que
- * acá no van. Un link a una pantalla inexistente es peor que no ofrecerla.
+ * El pie. Lleva a Método, que es lo que hace auditable todo lo de arriba: un conteo sin su regla
+ * publicada es "confiá en mí". Falta "Bajar los datos" hacia el CSV, que es otra story de la misma
+ * épica y todavía no existe; un link a una pantalla inexistente es peor que no ofrecerla.
  */
 function Footer({ facts }: { facts: ChairFacts }) {
   return (
     <div className="flex items-center justify-between gap-2.5">
-      <span className="text-[12px] text-ink-3">
-        {facts.subjectCode} · {facts.subjectName}
-      </span>
+      <Link
+        href="/method"
+        className="text-[12px] text-accent-ink underline-offset-2 hover:underline"
+      >
+        ¿Cómo calculamos esto?
+      </Link>
       <Link
         href="/reviews/new"
         className="whitespace-nowrap rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
