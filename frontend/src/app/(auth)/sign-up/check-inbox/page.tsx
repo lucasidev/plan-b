@@ -1,5 +1,6 @@
 import { MailCheck } from 'lucide-react';
 import Link from 'next/link';
+import { AuthCard } from '@/components/layout/auth-card';
 import { ResendVerificationButton } from '@/features/resend-verification';
 import { cn } from '@/lib/utils';
 
@@ -13,10 +14,9 @@ type Props = {
  * from here; the verification email is dispatched by the backend's UserRegistered
  * domain event handler asynchronously.
  *
- * Centered single-card layout (no AuthSplit). This is a transition screen, not a
- * marketing surface: the user already converted, we are just telling them what to do
- * next. The cream background + subtle radial glow keeps it tonally aligned with
- * `/sign-in` and `/sign-up` without reusing the heavier split layout.
+ * Va en `AuthCard`, el shell de las pantallas de transición: la persona ya convirtió y solo le
+ * estamos diciendo qué sigue, así que no lleva la columna de la izquierda que existe para
+ * convencer.
  *
  * Path: `/sign-up/check-inbox`. Lives as a sub-route of sign-up because it is the
  * natural continuation of the flow: registration → "check your inbox" → (click on the
@@ -26,32 +26,8 @@ export default async function CheckInboxPage({ searchParams }: Props) {
   const { email } = await searchParams;
 
   return (
-    <main
-      className="relative min-h-screen overflow-hidden flex items-center justify-center"
-      style={{
-        background: 'linear-gradient(160deg,#fbe5d6_0%,#fbf3ec_60%)',
-        padding: '48px 24px',
-      }}
-    >
-      {/* Two radial glows for warmth, same recipe as AuthSplit's hero column. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 80% 20%, rgb(224 122 77 / 18%) 0, transparent 40%), radial-gradient(circle at 20% 90%, rgb(224 122 77 / 12%) 0, transparent 35%)',
-        }}
-      />
-
-      <div
-        className="relative z-10 flex flex-col items-center text-center bg-bg-card border border-line shadow-card"
-        style={{
-          width: '100%',
-          maxWidth: 480,
-          padding: '48px 40px',
-          borderRadius: 18,
-        }}
-      >
+    <AuthCard>
+      <div className="flex flex-col items-center text-center">
         <div
           className="inline-flex items-center justify-center bg-accent-soft text-accent-ink"
           style={{
@@ -132,6 +108,6 @@ export default async function CheckInboxPage({ searchParams }: Props) {
           </Link>
         </p>
       </div>
-    </main>
+    </AuthCard>
   );
 }

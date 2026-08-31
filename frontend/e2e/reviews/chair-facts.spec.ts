@@ -87,7 +87,7 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await expect(page.getByRole('heading', { name: /cátedra gonz.lez/i })).toBeVisible({
       timeout: 30_000,
     });
-    await expect(page.getByText(/todavía nadie contó cómo es cursar acá/i)).toBeVisible();
+    await expect(page.getByText(/todavía nadie reseñó cómo es cursar acá/i)).toBeVisible();
 
     // ---- 2. Nueve reseñas: la cátedra queda a una del piso.
     for (let i = 0; i < 9; i++) {

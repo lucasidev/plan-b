@@ -31,17 +31,14 @@ export type MemberRoute = {
 export const memberRoutes: readonly MemberRoute[] = [
   // La sección "Mi cuatrimestre" se retiró con Mi carrera (ADR-0086): agrupaba las pantallas del
   // planificador, y la tesis dice que el producto no planifica tu cuatrimestre. Inicio queda con
-  // Mis aportes, que es lo que esta cuenta hace acá.
-  //
-  // El nombre de la sección es una decisión de copy sin ficha que la respalde: "Comunidad" cubre
-  // Mis aportes mejor que Inicio.
+  // Mis aportes, y esas dos van sin encabezado: son la navegación primaria, no un grupo temático.
   {
     path: '/home',
     label: 'Inicio',
     section: 'community',
     shortcut: '⌘1',
   },
-  // Mis aportes: lo que esta cuenta contó, para poder corregirlo o borrarlo (US-165).
+  // Mis aportes: lo que esta cuenta reseñó, para poder corregirlo o borrarlo (US-165).
   {
     path: '/reviews/mine',
     label: 'Mis aportes',
@@ -57,13 +54,15 @@ export const memberRoutes: readonly MemberRoute[] = [
   { path: '/about', label: 'Sobre plan-b', section: 'other' },
 ] as const;
 
+/**
+ * Las secciones del sidebar. La primera va **sin label**: agrupa la navegación primaria, y
+ * ponerle nombre obliga a inventar uno que no está en el glosario (era "Comunidad", que no
+ * describe ni a Inicio ni a Mis aportes). "Otros" separa lo secundario, que sí necesita el corte.
+ */
 export const memberSections: ReadonlyArray<{
   readonly key: MemberRoute['section'];
-  readonly label: string;
-}> = [
-  { key: 'community', label: 'Comunidad' },
-  { key: 'other', label: 'Otros' },
-] as const;
+  readonly label?: string;
+}> = [{ key: 'community' }, { key: 'other', label: 'Otros' }] as const;
 
 /**
  * Derives breadcrumbs from `usePathname()`. The shell currently only shows up to two
@@ -78,23 +77,23 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
   const route = memberRoutes.find((r) => r.path === pathname);
   if (route) {
     const section = memberSections.find((s) => s.key === route.section);
-    return section ? [section.label, route.label] : [route.label];
+    return section?.label ? [section.label, route.label] : [route.label];
   }
 
   // Known patterns for dynamic routes that do not fit into memberRoutes (because they
   // have [param] or nested levels). The topbar shows a friendly copy instead of the raw
   // URL slug.
   if (pathname === '/reviews/new') {
-    return ['Comunidad', 'Contar una cursada'];
+    return ['Reseñar una cursada'];
   }
   if (pathname === '/reviews/mine') {
-    return ['Comunidad', 'Mis aportes'];
+    return ['Mis aportes'];
   }
   if (pathname === '/teacher-claim') {
-    return ['Comunidad', 'Soy docente'];
+    return ['Soy docente'];
   }
   if (pathname === '/verify-teacher') {
-    return ['Comunidad', 'Verificar docente'];
+    return ['Verificar docente'];
   }
 
   // Fallback: split the path into capitalised segments. Better than empty.

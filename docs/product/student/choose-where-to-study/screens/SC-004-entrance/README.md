@@ -1,4 +1,4 @@
-# Inicio (la pantalla)
+# La entrada (la pantalla)
 
 > Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: construida el 2026-08-27 (R2). El [boceto mid-fi](sketch.html) quedó rebasado en su contenido: su ejemplo de ficha es de la medición anterior al 2026-08-25 ([ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)), y lo que vale de él es la estructura de bloques. Pública, se lee sin cuenta. Slug `/`.
 

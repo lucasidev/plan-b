@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * La banda final de la entrada. Cierra con la única acción que pide cuenta: contar una cursada.
+ * La banda final de la entrada. Cierra con la única acción que pide cuenta: reseñar una cursada.
  *
  * Antes cerraba con "empezá a planificar el cuatrimestre que viene", que era el producto retirado
  * (ADR-0063). Y sigue sin ser un muro: quien no quiere cuenta ya leyó todo lo de arriba, que es la
@@ -25,7 +25,7 @@ export function LpCtaFinal() {
               color: 'var(--color-bg)',
             }}
           >
-            ¿Cursaste alguna? Contala.
+            ¿Cursaste alguna? Reseñala.
           </h2>
           <p className="text-ink-4" style={{ marginTop: 8, fontSize: 14, maxWidth: '56ch' }}>
             Un minuto y medio, marcando opciones. Lo tuyo se suma a los conteos de tu cátedra y no

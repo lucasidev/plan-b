@@ -161,7 +161,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     await page.getByRole('button', { name: /^borrar$/i }).click();
     await expect(page.getByText(/sus respuestas dejan de contar/i)).toBeVisible();
     await page.getByRole('button', { name: /sí, borrarla/i }).click();
-    await expect(page.getByText(/todavía no contaste ninguna cursada/i)).toBeVisible({
+    await expect(page.getByText(/todavía no reseñaste ninguna cursada/i)).toBeVisible({
       timeout: 30_000,
     });
 

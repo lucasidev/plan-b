@@ -36,7 +36,7 @@ export default function SignUpPage() {
       stepName="Crear cuenta"
       leftPanel={LEFT_PANEL}
       title="Empezá en 30 segundos"
-      sub="Tu mail confirma que la cuenta es tuya. Ninguna reseña se muestra sola: lo que contás entra en los conteos de la cátedra."
+      sub="Tu mail confirma que la cuenta es tuya. Ninguna reseña se muestra sola: tu reseña entra en los conteos de la cátedra."
       foot={FOOT}
     >
       <SignUpForm />

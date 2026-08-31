@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
  * probaría uno y después usaría otro distinto.
  *
  * Los dos CTA son de **lectura** y no de registro. Pedirle cuenta a alguien que todavía no entendió
- * qué es esto invierte el orden: primero se ve el dato, y recién si cursaste tiene sentido contar
+ * qué es esto invierte el orden: primero se ve el dato, y recién si cursaste tiene sentido reseñar
  * lo tuyo (US-168).
  *
  * El "diez" del título es el piso de publicación real (ADR-0083), no una cifra retórica. Cualquier

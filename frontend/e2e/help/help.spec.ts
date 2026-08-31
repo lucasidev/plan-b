@@ -35,9 +35,7 @@ test.describe('Ayuda (US-073)', () => {
     // Las 5 entries del FAQ, reescritas al producto vigente (ADR-0082 a ADR-0084).
     await expect(page.getByRole('button', { name: /qué se reseña/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /por qué no hay puntaje/i })).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: /por qué lo que contás es anónimo/i }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: /por qué tu reseña es anónima/i })).toBeVisible();
     await expect(
       page.getByRole('button', { name: /qué pasa con lo que escribís al final/i }),
     ).toBeVisible();

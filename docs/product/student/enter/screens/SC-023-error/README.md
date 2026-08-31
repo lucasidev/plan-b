@@ -28,7 +28,7 @@ Ningún stack trace, código HTTP ni jerga técnica; ninguna culpa al usuario ("
 
 ## Adónde va
 
-Aparece donde haga falta, en cualquier pantalla que no pueda cargar: no llega desde un lugar fijo. Va a: [Explorar](../../../choose-where-to-study/screens/SC-003-explore/README.md), [Inicio](../../../choose-where-to-study/screens/SC-004-home/README.md), o donde se retoma lo que quedó a medias.
+Aparece donde haga falta, en cualquier pantalla que no pueda cargar: no llega desde un lugar fijo. Va a: [Explorar](../../../choose-where-to-study/screens/SC-003-explore/README.md), [La entrada](../../../choose-where-to-study/screens/SC-004-entrance/README.md), o donde se retoma lo que quedó a medias.
 
 ## Decisiones que aplica
 

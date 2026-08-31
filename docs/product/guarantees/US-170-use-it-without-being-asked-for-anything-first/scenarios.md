@@ -6,7 +6,7 @@
 
 **E1.** Dado que Matías termina de registrarse,
 Cuando el producto lo deja donde entró,
-Entonces puede leer una ficha o contar una cursada sin que nada le pida completar un dato primero.
+Entonces puede leer una ficha o reseñar una cursada sin que nada le pida completar un dato primero.
 
 **E2.** Dado que alguien llega de un link a una ficha de cátedra, sin cuenta,
 Cuando la abre,

@@ -123,7 +123,7 @@ export function CourseReviewForm({ instrument, subjects, terms }: CourseReviewFo
 
       <header>
         <h1 className="font-serif text-[28px] leading-tight font-semibold text-ink">
-          Contá tu cursada
+          Reseñá tu cursada
         </h1>
         <p className="mt-1 text-[13px] text-ink-2">
           Un minuto y medio. Saltear también vale, y nada sale con tu nombre.
@@ -276,7 +276,7 @@ export function CourseReviewForm({ instrument, subjects, terms }: CourseReviewFo
           onChange={(e) => setFreeText(e.target.value)}
           rows={3}
           maxLength={2000}
-          placeholder="Contalo con tus palabras…"
+          placeholder="Decilo con tus palabras…"
           className="w-full rounded-sm border border-line bg-bg px-3 py-2.5 text-[13px] text-ink placeholder:text-ink-4"
         />
         <p className="mt-2 text-[12px] text-ink-3">

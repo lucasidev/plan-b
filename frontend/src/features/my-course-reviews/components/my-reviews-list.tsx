@@ -9,7 +9,7 @@ import type { MyCourseReview } from '../types';
 import { ReviewEditor } from './review-editor';
 
 /**
- * Mis aportes (US-165, US-166): lo que esta cuenta contó, para poder corregirlo o borrarlo.
+ * Mis aportes (US-165, US-166): lo que esta cuenta reseñó, para poder corregirlo o borrarlo.
  *
  * Es el único lugar del producto donde una reseña se ve de a una, y solo la ve quien la escribió.
  * Todo lo que se publica es agregado: la ficha nunca muestra una reseña individual, ni siquiera
@@ -42,10 +42,10 @@ export function MyReviewsList({
     return (
       <div className="rounded-xl border border-line bg-bg-card p-6">
         <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
-          Todavía no contaste ninguna cursada.
+          Todavía no reseñaste ninguna cursada.
         </p>
         <p className="mb-4 text-[13px] leading-relaxed text-ink-3">
-          Lo que cuentes acá se publica solo en conteos, junto con lo de los demás. Nunca se muestra
+          Lo que reseñes acá se publica solo en conteos, junto con lo de los demás. Nunca se muestra
           una reseña sola, ni con tu nombre ni sin él.
         </p>
         <Link
@@ -53,7 +53,7 @@ export function MyReviewsList({
           className="inline-block rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
           style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
         >
-          Contar una cursada
+          Reseñar una cursada
         </Link>
       </div>
     );

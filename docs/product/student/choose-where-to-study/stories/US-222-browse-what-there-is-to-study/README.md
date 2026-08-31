@@ -16,7 +16,7 @@ Como quien está eligiendo, quiero ver qué carreras y qué instituciones hay an
 ## Dónde se resuelve
 
 - [Explorar](../../screens/SC-003-explore/README.md): las dos lentes, cada entrada con sus voces y su cobertura, y el vacío en sus tres estados.
-- [Inicio](../../screens/SC-004-home/README.md): desde donde se llega, junto con Buscar.
+- [La entrada](../../screens/SC-004-entrance/README.md): desde donde se llega, junto con Buscar.
 
 ## Notas
 

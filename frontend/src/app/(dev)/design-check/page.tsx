@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { AuthSplit } from '@/components/layout/auth-split';
+import { AuthCard } from '@/components/layout/auth-card';
 import {
   Button,
   Card,
@@ -16,21 +16,11 @@ import {
 // Hoisted heading element to avoid a new ref on every render
 // (react-doctor/jsx-no-jsx-as-prop rule). Since this page is internal-only and
 // static, the heading can live in module scope.
-const AUTH_SPLIT_DEMO_HEADING = (
-  <DisplayHeading size={48}>
-    Antes de inscribirte,
-    <br />
-    mirá <em>quiénes ya pasaron</em>
-    <br />
-    por esa materia.
-  </DisplayHeading>
-);
-
 /**
  * Internal Storybook-lite for the design system primitives. Hidden behind
  * NEXT_PUBLIC_DESIGN_CHECK=1 so it never ships to a real environment.
  *
- * Use this to eyeball every primitive on its own and inside the AuthSplit
+ * Use this to eyeball every primitive on its own and inside the AuthCard
  * shell after every token tweak. Removed (or kept gated) in later PRs.
  */
 export default function DesignCheckPage() {
@@ -45,7 +35,7 @@ export default function DesignCheckPage() {
         </DisplayHeading>
         <Lede>
           Render de cada primitiva de <code className="font-mono">@/components/ui</code> + el shell{' '}
-          <code className="font-mono">AuthSplit</code>. Si algo se ve raro acá, se va a ver raro en
+          <code className="font-mono">AuthCard</code>. Si algo se ve raro acá, se va a ver raro en
           producto.
         </Lede>
       </header>
@@ -133,12 +123,9 @@ export default function DesignCheckPage() {
         </div>
       </Section>
 
-      <Section title="AuthSplit">
+      <Section title="AuthCard">
         <div className="border border-line rounded overflow-hidden h-[600px]">
-          <AuthSplit
-            heading={AUTH_SPLIT_DEMO_HEADING}
-            description="Lo que sabés de una materia porque la cursaste vive suelto en grupos y pasillos. Acá se junta: cuántos dicen lo mismo, de qué años, y cuántos son."
-          >
+          <AuthCard>
             <div className="space-y-4">
               <Eyebrow>Form column</Eyebrow>
               <p className="text-ink-2 text-sm">
@@ -147,7 +134,7 @@ export default function DesignCheckPage() {
               </p>
               <Button variant="accent">CTA principal</Button>
             </div>
-          </AuthSplit>
+          </AuthCard>
         </div>
       </Section>
     </div>

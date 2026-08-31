@@ -21,7 +21,7 @@ const STEPS = [
   },
   {
     n: '3',
-    title: 'Contá tu cursada',
+    title: 'Reseñá tu cursada',
     body: 'Un minuto y medio, marcando opciones. Acá sí hace falta cuenta, y nada sale con tu nombre.',
   },
 ] as const;

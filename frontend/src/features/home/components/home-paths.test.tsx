@@ -3,14 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { HomePaths } from './home-paths';
 
 describe('HomePaths', () => {
-  it('linkea a explorar el catálogo, contar una cursada y mis aportes', () => {
+  it('linkea a explorar el catálogo, reseñar una cursada y mis aportes', () => {
     render(<HomePaths />);
 
     expect(screen.getByRole('link', { name: /explorar carreras y materias/i })).toHaveAttribute(
       'href',
       '/universities',
     );
-    expect(screen.getByRole('link', { name: /contar una cursada/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /reseñar una cursada/i })).toHaveAttribute(
       'href',
       '/reviews/new',
     );

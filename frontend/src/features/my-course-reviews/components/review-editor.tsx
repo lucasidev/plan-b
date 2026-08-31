@@ -17,7 +17,7 @@ import type { MyCourseReview } from '../types';
  * también **dejar de contestar** algo. En ese caso la respuesta desaparece y su ítem vuelve a no
  * contarla en el denominador. Por eso el formulario manda el set completo y no un delta.
  *
- * Y como en la pantalla de contar, ninguna opción se pinta de alarma mientras se responde.
+ * Y como en la pantalla de reseñar, ninguna opción se pinta de alarma mientras se responde.
  */
 export function ReviewEditor({
   review,
@@ -102,7 +102,7 @@ export function ReviewEditor({
 
       <label className="mb-4 block">
         <span className="mb-1.5 block text-[13px] text-ink">
-          ¿Algo más que quieras contar? (no se publica)
+          ¿Algo más que quieras decir? (no se publica)
         </span>
         <textarea
           value={freeText}

@@ -27,7 +27,7 @@ flowchart TD
 
 ## Pantallas
 
-- [Inicio](screens/SC-004-home/README.md): el punto de entrada cuando no llega por un link, un buscador o una recomendación directa (nodo A).
+- [La entrada](screens/SC-004-entrance/README.md): el punto de entrada cuando no llega por un link, un buscador o una recomendación directa (nodo A).
 - [Explorar](screens/SC-003-explore/README.md): las dos lentes, carreras y universidades (nodo B).
 - [Buscar](screens/SC-006-search/README.md): la única búsqueda que devuelve los cuatro sujetos con ficha (nodo S).
 - [Ficha de cátedra](screens/SC-002-chair/README.md): destino de buscar un docente (nodo S1), y la ficha a la que se llega a leer cátedra por cátedra (nodo E2).

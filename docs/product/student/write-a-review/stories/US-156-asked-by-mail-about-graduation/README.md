@@ -5,7 +5,7 @@
 
 ## Historia
 
-Como quien ya no entra a la app, quiero que me pregunten por mail si me recibí, porque no voy a volver solo para contarlo.
+Como quien ya no entra a la app, quiero que me pregunten por mail si me recibí, porque no voy a volver solo para decirlo.
 
 ## Listo cuando
 
