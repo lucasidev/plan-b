@@ -347,7 +347,12 @@ function ChairRow({ chair, last }: { chair: SubjectChair; last: boolean }) {
 function Footer({ facts }: { facts: SubjectFacts }) {
   return (
     <div className="flex items-center justify-between gap-2.5">
-      <span className="text-[12px] text-ink-3">{facts.subjectCode}</span>
+      <Link
+        href="/method"
+        className="text-[12px] text-accent-ink underline-offset-2 hover:underline"
+      >
+        ¿Cómo calculamos esto?
+      </Link>
       <Link
         href="/reviews/new"
         className="whitespace-nowrap rounded-lg px-3.5 py-[9px] text-[13px] font-medium"

@@ -32,7 +32,7 @@ const FAQ_ITEMS = [
  * importa.
  *
  * Dos contestan lo que el producto decidió **no** hacer (no hay puntaje, no se publica bajo el
- * piso). Están acá y no en Método porque Método todavía no existe como pantalla, y porque son
+ * piso). Están acá además de en Método porque son
  * exactamente las dos que hacen dudar a quien llega.
  */
 export function LpFaq() {
