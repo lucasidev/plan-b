@@ -69,7 +69,11 @@ export function groupByChair(
     }
   }
 
+  // Por la cursada reseñada más recientemente, no alfabético ni por cercanía al piso. La story
+  // pregunta qué pasó con lo que dijiste, en pasado, y lo reciente es el orden en que la persona
+  // lo tiene en la cabeza. Ordenar por cuánto le falta a cada cátedra contesta otra pregunta (qué
+  // te conviene hacer ahora) y convierte Inicio en una cola de tareas.
   return [...byChair.values()]
-    .map(({ latest: _latest, ...chair }) => chair)
-    .sort((a, b) => a.chairName.localeCompare(b.chairName, 'es'));
+    .sort((a, b) => b.latest.localeCompare(a.latest))
+    .map(({ latest: _latest, ...chair }) => chair);
 }

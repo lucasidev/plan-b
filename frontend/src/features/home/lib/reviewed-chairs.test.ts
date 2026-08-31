@@ -58,14 +58,32 @@ describe('groupByChair', () => {
     expect(chairs[0].voices).toBeNull();
   });
 
-  it('ordena alfabéticamente por cátedra, no por lo que devuelva el endpoint', () => {
+  it('ordena por la cursada más reciente, no por lo que devuelva el endpoint', () => {
     const chairs = groupByChair([
-      review({ chairId: 'c', chairName: 'Quiroga' }),
-      review({ chairId: 'a', chairName: 'Álvarez' }),
-      review({ chairId: 'b', chairName: 'Pérez' }),
+      review({ chairId: 'a', chairName: 'Álvarez', createdAt: '2026-01-01T00:00:00Z' }),
+      review({ chairId: 'c', chairName: 'Quiroga', createdAt: '2026-06-01T00:00:00Z' }),
+      review({ chairId: 'b', chairName: 'Pérez', createdAt: '2026-03-01T00:00:00Z' }),
     ]);
 
-    expect(chairs.map((c) => c.chairName)).toEqual(['Álvarez', 'Pérez', 'Quiroga']);
+    expect(chairs.map((c) => c.chairName)).toEqual(['Quiroga', 'Pérez', 'Álvarez']);
+  });
+
+  it('no ordena por cercanía al piso: eso contestaría qué te conviene hacer, no qué pasó', () => {
+    const tallies = new Map([
+      ['a', { reviewCount: 2, isPublished: false, reviewsMissingToPublish: 8 }],
+      ['b', { reviewCount: 9, isPublished: false, reviewsMissingToPublish: 1 }],
+    ]);
+
+    const chairs = groupByChair(
+      [
+        review({ chairId: 'a', chairName: 'Álvarez', createdAt: '2026-06-01T00:00:00Z' }),
+        review({ chairId: 'b', chairName: 'Pérez', createdAt: '2026-01-01T00:00:00Z' }),
+      ],
+      tallies,
+    );
+
+    // La que está a una del piso va segunda, porque su cursada es más vieja.
+    expect(chairs.map((c) => c.chairName)).toEqual(['Álvarez', 'Pérez']);
   });
 
   it('sin reseñas devuelve lista vacía, para que la pantalla decida no dibujar nada', () => {
