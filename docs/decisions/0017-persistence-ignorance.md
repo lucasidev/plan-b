@@ -57,7 +57,7 @@ Descartada tras discusión: introduce inconsistencia en la política. La semánt
 **Negativas:**
 
 - Si un bug en el application layer falla en validar una referencia, Postgres no va a atraparlo: puede crearse una Review con `enrollment_id` inexistente (orphan row). Esto es un bug de código, trackeable y solucionable, no un defecto del sistema.
-- Analítica cross-module que necesita JOIN (dashboard institucional) tiene dos caminos: read models denormalizados mantenidos por integration events, o Dapper cross-schema saltando el DbContext. Ambos son válidos y vivendo en Infrastructure.
+- Un módulo que necesita datos de otro no los puede leer de su tabla. Cómo los obtiene lo decide [ADR-0087](0087-a-module-reads-another-modules-data-through-its-contract.md): por contrato en lote para mostrarlos, con una proyección propia para filtrar u ordenar por ellos.
 
 **Reglas derivadas:**
 

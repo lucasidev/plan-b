@@ -13,7 +13,7 @@ namespace Planb.Reviews.Application.Features.DeleteCourseReview;
 ///
 /// <para>
 /// 204 cuando se borró. Una reseña ajena o inexistente devuelve 404 sin distinguir cuál de las dos
-/// es: decir "existe pero no es tuya" ya sería contar que alguien reseñó esa cursada.
+/// es: decir "existe pero no es tuya" ya sería decir que alguien reseñó esa cursada.
 /// </para>
 /// </summary>
 public sealed class DeleteCourseReviewEndpoint : ICarterModule

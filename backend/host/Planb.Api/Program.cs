@@ -13,6 +13,7 @@ using Planb.Identity.Infrastructure.Security;
 using Planb.Reviews.Application;
 using Planb.Reviews.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.Persistence;
 using Planb.SharedKernel.Abstractions.DomainEvents;
 using Serilog;
 using StackExchange.Redis;
@@ -60,6 +61,10 @@ builder.Host.UseSerilog((ctx, services, config) =>
 // SharedKernel services
 // ------------------------------------------------------------------
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+// Las lecturas Dapper de los tres modulos abren su conexion por aca. Singleton porque solo
+// guarda el connection string, y validarlo al construirse hace que un config incompleto
+// explote al levantar y no en el primer request que toque un servicio de lectura.
+builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddScoped<IDomainEventPublisher, WolverineDomainEventPublisher>();
 
 var connectionString = builder.Configuration.GetConnectionString("Planb")

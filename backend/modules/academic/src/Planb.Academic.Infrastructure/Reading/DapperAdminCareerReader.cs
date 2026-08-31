@@ -1,9 +1,7 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Domain.Universities;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -15,14 +13,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperAdminCareerReader : IAdminCareerReader
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAdminCareerReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAdminCareerReader.");
-    }
+    public DapperAdminCareerReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<AdminCareerListItem>> ListByUniversityAsync(
         UniversityId universityId, CancellationToken ct = default)
@@ -43,7 +37,7 @@ internal sealed class DapperAdminCareerReader : IAdminCareerReader
             WHERE c.university_id = @UniversityId
             ORDER BY c.name ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<AdminCareerListItem>(
             new CommandDefinition(
                 sql, new { UniversityId = universityId.Value }, cancellationToken: ct));

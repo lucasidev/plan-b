@@ -1,8 +1,6 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Identity.Application.Contracts;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Identity.Infrastructure.Reading;
 
@@ -16,14 +14,10 @@ namespace Planb.Identity.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperIdentityQueryService : IIdentityQueryService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperIdentityQueryService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperIdentityQueryService.");
-    }
+    public DapperIdentityQueryService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<bool> HasVerifiedTeacherProfileAsync(
         Guid userId, Guid teacherId, CancellationToken ct = default)
@@ -37,7 +31,7 @@ internal sealed class DapperIdentityQueryService : IIdentityQueryService
                   AND verified_at IS NOT NULL
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(
                 sql, new { UserId = userId, TeacherId = teacherId }, cancellationToken: ct));

@@ -87,6 +87,11 @@ internal sealed class ChairConfiguration : IEntityTypeConfiguration<Chair>
             // since_term_id) es una fila distinta.
             cm.HasKey("chair_id", "TeacherId", "SinceTermId");
 
+            // La ficha pública de un docente lista sus cátedras filtrando por `teacher_id`,
+            // que en la PK va segundo: un btree no puede usar un índice compuesto sin su
+            // columna líder, así que esa lectura barre la tabla sin este índice.
+            cm.HasIndex("TeacherId").HasDatabaseName("ix_chair_members_teacher");
+
             // Mismo criterio que CommissionTeacherRole: string, no int, para que agregar un rol no
             // rompa filas ya persistidas con el valor numérico de otro rol.
             cm.Property(m => m.Role)

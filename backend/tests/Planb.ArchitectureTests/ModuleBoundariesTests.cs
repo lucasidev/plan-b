@@ -49,6 +49,22 @@ public class ModuleBoundariesTests
             FailureMessage(module, result, "Domain debería ser persistence-ignorant (ADR-0017)"));
     }
 
+    // El driver, aparte de EF: las lecturas Dapper abren su conexión por `IDbConnectionFactory`,
+    // cuya firma toca solo el BCL y cuya implementación vive en el host. Sin este test, meter
+    // Npgsql en el dominio no rompía nada, porque el de arriba solo mira EntityFrameworkCore.
+    [Theory]
+    [MemberData(nameof(Modules))]
+    public void Domain_does_not_reference_Npgsql(string module)
+    {
+        var result = Types.InAssembly(DomainOf(module))
+            .Should()
+            .NotHaveDependencyOn("Npgsql")
+            .GetResult();
+
+        result.IsSuccessful.ShouldBeTrue(
+            FailureMessage(module, result, "Domain debería ser persistence-ignorant (ADR-0017)"));
+    }
+
     [Theory]
     [MemberData(nameof(Modules))]
     public void Domain_does_not_reference_AspNetCore(string module)
