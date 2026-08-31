@@ -15,7 +15,7 @@ namespace Planb.IntegrationTests.Reviews;
 ///
 /// <para>
 /// Lo que más importa acá es lo que NO se puede hacer: una reseña ajena tiene que responder 404 y
-/// no 403, porque decir "existe pero no es tuya" ya sería contarle a alguien que otra persona
+/// no 403, porque decir "existe pero no es tuya" ya sería decirle a alguien que otra persona
 /// reseñó esa cursada. El anonimato no se filtra ni por un código de error.
 /// </para>
 /// </summary>
@@ -153,7 +153,7 @@ public class MyCourseReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         var again = await auth.Client.DeleteAsync($"/api/reviews/cursadas/{id}");
         again.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
-        // Y borrarla libera la cursada: se puede volver a contar la misma materia y período.
+        // Y borrarla libera la cursada: se puede volver a reseñar la misma materia y período.
         var republished = await PublishAsync(auth, Term2024_1c);
         republished.ShouldNotBe(id);
     }
@@ -165,7 +165,7 @@ public class MyCourseReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         var stranger = await StudentAsync("stranger");
         var id = await PublishAsync(author, Term2024_2c);
 
-        // 403 diría "existe, pero no es tuya", y eso ya es contar que alguien reseñó esa cursada.
+        // 403 diría "existe, pero no es tuya", y eso ya es decir que alguien reseñó esa cursada.
         var revised = await stranger.Client.PutAsJsonAsync(
             $"/api/reviews/cursadas/{id}",
             new { answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = 1 } }, freeText = (string?)null });

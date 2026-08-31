@@ -11,9 +11,27 @@ namespace Planb.Reviews.Application.Abstractions.Persistence;
 /// </summary>
 public interface IMyCourseReviewsQueryService
 {
-    Task<IReadOnlyList<MyCourseReviewView>> ListAsync(
+    /// <summary>
+    /// Las reseñas crudas de una cuenta: todo lo que <c>reviews</c> sabe, y nada del catálogo.
+    /// Los nombres los compone el handler pidiéndoselos a academic por contrato.
+    /// </summary>
+    Task<IReadOnlyList<MyCourseReviewRow>> ListAsync(
         Guid accountId, CancellationToken ct = default);
 }
+
+/// <summary>
+/// Una reseña propia como la guarda este módulo: ids del catálogo, no nombres. Es lo que permite
+/// que la consulta no salga del schema <c>reviews</c>.
+/// </summary>
+public sealed record MyCourseReviewRow(
+    Guid Id,
+    Guid SubjectId,
+    Guid TermId,
+    Guid? ChairId,
+    IReadOnlyList<MyAnswerView> Answers,
+    string? FreeText,
+    DateTimeOffset CreatedAt,
+    DateTimeOffset UpdatedAt);
 
 /// <summary>
 /// Una reseña propia como la ve su autor: qué cursada fue, cuánto respondió y qué escribió.

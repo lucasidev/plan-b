@@ -1,8 +1,6 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Reviews.Application.Abstractions.Persistence;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
@@ -20,14 +18,10 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// </summary>
 internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQueryService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperCareerCoverageQueryService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperCareerCoverageQueryService.");
-    }
+    public DapperCareerCoverageQueryService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<CareerCoverage> GetCoverageAsync(
         Guid careerId, int minimumReviews, CancellationToken ct = default)
@@ -58,7 +52,7 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                 (SELECT count(*)::int FROM plan_subjects) AS TotalSubjects,
                 (SELECT count(DISTINCT subject_id)::int FROM covered_chairs) AS CoveredSubjects;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleAsync<CareerCoverage>(
             new CommandDefinition(
                 sql,

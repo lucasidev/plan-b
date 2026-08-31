@@ -1,9 +1,7 @@
-using System.Data;
 using System.Globalization;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.AdminCommissions;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -21,14 +19,10 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
 {
     private static readonly IReadOnlyList<AdminCommissionScheduleItem> EmptySchedule = [];
 
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAdminCommissionReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAdminCommissionReader.");
-    }
+    public DapperAdminCommissionReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<AdminCommissionListItem>> ListBySubjectAndTermAsync(
         Guid subjectId, Guid termId, CancellationToken ct = default)
@@ -61,7 +55,7 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     ELSE 5
                 END;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
 
         var teacherRows = await db.QueryAsync<CommissionTeacherRow>(
             new CommandDefinition(
@@ -130,7 +124,7 @@ internal sealed class DapperAdminCommissionReader : IAdminCommissionReader
                     ELSE 5
                 END;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
 
         var teacherRows = await db.QueryAsync<TermCommissionTeacherRow>(
             new CommandDefinition(teachersSql, new { TermId = termId }, cancellationToken: ct));

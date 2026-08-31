@@ -2,6 +2,7 @@ using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Planb.Academic.Application.Contracts;
 using Planb.Identity.Application.Abstractions.Security;
 using Planb.Reviews.Application.Abstractions.Persistence;
 
@@ -23,10 +24,12 @@ public sealed class GetMyCourseReviewsEndpoint : ICarterModule
         app.MapGet("/api/reviews/cursadas/me", async (
             HttpContext http,
             IMyCourseReviewsQueryService reviews,
+            IAcademicQueryService academic,
             CancellationToken ct) =>
         {
             var userId = CurrentUser.RequireUserId(http);
-            var mine = await reviews.ListAsync(userId.Value, ct);
+            var mine = await GetMyCourseReviewsQueryHandler.Handle(
+                userId.Value, reviews, academic, ct);
             return Results.Ok(mine);
         })
         .WithName("Reviews_GetMyCourseReviews")

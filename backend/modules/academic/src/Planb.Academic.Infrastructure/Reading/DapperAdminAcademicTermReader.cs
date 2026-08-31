@@ -1,9 +1,7 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.AdminAcademicTerms;
 using Planb.Academic.Domain.Universities;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -12,14 +10,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperAdminAcademicTermReader : IAdminAcademicTermReader
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAdminAcademicTermReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAdminAcademicTermReader.");
-    }
+    public DapperAdminAcademicTermReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<AdminAcademicTermListItem>> ListByUniversityAsync(
         UniversityId universityId, CancellationToken ct = default)
@@ -37,7 +31,7 @@ internal sealed class DapperAdminAcademicTermReader : IAdminAcademicTermReader
             WHERE t.university_id = @UniversityId
             ORDER BY t.year DESC, t.number DESC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<AdminAcademicTermListItem>(
             new CommandDefinition(
                 sql, new { UniversityId = universityId.Value }, cancellationToken: ct));
