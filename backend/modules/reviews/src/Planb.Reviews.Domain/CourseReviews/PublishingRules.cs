@@ -20,6 +20,19 @@ public static class PublishingRules
     public const int ChairMinimumReviews = 10;
 
     /// <summary>
+    /// Cuentas mínimas para publicar que dos materias se llevaron juntas, por par y período
+    /// (US-143, decidido el 2026-08-29).
+    ///
+    /// <para>
+    /// Es un piso propio y no el de la cátedra aunque hoy valgan lo mismo: protegen cosas
+    /// distintas. El de la cátedra existe por la privacidad de quien reseña; este existe porque con
+    /// menos, el número diría más sobre quién se acordó de reseñar que sobre la combinación. Si uno
+    /// se mueve, el otro no tiene por qué seguirlo.
+    /// </para>
+    /// </summary>
+    public const int SubjectPairMinimumReviews = 10;
+
+    /// <summary>
     /// El código del cuestionario de la cursada. Es el instrumento contra el que se responde al
     /// reseñar; el administrativo tiene el suyo y llega con su propio sprint (ADR-0085).
     /// </summary>

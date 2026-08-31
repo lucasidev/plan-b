@@ -33,6 +33,17 @@ public class PublishingRulesTests
     }
 
     /// <summary>
+    /// El par de materias publica desde 10 cuentas que las llevaron juntas en el mismo período. Es
+    /// un piso propio: el de la cátedra protege a quien reseña, este protege al número de decir
+    /// más sobre quién se acordó de reseñar que sobre la combinación (US-143).
+    /// </summary>
+    [Fact]
+    public void A_subject_pair_publishes_from_ten_accounts()
+    {
+        PublishingRules.SubjectPairMinimumReviews.ShouldBe(10);
+    }
+
+    /// <summary>
     /// Llegar al final es aprobar o quedar regular. Recursar y dejar, no: quedar regular es haber
     /// llegado al final de la cursada aunque falte el final (US-148).
     /// </summary>

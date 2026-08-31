@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CatalogTopbar } from '@/features/browse-catalog';
-import type { Distribution, SubjectChair, SubjectFacts } from '../types';
+import type { Distribution, SubjectChair, SubjectFacts, TakenWith } from '../types';
 
 /**
  * La ficha de una materia (SC-007, US-129, ADR-0085).
@@ -30,6 +30,7 @@ export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
           <Empty facts={facts} />
         )}
 
+        <TakenWithBlock facts={facts} />
         <Chairs facts={facts} />
         <Footer facts={facts} />
       </div>
@@ -238,6 +239,70 @@ function SubjectOrChair({ facts }: { facts: SubjectFacts }) {
  *
  * Es además el camino a la ficha de cátedra, que hasta acá no tenía ninguno.
  */
+/**
+ * Con qué otras materias se llevó esta (US-143). Es el dato que la lapicera no puede calcular:
+ * armar el horario lo resuelve cualquiera en quince minutos, saber que 18 de 40 dejaron una de las
+ * dos no lo resuelve nadie solo.
+ *
+ * Va fuera del gate de la materia porque tiene su propio piso, por par y período: un par puede no
+ * publicar aunque la materia sí, y al revés. El que no llega se lista igual con cuánto le falta,
+ * porque esconderlo mentiría sobre lo que hay.
+ */
+function TakenWithBlock({ facts }: { facts: SubjectFacts }) {
+  if (facts.takenWith.length === 0) return null;
+
+  return (
+    <section className="mb-5">
+      <p className="mb-2 text-[12px] text-ink-3">Con qué se llevó</p>
+      <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
+        {facts.takenWith.map((pair, index) => (
+          <TakenWithRow
+            key={`${pair.subjectId}`}
+            pair={pair}
+            last={index === facts.takenWith.length - 1}
+          />
+        ))}
+      </div>
+      <p className="mt-2 text-[11.5px] leading-relaxed text-ink-3">
+        Sale de quienes reseñaron las dos en el mismo período. No dice que una cause la otra: dice
+        cuántos las llevaron juntas y a cuántos se les cayó alguna.
+      </p>
+    </section>
+  );
+}
+
+function TakenWithRow({ pair, last }: { pair: TakenWith; last: boolean }) {
+  return (
+    <div style={{ padding: '10px 0', borderBottom: last ? 0 : '1px solid var(--color-line-2)' }}>
+      <div className="flex items-baseline justify-between gap-2.5">
+        <Link
+          href={`/subjects/${pair.subjectId}`}
+          className="text-[13.5px] text-ink underline-offset-2 hover:underline"
+        >
+          {pair.subjectName}
+        </Link>
+        <span className="whitespace-nowrap font-mono text-[10.5px] text-ink-3">
+          {pair.subjectCode}
+        </span>
+      </div>
+
+      {pair.isPublished ? (
+        <p className="mt-[5px] text-[12.5px] leading-relaxed text-ink-2">
+          {pair.togetherCount} la llevaron junto con esta.{' '}
+          {pair.droppedCount === 0
+            ? 'Ninguno dejó alguna de las dos.'
+            : `${pair.droppedCount} dejaron alguna de las dos.`}
+        </p>
+      ) : (
+        <p className="mt-[5px] text-[12.5px] leading-relaxed text-ink-3">
+          {pair.togetherCount} la llevaron junto con esta: con {pair.missingToPublish} más se
+          publica cómo les fue.
+        </p>
+      )}
+    </div>
+  );
+}
+
 function Chairs({ facts }: { facts: SubjectFacts }) {
   if (facts.chairs.length === 0) return null;
 

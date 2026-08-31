@@ -20,6 +20,7 @@ export interface SubjectFacts {
   enablesCount: number;
   spread: Spread[];
   shared: Shared[];
+  takenWith: TakenWith[];
   chairs: SubjectChair[];
 }
 
@@ -90,3 +91,20 @@ export interface SubjectChair {
   reviewsMissingToPublish: number;
   lastReviewedAt: string | null;
 }
+
+/**
+ * Con qué otra materia se llevó esta, en un período (US-143).
+ *
+ * Tiene su propio piso por par y período, así que un par puede no publicar aunque la materia sí:
+ * que una materia junte cuarenta reseñas no dice nada de una combinación puntual.
+ */
+export type TakenWith = {
+  subjectId: string;
+  subjectName: string;
+  subjectCode: string;
+  togetherCount: number;
+  /** Cuántas cuentas dejaron al menos una de las dos. Solo viaja si el par publica. */
+  droppedCount: number;
+  isPublished: boolean;
+  missingToPublish: number;
+};
