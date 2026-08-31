@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Inicio</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#e8e5dd;font-family:'Geist','Inter',system-ui,sans-serif;color:#191b1f}
+  main{max-width:1240px;margin:0 auto;padding:24px 20px 56px}
+  .lead{font-size:13px;color:#494e57;line-height:1.6;margin:0 0 24px;max-width:78ch}
+  h2{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#7b8089;margin:28px 0 10px}
+  .frame{border:1px solid #d6d2c8;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgb(25 27 31 / 8%)}
+  a{color:#8d2418}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:#7b8089}
+  .card{background:#fffefb;border:1px solid #e2dfd6;border-radius:12px}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .act{color:#8d2418;font-size:11.5px;white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<p class="lead">Boceto de <b>Inicio</b> (<code>/home</code>), el aterrizaje con cuenta, para <a href="../../stories/US-231-see-whether-what-i-reviewed-did-anything/README.md">US-231</a>. Dos bloques: el estado de las catedras que resenaste, que contesta si servio de algo, y la cobertura de la carrera como contexto. Paleta y tipografias del contrato Boletin (<a href="../../../../../decisions/0071-the-visual-language-is-a-bulletin.md">ADR-0071</a>). Los numeros son de ejemplo. Lo que muestra, sus estados y lo que queda abierto, en <a href="README.md">README.md</a>.</p>
+
+<h2>Con resenas</h2>
+<div class="frame">
+<div style="width: 1200px; height: 800px; box-sizing: border-box; display: grid; grid-template-columns: 240px 1fr; background: #f7f5ef; color: #191b1f;">
+
+  <aside style="border-right: 1px solid #e2dfd6; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+    <div style="padding: 0 8px 4px;">
+      <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 17px;">plan-b</span>
+      <span style="display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #8d2418; vertical-align: 6px; margin-left: 2px;"></span>
+    </div>
+    <div class="mono" style="padding: 0 8px 14px; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #a7adb5; line-height: 1.4;">unsta · tecnicatura en desarrollo y calidad de software</div>
+
+    <!-- Sin encabezado de sección: es la navegación primaria, no un grupo temático. -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; border-radius: 7px; background: #fffefb; box-shadow: 0 1px 2px rgb(25 27 31 / 6%); font-size: 12.5px;">
+      <span>Inicio</span><span class="mono" style="font-size: 10px; color: #a7adb5;">⌘1</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; font-size: 12.5px; color: #494e57;">
+      <span>Mis aportes</span><span class="mono" style="font-size: 10px; color: #a7adb5;">⌘4</span>
+    </div>
+
+    <div class="eyebrow" style="padding: 14px 8px 4px;">Otros</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Ajustes</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Ayuda</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Sobre plan-b</div>
+
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; border-top: 1px solid #e2dfd6; padding: 10px 8px 0;">
+      <div class="mono" style="width: 26px; height: 26px; border-radius: 6px; background: #191b1f; color: #fffefb; font-size: 9.5px; display: grid; place-items: center;">LM</div>
+      <div style="min-width: 0;">
+        <div style="font-size: 11.5px;">Lucía Mansilla</div>
+        <div class="mono" style="font-size: 9.5px; color: #7b8089;">4 reseñas</div>
+      </div>
+    </div>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; min-width: 0;">
+
+    <div style="height: 56px; flex-shrink: 0; border-bottom: 1px solid #e2dfd6; display: flex; align-items: center; gap: 16px; padding: 0 24px;">
+      <span class="mono" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #7b8089;">Inicio</span>
+      <div style="flex-grow: 1;"></div>
+      <div class="mono" style="font-size: 11px; color: #a7adb5; border: 1px solid #e2dfd6; border-radius: 8px; padding: 7px 12px; background: #fffefb; min-width: 300px;">Buscar materia, cátedra o docente<span style="float: right;">⌘K</span></div>
+      <div style="background: #191b1f; color: #fffefb; border-radius: 8px; padding: 7px 14px; font-size: 12.5px;">Reseñar una cursada</div>
+    </div>
+
+    <div style="flex-grow: 1; overflow: hidden; padding: 22px 24px; display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; align-content: start;">
+
+      <!-- Bloque 1: lo único que contesta "¿sirvió de algo?". Una sola lista, con el estado en la
+           fila, porque "lo que aporté" y "lo que le falta al piso" son el mismo dato. -->
+      <div style="min-width: 0;">
+        <div style="font-family: 'Instrument Serif', Georgia, serif; font-size: 26px; margin-bottom: 3px;">Hola Lucía.</div>
+        <div style="font-size: 12.5px; color: #494e57; margin-bottom: 16px;">Esto es lo que pasó con lo que reseñaste.</div>
+
+        <div class="card">
+          <div style="padding: 11px 16px; border-bottom: 1px solid #eae7de; display: flex; align-items: baseline; justify-content: space-between;">
+            <span class="eyebrow">Las cátedras que reseñaste</span>
+            <span class="mono" style="font-size: 10.5px; color: #7b8089;">4 reseñas · 3 cátedras</span>
+          </div>
+
+          <div style="padding: 11px 16px; border-bottom: 1px solid #eae7de; display: flex; align-items: center; gap: 12px;">
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="font-size: 14px;">Cátedra Pérez</div>
+              <div style="font-size: 11.5px; color: #7b8089;">Base de datos · 2025-C2</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="mono" style="font-size: 13px;">12</div>
+              <div class="mono" style="font-size: 9.5px; color: #7b8089;">voces</div>
+            </div>
+            <span class="act" style="min-width: 88px; text-align: right;">Ver la ficha →</span>
+          </div>
+
+          <div style="padding: 11px 16px; border-bottom: 1px solid #eae7de; display: flex; align-items: center; gap: 12px;">
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="font-size: 14px;">Cátedra Quiroga</div>
+              <div style="font-size: 11.5px; color: #7b8089;">Testeo Automatizado · 2025-C1</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="mono" style="font-size: 13px;">11</div>
+              <div class="mono" style="font-size: 9.5px; color: #7b8089;">voces</div>
+            </div>
+            <span class="act" style="min-width: 88px; text-align: right;">Ver la ficha →</span>
+          </div>
+
+          <!-- La que no publica: el estado va con el fondo de contraste, no con la alarma. El
+               contrato visual tiene un solo color y significa que algo está mal, no que falta poco. -->
+          <div style="padding: 11px 16px; display: flex; align-items: center; gap: 12px; background: #f2f0e9;">
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="font-size: 14px;">Cátedra Ruiz</div>
+              <div style="font-size: 11.5px; color: #7b8089;">Fundamentos de Control de Calidad · 2024-C2</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="mono" style="font-size: 13px;">9</div>
+              <div class="mono" style="font-size: 9.5px; color: #7b8089;">voces</div>
+            </div>
+            <span class="act" style="min-width: 88px; text-align: right;">Le falta una →</span>
+          </div>
+        </div>
+
+        <div style="font-size: 11.5px; color: #7b8089; line-height: 1.55; margin-top: 10px;">Los conteos son de la cátedra, no tuyos. Ninguna reseña se muestra sola, ni con tu nombre ni sin él.</div>
+      </div>
+
+      <!-- Bloque 2: el contexto que sostiene al de arriba cuando tus cuatro reseñas parecen nada. -->
+      <div class="card" style="padding: 16px 18px; align-self: start;">
+        <div class="eyebrow" style="margin-bottom: 8px;">Tu carrera</div>
+        <div style="display: flex; align-items: baseline; gap: 7px;">
+          <span class="mono" style="font-size: 34px; line-height: 1;">23</span>
+          <span class="mono" style="font-size: 15px; color: #7b8089;">/51</span>
+          <span style="font-size: 11.5px; color: #494e57;">materias</span>
+        </div>
+        <div style="display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin: 12px 0 9px;">
+          <span style="flex: 23; background: #191b1f;"></span>
+          <span style="flex: 28; background: #dedbd2;"></span>
+        </div>
+        <div style="font-size: 12px; color: #494e57; line-height: 1.55;">Tienen alguna cátedra que ya publica su ficha. Las otras <span class="mono">28</span> no llegan a las diez reseñas.</div>
+        <div style="border-top: 1px solid #eae7de; margin-top: 13px; padding-top: 11px;">
+          <span class="act">Ver la carrera →</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div></div>
+
+<h2>Sin ninguna resena todavia</h2>
+<div class="frame">
+<div style="width: 1200px; height: 800px; box-sizing: border-box; display: grid; grid-template-columns: 240px 1fr; background: #f7f5ef; color: #191b1f;">
+
+  <aside style="border-right: 1px solid #e2dfd6; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px;">
+    <div style="padding: 0 8px 4px;">
+      <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 17px;">plan-b</span>
+      <span style="display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #8d2418; vertical-align: 6px; margin-left: 2px;"></span>
+    </div>
+    <div class="mono" style="padding: 0 8px 12px; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #a7adb5; line-height: 1.4;">unsta · tecnicatura en desarrollo y calidad de software</div>
+
+    <!-- Sin encabezado de sección: es la navegación primaria, no un grupo temático. -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; border-radius: 7px; background: #fffefb; box-shadow: 0 1px 2px rgb(25 27 31 / 6%); font-size: 12.5px;">
+      <span>Inicio</span><span class="mono" style="font-size: 10px; color: #a7adb5;">⌘1</span>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 8px; font-size: 12.5px; color: #494e57;">
+      <span>Mis aportes</span><span class="mono" style="font-size: 10px; color: #a7adb5;">⌘4</span>
+    </div>
+
+    <div class="eyebrow" style="padding: 14px 8px 4px;">Otros</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Ajustes</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Ayuda</div>
+    <div style="padding: 7px 8px; font-size: 12.5px; color: #494e57;">Sobre plan-b</div>
+
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; border-top: 1px solid #e2dfd6; padding: 10px 8px 0;">
+      <div class="mono" style="width: 26px; height: 26px; border-radius: 6px; background: #191b1f; color: #fffefb; font-size: 9.5px; display: grid; place-items: center;">LM</div>
+      <div style="min-width: 0;">
+        <div style="font-size: 11.5px;">Lucía Mansilla</div>
+        <div class="mono" style="font-size: 9.5px; color: #7b8089;">sin reseñas</div>
+      </div>
+    </div>
+  </aside>
+
+  <div style="display: flex; flex-direction: column; min-width: 0;">
+
+    <div style="height: 56px; flex-shrink: 0; border-bottom: 1px solid #e2dfd6; display: flex; align-items: center; gap: 16px; padding: 0 24px;">
+      <span class="mono" style="font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #7b8089;">Inicio</span>
+      <div style="flex-grow: 1;"></div>
+      <div class="mono" style="font-size: 11px; color: #a7adb5; border: 1px solid #e2dfd6; border-radius: 8px; padding: 7px 12px; background: #fffefb; min-width: 300px;">Buscar materia, cátedra o docente<span style="float: right;">⌘K</span></div>
+      <div style="background: #191b1f; color: #fffefb; border-radius: 8px; padding: 7px 14px; font-size: 12.5px;">Reseñar una cursada</div>
+    </div>
+
+    <!-- Vacío: una pantalla entera, centrada, que explica qué es esto. No es el mismo layout con menos cosas. -->
+    <div style="flex-grow: 1; display: grid; place-items: center; padding: 24px;">
+      <div class="card" style="width: 620px; padding: 44px 56px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#a7adb5" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H10a2 2 0 0 1 2 2 2 2 0 0 1 2-2h4.5A1.5 1.5 0 0 1 20 5.5v12a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 0 0-2 2 2 2 0 0 0-2-2H5.5A1.5 1.5 0 0 1 4 17.5z"/>
+          <path d="M12 6v14"/>
+        </svg>
+
+        <div class="eyebrow">Todavía no reseñaste nada</div>
+
+        <div style="font-family: 'Instrument Serif', Georgia, serif; font-size: 27px; line-height: 1.2;">Una cátedra publica su ficha<br>a partir de diez reseñas.</div>
+
+        <div style="font-size: 13px; line-height: 1.6; color: #494e57; max-width: 44ch;">Lo que respondas se suma a los conteos de esa cátedra, junto con el resto. Nunca se muestra sola, ni con tu nombre ni sin él. Lleva un minuto y medio, marcando opciones.</div>
+
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+          <span style="background: #191b1f; color: #fffefb; border-radius: 8px; padding: 10px 18px; font-size: 12.5px;">Reseñar mi primera cursada</span>
+          <span style="border: 1px solid #e2dfd6; border-radius: 8px; padding: 10px 16px; font-size: 12.5px; color: #494e57;">Ver cómo se calcula</span>
+        </div>
+
+        <div style="border-top: 1px solid #eae7de; padding-top: 14px; margin-top: 8px; width: 100%;">
+          <span style="font-size: 11.5px; color: #7b8089; line-height: 1.5;">De tu carrera ya hay <span class="mono" style="color: #494e57;">23 de 51</span> materias con alguna cátedra publicando. Leer no depende de que reseñes.</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div></div>
+</main>
+</body>
+</html>

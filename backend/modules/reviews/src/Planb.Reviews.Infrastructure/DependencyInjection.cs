@@ -41,6 +41,9 @@ public static class DependencyInjection
         // Cuánto de una carrera está medido, para su ficha (US-134).
         services.AddScoped<ICareerCoverageQueryService, DapperCareerCoverageQueryService>();
 
+        // Las cátedras que una cuenta reseñó, con sus voces, para Inicio (US-231).
+        services.AddScoped<IMyReviewedChairsQueryService, DapperMyReviewedChairsQueryService>();
+
         return services;
     }
 
