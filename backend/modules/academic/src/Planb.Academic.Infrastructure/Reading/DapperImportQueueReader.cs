@@ -1,9 +1,7 @@
-using System.Data;
 using System.Text.Json;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.CareerPlanImportQueue;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -24,14 +22,10 @@ internal sealed class DapperImportQueueReader : IImportQueueReader
     private static readonly JsonSerializerOptions CandidatesJsonOptions =
         new() { PropertyNameCaseInsensitive = true };
 
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperImportQueueReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperImportQueueReader.");
-    }
+    public DapperImportQueueReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<ImportQueueReadResult> ReadAsync(
         ImportQueueFilter filter, CancellationToken ct = default)
@@ -100,7 +94,7 @@ internal sealed class DapperImportQueueReader : IImportQueueReader
             MaxCandidates,
         };
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = (await db.QueryAsync<Row>(
             new CommandDefinition(sql, parameters, cancellationToken: ct))).ToList();
 

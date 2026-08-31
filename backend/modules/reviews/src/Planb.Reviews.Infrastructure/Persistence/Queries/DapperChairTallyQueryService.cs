@@ -1,11 +1,9 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
 using Planb.Reviews.Domain.CourseReviews;
 using Planb.Reviews.Domain.Publishing;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
@@ -31,14 +29,10 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// </summary>
 internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperChairTallyQueryService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperChairTallyQueryService.");
-    }
+    public DapperChairTallyQueryService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<ChairTallies> GetTalliesAsync(
         Guid chairId,
@@ -109,7 +103,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             FROM reviews.course_reviews
             WHERE chair_id = @ChairId;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         using var grid = await db.QueryMultipleAsync(new CommandDefinition(
             sql,
             new { ChairId = chairId, SiblingIds = siblingChairIds.ToArray() },
@@ -158,7 +152,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             ORDER BY random()
             LIMIT 1;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<Guid?>(
             new CommandDefinition(sql, new { MinimumReviews = minimumReviews }, cancellationToken: ct));
     }
@@ -267,7 +261,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             FROM reviews.items i
             WHERE i.is_active = true;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         using var grid = await db.QueryMultipleAsync(new CommandDefinition(
             sql,
             new { ChairIds = chairs.Select(c => c.ChairId).ToArray() },

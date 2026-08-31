@@ -54,7 +54,7 @@ public interface IAcademicQueryService
     /// <summary>
     /// Lista los planes de una carrera. Tercer dropdown de la cascada (US-037). Mismo
     /// criterio que ListCareersByUniversityAsync: lista vacía para career inexistente.
-    /// El caller filtra Status = 'current' del lado cliente (no acá, para que un futuro
+    /// El caller filtra Status = 'Active' del lado cliente (no acá, para que un futuro
     /// admin puede ver planes deprecated).
     /// </summary>
     Task<IReadOnlyList<CareerPlanListItem>> ListCareerPlansByCareerAsync(
@@ -221,4 +221,25 @@ public interface IAcademicQueryService
     /// </summary>
     Task<IReadOnlyList<TeacherChairItem>> ListChairsByTeacherAsync(
         Guid teacherId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Cómo se llaman las cosas del catálogo que otro módulo referencia por id, en lote.
+    ///
+    /// <para>
+    /// Es el reemplazo del JOIN cross-schema: un módulo que guarda <c>subject_id</c> necesita
+    /// mostrar "Base de datos", y leerlo de <c>academic.subjects</c> lo ata al esquema físico de
+    /// acá, que ningún compilador chequea. Pedirlo de a uno sería un N+1, así que se pide con las
+    /// listas enteras que la pantalla ya sabe que necesita.
+    /// </para>
+    ///
+    /// <para>
+    /// Sirve solo para <b>mostrar</b>. Si un módulo necesita filtrar, ordenar o paginar por un dato
+    /// de acá, esto no alcanza y corresponde una proyección propia mantenida por eventos.
+    /// </para>
+    /// </summary>
+    Task<CatalogLabels> GetLabelsAsync(
+        IReadOnlyCollection<Guid> subjectIds,
+        IReadOnlyCollection<Guid> termIds,
+        IReadOnlyCollection<Guid> chairIds,
+        CancellationToken ct = default);
 }

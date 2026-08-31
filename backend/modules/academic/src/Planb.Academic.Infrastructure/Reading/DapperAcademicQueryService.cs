@@ -1,9 +1,7 @@
-using System.Data;
 using System.Globalization;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Contracts;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -15,14 +13,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperAcademicQueryService : IAcademicQueryService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAcademicQueryService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAcademicQueryService.");
-    }
+    public DapperAcademicQueryService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<bool> UniversityExistsAsync(Guid universityId, CancellationToken ct = default)
     {
@@ -33,7 +27,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 WHERE id = @Id
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(sql, new { Id = universityId }, cancellationToken: ct));
     }
@@ -47,7 +41,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 WHERE id = @Id
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(sql, new { Id = careerPlanId }, cancellationToken: ct));
     }
@@ -65,7 +59,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             JOIN academic.careers c ON c.id = cp.career_id
             WHERE cp.id = @Id;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<CareerPlanSummary>(
             new CommandDefinition(sql, new { Id = careerPlanId }, cancellationToken: ct));
     }
@@ -82,7 +76,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE is_active
             ORDER BY name ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<UniversityListItem>(
             new CommandDefinition(sql, cancellationToken: ct));
         return rows.AsList();
@@ -103,7 +97,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
               AND is_active
             ORDER BY is_official DESC, name ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<CareerListItem>(
             new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
         return rows.AsList();
@@ -124,7 +118,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             JOIN academic.universities u ON u.id = c.university_id
             WHERE c.id = @CareerId AND c.is_active = true;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<CareerDetailItem>(
             new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
     }
@@ -146,7 +140,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE career_id = @CareerId
             ORDER BY is_official DESC, year DESC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<CareerPlanListItem>(
             new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
         return rows.AsList();
@@ -163,7 +157,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                   AND career_plan_id = @CareerPlanId
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(
                 sql,
@@ -190,7 +184,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE career_plan_id = @CareerPlanId AND (@IncludeArchived OR is_active)
             ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<SubjectListItem>(
             new CommandDefinition(
                 sql,
@@ -219,7 +213,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             FROM academic.subjects
             WHERE id = @SubjectId AND is_active = true;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<SubjectDetailItem>(
             new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
     }
@@ -243,7 +237,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             FROM academic.teachers
             WHERE id = @TeacherId;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<TeacherDetailItem>(
             new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
     }
@@ -282,7 +276,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                     ELSE 5
                 END;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<CommissionTeacherRow>(
             new CommandDefinition(
                 sql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
@@ -328,7 +322,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 WHERE id = @TermId AND university_id = @UniversityId
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(
                 sql, new { TermId = termId, UniversityId = universityId }, cancellationToken: ct));
@@ -341,7 +335,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 SELECT 1 FROM academic.academic_terms WHERE id = @TermId
             );";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(sql, new { TermId = termId }, cancellationToken: ct));
     }
@@ -370,7 +364,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                     ELSE 5
                 END;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<CommissionTeacherItem>(
             new CommandDefinition(sql, new { CommissionId = commissionId }, cancellationToken: ct));
         return rows.AsList();
@@ -393,7 +387,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE university_id = @UniversityId
             ORDER BY year DESC, number DESC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<AcademicTermListItem>(
             new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
         return rows.AsList();
@@ -410,7 +404,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             JOIN academic.universities u ON u.id = t.university_id
             WHERE t.id = @TeacherId;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var domains = await db.QuerySingleOrDefaultAsync<string[]?>(
             new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
 
@@ -438,7 +432,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE s.career_plan_id = @CareerPlanId
             ORDER BY s.code ASC, rs.code ASC, p.type ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<PublicPrerequisiteEdge>(
             new CommandDefinition(sql, new { CareerPlanId = careerPlanId }, cancellationToken: ct));
         return rows.AsList();
@@ -465,7 +459,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE c.subject_id = @SubjectId AND c.is_active = true
             ORDER BY c.name ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<ChairListItem>(
             new CommandDefinition(sql, new { SubjectId = subjectId }, cancellationToken: ct));
         return rows.AsList();
@@ -494,7 +488,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             LEFT JOIN academic.teachers t ON t.id = cm.teacher_id
             WHERE c.id = @ChairId AND c.is_active = true;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<ChairDetailItem>(
             new CommandDefinition(sql, new { ChairId = chairId }, cancellationToken: ct));
     }
@@ -514,7 +508,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             WHERE id = ANY(@TermIds)
             ORDER BY year ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<int>(
             new CommandDefinition(sql, new { TermIds = termIds.ToArray() }, cancellationToken: ct));
         return rows.AsList();
@@ -543,9 +537,71 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
               AND s.is_active = true
             ORDER BY (cm.until_term_id IS NULL) DESC, s.name ASC, c.name ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<TeacherChairItem>(
             new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
         return rows.AsList();
     }
+
+    /// <summary>
+    /// Las tres listas en un solo viaje con <c>QueryMultiple</c>. Cada `SELECT` filtra por
+    /// <c>= ANY(@Ids)</c> y no por `IN`: con Npgsql el array va como un solo parámetro, así que el
+    /// plan de la consulta no cambia con la cantidad de ids.
+    ///
+    /// <para>
+    /// Una lista vacía no se saltea: el `SELECT` con array vacío devuelve cero filas y cuesta lo
+    /// mismo que la rama que lo evitaría, y saltearlo condicionalmente rompería el orden de los
+    /// grids que <c>QueryMultiple</c> lee en secuencia.
+    /// </para>
+    /// </summary>
+    public async Task<CatalogLabels> GetLabelsAsync(
+        IReadOnlyCollection<Guid> subjectIds,
+        IReadOnlyCollection<Guid> termIds,
+        IReadOnlyCollection<Guid> chairIds,
+        CancellationToken ct = default)
+    {
+        if (subjectIds.Count == 0 && termIds.Count == 0 && chairIds.Count == 0)
+        {
+            return CatalogLabels.Empty;
+        }
+
+        const string sql = @"
+            SELECT id AS Id, name AS Name, code AS Code
+            FROM academic.subjects
+            WHERE id = ANY(@SubjectIds);
+
+            SELECT id AS Id, label AS Label
+            FROM academic.academic_terms
+            WHERE id = ANY(@TermIds);
+
+            SELECT id AS Id, name AS Name
+            FROM academic.chairs
+            WHERE id = ANY(@ChairIds);";
+
+        using var db = _connections.Create();
+        using var grid = await db.QueryMultipleAsync(new CommandDefinition(
+            sql,
+            new
+            {
+                SubjectIds = subjectIds.ToArray(),
+                TermIds = termIds.ToArray(),
+                ChairIds = chairIds.ToArray(),
+            },
+            cancellationToken: ct));
+
+        var subjects = (await grid.ReadAsync<SubjectLabelRow>())
+            .ToDictionary(r => r.Id, r => new SubjectLabel(r.Name, r.Code));
+        var terms = (await grid.ReadAsync<TermLabelRow>())
+            .ToDictionary(r => r.Id, r => r.Label);
+        var chairs = (await grid.ReadAsync<ChairLabelRow>())
+            .ToDictionary(r => r.Id, r => r.Name);
+
+        return new CatalogLabels(subjects, terms, chairs);
+    }
+
+    private sealed record SubjectLabelRow(Guid Id, string Name, string Code);
+
+    private sealed record TermLabelRow(Guid Id, string Label);
+
+    private sealed record ChairLabelRow(Guid Id, string Name);
 }

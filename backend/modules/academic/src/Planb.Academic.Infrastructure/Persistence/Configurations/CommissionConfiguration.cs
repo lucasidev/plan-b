@@ -106,6 +106,10 @@ internal sealed class CommissionConfiguration : IEntityTypeConfiguration<Commiss
         // UNIQUE(subject_id, term_id, name). El prefijo (subject_id, term_id) sirve además el
         // lookup secundario "comisiones de la materia en ese cuatri", así que no hace falta un
         // índice no-único separado.
+        // El backoffice lista las comisiones de un período filtrando solo por `term_id`, que
+        // en el índice de abajo va segundo y por lo tanto no lo puede usar.
+        builder.HasIndex(c => c.TermId).HasDatabaseName("ix_commissions_term");
+
         builder.HasIndex(c => new { c.SubjectId, c.TermId, c.Name })
             .IsUnique()
             .HasDatabaseName("ux_commissions_subject_term_name");

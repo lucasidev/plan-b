@@ -1,8 +1,6 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Reviews.Application.Abstractions.Persistence;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
@@ -24,14 +22,10 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// </summary>
 internal sealed class DapperCurrentInstrumentQueryService : ICurrentInstrumentQueryService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperCurrentInstrumentQueryService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperCurrentInstrumentQueryService.");
-    }
+    public DapperCurrentInstrumentQueryService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<CurrentInstrumentView?> GetCurrentAsync(
         string code, CancellationToken ct = default)
@@ -57,7 +51,7 @@ internal sealed class DapperCurrentInstrumentQueryService : ICurrentInstrumentQu
               AND i.is_active = true
             ORDER BY ii.""order"", o.""order"";";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = (await db.QueryAsync<InstrumentRow>(
             new CommandDefinition(sql, new { Code = code }, cancellationToken: ct))).ToList();
 

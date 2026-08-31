@@ -1,8 +1,6 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.Search;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -26,14 +24,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperCatalogSearchReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperCatalogSearchReader.");
-    }
+    public DapperCatalogSearchReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<SearchResultItem>> SearchAsync(
         string term, int limit, CancellationToken ct = default)
@@ -104,7 +98,7 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
             ORDER BY rank_exact DESC, rank_prefix DESC, sim DESC, label ASC
             LIMIT @Limit;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
 
         // El umbral del operador `%` es una variable de sesión, no un literal del predicado. Se fija
         // acá porque `similarity(a, b) > 0.2` NO usa el índice trigram (solo el operador lo hace), y

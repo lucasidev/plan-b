@@ -1,11 +1,9 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Identity.Application.Abstractions.Reading;
 using Planb.Identity.Application.Features.GetMyTeacherClaims;
 using Planb.Identity.Application.Features.GetStudentProfile;
 using Planb.Identity.Domain.Users;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Identity.Infrastructure.Reading;
 
@@ -18,14 +16,10 @@ namespace Planb.Identity.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperIdentityReadService : IIdentityReadService
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperIdentityReadService(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperIdentityReadService.");
-    }
+    public DapperIdentityReadService(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<UserId>> GetUnverifiedExpirationCandidatesAsync(
         DateTimeOffset cutoff,
@@ -43,7 +37,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
               AND expired_at IS NULL
               AND created_at <= @Cutoff;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var ids = await db.QueryAsync<Guid>(
             new CommandDefinition(sql, new { Cutoff = cutoff }, cancellationToken: ct));
 
@@ -100,7 +94,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
             ORDER BY sp.created_at DESC
             LIMIT 1;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<StudentProfileResponse>(
             new CommandDefinition(sql, new { UserId = userId.Value }, cancellationToken: ct));
     }
@@ -127,7 +121,7 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
             WHERE tp.user_id = @UserId
             ORDER BY tp.created_at DESC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<TeacherClaimItem>(
             new CommandDefinition(sql, new { UserId = userId.Value }, cancellationToken: ct));
 

@@ -1,9 +1,7 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Domain.CareerPlans;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -14,14 +12,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperAdminSubjectReader : IAdminSubjectReader
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAdminSubjectReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAdminSubjectReader.");
-    }
+    public DapperAdminSubjectReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<AdminSubjectListItem>> ListByCareerPlanAsync(
         CareerPlanId careerPlanId, CancellationToken ct = default)
@@ -43,7 +37,7 @@ internal sealed class DapperAdminSubjectReader : IAdminSubjectReader
             WHERE s.career_plan_id = @CareerPlanId
             ORDER BY s.year_in_plan ASC, s.term_in_year ASC NULLS LAST, s.code ASC;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<AdminSubjectListItem>(
             new CommandDefinition(
                 sql, new { CareerPlanId = careerPlanId.Value }, cancellationToken: ct));

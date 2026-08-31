@@ -1,8 +1,6 @@
-using System.Data;
 using Dapper;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using Planb.Academic.Application.Features.AdminTeachers;
+using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
 
@@ -13,14 +11,10 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </summary>
 internal sealed class DapperAdminTeacherReader : IAdminTeacherReader
 {
-    private readonly string _connectionString;
+    private readonly IDbConnectionFactory _connections;
 
-    public DapperAdminTeacherReader(IConfiguration configuration)
-    {
-        _connectionString = configuration.GetConnectionString("Planb")
-            ?? throw new InvalidOperationException(
-                "ConnectionStrings:Planb is required for DapperAdminTeacherReader.");
-    }
+    public DapperAdminTeacherReader(IDbConnectionFactory connections) =>
+        _connections = connections;
 
     public async Task<IReadOnlyList<AdminTeacherListItem>> ListAsync(
         Guid? universityId, CancellationToken ct = default)
@@ -40,7 +34,7 @@ internal sealed class DapperAdminTeacherReader : IAdminTeacherReader
             WHERE (@UniversityId IS NULL OR t.university_id = @UniversityId)
             ORDER BY t.last_name, t.first_name;";
 
-        using IDbConnection db = new NpgsqlConnection(_connectionString);
+        using var db = _connections.Create();
         var rows = await db.QueryAsync<AdminTeacherListItem>(
             new CommandDefinition(sql, new { UniversityId = universityId }, cancellationToken: ct));
         return rows.ToList();

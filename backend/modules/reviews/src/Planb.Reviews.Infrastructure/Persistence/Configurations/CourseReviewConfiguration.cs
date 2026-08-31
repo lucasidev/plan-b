@@ -59,6 +59,17 @@ internal sealed class CourseReviewConfiguration : IEntityTypeConfiguration<Cours
             .IsUnique()
             .HasDatabaseName("ux_course_reviews_account_subject_term");
 
+        // Todo lo que el producto publica se cuenta por cátedra: la ficha de cátedra filtra por
+        // `chair_id` tres veces (su conteo, la distribución de cada ítem y la comparación contra
+        // las hermanas), y la cobertura de una carrera y el estado de Inicio agrupan por lo mismo.
+        // Sin este índice esas lecturas barren la tabla entera.
+        //
+        // Parcial porque `chair_id` es nullable y declarar la cátedra es opcional: la reseña sin
+        // cátedra no entra en ninguno de esos filtros, así que tampoco tiene que ocupar el índice.
+        builder.HasIndex(r => r.ChairId)
+            .HasDatabaseName("ix_course_reviews_chair")
+            .HasFilter("chair_id IS NOT NULL");
+
         builder.Ignore(r => r.DomainEvents);
 
         // Lo respondido, tabla hija (US-146, ADR-0082). Clave compuesta (course_review_id, item_id):

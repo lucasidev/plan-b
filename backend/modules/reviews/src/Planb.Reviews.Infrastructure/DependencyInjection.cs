@@ -29,7 +29,7 @@ public static class DependencyInjection
         // Write-side de la reseña de tres capas (US-146, ADR-0082).
         services.AddScoped<ICourseReviewRepository, CourseReviewRepository>();
 
-        // El instrumento vigente, que es lo que la pantalla de contar pregunta (US-146).
+        // El instrumento vigente, que es lo que la pantalla de reseñar pregunta (US-146).
         services.AddScoped<ICurrentInstrumentQueryService, DapperCurrentInstrumentQueryService>();
 
         // Lo que una cuenta aportó, para poder corregirlo o borrarlo (US-165, US-166).
