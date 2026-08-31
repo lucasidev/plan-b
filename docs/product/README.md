@@ -21,7 +21,7 @@ docs/product/<journey>/<epic>/
 
 - **La story** (`stories/US-NNN-slug/`) vive en su épica, con su letra, sus escenarios y su boceto adentro, una sola vez y para siempre, con su criterio de aceptación. No tiene estado de gestión: cuando se planifica, [`docs/plan/`](../plan/README.md) la cita por ID y le agrega el sprint, las tareas y el contrato técnico.
 - **El flujo** puede cruzar épicas: el pedido de Ana termina en la cola de Sofía. El handoff se dibuja como un nodo que nombra a la otra épica.
-- **La pantalla** tiene un solo lugar: su épica dueña. El [sitemap](map.md) es el índice derivado de las 34, con su slug y quién le aporta a cada una.
+- **La pantalla** tiene un solo lugar: su épica dueña. El [sitemap](map.md) es el índice derivado de las 33, con su slug y quién le aporta a cada una.
 - **El boceto** es de una pantalla, nunca de una story ni de una épica entera.
 
 Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el [glosario](language.md), las [personas](personas.md), el [catálogo de ítems](phrases.md), los [ADRs](../decisions/README.md), las [revisiones](../history/reviews/README.md) y el [design system](design-system.md) (el lenguaje visual: tokens y tipografía, no una pantalla). La épica los cita.
@@ -38,7 +38,7 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 |---|---|---|---|---|
 | [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 13 | 8 |
 | [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
-| [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 4 | 4 |
+| [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 5 | 5 |
 | [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 18 | 3 |
 | [Cuidar lo publicado](student/care-for-what-is-published/README.md) | T1 | quien ya aportó, quien vuelve | 2 | 1 |
 | [Deshacer](student/undo/README.md) | O5 | quien ya aportó | 2 | 4 |
@@ -65,9 +65,9 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 | [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
 | [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
 
-90 stories (85 en tramos y 5 garantías) y 32 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
+91 stories (86 en tramos y 5 garantías) y 33 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
-## Las 32 pantallas
+## Las 33 pantallas
 
 Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo el índice por ID y slug de URL, que es lo único que no se deduce de la estructura de carpetas (los slugs se verificaron contra `frontend/src/app/` el 2026-08-19). **Una pantalla se nombra por lo que dice arriba**, en español; la URL es código, en inglés, y se fija al construirla.
 
@@ -83,6 +83,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
 | `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
 | `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
+| `SC-011` | Entrar | [Inicio](student/enter/screens/SC-011-home/README.md) | `/home` |
 | `SC-013` | Reseñar | [Anonimato](student/write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
 | `SC-014` |  | [Mi situación](student/write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
 | `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/write` |

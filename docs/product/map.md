@@ -2,7 +2,7 @@
 
 El índice del producto: qué pantallas hay y qué flujos las recorren, con el link a donde vive cada cosa. Lo que el canvas `plan-b mapa` (2026-08-16) definía como pantallas, flujos, planos y reglas ya tiene casa en el repo: cada pantalla con su ficha y su boceto adentro de la capacidad que la hace existir, los flujos en mermaid dentro de esa misma capacidad, en [`docs/product/`](../product/README.md), y las reglas en los ADRs y en el [catálogo de ítems](../product/phrases.md). Los requisitos viven en el README de su capacidad ([índice](README.md)) y las personas en [`user-personas.md`](../product/personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
-**Estado**: orientativo. Es la estructura que el mapa propone, útil para entender qué vistas necesita el producto; **no fija el diseño final ni la UX/UI**: eso lo fija la ficha de cada pantalla cuando se escribe, desde sus requisitos y sus personas. El canvas del que salió todo está en el [ático](../history/product-canvas/README.md) desde el 2026-08-19: las 32 pantallas tienen ficha y boceto, y ninguna imagen ni canvas es fuente (ADR-0070).
+**Estado**: orientativo. Es la estructura que el mapa propone, útil para entender qué vistas necesita el producto; **no fija el diseño final ni la UX/UI**: eso lo fija la ficha de cada pantalla cuando se escribe, desde sus requisitos y sus personas. El canvas del que salió todo está en el [ático](../history/product-canvas/README.md) desde el 2026-08-19: las 33 pantallas tienen ficha y boceto, y ninguna imagen ni canvas es fuente (ADR-0070).
 
 ## Los tres planos
 

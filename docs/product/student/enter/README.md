@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además vive acá la pantalla de Error, porque es el chasis que sostiene a todas las demás cuando algo falla y no le pertenece a ninguna épica en particular.
+Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además viven acá las dos pantallas que son chasis y no un paso de ningún recorrido: Error, que sostiene a todas las demás cuando algo falla, e Inicio, donde se aterriza después de cruzar el umbral. Ninguna le pertenece a otra épica en particular.
 
 Sostiene garantías de otras épicas ([Que no me molesten](../../guarantees/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
 
@@ -14,7 +14,7 @@ Sostiene garantías de otras épicas ([Que no me molesten](../../guarantees/READ
 
 ## Stories
 
-Cuatro. El resto de lo que pasa en el umbral sí son garantías de otras épicas que se verifican acá, pero cruzar el umbral es una acción concreta con su pantalla y su criterio, y eso es una story.
+Cinco: cuatro del umbral y una de lo que hay del otro lado. El resto de lo que pasa acá sí son garantías de otras épicas que se verifican en estas pantallas, pero cada una de estas cinco es una acción concreta con su pantalla y su criterio, y eso es una story.
 
 | ID | De qué trata |
 |---|---|
@@ -22,6 +22,7 @@ Cuatro. El resto de lo que pasa en el umbral sí son garantías de otras épicas
 | [US-228](stories/US-228-create-the-account-when-the-action-asks-for-it/README.md) | Crear la cuenta recién cuando la acción me la pide |
 | [US-229](stories/US-229-sign-in-and-land-back-on-what-i-was-doing/README.md) | Entrar y volver a lo que estaba haciendo |
 | [US-230](stories/US-230-understand-the-failure-without-losing-my-work/README.md) | Entender que se rompió sin perder lo que venía cargando |
+| [US-231](stories/US-231-see-whether-what-i-reviewed-did-anything/README.md) | Ver si lo que reseñé sirvió de algo |
 
 ### Las que cumple de otras épicas
 
