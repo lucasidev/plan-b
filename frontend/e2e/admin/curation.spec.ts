@@ -13,6 +13,8 @@ import { createStudent, deleteStudent } from '../helpers/students';
 const SUBJECT_211 = '00000004-0000-4000-a000-000000000012';
 const TERM_2024_C1 = '00000005-0000-4000-a000-000000000001';
 const CHAIR_PEREZ = '00000008-0000-4000-a000-000000000001';
+const UNSTA = '00000001-0000-4000-a000-000000000001';
+const TUDCS_CAREER = '00000002-0000-4000-a000-000000000003';
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto('/sign-in');
@@ -118,5 +120,38 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
     const marked = page.getByText(question);
     await expect(marked).toBeVisible({ timeout: 15_000 });
     await expect(marked).toContainText('destilada');
+  });
+
+  /**
+   * La segunda salida del campo libre (ADR-0084): el equipo lee y publica una síntesis. Se escribe
+   * en la curaduría y se lee en la ficha de la carrera, sin cuenta. La síntesis se publica; el
+   * texto del que salió, no.
+   */
+  test('una nota del equipo se escribe acá y se lee en la ficha de la carrera', async ({
+    page,
+    context,
+  }) => {
+    const note = `Varias cursadas mencionan que no se sabe con qué se rinde ${Math.random()
+      .toString(36)
+      .slice(2, 8)}.`;
+
+    await context.clearCookies();
+    await signIn(page, ADMIN.email, ADMIN.password);
+
+    // La universidad va por la URL: elegirla es ir a buscar sus carreras.
+    await page.goto(`/admin/curation?universityId=${UNSTA}`);
+    await page.getByLabel('Carrera').selectOption(TUDCS_CAREER);
+    await page.getByLabel('La nota').fill(note);
+    await page.getByRole('button', { name: /publicar nota/i }).click();
+
+    await expect(page.getByRole('status')).toContainText(/ya se lee en la ficha/i, {
+      timeout: 15_000,
+    });
+
+    // Y cualquiera la lee, con su procedencia y su fecha.
+    await context.clearCookies();
+    await page.goto(`/careers/${TUDCS_CAREER}`);
+    await expect(page.getByText(note)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/leída de comentarios que no se publican/i)).toBeVisible();
   });
 });

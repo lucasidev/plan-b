@@ -18,4 +18,17 @@ public sealed record GetCareerFactsResponse(
     int? DurationYears,
     int TotalSubjects,
     int CoveredSubjects,
-    int CoveragePercent);
+    int CoveragePercent,
+    /// <summary>
+    /// Las notas del equipo sobre esta carrera (ADR-0084): la síntesis de lo que se leyó en el
+    /// campo libre, que se publica mientras el texto del que salió no. Van acá y no en un endpoint
+    /// propio porque su razón de ser es contextualizar el dato que tienen al lado.
+    /// </summary>
+    IReadOnlyList<EditorialNoteView> EditorialNotes);
+
+/// <summary>
+/// Una nota del equipo tal como la lee cualquiera. <b>Sin autor</b>: la firma el equipo. La
+/// procedencia no viaja como dato porque es siempre la misma y la dice la ficha: leída de
+/// comentarios que no se publican.
+/// </summary>
+public sealed record EditorialNoteView(Guid Id, string Text, DateTimeOffset PublishedAt);

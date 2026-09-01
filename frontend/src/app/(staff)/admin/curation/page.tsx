@@ -1,6 +1,12 @@
 import Link from 'next/link';
-import { CURATION_PAGE_SIZE, fetchFreeTextsServer } from '@/features/curation/api.server';
+import {
+  CURATION_PAGE_SIZE,
+  fetchCareersServer,
+  fetchFreeTextsServer,
+  fetchUniversitiesServer,
+} from '@/features/curation/api.server';
 import { DistilItemForm } from '@/features/curation/components/distil-item-form';
+import { EditorialNoteForm } from '@/features/curation/components/editorial-note-form';
 import { FreeTextList } from '@/features/curation/components/free-text-list';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Curaduría · planb' };
 
 type Props = {
-  searchParams: Promise<{ skip?: string }>;
+  searchParams: Promise<{ skip?: string; universityId?: string }>;
 };
 
 /**
@@ -21,10 +27,14 @@ type Props = {
  * El guard de `(staff)/layout.tsx` ya filtró sesión y rol admin; esta página asume los dos.
  */
 export default async function CurationPage({ searchParams }: Props) {
-  const { skip: rawSkip } = await searchParams;
+  const { skip: rawSkip, universityId } = await searchParams;
   const skip = Math.max(0, Number.parseInt(rawSkip ?? '0', 10) || 0);
 
-  const { items, total } = await fetchFreeTextsServer(skip);
+  const [{ items, total }, universities, careers] = await Promise.all([
+    fetchFreeTextsServer(skip),
+    fetchUniversitiesServer(),
+    universityId ? fetchCareersServer(universityId) : Promise.resolve([]),
+  ]);
   const from = total === 0 ? 0 : skip + 1;
   const to = skip + items.length;
 
@@ -43,8 +53,13 @@ export default async function CurationPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <div className="mb-5">
+      <div className="mb-5 flex flex-col gap-4">
         <DistilItemForm />
+        <EditorialNoteForm
+          universities={universities}
+          careers={careers}
+          selectedUniversityId={universityId ?? null}
+        />
       </div>
 
       {total > 0 && (
