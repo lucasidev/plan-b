@@ -59,6 +59,21 @@ test.describe('Método (US-130)', () => {
     ).toBeVisible();
   });
 
+  test('N1: la ficha no repite la fórmula, linkea a Método', async ({ page }) => {
+    await page.goto(`/subjects/${SUBJECT_211}`);
+
+    const ficha = (await page.locator('body').textContent()) ?? '';
+
+    // La maquinaria de la comparación se explica en un solo lugar. Repetirla en cada ficha es
+    // garantizar que un día dos pantallas digan cosas distintas sobre el mismo número.
+    expect(ficha).not.toMatch(/Wilson|intervalo de confianza/i);
+    await expect(page.getByRole('link', { name: /cómo calculamos esto/i })).toBeVisible();
+
+    // Y donde sí se explica, está entera.
+    await page.goto('/method');
+    expect((await page.locator('body').textContent()) ?? '').toMatch(/intervalo de Wilson/i);
+  });
+
   test('no promete puntajes ni rankings en ningún lado', async ({ page }) => {
     await page.goto('/method');
 

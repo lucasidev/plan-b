@@ -79,6 +79,10 @@ export function MethodSheet({
             fijo. Si los intervalos de las dos cátedras se tocan, no se publica ninguna diferencia.
           </P>
           <P>
+            Si la cátedra es <b>la única de su materia</b>, no hay contra qué compararla y no se
+            publica ninguna comparación.
+          </P>
+          <P>
             Ese número nunca se muestra: es la maquinaria que decide si mostrar algo, no un dato.
             Cuando no hay señal suficiente, la ficha se calla en vez de insinuar.
           </P>
@@ -97,7 +101,8 @@ export function MethodSheet({
           <P>
             Los datos oficiales (cuánto dura una carrera en el papel y en la realidad, cuánto egresa
             por cohorte) <b>no salen de reseñas</b>: se relevan contra fuente pública y se publican
-            con la fuente al lado.
+            con <b>la fuente y el período relevado</b> al lado. Un dato oficial sin decir de cuándo
+            es no se puede discutir.
           </P>
         </Block>
 
@@ -216,6 +221,11 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
       <p className="mb-2 text-[12px] text-ink-3">
         Las {instrument.items.length} preguntas del cuestionario vigente, con todas sus opciones.
         Salen del mismo lugar del que las lee la pantalla de reseñar.
+      </p>
+      <p className="mb-2 text-[12px] text-ink-3">
+        Las escribimos nosotros para arrancar: son las <b>semilla</b>. Una pregunta que salga de lo
+        que muchos escribieron en el campo libre va marcada como <b>destilada</b>. Todavía no hay
+        ninguna.
       </p>
 
       {LAYER_ORDER.map((layer) => {
