@@ -34,6 +34,7 @@ public static class DependencyInjection
 
         // Lo que una cuenta aportó, para poder corregirlo o borrarlo (US-165, US-166).
         services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
+        services.AddScoped<IFreeTextQueryService, DapperFreeTextQueryService>();
 
         // Los conteos que alimentan las fichas de cátedra y de materia (US-147, US-148, ADR-0083).
         services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();

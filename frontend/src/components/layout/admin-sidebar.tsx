@@ -30,6 +30,10 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { label: 'Cátedras', href: '/admin/chairs' },
     ],
   },
+  {
+    group: 'Curaduría',
+    items: [{ label: 'Campo libre', href: '/admin/curation' }],
+  },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
