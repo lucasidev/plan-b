@@ -17,8 +17,7 @@ public interface IChairRepository
 
     /// <summary>
     /// True si ya existe una cátedra con ese (subject_id, name). Refleja el UNIQUE de DB.
-    /// <paramref name="excludeId"/> ignora la propia fila al validar un rename, mismo patrón que
-    /// <c>ICommissionRepository.ExistsByNameAsync</c>.
+    /// <paramref name="excludeId"/> ignora la propia fila al validar un rename.
     /// </summary>
     Task<bool> ExistsByNameAsync(
         SubjectId subjectId,

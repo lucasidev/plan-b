@@ -28,7 +28,6 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { label: 'Materias', hint: DENTRO_DE_UNA_UNIVERSIDAD },
       { label: 'Docentes', href: '/admin/teachers' },
       { label: 'Cátedras', href: '/admin/chairs' },
-      { label: 'Comisiones', href: '/admin/commissions' },
       { label: 'Importador' },
     ],
   },

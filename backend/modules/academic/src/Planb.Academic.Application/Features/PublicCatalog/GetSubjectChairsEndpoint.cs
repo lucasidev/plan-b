@@ -12,8 +12,8 @@ namespace Planb.Academic.Application.Features.PublicCatalog;
 ///
 /// Caller: el picker de cátedra de Reseñar (elegir "cursé con Pérez" antes de calificar la
 /// cursada). Sin auth, el catálogo es público. Materia inexistente o sin cátedras cargadas devuelve
-/// 200 con lista vacía (no 404), mismo criterio que <see cref="ListCommissionsEndpoint"/> para un
-/// catálogo público.
+/// 200 con lista vacía (no 404), que es el criterio de un catálogo público: no encontrar nada es
+/// una respuesta, no un error.
 /// </summary>
 public sealed class GetSubjectChairsEndpoint : ICarterModule
 {

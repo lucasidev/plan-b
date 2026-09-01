@@ -89,7 +89,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Pedidos | [`requests/`](team/sustain-the-catalog/screens/SC-030-requests/README.md) | backoffice | sin slug (el endpoint existe; la pantalla no) | La cola de carga por pedidos confirmados, con su demora declarada. | Pedir una carrera (de dónde vienen) | mid-fi, revisada |
-| Catálogo | [`catalog/`](team/sustain-the-catalog/screens/SC-027-catalog/README.md) | backoffice | `/admin/universities`, `/admin/teachers`, `/admin/commissions` | Cargar una oferta por huecos: plan, materias canónicas, cátedras, carrera canónica; la reforma. | Cuando el catálogo no alcanza (la materia pendiente) | mid-fi, revisada |
+| Catálogo | [`catalog/`](team/sustain-the-catalog/screens/SC-027-catalog/README.md) | backoffice | `/admin/universities`, `/admin/teachers`, `/admin/chairs` | Cargar una oferta por huecos: plan, materias canónicas, cátedras, carrera canónica; la reforma. | Cuando el catálogo no alcanza (la materia pendiente) | mid-fi, revisada |
 | Correcciones | [`corrections/`](team/sustain-the-catalog/screens/SC-028-corrections/README.md) | backoffice | sin slug | Datos duros corregidos: valor viejo y nuevo, contrastados contra la fuente. | Cuidar lo publicado (de dónde llegan) | mid-fi, revisada |
 | Frases | [`phrases/`](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | backoffice | sin slug | El catálogo de ítems: código, capa, opciones; la cola de curaduría de los destilados. | Llevarse el dato (Método lo publica entero) | mid-fi, revisada |
 

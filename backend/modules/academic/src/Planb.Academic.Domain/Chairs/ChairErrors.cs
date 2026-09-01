@@ -40,7 +40,7 @@ public static class ChairErrors
     /// <summary>
     /// El subjectId del alta no corresponde a ninguna Subject del catálogo. No hay FK cross-schema
     /// (ADR-0017) y la materia vive en otro aggregate, así que la existencia la valida el
-    /// application layer antes de crear, igual que en Commission.
+    /// application layer antes de crear.
     /// </summary>
     public static readonly Error SubjectNotFound =
         Error.NotFound(
@@ -60,8 +60,8 @@ public static class ChairErrors
             "One of the chair members does not exist.");
 
     /// <summary>
-    /// El docente existe pero está archivado (US-063). Mismo criterio que la comisión: archivar
-    /// tiene que significar algo, y sumarlo a una cátedra lo devolvería a la superficie del producto.
+    /// El docente existe pero está archivado (US-063). Archivar tiene que significar algo, y sumarlo
+    /// a una cátedra lo devolvería a la superficie del producto.
     /// </summary>
     public static readonly Error TeacherInactive =
         Error.Conflict(

@@ -13,11 +13,9 @@ namespace Planb.Academic.Domain.Chairs;
 /// ADR-0017).
 ///
 /// <para>
-/// <b>No es una comisión.</b> La <c>Commission</c> es la oferta de un período (materia + término +
-/// horario + cupo) y muere con él; la cátedra persiste entre períodos y una materia puede tener
-/// varias en paralelo, que es exactamente lo que la ficha compara ("acá se pierden clases; en las
-/// otras dos cátedras de la materia, no"). Colgar la comisión de la cátedra es una relación que el
-/// dominio admite y que todavía nadie necesita: no se modela hasta que haya un consumidor real.
+/// La cátedra <b>persiste entre períodos</b>, y una materia puede tener varias en paralelo: eso es
+/// exactamente lo que la ficha compara ("acá se pierden clases; en las otras dos cátedras de la
+/// materia, no").
 /// </para>
 ///
 /// <para>
@@ -25,7 +23,7 @@ namespace Planb.Academic.Domain.Chairs;
 /// estar dos veces vigente, y a lo sumo un titular vigente. La coherencia cross-aggregate (que la
 /// materia exista y esté activa, que los docentes existan y sean de la misma universidad, que los
 /// períodos del tramo existan y estén bien ordenados) la valida el application service, que es el
-/// único que ve esos aggregates: mismo reparto que <c>Commission</c>.
+/// único que ve esos aggregates.
 /// </para>
 /// </summary>
 public sealed class Chair : Entity<ChairId>, IAggregateRoot
@@ -97,9 +95,9 @@ public sealed class Chair : Entity<ChairId>, IAggregateRoot
 
     /// <summary>
     /// Reconstitución con Id pre-asignado, para el seeder. EF no pasa por acá (materializa por ctor
-    /// privado y setters). Valida el equipo y tira si viene incoherente, por la misma razón que
-    /// <c>Commission.Hydrate</c>: el manifiesto del seeder entra sin que nadie lo revise, y un
-    /// equipo con dos titulares vigentes se persistiría sin ruido para romper la ficha después.
+    /// privado y setters). Valida el equipo y tira si viene incoherente: el manifiesto del seeder
+    /// entra sin que nadie lo revise, y un equipo con dos titulares vigentes se persistiría sin
+    /// ruido para romper la ficha después.
     /// </summary>
     /// <exception cref="ArgumentException">Si el equipo viola los invariantes del aggregate.</exception>
     public static Chair Hydrate(
@@ -198,9 +196,9 @@ public sealed class Chair : Entity<ChairId>, IAggregateRoot
 
     /// <summary>
     /// Reemplaza el equipo entero por el conjunto dado, validándolo antes de mutar. Es la operación
-    /// del PUT del backoffice, y es atómica por la misma razón que <c>Commission.Reconfigure</c>:
-    /// un <c>Result.Failure</c> no es una excepción y no dispara el rollback de Wolverine, así que
-    /// mutar en pasos dejaría un equipo a medio aplicar commiteado.
+    /// del PUT del backoffice, y es atómica porque un <c>Result.Failure</c> no es una excepción y no
+    /// dispara el rollback de Wolverine: mutar en pasos dejaría un equipo a medio aplicar
+    /// commiteado.
     /// </summary>
     public Result ReplaceStaff(
         IEnumerable<(TeacherId TeacherId, ChairMemberRole Role, AcademicTermId Since, AcademicTermId? Until)> members,

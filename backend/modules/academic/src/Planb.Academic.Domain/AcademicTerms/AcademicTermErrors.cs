@@ -61,20 +61,4 @@ public static class AcademicTermErrors
     /// <summary>Kind es obligatorio en el aggregate (a diferencia de Career.Cadence, opcional).</summary>
     public static readonly Error KindRequired =
         Error.Validation("academic.term.kind_required", "AcademicTerm kind is required.");
-
-    /// <summary>
-    /// El período ya tiene comisiones, así que su cadencia queda congelada. 409.
-    ///
-    /// <para>
-    /// Crear una comisión valida que la cadencia de la materia coincida con la del período
-    /// (<c>CommissionErrors.TermKindMismatch</c>). El update del período no volvía a mirar esa
-    /// igualdad, así que un PATCH que cambiaba <c>kind</c> dejaba a todas las comisiones ya creadas
-    /// en el estado que la creación rechaza, en silencio y sin forma de enterarse. Los demás campos
-    /// (fechas, ventanas de inscripción, número) se siguen pudiendo corregir.
-    /// </para>
-    /// </summary>
-    public static readonly Error KindLockedByCommissions =
-        Error.Conflict(
-            "academic.term.kind_locked_by_commissions",
-            "Cannot change the term kind: commissions already exist for this term.");
 }

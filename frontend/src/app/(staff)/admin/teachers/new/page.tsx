@@ -13,7 +13,7 @@ export default async function NewTeacherPage() {
       <AdminPageHeader
         eyebrow="Docentes"
         title="Nuevo docente"
-        subtitle="Alta en el catálogo. Después queda disponible para reseñas y comisiones."
+        subtitle="Alta en el catálogo. Después queda disponible para integrar cátedras."
       />
       <TeacherForm mode="create" universities={universities} />
     </div>

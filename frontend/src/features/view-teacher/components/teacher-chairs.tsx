@@ -23,10 +23,8 @@ export interface TeacherChair {
 /**
  * Los roles como los lee un alumno. Espeja `ChairMemberRole` del backend.
  *
- * El mapeo se duplica del de comisiones a propósito, y no se extrae a `lib/`: son dos enums
- * distintos que hoy coinciden, y el dominio ya decidió no compartir el tipo porque la comisión
- * muere con su período y la cátedra persiste, así que sus listas de roles pueden separarse sin que
- * una arrastre a la otra.
+ * El mapeo vive acá y no en `lib/`: es el vocabulario de esta pantalla, y compartirlo obligaría a
+ * que dos pantallas cambien juntas cada vez que el dominio agregue un rol.
  */
 const ROLE_LABEL: Record<string, string> = {
   Lead: 'Titular',

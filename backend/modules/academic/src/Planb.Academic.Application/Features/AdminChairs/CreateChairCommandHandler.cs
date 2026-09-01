@@ -12,9 +12,9 @@ namespace Planb.Academic.Application.Features.AdminChairs;
 /// misma materia.
 ///
 /// <para>
-/// Resuelve la materia por su repo de escritura y no por <c>IAcademicQueryService</c>, mismo motivo
-/// que <c>CreateCommissionCommandHandler</c>: el read público ya filtra <c>is_active = true</c> y
-/// colapsaría "no existe" con "existe pero archivada", que son dos respuestas distintas.
+/// Resuelve la materia por su repo de escritura y no por <c>IAcademicQueryService</c>: el read
+/// público ya filtra <c>is_active = true</c> y colapsaría "no existe" con "existe pero archivada",
+/// que son dos respuestas distintas.
 /// </para>
 /// </summary>
 public static class CreateChairCommandHandler

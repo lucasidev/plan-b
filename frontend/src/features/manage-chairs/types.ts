@@ -2,7 +2,7 @@
  * La gestión de cátedras del backoffice (US-196, SC-027).
  *
  * La cátedra es el equipo docente a cargo de una materia y **persiste entre períodos**, a
- * diferencia de la comisión, que es la oferta de un período y muere con él. Por eso se entra por
+ * es la que el alumno recuerda al reseñar. Por eso se entra por
  * materia y no por la cascada de universidad y término.
  */
 
