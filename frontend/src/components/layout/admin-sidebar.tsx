@@ -28,10 +28,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { label: 'Materias', hint: DENTRO_DE_UNA_UNIVERSIDAD },
       { label: 'Docentes', href: '/admin/teachers' },
       { label: 'Cátedras', href: '/admin/chairs' },
-      { label: 'Importador' },
     ],
   },
-  { group: 'Operación', items: [{ label: 'Migraciones' }, { label: 'Audit log' }] },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
@@ -70,7 +68,7 @@ export function AdminSidebar({ email }: { email: string }) {
                   {it.label}
                 </Link>
               ) : (
-                <span key={it.label} className={className} title={it.hint ?? 'Próximamente'}>
+                <span key={it.label} className={className} title={it.hint}>
                   {it.label}
                 </span>
               );
