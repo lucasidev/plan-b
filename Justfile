@@ -79,14 +79,6 @@ infra-reset:
     bun scripts/compose.ts down -v
     just infra-up
 
-# Dropea las bases efímeras que dejaron corridas de tests interrumpidas. Salta las que están en
-# uso. Alternativa quirúrgica a infra-reset, que vuela el volumen y obliga a resembrar.
-db-clean:
-    bun scripts/clean-test-dbs.ts
-
-db-clean-dry:
-    bun scripts/clean-test-dbs.ts --dry-run
-
 # Show detected container runtime and compose command
 container-info:
     @bun scripts/detect-container.ts --info
