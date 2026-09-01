@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.PublishCourseReview;
 using Planb.Reviews.Application.Features.SubjectFacts;
@@ -42,6 +43,16 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         Guid.Parse("00000004-0000-4000-a000-000000000007");
     private static readonly Guid SubjectSurvivingSide =
         Guid.Parse("00000004-0000-4000-a000-000000000008");
+    private static readonly Guid SubjectCrowdedA =
+        Guid.Parse("00000004-0000-4000-a000-000000000009");
+    private static readonly Guid SubjectCrowdedB =
+        Guid.Parse("00000004-0000-4000-a000-000000000010");
+    // 312 y 314, que no son correlativa de ninguna: archivar una materia de la que otra depende lo
+    // rechaza el catálogo, y lo que se prueba acá es el par, no esa regla.
+    private static readonly Guid SubjectArchivedSide =
+        Guid.Parse("00000004-0000-4000-a000-000000000019");
+    private static readonly Guid SubjectArchivedPartner =
+        Guid.Parse("00000004-0000-4000-a000-000000000021");
 
     private static readonly Guid TermA = Guid.Parse("00000005-0000-4000-a000-000000000001");
     private static readonly Guid TermB = Guid.Parse("00000005-0000-4000-a000-000000000002");
@@ -168,5 +179,68 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         (await FactsAsync(SubjectDeletedSide)).TakenWith.ShouldBeEmpty();
         (await FactsAsync(SubjectSurvivingSide)).TakenWith.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// E1 de US-143: cruzado el piso, el par publica sus dos números exactos ("N la llevaron
+    /// juntas", "M dejaron una") para ese período, y se lee <b>sin cuenta</b>.
+    ///
+    /// <para>
+    /// Es el camino feliz de la story y hasta acá no lo cubría nadie de punta a punta: los otros
+    /// tests trabajan bajo el piso, donde el conteo de las que dejaron ni siquiera viaja.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Above_the_floor_the_pair_publishes_both_counts_for_that_term()
+    {
+        const int dropped = 4;
+
+        for (var i = 0; i < PublishingRules.SubjectPairMinimumReviews; i++)
+        {
+            var auth = await AccountAsync();
+
+            // Los primeros dejan una de las dos; el resto llega al final en las dos.
+            var outcome = i < dropped ? 3 : 1;
+            await ReviewAsync(auth, SubjectCrowdedA, TermA, outcome);
+            await ReviewAsync(auth, SubjectCrowdedB, TermA);
+        }
+
+        var facts = await FactsAsync(SubjectCrowdedA);
+        var pair = facts.TakenWith.ShouldHaveSingleItem();
+
+        pair.SubjectId.ShouldBe(SubjectCrowdedB);
+        pair.TogetherCount.ShouldBe(PublishingRules.SubjectPairMinimumReviews);
+        pair.IsPublished.ShouldBeTrue();
+        pair.MissingToPublish.ShouldBe(0);
+
+        // Cruzado el piso, el conteo de quienes dejaron alguna sí viaja.
+        pair.DroppedCount.ShouldBe(dropped);
+    }
+
+    /// <summary>
+    /// El edge de US-143: una materia sale del plan cuando la carrera se reforma, y el par la sigue
+    /// contando. La reseña queda pegada al período y a la materia, no a que el plan de hoy la tenga.
+    ///
+    /// <para>
+    /// Se archiva la materia (soft delete, US-062: no hay hard delete porque hay reseñas colgando) y
+    /// el par tiene que sobrevivir. Si algún día el read filtrara por materia vigente, se cae acá.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task A_subject_that_leaves_the_plan_keeps_counting_in_the_pair()
+    {
+        var auth = await AccountAsync();
+        await ReviewAsync(auth, SubjectArchivedSide, TermA);
+        await ReviewAsync(auth, SubjectArchivedPartner, TermA);
+
+        var admin = await AuthenticatedClient.CreateAsync(
+            _fixture, $"pairs-admin-{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
+        var archived = await admin.Client.DeleteAsync(
+            $"/api/academic/subjects/{SubjectArchivedPartner}");
+        archived.IsSuccessStatusCode.ShouldBeTrue();
+
+        var facts = await FactsAsync(SubjectArchivedSide);
+
+        facts.TakenWith.ShouldHaveSingleItem().SubjectId.ShouldBe(SubjectArchivedPartner);
     }
 }
