@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.Reviews.Application.Features.PublishCourseReview;
 using Planb.Reviews.Application.Features.SubjectFacts;
 using Planb.Reviews.Domain.CourseReviews;
 using Shouldly;
@@ -26,11 +27,21 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid TudcsPlanId =
         Guid.Parse("00000003-0000-4000-a000-000000000003");
 
-    // Dos materias del mismo plan. 211 es la única con cátedras sembradas; 121 es otra cualquiera.
+    // Materias del mismo plan. 211 es la única con cátedras sembradas; el resto son cualesquiera.
+    //
+    // Cada test usa las suyas y no las comparte: un par no es de una cuenta, es de la materia, así
+    // que dos tests que publiquen sobre la misma se pisan y el resultado pasa a depender del orden
+    // en que xUnit corra la clase.
     private static readonly Guid Subject211 =
         Guid.Parse("00000004-0000-4000-a000-000000000012");
     private static readonly Guid Subject121 =
         Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid SubjectTakenAlone =
+        Guid.Parse("00000004-0000-4000-a000-000000000003");
+    private static readonly Guid SubjectDeletedSide =
+        Guid.Parse("00000004-0000-4000-a000-000000000007");
+    private static readonly Guid SubjectSurvivingSide =
+        Guid.Parse("00000004-0000-4000-a000-000000000008");
 
     private static readonly Guid TermA = Guid.Parse("00000005-0000-4000-a000-000000000001");
     private static readonly Guid TermB = Guid.Parse("00000005-0000-4000-a000-000000000002");
@@ -55,7 +66,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     /// <summary><paramref name="outcome"/> 1 y 2 son llegar al final; 3 en adelante, no.</summary>
-    private static async Task ReviewAsync(
+    private static async Task<Guid> ReviewAsync(
         AuthenticatedClient auth, Guid subjectId, Guid termId, int outcome = 1)
     {
         var published = await auth.Client.PostAsJsonAsync(
@@ -69,6 +80,10 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
                 freeText = (string?)null,
             });
         published.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var body = await published.Content.ReadFromJsonAsync<PublishCourseReviewResponse>();
+        body.ShouldNotBeNull();
+        return body!.Id;
     }
 
     private async Task<GetSubjectFactsResponse> FactsAsync(Guid subjectId)
@@ -117,10 +132,41 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task A_subject_nobody_took_with_another_has_no_pairs()
     {
         var auth = await AccountAsync();
-        await ReviewAsync(auth, Subject211, TermA);
+        await ReviewAsync(auth, SubjectTakenAlone, TermA);
 
-        var facts = await FactsAsync(Subject211);
+        var facts = await FactsAsync(SubjectTakenAlone);
 
         facts.TakenWith.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// Método publica que borrar una reseña la saca de todos los conteos donde sumó. Acá se pinea
+    /// del lado del par, que es donde la promesa se rompe más callada: el par no vive en ninguna
+    /// tabla, se arma de un self-join sobre <c>course_reviews</c>, así que una fila que sobreviva
+    /// al borrado sigue contando y nadie se entera.
+    ///
+    /// <para>
+    /// Se mira desde <b>los dos lados</b>: el par desaparece tanto de la materia cuya reseña se
+    /// borró como de la otra. Un filtro puesto en una sola rama del join deja pasar la mitad.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Deleting_a_review_removes_the_pair_it_had_formed_on_both_sides()
+    {
+        var auth = await AccountAsync();
+        var doomed = await ReviewAsync(auth, SubjectDeletedSide, TermA);
+        await ReviewAsync(auth, SubjectSurvivingSide, TermA);
+
+        // Antes del borrado el par existe, y se ve desde las dos materias.
+        (await FactsAsync(SubjectDeletedSide)).TakenWith
+            .ShouldHaveSingleItem().SubjectId.ShouldBe(SubjectSurvivingSide);
+        (await FactsAsync(SubjectSurvivingSide)).TakenWith
+            .ShouldHaveSingleItem().SubjectId.ShouldBe(SubjectDeletedSide);
+
+        var deleted = await auth.Client.DeleteAsync($"/api/reviews/cursadas/{doomed}");
+        deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        (await FactsAsync(SubjectDeletedSide)).TakenWith.ShouldBeEmpty();
+        (await FactsAsync(SubjectSurvivingSide)).TakenWith.ShouldBeEmpty();
     }
 }
