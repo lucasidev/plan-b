@@ -16,8 +16,8 @@ export function MethodSheet({
   pairFloor,
 }: {
   instrument: CurrentInstrument | null;
-  chairFloor: number;
-  pairFloor: number;
+  chairFloor: number | null;
+  pairFloor: number | null;
 }) {
   return (
     <div data-surface="bulletin" className="min-h-full w-full">
@@ -65,22 +65,7 @@ export function MethodSheet({
           </P>
         </Block>
 
-        <Block title={`Por qué una cátedra con ${chairFloor - 1} reseñas no publica`}>
-          <P>
-            Una cátedra publica sus conteos <b>desde las {chairFloor} reseñas</b>. La razón es la
-            privacidad de quien reseña, no la estadística: con dos o tres, el titular deduce quién
-            dijo qué.
-          </P>
-          <P>
-            La cátedra que no llega <b>no se esconde</b>: se muestra con cuántas juntó y cuántas le
-            faltan. Esconderla mentiría sobre lo que hay.
-          </P>
-          <P>
-            Con qué otras materias se llevó una tiene su propio piso, de {pairFloor} por par y
-            período. Es otro piso porque protege otra cosa: que el número no diga más sobre quién se
-            acordó de reseñar que sobre la combinación.
-          </P>
-        </Block>
+        <FloorBlock chairFloor={chairFloor} pairFloor={pairFloor} />
 
         <Block title="Cuándo decimos que una cátedra es distinta de otra">
           <P>
@@ -131,6 +116,57 @@ export function MethodSheet({
         <ItemCatalog instrument={instrument} />
       </div>
     </div>
+  );
+}
+
+/**
+ * El bloque que depende de los pisos. Se separa porque es el único de Método que necesita un número
+ * del backend, y cuando ese número no llega la pantalla dice que no lo tiene en vez de inventarlo:
+ * un piso escrito a mano acá sería una segunda definición de la regla.
+ */
+function FloorBlock({
+  chairFloor,
+  pairFloor,
+}: {
+  chairFloor: number | null;
+  pairFloor: number | null;
+}) {
+  if (chairFloor === null) {
+    return (
+      <Block title="Por qué una cátedra con pocas reseñas no publica">
+        <P>
+          Una cátedra no publica sus conteos hasta juntar un mínimo de reseñas. La razón es la
+          privacidad de quien reseña, no la estadística: con dos o tres, el titular deduce quién
+          dijo qué.
+        </P>
+        <P>
+          La cátedra que no llega <b>no se esconde</b>: se muestra con cuántas juntó y cuántas le
+          faltan. Esconderla mentiría sobre lo que hay.
+        </P>
+        <P>No pudimos leer el mínimo vigente en este momento. Volvé a cargar la página.</P>
+      </Block>
+    );
+  }
+
+  return (
+    <Block title={`Por qué una cátedra con ${chairFloor - 1} reseñas no publica`}>
+      <P>
+        Una cátedra publica sus conteos <b>desde las {chairFloor} reseñas</b>. La razón es la
+        privacidad de quien reseña, no la estadística: con dos o tres, el titular deduce quién dijo
+        qué.
+      </P>
+      <P>
+        La cátedra que no llega <b>no se esconde</b>: se muestra con cuántas juntó y cuántas le
+        faltan. Esconderla mentiría sobre lo que hay.
+      </P>
+      {pairFloor !== null && (
+        <P>
+          Con qué otras materias se llevó una tiene su propio piso, de {pairFloor} por par y
+          período. Es otro piso porque protege otra cosa: que el número no diga más sobre quién se
+          acordó de reseñar que sobre la combinación.
+        </P>
+      )}
+    </Block>
   );
 }
 

@@ -1,5 +1,7 @@
 import 'server-only';
 
+import type { CurrentInstrument } from '@/components/instrument/types';
+import { fetchCurrentInstrumentServer } from '@/features/write-course-review/api.server';
 import { apiFetch } from '@/lib/api-client';
 
 /**
@@ -12,10 +14,36 @@ export type PublishingRules = {
   subjectPairMinimumReviews: number;
 };
 
-export async function fetchPublishingRulesServer(): Promise<PublishingRules> {
-  const response = await apiFetch('/api/reviews/publishing-rules', { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Publishing rules fetch failed: ${response.status}`);
+/**
+ * Devuelve `null` en vez de tirar. Los pisos gobiernan un solo bloque de Método; el resto de la
+ * pantalla (de dónde sale una voz, por qué nada se promedia, los sesgos, el cuestionario entero)
+ * no depende de ningún número y sigue siendo auditable sin ellos. Tirar acá tumbaba la pantalla
+ * pública entera por la dependencia con menos razones para fallar.
+ *
+ * Lo que no se hace es inventar un piso por defecto: un número escrito a mano que no salió de la
+ * regla es peor que no mostrarlo, porque suena a método.
+ */
+export async function fetchPublishingRulesServer(): Promise<PublishingRules | null> {
+  try {
+    const response = await apiFetch('/api/reviews/publishing-rules', { cache: 'no-store' });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as PublishingRules;
+  } catch {
+    return null;
   }
-  return (await response.json()) as PublishingRules;
+}
+
+/**
+ * El cuestionario para Método. El fetcher compartido tira si el endpoint no responde, y ahí eso es
+ * correcto: la pantalla de reseñar sin cuestionario no tiene formulario que mostrar. Método sí
+ * tiene qué mostrar sin él, así que degrada acá y no en el contrato que comparte.
+ */
+export async function fetchInstrumentForMethodServer(): Promise<CurrentInstrument | null> {
+  try {
+    return await fetchCurrentInstrumentServer();
+  } catch {
+    return null;
+  }
 }
