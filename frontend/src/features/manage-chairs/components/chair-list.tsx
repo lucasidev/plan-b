@@ -1,3 +1,7 @@
+'use client';
+
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { adminChairQueries } from '../api';
 import { type AdminChair, CHAIR_ROLE_LABELS, type ChairMemberRole } from '../types';
 
 /**
@@ -6,8 +10,13 @@ import { type AdminChair, CHAIR_ROLE_LABELS, type ChairMemberRole } from '../typ
  * Muestra el equipo entero, no solo el de hoy: los tramos cerrados van abajo y grises. Esconderlos
  * haría que quien carga no pueda ver a quién cerró, y esa es justamente la corrección más
  * frecuente. Una cátedra archivada se lista igual, marcada.
+ *
+ * Lee del query que la RSC dejó hidratado, y no de una prop: así el alta puede invalidarlo y ver el
+ * resultado sin depender de `router.refresh()`, que en prod build no lo refleja siempre.
  */
-export function ChairList({ chairs }: { chairs: readonly AdminChair[] }) {
+export function ChairList({ subjectId }: { subjectId: string }) {
+  const { data: chairs } = useSuspenseQuery(adminChairQueries.forSubject(subjectId));
+
   if (chairs.length === 0) {
     return (
       <p className="rounded-lg border border-line bg-bg-card p-4 text-[13px] text-ink-3">

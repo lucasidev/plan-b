@@ -1,16 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { useActionState, useEffect, useRef } from 'react';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createChairAction } from '../actions';
+import { adminChairQueries } from '../api';
 import { initialManageChairState } from '../types';
 
 /**
  * Alta de una cátedra sobre la materia abierta (US-196).
  *
  * El action es una mutación pura y no revalida ni redirige adentro ([ADR-0046]): la pantalla
- * reacciona al `status: 'success'` refrescando, que es lo que trae la cátedra nueva al listado.
+ * reacciona al `status: 'success'` invalidando el query del listado, que refetchea client-side.
+ *
+ * Invalida y no hace `router.refresh()`: medido, el refresh no traía la cátedra recién cargada en
+ * la mitad de las corridas, con el backend ya teniéndola y un reload completo mostrándola siempre.
+ * Es el mismo hallazgo que ya había documentado el panel de planes de una carrera.
  *
  * El submit arranca deshabilitado hasta hidratar (`useHydrated`). Sin eso hay una ventana real en
  * la que el browser manda el form como POST nativo: la cátedra se crea, pero el resultado nunca
@@ -20,14 +25,14 @@ import { initialManageChairState } from '../types';
 export function CreateChairForm({ subjectId }: { subjectId: string }) {
   const [state, action, pending] = useActionState(createChairAction, initialManageChairState);
   const hydrated = useHydrated();
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
-    router.refresh();
-  }, [state.status, router]);
+    queryClient.invalidateQueries({ queryKey: adminChairQueries.forSubject(subjectId).queryKey });
+  }, [state.status, queryClient, subjectId]);
 
   return (
     <form ref={formRef} action={action} className="rounded-lg border border-line bg-bg-card p-4">

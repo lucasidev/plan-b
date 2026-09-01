@@ -1,3 +1,5 @@
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { adminChairQueries } from '@/features/manage-chairs/api';
 import { fetchAdminChairsServer } from '@/features/manage-chairs/api.server';
 import { ChairList } from '@/features/manage-chairs/components/chair-list';
 import { CreateChairForm } from '@/features/manage-chairs/components/create-chair-form';
@@ -19,10 +21,21 @@ type Props = {
  * período modelaría mal lo que se está cargando.
  *
  * El guard de `(staff)/layout.tsx` ya filtró sesión y rol admin; esta página asume los dos.
+ *
+ * El listado se prefetchea acá y se hidrata (mismo queryKey que consume `ChairList`): el alta lo
+ * invalida y refetchea client-side, que es lo único que refleja la cátedra recién cargada de forma
+ * confiable en prod build (ADR-0021 + ADR-0046).
  */
 export default async function AdminChairsPage({ searchParams }: Props) {
   const { subjectId } = await searchParams;
-  const chairs = subjectId ? await fetchAdminChairsServer(subjectId) : [];
+
+  const queryClient = new QueryClient();
+  if (subjectId) {
+    await queryClient.prefetchQuery({
+      queryKey: adminChairQueries.forSubject(subjectId).queryKey,
+      queryFn: () => fetchAdminChairsServer(subjectId),
+    });
+  }
 
   return (
     <div className="mx-auto w-full max-w-[720px] px-4 py-8">
@@ -39,7 +52,9 @@ export default async function AdminChairsPage({ searchParams }: Props) {
       ) : (
         <div className="flex flex-col gap-5">
           <CreateChairForm subjectId={subjectId} />
-          <ChairList chairs={chairs} />
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <ChairList subjectId={subjectId} />
+          </HydrationBoundary>
           <SubjectPicker />
         </div>
       )}
