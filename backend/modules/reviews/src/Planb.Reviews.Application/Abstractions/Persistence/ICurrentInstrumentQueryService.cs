@@ -36,6 +36,12 @@ public sealed record InstrumentItemView(
     string Text,
     string? Help,
     string Layer,
+    /// <summary>
+    /// De dónde salió la pregunta: <c>Seed</c> si la escribimos nosotros para arrancar,
+    /// <c>Distilled</c> si salió del campo libre de muchos (ADR-0084). Método lo publica: es parte
+    /// de cómo se llegó a preguntarla, y quien audita un número tiene derecho a saberlo.
+    /// </summary>
+    string Origin,
     IReadOnlyList<InstrumentOptionView> Options);
 
 /// <summary>Una opción: el valor que se manda al responder y la etiqueta que se lee.</summary>

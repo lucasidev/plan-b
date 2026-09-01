@@ -215,6 +215,8 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
     );
   }
 
+  const distilled = instrument.items.filter((i) => i.origin === 'Distilled').length;
+
   return (
     <section className="mb-6">
       <h2 className="mb-1 font-serif text-[18px] font-semibold text-ink">Qué se pregunta</h2>
@@ -223,9 +225,11 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
         Salen del mismo lugar del que las lee la pantalla de reseñar.
       </p>
       <p className="mb-2 text-[12px] text-ink-3">
-        Las escribimos nosotros para arrancar: son las <b>semilla</b>. Una pregunta que salga de lo
-        que muchos escribieron en el campo libre va marcada como <b>destilada</b>. Todavía no hay
-        ninguna.
+        Las que escribimos nosotros para arrancar son las <b>semilla</b>. Las que salieron de lo que
+        muchos escribieron en el campo libre van marcadas como <b>destilada</b>
+        {distilled === 0
+          ? ': todavía no hay ninguna.'
+          : `: hay ${distilled === 1 ? 'una' : distilled}.`}
       </p>
 
       {LAYER_ORDER.map((layer) => {
@@ -251,7 +255,14 @@ function ItemCatalog({ instrument }: { instrument: CurrentInstrument | null }) {
 function ItemRow({ item }: { item: InstrumentItem }) {
   return (
     <li>
-      <p className="text-[13px] text-ink">{item.text}</p>
+      <p className="text-[13px] text-ink">
+        {item.text}
+        {item.origin === 'Distilled' && (
+          <span className="ml-1.5 rounded bg-bg-elev px-1.5 py-0.5 font-mono text-[9.5px] text-ink-3">
+            destilada
+          </span>
+        )}
+      </p>
       <p className="mt-1 text-[11.5px] leading-relaxed text-ink-3">
         {item.options.map((o) => o.label).join(' · ')}
       </p>

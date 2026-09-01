@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CURATION_PAGE_SIZE, fetchFreeTextsServer } from '@/features/curation/api.server';
+import { DistilItemForm } from '@/features/curation/components/distil-item-form';
 import { FreeTextList } from '@/features/curation/components/free-text-list';
 
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,10 @@ export default async function CurationPage({ searchParams }: Props) {
           Quién escribió cada uno no llega hasta acá, y no es una omisión de esta pantalla: el dato
           no sale de la base.
         </p>
+      </div>
+
+      <div className="mb-5">
+        <DistilItemForm />
       </div>
 
       {total > 0 && (

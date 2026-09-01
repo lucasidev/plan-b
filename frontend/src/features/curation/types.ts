@@ -16,3 +16,11 @@ export type FreeTexts = {
   /** Cuántos hay en total, para saber cuánto queda sin traérselo todo. */
   total: number;
 };
+
+/** El estado del alta de una pregunta destilada, como lo lee la pantalla. */
+export type DistilItemState =
+  | { status: 'idle' }
+  | { status: 'success'; code: string; instrumentVersion: number }
+  | { status: 'error'; message: string };
+
+export const initialDistilItemState: DistilItemState = { status: 'idle' };

@@ -42,6 +42,15 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasMaxLength(20)
             .IsRequired();
 
+        // String y no int, mismo criterio que layer y subject: agregar un origen no rompe filas ya
+        // persistidas con el valor numérico de otro.
+        builder.Property(i => i.Origin)
+            .HasColumnName("origin")
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .HasDefaultValue(ItemOrigin.Seed)
+            .IsRequired();
+
         builder.Property(i => i.IsActive)
             .HasColumnName("is_active")
             .IsRequired();
