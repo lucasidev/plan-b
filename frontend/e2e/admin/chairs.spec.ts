@@ -17,6 +17,10 @@ const UNSTA_ID = '00000001-0000-4000-a000-000000000001';
 const SUBJECT_211 = '00000004-0000-4000-a000-000000000012';
 const UNSTA_TERM = '00000005-0000-4000-a000-000000000001';
 const UNSTA_TERM_LATER = '00000005-0000-4000-a000-000000000002';
+const TUDCS_SUBJECTS =
+  '/admin/universities/00000001-0000-4000-a000-000000000001' +
+  '/careers/00000002-0000-4000-a000-000000000003' +
+  '/plans/00000003-0000-4000-a000-000000000003/subjects';
 
 function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 7).toUpperCase();
@@ -129,6 +133,26 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     await page.goto('/admin/chairs');
 
     await expect(page.getByLabel(/buscá la materia/i)).toBeVisible();
+  });
+
+  /**
+   * La cátedra es de una materia, así que el camino natural es entrar desde ella. El buscador de
+   * /admin/chairs existe como atajo, no como único camino: quien está parado en una materia no
+   * tendría que ir a otra pantalla a buscar la materia de la que viene.
+   */
+  test('se entra a las cátedras de una materia desde la materia', async ({ page }) => {
+    await signIn(page, ADMIN);
+    await page.goto(TUDCS_SUBJECTS);
+
+    const toChairs = page.locator('a[href*="/admin/chairs?subjectId="]').first();
+    await expect(toChairs).toBeVisible();
+    await toChairs.click();
+
+    await expect(page).toHaveURL(/\/admin\/chairs\?subjectId=/);
+    await expect(page.getByRole('heading', { name: 'Cátedras', level: 1 })).toBeVisible();
+
+    // Y llega con la materia ya elegida: se ve el alta, no el buscador vacío.
+    await expect(page.getByLabel(/nombre de la cátedra/i)).toBeVisible();
   });
 });
 
