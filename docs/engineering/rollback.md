@@ -86,7 +86,7 @@ dotnet ef migrations remove \
   --startup-project host/Planb.Api
 ```
 
-**Caveat**: si el `Down()` de la migración está mal escrito (no es rollback-safe), `database update <previa>` falla. Hoy no hay test automático para `Down()` correctness: es responsabilidad del autor de la migración escribir uno consistente.
+**Caveat**: si el `Down()` de la migración está mal escrito (no es rollback-safe), `database update <previa>` falla. `MigrationRollbackTests` revierte y reaplica la migración **más nueva** de cada módulo en cada corrida de CI, así que un `Down()` roto se caza el día que se escribe. Lo que ese test no re-verifica son las viejas: una vez que otra migración se apila encima, su `Down()` deja de ser el que se ejercita.
 
 **En dev local**: si todo se rompió y querés empezar de cero, `just infra-reset` (volca volúmenes + relevanta containers + recrea DB).
 

@@ -51,7 +51,7 @@ docker run --rm --network <red-interna> \
   ghcr.io/<owner>/plan-b/planb-api:<sha> migrate-db
 ```
 
-`migrate-db` aplica las migraciones pendientes de los seis DbContexts y termina. Es idempotente: correrlo dos veces no hace nada la segunda.
+`migrate-db` aplica las migraciones pendientes de los tres DbContexts y termina. Es idempotente: correrlo dos veces no hace nada la segunda.
 
 ### 4. Aplicar el schema de Wolverine
 
@@ -96,7 +96,7 @@ El backend no lee ningún `.env` en producción: la carga de `.env` está gatead
 
 **Todas las de la tabla son obligatorias de verdad, y el host lo verifica al arrancar.** Las de SMTP y los tres `LinkBaseUrl` viven hoy solo en `appsettings.Development.json`, así que en producción no tienen ningún default: el arranque falla con `DataAnnotation validation failed for 'VerificationEmailOptions' members: 'LinkBaseUrl'` y equivalentes. Es la trampa principal de este deploy y sale así de la corrida real, no de leer el código.
 
-El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens, umbral de auto-ocultado de moderación) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-environment-configuration.md)).
+El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-environment-configuration.md)).
 
 Los valores los carga Lucas en Dokploy. No están en el repo ni pasan por este doc.
 
@@ -107,7 +107,7 @@ Honestidad sobre el estado, para que nadie lea este doc como si estuviera probad
 **Verificado local** (Podman + el Postgres y el Redis de `just infra-up`, 2026-07-27):
 
 - La imagen construye con el paso de codegen adentro.
-- `migrate-db` aplica las migraciones pendientes de los seis DbContexts en modo Production, y la segunda corrida no hace nada.
+- `migrate-db` aplica las migraciones pendientes de los tres DbContexts en modo Production, y la segunda corrida no hace nada.
 - `db-apply` corre en modo Production.
 - `codegen write` no necesita base alcanzable: corre contra un host de Postgres inexistente. Por eso el Dockerfile puede pasarle valores basura y no hace falta ningún secreto real en el build.
 - El contenedor arranca en Production y `/health` devuelve `{"status":"ok"}`. En los logs: `code generation mode is Static with pre-generated types being loaded`, sin tipos faltantes.
