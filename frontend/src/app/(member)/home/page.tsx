@@ -14,9 +14,10 @@ import { fetchStudentProfile } from '@/lib/student-profile';
  * Inicio (`/home`, SC-011, US-231). Contesta la única pregunta con la que alguien vuelve: leer no
  * pide cuenta, así que nadie entra acá a leer, entra a ver qué pasó con lo que reseñó.
  *
- * Dos bloques: las cátedras que esta cuenta reseñó, y cuánto de su carrera está medido. El
- * conteo de voces por cátedra todavía no tiene endpoint y su slot se dibuja inerte
- * (`ReviewedChairsCard`); todo lo demás son datos reales.
+ * Dos bloques: las cátedras que esta cuenta reseñó, con cuántas voces junta cada una y si ya
+ * publica, y cuánto de su carrera está medido. Los conteos salen de `GET /api/reviews/chairs/mine`
+ * en una sola consulta; si esa no llega, la fila se dibuja con el slot inerte en vez de con un
+ * cero, que diría que la cátedra no tiene reseñas cuando puede tener doce.
  *
  * Sin reseñas la pantalla no muestra listas vacías: cae en `HomePaths`, que dice qué se puede
  * hacer. La cobertura se muestra igual, porque leer no depende de que reseñes.
