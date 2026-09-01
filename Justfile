@@ -218,6 +218,7 @@ check-docs-strict:
 
 backend-restore:
     cd backend && dotnet restore
+    cd backend && dotnet tool restore
 
 frontend-install:
     cd frontend && bun install
