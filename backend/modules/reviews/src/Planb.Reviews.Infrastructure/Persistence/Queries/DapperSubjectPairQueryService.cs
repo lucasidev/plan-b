@@ -1,13 +1,13 @@
 using Dapper;
 using Planb.Reviews.Application.Abstractions.Persistence;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
 /// <summary>
 /// Dapper read de con qué otras materias se llevó una (US-143). Self-join sobre
-/// <c>course_reviews</c>: no hace falta ninguna tabla ni migración nueva, porque cada reseña ya
+/// <c>reviews</c>: no hace falta ninguna tabla ni migración nueva, porque cada reseña ya
 /// trae cuenta, materia y período.
 ///
 /// <para>
@@ -33,14 +33,14 @@ internal sealed class DapperSubjectPairQueryService : ISubjectPairQueryService
         // y no `count(DISTINCT account_id)`.
         const string sql = @"
             WITH outcomes AS (
-                SELECT a.course_review_id AS review_id, a.option_value
-                FROM reviews.course_review_answers a
+                SELECT a.review_id AS review_id, a.option_value
+                FROM reviews.review_answers a
                 JOIN reviews.items i ON i.id = a.item_id
                 WHERE i.code = @OutcomeCode
             ),
             mine AS (
                 SELECT id, account_id, term_id
-                FROM reviews.course_reviews
+                FROM reviews.reviews
                 WHERE subject_id = @SubjectId
             ),
             pairs AS (
@@ -50,7 +50,7 @@ internal sealed class DapperSubjectPairQueryService : ISubjectPairQueryService
                     mine.id          AS mine_review_id,
                     other.id         AS other_review_id
                 FROM mine
-                JOIN reviews.course_reviews other
+                JOIN reviews.reviews other
                   ON other.account_id = mine.account_id
                  AND other.term_id    = mine.term_id
                  AND other.subject_id <> @SubjectId

@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { CurrentInstrument } from '@/components/instrument/types';
-import { fetchCurrentInstrumentServer } from '@/features/write-course-review/api.server';
+import { fetchCurrentInstrumentServer } from '@/features/write-review/api.server';
 import { apiFetch } from '@/lib/api-client';
 
 /**

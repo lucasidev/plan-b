@@ -28,7 +28,7 @@ Escribís un read con Dapper. En planb los writes van por EF Core (dominio + out
 ## Reglas
 
 - **SQL con alias explícitos** (`id AS Id`) que matcheen las props del record: Dapper mapea por nombre. Record posicional o con `{ get; init; }`, cualquiera mapea si los nombres coinciden.
-- **Schema calificado en el FROM** (`academic.universities`, `reviews.course_reviews`).
+- **Schema calificado en el FROM** (`academic.universities`, `reviews.reviews`).
 - **Cruzar schemas solo para filtrar, ordenar o paginar por el dato del otro módulo.** Si lo único que necesitás de él es **mostrar** un nombre, no hagas JOIN: pedíselo a su contrato (`I<Module>QueryService`) **en lote**, con la lista de ids que la pantalla ya sabe que necesita. De a uno sería un N+1; en lote es una llamada, y la frontera pasa a ser una interfaz que el compilador chequea en vez de un nombre de tabla ajeno que nadie chequea. Un JOIN cross-schema es una dependencia al esquema físico de otro módulo: cuando renombran una columna, rompés vos, en runtime.
 - **Chequeá que las columnas del `WHERE`, del `JOIN` y del `GROUP BY` tengan índice.** Mirá la EF configuration de esa tabla, no lo supongas. Un read nuevo que filtra por una columna sin índice barre la tabla entera cada vez que alguien abre la pantalla, y eso no lo agarra ningún test: pasa en verde con la base vacía. Si falta, el índice va en el mismo cambio, con su migración.
 - **`CommandDefinition` con el `CancellationToken`** siempre.

@@ -37,7 +37,8 @@ export function AccountDeactivatedBanner() {
       <CheckCircle2 size={16} aria-hidden style={{ marginTop: 1, flexShrink: 0 }} />
       <p className="flex-1" style={{ lineHeight: 1.45 }}>
         <b style={{ fontWeight: 600 }}>Tu cuenta fue dada de baja.</b> Tus datos personales se
-        borraron; tus reseñas, si las tuviste, quedan publicadas como "Ex-miembro".
+        borraron; lo que reseñaste sigue contando en los conteos de su cátedra, sin nada que lleve a
+        vos.
       </p>
       <button
         type="button"

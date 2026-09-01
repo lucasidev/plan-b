@@ -13,8 +13,8 @@ import { initialDeactivateAccountState } from '../types';
  * Destructive card with a "Dar de baja mi cuenta" CTA + confirmation modal that asks the
  * user to retype their email (anti-accidental check). Replaces the previous "Eliminar mi
  * cuenta" (US-038-f) after the ADR-0044 rework: the flow is now soft delete with
- * anonymization (preserves the crowdsourced corpus; the user's reviews stay published as
- * "Ex-miembro").
+ * anonymization: what the user reviewed keeps counting in its chair's tallies, with nothing that
+ * points back to them.
  *
  * Convention (GitHub, Vercel, Linear): ask for the email instead of the password. The
  * password already authenticated this session; asking for it again adds friction without
@@ -98,9 +98,10 @@ export function DeactivateAccountButton({ email }: { email: string }) {
       </h3>
       <p className="text-ink-2" style={{ fontSize: 13.5, lineHeight: 1.55, marginBottom: 16 }}>
         Tu cuenta se cierra y tus datos personales (email, nombre, perfil académico) se{' '}
-        <b>anonimizan</b>. Tus reseñas, si las hay, quedan publicadas como "Ex-miembro" para que
-        sigan siendo útiles a otros alumnos. Esta acción es <b>irreversible</b> y cumple con tu
-        derecho de supresión (Ley 25.326).
+        <b>anonimizan</b>. Lo que reseñaste sigue contando en los conteos de su cátedra, sin nada
+        que lleve a vos: ninguna reseña se muestra sola, ni con tu nombre ni sin él. Si querés que
+        deje de contar, sacala en <b>Mis aportes</b> antes de dar de baja. Esta acción es{' '}
+        <b>irreversible</b> y cumple con tu derecho de supresión (Ley 25.326).
       </p>
       <button
         ref={triggerRef}
@@ -176,7 +177,7 @@ export function DeactivateAccountButton({ email }: { email: string }) {
                   style={{ fontSize: 13.5, lineHeight: 1.5, margin: 0 }}
                 >
                   Para confirmar, escribí tu email <b>{email}</b> abajo. Tus datos personales se
-                  anonimizan ahora; tus reseñas quedan como anónimas.
+                  anonimizan ahora; lo que reseñaste sigue en los conteos de su cátedra.
                 </p>
               </div>
             </div>

@@ -9,8 +9,8 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 ///
 /// <para>
 /// No cruza esquemas: <c>account_id</c> y <c>chair_id</c> viven los dos en
-/// <c>reviews.course_reviews</c>, y el nombre de la cátedra lo compone el frontend con lo que ya
-/// pidió a <c>/api/reviews/cursadas/me</c>.
+/// <c>reviews.reviews</c>, y el nombre de la cátedra lo compone el frontend con lo que ya
+/// pidió a <c>/api/reviews/courses/me</c>.
 /// </para>
 /// </summary>
 internal sealed class DapperMyReviewedChairsQueryService : IMyReviewedChairsQueryService
@@ -33,10 +33,10 @@ internal sealed class DapperMyReviewedChairsQueryService : IMyReviewedChairsQuer
             SELECT
                 cr.chair_id AS ChairId,
                 count(*)::int AS ReviewCount
-            FROM reviews.course_reviews cr
+            FROM reviews.reviews cr
             WHERE cr.chair_id IN (
                 SELECT DISTINCT mine.chair_id
-                FROM reviews.course_reviews mine
+                FROM reviews.reviews mine
                 WHERE mine.account_id = @AccountId
                   AND mine.chair_id IS NOT NULL
             )

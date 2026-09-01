@@ -12,8 +12,9 @@ const REFRESH_COOKIE = 'planb_refresh';
  * Deactivates the authenticated user's account (ADR-0044, US-038-bis). Replaced the hard
  * delete of the original flow (US-038-f). The backend endpoint `/api/me/account` now
  * anonymizes PII (hashed email, blank password, deactivated_at = now) and deletes owned
- * data with PII (StudentProfile, verification tokens). The user's existing reviews stay
- * published as "Ex-miembro".
+ * data with PII (StudentProfile, verification tokens). The user's existing reviews keep counting
+ * in their chair's tallies, with nothing that points back: no individual review is ever shown
+ * (ADR-0083), so there is no byline to anonymize.
  *
  * Steps:
  *   1. Read the session from the JWT cookie. If absent (cookie expired mid-action),

@@ -1,7 +1,7 @@
 using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Application.Features.ChairFacts;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Application.Features.SampleChairFacts;

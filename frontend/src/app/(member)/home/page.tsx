@@ -6,7 +6,7 @@ import { HomePaths } from '@/features/home/components/home-paths';
 import { ReviewedChairsCard } from '@/features/home/components/reviewed-chairs-card';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { groupByChair } from '@/features/home/lib/reviewed-chairs';
-import { fetchMyCourseReviewsServer } from '@/features/my-course-reviews/api.server';
+import { fetchMyReviewsServer } from '@/features/my-reviews/api.server';
 import { getSession } from '@/lib/session';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
@@ -33,7 +33,7 @@ export default async function HomePage() {
   const [session, profile, reviews, tallies] = await Promise.all([
     getSession(),
     fetchStudentProfile(),
-    fetchMyCourseReviewsServer(),
+    fetchMyReviewsServer(),
     fetchMyReviewedChairTalliesServer(),
   ]);
 

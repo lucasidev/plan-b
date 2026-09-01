@@ -1,4 +1,4 @@
-import type { MyCourseReview } from '@/features/my-course-reviews/types';
+import type { MyReview } from '@/features/my-reviews/types';
 
 /**
  * Una cátedra que esta cuenta reseñó, como la muestra Inicio (US-231).
@@ -32,7 +32,7 @@ export type ReviewedChair = {
  * no hay sujeto del que decir si publica.
  */
 export function groupByChair(
-  reviews: readonly MyCourseReview[],
+  reviews: readonly MyReview[],
   tallies: ReadonlyMap<
     string,
     { reviewCount: number; isPublished: boolean; reviewsMissingToPublish: number }

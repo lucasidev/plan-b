@@ -52,5 +52,5 @@ Descartada desde [ADR-0063](0063-the-product-is-a-pressure-instrument.md), y est
 - **La pantalla Mi carrera se cierra**, y con ella el onboarding "marcá por dónde vas": era su única razón de ser. La cuenta se crea en el Registro y desde ahí se lee y se reseña, sin ningún paso intermedio que pida trayectoria. [US-170](../product/guarantees/US-170-use-it-without-being-asked-for-anything-first/README.md) ("todo funciona sin plan marcado") pasa a ser trivialmente cierta: no hay plan que marcar.
 - **`enrollments` se poda**, con su importador de PDF, su carga manual y sus pantallas. Era el seguimiento en su forma vieja, y ningún módulo lo consume.
 - **El glosario** gana **co-cursada** con su definición, y pierde **marcar el plan**.
-- **El modelo de datos no gana nada.** La co-cursada se calcula sobre `course_reviews`, que ya tiene cuenta, materia y período, y ya tiene el desenlace para saber quién dejó una.
+- **El modelo de datos no gana nada.** La co-cursada se calcula sobre `reviews`, que ya tiene cuenta, materia y período, y ya tiene el desenlace para saber quién dejó una.
 - **Lo que se pierde**: alguien que quiera ver solo los pares que le sirven tiene que buscarlos. Es el costo aceptado, y es el mismo que el producto ya le pide para todo lo demás: no hay recomendaciones, hay datos.

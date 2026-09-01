@@ -113,7 +113,7 @@ namespace Planb.Reviews.Infrastructure.Migrations
                     b.ToTable("items", "reviews");
                 });
 
-            modelBuilder.Entity("Planb.Reviews.Domain.CourseReviews.CourseReview", b =>
+            modelBuilder.Entity("Planb.Reviews.Domain.Reviews.Review", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -155,14 +155,14 @@ namespace Planb.Reviews.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChairId")
-                        .HasDatabaseName("ix_course_reviews_chair")
+                        .HasDatabaseName("ix_reviews_chair")
                         .HasFilter("chair_id IS NOT NULL");
 
                     b.HasIndex("AccountId", "SubjectId", "TermId")
                         .IsUnique()
-                        .HasDatabaseName("ux_course_reviews_account_subject_term");
+                        .HasDatabaseName("ux_reviews_account_subject_term");
 
-                    b.ToTable("course_reviews", "reviews");
+                    b.ToTable("reviews", "reviews");
                 });
 
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
@@ -323,13 +323,13 @@ namespace Planb.Reviews.Infrastructure.Migrations
                     b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("Planb.Reviews.Domain.CourseReviews.CourseReview", b =>
+            modelBuilder.Entity("Planb.Reviews.Domain.Reviews.Review", b =>
                 {
-                    b.OwnsMany("Planb.Reviews.Domain.CourseReviews.ItemAnswer", "Answers", b1 =>
+                    b.OwnsMany("Planb.Reviews.Domain.Reviews.ItemAnswer", "Answers", b1 =>
                         {
-                            b1.Property<Guid>("course_review_id")
+                            b1.Property<Guid>("review_id")
                                 .HasColumnType("uuid")
-                                .HasColumnName("course_review_id");
+                                .HasColumnName("review_id");
 
                             b1.Property<Guid>("ItemId")
                                 .HasColumnType("uuid")
@@ -339,12 +339,12 @@ namespace Planb.Reviews.Infrastructure.Migrations
                                 .HasColumnType("smallint")
                                 .HasColumnName("option_value");
 
-                            b1.HasKey("course_review_id", "ItemId");
+                            b1.HasKey("review_id", "ItemId");
 
-                            b1.ToTable("course_review_answers", "reviews");
+                            b1.ToTable("review_answers", "reviews");
 
                             b1.WithOwner()
-                                .HasForeignKey("course_review_id");
+                                .HasForeignKey("review_id");
                         });
 
                     b.Navigation("Answers");

@@ -57,7 +57,7 @@ plan-b/
 │   ├── modules/             3 bounded contexts
 │   │   ├── identity/        User, StudentProfile, TeacherProfile
 │   │   ├── academic/        University, Career, Subject, Teacher, Chair, Commission
-│   │   └── reviews/         Instrument, Item, CourseReview
+│   │   └── reviews/         Instrument, Item, Review
 │   └── tests/Planb.IntegrationTests/
 ├── frontend/                Next.js 15 App Router
 │   └── src/{app,features,components,lib}/

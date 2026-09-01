@@ -72,7 +72,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
             profile.EnsureSuccessStatusCode();
 
             var published = await auth.Client.PostAsJsonAsync(
-                "/api/reviews/cursadas",
+                "/api/reviews/courses",
                 new
                 {
                     subjectId = Subject211,

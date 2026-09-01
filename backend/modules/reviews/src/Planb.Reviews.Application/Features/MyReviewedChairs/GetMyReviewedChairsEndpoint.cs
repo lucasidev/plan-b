@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Planb.Identity.Application.Abstractions.Security;
 using Planb.Reviews.Application.Abstractions.Persistence;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 
 namespace Planb.Reviews.Application.Features.MyReviewedChairs;
 
@@ -14,7 +14,7 @@ namespace Planb.Reviews.Application.Features.MyReviewedChairs;
 ///
 /// <para>
 /// La cuenta sale del token y nunca de un parámetro, igual que en
-/// <c>/api/reviews/cursadas/me</c>: qué reseñó alguien es de ese alguien.
+/// <c>/api/reviews/courses/me</c>: qué reseñó alguien es de ese alguien.
 /// </para>
 ///
 /// <para>

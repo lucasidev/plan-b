@@ -45,7 +45,7 @@ async function publishByApi(
   });
   expect(signIn.ok(), `sign-in de ${student.email}`).toBeTruthy();
 
-  const published = await request.post('/api/reviews/cursadas', {
+  const published = await request.post('/api/reviews/courses', {
     data: {
       subjectId: SUBJECT_ID,
       termId,

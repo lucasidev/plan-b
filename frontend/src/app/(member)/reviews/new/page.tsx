@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import {
-  CourseReviewForm,
   fetchCurrentInstrumentServer,
   fetchPlanSubjectsServer,
   fetchTermsServer,
-} from '@/features/write-course-review';
+  ReviewForm,
+} from '@/features/write-review';
 import { fetchStudentProfile } from '@/lib/student-profile';
 
 export const metadata = {
@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
  * cliente. Lo único que se pide en el browser son las cátedras, porque dependen de la materia que
  * todavía no eligió.
  */
-export default async function WriteCourseReviewPage() {
+export default async function WriteReviewPage() {
   const profile = await fetchStudentProfile();
   if (!profile) {
     // Las materias que se ofrecen salen del plan de la persona, así que sin carrera declarada
@@ -53,7 +53,7 @@ export default async function WriteCourseReviewPage() {
           </p>
         </div>
       ) : (
-        <CourseReviewForm instrument={instrument} subjects={subjects} terms={terms} />
+        <ReviewForm instrument={instrument} subjects={subjects} terms={terms} />
       )}
     </div>
   );

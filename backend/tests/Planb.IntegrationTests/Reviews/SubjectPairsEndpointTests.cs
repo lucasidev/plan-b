@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Http.Json;
 using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
-using Planb.Reviews.Application.Features.PublishCourseReview;
+using Planb.Reviews.Application.Features.PublishReview;
 using Planb.Reviews.Application.Features.SubjectFacts;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Shouldly;
 using Xunit;
 
@@ -15,7 +15,7 @@ namespace Planb.IntegrationTests.Reviews;
 ///
 /// <para>
 /// Lo que se prueba acá y no en el unit del calculador: que el self-join sobre
-/// <c>course_reviews</c> arme los pares que tiene que armar. En particular que <b>el mismo período
+/// <c>reviews</c> arme los pares que tiene que armar. En particular que <b>el mismo período
 /// sea condición</b>: dos materias que la misma cuenta reseñó en cuatrimestres distintos no se
 /// llevaron juntas, y ese es el error que un join mal escrito produce sin que nada chille.
 /// </para>
@@ -81,7 +81,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         AuthenticatedClient auth, Guid subjectId, Guid termId, int outcome = 1)
     {
         var published = await auth.Client.PostAsJsonAsync(
-            "/api/reviews/cursadas",
+            "/api/reviews/courses",
             new
             {
                 subjectId,
@@ -92,7 +92,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
             });
         published.StatusCode.ShouldBe(HttpStatusCode.Created);
 
-        var body = await published.Content.ReadFromJsonAsync<PublishCourseReviewResponse>();
+        var body = await published.Content.ReadFromJsonAsync<PublishReviewResponse>();
         body.ShouldNotBeNull();
         return body!.Id;
     }
@@ -153,7 +153,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     /// <summary>
     /// Método publica que borrar una reseña la saca de todos los conteos donde sumó. Acá se pinea
     /// del lado del par, que es donde la promesa se rompe más callada: el par no vive en ninguna
-    /// tabla, se arma de un self-join sobre <c>course_reviews</c>, así que una fila que sobreviva
+    /// tabla, se arma de un self-join sobre <c>reviews</c>, así que una fila que sobreviva
     /// al borrado sigue contando y nadie se entera.
     ///
     /// <para>
@@ -174,7 +174,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         (await FactsAsync(SubjectSurvivingSide)).TakenWith
             .ShouldHaveSingleItem().SubjectId.ShouldBe(SubjectDeletedSide);
 
-        var deleted = await auth.Client.DeleteAsync($"/api/reviews/cursadas/{doomed}");
+        var deleted = await auth.Client.DeleteAsync($"/api/reviews/courses/{doomed}");
         deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         (await FactsAsync(SubjectDeletedSide)).TakenWith.ShouldBeEmpty();

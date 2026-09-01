@@ -9,7 +9,7 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 /// <c>PublishingRules.ChairMinimumReviews</c>, y llega acá como parámetro para no duplicarlo.
 ///
 /// <para>
-/// Cruza <c>academic.subjects</c>/<c>academic.chairs</c> con <c>reviews.course_reviews</c> en una
+/// Cruza <c>academic.subjects</c>/<c>academic.chairs</c> con <c>reviews.reviews</c> en una
 /// sola consulta. Es el caso que ADR-0017 nombra explícitamente para analítica cross-module
 /// (JOIN Dapper saltando el DbContext): resolverlo materia por materia contra
 /// <c>IAcademicQueryService</c> sería un round-trip por cada materia del plan, solo para contar
@@ -42,7 +42,7 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
             covered_chairs AS (
                 SELECT ch.subject_id
                 FROM academic.chairs ch
-                JOIN reviews.course_reviews cr ON cr.chair_id = ch.id
+                JOIN reviews.reviews cr ON cr.chair_id = ch.id
                 WHERE ch.is_active = true
                   AND ch.subject_id IN (SELECT id FROM plan_subjects)
                 GROUP BY ch.id, ch.subject_id

@@ -11,7 +11,7 @@ namespace Planb.Reviews.Application.Abstractions.Persistence;
 ///
 /// <para>
 /// <b>No devuelve nada del catálogo.</b> Ni el nombre de la cátedra ni el de la materia: eso ya
-/// viene de <see cref="IMyCourseReviewsQueryService"/> y el frontend lo compone. Con ese recorte
+/// viene de <see cref="IMyReviewsQueryService"/> y el frontend lo compone. Con ese recorte
 /// la consulta vive entera en el schema <c>reviews</c> y no cruza a <c>academic</c>.
 /// </para>
 /// </summary>

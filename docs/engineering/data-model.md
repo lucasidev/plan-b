@@ -40,11 +40,11 @@ erDiagram
     Subject ||--o{ Chair : "taught by"
     Chair }o--o{ Teacher : "through ChairMember"
 
-    User ||--o{ CourseReview : authors
-    Subject ||--o{ CourseReview : about
-    AcademicTerm ||--o{ CourseReview : during
-    Chair ||--o{ CourseReview : about
-    CourseReview ||--o{ ItemAnswer : contains
+    User ||--o{ Review : authors
+    Subject ||--o{ Review : about
+    AcademicTerm ||--o{ Review : during
+    Chair ||--o{ Review : about
+    Review ||--o{ ItemAnswer : contains
     Item ||--o{ ItemAnswer : answered
     Instrument }o--o{ Item : "through InstrumentItem"
 ```
@@ -387,7 +387,7 @@ El tramo no es adorno: la ficha publica reseñas de varios años y el equipo cam
 
 **El modelo del producto vigente** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), y desde R2 lo único que vive en el schema `reviews`. Cuatro tablas del catálogo (qué se pregunta) y dos de la reseña (qué se respondió).
 
-Nacieron aparte de `Review` a propósito: `CourseReview` no era una versión de la reseña anterior, era otra cosa, y convertirla habría dejado un período largo donde una misma tabla era mitad un modelo y mitad el otro. La anterior (`Review`, `ReviewVote`, `TeacherResponse`, `ReviewAuditLog`) y el schema `moderation` entero se podaron en R2 con la migración `DropPreviousReviewModel` ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): moderaban y publicaban contenido que el modelo vigente no produce ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Su forma queda en el historial de git.
+Nacieron aparte de `Review` a propósito: `Review` no era una versión de la reseña anterior, era otra cosa, y convertirla habría dejado un período largo donde una misma tabla era mitad un modelo y mitad el otro. La anterior (`Review`, `ReviewVote`, `TeacherResponse`, `ReviewAuditLog`) y el schema `moderation` entero se podaron en R2 con la migración `DropPreviousReviewModel` ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)): moderaban y publicaban contenido que el modelo vigente no produce ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Su forma queda en el historial de git.
 
 ### Entity: Item
 
@@ -459,7 +459,7 @@ Constraints:
 
 No lleva marca de obligatorio: **saltear siempre vale**, así que no habría dónde ponerla. Tampoco lleva condición: los ítems condicionales no existen en el catálogo vigente y se agregan el día que un ítem real los pida.
 
-### Entity: CourseReview
+### Entity: Review
 
 Una voz sobre una cursada: la unidad de todo lo que el producto publica.
 
@@ -477,19 +477,19 @@ Una voz sobre una cursada: la unidad de todo lo que el producto publica.
 
 Constraints:
 
-- `UNIQUE(account_id, subject_id, term_id)` (`ux_course_reviews_account_subject_term`): **una voz por cuenta, materia y período**. Es lo que impide que una persona pese como muchas en el mismo dato, y la red de base del error `already_reviewed`.
+- `UNIQUE(account_id, subject_id, term_id)` (`ux_reviews_account_subject_term`): **una voz por cuenta, materia y período**. Es lo que impide que una persona pese como muchas en el mismo dato, y la red de base del error `already_reviewed`.
 
 ### Entity: ItemAnswer
 
 | Campo              | Tipo     | Constraints                | Notas                                    |
 | ------------------ | -------- | -------------------------- | ---------------------------------------- |
-| `course_review_id` | UUID     | FK → CourseReview, NOT NULL | ON DELETE CASCADE                        |
+| `review_id` | UUID     | FK → Review, NOT NULL | ON DELETE CASCADE                        |
 | `item_id`          | UUID     | NOT NULL                   | Ref a Item sin FK                        |
 | `option_value`     | SMALLINT | NOT NULL                   | El valor de la opción, no su texto       |
 
 Constraints:
 
-- `PRIMARY KEY (course_review_id, item_id)`, con `option_value` **no identity** por la misma razón que `item_options.value`.
+- `PRIMARY KEY (review_id, item_id)`, con `option_value` **no identity** por la misma razón que `item_options.value`.
 
 **Saltear no deja fila.** Un ítem sin responder simplemente no está en esta tabla, y por eso no cuenta en ningún denominador: el denominador de un ítem son las reseñas que lo respondieron, no las que existen. Guardar un "no dijo" explícito sería la misma información con una fila de más, y abriría la puerta a contarlo como si fuera una respuesta.
 
@@ -497,10 +497,10 @@ Se guarda el **valor** y no la etiqueta porque la etiqueta puede afinarse despu�
 
 ### Invariantes cross-table (enforced en app)
 
-- La materia y el período de una `CourseReview` existen en el catálogo; la cátedra, si se declaró, es una de las de esa materia (si no, el dato aterrizaría en la ficha equivocada).
+- La materia y el período de una `Review` existen en el catálogo; la cátedra, si se declaró, es una de las de esa materia (si no, el dato aterrizaría en la ficha equivocada).
 - Cada `ItemAnswer` apunta a un ítem que **el instrumento de esa reseña ofrece**, y a un valor que **ese ítem admite**. El aggregate recibe el juego de pares válidos armado desde el catálogo y rechaza cualquier otro.
 - Una opción que ya tiene respuestas no se borra ni cambia de valor al re-editar el ítem: las reseñas viejas la apuntan.
-- Ningún read público devuelve una `CourseReview` individual, ni su `free_text`, ni su contexto dato por dato. Lo que se publica son conteos agregados, y el piso de 10 reseñas por cátedra protege a quien reseñó, no a la institución.
+- Ningún read público devuelve una `Review` individual, ni su `free_text`, ni su contexto dato por dato. Lo que se publica son conteos agregados, y el piso de 10 reseñas por cátedra protege a quien reseñó, no a la institución.
 
 ## Context: Semantic Analytics
 
@@ -541,8 +541,8 @@ Responsable: servicios de registro, claim de profile, cambio de rol admin.
 
 Ningún endpoint público serializa:
 
-- `CourseReview.account_id`, ni ninguna otra forma de llegar de una respuesta a quien la escribió.
-- `CourseReview.free_text`, que no se publica nunca y solo lo relee su autor ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+- `Review.account_id`, ni ninguna otra forma de llegar de una respuesta a quien la escribió.
+- `Review.free_text`, que no se publica nunca y solo lo relee su autor ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 - `ItemAnswer` de a una: lo que sale publicado son conteos, y solo pasado el piso de la cátedra ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
 - `User.email` de terceros.
 

@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.MyReviewedChairs;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Shouldly;
 using Xunit;
 
@@ -61,7 +61,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         AuthenticatedClient auth, Guid? chairId, int termIndex)
     {
         var published = await auth.Client.PostAsJsonAsync(
-            "/api/reviews/cursadas",
+            "/api/reviews/courses",
             new
             {
                 subjectId = Subject211,
@@ -77,7 +77,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         published.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var body = await published.Content
-            .ReadFromJsonAsync<Planb.Reviews.Application.Features.PublishCourseReview.PublishCourseReviewResponse>();
+            .ReadFromJsonAsync<Planb.Reviews.Application.Features.PublishReview.PublishReviewResponse>();
         body.ShouldNotBeNull();
         return body!.Id;
     }
@@ -199,7 +199,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
             "/api/reviews/chairs/mine");
         before!.Select(c => c.ChairId).ShouldBe([ChairPerez, ChairGonzalez], ignoreOrder: true);
 
-        var deleted = await auth.Client.DeleteAsync($"/api/reviews/cursadas/{doomed}");
+        var deleted = await auth.Client.DeleteAsync($"/api/reviews/courses/{doomed}");
         deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         var after = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(

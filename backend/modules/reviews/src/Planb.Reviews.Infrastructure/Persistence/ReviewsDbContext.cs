@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Planb.Reviews.Domain.Catalog;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Infrastructure.Persistence.Configurations;
 
 namespace Planb.Reviews.Infrastructure.Persistence;
@@ -11,7 +11,7 @@ public sealed class ReviewsDbContext : DbContext
 
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Instrument> Instruments => Set<Instrument>();
-    public DbSet<CourseReview> CourseReviews => Set<CourseReview>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     public ReviewsDbContext(DbContextOptions<ReviewsDbContext> options) : base(options) { }
 
@@ -20,6 +20,6 @@ public sealed class ReviewsDbContext : DbContext
         modelBuilder.HasDefaultSchema(SchemaName);
         modelBuilder.ApplyConfiguration(new ItemConfiguration());
         modelBuilder.ApplyConfiguration(new InstrumentConfiguration());
-        modelBuilder.ApplyConfiguration(new CourseReviewConfiguration());
+        modelBuilder.ApplyConfiguration(new ReviewConfiguration());
     }
 }

@@ -1,5 +1,5 @@
-import { fetchMyCourseReviewsServer, MyReviewsList } from '@/features/my-course-reviews';
-import { fetchCurrentInstrumentServer } from '@/features/write-course-review';
+import { fetchMyReviewsServer, MyReviewsList } from '@/features/my-reviews';
+import { fetchCurrentInstrumentServer } from '@/features/write-review';
 
 export const metadata = {
   title: 'Mis aportes · planb',
@@ -19,14 +19,14 @@ export const dynamic = 'force-dynamic';
  * no en la pantalla de reseñar porque lo que confirma es que la reseña ya está en la lista, con su
  * botón de corregir al lado.
  */
-export default async function MyCourseReviewsPage({
+export default async function MyReviewsPage({
   searchParams,
 }: {
   searchParams: Promise<{ published?: string }>;
 }) {
   const [{ published }, reviews, instrument] = await Promise.all([
     searchParams,
-    fetchMyCourseReviewsServer(),
+    fetchMyReviewsServer(),
     fetchCurrentInstrumentServer(),
   ]);
 
