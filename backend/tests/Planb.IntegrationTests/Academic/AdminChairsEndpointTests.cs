@@ -187,6 +187,121 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
 
+    /// <summary>
+    /// E1 de US-196: "en el período siguiente sigue siendo la misma cátedra, sin recargarse de
+    /// cero". Es lo único que la distingue de una comisión, que es la oferta de un cuatrimestre y
+    /// muere con él, y por eso la cátedra existe como entidad propia.
+    ///
+    /// <para>
+    /// Se prueba haciendo cruzar el borde al equipo: un integrante entra en un período y su tramo
+    /// se cierra en el siguiente, y la cátedra sigue siendo <b>la misma fila, con el mismo id</b>,
+    /// cargando su historia. Si alguien le colgara un período propio a la cátedra, se cae acá.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task A_chair_is_the_same_entity_across_periods()
+    {
+        var admin = await AdminAsync();
+        var name = UniqueName();
+
+        var created = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var chair = (await created.Content.ReadFromJsonAsync<CreateChairResponse>())!;
+
+        var teacherId = await CreateTeacherAsync(admin);
+
+        var added = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/chairs/{chair.Id}/members",
+            new { teacherId, role = "Lead", sinceTermId = UnstaTerm });
+        added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var closed = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/chairs/{chair.Id}/members/{teacherId}/close",
+            new { untilTermId = UnstaTermLater });
+        closed.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Después de cruzar de un período al siguiente sigue siendo la misma cátedra, no una nueva.
+        var list = await admin.Client.GetAsync($"/api/academic/chairs?subjectId={Subject211}");
+        list.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var body = await list.Content.ReadAsStringAsync();
+
+        body.ShouldContain(chair.Id.ToString());
+        body.ShouldContain(name);
+    }
+
+    /// <summary>
+    /// E2 de US-196: la cátedra recién cargada "aparece en la lista que Reseñar ofrece". Es la razón
+    /// de ser de la story, porque la cátedra es lo que el alumno recuerda al reseñar.
+    ///
+    /// <para>
+    /// Va contra el endpoint del que la pantalla de reseñar lee su lista
+    /// (<c>/api/academic/subjects/{id}/chairs</c>), que es público y devuelve solo las activas: una
+    /// cátedra nace activa, así que cargarla alcanza para que el alumno pueda elegirla.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task A_freshly_loaded_chair_is_offered_by_the_list_that_reviewing_reads()
+    {
+        var admin = await AdminAsync();
+        var name = UniqueName();
+
+        var created = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        // Sin cuenta: quien todavía no reseñó tiene que poder ver qué cátedras hay.
+        var anonymous = _fixture.Factory.CreateClient();
+        var offered = await anonymous.GetAsync($"/api/academic/subjects/{Subject211}/chairs");
+
+        offered.StatusCode.ShouldBe(HttpStatusCode.OK);
+        (await offered.Content.ReadAsStringAsync()).ShouldContain(name);
+    }
+
+    /// <summary>
+    /// El edge case de US-196: "una materia con dos cátedras en paralelo, cada una con su propio
+    /// equipo docente en el mismo período: se cargan como entidades separadas".
+    ///
+    /// <para>
+    /// Distinto de que no puedan compartir nombre: acá los nombres difieren y lo que se prueba es
+    /// que los equipos no se mezclen. Dos titulares vigentes en el mismo período son válidos si son
+    /// de cátedras distintas, y serían un error dentro de una sola.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Two_parallel_chairs_of_one_subject_keep_their_own_teams()
+    {
+        var admin = await AdminAsync();
+
+        var first = (await (await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() }))
+            .Content.ReadFromJsonAsync<CreateChairResponse>())!;
+        var second = (await (await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() }))
+            .Content.ReadFromJsonAsync<CreateChairResponse>())!;
+
+        var firstLead = await CreateTeacherAsync(admin);
+        var secondLead = await CreateTeacherAsync(admin);
+
+        foreach (var (chairId, teacherId) in new[] { (first.Id, firstLead), (second.Id, secondLead) })
+        {
+            var added = await admin.Client.PostAsJsonAsync(
+                $"/api/academic/chairs/{chairId}/members",
+                new { teacherId, role = "Lead", sinceTermId = UnstaTerm });
+            added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        }
+
+        // Cada una con su titular vigente en el mismo período, sin que la segunda choque con la
+        // primera: el titular único es invariante de UNA cátedra, no de la materia.
+        var list = await admin.Client.GetAsync($"/api/academic/chairs?subjectId={Subject211}");
+        var body = await list.Content.ReadAsStringAsync();
+
+        body.ShouldContain(first.Id.ToString());
+        body.ShouldContain(second.Id.ToString());
+        body.ShouldContain(firstLead.ToString());
+        body.ShouldContain(secondLead.ToString());
+    }
+
     private async Task<Guid> CreateTeacherAsync(AuthenticatedClient admin, Guid? universityId = null)
     {
         universityId ??= Unsta;
