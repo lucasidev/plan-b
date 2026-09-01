@@ -58,4 +58,75 @@ describe('ReviewedChairsCard', () => {
     );
     expect(container.textContent).not.toMatch(/★|puntaje|ranking|promedio|nivel|racha/i);
   });
+
+  it('E1: la cátedra que cruzó el piso dice su conteo y que publica, sin festejarlo', () => {
+    render(
+      <ReviewedChairsCard
+        chairs={[chair({ voices: 12, isPublished: true, missingToPublish: 0 })]}
+      />,
+    );
+
+    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText(/voces · publica/)).toBeInTheDocument();
+
+    // Publicar no es un logro: no hay felicitación ni marca de meta cumplida.
+    expect(screen.queryByText(/felicit|lograst|¡|meta/i)).not.toBeInTheDocument();
+  });
+
+  it('E1: la que no llega dice cuántas le faltan, en plural y en singular', () => {
+    render(
+      <ReviewedChairsCard
+        chairs={[
+          chair({
+            chairId: 'a',
+            chairName: 'Ruiz',
+            voices: 9,
+            isPublished: false,
+            missingToPublish: 1,
+          }),
+          chair({
+            chairId: 'b',
+            chairName: 'Gómez',
+            voices: 6,
+            isPublished: false,
+            missingToPublish: 4,
+          }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText(/voces · le falta una/)).toBeInTheDocument();
+    expect(screen.getByText(/voces · le faltan 4/)).toBeInTheDocument();
+  });
+
+  it('E1: las dos conviven en la misma lista, cada una con lo suyo', () => {
+    render(
+      <ReviewedChairsCard
+        chairs={[
+          chair({
+            chairId: 'a',
+            chairName: 'Pérez',
+            voices: 12,
+            isPublished: true,
+            missingToPublish: 0,
+          }),
+          chair({
+            chairId: 'b',
+            chairName: 'Ruiz',
+            voices: 9,
+            isPublished: false,
+            missingToPublish: 1,
+          }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('12')).toBeInTheDocument();
+    expect(screen.getByText(/voces · publica/)).toBeInTheDocument();
+    expect(screen.getByText('9')).toBeInTheDocument();
+    expect(screen.getByText(/voces · le falta una/)).toBeInTheDocument();
+
+    // X2: de una cátedra reseñada se ve el conteo, nunca qué se contestó.
+    expect(screen.queryByText(/respondiste|tu respuesta|contestaste/i)).not.toBeInTheDocument();
+  });
 });

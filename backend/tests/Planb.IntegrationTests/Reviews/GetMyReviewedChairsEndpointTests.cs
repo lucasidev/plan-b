@@ -57,7 +57,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         return auth;
     }
 
-    private static async Task ReviewAsync(
+    private static async Task<Guid> ReviewAsync(
         AuthenticatedClient auth, Guid? chairId, int termIndex)
     {
         var published = await auth.Client.PostAsJsonAsync(
@@ -75,6 +75,11 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
                 freeText = (string?)null,
             });
         published.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        var body = await published.Content
+            .ReadFromJsonAsync<Planb.Reviews.Application.Features.PublishCourseReview.PublishCourseReviewResponse>();
+        body.ShouldNotBeNull();
+        return body!.Id;
     }
 
     [Fact]
@@ -171,5 +176,34 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         gonzalez.IsPublished.ShouldBe(gonzalez.ReviewCount >= floor);
         gonzalez.ReviewsMissingToPublish.ShouldBe(
             gonzalez.IsPublished ? 0 : floor - gonzalez.ReviewCount);
+    }
+
+    /// <summary>
+    /// N3 de US-231: borrada la única reseña que esta cuenta tenía de una cátedra, esa cátedra ya no
+    /// aparece en su lista. Inicio contesta qué pasó con lo que dijiste, y si no dijiste nada de esa
+    /// cátedra no hay nada de qué contestar.
+    ///
+    /// <para>
+    /// Se borra una de dos para que el test distinga sacar la fila de vaciar la lista: la otra
+    /// cátedra tiene que seguir ahí.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Deleting_the_only_review_of_a_chair_drops_it_from_my_list()
+    {
+        var auth = await AccountWithProfileAsync();
+        var doomed = await ReviewAsync(auth, ChairPerez, 0);
+        await ReviewAsync(auth, ChairGonzalez, 1);
+
+        var before = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+            "/api/reviews/chairs/mine");
+        before!.Select(c => c.ChairId).ShouldBe([ChairPerez, ChairGonzalez], ignoreOrder: true);
+
+        var deleted = await auth.Client.DeleteAsync($"/api/reviews/cursadas/{doomed}");
+        deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        var after = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+            "/api/reviews/chairs/mine");
+        after!.ShouldHaveSingleItem().ChairId.ShouldBe(ChairGonzalez);
     }
 }
