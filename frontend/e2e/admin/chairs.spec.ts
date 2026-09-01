@@ -65,8 +65,10 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     const chairRow = page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') });
     await expect(chairRow).toBeVisible({ timeout: 15_000 });
 
-    // Todo lo que sigue se afirma sobre ESTA cátedra y no sobre la pantalla: la materia acumula
-    // cátedras de otras corridas, y un locator suelto ("Integraron antes") las matchea a todas.
+    // Todo lo que sigue se afirma sobre ESTA cátedra y no sobre la pantalla: los otros tests del
+    // archivo cargan las suyas sobre la misma materia (y --repeat-each multiplica cada uno), así
+    // que un locator suelto ("Integraron antes") las matchea a todas. La base sí arranca limpia en
+    // cada corrida: run-e2e la dropea y recrea al arrancar.
     const chairCard = page.getByRole('listitem').filter({
       has: page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') }),
     });

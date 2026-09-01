@@ -131,7 +131,7 @@ export function killTree(child: ChildProcess): void {
   }
 }
 
-function psql(containerCmd: string, database: string, sql: string) {
+export function psql(containerCmd: string, database: string, sql: string) {
   return spawnSync(
     containerCmd,
     [

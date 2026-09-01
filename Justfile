@@ -79,6 +79,14 @@ infra-reset:
     bun scripts/compose.ts down -v
     just infra-up
 
+# Dropea las bases efímeras que dejaron corridas de tests interrumpidas. Salta las que están en
+# uso. Alternativa quirúrgica a infra-reset, que vuela el volumen y obliga a resembrar.
+db-clean:
+    bun scripts/clean-test-dbs.ts
+
+db-clean-dry:
+    bun scripts/clean-test-dbs.ts --dry-run
+
 # Show detected container runtime and compose command
 container-info:
     @bun scripts/detect-container.ts --info
@@ -192,6 +200,10 @@ scripts-typecheck:
 scenarios us:
     bun scripts/show-scenarios.ts {{us}}
 
+# ¿Hay un cambio de modelo de EF Core que nadie migró? Necesita el backend compilado.
+check-migrations:
+    bun scripts/check-migrations.ts
+
 check-docs:
     bun scripts/check-docs.ts
 
@@ -206,6 +218,7 @@ check-docs-strict:
 
 backend-restore:
     cd backend && dotnet restore
+    cd backend && dotnet tool restore
 
 frontend-install:
     cd frontend && bun install
@@ -264,5 +277,5 @@ clean:
 # Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
 # ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
 # con ci.yml, docs-links.yml y commits.yml.
-ci: backend-lint backend-build backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict frontend-build frontend-test
+ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict frontend-build frontend-test
     @echo "✓ All quality gates passed"
