@@ -111,7 +111,7 @@ Reglas:
 
 Endpoints HTTP + Postgres/Redis/Mailpit reales, vía `WebApplicationFactory`. Patrón existente, ver [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md).
 
-**Cuando una corrida se corta, deja su base.** Cada clase crea la suya (`planb_<label>_<guid>`) y la dropea en el `DisposeAsync` de la fixture, que no corre si el proceso muere antes: un timeout, un Ctrl+C, Postgres caído a mitad. El nombre trae un guid nuevo cada vez, así que ningún drop posterior la pisa y se acumulan. `just db-clean` las dropea, salteando las que tienen conexiones abiertas (esas son de una corrida en curso, posiblemente en otra terminal); `just db-clean-dry` lista sin tocar.
+**Cuando una corrida se corta, deja su base.** Cada clase crea la suya (`planb_<label>_<guid>`) y la dropea en el `DisposeAsync` de la fixture, que no corre si el proceso muere antes: un timeout, un Ctrl+C, Postgres caído a mitad. El nombre trae un guid nuevo cada vez, así que ningún drop posterior la pisa y se acumulan. `just db-prune` las dropea, salteando las que tienen conexiones abiertas (esas son de una corrida en curso, posiblemente en otra terminal).
 
 **El schema tiene sus dos gates.** `just check-migrations` falla si el modelo de EF Core tiene cambios que nadie migró: cambiar un `ToTable` o una columna compila y formatea igual, y sin este chequeo el desfasaje solo aparece si algún test toca esa tabla. Y `MigrationRollbackTests` revierte y reaplica la migración más nueva de cada módulo, que es lo único que prueba que su `Down()` sirve antes del día que haga falta.
 

@@ -20,6 +20,8 @@ import { dropDatabase, POSTGRES_CONTAINER } from './lib/dev-stack.ts';
 interface OrphanDatabase {
   name: string;
   bytes: number;
+  /** Conexiones abiertas. Una base en uso es de una corrida en curso, no residuo. */
+  connections: number;
 }
 
 function formatBytes(bytes: number): string {
@@ -34,11 +36,15 @@ function formatBytes(bytes: number): string {
   return `${value.toFixed(1)} ${units[unitIndex]}`;
 }
 
-/** Lista las bases `planb_*` huérfanas (todo menos `planb`) con su tamaño en bytes. */
+/**
+ * Lista las bases `planb_*` huérfanas (todo menos `planb`) con su tamaño y sus conexiones abiertas.
+ */
 function listOrphans(containerCmd: string): OrphanDatabase[] | undefined {
   const query =
-    'SELECT datname, pg_database_size(datname) FROM pg_database ' +
-    "WHERE datname LIKE 'planb\\_%' AND datname <> 'planb' ORDER BY datname";
+    'SELECT d.datname, pg_database_size(d.datname), ' +
+    '(SELECT count(*) FROM pg_stat_activity a WHERE a.datname = d.datname) ' +
+    'FROM pg_database d ' +
+    "WHERE d.datname LIKE 'planb\\_%' AND d.datname <> 'planb' ORDER BY d.datname";
 
   const result = spawnSync(
     containerCmd,
@@ -74,17 +80,31 @@ function listOrphans(containerCmd: string): OrphanDatabase[] | undefined {
     .map((line) => line.trim())
     .filter((line) => line.length > 0)
     .map((line) => {
-      const [name, bytes] = line.split('|');
-      return { name, bytes: Number(bytes) };
+      const [name, bytes, connections] = line.split('|');
+      return { name, bytes: Number(bytes), connections: Number(connections) };
     });
 }
 
 function main(): number {
   const containerCmd = detectContainerRuntime();
 
-  const orphans = listOrphans(containerCmd);
+  let orphans = listOrphans(containerCmd);
   if (orphans === undefined) {
     return 1;
+  }
+
+  if (orphans.length === 0) {
+    console.log('No hay bases huérfanas para barrer.');
+    return 0;
+  }
+
+  // Una base con conexiones abiertas es de una corrida que está pasando ahora, posiblemente en
+  // otra terminal. `dropDatabase` usa WITH (FORCE), así que dropearla la cortaría a mitad.
+  const inUse = orphans.filter((db) => db.connections > 0);
+  orphans = orphans.filter((db) => db.connections === 0);
+
+  for (const db of inUse) {
+    console.log(`  ${db.name}: en uso (${db.connections} conexiones), no se toca`);
   }
 
   if (orphans.length === 0) {
