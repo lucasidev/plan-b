@@ -23,6 +23,7 @@ export function CareerFactsSheet({ facts }: { facts: CareerFacts }) {
         <Identity facts={facts} />
         <OfficialData facts={facts} />
         <Coverage facts={facts} />
+        <EditorialNotes facts={facts} />
         <Footer facts={facts} />
       </div>
     </div>
@@ -73,6 +74,44 @@ function OfficialData({ facts }: { facts: CareerFacts }) {
  * Cuánto de esta carrera está medido (US-134): siempre a la vista, nunca oculta detrás de un
  * umbral. El piso de 10 reseñas por cátedra es lo único que condiciona qué materia entra al "N".
  */
+/**
+ * Las notas del equipo (ADR-0084). Van con su procedencia dicha y su fecha, porque una síntesis sin
+ * decir de dónde sale es una opinión: lo que la hace legible es saber que se leyó de comentarios
+ * que el producto no publica.
+ *
+ * No se dibuja si no hay ninguna. Un bloque vacío que dice "el equipo todavía no escribió nada"
+ * ocupa lugar para no informar nada.
+ */
+function EditorialNotes({ facts }: { facts: CareerFacts }) {
+  if (facts.editorialNotes.length === 0) return null;
+
+  return (
+    <section className="mb-5">
+      <p className="mb-2 text-[12px] text-ink-3">De la curaduría</p>
+      <div className="rounded-xl border border-line bg-bg-card p-4">
+        {facts.editorialNotes.map((note, index) => (
+          <div key={note.id} className={index === 0 ? '' : 'mt-3 border-t border-line-2 pt-3'}>
+            <p className="text-[13.5px] leading-relaxed text-ink">{note.text}</p>
+            <p className="mt-1.5 text-[11px] text-ink-3">
+              Nota del equipo, leída de comentarios que no se publican
+              <span className="font-mono"> · {formatNoteDate(note.publishedAt)}</span>
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** La fecha de la nota, al día: la hora no aporta nada a leer una síntesis. */
+function formatNoteDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
 function Coverage({ facts }: { facts: CareerFacts }) {
   return (
     <section className="mb-5">

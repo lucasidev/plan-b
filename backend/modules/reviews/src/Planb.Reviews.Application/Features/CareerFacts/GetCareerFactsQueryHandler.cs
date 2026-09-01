@@ -21,6 +21,7 @@ public static class GetCareerFactsQueryHandler
         GetCareerFactsQuery query,
         IAcademicQueryService academic,
         ICareerCoverageQueryService coverage,
+        IEditorialNoteQueryService notes,
         CancellationToken ct)
     {
         var career = await academic.GetCareerByIdAsync(query.CareerId, ct);
@@ -32,6 +33,8 @@ public static class GetCareerFactsQueryHandler
         var counted = await coverage.GetCoverageAsync(
             career.Id, PublishingRules.ChairMinimumReviews, ct);
 
+        var editorial = await notes.ListForCareerAsync(career.Id, ct);
+
         return new GetCareerFactsResponse(
             CareerId: career.Id,
             CareerName: career.Name,
@@ -39,7 +42,10 @@ public static class GetCareerFactsQueryHandler
             DurationYears: career.DurationYears,
             TotalSubjects: counted.TotalSubjects,
             CoveredSubjects: counted.CoveredSubjects,
-            CoveragePercent: Percent(counted.CoveredSubjects, counted.TotalSubjects));
+            CoveragePercent: Percent(counted.CoveredSubjects, counted.TotalSubjects),
+            EditorialNotes: editorial
+                .Select(n => new EditorialNoteView(n.Id, n.Text, n.PublishedAt))
+                .ToList());
     }
 
     private static int Percent(int count, int total) =>

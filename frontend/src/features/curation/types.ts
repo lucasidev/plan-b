@@ -24,3 +24,11 @@ export type DistilItemState =
   | { status: 'error'; message: string };
 
 export const initialDistilItemState: DistilItemState = { status: 'idle' };
+
+/** El estado del alta de una nota del equipo. */
+export type EditorialNoteState =
+  | { status: 'idle' }
+  | { status: 'success' }
+  | { status: 'error'; message: string };
+
+export const initialEditorialNoteState: EditorialNoteState = { status: 'idle' };

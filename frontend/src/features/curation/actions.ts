@@ -3,7 +3,7 @@
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import { getSession } from '@/lib/session';
 import { distilItemSchema } from './schema';
-import type { DistilItemState } from './types';
+import type { DistilItemState, EditorialNoteState } from './types';
 
 const NO_PERMISSION = 'No tenés permisos para curar el instrumento.';
 const NO_CONNECTION = 'No pudimos conectarnos al servidor. Probá de nuevo.';
@@ -86,3 +86,60 @@ export async function distilItemAction(
     return { status: 'error', message: NO_CONNECTION };
   }
 }
+
+/**
+ * Publica una nota del equipo sobre una carrera (ADR-0084). Mutación pura (ADR-0046).
+ *
+ * La nota cuelga de una carrera y nunca de una cátedra: a ese nivel el docente es identificable, y
+ * una síntesis ahí sería decir algo sobre una persona a partir de textos que prometimos no
+ * publicar. El backend lo impone; acá no hay forma de elegir otra cosa.
+ */
+export async function publishEditorialNoteAction(
+  _prev: EditorialNoteState,
+  formData: FormData,
+): Promise<EditorialNoteState> {
+  const session = await getSession();
+  if (session?.role !== 'admin') {
+    return { status: 'error', message: NO_PERMISSION };
+  }
+
+  const careerId = formData.get('careerId')?.toString() ?? '';
+  const text = formData.get('text')?.toString().trim() ?? '';
+
+  if (!careerId) {
+    return { status: 'error', message: 'Elegí sobre qué carrera es la nota.' };
+  }
+  if (!text) {
+    return { status: 'error', message: 'Escribí la nota.' };
+  }
+
+  try {
+    const response = await apiFetchAuthenticated(
+      `/api/reviews/curation/careers/${careerId}/notes`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      },
+    );
+
+    if (response.ok) return { status: 'success' };
+    if (response.status === 401 || response.status === 403) {
+      return { status: 'error', message: NO_PERMISSION };
+    }
+
+    const problem = (await response.json().catch(() => null)) as { title?: string } | null;
+    return {
+      status: 'error',
+      message: NOTE_MESSAGES[problem?.title ?? ''] ?? 'No pudimos publicar la nota.',
+    };
+  } catch {
+    return { status: 'error', message: NO_CONNECTION };
+  }
+}
+
+const NOTE_MESSAGES: Record<string, string> = {
+  'reviews.editorial_note.career_not_found': 'Esa carrera no existe.',
+  'reviews.editorial_note.text_required': 'Escribí la nota.',
+  'reviews.editorial_note.text_too_long': 'La nota es demasiado larga.',
+};

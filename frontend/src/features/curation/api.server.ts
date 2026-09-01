@@ -30,3 +30,26 @@ export async function fetchFreeTextsServer(skip: number): Promise<FreeTexts> {
 
   return (await res.json()) as FreeTexts;
 }
+
+/** Una universidad y una carrera, como las lee el selector de la nota. */
+export type CatalogOption = { id: string; name: string };
+
+/**
+ * Las universidades y las carreras de una, para elegir sobre cuál escribe la nota. Salen del
+ * catálogo público: la curaduría no necesita ver nada que el catálogo no muestre.
+ */
+export async function fetchUniversitiesServer(): Promise<CatalogOption[]> {
+  const res = await apiFetchAuthenticated('/api/academic/universities', { cache: 'no-store' });
+  if (!res.ok) return [];
+  const body = (await res.json()) as { items?: CatalogOption[] } | CatalogOption[];
+  return Array.isArray(body) ? body : (body.items ?? []);
+}
+
+export async function fetchCareersServer(universityId: string): Promise<CatalogOption[]> {
+  const res = await apiFetchAuthenticated(`/api/academic/careers?universityId=${universityId}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) return [];
+  const body = (await res.json()) as { items?: CatalogOption[] } | CatalogOption[];
+  return Array.isArray(body) ? body : (body.items ?? []);
+}

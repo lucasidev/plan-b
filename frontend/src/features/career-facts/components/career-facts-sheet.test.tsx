@@ -19,6 +19,7 @@ const BASE: CareerFacts = {
   totalSubjects: 21,
   coveredSubjects: 0,
   coveragePercent: 0,
+  editorialNotes: [],
 };
 
 function renderSheet(facts: CareerFacts) {
@@ -92,5 +93,30 @@ describe('CareerFactsSheet', () => {
     const { container } = renderSheet(BASE);
 
     expect(container.textContent).not.toMatch(/★|puntaje|promedio de|\/ 5/i);
+  });
+
+  it('publica la nota del equipo con su procedencia y su fecha', () => {
+    renderSheet({
+      ...BASE,
+      editorialNotes: [
+        {
+          id: 'n1',
+          text: 'Varias cursadas mencionan que no se sabe con qué se rinde el final.',
+          publishedAt: '2026-08-19T12:00:00Z',
+        },
+      ],
+    });
+
+    expect(screen.getByText(/no se sabe con qué se rinde el final/i)).toBeInTheDocument();
+
+    // La procedencia es lo que la hace legible: una síntesis sin decir de dónde sale es opinión.
+    expect(screen.getByText(/leída de comentarios que no se publican/i)).toBeInTheDocument();
+    expect(screen.getByText(/19\/08\/2026/)).toBeInTheDocument();
+  });
+
+  it('sin notas no dibuja el bloque, en vez de decir que no hay ninguna', () => {
+    renderSheet(BASE);
+
+    expect(screen.queryByText(/de la curaduría/i)).not.toBeInTheDocument();
   });
 });

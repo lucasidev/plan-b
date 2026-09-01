@@ -16,14 +16,28 @@ namespace Planb.Reviews.Tests.Features.CareerFacts;
 /// </summary>
 public class GetCareerFactsQueryHandlerTests
 {
-    private sealed record Deps(IAcademicQueryService Academic, ICareerCoverageQueryService Coverage);
+    private sealed record Deps(
+        IAcademicQueryService Academic,
+        ICareerCoverageQueryService Coverage,
+        IEditorialNoteQueryService Notes);
 
-    private static Deps NewDeps() =>
-        new(Substitute.For<IAcademicQueryService>(), Substitute.For<ICareerCoverageQueryService>());
+    private static Deps NewDeps()
+    {
+        var notes = Substitute.For<IEditorialNoteQueryService>();
+        // Sin notas por default: son opcionales, y este handler prueba identidad y cobertura.
+        notes.ListForCareerAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<EditorialNoteRow>>([]));
+
+        return new(
+            Substitute.For<IAcademicQueryService>(),
+            Substitute.For<ICareerCoverageQueryService>(),
+            notes);
+    }
 
     private static Task<Result<GetCareerFactsResponse>> Invoke(Deps deps, Guid careerId) =>
         GetCareerFactsQueryHandler.Handle(
-            new GetCareerFactsQuery(careerId), deps.Academic, deps.Coverage, CancellationToken.None);
+            new GetCareerFactsQuery(careerId), deps.Academic, deps.Coverage, deps.Notes,
+            CancellationToken.None);
 
     private static CareerDetailItem Career(Guid id, int? durationYears = null) =>
         new(id, "Tecnicatura Universitaria en Desarrollo y Calidad de Software", durationYears,

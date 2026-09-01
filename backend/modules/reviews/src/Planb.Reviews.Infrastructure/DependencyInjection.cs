@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
+using Planb.Reviews.Domain.Curation;
 using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence.Queries;
@@ -35,6 +36,8 @@ public static class DependencyInjection
         // Lo que una cuenta aportó, para poder corregirlo o borrarlo (US-165, US-166).
         services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
         services.AddScoped<IFreeTextQueryService, DapperFreeTextQueryService>();
+        services.AddScoped<IEditorialNoteRepository, EditorialNoteRepository>();
+        services.AddScoped<IEditorialNoteQueryService, DapperEditorialNoteQueryService>();
 
         // Los conteos que alimentan las fichas de cátedra y de materia (US-147, US-148, ADR-0083).
         services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();
