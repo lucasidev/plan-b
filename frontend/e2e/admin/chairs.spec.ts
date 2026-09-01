@@ -61,6 +61,12 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     const chairRow = page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') });
     await expect(chairRow).toBeVisible({ timeout: 15_000 });
 
+    // Todo lo que sigue se afirma sobre ESTA cátedra y no sobre la pantalla: la materia acumula
+    // cátedras de otras corridas, y un locator suelto ("Integraron antes") las matchea a todas.
+    const chairCard = page.getByRole('listitem').filter({
+      has: page.getByRole('heading', { name: new RegExp(`Cátedra ${chairName}`, 'i') }),
+    });
+
     // 2. El equipo. La UI de sumar integrantes no está construida todavía, así que este paso va por
     //    API contra los endpoints que sí lo están: lo que el issue exige verificar de punta a punta
     //    es que la cátedra cargada llegue a la ficha pública.
@@ -73,8 +79,8 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     expect(added.status()).toBe(204);
 
     await page.reload();
-    await expect(page.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
-    await expect(page.getByText(/titular/i).first()).toBeVisible();
+    await expect(chairCard.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
+    await expect(chairCard.getByText(/titular/i)).toBeVisible();
 
     // 3. Cerrar el tramo no borra al docente: sigue listado, ahora entre los que integraron antes.
     const closed = await page.request.post(
@@ -84,8 +90,8 @@ test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
     expect(closed.status()).toBe(204);
 
     await page.reload();
-    await expect(page.getByText(/integraron antes/i)).toBeVisible();
-    await expect(page.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
+    await expect(chairCard.getByText(/integraron antes/i)).toBeVisible();
+    await expect(chairCard.getByText(new RegExp(`Ada${suffix}`, 'i'))).toBeVisible();
 
     // 4. Y el criterio del issue: la ficha pública la muestra, sin haber tocado el seed.
     await page.goto(`/chairs/${chairId}`);
