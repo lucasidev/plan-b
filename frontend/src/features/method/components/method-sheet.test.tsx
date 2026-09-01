@@ -13,6 +13,7 @@ const INSTRUMENT: CurrentInstrument = {
       text: '¿Cuántos eran en la comisión?',
       help: null,
       layer: 'Context',
+      origin: 'Seed',
       options: [
         { value: 1, label: 'Menos de 20' },
         { value: 2, label: 'Más de 20' },
@@ -23,6 +24,7 @@ const INSTRUMENT: CurrentInstrument = {
       text: '¿Se dictaron las clases?',
       help: null,
       layer: 'ChairConduct',
+      origin: 'Seed',
       options: [
         { value: 1, label: 'Casi todas' },
         { value: 2, label: 'Faltaron algunas' },
@@ -34,6 +36,7 @@ const INSTRUMENT: CurrentInstrument = {
       text: '¿Cómo terminaste la cursada?',
       help: null,
       layer: 'StudentExperience',
+      origin: 'Seed',
       options: [{ value: 1, label: 'La aprobé' }],
     },
   ],
@@ -138,11 +141,41 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/la fuente y el período relevado/)).toBeInTheDocument();
   });
 
-  it('las preguntas son semilla hasta que exista la primera destilada, y lo dice', () => {
+  it('sin ninguna destilada todavía, lo dice en vez de callarlo', () => {
     render(<MethodSheet instrument={INSTRUMENT} chairFloor={7} pairFloor={4} />);
 
     expect(screen.getByText(/semilla/)).toBeInTheDocument();
-    expect(screen.getByText(/destilada/)).toBeInTheDocument();
     expect(screen.getByText(/todavía no hay ninguna/i)).toBeInTheDocument();
+  });
+
+  it('la pregunta que salió del campo libre va marcada, y Método las cuenta', () => {
+    const withDistilled = {
+      ...INSTRUMENT,
+      items: [
+        ...INSTRUMENT.items,
+        {
+          code: 'CHAIR_EXAM_SCOPE',
+          text: '¿Sabías con qué se rendía el final?',
+          help: null,
+          layer: 'ChairConduct',
+          origin: 'Distilled',
+          options: [
+            { value: 1, label: 'Sí' },
+            { value: 2, label: 'No' },
+          ],
+        },
+      ],
+    } satisfies CurrentInstrument;
+
+    render(<MethodSheet instrument={withDistilled} chairFloor={7} pairFloor={4} />);
+
+    // La marca va al lado de su pregunta, que es donde sirve para auditar ese número. Se busca
+    // dentro del párrafo del ítem: la palabra también aparece en la explicación de arriba.
+    const question = screen.getByText(/sabías con qué se rendía el final/i);
+    expect(question).toHaveTextContent('destilada');
+
+    // Y el conteo, que es lo que deja ver cuánto evolucionó el instrumento desde lo cualitativo.
+    expect(screen.getByText(/hay una\./)).toBeInTheDocument();
+    expect(screen.queryByText(/todavía no hay ninguna/i)).not.toBeInTheDocument();
   });
 });

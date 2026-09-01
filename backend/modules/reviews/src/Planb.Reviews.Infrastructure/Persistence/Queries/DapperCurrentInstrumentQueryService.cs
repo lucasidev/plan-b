@@ -38,6 +38,7 @@ internal sealed class DapperCurrentInstrumentQueryService : ICurrentInstrumentQu
                 i.text             AS Text,
                 i.help             AS Help,
                 i.layer            AS Layer,
+                i.origin           AS Origin,
                 ii.""order""       AS ItemOrder,
                 o.value            AS OptionValue,
                 o.label            AS OptionLabel,
@@ -61,13 +62,14 @@ internal sealed class DapperCurrentInstrumentQueryService : ICurrentInstrumentQu
         }
 
         var items = rows
-            .GroupBy(r => new { r.ItemCode, r.Text, r.Help, r.Layer, r.ItemOrder })
+            .GroupBy(r => new { r.ItemCode, r.Text, r.Help, r.Layer, r.Origin, r.ItemOrder })
             .OrderBy(g => g.Key.ItemOrder)
             .Select(g => new InstrumentItemView(
                 g.Key.ItemCode,
                 g.Key.Text,
                 g.Key.Help,
                 g.Key.Layer,
+                g.Key.Origin,
                 g.OrderBy(r => r.OptionOrder)
                     .Select(r => new InstrumentOptionView(r.OptionValue, r.OptionLabel))
                     .ToList()))
@@ -84,6 +86,7 @@ internal sealed class DapperCurrentInstrumentQueryService : ICurrentInstrumentQu
         string Text,
         string? Help,
         string Layer,
+        string Origin,
         short ItemOrder,
         short OptionValue,
         string OptionLabel,

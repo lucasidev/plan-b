@@ -83,4 +83,40 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
       await deleteStudent(request, student);
     }
   });
+
+  /**
+   * El ciclo entero de destilar: la pregunta se escribe acá, entra al cuestionario como versión
+   * nueva, y aparece en los dos lugares donde el instrumento se ve. En Método va marcada, que es
+   * lo que deja auditar de dónde salió.
+   */
+  test('destilar una pregunta la mete en el cuestionario y Método la marca', async ({
+    page,
+    context,
+  }) => {
+    const suffix = Math.random().toString(36).slice(2, 7).toUpperCase();
+    const code = `DISTIL_${suffix}`;
+    const question = `¿Sabías con qué se rendía ${suffix}?`;
+
+    await context.clearCookies();
+    await signIn(page, ADMIN.email, ADMIN.password);
+    await page.goto('/admin/curation');
+
+    await page.getByLabel('Código').fill(code);
+    await page.getByLabel('La pregunta').fill(question);
+    await page.getByLabel(/etiqueta de la opción 1/i).fill('Sí');
+    await page.getByLabel(/etiqueta de la opción 2/i).fill('No');
+    await page.getByRole('button', { name: 'Destilar' }).click();
+
+    // Dice en qué versión del cuestionario entró: ese número es el corte de la serie.
+    await expect(page.getByRole('status')).toContainText(/entró en la versión \d+/i, {
+      timeout: 15_000,
+    });
+
+    // Y Método la publica, marcada como destilada.
+    await context.clearCookies();
+    await page.goto('/method');
+    const marked = page.getByText(question);
+    await expect(marked).toBeVisible({ timeout: 15_000 });
+    await expect(marked).toContainText('destilada');
+  });
 });

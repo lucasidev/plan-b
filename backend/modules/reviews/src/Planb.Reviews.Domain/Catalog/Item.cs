@@ -47,6 +47,9 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     /// <summary>A qué ficha aterriza el dato. Metadato invisible: el que responde nunca lo ve.</summary>
     public ItemSubject Subject { get; private set; }
 
+    /// <summary>De dónde salió la pregunta. Método lo publica: ver <see cref="ItemOrigin"/>.</summary>
+    public ItemOrigin Origin { get; private set; }
+
     /// <summary>
     /// Si el ítem sigue ofreciéndose. Retirarlo no borra nada: las respuestas viejas siguen contando
     /// en las fichas de los períodos en que se preguntó.
@@ -75,7 +78,8 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
         ItemLayer layer,
         ItemSubject subject,
         IEnumerable<(short Value, short Order, string Label, OptionValence Valence)> options,
-        IDateTimeProvider clock)
+        IDateTimeProvider clock,
+        ItemOrigin origin = ItemOrigin.Seed)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(clock);
@@ -107,6 +111,7 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
             Help = TrimToNull(help),
             Layer = layer,
             Subject = subject,
+            Origin = origin,
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,
@@ -131,7 +136,8 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
         IEnumerable<(short Value, short Order, string Label, OptionValence Valence)> options,
         bool isActive,
         DateTimeOffset createdAt,
-        DateTimeOffset updatedAt)
+        DateTimeOffset updatedAt,
+        ItemOrigin origin = ItemOrigin.Seed)
     {
         var built = BuildOptionSet(options, layer);
         if (built.IsFailure)
@@ -149,6 +155,7 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
             Help = help,
             Layer = layer,
             Subject = subject,
+            Origin = origin,
             IsActive = isActive,
             CreatedAt = createdAt,
             UpdatedAt = updatedAt,

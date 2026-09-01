@@ -15,11 +15,18 @@ export type InstrumentOption = {
 /** Las tres capas de la reseña. Ordenan los pasos de la pantalla. */
 export type ItemLayer = 'Context' | 'ChairConduct' | 'StudentExperience';
 
+/**
+ * De dónde salió la pregunta (ADR-0084). Método lo publica: que una haya salido de lo que muchos
+ * escribieron en el campo libre es parte de cómo se llegó a preguntarla.
+ */
+export type ItemOrigin = 'Seed' | 'Distilled';
+
 export type InstrumentItem = {
   code: string;
   text: string;
   help: string | null;
   layer: ItemLayer;
+  origin: ItemOrigin;
   options: readonly InstrumentOption[];
 };
 
