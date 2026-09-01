@@ -38,7 +38,7 @@ const services: Service[] = [
     command: 'dotnet',
     args: ['watch', 'run'],
     // Seed corpus: solo en `just dev` (no en `dotnet test`), así los integration tests
-    // quedan con DB limpia. El backend lo gatea además por IsDevelopment(). Ver SeedCorpusHostedService.
+    // quedan con DB limpia. El backend lo gatea además por IsDevelopment(). Ver CorpusSeedHostedService.
     env: { PLANB_SEED_CORPUS: '1' },
   },
   {

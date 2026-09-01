@@ -222,6 +222,12 @@ builder.Services.AddHostedService<AcademicSeedHostedService>();
 builder.Services.AddScoped<Planb.Reviews.Application.Seeding.CatalogSeeder>();
 builder.Services.AddHostedService<CatalogSeedHostedService>();
 
+// Corpus de demostración (#374): las reseñas que hacen que las fichas tengan qué mostrar. Es el
+// nivel 2 de ADR-0058 y va gateado también por PLANB_SEED_CORPUS. Después del catálogo, que es
+// contra cuyo instrumento se responden.
+builder.Services.AddScoped<Planb.Reviews.Application.Seeding.CorpusSeeder>();
+builder.Services.AddHostedService<CorpusSeedHostedService>();
+
 // ------------------------------------------------------------------
 // Traducción de violaciones de UNIQUE a 409. Ver UniqueViolationExceptionHandler: los índices
 // únicos son la red para las carreras que el chequeo previo del handler no puede cerrar, y sin esto
