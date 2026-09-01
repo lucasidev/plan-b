@@ -46,9 +46,9 @@ public sealed class Subject : Entity<SubjectId>, IAggregateRoot
     public bool IsOfficial { get; private set; }
 
     /// <summary>
-    /// Soft delete (US-062). No hay hard delete: Review y Commission referencian
-    /// la materia por id sin FK cross-schema, así que borrarla de verdad dejaría filas colgadas
-    /// (mismo criterio que <c>Career.IsActive</c>).
+    /// Soft delete (US-062). No hay hard delete: las reseñas referencian la materia por id sin FK
+    /// cross-schema, así que borrarla de verdad dejaría filas colgadas (mismo criterio que
+    /// <c>Career.IsActive</c>).
     /// </summary>
     public bool IsActive { get; private set; }
 

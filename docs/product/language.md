@@ -54,7 +54,6 @@ Vocabulario de la tesis vigente ([THESIS.md](../THESIS.md), "Qué recabamos" y "
 | **Constancia** | La prueba opcional de condición de alumno. Verificarse pesa, no habilita. |
 | **Aporte** | Genérico: cualquier cosa que alguien contribuye (una reseña, una respuesta administrativa, una corrección de dato, un pedido de carrera). "Mis aportes" es la pantalla que junta todo eso. |
 | **Cátedra** | El equipo docente que dicta una materia: titular a cargo, adjuntos, JTPs, ayudantes. Persiste entre cuatrimestres. Una materia puede tener varias en paralelo y el alumno elige. Existe en el catálogo como `Chair`. |
-| **Comisión** | La división horaria y de cupo dentro de una cátedra (Com A, martes noche). Existe en el catálogo como `Commission`. |
 | **Pendiente de vincular** | La materia que alguien nombró al reseñar y el catálogo no tiene. La reseña se guarda; no cuenta en ninguna ficha ni en la cobertura hasta que el catálogo la vincula a la materia canónica (US-197); el autor la ve como pendiente en Mis aportes. |
 | **Co-cursada** | Llevar dos materias juntas, en el mismo período. Como conteo publicado: por par de materias y período, cuántas cuentas reseñaron las dos y cuántas dejaron una. Sale solo de las reseñas, que ya traen materia y período, y no le pide nada a nadie: el producto no sabe por dónde va tu carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Contesta lo que se pregunta en el pasillo («¿se pueden llevar juntas?») y hoy contesta la anécdota de uno. |
 | **Cohorte** | Las cuentas que entraron a una carrera el mismo año. En el producto vigente es sobre todo el corte de los **datos oficiales** ("egresan por cohorte: 14 %", serie SPU). |
@@ -111,8 +110,6 @@ Lo que cambió el 2026-08-27 es qué dato muestra la landing: dejó de ilustrar 
 | **para_cursar** | Tipo de correlativa: requiere que la materia requerida esté **regularizada** para inscribirse a la dependiente. |
 | **para_rendir** | Tipo de correlativa: requiere que la materia requerida esté **aprobada** para rendir el final de la dependiente. |
 | **Teacher** | Docente. Entidad del catálogo académico precargada, asociada a una universidad. Existe independientemente de si hay un `User` que la reclamó. |
-| **Commission** | Comisión. Oferta concreta de una `Subject` en un `AcademicTerm`. Tiene nombre (A, B, Com 1), modalidad, capacidad. |
-| **CommissionTeacher** | Asignación M:N entre `Teacher` y `Commission` con `role` (titular, adjunto, JTP, ayudante, invitado). |
 | **AcademicTerm** | Período lectivo de una universidad. Tiene un `kind` (bimestral, cuatrimestral, semestral, anual) que define su duración. Ej: "2026-C1". |
 | **term_kind** | Cadencia del período: `bimestral`, `cuatrimestral`, `semestral`, `anual`. Genérico para soportar universidades con distintos calendarios. |
 | **cadencia (cómo se dice en la UI)** | `term_kind` mostrado al usuario: "1er cuatrimestre", "3er bimestre", "anual"; forma corta "1er cuatri". **Nunca codificada en letras** (`1c`, `3b`, `1s`): esas abreviaturas no están definidas en ninguna pantalla y no significan nada para quien las lee por primera vez. Fuente única: `frontend/src/lib/academic-terms.ts` ([ADR-0051](../decisions/0051-academic-vocabulary-with-a-canonical-representation-in-the-ui.md)). |
@@ -130,7 +127,7 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 | **alumno** | "Un rol de usuario" | Se refiere a un `member` con `StudentProfile`. El rol es `member`. |
 | **rol** | "Algo que un usuario puede tener varios a la vez" | Un `User` tiene exactamente un `role` del enum. Los profiles suman **capacidades**, no roles. |
 | **carrera** | "Un plan de estudios específico" | `Career` es el concepto estable. `CareerPlan` es la versión específica. Un alumno cursa una `Career` bajo un `CareerPlan` determinado. |
-| **comisión** | "Cursada del alumno" | `Commission` es la oferta (materia + cuatrimestre + docentes). La cursada es lo que declara la reseña (materia, cátedra y período), no una entidad propia: el producto no lleva un historial del alumno ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). |
+| **comisión** | La división horaria de una materia (Com A, martes noche) | Existe en la universidad y el producto **no la modela**: la reseña se cuelga de la **cátedra**, que persiste entre períodos. |
 | **cuatrimestre** | Como sinónimo de cualquier período | `AcademicTerm` generaliza a bimestral/cuatrimestral/semestral/anual. "Cuatrimestre" es un `AcademicTerm` con `kind='cuatrimestral'`. Vale también para el código: concatenar una "c" fija al formatear un período asume la cadencia de UNSTA y rompe la generalidad que compró [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md). |
 | **contar** | El verbo de la acción ("contar una cursada", "lo que contás") | Se dice **reseñar**. |
 | **anónimo** | "Los datos del autor no existen en DB" | El anonimato es de **presentación**, no de storage. La identidad siempre se preserva internamente. |

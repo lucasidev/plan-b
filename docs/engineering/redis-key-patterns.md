@@ -183,7 +183,7 @@ catch
 
 ## Patrón 4: Hot reads cache (cache-aside)
 
-**Caso**: reads de catálogo (Subject, Teacher, Commission, agregados como `pass_rate`, `avg_rating`). Read-100x:write-1.
+**Caso**: reads de catálogo (Subject, Teacher, Chair, y los conteos de una ficha). Read-100x:write-1.
 
 **Key shape**:
 ```
@@ -193,7 +193,7 @@ catch
 Ejemplos:
 - `academic:cache:subject:{subjectId}`
 - `academic:cache:teacher:{teacherId}`
-- `academic:cache:commission:{commissionId}`
+- `academic:cache:chair:{chairId}`
 - `reviews:cache:subject-stats:{subjectId}` (agregado: avg_rating, pass_rate, review_count)
 
 **Tipo**: string (JSON serializado del DTO de read).

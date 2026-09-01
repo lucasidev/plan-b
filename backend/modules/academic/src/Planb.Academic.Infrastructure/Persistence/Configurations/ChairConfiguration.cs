@@ -29,8 +29,8 @@ internal sealed class ChairConfiguration : IEntityTypeConfiguration<Chair>
             .HasConversion(id => id.Value, value => new ChairId(value));
 
         // Ref cross-aggregate (Chair y Subject son aggregates distintos, aunque compartan el
-        // schema academic): mismo criterio que Commission.SubjectId / Prerequisite.SubjectId,
-        // columna sin FK Postgres (ADR-0017), validada en el application layer.
+        // schema academic): mismo criterio que Prerequisite.SubjectId, columna sin FK Postgres
+        // (ADR-0017), validada en el application layer.
         builder.Property(c => c.SubjectId)
             .HasColumnName("subject_id")
             .HasConversion(id => id.Value, value => new SubjectId(value))
@@ -48,8 +48,7 @@ internal sealed class ChairConfiguration : IEntityTypeConfiguration<Chair>
         builder.Property(c => c.UpdatedAt).HasColumnName("updated_at").IsRequired();
 
         // UNIQUE(subject_id, name): lo que ChairErrors.NameAlreadyExists refleja. El prefijo
-        // subject_id además cubre el lookup "cátedras de esta materia" (GetBySubjectAsync), mismo
-        // razonamiento que el índice compuesto de Commission.
+        // subject_id además cubre el lookup "cátedras de esta materia" (GetBySubjectAsync).
         builder.HasIndex(c => new { c.SubjectId, c.Name })
             .IsUnique()
             .HasDatabaseName("ux_chairs_subject_name");
@@ -81,10 +80,9 @@ internal sealed class ChairConfiguration : IEntityTypeConfiguration<Chair>
                 .HasColumnName("since_term_id")
                 .HasConversion(id => id.Value, value => new AcademicTermId(value));
 
-            // PRIMARY KEY (chair_id, teacher_id, since_term_id). A diferencia de CommissionTeacher
-            // (commission_id, teacher_id), acá esa pareja no alcanza como identidad: un docente
-            // puede entrar, salir y volver a la misma cátedra, y cada tramo (marcado por su propio
-            // since_term_id) es una fila distinta.
+            // PRIMARY KEY (chair_id, teacher_id, since_term_id). El par (cátedra, docente) no
+            // alcanza como identidad: un docente puede entrar, salir y volver a la misma cátedra, y
+            // cada tramo (marcado por su propio since_term_id) es una fila distinta.
             cm.HasKey("chair_id", "TeacherId", "SinceTermId");
 
             // La ficha pública de un docente lista sus cátedras filtrando por `teacher_id`,
@@ -92,8 +90,8 @@ internal sealed class ChairConfiguration : IEntityTypeConfiguration<Chair>
             // columna líder, así que esa lectura barre la tabla sin este índice.
             cm.HasIndex("TeacherId").HasDatabaseName("ix_chair_members_teacher");
 
-            // Mismo criterio que CommissionTeacherRole: string, no int, para que agregar un rol no
-            // rompa filas ya persistidas con el valor numérico de otro rol.
+            // String, no int, para que agregar un rol no rompa filas ya persistidas con el valor
+            // numérico de otro rol.
             cm.Property(m => m.Role)
                 .HasColumnName("role")
                 .HasConversion<string>()

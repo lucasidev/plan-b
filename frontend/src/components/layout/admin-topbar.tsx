@@ -11,7 +11,6 @@ import { Fragment } from 'react';
 const SEGMENT_LABELS: Record<string, string> = {
   universities: 'Universidades',
   teachers: 'Docentes',
-  commissions: 'Comisiones',
   careers: 'Carreras',
   terms: 'Períodos',
   // `new`/`edit` son genéricos: el mismo breadcrumb sirve para todos los recursos del backoffice

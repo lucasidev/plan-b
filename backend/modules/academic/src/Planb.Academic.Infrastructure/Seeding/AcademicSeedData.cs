@@ -3,7 +3,6 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Chairs;
-using Planb.Academic.Domain.Commissions;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
@@ -580,139 +579,11 @@ public static class AcademicSeedData
     private static TeacherId Tid(string nn) =>
         new(Guid.Parse($"00000006-0000-4000-a000-0000000000{nn}"));
 
-    // ====================================================================
-    // Commissions + CommissionTeachers + CommissionSchedules (UNSTA): oferta de prueba (US-065,
-    // horarios US-096). Cada comisión cuelga de un Subject TUDCS + un AcademicTerm UNSTA, con
-    // docentes del catálogo asignados por rol. Todo UNSTA, así la coherencia universitaria total y
-    // term_kind (Cuatrimestral) se sostienen. Habilita "docente real por reseña": las reseñas de
-    // prueba van a anclar su docente a uno de estos.
-    //
-    // Horarios: solo las comisiones de 2026-C1 (Atid "05") tienen franjas cargadas, para tener un
-    // cuatrimestre con oferta completa que el planificador pueda mostrar. Las de otros términos
-    // quedan sin horario a propósito: es el caso "sin horario cargado". Desarrollo de Software "A"
-    // y Álgebra I "A" chocan a propósito los lunes 18-21: es el escenario de choque que el
-    // planificador (US-096) tiene que detectar.
-    //
-    // Convención de UUIDs:
-    //   - Commissions: 00000007-0000-4000-a000-0000000000NN
-    //   - CommissionTeachers / CommissionSchedules: sin id propio (PK compuesta).
-    // ====================================================================
-    public static IReadOnlyList<CommissionRecord> Commissions { get; } = new[]
-    {
-        // Desarrollo de Software (111) · 2026-C1: dos comisiones, distinta modalidad.
-        new CommissionRecord(Cid("01"), Sid("05"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Lead), // brandt
-                new CommissionTeacherRecord(Tid("04"), CommissionTeacherRole.PracticalLead),     // sosa
-            },
-            new[] { Slot(DayOfWeek.Monday, 18, 22), Slot(DayOfWeek.Wednesday, 18, 22) }),
-        new CommissionRecord(Cid("02"), Sid("05"), Atid("05"), "B (Virtual)", CommissionModality.Virtual, 60, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead),  // reynoso
-                new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Assistant), // quiroga
-            },
-            new[] { Slot(DayOfWeek.Tuesday, 19, 23), Slot(DayOfWeek.Thursday, 19, 23) }),
-
-        // Algoritmos y Paradigmas (101) · 2026-C1.
-        new CommissionRecord(Cid("03"), Sid("01"), Atid("05"), "Mañana", CommissionModality.Presencial, 35, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Lead), // iturralde
-            },
-            new[] { Slot(DayOfWeek.Monday, 8, 12), Slot(DayOfWeek.Wednesday, 8, 12) }),
-
-        // Desarrollo Back End (223) · 2025-C2. Sin horario cargado (otro término).
-        new CommissionRecord(Cid("04"), Sid("17"), Atid("04"), "Noche", CommissionModality.Hibrida, null, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Lead), // castro
-                new CommissionTeacherRecord(Tid("05"), CommissionTeacherRole.Associate), // castellanos
-            },
-            []),
-
-        // Base de datos (121) · 2025-C2. Sin horario cargado (idem Cid 04).
-        new CommissionRecord(Cid("05"), Sid("07"), Atid("04"), "U1", CommissionModality.Presencial, 30, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Lead), // méndez
-                new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.PracticalLead),     // páez
-            },
-            []),
-
-        // Inglés B1:1 (313) · 2026-C1. brandt acá es adjunto (mismo docente, otra comisión).
-        new CommissionRecord(Cid("06"), Sid("20"), Atid("05"), "A", CommissionModality.Presencial, 25, null,
-            new[]
-            {
-                new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead), // ledesma
-                new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Associate), // brandt
-            },
-            new[] { Slot(DayOfWeek.Saturday, 9, 13) }),
-
-        // Comisiones adicionales (una por materia) en 2026-C1, coherentes con el mapeo docente del
-        // corpus de prueba. Amplían la oferta reseñable: cada (materia, term) con comisión es una cursada
-        // que un alumno puede reseñar (docente real por reseña), y dan headroom a los E2E.
-        new CommissionRecord(Cid("07"), Sid("02"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead) }, // álgebra I (102): reynoso
-            // Choca a propósito con Desarrollo de Software "A" (Cid 01) los lunes 18-21: escenario
-            // de choque del planificador (US-096).
-            new[] { Slot(DayOfWeek.Monday, 18, 21), Slot(DayOfWeek.Friday, 18, 21) }),
-        new CommissionRecord(Cid("08"), Sid("09"), Atid("05"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead) }, // seminario informático I (123): ledesma
-            new[] { Slot(DayOfWeek.Tuesday, 14, 18) }),
-        new CommissionRecord(Cid("09"), Sid("14"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Lead) }, // desarrollo front end (213): páez
-            new[] { Slot(DayOfWeek.Thursday, 14, 18) }),
-        new CommissionRecord(Cid("0a"), Sid("11"), Atid("05"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("0a"), CommissionTeacherRole.Lead) }, // formación humanística II (202): quiroga
-            new[] { Slot(DayOfWeek.Friday, 8, 12) }),
-
-        // Oferta histórica (2024-C2, 2025-C1, 2025-C2) para las materias del corpus de reseñas.
-        // Existe porque el invariante "el docente reseñado pertenece a la comisión de la cursada"
-        // necesita una comisión real del par (materia, período) de cada cursada, y las de arriba
-        // son de 2026-C1: una reseña escrita hace más de 139 días precedería a ese cuatrimestre.
-        // El período de cada una se eligió para que termine antes de la reseña más vieja de su
-        // materia, así ninguna cursada Aprobada cierra un cuatrimestre que todavía no terminó.
-        // El titular es, en cada caso, el docente que el corpus reseña para esa materia.
-        //
-        // Sin horario cargado, igual que las otras comisiones de períodos pasados (Cid 04 y 05):
-        // "sin horario" es un estado válido del dominio y no hay dato real que inventar acá.
-        new CommissionRecord(Cid("0b"), Sid("01"), Atid("02"), "Mañana", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("02"), CommissionTeacherRole.Lead) }, // algoritmos y paradigmas (101): iturralde
-            []),
-        new CommissionRecord(Cid("0c"), Sid("05"), Atid("02"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("01"), CommissionTeacherRole.Lead) }, // desarrollo de software (111): brandt
-            []),
-        new CommissionRecord(Cid("0d"), Sid("09"), Atid("02"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("09"), CommissionTeacherRole.Lead) }, // seminario informático I (123): ledesma
-            []),
-        new CommissionRecord(Cid("0e"), Sid("07"), Atid("03"), "U1", CommissionModality.Presencial, 30, null,
-            new[] { new CommissionTeacherRecord(Tid("07"), CommissionTeacherRole.Lead) }, // base de datos (121): méndez
-            []),
-        new CommissionRecord(Cid("0f"), Sid("17"), Atid("03"), "Noche", CommissionModality.Hibrida, null, null,
-            new[] { new CommissionTeacherRecord(Tid("06"), CommissionTeacherRole.Lead) }, // desarrollo back end (223): castro
-            []),
-        new CommissionRecord(Cid("10"), Sid("02"), Atid("03"), "A", CommissionModality.Presencial, 40, null,
-            new[] { new CommissionTeacherRecord(Tid("03"), CommissionTeacherRole.Lead) }, // álgebra I (102): reynoso
-            []),
-        new CommissionRecord(Cid("11"), Sid("14"), Atid("04"), "A", CommissionModality.Presencial, 35, null,
-            new[] { new CommissionTeacherRecord(Tid("08"), CommissionTeacherRole.Lead) }, // desarrollo front end (213): páez
-            []),
-    };
-
     private static SubjectId Sid(string nn) =>
         new(Guid.Parse($"00000004-0000-4000-a000-0000000000{nn}"));
 
     private static AcademicTermId Atid(string nn) =>
         new(Guid.Parse($"00000005-0000-4000-a000-0000000000{nn}"));
-
-    private static CommissionId Cid(string nn) =>
-        new(Guid.Parse($"00000007-0000-4000-a000-0000000000{nn}"));
-
-    /// <summary>Franja horaria del seed (US-096): hora en punto, minutos siempre en cero.</summary>
-    private static CommissionScheduleRecord Slot(DayOfWeek day, int startHour, int endHour) =>
-        new(day, new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
     // ====================================================================
     // Chairs (UNSTA): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
@@ -806,29 +677,6 @@ public sealed record AcademicTermRecord(
 /// </summary>
 public sealed record TeacherRecord(
     TeacherId Id, UniversityId UniversityId, string FirstName, string LastName, string? Title);
-
-/// <summary>
-/// Comisión del seed con sus docentes y horarios embebidos. UUIDs determinísticos.
-/// <see cref="SubjectId"/> y <see cref="TermId"/> son las refs cross-aggregate (el aggregate las
-/// guarda como Guid plano). <see cref="Schedules"/> puede venir vacía (US-096): "sin horario
-/// cargado" es un estado válido, no un dato faltante.
-/// </summary>
-public sealed record CommissionRecord(
-    CommissionId Id,
-    SubjectId SubjectId,
-    AcademicTermId TermId,
-    string Name,
-    CommissionModality Modality,
-    int? Capacity,
-    string? Notes,
-    IReadOnlyList<CommissionTeacherRecord> Teachers,
-    IReadOnlyList<CommissionScheduleRecord> Schedules);
-
-/// <summary>Asignación docente del seed (par teacher + rol dentro de una comisión).</summary>
-public sealed record CommissionTeacherRecord(TeacherId TeacherId, CommissionTeacherRole Role);
-
-/// <summary>Franja horaria del seed (US-096): día + horas nativas, listas para <c>Commission.Hydrate</c>.</summary>
-public sealed record CommissionScheduleRecord(DayOfWeek Day, TimeOnly Start, TimeOnly End);
 
 /// <summary>
 /// Cátedra del seed con su equipo embebido (US-196). UUIDs determinísticos. <see cref="Name"/> se

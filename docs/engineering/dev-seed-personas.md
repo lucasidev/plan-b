@@ -63,7 +63,7 @@ Placeholder. Cuando aterrice el aggregate `TeacherProfile` y la verificación in
 - **Lic. Castro**: POO, bien valorado, didáctico.
 - **Dr. Iturralde**: Probabilidad, exigente, reseñas mixtas.
 
-Cada uno con su email institucional fake (`brandt@unsta.edu.ar` style), su `TeacherProfile` verificado, y un set de comisiones asignadas. Los detalles cuando llegue la fase.
+Cada uno con su email institucional fake (`brandt@unsta.edu.ar` style), su `TeacherProfile` verificado, y las cátedras que integran. Los detalles cuando llegue la fase.
 
 ## Personas staff
 
@@ -76,7 +76,7 @@ Cada uno con su email institucional fake (`brandt@unsta.edu.ar` style), su `Teac
 | Estado | verified, **admin** |
 | Rol | `admin` |
 
-**La usamos para**: entrar al backoffice y cargar catálogo (universidades, carreras, planes, materias, docentes, comisiones). Es el único rol que hoy tiene backoffice.
+**La usamos para**: entrar al backoffice y cargar catálogo (universidades, carreras, planes, materias, docentes, cátedras). Es el único rol que hoy tiene backoffice.
 
 **Hubo también un moderador (Elena Ferro), y se fue el 2026-08-30** con su rol. Moderación se retiró en R2 y el rol quedó sin una sola pantalla; el frontend dejó de reconocerlo, así que la cuenta sembrada se habría logueado bien y ningún guard la habría reconocido después, en silencio. Vuelve cuando vuelva la feature, con su pantalla (ver la revisión de [ADR-0019](../decisions/0019-single-nextjs-app-with-route-groups-per-actor.md)).
 

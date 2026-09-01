@@ -31,9 +31,6 @@ erDiagram
     University ||--o{ AcademicTerm : schedules
     Career ||--o{ CareerPlan : versions
     CareerPlan ||--o{ Subject : contains
-    Subject ||--o{ Commission : "offered as"
-    AcademicTerm ||--o{ Commission : during
-    Commission }o--o{ Teacher : "through CommissionTeacher"
 
     User ||--o{ StudentProfile : has
     User ||--o{ TeacherProfile : claims
@@ -57,7 +54,7 @@ erDiagram
 | Context              | Entidades                                                                                                   | Propósito                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Identity             | User, StudentProfile, TeacherProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
-| Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Commission, CommissionTeacher, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
+| Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Chair, ChairMember, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
 
 ## Context: Identity
 
@@ -166,7 +163,7 @@ Constraints:
 
 ## Context: Academic Catalog
 
-Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, comisiones y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0049](../decisions/0049-career-plan-versions-by-year-and-status.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
+Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, cátedras y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0049](../decisions/0049-career-plan-versions-by-year-and-status.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
 
 ```mermaid
 ---
@@ -181,10 +178,6 @@ erDiagram
     CareerPlan ||--o{ Subject : contains
     Subject ||--o{ Prerequisite : "as subject_id"
     Subject ||--o{ Prerequisite : "as required_subject_id"
-    Subject ||--o{ Commission : "offered as"
-    AcademicTerm ||--o{ Commission : during
-    Commission ||--o{ CommissionTeacher : "staffed by"
-    Teacher ||--o{ CommissionTeacher : "teaches in"
 ```
 
 ### Entity: University
@@ -272,7 +265,6 @@ Constraints:
 - `UNIQUE(career_plan_id, code)`.
 - CHECK: `term_kind = 'anual'` → `term_in_year IS NULL`.
 - CHECK: `term_kind != 'anual'` → `term_in_year IS NOT NULL`.
-- `term_kind` queda congelado apenas la materia tiene comisiones (app-level): crear una comisión valida que la cadencia de materia y período coincidan, y editarla después rompía esa igualdad en silencio.
 
 Índices de búsqueda (US-042):
 
@@ -320,7 +312,7 @@ Docente del catálogo de una universidad. Entidad precargada, independiente de s
 
 Índice de búsqueda análogo al de Subject (`ix_teachers_search_trgm`), con una tercera expresión sobre `first_name || ' ' || last_name` para la búsqueda por nombre completo.
 
-Un docente archivado no se puede asignar a comisiones nuevas (app-level). Sí se lo deja seguir asignado donde ya estaba: sacarlo reescribiría quién dictó esa comisión.
+Un docente archivado no se puede sumar a una cátedra (app-level). Sí se lo deja donde ya integraba: sacarlo reescribiría quién dictó esa cursada.
 
 ### Entity: AcademicTerm
 
@@ -346,52 +338,12 @@ Constraints:
 - `UNIQUE(university_id, year, number, kind)`.
 - CHECK: `end_date > start_date`.
 - CHECK: `enrollment_closes > enrollment_opens`.
-- `kind` queda congelado apenas el período tiene comisiones (app-level), por el mismo motivo que `Subject.term_kind`. El resto de los campos se siguen pudiendo corregir.
 
 El `label` lo computa siempre el dominio (`AcademicTerm.ComputeLabel`), incluido el seeder. Cuando el seed traía sus propios literales, el mismo dropdown mezclaba dos convenciones para el mismo tipo de período según quién lo hubiera creado.
 
-### Entity: Commission
-
-Oferta concreta de una Subject en un AcademicTerm.
-
-| Campo        | Tipo                       | Constraints                 | Notas                                  |
-| ------------ | -------------------------- | --------------------------- | -------------------------------------- |
-| `id`         | UUID                       | PK                          |                                        |
-| `subject_id` | UUID                       | FK → Subject, NOT NULL      |                                        |
-| `term_id`    | UUID                       | FK → AcademicTerm, NOT NULL |                                        |
-| `name`       | TEXT                       | NOT NULL                    | Ej "A", "Com 1", "Noche"               |
-| `modality`   | ENUM `commission_modality` | NOT NULL                    |                                        |
-| `capacity`   | INT                        | NULL                        |                                        |
-| `notes`      | TEXT                       | NULL                        |                                        |
-| `schedules`  | JSONB                      | NOT NULL                    | Franjas embebidas, ver abajo           |
-| `is_active`  | BOOLEAN                    | NOT NULL                    | Soft delete (US-093), default `true`   |
-| `created_at` | TIMESTAMPTZ                | NOT NULL                    |                                        |
-| `updated_at` | TIMESTAMPTZ                | NOT NULL                    |                                        |
-
-Constraints:
-
-- `UNIQUE(subject_id, term_id, name)`. Sobre todas las filas, no solo las activas: archivar no libera el nombre porque la salida correcta es reactivar la comisión archivada, no crear una segunda con el mismo nombre.
-- CHECK `ck_commissions_capacity_positive`: `capacity IS NULL OR capacity > 0`.
-
-`schedules` es un array de `{day, start, end}` embebido en la fila, no una tabla hija ([ADR-0053](../decisions/0053-the-shape-of-child-collections-in-an-aggregate.md)): ninguna lectura expande las franjas a filas para joinear. `CommissionTeacher`, en cambio, sigue siendo tabla porque se joinea contra `teachers` para traer el nombre. El CHECK `end_time > start_time` que tenía la tabla de franjas no se puede escribir sobre un array jsonb; el invariante lo sostiene el aggregate, cuyo último bypass (`Commission.Hydrate`, usado por el seeder) ahora valida y tira.
-
-### Entity: CommissionTeacher
-
-M:N entre Commission y Teacher, con rol.
-
-| Campo           | Tipo                           | Constraints               |
-| --------------- | ------------------------------ | ------------------------- |
-| `commission_id` | UUID                           | FK → Commission, NOT NULL |
-| `teacher_id`    | UUID                           | FK → Teacher, NOT NULL    |
-| `role`          | ENUM `commission_teacher_role` | NOT NULL                  |
-
-Constraints:
-
-- `PRIMARY KEY (commission_id, teacher_id)`.
-
 ### Entity: Chair (la cátedra)
 
-El equipo docente a cargo de una materia, con su titular ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md), US-196). **No es una `Commission`**: la comisión es la oferta de un período (horario y cupo) y muere con él; la cátedra persiste entre períodos, y una materia puede tener varias en paralelo, que es lo que la ficha compara. La reseña la referencia por id, cross-BC y sin FK.
+El equipo docente a cargo de una materia, con su titular ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md), US-196). Persiste entre períodos, y una materia puede tener varias en paralelo, que es lo que la ficha compara. La reseña la referencia por id, cross-BC y sin FK.
 
 | Campo        | Tipo         | Constraints            | Notas                                            |
 | ------------ | ------------ | ---------------------- | ------------------------------------------------ |
@@ -426,12 +378,10 @@ El tramo no es adorno: la ficha publica reseñas de varios años y el equipo cam
 
 ### Invariantes cross-table (enforced en app)
 
-- `Career.university_id = Teacher.university_id` para los teachers asignados (vía `CommissionTeacher`) a comisiones de subjects de esa carrera.
+- `Career.university_id = Teacher.university_id` para los teachers que integran (vía `ChairMember`) cátedras de subjects de esa carrera.
 - `Chair.subject_id` existe y está activa; los `ChairMember.teacher_id` existen, están activos y son de la misma universidad que la materia.
-- `Subject.term_kind = AcademicTerm.kind` cuando se crea una `Commission`.
-- `Subject.career_plan.career.university_id = AcademicTerm.university_id` para una `Commission`.
 - `Prerequisite`: ambos subjects pertenecen al mismo `career_plan_id`.
-- `Career.university_id = Commission.subject.career_plan.career.university_id = AcademicTerm.university_id = Teacher.university_id` (coherencia universitaria total).
+- `Career.university_id = Chair.subject.career_plan.career.university_id = AcademicTerm.university_id = Teacher.university_id` (coherencia universitaria total).
 
 ## Context: el instrumento y la reseña de tres capas
 
@@ -573,8 +523,6 @@ Nombres y valores de todos los enums del modelo.
 | `career_plan_status`          | `active`, `deprecated`                                                                |
 | `term_kind`                   | `bimestral`, `cuatrimestral`, `semestral`, `anual`                                    |
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
-| `commission_modality`         | `presencial`, `virtual`, `hibrida`                                                    |
-| `commission_teacher_role`     | `titular`, `adjunto`, `jtp`, `ayudante`, `invitado`                                   |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
 | `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
 

@@ -12,9 +12,8 @@ namespace Planb.Academic.Application.Features.AdminChairs;
 /// POST /api/academic/subjects/{subjectId}/chairs (admin, US-196).
 ///
 /// <para>
-/// La entrada es <b>por materia</b> y no por la cascada de universidad y período que usa la
-/// comisión: la cátedra es de una materia y persiste entre períodos, así que colgarla de un término
-/// sería modelar mal la cosa que se está cargando.
+/// La entrada es <b>por materia</b>: la cátedra es de una materia y persiste entre períodos, así
+/// que colgarla de un término sería modelar mal la cosa que se está cargando.
 /// </para>
 /// </summary>
 public sealed class CreateChairEndpoint : ICarterModule

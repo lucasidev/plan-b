@@ -44,7 +44,7 @@ public sealed class AcademicSeedHostedService : IHostedService
         {
             // Falla ruidoso a propósito. El seed es determinista y corre en una sola transacción, así
             // que un fallo significa manifiesto roto o schema desactualizado, y el rollback se lleva
-            // el catálogo entero (universidades, carreras, materias, períodos, comisiones). Tragarse
+            // el catálogo entero (universidades, carreras, materias, períodos, cátedras). Tragarse
             // la excepción dejaba la API arrancando con el catálogo vacío y una línea de log: los
             // integration tests fallaban todos por causas que no nombran el problema real.
             _log.LogError(ex, "Academic seeder failed.");

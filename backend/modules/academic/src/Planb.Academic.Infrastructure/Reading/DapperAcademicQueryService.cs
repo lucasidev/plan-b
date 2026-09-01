@@ -242,76 +242,6 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             new CommandDefinition(sql, new { TeacherId = teacherId }, cancellationToken: ct));
     }
 
-    public async Task<IReadOnlyList<CommissionListItem>> ListCommissionsBySubjectAndTermAsync(
-        Guid subjectId, Guid termId, CancellationToken ct = default)
-    {
-        // Join plano comisión + asignaciones + docente. Una fila por (comisión, docente); las
-        // comisiones sin docente igual aparecen (LEFT JOIN, teacher fields null). initcap pasa el
-        // nombre lowercase del storage a title case. El CASE ordena titular primero para display.
-        // US-093: solo comisiones activas en el catálogo público (soft delete), mismo criterio que
-        // Subject.IsActive en ListSubjectsByCareerPlanAsync.
-        const string sql = @"
-            SELECT
-                c.id                AS CommissionId,
-                c.name              AS CommissionName,
-                c.modality          AS Modality,
-                c.capacity          AS Capacity,
-                c.schedules::text   AS SchedulesJson,
-                ct.teacher_id       AS TeacherId,
-                initcap(t.first_name) AS FirstName,
-                initcap(t.last_name)  AS LastName,
-                ct.role             AS Role
-            FROM academic.commissions c
-            LEFT JOIN academic.commission_teachers ct ON ct.commission_id = c.id
-            LEFT JOIN academic.teachers t ON t.id = ct.teacher_id
-            WHERE c.subject_id = @SubjectId AND c.term_id = @TermId AND c.is_active = true
-            ORDER BY
-                c.name,
-                CASE ct.role
-                    WHEN 'Lead'          THEN 0
-                    WHEN 'Associate'     THEN 1
-                    WHEN 'PracticalLead' THEN 2
-                    WHEN 'Assistant'     THEN 3
-                    WHEN 'Guest'         THEN 4
-                    ELSE 5
-                END;";
-
-        using var db = _connections.Create();
-        var rows = await db.QueryAsync<CommissionTeacherRow>(
-            new CommandDefinition(
-                sql, new { SubjectId = subjectId, TermId = termId }, cancellationToken: ct));
-
-        // GroupBy preserva el orden de primera aparición de cada comisión (ya vienen ordenadas por
-        // nombre desde el SQL), así que el listado sale ordenado sin re-sort.
-        return rows
-            .GroupBy(r => (r.CommissionId, r.CommissionName, r.Modality, r.Capacity, r.SchedulesJson))
-            .Select(g => new CommissionListItem(
-                g.Key.CommissionId,
-                g.Key.CommissionName,
-                g.Key.Modality,
-                g.Key.Capacity,
-                g.Where(r => r.TeacherId.HasValue)
-                    .Select(r => new CommissionTeacherItem(
-                        r.TeacherId!.Value, r.FirstName!, r.LastName!, r.Role!))
-                    .ToList(),
-                [.. CommissionScheduleJson.Read(g.Key.SchedulesJson)
-                    .Select(s => new CommissionScheduleItem(s.Day, s.Start, s.End))]))
-            .ToList();
-    }
-
-    private sealed record CommissionTeacherRow(
-        Guid CommissionId,
-        string CommissionName,
-        string Modality,
-        int? Capacity,
-        string? SchedulesJson,
-        Guid? TeacherId,
-        string? FirstName,
-        string? LastName,
-        string? Role);
-
-    private sealed record CommissionScheduleRow(Guid CommissionId, string Day, TimeOnly Start, TimeOnly End);
-
     public async Task<bool> IsAcademicTermInUniversityAsync(
         Guid termId, Guid universityId, CancellationToken ct = default)
     {
@@ -338,36 +268,6 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         using var db = _connections.Create();
         return await db.ExecuteScalarAsync<bool>(
             new CommandDefinition(sql, new { TermId = termId }, cancellationToken: ct));
-    }
-
-    public async Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
-        Guid commissionId, CancellationToken ct = default)
-    {
-        // Mismos join + initcap + orden (titular primero) que ListCommissions, pero acotado a una
-        // comisión por id. Sin LEFT JOIN: una comisión sin docentes devuelve lista vacía.
-        const string sql = @"
-            SELECT
-                ct.teacher_id       AS TeacherId,
-                initcap(t.first_name) AS FirstName,
-                initcap(t.last_name)  AS LastName,
-                ct.role             AS Role
-            FROM academic.commission_teachers ct
-            JOIN academic.teachers t ON t.id = ct.teacher_id
-            WHERE ct.commission_id = @CommissionId
-            ORDER BY
-                CASE ct.role
-                    WHEN 'Lead'          THEN 0
-                    WHEN 'Associate'     THEN 1
-                    WHEN 'PracticalLead' THEN 2
-                    WHEN 'Assistant'     THEN 3
-                    WHEN 'Guest'         THEN 4
-                    ELSE 5
-                END;";
-
-        using var db = _connections.Create();
-        var rows = await db.QueryAsync<CommissionTeacherItem>(
-            new CommandDefinition(sql, new { CommissionId = commissionId }, cancellationToken: ct));
-        return rows.AsList();
     }
 
     public async Task<IReadOnlyList<AcademicTermListItem>> ListAcademicTermsByUniversityAsync(

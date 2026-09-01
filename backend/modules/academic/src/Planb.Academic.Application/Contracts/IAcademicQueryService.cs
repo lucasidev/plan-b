@@ -116,31 +116,13 @@ public interface IAcademicQueryService
     Task<TeacherDetailItem?> GetTeacherByIdAsync(Guid teacherId, CancellationToken ct = default);
 
     /// <summary>
-    /// Lista las comisiones de una materia en un cuatrimestre, cada una con sus docentes (US-065).
-    /// Caller: el listado público de comisiones (picker de la cursada al reseñar, página de
-    /// materia). Devuelve lista vacía si no hay comisiones para ese par (materia/term inexistente o
-    /// sin oferta cargada). Orden: por nombre de comisión; dentro de cada una, titular primero.
-    /// </summary>
-    Task<IReadOnlyList<CommissionListItem>> ListCommissionsBySubjectAndTermAsync(
-        Guid subjectId, Guid termId, CancellationToken ct = default);
-
-    /// <summary>
-    /// Lista los docentes asignados a una comisión por id (US-065). Devuelve lista vacía si la
-    /// comisión no existe o no tiene docentes. Callers: el handler de publicar reseña (valida que el
-    /// <c>docente_reseñado_id</c> esté en la comisión de la cursada, data-model) y el picker de
-    /// docente del editor de reseña (elegir a quién reseñar). Nombres en title case para display.
-    /// </summary>
-    Task<IReadOnlyList<CommissionTeacherItem>> GetCommissionTeachersAsync(
-        Guid commissionId, CancellationToken ct = default);
-
-    /// <summary>
     /// ¿Ese período lectivo pertenece a esa universidad?
     ///
     /// <para>
     /// Cierra la otra mitad de la coherencia universitaria que declara el data-model: un
     /// <c>term_id</c> que llega del cliente podía ser un Guid inventado o el período de otra
     /// universidad, y ningún camino de escritura lo miraba. Con la materia ya validada contra el plan
-    /// del alumno y el período contra su universidad, la comisión de ese par queda coherente por
+    /// del alumno y el período contra su universidad, la cursada de ese par queda coherente por
     /// transitividad.
     /// </para>
     /// </summary>
@@ -182,9 +164,9 @@ public interface IAcademicQueryService
     /// <summary>
     /// Lista las cátedras activas de una materia, cada una con su titular vigente (US-196). Caller:
     /// el picker de cátedra de Reseñar (elegir "cursé con Pérez" antes de calificar la cursada).
-    /// Materia inexistente o sin cátedras cargadas devuelve lista vacía (no 404), mismo criterio que
-    /// <see cref="ListCommissionsBySubjectAndTermAsync"/> para un catálogo público. Orden por
-    /// nombre de cátedra.
+    /// Materia inexistente o sin cátedras cargadas devuelve lista vacía (no 404), que es el criterio
+    /// de un catálogo público: no encontrar nada es una respuesta, no un error. Orden por nombre de
+    /// cátedra.
     /// </summary>
     Task<IReadOnlyList<ChairListItem>> ListChairsBySubjectAsync(
         Guid subjectId, CancellationToken ct = default);
