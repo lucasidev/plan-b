@@ -1,6 +1,8 @@
-import { fetchPublishingRulesServer } from '@/features/method/api.server';
+import {
+  fetchInstrumentForMethodServer,
+  fetchPublishingRulesServer,
+} from '@/features/method/api.server';
 import { MethodSheet } from '@/features/method/components/method-sheet';
-import { fetchCurrentInstrumentServer } from '@/features/write-course-review/api.server';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,15 +21,15 @@ export const metadata = {
  */
 export default async function MethodPage() {
   const [instrument, rules] = await Promise.all([
-    fetchCurrentInstrumentServer(),
+    fetchInstrumentForMethodServer(),
     fetchPublishingRulesServer(),
   ]);
 
   return (
     <MethodSheet
       instrument={instrument}
-      chairFloor={rules.chairMinimumReviews}
-      pairFloor={rules.subjectPairMinimumReviews}
+      chairFloor={rules?.chairMinimumReviews ?? null}
+      pairFloor={rules?.subjectPairMinimumReviews ?? null}
     />
   );
 }
