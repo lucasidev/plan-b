@@ -4,9 +4,10 @@ namespace Planb.Reviews.Application.Abstractions.Persistence;
 /// Lo que una cuenta aportó, para que pueda verlo, corregirlo o borrarlo (US-165, US-166).
 ///
 /// <para>
-/// Es el único read del producto que devuelve reseñas de a una, y solo se lo puede pedir su
-/// autor. Todo lo demás que el producto publica es agregado: la ficha nunca muestra una reseña
-/// individual, ni siquiera anónima (ADR-0083).
+/// Devuelve reseñas de a una y solo se lo puede pedir su autor. Todo lo que el producto
+/// <b>publica</b> es agregado: la ficha nunca muestra una reseña individual, ni siquiera anónima
+/// (ADR-0083). El otro read que devuelve de a una es el del campo libre para la curaduría
+/// (<see cref="IFreeTextQueryService"/>), que tampoco publica nada y no trae la cuenta.
 /// </para>
 /// </summary>
 public interface IMyReviewsQueryService
