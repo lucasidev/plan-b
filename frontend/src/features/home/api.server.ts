@@ -18,10 +18,10 @@ export type MyReviewedChairTally = {
 
 /**
  * Las voces de cada cátedra que esta cuenta reseñó. Devuelve un `Map` porque el consumidor lo usa
- * para cruzar contra las filas que ya trajo `/api/reviews/cursadas/me`: el nombre de la cátedra y
+ * para cruzar contra las filas que ya trajo `/api/reviews/courses/me`: el nombre de la cátedra y
  * la materia salen de ahí, así que este read no toca el catálogo.
  *
- * Degrada a mapa vacío en 401, igual que `fetchMyCourseReviewsServer`: el layout y la page
+ * Degrada a mapa vacío en 401, igual que `fetchMyReviewsServer`: el layout y la page
  * renderizan en paralelo, así que este fetch puede salir sin sesión mientras el guard redirige, y
  * eso es una carrera y no una falla. El resto de los status suben.
  */

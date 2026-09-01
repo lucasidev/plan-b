@@ -1,7 +1,7 @@
 using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Domain.Publishing;
 using Planb.SharedKernel.Primitives;
 

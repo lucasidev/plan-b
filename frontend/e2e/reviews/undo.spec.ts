@@ -44,7 +44,7 @@ async function publishByApi(
   });
   expect(signIn.ok(), `sign-in de ${student.email}`).toBeTruthy();
 
-  const published = await request.post('/api/reviews/cursadas', {
+  const published = await request.post('/api/reviews/courses', {
     data: {
       subjectId: SUBJECT_ID,
       termId,
@@ -74,7 +74,7 @@ async function unpublishByApi(
   });
   if (!signIn.ok()) return;
 
-  await request.delete(`/api/reviews/cursadas/${reviewId}`);
+  await request.delete(`/api/reviews/courses/${reviewId}`);
 }
 
 test.describe('Deshacer lo aportado (US-165, US-166)', () => {

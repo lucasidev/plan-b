@@ -23,7 +23,7 @@ Planb adopta persistence ignorance de forma estricta. Consecuencias operativas:
 1. **No FKs cross-schema** a nivel Postgres. Las referencias cross-module son solo columnas UUID sin constraint.
 2. **Validación de referencias en application layer**: antes de crear un aggregate que referencia otro, el handler consulta vía PublicContracts del otro módulo (`IAcademicQueryService.GetSubjectByIdAsync`).
 3. **FKs intra-módulo sí** se mantienen (ej. `TeacherResponse.review_id → Review.id` dentro del schema `reviews`). Son detalle del adapter del módulo, coherentes con persistence ignorance porque no cruzan los boundaries.
-4. **Los aggregates conocen IDs, no referencias objeto**. `CourseReview.SubjectId` es un `Guid` plano, no un `Subject navigation`.
+4. **Los aggregates conocen IDs, no referencias objeto**. `Review.SubjectId` es un `Guid` plano, no un `Subject navigation`.
 5. **EF Core y Dapper viven solo en Infrastructure**, detrás de interfaces definidas en Application (`IReviewRepository`, `IReviewQueryService`).
 6. **El DbContext no cruza la frontera**: handlers consumen repositorios, no `DbContext` directamente.
 

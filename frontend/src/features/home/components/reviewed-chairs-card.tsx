@@ -5,7 +5,7 @@ import type { ReviewedChair } from '../lib/reviewed-chairs';
  * Las cátedras que esta cuenta reseñó (US-231). Contesta la pregunta con la que alguien vuelve:
  * si lo que dijo ya publica o qué le falta.
  *
- * Las filas salen de `GET /api/reviews/cursadas/me` y el estado de cada cátedra de
+ * Las filas salen de `GET /api/reviews/courses/me` y el estado de cada cátedra de
  * `GET /api/reviews/chairs/mine`, que las devuelve todas con su conteo en una consulta: pedirlo
  * fila por fila contra `/api/reviews/chairs/{id}/facts` era un N+1 por red.
  *

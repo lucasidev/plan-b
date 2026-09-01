@@ -41,13 +41,13 @@ internal sealed class CatalogRepository : ICatalogRepository
 
     /// <summary>
     /// Los valores de opción de este ítem que ya tienen respuestas guardadas, leyendo
-    /// course_review_answers (la tabla hija de <c>CourseReview.Answers</c>, US-146). SelectMany sobre
+    /// review_answers (la tabla hija de <c>Review.Answers</c>, US-146). SelectMany sobre
     /// el owned collection traduce a un query sobre esa tabla, sin traer la reseña entera a memoria.
     /// </summary>
     public async Task<IReadOnlySet<short>> GetAnsweredOptionValuesAsync(
         ItemId itemId, CancellationToken ct = default)
     {
-        var values = await _db.CourseReviews
+        var values = await _db.Reviews
             .SelectMany(r => r.Answers)
             .Where(a => a.ItemId == itemId)
             .Select(a => a.OptionValue)

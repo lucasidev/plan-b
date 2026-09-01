@@ -1,7 +1,7 @@
 using Dapper;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Domain.Publishing;
 using Planb.SharedKernel.Abstractions.Persistence;
 
@@ -50,7 +50,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         // un WHERE que las borraría.
         const string sql = @"
             SELECT count(*)::int
-            FROM reviews.course_reviews
+            FROM reviews.reviews
             WHERE chair_id = @ChairId;
 
             SELECT
@@ -60,14 +60,14 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                 o.""order"" AS ""Order"",
                 o.label   AS Label,
                 o.valence AS Valence,
-                count(a.course_review_id)::int AS Count
+                count(a.review_id)::int AS Count
             FROM reviews.items i
             JOIN reviews.item_options o ON o.item_id = i.id
-            LEFT JOIN reviews.course_review_answers a
+            LEFT JOIN reviews.review_answers a
                 ON a.item_id = i.id
                AND a.option_value = o.value
-               AND a.course_review_id IN (
-                   SELECT id FROM reviews.course_reviews WHERE chair_id = @ChairId)
+               AND a.review_id IN (
+                   SELECT id FROM reviews.reviews WHERE chair_id = @ChairId)
             WHERE i.is_active = true
             GROUP BY i.code, i.layer, o.value, o.""order"", o.label, o.valence
             ORDER BY i.code, o.""order"";
@@ -79,14 +79,14 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                 o.""order"" AS ""Order"",
                 o.label   AS Label,
                 o.valence AS Valence,
-                count(a.course_review_id)::int AS Count
+                count(a.review_id)::int AS Count
             FROM reviews.items i
             JOIN reviews.item_options o ON o.item_id = i.id
-            LEFT JOIN reviews.course_review_answers a
+            LEFT JOIN reviews.review_answers a
                 ON a.item_id = i.id
                AND a.option_value = o.value
-               AND a.course_review_id IN (
-                   SELECT id FROM reviews.course_reviews WHERE chair_id = ANY(@SiblingIds))
+               AND a.review_id IN (
+                   SELECT id FROM reviews.reviews WHERE chair_id = ANY(@SiblingIds))
             WHERE i.is_active = true
             GROUP BY i.code, i.layer, o.value, o.""order"", o.label, o.valence
             ORDER BY i.code, o.""order"";
@@ -96,11 +96,11 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             WHERE i.is_active = true;
 
             SELECT DISTINCT term_id
-            FROM reviews.course_reviews
+            FROM reviews.reviews
             WHERE chair_id = @ChairId;
 
             SELECT max(created_at)
-            FROM reviews.course_reviews
+            FROM reviews.reviews
             WHERE chair_id = @ChairId;";
 
         using var db = _connections.Create();
@@ -145,7 +145,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         // ficha usa para decidir si publica; una cátedra que no publica no tendría nada que mostrar.
         const string sql = @"
             SELECT chair_id
-            FROM reviews.course_reviews
+            FROM reviews.reviews
             WHERE chair_id IS NOT NULL
             GROUP BY chair_id
             HAVING count(*) >= @MinimumReviews
@@ -229,7 +229,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                 count(r.id)::int AS ReviewCount,
                 max(r.created_at) AS LastReviewedAt
             FROM unnest(@ChairIds) AS c(chair_id)
-            LEFT JOIN reviews.course_reviews r ON r.chair_id = c.chair_id
+            LEFT JOIN reviews.reviews r ON r.chair_id = c.chair_id
             GROUP BY c.chair_id;
 
             SELECT
@@ -240,21 +240,21 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                 o.""order""  AS ""Order"",
                 o.label    AS Label,
                 o.valence  AS Valence,
-                count(a.course_review_id)::int AS Count
+                count(a.review_id)::int AS Count
             FROM unnest(@ChairIds) AS c(chair_id)
             CROSS JOIN reviews.items i
             JOIN reviews.item_options o ON o.item_id = i.id
-            LEFT JOIN reviews.course_review_answers a
+            LEFT JOIN reviews.review_answers a
                 ON a.item_id = i.id
                AND a.option_value = o.value
-               AND a.course_review_id IN (
-                   SELECT id FROM reviews.course_reviews WHERE chair_id = c.chair_id)
+               AND a.review_id IN (
+                   SELECT id FROM reviews.reviews WHERE chair_id = c.chair_id)
             WHERE i.is_active = true
             GROUP BY c.chair_id, i.code, i.layer, o.value, o.""order"", o.label, o.valence
             ORDER BY c.chair_id, i.code, o.""order"";
 
             SELECT DISTINCT term_id
-            FROM reviews.course_reviews
+            FROM reviews.reviews
             WHERE chair_id = ANY(@ChairIds);
 
             SELECT i.code AS Code, i.text AS Text

@@ -1,5 +1,5 @@
 using Planb.Reviews.Domain.Catalog;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 
 namespace Planb.Reviews.Domain.Publishing;
 

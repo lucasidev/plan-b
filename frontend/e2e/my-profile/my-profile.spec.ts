@@ -98,7 +98,15 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
       page.getByRole('heading', { name: /dar de baja mi cuenta/i }).first(),
     ).toBeVisible();
     await expect(page.getByText(/anonimizan/i)).toBeVisible();
-    await expect(page.getByText(/ex-miembro/i)).toBeVisible();
+
+    // Dice lo que pasa de verdad: los conteos siguen y no queda nada que lleve a la persona.
+    // Este assert pineaba "Ex-miembro", que no existe: el producto no publica una sola reseña
+    // individual (ADR-0083), así que no hay firma que anonimizar.
+    await expect(page.getByText(/sigue contando en los conteos de su cátedra/i)).toBeVisible();
+    await expect(page.getByText(/sin nada que lleve a vos/i)).toBeVisible();
+
+    // Y la salida real, que es sacar lo tuyo de a uno antes de dar de baja.
+    await expect(page.getByText(/mis aportes/i).first()).toBeVisible();
   });
 
   // TODO(US-038-bis-fix): el click al CTA "Dar de baja" dispara setOpen(true) pero el

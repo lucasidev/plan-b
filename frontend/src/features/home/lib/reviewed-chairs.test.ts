@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { MyCourseReview } from '@/features/my-course-reviews/types';
+import type { MyReview } from '@/features/my-reviews/types';
 import { groupByChair } from './reviewed-chairs';
 
-function review(over: Partial<MyCourseReview>): MyCourseReview {
+function review(over: Partial<MyReview>): MyReview {
   return {
     id: crypto.randomUUID(),
     subjectId: 'sub-1',

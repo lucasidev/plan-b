@@ -2,7 +2,7 @@ using NSubstitute;
 using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Application.Features.CareerFacts;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.SharedKernel.Primitives;
 using Shouldly;
 using Xunit;

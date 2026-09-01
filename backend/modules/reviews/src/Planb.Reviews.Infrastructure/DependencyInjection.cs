@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
-using Planb.Reviews.Domain.CourseReviews;
+using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Infrastructure.Persistence;
 using Planb.Reviews.Infrastructure.Persistence.Queries;
 using Planb.Reviews.Infrastructure.Persistence.Repositories;
@@ -27,13 +27,13 @@ public static class DependencyInjection
         services.AddScoped<ICatalogRepository, CatalogRepository>();
 
         // Write-side de la reseña de tres capas (US-146, ADR-0082).
-        services.AddScoped<ICourseReviewRepository, CourseReviewRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
 
         // El instrumento vigente, que es lo que la pantalla de reseñar pregunta (US-146).
         services.AddScoped<ICurrentInstrumentQueryService, DapperCurrentInstrumentQueryService>();
 
         // Lo que una cuenta aportó, para poder corregirlo o borrarlo (US-165, US-166).
-        services.AddScoped<IMyCourseReviewsQueryService, DapperMyCourseReviewsQueryService>();
+        services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
 
         // Los conteos que alimentan las fichas de cátedra y de materia (US-147, US-148, ADR-0083).
         services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();
