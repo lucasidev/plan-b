@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { useHydrated } from '@/lib/use-hydrated';
 import { distilItemAction } from '../actions';
@@ -43,16 +42,16 @@ const EMPTY_OPTIONS: DraftOption[] = [
 export function DistilItemForm() {
   const [state, action, pending] = useActionState(distilItemAction, initialDistilItemState);
   const hydrated = useHydrated();
-  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [options, setOptions] = useState<DraftOption[]>(EMPTY_OPTIONS);
 
+  // Se limpia el form y nada más: lo que esta pantalla muestra son textos libres, y destilar no
+  // los cambia. La pregunta nueva se ve en Método y al reseñar, no acá.
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
     setOptions(EMPTY_OPTIONS);
-    router.refresh();
-  }, [state.status, router]);
+  }, [state.status]);
 
   const disabled = pending || !hydrated;
 
