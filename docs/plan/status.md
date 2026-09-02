@@ -381,24 +381,24 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 
 **Decisiones de Lucas**: si el stage va con HTTPS (`sslip.io` sobre la IP, sin dominio) o HTTP a secas, y los 15 issues US-2xx. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
 
-### Pista 2 · Los hallazgos de la auditoría (40 pts)
+### Pista 2 · Romper el producto (40 pts)
 
-Cada tarea cita su hallazgo; el registro es la fuente y ahí se les cambia el estado al cerrarse.
+El escenario es la especificación y un test es un intento de falsarla. Tres reglas para todo test de esta pista: se escribe a ciegas, desde el escenario, la story o el ADR y el contrato público, sin leer la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra; y cuando escenario y código no coinciden, es un bug (issue con el caso que lo dispara) o una decisión de Lucas (el escenario se reescribe o se marca `No construido`), nunca un escenario acomodado al código ni un test que afirme el bug. Cada tarea cita su hallazgo; el registro es la fuente y ahí se les cambia el estado al cerrarse.
 
 | Hallazgo | Tarea | Pts |
 |---|---|---|
-| [#407](https://github.com/lucasidev/plan-b/issues/407) · Q01 | **La regla y su gate**: cada escenario E/N de una story construida tiene un test que lo cita por ID; si describe algo no construido, `scenarios.md` lo marca con una nota `No construido:` y el script lo cuenta como tal. `scripts/check-scenarios.ts` cuenta las tres columnas (citado, no construido, sin test) y falla en CI si hay un escenario sin ninguno de los dos estados. Después, la barrida de las 18 stories para dejar cada E/N en uno de los dos | 5 |
-| [#408](https://github.com/lucasidev/plan-b/issues/408) · Q02 | **Tests de handler** para todo handler con lógica de decisión, con la vara de `testing.md` (Wolverine handler más validator, dependencias mockeadas): reviews (publicar, corregir, borrar, la ficha de cátedra, la de materia, mis reseñas, mis cátedras, las siete features de curaduría), academic (cátedras, materias, docentes, universidades, períodos, correlativas, la cola de importación, la búsqueda) e identity (las doce sin test: cambiar contraseña, baja, verificar mail, verificar cargo, mail institucional, refresh, salir, perfil y ajustes). Los reads Dapper puros quedan en integración, que es su capa | 13 |
-| [#409](https://github.com/lucasidev/plan-b/issues/409) · Q03 | **Tests de componente de las pantallas del corazón**: reseñar (los seis pasos y sus estados), ficha de cátedra, ficha de materia, mis reseñas, curaduría (lista y los dos forms), verificar mail, reset de contraseña, cátedras y docentes del backoffice, mi perfil. Los estados, no el recorrido | 8 |
+| [#407](https://github.com/lucasidev/plan-b/issues/407) · Q01 | **Los 75 escenarios, a ciegas**: la regla y su gate. El test de un escenario lo escribe quien recibe el escenario y el contrato público, no la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra. Cada E/N de las 18 stories construidas recibe un veredicto: `confirmado` (test que lo cita por ID y cayó con el código roto), `roto` (issue con el caso que lo dispara, test marcado con ese issue) o `no construido` (nota en `scenarios.md`, decisión de Lucas). `scripts/check-scenarios.ts` cuenta las tres columnas y falla en CI ante un escenario sin veredicto; el procedimiento entra a `testing.md` | 10 |
+| [#408](https://github.com/lucasidev/plan-b/issues/408) · Q02 | **Las invariantes de la tesis bajo ataque**, en vez de un test por handler: la lista de lo que la tesis, las garantías y los ADRs prometen, y un ataque por promesa que cae si cede: el piso contado en vivo en 9, 10 y 11 reseñas; dos envíos concurrentes de la misma persona; el campo libre buscado en cada respuesta y pantalla pública; la frase retirada y los dos tramos de una serie; el borrado que mueve los conteos; ningún endpoint público que diga quién reseñó; Redis caído en medio de publicar y de entrar. Lo que cede es un issue con el caso, nunca un test que afirme lo roto | 7 |
+| [#409](https://github.com/lucasidev/plan-b/issues/409) · Q03 | **Las pantallas del corazón, a ciegas**: reseñar (los seis pasos y sus estados), ficha de cátedra (publicada, bajo el piso, con corte de serie), ficha de materia, mis reseñas, curaduría (lista y los dos forms). Quien escribe recibe la story, sus escenarios y la ficha de la pantalla, no el componente; test de componente cuando el estado es del cliente, E2E cuando es un recorrido. Que vitest deje de marcar 0 % ahí es consecuencia, no meta | 5 |
 | [#410](https://github.com/lucasidev/plan-b/issues/410) · Q04 | Los catorce tests de integración que leen el body sin afirmar el status | 1 |
-| [#411](https://github.com/lucasidev/plan-b/issues/411) · Q05 | El guard anti-puntaje recorre las tres fichas y Método, además de la entrada y el docente | 1 |
+| [#411](https://github.com/lucasidev/plan-b/issues/411) · Q05 | El guard anti-puntaje recorre la entrada, las tres fichas, Método y el docente, y un test recorre cada respuesta JSON pública buscando un promedio, un puntaje o una estrella con otro nombre | 1 |
 | [#412](https://github.com/lucasidev/plan-b/issues/412) · Q06 | **Las restricciones del producto con test**: `@axe-core/playwright` sobre la entrada, las tres fichas y Método (WCAG 2.2 AA); un proyecto de Playwright con viewport de celular chico para lo público; y un presupuesto de rendimiento de lo público con Lighthouse CI (medición y umbral, sin gate hasta ver dos corridas) | 4 |
-| [#413](https://github.com/lucasidev/plan-b/issues/413) · Q07 | Los tres E2E en `fixme` desde mayo: arreglar o borrar, con la razón | 1 |
-| [#414](https://github.com/lucasidev/plan-b/issues/414) · Q08 | El tooling de cobertura queda (`dotnet-coverage`, `@vitest/coverage-v8`), CI genera los dos reportes y los sube como artefacto en cada PR. Tracking sí, gate no, como dice ADR-0036 | 1 |
-| [#415](https://github.com/lucasidev/plan-b/issues/415) · Q09 | Tests de dominio de `EditorialNote` y `UserSettings`; test de integración de `GET /api/reviews/publishing-rules` | 1 |
-| [#416](https://github.com/lucasidev/plan-b/issues/416) · Q10 | Las nueve rutas sin E2E: docentes del backoffice y universidad nueva con su spec; `design-check`, `maintenance` y `offline` con un smoke; `teacher-claim` y `verify-teacher` son del modelo anterior y su destino lo decide Lucas antes de escribirles un test | 2,5 |
-| [#417](https://github.com/lucasidev/plan-b/issues/417) · Q11 | Los 400 y 403 sistemáticos: por cada endpoint que escribe, un test de validación y uno de autorización, con la misma forma que ya tienen curaduría y cátedras | 2 |
-| [#418](https://github.com/lucasidev/plan-b/issues/418) · Q12 | Tres restos: `just db-seed` (verbo inexistente), el workflow `test-gaps` con módulos podados, y `AllowedTags` (US-089, sin referencias) | 0,5 |
+| [#413](https://github.com/lucasidev/plan-b/issues/413) · Q07, Q12 | **Lo que nadie ejecuta y lo que nadie usa**: los tres E2E en `fixme` desde mayo (arreglar o borrar, con la razón), y tres restos: `just db-seed` (verbo inexistente), el workflow `test-gaps` con módulos podados, y `AllowedTags` (US-089, sin referencias) | 1,5 |
+| [#414](https://github.com/lucasidev/plan-b/issues/414) · Q08 | **Cobertura como mapa, no como meta**: CI genera los dos reportes (`dotnet-coverage`, `@vitest/coverage-v8`) y los sube como artefacto en cada PR, sin gate (ADR-0036). Se lee para saber dónde nadie intentó nada todavía y elegir el próximo ataque | 1 |
+| [#415](https://github.com/lucasidev/plan-b/issues/415) · Q09 | **Las reglas de las notas y de los ajustes, intentadas al revés**: cada regla que ADR-0084 le da a `EditorialNote` (nivel carrera o institución, fechada, con procedencia, sin nombres) probada con una nota que la viola; la regla que el código no impone es un hallazgo, no un test que falta. Lo mismo con `UserSettings`, y `GET /api/reviews/publishing-rules` contra los valores que `PublishingRulesTests` pinea | 1,5 |
+| [#416](https://github.com/lucasidev/plan-b/issues/416) · Q10 | Las nueve rutas sin E2E: docentes del backoffice y universidad nueva con su spec; `design-check`, `maintenance` y `offline` con un smoke; `teacher-claim` y `verify-teacher` son faltantes al revés, código del modelo anterior sin story vigente, y su destino (borrar o probar) lo decide Lucas antes de escribirles un test | 2,5 |
+| [#417](https://github.com/lucasidev/plan-b/issues/417) · Q11 | **Autorización y validación por ataque**: por cada endpoint que escribe, intentar pasar sin token, con el token de otra persona (editar, borrar y deshacer una reseña ajena por su id), con un alumno en rutas de admin y un admin en las de alumno, y con el payload en el borde (vacío, más largo que el máximo, enum inválido, id inexistente). Cada 200 donde correspondía 400, 401 o 403 es un issue con el request; los tests que quedan tienen la forma de los de curaduría | 3 |
+| [#418](https://github.com/lucasidev/plan-b/issues/418) · fuera de la auditoría | **Mutation testing sobre el corazón**: Stryker.NET sobre `PublishingRules`, `ChairFactsCalculator`, el corte de serie de `Item` y el aggregate `Review`, y Stryker sobre el paso de reseñar; línea de base al principio y medición al cierre en `testing.md`, sin gate. Cada mutante que sobrevive se convierte en un test (si pinea una regla) o en un issue (si muestra código sin regla) | 2,5 |
 
 ### Pista 3 · La suite y CI, más rápidos (7 pts)
 
@@ -416,13 +416,13 @@ Descartado con razón: compartir el build entre jobs por artefactos (los jobs co
 
 ### Secuencia
 
-La pista 3 va primero: acelera el resto del sprint. En la pista 2, Q01 va antes de Q02 y Q03, porque la regla gobierna los tests que se escriben después. La pista 1 corre en paralelo: sus tareas 1 a 3 son del repo y no dependen de nada; la 4 es de Lucas con el guion.
+La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va primero, porque la regla gobierna los tests que se escriben después; #408, #417 y #418 no dependen de nada y son los que más rompen, así que van temprano. La pista 1 corre en paralelo: sus tareas 1 a 3 son del repo y no dependen de nada; la 4 es de Lucas con el guion.
 
 ### Cómo se sabe que R4 está listo
 
 1. Una URL de Dokploy responde `/health` y muestra la entrada con el corpus; la ficha de Pérez publica con 14 voces y la de Ruiz dice que le faltan 4; alguien se registra, verifica desde el Mailpit del stage, reseña y la reseña cuenta; el admin sembrado cura una frase; `down -v && up` vuelve a cero y resiembra igual.
-2. `check-scenarios` corre en CI y devuelve cero escenarios sin estado en las 18 stories.
-3. Reviews y academic tienen test de handler en cada feature con lógica; las pantallas del corazón tienen test de componente y su cobertura en vitest deja de ser 0 %.
+2. `check-scenarios` corre en CI y devuelve cero escenarios sin veredicto en las 18 stories, y cada `roto` tiene su issue.
+3. Cada invariante de la tesis tiene su ataque en la suite y ninguno cede; las pantallas del corazón tienen sus tests escritos desde la story; el corazón tiene su mutation score publicado y ningún mutante sobreviviente sin dueño.
 4. CI sube los dos reportes de cobertura en cada PR.
 5. axe en verde sobre lo público, el proyecto de celular pasa, y hay una primera medición de rendimiento publicada.
 6. El job de backend baja de 489 s a menos de 180 s y la integración local de 25 minutos a menos de 8, con el antes y el después escritos en `testing.md`.
@@ -433,7 +433,6 @@ La pista 3 va primero: acelera el resto del sprint. En la pista 2, Q01 va antes 
 
 - Personas reales y todo lo que solo ellas exigen: mail y dominio reales, consentimiento (US-228, Ley 25.326), Anonimato (SC-013), el piso en el contrato antes de enviar (US-159). Es lo primero del sprint en que las haya.
 - El hardening de Production, que ya está escrito y espera su propio deploy; y la política de versionado que ADR-0038 dice revisar al primer deploy.
-- Mutation testing: se mide después de que la suite tenga la forma que esta pista le da.
 
 ## Lo anterior: el producto en retiro
 
