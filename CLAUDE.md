@@ -31,6 +31,20 @@ Cómo pensamos y decidimos en este proyecto. No son procesos a cumplir: son lent
 
 **Nota final:** estos mindsets son ellos mismos defaults, no mandamientos. Si en un caso concreto uno no aplica, lo anulás con una razón explícita. El único pecado es seguir o romper una regla por dogma en vez de por juicio.
 
+## Reparto del trabajo
+
+El contexto principal orquesta: decide, especifica, verifica lo entregado y reporta. Construir y correr suites es de los agentes de [`.claude/agents/`](.claude/agents), cada uno con su modelo fijado en el frontmatter, y dos hooks de [`.claude/hooks/`](.claude/hooks) lo hacen cumplir: `guard-main-context` en el contexto principal (dentro de un subagente no interviene) y `guard-agent-tier` en cualquier contexto.
+
+| Trabajo | Quién | El hook |
+|---|---|---|
+| Investigar: dónde está X, todos los usos de Y, un inventario | `scout` (haiku). Un archivo que ya sabés cuál es se lee directo | |
+| Construir desde un spec (qué, dónde, contrato, criterio de éxito) | `implementer` (sonnet). En el contexto principal solo cambios quirúrgicos | Cuenta las escrituras de código por sesión (`backend/`, `frontend/src/`, `frontend/e2e/`, `scripts/`, también por heredoc o `sed`): avisa en cada una desde la 8 y bloquea a las 20 |
+| Correr suites: `dotnet test`, Playwright, vitest, `just test`, `just ci` | `test-runner` (haiku): devuelve verde/rojo y las fallas | Bloquea esos comandos en el contexto principal |
+| Revisar un diff no trivial antes del commit | `reviewer` (opus) | |
+| Lanzar un subagente | Un agente del proyecto, con el modelo de su frontmatter; un built-in (`Explore`, `claude-code-guide`) solo con `model` haiku o sonnet | Bloquea `general-purpose`, `fork`, sin tipo, un built-in sin modelo barato, y un `model` que pise el frontmatter |
+
+Escape por sesión, decisión del usuario: `PLANB_GUARD_OFF=1`; topes con `PLANB_GUARD_EDIT_NUDGE` y `PLANB_GUARD_EDIT_DENY`. Estos hooks bloquean a propósito, contra el default de que un hook señala ([ADR-0088](docs/decisions/0088-the-main-context-orchestrates-and-two-hooks-enforce-it.md)): la regla como texto falló dos veces y el costo es una sesión que se compacta a mitad de tarea en el tier más caro.
+
 ## Stack
 
 | Capa | Tecnología |
@@ -127,7 +141,7 @@ Detalle por capa: [`backend/CLAUDE.md`](backend/CLAUDE.md) y [`frontend/CLAUDE.m
 
 ## Boundaries
 
-- **No** commitear `.env`, secrets, `.claude/`, archivos de IDE.
+- **No** commitear `.env`, secrets, archivos de IDE, ni `.claude/` salvo lo compartido que `.gitignore` deja pasar (agents, hooks, rules, skills, workflows y `settings.json`).
 - **No** pushear directo a `main`. Siempre via PR.
 - **No** introducir referencias a paths absolutos locales o a proyectos privados externos.
 - **No** hacer `git push --force` a `main` salvo que sea explícitamente pedido.
