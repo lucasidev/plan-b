@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
+**Última actualización**: 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
 
 ---
 
@@ -28,7 +28,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R0** | 2026-08-23 a 2026-08-24 | **El rework arranca achicando**: se podan el planificador y lo que el viraje dejó sin dueño, se cierran los dos ADR en propuesto, y se arregla la fuga de enumeración que el inventario encontró. No construye nada del producto nuevo. | ✓ Hecho (mergeado el 2026-08-24, PR #354) |
 | **R1** | 2026-08-24 a 2026-08-27 | **El acto de reseñar, de punta a punta**: una persona reseña una cursada en tres capas, y al cruzar el piso de 10 la ficha de la cátedra publica sus conteos. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | ✓ Hecho (mergeado el 2026-08-27, PR [#362](https://github.com/lucasidev/plan-b/pull/362)) |
 | **R2** | 2026-08-27 a 2026-08-28 | **El producto habla con una voz, y lo que dice se encuentra y se deshace**: la ficha de materia deriva de sus cátedras, se llega a la cátedra desde donde se la busca, se puede corregir y borrar lo aportado, la landing dice lo que el producto hace, y el aggregate de reseña anterior se poda con su moderación. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), issues #363 a #368, 42 pts. | ✓ Hecho (mergeado el 2026-08-28, PR [#369](https://github.com/lucasidev/plan-b/pull/369)) |
-| **R3** | desde 2026-08-29 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | En curso |
+| **R3** | 2026-08-29 a 2026-09-02 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | ✓ Hecho (cerrado el 2026-09-02, PRs #387 a #399; entró además la curaduría entera y US-198) |
+| **R4** | desde 2026-09-02 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | Planificado |
 
 Convenciones:
 
@@ -294,7 +295,7 @@ Dos specs quedaron mintiendo por lo que la poda retiró y se reescribieron: el d
 
 ## R3 · El catálogo crece y el número se puede auditar
 
-Desde el 2026-08-29. Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), 47 pts.
+Del 2026-08-29 al 2026-09-02. Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), 47 pts. Cerrado con los cinco criterios de abajo cumplidos, más la curaduría entera y US-198, que no estaban planificadas y entraron (ver más abajo).
 
 **Por qué este hilo.** R2 dejó el producto hablando con una voz sola, y con un techo: las cátedras existen **solo porque las siembra el seed**, así que todo lo que R1 y R2 construyeron opera sobre tres filas cargadas a mano. Y lo que publica no dice cómo lo calculó, aunque la tesis prometa "un dato que aguanta una discusión". R3 levanta el techo, publica un dato que el producto no tenía, y explica todo lo que dice.
 
@@ -359,6 +360,80 @@ Construirlo destapó dos cosas que el plan no tenía. La primera: la ficha filtr
 - **La Ficha de carrera** (SC-001): habilitaría la mitad pública de US-143 y las stories de comparar instituciones, pero esas dependen de [ADR-0085](../decisions/0085-three-instruments-and-official-data.md), o sea de datos oficiales que nadie relevó. Construirla ahora es construir una pantalla medio vacía.
 - **El CSV** de Llevarse el dato: es la otra mitad de la transparencia y entra con su propia story.
 - **Todo ADR-0085**: unidad académica, datos oficiales relevados, carrera y materia canónica.
+
+## R4 · Un stage funcional, y una suite que dice la verdad más rápido
+
+Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts en tres pistas.
+
+**Por qué este hilo.** Tres sprints construyeron la máquina que convierte reseñas en fichas, y nadie la usó todavía: seguimos pre-deploy y no existe una reseña de una persona real. Antes de personas reales, un stage: el producto entero en una URL, con el corpus sintético, recorrible por Lucas y por Copas. Y la retrospectiva de R3 pidió mirar la calidad con lentes de QA: la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) encontró una suite grande y verde pero desbalanceada (el dominio bien cubierto, la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, y 9 de 75 escenarios citados por un test), y una sola línea que explica casi todo el costo de CI (cada clase de integración levanta su base, corre 57 migraciones y siembra, 50 veces en serie). **R4 no recorta: entran los doce hallazgos y las ocho propuestas de eficiencia.**
+
+### Pista 1 · El stage, con datos de prueba (14 pts)
+
+| # | Tarea | Pts | Quién |
+|---|---|---|---|
+| [#400](https://github.com/lucasidev/plan-b/issues/400) · 1 | **El frontend recibe la URL del backend en el build**: `ARG NEXT_PUBLIC_API_URL` en el Dockerfile e input en `release.yml`. Hoy hornea `localhost:5000` | 1 | Claude |
+| [#401](https://github.com/lucasidev/plan-b/issues/401) · 2 | **`docker-compose.stage.yml`**: postgres, redis, mailpit, api en `Development` con `PLANB_SEED_CORPUS=1` (los seeders y las migraciones corren solos), web. Red `dokploy-network`, `expose` en vez de `ports`, volumen con nombre para postgres, imágenes de GHCR por sha. Reset: `down -v && up` | 3 | Claude |
+| [#402](https://github.com/lucasidev/plan-b/issues/402) · 3 | **Sección "Stage" en `deploy.md`**: el guion de clics en Dokploy (registro GHCR, servicio Compose desde el repo, env, los dos dominios, deploy, reset) y la decisión escrita de por qué el stage corre como Development hospedado y no como Staging | 2 | Claude |
+| [#403](https://github.com/lucasidev/plan-b/issues/403) · 4 | **Primer deploy del stage**: correr `release.yml` por primera vez (GHCR nunca se corrió), configurar Dokploy con el guion, deploy, `/health`, recorrer. Lo que la infra real destape vuelve al doc | 3 | Lucas con el guion, Claude con lo que rompa |
+| [#404](https://github.com/lucasidev/plan-b/issues/404) · 5 | **El recorrido para Copas**, al final del doc: Pérez publica con 14 voces, Ruiz bajo el piso con 6, la co-cursada que publica y la que no, Método, registrarse y verificar desde Mailpit, reseñar y ver que contó, cargar una cátedra y curar una frase | 1 | Claude |
+| [#405](https://github.com/lucasidev/plan-b/issues/405) · 6 | **Barrida ítem → frase** (335 en docs, 77 en código) y el gate: `check-docs` falla con un término prohibido del glosario fuera de `history/` y de los ADRs | 3 | Claude |
+| [#406](https://github.com/lucasidev/plan-b/issues/406) · 7 | **Orden**: cerrar los 5 issues de R0 que siguen abiertos, la entrada de la retro en `lessons-learned.md`, y decidir los 15 issues US-2xx sin milestone | 1 | Claude; lo último, Lucas |
+
+**Decisiones de Lucas**: si el stage va con HTTPS (`sslip.io` sobre la IP, sin dominio) o HTTP a secas, y los 15 issues US-2xx. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
+
+### Pista 2 · Los hallazgos de la auditoría (40 pts)
+
+Cada tarea cita su hallazgo; el registro es la fuente y ahí se les cambia el estado al cerrarse.
+
+| Hallazgo | Tarea | Pts |
+|---|---|---|
+| [#407](https://github.com/lucasidev/plan-b/issues/407) · Q01 | **La regla y su gate**: cada escenario E/N de una story construida tiene un test que lo cita por ID; si describe algo no construido, `scenarios.md` lo marca con una nota `No construido:` y el script lo cuenta como tal. `scripts/check-scenarios.ts` cuenta las tres columnas (citado, no construido, sin test) y falla en CI si hay un escenario sin ninguno de los dos estados. Después, la barrida de las 18 stories para dejar cada E/N en uno de los dos | 5 |
+| [#408](https://github.com/lucasidev/plan-b/issues/408) · Q02 | **Tests de handler** para todo handler con lógica de decisión, con la vara de `testing.md` (Wolverine handler más validator, dependencias mockeadas): reviews (publicar, corregir, borrar, la ficha de cátedra, la de materia, mis reseñas, mis cátedras, las siete features de curaduría), academic (cátedras, materias, docentes, universidades, períodos, correlativas, la cola de importación, la búsqueda) e identity (las doce sin test: cambiar contraseña, baja, verificar mail, verificar cargo, mail institucional, refresh, salir, perfil y ajustes). Los reads Dapper puros quedan en integración, que es su capa | 13 |
+| [#409](https://github.com/lucasidev/plan-b/issues/409) · Q03 | **Tests de componente de las pantallas del corazón**: reseñar (los seis pasos y sus estados), ficha de cátedra, ficha de materia, mis reseñas, curaduría (lista y los dos forms), verificar mail, reset de contraseña, cátedras y docentes del backoffice, mi perfil. Los estados, no el recorrido | 8 |
+| [#410](https://github.com/lucasidev/plan-b/issues/410) · Q04 | Los catorce tests de integración que leen el body sin afirmar el status | 1 |
+| [#411](https://github.com/lucasidev/plan-b/issues/411) · Q05 | El guard anti-puntaje recorre las tres fichas y Método, además de la entrada y el docente | 1 |
+| [#412](https://github.com/lucasidev/plan-b/issues/412) · Q06 | **Las restricciones del producto con test**: `@axe-core/playwright` sobre la entrada, las tres fichas y Método (WCAG 2.2 AA); un proyecto de Playwright con viewport de celular chico para lo público; y un presupuesto de rendimiento de lo público con Lighthouse CI (medición y umbral, sin gate hasta ver dos corridas) | 4 |
+| [#413](https://github.com/lucasidev/plan-b/issues/413) · Q07 | Los tres E2E en `fixme` desde mayo: arreglar o borrar, con la razón | 1 |
+| [#414](https://github.com/lucasidev/plan-b/issues/414) · Q08 | El tooling de cobertura queda (`dotnet-coverage`, `@vitest/coverage-v8`), CI genera los dos reportes y los sube como artefacto en cada PR. Tracking sí, gate no, como dice ADR-0036 | 1 |
+| [#415](https://github.com/lucasidev/plan-b/issues/415) · Q09 | Tests de dominio de `EditorialNote` y `UserSettings`; test de integración de `GET /api/reviews/publishing-rules` | 1 |
+| [#416](https://github.com/lucasidev/plan-b/issues/416) · Q10 | Las nueve rutas sin E2E: docentes del backoffice y universidad nueva con su spec; `design-check`, `maintenance` y `offline` con un smoke; `teacher-claim` y `verify-teacher` son del modelo anterior y su destino lo decide Lucas antes de escribirles un test | 2,5 |
+| [#417](https://github.com/lucasidev/plan-b/issues/417) · Q11 | Los 400 y 403 sistemáticos: por cada endpoint que escribe, un test de validación y uno de autorización, con la misma forma que ya tienen curaduría y cátedras | 2 |
+| [#418](https://github.com/lucasidev/plan-b/issues/418) · Q12 | Tres restos: `just db-seed` (verbo inexistente), el workflow `test-gaps` con módulos podados, y `AllowedTags` (US-089, sin referencias) | 0,5 |
+
+### Pista 3 · La suite y CI, más rápidos (7 pts)
+
+Línea de base medida el 2026-09-02: el job de backend tarda 489 s (354 s de tests, 48 s de `dotnet format`), el E2E 333 s (179 s de Playwright con un worker), la integración local 25 minutos, y una clase de integración de 3 tests tarda 18 s de pared por 246 ms de tests. Con las colecciones en paralelo (x4) el área Reviews pasó de 565 s a 212 s, 73 de 73 en verde, sin tocar un test. Cada tarea se cierra con el número de después al lado del de antes.
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#419](https://github.com/lucasidev/plan-b/issues/419) · 1 | **Colecciones de integración en paralelo** (`parallelizeTestCollections: true`, `maxParallelThreads: 4`): cada clase ya tiene su base, que es la condición de xUnit. Y **base plantilla**: migrar y sembrar una vez por corrida en `planb_template`, y que cada clase haga `CREATE DATABASE ... TEMPLATE` en vez de correr 57 migraciones; la copia se serializa con un semáforo porque la plantilla no admite conexiones mientras se copia. ADR-0027 queda intacto | 3 |
+| [#420](https://github.com/lucasidev/plan-b/issues/420) · 2 | **Partir el job de backend** en unit más arquitectura (segundos) e integración, en paralelo; **`dotnet format whitespace --verify-no-changes --no-restore`** en vez del format completo, porque `EnforceCodeStyleInBuild` ya gatea estilo y analizadores en el build; y **caché de NuGet** con `RestorePackagesWithLockFile` y `cache: true` en `setup-dotnet` | 1 |
+| [#421](https://github.com/lucasidev/plan-b/issues/421) · 3 | **E2E en paralelo**: primero aislar los specs que mutan datos sembrados compartidos (Pérez cruza el piso en `chair-facts`, `undo` lo baja), cada uno sobre su propia cátedra o sus propias cuentas; después `fullyParallel: true` y `workers: 2` en CI, y `--shard` con `merge-reports` el día que crezca | 2 |
+| [#422](https://github.com/lucasidev/plan-b/issues/422) · 4 | **Política de flakes** en `testing.md`: el reintento solo para tests marcados como flaky, `retries: 0` en CI salvo esa marca, el estado `flaky` de Playwright reportado y contado, y una cuarentena con vencimiento (los tres `fixme` de Q07 son la cuarentena de hoy, sin fecha) | 0,5 |
+| [#423](https://github.com/lucasidev/plan-b/issues/423) · 5 | **Lo afectado, en local**: dos recetas de `just` con `dotnet-affected` y `vitest --changed origin/main` para el pre-push. CI sigue corriendo todo: es la lección de mayo | 0,5 |
+
+Descartado con razón: compartir el build entre jobs por artefactos (los jobs corren en paralelo; encadenarlos le suma al E2E la espera del build ajeno) y la cola de merge (exige repo público de una organización; este es de usuario).
+
+### Secuencia
+
+La pista 3 va primero: acelera el resto del sprint. En la pista 2, Q01 va antes de Q02 y Q03, porque la regla gobierna los tests que se escriben después. La pista 1 corre en paralelo: sus tareas 1 a 3 son del repo y no dependen de nada; la 4 es de Lucas con el guion.
+
+### Cómo se sabe que R4 está listo
+
+1. Una URL de Dokploy responde `/health` y muestra la entrada con el corpus; la ficha de Pérez publica con 14 voces y la de Ruiz dice que le faltan 4; alguien se registra, verifica desde el Mailpit del stage, reseña y la reseña cuenta; el admin sembrado cura una frase; `down -v && up` vuelve a cero y resiembra igual.
+2. `check-scenarios` corre en CI y devuelve cero escenarios sin estado en las 18 stories.
+3. Reviews y academic tienen test de handler en cada feature con lógica; las pantallas del corazón tienen test de componente y su cobertura en vitest deja de ser 0 %.
+4. CI sube los dos reportes de cobertura en cada PR.
+5. axe en verde sobre lo público, el proyecto de celular pasa, y hay una primera medición de rendimiento publicada.
+6. El job de backend baja de 489 s a menos de 180 s y la integración local de 25 minutos a menos de 8, con el antes y el después escritos en `testing.md`.
+7. No queda ningún `fixme` sin fecha, `retries` en CI es 0, y ningún test pasa al segundo intento sin quedar contado.
+8. Ninguna pantalla pública dice "ítem", y `check-docs` falla si vuelve.
+
+### Lo que R4 deja afuera a propósito
+
+- Personas reales y todo lo que solo ellas exigen: mail y dominio reales, consentimiento (US-228, Ley 25.326), Anonimato (SC-013), el piso en el contrato antes de enviar (US-159). Es lo primero del sprint en que las haya.
+- El hardening de Production, que ya está escrito y espera su propio deploy; y la política de versionado que ADR-0038 dice revisar al primer deploy.
+- Mutation testing: se mide después de que la suite tenga la forma que esta pista le da.
 
 ## Lo anterior: el producto en retiro
 
