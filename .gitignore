@@ -23,6 +23,8 @@ Thumbs.db
 !.claude/skills/
 !.claude/rules/
 !.claude/workflows/
+!.claude/hooks/
+!.claude/settings.json
 
 # Playwright MCP scratch (snapshots, console logs from interactive debugging)
 .playwright-mcp/
