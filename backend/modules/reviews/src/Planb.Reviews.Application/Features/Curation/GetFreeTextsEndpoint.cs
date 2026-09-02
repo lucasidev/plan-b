@@ -11,7 +11,7 @@ namespace Planb.Reviews.Application.Features.Curation;
 /// GET /api/reviews/curation/free-texts (ADR-0084): el campo libre, para que el equipo lo lea.
 ///
 /// <para>
-/// El ADR le prometió dos salidas al campo libre, destilar ítems y escribir notas editoriales, y
+/// El ADR le prometió dos salidas al campo libre, destilar frases y escribir notas editoriales, y
 /// ninguna se puede hacer sin leerlo. Hasta acá lo único que lo leía era su propio autor: la
 /// curaduría existía en el papel y no en el producto.
 /// </para>

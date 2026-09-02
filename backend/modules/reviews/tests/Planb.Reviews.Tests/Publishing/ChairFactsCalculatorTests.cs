@@ -17,7 +17,8 @@ namespace Planb.Reviews.Tests.Publishing;
 /// <see cref="PublishingRules.ChairMinimumReviews"/> reseñas, la moda y la distribución de cada
 /// ítem, que los bloques (conducta de cátedra, vivencia del estudiante y la fama) no se mezclan
 /// entre sí ni con el contexto, que un ítem sin respuestas no se publica, la tasa de finalización
-/// agregada y los contrastes contra las cátedras hermanas.
+/// agregada, los contrastes contra las cátedras hermanas, y el corte de serie de US-198: los dos
+/// tramos se publican separados y el viejo no vota en nada de lo que se calcula sobre el de hoy.
 /// </para>
 /// </summary>
 public class ChairFactsCalculatorTests
@@ -35,6 +36,29 @@ public class ChairFactsCalculatorTests
             layer,
             Option(1, 1, "Bien", OptionValence.Positive, positiveCount),
             Option(2, 2, "Mal", OptionValence.Negative, negativeCount));
+
+    /// <summary>El mismo ítem binario, pero retirado el día que se abrió el código nuevo.</summary>
+    private static ItemTally RetiredTally(
+        string itemCode, ItemLayer layer, int positiveCount, int negativeCount) =>
+        BinaryTally(itemCode, layer, positiveCount, negativeCount) with
+        {
+            IsRetired = true,
+            RetiredAt = CutDate,
+        };
+
+    /// <summary>El sucesor, que declara de qué pregunta viene.</summary>
+    private static ItemTally SuccessorTally(
+        string itemCode,
+        string supersedesCode,
+        ItemLayer layer,
+        int positiveCount,
+        int negativeCount) =>
+        BinaryTally(itemCode, layer, positiveCount, negativeCount) with
+        {
+            SupersedesCode = supersedesCode,
+        };
+
+    private static readonly DateTimeOffset CutDate = new(2026, 8, 21, 0, 0, 0, TimeSpan.Zero);
 
     /// <summary>Calcula ya arriba del piso de reseñas, salvo que el test pida otra cosa.</summary>
     private static ChairFacts Publish(
@@ -384,5 +408,173 @@ public class ChairFactsCalculatorTests
         var facts = Publish(tallies, siblingTallies);
 
         facts.Contrasts.Select(c => c.ItemCode).ShouldBe(["CHAIR_ARRIVES_LATE", "CHAIR_INTERRUPTS"]);
+    }
+
+    // -------------------------------------------------------------------
+    // El corte de serie (US-198, E3)
+    // -------------------------------------------------------------------
+
+    /// <summary>
+    /// US-198 E3: lo de antes queda bajo el código viejo, lo de después bajo el nuevo, y los dos se
+    /// publican. Que se vean separados es la mitad del corte; la otra mitad es que no se sumen.
+    /// </summary>
+    [Fact]
+    public void Calculate_ItemThatSupersededAnother_PublishesBothStretchesSeparately()
+    {
+        List<ItemTally> tallies =
+        [
+            SuccessorTally(
+                "CHAIR_CLASSES_HELD_B", "CHAIR_CLASSES_HELD", ItemLayer.ChairConduct,
+                positiveCount: 9, negativeCount: 7),
+            RetiredTally(
+                "CHAIR_CLASSES_HELD", ItemLayer.ChairConduct,
+                positiveCount: 56, negativeCount: 56),
+        ];
+
+        var facts = Publish(tallies);
+
+        // Una sola fila en el bloque: el tramo viejo cuelga del nuevo, no compite con él.
+        var item = facts.ChairConduct.ShouldHaveSingleItem();
+        item.ItemCode.ShouldBe("CHAIR_CLASSES_HELD_B");
+        item.Total.ShouldBe(16);
+
+        var previous = item.PreviousSeries.ShouldNotBeNull();
+        previous.ItemCode.ShouldBe("CHAIR_CLASSES_HELD");
+        previous.Total.ShouldBe(112);
+        previous.RetiredAt.ShouldBe(CutDate);
+
+        // Y el punto de todo: los totales no se juntan en ningún lado.
+        (item.Total + previous.Total).ShouldBe(128);
+        item.Total.ShouldNotBe(128);
+    }
+
+    /// <summary>
+    /// Un tramo viejo no vota en la fama. Si votara, tres preguntas retiradas podrían sostener una
+    /// afirmación sobre la cátedra de hoy que nadie le hizo a la cátedra de hoy.
+    /// </summary>
+    [Fact]
+    public void Calculate_RetiredStretches_DoNotFeedTheFame()
+    {
+        List<ItemTally> tallies =
+        [
+            SuccessorTally("A_B", "A", ItemLayer.ChairConduct, positiveCount: 30, negativeCount: 2),
+            RetiredTally("A", ItemLayer.ChairConduct, positiveCount: 1, negativeCount: 99),
+            RetiredTally("B", ItemLayer.ChairConduct, positiveCount: 1, negativeCount: 99),
+            RetiredTally("C", ItemLayer.ChairConduct, positiveCount: 1, negativeCount: 99),
+        ];
+
+        var facts = Publish(tallies);
+
+        // Tres retirados con 99 % negativo, y aun así no hay fama: el único ítem vigente está bien.
+        facts.Fame.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// Un tramo viejo tampoco se compara contra las hermanas: la pregunta que ellas responden hoy
+    /// no es esa, y contrastarlas sería exactamente la comparación que el corte prohíbe.
+    /// </summary>
+    [Fact]
+    public void Calculate_RetiredStretches_AreNeverContrastedAgainstSiblings()
+    {
+        List<ItemTally> tallies =
+        [
+            RetiredTally("CHAIR_CLASSES_HELD", ItemLayer.ChairConduct, positiveCount: 10, negativeCount: 90),
+        ];
+        List<ItemTally> siblingTallies =
+        [
+            BinaryTally("CHAIR_CLASSES_HELD", ItemLayer.ChairConduct, positiveCount: 90, negativeCount: 10),
+        ];
+
+        var facts = Publish(tallies, siblingTallies);
+
+        facts.Contrasts.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// Un retirado sin sucesor no aparece en ningún lado. Sus respuestas existen y no se borran,
+    /// pero no hay pregunta viva de la que colgarlas, y publicarlo suelto lo haría leer como algo
+    /// que todavía se pregunta.
+    /// </summary>
+    [Fact]
+    public void Calculate_RetiredItemWithNoSuccessor_IsNotPublishedOnItsOwn()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct, positiveCount: 8, negativeCount: 4),
+            RetiredTally("CHAIR_OLD_QUESTION", ItemLayer.ChairConduct, positiveCount: 50, negativeCount: 50),
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.ChairConduct.Select(i => i.ItemCode).ShouldBe(["CHAIR_ANSWERS_QUESTIONS"]);
+        facts.ChairConduct[0].PreviousSeries.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// El estado inmediatamente después del corte, que es el más común y el más peligroso: la
+    /// pregunta nueva todavía no la contestó nadie. El ítem se publica igual, con su tramo anterior
+    /// intacto. Descartarlo por tener cero respuestas propias escondería las 112 de antes justo el
+    /// día que cambió la pregunta, que es lo único que el corte tenía que hacer visible.
+    /// </summary>
+    [Fact]
+    public void Calculate_SuccessorWithNoAnswersYet_StillPublishesThePreviousStretch()
+    {
+        List<ItemTally> tallies =
+        [
+            SuccessorTally(
+                "CHAIR_CLASSES_HELD_B", "CHAIR_CLASSES_HELD", ItemLayer.ChairConduct,
+                positiveCount: 0, negativeCount: 0),
+            RetiredTally(
+                "CHAIR_CLASSES_HELD", ItemLayer.ChairConduct,
+                positiveCount: 56, negativeCount: 56),
+        ];
+
+        var facts = Publish(tallies);
+
+        var item = facts.ChairConduct.ShouldHaveSingleItem();
+        item.ItemCode.ShouldBe("CHAIR_CLASSES_HELD_B");
+        item.Total.ShouldBe(0);
+        item.ModeLabel.ShouldBeEmpty(); // no hay moda que inventar sobre cero respuestas
+        item.Distribution.ShouldBeEmpty();
+        item.PreviousSeries.ShouldNotBeNull().Total.ShouldBe(112);
+    }
+
+    /// <summary>
+    /// Y un ítem sin respuestas y sin tramo anterior sigue sin publicarse: no hay nada que decir de
+    /// una pregunta que nadie contestó nunca, y una barra vacía no es información.
+    /// </summary>
+    [Fact]
+    public void Calculate_ItemWithNoAnswersAndNoHistory_IsStillNotPublished()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct, positiveCount: 8, negativeCount: 4),
+            BinaryTally("CHAIR_NEVER_ANSWERED", ItemLayer.ChairConduct, positiveCount: 0, negativeCount: 0),
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.ChairConduct.Select(i => i.ItemCode).ShouldBe(["CHAIR_ANSWERS_QUESTIONS"]);
+    }
+
+    /// <summary>
+    /// US-198, edge: un ítem recién abierto sobre una cátedra que nunca respondió al anterior no
+    /// tiene tramo viejo que mostrar. El corte existe en el catálogo; en esta ficha no hay nada que
+    /// cortar, y una sección vacía diciendo "acá cambió la pregunta" sería ruido.
+    /// </summary>
+    [Fact]
+    public void Calculate_SuccessorWhoseChairNeverAnsweredThePreviousItem_HasNoPreviousStretch()
+    {
+        List<ItemTally> tallies =
+        [
+            SuccessorTally(
+                "CHAIR_CLASSES_HELD_B", "CHAIR_CLASSES_HELD", ItemLayer.ChairConduct,
+                positiveCount: 9, negativeCount: 7),
+            RetiredTally("CHAIR_CLASSES_HELD", ItemLayer.ChairConduct, positiveCount: 0, negativeCount: 0),
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.ChairConduct.ShouldHaveSingleItem().PreviousSeries.ShouldBeNull();
     }
 }

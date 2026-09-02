@@ -32,7 +32,10 @@ const NAV: { group: string; items: NavItem[] }[] = [
   },
   {
     group: 'Curaduría',
-    items: [{ label: 'Campo libre', href: '/admin/curation' }],
+    items: [
+      { label: 'Frases', href: '/admin/items' },
+      { label: 'Campo libre', href: '/admin/curation' },
+    ],
   },
 ];
 

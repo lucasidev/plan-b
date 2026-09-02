@@ -26,7 +26,19 @@ public sealed record PublishedItem(
     int ModePercent,
     bool ModeIsNegative,
     int Total,
-    IReadOnlyList<PublishedOption> Distribution);
+    IReadOnlyList<PublishedOption> Distribution,
+    /// <summary>
+    /// El tramo de antes, cuando este ítem reemplazó a otro y ese otro tiene respuestas de este
+    /// sujeto (US-198, E3). Va colgado del ítem de hoy y no como una fila más de la lista, porque
+    /// eso es lo que es: la misma pregunta antes de dejar de ser la misma. Nunca se suma con el
+    /// tramo nuevo, y no alimenta ni la fama ni los contrastes.
+    /// </summary>
+    PublishedItem? PreviousSeries = null,
+    /// <summary>
+    /// Cuándo dejó de preguntarse. Solo lo trae un tramo viejo: es la fecha en que la serie se
+    /// cortó, y sin ella la ficha puede decir que dos tramos no se comparan pero no desde cuándo.
+    /// </summary>
+    DateTimeOffset? RetiredAt = null);
 
 /// <summary>Un segmento de la distribución: su etiqueta, su porcentaje y de qué lado cae.</summary>
 public sealed record PublishedOption(string Label, int Percent, OptionValence Valence);

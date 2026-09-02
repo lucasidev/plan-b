@@ -62,6 +62,13 @@ public sealed record FameItemView(string Code, string Text, string NegativeLabel
 
 /// <summary>
 /// Un ítem publicado: qué se preguntó, qué contestó la mayoría y cómo se repartió el resto.
+///
+/// <para>
+/// <see cref="PreviousSeries"/> es el tramo de antes, cuando la pregunta cambió y se abrió un
+/// código nuevo (US-198). Viene colgado del ítem de hoy y no como otra fila de la lista, porque la
+/// pantalla tiene que poder decir que los dos tramos son de la misma pregunta y a la vez que no se
+/// comparan entre sí. Nunca se suman: cada uno tiene su propio total.
+/// </para>
 /// </summary>
 public sealed record PublishedItemView(
     string Code,
@@ -70,7 +77,10 @@ public sealed record PublishedItemView(
     int ModePercent,
     bool ModeIsNegative,
     int Total,
-    IReadOnlyList<DistributionSliceView> Distribution);
+    IReadOnlyList<DistributionSliceView> Distribution,
+    PublishedItemView? PreviousSeries = null,
+    /// <summary>Cuándo dejó de preguntarse. Solo lo trae un tramo viejo: es la fecha del corte.</summary>
+    DateTimeOffset? RetiredAt = null);
 
 /// <summary>
 /// Un tramo de la distribución. Lleva <see cref="IsNegative"/> y no la valencia cruda: la pantalla

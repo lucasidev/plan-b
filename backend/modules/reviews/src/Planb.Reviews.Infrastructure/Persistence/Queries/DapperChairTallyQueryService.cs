@@ -25,6 +25,13 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 ///     salteado no deja fila (ADR-0082), así que dos ítems de la misma cátedra pueden tener
 ///     denominadores distintos y eso es correcto, no un bug de la query.
 ///   </item>
+///   <item>
+///     Los conteos de la cátedra traen también los ítems <b>retirados</b> (US-198): son el tramo de
+///     antes del que los reemplazó, y filtrarlos haría desaparecer de la ficha lo que se respondió
+///     bajo el código viejo. Los de las hermanas no: contra ellas se compara, y un tramo viejo no se
+///     compara con nada. Que un retirado sin respuestas no aparezca lo resuelve el calculador, que
+///     descarta todo lo que tiene total cero.
+///   </item>
 /// </list>
 /// </summary>
 internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
@@ -56,25 +63,32 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             SELECT
                 i.code    AS ItemCode,
                 i.layer   AS Layer,
+                NOT i.is_active AS IsRetired,
+                prev.code AS SupersedesCode,
+                i.retired_at AS RetiredAt,
                 o.value   AS Value,
                 o.""order"" AS ""Order"",
                 o.label   AS Label,
                 o.valence AS Valence,
                 count(a.review_id)::int AS Count
             FROM reviews.items i
+            LEFT JOIN reviews.items prev ON prev.id = i.supersedes_item_id
             JOIN reviews.item_options o ON o.item_id = i.id
             LEFT JOIN reviews.review_answers a
                 ON a.item_id = i.id
                AND a.option_value = o.value
                AND a.review_id IN (
                    SELECT id FROM reviews.reviews WHERE chair_id = @ChairId)
-            WHERE i.is_active = true
-            GROUP BY i.code, i.layer, o.value, o.""order"", o.label, o.valence
+            GROUP BY i.code, i.layer, i.is_active, prev.code, i.retired_at,
+                     o.value, o.""order"", o.label, o.valence
             ORDER BY i.code, o.""order"";
 
             SELECT
                 i.code    AS ItemCode,
                 i.layer   AS Layer,
+                false     AS IsRetired,
+                NULL::text        AS SupersedesCode,
+                NULL::timestamptz AS RetiredAt,
                 o.value   AS Value,
                 o.""order"" AS ""Order"",
                 o.label   AS Label,
@@ -92,8 +106,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             ORDER BY i.code, o.""order"";
 
             SELECT i.code AS Code, i.text AS Text
-            FROM reviews.items i
-            WHERE i.is_active = true;
+            FROM reviews.items i;
 
             SELECT DISTINCT term_id
             FROM reviews.reviews
@@ -169,7 +182,10 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
                         r.Label,
                         Enum.Parse<OptionValence>(r.Valence),
                         r.Count))
-                    .ToList()))
+                    .ToList(),
+                g.First().IsRetired,
+                g.First().SupersedesCode,
+                AsOffset(g.First().RetiredAt)))
             .ToList();
 
     /// <summary>
@@ -194,10 +210,24 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         return (reaching, outcome.Total);
     }
 
-    /// <summary>Fila plana del SQL, antes de agruparse por ítem.</summary>
+    /// <summary>
+    /// Fila plana del SQL, antes de agruparse por ítem.
+    ///
+    /// <para>
+    /// <b>El orden de estos parámetros es el de las columnas del SELECT, y no es cosmético</b>:
+    /// Dapper matchea la firma del constructor posicionalmente contra las columnas del reader, y si
+    /// no encuentra una que coincida tira <c>InvalidOperationException</c> en runtime pidiendo "a
+    /// parameterless default constructor or one matching signature". Por eso las dos consultas que
+    /// materializan este record devuelven las MISMAS columnas en el MISMO orden, y la de las
+    /// hermanas rellena con constantes las tres que no le aplican.
+    /// </para>
+    /// </summary>
     private sealed record TallyRow(
         string ItemCode,
         string Layer,
+        bool IsRetired,
+        string? SupersedesCode,
+        DateTime? RetiredAt,
         short Value,
         short Order,
         string Label,
@@ -308,7 +338,11 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
     /// <summary>Cuántas reseñas junta una cátedra y cuándo entró la última.</summary>
     private sealed record ChairCountRow(Guid ChairId, int ReviewCount, DateTime? LastReviewedAt);
 
-    /// <summary>Fila plana del conteo por cátedra, antes de agruparse por ítem.</summary>
+    /// <summary>
+    /// Fila plana del conteo por cátedra, antes de agruparse por ítem. La ficha de materia contrasta
+    /// cátedras entre sí sobre la misma pregunta, así que su query solo trae los ítems vigentes: un
+    /// tramo viejo ahí sería exactamente la comparación que US-198 no permite hacer.
+    /// </summary>
     private sealed record ChairTallyRow(
         Guid ChairId,
         string ItemCode,
@@ -320,6 +354,16 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         int Count)
     {
         public TallyRow ToTallyRow() =>
-            new(ItemCode, Layer, Value, Order, Label, Valence, Count);
+            new(
+                ItemCode,
+                Layer,
+                IsRetired: false,
+                SupersedesCode: null,
+                RetiredAt: null,
+                Value,
+                Order,
+                Label,
+                Valence,
+                Count);
     }
 }

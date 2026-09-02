@@ -36,4 +36,28 @@ internal sealed class DapperIdentityQueryService : IIdentityQueryService
             new CommandDefinition(
                 sql, new { UserId = userId, TeacherId = teacherId }, cancellationToken: ct));
     }
+
+    public async Task<IReadOnlyDictionary<Guid, string>> GetEmailsAsync(
+        IReadOnlyCollection<Guid> userIds, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(userIds);
+
+        if (userIds.Count == 0)
+        {
+            return new Dictionary<Guid, string>();
+        }
+
+        const string sql = @"
+            SELECT id AS Id, email AS Email
+            FROM identity.users
+            WHERE id = ANY(@Ids);";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<EmailRow>(
+            new CommandDefinition(sql, new { Ids = userIds.ToArray() }, cancellationToken: ct));
+
+        return rows.ToDictionary(r => r.Id, r => r.Email);
+    }
+
+    private sealed record EmailRow(Guid Id, string Email);
 }

@@ -43,7 +43,7 @@ public sealed class DistilItemEndpoint : ICarterModule
                     statusCode: StatusCodes.Status400BadRequest);
             }
 
-            var options = new List<DistilledOption>(body.Options.Count);
+            var options = new List<CuratedOption>(body.Options.Count);
             foreach (var option in body.Options)
             {
                 if (!CurationEnumParsing.TryValence(option.Valence, out var valence))
@@ -54,7 +54,7 @@ public sealed class DistilItemEndpoint : ICarterModule
                         statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                options.Add(new DistilledOption(option.Value, option.Order, option.Label, valence));
+                options.Add(new CuratedOption(option.Value, option.Order, option.Label, valence));
             }
 
             var command = new DistilItemCommand(

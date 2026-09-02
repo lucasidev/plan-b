@@ -17,6 +17,9 @@ public class ItemTests
 {
     private static readonly DateTimeOffset T0 = new(2026, 8, 26, 12, 0, 0, TimeSpan.Zero);
 
+    /// <summary>Quien cura los ítems: US-198 pide que todo cambio quede con su autor.</summary>
+    private static readonly Guid Curator = Guid.Parse("00000198-0000-0000-0000-000000000001");
+
     private sealed class FixedClock(DateTimeOffset now) : IDateTimeProvider
     {
         public DateTimeOffset UtcNow { get; } = now;
@@ -247,22 +250,81 @@ public class ItemTests
         result.Value.Options.Select(o => o.Label).ShouldBe(["Primera", "Segunda"]);
     }
 
+    /// <summary>
+    /// US-198 E1: se edita el texto y las opciones y el ítem conserva su código, o sea su serie.
+    /// El registro de quién y cuándo es parte del criterio de aceptación, no un extra.
+    /// </summary>
     [Fact]
-    public void Reword_ChangesTextAndHelp_ButKeepsTheCode()
+    public void Edit_ChangesTextAndHelp_KeepsTheCode_AndRecordsWhoAndWhen()
     {
         var item = Create(help: "Aclaración vieja").Value;
 
-        var result = item.Reword("¿Responde dudas en clase?", "Aclaración nueva", new FixedClock(T0.AddDays(1)));
+        var result = item.Edit(
+            "¿Responde dudas en clase?",
+            "Aclaración nueva",
+            ItemLayer.ChairConduct,
+            DefaultOptions(),
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
 
         result.IsSuccess.ShouldBeTrue();
         item.Text.ShouldBe("¿Responde dudas en clase?");
         item.Help.ShouldBe("Aclaración nueva");
-        item.UpdatedAt.ShouldBe(T0.AddDays(1));
         item.Code.ShouldBe("CHAIR_ANSWERS_QUESTIONS"); // el punto: la serie histórica no se corta
+        item.UpdatedAt.ShouldBe(T0.AddDays(1));
+        item.LastChangedBy.ShouldBe(Curator);
+    }
+
+    /// <summary>
+    /// US-198 E1: la capa se edita en el mismo lugar que el resto, porque decide qué bloque de la
+    /// ficha cuenta el ítem. Mover no corta la serie: la pregunta sigue siendo la misma.
+    /// </summary>
+    [Fact]
+    public void Edit_MovesTheItemToAnotherLayer_WithoutChangingTheCode()
+    {
+        var item = Create().Value;
+
+        var result = item.Edit(
+            item.Text,
+            null,
+            ItemLayer.StudentExperience,
+            DefaultOptions(),
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
+
+        result.IsSuccess.ShouldBeTrue();
+        item.Layer.ShouldBe(ItemLayer.StudentExperience);
+        item.Code.ShouldBe("CHAIR_ANSWERS_QUESTIONS");
+    }
+
+    /// <summary>
+    /// Las opciones se validan contra la capa DESTINO y no contra la que el ítem tenía: mover a
+    /// contexto con opciones teñidas dejaría persistido un lado bueno y uno malo en algo que no se
+    /// publica dato por dato.
+    /// </summary>
+    [Fact]
+    public void Edit_MovesToContextWithValencedOptions_ReturnsError()
+    {
+        var item = Create().Value; // sus opciones por defecto son Positive / Negative
+
+        var result = item.Edit(
+            item.Text,
+            null,
+            ItemLayer.Context,
+            DefaultOptions(),
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ItemErrors.ContextOptionsCannotHaveValence);
+        item.Layer.ShouldBe(ItemLayer.ChairConduct); // no se movió
     }
 
     [Fact]
-    public void ReplaceOptions_ValidNewSet_ReplacesTheOptions()
+    public void Edit_ValidNewOptionSet_ReplacesTheOptions()
     {
         var item = Create().Value;
         List<(short Value, short Order, string Label, OptionValence Valence)> newOptions =
@@ -271,14 +333,21 @@ public class ItemTests
             (20, 2, "No", OptionValence.Negative),
         ];
 
-        var result = item.ReplaceOptions(newOptions, new HashSet<short>(), new FixedClock(T0.AddDays(1)));
+        var result = item.Edit(
+            item.Text,
+            null,
+            item.Layer,
+            newOptions,
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
 
         result.IsSuccess.ShouldBeTrue();
         item.Options.Select(o => o.Label).ShouldBe(["Sí", "No"]);
     }
 
     [Fact]
-    public void ReplaceOptions_DropsAnAnsweredValue_ReturnsOptionValueAlreadyUsed()
+    public void Edit_DropsAnAnsweredValue_ReturnsOptionValueAlreadyUsed()
     {
         var item = Create().Value; // opciones por defecto: valores 1 y 2
         var answeredValues = new HashSet<short> { 1 };
@@ -288,14 +357,25 @@ public class ItemTests
             (4, 2, "Nueva B", OptionValence.Negative),
         ];
 
-        var result = item.ReplaceOptions(newOptions, answeredValues, new FixedClock(T0.AddDays(1)));
+        var result = item.Edit(
+            item.Text,
+            null,
+            item.Layer,
+            newOptions,
+            answeredValues,
+            new FixedClock(T0.AddDays(1)),
+            Curator);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(ItemErrors.OptionValueAlreadyUsed);
     }
 
+    /// <summary>
+    /// US-198, edge: corregir la etiqueta de una opción que ya se respondió no dispara nada. El
+    /// valor sigue existiendo, así que las reseñas viejas siguen apuntando a algo.
+    /// </summary>
     [Fact]
-    public void ReplaceOptions_KeepsAnAnsweredValue_ButChangesItsLabel_Succeeds()
+    public void Edit_KeepsAnAnsweredValue_ButChangesItsLabel_Succeeds()
     {
         var item = Create().Value; // el valor 1 tiene la etiqueta "Siempre"
         var answeredValues = new HashSet<short> { 1 };
@@ -305,18 +385,26 @@ public class ItemTests
             (2, 2, "Casi nunca", OptionValence.Negative),
         ];
 
-        var result = item.ReplaceOptions(newOptions, answeredValues, new FixedClock(T0.AddDays(1)));
+        var result = item.Edit(
+            item.Text,
+            null,
+            item.Layer,
+            newOptions,
+            answeredValues,
+            new FixedClock(T0.AddDays(1)),
+            Curator);
 
         result.IsSuccess.ShouldBeTrue();
         item.Options.Single(o => o.Value == 1).Label.ShouldBe("Etiqueta nueva");
     }
 
     /// <summary>
-    /// La validación del juego nuevo corre entera antes de tocar el estado: un juego inválido no
-    /// puede dejar el aggregate a mitad de camino, ni con las opciones viejas borradas.
+    /// La edición es atómica y por eso es un solo método: la validación corre entera antes de tocar
+    /// nada. Un fallo a mitad de camino dejaría persistido medio cambio, porque un Result fallido no
+    /// es una excepción y no revierte la transacción.
     /// </summary>
     [Fact]
-    public void ReplaceOptions_InvalidNewSet_LeavesTheOldOptionsIntact()
+    public void Edit_InvalidOptionSet_LeavesEverythingIntact()
     {
         var item = Create().Value; // opciones por defecto: "Siempre" / "Casi nunca"
         List<(short Value, short Order, string Label, OptionValence Valence)> invalidOptions =
@@ -324,12 +412,105 @@ public class ItemTests
             (1, 1, "Sola", OptionValence.None), // una sola opción: NotEnoughOptions
         ];
 
-        var result = item.ReplaceOptions(invalidOptions, new HashSet<short>(), new FixedClock(T0.AddDays(1)));
+        var result = item.Edit(
+            "Texto nuevo que no se tiene que guardar",
+            null,
+            ItemLayer.StudentExperience,
+            invalidOptions,
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(ItemErrors.NotEnoughOptions);
         item.Options.Select(o => o.Label).ShouldBe(["Siempre", "Casi nunca"]);
-        item.UpdatedAt.ShouldBe(T0); // tampoco se tocó: la validación corrió antes de mutar
+        item.Text.ShouldBe("¿El profesor responde las consultas?");
+        item.Layer.ShouldBe(ItemLayer.ChairConduct);
+        item.UpdatedAt.ShouldBe(T0);
+        item.LastChangedBy.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// US-198 E2: al confirmarse el código nuevo, el viejo deja de ofrecerse y su texto queda
+    /// congelado. Es el enunciado bajo el que se respondió, y la ficha lo muestra al lado de sus
+    /// conteos: editarlo sería reescribir una pregunta que ya nadie puede volver a contestar.
+    /// </summary>
+    [Fact]
+    public void Edit_RetiredItem_ReturnsError()
+    {
+        var item = Create().Value;
+        item.Retire(new FixedClock(T0.AddDays(1)), Curator);
+
+        var result = item.Edit(
+            "Texto nuevo",
+            null,
+            item.Layer,
+            DefaultOptions(),
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(2)),
+            Curator);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ItemErrors.RetiredCannotChange);
+        item.Text.ShouldBe("¿El profesor responde las consultas?");
+    }
+
+    /// <summary>
+    /// US-198 E2: el sucesor apunta a quién reemplaza, y esa flecha es lo único que después le
+    /// permite a la ficha llegar desde la pregunta de hoy al tramo de antes.
+    /// </summary>
+    [Fact]
+    public void Create_WithSupersedes_PointsAtTheItemItReplaces()
+    {
+        var previous = Create().Value;
+
+        var successor = Item.Create(
+            "CHAIR_ANSWERS_QUESTIONS_B",
+            "¿Respondió las consultas fuera de clase?",
+            null,
+            ItemLayer.ChairConduct,
+            ItemSubject.Chair,
+            DefaultOptions(),
+            new FixedClock(T0.AddDays(1)),
+            ItemOrigin.Seed,
+            Curator,
+            previous.Id);
+
+        successor.IsSuccess.ShouldBeTrue();
+        successor.Value.SupersedesItemId.ShouldBe(previous.Id);
+        successor.Value.LastChangedBy.ShouldBe(Curator);
+    }
+
+    [Fact]
+    public void Create_WithoutSupersedes_PointsAtNobody()
+    {
+        Create().Value.SupersedesItemId.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// La fecha del corte es propia y no es <c>UpdatedAt</c>: si fueran la misma, cualquier cambio
+    /// posterior movería el día en que la serie se cortó.
+    /// </summary>
+    [Fact]
+    public void Retire_RecordsItsOwnDate_SeparateFromUpdatedAt()
+    {
+        var item = Create().Value;
+
+        item.Retire(new FixedClock(T0.AddDays(1)), Curator);
+
+        item.RetiredAt.ShouldBe(T0.AddDays(1));
+        item.LastChangedBy.ShouldBe(Curator);
+    }
+
+    [Fact]
+    public void Restore_ClearsTheRetirementDate()
+    {
+        var item = Create().Value;
+        item.Retire(new FixedClock(T0.AddDays(1)), Curator);
+
+        item.Restore(new FixedClock(T0.AddDays(2)), Curator);
+
+        item.RetiredAt.ShouldBeNull();
     }
 
     [Fact]
