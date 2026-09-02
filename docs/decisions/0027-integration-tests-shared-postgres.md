@@ -27,6 +27,8 @@ Hay que decidir cómo van a correr los integration tests en dev y en CI.
 
 **Isolation garantizada por** nombre random (`Guid.NewGuid()`) en cada test: sin posibilidad de colisión incluso si dos tests corren en paralelo contra el mismo server.
 
+**Revisión del 2026-09-02.** La decisión no cambia; cambia de dónde sale cada base. Migrar y sembrar 57 migraciones por clase costaba 18 segundos de pared por una clase cuyos tests tardan milisegundos, cincuenta veces en serie. Ahora la primera clase de la corrida arma una plantilla (`planb_template_<hash del build>`) y las demás se copian de ella con `CREATE DATABASE ... TEMPLATE`, y como sigue habiendo una base por clase, las colecciones de xUnit corren en paralelo. Detalle y números en [`testing.md`](../engineering/testing.md).
+
 ## Alternativas consideradas
 
 ### A. Mantener Testcontainers (la decisión original de ADR-0024)
