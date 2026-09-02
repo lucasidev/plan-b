@@ -33,11 +33,12 @@ export function EditorialNoteForm({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Se limpia el form y nada más: la nota se publica en la ficha de la carrera, que no es esta
+  // pantalla. Refrescar acá no traería nada nuevo.
   useEffect(() => {
     if (state.status !== 'success') return;
     formRef.current?.reset();
-    router.refresh();
-  }, [state.status, router]);
+  }, [state.status]);
 
   const disabled = pending || !hydrated;
 

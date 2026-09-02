@@ -20,8 +20,6 @@ const SEGMENT_LABELS: Record<string, string> = {
   // que se filtraba mal a las otras secciones).
   new: 'Nuevo',
   edit: 'Editar',
-  moderacion: 'Moderación',
-  reportes: 'Reportes',
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
