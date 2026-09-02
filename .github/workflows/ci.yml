@@ -45,6 +45,61 @@ jobs:
               - 'scripts/**'
               - 'biome.json'
 
+  # Partido en dos a propósito (R4, #420): unit y arquitectura tardan segundos y no necesitan
+  # contenedores, así que un error de dominio se ve en menos de dos minutos en vez de esperar a
+  # la integración. Los dos compilan por su cuenta: encadenarlos por un artefacto le sumaría al
+  # lento la espera del rápido, y los jobs corren en paralelo de todos modos.
+  backend-unit:
+    name: Backend unit (.NET 10)
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "10.0.x"
+          # Cachea la carpeta global de paquetes con el hash de los packages.lock.json
+          # (RestorePackagesWithLockFile en Directory.Build.props): sin lock files la acción falla.
+          cache: true
+          cache-dependency-path: backend/**/packages.lock.json
+      - name: Restore
+        run: cd backend && dotnet restore
+      # Solo whitespace: el estilo y los analizadores ya los gatea el build con
+      # EnforceCodeStyleInBuild (Directory.Build.props). El format completo compilaba y corría
+      # analizadores dos veces por PR, 48 s para repetir lo que Build ya dice.
+      - name: Format check (whitespace)
+        run: cd backend && dotnet format whitespace --verify-no-changes --no-restore
+      # Build + test in Release so CI exercises the same configuration the
+      # future deploy pipeline (F6 with Dokploy) will produce. Dev local stays
+      # Debug for compile speed; the divergence is intentional. The bug class
+      # this guards against (optimization-induced reordering, dead code paths
+      # under #if DEBUG) is rare but Release-only, so the cost of catching it
+      # in CI rather than at first deploy is small. Once release.yml exists,
+      # ci.yml stays Release for fast feedback on prod-equivalent binaries.
+      - name: Build
+        run: cd backend && dotnet build --no-restore --configuration Release
+      # Después de Build: un cambio de modelo sin migrar compila y formatea igual, y los tests de
+      # integración solo lo cazan si alguno toca esa tabla.
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: 1.3.x }
+      # dotnet-ef es una tool local (backend/.config/dotnet-tools.json), pineada para que CI y
+      # local corran la misma: sin el restore el chequeo no encuentra el comando.
+      - name: Restore dotnet tools
+        run: cd backend && dotnet tool restore
+      - name: Migrations in sync with the model
+        run: bun scripts/check-migrations.ts --configuration Release
+      - name: Test (unit, shared kernel, architecture)
+        run: cd backend && dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~Planb.IntegrationTests" --logger "trx;LogFileName=test-results.trx"
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-unit-test-results
+          path: "**/test-results.trx"
+
+  # Conserva el nombre "Backend (.NET 10)": es el required check del ruleset de main.
   backend:
     name: Backend (.NET 10)
     needs: changes
@@ -56,8 +111,6 @@ jobs:
     # haber corrido format, build ni tests.
     if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true') }}
     runs-on: ubuntu-latest
-    # Local típico: restore+build+test ≈ 4-6 min. 15 min deja headroom para
-    # primer run sin caches (restore largo) sin tolerar un hang real.
     timeout-minutes: 15
     services:
       postgres:
@@ -122,36 +175,19 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
+          cache: true
+          cache-dependency-path: backend/**/packages.lock.json
       - name: Restore
         run: cd backend && dotnet restore
-      - name: Format check
-        run: cd backend && dotnet format --verify-no-changes
-      # Build + test in Release so CI exercises the same configuration the
-      # future deploy pipeline (F6 with Dokploy) will produce. Dev local stays
-      # Debug for compile speed; the divergence is intentional. The bug class
-      # this guards against (optimization-induced reordering, dead code paths
-      # under #if DEBUG) is rare but Release-only, so the cost of catching it
-      # in CI rather than at first deploy is small. Once release.yml exists,
-      # ci.yml stays Release for fast feedback on prod-equivalent binaries.
       - name: Build
         run: cd backend && dotnet build --no-restore --configuration Release
-      # Después de Build y antes de Test: un cambio de modelo sin migrar compila y formatea
-      # igual, y los tests de integración solo lo cazan si alguno toca esa tabla.
-      - uses: oven-sh/setup-bun@v2
-        with: { bun-version: 1.3.x }
-      # dotnet-ef es una tool local (backend/.config/dotnet-tools.json), pineada para que CI y
-      # local corran la misma: sin el restore el chequeo no encuentra el comando.
-      - name: Restore dotnet tools
-        run: cd backend && dotnet tool restore
-      - name: Migrations in sync with the model
-        run: bun scripts/check-migrations.ts --configuration Release
-      - name: Test
-        run: cd backend && dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+      - name: Test (integration)
+        run: cd backend && dotnet test tests/Planb.IntegrationTests --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: backend-test-results
+          name: backend-integration-test-results
           path: "**/test-results.trx"
 
   frontend:
@@ -262,7 +298,10 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v6
-        with: { dotnet-version: '10.0.x' }
+        with:
+          dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: backend/**/packages.lock.json
 
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: 1.3.x }

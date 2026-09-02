@@ -161,8 +161,10 @@ lint: backend-lint frontend-lint scripts-lint
 
 lint-fix: backend-lint-fix frontend-lint-fix scripts-lint-fix
 
+# Solo whitespace: el estilo y los analizadores los gatea el build (EnforceCodeStyleInBuild).
+# El format completo compila y corre analizadores de nuevo; para corregir, backend-lint-fix.
 backend-lint:
-    cd backend && dotnet format --verify-no-changes
+    cd backend && dotnet format whitespace --verify-no-changes --no-restore
 
 backend-lint-fix:
     cd backend && dotnet format
