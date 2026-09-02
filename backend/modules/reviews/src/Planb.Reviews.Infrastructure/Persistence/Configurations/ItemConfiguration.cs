@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Planb.Reviews.Domain.Catalog;
 
 namespace Planb.Reviews.Infrastructure.Persistence.Configurations;
@@ -55,6 +56,26 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasColumnName("is_active")
             .IsRequired();
 
+        // El converter se declara sobre el tipo NO nullable: EF resuelve el null antes de llamarlo.
+        // Con lambdas sobre `ItemId?` infiere uno que recibe el null y explota al convertirlo.
+        builder.Property(i => i.SupersedesItemId)
+            .HasColumnName("supersedes_item_id")
+            .HasConversion(new ValueConverter<ItemId, Guid>(
+                id => id.Value,
+                value => new ItemId(value)));
+
+        // FK real: apunta a otra fila de esta misma tabla, así que no cruza schema y ADR-0017 no
+        // aplica. Sin navigation property a propósito: el sucesor no tiene que arrastrar a su
+        // antecesor cada vez que se carga, que es traer una pregunta retirada para ofrecer la de
+        // hoy. Restrict porque un ítem no se borra nunca: se retira.
+        builder.HasOne<Item>()
+            .WithMany()
+            .HasForeignKey(i => i.SupersedesItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(i => i.SupersedesItemId)
+            .HasDatabaseName("ix_items_supersedes_item_id");
+
         builder.Property(i => i.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired();
@@ -62,6 +83,12 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.Property(i => i.UpdatedAt)
             .HasColumnName("updated_at")
             .IsRequired();
+
+        builder.Property(i => i.RetiredAt)
+            .HasColumnName("retired_at");
+
+        builder.Property(i => i.LastChangedBy)
+            .HasColumnName("last_changed_by");
 
         // El código es la identidad semántica del ítem (ver docstring de Item), y viaja en el CSV
         // público y en el Método: este UNIQUE es el reflejo en DB de ItemErrors.CodeAlreadyExists.

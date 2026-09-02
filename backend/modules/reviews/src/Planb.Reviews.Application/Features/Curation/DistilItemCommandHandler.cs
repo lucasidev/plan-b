@@ -10,17 +10,17 @@ namespace Planb.Reviews.Application.Features.Curation;
 /// Destila una pregunta del campo libre y la publica (ADR-0084).
 ///
 /// <para>
-/// <b>El alta del ítem y la versión nueva del instrumento son una sola operación.</b> El
-/// instrumento es lo que la pantalla de reseñar ofrece y lo que Método publica: un ítem que no
+/// <b>El alta de la frase y la versión nueva del instrumento son una sola operación.</b> El
+/// instrumento es lo que la pantalla de reseñar ofrece y lo que Método publica: una frase que no
 /// entra a una versión no existe para nadie, y dejarlo suelto crearía un estado a medias que
 /// alguien tiene que acordarse de terminar.
 /// </para>
 ///
 /// <para>
-/// <b>El corte de serie sale solo.</b> Los conteos de la ficha se calculan por ítem sobre las
-/// respuestas que ese ítem tiene, así que uno que estrena su versión arranca con las suyas y no
+/// <b>El corte de serie sale solo.</b> Los conteos de la ficha se calculan por frase sobre las
+/// respuestas que esa frase tiene, así que una que estrena su versión arranca con las suyas y no
 /// hereda nada: no hay que cortar nada a mano, hay que no mezclar. Lo que el corte sí necesita es
-/// ser visible, y para eso está el origen del ítem, que Método publica.
+/// ser visible, y para eso está el origen de la frase, que Método publica.
 /// </para>
 /// </summary>
 public static class DistilItemCommandHandler
@@ -63,7 +63,7 @@ public static class DistilItemCommandHandler
 
         var item = itemResult.Value;
 
-        // La versión nueva son los ítems de la vigente en su mismo orden, y el destilado al final.
+        // La versión nueva son las frases de la vigente en su mismo orden, y el destilado al final.
         var items = current.Items
             .OrderBy(i => i.Order)
             .Select(i => (i.ItemId, i.Order))

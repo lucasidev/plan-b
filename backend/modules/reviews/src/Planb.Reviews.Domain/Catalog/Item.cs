@@ -10,11 +10,12 @@ namespace Planb.Reviews.Domain.Catalog;
 ///
 /// <para>
 /// <b>El código es la identidad semántica, no el texto.</b> Afinar la redacción de una pregunta sin
-/// cambiar lo que pregunta es un <see cref="Reword"/>: mismo código, misma serie histórica, y las
+/// cambiar lo que pregunta es un <see cref="Edit"/>: mismo código, misma serie histórica, y las
 /// respuestas viejas siguen siendo comparables. Si cambia el SIGNIFICADO, no se edita: se crea un
-/// ítem nuevo con código nuevo y el anterior se retira, que es lo que declara la ruptura de la serie.
-/// Esa distinción es editorial y la sostiene quien cura el catálogo; el dominio la hace posible
-/// separando código de texto, y no puede tomarla por él.
+/// ítem nuevo con código nuevo apuntando al anterior por <see cref="SupersedesItemId"/>, y el
+/// anterior se retira. Eso es lo que declara la ruptura de la serie. La distinción es editorial y la
+/// sostiene quien cura el catálogo; el dominio la hace posible separando código de texto, y no puede
+/// tomarla por él.
 /// </para>
 ///
 /// <para>
@@ -56,8 +57,28 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     /// </summary>
     public bool IsActive { get; private set; }
 
+    /// <summary>
+    /// El ítem al que este reemplaza, cuando nació de un cambio de significado (US-198). Es lo que
+    /// hace visible el corte: la ficha llega desde la pregunta de hoy a la de antes y las muestra
+    /// separadas, en vez de perder de vista lo respondido bajo el código viejo.
+    /// </summary>
+    public ItemId? SupersedesItemId { get; private set; }
+
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
+
+    /// <summary>
+    /// Cuándo dejó de ofrecerse. Es la fecha del corte, y por eso no alcanza con
+    /// <see cref="UpdatedAt"/>: cualquier edición posterior lo movería y la ficha diría que la serie
+    /// se cortó un día en que no se cortó.
+    /// </summary>
+    public DateTimeOffset? RetiredAt { get; private set; }
+
+    /// <summary>
+    /// Quién hizo el último cambio (US-198). Null en lo que sembró el catálogo inicial y nadie tocó:
+    /// ahí no hay persona a la que atribuirlo, y poner la cuenta de sistema sería inventar un autor.
+    /// </summary>
+    public Guid? LastChangedBy { get; private set; }
 
     private readonly List<ItemOption> _options = [];
 
@@ -71,6 +92,10 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     /// crear nada: valores y órdenes únicos, a lo sumo una negativa, y ninguna valencia si el ítem
     /// es de contexto.
     /// </summary>
+    /// <param name="supersedes">
+    /// El ítem que este reemplaza, si nace de un cambio de significado. Retirar al anterior no es
+    /// asunto de este método: son dos aggregates y los coordina el application service.
+    /// </param>
     public static Result<Item> Create(
         string code,
         string text,
@@ -79,7 +104,9 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
         ItemSubject subject,
         IEnumerable<(short Value, short Order, string Label, OptionValence Valence)> options,
         IDateTimeProvider clock,
-        ItemOrigin origin = ItemOrigin.Seed)
+        ItemOrigin origin = ItemOrigin.Seed,
+        Guid? createdBy = null,
+        ItemId? supersedes = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(clock);
@@ -113,8 +140,10 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
             Subject = subject,
             Origin = origin,
             IsActive = true,
+            SupersedesItemId = supersedes,
             CreatedAt = now,
             UpdatedAt = now,
+            LastChangedBy = createdBy,
         };
         item._options.AddRange(built.Value);
         return item;
@@ -165,43 +194,57 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Afina la redacción SIN cambiar el significado: misma serie, mismas respuestas comparables.
-    /// Que el significado siga siendo el mismo lo decide quien cura, no el dominio: si cambió, el
-    /// camino es un ítem nuevo con código nuevo, no este método.
+    /// La edición del ítem, entera y en un solo lugar (US-198): su texto, su ayuda, su capa y sus
+    /// opciones. Es una sola operación y no tres porque las tres se guardan juntas: un fallo a
+    /// mitad de camino dejaría persistido medio cambio, ya que un <see cref="Result"/> fallido no
+    /// es una excepción y no revierte la transacción que Wolverine abre.
+    ///
+    /// <para>
+    /// <b>No cambia el significado, por definición.</b> Afinar la redacción, corregir una etiqueta
+    /// o mover el ítem a la capa que le corresponde deja la misma pregunta: mismo código, misma
+    /// serie, respuestas viejas y nuevas comparables entre sí. Si lo que cambia es LO QUE SE
+    /// PREGUNTA, esto no alcanza: hace falta un ítem nuevo con código nuevo y este se retira, que es
+    /// lo que declara el corte. Cuál de las dos cosas está pasando lo sabe quien cura y no el
+    /// dominio, y por eso son dos caminos distintos y no una heurística.
+    /// </para>
+    ///
+    /// <para>
+    /// Mover a contexto exige que ninguna opción quede con valencia: lo que no se publica no tiene
+    /// lado bueno ni malo, y dejarlas teñidas persistiría un estado que la ficha leería como
+    /// negativo. Lo valida <see cref="BuildOptionSet"/> contra la capa DESTINO, no la actual.
+    /// </para>
     /// </summary>
-    public Result Reword(string text, string? help, IDateTimeProvider clock)
-    {
-        ArgumentNullException.ThrowIfNull(clock);
-
-        var result = ValidateText(text, help);
-        if (result.IsFailure)
-        {
-            return result.Error;
-        }
-
-        Text = text.Trim();
-        Help = TrimToNull(help);
-        UpdatedAt = clock.UtcNow;
-        return Result.Success();
-    }
-
-    /// <summary>
-    /// Reemplaza el juego de opciones entero, validándolo antes de mutar. Los valores que ya se
-    /// respondieron tienen que seguir existiendo con el mismo significado: quien llama pasa en
-    /// <paramref name="answeredValues"/> los que la base ya tiene, y el aggregate rechaza el cambio
-    /// si alguno desaparece. Editar la etiqueta de un valor existente sí se permite: es la misma
-    /// afinación de redacción que <see cref="Reword"/>.
-    /// </summary>
-    public Result ReplaceOptions(
+    /// <param name="answeredValues">
+    /// Los valores de opción que ya tienen respuestas guardadas. Ninguno puede desaparecer: las
+    /// reseñas viejas lo apuntan. Cambiarle la etiqueta a uno que sigue existiendo sí se permite,
+    /// que es la misma afinación de redacción que el texto.
+    /// </param>
+    public Result Edit(
+        string text,
+        string? help,
+        ItemLayer layer,
         IEnumerable<(short Value, short Order, string Label, OptionValence Valence)> options,
         IReadOnlySet<short> answeredValues,
-        IDateTimeProvider clock)
+        IDateTimeProvider clock,
+        Guid changedBy)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(answeredValues);
         ArgumentNullException.ThrowIfNull(clock);
 
-        var built = BuildOptionSet(options, Layer);
+        if (!IsActive)
+        {
+            return ItemErrors.RetiredCannotChange;
+        }
+
+        // Todo se valida antes de mutar nada: es lo que hace que la edición sea atómica.
+        var textResult = ValidateText(text, help);
+        if (textResult.IsFailure)
+        {
+            return textResult.Error;
+        }
+
+        var built = BuildOptionSet(options, layer);
         if (built.IsFailure)
         {
             return built.Error;
@@ -213,14 +256,18 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
             return ItemErrors.OptionValueAlreadyUsed;
         }
 
+        Text = text.Trim();
+        Help = TrimToNull(help);
+        Layer = layer;
         _options.Clear();
         _options.AddRange(built.Value);
         UpdatedAt = clock.UtcNow;
+        LastChangedBy = changedBy;
         return Result.Success();
     }
 
     /// <summary>Deja de ofrecerse. Lo respondido sigue contando donde ya cuenta.</summary>
-    public Result Retire(IDateTimeProvider clock)
+    public Result Retire(IDateTimeProvider clock, Guid? retiredBy = null)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -230,11 +277,12 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
         }
 
         IsActive = false;
-        UpdatedAt = clock.UtcNow;
+        RetiredAt = clock.UtcNow;
+        Touch(clock, retiredBy);
         return Result.Success();
     }
 
-    public Result Restore(IDateTimeProvider clock)
+    public Result Restore(IDateTimeProvider clock, Guid? restoredBy = null)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -244,8 +292,16 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
         }
 
         IsActive = true;
-        UpdatedAt = clock.UtcNow;
+        RetiredAt = null;
+        Touch(clock, restoredBy);
         return Result.Success();
+    }
+
+    /// <summary>Deja el cambio fechado y con autor, que es lo que US-198 pide de toda edición.</summary>
+    private void Touch(IDateTimeProvider clock, Guid? changedBy)
+    {
+        UpdatedAt = clock.UtcNow;
+        LastChangedBy = changedBy;
     }
 
     /// <summary>Arma el juego de opciones validando sus invariantes, sin mutar nada.</summary>

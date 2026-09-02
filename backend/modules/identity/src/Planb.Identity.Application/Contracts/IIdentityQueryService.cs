@@ -20,4 +20,16 @@ public interface IIdentityQueryService
     /// </summary>
     Task<bool> HasVerifiedTeacherProfileAsync(
         Guid userId, Guid teacherId, CancellationToken ct = default);
+
+    /// <summary>
+    /// El mail de cada cuenta pedida, por id (US-198). Caller: el catálogo de ítems del backoffice,
+    /// que muestra quién hizo el último cambio de cada ítem y solo guarda el id de la cuenta.
+    ///
+    /// <para>
+    /// En batch y no de a uno: el catálogo son decenas de filas y resolverlas fila por fila es el
+    /// N+1 que ADR-0087 evita. Una cuenta que ya no existe simplemente no viene en el diccionario.
+    /// </para>
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, string>> GetEmailsAsync(
+        IReadOnlyCollection<Guid> userIds, CancellationToken ct = default);
 }

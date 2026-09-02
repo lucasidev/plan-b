@@ -39,6 +39,9 @@ public static class DependencyInjection
         services.AddScoped<IEditorialNoteRepository, EditorialNoteRepository>();
         services.AddScoped<IEditorialNoteQueryService, DapperEditorialNoteQueryService>();
 
+        // El catálogo de ítems, para curarlo en un solo lugar (US-198).
+        services.AddScoped<IItemCatalogQueryService, DapperItemCatalogQueryService>();
+
         // Los conteos que alimentan las fichas de cátedra y de materia (US-147, US-148, ADR-0083).
         services.AddScoped<IChairTallyQueryService, DapperChairTallyQueryService>();
 

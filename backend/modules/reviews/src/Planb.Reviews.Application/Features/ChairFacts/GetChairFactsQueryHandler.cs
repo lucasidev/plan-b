@@ -113,6 +113,11 @@ public static class GetChairFactsQueryHandler
                 .ToList());
     }
 
+    /// <summary>
+    /// Un ítem publicado, con su tramo anterior si lo tiene. El texto del tramo viejo sale del
+    /// mismo diccionario que el resto: los conteos traen el texto de TODOS los ítems, retirados
+    /// incluidos, justamente para poder enunciar la pregunta que ya no se hace.
+    /// </summary>
     private static PublishedItemView ToView(PublishedItem item, Func<string, string> text) =>
         new(
             item.ItemCode,
@@ -124,7 +129,9 @@ public static class GetChairFactsQueryHandler
             item.Distribution
                 .Select(d => new DistributionSliceView(
                     d.Label, d.Percent, d.Valence == OptionValence.Negative))
-                .ToList());
+                .ToList(),
+            item.PreviousSeries is { } previous ? ToView(previous, text) : null,
+            item.RetiredAt);
 
     /// <summary>
     /// Qué proporción eligió la opción negativa de ese ítem. Es el mismo cálculo que hizo el

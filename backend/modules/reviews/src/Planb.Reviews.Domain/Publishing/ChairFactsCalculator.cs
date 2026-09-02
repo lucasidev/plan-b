@@ -63,17 +63,23 @@ public static class ChairFactsCalculator
                 Contrasts: []);
         }
 
-        var published = tallies.Where(t => t.Total > 0).ToList();
+        var retired = tallies.Where(t => t.IsRetired && t.Total > 0).ToList();
+
+        // Los retirados se apartan: son el tramo de antes de otro ítem, no ítems de la ficha. La
+        // fama y los contrastes corren solo sobre lo que se pregunta hoy Y tiene respuestas, que es
+        // lo que hace que un tramo viejo no pueda contaminar una comparación.
+        var current = tallies.Where(t => !t.IsRetired).ToList();
+        var answered = current.Where(t => t.Total > 0).ToList();
 
         return new ChairFacts(
             IsPublished: true,
             ReviewCount: reviewCount,
             ReviewsMissingToPublish: 0,
-            Fame: BuildFame(published),
-            ChairConduct: BuildBlock(published, ItemLayer.ChairConduct),
-            StudentExperience: BuildBlock(published, ItemLayer.StudentExperience),
+            Fame: BuildFame(answered),
+            ChairConduct: BuildBlock(current, retired, ItemLayer.ChairConduct),
+            StudentExperience: BuildBlock(current, retired, ItemLayer.StudentExperience),
             Completion: BuildCompletion(completion),
-            Contrasts: BuildContrasts(published, siblingTallies));
+            Contrasts: BuildContrasts(answered, siblingTallies));
     }
 
     /// <summary>
@@ -96,23 +102,78 @@ public static class ChairFactsCalculator
             : [];
     }
 
-    /// <summary>Un bloque de la ficha: sus ítems con moda y distribución. Los bloques no se suman.</summary>
+    /// <summary>
+    /// Un bloque de la ficha: sus ítems con moda y distribución. Los bloques no se suman.
+    ///
+    /// <para>
+    /// A cada ítem se le cuelga su tramo anterior, si lo tiene y si este sujeto respondió aquella
+    /// pregunta (US-198, E3). Un ítem retirado sin sucesor no aparece en ningún lado: sus
+    /// respuestas existen, pero no hay pregunta viva de la que colgarlas, y publicarlo suelto lo
+    /// haría leer como algo que todavía se pregunta.
+    /// </para>
+    ///
+    /// <para>
+    /// Entra la lista de ítems vigentes ENTERA, con los de total cero incluidos, y no solo los
+    /// respondidos: uno recién estrenado por un corte todavía no tiene respuestas propias pero sí
+    /// un tramo anterior que mostrar. Filtrar antes lo dejaría afuera con su historia adentro.
+    /// </para>
+    /// </summary>
     private static IReadOnlyList<PublishedItem> BuildBlock(
         IReadOnlyList<ItemTally> tallies,
+        IReadOnlyList<ItemTally> retired,
         ItemLayer layer) =>
         tallies
             .Where(t => t.Layer == layer)
-            .Select(ToPublishedItem)
+            .Select(t => ToPublishedItem(t, PreviousSeries(t, retired)))
             .Where(item => item is not null)
             .Select(item => item!)
             .ToList();
 
-    private static PublishedItem? ToPublishedItem(ItemTally tally)
+    /// <summary>
+    /// El tramo de antes de un ítem: el retirado al que reemplazó, si este sujeto lo respondió.
+    /// Se sigue una sola vuelta y no la cadena entera: dos cortes seguidos sobre la misma pregunta
+    /// darían tres tramos, y a esa altura lo que la ficha tiene que decir ya no es "acá cambió"
+    /// sino que la serie no es serie. Cuando pase de verdad, se decide con el caso a la vista.
+    /// </summary>
+    private static PublishedItem? PreviousSeries(ItemTally item, IReadOnlyList<ItemTally> retired)
+    {
+        if (item.SupersedesCode is not { } code)
+        {
+            return null;
+        }
+
+        var previous = retired.FirstOrDefault(t =>
+            string.Equals(t.ItemCode, code, StringComparison.Ordinal));
+
+        return previous is null ? null : ToPublishedItem(previous, previous: null);
+    }
+
+    /// <summary>
+    /// Un ítem con su moda y su distribución, o null si no hay nada que publicar.
+    ///
+    /// <para>
+    /// Un ítem sin respuestas se publica igual <b>si arrastra un tramo anterior con datos</b>: es el
+    /// estado inmediatamente después de cortar una serie, cuando la pregunta nueva todavía no la
+    /// contestó nadie. Descartarlo ahí escondería las respuestas del tramo viejo justo el día que
+    /// cambió la pregunta, que es exactamente lo que el corte tiene que hacer visible. Su moda va
+    /// vacía y su total en cero: la pantalla lee eso como "todavía nadie respondió".
+    /// </para>
+    /// </summary>
+    private static PublishedItem? ToPublishedItem(ItemTally tally, PublishedItem? previous)
     {
         var mode = tally.Mode;
         if (mode is null || tally.Total == 0)
         {
-            return null;
+            return previous is null
+                ? null
+                : new PublishedItem(
+                    tally.ItemCode,
+                    ModeLabel: string.Empty,
+                    ModePercent: 0,
+                    ModeIsNegative: false,
+                    Total: 0,
+                    Distribution: [],
+                    PreviousSeries: previous);
         }
 
         return new PublishedItem(
@@ -124,7 +185,9 @@ public static class ChairFactsCalculator
             tally.Options
                 .OrderBy(o => o.Order)
                 .Select(o => new PublishedOption(o.Label, Percent(o.Count, tally.Total), o.Valence))
-                .ToList());
+                .ToList(),
+            previous,
+            tally.RetiredAt);
     }
 
     private static CompletionRate? BuildCompletion((int Reaching, int Total)? completion)

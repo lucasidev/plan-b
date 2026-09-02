@@ -330,6 +330,22 @@ De ahí salen también la pieza 2 (el código del seguimiento sigue vivo) y la r
 
 **Lo que el relevamiento corrigió antes de empezar.** La poda se estimó primero en 8 puntos como un borrado, y al relevarla apareció que `/onboarding/career` es el **único lugar donde se crea el `StudentProfile`**: borrarlo sin más deja al producto sin forma de crear un perfil de estudiante, y sin perfil no se reseña. La declaración de carrera se muda al Registro, que es donde la ficha SC-026 ya la ponía, y recién después se poda. Son 13 puntos. Y al relevar los docs aparecieron **17 ADRs vigentes** que citan el módulo (uno, ADR-0004, es enteramente sobre `EnrollmentRecord`), más el walkthrough de `git-workflow.md`, construido entero sobre la feature que se poda: con eso son 18, y R3 pasa de 37 a 47.
 
+### La curaduría, que no estaba planificada y entró igual (2026-08-31 y 2026-09-01)
+
+R3 se planificó dejando la curaduría afuera, con el argumento de que el campo libre podía seguir esperando. El argumento no se sostuvo: [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md) le hace tres promesas al campo libre desde R1, y las tres seguían sin cumplirse mientras el producto le decía a cada persona que lo que escribía servía para algo. Entraron las tres.
+
+**Leerlo.** Un read Dapper del campo libre con su contexto (materia, cátedra, período) y **sin la cuenta de quien lo escribió**, que no es una omisión de la pantalla sino del `SELECT`. Su endpoint con policy de admin y su pantalla en `/admin/curation`.
+
+**Destilar frases.** El instrumento tenía `Publish` y `Close` desde R1 y **ninguna feature los usaba**: solo nacía del seed. Destilar abre esa escritura: el alta de la frase y la versión nueva del cuestionario son una sola operación, porque una frase que no entra a una versión no existe para nadie. Cada frase lleva de dónde salió (semilla o destilada) y Método lo publica.
+
+**Notas editoriales.** Entidad nueva con sus reglas: a nivel carrera y nunca de cátedra (ahí el docente es identificable), fechada, con su procedencia dicha en la ficha ("leída de comentarios que no se publican"). Se publica y se retira.
+
+**[US-198](../product/team/sustain-the-catalog/stories/US-198-curate-a-phrase-in-one-place/README.md), curar una frase en un solo lugar.** El catálogo se edita en `/admin/items`, con autor y fecha en cada cambio. Lo que la story pedía y no era cableado: **el sistema no puede saber si cambió el significado de una pregunta, solo lo sabe quien edita**, así que la pantalla lo declara en vez de deducirlo, y el aviso del corte nombra la consecuencia con su código y sus respuestas en lugar de decir que la acción es irreversible.
+
+Construirlo destapó dos cosas que el plan no tenía. La primera: la ficha filtraba las frases retiradas, así que cambiar una pregunta **borraba de la vista todo lo respondido a la anterior**, que es justo lo que el corte tenía que hacer visible. Ahora la ficha publica los dos tramos separados, con la línea que dice que no se comparan, y el viejo no vota ni en la fama ni en los contrastes. La segunda: la tasa de finalización busca su frase por un código constante, así que abrirle uno nuevo la habría roto en silencio en todas las fichas; el backoffice lo rechaza y dice por qué.
+
+**Y el término quedó decidido**: en el producto se llama **frase**, no ítem. Los dos nombres convivían (el glosario decía "Ítem", la ficha de pantalla y los escenarios decían "Frases") y eso es exactamente el bug que la regla de vocabulario previene. El glosario ya dice frase; queda pendiente la barrida de la prosa que todavía dice ítem.
+
 ### Cómo se sabe que R3 está listo
 
 1. Se carga una cátedra nueva desde el backoffice, con su equipo, y aparece en Reseñar y en la ficha pública de su materia **sin tocar el seed**.
@@ -342,7 +358,6 @@ De ahí salen también la pieza 2 (el código del seguimiento sigue vivo) y la r
 
 - **La Ficha de carrera** (SC-001): habilitaría la mitad pública de US-143 y las stories de comparar instituciones, pero esas dependen de [ADR-0085](../decisions/0085-three-instruments-and-official-data.md), o sea de datos oficiales que nadie relevó. Construirla ahora es construir una pantalla medio vacía.
 - **El CSV** de Llevarse el dato: es la otra mitad de la transparencia y entra con su propia story.
-- **La curaduría del texto libre** (US-198, US-199): el campo libre se recolecta desde R1 y todavía no lo lee nadie, aunque [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md) diga que alimenta la curaduría. Es una promesa a medias y sigue esperando.
 - **Todo ADR-0085**: unidad académica, datos oficiales relevados, carrera y materia canónica.
 
 ## Lo anterior: el producto en retiro

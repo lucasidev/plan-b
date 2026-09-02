@@ -15,7 +15,16 @@ namespace Planb.Reviews.Domain.Publishing;
 public sealed record ItemTally(
     string ItemCode,
     ItemLayer Layer,
-    IReadOnlyList<OptionTally> Options)
+    IReadOnlyList<OptionTally> Options,
+    /// <summary>
+    /// Si el ítem ya no se ofrece. Un retirado no es un ítem menos de la ficha: es el tramo de
+    /// antes del que lo reemplazó, y se publica al lado del nuevo declarando que no se comparan.
+    /// </summary>
+    bool IsRetired = false,
+    /// <summary>El código del ítem al que este reemplazó, cuando cambió lo que se preguntaba.</summary>
+    string? SupersedesCode = null,
+    /// <summary>Cuándo dejó de preguntarse. Es la fecha del corte que la ficha enuncia.</summary>
+    DateTimeOffset? RetiredAt = null)
 {
     /// <summary>Cuántas personas respondieron este ítem.</summary>
     public int Total => Options.Sum(o => o.Count);

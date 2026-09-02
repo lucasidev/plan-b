@@ -100,4 +100,34 @@ public static class ItemErrors
 
     public static readonly Error AlreadyActive =
         Error.Conflict("reviews.item.already_active", "Item is already active.");
+
+    /// <summary>
+    /// Un ítem retirado ya no se edita (US-198). Su texto es el enunciado bajo el que se respondió,
+    /// y cambiarlo reescribiría la pregunta que la ficha muestra al lado de conteos que contestaron
+    /// otra cosa.
+    /// </summary>
+    public static readonly Error RetiredCannotChange =
+        Error.Conflict(
+            "reviews.item.retired_cannot_change",
+            "A retired item cannot be changed: its wording is what its answers replied to.");
+
+    /// <summary>
+    /// El ítem que abre un código nuevo no puede reemplazar a uno ya retirado: la serie que se
+    /// corta es la que se está ofreciendo hoy, y encadenar dos cortes sobre el mismo tramo dejaría
+    /// dos preguntas vivas reclamando el mismo pasado.
+    /// </summary>
+    public static readonly Error CannotSupersedeRetired =
+        Error.Conflict(
+            "reviews.item.cannot_supersede_retired",
+            "That item is already retired and cannot be superseded again.");
+
+    /// <summary>
+    /// El ítem del desenlace no puede cambiar de código: la tasa de finalización lo busca por su
+    /// código, que es una constante del dominio. Retirarlo dejaría a todas las fichas sin esa tasa,
+    /// en silencio y sin que nada falle. Su texto y sus opciones sí se editan.
+    /// </summary>
+    public static readonly Error CannotSupersedeTheOutcomeItem =
+        Error.Conflict(
+            "reviews.item.cannot_supersede_the_outcome_item",
+            "The outcome item is wired into the completion rate by its code and cannot be superseded.");
 }
