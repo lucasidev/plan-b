@@ -190,7 +190,7 @@ Per [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md):
 
 ### Antes de mergear
 
-- [ ] CI verde. Branch protection enforcea: `Backend (.NET 10)`, `Frontend (Next.js 15 / Bun)`, `Validate every commit message`, `Validate PR title`. Sin esos, el merge button está deshabilitado.
+- [ ] CI verde. El ruleset de `main` exige: `Backend unit (.NET 10)`, `Backend (.NET 10)`, `Frontend (Next.js 15 / Bun)`, `E2E (Playwright)`, `Validate every commit message`, `Validate PR title`. Sin esos, el merge button está deshabilitado.
 - [ ] Conversaciones del PR resueltas (branch protection lo enforce).
 - [ ] PR title es Conventional Commit válido (especialmente importante si Squash, porque pasa a ser el commit en main).
 
