@@ -93,7 +93,7 @@ El backend no lee ningún `.env` en producción: la carga de `.env` está gatead
 | `Identity__Verification__LinkBaseUrl` | sí | Base del link de verificación de email. Apunta al frontend: `https://<host>/verify-email`. |
 | `Identity__PasswordReset__LinkBaseUrl` | sí | Ídem para el reset: `https://<host>/reset-password`. |
 
-**Todas las de la tabla son obligatorias de verdad, y el host lo verifica al arrancar.** Las de SMTP y los tres `LinkBaseUrl` viven hoy solo en `appsettings.Development.json`, así que en producción no tienen ningún default: el arranque falla con `DataAnnotation validation failed for 'VerificationEmailOptions' members: 'LinkBaseUrl'` y equivalentes. Es la trampa principal de este deploy y sale así de la corrida real, no de leer el código.
+**Todas las de la tabla son obligatorias de verdad, y el host lo verifica al arrancar.** Las de SMTP y los dos `LinkBaseUrl` viven hoy solo en `appsettings.Development.json`, así que en producción no tienen ningún default: el arranque falla con `DataAnnotation validation failed for 'VerificationEmailOptions' members: 'LinkBaseUrl'` y equivalentes. Es la trampa principal de este deploy y sale así de la corrida real, no de leer el código.
 
 El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-environment-configuration.md)).
 
