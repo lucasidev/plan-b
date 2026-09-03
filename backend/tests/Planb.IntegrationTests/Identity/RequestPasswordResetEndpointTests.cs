@@ -21,6 +21,7 @@ namespace Planb.IntegrationTests.Identity;
 /// WebApplicationFactory always reports localhost so every test shares the same bucket key
 /// otherwise.
 /// </summary>
+[Collection("IpRateLimit")]
 public class RequestPasswordResetEndpointTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
 {
     private readonly RegisterApiFixture _fixture;

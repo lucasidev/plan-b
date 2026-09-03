@@ -62,7 +62,7 @@ public sealed record WriteEndpointCase(
 }
 
 /// <summary>
-/// El catálogo de los 52 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
+/// El catálogo de los 49 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
 /// declara su *Endpoint.cs. Verificado en el código el 2026-09-02 (issue #417).
 ///
 /// <para>
