@@ -309,14 +309,6 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     // reseña y una autora reales.
     private static readonly string[] OwnerBodyEndpoints = ["Reviews_ReviseReview"];
 
-    // Identity_SubmitInstitutionalEmail y Identity_VerifyTeacherClaim: su SeededIds (claim id / token)
-    // no tiene backing real (ver WriteEndpoints), así que el lookup por id/token corta en 404 antes de
-    // llegar a validar el largo del campo. No se pudo evaluar el cap de longitud sin sembrar un
-    // teacher-claim real, que el spec no pide (punto 4 solo lista universidad/carrera/plan/materia/
-    // período/cátedra/docente/reseña).
-    private static readonly string[] LongStringNeedsRealParent =
-        ["Identity_SubmitInstitutionalEmail", "Identity_VerifyTeacherClaim"];
-
     public static IEnumerable<object[]> EndpointsWithBody() =>
         WriteEndpoints.All
             .Where(e => e.HasBody && !OwnerBodyEndpoints.Contains(e.Name))
@@ -324,9 +316,7 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
 
     public static IEnumerable<object[]> EndpointsWithLongStringBody() =>
         WriteEndpoints.All
-            .Where(e => e.LongStringBody is not null
-                && !OwnerBodyEndpoints.Contains(e.Name)
-                && !LongStringNeedsRealParent.Contains(e.Name))
+            .Where(e => e.LongStringBody is not null && !OwnerBodyEndpoints.Contains(e.Name))
             .Select(e => new object[] { e });
 
     public static IEnumerable<object[]> EndpointsWithInvalidEnumBody() =>

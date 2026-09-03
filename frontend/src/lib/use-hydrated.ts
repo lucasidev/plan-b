@@ -13,8 +13,8 @@ import { useEffect, useState } from 'react';
  * mensaje de error y el redirect que viven ahí nunca se muestran**. El usuario ve que no pasó nada.
  *
  * Con esto el botón de submit arranca deshabilitado y se habilita al hidratar, así que no hay forma
- * de disparar la acción en esa ventana. Es el mismo patrón `mounted` que ya usábamos para gatear
- * queries client-only (ver `teacher-claim-panel`), extraído porque ahora tiene varios consumidores.
+ * de disparar la acción en esa ventana. Es el mismo patrón `mounted` que se usaba para gatear
+ * queries client-only, extraído porque ahora tiene varios consumidores.
  */
 export function useHydrated(): boolean {
   const [hydrated, setHydrated] = useState(false);

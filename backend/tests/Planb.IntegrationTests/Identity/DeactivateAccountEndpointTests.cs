@@ -3,9 +3,11 @@ using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Infrastructure.Seeding;
+using Planb.Identity.Domain.TeacherProfiles;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.SharedKernel.Abstractions.Clock;
 using Shouldly;
 using Xunit;
 
@@ -104,8 +106,18 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
             _fixture, FreshEmail("deactivate-claim"));
 
         var teacherId = AcademicSeedData.Teachers[0].Id.Value;
-        (await auth.Client.PostAsJsonAsync("/api/me/teacher-claims", new { teacherId }))
-            .EnsureSuccessStatusCode();
+
+        // El claim docente ya no se crea por HTTP (esas rutas de Identity se retiraron, R4 #416):
+        // se siembra directo via DbContext, mismo patrón que el resto de la suite para aggregates
+        // sin endpoint. El aggregate TeacherProfile sigue en pie (decisión aparte de #416).
+        using (var seedScope = _fixture.Factory.Services.CreateScope())
+        {
+            var seedDb = seedScope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+            var clock = seedScope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+            var profile = TeacherProfile.InitiateClaim(auth.UserId, teacherId, clock);
+            seedDb.Set<TeacherProfile>().Add(profile);
+            await seedDb.SaveChangesAsync();
+        }
 
         (await auth.Client.DeleteAsync("/api/me/account")).StatusCode
             .ShouldBe(HttpStatusCode.NoContent);

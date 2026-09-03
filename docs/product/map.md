@@ -61,7 +61,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Verificar | [`verify/`](student/care-for-what-is-published/screens/SC-022-verify/README.md) | con cuenta | `/verify-teacher` (hoy solo docente) | La constancia de alumno (señal) y la identidad docente (permiso), cada una a su cola. | Responder (la identidad docente habilita esa respuesta) | mid-fi, revisada |
+| Verificar | [`verify/`](student/care-for-what-is-published/screens/SC-022-verify/README.md) | con cuenta | sin slug | La constancia de alumno (señal) y la identidad docente (permiso), cada una a su cola. | Responder (la identidad docente habilita esa respuesta) | mid-fi, revisada |
 
 ### Llevarse el dato · [`product/take-the-data/`](student/take-the-data/README.md)
 
