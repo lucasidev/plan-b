@@ -60,7 +60,13 @@ public sealed class RedisDownApiFixture : IAsyncLifetime
                 builder.UseEnvironment("Development");
                 builder.UseSetting("ConnectionStrings:Planb", testConnectionString);
                 builder.UseSetting("ConnectionStrings:PlanbWolverine", testConnectionString);
-                builder.UseSetting("ConnectionStrings:Redis", $"localhost:{closedPort},abortConnect=false");
+                // syncTimeout gobierna el timeout de mensaje en el backlog para comandos sync Y
+                // async (asyncTimeout, sin este, queda en su default de 5000 ms y no alcanza:
+                // verificado con StackExchange.Redis 3.1.31 contra un puerto cerrado, un
+                // db.StringGetAsync tarda ~5 s igual si solo se fija asyncTimeout).
+                builder.UseSetting(
+                    "ConnectionStrings:Redis",
+                    $"localhost:{closedPort},connectTimeout=250,syncTimeout=250,connectRetry=1");
                 builder.ConfigureServices(services =>
                 {
                     services.RunWolverineInSoloMode();

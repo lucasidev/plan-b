@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Application.Features.Search;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.Reviews.Application.Features.ChairFacts;
 using Shouldly;
 using Xunit;
 
@@ -16,6 +18,7 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
     private readonly RegisterApiFixture _fixture;
     private readonly HttpClient _anonymous;
 
+    private static readonly Guid UnstaId = Guid.Parse("00000001-0000-4000-a000-000000000001");
     private static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Subject211 = Guid.Parse("00000004-0000-4000-a000-000000000012");
@@ -98,6 +101,13 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
             await PublishAsync(await AccountAsync(i), i, null);
         }
 
+        // Control positivo: con el piso de 10 cruzado, la ficha ya publica. Si el piso cambia,
+        // esto cae explicando por qué en vez de que el barrido de abajo falle sin dar pistas.
+        var chairFacts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+            $"/api/reviews/chairs/{ChairPerez}/facts");
+        chairFacts.ShouldNotBeNull();
+        chairFacts!.IsPublished.ShouldBeTrue();
+
         // Control positivo: la autora se lee a sí misma y el texto sigue ahí.
         var mineResponse = await author.Client.GetAsync("/api/reviews/courses/me");
         mineResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -110,6 +120,15 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
         var teacherId = chairs!.Single(c => c.Id == ChairPerez).LeadTeacherId;
         teacherId.ShouldNotBeNull();
 
+        // El probe genérico de abajo no puede fallar acá: la respuesta de /api/search nunca ecoa
+        // `q`, y el centinela (ruido random) no matchea ningún nombre del catálogo, así que nunca
+        // iba a contenerlo por más que buscara. Lo que sí es observable es que la búsqueda no
+        // devuelva resultados para ruido que no matchea nada.
+        var searchResponse = await _anonymous.GetFromJsonAsync<SearchResponse>(
+            $"/api/search?q={Uri.EscapeDataString(sentinel)}");
+        searchResponse.ShouldNotBeNull();
+        searchResponse!.Items.ShouldBeEmpty();
+
         var publicUrls = new (string Label, string Url)[]
         {
             ("chair facts", $"/api/reviews/chairs/{ChairPerez}/facts"),
@@ -118,11 +137,17 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
             ("sample chair facts", "/api/reviews/chairs/sample"),
             ("instrument", "/api/reviews/instrument"),
             ("publishing rules", "/api/reviews/publishing-rules"),
-            ("search", $"/api/search?q={Uri.EscapeDataString(sentinel)}"),
             ("subject detail", $"/api/academic/subjects/{Subject211}"),
             ("subject chairs", $"/api/academic/subjects/{Subject211}/chairs"),
             ("teacher detail", $"/api/academic/teachers/{teacherId}"),
             ("teacher chairs", $"/api/academic/teachers/{teacherId}/chairs"),
+            ("universities", "/api/academic/universities"),
+            ("careers", $"/api/academic/careers?universityId={UnstaId}"),
+            ("career plans", $"/api/academic/career-plans?careerId={TudcsCareerId}"),
+            ("career plan by id", $"/api/academic/career-plans/{TudcsPlanId}"),
+            ("academic terms", $"/api/academic/academic-terms?universityId={UnstaId}"),
+            ("subjects", $"/api/academic/subjects?careerPlanId={TudcsPlanId}"),
+            ("prerequisites", $"/api/academic/prerequisites?careerPlanId={TudcsPlanId}"),
         };
 
         foreach (var (label, url) in publicUrls)

@@ -141,22 +141,26 @@ public class RedisDownDegradesTests : IClassFixture<RedisDownApiFixture>
     }
 
     /// <summary>
-    /// El rate limiter de registro (por casilla de destino, ver RegisterUserEndpoint) vive en
-    /// Redis. Sin Redis, el fallback documentado es fail-open: no bloquea, no explota. Dos
-    /// registros seguidos con el mismo mail tienen que devolver los mismos 202 de siempre.
+    /// El rate limiter (<c>IRateLimiter</c>, ADR-0034 patrón #2) vive en Redis: sin Redis, el
+    /// fallback documentado es fail-open, no bloquea. RegisterUserEndpoint no sirve para
+    /// observar eso desde afuera: devuelve el mismo 202 tanto si el limiter permite como si
+    /// bloquea (ADR-0076, no revelar a la casilla de destino), así que un test ahí no distingue
+    /// fail-open de fail-closed. Resend-verification sí responde 429 al bloquear (ver
+    /// ResendVerificationEmailEndpoint, 3 por hora): con Redis caído, una cuarta request en la
+    /// misma ventana tiene que seguir pasando en vez de cortarse en la tercera.
     /// </summary>
     [Fact]
-    public async Task Two_registrations_with_the_same_mail_do_not_blow_up_the_rate_limiter()
+    public async Task Exceeding_the_rate_limit_window_does_not_return_429_when_redis_is_unreachable()
     {
         var email = $"redisdown-ratelimit-{Guid.NewGuid():N}@planb.local";
         using var client = _fixture.Factory.CreateClient();
 
-        var first = await client.PostAsJsonAsync(
-            "/api/identity/register", new { email, password = Password, careerPlanId = TudcsPlanId });
-        var second = await client.PostAsJsonAsync(
-            "/api/identity/register", new { email, password = Password, careerPlanId = TudcsPlanId });
+        for (var i = 0; i < 4; i++)
+        {
+            var response = await client.PostAsJsonAsync("/api/identity/resend-verification", new { email });
 
-        first.StatusCode.ShouldBe(HttpStatusCode.Accepted, await first.Content.ReadAsStringAsync());
-        second.StatusCode.ShouldBe(HttpStatusCode.Accepted, await second.Content.ReadAsStringAsync());
+            response.StatusCode.ShouldBe(
+                HttpStatusCode.NoContent, $"attempt {i + 1} debería pasar (Redis caído: fail-open)");
+        }
     }
 }
