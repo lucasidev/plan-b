@@ -29,9 +29,11 @@ const INSTRUMENT: CurrentInstrument = {
   code: 'course-review',
   version: 1,
   items: [
-    // Capa de contexto (paso 3): no se publica, sirve para leer los números.
+    // Capa de contexto (paso 3): no se publica, sirve para leer los números. Este código es el
+    // real del catálogo (COURSE_OUTCOME, no uno inventado): el componente lo verifica puntual
+    // para saber si se respondió cómo terminó (US-146 N1).
     {
-      code: 'how-it-ended',
+      code: 'COURSE_OUTCOME',
       text: '¿Cómo terminó?',
       help: null,
       layer: 'Context',
@@ -258,7 +260,7 @@ describe('US-146: reseñar en menos de dos minutos', () => {
       subjectId: 'subj-analysis-2',
       termId: 'term-2026-c1',
       chairId: null,
-      answers: { 'how-it-ended': 1, 'kept-pace': 1 },
+      answers: { COURSE_OUTCOME: 1, 'kept-pace': 1 },
     });
     expect(payload.freeText).toBeFalsy();
   });
@@ -281,6 +283,18 @@ describe('US-146: reseñar en menos de dos minutos', () => {
       render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
 
       await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+      await answerKeptPaceYes(user);
+
+      expect(screen.getByRole('button', { name: /enviar la reseña/i })).toBeDisabled();
+    });
+
+    /** US-146 N1: sin responder cómo terminó la cursada, el sistema no deja enviar. */
+    it('no deja enviar si no se respondió cómo terminó la cursada', async () => {
+      const user = userEvent.setup();
+      render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+      await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+      await user.click(screen.getByRole('button', { name: '2026-C1' }));
       await answerKeptPaceYes(user);
 
       expect(screen.getByRole('button', { name: /enviar la reseña/i })).toBeDisabled();
@@ -310,6 +324,11 @@ describe('US-146: reseñar en menos de dos minutos', () => {
 
     await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
     await user.click(screen.getByRole('button', { name: '2026-C1' }));
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Cómo terminó?' })).getByRole('button', {
+        name: 'La aprobé',
+      }),
+    );
     await answerKeptPaceYes(user);
 
     const submit = screen.getByRole('button', { name: /enviar la reseña/i });
@@ -392,6 +411,45 @@ describe('SC-015: estados que dependen de props', () => {
     render(<ReviewForm instrument={withoutChairConduct} subjects={SUBJECTS} terms={TERMS} />);
 
     expect(screen.queryByText(/qué hizo la cátedra/i)).not.toBeInTheDocument();
+  });
+});
+
+describe('SC-015: estado "Sin cátedra"', () => {
+  /**
+   * Ficha SC-015, estado "Sin cátedra": sin cátedra elegida, el paso "Qué hizo la cátedra" no se
+   * ofrece, y lo que se hubiera contestado ahí mientras hubo una cátedra elegida no viaja: no hay
+   * a quién atribuirle esa conducta.
+   */
+  it('con la cátedra en "No me acuerdo", el paso no se muestra y sus respuestas no viajan', async () => {
+    stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
+    actionMock.mockResolvedValue({ status: 'idle' });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(screen.getByRole('button', { name: '2026-C1' }));
+    await user.click(await screen.findByRole('button', { name: /cátedra pérez/i }));
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Se dictaron las clases?' })).getByRole('button', {
+        name: 'Casi todas',
+      }),
+    );
+
+    await user.click(screen.getByRole('button', { name: /no me acuerdo/i }));
+    expect(screen.queryByText(/qué hizo la cátedra/i)).not.toBeInTheDocument();
+
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Cómo terminó?' })).getByRole('button', {
+        name: 'La aprobé',
+      }),
+    );
+    await user.click(screen.getByRole('button', { name: /enviar la reseña/i }));
+
+    expect(actionMock).toHaveBeenCalledTimes(1);
+    const [, formData] = actionMock.mock.calls[0] as [unknown, FormData];
+    const payload = JSON.parse(formData.get('payload') as string);
+    expect(payload.chairId).toBeNull();
+    expect(payload.answers).toEqual({ COURSE_OUTCOME: 1 });
   });
 });
 

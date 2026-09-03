@@ -33,6 +33,13 @@ const BLOCKS: readonly { layer: ItemLayer; step: string; title: string; note?: s
 ];
 
 /**
+ * El ítem de Contexto que dice cómo terminó la cursada: junto con la materia y el período, el
+ * único paso obligatorio para poder enviar (US-146 N1). Mismo código que usa el backend
+ * (`PublishingRules.OutcomeItemCode`).
+ */
+const COURSE_OUTCOME_ITEM_CODE = 'COURSE_OUTCOME';
+
+/**
  * La pantalla Reseñar, entera (US-146, SC-015). Un formulario de corrido: elegís la cursada,
  * contestás lo que quieras contestar, y antes de enviar leés qué se publica y qué no.
  *
@@ -92,13 +99,28 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
 
   const answeredCount = Object.keys(answers).length;
   const chosenSubject = subjects.find((s) => s.id === subjectId);
-  const canSubmit = Boolean(subjectId) && Boolean(termId) && answeredCount > 0 && !pending;
+  const canSubmit =
+    Boolean(subjectId) &&
+    Boolean(termId) &&
+    answers[COURSE_OUTCOME_ITEM_CODE] !== undefined &&
+    !pending;
+
+  // Sin cátedra elegida no hay a quién atribuirle su conducta (ficha SC-015, "Sin cátedra"): lo
+  // que se haya contestado en ese paso mientras hubo una cátedra elegida no viaja si después se
+  // pasa a "No me acuerdo".
+  const chairConductCodes = new Set(
+    instrument.items.filter((i) => i.layer === 'ChairConduct').map((i) => i.code),
+  );
+  const publishableAnswers =
+    chairId === null
+      ? Object.fromEntries(Object.entries(answers).filter(([code]) => !chairConductCodes.has(code)))
+      : answers;
 
   const payload = JSON.stringify({
     subjectId,
     termId,
     chairId,
-    answers,
+    answers: publishableAnswers,
     freeText: freeText.trim().length > 0 ? freeText : null,
   });
 
@@ -239,6 +261,8 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
       {BLOCKS.map((block) => {
         const items = instrument.items.filter((i) => i.layer === block.layer);
         if (items.length === 0) return null;
+        // Ficha SC-015, "Sin cátedra": sin cátedra elegida no hay a quién atribuirle su conducta.
+        if (block.layer === 'ChairConduct' && chairId === null) return null;
         return (
           <section key={block.layer} className="rounded-lg border border-line bg-bg-card p-4">
             <p className="mb-1 font-mono text-[11px] tracking-wide text-ink-3 uppercase">
