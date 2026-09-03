@@ -20,6 +20,16 @@ namespace Planb.Academic.Domain.Careers;
 /// </summary>
 public sealed class Career : Entity<CareerId>, IAggregateRoot
 {
+    // Mismo largo que las columnas EF (CareerConfiguration): name varchar(200), slug varchar(120),
+    // short_name varchar(100), code varchar(40), description varchar(500). Compartida por el
+    // aggregate y el validator de alta/edicion para que ninguno acepte lo que la columna despues
+    // rechaza con un 500 de Postgres.
+    public const int MaxNameLength = 200;
+    public const int MaxSlugLength = 120;
+    public const int MaxShortNameLength = 100;
+    public const int MaxCodeLength = 40;
+    public const int MaxDescriptionLength = 500;
+
     public UniversityId UniversityId { get; private set; }
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;

@@ -32,10 +32,23 @@ public sealed class RegisterUserEndpoint : ICarterModule
     {
         app.MapPost("/api/identity/register", async (
             RegisterUserRequest request,
+            IValidator<RegisterUserCommand> validator,
             IRateLimiter rateLimiter,
             IMessageBus bus,
             CancellationToken ct) =>
         {
+            var command = new RegisterUserCommand(request.Email, request.Password, request.CareerPlanId);
+
+            // La key del rate limiter hashea Email: un body sin mail (o vacio) lo deja null y
+            // explota antes de validar. Validar el shape primero evita eso, devuelve el mismo 400
+            // que daria el validator via Wolverine, y no gasta cupo del rate limiter en un
+            // request invalido.
+            var shapeCheck = await validator.ValidateAsync(command, ct);
+            if (!shapeCheck.IsValid)
+            {
+                return ToValidationProblem(shapeCheck.Errors);
+            }
+
             var mailboxKey = $"identity:ratelimit:register:{HashEmail(request.Email)}";
             var rateCheck = await rateLimiter.TryAcquireAsync(
                 mailboxKey, Window, MaxRegistrationsPerWindow, ct);
@@ -46,7 +59,6 @@ public sealed class RegisterUserEndpoint : ICarterModule
                 return Results.Accepted(value: new RegisterUserResponse(request.Email));
             }
 
-            var command = new RegisterUserCommand(request.Email, request.Password, request.CareerPlanId);
             try
             {
                 var result = await bus.InvokeAsync<Result<RegisterUserResponse>>(command, ct);
@@ -60,18 +72,22 @@ public sealed class RegisterUserEndpoint : ICarterModule
             }
             catch (ValidationException ex)
             {
-                // Wolverine's FluentValidation middleware throws when the command shape itself is
-                // invalid (empty, too short, etc). We surface that as RFC 7807 with the field
-                // errors so the frontend can render them per-input.
-                var errors = ex.Errors.GroupBy(e => e.PropertyName)
-                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
-                return Results.ValidationProblem(errors);
+                // Wolverine's FluentValidation middleware corre el mismo validator: en teoria ya
+                // no dispara porque el shape se valida arriba, queda como red de seguridad.
+                return ToValidationProblem(ex.Errors);
             }
         })
         .WithName("Identity_RegisterUser")
         .WithTags("Identity")
         .Produces<RegisterUserResponse>(StatusCodes.Status202Accepted)
         .ProducesProblem(StatusCodes.Status400BadRequest);
+    }
+
+    private static IResult ToValidationProblem(IEnumerable<FluentValidation.Results.ValidationFailure> errors)
+    {
+        var grouped = errors.GroupBy(e => e.PropertyName)
+            .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+        return Results.ValidationProblem(grouped);
     }
 
     private static IResult ToProblem(Error error) => error.Type switch

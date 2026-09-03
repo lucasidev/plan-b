@@ -29,6 +29,12 @@ namespace Planb.Academic.Domain.Subjects;
 /// </summary>
 public sealed class Subject : Entity<SubjectId>, IAggregateRoot
 {
+    // Mismo largo que las columnas EF (SubjectConfiguration): code varchar(40), name varchar(200).
+    // Compartida por el aggregate y el validator de alta/edicion para que ninguno acepte lo que
+    // la columna despues rechaza con un 500 de Postgres.
+    public const int MaxCodeLength = 40;
+    public const int MaxNameLength = 200;
+
     public CareerPlanId CareerPlanId { get; private set; }
     public string Code { get; private set; } = null!;
     public string Name { get; private set; } = null!;
