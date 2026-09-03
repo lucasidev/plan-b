@@ -88,8 +88,20 @@ jobs:
       # local corran la misma: sin el restore el chequeo no encuentra el comando.
       - name: Restore dotnet tools
         run: cd backend && dotnet tool restore
+      # has-pending-model-changes compara el snapshot con las migraciones sin conectarse, pero el
+      # host tiene que poder armar sus servicios en design time, y eso exige la configuración entera
+      # (connection strings, secreto JWT). Los mismos valores nominales del job de integración: no hay
+      # contenedores acá y nada se conecta.
       - name: Migrations in sync with the model
         run: bun scripts/check-migrations.ts --configuration Release
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__Planb: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+          ConnectionStrings__PlanbWolverine: Host=localhost;Port=5432;Database=planb_test;Username=planb;Password=planb_test
+          ConnectionStrings__Redis: localhost:6379
+          JWT__Secret: ci-test-jwt-secret-must-be-at-least-32-chars-long
+          JWT__Issuer: planb-test
+          JWT__Audience: planb-test
       - name: Test (unit, shared kernel, architecture)
         run: cd backend && dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~Planb.IntegrationTests" --logger "trx;LogFileName=test-results.trx"
       - name: Upload test results
