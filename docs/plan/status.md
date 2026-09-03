@@ -361,6 +361,31 @@ Construirlo destapó dos cosas que el plan no tenía. La primera: la ficha filtr
 - **El CSV** de Llevarse el dato: es la otra mitad de la transparencia y entra con su propia story.
 - **Todo ADR-0085**: unidad académica, datos oficiales relevados, carrera y materia canónica.
 
+## Stories bajo el gate de escenarios
+
+Las stories del producto vigente que entraron a un sprint cerrado (R1 a R3). `scripts/check-scenarios.ts` gobierna sus escenarios: cada uno lleva un veredicto, y una story que quedó sin construir lo dice escenario por escenario con `No construido:`. Al mergear una story, se agrega acá en el mismo PR.
+
+| Story | Nombre | Sprint |
+|---|---|---|
+| US-146 | Reseñar en menos de dos minutos | R1 |
+| US-147 | Reseñar una materia sola | R1 a R3 |
+| US-148 | Que nadie sepa que fui yo | R1 |
+| US-165 | Editar o borrar mi reseña | R2 |
+| US-166 | Sacar lo mío y después irme | R1 a R3 |
+| US-130 | Ver cómo se calcula cada número | R3 |
+| US-231 | Ver si lo que reseñé sirvió de algo | R3 |
+| US-221 | Entender qué es esto viendo una ficha real | R2 |
+| US-129 | Atribuir la dificultad: carrera o facultad | R1 a R3 |
+| US-134 | Saber para cuánta carrera vale un dato | R1 a R3 |
+| US-196 | Cargar la cátedra como entidad propia | R3 |
+| US-143 | Saber qué materias se pueden llevar juntas | R3 |
+| US-198 | Editar el ítem en un solo lugar | R3 |
+| US-155 | Preguntar el año de ingreso una vez | R3 |
+| US-127 | Ver cuánto tarda de verdad la carrera | R1 a R3 |
+| US-132 | Buscar por materia, carrera o docente | R1 a R3 |
+| US-197 | Vincular materias declaradas a la canónica | R1 a R3 |
+| US-204 | Que la reforma no parta el corpus | R1 a R3 |
+
 ## R4 · Un stage funcional, y una suite que dice la verdad más rápido
 
 Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts en tres pistas.
@@ -383,7 +408,7 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 
 ### Pista 2 · Romper el producto (40 pts)
 
-El escenario es la especificación y un test es un intento de falsarla. Tres reglas para todo test de esta pista: se escribe a ciegas, desde el escenario, la story o el ADR y el contrato público, sin leer la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra; y cuando escenario y código no coinciden, es un bug (issue con el caso que lo dispara) o una decisión de Lucas (el escenario se reescribe o se marca `No construido`), nunca un escenario acomodado al código ni un test que afirme el bug. Cada tarea cita su hallazgo; el registro es la fuente y ahí se les cambia el estado al cerrarse.
+El escenario es la especificación y un test es un intento de falsarla. Tres reglas para todo test de esta pista: se escribe a ciegas, desde el escenario, la story o el ADR y el contrato público, sin leer la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra; y cuando escenario y código no coinciden, es un bug (issue con el caso que lo dispara) o una decisión de Lucas (el escenario se reescribe o se marca `No construido:`), nunca un escenario acomodado al código ni un test que afirme el bug. Cada tarea cita su hallazgo; el registro es la fuente y ahí se les cambia el estado al cerrarse.
 
 | Hallazgo | Tarea | Pts |
 |---|---|---|
