@@ -15,6 +15,13 @@ public enum WriteAccess
     /// <summary>RequireAuthorization(p =&gt; p.RequireRole("Admin")).</summary>
     Admin,
 
+    /// <summary>
+    /// RequireRole con un conjunto de roles que no es exactamente { "Admin" }: ningún endpoint del
+    /// catálogo lo declara, así que si la app real cae acá contra un caso esperado, el test revienta
+    /// en vez de confundirlo con AnyAccount o con Admin.
+    /// </summary>
+    OtherRole,
+
     /// <summary>RequireAuthorization() y el handler resuelve la propiedad (una reseña ajena da 404).</summary>
     Owner,
 }
@@ -41,6 +48,7 @@ public sealed record WriteEndpointCase(
     Func<object>? ValidBody = null,
     Func<object>? LongStringBody = null,
     Func<object>? InvalidEnumBody = null,
+    Func<object>? NumericEnumBody = null,
     Func<object>? ImpossibleDateBody = null)
 {
     public bool HasBody => ValidBody is not null;
@@ -148,7 +156,8 @@ public static class WriteEndpoints
         new WriteEndpointCase("Identity_UpdateMySettings", HttpMethod.Patch, WriteAccess.AnyAccount,
             _ => "/api/users/me/settings", [],
             ValidBody: () => new { language = "EsRioplatense", theme = "Light" },
-            InvalidEnumBody: () => new { language = "NotALanguage" }),
+            InvalidEnumBody: () => new { language = "NotALanguage" },
+            NumericEnumBody: () => new { language = "9" }),
 
         new WriteEndpointCase("Identity_DeactivateAccount", HttpMethod.Delete, WriteAccess.AnyAccount,
             _ => "/api/me/account", []),
@@ -212,13 +221,15 @@ public static class WriteEndpoints
             ids => $"/api/academic/career-plans/{ids[0]}/subjects", [TudcsPlanId],
             ValidBody: () => new { code = Unique("SUB"), name = "Materia de prueba", yearInPlan = 1, termInYear = 1, termKind = "FourMonth", weeklyHours = 3, totalHours = 42, description = (string?)null },
             LongStringBody: () => new { code = Unique("SUB"), name = LongString, yearInPlan = 1, termInYear = 1, termKind = "FourMonth", weeklyHours = 3, totalHours = 42, description = (string?)null },
-            InvalidEnumBody: () => new { code = Unique("SUB"), name = "Materia de prueba", yearInPlan = 1, termInYear = 1, termKind = "NotAKind", weeklyHours = 3, totalHours = 42, description = (string?)null }),
+            InvalidEnumBody: () => new { code = Unique("SUB"), name = "Materia de prueba", yearInPlan = 1, termInYear = 1, termKind = "NotAKind", weeklyHours = 3, totalHours = 42, description = (string?)null },
+            NumericEnumBody: () => new { code = Unique("SUB"), name = "Materia de prueba", yearInPlan = 1, termInYear = 1, termKind = "9", weeklyHours = 3, totalHours = 42, description = (string?)null }),
 
         new WriteEndpointCase("Academic_UpdateSubject", HttpMethod.Patch, WriteAccess.Admin,
             ids => $"/api/academic/subjects/{ids[0]}", [Subject211Id],
             ValidBody: () => new { code = "211", name = "Fundamentos de Control de Calidad", yearInPlan = 2, termInYear = 1, termKind = "FourMonth", weeklyHours = 4, totalHours = 56, description = (string?)null },
             LongStringBody: () => new { code = "211", name = LongString, yearInPlan = 2, termInYear = 1, termKind = "FourMonth", weeklyHours = 4, totalHours = 56, description = (string?)null },
-            InvalidEnumBody: () => new { code = "211", name = "Fundamentos de Control de Calidad", yearInPlan = 2, termInYear = 1, termKind = "NotAKind", weeklyHours = 4, totalHours = 56, description = (string?)null }),
+            InvalidEnumBody: () => new { code = "211", name = "Fundamentos de Control de Calidad", yearInPlan = 2, termInYear = 1, termKind = "NotAKind", weeklyHours = 4, totalHours = 56, description = (string?)null },
+            NumericEnumBody: () => new { code = "211", name = "Fundamentos de Control de Calidad", yearInPlan = 2, termInYear = 1, termKind = "9", weeklyHours = 4, totalHours = 56, description = (string?)null }),
 
         new WriteEndpointCase("Academic_DeactivateSubject", HttpMethod.Delete, WriteAccess.Admin,
             ids => $"/api/academic/subjects/{ids[0]}", [Subject211Id]),
@@ -232,7 +243,8 @@ public static class WriteEndpoints
         new WriteEndpointCase("Academic_CreatePrerequisite", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/academic/subjects/{ids[0]}/prerequisites", [Subject211Id],
             ValidBody: () => new { requiredSubjectId = Subject101Id, type = "ToEnroll" },
-            InvalidEnumBody: () => new { requiredSubjectId = Subject101Id, type = "NotAType" }),
+            InvalidEnumBody: () => new { requiredSubjectId = Subject101Id, type = "NotAType" },
+            NumericEnumBody: () => new { requiredSubjectId = Subject101Id, type = "9" }),
 
         new WriteEndpointCase("Academic_DeletePrerequisite", HttpMethod.Delete, WriteAccess.Admin,
             ids => $"/api/academic/subjects/{ids[0]}/prerequisites/{ids[1]}/ToEnroll", [Subject211Id, Subject101Id]),
@@ -244,12 +256,14 @@ public static class WriteEndpoints
             ids => $"/api/academic/universities/{ids[0]}/terms", [UnstaId],
             ValidBody: () => new { year = 2030, number = 1, kind = "FourMonth", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
             InvalidEnumBody: () => new { year = 2030, number = 1, kind = "NotAKind", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
+            NumericEnumBody: () => new { year = 2030, number = 1, kind = "9", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
             ImpossibleDateBody: () => new { year = 2030, number = 1, kind = "FourMonth", startDate = "2030-07-01", endDate = "2030-03-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" }),
 
         new WriteEndpointCase("Academic_UpdateAcademicTerm", HttpMethod.Patch, WriteAccess.Admin,
             ids => $"/api/academic/academic-terms/{ids[0]}", [Term1Id],
             ValidBody: () => new { year = 2030, number = 1, kind = "FourMonth", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
             InvalidEnumBody: () => new { year = 2030, number = 1, kind = "NotAKind", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
+            NumericEnumBody: () => new { year = 2030, number = 1, kind = "9", startDate = "2030-03-01", endDate = "2030-07-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" },
             ImpossibleDateBody: () => new { year = 2030, number = 1, kind = "FourMonth", startDate = "2030-07-01", endDate = "2030-03-01", enrollmentOpens = "2030-02-01T00:00:00Z", enrollmentCloses = "2030-02-25T00:00:00Z" }),
 
         // -----------------------------------------------------------------
@@ -259,13 +273,15 @@ public static class WriteEndpoints
             ids => $"/api/academic/universities/{ids[0]}/careers", [UnstaId],
             ValidBody: () => new { name = Unique("Carrera"), slug = Unique("carrera"), shortName = (string?)null, code = (string?)null, degreeType = (string?)null, durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
             LongStringBody: () => new { name = LongString, slug = Unique("carrera"), shortName = (string?)null, code = (string?)null, degreeType = (string?)null, durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
-            InvalidEnumBody: () => new { name = Unique("Carrera"), slug = Unique("carrera"), shortName = (string?)null, code = (string?)null, degreeType = "NotADegree", durationYears = (int?)null, cadence = (string?)null, description = (string?)null }),
+            InvalidEnumBody: () => new { name = Unique("Carrera"), slug = Unique("carrera"), shortName = (string?)null, code = (string?)null, degreeType = "NotADegree", durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
+            NumericEnumBody: () => new { name = Unique("Carrera"), slug = Unique("carrera"), shortName = (string?)null, code = (string?)null, degreeType = "9", durationYears = (int?)null, cadence = (string?)null, description = (string?)null }),
 
         new WriteEndpointCase("Academic_UpdateCareer", HttpMethod.Patch, WriteAccess.Admin,
             ids => $"/api/academic/careers/{ids[0]}", [TudcsCareerId],
             ValidBody: () => new { name = "Tecnicatura Universitaria en Desarrollo y Calidad de Software", slug = "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software", shortName = (string?)null, code = (string?)null, degreeType = (string?)null, durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
             LongStringBody: () => new { name = LongString, slug = "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software", shortName = (string?)null, code = (string?)null, degreeType = (string?)null, durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
-            InvalidEnumBody: () => new { name = "Tecnicatura Universitaria en Desarrollo y Calidad de Software", slug = "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software", shortName = (string?)null, code = (string?)null, degreeType = "NotADegree", durationYears = (int?)null, cadence = (string?)null, description = (string?)null }),
+            InvalidEnumBody: () => new { name = "Tecnicatura Universitaria en Desarrollo y Calidad de Software", slug = "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software", shortName = (string?)null, code = (string?)null, degreeType = "NotADegree", durationYears = (int?)null, cadence = (string?)null, description = (string?)null },
+            NumericEnumBody: () => new { name = "Tecnicatura Universitaria en Desarrollo y Calidad de Software", slug = "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software", shortName = (string?)null, code = (string?)null, degreeType = "9", durationYears = (int?)null, cadence = (string?)null, description = (string?)null }),
 
         new WriteEndpointCase("Academic_DeactivateCareer", HttpMethod.Delete, WriteAccess.Admin,
             ids => $"/api/academic/careers/{ids[0]}", [TudcsCareerId]),
@@ -298,7 +314,8 @@ public static class WriteEndpoints
         new WriteEndpointCase("Academic_AddChairMember", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/academic/chairs/{ids[0]}/members", [ChairPerezId],
             ValidBody: () => new { teacherId = TeacherCarlosId, role = "Assistant", sinceTermId = Term1Id },
-            InvalidEnumBody: () => new { teacherId = TeacherCarlosId, role = "NotARole", sinceTermId = Term1Id }),
+            InvalidEnumBody: () => new { teacherId = TeacherCarlosId, role = "NotARole", sinceTermId = Term1Id },
+            NumericEnumBody: () => new { teacherId = TeacherCarlosId, role = "9", sinceTermId = Term1Id }),
 
         new WriteEndpointCase("Academic_CloseChairMember", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/academic/chairs/{ids[0]}/members/{ids[1]}/close", [ChairPerezId, TeacherCarlosId],
@@ -322,7 +339,10 @@ public static class WriteEndpoints
         new WriteEndpointCase("Reviews_PublishReview", HttpMethod.Post, WriteAccess.AnyAccount,
             _ => "/api/reviews/courses", [],
             ValidBody: () => new { subjectId = Subject211Id, termId = Term1Id, chairId = (Guid?)ChairPerezId, answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)1 } }, freeText = (string?)null },
-            LongStringBody: () => new { subjectId = Subject211Id, termId = Term1Id, chairId = (Guid?)ChairPerezId, answers = new[] { new { itemCode = LongString, optionValue = (short)1 } }, freeText = (string?)null }),
+            // itemCode es clave de un diccionario, no una columna: un valor de 10.000 caracteres da
+            // 400 por "ítem no ofrecido", no por tope de longitud. El campo con tope real es freeText
+            // (Review.MaxFreeTextLength), así que la sonda de largo va ahí con un itemCode válido.
+            LongStringBody: () => new { subjectId = Subject211Id, termId = Term1Id, chairId = (Guid?)ChairPerezId, answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)1 } }, freeText = LongString }),
 
         new WriteEndpointCase("Reviews_ReviseReview", HttpMethod.Put, WriteAccess.Owner,
             ids => $"/api/reviews/courses/{ids[0]}", [Guid.NewGuid()],
@@ -338,19 +358,22 @@ public static class WriteEndpoints
             _ => "/api/reviews/curation/items", [],
             ValidBody: () => new { code = Unique("ITEM"), text = "¿Pregunta de prueba?", help = (string?)null, layer = "ChairConduct", subject = "Chair", options = CuratedOptions() },
             LongStringBody: () => new { code = Unique("ITEM"), text = LongString, help = (string?)null, layer = "ChairConduct", subject = "Chair", options = CuratedOptions() },
-            InvalidEnumBody: () => new { code = Unique("ITEM"), text = "¿Pregunta de prueba?", help = (string?)null, layer = "NotALayer", subject = "Chair", options = CuratedOptions() }),
+            InvalidEnumBody: () => new { code = Unique("ITEM"), text = "¿Pregunta de prueba?", help = (string?)null, layer = "NotALayer", subject = "Chair", options = CuratedOptions() },
+            NumericEnumBody: () => new { code = Unique("ITEM"), text = "¿Pregunta de prueba?", help = (string?)null, layer = "9", subject = "Chair", options = CuratedOptions() }),
 
         new WriteEndpointCase("Reviews_EditItem", HttpMethod.Put, WriteAccess.Admin,
             ids => $"/api/reviews/curation/items/{ids[0]}", [Guid.NewGuid()],
             ValidBody: () => new { text = "Editado de prueba", help = (string?)null, layer = "ChairConduct", options = CuratedOptions() },
             LongStringBody: () => new { text = LongString, help = (string?)null, layer = "ChairConduct", options = CuratedOptions() },
-            InvalidEnumBody: () => new { text = "Editado de prueba", help = (string?)null, layer = "NotALayer", options = CuratedOptions() }),
+            InvalidEnumBody: () => new { text = "Editado de prueba", help = (string?)null, layer = "NotALayer", options = CuratedOptions() },
+            NumericEnumBody: () => new { text = "Editado de prueba", help = (string?)null, layer = "9", options = CuratedOptions() }),
 
         new WriteEndpointCase("Reviews_SupersedeItem", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/reviews/curation/items/{ids[0]}/supersede", [Guid.NewGuid()],
             ValidBody: () => new { code = Unique("SUP"), text = "Reemplazo de prueba", help = (string?)null, layer = "ChairConduct", options = CuratedOptions() },
             LongStringBody: () => new { code = Unique("SUP"), text = LongString, help = (string?)null, layer = "ChairConduct", options = CuratedOptions() },
-            InvalidEnumBody: () => new { code = Unique("SUP"), text = "Reemplazo de prueba", help = (string?)null, layer = "NotALayer", options = CuratedOptions() }),
+            InvalidEnumBody: () => new { code = Unique("SUP"), text = "Reemplazo de prueba", help = (string?)null, layer = "NotALayer", options = CuratedOptions() },
+            NumericEnumBody: () => new { code = Unique("SUP"), text = "Reemplazo de prueba", help = (string?)null, layer = "9", options = CuratedOptions() }),
 
         new WriteEndpointCase("Reviews_PublishEditorialNote", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/reviews/curation/careers/{ids[0]}/notes", [TudcsCareerId],

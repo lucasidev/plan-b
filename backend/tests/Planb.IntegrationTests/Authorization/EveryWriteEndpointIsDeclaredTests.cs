@@ -121,7 +121,11 @@ public class EveryWriteEndpointIsDeclaredTests : IClassFixture<RegisterApiFixtur
 
         if (roles.Count > 0)
         {
-            return roles.Contains("Admin") ? WriteAccess.Admin : WriteAccess.AnyAccount;
+            // "Admin" a secas, ni un rol distinto ni Admin sumado a otro: cualquier otra
+            // combinación es un acceso que el catálogo no declara para ningún endpoint (OtherRole),
+            // nunca el balde de AnyAccount (que es "sin requerimiento de rol", no "algún rol").
+            var distinctRoles = roles.ToHashSet(StringComparer.Ordinal);
+            return distinctRoles.SetEquals(["Admin"]) ? WriteAccess.Admin : WriteAccess.OtherRole;
         }
 
         var requiresAnyAccount = endpoint.Metadata.GetOrderedMetadata<IAuthorizeData>().Count > 0;
