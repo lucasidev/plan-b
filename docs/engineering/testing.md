@@ -20,6 +20,18 @@ Decisión que lo motiva: [ADR-0036: Pirámide de testing cross-stack](../decisio
 
 Si no sabés qué test hace falta para tu cambio, **el PR template tiene un checklist por capa**. Tildá el que aplica, dejá explícito el resto.
 
+### Escenarios con veredicto
+
+El escenario es la especificación. El test se escribe a ciegas, desde el escenario y el contrato público, sin leer la implementación: si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra. Cuando el escenario y el código no coinciden, es un bug (issue con el caso que lo dispara) o una decisión de Lucas (el escenario se reescribe o se marca `No construido:`); nunca un escenario acomodado al código ni un test que afirme el bug.
+
+Cada escenario E/N/X de un `scenarios.md` termina en uno de tres veredictos:
+
+- **Confirmado**: un test vivo lo cita, en una sola línea, en el docstring o el comentario pegado a la declaración del test puntual (`[Fact]`, `[Theory]`, `test(`, `test.only(`, `it(`, `it.only(`). Un `describe(...)` no cuenta: agrupa tests, no declara uno. Formas aceptadas (lista cerrada, ver el docstring de `scripts/check-scenarios.ts`): `US-146 E1`, `US-146, E1`, `US-146: E1`, `[US-146] E1`, `US-198 E2, E3`, `E1 de US-146`, `E1 y E2 de US-146`.
+- **Roto**: una línea propia debajo del escenario, con `- ` opcional al inicio, `Roto: #NNN` (el número del issue que reproduce la falla).
+- **No construido**: una línea propia debajo del escenario, con `- ` opcional al inicio, `No construido: <razón>`.
+
+`scripts/check-scenarios.ts` cuenta las tres columnas por story, contra la tabla `## Stories bajo el gate de escenarios` de [`status.md`](../plan/status.md). Se corre con `just check-scenarios` (señala) o `just check-scenarios-strict` (corta si queda algún escenario sin veredicto); el job `scenarios` de `ci.yml` corre en cada PR.
+
 ## Cómo correr tests
 
 ### Local
