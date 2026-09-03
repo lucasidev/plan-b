@@ -385,6 +385,10 @@ Las stories del producto vigente que entraron a un sprint cerrado (R1 a R3). `sc
 | US-132 | Buscar por materia, carrera o docente | R1 a R3 |
 | US-197 | Vincular materias declaradas a la canónica | R1 a R3 |
 | US-204 | Que la reforma no parta el corpus | R1 a R3 |
+| US-131 | Ver sobre cuántas voces se calcula | R1 a R3 |
+| US-228 | Crear la cuenta recién cuando la acción me la pide | R1 a R3 |
+| US-170 | Usarlo sin que me pidan nada antes | R1 a R3 |
+| US-171 | Que no me vendan nada | R1 a R3 |
 
 ## R4 · Un stage funcional, y una suite que dice la verdad más rápido
 
@@ -404,7 +408,7 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 | [#405](https://github.com/lucasidev/plan-b/issues/405) · 6 | **Barrida ítem → frase** (335 en docs, 77 en código) y el gate: `check-docs` falla con un término prohibido del glosario fuera de `history/` y de los ADRs | 3 | Claude |
 | [#406](https://github.com/lucasidev/plan-b/issues/406) · 7 | **Orden**: cerrar los 5 issues de R0 que siguen abiertos, la entrada de la retro en `lessons-learned.md`, y decidir los 15 issues US-2xx sin milestone | 1 | Claude; lo último, Lucas |
 
-**Decisiones de Lucas**: si el stage va con HTTPS (`sslip.io` sobre la IP, sin dominio) o HTTP a secas, y los 15 issues US-2xx. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
+**Decidido el 2026-09-03**: el stage va con HTTPS, `sslip.io` sobre la IP del servidor y certificado de Let's Encrypt emitido desde Dokploy, porque corre en un servidor y no en una máquina local. Queda por decidir los 15 issues US-2xx. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
 
 ### Pista 2 · Romper el producto (40 pts)
 
@@ -412,7 +416,7 @@ El escenario es la especificación y un test es un intento de falsarla. Tres reg
 
 | Hallazgo | Tarea | Pts |
 |---|---|---|
-| [#407](https://github.com/lucasidev/plan-b/issues/407) · Q01 | **Los 75 escenarios, a ciegas**: la regla y su gate. El test de un escenario lo escribe quien recibe el escenario y el contrato público, no la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra. Cada E/N de las 18 stories construidas recibe un veredicto: `confirmado` (test que lo cita por ID y cayó con el código roto), `roto` (issue con el caso que lo dispara, test marcado con ese issue) o `no construido` (nota en `scenarios.md`, decisión de Lucas). `scripts/check-scenarios.ts` cuenta las tres columnas y falla en CI ante un escenario sin veredicto; el procedimiento entra a `testing.md`. **Al 2026-09-03**: el gate corre en CI (informa) sobre 78 escenarios con 9 confirmados; falta la barrida | 10 |
+| [#407](https://github.com/lucasidev/plan-b/issues/407) · Q01 | **Los 75 escenarios, a ciegas**: la regla y su gate. El test de un escenario lo escribe quien recibe el escenario y el contrato público, no la implementación; si sale verde a la primera, se rompe el código a propósito y tiene que caer, o se borra. Cada E/N de las 18 stories construidas recibe un veredicto: `confirmado` (test que lo cita por ID y cayó con el código roto), `roto` (issue con el caso que lo dispara, test marcado con ese issue) o `no construido` (nota en `scenarios.md`, decisión de Lucas). `scripts/check-scenarios.ts` cuenta las tres columnas y falla en CI ante un escenario sin veredicto; el procedimiento entra a `testing.md`. **Al 2026-09-03**: el gate corre en CI (informa) sobre 97 escenarios de 22 stories, con 9 confirmados; falta la barrida | 10 |
 | [#408](https://github.com/lucasidev/plan-b/issues/408) · Q02 | **Las invariantes de la tesis bajo ataque**, en vez de un test por handler: la lista de lo que la tesis, las garantías y los ADRs prometen, y un ataque por promesa que cae si cede: el piso contado en vivo en 9, 10 y 11 reseñas; dos envíos concurrentes de la misma persona; el campo libre buscado en cada respuesta y pantalla pública; la frase retirada y los dos tramos de una serie; el borrado que mueve los conteos; ningún endpoint público que diga quién reseñó; Redis caído en medio de publicar y de entrar. Lo que cede es un issue con el caso, nunca un test que afirme lo roto. **Hecho el 2026-09-03**: las siete promesas atacadas en `Invariants/`, ninguna cedió, y cada test cayó con el código roto a propósito antes de quedar | 7 |
 | [#409](https://github.com/lucasidev/plan-b/issues/409) · Q03 | **Las pantallas del corazón, a ciegas**: reseñar (los seis pasos y sus estados), ficha de cátedra (publicada, bajo el piso, con corte de serie), ficha de materia, mis reseñas, curaduría (lista y los dos forms). Quien escribe recibe la story, sus escenarios y la ficha de la pantalla, no el componente; test de componente cuando el estado es del cliente, E2E cuando es un recorrido. Que vitest deje de marcar 0 % ahí es consecuencia, no meta | 5 |
 | [#410](https://github.com/lucasidev/plan-b/issues/410) · Q04 | Los catorce tests de integración que leen el body sin afirmar el status | 1 |
