@@ -284,6 +284,94 @@ public class ChairFactsCalculatorTests
         facts.Fame.ShouldBeEmpty(); // sin el de contexto quedan 2, no llegan al mínimo de 3
     }
 
+    /// <summary>
+    /// ADR-0083: la fama exige más de la mitad de quienes respondieron, no "algunos". Este ítem
+    /// tiene 10 respuestas y solo 2 marcaron la opción negativa (20 %): no converge, por muchas
+    /// respuestas que tenga en crudo.
+    /// </summary>
+    [Fact]
+    public void Calculate_ItemWithNegativeProportionAtOrBelowHalf_NeverContributesToFame()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_EXPLAINS_CLEARLY", ItemLayer.ChairConduct, positiveCount: 2, negativeCount: 8),      // 80 %
+            BinaryTally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct, positiveCount: 3, negativeCount: 7),     // 70 %
+            BinaryTally("STUDENT_FELT_SUPPORTED", ItemLayer.StudentExperience, positiveCount: 8, negativeCount: 2), // 20 %: no converge
+        ];
+
+        var facts = Publish(tallies);
+
+        // Sin el tercero, solo hay 2 que convergen: no llega al mínimo de 3.
+        facts.Fame.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// El umbral es "más de la mitad", no "la mitad": empatado 5 y 5 no alcanza. Es el borde
+    /// exacto de <see cref="ChairFactsCalculator.ConvergenceThreshold"/>.
+    /// </summary>
+    [Fact]
+    public void Calculate_ItemExactlyAtConvergenceThreshold_DoesNotConverge()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_EXPLAINS_CLEARLY", ItemLayer.ChairConduct, positiveCount: 2, negativeCount: 8),      // 80 %
+            BinaryTally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct, positiveCount: 3, negativeCount: 7),     // 70 %
+            BinaryTally("STUDENT_FELT_SUPPORTED", ItemLayer.StudentExperience, positiveCount: 5, negativeCount: 5), // exactamente 50 %
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.Fame.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// El orden es por proporción descendente, no por cuántos marcaron la negativa en crudo: acá
+    /// el ítem con menos marcas negativas en total (3 de 4) va primero porque su proporción es más
+    /// alta (75 %) que la del que tiene más marcas en crudo (5 de 9, 55,6 %).
+    /// </summary>
+    [Fact]
+    public void Calculate_FameOrdering_RanksByProportion_NotByRawNegativeCount()
+    {
+        List<ItemTally> tallies =
+        [
+            Tally("CHAIR_EXPLAINS_CLEARLY", ItemLayer.ChairConduct,
+                Option(1, 1, "Bien", OptionValence.Positive, 1),
+                Option(2, 2, "Mal", OptionValence.Negative, 3)),   // 3 de 4 = 75 %
+            Tally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct,
+                Option(1, 1, "Bien", OptionValence.Positive, 1),
+                Option(2, 2, "Mal", OptionValence.Negative, 2)),   // 2 de 3 = 66,7 %
+            Tally("STUDENT_FELT_SUPPORTED", ItemLayer.StudentExperience,
+                Option(1, 1, "Bien", OptionValence.Positive, 4),
+                Option(2, 2, "Mal", OptionValence.Negative, 5)),   // 5 de 9 = 55,6 %: más marcas en crudo, menor proporción
+        ];
+
+        var facts = Publish(tallies);
+
+        var fame = facts.Fame.Single();
+        fame.ItemCodes.ShouldBe(["CHAIR_EXPLAINS_CLEARLY", "CHAIR_ANSWERS_QUESTIONS", "STUDENT_FELT_SUPPORTED"]);
+    }
+
+    /// <summary>
+    /// El denominador de cada ítem son quienes lo respondieron (ADR-0082): uno sin respuestas no
+    /// tiene proporción que calcular y no puede converger, por muchos otros ítems que sí converjan.
+    /// </summary>
+    [Fact]
+    public void Calculate_ItemWithNoAnswers_NeverEntersFame()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_EXPLAINS_CLEARLY", ItemLayer.ChairConduct, positiveCount: 2, negativeCount: 8),  // 80 %
+            BinaryTally("CHAIR_ANSWERS_QUESTIONS", ItemLayer.ChairConduct, positiveCount: 3, negativeCount: 7), // 70 %
+            Tally("STUDENT_FELT_SUPPORTED", ItemLayer.StudentExperience,
+                Option(1, 1, "Bien", OptionValence.Positive, 0),
+                Option(2, 2, "Mal", OptionValence.Negative, 0)), // nadie respondió
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.Fame.ShouldBeEmpty(); // sin el tercero, solo hay 2: no alcanza el mínimo
+    }
+
     // -------------------------------------------------------------------
     // La tasa de finalización
     // -------------------------------------------------------------------
@@ -375,6 +463,53 @@ public class ChairFactsCalculatorTests
         var facts = Publish(tallies, siblingTallies);
 
         facts.Contrasts.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// Una hermana que nunca respondió ese ítem no tiene proporción que comparar: no hay contraste
+    /// que hacer con un dato que no existe.
+    /// </summary>
+    [Fact]
+    public void Calculate_SiblingWithNoAnswers_NeverProducesAContrast()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_ARRIVES_LATE", ItemLayer.ChairConduct, positiveCount: 16, negativeCount: 20),
+        ];
+        List<ItemTally> siblingTallies =
+        [
+            Tally("CHAIR_ARRIVES_LATE", ItemLayer.ChairConduct,
+                Option(1, 1, "Bien", OptionValence.Positive, 0),
+                Option(2, 2, "Mal", OptionValence.Negative, 0)),
+        ];
+
+        var facts = Publish(tallies, siblingTallies);
+
+        facts.Contrasts.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// El más separado va primero, y "separado" es la DIFERENCIA de porcentajes, no la suma: acá
+    /// CHAIR_A acumula menos entre los dos lados (60) pero tiene una diferencia mucho más grande
+    /// (50 puntos) que CHAIR_B (178 acumulados, apenas 18 de diferencia).
+    /// </summary>
+    [Fact]
+    public void Calculate_ContrastOrdering_RanksByPercentDifference_NotByPercentSum()
+    {
+        List<ItemTally> tallies =
+        [
+            BinaryTally("CHAIR_A", ItemLayer.ChairConduct, positiveCount: 19, negativeCount: 1),  // 5 %
+            BinaryTally("CHAIR_B", ItemLayer.ChairConduct, positiveCount: 20, negativeCount: 80), // 80 %
+        ];
+        List<ItemTally> siblingTallies =
+        [
+            BinaryTally("CHAIR_A", ItemLayer.ChairConduct, positiveCount: 9, negativeCount: 11), // 55 %: 50 puntos de diferencia
+            BinaryTally("CHAIR_B", ItemLayer.ChairConduct, positiveCount: 2, negativeCount: 98),  // 98 %: 18 puntos de diferencia
+        ];
+
+        var facts = Publish(tallies, siblingTallies);
+
+        facts.Contrasts.Select(c => c.ItemCode).ShouldBe(["CHAIR_A", "CHAIR_B"]);
     }
 
     [Fact]
@@ -535,6 +670,7 @@ public class ChairFactsCalculatorTests
         item.ItemCode.ShouldBe("CHAIR_CLASSES_HELD_B");
         item.Total.ShouldBe(0);
         item.ModeLabel.ShouldBeEmpty(); // no hay moda que inventar sobre cero respuestas
+        item.ModeIsNegative.ShouldBeFalse(); // tampoco hay un lado que teñir de rojo
         item.Distribution.ShouldBeEmpty();
         item.PreviousSeries.ShouldNotBeNull().Total.ShouldBe(112);
     }
@@ -576,5 +712,24 @@ public class ChairFactsCalculatorTests
         var facts = Publish(tallies);
 
         facts.ChairConduct.ShouldHaveSingleItem().PreviousSeries.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// El tramo de antes solo puede venir de un ítem efectivamente retirado. Acá "A" sigue activo
+    /// (no está retirado) aunque comparta código con lo que "B" dice reemplazar: no es un tramo
+    /// anterior legítimo y no se cuelga de "B".
+    /// </summary>
+    [Fact]
+    public void Calculate_PreviousSeriesOnlyComesFromARetiredTally_NeverFromAnActiveOne()
+    {
+        List<ItemTally> tallies =
+        [
+            SuccessorTally("B", "A", ItemLayer.ChairConduct, positiveCount: 9, negativeCount: 7),
+            BinaryTally("A", ItemLayer.ChairConduct, positiveCount: 5, negativeCount: 5), // activo, no retirado
+        ];
+
+        var facts = Publish(tallies);
+
+        facts.ChairConduct.Single(i => i.ItemCode == "B").PreviousSeries.ShouldBeNull();
     }
 }

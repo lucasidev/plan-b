@@ -181,6 +181,18 @@ public class ReviewTests
         result.Error.ShouldBe(ReviewErrors.FreeTextTooLong);
     }
 
+    /// <summary>Borde exacto: el máximo entra.</summary>
+    [Fact]
+    public void Create_FreeTextAtMaxLength_Succeeds()
+    {
+        var freeText = new string('a', Review.MaxFreeTextLength);
+
+        var result = Create(freeText: freeText);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.FreeText.ShouldBe(freeText);
+    }
+
     [Fact]
     public void Create_FreeTextWithSurroundingSpaces_IsTrimmed()
     {
@@ -277,6 +289,30 @@ public class ReviewTests
         review.Answers.Count.ShouldBe(2);
         review.Answers.ShouldContain(a => a.ItemId == Item1 && a.OptionValue == 1);
         review.Answers.ShouldContain(a => a.ItemId == Item2 && a.OptionValue == 2);
+        review.FreeText.ShouldBe("Texto original.");
+        review.UpdatedAt.ShouldBe(T0);
+    }
+
+    /// <summary>
+    /// Revise valida el texto libre con el mismo criterio atómico que Create: si no entra, ni las
+    /// respuestas ni el texto viejo se tocan.
+    /// </summary>
+    [Fact]
+    public void Revise_FreeTextTooLong_ReturnsError_AndKeepsOldAnswersIntact()
+    {
+        var review = CreatedReview(answers: [(Item1, 1)], freeText: "Texto original.", at: T0);
+        var tooLong = new string('a', Review.MaxFreeTextLength + 1);
+
+        var result = review.Revise(
+            [(Item2, 2)],
+            tooLong,
+            FiveItemInstrument(),
+            new FixedClock(T0.AddHours(1)));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ReviewErrors.FreeTextTooLong);
+        review.Answers.Count.ShouldBe(1);
+        review.Answers.ShouldContain(a => a.ItemId == Item1 && a.OptionValue == 1);
         review.FreeText.ShouldBe("Texto original.");
         review.UpdatedAt.ShouldBe(T0);
     }

@@ -112,6 +112,15 @@ backend-test-unit:
 backend-test-integration:
     cd backend && dotnet test tests/Planb.IntegrationTests
 
+# Mutation testing sobre el corazón de reviews: mide si la suite detecta cambios reales al código, sin gate (ADR-0036).
+backend-mutation:
+    cd backend/modules/reviews/tests/Planb.Reviews.Tests && dotnet stryker
+
+# Stryker con vitest sobre la lógica de reseñar (frontend/stryker.config.mjs). Necesita al menos un
+# test unitario que importe el feature: con cero tests relacionados el runner aborta.
+frontend-mutation:
+    cd frontend && bunx stryker run
+
 frontend-test:
     cd frontend && bun run test
 
@@ -204,6 +213,15 @@ check-docs:
 check-docs-strict:
     bun scripts/check-docs.ts --strict
 
+# Veredicto por escenario (E, N, X) de las stories bajo el gate: confirmado (un test lo cita), roto (#issue)
+# o no construido. Sin --strict informa (solo un tracker ilegible lo hace fallar); --strict falla
+# ante un escenario sin veredicto, una story sin escenarios o una marca caduca.
+check-scenarios:
+    bun scripts/check-scenarios.ts
+
+check-scenarios-strict:
+    bun scripts/check-scenarios.ts --strict
+
 # ═══════════════════════════════════════════════════════════════
 # Package management
 # ═══════════════════════════════════════════════════════════════
@@ -269,5 +287,5 @@ clean:
 # Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
 # ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
 # con ci.yml, docs-links.yml y commits.yml.
-ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict frontend-build frontend-test
+ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict check-scenarios frontend-build frontend-test
     @echo "✓ All quality gates passed"

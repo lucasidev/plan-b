@@ -1,0 +1,23 @@
+{
+  "stryker-config": {
+    "project": "Planb.Reviews.Domain.csproj",
+    "mutate": [
+      "Catalog/Item.cs",
+      "Publishing/ChairFactsCalculator.cs",
+      "Reviews/PublishingRules.cs",
+      "Reviews/Review.cs"
+    ],
+    "ignore-methods": ["ThrowIfNull"],
+    "reporters": [
+      "html",
+      "json",
+      "progress",
+      "cleartext"
+    ],
+    "thresholds": {
+      "high": 80,
+      "low": 60,
+      "break": 0
+    }
+  }
+}
