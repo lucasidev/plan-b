@@ -215,7 +215,7 @@ check-docs-strict:
 
 # Veredicto por escenario (E, N, X) de las stories bajo el gate: confirmado (un test lo cita), roto (#issue)
 # o no construido. Sin --strict informa (solo un tracker ilegible lo hace fallar); --strict falla
-# ante un escenario sin veredicto, una story sin escenarios o una marca caduca.
+# ante cualquier hallazgo que gatea (la lista está en testing.md).
 check-scenarios:
     bun scripts/check-scenarios.ts
 

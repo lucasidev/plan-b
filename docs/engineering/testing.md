@@ -26,11 +26,13 @@ El escenario es la especificación. El test se escribe a ciegas, desde el escena
 
 Cada escenario E/N/X de un `scenarios.md` termina en uno de tres veredictos:
 
-- **Confirmado**: un test vivo lo cita, en una sola línea, en el docstring o el comentario pegado a la declaración del test puntual (`[Fact]`, `[Theory]`, `test(`, `test.only(`, `it(`, `it.only(`). Un `describe(...)` no cuenta: agrupa tests, no declara uno. Formas aceptadas (lista cerrada, ver el docstring de `scripts/check-scenarios.ts`): `US-146 E1`, `US-146, E1`, `US-146: E1`, `[US-146] E1`, `US-198 E2, E3`, `E1 de US-146`, `E1 y E2 de US-146`.
-- **Roto**: una línea propia debajo del escenario, con `- ` opcional al inicio, `Roto: #NNN` (el número del issue que reproduce la falla).
-- **No construido**: una línea propia debajo del escenario, con `- ` opcional al inicio, `No construido: <razón>`.
+- **Confirmado**: la cita está en el docstring o el comentario pegado a la declaración del test, sin una línea en blanco entre medio, o en el título del test (si la declaración es de una sola línea), o en su `DisplayName`. Un `.each` multilínea (el caso, el título y el cuerpo repartidos en varias líneas) no cuenta por el título: la cita va en el docstring de arriba. Declaraciones reconocidas (lista cerrada): `[Fact]`, `[Theory]`, `test(`, `it(`, sus `.only` (`test.only(`, `it.only(`) y sus `.each` (`test.each(`, `it.each(`, `test.only.each(`, `it.only.each(`). Un `describe(...)` no cuenta: agrupa tests, no declara uno. Formas de cita aceptadas (lista cerrada, ver el docstring de `scripts/check-scenarios.ts`): `US-146 E1`, `US-146, E1`, `US-146: E1`, `[US-146] E1`, `US-198 E2, E3`, `E1 de US-146`, `E1 y E2 de US-146`.
+- **Roto**: una línea propia debajo del escenario, con un bullet opcional al inicio (`-`, `*`, `+` o `>` seguido de espacios), `Roto: #NNN` o `Roto: [#NNN](https://...)` (el número del issue, mayor que cero).
+- **No construido**: una línea propia debajo del escenario, con el mismo bullet opcional, `No construido: <razón>`.
 
-`scripts/check-scenarios.ts` cuenta las tres columnas por story, contra la tabla `## Stories bajo el gate de escenarios` de [`status.md`](../plan/status.md). Se corre con `just check-scenarios` (señala) o `just check-scenarios-strict` (corta si queda algún escenario sin veredicto); el job `scenarios` de `ci.yml` corre en cada PR.
+Una cita que no llega a una declaración (el cuerpo del test, el docstring de un `describe`, un comentario suelto) se reporta como hallazgo `cita-sin-test`, informativo. Una cita en un test apagado (`Skip`, `.fixme(`, `.skip(`, `xit`) no confirma y se reporta como `cita-en-test-apagado`.
+
+`scripts/check-scenarios.ts` cuenta las tres columnas por story, contra la tabla `## Stories bajo el gate de escenarios` de [`status.md`](../plan/status.md). Se corre con `just check-scenarios` (señala) o `just check-scenarios-strict` (corta); el job `scenarios` de `ci.yml` corre hoy sin `--strict` (informa) y pasa a `--strict` cuando la barrida del issue #407 deje los 78 escenarios de las stories bajo el gate con veredicto. `--strict` corta ante cualquiera de estos hallazgos: escenario sin veredicto, cita sin escenario, story sin `scenarios.md`, story sin escenarios, story duplicada, fila sin ID, ID repetido, escenario repetido, marca mal escrita, marca caduca, fence sin cerrar.
 
 ### Las promesas de la tesis bajo ataque
 

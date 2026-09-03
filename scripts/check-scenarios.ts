@@ -5,12 +5,16 @@
  * a mano, nunca mudo. Existe porque la auditoría de tests de R1 a R3 encontró que los
  * escenarios no gobernaban los tests (9 de 75 citados, hallazgo Q01).
  *
- * Formas de cita aceptadas (siempre en una sola línea, pegada a la declaración del test; un
+ * Formas de cita aceptadas (siempre en una sola línea, en el docstring o comentario pegado a
+ * la declaración del test, en su DisplayName, o en su título si la declaración es de una sola
+ * línea (un .each multilínea cuenta por el docstring de arriba, no por el título); un
  * describe() no cuenta): "US-146 E1", "US-146, E1", "US-146: E1", "[US-146] E1",
  * "US-198 E2, E3" (lista completa separada por comas o "y"), "E1 de US-146",
- * "E1 y E2 de US-146". La declaración se busca únicamente hacia adelante, por el bloque de
- * comentario/atributo que envuelve a la cita (sin límite de líneas); no hay barrido hacia
- * atrás. Una cita que no llega a una declaración es hallazgo informativo, no gatea --strict.
+ * "E1 y E2 de US-146". Declaraciones reconocidas: [Fact], [Theory],
+ * test(, it(, sus .only y sus .each (test.each(, it.each(, test.only.each(, it.only.each(). La
+ * declaración se busca únicamente hacia adelante, por el bloque de comentario/atributo que
+ * envuelve a la cita (sin límite de líneas); no hay barrido hacia atrás. Una cita que no llega
+ * a una declaración es hallazgo informativo, no gatea --strict.
  *
  * Uso: bun scripts/check-scenarios.ts [--strict]
  */
@@ -120,16 +124,37 @@ if (stories.length === 0) {
 //    "stories/": las garantías viven directo en docs/product/guarantees/). Sus marcas E/N/X
 //    (espacio inicial y punto opcionales), y Roto:/No construido: debajo de cada una, hasta el
 //    escenario siguiente o el próximo heading, lo que venga primero. La forma canónica de una
-//    marca es una línea, con "- " opcional al inicio, "Roto: #NNN" (número > 0) o
-//    "No construido: <razón>"; cualquier otra línea del rango que mencione "roto" o
-//    "no construido" (sin distinguir mayúsculas) sin cumplir esa forma es un hallazgo.
+//    marca es una línea, con un bullet opcional al inicio (-, *, + o > seguido de espacios, los
+//    cuatro prefijos de bullet/cita de markdown) más "Roto: #NNN" (número > 0) o
+//    "No construido: <razón>"; una línea del rango que EMPIECE (después de ese bullet opcional,
+//    sin distinguir mayúsculas) con "roto" o "no construido" sin cumplir esa forma es un
+//    hallazgo (la palabra en medio de la prosa, como "el enlace roto no rompe la ficha", no
+//    cuenta). Las líneas dentro de un fence ``` no son heading, escenario ni marca; un fence
+//    que no cierra antes del fin del archivo es hallazgo aparte, con la línea donde abrió.
 const SCENARIO_MARK = /^\s*\*\*([A-Z])(\d+)\.?\*\*/;
-const ROTO_LINE = /^(?:-\s+)?Roto:\s*\[?#(\d+)\]?/;
-const NO_CONSTRUIDO_LINE = /^(?:-\s+)?No construido:\s*(.*)$/;
-const MENTIONS_MARK = /roto|no construido/i;
+const ROTO_LINE = /^(?:[-*+>]\s+)?Roto:\s*\[?#(\d+)\]?/;
+const NO_CONSTRUIDO_LINE = /^(?:[-*+>]\s+)?No construido:\s*(.*)$/;
+const MENTIONS_MARK = /^(?:[-*+>]\s+)?(roto|no construido)/i;
 
-function blockEnd(lines: string[], from: number, hardEnd: number): number {
+function computeFenceMask(lines: string[]): { mask: boolean[]; unclosedAt: number | null } {
+  const mask = new Array(lines.length).fill(false);
+  let inFence = false;
+  let openedAt: number | null = null;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim().startsWith('```')) {
+      inFence = !inFence;
+      mask[i] = true;
+      openedAt = inFence ? i : null;
+      continue;
+    }
+    mask[i] = inFence;
+  }
+  return { mask, unclosedAt: inFence ? openedAt : null };
+}
+
+function blockEnd(lines: string[], fence: boolean[], from: number, hardEnd: number): number {
   for (let i = from; i < hardEnd; i++) {
+    if (fence[i]) continue;
     if (/^#/.test(lines[i])) return i;
   }
   return hardEnd;
@@ -138,8 +163,18 @@ function blockEnd(lines: string[], from: number, hardEnd: number): number {
 function loadScenariosFromFile(hitPath: string): Scenario[] {
   const file = toSlash(hitPath);
   const lines = readFileSync(join(ROOT, hitPath), 'utf-8').split('\n');
+  const { mask: fence, unclosedAt } = computeFenceMask(lines);
+  if (unclosedAt !== null) {
+    findings.push({
+      file,
+      line: unclosedAt + 1,
+      rule: 'fence-sin-cerrar',
+      detail: 'el fence ``` que abre acá no cierra antes del fin del archivo',
+    });
+  }
   const marks: { idx: number; letter: string; num: string }[] = [];
   lines.forEach((ln, i) => {
+    if (fence[i]) return;
     const m = ln.match(SCENARIO_MARK);
     if (m) marks.push({ idx: i, letter: m[1], num: m[2] });
   });
@@ -158,10 +193,11 @@ function loadScenariosFromFile(hitPath: string): Scenario[] {
     }
     const id = `${mk.letter}${mk.num}`;
     const nextMarkIdx = i + 1 < marks.length ? marks[i + 1].idx : lines.length;
-    const end = blockEnd(lines, mk.idx + 1, nextMarkIdx);
+    const end = blockEnd(lines, fence, mk.idx + 1, nextMarkIdx);
     let roto: number | null = null;
     let noConstruido = false;
     for (let j = mk.idx + 1; j < end; j++) {
+      if (fence[j]) continue;
       const trimmed = lines[j].trim();
       const rm = trimmed.match(ROTO_LINE);
       if (rm) {
@@ -282,19 +318,37 @@ const TOKEN = /[ENX]\d+/g;
 // test de arriba aunque el propio estuviera apagado, y \btest\( matcheaba cualquier RE.test(s)
 // de código que llamara a un regex. El bloque es contiguo: comentario (//, ///, /*, *, */) o
 // atributo C# con identificador (^\[[A-Z]\w*, como [Fact], [Trait(; un "[" solo o seguido de un
-// literal es código, no atributo). Una línea en blanco corta el bloque. Confirma si el bloque
-// contuvo [Fact o [Theory sin Skip =, o si la primera línea de código empieza con test(,
-// test.only(, it( o it.only(; apagado si trae Skip = o empieza con test.fixme(, test.skip(,
-// it.skip(, xit(. Cualquier otra cosa (función, clase, export, describe() no es declaración.
+// literal es código, no atributo); una línea en blanco lo corta. [Fact/[Theory y Skip= se leen
+// SOLO en líneas de atributo, nunca en un comentario (uno que hable de "[Fact]" o "Skip =" en
+// prosa no cuenta). Un atributo que abre "(" o "[" sin cerrar en la misma línea sigue en las
+// líneas que vienen hasta que cierra, hasta una línea en blanco, o hasta 20 líneas (lo que
+// venga primero). Esas líneas de continuación también se miran por [Fact/[Theory (un string
+// con un "(" suelto, como "Regex(", desbalancea el conteo y puede tragarse el atributo
+// siguiente; por eso se sigue buscando ahí adentro) y por Skip=, salvo que la línea de
+// continuación sea a su vez un comentario "//" (ni [Fact/[Theory ni Skip= dentro de un
+// comentario cuentan; uno mencionando "[Fact]" o "Skip =" en prosa, como en un parámetro de
+// [InlineData(, no confirma ni apaga nada). Confirma si el bloque contuvo [Fact o [Theory sin
+// Skip =, o si la primera línea de código empieza con test(, it(, sus .only, o sus .each
+// (test.each(, test.only.each(, it.each(, it.only.each(); apagado si trae Skip =, o empieza
+// con test.fixme(, test.skip(, test.skip.each(, it.skip(, it.skip.each(, xit( o xit.each(.
+// Cualquier otra cosa (función, clase, export, describe() no es declaración.
 const COMMENT_LINE = /^(\/\/|\/\*|\*)/;
 const ATTRIBUTE_LINE = /^\[[A-Z]\w*/;
 const FACT_OR_THEORY = /\[Fact|\[Theory/;
 const SKIP_MARK = /Skip\s*=/;
-const LIVE_FIRST_CODE_LINE = /^(test\(|test\.only\(|it\(|it\.only\()/;
-const DISABLED_FIRST_CODE_LINE = /^(test\.fixme\(|test\.skip\(|it\.skip\(|xit\()/;
+const LIVE_FIRST_CODE_LINE =
+  /^(test\(|test\.only\(|test\.each\(|test\.only\.each\(|it\(|it\.only\(|it\.each\(|it\.only\.each\()/;
+const DISABLED_FIRST_CODE_LINE =
+  /^(test\.fixme\(|test\.skip\(|test\.skip\.each\(|it\.skip\(|it\.skip\.each\(|xit\(|xit\.each\()/;
 
-function isBlockLine(t: string): boolean {
-  return COMMENT_LINE.test(t) || ATTRIBUTE_LINE.test(t);
+// cuenta paréntesis y corchetes: positivo = quedan sin cerrar, la línea de atributo sigue.
+function bracketDelta(line: string): number {
+  let delta = 0;
+  for (const ch of line) {
+    if (ch === '(' || ch === '[') delta++;
+    else if (ch === ')' || ch === ']') delta--;
+  }
+  return delta;
 }
 
 type Declaration = 'live' | 'disabled' | 'none';
@@ -305,10 +359,28 @@ function findDeclaration(lines: string[], citationIdx: number): Declaration {
   let hasSkip = false;
   while (i < lines.length) {
     const t = lines[i].trim();
-    if (!isBlockLine(t)) break;
-    if (FACT_OR_THEORY.test(t)) hasFactOrTheory = true;
-    if (SKIP_MARK.test(t)) hasSkip = true;
-    i++;
+    if (COMMENT_LINE.test(t)) {
+      i++;
+      continue;
+    }
+    if (ATTRIBUTE_LINE.test(t)) {
+      if (FACT_OR_THEORY.test(t)) hasFactOrTheory = true;
+      if (SKIP_MARK.test(t)) hasSkip = true;
+      let balance = bracketDelta(t);
+      i++;
+      let contCount = 0;
+      while (balance > 0 && i < lines.length && contCount < 20) {
+        const cont = lines[i].trim();
+        if (cont === '') break; // línea en blanco corta la continuación
+        if (!cont.startsWith('//') && FACT_OR_THEORY.test(cont)) hasFactOrTheory = true;
+        if (!cont.startsWith('//') && SKIP_MARK.test(cont)) hasSkip = true;
+        balance += bracketDelta(cont);
+        i++;
+        contCount++;
+      }
+      continue;
+    }
+    break;
   }
   if (hasFactOrTheory) return hasSkip ? 'disabled' : 'live';
   if (i < lines.length) {
@@ -457,7 +529,7 @@ const totals = rows.reduce(
 );
 
 console.log(
-  `check-scenarios: ${stories.length} stories bajo el gate, ${totals.total} escenarios.\n`,
+  `check-scenarios: ${results.length} stories bajo el gate, ${totals.total} escenarios.\n`,
 );
 
 printTable(
@@ -503,7 +575,7 @@ if (citaSinEscenario.length > 0) {
 }
 
 console.log(
-  `\nTotal: ${totals.total} escenarios en ${stories.length} stories. confirmado ${totals.confirmado}, roto ${totals.roto}, no construido ${totals.noConstruido}, sin veredicto ${totals.sinVeredicto}. Citas sin escenario: ${citaSinEscenario.length}. Otros hallazgos: ${findings.length}.`,
+  `\nTotal: ${totals.total} escenarios en ${results.length} stories. confirmado ${totals.confirmado}, roto ${totals.roto}, no construido ${totals.noConstruido}, sin veredicto ${totals.sinVeredicto}. Citas sin escenario: ${citaSinEscenario.length}. Otros hallazgos: ${findings.length}.`,
 );
 
 const GATING_RULES = [
@@ -515,6 +587,7 @@ const GATING_RULES = [
   'id-repetido',
   'marca-caduca',
   'marca-mal-escrita',
+  'fence-sin-cerrar',
 ];
 const gatingFindings = findings.filter((f) => GATING_RULES.includes(f.rule)).length;
 const shouldFail =
