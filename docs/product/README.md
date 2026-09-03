@@ -93,7 +93,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-019` |  | [Mi perfil](student/undo/screens/SC-019-my-profile/README.md) | `/my-profile` |
 | `SC-020` | Responder | [Responder](reviewed/reply/screens/SC-020-respond/README.md) | sin slug hoy |
 | `SC-021` | Llevarse el dato | [Método](student/take-the-data/screens/SC-021-method/README.md) | sin slug hoy |
-| `SC-022` | Cuidar lo publicado | [Verificar](student/care-for-what-is-published/screens/SC-022-verify/README.md) | `/verify-teacher` |
+| `SC-022` | Cuidar lo publicado | [Verificar](student/care-for-what-is-published/screens/SC-022-verify/README.md) | sin slug hoy |
 | `SC-023` | Entrar | [Error](student/enter/screens/SC-023-error/README.md) | sin slug hoy |
 | `SC-024` |  | [Recuperar](student/enter/screens/SC-024-forgot-password/README.md) | `/forgot-password` |
 | `SC-025` |  | [Ingresar](student/enter/screens/SC-025-sign-in/README.md) | `/sign-in` |

@@ -41,10 +41,6 @@
           "src/features/forgot-password/components/flow-steps.tsx"
         ],
         "rules": ["react-doctor/no-inline-exhaustive-style"]
-      },
-      {
-        "files": ["src/features/teacher-claim/components/teacher-claim-card.tsx"],
-        "rules": ["react-doctor/control-has-associated-label"]
       }
     ]
   }

@@ -92,7 +92,6 @@ El backend no lee ningún `.env` en producción: la carga de `.env` está gatead
 | `Smtp__Username`, `Smtp__Password` | según el relay | Solo si el relay pide auth. |
 | `Identity__Verification__LinkBaseUrl` | sí | Base del link de verificación de email. Apunta al frontend: `https://<host>/verify-email`. |
 | `Identity__PasswordReset__LinkBaseUrl` | sí | Ídem para el reset: `https://<host>/reset-password`. |
-| `Identity__TeacherVerification__LinkBaseUrl` | sí | Ídem para el claim docente: `https://<host>/verify-teacher`. |
 
 **Todas las de la tabla son obligatorias de verdad, y el host lo verifica al arrancar.** Las de SMTP y los tres `LinkBaseUrl` viven hoy solo en `appsettings.Development.json`, así que en producción no tienen ningún default: el arranque falla con `DataAnnotation validation failed for 'VerificationEmailOptions' members: 'LinkBaseUrl'` y equivalentes. Es la trampa principal de este deploy y sale así de la corrida real, no de leer el código.
 

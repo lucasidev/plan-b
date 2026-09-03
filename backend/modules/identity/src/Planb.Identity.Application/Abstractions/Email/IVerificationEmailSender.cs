@@ -32,12 +32,4 @@ public interface IVerificationEmailSender
     /// recuperar la contrasena).
     /// </summary>
     Task SendExistingAccountNoticeAsync(EmailAddress recipient, CancellationToken ct = default);
-
-    /// <summary>
-    /// Envía el mail de verificación de identidad docente (US-031). El link apunta a la página
-    /// <c>/verify-teacher</c> del frontend con el token crudo en el query string. Recipient es el
-    /// email institucional ingresado por el docente.
-    /// </summary>
-    Task SendTeacherVerificationAsync(
-        EmailAddress recipient, string token, CancellationToken ct = default);
 }

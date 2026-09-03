@@ -1,6 +1,6 @@
 # Verificaciones (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Nota (2026-08-25)**: a diferencia de [Reportes](../SC-031-reports/README.md), esta pantalla no queda redefinida por [ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md): verificar una identidad no depende de que haya texto publicado. Se corrige acá el vocabulario que quedó desactualizado con ese ADR ("réplica" pasa a ser "respuesta", la épica que la habilita pasa a llamarse [Responder](../../../../reviewed/reply/README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas originales y sus estados, pendiente de sumar el cargo institucional y la revalidación anual que suma [ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md); hi-fi pendiente. Backoffice, rol verificación (Camila). Sin slug hoy (no confundir con `/verify-teacher`, la pantalla pública donde se sube la constancia o la evidencia docente).
+> Ficha de pantalla, dueña: la épica [Moderar sin romper el producto](../../README.md). **Nota (2026-08-25)**: a diferencia de [Reportes](../SC-031-reports/README.md), esta pantalla no queda redefinida por [ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md): verificar una identidad no depende de que haya texto publicado. Se corrige acá el vocabulario que quedó desactualizado con ese ADR ("réplica" pasa a ser "respuesta", la épica que la habilita pasa a llamarse [Responder](../../../../reviewed/reply/README.md)). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos colas originales y sus estados, pendiente de sumar el cargo institucional y la revalidación anual que suma [ADR-0073](../../../../../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md); hi-fi pendiente. Backoffice, rol verificación (Camila). Sin slug hoy (no confundir con Verificar, la pantalla pública donde se sube la constancia o la evidencia docente).
 
 ## Quién la usa
 
@@ -34,7 +34,7 @@ US-207 (constancia: se ve lo mínimo, se compara contra lo declarado, el documen
 
 ## Adónde va
 
-Llega desde la constancia o la evidencia que alguien sube en **Verificar** (pública, con cuenta; hoy `/verify-teacher` solo para docente). Aprobar una identidad docente o un cargo institucional habilita **Responder**, cada uno para lo suyo, en la épica [Responder](../../../../reviewed/reply/README.md); aprobar una constancia de alumno solo suma la señal que se ve en la ficha, sin abrir ninguna puerta nueva. Una identidad vencida (US-226) no va a ninguna pantalla nueva: vuelve a esta cola, igual que cualquier pedido sin resolver.
+Llega desde la constancia o la evidencia que alguien sube en **Verificar** (pública, con cuenta; sin pantalla propia todavía). Aprobar una identidad docente o un cargo institucional habilita **Responder**, cada uno para lo suyo, en la épica [Responder](../../../../reviewed/reply/README.md); aprobar una constancia de alumno solo suma la señal que se ve en la ficha, sin abrir ninguna puerta nueva. Una identidad vencida (US-226) no va a ninguna pantalla nueva: vuelve a esta cola, igual que cualquier pedido sin resolver.
 
 ## Decisiones que aplica
 

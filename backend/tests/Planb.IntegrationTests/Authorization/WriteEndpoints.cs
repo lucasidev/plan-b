@@ -35,7 +35,7 @@ public enum WriteAccess
 /// <see cref="Route"/> arma la ruta concreta a partir de un array de ids posicionales (en el orden en
 /// que aparecen en la URL); los endpoints sin id lo ignoran. <see cref="SeededIds"/> son ids reales
 /// (del seed determinístico de Academic) cuando existe uno a mano, o un GUID fijo si el recurso no
-/// tiene seed (curation items, teacher-claims, career-plan-imports, reseñas: ahí "seeded" y "fake" dan
+/// tiene seed (curation items, career-plan-imports, reseñas: ahí "seeded" y "fake" dan
 /// la misma ruta, a propósito).
 /// </para>
 /// </summary>
@@ -161,20 +161,6 @@ public static class WriteEndpoints
 
         new WriteEndpointCase("Identity_DeactivateAccount", HttpMethod.Delete, WriteAccess.AnyAccount,
             _ => "/api/me/account", []),
-
-        new WriteEndpointCase("Identity_InitiateTeacherClaim", HttpMethod.Post, WriteAccess.AnyAccount,
-            _ => "/api/me/teacher-claims", [],
-            ValidBody: () => new { teacherId = TeacherCarlosId }),
-
-        new WriteEndpointCase("Identity_SubmitInstitutionalEmail", HttpMethod.Post, WriteAccess.AnyAccount,
-            ids => $"/api/me/teacher-claims/{ids[0]}/institutional-email", [Guid.NewGuid()],
-            ValidBody: () => new { email = "profesor@unsta.edu.ar" },
-            LongStringBody: () => new { email = LongString }),
-
-        new WriteEndpointCase("Identity_VerifyTeacherClaim", HttpMethod.Post, WriteAccess.AnyAccount,
-            _ => "/api/me/teacher-claims/verify", [],
-            ValidBody: () => new { token = "garbage-token" },
-            LongStringBody: () => new { token = LongString }),
 
         // -----------------------------------------------------------------
         // Academic: universidades (admin CRUD)

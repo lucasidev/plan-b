@@ -1,6 +1,5 @@
 using Dapper;
 using Planb.Identity.Application.Abstractions.Reading;
-using Planb.Identity.Application.Features.GetMyTeacherClaims;
 using Planb.Identity.Application.Features.GetStudentProfile;
 using Planb.Identity.Domain.Users;
 using Planb.SharedKernel.Abstractions.Persistence;
@@ -97,34 +96,5 @@ internal sealed class DapperIdentityReadService : IIdentityReadService
         using var db = _connections.Create();
         return await db.QuerySingleOrDefaultAsync<StudentProfileResponse>(
             new CommandDefinition(sql, new { UserId = userId.Value }, cancellationToken: ct));
-    }
-
-    public async Task<IReadOnlyList<TeacherClaimItem>> GetTeacherClaimsByUserAsync(
-        UserId userId,
-        CancellationToken ct = default)
-    {
-        // Cross-schema read-projection JOIN a academic.teachers para resolver el nombre del docente
-        // (mismo patrón que GetStudentProfileByUserIdAsync joinea academic.careers). initcap()
-        // capitaliza el storage lowercase para display. LEFT JOIN defensivo: un claim cuyo docente
-        // desapareciera del catálogo igual aparece (sin nombre), no se pierde la fila.
-        const string sql = @"
-            SELECT
-                tp.id          AS ClaimId,
-                tp.teacher_id  AS TeacherId,
-                initcap(t.first_name || ' ' || t.last_name) AS TeacherName,
-                t.title        AS TeacherTitle,
-                (tp.verified_at IS NOT NULL) AS IsVerified,
-                tp.institutional_email AS InstitutionalEmail,
-                tp.created_at  AS CreatedAt
-            FROM identity.teacher_profiles tp
-            LEFT JOIN academic.teachers t ON t.id = tp.teacher_id
-            WHERE tp.user_id = @UserId
-            ORDER BY tp.created_at DESC;";
-
-        using var db = _connections.Create();
-        var rows = await db.QueryAsync<TeacherClaimItem>(
-            new CommandDefinition(sql, new { UserId = userId.Value }, cancellationToken: ct));
-
-        return rows.ToList();
     }
 }
