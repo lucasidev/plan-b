@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useMemo, useState } from 'react';
 import { ItemQuestion } from '@/components/instrument';
 import { publishReviewAction } from '../actions';
+import { FREE_TEXT_MAX_LENGTH } from '../schema';
 import type {
   AnswerDraft,
   ChairOption,
@@ -296,10 +297,11 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
           value={freeText}
           onChange={(e) => setFreeText(e.target.value)}
           rows={3}
-          maxLength={2000}
+          maxLength={FREE_TEXT_MAX_LENGTH}
           placeholder="Decilo con tus palabras…"
           className="w-full rounded-sm border border-line bg-bg px-3 py-2.5 text-[13px] text-ink placeholder:text-ink-4"
         />
+        <p className="mt-1 text-[12px] text-ink-3">Hasta {FREE_TEXT_MAX_LENGTH} caracteres.</p>
         <p className="mt-2 text-[12px] text-ink-3">
           Esto no se publica: lo lee el equipo para mejorar las preguntas.
         </p>

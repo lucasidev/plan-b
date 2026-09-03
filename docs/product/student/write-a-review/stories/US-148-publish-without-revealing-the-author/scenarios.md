@@ -14,5 +14,5 @@ Entonces la Ficha de cátedra publica, por primera vez, la distribución de esa 
 
 ## Edge cases
 
-- Reseña sin cátedra marcada ("No sé"): no publica ninguna cátedra; el resto de la reseña (contexto y vivencia) queda guardado igual, sin frases de cátedra que atribuirle.
+- Reseña sin cátedra marcada ("No me acuerdo"): no publica ninguna cátedra; el resto de la reseña (contexto y vivencia) queda guardado igual, sin frases de cátedra que atribuirle.
 - Cátedra con menos de 10 reseñas: nada de esa cátedra se publica todavía, ni agregado ni individual; la ficha solo muestra el estado del piso.

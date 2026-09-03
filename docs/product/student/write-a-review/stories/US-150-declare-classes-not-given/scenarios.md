@@ -15,5 +15,5 @@ Entonces "Faltaron muchas" entra a la distribución de esa frase en la Ficha de 
 ## Edge cases
 
 - Ya no existe una pregunta de seguimiento ("¿cuántas, más o menos?") ni un valor numérico que declarar: la única señal es la opción elegida.
-- Si en el paso 2 la cátedra queda en "No sé", el paso 4 completo no se ofrece: tampoco esta frase.
+- Si en el paso 2 la cátedra queda en "No me acuerdo", el paso 4 completo no se ofrece: tampoco esta frase.
 - Ninguna ficha publica un promedio, mediana o rango de clases faltantes: solo la distribución de las tres opciones.

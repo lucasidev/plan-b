@@ -21,7 +21,7 @@ Las frases que el producto pregunta al reseñar una cursada, con sus opciones, y
 | Frase | Opciones |
 |---|---|
 | ¿Cuándo la cursaste? | período (chips de los últimos, y "otro") |
-| ¿Con qué cátedra? | las cátedras de la materia · No sé |
+| ¿Con qué cátedra? | las cátedras de la materia · No me acuerdo |
 | ¿Cómo cursaste? | Presencial · A distancia · Mezcla |
 | ¿Cómo terminó? | La aprobé · Me quedó regular · La recursé · La dejé |
 | ¿Cuántas veces la cursaste, contando esta? | Una · Dos · Tres o más |
