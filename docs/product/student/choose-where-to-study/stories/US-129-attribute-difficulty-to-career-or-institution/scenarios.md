@@ -4,7 +4,7 @@
 
 ## Camino feliz
 
-**E1.** Dado que en la Ficha de Cátedra Pérez (Análisis Matemático II, UNT) el ítem "¿Se dictaron las clases?" tiene moda "Faltaron muchas · 41 %" sobre 37 voces, en el bloque "Qué hizo la cátedra"
+**E1.** Dado que en la Ficha de Cátedra Pérez (Análisis Matemático II, UNT) la frase "¿Se dictaron las clases?" tiene moda "Faltaron muchas · 41 %" sobre 37 voces, en el bloque "Qué hizo la cátedra"
 Cuando alguien lee esa ficha
 Entonces ese dato queda en el bloque de conducta observable, atribuible a esta cátedra puntual, sin mezclarse con ningún número de la carrera o la institución.
 
@@ -24,5 +24,5 @@ Entonces no existe: ninguna ficha computa ni publica esa proporción; lo que hay
 
 ## Edge cases
 
-- Una cátedra con ítems marcados solo en "qué hizo la cátedra" y ninguno todavía en "qué les pasó a los que cursaron" (o al revés): la lectura que arma quien lee queda con menos ingredientes de un lado, pero ningún bloque se completa ni se infiere para balancearla.
+- Una cátedra con frases marcadas solo en "qué hizo la cátedra" y ninguna todavía en "qué les pasó a los que cursaron" (o al revés): la lectura que arma quien lee queda con menos ingredientes de un lado, pero ningún bloque se completa ni se infiere para balancearla.
 - Una carrera con un solo dato oficial relevado (por ejemplo, "plan vigente" cargado y "egresan por cohorte" todavía no): lo que falta se dice como no relevado todavía, nunca se completa con un promedio de reseñas.

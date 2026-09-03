@@ -6,7 +6,7 @@ Una pantalla vive en la épica que la hace existir: `docs/product/<épica>/scree
 
 **Una pantalla es una composición**: resuelve 6,3 stories en promedio, y 65 de las 93 aparecen en más de una. Por eso no vive adentro de una story: sería elegir arbitrariamente una de veinte. Y por eso tampoco se parte por story, que sería el corte vertical llevado al absurdo ([ADR-0070](../decisions/0070-product-requirements-are-vertical-by-capability-and-design-is-text.md), alternativa E).
 
-**La hace existir el flujo de su épica.** El recorrido de Reseñar (elegir la materia, responder los ítems, el campo libre, publicar) es lo que produce sus tres pantallas. Si una pantalla no aparece en ningún paso de ningún flujo, o sobra, o al flujo le falta un paso.
+**La hace existir el flujo de su épica.** El recorrido de Reseñar (elegir la materia, responder las frases, el campo libre, publicar) es lo que produce sus tres pantallas. Si una pantalla no aparece en ningún paso de ningún flujo, o sobra, o al flujo le falta un paso.
 
 ## El identificador
 

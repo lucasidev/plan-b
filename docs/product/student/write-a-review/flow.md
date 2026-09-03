@@ -24,18 +24,18 @@ flowchart TD
   G4 --> G5[Su reseña suma voces igual que cualquier otra: lo publicado no dice cómo terminó ni quién, US-153]
   G5 --> D
   C --> D[Paso 3 · Cómo terminó: un toque, más cuántas veces la cursaste, US-154]
-  D --> E[Paso 4 · Qué hizo la cátedra: siete ítems, frecuencias gruesas]
-  E --> F[Paso 5 · Qué te pasó a vos: cuatro ítems, vivencia]
+  D --> E[Paso 4 · Qué hizo la cátedra: siete frases, frecuencias gruesas]
+  E --> F[Paso 5 · Qué te pasó a vos: cuatro frases, vivencia]
   F --> H[Paso 6 · Lo último: campo libre que no se publica, ADR-0084]
   H --> I[Enviar la reseña]
-  I --> K([Publicada: suma voz a sus ítems<br/>el contrato ya se dijo antes de enviar, US-148, US-159])
+  I --> K([Publicada: suma voz a sus frases<br/>el contrato ya se dijo antes de enviar, US-148, US-159])
   B -.->|cerró la pestaña, en cualquier paso| R[Queda guardada a medias: se retoma, US-161]
   C -.-> R
   D -.-> R
   E -.-> R
   F -.-> R
   R -.-> B
-  K --> L[Mis aportes: qué sumó cada ítem que respondiste, US-162]
+  K --> L[Mis aportes: qué sumó cada frase que respondiste, US-162]
 ```
 
 ## Pantallas
@@ -44,7 +44,7 @@ flowchart TD
 - [Mi situación](screens/SC-014-my-status/README.md): la pregunta de trayectoria, embebida en el paso 2 cuando el período es viejo (nodos G2, G3, G4, G5).
 - [Anonimato](screens/SC-013-anonymity/README.md): qué se publica y qué no, el campo libre y el piso, dicho antes de escribir; no es un paso propio del diagrama, se linkea desde el paso 6 y desde cualquier ficha.
 - [Ingresar / Registro](../enter/screens/SC-025-sign-in/README.md): el gate que cruza Matías antes de llegar a Reseñar (nodo M1), directo y sin paso intermedio ([ADR-0086](../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)); ver también [Registro](../enter/screens/SC-026-sign-up/README.md).
-- [Mis aportes](../undo/screens/SC-018-my-contributions/README.md): a donde vuelve la reseña publicada, con lo que sumó cada ítem (nodo L).
+- [Mis aportes](../undo/screens/SC-018-my-contributions/README.md): a donde vuelve la reseña publicada, con lo que sumó cada frase (nodo L).
 - [Avisos](../../notices/screens/SC-034-mail/README.md): los dos mails que disparan el flujo, el del cierre de período y el reenganche anual (nodos A, A2).
 
 ## Salidas y errores
@@ -58,4 +58,4 @@ flowchart TD
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 
-El orden y el colapso por defecto de los ítems dentro de los pasos 4 y 5, si el catálogo crece; si el selector de cátedra del paso 2 acepta texto libre además de la lista del catálogo; si el copy "en un grupo chico pueden sospechar" se dice en algún lado además del estado del piso mostrado en el paso 6; qué muestra Mis aportes al terminar.
+El orden y el colapso por defecto de las frases dentro de los pasos 4 y 5, si el catálogo crece; si el selector de cátedra del paso 2 acepta texto libre además de la lista del catálogo; si el copy "en un grupo chico pueden sospechar" se dice en algún lado además del estado del piso mostrado en el paso 6; qué muestra Mis aportes al terminar.

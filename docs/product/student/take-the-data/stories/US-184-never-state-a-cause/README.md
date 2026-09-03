@@ -9,7 +9,7 @@ Como quien investiga, quiero que no interpreten por mí, porque si me dan la con
 
 ## Listo cuando
 
-- Las fichas muestran ítems con su moda y su distribución, y la fama por convergencia arriba, que son hechos agregados y no un juicio aparte; en ningún lado se afirma una causa.
+- Las fichas muestran frases con su moda y su distribución, y la fama por convergencia arriba, que son hechos agregados y no un juicio aparte; en ningún lado se afirma una causa.
 
 ## Dónde se resuelve
 

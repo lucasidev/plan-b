@@ -5,8 +5,8 @@
 ## Camino feliz
 
 **E1.** Dado que Lucía entra a Reseñar para Análisis Matemático II, período 2026-C1.
-Cuando responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde un solo ítem del paso 5 ("Sí" a si pudo seguir el ritmo), deja todos los demás ítems sin responder y no escribe nada en el campo libre del paso 6.
-Entonces la reseña se envía igual: en ningún paso el sistema le exigió responder un ítem ni escribir texto, y saltear no le bloqueó el envío.
+Cuando responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde una sola frase del paso 5 ("Sí" a si pudo seguir el ritmo), deja todas las demás frases sin responder y no escribe nada en el campo libre del paso 6.
+Entonces la reseña se envía igual: en ningún paso el sistema le exigió responder una frase ni escribir texto, y saltear no le bloqueó el envío.
 
 ## Negativos
 

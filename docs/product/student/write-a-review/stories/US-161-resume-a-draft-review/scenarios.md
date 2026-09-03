@@ -10,7 +10,7 @@ Entonces encuentra la reseña a medias guardada con el paso donde quedó (paso 4
 
 ## Negativos
 
-**N1.** Dado que la reseña a medias de Lucía nunca llegó a responder ningún ítem ni a completar el paso 3 (cómo terminó), Cuando se calculan las voces publicadas en cualquier ficha, Entonces esa reseña a medias no suma ninguna voz ni aparece publicada en ningún lado, hasta que se termine y se envíe.
+**N1.** Dado que la reseña a medias de Lucía nunca llegó a responder ninguna frase ni a completar el paso 3 (cómo terminó), Cuando se calculan las voces publicadas en cualquier ficha, Entonces esa reseña a medias no suma ninguna voz ni aparece publicada en ningún lado, hasta que se termine y se envíe.
 
 ## Edge cases
 

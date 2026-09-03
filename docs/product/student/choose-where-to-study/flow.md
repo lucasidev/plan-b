@@ -16,11 +16,11 @@ flowchart TD
   C1 --> C2[Qué frena la cursada según reseñas, cada tapón con sus voces e intentos, y la cobertura siempre a la vista, US-134, US-138]
   C2 --> D[Ver las materias del plan]
   D --> E[Ficha de materia: intentos, qué habilita, la dispersión entre sus cátedras, sus cátedras por voces]
-  E --> E2[Ficha de cátedra: los hechos que la marcan, cómo termina la cursada, qué hizo la cátedra / qué les pasó a los que cursaron, cada ítem con sus voces, US-129, US-131]
+  E --> E2[Ficha de cátedra: los hechos que la marcan, cómo termina la cursada, qué hizo la cátedra / qué les pasó a los que cursaron, cada frase con sus voces, US-129, US-131]
   E2 -->|bajo el piso| E1[Junta N reseñas: con M más se publica, US-136, US-138]
   C2 --> F[Dónde estudiarla: la misma carrera canónica lado a lado, datos oficiales medidos igual para todas y señales de reseñas por institución sin cruzarse, US-128]
   F -->|quiere ordenar| F2[Método → el CSV, Llevarse el dato]
-  C2 --> G[Método: la moda, la distribución, el catálogo de ítems, el piso y los sesgos, US-130]
+  C2 --> G[Método: la moda, la distribución, el catálogo de frases, el piso y los sesgos, US-130]
   E2 -->|quiere aportar| H[Ingresar / Registro → Reseñar]
   C3 -->|es de las primeras voces| H
 ```
@@ -34,7 +34,7 @@ flowchart TD
 - [Ficha de carrera](screens/SC-001-career/README.md): la identidad, los datos oficiales con fuente, qué frena la cursada según reseñas y la cobertura siempre a la vista (nodo C).
 - [Ficha de materia](screens/SC-007-subject/README.md): intentos, qué habilita, la dispersión entre sus cátedras y sus cátedras ordenadas por voces (nodo E).
 - [Dónde estudiarla](screens/SC-008-where-to-study/README.md): la comparación lado a lado, sin ganador (nodo F).
-- [Método](../take-the-data/screens/SC-021-method/README.md): la moda, la distribución, el catálogo de ítems y los sesgos, dueña de [Llevarse el dato](../take-the-data/README.md) (nodos F2, G).
+- [Método](../take-the-data/screens/SC-021-method/README.md): la moda, la distribución, el catálogo de frases y los sesgos, dueña de [Llevarse el dato](../take-the-data/README.md) (nodos F2, G).
 
 ## Salidas y errores
 

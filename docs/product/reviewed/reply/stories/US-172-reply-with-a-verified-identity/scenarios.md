@@ -4,7 +4,7 @@
 
 ## Camino feliz
 
-**E1.** Dado que la Ficha de Cátedra Pérez (Análisis Matemático II, Ingeniería en Sistemas, UNSTA) publica, entre sus conteos, el ítem "Podían preguntar sin quedar mal" con moda "No · 66 %" sobre 25 de 38 voces (ADR-0083), y Claudia Fernández con identidad docente verificada como titular de Cátedra Pérez
+**E1.** Dado que la Ficha de Cátedra Pérez (Análisis Matemático II, Ingeniería en Sistemas, UNSTA) publica, entre sus conteos, la frase "Podían preguntar sin quedar mal" con moda "No · 66 %" sobre 25 de 38 voces (ADR-0083), y Claudia Fernández con identidad docente verificada como titular de Cátedra Pérez
 Cuando Claudia manda su respuesta desde Responder
 Entonces la respuesta se publica al instante en el bloque "Qué respondió la cátedra" de la ficha, firmada "Claudia Fernández, titular, identidad verificada", con la fecha de publicación.
 

@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Poder sacar lo que aportaste, y poder reportar lo que otro publicó sobre vos, sin hacerte cuenta en el sitio que te difama. Editar o borrar un aporte desde Mis aportes: la reseña entera, o una respuesta de a una (un ítem de conducta observable o de vivencia), sin testimonios ni réplicas que citar; los conteos de los ítems tocados se recalculan hacia atrás, y la reseña lo dice. El campo libre se edita directo, sin ningún chequeo previo, porque nunca se publica. Dar de baja la cuenta anonimiza la identidad y preserva las reseñas que dejaste (sus conteos y su tasa de finalización, exactos): lo que querés sacar lo borrás antes, de a uno, y lo que queda publicado sigue siendo corpus. Y reportar algo publicado con el mail y nada más, confirmado por link, resuelto por una persona. A diferencia de O6, esta no es una garantía: se construye. Las pantallas Editar y Baja todavía no existen, y sin ellas reseñar algo incómodo es irreversible.
+Poder sacar lo que aportaste, y poder reportar lo que otro publicó sobre vos, sin hacerte cuenta en el sitio que te difama. Editar o borrar un aporte desde Mis aportes: la reseña entera, o una respuesta de a una (una frase de conducta observable o de vivencia), sin testimonios ni réplicas que citar; los conteos de las frases tocadas se recalculan hacia atrás, y la reseña lo dice. El campo libre se edita directo, sin ningún chequeo previo, porque nunca se publica. Dar de baja la cuenta anonimiza la identidad y preserva las reseñas que dejaste (sus conteos y su tasa de finalización, exactos): lo que querés sacar lo borrás antes, de a uno, y lo que queda publicado sigue siendo corpus. Y reportar algo publicado con el mail y nada más, confirmado por link, resuelto por una persona. A diferencia de O6, esta no es una garantía: se construye. Las pantallas Editar y Baja todavía no existen, y sin ellas reseñar algo incómodo es irreversible.
 
 ## Para quién
 
@@ -40,4 +40,4 @@ Las que comparte con otras épicas: [**Mis aportes**](screens/SC-018-my-contribu
 ## Lo que esta épica todavía no resuelve
 
 - **Cuánto tiempo se guarda un aporte a medias** antes de descartarlo (US-161).
-- **Si Editar permite cambiar el período, la cátedra o el modo de cursada de una reseña publicada**, o solo las respuestas a los ítems y el campo libre.
+- **Si Editar permite cambiar el período, la cátedra o el modo de cursada de una reseña publicada**, o solo las respuestas a las frases y el campo libre.

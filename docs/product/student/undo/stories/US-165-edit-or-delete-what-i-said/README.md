@@ -9,7 +9,7 @@ Como quien ya aportó, quiero editar o borrar mi reseña, porque me expuse más 
 
 ## Listo cuando
 
-- El aporte se puede modificar y borrar desde Mis aportes: la reseña entera, o una respuesta de a una (un ítem de conducta observable o de vivencia); los conteos de los ítems tocados se recalculan hacia atrás. El campo libre se edita directo, sin ningún chequeo previo, porque nunca se publica ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+- El aporte se puede modificar y borrar desde Mis aportes: la reseña entera, o una respuesta de a una (una frase de conducta observable o de vivencia); los conteos de las frases tocadas se recalculan hacia atrás. El campo libre se edita directo, sin ningún chequeo previo, porque nunca se publica ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 
 ## Dónde se resuelve
 

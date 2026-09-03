@@ -24,7 +24,7 @@ docs/product/<journey>/<epic>/
 - **La pantalla** tiene un solo lugar: su épica dueña. El [sitemap](map.md) es el índice derivado de las 33, con su slug y quién le aporta a cada una.
 - **El boceto** es de una pantalla, nunca de una story ni de una épica entera.
 
-Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el [glosario](language.md), las [personas](personas.md), el [catálogo de ítems](phrases.md), los [ADRs](../decisions/README.md), las [revisiones](../history/reviews/README.md) y el [design system](design-system.md) (el lenguaje visual: tokens y tipografía, no una pantalla). La épica los cita.
+Lo que no se corta, porque no es de ninguna épica: la [tesis](../THESIS.md), el [glosario](language.md), las [personas](personas.md), el [catálogo de frases](phrases.md), los [ADRs](../decisions/README.md), las [revisiones](../history/reviews/README.md) y el [design system](design-system.md) (el lenguaje visual: tokens y tipografía, no una pantalla). La épica los cita.
 
 Reglas de forma: la **carpeta se nombra en inglés, en kebab-case**, como todo identificador del repo; el nombre visible de la épica va en español en el texto. Una épica de docs no es un feature de código: sus stories se implementan en uno o más slices de código cuando se planifican.
 
@@ -126,7 +126,7 @@ Que nadie los perciba no los hace menores: que las constancias se destruyan al r
 
 - **Accesibilidad y celular.** La lectura es pública y la mayoría llega desde el teléfono: las fichas, Método, Dónde estudiarla y el CSV se leen y se usan en un celular chico, y cumplen WCAG 2.2 AA (contraste, teclado, lectores de pantalla, texto que escala). Una ficha que solo se lee en escritorio no está terminada.
 - **Datos personales (Ley 25.326).** Consentimiento informado al registrarse, aviso de privacidad público, y los derechos de acceso, rectificación y supresión resueltos por US-165 y US-166 (borrar de a uno; la baja anonimiza y preserva lo aportado, ADR-0044). Las constancias se destruyen al resolver (US-207). Nada publicado trae nombre, cuenta ni perfil (US-159).
-- **La política de curaduría y respuesta es pública.** Qué hace el equipo con el campo libre que no se publica (destilar ítems, escribir notas sin nombres, [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), el criterio del filtro grueso ([ADR-0055](../decisions/0055-content-filter-is-a-coarse-first-pass-not-a-verdict.md)) y las reglas de la respuesta del reseñado (US-178) se publican donde se publica el método. El equipo aplica lo que cualquiera puede leer.
+- **La política de curaduría y respuesta es pública.** Qué hace el equipo con el campo libre que no se publica (destilar frases, escribir notas sin nombres, [ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)), el criterio del filtro grueso ([ADR-0055](../decisions/0055-content-filter-is-a-coarse-first-pass-not-a-verdict.md)) y las reglas de la respuesta del reseñado (US-178) se publican donde se publica el método. El equipo aplica lo que cualquiera puede leer.
 - **Rendimiento y disponibilidad de lo público.** Lo que se lee sin cuenta es lo que la mesa cita: las fichas cargan rápido y se cachean; una caída de lo público es una caída del producto, y el CSV siempre está.
 
 ## Las reglas de escritura de una story
@@ -148,7 +148,7 @@ Cada story tiene un `scenarios.md` en su carpeta que traduce su "listo cuando" a
 
 Tres cosas que conviene saber antes de usarlos:
 
-- **Los números salen de [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)**: la moda y la distribución son conteos crudos con su denominador (quienes respondieron ese ítem), y las comparaciones usan intervalos de Wilson como maquinaria interna para decidir qué se publica (el ADR fija la regla de intervalos; el valor de z lo fija el código, no un ADR). La tercera es de [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md): una persona suma una voz por cursada. Sin esos tres, ningún dato publicado se puede recalcular dos veces igual.
+- **Los números salen de [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)**: la moda y la distribución son conteos crudos con su denominador (quienes respondieron esa frase), y las comparaciones usan intervalos de Wilson como maquinaria interna para decidir qué se publica (el ADR fija la regla de intervalos; el valor de z lo fija el código, no un ADR). La tercera es de [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md): una persona suma una voz por cursada. Sin esos tres, ningún dato publicado se puede recalcular dos veces igual.
 - **Cada escenario declara sus propios datos en el "Dado". No hay fixture compartido, y no debería haberlo**: los nombres que se repiten entre épicas (Cátedra Pérez, Análisis Matemático II) son etiquetas para que se lea bien, no una entidad con un estado único. Dos escenarios pueden nombrar la misma cátedra con distinta cantidad de voces porque cada uno arma su caso.
 - **Son el aro externo, no el interno.** Están escritos al nivel de lo que se observa (una pantalla, una ficha, un mail), que es aceptación. El test unitario que sale de ellos es otra cosa, y su forma la descubre quien lo escriba.
 

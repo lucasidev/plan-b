@@ -42,7 +42,7 @@ El gate está en la acción (reseñar, corregir), no en la puerta. Publicamos so
 
 Nadie llega con ganas de inventariar su cuatrimestre: llega con una materia en la cabeza, la que lo destrozó o la que le cambió la carrera. Se reseña **esa cursada**: la materia, la cátedra que la dio, el período, y lo que viviste, en un solo acto de un minuto y medio donde saltear siempre vale. Solo se reseña la cursada: la materia, la carrera y la institución se derivan de ahí, con la cobertura a la vista, porque el dato anclado a una cursada concreta es caro de fabricar y barato de auditar, y el flotante ("puntuá tu universidad") es lo contrario.
 
-Los ítems no son solo nuestros: de lo que muchos escriben en el campo libre se destilan los que faltaban, y el instrumento evoluciona versionado ([ADR-0082](decisions/0082-the-review-captures-the-cursada-in-three-layers.md), [ADR-0084](decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Si los ítems los inventáramos solo nosotros, el producto respondería "¿qué falla?" únicamente con las fallas que se nos ocurrieron.
+Las frases no son solo nuestras: de lo que muchos escriben en el campo libre se destilan las que faltaban, y el instrumento evoluciona versionado ([ADR-0082](decisions/0082-the-review-captures-the-cursada-in-three-layers.md), [ADR-0084](decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Si las frases las inventáramos solo nosotros, el producto respondería "¿qué falla?" únicamente con las fallas que se nos ocurrieron.
 
 ### 5 · El catálogo es nuestro, y lo oficial viene con fuente
 
@@ -56,7 +56,7 @@ Rehecho el 2026-08-25 ([ADR-0082](decisions/0082-the-review-captures-the-cursada
 2. **El campo libre**, uno solo, al final: "¿algo que no te preguntamos y deberíamos?". No se publica nunca: alimenta a la curaduría ([ADR-0084](decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 3. **El instrumento administrativo**: preguntas cortas de trámites, infraestructura y becas, con disparador propio (el perfil, re-preguntado con el tiempo, porque la opinión institucional cambia a medida que se cursa). Solo cuenta lo respondido por cuentas con al menos una cursada reseñada: el que no puso el cuerpo no mueve números.
 4. **La constancia**, opcional: la prueba de condición de alumno. Verificarse pesa, no habilita.
-5. **Lo destilado**: del campo libre de muchos salen ítems nuevos, versionados en el catálogo. Es un dato derivado, no pedido.
+5. **Lo destilado**: del campo libre de muchos salen frases nuevas, versionadas en el catálogo. Es un dato derivado, no pedido.
 
 Nada más se reseña. Ni la carrera, ni la universidad, ni la gestión como acto aparte: se derivan de las cursadas, del instrumento administrativo y del relevamiento oficial.
 
@@ -64,8 +64,8 @@ Nada más se reseña. Ni la carrera, ni la universidad, ni la gestión como acto
 
 Rehecho el 2026-08-25. La base son [ADR-0082](decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](decisions/0085-three-instruments-and-official-data.md).
 
-1. **La unidad de publicación es el conteo de un ítem**: la moda como síntesis (la opción literal más votada, con su porcentaje) y la distribución completa por opción. Cada ítem es su propio dato con su propio denominador (quienes lo respondieron); nada se promedia con nada.
-2. **La fama es la convergencia.** Lo primero que la ficha dice del sujeto son los hechos donde varios ítems distintos apuntan al mismo lado, predicados de él ("acá no se aprende preguntando"), con el sustento como metadato. Tres ítems convergentes valen más que quinientas marcas en uno.
+1. **La unidad de publicación es el conteo de una frase**: la moda como síntesis (la opción literal más votada, con su porcentaje) y la distribución completa por opción. Cada frase es su propio dato con su propio denominador (quienes la respondieron); nada se promedia con nada.
+2. **La fama es la convergencia.** Lo primero que la ficha dice del sujeto son los hechos donde varias frases distintas apuntan al mismo lado, predicados de él ("acá no se aprende preguntando"), con el sustento como metadato. Tres frases convergentes valen más que quinientas marcas en una.
 3. **Comparar es solo contra los pares directos**: una cátedra contra las otras cátedras de su misma materia, donde el sesgo de quién reseña pega parejo y se cancela en la diferencia. El contraste se publica solo si los intervalos no se tocan (Wilson, como maquinaria interna, no como número publicado); sin señal o sin base comparable, silencio. Jamás se cruzan señales de reseñas entre instituciones.
 4. **La tasa de finalización se publica agregada** ("de cada 10 que la cursan, llegan 4"): es un resultado de la cátedra y de la universidad, que tiene que luchar por que se reciban. El desenlace individual no se muestra jamás.
 5. **Hay piso, y es por el que reseña**: una cátedra publica desde las 10 reseñas, porque con menos el titular deduce quién dijo qué. El estado se muestra ("junta 3 reseñas: con 7 más se publica"). No es vergüenza estadística: es privacidad.
@@ -74,8 +74,8 @@ Rehecho el 2026-08-25. La base son [ADR-0082](decisions/0082-the-review-captures
 8. **La institución no tiene número**: su ficha es su plantel navegable, su transparencia relevada a fuente pública (con fecha y fuentes), las notas de curaduría y su cobertura.
 9. **Los datos oficiales van al lado de las voces, con su fuente dicha**: dura en el papel contra dura en la realidad, egreso por cohorte, plan vigente, acreditación, régimen de ingreso. Comparar una carrera entre instituciones es lado a lado con esos datos, medidos igual para todas, sin compuesto y sin ganador.
 10. **La curaduría publica notas sin nombres** a nivel carrera o institución, con procedencia declarada ("leída de comentarios que no se publican") y fecha ([ADR-0084](decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
-11. **El instrumento se versiona y la serie declara sus cortes**: si un ítem cambia de significado, cambia de código y la serie no se compara a través. La lista se reprocesa a medida que entran reseñas, y se dice.
-12. **El método entero es público**, con el catálogo de ítems, las reglas de publicación y el piso; y los datos se bajan como se publican, agregados: no existe un crudo que tenga más que la ficha.
+11. **El instrumento se versiona y la serie declara sus cortes**: si una frase cambia de significado, cambia de código y la serie no se compara a través. La lista se reprocesa a medida que entran reseñas, y se dice.
+12. **El método entero es público**, con el catálogo de frases, las reglas de publicación y el piso; y los datos se bajan como se publican, agregados: no existe un crudo que tenga más que la ficha.
 
 ## Qué no hace
 

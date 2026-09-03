@@ -9,7 +9,7 @@ Como quien investiga, quiero citar un número que no me puedan desarmar, porque 
 
 ## Listo cuando
 
-- El método es público e incluye la regla de comparación entre hermanas (intervalo de Wilson, tal cual) y el catálogo entero de ítems, con su capa y sus opciones.
+- El método es público e incluye la regla de comparación entre hermanas (intervalo de Wilson, tal cual) y el catálogo entero de frases, con su capa y sus opciones.
 - Cada dato publicado muestra sus voces y el período de lo que lo sostiene.
 
 ## Dónde se resuelve

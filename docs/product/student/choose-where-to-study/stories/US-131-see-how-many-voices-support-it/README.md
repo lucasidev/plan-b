@@ -9,10 +9,10 @@ Como quien está eligiendo, quiero ver sobre cuántas voces se calcula, porque u
 
 ## Listo cuando
 
-- Cada ítem publicado muestra su propio "de N" (cuántas voces lo respondieron), al lado de su moda y de su distribución completa.
+- Cada frase publicada muestra su propio "de N" (cuántas voces la respondieron), al lado de su moda y de su distribución completa.
 - Ninguna proporción se publica sin ese denominador al lado.
 
 ## Dónde se resuelve
 
-- [Ficha de cátedra](../../screens/SC-002-chair/README.md): cada ítem se publica con su moda, su distribución y su "de N" voces.
+- [Ficha de cátedra](../../screens/SC-002-chair/README.md): cada frase se publica con su moda, su distribución y su "de N" voces.
 - [Ficha de carrera](../../screens/SC-001-career/README.md), [Ficha de materia](../../screens/SC-007-subject/README.md) y [Dónde estudiarla](../../screens/SC-008-where-to-study/README.md): cada dato derivado (qué frena la cursada, las estadísticas de la materia, las tarjetas de comparación) muestra sus propias voces.

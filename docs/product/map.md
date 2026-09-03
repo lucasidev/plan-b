@@ -1,13 +1,13 @@
 # Product map
 
-El índice del producto: qué pantallas hay y qué flujos las recorren, con el link a donde vive cada cosa. Lo que el canvas `plan-b mapa` (2026-08-16) definía como pantallas, flujos, planos y reglas ya tiene casa en el repo: cada pantalla con su ficha y su boceto adentro de la capacidad que la hace existir, los flujos en mermaid dentro de esa misma capacidad, en [`docs/product/`](../product/README.md), y las reglas en los ADRs y en el [catálogo de ítems](../product/phrases.md). Los requisitos viven en el README de su capacidad ([índice](README.md)) y las personas en [`user-personas.md`](../product/personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
+El índice del producto: qué pantallas hay y qué flujos las recorren, con el link a donde vive cada cosa. Lo que el canvas `plan-b mapa` (2026-08-16) definía como pantallas, flujos, planos y reglas ya tiene casa en el repo: cada pantalla con su ficha y su boceto adentro de la capacidad que la hace existir, los flujos en mermaid dentro de esa misma capacidad, en [`docs/product/`](../product/README.md), y las reglas en los ADRs y en el [catálogo de frases](../product/phrases.md). Los requisitos viven en el README de su capacidad ([índice](README.md)) y las personas en [`user-personas.md`](../product/personas.md). La tesis que gobierna todo: [`THESIS.md`](../THESIS.md).
 
 **Estado**: orientativo. Es la estructura que el mapa propone, útil para entender qué vistas necesita el producto; **no fija el diseño final ni la UX/UI**: eso lo fija la ficha de cada pantalla cuando se escribe, desde sus requisitos y sus personas. El canvas del que salió todo está en el [ático](../history/product-canvas/README.md) desde el 2026-08-19: las 33 pantallas tienen ficha y boceto, y ninguna imagen ni canvas es fuente (ADR-0070).
 
 ## Los tres planos
 
 1. **El catálogo.** Instituciones, carreras, planes, correlativas. Lo cargamos nosotros, a mano y completo: la calidad del dato base no se crowdsourcea. Una carrera está cargada entera o no está. Sin cobertura no hay nada: si la institución no está cargada no hay ficha, ni plan, ni materias. No inventamos una ficha vacía.
-2. **Lo que publicamos.** Los conteos por ítem con sus voces (moda y distribución), la fama por convergencia, la comparación entre cátedras hermanas, la tasa de finalización agregada, la serie temporal. Todo derivado del corpus, nada declarado a mano. La ausencia no es un juicio: decimos "no la cargamos todavía", no "no hay datos", y muchísimo menos un cero.
+2. **Lo que publicamos.** Los conteos por frase con sus voces (moda y distribución), la fama por convergencia, la comparación entre cátedras hermanas, la tasa de finalización agregada, la serie temporal. Todo derivado del corpus, nada declarado a mano. La ausencia no es un juicio: decimos "no la cargamos todavía", no "no hay datos", y muchísimo menos un cero.
 3. **Lo que hacemos.** Publicar, atribuir y exigir respuesta. Es el único plano donde alguien sin cobertura tiene lugar: el pedido es un dato público. Cuánta gente reclama que se cargue algo dice dónde la comunidad quiere que se mire y no llegamos.
 
 ## Las pantallas (el sitemap)
@@ -31,7 +31,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Reseñar | [`write-review/`](student/write-a-review/screens/SC-015-write-review/README.md) | con cuenta | `/reviews/write` (existe el editor texto-libre: otro modelo) | El acto: la cursada (materia, cátedra, período), cómo terminó, los ítems de conducta observable y de vivencia, el campo libre que no se publica. | Cuando el catálogo no alcanza es una rama suya | **hi-fi Boletín** |
+| Reseñar | [`write-review/`](student/write-a-review/screens/SC-015-write-review/README.md) | con cuenta | `/reviews/write` (existe el editor texto-libre: otro modelo) | El acto: la cursada (materia, cátedra, período), cómo terminó, las frases de conducta observable y de vivencia, el campo libre que no se publica. | Cuando el catálogo no alcanza es una rama suya | **hi-fi Boletín** |
 | Mi situación | [`my-status/`](student/write-a-review/screens/SC-014-my-status/README.md) | con cuenta | sin slug | La pregunta de trayectoria de a uno, nunca como inventario. | Avisos (el mail anual la trae) | mid-fi, revisada |
 | Anonimato | [`anonymity/`](student/write-a-review/screens/SC-013-anonymity/README.md) | pública | `/about` (habla de otra cosa; se rehace) | Cómo te cubrimos: qué se publica y qué no, por qué ya no hay chequeo previo (el campo libre nunca se publica), la verdad del grupo chico, la política. | Moderar sin romper el producto (la política de moderación) | mid-fi, revisada |
 
@@ -47,7 +47,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
 | Mis aportes | [`my-contributions/`](student/undo/screens/SC-018-my-contributions/README.md) | con cuenta | `/reviews` | Lo que diste y qué cambió: tus reseñas, lo pendiente, lo a medias. | Reseñar (qué sumó), Responder (el aviso de la respuesta del reseñado) | mid-fi, revisada |
-| Editar | [`edit/`](student/undo/screens/SC-017-edit/README.md) | con cuenta | sin slug | Editar o borrar un aporte: la reseña entera, o una respuesta de a una; el campo libre se edita directo, sin chequeo. | Reseñar (qué sumó cada ítem) | mid-fi, revisada |
+| Editar | [`edit/`](student/undo/screens/SC-017-edit/README.md) | con cuenta | sin slug | Editar o borrar un aporte: la reseña entera, o una respuesta de a una; el campo libre se edita directo, sin chequeo. | Reseñar (qué sumó cada frase) | mid-fi, revisada |
 | Baja | [`delete-account/`](student/undo/screens/SC-016-delete-account/README.md) | con cuenta | sin slug | Dar de baja: anonimiza la identidad y preserva lo aportado. | nadie más | mid-fi, revisada |
 | Mi perfil | [`my-profile/`](student/undo/screens/SC-019-my-profile/README.md) | con cuenta | `/my-profile` | Tu cuenta y por dónde vas; donde se apagan los avisos y se llega a la Baja. | Avisos (el apagado), Cuidar lo publicado (la señal) | mid-fi, revisada |
 
@@ -67,7 +67,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| Método | [`method/`](student/take-the-data/screens/SC-021-method/README.md) | pública | sin slug (hoy sección de la landing) | El catálogo de ítems, la regla de comparación entre hermanas, el piso, los sesgos, qué no cubrimos, las fuentes oficiales, la descarga del CSV agregado. | Elegir dónde estudiar (se llega desde toda ficha) | mid-fi, revisada |
+| Método | [`method/`](student/take-the-data/screens/SC-021-method/README.md) | pública | sin slug (hoy sección de la landing) | El catálogo de frases, la regla de comparación entre hermanas, el piso, los sesgos, qué no cubrimos, las fuentes oficiales, la descarga del CSV agregado. | Elegir dónde estudiar (se llega desde toda ficha) | mid-fi, revisada |
 
 ### Avisos · [`product/notices/`](../product/notices/README.md)
 
@@ -91,7 +91,7 @@ Treinta y dos, más dos acciones inline que pasan adentro de una ficha (Reportar
 | Pedidos | [`requests/`](team/sustain-the-catalog/screens/SC-030-requests/README.md) | backoffice | sin slug (el endpoint existe; la pantalla no) | La cola de carga por pedidos confirmados, con su demora declarada. | Pedir una carrera (de dónde vienen) | mid-fi, revisada |
 | Catálogo | [`catalog/`](team/sustain-the-catalog/screens/SC-027-catalog/README.md) | backoffice | `/admin/universities`, `/admin/teachers`, `/admin/chairs` | Cargar una oferta por huecos: plan, materias canónicas, cátedras, carrera canónica; la reforma. | Cuando el catálogo no alcanza (la materia pendiente) | mid-fi, revisada |
 | Correcciones | [`corrections/`](team/sustain-the-catalog/screens/SC-028-corrections/README.md) | backoffice | sin slug | Datos duros corregidos: valor viejo y nuevo, contrastados contra la fuente. | Cuidar lo publicado (de dónde llegan) | mid-fi, revisada |
-| Frases | [`phrases/`](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | backoffice | sin slug | El catálogo de ítems: código, capa, opciones; la cola de curaduría de los destilados. | Llevarse el dato (Método lo publica entero) | mid-fi, revisada |
+| Frases | [`phrases/`](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | backoffice | sin slug | El catálogo de frases: código, capa, opciones; la cola de curaduría de los destilados. | Llevarse el dato (Método lo publica entero) | mid-fi, revisada |
 
 ### Moderar sin romper el producto · [`product/moderate-without-breaking-the-product/`](team/moderate-without-breaking-the-product/README.md)
 
@@ -128,7 +128,7 @@ Cada flujo del mapa vive, como diagrama en mermaid con sus ramas, salidas y erro
 | 12 | El texto que te delata sin nombrar a nadie | [Reseñar](student/write-a-review/flow.md) (ya no aplica como estaba: el campo libre nunca se publica, lo explica Anonimato) |
 | 13 | La ficha vacía y el primero que aporta | [Elegir dónde estudiar](student/choose-where-to-study/flow.md) (la ficha vacía) y [Reseñar](student/write-a-review/flow.md) (el primero que aporta) |
 | 14 | Cuando el dato no me alcanza | [Reseñar](student/write-a-review/flow.md) (la materia que no está, la recursada, lo que quedó a medias, qué cambió) y [Sostener el catálogo](team/sustain-the-catalog/flow.md) (vincular la pendiente) |
-| 15 | Cuando un ítem solo no alcanza | [Elegir dónde estudiar](student/choose-where-to-study/flow.md) (la convergencia entre ítems; la dispersión temporal; de qué voces está hecha cada ficha) |
+| 15 | Cuando una frase sola no alcanza | [Elegir dónde estudiar](student/choose-where-to-study/flow.md) (la convergencia entre frases; la dispersión temporal; de qué voces está hecha cada ficha) |
 
 Sin fila en el mapa y con flujo propio: [Cuidar lo publicado](student/care-for-what-is-published/flow.md) (corregir, verificarse: las acciones inline). [Que no me molesten](guarantees/README.md) es garantía y no tiene flujo. Los grupos T2, T3 y T4 del mapa son temas, no actividades: sus requisitos viven en la capacidad que los implementa (el [índice](README.md) los lista por tema).
 
@@ -144,13 +144,13 @@ Sin fila en el mapa y con flujo propio: [Cuidar lo publicado](student/care-for-w
 | BO-6 | Cuando alguien intenta inflar el corpus | [Moderar sin romper el producto](team/moderate-without-breaking-the-product/flow.md) |
 | BO-7 | Cuando la cola nos gana, y quién nos mira | [Sostener el catálogo](team/sustain-the-catalog/flow.md) (la cola del catálogo), [Moderar sin romper el producto](team/moderate-without-breaking-the-product/flow.md) (la cola de moderación) y [Cortar los accesos](team/cut-the-access/flow.md) (el registro y quién lo mira) |
 | BO-8 | El filtro grueso del campo libre (reemplaza a "lo que el chequeo previo retuvo": ya no hay contenido público que retener) | [Moderar sin romper el producto](team/moderate-without-breaking-the-product/flow.md) |
-| BO-9 | Destilar y clasificar ítems nuevos | [Sostener el catálogo](team/sustain-the-catalog/flow.md) |
+| BO-9 | Destilar y clasificar frases nuevas | [Sostener el catálogo](team/sustain-the-catalog/flow.md) |
 
 Los grupos BO4, BO5 y BO6 del mapa son temas, no actividades: sus requisitos viven en Sostener el catálogo, Moderar sin romper el producto y Cortar los accesos.
 
 ## Reglas del corpus
 
-La regla que el canvas traía sobre desbloqueos por volumen se cerró distinto de como entró: **hay un piso, no una escalera** (una cátedra publica desde las 10 reseñas, por la privacidad de quien reseña, no por vergüenza estadística; el estado se muestra, "junta 3 reseñas: con 7 más se publica"; lo único que además espera es la cabecera derivada, hasta que más de la mitad de las materias canónicas de la carrera tenga voces, umbral que hoy sostiene D04 del [registro del 17](../history/reviews/2026-08-17-catalog-propagation.md) y que ningún ADR vigente fija; el piso y el condicionamiento por cobertura son [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) y [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)); y **los ítems** son el catálogo de [`phrases.md`](../product/phrases.md), agrupados por capa (conducta observable, vivencia), cada uno con su código estable y sus opciones, que Método publica entero y cuyos conteos arman la ficha ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
+La regla que el canvas traía sobre desbloqueos por volumen se cerró distinto de como entró: **hay un piso, no una escalera** (una cátedra publica desde las 10 reseñas, por la privacidad de quien reseña, no por vergüenza estadística; el estado se muestra, "junta 3 reseñas: con 7 más se publica"; lo único que además espera es la cabecera derivada, hasta que más de la mitad de las materias canónicas de la carrera tenga voces, umbral que hoy sostiene D04 del [registro del 17](../history/reviews/2026-08-17-catalog-propagation.md) y que ningún ADR vigente fija; el piso y el condicionamiento por cobertura son [ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) y [ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)); y **las frases** son el catálogo de [`phrases.md`](../product/phrases.md), agrupadas por capa (conducta observable, vivencia), cada una con su código estable y sus opciones, que Método publica entero y cuyos conteos arman la ficha ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
 
 ## Estado contra el código (cruce 2026-08-16)
 
@@ -163,7 +163,7 @@ Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el
 | Con cuenta | Mis aportes, Mi perfil (Empezar y Mi carrera se retiran: [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
 | Backoffice | Catálogo (backoffice) (ABM completo), Reportes (backoffice) (cola de moderación) | Pedidos (backoffice) (el endpoint de cola existe; la pantalla no) | Correcciones (backoffice), Verificaciones (backoffice), Equipo (backoffice), Frases (backoffice) |
 
-Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de ítems (catálogo versionado, conteos, moda, distribución, convergencia), el piso de publicación por cátedra, la cola pública de pedidos, la verificación de alumno por constancia, y las seis pantallas diseñadas sin construir (Responder, Buscar, Editar, Mi situación, Baja, Avisos).
+Lo que no existe en ningún módulo del backend y es el corazón del build: el sistema de frases (catálogo versionado, conteos, moda, distribución, convergencia), el piso de publicación por cátedra, la cola pública de pedidos, la verificación de alumno por constancia, y las seis pantallas diseñadas sin construir (Responder, Buscar, Editar, Mi situación, Baja, Avisos).
 
 ## Auditoría del mapa (2026-08-16)
 

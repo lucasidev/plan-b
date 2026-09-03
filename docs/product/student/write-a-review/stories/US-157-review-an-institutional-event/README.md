@@ -11,7 +11,7 @@ Como quien está cursando, quería reseñar lo que pasó fuera de una cursada, p
 
 ## Listo cuando
 
-- Esto no sobrevive como lo pedía la story: [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) rechaza explícitamente reseñar la institución de forma directa (bombeable por marketing o por partidarios, sin ancla verificable). La necesidad real (contar un trámite, el título, una mesa) la cubre el instrumento administrativo, con su propio catálogo de ítems (ver [`phrases.md`](../../../../phrases.md), sección "El instrumento administrativo"), fuera de esta épica.
+- Esto no sobrevive como lo pedía la story: [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) rechaza explícitamente reseñar la institución de forma directa (bombeable por marketing o por partidarios, sin ancla verificable). La necesidad real (contar un trámite, el título, una mesa) la cubre el instrumento administrativo, con su propio catálogo de frases (ver [`phrases.md`](../../../../phrases.md), sección "El instrumento administrativo"), fuera de esta épica.
 
 ## Dónde se resuelve
 

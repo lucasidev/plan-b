@@ -8,9 +8,9 @@
 Cuando Rocío entra a Método
 Entonces ve los tres números (86, 61, 214) y, al entrar a la Ficha de carrera de Ingeniería en Sistemas (UNSTA), la cobertura "24 de 40 materias con voces".
 
-**E2.** Dado que el método declara que los conteos de ítems son de quienes reseñaron, que la co-cursada es solo de quien reseñó las dos materias, y que la duración real y el egreso por cohorte son dato oficial con su fuente al lado
+**E2.** Dado que el método declara que los conteos de frases son de quienes reseñaron, que la co-cursada es solo de quien reseñó las dos materias, y que la duración real y el egreso por cohorte son dato oficial con su fuente al lado
 Cuando Rocío lee el bloque "Los sesgos declarados" y el bloque de datos oficiales de Método
-Entonces encuentra las aclaraciones: que ningún conteo de ítems es "la tasa de la carrera", que la co-cursada no sale del plan que alguien marcó para sí, que es privado, y que la duración real y el egreso citan su fuente oficial en vez de salir de una encuesta propia.
+Entonces encuentra las aclaraciones: que ningún conteo de frases es "la tasa de la carrera", que la co-cursada no sale del plan que alguien marcó para sí, que es privado, y que la duración real y el egreso citan su fuente oficial en vez de salir de una encuesta propia.
 
 **E3.** Dado que 142 cuentas de 9.400 quedaron afuera de todo agregado propio por inconsistencia (por ejemplo, una cuenta con "me recibí" antes que "entré")
 Cuando Rocío entra a Método

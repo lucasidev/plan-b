@@ -7,7 +7,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 ## Los dos invariantes que la paleta carga
 
 1. **El rojo es solo la opción negativa publicada** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): en una distribución, el segmento de la opción negativa; en un badge de moda, solo cuando la moda ES la opción negativa. Nada más se pinta: no hay semáforos, no hay umbrales editoriales, y la recolección (Reseñar) va sin rojo: la alarma es lectura, no captura.
-2. **Todo conteo publicado viaja con sus voces** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): el estilo nunca muestra un número pelado, y la síntesis de un ítem es su moda literal con la distribución al lado, jamás un promedio.
+2. **Todo conteo publicado viaja con sus voces** ([ADR-0083](../decisions/0083-the-ficha-publishes-counts-not-scores.md)): el estilo nunca muestra un número pelado, y la síntesis de una frase es su moda literal con la distribución al lado, jamás un promedio.
 
 ## Paleta
 

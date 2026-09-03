@@ -18,6 +18,8 @@
  *  7. El filename y el título de un ADR van en inglés, como todo identificador del repo.
  *  8. Toda pantalla la pide una story de su propia épica. La simetría del 6 no alcanza: una
  *     pantalla citada solo por stories de otras épicas existe sin que nadie la haya pedido.
+ *  9. "ítem" como palabra en prosa, fuera de docs/history/ y docs/decisions/: el glosario fija
+ *     que el concepto del producto se llama frase; `Item` es solo el identificador de código.
  *
  * Señala, no bloquea: exit 0 siempre, salvo con --strict (para CI si algún día se quiere gate).
  * Uso: bun scripts/check-docs.ts [--strict]
@@ -65,6 +67,7 @@ const rel = (f: string) =>
     .join('/');
 const isDocs = (f: string) => rel(f).startsWith('docs/');
 const isHistory = (f: string) => rel(f).startsWith('docs/history/');
+const isDecisions = (f: string) => rel(f).startsWith('docs/decisions/');
 
 // 1. links relativos rotos
 const LINK = /\]\(([^)\s]+)\)/g;
@@ -114,6 +117,29 @@ for (const f of all.filter(
         detail: ln.trim().slice(0, 60),
       });
     }
+  });
+}
+
+// 9. "ítem" en prosa, fuera de docs/history/ y docs/decisions/: el glosario dice que el
+//    concepto del producto es la frase, y `Item` es solo el identificador en el código. Se
+//    exceptúan los tramos entre backticks y la fila de Desambiguación del propio glosario
+//    que nombra "ítem" para prohibirlo.
+const ITEM_WORD = /(?<!\p{L})ítems?(?!\p{L})/iu;
+const stripInlineCode = (ln: string) => ln.replace(/`[^`]*`/g, '');
+const LANGUAGE_MD = 'docs/product/language.md';
+const ITEM_DISAMBIGUATION_ROW = /^\|\s*\*\*ítem\*\*\s*\|/i;
+for (const f of mds.filter((x) => isDocs(x) && !isHistory(x) && !isDecisions(x))) {
+  const relPath = rel(f);
+  const lines = readFileSync(f, 'utf-8').split('\n');
+  lines.forEach((ln, i) => {
+    if (relPath === LANGUAGE_MD && ITEM_DISAMBIGUATION_ROW.test(ln)) return;
+    if (ITEM_WORD.test(stripInlineCode(ln)))
+      findings.push({
+        file: relPath,
+        line: i + 1,
+        rule: 'item-en-prosa',
+        detail: ln.trim().slice(0, 60),
+      });
   });
 }
 
@@ -501,7 +527,7 @@ for (const f of readdirSync(decisionsDir).filter((x) => ADR.test(x))) {
 // salida
 if (findings.length === 0) {
   console.log(
-    'check-docs: limpio (links, em-dashes, períodos, stories, pantallas, trazabilidad, mermaid, idioma de ADR, pantalla sin dueña).',
+    'check-docs: limpio (links, em-dashes, períodos, "ítem" en prosa, stories, pantallas, trazabilidad, mermaid, idioma de ADR, pantalla sin dueña).',
   );
   process.exit(0);
 }
