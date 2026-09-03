@@ -156,6 +156,7 @@ public class RetiredPhraseDoesNotFeedFameTests : IClassFixture<RegisterApiFixtur
         fame.Items.Select(i => i.Code).ShouldNotContain(ItemBeingCut);
 
         // ...ni en los contrastes contra la hermana.
+        facts.Contrasts.ShouldNotBeEmpty();
         facts.Contrasts.Select(c => c.ItemCode).ShouldNotContain(ItemBeingCut);
 
         // El tramo de hoy es el suyo propio, no la suma con el de ayer.

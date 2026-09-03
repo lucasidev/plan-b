@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using Planb.Academic.Application.Contracts;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.Reviews.Application.Features.ChairFacts;
 using Shouldly;
 using Xunit;
 
@@ -18,6 +19,7 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
     private readonly RegisterApiFixture _fixture;
     private readonly HttpClient _anonymous;
 
+    private static readonly Guid UnstaId = Guid.Parse("00000001-0000-4000-a000-000000000001");
     private static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
     private static readonly Guid Subject211 = Guid.Parse("00000004-0000-4000-a000-000000000012");
@@ -107,11 +109,24 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
             }))
             .EnsureSuccessStatusCode();
 
+        // Control positivo: el propio perfil trae el nombre que acabamos de guardar.
+        var profileResponse = await author.Client.GetAsync("/api/me/student-profile");
+        profileResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var profileBody = await profileResponse.Content.ReadAsStringAsync();
+        profileBody.ShouldContain(sentinelName);
+
         var reviewId = await PublishAsync(author, 0);
         for (var i = 1; i < 10; i++)
         {
             await PublishAsync(await AccountAsync(i), i);
         }
+
+        // Control positivo: con el piso de 10 cruzado, la ficha ya publica. Si el piso cambia,
+        // esto cae explicando por qué en vez de que el barrido de abajo falle sin dar pistas.
+        var chairFacts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+            $"/api/reviews/chairs/{ChairPerez}/facts");
+        chairFacts.ShouldNotBeNull();
+        chairFacts!.IsPublished.ShouldBeTrue();
 
         var accountId = author.UserId.Value.ToString();
         var reviewIdText = reviewId.ToString();
@@ -141,6 +156,13 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
             ("subject chairs", $"/api/academic/subjects/{Subject211}/chairs"),
             ("teacher detail", $"/api/academic/teachers/{teacherId}"),
             ("teacher chairs", $"/api/academic/teachers/{teacherId}/chairs"),
+            ("universities", "/api/academic/universities"),
+            ("careers", $"/api/academic/careers?universityId={UnstaId}"),
+            ("career plans", $"/api/academic/career-plans?careerId={TudcsCareerId}"),
+            ("career plan by id", $"/api/academic/career-plans/{TudcsPlanId}"),
+            ("academic terms", $"/api/academic/academic-terms?universityId={UnstaId}"),
+            ("subjects", $"/api/academic/subjects?careerPlanId={TudcsPlanId}"),
+            ("prerequisites", $"/api/academic/prerequisites?careerPlanId={TudcsPlanId}"),
         };
 
         var probes = new[] { sentinelEmail, sentinelName, accountId, reviewIdText };
