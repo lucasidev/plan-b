@@ -230,8 +230,9 @@ beforeEach(() => {
 
 describe('US-146: reseñar en menos de dos minutos', () => {
   /**
-   * US-146 E1: responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde una sola
-   * frase del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía igual.
+   * US-146 E1: responde "la aprobé" en cómo terminó, elige "No me acuerdo" en cátedra, responde una
+   * sola frase del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía
+   * igual.
    */
   it('publica la reseña con solo opciones cerradas, sin escribir nada obligatorio', async () => {
     stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
@@ -343,9 +344,11 @@ describe('US-146: reseñar en menos de dos minutos', () => {
   });
 
   /** US-146 X: el campo libre no permite escribir más de 2000 caracteres (el tope de schema.ts). */
-  it('el campo libre no deja escribir más de 2000 caracteres', async () => {
+  it('el campo libre no deja escribir más de 2000 caracteres, y avisa el tope debajo', async () => {
     const user = userEvent.setup();
     render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    expect(screen.getByText('Hasta 2000 caracteres.')).toBeInTheDocument();
 
     const freeText = screen.getByLabelText(/algo que no te preguntamos/i);
     await user.click(freeText);

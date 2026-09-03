@@ -59,7 +59,7 @@ Las que comparte con otras épicas: [**Ingresar**](../enter/screens/SC-025-sign-
 
 - **Qué pasa con la reseña a medias** (US-161: se guarda y se retoma) y **cuánto tiempo**.
 - **Dónde vive el instrumento administrativo** (trámites, título, mesas, infraestructura): [ADR-0085](../../../decisions/0085-three-instruments-and-official-data.md) lo define como un instrumento aparte, con disparador propio (el perfil o el evento puntual); todavía no tiene épica ni pantalla asignada, y US-157 quedó sin dónde resolverse dentro de este set de stories.
-- **Si una cursada sin cátedra recordada pierde las frases de cátedra o hace falta una «cátedra sin identificar»**: hoy el boceto ofrece "No sé" y quita esas frases.
+- **Si una cursada sin cátedra recordada pierde las frases de cátedra o hace falta una «cátedra sin identificar»**: hoy el boceto ofrece "No me acuerdo" y quita esas frases.
 - **Si la cátedra que no está en la lista del paso 2 se puede escribir a mano**, como la materia del paso 1, o si el selector queda cerrado al catálogo.
 - **Qué hace la curaduría con un campo libre que identifica a un tercero** (un alumno, no un docente): sigue sin publicarse nunca, pero si necesita algún tratamiento especial antes de destilarse en frase es decisión del equipo de curaduría, no de esta épica.
 - **El orden y el colapso por defecto de las frases de los pasos 4 y 5** si el catálogo crece: el boceto de R1 las muestra todas abiertas.
