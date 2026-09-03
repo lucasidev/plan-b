@@ -14,7 +14,7 @@ US-152 (la pregunta por cuatro caminos: esta pantalla es uno; los otros son el p
 
 ## Qué muestra
 
-La pregunta de trayectoria de a uno: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Esto no es un ítem del catálogo de la cursada ([`phrases.md`](../../../../phrases.md)): es un hecho aparte, de a uno, nunca como inventario. Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere.
+La pregunta de trayectoria de a uno: ¿seguís cursando la carrera? Sigo / me recibí, en… / me fui, en… / ahora no. Es una sola pregunta con un año, y se contesta una sola vez: respondida, se apaga para siempre (US-169). Esto no es una frase del catálogo de la cursada ([`phrases.md`](../../../../phrases.md)): es un hecho aparte, de a uno, nunca como inventario. Sin esto no sabemos dónde se cae la mayoría ni cuánto tarda la gente de verdad, y el silencio no se infiere.
 
 Una sola tarjeta: la pregunta, cuatro salidas (sigo / me recibí, en… / me fui, en… / ahora no), el año cuando hace falta, y una línea que dice qué se hace con eso (cuántos se reciben, cuántos se van y cuándo, de cohortes cerradas, sin tu nombre) y que no se va a volver a preguntar.
 

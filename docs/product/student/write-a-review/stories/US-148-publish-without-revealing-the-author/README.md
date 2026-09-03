@@ -9,7 +9,7 @@ Como quien está cursando, quiero que nadie sepa que fui yo, para poder decir lo
 
 ## Listo cuando
 
-- Ninguna reseña se publica individual: lo que se publica es el agregado por cátedra (la moda y la distribución de cada ítem, con sus voces), y recién desde que la cátedra junta 10 reseñas ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md), [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
+- Ninguna reseña se publica individual: lo que se publica es el agregado por cátedra (la moda y la distribución de cada frase, con sus voces), y recién desde que la cátedra junta 10 reseñas ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md), [ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
 - Nunca se publica el nombre, la cuenta ni el rol de quien reseñó, ni cómo terminó su cursada.
 
 ## Dónde se resuelve

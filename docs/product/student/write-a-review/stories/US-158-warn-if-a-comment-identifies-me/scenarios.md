@@ -12,4 +12,4 @@ No aplica.
 
 ## Edge cases
 
-- Lo que sí sigue abierto: qué hace la curaduría con un campo libre que identifica a un tercero (un alumno, no un docente) al destilarlo en ítem o en nota editorial; es decisión del equipo de curaduría, no de esta pantalla (ver "Lo que esta épica todavía no resuelve" en el [README de la épica](../../README.md)).
+- Lo que sí sigue abierto: qué hace la curaduría con un campo libre que identifica a un tercero (un alumno, no un docente) al destilarlo en frase o en nota editorial; es decisión del equipo de curaduría, no de esta pantalla (ver "Lo que esta épica todavía no resuelve" en el [README de la épica](../../README.md)).

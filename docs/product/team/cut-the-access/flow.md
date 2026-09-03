@@ -15,7 +15,7 @@ flowchart TD
   K --> L{Alguien se va del equipo}
   L --> M([El acceso se corta en el momento<br/>y su registro de acciones queda, US-219])
   K --> N{Quién revisa el registro, US-218}
-  N -->|primera capa, construible| N1([Se publica en agregado: notas editoriales,<br/>ítems destilados y reclamos resueltos, por categoría, sin contenido])
+  N -->|primera capa, construible| N1([Se publica en agregado: notas editoriales,<br/>frases destiladas y reclamos resueltos, por categoría, sin contenido])
   N -->|segunda capa, decisión de gobierno| N2([Una persona externa lee el registro<br/>ya disociado, nunca en bruto])
 ```
 

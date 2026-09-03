@@ -4,7 +4,7 @@
 
 ## Camino feliz
 
-**E1.** Dado que Matías reseñó Análisis Matemático II, Cátedra Pérez, UNSTA, 1C 2025, respondiendo "Faltaron muchas" en "¿Se dictaron las clases?" (ítem I07), que hoy suma 12 de 40 voces.
+**E1.** Dado que Matías reseñó Análisis Matemático II, Cátedra Pérez, UNSTA, 1C 2025, respondiendo "Faltaron muchas" en "¿Se dictaron las clases?" (frase I07), que hoy suma 12 de 40 voces.
 Cuando Matías entra a Mis aportes, abre ese aporte en Editar y cambia esa respuesta a "Faltaron algunas", sin tocar el resto de la reseña.
 Entonces esa respuesta se actualiza: "Faltaron muchas" pasa a sumar 11 de 40 voces y "Faltaron algunas" suma una más; la cursada sigue teniendo 40 voces en total, porque Matías sigue siendo una de ellas.
 
@@ -26,9 +26,9 @@ Entonces se lo rechaza: a Editar solo entra el dueño del aporte, Matías no pue
 Cuando guarda la edición.
 Entonces el texto se guarda igual, sin ningún chequeo ni retención: nunca se va a publicar, así que no hay nada que moderar antes de nada; las respuestas que había dado siguen contando igual.
 
-**N3.** Dado que Matías tiene un aporte publicado con "Faltaron muchas" respondido en "¿Se dictaron las clases?" (ítem I07).
+**N3.** Dado que Matías tiene un aporte publicado con "Faltaron muchas" respondido en "¿Se dictaron las clases?" (frase I07).
 Cuando entra a Editar y vuelve esa respuesta a sin responder (la saltea), sin tocar el resto de la reseña.
-Entonces I07 deja de contar la voz de Matías (pasa a 11 de 39 para ese ítem), mientras el resto de sus respuestas sigue contando sobre 40: saltear después de haber respondido también vale.
+Entonces I07 deja de contar la voz de Matías (pasa a 11 de 39 para esa frase), mientras el resto de sus respuestas sigue contando sobre 40: saltear después de haber respondido también vale.
 
 **N4.** Dado que Diego tiene reseñas publicadas de dos cursadas distintas (Análisis Matemático II y Programación I).
 Cuando quiere sacar las dos de una sola acción.

@@ -9,8 +9,8 @@ Como la institución, quiero ver si mejoré desde que lo publicaron, porque arre
 
 ## Listo cuando
 
-- La ficha muestra cada ítem por el período de cursada en que pasó (su moda y sus voces), sin suavizar, con la publicación y la respuesta marcadas en la línea de tiempo. (Absorbe la que era O7-4.)
-- Si un ítem cambió de código porque cambió su significado, la serie declara el corte: los tramos de antes y después no se comparan entre sí ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)).
+- La ficha muestra cada frase por el período de cursada en que pasó (su moda y sus voces), sin suavizar, con la publicación y la respuesta marcadas en la línea de tiempo. (Absorbe la que era O7-4.)
+- Si una frase cambió de código porque cambió su significado, la serie declara el corte: los tramos de antes y después no se comparan entre sí ([ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)).
 
 ## Dónde se resuelve
 

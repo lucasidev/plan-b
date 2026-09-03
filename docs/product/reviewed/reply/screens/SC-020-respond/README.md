@@ -12,7 +12,7 @@ US-172 (dueña): la respuesta se publica al mandarla, con nombre y rol (o cargo)
 
 ## Qué muestra
 
-1. **Los números a los que se responde**: los conteos ya publicados de la ficha (moda y distribución por ítem, la comparación con las hermanas si la hay), a la vista mientras se escribe. No hay ningún comentario ni testimonio individual que mostrar: no existe ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+1. **Los números a los que se responde**: los conteos ya publicados de la ficha (moda y distribución por frase, la comparación con las hermanas si la hay), a la vista mientras se escribe. No hay ningún comentario ni testimonio individual que mostrar: no existe ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 2. **Tu respuesta**: un campo con tope. Se publica apenas se manda: no hay chequeo previo ni plazo de retención, porque no hay ningún testimonio que citar ni ningún autor anónimo que proteger.
 
 **Al publicarse**: la respuesta queda en la ficha con tu nombre, tu rol o cargo, "identidad verificada" y la fecha; no mueve ningún conteo (así se ve en la Ficha de cátedra, no en esta pantalla).

@@ -26,7 +26,7 @@ Cuarto año, veinte horas de trabajo. Tiene más para decir que nadie y menos ti
 
 **La contradicción**: quiere que exista el dato pero no quiere producirlo. Aportaría si le costara lo que cuesta mandar un mensaje.
 
-**Decisión que produce**: por ella se responden ítems cerrados en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y la co-cursada que le sirve sale sola de las reseñas, sin que el producto le pida nada de su carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)).
+**Decisión que produce**: por ella se responden frases cerradas en vez de escribir, la unidad es una cursada y no el período, y lo único que la reseña le agrega es un toque: cómo terminó. Y la co-cursada que le sirve sale sola de las reseñas, sin que el producto le pida nada de su carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)).
 
 ### Matías, 26 · "Reclamó solo y no sirvió de nada"
 
@@ -34,7 +34,7 @@ Cursó una materia donde faltaron seis clases. Fue a hablar, le dijeron que era 
 
 **La contradicción**: está convencido de que no cambia nada y aun así quiere que quede registrado. Le da lo mismo el producto: quiere el número.
 
-**Decisión que produce**: por él el gate llega en la acción y no en la puerta, nada le pide completar algo antes de reseñar, y su reseña queda: suma a los conteos, y si escribe en el campo libre, alimenta los ítems que se destilan más adelante. Lo que quiere es que quede.
+**Decisión que produce**: por él el gate llega en la acción y no en la puerta, nada le pide completar algo antes de reseñar, y su reseña queda: suma a los conteos, y si escribe en el campo libre, alimenta las frases que se destilan más adelante. Lo que quiere es que quede.
 
 ### Ana, 21 · "Su facultad no está y sospecha del vacío"
 
@@ -58,7 +58,7 @@ Trabaja en un centro de estudiantes. Tiene que llevar un dato a una reunión y q
 
 **La contradicción**: nos usa y a la vez nos audita. Si no puede ver cómo calculamos, no nos cita; si puede, nos defiende.
 
-**Decisión que produce**: por ella el método es público (la regla de comparación, el catálogo de ítems, los sesgos), la cobertura se declara y el crudo se descarga sin registro, agregado por ítem con voces y período, sin reseñas individuales: no existe un crudo con más que la ficha.
+**Decisión que produce**: por ella el método es público (la regla de comparación, el catálogo de frases, los sesgos), la cobertura se declara y el crudo se descarga sin registro, agregado por frase con voces y período, sin reseñas individuales: no existe un crudo con más que la ficha.
 
 ### Diego, 28 · "Dejó en tercero y nadie le preguntó por qué"
 

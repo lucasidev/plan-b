@@ -5,13 +5,13 @@
 ```mermaid
 flowchart TD
   A([Explorar o Ficha de carrera]) --> B[Método: la regla de comparación tal cual<br/>y cómo se suman las voces, US-130, US-183]
-  B --> C[El catálogo de ítems entero, con su capa<br/>y cuál es destilado, US-187]
+  B --> C[El catálogo de frases entero, con su capa<br/>y cuál es destilada, US-187]
   C --> D[Los sesgos declarados: de quienes reseñaron y la co-cursada;<br/>la duración real y el egreso, dato oficial, US-182]
   D --> E[Qué no cubrimos: carreras cargadas, en cola y pedidas<br/>cobertura por plan, cuentas afuera por inconsistencia, US-182]
   E --> G[La postura sin acuerdos con instituciones, US-185]
   G --> M([Ninguna causa afirmada, US-184])
   G --> H{Descargar sin cuenta, US-180}
-  H --> I([Tabla 1: ítem, opción, sujeto, período, voces])
+  H --> I([Tabla 1: frase, opción, sujeto, período, voces])
   H --> J([Tabla 2: tasa de finalización por materia y período,<br/>co-cursada por par y período])
   I --> K([Lo discute afuera])
   J --> K

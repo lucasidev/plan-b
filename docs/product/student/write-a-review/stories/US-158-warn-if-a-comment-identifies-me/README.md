@@ -11,7 +11,7 @@ Como quien reseña, quería que me avisaran si lo que escribí me delataba, porq
 
 ## Listo cuando
 
-- Ya no aplica como estaba escrito: no hay chequeo previo a una publicación, porque el campo libre nunca se publica ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Lo que sí sigue siendo cierto: el equipo de curaduría lee ese texto para destilar ítems o escribir notas editoriales sin nombres, nunca con lo que escribiste tal cual, y nunca de tu cátedra con tu nombre.
+- Ya no aplica como estaba escrito: no hay chequeo previo a una publicación, porque el campo libre nunca se publica ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)). Lo que sí sigue siendo cierto: el equipo de curaduría lee ese texto para destilar frases o escribir notas editoriales sin nombres, nunca con lo que escribiste tal cual, y nunca de tu cátedra con tu nombre.
 
 ## Dónde se resuelve
 

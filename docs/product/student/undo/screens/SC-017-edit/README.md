@@ -12,8 +12,8 @@ US-165 (dueña): el aporte se puede modificar y borrar desde Mis aportes: la res
 
 ## Qué muestra
 
-- **Editar un aporte**: llega desde Mis aportes con la materia, el período, cómo terminó y la cátedra a la vista, como contexto. Las respuestas de las capas de conducta observable y de vivencia, cada una con su propio control para cambiarla o volverla a "sin responder". El campo libre, editable, sin ningún tope ni chequeo: la pantalla recuerda que nunca se publica. Guardar actualiza al instante lo que cambiaste: los conteos de cada ítem tocado se recalculan, y la reseña lo confirma en pantalla.
-- **Borrar este aporte**: una confirmación aparte ("esto no se puede deshacer"); al confirmar, la reseña entera deja de contar y sus voces bajan de cada ítem que había respondido.
+- **Editar un aporte**: llega desde Mis aportes con la materia, el período, cómo terminó y la cátedra a la vista, como contexto. Las respuestas de las capas de conducta observable y de vivencia, cada una con su propio control para cambiarla o volverla a "sin responder". El campo libre, editable, sin ningún tope ni chequeo: la pantalla recuerda que nunca se publica. Guardar actualiza al instante lo que cambiaste: los conteos de cada frase tocada se recalculan, y la reseña lo confirma en pantalla.
+- **Borrar este aporte**: una confirmación aparte ("esto no se puede deshacer"); al confirmar, la reseña entera deja de contar y sus voces bajan de cada frase que había respondido.
 
 ## Estados
 

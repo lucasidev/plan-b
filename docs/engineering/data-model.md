@@ -409,7 +409,7 @@ Constraints:
 
 - `UNIQUE(code)` (`ux_items_code`).
 
-**El código es la identidad, no el texto.** Afinar la redacción sin cambiar lo que se pregunta es un update: misma serie histórica, respuestas viejas comparables. Si cambia el **significado**, no se edita: se crea un ítem nuevo con código nuevo y el anterior se retira, y eso es lo que declara la ruptura de la serie. La distinción es editorial y la sostiene quien cura; el modelo la hace posible separando las dos columnas.
+**El código es la identidad, no el texto.** Afinar la redacción sin cambiar lo que se pregunta es un update: misma serie histórica, respuestas viejas comparables. Si cambia el **significado**, no se edita: se crea una frase nueva con código nuevo y la anterior se retira, y eso es lo que declara la ruptura de la serie. La distinción es editorial y la sostiene quien cura; el modelo la hace posible separando las dos columnas.
 
 ### Entity: ItemOption
 
@@ -423,13 +423,13 @@ Constraints:
 
 Constraints:
 
-- `PRIMARY KEY (item_id, value)`, con `value` explícitamente **no identity**: es un valor de negocio que elige quien cura el ítem, y la convención de EF lo habría hecho autoincremental (se detectó leyendo la migración generada).
+- `PRIMARY KEY (item_id, value)`, con `value` explícitamente **no identity**: es un valor de negocio que elige quien cura la frase, y la convención de EF lo habría hecho autoincremental (se detectó leyendo la migración generada).
 
-Invariantes que sostiene el aggregate: al menos dos opciones; valores y órdenes únicos; **a lo sumo una negativa** (el rojo de la ficha marca una sola cosa); y ninguna valencia distinta de `None` si el ítem es de capa `Context`, porque el contexto no se publica dato por dato.
+Invariantes que sostiene el aggregate: al menos dos opciones; valores y órdenes únicos; **a lo sumo una negativa** (el rojo de la ficha marca una sola cosa); y ninguna valencia distinta de `None` si la frase es de capa `Context`, porque el contexto no se publica dato por dato.
 
 ### Entity: Instrument
 
-Una versión del cuestionario: qué ítems se ofrecen y en qué orden.
+Una versión del cuestionario: qué frases se ofrecen y en qué orden.
 
 | Campo         | Tipo        | Constraints | Notas                                    |
 | ------------- | ----------- | ----------- | ---------------------------------------- |
@@ -457,7 +457,7 @@ Constraints:
 
 - `PRIMARY KEY (instrument_id, item_id)`.
 
-No lleva marca de obligatorio: **saltear siempre vale**, así que no habría dónde ponerla. Tampoco lleva condición: los ítems condicionales no existen en el catálogo vigente y se agregan el día que un ítem real los pida.
+No lleva marca de obligatorio: **saltear siempre vale**, así que no habría dónde ponerla. Tampoco lleva condición: las frases condicionales no existen en el catálogo vigente y se agregan el día que una frase real las pida.
 
 ### Entity: Review
 
@@ -491,15 +491,15 @@ Constraints:
 
 - `PRIMARY KEY (review_id, item_id)`, con `option_value` **no identity** por la misma razón que `item_options.value`.
 
-**Saltear no deja fila.** Un ítem sin responder simplemente no está en esta tabla, y por eso no cuenta en ningún denominador: el denominador de un ítem son las reseñas que lo respondieron, no las que existen. Guardar un "no dijo" explícito sería la misma información con una fila de más, y abriría la puerta a contarlo como si fuera una respuesta.
+**Saltear no deja fila.** Una frase sin responder simplemente no está en esta tabla, y por eso no cuenta en ningún denominador: el denominador de una frase son las reseñas que la respondieron, no las que existen. Guardar un "no dijo" explícito sería la misma información con una fila de más, y abriría la puerta a contarlo como si fuera una respuesta.
 
 Se guarda el **valor** y no la etiqueta porque la etiqueta puede afinarse después sin tocar lo respondido: es lo que mantiene comparable la serie.
 
 ### Invariantes cross-table (enforced en app)
 
 - La materia y el período de una `Review` existen en el catálogo; la cátedra, si se declaró, es una de las de esa materia (si no, el dato aterrizaría en la ficha equivocada).
-- Cada `ItemAnswer` apunta a un ítem que **el instrumento de esa reseña ofrece**, y a un valor que **ese ítem admite**. El aggregate recibe el juego de pares válidos armado desde el catálogo y rechaza cualquier otro.
-- Una opción que ya tiene respuestas no se borra ni cambia de valor al re-editar el ítem: las reseñas viejas la apuntan.
+- Cada `ItemAnswer` apunta a una frase que **el instrumento de esa reseña ofrece**, y a un valor que **esa frase admite**. El aggregate recibe el juego de pares válidos armado desde el catálogo y rechaza cualquier otro.
+- Una opción que ya tiene respuestas no se borra ni cambia de valor al re-editar la frase: las reseñas viejas la apuntan.
 - Ningún read público devuelve una `Review` individual, ni su `free_text`, ni su contexto dato por dato. Lo que se publica son conteos agregados, y el piso de 10 reseñas por cátedra protege a quien reseñó, no a la institución.
 
 ## Context: Semantic Analytics

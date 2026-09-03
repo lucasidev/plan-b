@@ -4,13 +4,13 @@
 
 ## Camino feliz
 
-**E1.** Dado que 15 cuentas se dieron de alta el mismo día, respondiendo igual en cada ítem entre ellas y sin ninguna trayectoria previa (ninguna había reseñado nada antes), y las 15 responden el ítem "Podían preguntar sin quedar mal" con la misma opción sobre Cátedra Pérez dentro de una ventana de 2 horas.
+**E1.** Dado que 15 cuentas se dieron de alta el mismo día, respondiendo igual en cada frase entre ellas y sin ninguna trayectoria previa (ninguna había reseñado nada antes), y las 15 responden la frase "Podían preguntar sin quedar mal" con la misma opción sobre Cátedra Pérez dentro de una ventana de 2 horas.
 Cuando el sistema evalúa la procedencia de esas cuentas.
 Entonces dispara la alarma de cuentas correlacionadas sobre Cátedra Pérez, por la fecha de alta compartida, el patrón idéntico y la ausencia de trayectoria.
 
 **E2.** Dado que Nahuel revisa esa alarma y marca las 15 cuentas como correlacionadas.
-Cuando se recalcula ese ítem sobre Cátedra Pérez.
-Entonces esas 15 voces no suman ni a las voces ni a la moda de ese ítem, ni a ningún agregado de trayectoria de esas cuentas.
+Cuando se recalcula esa frase sobre Cátedra Pérez.
+Entonces esas 15 voces no suman ni a las voces ni a la moda de esa frase, ni a ningún agregado de trayectoria de esas cuentas.
 
 **E3.** Dado que Nahuel, después de marcar las 15 cuentas, congela los conteos de Cátedra Pérez.
 Cuando se mira el estado de esa cátedra.

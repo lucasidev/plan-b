@@ -5,7 +5,7 @@
 ```mermaid
 flowchart TD
   A([Mis aportes: entra a modificar algo que reseñó]) --> B{Editar}
-  B -->|edita una respuesta| B1[Se actualiza esa respuesta:<br/>los conteos del ítem se recalculan, US-165]
+  B -->|edita una respuesta| B1[Se actualiza esa respuesta:<br/>los conteos de la frase se recalculan, US-165]
   B -->|edita el campo libre| B1b[Se guarda directo, sin chequeo:<br/>nunca se publica, ADR-0084]
   B -->|borra la reseña entera| B2[La reseña deja de contar en todos los conteos:<br/>es tuyo, se borra de a uno]
   B1 --> C[Mis aportes se actualiza]
@@ -33,7 +33,7 @@ flowchart TD
 
 ## Salidas y errores
 
-- **Respuesta editada**: se actualiza al instante, sin ningún chequeo; los conteos del ítem se recalculan hacia atrás.
+- **Respuesta editada**: se actualiza al instante, sin ningún chequeo; los conteos de la frase se recalculan hacia atrás.
 - **Campo libre editado**: se guarda directo, sin chequeo, porque nunca se publica (ADR-0084).
 - **Reseña borrada**: deja de contar en cualquier agregado, de una vez: no hay borrado parcial de la cursada disfrazado de borrado total.
 - **Baja de cuenta**: irreversible en la identidad (se anonimiza) y preserva las reseñas exactas (US-166); lo que se quiera sacar puntual, antes por Editar.

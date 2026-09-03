@@ -10,7 +10,7 @@ Entonces no encuentra ningún dato publicado de esa cátedra (ni conteos, ni dis
 
 **E2.** Dado que la cátedra Gómez llega a su décima reseña, con Lucía entre las 10 personas que cursaron.
 Cuando se visita su ficha pública o se descarga el CSV agregado.
-Entonces se publican los conteos por ítem (moda, distribución, voces), pero ninguna columna ni campo trae un nombre, una cuenta ni un identificador de perfil.
+Entonces se publican los conteos por frase (moda, distribución, voces), pero ninguna columna ni campo trae un nombre, una cuenta ni un identificador de perfil.
 
 **E3.** Dado que Lucía, una de esas 10 personas, está en el paso 6 de Reseñar esa misma cátedra, antes de enviar.
 Cuando llega al contrato previo a enviar.

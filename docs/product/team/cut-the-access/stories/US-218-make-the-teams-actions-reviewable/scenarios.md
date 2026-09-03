@@ -4,7 +4,7 @@
 
 ## Camino feliz
 
-**E1.** Dado que en agosto de 2026 la curaduría publicó 2 notas editoriales y retiró 1, aprobó 3 ítems destilados y descartó 5, y resolvió 2 reclamos de instituciones sobre datos publicados (1 corrigió el catálogo, 1 se sostuvo)
+**E1.** Dado que en agosto de 2026 la curaduría publicó 2 notas editoriales y retiró 1, aprobó 3 frases destiladas y descartó 5, y resolvió 2 reclamos de instituciones sobre datos publicados (1 corrigió el catálogo, 1 se sostuvo)
 Cuando cualquiera entra al registro público en agregado (Equipo o Anonimato)
 Entonces ve esos números por categoría, sin ningún texto de campo libre ni nombre de quien reseñó.
 
@@ -19,6 +19,6 @@ Entonces lee el mismo agregado ya disociado: el producto no construye ningún ac
 
 ## Edge cases
 
-- Un mes sin ninguna nota, ningún ítem destilado y ningún reclamo: el registro público muestra el agregado en cero, la sección no desaparece.
+- Un mes sin ninguna nota, ninguna frase destilada y ningún reclamo: el registro público muestra el agregado en cero, la sección no desaparece.
 - Si el agregado se publica en Equipo, en Anonimato, o en ambos, es una pregunta abierta en las dos fichas (README de la épica).
 - "Se revisa cada tanto" no es una cadencia: cada cuánto se revisa el registro no está decidido (README de la épica).

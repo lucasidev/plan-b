@@ -22,6 +22,6 @@ Como quien está cursando, quiero saber qué materias se pueden llevar juntas, p
 
 Es el dato que la lapicera no puede calcular: armar el horario lo resuelve cualquiera en quince minutos, saber que 18 de 40 dejaron una de las dos no lo resuelve nadie solo ([THESIS.md](../../../../../THESIS.md), "Qué no hace").
 
-Dependía de US-154 ("decir cómo terminó la cursada"), **ya construida** desde R1: es el ítem `COURSE_OUTCOME` del que sale quién dejó una. Hallazgo C04 de la [revisión del 2026-08-29](../../../../../history/reviews/2026-08-29-my-career-epic.md).
+Dependía de US-154 ("decir cómo terminó la cursada"), **ya construida** desde R1: es la frase `COURSE_OUTCOME` de la que sale quién dejó una. Hallazgo C04 de la [revisión del 2026-08-29](../../../../../history/reviews/2026-08-29-my-career-epic.md).
 
 Vivía en la épica Mi carrera, que se cerró con [ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md): el producto informa sobre materias y cátedras, no hace seguimiento de tu carrera. Con la épica se fueron US-144 (filtrar la co-cursada a tu plan) y US-145 (marcar lo que vas a cursar), que existían para eso. Esta story sobrevivió porque su dato no necesita saber nada de quien lo lee.

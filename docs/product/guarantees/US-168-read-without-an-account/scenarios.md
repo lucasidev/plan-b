@@ -6,7 +6,7 @@
 
 **E1.** Dado que Valentina nunca creó una cuenta en plan-b,
 Cuando entra a la Ficha de cátedra de Análisis Matemático II, Cátedra Pérez, UNSTA (cabecera con gate, 41 voces),
-Entonces lee la cabecera, los conteos por ítem con su moda y distribución, la fama por convergencia y la serie por período, sin que en ningún momento se le pida iniciar sesión.
+Entonces lee la cabecera, los conteos por frase con su moda y distribución, la fama por convergencia y la serie por período, sin que en ningún momento se le pida iniciar sesión.
 
 **E2.** Dado que Valentina compara instituciones en Dónde estudiarla,
 Cuando abre la Ficha de carrera de cada oferta comparada,

@@ -24,5 +24,5 @@ Entonces en ningún caso aparece un botón de "desbloquear con más voces" ni un
 
 ## Edge cases
 
-- Llega la reseña número 10 a Cátedra Ibáñez: la ficha deja de mostrar el conteo hacia el piso y publica sus ítems con moda y distribución de una sola vez, no de a poco.
+- Llega la reseña número 10 a Cátedra Ibáñez: la ficha deja de mostrar el conteo hacia el piso y publica sus frases con moda y distribución de una sola vez, no de a poco.
 - Que Cátedra Ibáñez esté vacía o bajo el piso es un estado distinto del estado del canal de su titular: que Prof. Paredes nunca haya verificado su identidad ni respondido no hace que la ficha esté "vacía"; son dos cosas separadas (US-176).
