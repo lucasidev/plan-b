@@ -1,4 +1,5 @@
 using FluentValidation;
+using Planb.Academic.Domain.Universities;
 
 namespace Planb.Academic.Application.Features.AdminUniversities;
 
@@ -6,7 +7,7 @@ internal sealed class UpdateUniversityValidator : AbstractValidator<UpdateUniver
 {
     public UpdateUniversityValidator()
     {
-        RuleFor(c => c.Name).NotEmpty();
-        RuleFor(c => c.Slug).NotEmpty();
+        RuleFor(c => c.Name).NotEmpty().MaximumLength(University.MaxNameLength);
+        RuleFor(c => c.Slug).NotEmpty().MaximumLength(University.MaxSlugLength);
     }
 }

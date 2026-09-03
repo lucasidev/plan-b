@@ -1,4 +1,5 @@
 using FluentValidation;
+using Planb.Academic.Domain.Subjects;
 
 namespace Planb.Academic.Application.Features.AdminSubjects;
 
@@ -6,8 +7,8 @@ internal sealed class UpdateSubjectValidator : AbstractValidator<UpdateSubjectCo
 {
     public UpdateSubjectValidator()
     {
-        RuleFor(c => c.Code).NotEmpty();
-        RuleFor(c => c.Name).NotEmpty();
+        RuleFor(c => c.Code).NotEmpty().MaximumLength(Subject.MaxCodeLength);
+        RuleFor(c => c.Name).NotEmpty().MaximumLength(Subject.MaxNameLength);
 
         // TermKind ya llega parseado a enum fuerte (el endpoint hace el Enum.TryParse); acá solo
         // quedan los rangos primitivos. El resto (consistencia term_in_year/kind, total >= weekly)

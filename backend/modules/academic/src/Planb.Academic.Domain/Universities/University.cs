@@ -19,6 +19,12 @@ namespace Planb.Academic.Domain.Universities;
 /// </summary>
 public sealed class University : Entity<UniversityId>, IAggregateRoot
 {
+    // Mismo largo que las columnas EF (UniversityConfiguration): name varchar(200), slug
+    // varchar(100). Compartida por el aggregate y el validator de alta/edicion para que ninguno
+    // acepte lo que la columna despues rechaza con un 500 de Postgres.
+    public const int MaxNameLength = 200;
+    public const int MaxSlugLength = 100;
+
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
 
