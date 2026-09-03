@@ -36,7 +36,19 @@ const findings: Finding[] = [];
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
-    if (['node_modules', '.git', 'bin', 'obj', '.next', 'dist'].includes(name)) continue;
+    if (
+      [
+        'node_modules',
+        '.git',
+        'bin',
+        'obj',
+        '.next',
+        'dist',
+        '.stryker-tmp',
+        'StrykerOutput',
+      ].includes(name)
+    )
+      continue;
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p, out);
     else out.push(p);

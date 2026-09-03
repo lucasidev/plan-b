@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <!-- Duplica Directory.Build.props: Buildalyzer (Stryker.NET) lee el TargetFramework en forma
+         literal y no seguido de imports, así que sin esto el análisis del proyecto falla
+         (stryker-net#3758). Se borra cuando ese issue se cierre. -->
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Planb.Reviews.Domain</RootNamespace>
     <AssemblyName>Planb.Reviews.Domain</AssemblyName>
   </PropertyGroup>

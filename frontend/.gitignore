@@ -12,6 +12,9 @@ dist/
 
 # Testing / e2e
 coverage/
+# Stryker (mutation testing): sandbox y reportes
+.stryker-tmp/
+reports/
 playwright-report/
 test-results/
 .playwright-mcp/

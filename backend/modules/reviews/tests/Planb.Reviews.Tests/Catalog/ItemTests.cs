@@ -82,6 +82,18 @@ public class ItemTests
         result.Error.ShouldBe(ItemErrors.CodeTooLong);
     }
 
+    /// <summary>Borde exacto: el máximo entra. Uno más (arriba) ya lo cubre <c>Create_CodeTooLong_ReturnsError</c>.</summary>
+    [Fact]
+    public void Create_CodeAtMaxLength_Succeeds()
+    {
+        var code = new string('A', Item.MaxCodeLength);
+
+        var result = Create(code: code);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Code.ShouldBe(code);
+    }
+
     [Theory]
     [InlineData("CHAIR ANSWERS")]  // espacio
     [InlineData("ÍTEM_CODE")]      // tilde
@@ -117,6 +129,18 @@ public class ItemTests
         result.Error.ShouldBe(ItemErrors.TextTooLong);
     }
 
+    /// <summary>Borde exacto: el máximo entra.</summary>
+    [Fact]
+    public void Create_TextAtMaxLength_Succeeds()
+    {
+        var text = new string('A', Item.MaxTextLength);
+
+        var result = Create(text: text);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Text.ShouldBe(text);
+    }
+
     [Fact]
     public void Create_HelpTooLong_ReturnsError()
     {
@@ -126,6 +150,18 @@ public class ItemTests
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(ItemErrors.HelpTooLong);
+    }
+
+    /// <summary>Borde exacto: el máximo entra.</summary>
+    [Fact]
+    public void Create_HelpAtMaxLength_Succeeds()
+    {
+        var help = new string('A', Item.MaxHelpLength);
+
+        var result = Create(help: help);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Help.ShouldBe(help);
     }
 
     [Theory]
@@ -205,6 +241,23 @@ public class ItemTests
         result.Error.ShouldBe(ItemErrors.OptionLabelTooLong);
     }
 
+    /// <summary>Borde exacto: el máximo entra.</summary>
+    [Fact]
+    public void Create_OptionLabelAtMaxLength_Succeeds()
+    {
+        var label = new string('A', ItemOption.MaxLabelLength);
+        List<(short Value, short Order, string Label, OptionValence Valence)> options =
+        [
+            (1, 1, label, OptionValence.None),
+            (2, 2, "Otra", OptionValence.None),
+        ];
+
+        var result = Create(options: options);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Options[0].Label.ShouldBe(label);
+    }
+
     [Fact]
     public void Create_TwoNegativeOptions_ReturnsMultipleNegativeOptions()
     {
@@ -212,6 +265,27 @@ public class ItemTests
         [
             (1, 1, "Nunca", OptionValence.Negative),
             (2, 2, "Jamás", OptionValence.Negative),
+        ];
+
+        var result = Create(options: options);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ItemErrors.MultipleNegativeOptions);
+    }
+
+    /// <summary>
+    /// La regla es "a lo sumo una negativa" contra CUALQUIERA de las que ya entraron, no contra
+    /// TODAS: acá de las dos anteriores solo una es negativa (la otra es neutra), y aun así la
+    /// tercera negativa se tiene que rechazar.
+    /// </summary>
+    [Fact]
+    public void Create_TwoNegativeOptionsAmongMixedValences_ReturnsMultipleNegativeOptions()
+    {
+        List<(short Value, short Order, string Label, OptionValence Valence)> options =
+        [
+            (1, 1, "Neutra", OptionValence.None),
+            (2, 2, "Nunca", OptionValence.Negative),
+            (3, 3, "Jamás", OptionValence.Negative),
         ];
 
         var result = Create(options: options);
@@ -428,6 +502,31 @@ public class ItemTests
         item.Layer.ShouldBe(ItemLayer.ChairConduct);
         item.UpdatedAt.ShouldBe(T0);
         item.LastChangedBy.ShouldBeNull();
+    }
+
+    /// <summary>
+    /// La edición valida el texto igual que Create, con el mismo criterio de atomicidad: si el
+    /// texto no entra, nada se toca (ni siquiera las opciones nuevas, que acá son válidas).
+    /// </summary>
+    [Fact]
+    public void Edit_TextTooLong_ReturnsError_AndLeavesItemUnchanged()
+    {
+        var item = Create().Value;
+        var tooLong = new string('A', Item.MaxTextLength + 1);
+
+        var result = item.Edit(
+            tooLong,
+            null,
+            item.Layer,
+            DefaultOptions(),
+            new HashSet<short>(),
+            new FixedClock(T0.AddDays(1)),
+            Curator);
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(ItemErrors.TextTooLong);
+        item.Text.ShouldBe("¿El profesor responde las consultas?");
+        item.UpdatedAt.ShouldBe(T0);
     }
 
     /// <summary>

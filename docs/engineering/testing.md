@@ -172,6 +172,53 @@ Aterrizó con US-T04-b (Identity); **US-T07-b generalizó las reglas a los 5 mó
 
 No expresables en NetArchTest (requieren body inspection), quedan en review: `DateTime.UtcNow` directo (usar `IDateTimeProvider`), `throw` para fallas de negocio (usar `Result<T>`).
 
+### Mutation testing
+
+Cobertura dice qué línea corrió; no dice si algún test se daría cuenta de un cambio en esa línea. [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/introduction/) sí lo mide: cambia una línea a la vez (invierte un booleano, un operador de comparación, borra un bloque) y corre la suite contra esa versión mutada. Si algún test se pone rojo, el mutante murió; si la suite sigue verde, sobrevivió, y eso es un hueco.
+
+Se muta solo el corazón del módulo reviews, en `backend/modules/reviews/src/Planb.Reviews.Domain/`:
+
+- `Catalog/Item.cs`: el corte de serie de una frase, la distinción entre afinar redacción y preguntar otra cosa.
+- `Publishing/ChairFactsCalculator.cs`: la ficha de cátedra (el piso de publicación, la fama, los contrastes contra las hermanas).
+- `Reviews/PublishingRules.cs`: el piso y las constantes de publicación.
+- `Reviews/Review.cs`: el aggregate de la reseña, una voz por cursada.
+
+Son las reglas de negocio que hacen al producto lo que es. El resto del dominio (VOs, errors, repositorios) es estructura y queda afuera.
+
+**Línea de base, medida el 2026-09-02** (Stryker.NET 4.16.0, mutation level Standard, 217 mutantes válidos, corrida completa en 1 min 19 s):
+
+| Archivo | Mutantes | Muertos | Sobrevivientes | Sin cobertura | Score |
+|---|---|---|---|---|---|
+| `Item.cs` | 106 | 92 | 13 | 1 | 86,79 % |
+| `ChairFactsCalculator.cs` | 61 | 46 | 15 | 0 | 75,41 % |
+| `PublishingRules.cs` | 1 | 1 | 0 | 0 | 100,00 % |
+| `Review.cs` | 49 | 38 | 10 | 1 | 77,55 % |
+| **Total** | **217** | **177** | **38** | **2** | **81,57 %** |
+
+**Al cierre del 2026-09-02**, después de escribir el test de cada sobreviviente de la línea de base que tenía una regla de producto detrás (Stryker.NET 4.16.0, mutation level Standard, 201 mutantes válidos, corrida completa en 49 s):
+
+| Archivo | Mutantes | Muertos | Sobrevivientes | Sin cobertura | Score |
+|---|---|---|---|---|---|
+| `Item.cs` | 99 | 98 | 1 | 0 | 98,99 % |
+| `ChairFactsCalculator.cs` | 59 | 53 | 6 | 0 | 89,83 % |
+| `PublishingRules.cs` | 1 | 1 | 0 | 0 | 100,00 % |
+| `Review.cs` | 42 | 41 | 1 | 0 | 97,62 % |
+| **Total** | **201** | **193** | **8** | **0** | **96,02 %** |
+
+La baja de 217 a 201 mutantes válidos es el guard de null que sale de alcance (siguiente párrafo), no una regresión de cobertura.
+
+"Mutantes" cuenta los que compilan y participan del score (quedan afuera los que no compilan o caen en un bloque que ya cubre otro mutante contado). El score es muertos sobre mutantes.
+
+Un guard `ArgumentNullException.ThrowIfNull` no tiene una regla de producto detrás: queda fuera de alcance con `"ignore-methods": ["ThrowIfNull"]` en `stryker-config.json`. El mensaje literal de una excepción tampoco se pinea con un test: los dos sobrevivientes de un `Hydrate` (`Item.cs`, `Review.cs`) quedan como sobrevivientes aceptados. Los 6 sobrevivientes restantes de `ChairFactsCalculator.cs` son equivalentes: cada guard de total cero tiene otro guard igual aguas arriba o aguas abajo en el mismo archivo, así que ningún input que entre por `Calculate` distingue el mutante del original; no se matan con un test, y si se quiere que dejen de sobrevivir hay que quitar el guard redundante, no agregar un test.
+
+Se corre con `just backend-mutation` (`dotnet stryker` sobre `backend/modules/reviews/tests/Planb.Reviews.Tests`, config en el `stryker-config.json` del mismo directorio). El reporte queda en `StrykerOutput/<fecha>/reports/mutation-report.html` de ese directorio, para abrir directo en el navegador; no se commitea (`**/StrykerOutput/` en `.gitignore`).
+
+**No gatea** ([ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md)): thresholds en 80/60 y el break en 0, así que la corrida nunca tira abajo el pipeline por un score bajo. Se mide y se lee, no se bloquea un PR por un número.
+
+**Qué se hace con un sobreviviente**: se lee el mutante contra el código. Si el cambio pisa una regla del producto (algo que la tesis, un ADR o una US prometen), se escribe el test que lo mate. Si el mutante muestra código sin ninguna regla detrás, es un issue: puede ser código de más que se borra, o una regla real que todavía nadie escribió como test.
+
+**Frontend.** Stryker con el runner de vitest (`frontend/stryker.config.mjs`, `just frontend-mutation`) muta la lógica de la pantalla Reseñar (`frontend/src/features/write-review/`: `actions.ts`, `api.server.ts`, `schema.ts`, `types.ts`; los componentes quedan afuera). Medido el 2026-09-02: 122 mutantes y ningún test unitario que importe el feature, así que los 122 sobreviven sin que Stryker llegue a clasificarlos (con cero tests relacionados el runner aborta antes del reporte). La línea de base real se toma cuando #409 deje esa pantalla con tests escritos desde la story; hasta entonces el número que vale es ese: 122 de 122.
+
 ## Frontend
 
 ### Utils / Schemas
