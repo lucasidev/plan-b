@@ -23,6 +23,8 @@ Segundo, el Dockerfile publicaba sin generar el código de Wolverine. La imagen 
 
 Tercero, y esto solo se ve corriéndolo: el host valida su configuración al arrancar y **exige ocho valores que hoy viven únicamente en `appsettings.Development.json`** (los cinco de SMTP y los tres `Identity:*:LinkBaseUrl`). En producción no tienen ningún default. El arranque falla con un `OptionsValidationException` que los nombra, pero nadie los había enumerado en ningún lado.
 
+**Revisión del 2026-09-03.** Con la poda del claim docente del modelo anterior (#416) se fue la verificación docente y su `LinkBaseUrl`: el host exige siete valores, los cinco de SMTP y los dos `Identity:*:LinkBaseUrl` (verificación de mail y reset de contraseña). La tabla vigente está en [deploy.md](../engineering/deploy.md).
+
 La pregunta de fondo es si el arranque debería resolver todo esto solo (migrar, crear su schema, generar lo que falte) o fallar.
 
 ## Decisión

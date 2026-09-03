@@ -87,3 +87,5 @@ La decisión se mantiene: un solo Next.js con un route group por actor. Cambió 
 
 **`(teacher)` se retiró entero.** Tenía su `layout.tsx` con el guard y ninguna página, así que ni siquiera llegaba a ejecutarse: sin rutas debajo, un route group no existe. Su guard leía `session.teacherVerified`, un campo que el backend nunca emitió porque el aggregate `TeacherProfile` no está construido, y que por eso viajaba siempre `undefined` en el tipo de la sesión: el guard mandaba a `/teacher-claim` en el 100% de los casos posibles. La pantalla de reclamo sigue en pie, en `(member)`, que es donde se llega a ella. El grupo vuelve cuando exista qué poner adentro, que es responder reseñas (US-031 y la épica Responder).
 
+**Revisión del 2026-09-03.** La pantalla de reclamo también se retiró, con el claim docente entero del modelo anterior (#416): no tenía story vigente ni test. El recorrido reviewed la rehace desde US-172 y US-227 cuando entre a un sprint.
+
