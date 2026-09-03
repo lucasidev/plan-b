@@ -1,4 +1,5 @@
 import { type APIRequestContext, expect, test } from '@playwright/test';
+import { type CreatedChair, createChair } from '../helpers/chairs';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
@@ -9,6 +10,10 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  * con cuenta y publica sin ella. Por eso el tramo de lectura se hace **sin sesión**: si la ficha
  * necesitara login, la presión que el producto existe para ejercer no llegaría a nadie.
  *
+ * La cátedra es propia de esta corrida (`createChair`), no una de las tres sembradas: la
+ * progresión exacta de conteos que este spec afirma (9 → 10, moda, distribución) exige arrancar
+ * en cero, y una cátedra sembrada no lo garantiza si otro spec ya publicó ahí.
+ *
  * Lo que protege, y ningún unit test puede:
  *   - Que bajo el piso de 10 la ficha exista y diga cuánto le falta, sin adelantar un solo conteo.
  *   - Que en la décima reseña, y no antes, aparezcan la moda y la distribución.
@@ -16,11 +21,8 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  *   - Que lo publicado no tenga reseñas individuales ni el desenlace de nadie (US-148).
  */
 
-const SUBJECT_ID = '00000004-0000-4000-a000-000000000012'; // 211 Fundamentos de Control de Calidad
-const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
-const CHAIR_GONZALEZ = '00000008-0000-4000-a000-000000000002';
-
 // Un período por reseña: la unidad es cuenta × materia × período, y cada reseña va con su cuenta.
+// Son de la universidad, no de la materia: sirven igual para la materia descartable de esta corrida.
 const TERMS = [
   '00000005-0000-4000-a000-000000000001',
   '00000005-0000-4000-a000-000000000002',
@@ -37,6 +39,7 @@ const TERMS = [
 async function publishByApi(
   request: APIRequestContext,
   student: CreatedStudent,
+  chair: CreatedChair,
   termId: string,
   outcome: number,
 ): Promise<void> {
@@ -47,9 +50,9 @@ async function publishByApi(
 
   const published = await request.post('/api/reviews/courses', {
     data: {
-      subjectId: SUBJECT_ID,
+      subjectId: chair.subjectId,
       termId,
-      chairId: CHAIR_GONZALEZ,
+      chairId: chair.chairId,
       answers: [
         // Las tres capas: contexto, conducta de la cátedra, y vivencia.
         { itemCode: 'COURSE_OUTCOME', optionValue: outcome },
@@ -81,23 +84,25 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     context,
     request,
   }) => {
+    const chair = await createChair(request, { label: 'ChairFacts' });
+
     // ---- 1. La cátedra arranca sin una sola voz, y se lee sin cuenta.
     await context.clearCookies();
-    await page.goto(`/chairs/${CHAIR_GONZALEZ}`);
-    await expect(page.getByRole('heading', { name: /cátedra gonz.lez/i })).toBeVisible({
-      timeout: 30_000,
-    });
+    await page.goto(`/chairs/${chair.chairId}`);
+    await expect(
+      page.getByRole('heading', { name: new RegExp(`cátedra ${chair.chairName}`, 'i') }),
+    ).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText(/todavía nadie reseñó cómo es cursar acá/i)).toBeVisible();
 
     // ---- 2. Nueve reseñas: la cátedra queda a una del piso.
     for (let i = 0; i < 9; i++) {
       const student = await createStudent(request, { emailPrefix: `e2e-facts-${i}` });
       students.push(student);
-      await publishByApi(request, student, TERMS[i % TERMS.length], i < 6 ? 1 : 3);
+      await publishByApi(request, student, chair, TERMS[i % TERMS.length], i < 6 ? 1 : 3);
     }
 
     await context.clearCookies();
-    await page.goto(`/chairs/${CHAIR_GONZALEZ}`);
+    await page.goto(`/chairs/${chair.chairId}`);
 
     // Dice cuántas junta y cuántas faltan, y no adelanta un solo conteo: mostrarlos con nueve
     // voces dejaría deducir quién dijo qué, que es la razón del piso (ADR-0082).
@@ -107,8 +112,13 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await expect(page.getByText(/qué hizo la cátedra/i)).toHaveCount(0);
     await expect(page.getByText(/de cada 10 que la cursan/i)).toHaveCount(0);
 
-    // ---- 3. La décima se hace por la pantalla real, que es el acto del producto.
-    const last = await createStudent(request, { emailPrefix: 'e2e-facts-last' });
+    // ---- 3. La décima se hace por la pantalla real, que es el acto del producto. Este alumno se
+    // registra en el plan descartable de la corrida: el picker de /reviews/new solo ofrece las
+    // materias del plan declarado, y la materia descartable no está en ningún otro.
+    const last = await createStudent(request, {
+      emailPrefix: 'e2e-facts-last',
+      careerPlanId: chair.planId,
+    });
     students.push(last);
 
     await context.clearCookies();
@@ -119,12 +129,12 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
     await page.goto('/reviews/new');
-    await page.getByRole('searchbox', { name: /materia/i }).fill('Fundamentos');
-    await page.getByRole('button', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
+    await page.getByRole('searchbox', { name: /materia/i }).fill(chair.subjectName);
+    await page.getByRole('button', { name: new RegExp(chair.subjectName, 'i') }).click();
     await page.getByRole('button', { name: /^2024-C1$/ }).click();
-    const chair = page.getByRole('button', { name: /^Gonz.lez$/ });
-    await expect(chair).toBeVisible({ timeout: 15_000 });
-    await chair.click();
+    const chairButton = page.getByRole('button', { name: chair.chairName, exact: true });
+    await expect(chairButton).toBeVisible({ timeout: 15_000 });
+    await chairButton.click();
 
     // Las tres capas otra vez, ahora a mano.
     await page.getByRole('button', { name: /^La aprob.$/ }).click();
@@ -138,7 +148,7 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
 
     // ---- 4. Con la décima, la ficha publica. Y se lee sin sesión: esa es la mitad de la tesis.
     await context.clearCookies();
-    await page.goto(`/chairs/${CHAIR_GONZALEZ}`);
+    await page.goto(`/chairs/${chair.chairId}`);
 
     await expect(page.getByText(/10 voces/i)).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText(/con 1 más se publica/i)).toHaveCount(0);

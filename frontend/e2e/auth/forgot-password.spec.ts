@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { clearAllMessages, extractTokenFromLatestMail } from '../helpers/mailpit';
-import { LUCIA } from '../helpers/personas';
+import { extractTokenFromLatestMail } from '../helpers/mailpit';
 import { clearForgotPasswordRateLimits } from '../helpers/redis';
+import { createStudent, deleteStudent } from '../helpers/students';
 
 /**
  * E2E happy path + edge cases del flow forgot/reset password (US-033).
@@ -18,72 +18,61 @@ import { clearForgotPasswordRateLimits } from '../helpers/redis';
  *   para esos detalles de DOM.
  * - Los edge cases que SÍ requieren browser (garbage token, sin token,
  *   anti-enum) tienen su propio test cada uno.
+ * - El happy path corre contra un alumno descartable (`createStudent`), no contra Lucía: cambiar
+ *   la contraseña de una persona sembrada la deja en un estado que otro spec en paralelo puede
+ *   pisar a mitad de camino. Un alumno propio se borra entero al final, sin nada que restaurar.
  */
 
 const TEMP_PASSWORD = 'temp-pw-for-e2e-12';
-const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:5000';
-
-async function restoreLuciaPassword() {
-  await clearForgotPasswordRateLimits();
-  await clearAllMessages();
-
-  const r1 = await fetch(`${BACKEND_URL}/api/identity/forgot-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: LUCIA.email }),
-  });
-  if (r1.status !== 204) throw new Error(`forgot-password restore failed: ${r1.status}`);
-
-  const token = await extractTokenFromLatestMail(LUCIA.email);
-  const r2 = await fetch(`${BACKEND_URL}/api/identity/reset-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, newPassword: LUCIA.password }),
-  });
-  if (r2.status !== 204) throw new Error(`reset-password restore failed: ${r2.status}`);
-}
 
 test.describe('forgot/reset password (US-033)', () => {
   test.beforeEach(async () => {
     await clearForgotPasswordRateLimits();
-    await clearAllMessages();
   });
 
-  test('Lucía recupera su contraseña desde sign-in y vuelve a entrar', async ({ page }) => {
-    // 1. /sign-in → click forgot link → /forgot-password
-    await page.goto('/sign-in');
-    await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
-    await expect(page).toHaveURL(/\/forgot-password$/, { timeout: 15_000 });
+  test('un alumno recupera su contraseña desde sign-in y vuelve a entrar', async ({
+    page,
+    request,
+  }) => {
+    const student = await createStudent(request, { emailPrefix: 'e2e-forgot-password' });
 
-    // 2. submit email → /forgot-password/check-inbox?email=...
-    await page.getByLabel(/tu email/i).fill(LUCIA.email);
-    await page.getByRole('button', { name: /mandame el link/i }).click();
-    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 15_000 });
-    expect(new URL(page.url()).searchParams.get('email')).toBe(LUCIA.email);
+    try {
+      // 1. /sign-in → click forgot link → /forgot-password
+      await page.goto('/sign-in');
+      await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
+      await expect(page).toHaveURL(/\/forgot-password$/, { timeout: 15_000 });
 
-    // 3. extract token de mailpit → /reset-password?token=...
-    const token = await extractTokenFromLatestMail(LUCIA.email);
-    await page.goto(`/reset-password?token=${token}`);
-    await expect(page.getByLabel(/^contraseña nueva$/i)).toBeVisible();
+      // 2. submit email → /forgot-password/check-inbox?email=...
+      await page.getByLabel(/tu email/i).fill(student.email);
+      await page.getByRole('button', { name: /mandame el link/i }).click();
+      await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 15_000 });
+      expect(new URL(page.url()).searchParams.get('email')).toBe(student.email);
 
-    // 4. Happy path → /sign-in?reset=success.
-    // (Inline validation errors – password corta, mismatch – se cubren
-    // en el component test del reset-password-form, no acá. Acá nos
-    // concentramos en el flow cross-stack.)
-    await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
-    await page.getByLabel(/repetí la contraseña/i).fill(TEMP_PASSWORD);
-    await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
-    await expect(page).toHaveURL(/\/sign-in\?reset=success/, { timeout: 15_000 });
-    await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
+      // 3. extract token de mailpit → /reset-password?token=...
+      const token = await extractTokenFromLatestMail(student.email);
+      await page.goto(`/reset-password?token=${token}`);
+      await expect(page.getByLabel(/^contraseña nueva$/i)).toBeVisible();
 
-    // 5. Sign-in con la nueva pw → /home
-    await page.getByLabel(/tu email/i).fill(LUCIA.email);
-    await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
-    await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+      // 4. Happy path → /sign-in?reset=success.
+      // (Errores de validación in-line, password corta, mismatch, se cubren
+      // en el component test del reset-password-form, no acá. Acá nos
+      // concentramos en el flow cross-stack.)
+      await page.getByLabel(/^contraseña nueva$/i).fill(TEMP_PASSWORD);
+      await page.getByLabel(/repetí la contraseña/i).fill(TEMP_PASSWORD);
+      await page.getByRole('button', { name: /guardar contraseña nueva/i }).click();
+      await expect(page).toHaveURL(/\/sign-in\?reset=success/, { timeout: 15_000 });
+      await expect(page.getByRole('status').filter({ hasText: /listo/i })).toBeVisible();
 
-    // 6. Cleanup: restaurar pw original
-    await restoreLuciaPassword();
+      // 5. Sign-in con la nueva pw → /home
+      await page.getByLabel(/tu email/i).fill(student.email);
+      await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
+      await page.getByRole('button', { name: /^entrar$/i }).click();
+      await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    } finally {
+      // La contraseña ya cambió a TEMP_PASSWORD en el paso 4: es la que hace falta para
+      // re-autenticar y borrar la cuenta (self-service, ADR-0044).
+      await deleteStudent(request, { email: student.email, password: TEMP_PASSWORD });
+    }
   });
 
   test('email random no existente → 204 sin mail (anti-enumeración)', async ({ page }) => {

@@ -336,32 +336,36 @@ Un spec por user flow. Reusan helpers de `e2e/helpers/`.
 ```ts
 // frontend/e2e/auth/forgot-password.spec.ts
 import { test, expect } from '@playwright/test';
-import { extractResetTokenFromMail } from '../helpers/mailpit';
-import { LUCIA } from '../helpers/personas';
+import { extractTokenFromLatestMail } from '../helpers/mailpit';
 import { clearForgotPasswordRateLimits } from '../helpers/redis';
+import { createStudent, deleteStudent } from '../helpers/students';
 
 test.beforeEach(async () => {
   await clearForgotPasswordRateLimits();
 });
 
-test('Lucía recovers her password from sign-in', async ({ page }) => {
-  await page.goto('/auth');
-  await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
-  await page.getByLabel(/tu email/i).fill(LUCIA.email);
-  await page.getByRole('button', { name: /mandame el link/i }).click();
-  await expect(page).toHaveURL(/\/forgot-password\/check-inbox/);
+test('un alumno recupera su contraseña desde sign-in', async ({ page, request }) => {
+  const student = await createStudent(request, { emailPrefix: 'e2e-forgot-password' });
+  try {
+    await page.goto('/sign-in');
+    await page.getByRole('link', { name: /olvidaste tu contraseña/i }).click();
+    await page.getByLabel(/tu email/i).fill(student.email);
+    await page.getByRole('button', { name: /mandame el link/i }).click();
+    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/);
 
-  const token = await extractResetTokenFromMail(LUCIA.email);
-  await page.goto(`/reset-password?token=${token}`);
-  // ...
+    const token = await extractTokenFromLatestMail(student.email);
+    await page.goto(`/reset-password?token=${token}`);
+    // ...
+  } finally {
+    await deleteStudent(request, { email: student.email, password: 'la-que-quedó-puesta' });
+  }
 });
 ```
 
 Reglas:
 - Helpers en `e2e/helpers/`: no copiar parsing de mail por test.
-- Personas (`LUCIA`, `PAULA`, etc.) vienen del seed. Los tests no crean usuarios, los reutilizan.
+- **Un spec crea lo que muta, nunca lo que otro lee.** Las personas sembradas (`LUCIA`, `PAULA`, `MARTIN`, `ADMIN`) son de solo lectura para toda la suite: sirven para login y gating de roles, nunca para reseñar, cambiar contraseña o cualquier cosa que sobreviva al request. Lo que un test necesita mutar (un alumno, una cátedra, una frase) lo crea (`createStudent`, `createChair`) y lo borra en `afterEach`/`finally`.
 - Locators robustos: `getByRole`, `getByLabel`. Evitar `getByText` salvo strings auténticamente únicos.
-- Cada test es independiente: limpia rate limits (Mailpit y Redis se comparten dentro de una corrida). La base **no** hace falta restaurarla: cada corrida arranca de una base nueva.
 - **E2E corre siempre en CI** en cada PR como gate antes de merge (job `e2e` en `.github/workflows/ci.yml`). Localmente: `just frontend-test-e2e` (headless) o `just frontend-test-e2e-show` (browser visible + slowMo).
 
 **Base efímera por corrida.** Los dos recipes locales levantan su propio backend + frontend contra una base `planb_e2e` que se dropea y recrea al arrancar (`scripts/run-e2e.ts`), o sea que el stack de dev tiene que estar **abajo**: si `just dev` está corriendo, el script corta con el puerto ocupado. Es el mismo aislamiento que CI ya tenía por usar un service container nuevo en cada corrida, y el mismo patrón que [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md) usa una capa más abajo.
@@ -369,6 +373,26 @@ Reglas:
 Antes la suite local corría contra la base de dev y cada corrida dejaba usuarios, reseñas y borradores acumulados. El costo no era el desorden: **los specs no podían afirmar datos concretos** porque el estado era compartido y mutable entre corridas, así que afirmaban comportamiento y nada más. Con base propia, un spec puede volver a asumir un punto de partida conocido.
 
 La base sobrevive a la corrida a propósito (el drop es al arrancar, no al terminar): si un spec falla, entrás con `psql -d planb_e2e` a ver en qué estado quedó. Contrapartida a tener presente: los bugs que se acumulan con el tiempo (filas huérfanas, cuentas dadas de baja que dejan rastro) ya no van a aparecer solos como aparecían en la base de dev de larga vida; esos hay que cubrirlos con un test explícito.
+
+#### Aislamiento para correr en paralelo
+
+`frontend/playwright.config.ts` define dos proyectos sobre chromium: `parallel` (`fullyParallel: true`, todo lo que no está en la lista de abajo) y `serial` (un worker, `dependencies: ['parallel']`, así que arranca recién cuando `parallel` terminó entero). La regla de aislamiento:
+
+- **Un spec crea lo que muta, y nunca toca los datos sembrados que otro spec lee.** Las tres cátedras del seed (Pérez, González, Ruiz) y las cuatro personas (`LUCIA`, `PAULA`, `MARTIN`, `ADMIN`) son de lectura para toda la suite. Un test que necesita una cátedra en cero, una materia propia o una cuenta cuya contraseña cambia crea la suya (`createChair`, `createStudent`) y la borra al terminar; nunca depende de que una cátedra sembrada arranque vacía.
+- **Mailpit se busca por destinatario, nunca se vacía.** `waitForMail(recipient)` filtra por a quién le llegó el mail y se queda con el más nuevo si hay más de uno en vuelo; ningún spec llama `clearAllMessages()` (borraría el mail que otro spec está esperando en simultáneo). Como cada cuenta (sembrada o descartable) es dueña de su propio destinatario, buscar por dirección alcanza.
+- **Redis se limpia por clave, nunca entero.** `clearForgotPasswordRateLimits()` y `clearResendVerificationRateLimits()` (`identity:ratelimit:{endpoint}:*`) son las únicas limpiezas que corre la suite, y solo las llaman `forgot-password.spec.ts` y `resend-verification.spec.ts` respectivamente, al principio de sus propios tests. `clearAllIdentityRateLimits()` sigue existiendo para debugging manual; ningún spec la llama.
+- **Al proyecto `serial` va lo que muta un recurso global sin lock optimista**, no lo que simplemente lee datos compartidos. Hoy es un solo archivo, `admin/items.spec.ts`: sus dos tests destilan una frase cada uno contra el instrumento "vigente" (`DistilItemCommand`/`SupersedeItemCommand`), y `Instrument` no tiene concurrency token (`InstrumentConfiguration.cs`, solo `unique(code, version)`), así que dos publicaciones que lean la misma vigente antes de que la primera cierre pueden calcular la misma versión siguiente y chocar contra ese unique con un 500. Que corra solo, después de que `parallel` terminó entero (incluida `admin/curation.spec.ts`, que también destila una frase, una sola vez), saca la ventana de carrera contra cualquier otro spec de la suite, no solo contra sí mismo.
+
+**Workers.** Local: sin fijar (Playwright usa la mitad de los cores). CI: 3 (el runner tiene 4 y los comparte con Postgres, el backend y el frontend corriendo al lado). `PLAYWRIGHT_ALL_BROWSERS=1` (matrix Firefox/WebKit, manual y local) no lleva la partición `parallel`/`serial`: partirla también multiplicaría cada proyecto por navegador, así que ese modo se queda con un worker, que alcanza para evitar la misma carrera de instrumento.
+
+**Medición** (2026-09-03, local, `just frontend-test-e2e --build`, 12 cores → 6 workers, 72 tests con 3 `fixme`, promedio de tres corridas limpias):
+
+| | Antes (un worker) | Después (`parallel` + `serial`) |
+|---|---|---|
+| Playwright solo | 5.5 min | ~2.5 min |
+| Build + arranque + Playwright | 8.0 min | ~3.7 min |
+
+CI (línea de base en [`docs/plan/status.md`](../plan/status.md), pista 3, medida el 2026-09-02): 179 s de Playwright con un worker. El número de después con 3 workers en CI queda para la próxima corrida real: acá solo se pudo medir en local.
 
 #### Política E2E: una sola regla
 

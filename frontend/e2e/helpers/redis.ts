@@ -76,9 +76,22 @@ export async function clearForgotPasswordRateLimits(): Promise<number> {
 }
 
 /**
- * Limpia los buckets de rate-limit para todos los flows de identity:
- * forgot-password, resend-verification, sign-in, etc. Útil al setup
- * de suites E2E que tocan varios endpoints.
+ * Limpia los buckets de rate-limit para resend-verification. Igual razón que
+ * `clearForgotPasswordRateLimits`: acotado a su propia clave para no pisar el contador de
+ * otro endpoint que esté corriendo en paralelo.
+ */
+export async function clearResendVerificationRateLimits(): Promise<number> {
+  return delByPattern('identity:ratelimit:resend-verification:*');
+}
+
+/**
+ * Limpia los buckets de rate-limit para todos los flows de identity: forgot-password,
+ * resend-verification, sign-in, etc.
+ *
+ * Con la suite en paralelo esto ya NO se usa desde ningún spec (borraría el contador de
+ * cualquier otro que esté corriendo al mismo tiempo): cada uno limpia solo su propia clave
+ * (`clearForgotPasswordRateLimits`, `clearResendVerificationRateLimits`). Queda para uso manual
+ * de debugging.
  */
 export async function clearAllIdentityRateLimits(): Promise<number> {
   return delByPattern('identity:ratelimit:*');
