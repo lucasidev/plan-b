@@ -77,6 +77,7 @@ Tags especiales:
 - **Una sola unidad de trabajo por commit.** Si el commit hace dos cosas, son dos commits. Si lo amerita, dos PRs.
 - **Subject empieza en minúscula.** Si por convención del nombre propio ("NetArchTest", "Playwright") tendría que ser mayúscula, **reformulá la frase** para que empiece con palabra común. La regla pr-title.yml es estricta: regex `^(?![A-Z]).+$`. Ya nos mordió 2 veces (US-T02, US-T04).
 - **Body es para el porqué.** Diferenciá lo que es decisión del autor vs lo que el diff hace obvio. La gente lee `git log` para entender por qué.
+- **El issue se cierra con la palabra clave en inglés.** `Closes #NNN` (o `Fixes`, `Resolves`) en el body cierra el issue al mergear a `main`; `Cierra #NNN` es prosa y no cierra nada. Una referencia sin cierre va como `Parte de #NNN`.
 
 ## Branching
 
