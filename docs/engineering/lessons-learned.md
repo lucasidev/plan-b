@@ -12,6 +12,23 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-02 · Tres sprints de máquina, ninguna persona real, y tests que confirmaban lo que había
+
+**Síntoma**: al cerrar R3 la máquina que convierte reseñas en fichas estaba entera y nadie la había usado: pre-deploy, cero reseñas de una persona real. La suite era grande y verde (más de mil tests) y la auditoría de R1 a R3 la encontró desbalanceada: la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, 9 de 75 escenarios citados por un test. CI tardaba 8 minutos por PR y la integración 25 minutos en local. Y la sesión que construyó la última story lo hizo entera desde el contexto principal, en el tier más caro, hasta compactarse a mitad de tarea.
+
+**Causa raíz**: los tests se escribían mirando el código, así que afirmaban lo que el código ya hacía y no podían caer; la mutación sobre el corazón lo midió después: 38 mutantes vivos, entre ellos la aritmética de la ficha. No había un stage donde poner el producto delante de alguien, así que "hecho" significaba "mergeado". Cada clase de integración creaba su base y corría 57 migraciones en serie, 50 veces. Y el reparto entre el contexto principal y los agentes existía solo como texto, que ya había fallado una vez en julio.
+
+**Fix**: R4 entero. La pista de calidad se reescribió como programa de ataque (mutation testing del corazón de 81,6 % a 96,0 %; siete promesas de la tesis atacadas en integración, ninguna cedió; 329 intentos de autorización y validación sobre los 52 endpoints de escritura, tres bugs de validación arreglados); un gate que da veredicto a cada escenario de las stories construidas; la integración con base plantilla y colecciones en paralelo (25 minutos a 7); dos hooks que hacen cumplir el reparto ([ADR-0088](../decisions/0088-the-main-context-orchestrates-and-two-hooks-enforce-it.md)); y un stage con corpus sintético como piso antes de cualquier persona real.
+
+**Prevención**:
+
+- Un test se escribe a ciegas desde el escenario y el contrato, y entra a la suite solo después de haber caído con el código roto a propósito. Si el escenario y el código no coinciden, es un bug con issue o una decisión, nunca un escenario acomodado. Regla y gate en [testing.md](testing.md).
+- Un sprint no cierra con "mergeado": cierra con algo que alguien que no lo escribió pueda recorrer. El stage es ese piso hasta que haya personas reales.
+- Toda tarea de eficiencia mide antes y después (segundos de CI, minutos de suite, tokens), y el número queda en el tracker al cerrarla.
+- Una regla de proceso que falló dos veces como texto se convierte en hook, aunque el default del repo sea que un hook señala y no bloquea.
+
+---
+
 ## 2026-05-24 · Over-engineering del enforcement E2E: detector custom, whitelists, escape hatches
 
 **Síntoma**: en US-072 entregué "feature listo, ¿OK para commit?" sin haber corrido E2E local. Lucas tuvo que pedirme que lo corra (otra vez). Al intentar arreglar el problema con tooling, fui acumulando capas: detector de paths (`check-e2e-zone.ts`) → whitelist de módulos backend con FE consumidor → detección de mocks vs reales → escape hatch selectivo (`SKIP_E2E_PRECHECK=1`) → labels auto-aplicados (`auto-label.yml` + `labeler.yml`). Cada capa estaba justificada en aislamiento, el total era deuda combinatoria.
