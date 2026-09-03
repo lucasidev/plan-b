@@ -33,7 +33,7 @@ public sealed class UpdateMySettingsEndpoint : ICarterModule
 
             if (request.Language is not null)
             {
-                if (Enum.TryParse<Language>(request.Language, ignoreCase: false, out var parsed))
+                if (StrictEnum.TryParse<Language>(request.Language, out var parsed))
                 {
                     language = parsed;
                 }
@@ -47,7 +47,7 @@ public sealed class UpdateMySettingsEndpoint : ICarterModule
 
             if (request.Theme is not null)
             {
-                if (Enum.TryParse<ThemePreference>(request.Theme, ignoreCase: false, out var parsed))
+                if (StrictEnum.TryParse<ThemePreference>(request.Theme, out var parsed))
                 {
                     theme = parsed;
                 }

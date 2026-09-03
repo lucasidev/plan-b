@@ -39,10 +39,15 @@ public sealed class WriteEndpointMatrixFixture : IAsyncLifetime
         // Los rate limiters de forgot-password (5/hora) y resend-verification (3/hora) son por IP, y
         // WebApplicationFactory siempre reporta localhost: sin este clear, esta clase comparte bucket
         // con cualquier otra que ya le haya pegado a esos dos endpoints en el mismo Redis (mismo
-        // criterio que RequestPasswordResetEndpointTests/ResendVerificationEmailEndpointTests).
+        // criterio que RequestPasswordResetEndpointTests/ResendVerificationEmailEndpointTests). El
+        // patrón va acotado a esos dos prefijos, no a "identity:ratelimit:*": ese comodín también
+        // borra el bucket de register (por mail, no por IP) de cualquier otra clase que esté corriendo
+        // en paralelo sobre el mismo Redis, en este proceso o en otro.
         var redis = Register.Factory.Services.GetRequiredService<IConnectionMultiplexer>();
         var server = redis.GetServer(redis.GetEndPoints()[0]);
-        var staleKeys = server.Keys(pattern: "identity:ratelimit:*").ToArray();
+        var staleKeys = server.Keys(pattern: "identity:ratelimit:forgot-password:*")
+            .Concat(server.Keys(pattern: "identity:ratelimit:resend-verification:*"))
+            .ToArray();
         if (staleKeys.Length > 0)
         {
             await redis.GetDatabase().KeyDeleteAsync(staleKeys);
@@ -116,6 +121,36 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
         WriteAccess.Anonymous => _fixture.Register.Factory.CreateClient(),
         _ => throw new ArgumentOutOfRangeException(nameof(access), access, null),
     };
+
+    /// <summary>
+    /// forgot-password (5/hora) y resend-verification (3/hora) son rate-limited por IP, y varias
+    /// baterías de esta matriz (body vacío, string largo, cookies basura) le pegan a los dos más de
+    /// una vez a lo largo del archivo: sin limpiar antes de cada fila, la ventana que dejó una fila
+    /// anterior hace caer la siguiente con 429 en vez del status que esa fila realmente prueba. Misma
+    /// key que RequestPasswordResetEndpointTests/ResendVerificationEmailEndpointTests; no hace nada
+    /// para el resto de los endpoints.
+    /// </summary>
+    private async Task ClearIpRateLimitBucketIfAnyAsync(WriteEndpointCase testCase)
+    {
+        var segment = testCase.Name switch
+        {
+            "Identity_RequestPasswordReset" => "forgot-password",
+            "Identity_ResendVerificationEmail" => "resend-verification",
+            _ => null,
+        };
+        if (segment is null)
+        {
+            return;
+        }
+
+        var redis = _fixture.Register.Factory.Services.GetRequiredService<IConnectionMultiplexer>();
+        var server = redis.GetServer(redis.GetEndPoints()[0]);
+        var keys = server.Keys(pattern: $"identity:ratelimit:{segment}:*").ToArray();
+        if (keys.Length > 0)
+        {
+            await redis.GetDatabase().KeyDeleteAsync(keys);
+        }
+    }
 
     // -----------------------------------------------------------------
     // 1) Sin sesión: todo endpoint que exige cuenta responde 401.
@@ -213,14 +248,12 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
         var revise = await _fixture.Admin.Client.PutAsJsonAsync(
             $"/api/reviews/courses/{reviewId}",
             new { answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)2 } }, freeText = "pisado por admin" });
-        revise.IsSuccessStatusCode.ShouldBeFalse(
-            $"PUT /api/reviews/courses/{reviewId} con una cuenta Admin ajena no debería ser 2xx, fue {(int)revise.StatusCode}.");
-        ((int)revise.StatusCode).ShouldBeLessThan(500);
+        revise.StatusCode.ShouldBe(HttpStatusCode.NotFound,
+            $"el contrato dice 404 para una reseña ajena, nunca 403, ni siquiera con Admin; fue {(int)revise.StatusCode}.");
 
         var delete = await _fixture.Admin.Client.DeleteAsync($"/api/reviews/courses/{reviewId}");
-        delete.IsSuccessStatusCode.ShouldBeFalse(
-            $"DELETE /api/reviews/courses/{reviewId} con una cuenta Admin ajena no debería ser 2xx, fue {(int)delete.StatusCode}.");
-        ((int)delete.StatusCode).ShouldBeLessThan(500);
+        delete.StatusCode.ShouldBe(HttpStatusCode.NotFound,
+            $"el contrato dice 404 para una reseña ajena, nunca 403, ni siquiera con Admin; fue {(int)delete.StatusCode}.");
 
         await AssertReviewUnchangedAsync(author, reviewId);
     }
@@ -299,6 +332,9 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     public static IEnumerable<object[]> EndpointsWithInvalidEnumBody() =>
         WriteEndpoints.All.Where(e => e.InvalidEnumBody is not null).Select(e => new object[] { e });
 
+    public static IEnumerable<object[]> EndpointsWithNumericEnumBody() =>
+        WriteEndpoints.All.Where(e => e.NumericEnumBody is not null).Select(e => new object[] { e });
+
     public static IEnumerable<object[]> EndpointsWithImpossibleDateBody() =>
         WriteEndpoints.All.Where(e => e.ImpossibleDateBody is not null).Select(e => new object[] { e });
 
@@ -306,6 +342,8 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     [MemberData(nameof(EndpointsWithBody))]
     public async Task Empty_body_is_400(WriteEndpointCase testCase)
     {
+        await ClearIpRateLimitBucketIfAnyAsync(testCase);
+
         var client = ClientFor(testCase.Access);
         var response = await client.SendAsync(
             BuildRequest(testCase.Method, testCase.SeededRoute, new { }));
@@ -318,6 +356,8 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     [MemberData(nameof(EndpointsWithLongStringBody))]
     public async Task String_field_at_10000_chars_is_400(WriteEndpointCase testCase)
     {
+        await ClearIpRateLimitBucketIfAnyAsync(testCase);
+
         var client = ClientFor(testCase.Access);
         var response = await client.SendAsync(
             BuildRequest(testCase.Method, testCase.SeededRoute, testCase.LongStringBody!.Invoke()));
@@ -339,6 +379,21 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
             $"{testCase.Method} {testCase.SeededRoute} con un enum inválido: esperaba 400, fue {(int)response.StatusCode}.");
     }
 
+    // Enum.TryParse acepta un string numérico y lo castea aunque ningún miembro valga eso (#428): un
+    // "9" que no es ninguna opción del enum tiene que dar 400 igual que "NotALanguage", nunca colarse
+    // como el literal crudo.
+    [Theory]
+    [MemberData(nameof(EndpointsWithNumericEnumBody))]
+    public async Task Numeric_enum_value_is_400(WriteEndpointCase testCase)
+    {
+        var client = ClientFor(testCase.Access);
+        var response = await client.SendAsync(
+            BuildRequest(testCase.Method, testCase.SeededRoute, testCase.NumericEnumBody!.Invoke()));
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest,
+            $"{testCase.Method} {testCase.SeededRoute} con un enum numérico ('9'): esperaba 400, fue {(int)response.StatusCode}.");
+    }
+
     [Theory]
     [MemberData(nameof(EndpointsWithImpossibleDateBody))]
     public async Task Impossible_date_range_is_400(WriteEndpointCase testCase)
@@ -354,7 +409,7 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
 
     /// <summary>
     /// El caso Owner de la batería 6: una reseña y una autora reales, para que un body corrupto
-    /// (acá, un itemCode de 10.000 caracteres) se pruebe contra su dueña real y no contra un id que
+    /// (acá, un freeText de 10.000 caracteres) se pruebe contra su dueña real y no contra un id que
     /// de entrada ya es 404.
     /// </summary>
     [Fact]
@@ -366,12 +421,12 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
             $"/api/reviews/courses/{reviewId}",
             new
             {
-                answers = new[] { new { itemCode = new string('x', 10_000), optionValue = (short)1 } },
-                freeText = (string?)null,
+                answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)1 } },
+                freeText = new string('x', 10_000),
             });
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest,
-            $"PUT /api/reviews/courses/{reviewId} con un itemCode de 10.000 caracteres: " +
+            $"PUT /api/reviews/courses/{reviewId} con un freeText de 10.000 caracteres: " +
             $"esperaba 400, fue {(int)response.StatusCode}.");
     }
 
@@ -396,6 +451,8 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
     public async Task Anonymous_identity_endpoints_reject_garbage_session_material_without_a_500(
         WriteEndpointCase testCase)
     {
+        await ClearIpRateLimitBucketIfAnyAsync(testCase);
+
         using var client = _fixture.Register.Factory.CreateClient(new WebApplicationFactoryClientOptions
         {
             HandleCookies = false,
