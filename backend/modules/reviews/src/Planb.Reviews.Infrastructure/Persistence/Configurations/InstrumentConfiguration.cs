@@ -44,8 +44,8 @@ internal sealed class InstrumentConfiguration : IEntityTypeConfiguration<Instrum
 
         builder.Ignore(i => i.DomainEvents);
 
-        // Los ítems ofrecidos en esta versión, tabla hija. Clave compuesta (instrument_id, item_id):
-        // InstrumentErrors.DuplicateItem es justamente que un ítem no se repita en el mismo instrumento.
+        // Las frases ofrecidas en esta versión, tabla hija. Clave compuesta (instrument_id, item_id):
+        // InstrumentErrors.DuplicateItem es justamente que una frase no se repita en el mismo instrumento.
         builder.OwnsMany(i => i.Items, ii =>
         {
             ii.ToTable("instrument_items");

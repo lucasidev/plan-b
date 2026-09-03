@@ -33,7 +33,7 @@ export interface Span {
   lastReviewedAt: string | null;
 }
 
-/** Varios ítems distintos apuntando al mismo lado. Es lo primero que la ficha dice. */
+/** Varias frases distintas apuntando al mismo lado. Es lo primero que la ficha dice. */
 export interface Fame {
   itemsAgreeing: number;
   items: FameItem[];

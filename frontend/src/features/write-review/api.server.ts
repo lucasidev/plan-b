@@ -9,7 +9,7 @@ import type { ChairOption, CurrentInstrument, SubjectOption, TermOption } from '
  * La cuenta la pide responder, no mirar.
  */
 
-/** El cuestionario vigente con sus ítems y opciones en orden (ADR-0082). */
+/** El cuestionario vigente con sus frases y opciones en orden (ADR-0082). */
 export async function fetchCurrentInstrumentServer(): Promise<CurrentInstrument | null> {
   const response = await apiFetch('/api/reviews/instrument', { cache: 'no-store' });
   if (response.status === 404) {

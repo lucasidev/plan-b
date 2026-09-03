@@ -4,7 +4,7 @@ namespace Planb.Reviews.Application.Abstractions.Persistence;
 /// El campo libre, para que el equipo lo lea ([ADR-0084](../../../../../../docs/decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 ///
 /// <para>
-/// El ADR le prometió al campo libre dos salidas (destilar ítems nuevos y escribir notas
+/// El ADR le prometió al campo libre dos salidas (destilar frases nuevas y escribir notas
 /// editoriales) y ninguna de las dos se puede hacer sin leerlo primero. Hasta acá lo único que lo
 /// leía era su propio autor, en Mis aportes: el equipo no tenía forma de ver lo que la gente
 /// escribía, así que la curaduría existía solo en el papel.

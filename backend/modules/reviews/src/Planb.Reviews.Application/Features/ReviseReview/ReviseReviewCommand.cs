@@ -14,5 +14,5 @@ public sealed record ReviseReviewCommand(
     IReadOnlyList<ReviseAnswerInput> Answers,
     string? FreeText);
 
-/// <summary>Una respuesta que queda: el código del ítem y el valor de la opción elegida.</summary>
+/// <summary>Una respuesta que queda: el código de la frase y el valor de la opción elegida.</summary>
 public sealed record ReviseAnswerInput(string ItemCode, short OptionValue);

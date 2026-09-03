@@ -340,7 +340,7 @@ public static class WriteEndpoints
             _ => "/api/reviews/courses", [],
             ValidBody: () => new { subjectId = Subject211Id, termId = Term1Id, chairId = (Guid?)ChairPerezId, answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)1 } }, freeText = (string?)null },
             // itemCode es clave de un diccionario, no una columna: un valor de 10.000 caracteres da
-            // 400 por "ítem no ofrecido", no por tope de longitud. El campo con tope real es freeText
+            // 400 por "frase no ofrecida", no por tope de longitud. El campo con tope real es freeText
             // (Review.MaxFreeTextLength), así que la sonda de largo va ahí con un itemCode válido.
             LongStringBody: () => new { subjectId = Subject211Id, termId = Term1Id, chairId = (Guid?)ChairPerezId, answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = (short)1 } }, freeText = LongString }),
 

@@ -12,7 +12,7 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  *   - Que la pantalla se alcance desde el topbar, que es como llega un alumno de verdad.
  *   - Que el cuestionario vigente baje del backend y se agrupe en sus tres capas.
  *   - Que las cátedras aparezcan recién al elegir la materia (dependen de ella).
- *   - Que saltear sea real: se contestan tres de los catorce ítems y la reseña se publica igual.
+ *   - Que saltear sea real: se contestan tres de las catorce frases y la reseña se publica igual.
  *   - Que la recolección vaya sin alarma: ninguna opción se tiñe mientras se responde.
  *   - Que reseñar dos veces la misma cursada avise en vez de duplicar la voz.
  */
@@ -63,7 +63,7 @@ test.describe('Reseñar una cursada (US-146)', () => {
     await expect(chair).toBeVisible({ timeout: 15_000 });
     await chair.click();
 
-    // Pasos 3 a 5: se contestan TRES ítems de los catorce que ofrece el cuestionario. El resto
+    // Pasos 3 a 5: se contestan TRES frases de las catorce que ofrece el cuestionario. El resto
     // queda salteado a propósito: es la mitad del modelo.
     await page.getByRole('button', { name: /^Me qued. regular$/ }).click();
     await page.getByRole('button', { name: /^Faltaron muchas$/ }).click();

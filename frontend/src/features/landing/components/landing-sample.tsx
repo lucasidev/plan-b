@@ -12,8 +12,8 @@ import type { ChairFacts } from '@/features/chair-facts';
  *
  * **Qué se muestra y qué no.** La cátedra sale sorteada entre las que ya publican, y la elige el
  * backend, no esta pantalla (US-171: nada destacado ni ordenado por conveniencia). De la ficha se
- * enseñan la finalización y los dos primeros ítems **en el orden de la ficha**, que es alfabético
- * por código de ítem: elegir "los peores" convertiría la muestra en una acusación y elegir "los
+ * enseñan la finalización y las dos primeras frases **en el orden de la ficha**, que es alfabético
+ * por código de frase: elegir "los peores" convertiría la muestra en una acusación y elegir "los
  * mejores" en una vidriera, y las dos cosas serían curar lo que el producto promete no curar. El
  * resto se ve entrando a la ficha, que es adonde esto lleva.
  */

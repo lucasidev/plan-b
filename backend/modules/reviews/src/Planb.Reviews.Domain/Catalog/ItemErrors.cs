@@ -14,7 +14,7 @@ public static class ItemErrors
             $"Item code must be at most {Item.MaxCodeLength} characters.");
 
     /// <summary>
-    /// El código es la identidad semántica del ítem y viaja en el CSV público y en el Método, así
+    /// El código es la identidad semántica de la frase y viaja en el CSV público y en el Método, así
     /// que se restringe a mayúsculas, dígitos y guión bajo: nada de espacios, tildes ni ñ.
     /// </summary>
     public static readonly Error CodeInvalidFormat =
@@ -50,7 +50,7 @@ public static class ItemErrors
             $"An option label must be at most {ItemOption.MaxLabelLength} characters.");
 
     /// <summary>
-    /// Un ítem sin al menos dos opciones no pregunta nada: no hay respuesta que distinga a nadie de
+    /// Una frase sin al menos dos opciones no pregunta nada: no hay respuesta que distinga a nadie de
     /// nadie, y su conteo publicado sería siempre 100 %.
     /// </summary>
     public static readonly Error NotEnoughOptions =
@@ -69,7 +69,7 @@ public static class ItemErrors
             "Two options of the same item cannot share an order.");
 
     /// <summary>
-    /// El rojo de la ficha marca UNA opción por ítem (ADR-0083). Dos negativas dejarían la alarma
+    /// El rojo de la ficha marca UNA opción por frase (ADR-0083). Dos negativas dejarían la alarma
     /// repartida y la moda dejaría de decir de qué lado cae el dato.
     /// </summary>
     public static readonly Error MultipleNegativeOptions =
@@ -78,7 +78,7 @@ public static class ItemErrors
             "An item can have at most one negative option.");
 
     /// <summary>
-    /// Los ítems de contexto no se publican dato por dato, así que sus opciones no tienen lado. Que
+    /// Las frases de contexto no se publican dato por dato, así que sus opciones no tienen lado. Que
     /// una traiga valencia significa que alguien esperaba verla publicada, y no se va a publicar.
     /// </summary>
     public static readonly Error ContextOptionsCannotHaveValence =
@@ -102,7 +102,7 @@ public static class ItemErrors
         Error.Conflict("reviews.item.already_active", "Item is already active.");
 
     /// <summary>
-    /// Un ítem retirado ya no se edita (US-198). Su texto es el enunciado bajo el que se respondió,
+    /// Una frase retirada ya no se edita (US-198). Su texto es el enunciado bajo el que se respondió,
     /// y cambiarlo reescribiría la pregunta que la ficha muestra al lado de conteos que contestaron
     /// otra cosa.
     /// </summary>
@@ -112,7 +112,7 @@ public static class ItemErrors
             "A retired item cannot be changed: its wording is what its answers replied to.");
 
     /// <summary>
-    /// El ítem que abre un código nuevo no puede reemplazar a uno ya retirado: la serie que se
+    /// La frase que abre un código nuevo no puede reemplazar a una ya retirada: la serie que se
     /// corta es la que se está ofreciendo hoy, y encadenar dos cortes sobre el mismo tramo dejaría
     /// dos preguntas vivas reclamando el mismo pasado.
     /// </summary>
@@ -122,8 +122,8 @@ public static class ItemErrors
             "That item is already retired and cannot be superseded again.");
 
     /// <summary>
-    /// El ítem del desenlace no puede cambiar de código: la tasa de finalización lo busca por su
-    /// código, que es una constante del dominio. Retirarlo dejaría a todas las fichas sin esa tasa,
+    /// La frase del desenlace no puede cambiar de código: la tasa de finalización la busca por su
+    /// código, que es una constante del dominio. Retirarla dejaría a todas las fichas sin esa tasa,
     /// en silencio y sin que nada falle. Su texto y sus opciones sí se editan.
     /// </summary>
     public static readonly Error CannotSupersedeTheOutcomeItem =

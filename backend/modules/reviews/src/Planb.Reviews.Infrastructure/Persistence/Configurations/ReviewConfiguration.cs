@@ -60,7 +60,7 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasDatabaseName("ux_reviews_account_subject_term");
 
         // Todo lo que el producto publica se cuenta por cátedra: la ficha de cátedra filtra por
-        // `chair_id` tres veces (su conteo, la distribución de cada ítem y la comparación contra
+        // `chair_id` tres veces (su conteo, la distribución de cada frase y la comparación contra
         // las hermanas), y la cobertura de una carrera y el estado de Inicio agrupan por lo mismo.
         // Sin este índice esas lecturas barren la tabla entera.
         //
@@ -73,7 +73,7 @@ internal sealed class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.Ignore(r => r.DomainEvents);
 
         // Lo respondido, tabla hija (US-146, ADR-0082). Clave compuesta (review_id, item_id):
-        // el ítem no puede responderse dos veces en la misma reseña (ReviewErrors.DuplicateAnswer).
+        // la frase no puede responderse dos veces en la misma reseña (ReviewErrors.DuplicateAnswer).
         builder.OwnsMany(r => r.Answers, a =>
         {
             a.ToTable("review_answers");

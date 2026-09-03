@@ -18,7 +18,7 @@ public static class ReviewErrors
             "You already reviewed this cursada. Edit that review instead.");
 
     /// <summary>
-    /// Una reseña sin ninguna respuesta no aporta nada a ningún conteo. Saltear cada ítem es
+    /// Una reseña sin ninguna respuesta no aporta nada a ningún conteo. Saltear cada frase es
     /// legítimo, pero entonces no hay reseña que guardar: es una sesión abandonada.
     /// </summary>
     public static readonly Error NoAnswers =
@@ -31,13 +31,13 @@ public static class ReviewErrors
             "reviews.review.duplicate_answer",
             "The same item cannot be answered twice in one review.");
 
-    /// <summary>El ítem respondido no lo ofrece la versión del instrumento con la que se está respondiendo.</summary>
+    /// <summary>La frase respondida no la ofrece la versión del instrumento con la que se está respondiendo.</summary>
     public static readonly Error ItemNotInInstrument =
         Error.Validation(
             "reviews.review.item_not_in_instrument",
             "That item is not part of the instrument version being answered.");
 
-    /// <summary>El valor elegido no es ninguna de las opciones del ítem.</summary>
+    /// <summary>El valor elegido no es ninguna de las opciones de la frase.</summary>
     public static readonly Error OptionNotInItem =
         Error.Validation(
             "reviews.review.option_not_in_item",

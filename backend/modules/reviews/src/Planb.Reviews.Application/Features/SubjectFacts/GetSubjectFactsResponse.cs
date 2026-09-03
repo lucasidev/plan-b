@@ -51,11 +51,11 @@ public sealed record TakenWithView(
 public sealed record SubjectSpanView(int FromYear, int ToYear);
 
 /// <summary>
-/// La distribución de un ítem, con su moda y sus tramos.
+/// La distribución de una frase, con su moda y sus tramos.
 ///
 /// <para>
 /// Es distribución y no promedio: la ficha de pantalla pedía "2,1 intentos", y esa forma no
-/// sobrevive porque la última opción del ítem es abierta ("tres o más"), así que el promedio
+/// sobrevive porque la última opción de la frase es abierta ("tres o más"), así que el promedio
 /// subestima siempre y por un margen que nadie puede recalcular.
 /// </para>
 ///
@@ -80,7 +80,7 @@ public sealed record SliceView(string Label, int Percent, bool IsNegative);
 public sealed record SubjectCompletionView(int OutOfTen, int Reaching, int Total);
 
 /// <summary>
-/// Un ítem donde las cátedras difieren de verdad: la respuesta depende de con quién te toque. Solo
+/// Una frase donde las cátedras difieren de verdad: la respuesta depende de con quién te toque. Solo
 /// aparece si los intervalos de la más alta y la más baja no se tocan.
 /// </summary>
 public sealed record SpreadView(
@@ -89,11 +89,11 @@ public sealed record SpreadView(
     string NegativeLabel,
     IReadOnlyList<ChairShareView> ByChair);
 
-/// <summary>Cuánto marca una cátedra la opción negativa de un ítem, con su denominador.</summary>
+/// <summary>Cuánto marca una cátedra la opción negativa de una frase, con su denominador.</summary>
 public sealed record ChairShareView(Guid ChairId, string ChairName, int Percent, int Total);
 
 /// <summary>
-/// Un ítem que todas las cátedras marcan parejo y fuerte: eso lo vuelve un rasgo de la materia y no
+/// Una frase que todas las cátedras marcan parejo y fuerte: eso lo vuelve un rasgo de la materia y no
 /// de quien la dicta.
 /// </summary>
 public sealed record SharedView(

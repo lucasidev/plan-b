@@ -50,7 +50,7 @@ export async function publishReviewAction(
       subjectId,
       termId,
       chairId,
-      // El backend recibe pares (código de ítem, valor de opción). Lo salteado no viaja: no hay un
+      // El backend recibe pares (código de frase, valor de opción). Lo salteado no viaja: no hay un
       // "no dijo" que mandar, porque no cuenta en ningún denominador.
       answers: Object.entries(answers).map(([itemCode, optionValue]) => ({
         itemCode,

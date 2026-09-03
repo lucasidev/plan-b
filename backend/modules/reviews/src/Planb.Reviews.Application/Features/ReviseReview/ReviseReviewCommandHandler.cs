@@ -12,7 +12,7 @@ namespace Planb.Reviews.Application.Features.ReviseReview;
 /// <para>
 /// Editar es reemplazar lo respondido, no parchearlo: se puede cambiar una respuesta, agregar una
 /// que se había salteado, o **dejar de responder** algo, y en ese caso la respuesta desaparece y su
-/// ítem vuelve a no contarla en el denominador. Por eso el comando trae el set completo y no un
+/// frase vuelve a no contarla en el denominador. Por eso el comando trae el set completo y no un
 /// delta: un delta no puede expresar "esto ya no lo quiero contestar".
 /// </para>
 ///

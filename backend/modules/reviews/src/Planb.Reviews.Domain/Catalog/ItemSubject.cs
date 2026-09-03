@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
-/// A qué ficha aterriza el dato de un ítem (ADR-0085). Es metadato invisible: el que responde nunca
+/// A qué ficha aterriza el dato de una frase (ADR-0085). Es metadato invisible: el que responde nunca
 /// elige un sujeto, contesta sobre su cursada y el catálogo sabe dónde va cada respuesta.
 ///
 /// <para>

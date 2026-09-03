@@ -17,7 +17,7 @@ public sealed record ChairFacts(
     IReadOnlyList<SiblingContrast> Contrasts);
 
 /// <summary>
-/// Un ítem publicado: su moda como badge y su distribución completa. Nunca un promedio: "2,4 sobre
+/// Una frase publicada: su moda como badge y su distribución completa. Nunca un promedio: "2,4 sobre
 /// 3" no significa nada, y que el 59 % haya marcado "casi nunca" sí (ADR-0083).
 /// </summary>
 public sealed record PublishedItem(
@@ -28,8 +28,8 @@ public sealed record PublishedItem(
     int Total,
     IReadOnlyList<PublishedOption> Distribution,
     /// <summary>
-    /// El tramo de antes, cuando este ítem reemplazó a otro y ese otro tiene respuestas de este
-    /// sujeto (US-198, E3). Va colgado del ítem de hoy y no como una fila más de la lista, porque
+    /// El tramo de antes, cuando esta frase reemplazó a otra y esa otra tiene respuestas de este
+    /// sujeto (US-198, E3). Va colgado de la frase de hoy y no como una fila más de la lista, porque
     /// eso es lo que es: la misma pregunta antes de dejar de ser la misma. Nunca se suma con el
     /// tramo nuevo, y no alimenta ni la fama ni los contrastes.
     /// </summary>
@@ -44,8 +44,8 @@ public sealed record PublishedItem(
 public sealed record PublishedOption(string Label, int Percent, OptionValence Valence);
 
 /// <summary>
-/// La fama del sujeto: varios ítems distintos apuntando al mismo lado. Es lo primero que la ficha
-/// dice, porque tres ítems convergentes valen más que quinientas marcas en uno solo.
+/// La fama del sujeto: varias frases distintas apuntando al mismo lado. Es lo primero que la ficha
+/// dice, porque tres frases convergentes valen más que quinientas marcas en una sola.
 /// </summary>
 public sealed record ConvergingFact(IReadOnlyList<string> ItemCodes, int ItemsAgreeing);
 

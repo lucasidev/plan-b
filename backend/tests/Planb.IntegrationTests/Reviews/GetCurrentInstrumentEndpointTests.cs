@@ -41,7 +41,7 @@ public class GetCurrentInstrumentEndpointTests : IClassFixture<RegisterApiFixtur
         instrument.Version.ShouldBeGreaterThan((short)0);
         instrument.Items.ShouldNotBeEmpty();
 
-        // Cada ítem llega con al menos dos opciones: un ítem de una sola opción no es una pregunta.
+        // Cada frase llega con al menos dos opciones: una frase de una sola opción no es una pregunta.
         foreach (var item in instrument.Items)
         {
             item.Code.ShouldNotBeNullOrWhiteSpace();

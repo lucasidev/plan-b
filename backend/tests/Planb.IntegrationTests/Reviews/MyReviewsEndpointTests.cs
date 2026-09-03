@@ -128,7 +128,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         review.Answers.ShouldContain(a => a.ItemCode == "COURSE_OUTCOME" && a.OptionValue == 1);
         review.Answers.ShouldContain(a => a.ItemCode == "STUDENT_COULD_ASK");
 
-        // La que se dejó de contestar DESAPARECE: vuelve a no contar en el denominador de su ítem,
+        // La que se dejó de contestar DESAPARECE: vuelve a no contar en el denominador de su frase,
         // que es la mitad de por qué alguien corrige.
         review.Answers.ShouldNotContain(a => a.ItemCode == "CHAIR_ANSWERS_IN_CLASS");
 

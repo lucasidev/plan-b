@@ -26,7 +26,7 @@ public static class InstrumentErrors
     public static readonly Error NotFound =
         Error.NotFound("reviews.instrument.not_found", "Instrument not found.");
 
-    /// <summary>Un cuestionario sin ítems no pregunta nada.</summary>
+    /// <summary>Un cuestionario sin frases no pregunta nada.</summary>
     public static readonly Error NoItems =
         Error.Validation("reviews.instrument.no_items", "An instrument needs at least one item.");
 
@@ -63,14 +63,14 @@ public static class InstrumentErrors
             "reviews.instrument.version_not_increasing",
             "A new instrument version must be greater than the current one.");
 
-    /// <summary>Uno de los ítems del instrumento no existe en el catálogo.</summary>
+    /// <summary>Una de las frases del instrumento no existe en el catálogo.</summary>
     public static readonly Error ItemNotFound =
         Error.NotFound(
             "reviews.instrument.item_not_found",
             "One of the items in this instrument does not exist.");
 
     /// <summary>
-    /// Uno de los ítems está retirado. Un cuestionario nuevo no puede ofrecer algo que se dejó de
+    /// Una de las frases está retirada. Un cuestionario nuevo no puede ofrecer algo que se dejó de
     /// preguntar: si se lo quiere de vuelta, primero se restaura en el catálogo.
     /// </summary>
     public static readonly Error ItemRetired =

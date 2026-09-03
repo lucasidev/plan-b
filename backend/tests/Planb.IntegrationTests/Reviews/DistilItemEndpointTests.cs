@@ -13,8 +13,8 @@ namespace Planb.IntegrationTests.Reviews;
 /// Integration tests de destilar una pregunta del campo libre (ADR-0084).
 ///
 /// <para>
-/// Lo que se prueba acá y no en un unit: que el alta del ítem y la versión nueva del instrumento
-/// sean <b>una sola operación</b>. Un ítem que no entra a una versión no existe para nadie, porque
+/// Lo que se prueba acá y no en un unit: que el alta de la frase y la versión nueva del instrumento
+/// sean <b>una sola operación</b>. Una frase que no entra a una versión no existe para nadie, porque
 /// el instrumento es lo que la pantalla de reseñar ofrece y lo que Método publica.
 /// </para>
 /// </summary>

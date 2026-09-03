@@ -8,7 +8,7 @@ namespace Planb.Reviews.Application.Features.ChairFacts;
 /// <para>
 /// Lo que este contrato NO tiene es tan importante como lo que tiene: ninguna reseña individual,
 /// ningún autor, ningún desenlace de una persona (US-148). Lo único que viaja son conteos y las
-/// etiquetas literales que se eligieron, más el texto de cada ítem para poder enunciarlo.
+/// etiquetas literales que se eligieron, más el texto de cada frase para poder enunciarlo.
 /// </para>
 ///
 /// <para>
@@ -47,7 +47,7 @@ public sealed record GetChairFactsResponse(
 public sealed record SpanView(int FromYear, int ToYear, DateTimeOffset? LastReviewedAt);
 
 /// <summary>
-/// La fama: los ítems que apuntan al mismo lado, cada uno con lo que se eligió y cuánto pesa.
+/// La fama: las frases que apuntan al mismo lado, cada una con lo que se eligió y cuánto pesa.
 ///
 /// <para>
 /// Viaja con texto y porcentaje porque la pantalla la enuncia con su sustento a la vista ("el 80 %
@@ -57,15 +57,15 @@ public sealed record SpanView(int FromYear, int ToYear, DateTimeOffset? LastRevi
 /// </summary>
 public sealed record FameView(int ItemsAgreeing, IReadOnlyList<FameItemView> Items);
 
-/// <summary>Un ítem de la convergencia: qué se preguntó, qué se eligió y cuántos.</summary>
+/// <summary>Una frase de la convergencia: qué se preguntó, qué se eligió y cuántos.</summary>
 public sealed record FameItemView(string Code, string Text, string NegativeLabel, int Percent);
 
 /// <summary>
-/// Un ítem publicado: qué se preguntó, qué contestó la mayoría y cómo se repartió el resto.
+/// Una frase publicada: qué se preguntó, qué contestó la mayoría y cómo se repartió el resto.
 ///
 /// <para>
 /// <see cref="PreviousSeries"/> es el tramo de antes, cuando la pregunta cambió y se abrió un
-/// código nuevo (US-198). Viene colgado del ítem de hoy y no como otra fila de la lista, porque la
+/// código nuevo (US-198). Viene colgado de la frase de hoy y no como otra fila de la lista, porque la
 /// pantalla tiene que poder decir que los dos tramos son de la misma pregunta y a la vez que no se
 /// comparan entre sí. Nunca se suman: cada uno tiene su propio total.
 /// </para>
@@ -106,7 +106,7 @@ public sealed record ContrastView(
     int SiblingsTotal);
 
 /// <summary>
-/// Lo mínimo del catálogo que la respuesta necesita para hablar en castellano: el texto del ítem y
+/// Lo mínimo del catálogo que la respuesta necesita para hablar en castellano: el texto de la frase y
 /// la etiqueta de su opción negativa. El dominio devuelve códigos, que son identidad y no idioma.
 /// </summary>
 public sealed record ItemCopy(string Code, string Text, string? NegativeLabel, ItemLayer Layer);

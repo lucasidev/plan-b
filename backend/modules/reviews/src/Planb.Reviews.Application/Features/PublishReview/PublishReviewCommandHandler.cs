@@ -16,8 +16,8 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 ///         puede ubicar en ninguna serie.</item>
 ///   <item>La cátedra es opcional (no siempre se la recuerda), pero si se declara tiene que ser
 ///         una de las de esa materia: si no, el dato aterrizaría en la ficha equivocada.</item>
-///   <item>Se resuelve el instrumento vigente y sus ítems. De ahí sale el juego de pares
-///         (ítem, opción) que el aggregate exige: es lo que hace imposible guardar una respuesta
+///   <item>Se resuelve el instrumento vigente y sus frases. De ahí sale el juego de pares
+///         (frase, opción) que el aggregate exige: es lo que hace imposible guardar una respuesta
 ///         a algo que no se preguntó, o una opción inventada.</item>
 ///   <item>Una voz por cuenta, materia y período (ADR-0082): si ya reseñó esa cursada, se le dice
 ///         que edite la que tiene en vez de crear una segunda.</item>
@@ -64,7 +64,7 @@ public static class PublishReviewCommandHandler
             }
         }
 
-        // 4) El cuestionario vigente y lo que admite cada uno de sus ítems.
+        // 4) El cuestionario vigente y lo que admite cada una de sus frases.
         var instrument = await catalog.GetCurrentInstrumentAsync(
             PublishingRules.CourseInstrumentCode, ct);
         if (instrument is null)

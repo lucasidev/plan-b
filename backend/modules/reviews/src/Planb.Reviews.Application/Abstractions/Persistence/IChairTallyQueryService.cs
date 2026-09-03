@@ -66,7 +66,7 @@ public interface IChairTallyQueryService
 
 /// <summary>
 /// Lo que la base contó para una materia: sus cátedras por separado, los períodos que cubren esas
-/// reseñas y el texto de cada ítem.
+/// reseñas y el texto de cada frase.
 ///
 /// <para>
 /// Los períodos viajan sueltos y no por cátedra porque lo que la ficha dice es de la materia
@@ -81,7 +81,7 @@ public sealed record SubjectTallies(
 
 /// <summary>
 /// Lo que la base contó para una cátedra: cuántas reseñas junta, cómo se repartieron las respuestas
-/// de cada ítem, lo mismo sumado sobre sus hermanas, y cuántas cursadas llegaron a destino.
+/// de cada frase, lo mismo sumado sobre sus hermanas, y cuántas cursadas llegaron a destino.
 ///
 /// <para>
 /// <see cref="ItemTexts"/> viaja al lado y no adentro de <see cref="ItemTally"/> porque el dominio

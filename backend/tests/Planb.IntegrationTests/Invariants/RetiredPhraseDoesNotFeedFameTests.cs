@@ -39,7 +39,7 @@ public class RetiredPhraseDoesNotFeedFameTests : IClassFixture<RegisterApiFixtur
 
     /// <summary>
     /// Otras frases de ChairConduct que se responden junto con <see cref="ItemBeingCut"/> para que
-    /// la fama tenga con qué converger: la fama pide al menos tres ítems apuntando al mismo lado
+    /// la fama tenga con qué converger: la fama pide al menos tres frases apuntando al mismo lado
     /// (no uno solo), así que cortar la única que se contestara la dejaría vacía sin que el corte
     /// tuviera nada que ver.
     /// </summary>
@@ -65,7 +65,7 @@ public class RetiredPhraseDoesNotFeedFameTests : IClassFixture<RegisterApiFixtur
         return auth;
     }
 
-    /// <summary><paramref name="negative"/> true responde la opción negativa (3) de cada ítem; false, la positiva (1).</summary>
+    /// <summary><paramref name="negative"/> true responde la opción negativa (3) de cada frase; false, la positiva (1).</summary>
     private static async Task PublishAsync(
         AuthenticatedClient auth, Guid chairId, int termIndex, bool negative, params string[] itemCodes)
     {
@@ -138,7 +138,7 @@ public class RetiredPhraseDoesNotFeedFameTests : IClassFixture<RegisterApiFixtur
         supersede.StatusCode.ShouldBe(HttpStatusCode.Created, await supersede.Content.ReadAsStringAsync());
 
         // Después del corte, Perez suma tres respuestas más al código nuevo: si algo sumara los
-        // dos tramos, el total del ítem de hoy pasaría a ser 13 en vez de 3.
+        // dos tramos, el total de la frase de hoy pasaría a ser 13 en vez de 3.
         await PublishAsync(await AccountAsync("cut-perez-new", 10), ChairPerez, 10, negative: true, newCode);
         await PublishAsync(await AccountAsync("cut-perez-new", 11), ChairPerez, 11, negative: false, newCode);
         await PublishAsync(await AccountAsync("cut-perez-new", 12), ChairPerez, 12, negative: false, newCode);

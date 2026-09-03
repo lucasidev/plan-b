@@ -107,7 +107,7 @@ function Numbers({ facts }: { facts: SubjectFacts }) {
 /**
  * Los intentos: la moda y, aparte, la cola.
  *
- * El boceto pedía acá un promedio ("2,1 intentos") y no sobrevive: la última opción del ítem es
+ * El boceto pedía acá un promedio ("2,1 intentos") y no sobrevive: la última opción de la frase es
  * abierta ("tres o más"), así que promediarla subestima siempre y por un margen que nadie puede
  * recalcular. Pero publicar la distribución sola tampoco alcanzaba: obliga a leer tres números y
  * hacer la cuenta en la cabeza para darse cuenta de lo único que importa.

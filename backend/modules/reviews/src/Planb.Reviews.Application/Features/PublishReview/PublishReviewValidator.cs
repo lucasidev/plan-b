@@ -5,7 +5,7 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 
 /// <summary>
 /// Validación de forma del comando (US-146). Lo que se chequea acá es que el mensaje esté bien
-/// armado; lo que es regla del producto (que el ítem exista, que la opción le pertenezca, que no
+/// armado; lo que es regla del producto (que la frase exista, que la opción le pertenezca, que no
 /// haya reseñado ya esa cursada) lo decide el handler contra el catálogo y el aggregate.
 /// </summary>
 internal sealed class PublishReviewValidator : AbstractValidator<PublishReviewCommand>

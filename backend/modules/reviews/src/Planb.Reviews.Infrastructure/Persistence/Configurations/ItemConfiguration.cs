@@ -67,7 +67,7 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
         // FK real: apunta a otra fila de esta misma tabla, así que no cruza schema y ADR-0017 no
         // aplica. Sin navigation property a propósito: el sucesor no tiene que arrastrar a su
         // antecesor cada vez que se carga, que es traer una pregunta retirada para ofrecer la de
-        // hoy. Restrict porque un ítem no se borra nunca: se retira.
+        // hoy. Restrict porque una frase no se borra nunca: se retira.
         builder.HasOne<Item>()
             .WithMany()
             .HasForeignKey(i => i.SupersedesItemId)
@@ -90,7 +90,7 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.Property(i => i.LastChangedBy)
             .HasColumnName("last_changed_by");
 
-        // El código es la identidad semántica del ítem (ver docstring de Item), y viaja en el CSV
+        // El código es la identidad semántica de la frase (ver docstring de Item), y viaja en el CSV
         // público y en el Método: este UNIQUE es el reflejo en DB de ItemErrors.CodeAlreadyExists.
         builder.HasIndex(i => i.Code)
             .IsUnique()
@@ -113,7 +113,7 @@ internal sealed class ItemConfiguration : IEntityTypeConfiguration<Item>
 
             // Sin ValueGeneratedNever, EF trata a Value como identity por ser un numérico parte de
             // la PK compuesta (convención de EF para PKs numéricas): generaría 1, 2, 3... por tabla
-            // en vez de respetar el valor de negocio que elige quien curó el ítem.
+            // en vez de respetar el valor de negocio que elige quien curó la frase.
             o.Property(op => op.Value)
                 .HasColumnName("value")
                 .ValueGeneratedNever();

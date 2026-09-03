@@ -15,7 +15,7 @@ namespace Planb.Reviews.Domain.Reviews;
 /// </para>
 ///
 /// <para>
-/// <b>Nunca se muestra una reseña individual.</b> La ficha publica conteos agregados por ítem y
+/// <b>Nunca se muestra una reseña individual.</b> La ficha publica conteos agregados por frase y
 /// opción; esta entidad existe para alimentarlos y para que su autor pueda editarla o borrarla.
 /// Lo que se guarda acá y no se publica jamás: el contexto dato por dato (cómo terminó, cuántas
 /// veces la cursó) y el <see cref="FreeText"/>.
@@ -54,7 +54,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
     /// <summary>
     /// Lo que escribió al final, si escribió. <b>No se publica nunca</b> (ADR-0084): lo lee la
-    /// curaduría para destilar ítems nuevos y para escribir notas sin nombres. Ningún read público
+    /// curaduría para destilar frases nuevas y para escribir notas sin nombres. Ningún read público
     /// lo devuelve, y no está en lo que se descarga.
     /// </summary>
     public string? FreeText { get; private set; }
@@ -71,13 +71,13 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
 
     /// <summary>
     /// Crea la reseña con lo respondido. Las respuestas se validan enteras contra el juego de pares
-    /// (ítem, opción) que la versión del instrumento admite, que el application layer arma leyendo
+    /// (frase, opción) que la versión del instrumento admite, que el application layer arma leyendo
     /// el catálogo: el aggregate no puede ver esos otros aggregates, pero sí exigir que lo que entra
     /// esté adentro de lo ofrecido.
     /// </summary>
     /// <param name="allowedOptionsByItem">
-    /// Por cada ítem que el instrumento ofrece, los valores de opción válidos. Es el contrato que
-    /// hace imposible guardar una respuesta a un ítem que no se preguntó, o una opción inventada.
+    /// Por cada frase que el instrumento ofrece, los valores de opción válidos. Es el contrato que
+    /// hace imposible guardar una respuesta a una frase que no se preguntó, o una opción inventada.
     /// </param>
     public static Result<Review> Create(
         Guid accountId,
@@ -127,7 +127,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// Reconstitución con Id pre-asignado, para el seeder. Valida las respuestas y tira si vienen
     /// incoherentes, mismo criterio que los demás Hydrate del proyecto.
     /// </summary>
-    /// <exception cref="ArgumentException">Si hay dos respuestas al mismo ítem.</exception>
+    /// <exception cref="ArgumentException">Si hay dos respuestas a la misma frase.</exception>
     public static Review Hydrate(
         ReviewId id,
         Guid accountId,
@@ -172,7 +172,7 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     /// <summary>
     /// Reemplaza lo respondido y el texto, validando todo antes de mutar. Es la edición del autor:
     /// puede cambiar una respuesta, agregar una que había salteado, o dejar de responder algo (esa
-    /// respuesta desaparece y su ítem vuelve a no contarla en el denominador).
+    /// respuesta desaparece y su frase vuelve a no contarla en el denominador).
     ///
     /// <para>
     /// Los conteos publicados se recalculan desde acá, así que editar mueve las fichas hacia atrás:
@@ -229,8 +229,8 @@ public sealed class Review : Entity<ReviewId>, IAggregateRoot
     public bool IsAuthoredBy(Guid accountId) => AccountId == accountId;
 
     /// <summary>
-    /// Arma el juego de respuestas validándolo sin mutar: sin ítems repetidos, cada ítem ofrecido
-    /// por el instrumento, cada opción perteneciente a su ítem, y al menos una respuesta.
+    /// Arma el juego de respuestas validándolo sin mutar: sin frases repetidas, cada frase ofrecida
+    /// por el instrumento, cada opción perteneciente a su frase, y al menos una respuesta.
     /// </summary>
     private static Result<List<ItemAnswer>> BuildAnswerSet(
         IEnumerable<(ItemId ItemId, short OptionValue)> answers,

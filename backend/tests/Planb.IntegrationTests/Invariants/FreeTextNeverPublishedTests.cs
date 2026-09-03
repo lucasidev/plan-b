@@ -65,9 +65,9 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
                 answers = new[]
                 {
                     new { itemCode = "COURSE_OUTCOME", optionValue = 1 },
-                    // Un ítem de ChairConduct de verdad: si el campo libre se filtrara pegado al
-                    // texto de algún ítem publicado, acá tiene contenido real donde aparecer. Con
-                    // solo COURSE_OUTCOME (que no se publica como ítem) la ficha queda vacía y esa
+                    // Una frase de ChairConduct de verdad: si el campo libre se filtrara pegado al
+                    // texto de alguna frase publicada, acá tiene contenido real donde aparecer. Con
+                    // solo COURSE_OUTCOME (que no se publica como frase) la ficha queda vacía y esa
                     // vía de filtración no se ejercita.
                     new { itemCode = "CHAIR_ANSWERS_IN_CLASS", optionValue = 1 },
                 },
@@ -86,7 +86,7 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
     }
 
     /// <summary>
-    /// Un GUID como texto libre no se confunde con nada de lo que un ítem, un nombre o una nota
+    /// Un GUID como texto libre no se confunde con nada de lo que una frase, un nombre o una nota
     /// editorial dirían de verdad. Si aparece en algún cuerpo público, es porque se filtró.
     /// </summary>
     [Fact]

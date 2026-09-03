@@ -6,15 +6,15 @@ using Planb.SharedKernel.Abstractions.Clock;
 namespace Planb.Reviews.Application.Seeding;
 
 /// <summary>
-/// Materializa el catálogo aprobado (issue #357): los 14 ítems de <see cref="CatalogSeedData"/> y el
+/// Materializa el catálogo aprobado (issue #357): las 14 frases de <see cref="CatalogSeedData"/> y el
 /// instrumento <c>STUDENT_COURSE</c> v1 que los publica. Construye los aggregates con
 /// <see cref="Item.Hydrate"/> e <see cref="Instrument.Hydrate"/> (ids pre-asignados, mismo camino que
 /// usa cualquier carga inicial de catálogo), no con SQL crudo.
 ///
 /// <para>
-/// Idempotente por identidad semántica, no por "está vacía la tabla" (ADR-0058): cada ítem se busca
+/// Idempotente por identidad semántica, no por "está vacía la tabla" (ADR-0058): cada frase se busca
 /// por su <see cref="Item.Code"/> y el instrumento por su código+vigencia antes de insertar, así que
-/// correrlo sobre una base ya sembrada no duplica nada y agregar un ítem nuevo al manifiesto lo
+/// correrlo sobre una base ya sembrada no duplica nada y agregar una frase nueva al manifiesto lo
 /// inserta sin tocar el resto.
 /// </para>
 /// </summary>
@@ -65,8 +65,8 @@ public sealed class CatalogSeeder
             insertedItems++;
         }
 
-        // El instrumento referencia los 14 ítems del manifiesto completo (no solo los recién
-        // insertados en esta corrida): si una corrida previa insertó los ítems pero se cortó antes de
+        // El instrumento referencia las 14 frases del manifiesto completo (no solo las recién
+        // insertadas en esta corrida): si una corrida previa insertó las frases pero se cortó antes de
         // publicar el instrumento, esta sigue encontrándolos por su id determinístico igual.
         var publishedInstrument = false;
         if (await _catalog.GetCurrentInstrumentAsync(CatalogSeedData.StudentCourseCode, ct) is null)

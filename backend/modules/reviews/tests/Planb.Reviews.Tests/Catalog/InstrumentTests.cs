@@ -7,9 +7,9 @@ using Xunit;
 namespace Planb.Reviews.Tests.Catalog;
 
 /// <summary>
-/// Domain unit tests de <see cref="Instrument"/> (ADR-0082): la versión del cuestionario, con los
-/// ítems que ofrece y en qué orden. Cubre <see cref="Instrument.Publish"/> y la validación entera
-/// del juego de ítems, <see cref="Instrument.Close"/> (que cierra la vigencia) y
+/// Domain unit tests de <see cref="Instrument"/> (ADR-0082): la versión del cuestionario, con las
+/// frases que ofrece y en qué orden. Cubre <see cref="Instrument.Publish"/> y la validación entera
+/// del juego de frases, <see cref="Instrument.Close"/> (que cierra la vigencia) y
 /// <see cref="Instrument.Hydrate"/>.
 /// </summary>
 public class InstrumentTests

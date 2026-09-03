@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Frases · planb' };
 
 /**
- * Ítems (SC-029, US-198). El catálogo de lo que el producto pregunta, editable en un solo lugar.
+ * Frases (SC-029, US-198). El catálogo de lo que el producto pregunta, editable en un solo lugar.
  *
- * Es la pantalla más cara de equivocar del backoffice: un ítem mal definido no rompe una fila, sino
+ * Es la pantalla más cara de equivocar del backoffice: una frase mal definida no rompe una fila, sino
  * todas las fichas que lo usan, y lo hace en silencio. Por eso editar no es un formulario suelto
  * sino una declaración de qué se está cambiando (ver `ItemEditor`): afinar la redacción conserva la
  * serie, cambiar lo que se pregunta la corta, y esa diferencia no la puede deducir el sistema.

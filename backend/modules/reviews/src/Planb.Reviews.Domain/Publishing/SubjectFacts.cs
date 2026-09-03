@@ -23,7 +23,7 @@ public sealed record SubjectFacts(
     IReadOnlyList<ChairListing> Chairs);
 
 /// <summary>
-/// La distribución de un ítem agregada sobre las cátedras que publican.
+/// La distribución de una frase agregada sobre las cátedras que publican.
 ///
 /// <para>
 /// Es distribución y no promedio a propósito. El boceto de la pantalla pedía "2,1 intentos", y esa
@@ -34,7 +34,7 @@ public sealed record SubjectFacts(
 /// </para>
 ///
 /// <para>
-/// <see cref="OpenEnded"/> es esa opción abierta, cuando el ítem tiene una. Viaja aparte del resto
+/// <see cref="OpenEnded"/> es esa opción abierta, cuando la frase tiene una. Viaja aparte del resto
 /// de la distribución para que la ficha pueda decirla sola: es la gente a la que le costó, o sea
 /// justo la que el dato existe para hacer visible.
 /// </para>
@@ -48,7 +48,7 @@ public sealed record ItemDistribution(
     PublishedOption? OpenEnded);
 
 /// <summary>
-/// Un ítem donde las cátedras difieren de verdad: la respuesta depende de con quién te toque.
+/// Una frase donde las cátedras difieren de verdad: la respuesta depende de con quién te toque.
 ///
 /// <para>
 /// "De verdad" tiene una definición y no es una impresión: los intervalos de la cátedra más alta y
@@ -61,11 +61,11 @@ public sealed record ChairSpread(
     string NegativeLabel,
     IReadOnlyList<ChairShare> ByChair);
 
-/// <summary>Cuánto marca una cátedra la opción negativa de un ítem.</summary>
+/// <summary>Cuánto marca una cátedra la opción negativa de una frase.</summary>
 public sealed record ChairShare(Guid ChairId, string ChairName, int Percent, int Total);
 
 /// <summary>
-/// Un ítem que **no** distingue a una cátedra de otra porque todas lo marcan parejo: eso lo vuelve
+/// Una frase que **no** distingue a una cátedra de otra porque todas la marcan parejo: eso lo vuelve
 /// un rasgo de la materia y no de quien la dicta. Es la otra mitad de la pregunta.
 /// </summary>
 public sealed record SharedTrait(

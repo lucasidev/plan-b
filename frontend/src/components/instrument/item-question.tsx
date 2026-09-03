@@ -16,8 +16,8 @@ type ItemQuestionProps = {
  * lectura, de la ficha, y teñir una opción mientras alguien responde es sugerirle la respuesta.
  * Por eso el endpoint del cuestionario ni siquiera manda la valencia.
  *
- * Saltear es una salida visible y sin costo: quien saltea no cuenta en el denominador de este
- * ítem, y el producto se apoya en eso en vez de exigir respuestas (ADR-0082).
+ * Saltear es una salida visible y sin costo: quien saltea no cuenta en el denominador de esta
+ * frase, y el producto se apoya en eso en vez de exigir respuestas (ADR-0082).
  */
 export function ItemQuestion({ item, value, onAnswer, onSkip }: ItemQuestionProps) {
   const answered = value !== undefined;

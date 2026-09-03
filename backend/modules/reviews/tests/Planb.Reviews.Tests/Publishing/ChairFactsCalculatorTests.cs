@@ -15,8 +15,8 @@ namespace Planb.Reviews.Tests.Publishing;
 /// <para>
 /// Cubre, en el mismo orden que <see cref="ChairFactsCalculator.Calculate"/>: el piso de
 /// <see cref="PublishingRules.ChairMinimumReviews"/> reseñas, la moda y la distribución de cada
-/// ítem, que los bloques (conducta de cátedra, vivencia del estudiante y la fama) no se mezclan
-/// entre sí ni con el contexto, que un ítem sin respuestas no se publica, la tasa de finalización
+/// frase, que los bloques (conducta de cátedra, vivencia del estudiante y la fama) no se mezclan
+/// entre sí ni con el contexto, que una frase sin respuestas no se publica, la tasa de finalización
 /// agregada, los contrastes contra las cátedras hermanas, y el corte de serie de US-198: los dos
 /// tramos se publican separados y el viejo no vota en nada de lo que se calcula sobre el de hoy.
 /// </para>
@@ -29,7 +29,7 @@ public class ChairFactsCalculatorTests
     private static ItemTally Tally(string itemCode, ItemLayer layer, params OptionTally[] options) =>
         new(itemCode, layer, options);
 
-    /// <summary>Un ítem binario típico: una opción positiva y una negativa, nada más.</summary>
+    /// <summary>Una frase binaria típica: una opción positiva y una negativa, nada más.</summary>
     private static ItemTally BinaryTally(string itemCode, ItemLayer layer, int positiveCount, int negativeCount) =>
         Tally(
             itemCode,
@@ -37,7 +37,7 @@ public class ChairFactsCalculatorTests
             Option(1, 1, "Bien", OptionValence.Positive, positiveCount),
             Option(2, 2, "Mal", OptionValence.Negative, negativeCount));
 
-    /// <summary>El mismo ítem binario, pero retirado el día que se abrió el código nuevo.</summary>
+    /// <summary>La misma frase binaria, pero retirada el día que se abrió el código nuevo.</summary>
     private static ItemTally RetiredTally(
         string itemCode, ItemLayer layer, int positiveCount, int negativeCount) =>
         BinaryTally(itemCode, layer, positiveCount, negativeCount) with
@@ -216,7 +216,7 @@ public class ChairFactsCalculatorTests
     }
 
     // -------------------------------------------------------------------
-    // Un ítem sin respuestas
+    // Una frase sin respuestas
     // -------------------------------------------------------------------
 
     [Fact]
@@ -285,7 +285,7 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// ADR-0083: la fama exige más de la mitad de quienes respondieron, no "algunos". Este ítem
+    /// ADR-0083: la fama exige más de la mitad de quienes respondieron, no "algunos". Esta frase
     /// tiene 10 respuestas y solo 2 marcaron la opción negativa (20 %): no converge, por muchas
     /// respuestas que tenga en crudo.
     /// </summary>
@@ -326,7 +326,7 @@ public class ChairFactsCalculatorTests
 
     /// <summary>
     /// El orden es por proporción descendente, no por cuántos marcaron la negativa en crudo: acá
-    /// el ítem con menos marcas negativas en total (3 de 4) va primero porque su proporción es más
+    /// la frase con menos marcas negativas en total (3 de 4) va primero porque su proporción es más
     /// alta (75 %) que la del que tiene más marcas en crudo (5 de 9, 55,6 %).
     /// </summary>
     [Fact]
@@ -352,8 +352,8 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// El denominador de cada ítem son quienes lo respondieron (ADR-0082): uno sin respuestas no
-    /// tiene proporción que calcular y no puede converger, por muchos otros ítems que sí converjan.
+    /// El denominador de cada frase son quienes la respondieron (ADR-0082): una sin respuestas no
+    /// tiene proporción que calcular y no puede converger, por muchas otras frases que sí converjan.
     /// </summary>
     [Fact]
     public void Calculate_ItemWithNoAnswers_NeverEntersFame()
@@ -466,7 +466,7 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// Una hermana que nunca respondió ese ítem no tiene proporción que comparar: no hay contraste
+    /// Una hermana que nunca respondió esa frase no tiene proporción que comparar: no hay contraste
     /// que hacer con un dato que no existe.
     /// </summary>
     [Fact]
@@ -600,7 +600,7 @@ public class ChairFactsCalculatorTests
 
         var facts = Publish(tallies);
 
-        // Tres retirados con 99 % negativo, y aun así no hay fama: el único ítem vigente está bien.
+        // Tres retiradas con 99 % negativo, y aun así no hay fama: la única frase vigente está bien.
         facts.Fame.ShouldBeEmpty();
     }
 
@@ -647,7 +647,7 @@ public class ChairFactsCalculatorTests
 
     /// <summary>
     /// El estado inmediatamente después del corte, que es el más común y el más peligroso: la
-    /// pregunta nueva todavía no la contestó nadie. El ítem se publica igual, con su tramo anterior
+    /// pregunta nueva todavía no la contestó nadie. La frase se publica igual, con su tramo anterior
     /// intacto. Descartarlo por tener cero respuestas propias escondería las 112 de antes justo el
     /// día que cambió la pregunta, que es lo único que el corte tenía que hacer visible.
     /// </summary>
@@ -676,7 +676,7 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// Y un ítem sin respuestas y sin tramo anterior sigue sin publicarse: no hay nada que decir de
+    /// Y una frase sin respuestas y sin tramo anterior sigue sin publicarse: no hay nada que decir de
     /// una pregunta que nadie contestó nunca, y una barra vacía no es información.
     /// </summary>
     [Fact]
@@ -694,7 +694,7 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// US-198, edge: un ítem recién abierto sobre una cátedra que nunca respondió al anterior no
+    /// US-198, edge: una frase recién abierta sobre una cátedra que nunca respondió a la anterior no
     /// tiene tramo viejo que mostrar. El corte existe en el catálogo; en esta ficha no hay nada que
     /// cortar, y una sección vacía diciendo "acá cambió la pregunta" sería ruido.
     /// </summary>
@@ -715,7 +715,7 @@ public class ChairFactsCalculatorTests
     }
 
     /// <summary>
-    /// El tramo de antes solo puede venir de un ítem efectivamente retirado. Acá "A" sigue activo
+    /// El tramo de antes solo puede venir de una frase efectivamente retirada. Acá "A" sigue activo
     /// (no está retirado) aunque comparta código con lo que "B" dice reemplazar: no es un tramo
     /// anterior legítimo y no se cuelga de "B".
     /// </summary>

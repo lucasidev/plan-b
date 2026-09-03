@@ -19,8 +19,8 @@ namespace Planb.IntegrationTests.Reviews;
 ///
 /// <para>
 /// El corpus lo siembra <c>CatalogSeedHostedService</c> al arrancar la app, con ids determinísticos
-/// (prefijo 00000010 para ítems, 00000011 para instrumentos, ADR-0058). Los tests resuelven por
-/// código de ítem, que es la identidad semántica y no cambia mientras el ítem signifique lo mismo.
+/// (prefijo 00000010 para frases, 00000011 para instrumentos, ADR-0058). Los tests resuelven por
+/// código de frase, que es la identidad semántica y no cambia mientras la frase signifique lo mismo.
 /// </para>
 /// </summary>
 public class PublishReviewEndpointTests : IClassFixture<RegisterApiFixture>
@@ -109,7 +109,7 @@ public class PublishReviewEndpointTests : IClassFixture<RegisterApiFixture>
         body.ShouldNotBeNull();
         body!.Id.ShouldNotBe(Guid.Empty);
 
-        // Saltear no deja fila: los once ítems no contestados no entran en ningún denominador.
+        // Saltear no deja fila: las once frases no contestadas no entran en ningún denominador.
         body.AnsweredItems.ShouldBe(3);
     }
 

@@ -11,7 +11,7 @@ import { ReviewForm } from './review-form';
  * leído antes el cuerpo del componente.
  *
  * El instrumento de fixture usa los textos y opciones reales del catálogo
- * (docs/product/phrases.md) para que lo que aparece en pantalla sea lo que un ítem real diría.
+ * (docs/product/phrases.md) para que lo que aparece en pantalla sea lo que una frase real diría.
  */
 
 vi.mock('../actions', () => ({
@@ -230,8 +230,8 @@ beforeEach(() => {
 
 describe('US-146: reseñar en menos de dos minutos', () => {
   /**
-   * US-146 E1: responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde un solo
-   * ítem del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía igual.
+   * US-146 E1: responde "la aprobé" en cómo terminó, elige "No sé" en cátedra, responde una sola
+   * frase del paso 5 (pudo seguir el ritmo) y deja el resto sin contestar; la reseña se envía igual.
    */
   it('publica la reseña con solo opciones cerradas, sin escribir nada obligatorio', async () => {
     stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
@@ -403,7 +403,7 @@ describe('SC-015: estados que dependen de props', () => {
     expect(screen.getByRole('button', { name: /enviar la reseña/i })).toBeDisabled();
   });
 
-  it('si el instrumento no trae ítems de conducta observable, el paso no se ofrece', () => {
+  it('si el instrumento no trae frases de conducta observable, el paso no se ofrece', () => {
     const withoutChairConduct: CurrentInstrument = {
       ...INSTRUMENT,
       items: INSTRUMENT.items.filter((item) => item.layer !== 'ChairConduct'),

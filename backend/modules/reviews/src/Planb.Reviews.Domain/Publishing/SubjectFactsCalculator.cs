@@ -17,8 +17,8 @@ namespace Planb.Reviews.Domain.Publishing;
 public static class SubjectFactsCalculator
 {
     /// <summary>
-    /// Qué proporción tiene que marcar la opción negativa en TODAS las cátedras para que el ítem
-    /// cuente como rasgo de la materia. La mitad: por debajo, el ítem no está diciendo eso de nadie.
+    /// Qué proporción tiene que marcar la opción negativa en TODAS las cátedras para que la frase
+    /// cuente como rasgo de la materia. La mitad: por debajo, la frase no está diciendo eso de nadie.
     /// </summary>
     public const double SharedTraitThreshold = 0.5d;
 
@@ -75,8 +75,8 @@ public static class SubjectFactsCalculator
     }
 
     /// <summary>
-    /// Suma un ítem sobre todas las cátedras que publican y devuelve su distribución. El
-    /// denominador son las respuestas a ese ítem, no las reseñas: lo salteado no cuenta.
+    /// Suma una frase sobre todas las cátedras que publican y devuelve su distribución. El
+    /// denominador son las respuestas a esa frase, no las reseñas: lo salteado no cuenta.
     /// </summary>
     private static ItemDistribution? Aggregate(
         IReadOnlyList<ChairContribution> chairs, string itemCode)
@@ -114,9 +114,9 @@ public static class SubjectFactsCalculator
 
         var mode = options.OrderByDescending(o => o.Count).ThenBy(o => o.Order).First();
 
-        // La opción abierta viaja aparte para que la ficha pueda decirla sola. Hoy solo el ítem de
-        // intentos tiene una; el día que haya un segundo, esto pide un flag en el catálogo en vez
-        // de una constante por ítem.
+        // La opción abierta viaja aparte para que la ficha pueda decirla sola. Hoy solo la frase de
+        // intentos tiene una; el día que haya una segunda, esto pide un flag en el catálogo en vez
+        // de una constante por frase.
         var openEnded = string.Equals(itemCode, PublishingRules.AttemptsItemCode, StringComparison.Ordinal)
             ? options.FirstOrDefault(o => o.Value == PublishingRules.AttemptsOpenEndedValue)
             : null;
@@ -166,7 +166,7 @@ public static class SubjectFactsCalculator
     }
 
     /// <summary>
-    /// Los ítems donde las cátedras difieren de verdad. Con una sola cátedra publicando no hay nada
+    /// Las frases donde las cátedras difieren de verdad. Con una sola cátedra publicando no hay nada
     /// que contrastar y la sección entera desaparece: es el caso honesto, no un hueco.
     /// </summary>
     private static IReadOnlyList<ChairSpread> BuildSpread(IReadOnlyList<ChairContribution> chairs)
@@ -211,7 +211,7 @@ public static class SubjectFactsCalculator
     }
 
     /// <summary>
-    /// Los ítems que todas las cátedras marcan parejo y fuerte. Que nadie se salve es lo que los
+    /// Las frases que todas las cátedras marcan parejo y fuerte. Que nadie se salve es lo que las
     /// vuelve un rasgo de la materia: no depende de con quién te toque.
     /// </summary>
     private static IReadOnlyList<SharedTrait> BuildShared(IReadOnlyList<ChairContribution> chairs)
@@ -233,7 +233,7 @@ public static class SubjectFactsCalculator
             var highest = perChair.MaxBy(Share)!;
             var lowest = perChair.MinBy(Share)!;
 
-            // Si además se separan, el ítem ya está contado como diferencia y no como rasgo común.
+            // Si además se separan, la frase ya está contada como diferencia y no como rasgo común.
             if (WilsonInterval.Separated(
                     highest.Tally.NegativeInterval, lowest.Tally.NegativeInterval))
             {
@@ -252,9 +252,9 @@ public static class SubjectFactsCalculator
     }
 
     /// <summary>
-    /// Los ítems que TODAS las cátedras que publican respondieron, con su opción negativa. Solo
-    /// esos se pueden comparar: un ítem que una cátedra no tiene no dice nada sobre la diferencia
-    /// entre ellas. Los de contexto quedan afuera porque no se publican dato por dato.
+    /// Las frases que TODAS las cátedras que publican respondieron, con su opción negativa. Solo
+    /// esas se pueden comparar: una frase que una cátedra no tiene no dice nada sobre la diferencia
+    /// entre ellas. Las de contexto quedan afuera porque no se publican dato por dato.
     /// </summary>
     private static IEnumerable<(string Code, List<ChairItem> PerChair)> ComparableItems(
         IReadOnlyList<ChairContribution> chairs)
@@ -299,7 +299,7 @@ public static class SubjectFactsCalculator
     private static int Percent(int count, int total) =>
         total <= 0 ? 0 : (int)Math.Round(100d * count / total, MidpointRounding.AwayFromZero);
 
-    /// <summary>Un ítem de una cátedra puntual, mientras se comparan entre sí.</summary>
+    /// <summary>Una frase de una cátedra puntual, mientras se comparan entre sí.</summary>
     private sealed record ChairItem(ChairContribution Chair, ItemTally Tally);
 }
 

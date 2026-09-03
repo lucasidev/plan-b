@@ -66,9 +66,9 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
                 answers = new[]
                 {
                     new { itemCode = "COURSE_OUTCOME", optionValue = 1 },
-                    // Un ítem de ChairConduct de verdad: si algo llegara a colgar un dato de la
-                    // reseña del texto de un ítem publicado, acá tiene contenido real donde
-                    // aparecer (con solo COURSE_OUTCOME la ficha queda sin ítems que mostrar).
+                    // Una frase de ChairConduct de verdad: si algo llegara a colgar un dato de la
+                    // reseña del texto de una frase publicada, acá tiene contenido real donde
+                    // aparecer (con solo COURSE_OUTCOME la ficha queda sin frases que mostrar).
                     new { itemCode = "CHAIR_ANSWERS_IN_CLASS", optionValue = 1 },
                 },
                 freeText = (string?)null,

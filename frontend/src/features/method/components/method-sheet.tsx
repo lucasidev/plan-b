@@ -7,7 +7,7 @@ import type { CurrentInstrument, InstrumentItem, ItemLayer } from '@/components/
  * nada: es "confiá en mí". Esta pantalla existe para que cualquiera pueda rastrear un número hasta
  * la regla que lo calculó **sin leer código**, y para que pueda descartarlo con fundamento.
  *
- * El catálogo de ítems sale del mismo endpoint que usa la pantalla de reseñar: publicar una copia
+ * El catálogo de frases sale del mismo endpoint que usa la pantalla de reseñar: publicar una copia
  * escrita a mano garantizaría que un día diga algo distinto de lo que se pregunta.
  */
 export function MethodSheet({
