@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
-/// Write-side del catálogo del instrumento (ADR-0082): los ítems y sus versiones. Los reads que
+/// Write-side del catálogo del instrumento (ADR-0082): las frases y sus versiones. Los reads que
 /// alimentan la pantalla Reseñar y el Método público van por query service con Dapper; este repo es
 /// solo para cargar los aggregates a mutar. El SaveChanges lo hace el unit of work del módulo.
 /// </summary>
@@ -14,19 +14,19 @@ public interface ICatalogRepository
     /// <summary>Por su identidad semántica. Es como se lo busca al curar y al cargar el catálogo.</summary>
     Task<Item?> GetItemByCodeAsync(string code, CancellationToken ct = default);
 
-    /// <summary>True si otro ítem ya usa ese código. Refleja el UNIQUE de DB.</summary>
+    /// <summary>True si otra frase ya usa ese código. Refleja el UNIQUE de DB.</summary>
     Task<bool> ItemCodeExistsAsync(string code, ItemId? excludeId, CancellationToken ct = default);
 
     /// <summary>
-    /// Los ítems pedidos, por id. La usa la publicación de un instrumento para validar de una que
-    /// todos existan y ninguno esté retirado, sin una consulta por ítem.
+    /// Las frases pedidas, por id. La usa la publicación de un instrumento para validar de una que
+    /// todas existan y ninguna esté retirada, sin una consulta por frase.
     /// </summary>
     Task<IReadOnlyList<Item>> GetItemsByIdsAsync(
         IReadOnlyCollection<ItemId> ids,
         CancellationToken ct = default);
 
     /// <summary>
-    /// Los valores de opción de un ítem que ya tienen respuestas guardadas. Es lo que
+    /// Los valores de opción de una frase que ya tienen respuestas guardadas. Es lo que
     /// <see cref="Item.ReplaceOptions"/> necesita para no dejar huérfana una respuesta vieja.
     /// </summary>
     Task<IReadOnlySet<short>> GetAnsweredOptionValuesAsync(ItemId itemId, CancellationToken ct = default);
@@ -34,13 +34,13 @@ public interface ICatalogRepository
     Task AddInstrumentAsync(Instrument instrument, CancellationToken ct = default);
 
     /// <summary>
-    /// La versión vigente de un cuestionario, con sus ítems. Es la que la pantalla Reseñar ofrece y
+    /// La versión vigente de un cuestionario, con sus frases. Es la que la pantalla Reseñar ofrece y
     /// a la que queda atada cada reseña nueva. Null si ese código todavía no se publicó.
     /// </summary>
     Task<Instrument?> GetCurrentInstrumentAsync(string code, CancellationToken ct = default);
 
     /// <summary>
-    /// Un cuestionario por id, con sus ítems, aunque ya no sea el vigente. Null si no existe.
+    /// Un cuestionario por id, con sus frases, aunque ya no sea el vigente. Null si no existe.
     ///
     /// <para>
     /// Lo pide editar una reseña (US-165): se valida contra el cuestionario con el que se

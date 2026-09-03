@@ -8,7 +8,7 @@ using Planb.Reviews.Domain.Reviews;
 namespace Planb.Reviews.Application.Features.CurrentInstrument;
 
 /// <summary>
-/// GET /api/reviews/instrument (US-146): el cuestionario que se ofrece hoy, con sus ítems y
+/// GET /api/reviews/instrument (US-146): el cuestionario que se ofrece hoy, con sus frases y
 /// opciones en orden.
 ///
 /// <para>

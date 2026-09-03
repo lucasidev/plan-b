@@ -30,9 +30,9 @@ export interface SubjectSpan {
 }
 
 /**
- * La distribución de un ítem, con su moda. Nunca un promedio.
+ * La distribución de una frase, con su moda. Nunca un promedio.
  *
- * `openEnded` es la opción abierta del ítem ("tres o más"), cuando tiene una. Viene separada del
+ * `openEnded` es la opción abierta de la frase ("tres o más"), cuando tiene una. Viene separada del
  * resto para que la ficha la diga sola: es la gente a la que le costó, que es justo la que un
  * promedio taparía.
  */
@@ -58,7 +58,7 @@ export interface SubjectCompletion {
   total: number;
 }
 
-/** Un ítem donde las cátedras difieren: la respuesta depende de con quién te toque. */
+/** Una frase donde las cátedras difieren: la respuesta depende de con quién te toque. */
 export interface Spread {
   itemCode: string;
   itemText: string;
@@ -73,7 +73,7 @@ export interface ChairShare {
   total: number;
 }
 
-/** Un ítem que todas las cátedras marcan parejo: es de la materia, no de quien la dicta. */
+/** Una frase que todas las cátedras marcan parejo: es de la materia, no de quien la dicta. */
 export interface Shared {
   itemCode: string;
   itemText: string;

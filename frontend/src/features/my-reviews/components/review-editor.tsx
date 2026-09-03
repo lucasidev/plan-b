@@ -14,7 +14,7 @@ import type { MyReview } from '../types';
  * Lo que se corrige son las respuestas.
  *
  * Saltear sigue valiendo, y acá vale doble: se puede contestar algo que se había salteado, y
- * también **dejar de contestar** algo. En ese caso la respuesta desaparece y su ítem vuelve a no
+ * también **dejar de contestar** algo. En ese caso la respuesta desaparece y su frase vuelve a no
  * contarla en el denominador. Por eso el formulario manda el set completo y no un delta.
  *
  * Y como en la pantalla de reseñar, ninguna opción se pinta de alarma mientras se responde.

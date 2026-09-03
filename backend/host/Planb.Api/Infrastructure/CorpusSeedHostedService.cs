@@ -7,7 +7,7 @@ namespace Planb.Api.Infrastructure;
 /// <c>PLANB_SEED_CORPUS</c>.
 ///
 /// <para>
-/// Es el nivel 2 de ADR-0058, a diferencia del catálogo académico y del de ítems, que son catálogo
+/// Es el nivel 2 de ADR-0058, a diferencia del catálogo académico y del de frases, que son catálogo
 /// de referencia y van en el nivel 1. La distinción es la que gobierna el gate: sin el catálogo la
 /// API no tiene qué responder, y sin el corpus tiene todo lo que necesita para funcionar, solo que
 /// en cero. Los integration tests corren en Development sin la variable, así que su base sigue

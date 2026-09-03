@@ -5,14 +5,14 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
-/// Aggregate root del ítem del catálogo (US-198, ADR-0082): una pregunta con sus opciones cerradas,
+/// Aggregate root de la frase del catálogo (US-198, ADR-0082): una pregunta con sus opciones cerradas,
 /// que es la unidad de lo que se recolecta y de lo que la ficha publica como conteo (ADR-0083).
 ///
 /// <para>
 /// <b>El código es la identidad semántica, no el texto.</b> Afinar la redacción de una pregunta sin
 /// cambiar lo que pregunta es un <see cref="Edit"/>: mismo código, misma serie histórica, y las
 /// respuestas viejas siguen siendo comparables. Si cambia el SIGNIFICADO, no se edita: se crea un
-/// ítem nuevo con código nuevo apuntando al anterior por <see cref="SupersedesItemId"/>, y el
+/// frase nueva con código nuevo apuntando al anterior por <see cref="SupersedesItemId"/>, y el
 /// anterior se retira. Eso es lo que declara la ruptura de la serie. La distinción es editorial y la
 /// sostiene quien cura el catálogo; el dominio la hace posible separando código de texto, y no puede
 /// tomarla por él.
@@ -52,13 +52,13 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     public ItemOrigin Origin { get; private set; }
 
     /// <summary>
-    /// Si el ítem sigue ofreciéndose. Retirarlo no borra nada: las respuestas viejas siguen contando
+    /// Si la frase sigue ofreciéndose. Retirarla no borra nada: las respuestas viejas siguen contando
     /// en las fichas de los períodos en que se preguntó.
     /// </summary>
     public bool IsActive { get; private set; }
 
     /// <summary>
-    /// El ítem al que este reemplaza, cuando nació de un cambio de significado (US-198). Es lo que
+    /// La frase a la que esta reemplaza, cuando nació de un cambio de significado (US-198). Es lo que
     /// hace visible el corte: la ficha llega desde la pregunta de hoy a la de antes y las muestra
     /// separadas, en vez de perder de vista lo respondido bajo el código viejo.
     /// </summary>
@@ -88,12 +88,12 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     private Item() { }
 
     /// <summary>
-    /// Crea un ítem con sus opciones. Arranca activo. Las opciones se validan enteras antes de
-    /// crear nada: valores y órdenes únicos, a lo sumo una negativa, y ninguna valencia si el ítem
+    /// Crea una frase con sus opciones. Arranca activa. Las opciones se validan enteras antes de
+    /// crear nada: valores y órdenes únicos, a lo sumo una negativa, y ninguna valencia si la frase
     /// es de contexto.
     /// </summary>
     /// <param name="supersedes">
-    /// El ítem que este reemplaza, si nace de un cambio de significado. Retirar al anterior no es
+    /// La frase que esta reemplaza, si nace de un cambio de significado. Retirar a la anterior no es
     /// asunto de este método: son dos aggregates y los coordina el application service.
     /// </param>
     public static Result<Item> Create(
@@ -151,7 +151,7 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
 
     /// <summary>
     /// Reconstitución con Id pre-asignado, para el seeder y la carga inicial del catálogo. Valida
-    /// las opciones y tira si vienen incoherentes: un ítem con dos negativas se persistiría sin
+    /// las opciones y tira si vienen incoherentes: una frase con dos negativas se persistiría sin
     /// ruido y rompería la ficha después, cuando ya hay respuestas colgando.
     /// </summary>
     /// <exception cref="ArgumentException">Si las opciones violan los invariantes del aggregate.</exception>
@@ -194,16 +194,16 @@ public sealed partial class Item : Entity<ItemId>, IAggregateRoot
     }
 
     /// <summary>
-    /// La edición del ítem, entera y en un solo lugar (US-198): su texto, su ayuda, su capa y sus
+    /// La edición de la frase, entera y en un solo lugar (US-198): su texto, su ayuda, su capa y sus
     /// opciones. Es una sola operación y no tres porque las tres se guardan juntas: un fallo a
     /// mitad de camino dejaría persistido medio cambio, ya que un <see cref="Result"/> fallido no
     /// es una excepción y no revierte la transacción que Wolverine abre.
     ///
     /// <para>
     /// <b>No cambia el significado, por definición.</b> Afinar la redacción, corregir una etiqueta
-    /// o mover el ítem a la capa que le corresponde deja la misma pregunta: mismo código, misma
+    /// o mover la frase a la capa que le corresponde deja la misma pregunta: mismo código, misma
     /// serie, respuestas viejas y nuevas comparables entre sí. Si lo que cambia es LO QUE SE
-    /// PREGUNTA, esto no alcanza: hace falta un ítem nuevo con código nuevo y este se retira, que es
+    /// PREGUNTA, esto no alcanza: hace falta una frase nueva con código nuevo y esta se retira, que es
     /// lo que declara el corte. Cuál de las dos cosas está pasando lo sabe quien cura y no el
     /// dominio, y por eso son dos caminos distintos y no una heurística.
     /// </para>

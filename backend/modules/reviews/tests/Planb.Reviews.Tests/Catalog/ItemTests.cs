@@ -17,7 +17,7 @@ public class ItemTests
 {
     private static readonly DateTimeOffset T0 = new(2026, 8, 26, 12, 0, 0, TimeSpan.Zero);
 
-    /// <summary>Quien cura los ítems: US-198 pide que todo cambio quede con su autor.</summary>
+    /// <summary>Quien cura las frases: US-198 pide que todo cambio quede con su autor.</summary>
     private static readonly Guid Curator = Guid.Parse("00000198-0000-0000-0000-000000000001");
 
     private sealed class FixedClock(DateTimeOffset now) : IDateTimeProvider
@@ -325,7 +325,7 @@ public class ItemTests
     }
 
     /// <summary>
-    /// US-198 E1: se edita el texto y las opciones y el ítem conserva su código, o sea su serie.
+    /// US-198 E1: se edita el texto y las opciones y la frase conserva su código, o sea su serie.
     /// El registro de quién y cuándo es parte del criterio de aceptación, no un extra.
     /// </summary>
     [Fact]
@@ -352,7 +352,7 @@ public class ItemTests
 
     /// <summary>
     /// US-198 E1: la capa se edita en el mismo lugar que el resto, porque decide qué bloque de la
-    /// ficha cuenta el ítem. Mover no corta la serie: la pregunta sigue siendo la misma.
+    /// ficha cuenta la frase. Mover no corta la serie: la pregunta sigue siendo la misma.
     /// </summary>
     [Fact]
     public void Edit_MovesTheItemToAnotherLayer_WithoutChangingTheCode()
@@ -374,7 +374,7 @@ public class ItemTests
     }
 
     /// <summary>
-    /// Las opciones se validan contra la capa DESTINO y no contra la que el ítem tenía: mover a
+    /// Las opciones se validan contra la capa DESTINO y no contra la que la frase tenía: mover a
     /// contexto con opciones teñidas dejaría persistido un lado bueno y uno malo en algo que no se
     /// publica dato por dato.
     /// </summary>

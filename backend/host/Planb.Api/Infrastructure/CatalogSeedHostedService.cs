@@ -4,14 +4,14 @@ namespace Planb.Api.Infrastructure;
 
 /// <summary>
 /// Corre el <see cref="CatalogSeeder"/> en startup, en Development. Mismo patrón que
-/// <see cref="AcademicSeedHostedService"/>, y por la misma razón: el catálogo de ítems y su
+/// <see cref="AcademicSeedHostedService"/>, y por la misma razón: el catálogo de frases y su
 /// instrumento son **catálogo de referencia del producto**, no corpus de demostración.
 ///
 /// <para>
 /// Por eso va gateado por <c>IsDevelopment()</c> solo (nivel 1 de ADR-0058) y NO por
 /// <c>PLANB_SEED_CORPUS</c> (nivel 2). Sin este seed no hay cuestionario, y sin cuestionario no hay
 /// reseña que responder: los integration tests, que corren en Development pero sin el corpus,
-/// necesitan los ítems para poder publicar una reseña contra la versión vigente del instrumento.
+/// necesitan las frases para poder publicar una reseña contra la versión vigente del instrumento.
 /// Dejarlo en el nivel 2 los habría dejado sin nada que contestar.
 /// </para>
 ///
@@ -56,7 +56,7 @@ public sealed class CatalogSeedHostedService : IHostedService
         }
         catch (Exception ex)
         {
-            // Falla ruidoso, mismo criterio que el seed académico: sin catálogo de ítems la API
+            // Falla ruidoso, mismo criterio que el seed académico: sin catálogo de frases la API
             // arranca sin cuestionario, la pantalla Reseñar no tiene qué ofrecer y los tests fallan
             // todos por causas que no nombran el problema real.
             _log.LogError(ex, "Catalog seeder failed.");

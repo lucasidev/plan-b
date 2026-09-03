@@ -14,7 +14,7 @@ namespace Planb.IntegrationTests.Reviews;
 ///
 /// <para>
 /// Lo que se prueba acá y no en el unit del calculador: que el read cuente bien (denominadores por
-/// ítem, opciones en cero presentes) y que la respuesta HTTP no filtre nada de lo que la tesis
+/// frase, opciones en cero presentes) y que la respuesta HTTP no filtre nada de lo que la tesis
 /// prohíbe publicar. El juicio editorial ya está probado sin base en
 /// <c>ChairFactsCalculatorTests</c>.
 /// </para>
@@ -89,7 +89,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
                     {
                         // Siete aprueban, tres recursan: 7 de cada 10 llegan.
                         new { itemCode = "COURSE_OUTCOME", optionValue = i < 7 ? 1 : 3 },
-                        // Ocho de diez eligen la negativa de este ítem.
+                        // Ocho de diez eligen la negativa de esta frase.
                         new { itemCode = "CHAIR_ANSWERS_IN_CLASS", optionValue = i < 8 ? 3 : 1 },
                     },
                     freeText = (string?)null,
@@ -181,7 +181,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         await PublishAsync(ChairPerez, 0, 10);
 
-        // El ítem que nadie contestó no aparece publicado: saltear no deja fila, así que no entra
+        // La frase que nadie contestó no aparece publicada: saltear no deja fila, así que no entra
         // en ningún denominador (ADR-0082). Si apareciera con total 0, la ficha estaría inventando
         // un denominador que nadie sostiene.
         var facts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
@@ -204,7 +204,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
         json.ShouldNotContain("accountId");
         json.ShouldNotContain("freeText");
 
-        // Y ningún desenlace individual: la capa de contexto no se publica ítem por ítem, solo
+        // Y ningún desenlace individual: la capa de contexto no se publica frase por frase, solo
         // agregada como tasa de finalización.
         using var document = JsonDocument.Parse(json);
         var codes = document.RootElement.GetProperty("chairConduct").EnumerateArray()

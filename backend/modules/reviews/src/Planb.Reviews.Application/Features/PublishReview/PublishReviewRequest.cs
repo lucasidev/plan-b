@@ -11,5 +11,5 @@ public sealed record PublishReviewRequest(
     IReadOnlyList<ReviewAnswerRequest>? Answers,
     string? FreeText);
 
-/// <summary>Una respuesta del cuestionario: el código del ítem y el valor de la opción elegida.</summary>
+/// <summary>Una respuesta del cuestionario: el código de la frase y el valor de la opción elegida.</summary>
 public sealed record ReviewAnswerRequest(string ItemCode, short OptionValue);

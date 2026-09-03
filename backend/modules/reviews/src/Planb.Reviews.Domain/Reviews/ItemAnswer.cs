@@ -3,12 +3,12 @@ using Planb.Reviews.Domain.Catalog;
 namespace Planb.Reviews.Domain.Reviews;
 
 /// <summary>
-/// Child entity de <see cref="Review"/>: la opción que alguien eligió para un ítem. El ctor es
-/// internal: solo la reseña las crea, que es lo que impide dos respuestas al mismo ítem.
+/// Child entity de <see cref="Review"/>: la opción que alguien eligió para una frase. El ctor es
+/// internal: solo la reseña las crea, que es lo que impide dos respuestas a la misma frase.
 ///
 /// <para>
-/// <b>Saltear no deja fila.</b> Un ítem sin respuesta simplemente no está acá, y por eso no cuenta
-/// en ningún denominador (ADR-0082): el denominador de un ítem son las reseñas que lo respondieron,
+/// <b>Saltear no deja fila.</b> Una frase sin respuesta simplemente no está acá, y por eso no cuenta
+/// en ningún denominador (ADR-0082): el denominador de una frase son las reseñas que la respondieron,
 /// no las que existen. Guardar un "no dijo" explícito sería la misma información con una fila de
 /// más, y abriría la puerta a contarlo como si fuera una respuesta.
 /// </para>

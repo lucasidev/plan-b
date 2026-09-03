@@ -56,7 +56,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
 
     /// <summary>
     /// Publica reseñas sobre una cátedra, cada una con su cuenta. <paramref name="negative"/> dice
-    /// cuántas de ellas eligen la opción mala del ítem de conducta: es lo que hace que dos cátedras
+    /// cuántas de ellas eligen la opción mala de la frase de conducta: es lo que hace que dos cátedras
     /// difieran o no.
     /// </summary>
     private async Task PublishAsync(Guid chairId, int from, int count, int negative)

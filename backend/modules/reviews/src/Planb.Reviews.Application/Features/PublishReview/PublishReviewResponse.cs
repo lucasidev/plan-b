@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Application.Features.PublishReview;
 
 /// <summary>
-/// Lo que devuelve publicar una reseña: su id y cuántos ítems respondió.
+/// Lo que devuelve publicar una reseña: su id y cuántas frases respondió.
 ///
 /// <para>
 /// No trae nada de lo respondido, ni conteos de la ficha: la reseña individual no se muestra nunca

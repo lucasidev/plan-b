@@ -21,7 +21,7 @@ public class SubjectFactsCalculatorTests
     private const string Weight = "CHAIR_OFF_SYLLABUS_EXAMS";
 
     /// <summary>
-    /// Una cátedra con un ítem de conducta donde <paramref name="negative"/> de
+    /// Una cátedra con una frase de conducta donde <paramref name="negative"/> de
     /// <paramref name="total"/> eligieron la opción mala.
     /// </summary>
     private static ChairContribution Chair(
@@ -163,7 +163,7 @@ public class SubjectFactsCalculatorTests
         facts.Shared[0].LowestPercent.ShouldBe(73);
         facts.Shared[0].HighestPercent.ShouldBe(75);
 
-        // Si nadie se salva, el ítem no distingue a una cátedra de otra.
+        // Si nadie se salva, la frase no distingue a una cátedra de otra.
         facts.Spread.ShouldBeEmpty();
     }
 
@@ -204,7 +204,7 @@ public class SubjectFactsCalculatorTests
 
         var facts = SubjectFactsCalculator.Calculate([perez, ruiz]);
 
-        // Solo el ítem que las dos respondieron entra en la comparación.
+        // Solo la frase que las dos respondieron entra en la comparación.
         facts.Spread.Count.ShouldBe(1);
         facts.Spread[0].ItemCode.ShouldBe(Conduct);
         facts.Shared.ShouldBeEmpty();
@@ -275,7 +275,7 @@ public class SubjectFactsCalculatorTests
             Chair("Pérez", reviewCount: 40, (Conduct, 30, 40)),
         ]);
 
-        // Y el ítem de intentos ni siquiera se contestó acá, así que no hay distribución alguna.
+        // Y la frase de intentos ni siquiera se contestó acá, así que no hay distribución alguna.
         facts.Attempts.ShouldBeNull();
     }
 
@@ -289,7 +289,7 @@ public class SubjectFactsCalculatorTests
 
         var facts = SubjectFactsCalculator.Calculate([perez, ruiz]);
 
-        // Cómo terminó la cursada alimenta la tasa agregada y nada más: publicarlo ítem por ítem
+        // Cómo terminó la cursada alimenta la tasa agregada y nada más: publicarlo frase por frase
         // y cátedra por cátedra sería exponer el desenlace de la gente (US-148).
         facts.Spread.ShouldBeEmpty();
         facts.Shared.ShouldBeEmpty();

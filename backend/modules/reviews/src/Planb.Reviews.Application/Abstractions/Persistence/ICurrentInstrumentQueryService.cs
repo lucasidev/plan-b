@@ -8,20 +8,20 @@ namespace Planb.Reviews.Application.Abstractions.Persistence;
 public interface ICurrentInstrumentQueryService
 {
     /// <summary>
-    /// La versión vigente del cuestionario con ese código, con sus ítems y opciones en orden. Null
+    /// La versión vigente del cuestionario con ese código, con sus frases y opciones en orden. Null
     /// si ese cuestionario todavía no se publicó.
     /// </summary>
     Task<CurrentInstrumentView?> GetCurrentAsync(string code, CancellationToken ct = default);
 }
 
-/// <summary>El cuestionario tal como se ofrece: su versión y sus ítems en orden.</summary>
+/// <summary>El cuestionario tal como se ofrece: su versión y sus frases en orden.</summary>
 public sealed record CurrentInstrumentView(
     string Code,
     short Version,
     IReadOnlyList<InstrumentItemView> Items);
 
 /// <summary>
-/// Un ítem del cuestionario. Lleva su <see cref="Layer"/> porque la pantalla agrupa por capa
+/// Una frase del cuestionario. Lleva su <see cref="Layer"/> porque la pantalla agrupa por capa
 /// (el contexto, qué hizo la cátedra, qué te pasó a vos).
 ///
 /// <para>

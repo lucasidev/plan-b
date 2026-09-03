@@ -39,7 +39,7 @@ public static class PublishingRules
     public const string CourseInstrumentCode = "STUDENT_COURSE";
 
     /// <summary>
-    /// El ítem del que sale la tasa de finalización agregada (ADR-0083, punto 6).
+    /// La frase de la que sale la tasa de finalización agregada (ADR-0083, punto 6).
     /// </summary>
     public const string OutcomeItemCode = "COURSE_OUTCOME";
 
@@ -57,7 +57,7 @@ public static class PublishingRules
         new HashSet<short> { 1, 2 };
 
     /// <summary>
-    /// El ítem del que sale cuántas veces se cursa una materia antes de aprobarla.
+    /// La frase de la que sale cuántas veces se cursa una materia antes de aprobarla.
     ///
     /// <para>
     /// Se publica como distribución y nunca como promedio: su última opción es abierta ("tres o
@@ -68,7 +68,7 @@ public static class PublishingRules
     public const string AttemptsItemCode = "COURSE_ATTEMPTS";
 
     /// <summary>
-    /// El valor de la opción ABIERTA de ese ítem ("tres o más").
+    /// El valor de la opción ABIERTA de esa frase ("tres o más").
     ///
     /// <para>
     /// Es la que hace irreproducible cualquier promedio, porque quien la cursó cinco veces y quien
@@ -79,7 +79,7 @@ public static class PublishingRules
     ///
     /// <para>
     /// Vive acá y no en la pantalla porque cuál opción es abierta lo sabe el catálogo, no quien
-    /// dibuja: suponer "la última" sería cierto en este ítem y falso en casi todos los demás.
+    /// dibuja: suponer "la última" sería cierto en esta frase y falso en casi todas las demás.
     /// </para>
     /// </summary>
     public const short AttemptsOpenEndedValue = 3;

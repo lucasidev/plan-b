@@ -11,7 +11,7 @@ namespace Planb.Reviews.Domain.Publishing;
 ///
 /// <para>
 /// Lo que decide, en orden: si el sujeto publica (piso de 10 reseñas, por privacidad de quien
-/// reseña); qué ítems convergen y forman la fama; la moda y la distribución de cada bloque; la tasa
+/// reseña); qué frases convergen y forman la fama; la moda y la distribución de cada bloque; la tasa
 /// de finalización agregada; y qué contrastes contra las cátedras hermanas sobreviven la regla de
 /// los intervalos separados. Lo que no sobrevive no se muestra: el silencio es la regla funcionando,
 /// no un hueco.
@@ -20,15 +20,15 @@ namespace Planb.Reviews.Domain.Publishing;
 public static class ChairFactsCalculator
 {
     /// <summary>
-    /// Cuántos ítems tienen que apuntar al mismo lado para que la ficha lo cuente como fama. Dos es
+    /// Cuántas frases tienen que apuntar al mismo lado para que la ficha lo cuente como fama. Dos es
     /// coincidencia y tres es un patrón; se eligió tres porque es lo que hace que la afirmación de
-    /// arriba no dependa de un solo ítem mal redactado.
+    /// arriba no dependa de una sola frase mal redactada.
     /// </summary>
     public const int ConvergenceMinimumItems = 3;
 
     /// <summary>
-    /// Qué proporción de una opción negativa cuenta como "este ítem apunta para el lado malo".
-    /// La mitad de quienes respondieron: por debajo de eso, el ítem no está diciendo eso.
+    /// Qué proporción de una opción negativa cuenta como "esta frase apunta para el lado malo".
+    /// La mitad de quienes respondieron: por debajo de eso, la frase no está diciendo eso.
     /// </summary>
     public const double ConvergenceThreshold = 0.5d;
 
@@ -36,8 +36,8 @@ public static class ChairFactsCalculator
     /// Arma lo publicable de una cátedra.
     /// </summary>
     /// <param name="reviewCount">Reseñas de la cátedra. Decide el piso.</param>
-    /// <param name="tallies">Conteos por ítem del sujeto.</param>
-    /// <param name="siblingTallies">Los mismos ítems, sumados sobre las otras cátedras de la materia.</param>
+    /// <param name="tallies">Conteos por frase del sujeto.</param>
+    /// <param name="siblingTallies">Las mismas frases, sumadas sobre las otras cátedras de la materia.</param>
     /// <param name="completion">Cuántas cursadas llegaron (aprobada o regular) sobre el total.</param>
     public static ChairFacts Calculate(
         int reviewCount,
@@ -65,7 +65,7 @@ public static class ChairFactsCalculator
 
         var retired = tallies.Where(t => t.IsRetired && t.Total > 0).ToList();
 
-        // Los retirados se apartan: son el tramo de antes de otro ítem, no ítems de la ficha. La
+        // Los retirados se apartan: son el tramo de antes de otra frase, no frases de la ficha. La
         // fama y los contrastes corren solo sobre lo que se pregunta hoy Y tiene respuestas, que es
         // lo que hace que un tramo viejo no pueda contaminar una comparación.
         var current = tallies.Where(t => !t.IsRetired).ToList();
@@ -83,9 +83,9 @@ public static class ChairFactsCalculator
     }
 
     /// <summary>
-    /// La fama: los ítems cuya opción negativa la sostiene más de la mitad de quienes respondieron.
+    /// La fama: las frases cuya opción negativa la sostiene más de la mitad de quienes respondieron.
     /// Si son al menos tres, convergen y la ficha lo dice arriba. Se devuelve como un solo hecho
-    /// con sus ítems: la frase que lo enuncia es de la capa de presentación, que sabe el idioma;
+    /// con sus frases: el texto que lo enuncia es de la capa de presentación, que sabe el idioma;
     /// el dominio dice cuáles concuerdan y cuántos son.
     /// </summary>
     private static IReadOnlyList<ConvergingFact> BuildFame(IReadOnlyList<ItemTally> tallies)
@@ -103,19 +103,19 @@ public static class ChairFactsCalculator
     }
 
     /// <summary>
-    /// Un bloque de la ficha: sus ítems con moda y distribución. Los bloques no se suman.
+    /// Un bloque de la ficha: sus frases con moda y distribución. Los bloques no se suman.
     ///
     /// <para>
-    /// A cada ítem se le cuelga su tramo anterior, si lo tiene y si este sujeto respondió aquella
-    /// pregunta (US-198, E3). Un ítem retirado sin sucesor no aparece en ningún lado: sus
-    /// respuestas existen, pero no hay pregunta viva de la que colgarlas, y publicarlo suelto lo
+    /// A cada frase se le cuelga su tramo anterior, si lo tiene y si este sujeto respondió aquella
+    /// pregunta (US-198, E3). Una frase retirada sin sucesora no aparece en ningún lado: sus
+    /// respuestas existen, pero no hay pregunta viva de la que colgarlas, y publicarla suelta lo
     /// haría leer como algo que todavía se pregunta.
     /// </para>
     ///
     /// <para>
-    /// Entra la lista de ítems vigentes ENTERA, con los de total cero incluidos, y no solo los
-    /// respondidos: uno recién estrenado por un corte todavía no tiene respuestas propias pero sí
-    /// un tramo anterior que mostrar. Filtrar antes lo dejaría afuera con su historia adentro.
+    /// Entra la lista de frases vigentes ENTERA, con las de total cero incluidas, y no solo las
+    /// respondidas: una recién estrenada por un corte todavía no tiene respuestas propias pero sí
+    /// un tramo anterior que mostrar. Filtrar antes la dejaría afuera con su historia adentro.
     /// </para>
     /// </summary>
     private static IReadOnlyList<PublishedItem> BuildBlock(
@@ -130,7 +130,7 @@ public static class ChairFactsCalculator
             .ToList();
 
     /// <summary>
-    /// El tramo de antes de un ítem: el retirado al que reemplazó, si este sujeto lo respondió.
+    /// El tramo de antes de una frase: la retirada a la que reemplazó, si este sujeto la respondió.
     /// Se sigue una sola vuelta y no la cadena entera: dos cortes seguidos sobre la misma pregunta
     /// darían tres tramos, y a esa altura lo que la ficha tiene que decir ya no es "acá cambió"
     /// sino que la serie no es serie. Cuando pase de verdad, se decide con el caso a la vista.
@@ -149,10 +149,10 @@ public static class ChairFactsCalculator
     }
 
     /// <summary>
-    /// Un ítem con su moda y su distribución, o null si no hay nada que publicar.
+    /// Una frase con su moda y su distribución, o null si no hay nada que publicar.
     ///
     /// <para>
-    /// Un ítem sin respuestas se publica igual <b>si arrastra un tramo anterior con datos</b>: es el
+    /// Una frase sin respuestas se publica igual <b>si arrastra un tramo anterior con datos</b>: es el
     /// estado inmediatamente después de cortar una serie, cuando la pregunta nueva todavía no la
     /// contestó nadie. Descartarlo ahí escondería las respuestas del tramo viejo justo el día que
     /// cambió la pregunta, que es exactamente lo que el corte tiene que hacer visible. Su moda va
@@ -204,7 +204,7 @@ public static class ChairFactsCalculator
     }
 
     /// <summary>
-    /// Los contrastes contra las hermanas, uno por ítem, y solo los que la regla deja pasar: los
+    /// Los contrastes contra las hermanas, uno por frase, y solo los que la regla deja pasar: los
     /// intervalos de las dos proporciones negativas no se tocan. Sin hermanas con datos no hay
     /// contraste que hacer, y la sección entera no aparece: es el caso de la cátedra única, donde
     /// no hay base justa contra la cual comparar.

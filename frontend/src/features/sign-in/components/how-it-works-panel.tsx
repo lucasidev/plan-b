@@ -60,7 +60,7 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
   );
 }
 
-/** Los tramos de la distribución del ítem demo. El primero es el negativo y es el único con color. */
+/** Los tramos de la distribución de la frase demo. El primero es el negativo y es el único con color. */
 const SLICES = [
   { label: 'Casi nunca', percent: 59, isNegative: true },
   { label: 'A veces', percent: 24, isNegative: false },
@@ -68,7 +68,7 @@ const SLICES = [
 ] as const;
 
 /**
- * Un ítem publicado, con la anatomía de `ItemRow`: pregunta, moda como badge con su etiqueta
+ * Una frase publicada, con la anatomía de `ItemRow`: pregunta, moda como badge con su etiqueta
  * literal, distribución completa y los conteos crudos con su "de N". Ningún puntaje.
  */
 function ItemDemo() {

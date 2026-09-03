@@ -5,7 +5,7 @@ import type { FreeText } from '../types';
  *
  * Se muestra el texto con la cursada de la que salió y **nada de quien lo escribió**: ese dato no
  * viaja desde el backend, así que acá no hay nada que ocultar ni que se pueda filtrar por
- * descuido. Es lo que hace posible destilar ítems nuevos y escribir notas editoriales, que son las
+ * descuido. Es lo que hace posible destilar frases nuevas y escribir notas editoriales, que son las
  * dos salidas que el campo libre tiene.
  */
 export function FreeTextList({ texts }: { texts: readonly FreeText[] }) {

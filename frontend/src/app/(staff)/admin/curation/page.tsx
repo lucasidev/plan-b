@@ -20,7 +20,7 @@ type Props = {
 /**
  * Curaduría (ADR-0084). El campo libre de las reseñas, para que el equipo lo lea.
  *
- * El ADR le prometió dos salidas al campo libre (destilar ítems nuevos para la versión siguiente
+ * El ADR le prometió dos salidas al campo libre (destilar frases nuevas para la versión siguiente
  * del instrumento, y escribir notas editoriales sin nombres) y ninguna se puede hacer sin leerlo.
  * Hasta acá lo único que lo leía era su propio autor.
  *

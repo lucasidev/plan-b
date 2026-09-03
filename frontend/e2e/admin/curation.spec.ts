@@ -6,7 +6,7 @@ import { createStudent, deleteStudent } from '../helpers/students';
 /**
  * E2E de Curaduría (ADR-0084): el campo libre, para que el equipo lo lea.
  *
- * El ADR le prometió dos salidas al campo libre, destilar ítems nuevos y escribir notas
+ * El ADR le prometió dos salidas al campo libre, destilar frases nuevas y escribir notas
  * editoriales, y ninguna se puede hacer sin leerlo. Hasta esta pantalla lo único que lo leía era su
  * propio autor: la curaduría existía en el papel y no en el producto.
  */

@@ -5,7 +5,7 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
-/// Aggregate root del instrumento (ADR-0082): una versión del cuestionario, o sea qué ítems se
+/// Aggregate root del instrumento (ADR-0082): una versión del cuestionario, o sea qué frases se
 /// ofrecen y en qué orden. Cada reseña queda atada a la versión con la que se respondió, y sin eso
 /// el agregado histórico miente: si el cuestionario cambió, hay que saber a cuál contestó cada uno.
 ///
@@ -16,10 +16,10 @@ namespace Planb.Reviews.Domain.Catalog;
 /// </para>
 ///
 /// <para>
-/// <b>Ningún ítem es obligatorio</b> (ADR-0082): saltear siempre vale y no cuenta en el denominador.
-/// Por eso el instrumento no tiene una marca de requerido: no habría dónde ponerla en verdad. Los
-/// ítems condicionales (mostrar uno según lo que se respondió en otro) tampoco existen todavía: el
-/// catálogo vigente no los necesita, y se agregan el día que un ítem real lo pida.
+/// <b>Ninguna frase es obligatoria</b> (ADR-0082): saltear siempre vale y no cuenta en el denominador.
+/// Por eso el instrumento no tiene una marca de requerido: no habría dónde ponerla en verdad. Las
+/// frases condicionales (mostrar una según lo que se respondió en otra) tampoco existen todavía: el
+/// catálogo vigente no las necesita, y se agregan el día que una frase real lo pida.
 /// </para>
 /// </summary>
 public sealed partial class Instrument : Entity<InstrumentId>, IAggregateRoot
@@ -41,13 +41,13 @@ public sealed partial class Instrument : Entity<InstrumentId>, IAggregateRoot
 
     private readonly List<InstrumentItem> _items = [];
 
-    /// <summary>Los ítems que ofrece, en el orden en que se preguntan.</summary>
+    /// <summary>Las frases que ofrece, en el orden en que se preguntan.</summary>
     public IReadOnlyList<InstrumentItem> Items => _items;
 
     private Instrument() { }
 
     /// <summary>
-    /// Publica una versión del cuestionario, vigente desde ya. Los ítems se validan enteros antes:
+    /// Publica una versión del cuestionario, vigente desde ya. Las frases se validan enteras antes:
     /// sin repetidos, sin órdenes repetidos, y al menos uno.
     /// </summary>
     public static Result<Instrument> Publish(
@@ -89,10 +89,10 @@ public sealed partial class Instrument : Entity<InstrumentId>, IAggregateRoot
     }
 
     /// <summary>
-    /// Reconstitución con Id pre-asignado, para el seeder y la carga inicial. Valida los ítems y
+    /// Reconstitución con Id pre-asignado, para el seeder y la carga inicial. Valida las frases y
     /// tira si vienen incoherentes, por la misma razón que los demás Hydrate del proyecto.
     /// </summary>
-    /// <exception cref="ArgumentException">Si los ítems violan los invariantes del aggregate.</exception>
+    /// <exception cref="ArgumentException">Si las frases violan los invariantes del aggregate.</exception>
     public static Instrument Hydrate(
         InstrumentId id,
         string code,

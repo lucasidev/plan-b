@@ -10,9 +10,9 @@ namespace Planb.Reviews.Tests.Reviews;
 /// <summary>
 /// Domain unit tests de <see cref="Review"/> (US-146, ADR-0082): creación, revisión, borrado
 /// del texto libre y reconstitución. El foco central es el invariante del agregado: las respuestas
-/// se validan enteras contra el catálogo que arma el application layer (ítem ofrecido, opción
-/// perteneciente a ese ítem), y saltear un ítem no deja fila (el denominador de cada ítem son las
-/// reseñas que lo respondieron, no las que existen).
+/// se validan enteras contra el catálogo que arma el application layer (frase ofrecida, opción
+/// perteneciente a esa frase), y saltear una frase no deja fila (el denominador de cada frase son las
+/// reseñas que la respondieron, no las que existen).
 /// </summary>
 public class ReviewTests
 {
@@ -20,8 +20,8 @@ public class ReviewTests
 
     private static readonly InstrumentId SomeInstrument = InstrumentId.New();
 
-    // Cinco ítems de un instrumento de prueba: FiveItemInstrument() los admite todos, con las
-    // opciones 1, 2 y 3 como válidas para cada uno.
+    // Cinco frases de un instrumento de prueba: FiveItemInstrument() las admite todas, con las
+    // opciones 1, 2 y 3 como válidas para cada una.
     private static readonly ItemId Item1 = ItemId.New();
     private static readonly ItemId Item2 = ItemId.New();
     private static readonly ItemId Item3 = ItemId.New();
@@ -119,7 +119,7 @@ public class ReviewTests
     [Fact]
     public void Create_SkippedItems_LeaveNoRowInAnswers()
     {
-        // El instrumento ofrece 5 ítems (Item1..Item5); se responden solo 3, Item3 e Item5 se saltean.
+        // El instrumento ofrece 5 frases (Item1..Item5); se responden solo 3, Item3 e Item5 se saltean.
         var result = Create(answers: [(Item1, 1), (Item2, 2), (Item4, 3)]);
 
         result.IsSuccess.ShouldBeTrue();
@@ -163,7 +163,7 @@ public class ReviewTests
     [Fact]
     public void Create_OptionNotInItem_ReturnsOptionNotInItemError()
     {
-        // Item1 solo admite 1, 2 y 3: 9 no es una opción válida para ese ítem.
+        // Item1 solo admite 1, 2 y 3: 9 no es una opción válida para esa frase.
         var result = Create(answers: [(Item1, 9)]);
 
         result.IsFailure.ShouldBeTrue();

@@ -6,17 +6,17 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
 /// <summary>
 /// Dapper read del cuestionario vigente (US-146, ADR-0082): el instrumento con
-/// <c>valid_until IS NULL</c> para ese código, con sus ítems y opciones.
+/// <c>valid_until IS NULL</c> para ese código, con sus frases y opciones.
 ///
 /// <para>
-/// Una sola query con dos joins y armado en memoria, en vez de una por ítem: son 14 ítems y unas 50
+/// Una sola query con dos joins y armado en memoria, en vez de una por frase: son 14 frases y unas 50
 /// opciones, y la pantalla los pide todos juntos porque el cuestionario se responde de corrido.
 /// </para>
 ///
 /// <para>
 /// La proyección NO trae <c>valence</c> a propósito: es lo que decide el rojo en la ficha, y la
-/// recolección va sin alarma. Tampoco trae los ítems retirados, aunque el instrumento vigente no
-/// debería ofrecerlos: el filtro por <c>i.is_active</c> es la red por si un ítem se retira sin
+/// recolección va sin alarma. Tampoco trae las frases retiradas, aunque el instrumento vigente no
+/// debería ofrecerlas: el filtro por <c>i.is_active</c> es la red por si una frase se retira sin
 /// republicar el cuestionario.
 /// </para>
 /// </summary>

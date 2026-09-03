@@ -65,8 +65,8 @@ public static class GetChairFactsQueryHandler
         var text = (string code) =>
             counted.ItemTexts.TryGetValue(code, out var t) ? t : code;
 
-        // La etiqueta negativa sale de los conteos, que ya la traen: es la opción del ítem marcada
-        // como negativa en el catálogo. Un ítem sin negativa (los de contexto) devuelve null y no
+        // La etiqueta negativa sale de los conteos, que ya la traen: es la opción de la frase marcada
+        // como negativa en el catálogo. Una frase sin negativa (las de contexto) devuelve null y no
         // llega a un contraste, porque el calculador ya los excluyó.
         var negativeLabel = (string code) => counted.Tallies
             .FirstOrDefault(t => string.Equals(t.ItemCode, code, StringComparison.Ordinal))?
@@ -114,9 +114,9 @@ public static class GetChairFactsQueryHandler
     }
 
     /// <summary>
-    /// Un ítem publicado, con su tramo anterior si lo tiene. El texto del tramo viejo sale del
-    /// mismo diccionario que el resto: los conteos traen el texto de TODOS los ítems, retirados
-    /// incluidos, justamente para poder enunciar la pregunta que ya no se hace.
+    /// Una frase publicada, con su tramo anterior si lo tiene. El texto del tramo viejo sale del
+    /// mismo diccionario que el resto: los conteos traen el texto de TODAS las frases, retiradas
+    /// incluidas, justamente para poder enunciar la pregunta que ya no se hace.
     /// </summary>
     private static PublishedItemView ToView(PublishedItem item, Func<string, string> text) =>
         new(
@@ -134,9 +134,9 @@ public static class GetChairFactsQueryHandler
             item.RetiredAt);
 
     /// <summary>
-    /// Qué proporción eligió la opción negativa de ese ítem. Es el mismo cálculo que hizo el
+    /// Qué proporción eligió la opción negativa de esa frase. Es el mismo cálculo que hizo el
     /// calculador para decidir la convergencia; acá se repite para poder mostrarlo, porque el
-    /// dominio devuelve qué ítems concuerdan y no con cuánto (esa es la pregunta de la pantalla).
+    /// dominio devuelve qué frases concuerdan y no con cuánto (esa es la pregunta de la pantalla).
     /// </summary>
     private static int NegativePercent(IReadOnlyList<ItemTally> tallies, string code)
     {

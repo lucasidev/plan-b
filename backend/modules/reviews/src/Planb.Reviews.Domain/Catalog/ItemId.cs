@@ -4,7 +4,7 @@ namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
 /// Strongly-typed identifier para <see cref="Item"/> (US-198, ADR-0082). Es la clave técnica; la
-/// identidad SEMÁNTICA del ítem es su <see cref="Item.Code"/>, que es lo que ata una serie histórica
+/// identidad SEMÁNTICA de la frase es su <see cref="Item.Code"/>, que es lo que ata una serie histórica
 /// y lo que se corta cuando el significado cambia.
 /// </summary>
 public readonly record struct ItemId : IValueObject

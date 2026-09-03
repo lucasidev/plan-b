@@ -21,15 +21,15 @@ namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 ///     un cero es información ("nadie eligió 'siempre'"), no una fila ausente.
 ///   </item>
 ///   <item>
-///     El denominador de cada ítem son sus propias respuestas, no las reseñas de la cátedra. Lo
-///     salteado no deja fila (ADR-0082), así que dos ítems de la misma cátedra pueden tener
+///     El denominador de cada frase son sus propias respuestas, no las reseñas de la cátedra. Lo
+///     salteado no deja fila (ADR-0082), así que dos frases de la misma cátedra pueden tener
 ///     denominadores distintos y eso es correcto, no un bug de la query.
 ///   </item>
 ///   <item>
-///     Los conteos de la cátedra traen también los ítems <b>retirados</b> (US-198): son el tramo de
-///     antes del que los reemplazó, y filtrarlos haría desaparecer de la ficha lo que se respondió
-///     bajo el código viejo. Los de las hermanas no: contra ellas se compara, y un tramo viejo no se
-///     compara con nada. Que un retirado sin respuestas no aparezca lo resuelve el calculador, que
+///     Los conteos de la cátedra traen también las frases <b>retiradas</b> (US-198): son el tramo de
+///     antes de la que las reemplazó, y filtrarlas haría desaparecer de la ficha lo que se respondió
+///     bajo el código viejo. Las de las hermanas no: contra ellas se compara, y un tramo viejo no se
+///     compara con nada. Que una retirada sin respuestas no aparezca lo resuelve el calculador, que
 ///     descarta todo lo que tiene total cero.
 ///   </item>
 /// </list>
@@ -146,7 +146,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
     }
 
     /// <summary>
-    /// Agrupa las filas planas en un <see cref="ItemTally"/> por ítem. El orden de las opciones
+    /// Agrupa las filas planas en un <see cref="ItemTally"/> por frase. El orden de las opciones
     /// viene del SQL y se respeta: es el orden en que se ofrecieron al responder, y la ficha dibuja
     /// la distribución en ese mismo orden.
     /// </summary>
@@ -190,7 +190,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
 
     /// <summary>
     /// La tasa de finalización sale del mismo conteo del desenlace que ya vino, sin otra query: es
-    /// una lectura distinta de las mismas filas. Si nadie contestó ese ítem, no hay tasa (null), que
+    /// una lectura distinta de las mismas filas. Si nadie contestó esa frase, no hay tasa (null), que
     /// no es lo mismo que una tasa de cero (ADR-0054).
     /// </summary>
     private static (int Reaching, int Total)? Completion(IReadOnlyList<ItemTally> tallies)
@@ -211,7 +211,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
     }
 
     /// <summary>
-    /// Fila plana del SQL, antes de agruparse por ítem.
+    /// Fila plana del SQL, antes de agruparse por frase.
     ///
     /// <para>
     /// <b>El orden de estos parámetros es el de las columnas del SELECT, y no es cosmético</b>:
@@ -234,7 +234,7 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
         string Valence,
         int Count);
 
-    /// <summary>El texto de un ítem, para que la respuesta pueda enunciarlo en castellano.</summary>
+    /// <summary>El texto de una frase, para que la respuesta pueda enunciarlo en castellano.</summary>
     private sealed record ItemTextRow(string Code, string Text);
 
     public async Task<SubjectTallies> GetPerChairAsync(
@@ -339,8 +339,8 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
     private sealed record ChairCountRow(Guid ChairId, int ReviewCount, DateTime? LastReviewedAt);
 
     /// <summary>
-    /// Fila plana del conteo por cátedra, antes de agruparse por ítem. La ficha de materia contrasta
-    /// cátedras entre sí sobre la misma pregunta, así que su query solo trae los ítems vigentes: un
+    /// Fila plana del conteo por cátedra, antes de agruparse por frase. La ficha de materia contrasta
+    /// cátedras entre sí sobre la misma pregunta, así que su query solo trae las frases vigentes: un
     /// tramo viejo ahí sería exactamente la comparación que US-198 no permite hacer.
     /// </summary>
     private sealed record ChairTallyRow(

@@ -58,7 +58,7 @@ public sealed record MyReviewView(
     DateTimeOffset UpdatedAt);
 
 /// <summary>
-/// Una respuesta propia: qué ítem y qué opción eligió.
+/// Una respuesta propia: qué frase y qué opción eligió.
 ///
 /// <para>
 /// Viaja solo acá, y solo hacia quien la escribió. Que nadie más pueda ver una respuesta individual

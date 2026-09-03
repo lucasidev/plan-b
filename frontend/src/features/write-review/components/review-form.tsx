@@ -33,7 +33,7 @@ const BLOCKS: readonly { layer: ItemLayer; step: string; title: string; note?: s
 ];
 
 /**
- * El ítem de Contexto que dice cómo terminó la cursada: junto con la materia y el período, el
+ * La frase de Contexto que dice cómo terminó la cursada: junto con la materia y el período, el
  * único paso obligatorio para poder enviar (US-146 N1). Mismo código que usa el backend
  * (`PublishingRules.OutcomeItemCode`).
  */

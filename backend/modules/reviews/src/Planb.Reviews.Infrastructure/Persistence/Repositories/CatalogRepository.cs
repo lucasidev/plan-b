@@ -40,7 +40,7 @@ internal sealed class CatalogRepository : ICatalogRepository
         await _db.Items.Where(i => ids.Contains(i.Id)).ToListAsync(ct);
 
     /// <summary>
-    /// Los valores de opción de este ítem que ya tienen respuestas guardadas, leyendo
+    /// Los valores de opción de esta frase que ya tienen respuestas guardadas, leyendo
     /// review_answers (la tabla hija de <c>Review.Answers</c>, US-146). SelectMany sobre
     /// el owned collection traduce a un query sobre esa tabla, sin traer la reseña entera a memoria.
     /// </summary>

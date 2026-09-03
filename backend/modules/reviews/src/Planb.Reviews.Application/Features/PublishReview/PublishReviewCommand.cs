@@ -9,8 +9,8 @@ namespace Planb.Reviews.Application.Features.PublishReview;
 /// </para>
 ///
 /// <para>
-/// Las respuestas vienen como pares (código de ítem, valor de opción). Se manda el <b>código</b> y
-/// no el id porque es la identidad semántica y estable del ítem, que es lo que el front lee del
+/// Las respuestas vienen como pares (código de frase, valor de opción). Se manda el <b>código</b> y
+/// no el id porque es la identidad semántica y estable de la frase, que es lo que el front lee del
 /// cuestionario. Lo salteado simplemente no viene en la lista: no hay un "no dijo" que mandar,
 /// porque no cuenta en ningún denominador.
 /// </para>
@@ -23,5 +23,5 @@ public sealed record PublishReviewCommand(
     IReadOnlyList<ReviewAnswerInput> Answers,
     string? FreeText);
 
-/// <summary>Una respuesta: el código del ítem y el valor de la opción elegida.</summary>
+/// <summary>Una respuesta: el código de la frase y el valor de la opción elegida.</summary>
 public sealed record ReviewAnswerInput(string ItemCode, short OptionValue);

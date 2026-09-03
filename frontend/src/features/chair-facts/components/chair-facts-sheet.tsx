@@ -104,8 +104,8 @@ function BelowFloor({ facts }: { facts: ChairFacts }) {
 }
 
 /**
- * La fama: lo primero que la ficha dice, porque varios ítems distintos apuntando al mismo lado
- * valen más que muchas marcas en uno solo. Se enuncia con su sustento a la vista: la afirmación
+ * La fama: lo primero que la ficha dice, porque varias frases distintas apuntando al mismo lado
+ * valen más que muchas marcas en una sola. Se enuncia con su sustento a la vista: la afirmación
  * de arriba tiene que poder verificarse sin bajar al detalle.
  */
 function Fame({ facts }: { facts: ChairFacts }) {

@@ -3,12 +3,12 @@ using Planb.Reviews.Domain.Catalog;
 namespace Planb.Reviews.Domain.Publishing;
 
 /// <summary>
-/// Los conteos crudos de un ítem para un sujeto: cuántas personas eligieron cada opción. Es lo que
+/// Los conteos crudos de una frase para un sujeto: cuántas personas eligieron cada opción. Es lo que
 /// la base devuelve y la entrada de todo lo que la ficha calcula.
 ///
 /// <para>
-/// El denominador (<see cref="Total"/>) son las respuestas a ESE ítem, no las reseñas del sujeto:
-/// lo salteado no cuenta (ADR-0082), así que dos ítems de la misma cátedra pueden tener
+/// El denominador (<see cref="Total"/>) son las respuestas a ESA frase, no las reseñas del sujeto:
+/// lo salteado no cuenta (ADR-0082), así que dos frases de la misma cátedra pueden tener
 /// denominadores distintos y eso es correcto.
 /// </para>
 /// </summary>
@@ -17,16 +17,16 @@ public sealed record ItemTally(
     ItemLayer Layer,
     IReadOnlyList<OptionTally> Options,
     /// <summary>
-    /// Si el ítem ya no se ofrece. Un retirado no es un ítem menos de la ficha: es el tramo de
-    /// antes del que lo reemplazó, y se publica al lado del nuevo declarando que no se comparan.
+    /// Si la frase ya no se ofrece. Una retirada no es una frase menos de la ficha: es el tramo de
+    /// antes de la que la reemplazó, y se publica al lado de la nueva declarando que no se comparan.
     /// </summary>
     bool IsRetired = false,
-    /// <summary>El código del ítem al que este reemplazó, cuando cambió lo que se preguntaba.</summary>
+    /// <summary>El código de la frase a la que esta reemplazó, cuando cambió lo que se preguntaba.</summary>
     string? SupersedesCode = null,
     /// <summary>Cuándo dejó de preguntarse. Es la fecha del corte que la ficha enuncia.</summary>
     DateTimeOffset? RetiredAt = null)
 {
-    /// <summary>Cuántas personas respondieron este ítem.</summary>
+    /// <summary>Cuántas personas respondieron esta frase.</summary>
     public int Total => Options.Sum(o => o.Count);
 
     /// <summary>
@@ -39,7 +39,7 @@ public sealed record ItemTally(
             ? null
             : Options.OrderByDescending(o => o.Count).ThenBy(o => o.Order).First();
 
-    /// <summary>Cuántos eligieron la opción negativa del ítem, si tiene una.</summary>
+    /// <summary>Cuántos eligieron la opción negativa de la frase, si tiene una.</summary>
     public int NegativeCount =>
         Options.Where(o => o.Valence == OptionValence.Negative).Sum(o => o.Count);
 

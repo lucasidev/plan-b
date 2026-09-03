@@ -60,7 +60,7 @@ public static class CorpusSeedData
     private static readonly Guid ChairGonzalez = Guid.Parse("00000008-0000-4000-a000-000000000002");
     private static readonly Guid ChairRuiz = Guid.Parse("00000008-0000-4000-a000-000000000003");
 
-    // Los ítems que el corpus contesta. No contesta los catorce: alcanzan estos cuatro para que la
+    // Las frases que el corpus contesta. No contesta las catorce: alcanzan estas cuatro para que la
     // ficha tenga su moda, su distribución y su conteo de desenlaces, y agregar los demás sumaría
     // filas sin sumar nada que mirar.
     private static readonly ItemId Outcome = new(Guid.Parse("00000010-0000-4000-a000-000000000002"));

@@ -3,13 +3,13 @@ using Planb.Reviews.Domain.Catalog;
 namespace Planb.Reviews.Application.Seeding;
 
 /// <summary>
-/// Manifiesto determinístico del catálogo aprobado (issue #357): los 14 ítems semilla de
+/// Manifiesto determinístico del catálogo aprobado (issue #357): las 14 frases semilla de
 /// <c>docs/product/phrases.md</c> ("La reseña de una cursada") y el instrumento
 /// <c>STUDENT_COURSE</c> v1 que los agrupa, en el orden en que se preguntan (contexto, conducta de
 /// la cátedra, vivencia).
 ///
 /// <para>
-/// El período y la cátedra NO son ítems acá: son campos estructurales de la reseña que referencian
+/// El período y la cátedra NO son frases acá: son campos estructurales de la reseña que referencian
 /// <c>AcademicTerm</c> y <c>Chair</c> directamente, no preguntas del cuestionario (ver phrases.md).
 /// </para>
 ///
@@ -32,7 +32,7 @@ public static class CatalogSeedData
     public static readonly InstrumentId StudentCourseInstrumentId =
         new(Guid.Parse("00000011-0000-4000-a000-000000000001"));
 
-    /// <summary>Un ítem semilla con sus opciones, en la forma que pide <see cref="Item.Hydrate"/>.</summary>
+    /// <summary>Una frase semilla con sus opciones, en la forma que pide <see cref="Item.Hydrate"/>.</summary>
     public sealed record ItemSeed(
         ItemId Id,
         string Code,
@@ -43,10 +43,10 @@ public static class CatalogSeedData
         IReadOnlyList<(short Value, short Order, string Label, OptionValence Valence)> Options);
 
     /// <summary>
-    /// Los 14 ítems, en el orden de publicación del instrumento. Contexto no se publica y por eso
-    /// todas sus opciones llevan <see cref="OptionValence.None"/> (el dominio lo exige: un ítem de
+    /// Las 14 frases, en el orden de publicación del instrumento. Contexto no se publica y por eso
+    /// todas sus opciones llevan <see cref="OptionValence.None"/> (el dominio lo exige: una frase de
     /// capa Context con una opción con valencia no compila el aggregate). La opción negativa de cada
-    /// ítem de conducta y vivencia es la que phrases.md marca en negrita.
+    /// frase de conducta y vivencia es la que phrases.md marca en negrita.
     /// </summary>
     public static IReadOnlyList<ItemSeed> Items { get; } =
     [

@@ -1,13 +1,13 @@
 namespace Planb.Reviews.Domain.Catalog;
 
 /// <summary>
-/// Child entity de <see cref="Instrument"/>: un ítem del catálogo ofrecido en esta versión del
+/// Child entity de <see cref="Instrument"/>: una frase del catálogo ofrecida en esta versión del
 /// cuestionario, con el orden en que se pregunta. El ctor es internal: solo el instrumento las crea,
-/// que es lo que mantiene sus invariantes (sin ítems ni órdenes repetidos) dentro del aggregate.
+/// que es lo que mantiene sus invariantes (sin frases ni órdenes repetidos) dentro del aggregate.
 ///
 /// <para>
-/// No lleva marca de obligatorio: saltear siempre vale (ADR-0082). Tampoco lleva condición: los
-/// ítems condicionales no existen todavía en el catálogo vigente.
+/// No lleva marca de obligatorio: saltear siempre vale (ADR-0082). Tampoco lleva condición: las
+/// frases condicionales no existen todavía en el catálogo vigente.
 /// </para>
 /// </summary>
 public sealed class InstrumentItem
