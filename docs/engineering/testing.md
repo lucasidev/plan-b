@@ -32,6 +32,13 @@ Cada escenario E/N/X de un `scenarios.md` termina en uno de tres veredictos:
 
 `scripts/check-scenarios.ts` cuenta las tres columnas por story, contra la tabla `## Stories bajo el gate de escenarios` de [`status.md`](../plan/status.md). Se corre con `just check-scenarios` (señala) o `just check-scenarios-strict` (corta si queda algún escenario sin veredicto); el job `scenarios` de `ci.yml` corre en cada PR.
 
+### Las promesas de la tesis bajo ataque
+
+`tests/Planb.IntegrationTests/Invariants/` tiene una clase por promesa de la tesis o de un ADR (el piso contado en vivo, una reseña por persona y cursada, el campo libre que no sale, la reseña que no lleva a nadie, el borrado duro, la frase retirada y los tramos de una serie, Redis caído que degrada). Cada test se escribe desde la promesa y el contrato público, no desde la implementación, y entra a la suite solo después de haber caído con el código roto a propósito. Si una promesa cede, es un issue con el caso que lo dispara; el test no se acomoda. Se corren con el resto de la integración, o solos con `dotnet test tests/Planb.IntegrationTests --filter "FullyQualifiedName~Invariants"`.
+
+Un dato que no está en la promesa y que vuelve vacío a cualquier test de fama: lo que converge necesita `ChairFactsCalculator.ConvergenceMinimumItems` frases (tres) con respuesta; con una sola, la fama es siempre nula, con o sin bug.
+
+
 ## Cómo correr tests
 
 ### Local
