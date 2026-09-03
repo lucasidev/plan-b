@@ -1,4 +1,5 @@
 import { type APIRequestContext, expect, test } from '@playwright/test';
+import { type CreatedChair, createChair } from '../helpers/chairs';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
@@ -12,11 +13,11 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  * El caso más filoso está al final: la reseña que se borra es la que hizo cruzar el piso, así que
  * borrarla hace que la ficha **deje de publicar**. Es el peor escenario del deshacer y el que más
  * fácil se rompe.
+ *
+ * La cátedra es propia de esta corrida (`createChair`), no una de las tres sembradas: la
+ * progresión exacta de conteos que este spec afirma exige arrancar en cero, y una cátedra sembrada
+ * no lo garantiza si otro spec ya publicó ahí.
  */
-
-const SUBJECT_ID = '00000004-0000-4000-a000-000000000012';
-const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
-const CHAIR_RUIZ = '00000008-0000-4000-a000-000000000003';
 
 const TERMS = [
   '00000005-0000-4000-a000-000000000001',
@@ -28,15 +29,16 @@ const TERMS = [
 ];
 
 /**
- * Las nueve que dejan a Ruiz al borde del piso. Fixture, no el flujo bajo prueba.
+ * Las nueve que dejan a la cátedra al borde del piso. Fixture, no el flujo bajo prueba.
  *
  * Devuelve el id de la reseña porque el cleanup tiene que borrarla: dar de baja la cuenta **no**
  * borra lo que aportó (esa es la posición del producto, se saca antes de a uno), así que sin esto
- * cada corrida le dejaría nueve voces más a Ruiz y el reintento arrancaría sobre el piso.
+ * cada corrida le dejaría nueve voces más a la cátedra y el reintento arrancaría sobre el piso.
  */
 async function publishByApi(
   request: APIRequestContext,
   student: CreatedStudent,
+  chair: CreatedChair,
   termId: string,
 ): Promise<string> {
   const signIn = await request.post('/api/identity/sign-in', {
@@ -46,9 +48,9 @@ async function publishByApi(
 
   const published = await request.post('/api/reviews/courses', {
     data: {
-      subjectId: SUBJECT_ID,
+      subjectId: chair.subjectId,
       termId,
-      chairId: CHAIR_RUIZ,
+      chairId: chair.chairId,
       // Las nueve aprueban: así el desenlace de la décima se ve solo en el conteo.
       answers: [
         { itemCode: 'COURSE_OUTCOME', optionValue: 1 },
@@ -100,14 +102,21 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     context,
     request,
   }) => {
+    const chair = await createChair(request, { label: 'Undo' });
+
     for (let i = 0; i < 9; i++) {
       const student = await createStudent(request, { emailPrefix: `e2e-undo-${i}` });
       students.push(student);
-      const reviewId = await publishByApi(request, student, TERMS[i % TERMS.length]);
+      const reviewId = await publishByApi(request, student, chair, TERMS[i % TERMS.length]);
       seeded.push({ student, reviewId });
     }
 
-    const author = await createStudent(request, { emailPrefix: 'e2e-undo-author' });
+    // Este alumno se registra en el plan descartable de la corrida: el picker de /reviews/new
+    // solo ofrece las materias del plan declarado, y la materia descartable no está en ningún otro.
+    const author = await createStudent(request, {
+      emailPrefix: 'e2e-undo-author',
+      careerPlanId: chair.planId,
+    });
     students.push(author);
 
     await context.clearCookies();
@@ -119,21 +128,21 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
 
     // ── 1. La décima, por la pantalla real, con un desenlace que no llega ──────────────────
     await page.goto('/reviews/new');
-    await page.getByRole('searchbox', { name: /materia/i }).fill('Fundamentos');
-    await page.getByRole('button', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
+    await page.getByRole('searchbox', { name: /materia/i }).fill(chair.subjectName);
+    await page.getByRole('button', { name: new RegExp(chair.subjectName, 'i') }).click();
     await page.getByRole('button', { name: /^2025-C1$/ }).click();
-    await page.getByRole('button', { name: /^Ruiz$/ }).click();
+    await page.getByRole('button', { name: chair.chairName, exact: true }).click();
     await page.getByRole('button', { name: /^La recurs/ }).click();
     await page.getByRole('button', { name: /enviar la reseña/i }).click();
     await expect(page).toHaveURL(/\/reviews\/mine\?published=1$/, { timeout: 30_000 });
 
     // Aterriza en Mis aportes, con lo suyo a la vista y sus dos salidas.
-    await expect(page.getByRole('heading', { name: SUBJECT_NAME })).toBeVisible();
+    await expect(page.getByRole('heading', { name: chair.subjectName })).toBeVisible();
     await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /^borrar$/i })).toBeVisible();
 
     // La décima hizo cruzar el piso: la ficha publica, y con 9 de 10 llegando (la del autor no).
-    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await page.goto(`/chairs/${chair.chairId}`);
     await expect(page.getByText(/de cada 10 que la cursan, llegan 9/i)).toBeVisible({
       timeout: 30_000,
     });
@@ -151,7 +160,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
       timeout: 30_000,
     });
 
-    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await page.goto(`/chairs/${chair.chairId}`);
     await expect(page.getByText(/de cada 10 que la cursan, llegan 10/i)).toBeVisible({
       timeout: 30_000,
     });
@@ -167,7 +176,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
 
     // Nueve voces otra vez: bajo el piso, la ficha vuelve a decir cuánto le falta y no publica un
     // solo conteo. Es lo que hace del borrar una salida real y no un gesto.
-    await page.goto(`/chairs/${CHAIR_RUIZ}`);
+    await page.goto(`/chairs/${chair.chairId}`);
     await expect(page.getByText(/Junta 9 reseñas: con 1 más se publica/i)).toBeVisible({
       timeout: 30_000,
     });

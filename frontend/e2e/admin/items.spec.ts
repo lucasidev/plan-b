@@ -181,8 +181,15 @@ test.describe('Frases (US-198)', () => {
       // responder, la de antes con sus diez respuestas, y la línea que dice que no se comparan.
       await context.clearCookies();
       await page.goto(`/chairs/${CHAIR_PEREZ}`);
-      await expect(page.getByText(newQuestion)).toBeVisible({ timeout: 15_000 });
-      await expect(page.getByText('Todavía nadie respondió esta pregunta.')).toBeVisible();
+      const newQuestionText = page.getByText(newQuestion);
+      await expect(newQuestionText).toBeVisible({ timeout: 15_000 });
+      // Acotado a la fila de ESTA pregunta: "todavía nadie respondió" es el mismo texto para
+      // cualquier frase recién destilada, y `--repeat-each` dejó más de una en la misma corrida
+      // (cada repetición destila la suya y ninguna se borra, así que conviven en el instrumento).
+      const newQuestionRow = newQuestionText.locator('xpath=..');
+      await expect(
+        newQuestionRow.getByText('Todavía nadie respondió esta pregunta.'),
+      ).toBeVisible();
       await expect(page.getByText(question)).toBeVisible();
       await expect(page.getByText(/acá cambió la pregunta/).first()).toBeVisible();
       await expect(page.getByText(new RegExp(`de ${FLOOR}$`)).first()).toBeVisible();

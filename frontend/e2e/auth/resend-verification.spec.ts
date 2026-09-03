@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { clearAllMessages, waitForMail } from '../helpers/mailpit';
+import { waitForMail } from '../helpers/mailpit';
 import { MARTIN } from '../helpers/personas';
-import { clearAllIdentityRateLimits } from '../helpers/redis';
+import { clearResendVerificationRateLimits } from '../helpers/redis';
 
 /**
  * E2E del flow resend verification (US-021).
@@ -19,12 +19,14 @@ import { clearAllIdentityRateLimits } from '../helpers/redis';
  * Errores in-component (rate-limit, backend down, etc.) están cubiertos
  * a nivel vitest en `features/resend-verification/...`. Acá solo el flow
  * cross-stack.
+ *
+ * No limpia Mailpit entero al arrancar: `waitForMail` busca por destinatario, y Martín es el
+ * único que este spec usa, así que un mail viejo suyo no confunde al nuevo.
  */
 
 test.describe('resend verification (US-021)', () => {
   test.beforeEach(async () => {
-    await clearAllIdentityRateLimits();
-    await clearAllMessages();
+    await clearResendVerificationRateLimits();
   });
 
   test('Martín pide reenvío del link y el mail llega a su inbox', async ({ page }) => {

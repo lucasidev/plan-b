@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import { createChair } from '../helpers/chairs';
 import { ADMIN } from '../helpers/personas';
 import { createStudent, deleteStudent } from '../helpers/students';
 
@@ -10,9 +11,7 @@ import { createStudent, deleteStudent } from '../helpers/students';
  * propio autor: la curaduría existía en el papel y no en el producto.
  */
 
-const SUBJECT_211 = '00000004-0000-4000-a000-000000000012';
 const TERM_2024_C1 = '00000005-0000-4000-a000-000000000001';
-const CHAIR_PEREZ = '00000008-0000-4000-a000-000000000001';
 const UNSTA = '00000001-0000-4000-a000-000000000001';
 const TUDCS_CAREER = '00000002-0000-4000-a000-000000000003';
 
@@ -33,14 +32,17 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
     request,
   }) => {
     const written = `Nunca supimos con qué se rendía ${Math.random().toString(36).slice(2, 8)}`;
+    // Cátedra propia de esta corrida: la reseña con texto libre nunca se borra (es lo que este
+    // test verifica), así que publicarla contra una sembrada le dejaría una voz de más a otro spec.
+    const chair = await createChair(request, { label: 'Curation' });
     const student = await createStudent(request, { emailPrefix: 'e2e-curation' });
 
     try {
       const published = await request.post('/api/reviews/courses', {
         data: {
-          subjectId: SUBJECT_211,
+          subjectId: chair.subjectId,
           termId: TERM_2024_C1,
-          chairId: CHAIR_PEREZ,
+          chairId: chair.chairId,
           answers: [{ itemCode: 'COURSE_OUTCOME', optionValue: 1 }],
           freeText: written,
         },
@@ -53,8 +55,10 @@ test.describe('Curaduría del campo libre (ADR-0084)', () => {
 
       // El texto, con el contexto que lo hace legible.
       await expect(page.getByText(written)).toBeVisible({ timeout: 15_000 });
-      await expect(page.getByText(/control de calidad/i).first()).toBeVisible();
-      await expect(page.getByText(/cátedra pérez/i).first()).toBeVisible();
+      await expect(page.getByText(chair.subjectName).first()).toBeVisible();
+      await expect(
+        page.getByText(new RegExp(`cátedra ${chair.chairName}`, 'i')).first(),
+      ).toBeVisible();
 
       // Y la pantalla dice las dos cosas que gobiernan lo que hay adentro: que no se publica, y
       // que quién lo escribió no llega hasta acá.
