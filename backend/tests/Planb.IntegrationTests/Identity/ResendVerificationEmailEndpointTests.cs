@@ -21,6 +21,7 @@ namespace Planb.IntegrationTests.Identity;
 /// WebApplicationFactory siempre reporta localhost asi que todos comparten la misma key
 /// si no la limpiamos.
 /// </summary>
+[Collection("IpRateLimit")]
 public class ResendVerificationEmailEndpointTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
 {
     private readonly RegisterApiFixture _fixture;

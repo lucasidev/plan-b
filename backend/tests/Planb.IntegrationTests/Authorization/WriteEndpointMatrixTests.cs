@@ -84,6 +84,7 @@ public sealed class WriteEndpointMatrixFixture : IAsyncLifetime
 /// en todas las filas no ensucia nada: un intento rechazado no muta estado.
 /// </para>
 /// </summary>
+[Collection("IpRateLimit")]
 public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture>
 {
     private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");

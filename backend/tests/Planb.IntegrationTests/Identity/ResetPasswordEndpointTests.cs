@@ -25,6 +25,7 @@ namespace Planb.IntegrationTests.Identity;
 /// from one test doesn't bleed into another. Lucía from the seed is reused only when the
 /// sign-in / refresh path is what's under test.
 /// </summary>
+[Collection("IpRateLimit")]
 public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
 {
     private readonly RegisterApiFixture _fixture;
