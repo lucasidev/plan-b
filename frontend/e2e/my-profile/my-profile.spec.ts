@@ -55,12 +55,7 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await expect(page.getByRole('button', { name: /editar/i })).toBeVisible();
   });
 
-  // TODO(US-047-fix): el spec falla intermitentemente en CI dev frontend. El antipattern de
-  // `if (state.status === 'success') onSuccess()` dentro del render del EditForm dispara el
-  // switch a view mode con la prop `profile` vieja (revalidatePath invalida cache del RSC
-  // pero el componente montado no re-fetchea). Fix real requiere router.refresh() + guard
-  // contra loop o storageState + isolated test data. Out of scope para US-046.
-  test.fixme('edit mode habilita campos y guarda cambios', async ({ page }) => {
+  test('edit mode habilita campos y guarda cambios', async ({ page }) => {
     await page.getByRole('button', { name: /editar/i }).click();
 
     const nameInput = page.getByLabel(/nombre para mostrar/i);
@@ -109,17 +104,18 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await expect(page.getByText(/mis aportes/i).first()).toBeVisible();
   });
 
-  // TODO(US-038-bis-fix): el click al CTA "Dar de baja" dispara setOpen(true) pero el
-  // dialog no aparece dentro del timeout en CI dev. Hipótesis: hydration tardía del client
-  // component DeactivateAccountButton después del navigate. Out of scope para US-046.
-  test.fixme('click en "Dar de baja mi cuenta" abre el modal con email gate', async ({ page }) => {
-    await page
-      .getByRole('button', { name: /^dar de baja mi cuenta$/i })
-      .first()
-      .click();
-
+  test('click en "Dar de baja mi cuenta" abre el modal con email gate', async ({ page }) => {
+    const trigger = page.getByRole('button', { name: /^dar de baja mi cuenta$/i }).first();
     const dialog = page.getByRole('dialog');
-    await expect(dialog).toBeVisible();
+
+    // DeactivateAccountButton es un client component: a veces el click llega antes de que
+    // React termine de hidratarlo y no pasa nada. Reintentamos el click hasta que el
+    // diálogo aparezca, en vez de asumir que el primer click siempre engancha el handler.
+    await expect(async () => {
+      await trigger.click();
+      await expect(dialog).toBeVisible({ timeout: 1_000 });
+    }).toPass({ timeout: 10_000 });
+
     await expect(dialog.getByRole('heading', { name: /confirmá la baja/i })).toBeVisible();
     await expect(dialog.getByText(LUCIA.email)).toBeVisible();
 
