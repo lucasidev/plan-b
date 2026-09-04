@@ -32,7 +32,7 @@ export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
 
         <TakenWithBlock facts={facts} />
         <Chairs facts={facts} />
-        <Footer facts={facts} />
+        <Footer />
       </div>
     </div>
   );
@@ -344,7 +344,7 @@ function ChairRow({ chair, last }: { chair: SubjectChair; last: boolean }) {
   );
 }
 
-function Footer({ facts }: { facts: SubjectFacts }) {
+function Footer() {
   return (
     <div className="flex items-center justify-between gap-2.5">
       <Link
