@@ -40,6 +40,8 @@ Una cita que no llega a una declaración (el cuerpo del test, el docstring de un
 
 Un dato que no está en la promesa y que vuelve vacío a cualquier test de fama: lo que converge necesita `ChairFactsCalculator.ConvergenceMinimumItems` frases (tres) con respuesta; con una sola, la fama es siempre nula, con o sin bug.
 
+Un ataque de concurrencia se dimensiona contra la sección crítica, no contra la intuición: dos publicaciones concurrentes del instrumento no chocaron nunca en quince corridas, porque el handler hace dos round trips y la primera commitea antes de que la segunda lea; doce chocan siempre. El número de vías va en el test con su razón (`InstrumentConcurrentPublishTests`).
+
 
 ## Cómo correr tests
 

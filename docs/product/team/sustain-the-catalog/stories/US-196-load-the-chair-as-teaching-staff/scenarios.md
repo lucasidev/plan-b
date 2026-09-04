@@ -19,6 +19,7 @@ Entonces Camila compara el nombre declarado contra el nombre del adjunto que ya 
 ## Negativos
 
 **N1.** Dado que la cátedra "Análisis Matemático I, R. Domínguez" (UTN) tiene cargados un titular, un adjunto y dos ayudantes, y llega un pedido de verificación de alguien que dice ser un segundo adjunto que el catálogo no tiene cargado. Cuando Camila compara ese pedido contra el equipo cargado. Entonces Camila NO agrega ese nombre al equipo de la cátedra a partir de lo que la persona declaró: si no está cargado, no cuenta como parte de la cátedra hasta que Sofía lo cargue.
+No construido: el pedido de verificación del cargo es del recorrido reviewed (US-225 y US-227, Backlog)
 
 ## Edge cases
 

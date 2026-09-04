@@ -174,7 +174,20 @@ PLANB_WEB_TAG=<sha corto>
 
 **Verificado en local** (podman, las dos imágenes construidas en esta rama): `docker compose ... config` resuelve las cinco imágenes; con `PLANB_API_TAG` y `PLANB_WEB_TAG` apuntando a las imágenes locales, `api` llega a *healthy*, `/health` responde a través del rewrite del frontend, `/` devuelve 200, y `/api/academic/universities` devuelve el catálogo sembrado. Los logs de `api` muestran las migraciones de los tres módulos y las siembras (personas, catálogo académico, catálogo de frases, corpus) corriendo solas al arrancar. Un build de la imagen del frontend sin el `--build-arg` falla con el mensaje; con `HOSTNAME` definido, el web escucha en `0.0.0.0:3000`; el admin entra con la password de `PLANB_SEED_PASSWORD` y no con la de `personas.json`; la UI de Mailpit responde 401 sin auth y 200 con `MAILPIT_UI_AUTH`.
 
-**Sin verificar** (necesita la infra real): la publicación a GHCR (el workflow nunca corrió), el pull de las imágenes desde Dokploy, la emisión del certificado de Let's Encrypt, los labels de Traefik sobre este compose, y el reset por terminal (`down -v` y Deploy) contra un despliegue real.
+**Sin verificar** (necesita la infra real): la publicación a GHCR (el workflow nunca corrió), el pull de las imágenes desde Dokploy, la emisión del certificado de Let's Encrypt, los labels de Traefik sobre este compose, y el reset por terminal (`down -v` y Deploy) contra un despliegue real, y el recorrido para Copas, escrito con los números del corpus pero no caminado todavía sobre el stage.
+
+### El recorrido para Copas
+
+Diez minutos sobre el stage recién sembrado, en este orden. Los números son los del corpus sintético (`CorpusSeedData.cs`): todo vive en Fundamentos de Control de Calidad (materia 211 de la Tecnicatura Universitaria en Desarrollo y Calidad de Software, UNSTA), período 2024-C1, con tres cátedras.
+
+1. **Inicio**, `https://<WEB_HOST>/`: la muestra es una ficha real elegida al azar entre las que pasaron el piso. Buscar "Fundamentos de Control de Calidad".
+2. **Ficha de materia**, `/subjects/00000004-0000-4000-a000-000000000012`: tres cátedras. Pérez publica con 14 voces y González con 12; Ruiz dice "6 reseñas · faltan 4". Abajo, la co-cursada: con Base de datos publica (12 la llevaron juntas); con Desarrollo Back End dice "5 la llevaron junto con esta: con 5 más se publica cómo les fue".
+3. **Ficha de Cátedra Pérez**, `/chairs/00000008-0000-4000-a000-000000000001`: cada frase con su moda, su distribución y sus voces; ningún puntaje. **Ficha de Cátedra Ruiz**, `/chairs/00000008-0000-4000-a000-000000000003`: "Junta 6 reseñas: con 4 más se publica."
+4. **Método**, `/method`: la regla de cada conteo, el piso de 10 y la comparación solo contra cátedras hermanas.
+5. **Registrarse**, `/sign-up` con un mail inventado (por ejemplo `copas@planb.local`) y la carrera declarada; en Mailpit, `https://<MAIL_HOST>/` con el usuario y la password de `MAILPIT_UI_AUTH`, llega "Confirmá tu cuenta en planb" con el link a `/verify-email?token=`. Confirmar.
+6. **Reseñar**, `/reviews/new`: Fundamentos de Control de Calidad, Cátedra Ruiz, período 2024-C1, el formulario de una página. Al publicar, la Ficha de Cátedra Ruiz pasa a "Junta 7 reseñas: con 3 más se publica" y `/reviews/mine` lista el aporte: contó, aunque todavía no publica.
+7. **Backoffice**: cerrar sesión y entrar como `admin@planb.local` con la password de `PLANB_SEED_PASSWORD`. En `/admin/chairs`, cargar una cátedra nueva de Fundamentos de Control de Calidad con su titular; en `/admin/curation`, leer un texto libre del corpus y destilar una frase: en `/admin/items` aparece dentro de la versión nueva del instrumento.
+8. **Volver a cero**: el reset del paso 8 del guion de clics deja el stage exactamente como al principio, con las mismas 49 reseñas del corpus (32 de cátedra y 17 de co-cursada) y sin la cuenta de prueba.
 
 ## Refs
 
