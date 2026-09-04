@@ -112,6 +112,17 @@ backend-test-unit:
 backend-test-integration:
     cd backend && dotnet test tests/Planb.IntegrationTests
 
+# Lo afectado (#423): antes de pushear un cambio chico, señal rápida de qué tocar sin correr
+# todo. La lógica vive en TypeScript (scripts/test-affected.ts), no acá: es lo que la hace correr
+# igual en Windows y en Linux.
+backend-test-affected:
+    bun scripts/test-affected.ts --backend
+
+frontend-test-affected:
+    bun scripts/test-affected.ts --frontend
+
+test-affected: backend-test-affected frontend-test-affected
+
 # Mutation testing sobre el corazón de reviews: mide si la suite detecta cambios reales al código, sin gate (ADR-0036).
 backend-mutation:
     cd backend/modules/reviews/tests/Planb.Reviews.Tests && dotnet stryker
