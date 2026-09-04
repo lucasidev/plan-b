@@ -1,0 +1,17 @@
+# El contexto de build es la raíz del repo (context: . en release.yml). Sin esto, COPY
+# frontend/ ./ del stage build de frontend/Dockerfile trae el node_modules y el .next locales
+# del checkout (si ya corriste bun install/bun run build en el host) y tapa el node_modules
+# recién instalado en el stage deps: el bug se vio como "next: Permission denied" al buildear
+# localmente, porque los binarios instalados en el host no traen el bit +x que necesita el
+# contenedor. backend/Dockerfile copia directorios enteros (libs, host, modules, tests) y estos dos
+# patrones no lo afectan.
+frontend/node_modules
+frontend/.next
+
+# .env.local no llega hoy a la imagen final ni pisa el build-arg, pero si algún día alguien mete
+# un NEXT_PUBLIC_* ahí, este COPY lo horneaba en el bundle sin que nadie lo pidiera.
+frontend/.env*
+
+# dotnet restore los regenera: sin este ignore, el contexto carga cientos de MB de bin/obj del checkout.
+backend/**/bin
+backend/**/obj

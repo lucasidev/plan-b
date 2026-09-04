@@ -3,6 +3,10 @@ import type { NextConfig } from 'next';
 const backendUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 const nextConfig: NextConfig = {
+  // 'standalone' arma un server.js autocontenido en .next/standalone, que es lo que el runtime
+  // stage de frontend/Dockerfile copia. Solo lo pide el build de la imagen (NEXT_OUTPUT en el
+  // Dockerfile): con next start, Next avisa que standalone no aplica, y ese aviso confunde.
+  output: process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : undefined,
   logging: {
     fetches: {
       fullUrl: false,
