@@ -67,7 +67,9 @@ test.describe('forgot/reset password (US-033)', () => {
       await page.getByLabel(/tu email/i).fill(student.email);
       await page.getByLabel(/^contraseña$/i).fill(TEMP_PASSWORD);
       await page.getByRole('button', { name: /^entrar$/i }).click();
-      await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+      // Timeout generoso (#436): en la suite completa con 3 workers medimos esta navegación
+      // cayendo por carga con 15s; 30s le da margen sin caer en un reintento.
+      await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
     } finally {
       // La contraseña ya cambió a TEMP_PASSWORD en el paso 4: es la que hace falta para
       // re-autenticar y borrar la cuenta (self-service, ADR-0044).
@@ -79,7 +81,8 @@ test.describe('forgot/reset password (US-033)', () => {
     await page.goto('/forgot-password');
     await page.getByLabel(/tu email/i).fill('no-existe@nope.com');
     await page.getByRole('button', { name: /mandame el link/i }).click();
-    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 15_000 });
+    // Timeout generoso (#436): mismo ajuste que el paso 5 del happy path de este archivo.
+    await expect(page).toHaveURL(/\/forgot-password\/check-inbox/, { timeout: 30_000 });
 
     // Esperamos a que el backend tenga chance de enviar mail (no debería).
     await page.waitForTimeout(800);

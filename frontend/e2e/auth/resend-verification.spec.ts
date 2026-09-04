@@ -45,7 +45,12 @@ test.describe('resend verification (US-021)', () => {
     // 3. Mailpit recibe el mail con el token. El subject del backend hoy es
     // "Confirmá tu cuenta en planb"; aceptamos "confirm" o "verific" para
     // tolerar futuros refrasings del template.
-    const mail = await waitForMail(MARTIN.email, 5000);
+    //
+    // Timeout generoso (#436): en la suite completa con 3 workers, este test cae temprano en la
+    // corrida, cuando el backend + Turbopack JIT están sirviendo la ola inicial de logins de
+    // varios specs a la vez. Medido: 5000ms no siempre alcanza para que el mail llegue a Mailpit
+    // bajo esa carga; aislado (sin contención) el mail llega en un puñado de ms.
+    const mail = await waitForMail(MARTIN.email, 15_000);
     expect(mail.Subject).toMatch(/confirm|verific/i);
     expect(mail.HTML).toMatch(/[?&]token=/);
 
