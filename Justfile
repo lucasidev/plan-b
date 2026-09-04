@@ -224,6 +224,12 @@ check-scenarios:
 check-scenarios-strict:
     bun scripts/check-scenarios.ts --strict
 
+# Cuarentena de flakes (#422): todo fixme/@flaky sin "hasta YYYY-MM-DD" + #issue, o vencido,
+# hace fallar esto. Si ya corrió la suite con el reporter json, además lista los flaky de esa
+# corrida (informativo, no gatea).
+check-flaky:
+    bun scripts/check-flaky.ts
+
 # ═══════════════════════════════════════════════════════════════
 # Package management
 # ═══════════════════════════════════════════════════════════════
@@ -286,5 +292,5 @@ clean:
 # Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
 # ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
 # con ci.yml, docs-links.yml y commits.yml.
-ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict check-scenarios frontend-build frontend-test
+ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict check-scenarios check-flaky frontend-build frontend-test
     @echo "✓ All quality gates passed"

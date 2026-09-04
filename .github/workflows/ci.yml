@@ -441,6 +441,12 @@ jobs:
           CI: 'true'
         run: bunx playwright test
 
+      # Corre pase lo que pase Playwright: la cuarentena vencida gatea, y la lista de flaky de
+      # esta corrida (reporter json) es la señal de #422 aunque el resto haya salido verde.
+      - name: Flaky tests
+        if: always()
+        run: bun scripts/check-flaky.ts
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7

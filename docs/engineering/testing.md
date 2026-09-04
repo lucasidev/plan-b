@@ -394,6 +394,20 @@ La base sobrevive a la corrida a propósito (el drop es al arrancar, no al termi
 
 CI (línea de base en [`docs/plan/status.md`](../plan/status.md), pista 3, medida el 2026-09-02): 179 s de Playwright con un worker. El número de después con 3 workers en CI queda para la próxima corrida real: acá solo se pudo medir en local.
 
+#### Política de flakes
+
+`retries: 0` siempre, local y CI: un test que pasa al segundo intento es un flake que nadie
+contó. El único reintento es el de un test tageado `@flaky`, adentro de un `test.describe` con
+`test.describe.configure({ retries: 2 })`.
+
+La cuarentena (`test.fixme(` y `@flaky`) es una cola con vencimiento: cada uno lleva, en un
+comentario en las 3 líneas de arriba, `hasta YYYY-MM-DD` y el issue (`#NNN`). Al vencer, la
+tarea de orden del sprint siguiente lo arregla o lo borra.
+
+`just check-flaky` falla si una marca falta o venció; si corrió con el reporter `json`
+(`frontend/test-results/results.json`, solo CI), además lista los `status: "flaky"` de esa
+corrida sin romper el build.
+
 #### Política E2E: una sola regla
 
 **E2E corre siempre en CI, en cada PR.** Sin labels, sin detectores custom, sin whitelists. Es el patrón estándar de la industria 2025: shift-left + gate consistente antes de merge. Para PRs 100% docs/config (sin código), aceptamos los ~7 min como costo de simplicidad.
