@@ -1,0 +1,126 @@
+# El stage entero: los cinco servicios de un deploy de Dokploy (Project → Create Service →
+# Compose). Corre como Development hospedado porque el perfil Production de Wolverine exige
+# codegen estático y migraciones aplicadas a mano, que un stage con datos de prueba no necesita.
+# Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
+# SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH, PLANB_SEED_PASSWORD,
+# PLANB_API_TAG, PLANB_WEB_TAG.
+# El reset es `down -v` y volver a desplegar: migraciones y siembras corren solas al arrancar.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: planb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: planb
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - planb_stage_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planb -d planb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+
+  # Estado efímero: un reinicio cierra sesiones y nada más, el reset del stage es down -v igual.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD}
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--no-auth-warning", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - internal
+
+  mailpit:
+    image: axllent/mailpit:v1.29
+    restart: unless-stopped
+    expose: ["1025", "8025"]
+    environment:
+      # Mailpit muestra los links de verificación y de reset de todas las cuentas: la UI va con auth (usuario:password).
+      MP_UI_AUTH: ${MAILPIT_UI_AUTH}
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - internal
+      - dokploy-network
+
+  api:
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG}
+    expose: ["8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      PLANB_SEED_CORPUS: 1
+      PLANB_SEED_PASSWORD: ${PLANB_SEED_PASSWORD}
+      ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
+      JWT__Secret: ${JWT_SECRET}
+      Smtp__Host: mailpit
+      Smtp__Port: 1025
+      Smtp__UseSsl: "false"
+      Smtp__FromEmail: ${SMTP_FROM_EMAIL}
+      Smtp__FromName: ${SMTP_FROM_NAME}
+      Identity__Verification__LinkBaseUrl: https://${WEB_HOST}/verify-email
+      Identity__PasswordReset__LinkBaseUrl: https://${WEB_HOST}/reset-password
+    # La imagen de aspnet no trae curl ni wget, pero sí bash: abrir el socket confirma que el api escucha.
+    # Healthy no significa sembrado: las migraciones y las siembras siguen un minuto más y se ven en los logs.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    networks:
+      - internal
+
+  web:
+    image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG}
+    expose: ["3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:8080
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: planb
+      JWT_AUDIENCE: planb
+      SESSION_SECRET: ${SESSION_SECRET}
+    networks:
+      - internal
+      - dokploy-network
+
+# Traefik solo alcanza los servicios conectados a dokploy-network: por eso web y mailpit están
+# ahí además de internal. postgres, redis y api se quedan solo en internal, sin dominio.
+networks:
+  internal:
+  dokploy-network:
+    external: true
+
+volumes:
+  planb_stage_postgres:
+    name: planb_stage_postgres
