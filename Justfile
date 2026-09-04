@@ -255,7 +255,7 @@ migrate:
 # Add migration to a specific module. Usage: just migrate-add identity InitialSchema
 migrate-add module name:
     cd backend/modules/{{module}}/src/Planb.{{capitalize(module)}}.Infrastructure && \
-    dotnet ef migrations add {{name}} --startup-project ../../../../host/Planb.Api
+    dotnet ef migrations add {{name}} --startup-project ../../../../host/Planb.Api --context {{capitalize(module)}}DbContext
 
 # Reset DB: down volumes + up + migrate
 db-reset: infra-reset migrate
