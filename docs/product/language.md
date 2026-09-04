@@ -82,7 +82,7 @@ Lo que cambió el 2026-08-27 es qué dato muestra la landing: dejó de ilustrar 
 |---|---|---|
 | **User** | Cuenta con credenciales (email, password). Rol único, inmutable después de creado salvo intervención admin. | `User` |
 | **role** | Tipo funcional del usuario. Enum exclusivo. No acumulable. | `User.role` |
-| **member** | Rol de usuario de comunidad académica. Puede tener perfiles de alumno y/o docente. Sin acceso administrativo. | `role = 'member'` |
+| **member** | Rol de usuario de comunidad académica. Puede tener un perfil de alumno. Sin acceso administrativo. | `role = 'member'` |
 | **moderator** | Rol staff de la versión anterior (resolvía reports de texto publicado). Con el texto libre sin publicar ([ADR-0084](../decisions/0084-free-text-feeds-curation-and-is-never-published.md)) su alcance se redefine con la poda; el rol sigue en el código hasta entonces. | `role = 'moderator'` |
 | **admin** | Rol staff con permisos totales: curaduría + gestión de catálogo académico + alta/baja de staff. | `role = 'admin'` |
 | **university_staff** | Rol de la versión anterior (dashboard institucional). El producto nuevo no tiene cliente institucional: la institución lee la ficha pública y responde con identidad verificada. El rol sigue en el código hasta la poda. | `role = 'university_staff'` |
@@ -90,16 +90,13 @@ Lo que cambió el 2026-08-27 es qué dato muestra la landing: dejó de ilustrar 
 | **respuesta firmada** | Toda respuesta del reseñado la publica una persona con su nombre y su cargo, nunca una entidad: no existe "responde la UNSTA", responde alguien de la UNSTA ([ADR-0073](../decisions/0073-the-team-verifies-who-replies-against-its-own-catalog.md)). | |
 | **revalidación** | Una verificación (docente o cargo institucional) vence al año y hay que renovarla. Lo ya publicado no se retira: era cierto cuando se publicó. | |
 | **StudentProfile** | Perfil de alumno vinculado a un `CareerPlan` específico. Un `member` tiene uno solo activo; para cambiar de carrera hay que dar de baja el vigente. | `StudentProfile` |
-| **TeacherProfile** | Claim de identidad docente por parte de un `member`. Debe verificarse para activarse. | `TeacherProfile` |
-| **verified (docente)** | `TeacherProfile` con `verified_at NOT NULL`. Única condición para responder por su cátedra. | |
-| **verification_method** | Forma en que se verificó el `TeacherProfile`: `institutional_email` (automática) o `manual` (admin revisa evidencia). | `TeacherProfile.verification_method` |
 
 ## Dominio académico
 
 | Término | Significado |
 |---|---|
 | **University** | Universidad. Entidad raíz del catálogo académico. Ej: UNSTA, SIGLO 21, USPT. |
-| **institutional_email_domains** | Array de dominios de email válidos para verificación automática de docentes de la universidad. Ej: `['unsta.edu.ar']`. |
+| **institutional_email_domains** | Dominios de email institucional de la universidad, en lowercase. Ej: `['unsta.edu.ar']`. |
 | **Career** | Carrera como concepto institucional estable. Ej: "Tecnicatura Universitaria en Desarrollo y Calidad de Software". |
 | **CareerPlan** | Plan de estudios de una carrera para un año particular (`year`), con materias propias y un `label` editorial opcional. Ej: "Plan 2019", "Plan 2024". |
 | **plan vigente** | `CareerPlan` con `status = Active`. Es el que se le ofrece a nuevos ingresantes; el plan anterior pasa a `Deprecated` pero sigue existiendo para los alumnos que ya lo cursan. |
@@ -123,7 +120,7 @@ Términos que se prestan a confusión. La columna "Uso correcto" es la regla que
 
 | Término | Uso incorrecto | Uso correcto |
 |---|---|---|
-| **docente** | "Un rol de usuario" | Se refiere a `Teacher` (entidad catálogo) o a un `TeacherProfile` verificado. Nunca es un `role` de `User`. |
+| **docente** | "Un rol de usuario" | Se refiere a `Teacher` (entidad catálogo). Nunca es un `role` de `User`. |
 | **alumno** | "Un rol de usuario" | Se refiere a un `member` con `StudentProfile`. El rol es `member`. |
 | **rol** | "Algo que un usuario puede tener varios a la vez" | Un `User` tiene exactamente un `role` del enum. Los profiles suman **capacidades**, no roles. |
 | **carrera** | "Un plan de estudios específico" | `Career` es el concepto estable. `CareerPlan` es la versión específica. Un alumno cursa una `Career` bajo un `CareerPlan` determinado. |

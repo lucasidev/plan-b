@@ -8,6 +8,5 @@ namespace Planb.Identity.Domain.Users;
 public enum TokenPurpose
 {
     UserEmailVerification,
-    TeacherInstitutionalVerification,
     PasswordReset,
 }

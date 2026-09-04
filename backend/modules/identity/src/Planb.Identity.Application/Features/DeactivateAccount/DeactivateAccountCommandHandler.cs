@@ -15,14 +15,6 @@ namespace Planb.Identity.Application.Features.DeactivateAccount;
 /// que apunte al user quedan visibles como "Ex-miembro".
 ///
 /// <para>
-/// Además del aggregate <c>User</c> (que limpia sus owned collections), se borran los claims
-/// docentes del user. Son un aggregate aparte, así que <c>User.Deactivate</c> no los alcanza y
-/// ADR-0044 no los contempló: sobrevivían intactos, dejando el email institucional en la base y el
-/// docente reclamado bloqueado para siempre contra el índice parcial de verificados. Van en la misma
-/// transacción que la anonimización, no como best-effort.
-/// </para>
-///
-/// <para>
 /// El email anonimizado se computa acá (no en el aggregate) con SHA-256 determinístico del
 /// email original lowercased: <c>deleted-&lt;sha256hex16&gt;@anonymized.local</c>. El hash
 /// determinístico permite, en un script de soporte excepcional, identificar si dos cuentas
@@ -49,7 +41,6 @@ public static class DeactivateAccountCommandHandler
         DeactivateAccountCommand command,
         IUserRepository users,
         IUserDeletionLogRepository deletionLogs,
-        ITeacherProfileRepository teacherProfiles,
         IIdentityUnitOfWork unitOfWork,
         IRefreshTokenStore refreshTokens,
         IDomainEventPublisher publisher,
@@ -78,15 +69,6 @@ public static class DeactivateAccountCommandHandler
         if (deactivateResult.IsFailure)
         {
             return deactivateResult.Error;
-        }
-
-        // El claim docente es un aggregate aparte: User.Deactivate no lo alcanza, así que se borra
-        // acá y en la misma transacción. Sin esto queda el institutional_email (PII que la baja dice
-        // borrar) y el teacher_id ocupando el índice parcial de verificados, o sea el docente real
-        // bloqueado sin camino de liberación.
-        foreach (var teacherProfile in await teacherProfiles.ListForUserAsync(user.Id, ct))
-        {
-            teacherProfiles.Remove(teacherProfile);
         }
 
         await DomainEventDispatcher.DispatchAsync([user], publisher, ct);

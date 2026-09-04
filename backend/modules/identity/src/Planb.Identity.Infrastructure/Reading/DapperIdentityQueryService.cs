@@ -19,24 +19,6 @@ internal sealed class DapperIdentityQueryService : IIdentityQueryService
     public DapperIdentityQueryService(IDbConnectionFactory connections) =>
         _connections = connections;
 
-    public async Task<bool> HasVerifiedTeacherProfileAsync(
-        Guid userId, Guid teacherId, CancellationToken ct = default)
-    {
-        const string sql = @"
-            SELECT EXISTS (
-                SELECT 1
-                FROM identity.teacher_profiles
-                WHERE user_id = @UserId
-                  AND teacher_id = @TeacherId
-                  AND verified_at IS NOT NULL
-            );";
-
-        using var db = _connections.Create();
-        return await db.ExecuteScalarAsync<bool>(
-            new CommandDefinition(
-                sql, new { UserId = userId, TeacherId = teacherId }, cancellationToken: ct));
-    }
-
     public async Task<IReadOnlyDictionary<Guid, string>> GetEmailsAsync(
         IReadOnlyCollection<Guid> userIds, CancellationToken ct = default)
     {

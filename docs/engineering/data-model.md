@@ -33,9 +33,7 @@ erDiagram
     CareerPlan ||--o{ Subject : contains
 
     User ||--o{ StudentProfile : has
-    User ||--o{ TeacherProfile : claims
     StudentProfile }o--|| CareerPlan : "enrolled in"
-    TeacherProfile }o--|| Teacher : "claims"
 
     Subject ||--o{ Chair : "taught by"
     Chair }o--o{ Teacher : "through ChairMember"
@@ -53,7 +51,7 @@ erDiagram
 
 | Context              | Entidades                                                                                                   | Propósito                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Identity             | User, StudentProfile, TeacherProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
+| Identity             | User, StudentProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
 | Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Chair, ChairMember, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
 
 ## Context: Identity
@@ -67,7 +65,6 @@ config:
 ---
 erDiagram
     User ||--o{ StudentProfile : "(member) has"
-    User ||--o{ TeacherProfile : "(member) claims"
     User }o--o| User : "disabled_by (self-ref)"
     User }o--o| User : "verified_by (self-ref)"
 ```
@@ -108,40 +105,15 @@ Constraints adicionales:
 - CHECK: `status = 'graduated'` → `graduated_at NOT NULL`.
 - CHECK: `status IN ('active', 'abandoned')` → `graduated_at IS NULL`.
 
-### Entity: TeacherProfile
+### Entity: VerificationToken (child de User)
 
-Claim de identidad docente por parte de un User. Sin `verified_at`, el profile existe pero no desbloquea capacidades.
-
-| Campo                 | Tipo                               | Constraints            | Notas                                                   |
-| --------------------- | ---------------------------------- | ---------------------- | ------------------------------------------------------- |
-| `id`                  | UUID                               | PK                     |                                                         |
-| `user_id`             | UUID                               | FK → User, NOT NULL    |                                                         |
-| `teacher_id`          | UUID                               | FK → Teacher, NOT NULL |                                                         |
-| `verification_method` | ENUM `teacher_verification_method` | NULL                   | Se setea al verificar                                   |
-| `verified_at`         | TIMESTAMPTZ                        | NULL                   | Null = no verificado                                    |
-| `verified_by`         | UUID                               | FK → User, NULL        | Admin que verificó manualmente                          |
-| `institutional_email` | TEXT                               | NULL                   | Se captura si verification_method = institutional_email |
-| `rejection_reason`    | TEXT                               | NULL                   | Si se rechazó un claim, motivo                          |
-| `created_at`          | TIMESTAMPTZ                        | NOT NULL               |                                                         |
-| `updated_at`          | TIMESTAMPTZ                        | NOT NULL               |                                                         |
-
-Constraints adicionales:
-
-- `UNIQUE(user_id, teacher_id)`.
-- `UNIQUE(teacher_id) WHERE verified_at IS NOT NULL`: un Teacher tiene un único profile verificado.
-- CHECK: `verified_at NOT NULL` → `verification_method NOT NULL`.
-- CHECK: `verification_method = 'manual'` → `verified_by NOT NULL`.
-- CHECK: `verification_method = 'institutional_email'` → `institutional_email NOT NULL`.
-
-### Entity: VerificationToken (child de User / TeacherProfile)
-
-Token opaco usado para verificar el email de un User (purpose=`user_email_verification`) o el email institucional de un docente reclamado (purpose=`teacher_institutional_verification`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).
+Token opaco que un User consume para verificar su email o para resetear su contraseña (purpose=`user_email_verification` o `password_reset`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).
 
 | Campo               | Tipo                              | Constraints                              | Notas                                              |
 | ------------------- | --------------------------------- | ---------------------------------------- | -------------------------------------------------- |
 | `id`                | UUID                              | PK                                       |                                                    |
-| `owner_id`          | UUID                              | NOT NULL                                 | FK a `user.id` cuando purpose=`user_email_verification`; FK a `teacher_profile.id` cuando purpose=`teacher_institutional_verification` (UNIQUE por purpose) |
-| `purpose`           | ENUM `verification_token_purpose` | NOT NULL                                 | `user_email_verification`, `teacher_institutional_verification` |
+| `owner_id`          | UUID                              | NOT NULL                                 | FK a `user.id` (UNIQUE por purpose) |
+| `purpose`           | ENUM `verification_token_purpose` | NOT NULL                                 | `user_email_verification`, `password_reset` |
 | `value`             | TEXT                              | NOT NULL, UNIQUE                         | Opaque, 256-bit base64url                          |
 | `issued_at`         | TIMESTAMPTZ                       | NOT NULL                                 |                                                    |
 | `expires_at`        | TIMESTAMPTZ                       | NOT NULL                                 | TTL típicamente 24h                                |
@@ -156,8 +128,7 @@ Constraints:
 
 ### Invariantes cross-table (enforced en app)
 
-- Si `User.role != 'member'` → no puede existir `StudentProfile` ni `TeacherProfile` con ese `user_id`.
-- Si se crea un `TeacherProfile` con `verification_method = 'institutional_email'`, el dominio de `institutional_email` debe estar en `Teacher.university.institutional_email_domains`.
+- Si `User.role != 'member'` → no puede existir `StudentProfile` con ese `user_id`.
 - `verified_by` apunta a un User con `role = 'admin'`.
 - `disabled_by` apunta a un User con `role IN ('moderator', 'admin')`.
 
@@ -191,7 +162,7 @@ erDiagram
 | `country`                     | TEXT        | NOT NULL                 |                                                  |
 | `city`                        | TEXT        | NOT NULL                 |                                                  |
 | `website`                     | TEXT        | NULL                     |                                                  |
-| `institutional_email_domains` | TEXT[]      | NOT NULL, DEFAULT `'{}'` | Dominios válidos para verificación docente       |
+| `institutional_email_domains` | TEXT[]      | NOT NULL, DEFAULT `'{}'` | Dominios de email institucional, en lowercase    |
 | `created_at`                  | TIMESTAMPTZ | NOT NULL                 |                                                  |
 | `updated_at`                  | TIMESTAMPTZ | NOT NULL                 |                                                  |
 
@@ -518,13 +489,12 @@ Nombres y valores de todos los enums del modelo.
 | ----------------------------- | ------------------------------------------------------------------------------------- |
 | `user_role`                   | `member`, `moderator`, `admin`, `university_staff`                                    |
 | `student_status`              | `active`, `graduated`, `abandoned`                                                    |
-| `teacher_verification_method` | `institutional_email`, `manual`                                                       |
 | `career_degree_type`          | `grado`, `posgrado`, `tecnicatura`                                                    |
 | `career_plan_status`          | `active`, `deprecated`                                                                |
 | `term_kind`                   | `bimestral`, `cuatrimestral`, `semestral`, `anual`                                    |
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
-| `verification_token_purpose`  | `user_email_verification`, `teacher_institutional_verification`                       |
+| `verification_token_purpose`  | `user_email_verification`, `password_reset`                                           |
 
 ## Apéndice B: Invariantes transversales
 
@@ -532,8 +502,8 @@ Reglas que atraviesan múltiples contextos y no caben en una sola sección. La m
 
 ### Separación de roles staff y profiles
 
-- Si `User.role != 'member'` → no puede existir `StudentProfile(user_id=User.id)` ni `TeacherProfile(user_id=User.id)`.
-- `User.role = 'member'` → puede tener 0, 1 o 2 profiles (Student, Teacher, o ambos).
+- Si `User.role != 'member'` → no puede existir `StudentProfile(user_id=User.id)`.
+- `User.role = 'member'` → puede tener a lo sumo un `StudentProfile` activo.
 
 Responsable: servicios de registro, claim de profile, cambio de rol admin.
 
@@ -547,9 +517,3 @@ Ningún endpoint público serializa:
 - `User.email` de terceros.
 
 Responsable: DTOs de la capa API, tests de integración que verifican ausencia de estos campos.
-
-### Verificación de docentes
-
-- `institutional_email` debe tener un dominio presente en `Teacher.university.institutional_email_domains`.
-
-Responsable: servicio de claim/verificación.

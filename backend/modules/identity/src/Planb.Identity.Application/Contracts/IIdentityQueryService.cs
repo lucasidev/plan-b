@@ -13,15 +13,6 @@ namespace Planb.Identity.Application.Contracts;
 public interface IIdentityQueryService
 {
     /// <summary>
-    /// ¿El user tiene un <c>TeacherProfile</c> verificado para este docente (US-040)? Caller: el
-    /// handler de responder reseña, que solo deja responder a quien es el docente reseñado y está
-    /// verificado (claim US-030 + verificación US-031). False si no hay claim, o lo hay pero sin
-    /// verificar, o es de otro docente.
-    /// </summary>
-    Task<bool> HasVerifiedTeacherProfileAsync(
-        Guid userId, Guid teacherId, CancellationToken ct = default);
-
-    /// <summary>
     /// El mail de cada cuenta pedida, por id (US-198). Caller: el catálogo de frases del backoffice,
     /// que muestra quién hizo el último cambio de cada frase y solo guarda el id de la cuenta.
     ///

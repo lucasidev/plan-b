@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Planb.Identity.Domain.TeacherProfiles;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence.Configurations;
 
@@ -15,8 +14,6 @@ public sealed class IdentityDbContext : DbContext
 
     public DbSet<UserSettings> UserSettings => Set<UserSettings>();
 
-    public DbSet<TeacherProfile> TeacherProfiles => Set<TeacherProfile>();
-
     public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +22,5 @@ public sealed class IdentityDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserDeletionLogConfiguration());
         modelBuilder.ApplyConfiguration(new UserSettingsConfiguration());
-        modelBuilder.ApplyConfiguration(new TeacherProfileConfiguration());
     }
 }
