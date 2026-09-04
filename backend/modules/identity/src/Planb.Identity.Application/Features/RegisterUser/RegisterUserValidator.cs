@@ -13,8 +13,12 @@ internal sealed class RegisterUserValidator : AbstractValidator<RegisterUserComm
 
     public RegisterUserValidator()
     {
+        // El formato se chequea acá y no solo en el dominio: el endpoint gasta cupo del rate
+        // limiter por casilla antes de invocar el handler, y un mail sin arroba no tiene que
+        // consumirlo (agotado el cupo, la respuesta es el 202 de ADR-0076, no el 400).
         RuleFor(c => c.Email)
             .NotEmpty()
+            .EmailAddress()
             .MaximumLength(MaxEmailLength);
 
         RuleFor(c => c.Password)
