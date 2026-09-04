@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
   // NEXT_PUBLIC_API_URL — eso evita el doble hop server → next → backend.
   async rewrites() {
     return [
+      // En el stage solo el frontend tiene dominio: /health es cómo se verifica el backend desde afuera.
+      {
+        source: '/health',
+        destination: `${backendUrl}/health`,
+      },
       {
         source: '/api/:path*',
         destination: `${backendUrl}/api/:path*`,
