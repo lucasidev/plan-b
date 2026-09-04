@@ -81,6 +81,8 @@ backend/modules/identity/src/Planb.Identity.Application/Seeding/
 
 El hosted service corre en `StartAsync` *después* de `DevMigrationsHostedService` (orden por registro en Program.cs). Verifica si las personas ya existen vía `IUserRepository.ExistsByEmailAsync`; si sí, salta. Si no, crea cada una llamando al mismo `User.Register(...)` que el endpoint público, después aplica las transiciones específicas (`MarkVerified`, `Disable`) según corresponda.
 
+La variable de entorno `PLANB_SEED_PASSWORD` reemplaza la password de **todas** las personas (mail, rol y estado se conservan) por un único valor de al menos 12 caracteres: protege el backoffice en un ambiente con dominio real, donde `personas.json` (con la password del admin en texto) es público. Dev y los specs de E2E no la definen, así que siguen viendo la password propia de cada persona en `personas.json`.
+
 ## Cuándo este doc se actualiza
 
 - Aterriza un aggregate nuevo (StudentProfile, ModeratorProfile, etc.) → cada persona gana una sección con su data específica.

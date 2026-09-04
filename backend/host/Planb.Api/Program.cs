@@ -208,6 +208,15 @@ builder.Services.AddOptions<Planb.Identity.Application.Seeding.SeedPersonasOptio
         Planb.Identity.Application.Seeding.SeedPersonasOptions.SectionName))
     .ValidateDataAnnotations();
 
+// PLANB_SEED_PASSWORD: personas.json trae la password del admin en texto y el repo es público,
+// así que un ambiente con dominio real la reemplaza acá por una sola, común a todas las personas.
+// Se resuelve ahora, fuera del hosted service del seed, para fallar fuerte y temprano si está
+// definida pero es muy corta (mismo criterio que JWT__Secret más arriba) en vez de que la
+// falla se trague junto con cualquier otro error de siembra.
+var seedPasswordOverride = Planb.Identity.Application.Seeding.SeedPasswordOverride.Resolve(
+    Environment.GetEnvironmentVariable("PLANB_SEED_PASSWORD"));
+builder.Services.AddSingleton(seedPasswordOverride);
+
 builder.Services.AddScoped<Planb.Identity.Application.Seeding.IdentitySeeder>();
 builder.Services.AddHostedService<DevSeedHostedService>();
 
