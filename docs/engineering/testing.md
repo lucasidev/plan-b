@@ -62,6 +62,14 @@ just frontend-test-e2e-show       # Playwright con browser visible y slowMo (ver
 
 Ambos recipes aceptan args, ej: `just frontend-test-e2e-show e2e/auth/sign-up.spec.ts`.
 
+**`just test-affected`** (#423): antes de pushear un cambio chico recién commiteado (`dotnet-affected`
+compara commits contra `origin/main`, no working tree sucio), para la señal rápida de qué tocaste
+sin correr todo. **No** lo uses después de un rebase largo, con cambios en `shared-kernel`, `host`,
+`Directory.*.props` o `package.json`, o cuando tu branch ya acumuló muchos commits desde
+`origin/main`: en cualquiera de esos casos "lo afectado" se vuelve casi todo el árbol de
+dependencias (en particular arrastra `Planb.IntegrationTests`, la parte lenta de la suite), y ahí
+corré `just test` entero. CI corre todo siempre, este atajo es solo local.
+
 ### CI
 
 `just ci` corre las mismas gates que GitHub Actions. Antes de pushear, si tu cambio toca código real, corré `just ci` o al menos `just lint && just test`. Pre-push hooks corren build + typecheck pero NO tests largos (E2E queda para CI on-demand).

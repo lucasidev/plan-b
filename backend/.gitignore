@@ -30,3 +30,8 @@ TestResults/
 *.coverage
 *.coveragexml
 coverage.*.xml
+
+# dotnet-affected (just test-affected, #423): generado por cada corrida, nunca fuente.
+affected.proj
+# El restore de dotnet affected sobre el affected.proj sintético deja este lock en la raíz.
+packages.lock.json
