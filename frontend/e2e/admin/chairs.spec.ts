@@ -164,6 +164,6 @@ async function chairIdByName(page: Page, name: string): Promise<string> {
   expect(response.status()).toBe(200);
   const chairs = (await response.json()) as { id: string; name: string }[];
   const found = chairs.find((c) => c.name === name);
-  expect(found, `no apareció la cátedra ${name} en el listado`).toBeTruthy();
-  return found!.id;
+  if (!found) throw new Error(`no apareció la cátedra ${name} en el listado`);
+  return found.id;
 }

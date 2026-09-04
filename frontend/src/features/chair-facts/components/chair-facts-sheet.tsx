@@ -45,7 +45,7 @@ export function ChairFactsSheet({ facts }: { facts: ChairFacts }) {
           <BelowFloor facts={facts} />
         )}
 
-        <Footer facts={facts} />
+        <Footer />
       </div>
     </div>
   );
@@ -235,7 +235,7 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
  * publicada es "confiá en mí". Falta "Bajar los datos" hacia el CSV, que es otra story de la misma
  * épica y todavía no existe; un link a una pantalla inexistente es peor que no ofrecerla.
  */
-function Footer({ facts }: { facts: ChairFacts }) {
+function Footer() {
   return (
     <div className="flex items-center justify-between gap-2.5">
       <Link
