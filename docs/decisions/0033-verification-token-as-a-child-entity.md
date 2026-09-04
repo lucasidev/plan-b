@@ -52,6 +52,8 @@ internal sealed class VerificationToken : Entity<VerificationTokenId>
 
 `TeacherProfile` aggregate sigue el mismo patrón con `purpose=TeacherInstitutionalVerification`.
 
+**Revisión del 2026-09-03.** `TeacherProfile` se podó con el claim docente del modelo anterior (#416). `VerificationToken` queda como child entity solo de `User`, con dos purposes vigentes (`UserEmailVerification` y `PasswordReset`); la fila de la tabla canónica que la daba también dentro de `TeacherProfile` caducó con él.
+
 ### Razonamiento del cambio respecto a la implementación de S0
 
 El test de Khorikov / Mantinband: **"¿Necesito cargar este objeto independientemente?"** Si la respuesta es no, es child entity, no aggregate.

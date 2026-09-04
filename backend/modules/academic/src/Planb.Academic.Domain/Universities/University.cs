@@ -30,11 +30,7 @@ public sealed class University : Entity<UniversityId>, IAggregateRoot
 
     /// <summary>
     /// Dominios de email institucional de la universidad (ej. <c>unsta.edu.ar</c>), en lowercase.
-    /// Un docente verifica su identidad (US-031) mostrando que controla un email cuyo dominio está
-    /// en esta lista. Vacío = la universidad no habilita verificación por email institucional (solo
-    /// queda la manual, UC-066). La validación del dominio de un email contra esta lista vive en el
-    /// flow de claim (Identity, <c>TeacherProfile.SubmitInstitutionalEmail</c>): la University solo
-    /// es la fuente de verdad de qué dominios son válidos.
+    /// Vacío si la universidad no cargó ninguno.
     /// </summary>
     public IReadOnlyList<string> InstitutionalEmailDomains { get; private set; } = [];
 

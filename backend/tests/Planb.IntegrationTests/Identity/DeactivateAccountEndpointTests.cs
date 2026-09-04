@@ -3,11 +3,9 @@ using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Infrastructure.Seeding;
-using Planb.Identity.Domain.TeacherProfiles;
 using Planb.Identity.Domain.Users;
 using Planb.Identity.Infrastructure.Persistence;
 using Planb.IntegrationTests.Infrastructure;
-using Planb.SharedKernel.Abstractions.Clock;
 using Shouldly;
 using Xunit;
 
@@ -84,53 +82,6 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
                 auth.UserId.Value)
             .SingleAsync();
         orphanCount.ShouldBe(0);
-    }
-
-    /// <summary>
-    /// El claim docente también se va con la baja, y no es solo PII: el índice único parcial de
-    /// verificados es lo que impide que dos users reclamen al mismo docente. Si el claim sobrevivía,
-    /// ese docente quedaba bloqueado para siempre con <c>TeacherAlreadyVerifiedByAnother</c>, sin
-    /// nadie del otro lado para liberarlo.
-    ///
-    /// <para>
-    /// Este test verifica que la fila desaparece, y nada más. Lo que NO cubre es la liberación del
-    /// índice, porque ese índice es parcial sobre los claims verificados y verificar uno acá exige
-    /// el flow del mail. Una aserción del tipo "otro user puede reclamarlo" sobre un claim sin
-    /// verificar pasaría igual con o sin el cascade: sería cobertura falsa, y por eso no está.
-    /// </para>
-    /// </summary>
-    [Fact]
-    public async Task Cascade_removes_teacher_claims_of_the_deactivated_user()
-    {
-        var auth = await AuthenticatedClient.CreateAsync(
-            _fixture, FreshEmail("deactivate-claim"));
-
-        var teacherId = AcademicSeedData.Teachers[0].Id.Value;
-
-        // El claim docente ya no se crea por HTTP (esas rutas de Identity se retiraron, R4 #416):
-        // se siembra directo via DbContext, mismo patrón que el resto de la suite para aggregates
-        // sin endpoint. El aggregate TeacherProfile sigue en pie (decisión aparte de #416).
-        using (var seedScope = _fixture.Factory.Services.CreateScope())
-        {
-            var seedDb = seedScope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-            var clock = seedScope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
-            var profile = TeacherProfile.InitiateClaim(auth.UserId, teacherId, clock);
-            seedDb.Set<TeacherProfile>().Add(profile);
-            await seedDb.SaveChangesAsync();
-        }
-
-        (await auth.Client.DeleteAsync("/api/me/account")).StatusCode
-            .ShouldBe(HttpStatusCode.NoContent);
-
-        using var scope = _fixture.Factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-
-        var orphanClaims = await db.Database
-            .SqlQueryRaw<int>(
-                "SELECT COUNT(*)::int AS \"Value\" FROM identity.teacher_profiles WHERE user_id = {0}",
-                auth.UserId.Value)
-            .SingleAsync();
-        orphanClaims.ShouldBe(0);
     }
 
     [Fact]

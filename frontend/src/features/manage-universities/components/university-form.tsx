@@ -97,7 +97,7 @@ export function UniversityForm({ mode, university }: Props) {
       <Field
         label="Dominios institucionales"
         htmlFor={ids.domains}
-        hint="Opcional. Habilitan que un docente verifique su cuenta con un email de estos dominios. Ej: unsta.edu.ar."
+        hint="Opcional. Los dominios de email institucional de la universidad. Ej: unsta.edu.ar."
       >
         {domains.length > 0 && (
           <div className="flex flex-wrap gap-1.5">

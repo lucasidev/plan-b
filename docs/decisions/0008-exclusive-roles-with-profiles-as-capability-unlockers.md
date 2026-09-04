@@ -75,3 +75,5 @@ Moderadores viven en otra tabla, con su propio login. Descartada para MVP: overk
 - `User.role = 'member'` → puede tener 0, 1, o 2 profiles.
 
 Estos invariantes se aplican en la capa de aplicación (servicios de registro, claim de profile). Un trigger de integridad opcional puede agregarse en etapa de endurecimiento.
+
+**Revisión del 2026-09-03.** `TeacherProfile` se podó con el claim docente del modelo anterior (#416): el único profile que existe es `StudentProfile`, a lo sumo uno activo por `member`, y el invariante de arriba se aplica solo sobre esa tabla. La decisión sigue en pie: el rol es exclusivo y las capacidades las desbloquea un profile. El recorrido reviewed rehace la identidad del docente desde US-172 y US-227 cuando entre a un sprint.

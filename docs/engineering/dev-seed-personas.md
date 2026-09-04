@@ -55,16 +55,6 @@ Se registró pero nunca clickeó el link del mail. Tiene un `VerificationToken` 
 
 **La usamos para**: probar el 403 con `title: identity.account.email_not_verified`. También para probar el flow de "pedir reenvío" cuando exista, y `verify-email` consumiendo su token.
 
-## Personas docentes: F3+ (cuando exista TeacherProfile)
-
-Placeholder. Cuando aterrice el aggregate `TeacherProfile` y la verificación institucional de docentes (UC-031), seedeamos las tres figuras del mockup como teachers verificados:
-
-- **Lic. Brandt**: el docente que responde reseñas, perfil empático.
-- **Lic. Castro**: POO, bien valorado, didáctico.
-- **Dr. Iturralde**: Probabilidad, exigente, reseñas mixtas.
-
-Cada uno con su email institucional fake (`brandt@unsta.edu.ar` style), su `TeacherProfile` verificado, y las cátedras que integran. Los detalles cuando llegue la fase.
-
 ## Personas staff
 
 ### Lautaro Maza (admin)
@@ -93,7 +83,7 @@ El hosted service corre en `StartAsync` *después* de `DevMigrationsHostedServic
 
 ## Cuándo este doc se actualiza
 
-- Aterriza un aggregate nuevo (StudentProfile, TeacherProfile, ModeratorProfile, etc.) → cada persona gana una sección con su data específica.
+- Aterriza un aggregate nuevo (StudentProfile, ModeratorProfile, etc.) → cada persona gana una sección con su data específica.
 - Aparece un caso de uso de auth nuevo (ej. password reset) que requiere otro estado de user → agregamos persona.
 - Una persona deja de ser usada en tests → la borramos del seeder y de acá.
 
