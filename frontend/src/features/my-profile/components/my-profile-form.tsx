@@ -1,7 +1,8 @@
 'use client';
 
 import { Pencil } from 'lucide-react';
-import { useActionState, useId, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { useActionState, useEffect, useId, useState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export function MyProfileForm({ profile }: Props) {
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [state, formAction] = useActionState(updateMyProfileAction, initialUpdateProfileState);
   const [, startTransition] = useTransition();
@@ -62,7 +64,12 @@ export function MyProfileForm({ profile }: Props) {
           state={state}
           onCancel={() => setEditing(false)}
           onSuccess={() => {
-            startTransition(() => setEditing(false));
+            // La página es force-dynamic: refrescar trae el profile posta del RSC, para
+            // que la vista no vuelva a mostrar el nombre viejo apenas cerramos el form.
+            startTransition(() => {
+              setEditing(false);
+              router.refresh();
+            });
           }}
         />
       ) : (
@@ -135,10 +142,14 @@ function EditForm({ profile, formAction, state, onCancel, onSuccess }: EditFormP
     formAction(patch);
   };
 
-  // If the last submit was a success, run onSuccess to go back to view mode.
-  if (state.status === 'success') {
-    onSuccess();
-  }
+  // El switch a view mode va en un efecto, no durante el render (ADR-0046): mutar
+  // estado del padre en render corría antes de que el router.refresh() de onSuccess
+  // pudiera traer el profile nuevo, y el heading se quedaba con el nombre viejo.
+  useEffect(() => {
+    if (state.status === 'success') {
+      onSuccess();
+    }
+  }, [state.status, onSuccess]);
 
   return (
     <section className="bg-bg border border-line rounded-lg p-6">

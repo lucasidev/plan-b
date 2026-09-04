@@ -266,9 +266,6 @@ db-reset: infra-reset migrate
 db-prune:
     bun scripts/db-prune.ts
 
-db-seed:
-    cd backend/host/Planb.Api && dotnet run -- seed
-
 # ═══════════════════════════════════════════════════════════════
 # Cleanup
 # ═══════════════════════════════════════════════════════════════

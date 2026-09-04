@@ -44,17 +44,21 @@ test.describe('Ajustes (US-072 + US-079-i modal)', () => {
     await expect(page.getByRole('heading', { name: /^seguridad$/i, level: 2 })).toBeVisible();
   });
 
-  // TODO(US-072-fix): el optimistic UI del toggle cambia el data-state inmediato, pero el
-  // server action async puede no haber persistido cuando page.reload() dispara el re-fetch.
-  // Resultado: el GET trae el valor viejo y el assert falla. Fix real requiere settled-aware
-  // waiting (router.refresh await) o test fixture con waitForRequest al server action.
-  // Out of scope para US-046.
-  test.fixme('toggle de notificación por email persiste tras reload', async ({ page }) => {
+  test('toggle de notificación por email persiste tras reload', async ({ page }) => {
     const toggle = page.getByRole('switch', { name: /notificaciones por email/i });
     const initialState = await toggle.getAttribute('data-state');
     const wasChecked = initialState === 'checked';
 
+    // Esperamos la respuesta del server action antes del reload: sin esto, el reload puede
+    // ganarle a la persistencia (optimistic UI) y traer el valor viejo.
+    const saved = page.waitForResponse(
+      (r) =>
+        r.request().method() === 'POST' &&
+        r.request().headers()['next-action'] !== undefined &&
+        r.ok(),
+    );
     await toggle.click();
+    await saved;
     await expect(toggle).toHaveAttribute('data-state', wasChecked ? 'unchecked' : 'checked');
 
     await page.reload();
