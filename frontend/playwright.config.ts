@@ -59,9 +59,11 @@ export default defineConfig({
   // Fail builds si quedaron `.only` en el código.
   forbidOnly: !!process.env.CI,
 
-  // No retries local (queremos ver los flakes); 1 retry en CI para
-  // tolerar flakes transientes de network.
-  retries: process.env.CI ? 1 : 0,
+  // Política de flakes (#422): retries: 0 siempre, local y CI. Un test que pasa recién al
+  // segundo intento es un flake que nadie contó. El reintento existe solo para tests
+  // marcados: adentro de un `test.describe` con `test.describe.configure({ retries: 2 })`
+  // y el tag `@flaky`. Ver docs/engineering/testing.md.
+  retries: 0,
 
   // Sin fijar en local: Playwright usa la mitad de los cores. El runner de CI tiene 4 cores y los
   // comparte con Postgres, el backend y el frontend corriendo al lado (`scripts/run-e2e.ts`
@@ -73,7 +75,15 @@ export default defineConfig({
   // worker ahí es lo que evita la carrera de `SERIAL_SPECS` sin la partición para sacarla.
   workers: process.env.PLAYWRIGHT_ALL_BROWSERS ? 1 : process.env.CI ? 3 : undefined,
 
-  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list']],
+  // El reporter json alimenta scripts/check-flaky.ts (#422): lista la cuarentena (status
+  // "flaky") sin romper el build.
+  reporter: process.env.CI
+    ? [
+        ['github'],
+        ['html', { open: 'never' }],
+        ['json', { outputFile: 'test-results/results.json' }],
+      ]
+    : [['list']],
 
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:3000',
