@@ -66,8 +66,11 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
 
     await page.getByRole('button', { name: /^guardar$/i }).click();
 
+    // Timeout generoso (#436): el guardado dispara router.refresh(), que vuelve a pedirle el
+    // profile al servidor. En la suite completa con 3 workers, 5000ms no siempre le alcanza a
+    // esa vuelta bajo la carga concurrente de la corrida; aislado sobra.
     await expect(page.getByRole('heading', { name: /lucía mansilla/i, level: 2 })).toBeVisible({
-      timeout: 5_000,
+      timeout: 15_000,
     });
     await expect(page.getByText(/3° año/i)).toBeVisible();
   });
