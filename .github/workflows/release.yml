@@ -15,6 +15,10 @@ on:
         default: 'both'
         type: choice
         options: [both, backend, frontend]
+      api_url:
+        description: 'URL del backend que el frontend hornea en el build; interna al compose del stage'
+        required: true
+        default: 'http://api:8080'
 
 permissions:
   contents: read
@@ -103,6 +107,7 @@ jobs:
           file: frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: NEXT_PUBLIC_API_URL=${{ inputs.api_url }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -117,6 +122,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - run: |
+          echo "Para el stage estos pasos no aplican: el api migra y siembra solo al arrancar (sección Stage de docs/engineering/deploy.md)."
           echo "Imagen publicada. Antes de levantar la versión nueva:"
           echo "  1. db-apply con la imagen recién publicada (migraciones EF + schema de Wolverine)"
           echo "  2. recién ahí, apuntar el servicio a la imagen nueva"
