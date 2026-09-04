@@ -11,6 +11,7 @@ Entonces la cuenta se crea y el consentimiento informado estaba a la vista antes
 **E2.** Dado que Ana pidió que carguen Licenciatura en Psicología de UNSTA, confirmó el mail, y le avisaron que ya está cargada (US-142), y entra a Registro desde ese aviso.
 Cuando llega al formulario.
 Entonces institución y carrera vienen completas y de solo lectura, con la nota de por qué, y solo tiene que poner mail y contraseña.
+No construido: la carrera precargada desde un pedido de carga depende de US-140 a US-142 (Backlog)
 
 **E3.** Dado que Matías ya tiene una cuenta con matias.ferreyra@gmail.com y no se acuerda.
 Cuando se registra otra vez con ese mismo mail.
@@ -21,6 +22,7 @@ Entonces la pantalla dice lo mismo que diría con cualquier dirección ("te mand
 **N1.** Dado que Matías completó mail, contraseña y su situación, pero no marcó el consentimiento informado.
 Cuando manda el formulario.
 Entonces la cuenta no se crea: sin consentimiento no hay registro, porque es lo que exige la Ley 25.326 y no un paso opcional.
+No construido: el consentimiento informado queda para el sprint con personas reales (R4 lo deja afuera a propósito)
 
 **N2.** Dado dos direcciones, matias.ferreyra@gmail.com que ya tiene cuenta y sin.cuenta@gmail.com que no.
 Cuando alguien manda el formulario de Registro con cada una.
@@ -29,6 +31,7 @@ Entonces las dos respuestas son indistinguibles: mismo texto, mismos elementos e
 **N3.** Dado que Matías se registra declarando que da clases.
 Cuando la cuenta se crea.
 Entonces eso no le da ningún permiso de docente: la cuenta sigue siendo `member` y declararse docente solo abre un reclamo de identidad que alguien del equipo tiene que verificar (US-178). Nada de lo que declara en Registro se publica ni habilita nada.
+No construido: la identidad docente se rehace desde US-172 y US-227 (ADR-0019, revisión del 2026-09-03)
 
 ## Edge cases
 
