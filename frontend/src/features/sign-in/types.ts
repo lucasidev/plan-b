@@ -18,10 +18,10 @@ export type SignInUserPayload = {
  * message. Anti-enumeration: invalid_credentials is returned for both
  * wrong-email and wrong-password (mirrors the backend's UserErrors).
  *
- * `email` viaja con `invalid_credentials` para que el form pueda ofrecer el reenvío de
- * verificación (US-021) sin un input controlado. El backend no confirma si es una cuenta real
- * (ADR-0076: el mail sin verificar responde igual que una credencial mala), pero a esta altura
- * la persona ya tipeó su email, así que devolvérselo a su propio cliente no agrega información.
+ * `email` viaja con todo error, sea cual sea su `kind`: el mail tal como se tipeó, haya pasado o
+ * no la validación. El input de mail del form es no controlado y React resetea el form apenas
+ * la action termina, así que sin este valor quien reintenta después de un error tiene que
+ * volver a tipearlo. Devolvérselo a su propio cliente no agrega información (ADR-0076).
  */
 export type SignInFormState =
   | { status: 'idle' }
@@ -30,12 +30,7 @@ export type SignInFormState =
   | { status: 'success'; redirectTo: string }
   | {
       status: 'error';
-      kind: 'account_disabled' | 'unknown';
-      message: string;
-    }
-  | {
-      status: 'error';
-      kind: 'invalid_credentials';
+      kind: 'account_disabled' | 'unknown' | 'invalid_credentials';
       message: string;
       email: string;
     };

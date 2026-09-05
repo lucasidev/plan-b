@@ -33,6 +33,7 @@ export async function signInAction(
       status: 'error',
       kind: 'unknown',
       message: parsed.error.issues[0].message,
+      email: raw.email,
     };
   }
 
@@ -55,6 +56,7 @@ export async function signInAction(
         status: 'error',
         kind: 'unknown',
         message: 'Esa cuenta no tiene acceso a la aplicación.',
+        email: parsed.data.email,
       };
     }
 
@@ -84,12 +86,14 @@ export async function signInAction(
         kind: 'account_disabled',
         message:
           'Tu cuenta fue suspendida. Contactá al equipo de moderación si creés que es un error.',
+        email: parsed.data.email,
       };
     }
     return {
       status: 'error',
       kind: 'unknown',
       message: body?.detail ?? 'No podemos iniciar sesión con esa cuenta.',
+      email: parsed.data.email,
     };
   }
 
@@ -97,5 +101,6 @@ export async function signInAction(
     status: 'error',
     kind: 'unknown',
     message: 'No pudimos iniciar sesión. Probá de nuevo en un rato.',
+    email: parsed.data.email,
   };
 }

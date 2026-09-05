@@ -66,6 +66,7 @@ describe('SignInForm', () => {
       status: 'error',
       kind: 'account_disabled',
       message: 'Tu cuenta fue suspendida.',
+      email: 'lucia@test.com',
     });
     const user = userEvent.setup();
     render(<SignInForm />);
@@ -76,6 +77,24 @@ describe('SignInForm', () => {
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent(/tu cuenta fue suspendida/i);
+  });
+
+  it('conserva el mail escrito después de un intento fallido (el form no controlado se resetea)', async () => {
+    actionMock.mockResolvedValue({
+      status: 'error',
+      kind: 'invalid_credentials',
+      message: 'El mail o la contraseña no coinciden.',
+      email: 'lucia@test.com',
+    });
+    const user = userEvent.setup();
+    render(<SignInForm />);
+
+    await user.type(screen.getByLabelText(/tu email/i), 'lucia@test.com');
+    await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');
+    await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+    await screen.findByRole('alert');
+    expect(screen.getByLabelText(/tu email/i)).toHaveValue('lucia@test.com');
   });
 
   it('ofrece el reenvío de verificación bajo el error genérico (ADR-0076)', async () => {

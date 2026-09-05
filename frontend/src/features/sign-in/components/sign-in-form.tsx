@@ -48,6 +48,10 @@ export function SignInForm() {
       <Divider>o con email</Divider>
 
       <div style={{ marginBottom: 14 }}>
+        {/* El input es no controlado y React resetea el form apenas la action termina: sin
+            defaultValue, un intento fallido borra el mail que la persona ya tipeó. La
+            contraseña no lleva el mismo tratamiento a propósito: no se reescribe una
+            contraseña que falló. */}
         <TextField
           ref={emailRef}
           name="email"
@@ -56,6 +60,7 @@ export function SignInForm() {
           placeholder="lucia.mansilla@email.com"
           autoComplete="email"
           required
+          defaultValue={state.status === 'error' ? state.email : undefined}
         />
       </div>
       <div style={{ marginBottom: 14 }}>
