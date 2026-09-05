@@ -147,6 +147,9 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /^borrar$/i })).toBeVisible();
 
+    // El desenlace que declaró queda como registro propio en la tarjeta, nunca público (US-148).
+    await expect(page.getByText(/cómo terminó: la recursé/i)).toBeVisible();
+
     // La décima hizo cruzar el piso: la ficha publica, y con 9 de 10 llegando (la del autor no).
     await page.goto(`/chairs/${chair.chairId}`);
     await expect(page.getByText(/de cada 10 que la cursan, llegan 9/i)).toBeVisible({
