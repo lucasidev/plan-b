@@ -52,7 +52,12 @@ export function LandingHero() {
       >
         Lo que sabés de una materia porque la cursaste hoy vive suelto en grupos y en pasillos, y se
         pierde con cada camada. Acá se junta: cuántos dicen lo mismo, de qué años, y cuántos son.
-        Nunca un puntaje ni un ranking, porque un puntaje se discute y un conteo no.
+        Nunca un puntaje ni un ranking, porque un puntaje se discute y un conteo no. Cada número
+        tiene su regla escrita en el{' '}
+        <Link href="/method" className="text-accent-ink hover:underline">
+          Método
+        </Link>
+        .
       </p>
 
       <div className="flex flex-wrap" style={{ gap: 12, marginTop: 30 }}>

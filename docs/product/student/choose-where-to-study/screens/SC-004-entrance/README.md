@@ -43,11 +43,11 @@ Es la puerta de entrada: no llega desde ninguna otra pantalla del producto, sino
 
 ## Lo construido (R2, 2026-08-27)
 
-Están los bloques 1, 2, 3 y 6: qué es plan-b, la salida a Explorar (el buscador se encuentra en el catálogo), la muestra sorteada con su ficha real, y los tres pasos, donde el primero dice que explorar y buscar no piden cuenta; el hero no lo repite en una línea aparte.
+Están los bloques 1, 2, 3, 4 y 6: qué es plan-b, la salida a Explorar (el buscador se encuentra en el catálogo), la muestra sorteada con su ficha real, el método al alcance desde el hero, y los tres pasos, donde el primero dice que explorar y buscar no piden cuenta; el hero no lo repite en una línea aparte.
 
 **El sorteo es por visita** y lo hace la base (`ORDER BY random()` sobre las cátedras que cruzaron el piso), no la pantalla: dejarlo del lado del llamador permitiría ordenarlo «por las mejores» sin que se note. De la ficha sorteada se enfrentan la finalización y las dos primeras frases **en el orden de la ficha** (alfabético por código), no una selección; el resto se ve entrando.
 
-**No están los bloques 4 y 5** (Método y Pedir): sus pantallas todavía no existen, y un link a una pantalla inexistente es peor que no ofrecerla. Las dos preguntas que Método contestaría y que más hacen dudar a quien llega (por qué no hay puntaje, por qué algunas cátedras no muestran nada) se contestan mientras tanto en las preguntas de la propia entrada.
+**No está el bloque 5** (Pedir): su pantalla todavía no existe, y un link a una pantalla inexistente es peor que no ofrecerla. Las dos preguntas que más hacen dudar a quien llega (por qué no hay puntaje, por qué algunas cátedras no muestran nada) se contestan también en las preguntas de la propia entrada, además de en Método.
 
 ## Lo que esta ficha deja abierto
 
