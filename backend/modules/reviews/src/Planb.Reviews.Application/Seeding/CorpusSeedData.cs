@@ -24,7 +24,7 @@ namespace Planb.Reviews.Application.Seeding;
 ///
 ///   Cátedra Ruiz       6 voces  no publica, le faltan 4
 ///
-///   Par 211 + 121     12 la llevaron juntas, 3 dejaron una   publica
+///   Par 211 + 111     12 la llevaron juntas, 3 dejaron una   publica
 ///   Par 211 + 223      5 la llevaron juntas                  no publica, le faltan 5
 /// </code>
 ///
@@ -46,8 +46,8 @@ public static class CorpusSeedData
     /// <summary>211 Fundamentos de Control de Calidad, la única materia con cátedras sembradas.</summary>
     public static readonly Guid Subject211 = Guid.Parse("00000004-0000-4000-a000-000000000012");
 
-    /// <summary>121 Base de datos: la que se lleva junto con 211 en el par que publica.</summary>
-    private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000005");
+    /// <summary>111 Desarrollo de Software: la que se lleva junto con 211 en el par que publica.</summary>
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
 
     /// <summary>223 Desarrollo Back End: el par que se queda bajo el piso.</summary>
     private static readonly Guid Subject223 = Guid.Parse("00000004-0000-4000-a000-000000000017");
@@ -125,12 +125,12 @@ public static class CorpusSeedData
 
         // Co-cursada. Las cuentas 1..12 son las primeras doce de Pérez, y de ellas las 10, 11 y 12
         // son las que marcaron recursé o dejé en 211: por eso el par publica "12 la llevaron juntas,
-        // 3 dejaron una". En 121 todas llegaron al final, así que el conteo de dejadas sale entero
+        // 3 dejaron una". En 111 todas llegaron al final, así que el conteo de dejadas sale entero
         // del lado de 211.
         for (var i = 1; i <= 12; i++)
         {
             reviews.Add(new SeededReview(
-                ReviewIdAt(reviews.Count + 1), i, Subject121, Term2024C1, ChairId: null,
+                ReviewIdAt(reviews.Count + 1), i, Subject111, Term2024C1, ChairId: null,
                 [(Outcome, 1), (UnderstoodInClass, (short)(i % 3 + 1))]));
         }
 
