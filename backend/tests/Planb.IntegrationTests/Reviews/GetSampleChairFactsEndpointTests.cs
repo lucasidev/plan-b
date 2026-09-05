@@ -193,7 +193,7 @@ public class GetSampleChairFactsEndpointDrawsVariablyTests : IClassFixture<Regis
         var seen = new HashSet<Guid>();
         for (var i = 0; i < 40 && seen.Count < 2; i++)
         {
-            var response = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+            var response = await _anonymous.GetOkAsync<GetChairFactsResponse>(
                 "/api/reviews/chairs/sample");
             response.ShouldNotBeNull();
             seen.Add(response!.ChairId);

@@ -65,7 +65,7 @@ public class OneReviewPerCourseRunTests : IClassFixture<RegisterApiFixture>
         var statusCodes = responses.Select(r => r.StatusCode).OrderBy(c => c).ToList();
         statusCodes.ShouldBe([HttpStatusCode.Created, HttpStatusCode.Conflict]);
 
-        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>("/api/reviews/courses/me");
+        var mine = await auth.Client.GetOkAsync<List<MyReviewView>>("/api/reviews/courses/me");
         mine.ShouldNotBeNull();
         mine!.Count(r => r.SubjectId == Subject211 && r.TermId == Term).ShouldBe(1);
 
@@ -74,7 +74,7 @@ public class OneReviewPerCourseRunTests : IClassFixture<RegisterApiFixture>
         var third = await auth.Client.PostAsJsonAsync("/api/reviews/courses", ReviewBody());
         third.StatusCode.ShouldBe(HttpStatusCode.Conflict);
 
-        (await auth.Client.GetFromJsonAsync<List<MyReviewView>>("/api/reviews/courses/me"))!
+        (await auth.Client.GetOkAsync<List<MyReviewView>>("/api/reviews/courses/me"))
             .Count(r => r.SubjectId == Subject211 && r.TermId == Term).ShouldBe(1);
     }
 }

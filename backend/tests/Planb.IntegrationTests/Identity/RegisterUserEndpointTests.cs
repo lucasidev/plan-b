@@ -131,6 +131,8 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
         await _mailpit.ClearAsync();
 
+        first.StatusCode.ShouldBe(HttpStatusCode.Accepted);
+
         var second = await _client.PostAsJsonAsync(
             "/api/identity/register",
             new RegisterUserRequest(email, "another-password-12", ValidCareerPlanId));

@@ -67,7 +67,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/universities/{Unsta}/careers");
         var row = list!.Items.SingleOrDefault(c => c.Id == created!.Id);
         row.ShouldNotBeNull();
@@ -76,7 +76,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         row.IsActive.ShouldBeTrue();
         row.PlanCount.ShouldBe(0); // carrera recién creada, sin planes todavía
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/careers/{created!.Id}");
         detail!.Name.ShouldBe(row.Name);
         detail.Slug.ShouldBe(row.Slug);
@@ -147,6 +147,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -154,7 +155,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
             NewCareerBody(name: "Carrera Actualizada", shortName: "Actualizada"));
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/careers/{created.Id}");
         detail!.Name.ShouldBe("Carrera Actualizada");
         detail.ShortName.ShouldBe("Actualizada");
@@ -172,6 +173,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
 
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -188,6 +190,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var deactivate = await admin.Client.DeleteAsync($"/api/academic/careers/{created!.Id}");
@@ -195,7 +198,7 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var afterDeactivate = await deactivate.Content.ReadFromJsonAsync<StatusDto>();
         afterDeactivate!.IsActive.ShouldBeFalse();
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/careers/{created.Id}");
         detail!.IsActive.ShouldBeFalse();
 
@@ -212,15 +215,17 @@ public class AdminCareersEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var activeCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+        activeCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var active = await activeCreate.Content.ReadFromJsonAsync<CreatedDto>();
 
         var inactiveCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/careers", NewCareerBody());
+        inactiveCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var inactive = await inactiveCreate.Content.ReadFromJsonAsync<CreatedDto>();
         (await admin.Client.DeleteAsync($"/api/academic/careers/{inactive!.Id}"))
             .EnsureSuccessStatusCode();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/universities/{Unsta}/careers");
 
         list!.Items.Single(c => c.Id == active!.Id).IsActive.ShouldBeTrue();

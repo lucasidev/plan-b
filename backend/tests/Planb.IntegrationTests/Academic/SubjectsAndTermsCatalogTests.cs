@@ -64,10 +64,8 @@ public class SubjectsAndTermsCatalogTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task ListSubjects_orders_by_year_term_code()
     {
-        var response = await _client.GetAsync(
+        var subjects = await _client.GetOkAsync<List<SubjectListItem>>(
             $"/api/academic/subjects?careerPlanId={TudcsPlanId}");
-
-        var subjects = await response.Content.ReadFromJsonAsync<List<SubjectListItem>>();
         subjects.ShouldNotBeNull();
 
         // Verifico que las materias de 1º vienen antes que las de 2º antes que las de 3º.
@@ -140,10 +138,8 @@ public class SubjectsAndTermsCatalogTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task ListAcademicTerms_orders_most_recent_first()
     {
-        var response = await _client.GetAsync(
+        var terms = await _client.GetOkAsync<List<AcademicTermListItem>>(
             $"/api/academic/academic-terms?universityId={UnstaId}");
-
-        var terms = await response.Content.ReadFromJsonAsync<List<AcademicTermListItem>>();
         terms.ShouldNotBeNull();
         terms!.Count.ShouldBeGreaterThan(1);
 

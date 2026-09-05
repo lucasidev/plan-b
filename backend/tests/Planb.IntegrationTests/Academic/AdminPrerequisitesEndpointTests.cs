@@ -108,7 +108,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
         created.RequiredSubjectId.ShouldBe(b);
         created.Type.ShouldBe("ToEnroll");
 
-        var graph = await admin.Client.GetFromJsonAsync<GraphDto>(
+        var graph = await admin.Client.GetOkAsync<GraphDto>(
             $"/api/academic/career-plans/{planId}/prerequisites");
         graph!.Items.ShouldContain(
             e => e.SubjectId == a && e.RequiredSubjectId == b && e.Type == "ToEnroll");
@@ -249,7 +249,7 @@ public class AdminPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture>
             $"/api/academic/subjects/{a}/prerequisites/{b}/ToEnroll");
         delete.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var graph = await admin.Client.GetFromJsonAsync<GraphDto>(
+        var graph = await admin.Client.GetOkAsync<GraphDto>(
             $"/api/academic/career-plans/{planId}/prerequisites");
         graph!.Items.ShouldNotContain(e => e.SubjectId == a && e.RequiredSubjectId == b);
     }

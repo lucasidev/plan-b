@@ -118,7 +118,7 @@ public class ChairFactsSeriesCutTests : IClassFixture<RegisterApiFixture>
         var admin = await AuthenticatedClient.CreateAsync(
             _fixture, $"cut-admin-{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
 
-        var catalog = await admin.Client.GetFromJsonAsync<GetItemsResponse>(
+        var catalog = await admin.Client.GetOkAsync<GetItemsResponse>(
             "/api/reviews/curation/items");
         var item = catalog!.Items.Single(i => i.Code == ItemBeingCut);
 

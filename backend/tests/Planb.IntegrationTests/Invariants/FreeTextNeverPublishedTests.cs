@@ -103,7 +103,7 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
 
         // Control positivo: con el piso de 10 cruzado, la ficha ya publica. Si el piso cambia,
         // esto cae explicando por qué en vez de que el barrido de abajo falle sin dar pistas.
-        var chairFacts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+        var chairFacts = await _anonymous.GetOkAsync<GetChairFactsResponse>(
             $"/api/reviews/chairs/{ChairPerez}/facts");
         chairFacts.ShouldNotBeNull();
         chairFacts!.IsPublished.ShouldBeTrue();
@@ -114,7 +114,7 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
         var mineBody = await mineResponse.Content.ReadAsStringAsync();
         mineBody.ShouldContain(sentinel);
 
-        var chairs = await _anonymous.GetFromJsonAsync<List<ChairListItem>>(
+        var chairs = await _anonymous.GetOkAsync<List<ChairListItem>>(
             $"/api/academic/subjects/{Subject211}/chairs");
         chairs.ShouldNotBeNull();
         var teacherId = chairs!.Single(c => c.Id == ChairPerez).LeadTeacherId;
@@ -124,7 +124,7 @@ public class FreeTextNeverPublishedTests : IClassFixture<RegisterApiFixture>
         // `q`, y el centinela (ruido random) no matchea ningún nombre del catálogo, así que nunca
         // iba a contenerlo por más que buscara. Lo que sí es observable es que la búsqueda no
         // devuelva resultados para ruido que no matchea nada.
-        var searchResponse = await _anonymous.GetFromJsonAsync<SearchResponse>(
+        var searchResponse = await _anonymous.GetOkAsync<SearchResponse>(
             $"/api/search?q={Uri.EscapeDataString(sentinel)}");
         searchResponse.ShouldNotBeNull();
         searchResponse!.Items.ShouldBeEmpty();

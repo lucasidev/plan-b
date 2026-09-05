@@ -62,7 +62,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/universities/{Unsta}/terms");
         var row = list!.Items.SingleOrDefault(t => t.Id == created!.Id);
         row.ShouldNotBeNull();
@@ -71,7 +71,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         row.Kind.ShouldBe("FourMonth");
         row.Label.ShouldBe("2040-C1");
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/academic-terms/{created!.Id}");
         detail!.UniversityId.ShouldBe(Unsta);
         detail.Year.ShouldBe(2040);
@@ -91,7 +91,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/academic-terms/{created!.Id}");
         detail!.Label.ShouldBe("2041");
     }
@@ -197,6 +197,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
             NewTermBody(year: 2046, number: 1, kind: "FourMonth"));
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -204,7 +205,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
             NewTermBody(year: 2046, number: 2, kind: "FourMonth"));
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/academic-terms/{created.Id}");
         detail!.Number.ShouldBe(2);
         detail.Label.ShouldBe("2046-C2");
@@ -223,6 +224,7 @@ public class AdminAcademicTermsEndpointTests : IClassFixture<RegisterApiFixture>
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/universities/{Unsta}/terms",
             NewTermBody(year: 2039, number: 2, kind: "FourMonth"));
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(

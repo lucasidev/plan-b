@@ -126,7 +126,7 @@ public class FameStatesItsOwnVoiceCountTests : IClassFixture<RegisterApiFixture>
         }
 
         var anonymous = _fixture.Factory.CreateClient();
-        var json = await anonymous.GetStringAsync($"/api/reviews/chairs/{ChairRuiz}/facts");
+        var json = await anonymous.GetOkStringAsync($"/api/reviews/chairs/{ChairRuiz}/facts");
         using var document = JsonDocument.Parse(json);
         var fame = document.RootElement.GetProperty("fame");
         var items = fame.GetProperty("items").EnumerateArray().ToList();

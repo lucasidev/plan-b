@@ -109,7 +109,7 @@ public class GetCareerFactsEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task The_career_goes_from_no_coverage_to_one_subject_crossing_the_floor()
     {
         // ---- Sin reseñas: identidad más cobertura vacía, honesta y sin inventar datos oficiales.
-        var empty = await _anonymous.GetFromJsonAsync<GetCareerFactsResponse>(
+        var empty = await _anonymous.GetOkAsync<GetCareerFactsResponse>(
             $"/api/reviews/careers/{TudcsCareerId}/facts");
 
         empty!.CareerId.ShouldBe(TudcsCareerId);
@@ -125,14 +125,14 @@ public class GetCareerFactsEndpointTests : IClassFixture<RegisterApiFixture>
         // ---- Bajo el piso en las dos cátedras: la materia todavía no cuenta.
         await PublishAsync(ChairPerez, from: 0, count: 4);
 
-        var below = await _anonymous.GetFromJsonAsync<GetCareerFactsResponse>(
+        var below = await _anonymous.GetOkAsync<GetCareerFactsResponse>(
             $"/api/reviews/careers/{TudcsCareerId}/facts");
         below!.CoveredSubjects.ShouldBe(0);
 
         // ---- González llega justo a las 10 (el piso, ni una reseña de más): ya alcanza.
         await PublishAsync(ChairGonzalez, from: 100, count: 10);
 
-        var facts = await _anonymous.GetFromJsonAsync<GetCareerFactsResponse>(
+        var facts = await _anonymous.GetOkAsync<GetCareerFactsResponse>(
             $"/api/reviews/careers/{TudcsCareerId}/facts");
 
         facts!.TotalSubjects.ShouldBe(21);

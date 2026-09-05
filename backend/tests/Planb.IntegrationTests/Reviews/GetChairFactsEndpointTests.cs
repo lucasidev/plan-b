@@ -136,7 +136,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         await PublishAsync(ChairRuiz, 0, 9);
 
-        var below = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+        var below = await _anonymous.GetOkAsync<GetChairFactsResponse>(
             $"/api/reviews/chairs/{ChairRuiz}/facts");
         below!.IsPublished.ShouldBeFalse();
         below.ReviewCount.ShouldBe(9);
@@ -145,7 +145,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
 
         await PublishAsync(ChairRuiz, 9, 1);
 
-        var published = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+        var published = await _anonymous.GetOkAsync<GetChairFactsResponse>(
             $"/api/reviews/chairs/{ChairRuiz}/facts");
         published!.IsPublished.ShouldBeTrue();
         published.ReviewCount.ShouldBe(10);
@@ -185,7 +185,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
         // La frase que nadie contestó no aparece publicada: saltear no deja fila, así que no entra
         // en ningún denominador (ADR-0082). Si apareciera con total 0, la ficha estaría inventando
         // un denominador que nadie sostiene.
-        var facts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+        var facts = await _anonymous.GetOkAsync<GetChairFactsResponse>(
             $"/api/reviews/chairs/{ChairPerez}/facts");
 
         facts!.ChairConduct.ShouldNotContain(i => i.Code == "CHAIR_CLASSES_HELD");
@@ -198,7 +198,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         await PublishAsync(ChairPerez, 0, 10);
 
-        var json = await _anonymous.GetStringAsync($"/api/reviews/chairs/{ChairPerez}/facts");
+        var json = await _anonymous.GetOkStringAsync($"/api/reviews/chairs/{ChairPerez}/facts");
 
         // Nada de quién reseñó (US-148): ni cuentas, ni ids de reseña, ni texto libre.
         json.ShouldNotContain("@planb.local");

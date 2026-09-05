@@ -67,8 +67,7 @@ public class UpdateMyProfileEndpointTests : IClassFixture<RegisterApiFixture>
             });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var get = await auth.Client.GetAsync("/api/me/student-profile");
-        var body = await get.Content.ReadFromJsonAsync<StudentProfileResponse>();
+        var body = await auth.Client.GetOkAsync<StudentProfileResponse>("/api/me/student-profile");
         body.ShouldNotBeNull();
         body!.DisplayName.ShouldBe("Lucía Mansilla");
         body.YearOfStudy.ShouldBe(3);
@@ -92,8 +91,7 @@ public class UpdateMyProfileEndpointTests : IClassFixture<RegisterApiFixture>
             new { yearOfStudy = 3 });
         second.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var body = await (await auth.Client.GetAsync("/api/me/student-profile"))
-            .Content.ReadFromJsonAsync<StudentProfileResponse>();
+        var body = await auth.Client.GetOkAsync<StudentProfileResponse>("/api/me/student-profile");
         body!.DisplayName.ShouldBe("Lucía Mansilla");
         body.YearOfStudy.ShouldBe(3);
         body.Legajo.ShouldBe("ABC123");
@@ -109,8 +107,7 @@ public class UpdateMyProfileEndpointTests : IClassFixture<RegisterApiFixture>
             new { displayName = "   Mateo Giménez   " });
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var body = await (await auth.Client.GetAsync("/api/me/student-profile"))
-            .Content.ReadFromJsonAsync<StudentProfileResponse>();
+        var body = await auth.Client.GetOkAsync<StudentProfileResponse>("/api/me/student-profile");
         body!.DisplayName.ShouldBe("Mateo Giménez");
     }
 

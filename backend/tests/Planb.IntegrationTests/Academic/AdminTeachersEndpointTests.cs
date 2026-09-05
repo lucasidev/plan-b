@@ -44,7 +44,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>("/api/academic/teachers");
+        var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/teachers");
         var row = list!.Items.SingleOrDefault(t => t.Id == created!.Id);
         row.ShouldNotBeNull();
         row.FirstName.ShouldBe("Ada");        // storage lowercase, se devuelve title case
@@ -56,9 +56,9 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
 
         // El profile completo (incluida la photoUrl del flujo "URL + preview") round-trippea por el
         // GET público por id.
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/teachers/{created!.Id}");
-        detail!.PhotoUrl.ShouldBe("https://cdn.planb.local/ada.jpg");
+        detail.PhotoUrl.ShouldBe("https://cdn.planb.local/ada.jpg");
         detail.Bio.ShouldBe("Docente de referencia.");
     }
 
@@ -67,6 +67,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync("/api/academic/teachers", NewTeacherBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -81,7 +82,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
             });
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>("/api/academic/teachers");
+        var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/teachers");
         var row = list!.Items.Single(t => t.Id == created.Id);
         row.FirstName.ShouldBe("Grace");
         row.LastName.ShouldBe("Hopper");
@@ -93,6 +94,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync("/api/academic/teachers", NewTeacherBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var deactivate = await admin.Client.DeleteAsync($"/api/academic/teachers/{created!.Id}");
@@ -101,7 +103,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
         afterDeactivate!.IsActive.ShouldBeFalse();
 
         // Soft delete: sigue en el listado admin (inactivo), no desaparece.
-        var list = await admin.Client.GetFromJsonAsync<ListDto>("/api/academic/teachers");
+        var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/teachers");
         list!.Items.Single(t => t.Id == created.Id).IsActive.ShouldBeFalse();
 
         var reactivate = await admin.Client.PostAsync(
@@ -116,6 +118,7 @@ public class AdminTeachersEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync("/api/academic/teachers", NewTeacherBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         (await admin.Client.DeleteAsync($"/api/academic/teachers/{created!.Id}"))

@@ -81,7 +81,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         var auth = await StudentAsync("list");
         await PublishAsync(auth, Term2024_1c, freeText: "algo que escribí");
 
-        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var mine = await auth.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
 
         mine.ShouldNotBeNull();
@@ -120,7 +120,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
 
         revised.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var mine = await auth.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
         var review = mine!.Single();
 
@@ -163,7 +163,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         // Se guarda al instante: 200 y nada de un estado intermedio a la espera de un chequeo.
         revised.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var mine = await auth.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
         var review = mine!.Single();
 
@@ -177,8 +177,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         // Nunca se publica, así que no hay nada que moderar antes de nada: ni la mención ni el
         // resto del texto aparecen en la ficha pública.
         var anonymous = _fixture.Factory.CreateClient();
-        var factsResponse = await anonymous.GetAsync($"/api/reviews/chairs/{ChairPerez}/facts");
-        var factsBody = await factsResponse.Content.ReadAsStringAsync();
+        var factsBody = await anonymous.GetOkStringAsync($"/api/reviews/chairs/{ChairPerez}/facts");
         factsBody.ShouldNotContain(sentinel);
         factsBody.ShouldNotContain("Juan Pérez");
     }
@@ -192,7 +191,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         var deleted = await auth.Client.DeleteAsync($"/api/reviews/courses/{id}");
         deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var mine = await auth.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
         mine.ShouldBeEmpty();
 
@@ -223,12 +222,12 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         deleted.StatusCode.ShouldBe(HttpStatusCode.NotFound);
 
         // Y la del otro sigue intacta.
-        var mine = await author.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var mine = await author.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
         mine!.ShouldContain(r => r.Id == id);
 
         // El de al lado no ve nada de eso en su propia lista.
-        var theirs = await stranger.Client.GetFromJsonAsync<List<MyReviewView>>(
+        var theirs = await stranger.Client.GetOkAsync<List<MyReviewView>>(
             "/api/reviews/courses/me");
         theirs.ShouldBeEmpty();
     }

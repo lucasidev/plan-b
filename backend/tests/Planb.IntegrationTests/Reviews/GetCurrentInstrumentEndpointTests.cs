@@ -53,8 +53,7 @@ public class GetCurrentInstrumentEndpointTests : IClassFixture<RegisterApiFixtur
     [Fact]
     public async Task Items_come_grouped_by_the_three_layers()
     {
-        var response = await _client.GetAsync("/api/reviews/instrument");
-        var instrument = await response.Content.ReadFromJsonAsync<CurrentInstrumentView>();
+        var instrument = await _client.GetOkAsync<CurrentInstrumentView>("/api/reviews/instrument");
 
         var layers = instrument!.Items.Select(i => i.Layer).Distinct().ToList();
 
@@ -69,7 +68,7 @@ public class GetCurrentInstrumentEndpointTests : IClassFixture<RegisterApiFixtur
     {
         // Se mira el JSON crudo, no el DTO tipado: el DTO no tiene el campo por construcción, así
         // que deserializarlo lo escondería. Lo que se protege es lo que viaja por el cable.
-        var json = await _client.GetStringAsync("/api/reviews/instrument");
+        var json = await _client.GetOkStringAsync("/api/reviews/instrument");
 
         using var document = JsonDocument.Parse(json);
         var options = document.RootElement

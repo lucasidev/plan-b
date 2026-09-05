@@ -114,7 +114,7 @@ public class RetiredPhraseDoesNotFeedFameTests : IClassFixture<RegisterApiFixtur
         var admin = await AuthenticatedClient.CreateAsync(
             _fixture, $"cut-fame-admin-{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
 
-        var catalog = await admin.Client.GetFromJsonAsync<GetItemsResponse>("/api/reviews/curation/items");
+        var catalog = await admin.Client.GetOkAsync<GetItemsResponse>("/api/reviews/curation/items");
         catalog.ShouldNotBeNull();
         var item = catalog!.Items.Single(i => i.Code == ItemBeingCut);
 
