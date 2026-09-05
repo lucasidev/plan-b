@@ -14,7 +14,7 @@ Entonces la elegida varía entre las que pasaron el piso: no siempre devuelve la
 
 **E3.** Dado que alguien entra a Inicio desde un link que le compartieron, sin saber qué es plan-b
 Cuando lee el bloque "qué es plan-b"
-Entonces el texto explica el producto sin usar las palabras "instrumento de presión", "convergencia", "piso" ni "Wilson", y desde ese mismo bloque hay salida a Explorar, a Buscar y a Método.
+Entonces el texto explica el producto sin usar las palabras "instrumento de presión", "convergencia", "piso" ni "Wilson", y desde ese mismo bloque hay salida a Explorar y a Método.
 Roto: #440
 
 ## Negativos

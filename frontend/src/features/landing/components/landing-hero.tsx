@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { GlobalSearch } from '@/features/global-search';
 import { cn } from '@/lib/utils';
 
 /**
- * Hero de la entrada (US-221, bloque 1 de SC-004): qué es plan-b en palabras de lector, y los dos
- * caminos para llegar a una ficha.
+ * Hero de la entrada (US-221, bloque 1 de SC-004): qué es plan-b en palabras de lector, la
+ * salida a Explorar y la muestra de más abajo.
  *
  * El copy no usa vocabulario de producto ni de tesis, que es un requisito de la story y no una
  * preferencia de tono: quien llega no sabe qué es un instrumento, una cátedra publicando ni un piso
@@ -81,20 +80,6 @@ export function LandingHero() {
           Ver una ficha de verdad →
         </a>
       </div>
-
-      <div style={{ marginTop: 28 }}>
-        <p className="text-ink-2" style={{ margin: '0 0 8px', fontSize: 13.5 }}>
-          O bien, si ya sabés qué buscar:
-        </p>
-        <GlobalSearch />
-      </div>
-
-      <p
-        className="font-mono text-ink-3"
-        style={{ marginTop: 26, fontSize: 11.5, letterSpacing: '0.04em' }}
-      >
-        Leer no pide cuenta. Ni acá, ni en ninguna ficha.
-      </p>
     </section>
   );
 }

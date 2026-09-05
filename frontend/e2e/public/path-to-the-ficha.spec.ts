@@ -121,7 +121,10 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     await expect(sample.getByText(/sale sorteada entre las que ya publican/i)).toBeVisible();
     await expect(sample.getByRole('link', { name: /ver la ficha entera/i })).toBeVisible();
 
-    // 2) Se busca la materia por su nombre. Sin tipear un UUID en ningún momento.
+    // 2) De la entrada al catálogo, y ahí se busca la materia por su nombre. Sin tipear un UUID
+    // en ningún momento.
+    await page.getByRole('link', { name: /explorar carreras y materias/i }).click();
+    await expect(page).toHaveURL(/\/universities$/, { timeout: 30_000 });
     await page.getByRole('combobox', { name: /buscar materia/i }).fill('Fundamentos');
     await page.getByRole('option', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
     await expect(page).toHaveURL(new RegExp(`/subjects/${SUBJECT_ID}$`), { timeout: 30_000 });
