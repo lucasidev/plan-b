@@ -34,7 +34,7 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
     private static readonly Guid ChairPerez = Guid.Parse("00000008-0000-4000-a000-000000000001");
     private static readonly Guid ChairGonzalez = Guid.Parse("00000008-0000-4000-a000-000000000002");
     private static readonly Guid ChairRuiz = Guid.Parse("00000008-0000-4000-a000-000000000003");
-    private static readonly Guid Subject121 = Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
 
     public CorpusSeedTests(RegisterApiFixture fixture)
     {
@@ -127,7 +127,7 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
     }
 
     /// <summary>
-    /// La co-cursada, de los dos lados del piso: el par con 121 publica sus dos números, y el otro
+    /// La co-cursada, de los dos lados del piso: el par con 111 publica sus dos números, y el otro
     /// se queda corto y lo dice.
     /// </summary>
     [Fact]
@@ -139,13 +139,13 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
         var facts = await response.Content.ReadFromJsonAsync<GetSubjectFactsResponse>();
         facts.ShouldNotBeNull();
 
-        var published = facts!.TakenWith.Single(p => p.SubjectId == Subject121);
+        var published = facts!.TakenWith.Single(p => p.SubjectId == Subject111);
         published.TogetherCount.ShouldBe(12);
         published.IsPublished.ShouldBeTrue();
         published.DroppedCount.ShouldBe(3);
 
         // El otro par existe y se muestra con cuánto le falta, no se esconde.
-        var under = facts.TakenWith.Single(p => p.SubjectId != Subject121);
+        var under = facts.TakenWith.Single(p => p.SubjectId != Subject111);
         under.TogetherCount.ShouldBe(5);
         under.IsPublished.ShouldBeFalse();
         under.MissingToPublish.ShouldBe(5);

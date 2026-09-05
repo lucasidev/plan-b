@@ -35,7 +35,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     // en que xUnit corra la clase.
     private static readonly Guid Subject211 =
         Guid.Parse("00000004-0000-4000-a000-000000000012");
-    private static readonly Guid Subject121 =
+    private static readonly Guid Subject111 =
         Guid.Parse("00000004-0000-4000-a000-000000000005");
     private static readonly Guid SubjectTakenAlone =
         Guid.Parse("00000004-0000-4000-a000-000000000003");
@@ -125,11 +125,11 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         // Una cuenta que las lleva juntas: el par existe pero está lejos del piso.
         var together = await AccountAsync();
         await ReviewAsync(together, Subject211, TermA);
-        await ReviewAsync(together, Subject121, TermA);
+        await ReviewAsync(together, Subject111, TermA);
 
         var facts = await FactsAsync(Subject211);
         var pair = facts.TakenWith.ShouldHaveSingleItem();
-        pair.SubjectId.ShouldBe(Subject121);
+        pair.SubjectId.ShouldBe(Subject111);
         pair.TogetherCount.ShouldBe(1);
 
         // Bajo el piso se dice, no se esconde, y con cuánto le falta.
@@ -142,7 +142,7 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         // Una cuenta que las cursó en períodos distintos NO las llevó juntas: el conteo no se mueve.
         var apart = await AccountAsync();
         await ReviewAsync(apart, Subject211, TermA);
-        await ReviewAsync(apart, Subject121, TermB);
+        await ReviewAsync(apart, Subject111, TermB);
 
         var after = await FactsAsync(Subject211);
         after.TakenWith.ShouldHaveSingleItem().TogetherCount.ShouldBe(1);
