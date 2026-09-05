@@ -248,7 +248,36 @@ Se corre con `just backend-mutation` (`dotnet stryker` sobre `backend/modules/re
 
 **Qué se hace con un sobreviviente**: se lee el mutante contra el código. Si el cambio pisa una regla del producto (algo que la tesis, un ADR o una US prometen), se escribe el test que lo mate. Si el mutante muestra código sin ninguna regla detrás, es un issue: puede ser código de más que se borra, o una regla real que todavía nadie escribió como test.
 
-**Frontend.** Stryker con el runner de vitest (`frontend/stryker.config.mjs`, `just frontend-mutation`) muta la lógica de la pantalla Reseñar (`frontend/src/features/write-review/`: `actions.ts`, `api.server.ts`, `schema.ts`, `types.ts`; los componentes quedan afuera). Medido el 2026-09-02: 122 mutantes y ningún test unitario que importe el feature, así que los 122 sobreviven sin que Stryker llegue a clasificarlos (con cero tests relacionados el runner aborta antes del reporte). La línea de base real se toma cuando #409 deje esa pantalla con tests escritos desde la story; hasta entonces el número que vale es ese: 122 de 122.
+**Frontend.** Stryker con el runner de vitest (`frontend/stryker.config.mjs`, `just frontend-mutation`) muta la lógica de la pantalla Reseñar (`frontend/src/features/write-review/`: `actions.ts`, `api.server.ts`, `schema.ts`, `types.ts`; los componentes quedan afuera).
+
+**Línea de base, medida el 2026-09-05** (Stryker 10.0.0, vitest runner, 122 mutantes, corrida completa en 32 s). En ese momento la pantalla ya tenía `schema.test.ts` y `review-form.test.tsx` (#409), pero ninguno ejercita `actions.ts` ni `api.server.ts`: el component test mockea `../actions` entero, y nada corría los fetchers server-side.
+
+| Archivo | Mutantes | Muertos | Sobrevivientes | Sin cobertura | Score |
+|---|---|---|---|---|---|
+| `actions.ts` | 68 | 0 | 0 | 68 | 0,00 % |
+| `api.server.ts` | 40 | 0 | 0 | 40 | 0,00 % |
+| `schema.ts` | 12 | 12 | 0 | 0 | 100,00 % |
+| `types.ts` | 2 | 0 | 2 | 0 | 0,00 % |
+| **Total** | **122** | **12** | **2** | **108** | **9,84 %** |
+
+De los 12 muertos de `schema.ts`, 6 fueron timeout: mutantes estáticos (la construcción de `courseReviewSchema` corre una sola vez al importar el módulo, así que Stryker corre la suite entera para cada uno en vez de acotar por test) que no entraban en el presupuesto de tiempo con sólo 20 tests corriendo. No son loop ni await eterno: al cierre, con más tests, los mismos 6 matan directo. No cuentan como sobrevivientes.
+
+**Al cierre del 2026-09-05**, después de escribir `actions.test.ts` y `api.server.test.ts` (Stryker 10.0.0, vitest runner, 122 mutantes, corrida completa en 1 min 13 s):
+
+| Archivo | Mutantes | Muertos | Sobrevivientes | Sin cobertura | Score |
+|---|---|---|---|---|---|
+| `actions.ts` | 68 | 66 | 1 | 1 | 97,06 % |
+| `api.server.ts` | 40 | 40 | 0 | 0 | 100,00 % |
+| `schema.ts` | 12 | 12 | 0 | 0 | 100,00 % |
+| `types.ts` | 2 | 0 | 2 | 0 | 0,00 % |
+| **Total** | **122** | **118** | **3** | **1** | **96,72 %** |
+
+Los 3 sobrevivientes y el 1 sin cobertura, con su razón:
+
+- `actions.ts:41` (`const first = result.error.issues[0]?.message ?? 'Revisá lo que completaste.';`): `OptionalChaining` (sobreviviente, `?.` → `.`) y `StringLiteral` (sin cobertura, el fallback → `""`). Código defensivo sin caso que lo dispare: este bloque sólo corre cuando `!result.success`, y ahí `ZodError.issues` siempre trae al menos una entrada con `message` no vacío (todo validator de `schema.ts` tiene mensaje propio o el default de zod). `issues[0]` nunca es `undefined` ni su `.message` está vacío, así que el `?.` y el fallback no tienen forma de dispararse. No se borran (cambio de producción fuera de este alcance): quedan reportados.
+- `types.ts:45` (`export const initialPublishState: PublishReviewResult = { status: 'idle' };`): `ObjectLiteral` (`{}`) y `StringLiteral` (`status: ""`), los dos sobrevivientes. Mismo patrón que usan las ~20 features del repo para el estado inicial de un server action (`initialSignInState`, `initialDeactivateAccountState`, etc.): un sentinel que sólo tiene que distinguirse de `'success'` y `'error'`. `review-form.tsx` sólo compara `!== 'success'` y `=== 'error'`; nunca `=== 'idle'`. Ningún test de ninguna otra feature pinea ese literal tampoco: consistente con el resto de la base, no un hueco de esta pantalla.
+
+El reporte queda en `frontend/reports/mutation/mutation.html` (clear-text además en la terminal); no se commitea (`reports/` y `.stryker-tmp/` en `frontend/.gitignore`).
 
 ## Frontend
 
