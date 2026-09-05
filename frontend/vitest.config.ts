@@ -22,6 +22,15 @@ export default defineConfig({
     // por las dudas (el include glob ya los filtra, pero double-belt no daña).
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['e2e/**', 'node_modules/**', '.next/**'],
+    // Cobertura (#414), sin thresholds: es mapa de lo no ejercitado, no un gate (ADR-0036).
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      // src/app/** son páginas de Next: se prueban por E2E, no acá.
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/app/**', 'src/**/*.d.ts'],
+    },
   },
   resolve: {
     alias: {

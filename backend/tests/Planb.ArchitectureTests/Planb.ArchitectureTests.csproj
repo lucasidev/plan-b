@@ -10,6 +10,7 @@
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="NetArchTest.Rules" />
+    <PackageReference Include="coverlet.collector" />
   </ItemGroup>
   <!-- ProjectReferences a TODOS los assemblies que queremos inspeccionar.
        NetArchTest carga assemblies del output del test project, así que para

@@ -103,13 +103,21 @@ jobs:
           JWT__Issuer: planb-test
           JWT__Audience: planb-test
       - name: Test (unit, shared kernel, architecture)
-        run: cd backend && dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~Planb.IntegrationTests" --logger "trx;LogFileName=test-results.trx"
+        run: cd backend && dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~Planb.IntegrationTests" --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: backend-unit-test-results
           path: "**/test-results.trx"
+      # Reporte de cobertura (coverlet), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-unit-coverage
+          path: "**/coverage.cobertura.xml"
+          retention-days: 14
 
   # Conserva el nombre "Backend (.NET 10)": es el required check del ruleset de main.
   backend:
@@ -194,13 +202,21 @@ jobs:
       - name: Build
         run: cd backend && dotnet build --no-restore --configuration Release
       - name: Test (integration)
-        run: cd backend && dotnet test tests/Planb.IntegrationTests --no-build --configuration Release --logger "trx;LogFileName=test-results.trx"
+        run: cd backend && dotnet test tests/Planb.IntegrationTests --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory TestResults
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: backend-integration-test-results
           path: "**/test-results.trx"
+      # Reporte de cobertura (coverlet), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-integration-coverage
+          path: "**/coverage.cobertura.xml"
+          retention-days: 14
 
   frontend:
     name: Frontend (Next.js 15 / Bun)
@@ -238,7 +254,15 @@ jobs:
       - name: Build
         run: cd frontend && bun run build
       - name: Test
-        run: cd frontend && bun run test
+        run: cd frontend && bun run test:coverage
+      # Reporte de cobertura (v8), sin gate (ADR-0036): docs/engineering/testing.md#cobertura.
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
+          retention-days: 14
 
   # Suite Playwright. Corre SIEMPRE en cada PR (gate antes de merge).
   # Decisión 2026-05-23 (reset post-overkill): la industria estándar corre E2E

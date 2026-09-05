@@ -127,6 +127,11 @@ test-affected: backend-test-affected frontend-test-affected
 backend-mutation:
     cd backend/modules/reviews/tests/Planb.Reviews.Tests && dotnet stryker
 
+# Cobertura del backend (coverlet), unit e integración juntos en una sola corrida, sin gate (ADR-0036).
+# Reporte: un coverage.cobertura.xml por proyecto de test, bajo su propio backend/**/TestResults/**/.
+backend-coverage:
+    cd backend && dotnet test --collect:"XPlat Code Coverage" --results-directory TestResults
+
 # Stryker con vitest sobre la lógica de reseñar (frontend/stryker.config.mjs). Necesita al menos un
 # test unitario que importe el feature: con cero tests relacionados el runner aborta.
 frontend-mutation:
@@ -134,6 +139,11 @@ frontend-mutation:
 
 frontend-test:
     cd frontend && bun run test
+
+# Cobertura del frontend (vitest + v8), sin gate (ADR-0036). Reporte: frontend/coverage/ (text-summary
+# en consola + lcov.info).
+frontend-coverage:
+    cd frontend && bun run test:coverage
 
 # E2E contra una base efímera, igual que el job `e2e` de ci.yml. El script levanta su propio
 # backend + frontend contra una `planb_e2e` recreada, así que el stack de dev tiene que estar
