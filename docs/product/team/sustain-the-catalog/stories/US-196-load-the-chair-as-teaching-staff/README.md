@@ -16,7 +16,8 @@ Como quien carga el catálogo, quiero cargar la cátedra como el equipo docente 
 
 - [Catálogo](../../screens/SC-027-catalog/README.md): la cátedra se carga como entidad propia, equipo docente y titular, y persiste entre períodos.
 - [Ficha de cátedra](../../../../student/choose-where-to-study/screens/SC-002-chair/README.md): la ficha entera depende de que la cátedra exista como entidad, cargada acá.
-- [Buscar](../../../../student/choose-where-to-study/screens/SC-006-search/README.md): el nombre de un docente resuelve a su cátedra porque la cátedra existe como entidad, no como ficha propia del docente.
+- [Docente](../../../../student/choose-where-to-study/screens/SC-035-teacher/README.md): lo que la pantalla lista es el equipo cargado acá, con su rol; el nombre de un docente llega a sus cátedras porque la cátedra existe como entidad.
+- [Buscar](../../../../student/choose-where-to-study/screens/SC-006-search/README.md): una cátedra aparece como resultado propio porque existe como entidad, cargada acá.
 
 ## Notas
 

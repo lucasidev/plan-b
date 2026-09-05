@@ -8,12 +8,12 @@ Quien lee, con un nombre suelto en la cabeza y no una carrera ("lo que me recomi
 
 ## Qué stories resuelve
 
-[US-132](../../README.md) (una sola búsqueda devuelve los cuatro sujetos con ficha, y el nombre de un docente lleva a su cátedra), [US-139](../../../request-a-career/README.md#stories) (si no está, se explica con los tres estados del vacío), [US-168](../../../../guarantees/README.md#stories) (sin cuenta), [US-196](../../../../team/sustain-the-catalog/README.md#stories) (el nombre de un docente resuelve a su cátedra porque la cátedra existe como entidad propia, no como ficha del docente).
+[US-132](../../README.md) (una sola búsqueda devuelve los cuatro sujetos con ficha, y el nombre de un docente lleva a su pantalla, que lleva a sus cátedras), [US-139](../../../request-a-career/README.md#stories) (si no está, se explica con los tres estados del vacío), [US-168](../../../../guarantees/README.md#stories) (sin cuenta), [US-196](../../../../team/sustain-the-catalog/README.md#stories) (el nombre de un docente llega a sus cátedras porque la cátedra existe como entidad propia, con su equipo cargado).
 
 ## Qué muestra
 
 1. **Una sola búsqueda**: un campo de texto que devuelve los cuatro sujetos con ficha (materia, cátedra, carrera en una institución, institución), mezclados y cada uno con su tipo a la vista.
-2. **El nombre de un docente lleva directo a su cátedra**: un docente no es una ficha, la cátedra sí (depende de que la cátedra exista como entidad, US-196).
+2. **El nombre de un docente lleva a su pantalla**: [Docente](../SC-035-teacher/README.md) no publica nada sobre la persona y lista las cátedras que integra, cada una con link a su ficha (depende de que la cátedra exista como entidad, US-196).
 3. **Sin cuenta** (US-168): buscar y abrir cualquier resultado desde acá no pide login.
 
 ## Estados
@@ -23,11 +23,11 @@ Quien lee, con un nombre suelto en la cabeza y no una carrera ("lo que me recomi
 
 ## Lo que no muestra nunca
 
-Ninguna ficha de "docente": no existe como entidad con ficha propia, siempre resuelve a su cátedra; ningún resultado mostrado como un cero cuando en realidad está cargado sin voces o con cobertura parcial todavía (US-139); ningún orden entre resultados por conveniencia.
+Ningún conteo atribuido a una persona: el docente resuelve a su pantalla, que solo lleva a sus cátedras; ningún resultado mostrado como un cero cuando en realidad está cargado sin voces o con cobertura parcial todavía (US-139); ningún orden entre resultados por conveniencia.
 
 ## Adónde va
 
-Llega desde: el buscador del topbar de cualquier pantalla (hoy no lleva a ninguna pantalla propia: es lo que esta ficha empieza a fijar), [La entrada](../SC-004-entrance/README.md). Va a: [Ficha de materia](../SC-007-subject/README.md), [Ficha de cátedra](../SC-002-chair/README.md), [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md).
+Llega desde: el buscador del topbar de cualquier pantalla (hoy no lleva a ninguna pantalla propia: es lo que esta ficha empieza a fijar), [La entrada](../SC-004-entrance/README.md). Va a: [Ficha de materia](../SC-007-subject/README.md), [Ficha de cátedra](../SC-002-chair/README.md), [Docente](../SC-035-teacher/README.md), [Ficha de carrera](../SC-001-career/README.md), [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md).
 
 ## Decisiones que aplica
 
