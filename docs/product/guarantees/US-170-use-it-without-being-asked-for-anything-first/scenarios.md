@@ -15,6 +15,7 @@ Entonces la lee entera, con sus conteos, sin registro ni muro de por medio ([US-
 **E3.** Dado que Matías nunca declaró nada más que su carrera al registrarse,
 Cuando entra a una Ficha de materia y corrige un dato duro (US-189),
 Entonces la corrección se registra igual: ninguna acción del producto depende de datos que no le pedimos.
+No construido: corregir un dato duro desde la Ficha de materia es US-189 (Backlog)
 
 ## Negativos
 

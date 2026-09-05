@@ -24,4 +24,11 @@ describe('HomePaths', () => {
     render(<HomePaths />);
     expect(screen.getByRole('list').textContent).not.toMatch(/\d/);
   });
+
+  it('US-231 X3: no sugiere qué cursar, ni horarios, ni un orden de cursada', () => {
+    render(<HomePaths />);
+    expect(screen.getByRole('list').textContent).not.toMatch(
+      /te recomendamos|te sugerimos|deberías cursar|orden sugerido|horario sugerido/i,
+    );
+  });
 });

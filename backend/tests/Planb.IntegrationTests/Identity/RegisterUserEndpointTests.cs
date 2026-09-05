@@ -112,6 +112,12 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             $"Todo intento sobre la misma casilla responde 202; apareció {distinct}.");
     }
 
+    /// <summary>
+    /// US-228 E3, N2: registrar de nuevo un mail que ya tiene cuenta responde exactamente como uno
+    /// libre (mismo status, mismo cuerpo, no se crea una segunda cuenta), y la diferencia viaja
+    /// solo por el mail privado que le llega a la dueña, ofreciéndole Ingresar o Recuperar en vez
+    /// de un link para terminar un registro que nunca existió.
+    /// </summary>
     [Fact]
     public async Task Registering_with_a_taken_email_responds_exactly_like_a_free_one()
     {
@@ -145,6 +151,11 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         var detail = await _mailpit.GetMessageDetailAsync(summary.Id);
         detail.ShouldNotBeNull();
         detail.Html.ShouldNotContain("token=");
+
+        // E3: el aviso ofrece Ingresar o Recuperar, no un link para terminar un registro que
+        // nunca existió.
+        detail.Html.ShouldContain("Ingresar");
+        detail.Html.ShouldContain("Recuperar");
     }
 
     [Fact]
