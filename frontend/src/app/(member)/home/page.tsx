@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { fetchCareerFactsServer } from '@/features/career-facts/api.server';
 import { fetchMyReviewedChairTalliesServer } from '@/features/home/api.server';
 import { CareerCoverageCard } from '@/features/home/components/career-coverage-card';
-import { HomePaths } from '@/features/home/components/home-paths';
+import { HomeEmptyState } from '@/features/home/components/home-empty-state';
 import { ReviewedChairsCard } from '@/features/home/components/reviewed-chairs-card';
 import { greetingNameFromEmail } from '@/features/home/lib/greeting';
 import { groupByChair } from '@/features/home/lib/reviewed-chairs';
@@ -19,8 +19,9 @@ import { fetchStudentProfile } from '@/lib/student-profile';
  * en una sola consulta; si esa no llega, la fila se dibuja con el slot inerte en vez de con un
  * cero, que diría que la cátedra no tiene reseñas cuando puede tener doce.
  *
- * Sin reseñas la pantalla no muestra listas vacías: cae en `HomePaths`, que dice qué se puede
- * hacer. La cobertura se muestra igual, porque leer no depende de que reseñes.
+ * Sin reseñas la pantalla no muestra listas vacías: cae en `HomeEmptyState`, una pantalla propia
+ * y centrada que dice qué hace falta para que una cátedra publique. La cobertura se muestra
+ * igual, al pie, porque leer no depende de que reseñes.
  *
  * El guard de `(member)/layout.tsx` ya filtró sesión y rol; esta página asume los dos.
  *
@@ -44,6 +45,14 @@ export default async function HomePage() {
   // dibuja en vez de mostrar "0 de 0", que diría que la carrera no tiene materias.
   const facts = profile ? await fetchCareerFactsServer(profile.careerId) : null;
 
+  if (chairs.length === 0) {
+    return (
+      <div data-surface="bulletin" className="min-h-full w-full">
+        <HomeEmptyState firstName={firstName} facts={facts} />
+      </div>
+    );
+  }
+
   return (
     <div data-surface="bulletin" className="min-h-full w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
@@ -53,26 +62,20 @@ export default async function HomePage() {
             Hola {firstName}.
           </h1>
           <p className="mt-2 text-[13.5px] leading-relaxed text-ink-2">
-            {chairs.length > 0
-              ? 'Esto es lo que pasó con lo que reseñaste.'
-              : 'Leé lo que ya vivieron otros en cada materia y cátedra. Cuando curses algo, reseñala vos también.'}
+            Esto es lo que pasó con lo que reseñaste.
           </p>
         </div>
 
         <ReviewedChairsCard chairs={chairs} />
         {facts && <CareerCoverageCard facts={facts} />}
 
-        {chairs.length === 0 ? (
-          <HomePaths />
-        ) : (
-          <Link
-            href="/reviews/new"
-            className="inline-block rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
-            style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
-          >
-            Reseñar una cursada
-          </Link>
-        )}
+        <Link
+          href="/reviews/new"
+          className="inline-block rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
+          style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
+        >
+          Reseñar una cursada
+        </Link>
       </div>
     </div>
   );

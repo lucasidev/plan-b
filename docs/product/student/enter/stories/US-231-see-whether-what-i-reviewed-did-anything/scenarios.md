@@ -21,7 +21,6 @@ Entonces la ve con "le falta una" y puede reseñar otra cursada desde ahí: la a
 **N1.** Dado que Matías todavía no reseñó nada.
 Cuando entra a Inicio.
 Entonces no ve una lista vacía ni un cero: ve una pantalla que dice que una cátedra publica su ficha a partir de diez reseñas, con una sola acción, y la cobertura de su carrera al pie, porque leer no depende de que él reseñe.
-Roto: #441
 
 **N2.** Dado que la carrera de Ana se cargó hace dos semanas y ninguna cátedra llegó al piso.
 Cuando entra a Inicio.

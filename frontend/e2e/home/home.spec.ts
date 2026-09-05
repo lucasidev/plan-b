@@ -114,10 +114,7 @@ test.describe('Inicio (US-231)', () => {
    * falta para que una cátedra publique, ofrece una sola acción, y la cobertura de la carrera
    * sigue a la vista porque leer no depende de reseñar.
    */
-  // Roto: #441, hasta 2026-09-30. HomePaths ofrece tres
-  // acciones (Explorar, Reseñar, Mis aportes) más el nav, y la pantalla no dice en ningún lado
-  // que una cátedra publica a partir de diez reseñas.
-  test.fixme('sin reseñas no hay lista vacía ni cero: una sola acción y la cobertura al pie', async ({
+  test('sin reseñas no hay lista vacía ni cero: una sola acción y la cobertura al pie', async ({
     page,
     request,
   }) => {
@@ -129,9 +126,14 @@ test.describe('Inicio (US-231)', () => {
     // Dice qué hace falta para que una cátedra publique.
     await expect(page.getByText(/a partir de (diez|10) rese/i)).toBeVisible();
 
-    // Una sola acción, no un menú de caminos.
+    // Una sola acción, no un menú de caminos. Acotado al <main>: el nav lateral del área
+    // logueada lleva su propio link a "Mis aportes", que es chrome y no una acción de la
+    // pantalla.
     await expect(
-      page.getByRole('link').filter({ hasText: /reseñar|explorar|mis aportes/i }),
+      page
+        .getByRole('main')
+        .getByRole('link')
+        .filter({ hasText: /reseñar|explorar|mis aportes/i }),
     ).toHaveCount(1);
 
     // La cobertura de la carrera sigue a la vista.
