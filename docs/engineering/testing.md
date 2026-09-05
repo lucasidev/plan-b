@@ -203,6 +203,10 @@ Aterrizó con US-T04-b (Identity); **US-T07-b generalizó las reglas a los 5 mó
 
 No expresables en NetArchTest (requieren body inspection), quedan en review: `DateTime.UtcNow` directo (usar `IDateTimeProvider`), `throw` para fallas de negocio (usar `Result<T>`).
 
+### Cobertura
+
+Cada PR sube tres artefactos de cobertura: `backend-unit-coverage` y `backend-integration-coverage` (coverlet, un `coverage.cobertura.xml` por proyecto de test) del backend, y `frontend-coverage` (v8, `lcov.info`) del frontend. Ninguno gatea nada ([ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md)): no hay threshold que corte un PR por un número bajo. Se leen para encontrar lo que ningún test intentó todavía y elegir el próximo ataque; un número de cobertura no es un resultado.
+
 ### Mutation testing
 
 Cobertura dice qué línea corrió; no dice si algún test se daría cuenta de un cambio en esa línea. [Stryker.NET](https://stryker-mutator.io/docs/stryker-net/introduction/) sí lo mide: cambia una línea a la vez (invierte un booleano, un operador de comparación, borra un bloque) y corre la suite contra esa versión mutada. Si algún test se pone rojo, el mutante murió; si la suite sigue verde, sobrevivió, y eso es un hueco.
