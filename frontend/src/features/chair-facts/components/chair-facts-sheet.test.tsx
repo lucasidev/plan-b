@@ -79,4 +79,158 @@ describe('ChairFactsSheet', () => {
     // a la vez y le rompe a getByText la unicidad que pide.
     expect(within(section as HTMLElement).getByText(/80 % de \d+/)).toBeInTheDocument();
   });
+
+  /**
+   * SC-002, estado "cargada, sin voces" (US-136 E1): sin reseñas, la ficha dice que arranca vacía
+   * y que se puede ser la primera persona en reseñarla. Nunca un 0 %: con `isPublished` en false
+   * ninguno de los bloques de conteos se monta.
+   */
+  it('US-136 E1: sin voces, la ficha dice que arranca vacía y nunca un 0 %', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({ isPublished: false, reviewCount: 0, reviewsMissingToPublish: 10 })}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText('Todavía nadie reseñó cómo es cursar acá.')).toBeInTheDocument();
+    expect(screen.getByText('Podés ser la primera persona en hacerlo.')).toBeInTheDocument();
+    expect(screen.queryByText(/0 %/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * SC-002, estado "bajo el piso" (US-136 E2, US-138 E3): tiene reseñas pero no llega a 10, la
+   * ficha dice cuántas junta y cuántas faltan, sin adelantar moda ni distribución.
+   */
+  it('US-136 E2: bajo el piso, dice cuántas junta y cuántas faltan sin adelantar conteos', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({ isPublished: false, reviewCount: 3, reviewsMissingToPublish: 7 })}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText('Junta 3 reseñas: con 7 más se publica.')).toBeInTheDocument();
+    expect(screen.getByText(/hasta las 10 no se muestran los conteos/i)).toBeInTheDocument();
+    expect(screen.queryByText(/qué hizo la cátedra/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/de cada 10 que la cursan/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * US-131 N1 y US-129 E1: "qué hizo la cátedra" (conducta, atribuible a esta cátedra puntual) y
+   * "qué les pasó a los que cursaron" (vivencia) son bloques separados, cada uno con su propio
+   * "de N"; el denominador de una frase no se completa con las voces de otra frase de la misma
+   * cursada.
+   */
+  it('US-131 N1: cada bloque lleva su propio "de N", uno no se completa con el otro', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({
+            chairConduct: [
+              {
+                code: 'CHAIR_CLASSES_HELD',
+                text: '¿Se dictaron las clases?',
+                modeLabel: 'Faltaron muchas',
+                modePercent: 41,
+                modeIsNegative: true,
+                total: 37,
+                distribution: [
+                  { label: 'Casi todas', percent: 27, isNegative: false },
+                  { label: 'Faltaron algunas', percent: 32, isNegative: false },
+                  { label: 'Faltaron muchas', percent: 41, isNegative: true },
+                ],
+              },
+            ],
+            studentExperience: [
+              {
+                code: 'STUDENT_COULD_ASK',
+                text: '¿Podías preguntar sin quedar mal?',
+                modeLabel: 'No',
+                modePercent: 66,
+                modeIsNegative: true,
+                total: 34,
+                distribution: [
+                  { label: 'Sí', percent: 34, isNegative: false },
+                  { label: 'No', percent: 66, isNegative: true },
+                ],
+              },
+            ],
+          })}
+        />
+      </QueryClientProvider>,
+    );
+
+    const conduct = screen.getByText('Qué hizo la cátedra').closest('section');
+    const experience = screen.getByText('Qué les pasó a los que cursaron').closest('section');
+    expect(conduct).not.toBeNull();
+    expect(experience).not.toBeNull();
+
+    expect(within(conduct as HTMLElement).getByText(/de 37/)).toBeInTheDocument();
+    expect(within(experience as HTMLElement).getByText(/de 34/)).toBeInTheDocument();
+    // El "de N" de una frase no aparece adentro del bloque de la otra.
+    expect(within(conduct as HTMLElement).queryByText(/de 34/)).not.toBeInTheDocument();
+    expect(within(experience as HTMLElement).queryByText(/de 37/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * SC-002, estado "sin base para comparar": si es la única cátedra de su materia, no hay
+   * contraste que mostrar contra hermanas.
+   */
+  it('ficha SC-002, "sin base para comparar": sin hermanas, no hay contraste', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet facts={facts({ contrasts: [] })} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.queryByText(/comparada con las otras cátedras de/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * US-131: el contraste contra las cátedras hermanas también lleva su propio "de N" en cada
+   * lado (acá y en las otras), nunca un porcentaje solo.
+   */
+  it('US-131: el contraste contra hermanas lleva su "de N" en cada lado', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({
+            contrasts: [
+              {
+                itemCode: 'CHAIR_CLASSES_HELD',
+                itemText: '¿Se dictaron las clases?',
+                negativeLabel: 'Faltaron muchas',
+                herePercent: 56,
+                hereTotal: 37,
+                siblingsPercent: 14,
+                siblingsTotal: 61,
+              },
+            ],
+          })}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
+    expect(screen.getByText(/de 37 y 61/)).toBeInTheDocument();
+  });
+
+  /**
+   * US-148 E1: la tasa de finalización es agregada; ninguna reseña muestra cómo terminó nadie.
+   */
+  it('US-148 E1: la finalización es agregada, nunca el desenlace de una persona', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet facts={facts({ completion: { outOfTen: 7, reaching: 7, total: 10 } })} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/de cada 10 que la cursan, llegan 7/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/ninguna reseña muestra cómo terminó nadie: esto es el conteo/i),
+    ).toBeInTheDocument();
+  });
 });
