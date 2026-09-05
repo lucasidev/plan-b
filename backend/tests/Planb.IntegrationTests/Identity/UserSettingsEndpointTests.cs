@@ -88,8 +88,7 @@ public class UserSettingsEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             new { theme = "Dark", allowTeacherContact = true });
         patch.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var response = await auth.Client.GetAsync("/api/users/me/settings");
-        var body = await response.Content.ReadFromJsonAsync<GetMySettingsResponse>();
+        var body = await auth.Client.GetOkAsync<GetMySettingsResponse>("/api/users/me/settings");
 
         body.ShouldNotBeNull();
         body!.Theme.ShouldBe("Dark");
@@ -135,8 +134,7 @@ public class UserSettingsEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
             new { theme = "Light" });
         second.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var body = await (await auth.Client.GetAsync("/api/users/me/settings"))
-            .Content.ReadFromJsonAsync<GetMySettingsResponse>();
+        var body = await auth.Client.GetOkAsync<GetMySettingsResponse>("/api/users/me/settings");
         body!.Theme.ShouldBe("Light");
         body.Language.ShouldBe("EsNeutro");
         body.AllowTeacherContact.ShouldBeTrue();

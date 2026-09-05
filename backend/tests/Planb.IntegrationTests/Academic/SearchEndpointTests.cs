@@ -170,9 +170,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         using var client = _fixture.Factory.CreateClient();
 
         // Nadie tipea el acento al buscar: "gonzalez" tiene que encontrar a "González".
-        var response = await client.GetAsync("/api/search?q=gonzalez");
-
-        var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+        var body = await client.GetOkAsync<SearchResponse>("/api/search?q=gonzalez");
         body!.Items.ShouldContain(i => i.Type == "chair" && i.Label == "González");
     }
 

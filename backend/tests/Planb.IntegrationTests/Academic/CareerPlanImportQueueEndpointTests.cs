@@ -98,19 +98,19 @@ public class CareerPlanImportQueueEndpointTests : IClassFixture<RegisterApiFixtu
 
         var admin = await AdminAsync();
 
-        var parsedQueue = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var parsedQueue = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?status=Parsed");
         parsedQueue!.Items.Select(i => i.Id).ShouldBe([parsed]);
         parsedQueue.TotalCount.ShouldBe(1);
 
-        var rejectedQueue = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var rejectedQueue = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?status=Rejected");
         rejectedQueue!.Items.ShouldHaveSingleItem();
         rejectedQueue.Items[0].Id.ShouldBe(rejected);
         rejectedQueue.Items[0].RejectionReason.ShouldBe("No corresponde a un plan de estudios real.");
         rejectedQueue.Items[0].RejectedAt.ShouldNotBeNull();
 
-        var allQueue = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var allQueue = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports");
         allQueue!.TotalCount.ShouldBe(3);
     }
@@ -136,12 +136,12 @@ public class CareerPlanImportQueueEndpointTests : IClassFixture<RegisterApiFixtu
 
         var admin = await AdminAsync();
 
-        var firstPage = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var firstPage = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?pageSize=2&page=1");
         firstPage!.Items.Count.ShouldBe(2);
         firstPage.TotalCount.ShouldBe(3);
 
-        var secondPage = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var secondPage = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?pageSize=2&page=2");
         secondPage!.Items.Count.ShouldBe(1);
         secondPage.TotalCount.ShouldBe(3);
@@ -184,7 +184,7 @@ public class CareerPlanImportQueueEndpointTests : IClassFixture<RegisterApiFixtu
         var unrelatedImportId = await SeedImportAsync(
             "Contador Público Nacional", CareerPlanImportStatus.Pending, planYear: 2025);
 
-        var queue = await admin.Client.GetFromJsonAsync<ImportQueueResponse>(
+        var queue = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?pageSize=100");
 
         var similarItem = queue!.Items.Single(i => i.Id == similarImportId);

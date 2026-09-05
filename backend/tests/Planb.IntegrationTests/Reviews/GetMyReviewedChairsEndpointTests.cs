@@ -116,7 +116,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         var mine = await AccountWithProfileAsync();
         await ReviewAsync(mine, ChairPerez, 0);
 
-        var before = await mine.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var before = await mine.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         before.ShouldNotBeNull();
 
@@ -130,7 +130,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         var other = await AccountWithProfileAsync();
         await ReviewAsync(other, ChairPerez, 1);
 
-        var after = await mine.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var after = await mine.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         after.ShouldNotBeNull();
         after.ShouldHaveSingleItem().ReviewCount.ShouldBe(countWithOnlyMine + 1);
@@ -138,7 +138,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         // Y la cátedra que reseñó el otro y yo no, no aparece en mi lista.
         await ReviewAsync(other, ChairGonzalez, 2);
 
-        var stillMine = await mine.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var stillMine = await mine.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         stillMine.ShouldNotBeNull();
         stillMine.ShouldHaveSingleItem().ChairId.ShouldBe(ChairPerez);
@@ -150,7 +150,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         var auth = await AccountWithProfileAsync();
         await ReviewAsync(auth, chairId: null, termIndex: 3);
 
-        var chairs = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var chairs = await auth.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
 
         chairs.ShouldNotBeNull();
@@ -163,7 +163,7 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         var auth = await AccountWithProfileAsync();
         await ReviewAsync(auth, ChairGonzalez, 0);
 
-        var chairs = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var chairs = await auth.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         chairs.ShouldNotBeNull();
 
@@ -195,14 +195,14 @@ public class GetMyReviewedChairsEndpointTests : IClassFixture<RegisterApiFixture
         var doomed = await ReviewAsync(auth, ChairPerez, 0);
         await ReviewAsync(auth, ChairGonzalez, 1);
 
-        var before = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var before = await auth.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         before!.Select(c => c.ChairId).ShouldBe([ChairPerez, ChairGonzalez], ignoreOrder: true);
 
         var deleted = await auth.Client.DeleteAsync($"/api/reviews/courses/{doomed}");
         deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var after = await auth.Client.GetFromJsonAsync<List<MyReviewedChairResponse>>(
+        var after = await auth.Client.GetOkAsync<List<MyReviewedChairResponse>>(
             "/api/reviews/chairs/mine");
         after!.ShouldHaveSingleItem().ChairId.ShouldBe(ChairGonzalez);
     }

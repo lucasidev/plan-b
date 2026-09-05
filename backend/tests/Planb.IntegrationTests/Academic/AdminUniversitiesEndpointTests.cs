@@ -54,13 +54,13 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>("/api/academic/universities/admin");
+        var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/universities/admin");
         var row = list!.Items.SingleOrDefault(u => u.Id == created!.Id);
         row.ShouldNotBeNull();
         row.IsActive.ShouldBeTrue();
         row.CareerCount.ShouldBe(0); // universidad recién creada, sin careers todavía
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/universities/{created!.Id}");
         detail!.Name.ShouldBe(row.Name);
         detail.Slug.ShouldBe(row.Slug);
@@ -79,7 +79,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/universities/{created!.Id}");
         detail!.InstitutionalEmailDomains.ShouldBe(["unsta.edu.ar"]); // lowercase + dedup
     }
@@ -109,6 +109,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             "/api/academic/universities", NewUniversityBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -118,7 +119,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
                 institutionalEmailDomains: ["actualizada.edu.ar"]));
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var detail = await admin.Client.GetFromJsonAsync<DetailDto>(
+        var detail = await admin.Client.GetOkAsync<DetailDto>(
             $"/api/academic/universities/{created.Id}");
         detail!.Name.ShouldBe("Universidad Actualizada");
         detail.InstitutionalEmailDomains.ShouldBe(["actualizada.edu.ar"]);
@@ -130,6 +131,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             "/api/academic/universities", NewUniversityBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var deactivate = await admin.Client.DeleteAsync(
@@ -139,7 +141,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         afterDeactivate!.IsActive.ShouldBeFalse();
 
         // Soft delete: sigue en el listado admin (inactiva), no desaparece.
-        var list = await admin.Client.GetFromJsonAsync<ListDto>("/api/academic/universities/admin");
+        var list = await admin.Client.GetOkAsync<ListDto>("/api/academic/universities/admin");
         list!.Items.Single(u => u.Id == created.Id).IsActive.ShouldBeFalse();
 
         var reactivate = await admin.Client.PostAsync(
@@ -155,6 +157,7 @@ public class AdminUniversitiesEndpointTests : IClassFixture<RegisterApiFixture>
         var admin = await AdminAsync();
         var create = await admin.Client.PostAsJsonAsync(
             "/api/academic/universities", NewUniversityBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         (await admin.Client.DeleteAsync($"/api/academic/universities/{created!.Id}"))

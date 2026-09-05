@@ -145,7 +145,7 @@ public class FirstPublishNeverRevealsWhoOrHowTests : IClassFixture<RegisterApiFi
         // Mis aportes (control positivo: ahí sigue el código y el valor con los que respondió).
         afterBody.ShouldNotContain("recurs", Case.Insensitive, "la ficha filtró cómo terminó Matías");
 
-        var mine = await matias.Client.GetFromJsonAsync<List<MyReviewView>>("/api/reviews/courses/me");
+        var mine = await matias.Client.GetOkAsync<List<MyReviewView>>("/api/reviews/courses/me");
         mine!.Single().Answers.ShouldContain(a => a.ItemCode == "COURSE_OUTCOME" && a.OptionValue == 3);
     }
 

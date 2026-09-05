@@ -102,7 +102,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
             new { teacherId, role = "Lead", sinceTermId = UnstaTerm });
         added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-        var listed = await admin.Client.GetFromJsonAsync<List<AdminChairListItem>>(
+        var listed = await admin.Client.GetOkAsync<List<AdminChairListItem>>(
             $"/api/academic/chairs?subjectId={Subject211}");
         var mine = listed!.Single(c => c.Id == chair.Id);
         var lead = mine.Members.ShouldHaveSingleItem();
@@ -115,7 +115,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
         closed.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         // Cerrar no borra: el tramo sigue, con su hasta. Lo que esa persona dictó sigue siendo suyo.
-        var after = await admin.Client.GetFromJsonAsync<List<AdminChairListItem>>(
+        var after = await admin.Client.GetOkAsync<List<AdminChairListItem>>(
             $"/api/academic/chairs?subjectId={Subject211}");
         var stillThere = after!.Single(c => c.Id == chair.Id).Members.ShouldHaveSingleItem();
         stillThere.TeacherId.ShouldBe(teacherId);
@@ -129,6 +129,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var created = await admin.Client.PostAsJsonAsync(
             $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
         var chair = await created.Content.ReadFromJsonAsync<CreateChairResponse>();
         var teacherId = await CreateTeacherAsync(admin);
 
@@ -150,6 +151,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var created = await admin.Client.PostAsJsonAsync(
             $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
         var chair = await created.Content.ReadFromJsonAsync<CreateChairResponse>();
         var teacherId = await CreateTeacherAsync(admin);
 
@@ -173,9 +175,10 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var created = await admin.Client.PostAsJsonAsync(
             $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
         var chair = await created.Content.ReadFromJsonAsync<CreateChairResponse>();
 
-        var universities = await admin.Client.GetFromJsonAsync<List<UniversityRow>>(
+        var universities = await admin.Client.GetOkAsync<List<UniversityRow>>(
             "/api/academic/universities");
         var other = universities!.First(u => u.Id != Unsta);
         var foreignTeacher = await CreateTeacherAsync(admin, other.Id);
@@ -273,12 +276,15 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
     {
         var admin = await AdminAsync();
 
-        var first = (await (await admin.Client.PostAsJsonAsync(
-            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() }))
-            .Content.ReadFromJsonAsync<CreateChairResponse>())!;
-        var second = (await (await admin.Client.PostAsJsonAsync(
-            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() }))
-            .Content.ReadFromJsonAsync<CreateChairResponse>())!;
+        var firstResponse = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        firstResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var first = (await firstResponse.Content.ReadFromJsonAsync<CreateChairResponse>())!;
+
+        var secondResponse = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        secondResponse.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var second = (await secondResponse.Content.ReadFromJsonAsync<CreateChairResponse>())!;
 
         var firstLead = await CreateTeacherAsync(admin);
         var secondLead = await CreateTeacherAsync(admin);
@@ -294,6 +300,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
         // Cada una con su titular vigente en el mismo período, sin que la segunda choque con la
         // primera: el titular único es invariante de UNA cátedra, no de la materia.
         var list = await admin.Client.GetAsync($"/api/academic/chairs?subjectId={Subject211}");
+        list.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await list.Content.ReadAsStringAsync();
 
         body.ShouldContain(first.Id.ToString());
@@ -337,7 +344,7 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
             added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         }
 
-        var listed = await admin.Client.GetFromJsonAsync<List<AdminChairListItem>>(
+        var listed = await admin.Client.GetOkAsync<List<AdminChairListItem>>(
             $"/api/academic/chairs?subjectId={Subject211}");
         var team = listed!.Single(c => c.Id == chair.Id).Members;
         team.Count.ShouldBe(4);

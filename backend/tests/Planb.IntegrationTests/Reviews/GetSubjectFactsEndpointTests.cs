@@ -129,7 +129,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task The_subject_goes_from_empty_to_below_the_floor_to_answering_the_question()
     {
         // ---- Vacía: las cátedras existen pero ninguna tiene una sola reseña.
-        var empty = await _anonymous.GetFromJsonAsync<GetSubjectFactsResponse>(
+        var empty = await _anonymous.GetOkAsync<GetSubjectFactsResponse>(
             $"/api/reviews/subjects/{Subject211}/facts");
 
         empty!.IsPublished.ShouldBeFalse();
@@ -141,7 +141,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         // ---- Bajo el piso: la cátedra se lista con lo que le falta, y no aporta a ningún número.
         await PublishAsync(ChairGonzalez, from: 0, count: 3, negative: 3);
 
-        var below = await _anonymous.GetFromJsonAsync<GetSubjectFactsResponse>(
+        var below = await _anonymous.GetOkAsync<GetSubjectFactsResponse>(
             $"/api/reviews/subjects/{Subject211}/facts");
 
         below!.IsPublished.ShouldBeFalse();
@@ -158,7 +158,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         await PublishAsync(ChairGonzalez, from: 100, count: 12, negative: 0);
         await PublishAsync(ChairPerez, from: 200, count: 12, negative: 9);
 
-        var facts = await _anonymous.GetFromJsonAsync<GetSubjectFactsResponse>(
+        var facts = await _anonymous.GetOkAsync<GetSubjectFactsResponse>(
             $"/api/reviews/subjects/{Subject211}/facts");
 
         facts!.IsPublished.ShouldBeTrue();
@@ -190,7 +190,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task The_payload_never_carries_anything_from_the_previous_model()
     {
-        var json = await _anonymous.GetStringAsync($"/api/reviews/subjects/{Subject211}/facts");
+        var json = await _anonymous.GetOkStringAsync($"/api/reviews/subjects/{Subject211}/facts");
 
         // Ni puntaje, ni dificultad, ni recomendación, ni texto, ni quién reseñó.
         json.ShouldNotContain("overallRating");

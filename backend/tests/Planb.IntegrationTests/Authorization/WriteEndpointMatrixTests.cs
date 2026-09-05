@@ -235,7 +235,7 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
 
     private static async Task AssertReviewUnchangedAsync(AuthenticatedClient author, Guid reviewId)
     {
-        var mine = await author.Client.GetFromJsonAsync<List<MyReviewDto>>("/api/reviews/courses/me");
+        var mine = await author.Client.GetOkAsync<List<MyReviewDto>>("/api/reviews/courses/me");
         var review = mine!.SingleOrDefault(r => r.Id == reviewId);
 
         review.ShouldNotBeNull("la reseña ajena tiene que seguir existiendo después del intento.");

@@ -123,7 +123,7 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
 
         // Control positivo: con el piso de 10 cruzado, la ficha ya publica. Si el piso cambia,
         // esto cae explicando por qué en vez de que el barrido de abajo falle sin dar pistas.
-        var chairFacts = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+        var chairFacts = await _anonymous.GetOkAsync<GetChairFactsResponse>(
             $"/api/reviews/chairs/{ChairPerez}/facts");
         chairFacts.ShouldNotBeNull();
         chairFacts!.IsPublished.ShouldBeTrue();
@@ -137,7 +137,7 @@ public class ReviewLeadsToNobodyTests : IClassFixture<RegisterApiFixture>
         var mineBody = await mineResponse.Content.ReadAsStringAsync();
         mineBody.ShouldContain(reviewIdText);
 
-        var chairs = await _anonymous.GetFromJsonAsync<List<ChairListItem>>(
+        var chairs = await _anonymous.GetOkAsync<List<ChairListItem>>(
             $"/api/academic/subjects/{Subject211}/chairs");
         chairs.ShouldNotBeNull();
         var teacherId = chairs!.Single(c => c.Id == ChairPerez).LeadTeacherId;

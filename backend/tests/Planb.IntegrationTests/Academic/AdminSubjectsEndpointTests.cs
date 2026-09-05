@@ -98,7 +98,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/career-plans/{planId}/subjects");
         var row = list!.Items.SingleOrDefault(s => s.Id == created!.Id);
         row.ShouldNotBeNull();
@@ -111,7 +111,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         row.IsOfficial.ShouldBeTrue();
         row.IsActive.ShouldBeTrue();
 
-        var detail = await admin.Client.GetFromJsonAsync<SubjectDto>(
+        var detail = await admin.Client.GetOkAsync<SubjectDto>(
             $"/api/academic/career-plans/{planId}/subjects/{created!.Id}");
         detail!.Code.ShouldBe(row.Code);
         detail.Name.ShouldBe(row.Name);
@@ -182,6 +182,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         var planId = await CreateCareerPlanAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var update = await admin.Client.PatchAsJsonAsync(
@@ -189,7 +190,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
             NewSubjectBody(name: "Materia Actualizada", weeklyHours: 8, totalHours: 128));
         update.StatusCode.ShouldBe(HttpStatusCode.OK);
 
-        var detail = await admin.Client.GetFromJsonAsync<SubjectDto>(
+        var detail = await admin.Client.GetOkAsync<SubjectDto>(
             $"/api/academic/career-plans/{planId}/subjects/{created.Id}");
         detail!.Name.ShouldBe("Materia Actualizada");
         detail.WeeklyHours.ShouldBe(8);
@@ -204,10 +205,12 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var requiredCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody(yearInPlan: 1));
+        requiredCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var required = await requiredCreate.Content.ReadFromJsonAsync<CreatedDto>();
 
         var dependentCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody(yearInPlan: 2));
+        dependentCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var dependent = await dependentCreate.Content.ReadFromJsonAsync<CreatedDto>();
 
         // La correlativa se arma directo contra el DbContext: este slice (US-062) es el CRUD de
@@ -234,7 +237,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         body.Dependents.ShouldContain(d => d.Id == dependent.Id);
 
         // No se tocó: sigue activa.
-        var detail = await admin.Client.GetFromJsonAsync<SubjectDto>(
+        var detail = await admin.Client.GetOkAsync<SubjectDto>(
             $"/api/academic/career-plans/{planId}/subjects/{required.Id}");
         detail!.IsActive.ShouldBeTrue();
     }
@@ -246,6 +249,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         var planId = await CreateCareerPlanAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var delete = await admin.Client.DeleteAsync($"/api/academic/subjects/{created!.Id}");
@@ -262,6 +266,7 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         var planId = await CreateCareerPlanAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         (await admin.Client.DeleteAsync($"/api/academic/subjects/{created!.Id}"))
@@ -285,20 +290,22 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
 
         var activeCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody(yearInPlan: 1));
+        activeCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var active = await activeCreate.Content.ReadFromJsonAsync<CreatedDto>();
 
         var archivedCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody(yearInPlan: 1));
+        archivedCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var archived = await archivedCreate.Content.ReadFromJsonAsync<CreatedDto>();
         (await admin.Client.DeleteAsync($"/api/academic/subjects/{archived!.Id}"))
             .EnsureSuccessStatusCode();
 
-        var adminList = await admin.Client.GetFromJsonAsync<ListDto>(
+        var adminList = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/career-plans/{planId}/subjects");
         adminList!.Items.Single(s => s.Id == active!.Id).IsActive.ShouldBeTrue();
         adminList.Items.Single(s => s.Id == archived.Id).IsActive.ShouldBeFalse();
 
-        var publicList = await admin.Client.GetFromJsonAsync<List<PublicSubjectDto>>(
+        var publicList = await admin.Client.GetOkAsync<List<PublicSubjectDto>>(
             $"/api/academic/subjects?careerPlanId={planId}");
         publicList!.ShouldContain(s => s.Id == active!.Id);
         publicList!.ShouldNotContain(s => s.Id == archived.Id);

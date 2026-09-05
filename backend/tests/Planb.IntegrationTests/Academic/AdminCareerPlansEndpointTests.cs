@@ -70,7 +70,7 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
         create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/careers/{careerId}/plans");
         var row = list!.Items.SingleOrDefault(p => p.Id == created!.Id);
         row.ShouldNotBeNull();
@@ -117,6 +117,7 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
         var careerId = await CreateCareerAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/careers/{careerId}/plans", new { year = 2017 });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         var deprecate = await admin.Client.PostAsync(
@@ -125,7 +126,7 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
         var afterDeprecate = await deprecate.Content.ReadFromJsonAsync<StatusDto>();
         afterDeprecate!.Status.ShouldBe("Deprecated");
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/careers/{careerId}/plans");
         list!.Items.Single(p => p.Id == created.Id).Status.ShouldBe("Deprecated");
     }
@@ -137,6 +138,7 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
         var careerId = await CreateCareerAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/careers/{careerId}/plans", new { year = 2018 });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         (await admin.Client.PostAsync(
@@ -158,6 +160,7 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
         var careerId = await CreateCareerAsync();
         var create = await admin.Client.PostAsJsonAsync(
             $"/api/academic/careers/{careerId}/plans", new { year = 2019 });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
         var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
 
         (await admin.Client.PostAsync(
@@ -179,16 +182,18 @@ public class AdminCareerPlansEndpointTests : IClassFixture<RegisterApiFixture>
 
         var activeCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/careers/{careerId}/plans", new { year = 2020 });
+        activeCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var active = await activeCreate.Content.ReadFromJsonAsync<CreatedDto>();
 
         var deprecatedCreate = await admin.Client.PostAsJsonAsync(
             $"/api/academic/careers/{careerId}/plans", new { year = 2021 });
+        deprecatedCreate.StatusCode.ShouldBe(HttpStatusCode.Created);
         var deprecated = await deprecatedCreate.Content.ReadFromJsonAsync<CreatedDto>();
         (await admin.Client.PostAsync(
                 $"/api/academic/career-plans/{deprecated!.Id}/deprecate", content: null))
             .EnsureSuccessStatusCode();
 
-        var list = await admin.Client.GetFromJsonAsync<ListDto>(
+        var list = await admin.Client.GetOkAsync<ListDto>(
             $"/api/academic/careers/{careerId}/plans");
 
         list!.Items.Single(p => p.Id == active!.Id).Status.ShouldBe("Active");

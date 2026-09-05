@@ -67,6 +67,7 @@ public class CareerPlanImportEndpointTests
                 studentEnrollmentYear = planYear,
                 rawText = $"{subjectCode} Algo",
             });
+        post.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var created = await post.Content.ReadFromJsonAsync<CreateCareerPlanImportResponse>();
 
         using var scope = _fixture.Factory.Services.CreateScope();
@@ -207,6 +208,7 @@ public class CareerPlanImportEndpointTests
                 studentEnrollmentYear = 2024,
                 rawText = "MAT101 Algo",
             });
+        post.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var created = await post.Content.ReadFromJsonAsync<CreateCareerPlanImportResponse>();
 
         var get = await auth.Client.GetAsync($"/api/me/career-plan-imports/{created!.Id}");
@@ -236,6 +238,7 @@ public class CareerPlanImportEndpointTests
                 studentEnrollmentYear = 2024,
                 rawText = "MAT101",
             });
+        post.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var created = await post.Content.ReadFromJsonAsync<CreateCareerPlanImportResponse>();
 
         var sneak = await intruder.Client.GetAsync($"/api/me/career-plan-imports/{created!.Id}");
@@ -350,6 +353,7 @@ public class CareerPlanImportEndpointTests
 
         // El aggregate quedó en Approved: lo confirma el propio GET del alumno.
         var get = await uploader.Client.GetAsync($"/api/me/career-plan-imports/{importId}");
+        get.StatusCode.ShouldBe(HttpStatusCode.OK);
         var getBody = await get.Content.ReadFromJsonAsync<CareerPlanImportResponse>();
         getBody!.Status.ShouldBe("Approved");
         getBody.ApprovedCareerPlanId.ShouldBe(body.CareerPlanId);
@@ -402,7 +406,7 @@ public class CareerPlanImportEndpointTests
 
         // No se creó una segunda Career: el admin list de esa universidad tiene una sola fila con
         // ese slug.
-        var list = await admin.Client.GetFromJsonAsync<AdminCareerListResponse>(
+        var list = await admin.Client.GetOkAsync<AdminCareerListResponse>(
             $"/api/academic/universities/{UnstaUniversityId}/careers");
         list!.Items.Count(c => c.Slug == PlainAdminSlug).ShouldBe(1);
     }

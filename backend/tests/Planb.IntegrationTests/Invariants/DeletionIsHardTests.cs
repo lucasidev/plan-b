@@ -110,7 +110,7 @@ public class DeletionIsHardTests : IClassFixture<RegisterApiFixture>
         deleted.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         // Ya no aparece en mis reseñas.
-        var mine = await doomedAuthor.Client.GetFromJsonAsync<List<MyReviewView>>("/api/reviews/courses/me");
+        var mine = await doomedAuthor.Client.GetOkAsync<List<MyReviewView>>("/api/reviews/courses/me");
         mine.ShouldNotBeNull();
         mine!.ShouldNotContain(r => r.Id == doomedReviewId);
 
