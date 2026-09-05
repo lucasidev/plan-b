@@ -246,6 +246,14 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<Planb.Api.Infrastructure.UniqueViolationExceptionHandler>();
 
 // ------------------------------------------------------------------
+// Un body que no parsea es 400 en todos los ambientes. ThrowOnBadRequest es true por default en
+// Development para que el binding tire y la página de error del developer muestre el detalle;
+// esta API no usa esa página, así que la excepción llegaba a UseExceptionHandler y salía como
+// 500. En false, el binding responde 400 y loguea el detalle, que es lo que hace Production.
+// ------------------------------------------------------------------
+builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = false);
+
+// ------------------------------------------------------------------
 // HTTP pipeline
 // ------------------------------------------------------------------
 var app = builder.Build();
