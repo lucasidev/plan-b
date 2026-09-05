@@ -11,16 +11,19 @@ Entonces la cobertura se lee como "23 de 51 materias" con su 45 %, y el texto di
 **E2.** Dado que "Análisis Matemático II" tiene 111 voces sumando sus tres cátedras que pasaron el piso
 Cuando se muestra en "qué frena la cursada"
 Entonces aparece con esas 111 voces y sus 2,1 intentos promedio, sin importar que la carrera entera tenga solo 45 % de cobertura.
+No construido: la ficha de carrera no publica "qué frena la cursada" ni datos por cohorte; la respuesta lo excluye hasta que haya un corpus (GetCareerFactsResponse)
 
 **E3.** Dado que Contador Público en una institución recién cargada tiene solo un puñado de sus materias canónicas con al menos una cátedra que pasó el piso
 Cuando se arma su Ficha de carrera
 Entonces la cobertura se muestra igual, honesta y baja (el número real de materias medidas sobre el total del plan), y "qué frena la cursada" lista lo poco que ya se puede sostener con esas pocas, sin ocultar la sección ni esperar a un umbral más alto.
+No construido: la ficha de carrera no publica "qué frena la cursada" ni datos por cohorte; la respuesta lo excluye hasta que haya un corpus (GetCareerFactsResponse)
 
 ## Negativos
 
 **N1.** Dado una carrera con apenas 1 de 51 materias con una cátedra que pasó el piso
 Cuando se arma su ficha
 Entonces esa única materia igual aparece si frena la cursada, y la cobertura muestra "1 de 51 materias" tal cual: ningún umbral oculta la sección por ser un número bajo.
+No construido: la ficha de carrera no publica "qué frena la cursada" ni datos por cohorte; la respuesta lo excluye hasta que haya un corpus (GetCareerFactsResponse)
 
 ## Edge cases
 

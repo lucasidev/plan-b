@@ -52,14 +52,14 @@ describe('ReviewedChairsCard', () => {
     expect(screen.getByText(/3 cursadas tuyas/i)).toBeInTheDocument();
   });
 
-  it('no promete ningún puntaje ni marcador personal', () => {
+  it('US-231 X1: no promete ningún puntaje ni marcador personal', () => {
     const { container } = render(
       <ReviewedChairsCard chairs={[chair(), chair({ chairId: 'b', chairName: 'Ruiz' })]} />,
     );
     expect(container.textContent).not.toMatch(/★|puntaje|ranking|promedio|nivel|racha/i);
   });
 
-  it('E1: la cátedra que cruzó el piso dice su conteo y que publica, sin festejarlo', () => {
+  it('US-231 E1: la cátedra que cruzó el piso dice su conteo y que publica, sin festejarlo', () => {
     render(
       <ReviewedChairsCard
         chairs={[chair({ voices: 12, isPublished: true, missingToPublish: 0 })]}
@@ -73,7 +73,7 @@ describe('ReviewedChairsCard', () => {
     expect(screen.queryByText(/felicit|lograst|¡|meta/i)).not.toBeInTheDocument();
   });
 
-  it('E1: la que no llega dice cuántas le faltan, en plural y en singular', () => {
+  it('US-231 E1: la que no llega dice cuántas le faltan, en plural y en singular', () => {
     render(
       <ReviewedChairsCard
         chairs={[
@@ -99,7 +99,7 @@ describe('ReviewedChairsCard', () => {
     expect(screen.getByText(/voces · le faltan 4/)).toBeInTheDocument();
   });
 
-  it('E1: las dos conviven en la misma lista, cada una con lo suyo', () => {
+  it('US-231 E1, X2: las dos conviven en la misma lista, cada una con lo suyo', () => {
     render(
       <ReviewedChairsCard
         chairs={[

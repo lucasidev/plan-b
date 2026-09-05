@@ -99,6 +99,11 @@ public class GetCareerFactsEndpointTests : IClassFixture<RegisterApiFixture>
     /// se contaminan siempre. Partirlo daría tests que pasan o fallan según el orden en que xUnit
     /// los corra, que es peor que un test largo (mismo criterio que
     /// <c>GetSubjectFactsEndpointTests</c>).
+    ///
+    /// US-134 E1: la cobertura cruza de 0 a 1 materia medida cuando una cátedra cruza el piso, sin
+    /// importar que el resto del plan siga sin medir. US-127 E2: el bloque de datos oficiales
+    /// (<see cref="GetCareerFactsResponse.DurationYears"/>) se resuelve antes de que exista una sola
+    /// reseña, porque no depende de ellas.
     /// </summary>
     [Fact]
     public async Task The_career_goes_from_no_coverage_to_one_subject_crossing_the_floor()
@@ -110,7 +115,8 @@ public class GetCareerFactsEndpointTests : IClassFixture<RegisterApiFixture>
         empty!.CareerId.ShouldBe(TudcsCareerId);
         empty.CareerName.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
         empty.UniversityName.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
-        // El seed no carga duración: la ficha no puede inventarla.
+        // El seed no carga duración: la ficha no puede inventarla. El campo se resuelve igual
+        // (llega en null, no falta), y sin una sola reseña todavía: no depende de ellas.
         empty.DurationYears.ShouldBeNull();
         empty.TotalSubjects.ShouldBe(21);
         empty.CoveredSubjects.ShouldBe(0);

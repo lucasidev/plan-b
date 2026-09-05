@@ -21,6 +21,7 @@ Entonces cada una lleva su propio "de N": el denominador de una frase no se comp
 **N2.** Dado cualquier frase publicada en cualquier ficha
 Cuando se muestra su moda
 Entonces nunca aparece un porcentaje solo, sin su "de N" al lado.
+Roto: #439
 
 ## Edge cases
 

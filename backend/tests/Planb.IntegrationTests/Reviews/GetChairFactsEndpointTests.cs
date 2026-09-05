@@ -130,6 +130,7 @@ public class GetChairFactsEndpointTests : IClassFixture<RegisterApiFixture>
         facts.Span.ShouldBeNull();
     }
 
+    /// <summary>US-129 E1, US-131 E1, E2</summary>
     [Fact]
     public async Task The_tenth_review_is_what_publishes_the_ficha()
     {

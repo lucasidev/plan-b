@@ -52,6 +52,7 @@ public class GetSampleChairFactsEndpointTests : IClassFixture<RegisterApiFixture
         _anonymous = fixture.Factory.CreateClient();
     }
 
+    /// <summary>US-221 E1, N1</summary>
     [Fact]
     public async Task The_sample_only_draws_among_chairs_that_already_publish()
     {
@@ -116,5 +117,86 @@ public class GetSampleChairFactsEndpointTests : IClassFixture<RegisterApiFixture
                 });
             published.StatusCode.ShouldBe(HttpStatusCode.Created);
         }
+    }
+}
+
+/// <summary>
+/// La muestra sortea, no elige (US-221): con más de una cátedra publicando, tiene que aparecer más
+/// de una a lo largo de varias llamadas. Clase propia (y su propia base) porque necesita DOS
+/// cátedras publicando a la vez, y la de arriba depende de que sólo publique una.
+/// </summary>
+public class GetSampleChairFactsEndpointDrawsVariablyTests : IClassFixture<RegisterApiFixture>
+{
+    private readonly RegisterApiFixture _fixture;
+    private readonly HttpClient _anonymous;
+
+    private static readonly Guid TudcsPlanId = Guid.Parse("00000003-0000-4000-a000-000000000003");
+    private static readonly Guid Subject211 = Guid.Parse("00000004-0000-4000-a000-000000000012");
+    private static readonly Guid ChairPerez = Guid.Parse("00000008-0000-4000-a000-000000000001");
+    private static readonly Guid ChairRuiz = Guid.Parse("00000008-0000-4000-a000-000000000003");
+
+    private static readonly Guid[] Terms =
+    [
+        Guid.Parse("00000005-0000-4000-a000-000000000001"),
+        Guid.Parse("00000005-0000-4000-a000-000000000002"),
+        Guid.Parse("00000005-0000-4000-a000-000000000003"),
+        Guid.Parse("00000005-0000-4000-a000-000000000004"),
+        Guid.Parse("00000005-0000-4000-a000-000000000005"),
+        Guid.Parse("00000005-0000-4000-a000-000000000006"),
+    ];
+
+    public GetSampleChairFactsEndpointDrawsVariablyTests(RegisterApiFixture fixture)
+    {
+        _fixture = fixture;
+        _anonymous = fixture.Factory.CreateClient();
+    }
+
+    private async Task PublishAsync(Guid chairId, int from, int count)
+    {
+        for (var i = from; i < from + count; i++)
+        {
+            var auth = await AuthenticatedClient.CreateAsync(
+                _fixture, $"sample-draw-{i}.{Guid.NewGuid():N}@planb.local");
+
+            (await auth.Client.PostAsJsonAsync(
+                "/api/me/student-profiles",
+                new { careerPlanId = TudcsPlanId, enrollmentYear = 2024 }))
+                .EnsureSuccessStatusCode();
+
+            var response = await auth.Client.PostAsJsonAsync(
+                "/api/reviews/courses",
+                new
+                {
+                    subjectId = Subject211,
+                    termId = Terms[i % Terms.Length],
+                    chairId = (Guid?)chairId,
+                    answers = new[] { new { itemCode = "COURSE_OUTCOME", optionValue = 1 } },
+                    freeText = (string?)null,
+                });
+            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        }
+    }
+
+    /// <summary>US-221 E2</summary>
+    [Fact]
+    public async Task The_draw_varies_between_more_than_one_publishing_chair()
+    {
+        await PublishAsync(ChairPerez, 0, 10);
+        await PublishAsync(ChairRuiz, 10, 10);
+
+        // Cuarenta sorteos entre dos candidatas igual de válidas: la chance de no ver más que una
+        // sola es (1/2)^40, indistinguible de cero. No es una prueba de distribución, solo de que
+        // el sorteo no está devolviendo siempre la misma.
+        var seen = new HashSet<Guid>();
+        for (var i = 0; i < 40 && seen.Count < 2; i++)
+        {
+            var response = await _anonymous.GetFromJsonAsync<GetChairFactsResponse>(
+                "/api/reviews/chairs/sample");
+            response.ShouldNotBeNull();
+            seen.Add(response!.ChairId);
+        }
+
+        seen.Count.ShouldBeGreaterThan(
+            1, "en 40 sorteos con dos cátedras publicando, tendría que aparecer más de una");
     }
 }

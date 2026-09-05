@@ -60,7 +60,7 @@ function facts(overrides: Partial<ChairFacts> = {}): ChairFacts {
 }
 
 describe('LandingSample', () => {
-  it('muestra la ficha real con sus voces y su ventana temporal', () => {
+  it('US-221 E1: muestra la ficha real con sus voces y su ventana temporal', () => {
     render(<LandingSample sample={facts()} />);
 
     expect(screen.getByRole('heading', { name: /cátedra pérez/i })).toBeInTheDocument();

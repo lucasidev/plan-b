@@ -74,11 +74,20 @@ public class EditorialNoteEndpointsTests : IClassFixture<RegisterApiFixture>
     /// <summary>
     /// La nota llega a la ficha de su carrera, que se lee sin cuenta: la síntesis se publica, y el
     /// texto del que salió no.
+    ///
+    /// US-127 E1, E3: "dura en la realidad" no tiene un campo propio (es relevamiento oficial que
+    /// hoy no existe como dato estructurado); se publica como una nota del equipo con su fuente y su
+    /// período adentro del texto, y la ficha la muestra fechada. US-127 N1: antes de publicarla, la
+    /// carrera no tiene ninguna nota, así que ningún número sale inventado.
     /// </summary>
     [Fact]
     public async Task The_note_reaches_the_career_ficha_and_is_read_without_an_account()
     {
-        var text = $"Varias cursadas mencionan que no se sabe con qué se rinde {Guid.NewGuid():N}";
+        // Sin la nota, la carrera no dice nada de "dura en la realidad": ni un número, ni una nota.
+        (await FactsAsync()).EditorialNotes.ShouldBeEmpty();
+
+        var text = "Dura en la realidad: 8,4 años · Fuente: Ministerio de Educación (SPU) · " +
+            $"serie 2015-2024 ({Guid.NewGuid():N})";
         var admin = await AdminAsync();
         var created = await PublishAsync(admin, text);
 

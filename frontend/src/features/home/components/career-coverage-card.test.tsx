@@ -15,7 +15,7 @@ function facts(over: Partial<CareerFacts> = {}): CareerFacts {
 }
 
 describe('CareerCoverageCard', () => {
-  it('muestra la cobertura como fracción del plan y lleva a la ficha de la carrera', () => {
+  it('US-231 E2: muestra la cobertura como fracción del plan y lleva a la ficha de la carrera', () => {
     render(<CareerCoverageCard facts={facts()} />);
 
     expect(screen.getByText(/23 de 51 materias/i)).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('CareerCoverageCard', () => {
     expect(screen.getByText(/todas sus materias ya juntan/i)).toBeInTheDocument();
   });
 
-  it('el número es del plan y nunca se presenta como logro de la cuenta', () => {
+  it('US-231 X1: el número es del plan y nunca se presenta como logro de la cuenta', () => {
     const { container } = render(<CareerCoverageCard facts={facts()} />);
     expect(container.textContent).not.toMatch(
       /llevás|tu progreso|lograste|completaste|nivel|racha|★|puntaje/i,
