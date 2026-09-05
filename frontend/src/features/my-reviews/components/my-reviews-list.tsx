@@ -73,6 +73,7 @@ export function MyReviewsList({
           <ReviewCard
             key={review.id}
             review={review}
+            instrument={instrument}
             canEdit={instrument !== null}
             onEdit={() => setEditing(review.id)}
             onRemoved={() => setRemoved((prev) => [...prev, review.id])}
@@ -83,13 +84,30 @@ export function MyReviewsList({
   );
 }
 
+/** Mismo código que usa el backend (`PublishingRules.OutcomeItemCode`) y `ReviewForm` en Reseñar. */
+const COURSE_OUTCOME_ITEM_CODE = 'COURSE_OUTCOME';
+
+/**
+ * La etiqueta del desenlace declarado, si la reseña lo contestó y el instrumento vigente todavía
+ * trae esa frase: mismo mapeo opción → etiqueta que usa `ReviewEditor` para dibujar las preguntas,
+ * pero de solo lectura. Sin instrumento, sin la frase, o sin esa respuesta, no hay nada que traducir.
+ */
+function courseOutcomeLabel(review: MyReview, instrument: CurrentInstrument | null): string | null {
+  const item = instrument?.items.find((i) => i.code === COURSE_OUTCOME_ITEM_CODE);
+  const answer = review.answers.find((a) => a.itemCode === COURSE_OUTCOME_ITEM_CODE);
+  if (!item || !answer) return null;
+  return item.options.find((option) => option.value === answer.optionValue)?.label ?? null;
+}
+
 function ReviewCard({
   review,
+  instrument,
   canEdit,
   onEdit,
   onRemoved,
 }: {
   review: MyReview;
+  instrument: CurrentInstrument | null;
   canEdit: boolean;
   onEdit: () => void;
   onRemoved: () => void;
@@ -98,6 +116,7 @@ function ReviewCard({
   const [pending, startTransition] = useTransition();
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const outcomeLabel = courseOutcomeLabel(review, instrument);
 
   function remove() {
     startTransition(async () => {
@@ -142,6 +161,13 @@ function ReviewCard({
         {review.answeredItems}{' '}
         {review.answeredItems === 1 ? 'pregunta contestada' : 'preguntas contestadas'}
       </p>
+
+      {outcomeLabel && (
+        <p className="mb-3 text-[12.5px] text-ink-3">
+          Cómo terminó: {outcomeLabel}. Esto es tu registro. No se publica: en la ficha se ve solo
+          el conteo.
+        </p>
+      )}
 
       {review.freeText && (
         <p className="mb-3 border-l-2 border-line pl-3 text-[13px] leading-relaxed text-ink-2">

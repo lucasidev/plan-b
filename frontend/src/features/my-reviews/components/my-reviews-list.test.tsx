@@ -1,11 +1,33 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import type { CurrentInstrument } from '@/components/instrument';
 import type { MyReview } from '../types';
 import { MyReviewsList } from './my-reviews-list';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
+
+/** Un instrumento mínimo, con la única frase que esta tarjeta necesita traducir. */
+const INSTRUMENT: CurrentInstrument = {
+  code: 'TEST',
+  version: 1,
+  items: [
+    {
+      code: 'COURSE_OUTCOME',
+      text: '¿Cómo terminó esa cursada?',
+      help: null,
+      layer: 'Context',
+      origin: 'Seed',
+      options: [
+        { value: 1, label: 'La aprobé' },
+        { value: 2, label: 'Me quedó regular' },
+        { value: 3, label: 'La recursé' },
+        { value: 4, label: 'La dejé' },
+      ],
+    },
+  ],
+};
 
 function review(over: Partial<MyReview> = {}): MyReview {
   return {
@@ -87,14 +109,29 @@ describe('MyReviewsList', () => {
   });
 
   /**
-   * Roto: #444, hasta 2026-09-30. Ficha SC-018 ("Publicado"): "Cómo terminaste esa cursada se ve acá,
-   * aunque nunca se publique con la reseña: es tu propio registro, no lo público" (US-148, "Dónde
-   * se resuelve"). El desenlace viaja en `answers` como cualquier otra frase (`COURSE_OUTCOME`,
-   * optionValue 1 = "La aprobé": mismo mapeo que usa `chair-facts.spec.ts`), pero `ReviewCard` no
-   * lo traduce a texto en ningún lado: no hay mapping de opción a etiqueta en este componente (a
-   * diferencia de `review-editor.tsx`, que sí usa `instrument.items` para eso).
+   * Ficha SC-018 ("Publicado"): "Cómo terminaste esa cursada se ve acá, aunque nunca se publique
+   * con la reseña: es tu propio registro, no lo público" (US-148, "Dónde se resuelve"). El
+   * desenlace viaja en `answers` como cualquier otra frase (`COURSE_OUTCOME`, optionValue 1 = "La
+   * aprobé": mismo mapeo que usa `chair-facts.spec.ts`), y `ReviewCard` lo traduce con el
+   * instrumento vigente, igual que `review-editor.tsx`.
    */
-  it.skip('US-148: cómo terminó la cursada se ve en la tarjeta como registro propio', () => {
+  it('US-148: cómo terminó la cursada se ve en la tarjeta como registro propio', () => {
+    render(
+      <MyReviewsList
+        reviews={[review({ answers: [{ itemCode: 'COURSE_OUTCOME', optionValue: 1 }] })]}
+        instrument={INSTRUMENT}
+      />,
+    );
+
+    expect(screen.getByText(/aprob/i)).toBeInTheDocument();
+    expect(screen.getByText(/no se publica/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Sin instrumento vigente no hay con qué traducir la opción a etiqueta, así que la línea no se
+   * dibuja: mejor nada que un componente roto.
+   */
+  it('sin instrumento no dibuja el desenlace, y la tarjeta no rompe', () => {
     render(
       <MyReviewsList
         reviews={[review({ answers: [{ itemCode: 'COURSE_OUTCOME', optionValue: 1 }] })]}
@@ -102,6 +139,7 @@ describe('MyReviewsList', () => {
       />,
     );
 
-    expect(screen.getByText(/aprob/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Análisis Matemático II' })).toBeInTheDocument();
+    expect(screen.queryByText(/cómo terminó/i)).not.toBeInTheDocument();
   });
 });
