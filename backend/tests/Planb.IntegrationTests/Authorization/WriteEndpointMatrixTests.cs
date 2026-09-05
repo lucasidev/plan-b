@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Planb.Identity.Domain.Users;
@@ -341,6 +342,26 @@ public class WriteEndpointMatrixTests : IClassFixture<WriteEndpointMatrixFixture
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest,
             $"{testCase.Method} {testCase.SeededRoute} con body vacío: esperaba 400, fue {(int)response.StatusCode}.");
+    }
+
+    // Un body que no es JSON hace que el binding de Minimal APIs tire BadHttpRequestException, y con
+    // ThrowOnBadRequest (el default de Development) esa excepción llegaba al exception handler como
+    // 500. Mismo contrato que el resto de la batería: un request mal armado es 400, nunca 500.
+    [Theory]
+    [MemberData(nameof(EndpointsWithBody))]
+    public async Task Body_that_is_not_json_is_400(WriteEndpointCase testCase)
+    {
+        await ClearIpRateLimitBucketIfAnyAsync(testCase);
+
+        var client = ClientFor(testCase.Access);
+        var request = new HttpRequestMessage(testCase.Method, testCase.SeededRoute)
+        {
+            Content = new StringContent("not json", Encoding.UTF8, "application/json"),
+        };
+        var response = await client.SendAsync(request);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest,
+            $"{testCase.Method} {testCase.SeededRoute} con un body que no es JSON: esperaba 400, fue {(int)response.StatusCode}.");
     }
 
     [Theory]
