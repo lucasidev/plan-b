@@ -125,6 +125,11 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     // en ningún momento.
     await page.getByRole('link', { name: /explorar carreras y materias/i }).click();
     await expect(page).toHaveURL(/\/universities$/, { timeout: 30_000 });
+    // El estado de carga del catálogo monta su propia barra con un buscador que la página
+    // descarta al llegar: tipear ahí se pierde con él. El título solo existe en la página.
+    await expect(page.getByRole('heading', { level: 1, name: /universidades/i })).toBeVisible({
+      timeout: 30_000,
+    });
     await page.getByRole('combobox', { name: /buscar materia/i }).fill('Fundamentos');
     await page.getByRole('option', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
     await expect(page).toHaveURL(new RegExp(`/subjects/${SUBJECT_ID}$`), { timeout: 30_000 });
