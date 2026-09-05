@@ -114,6 +114,30 @@ public class RequestPasswordResetEndpointTests : IClassFixture<RegisterApiFixtur
         tokens.ShouldBeEmpty();
     }
 
+    /// <summary>US-166 N1</summary>
+    [Fact]
+    public async Task Returns_204_and_issues_no_token_for_a_deactivated_user()
+    {
+        var email = $"deactivated.{Guid.NewGuid():N}@planb.local";
+        var auth = await AuthenticatedClient.CreateAsync(_fixture, email, "valid-password-12c");
+        var userId = auth.UserId;
+
+        var deactivate = await auth.Client.DeleteAsync("/api/me/account");
+        deactivate.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // Pide recuperar la cuenta con el mail viejo: la respuesta es la misma genérica de
+        // siempre, y no le abre ninguna puerta de vuelta.
+        var response = await _client.PostAsJsonAsync(
+            "/api/identity/forgot-password",
+            new RequestPasswordResetRequest(email));
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var user = await db.Users.SingleAsync(u => u.Id == userId);
+        user.Tokens.Where(t => t.Purpose == TokenPurpose.PasswordReset).ShouldBeEmpty();
+    }
+
     [Fact]
     public async Task A_second_request_for_the_same_user_invalidates_the_first_token()
     {

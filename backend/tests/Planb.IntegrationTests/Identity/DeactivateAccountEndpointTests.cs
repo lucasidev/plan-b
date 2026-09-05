@@ -36,6 +36,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
 
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
+    /// <summary>US-166 E1</summary>
     [Fact]
     public async Task Returns_204_and_user_row_survives_with_anonymized_email()
     {
@@ -58,6 +59,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         user.PasswordHash.ShouldBe(User.DeactivatedPasswordSentinel);
     }
 
+    /// <summary>US-166 E1</summary>
     [Fact]
     public async Task Cascade_removes_student_profile_owned_by_the_deactivated_user()
     {
@@ -129,6 +131,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
     }
 
+    /// <summary>US-166 N4</summary>
     [Fact]
     public async Task Returns_409_when_user_is_already_deactivated()
     {
@@ -142,6 +145,35 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         // pero el handler chequea IsDeactivated y devuelve 409.
         var second = await auth.Client.DeleteAsync("/api/me/account");
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+    }
+
+    /// <summary>US-166 E1, N1</summary>
+    [Fact]
+    public async Task Old_password_stops_working_after_deactivation()
+    {
+        var rawEmail = FreshEmail("deactivate-oldpw");
+        var rawPassword = "valid-password-12c";
+        var auth = await AuthenticatedClient.CreateAsync(_fixture, rawEmail, rawPassword);
+
+        var deactivate = await auth.Client.DeleteAsync("/api/me/account");
+        deactivate.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        // El mail viejo ya no sirve para volver a entrar: no hay ninguna forma de recuperar la
+        // cuenta con lo que ella tenía antes de darse de baja.
+        using var bootstrap = _fixture.Factory.CreateClient();
+        var signIn = await bootstrap.PostAsJsonAsync(
+            "/api/identity/sign-in", new { email = rawEmail, password = rawPassword });
+        signIn.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+
+        // Y la contraseña, aislada del cambio de mail: ni con el mail nuevo (anonimizado) la
+        // contraseña vieja abre la cuenta.
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+        var anonymizedEmail = (await db.Users.FindAsync(auth.UserId))!.Email.Value;
+
+        var signInWithNewEmail = await bootstrap.PostAsJsonAsync(
+            "/api/identity/sign-in", new { email = anonymizedEmail, password = rawPassword });
+        signInWithNewEmail.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

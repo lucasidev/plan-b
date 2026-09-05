@@ -182,4 +182,58 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     });
     await expect(page.getByText(/de cada 10 que la cursan/i)).toHaveCount(0);
   });
+
+  /**
+   * US-165 N4: no existe un borrado en bloque. Diego tiene reseñas de dos cursadas distintas y
+   * cada una se borra de a una, con su propio botón al lado; borrar una no toca a la otra.
+   */
+  test('cada reseña se borra de a una, con su propio botón Borrar al lado', async ({
+    page,
+    context,
+    request,
+  }) => {
+    const chairA = await createChair(request, { label: 'BulkA' });
+    const chairB = await createChair(request, { label: 'BulkB' });
+
+    const author = await createStudent(request, {
+      emailPrefix: 'e2e-bulk-author',
+      careerPlanId: chairA.planId,
+    });
+    students.push(author);
+
+    const reviewIdA = await publishByApi(request, author, chairA, TERMS[0]);
+    seeded.push({ student: author, reviewId: reviewIdA });
+    const reviewIdB = await publishByApi(request, author, chairB, TERMS[1]);
+    seeded.push({ student: author, reviewId: reviewIdB });
+
+    await context.clearCookies();
+    await page.goto('/sign-in');
+    await page.getByLabel(/tu email/i).fill(author.email);
+    await page.getByLabel(/^contraseña$/i).fill(author.password);
+    await page.getByRole('button', { name: /^entrar$/i }).click();
+    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+
+    await page.goto('/reviews/mine');
+    await expect(page.getByRole('heading', { name: chairA.subjectName })).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(page.getByRole('heading', { name: chairB.subjectName })).toBeVisible();
+
+    // Dos reseñas, dos botones Borrar: nunca uno solo para las dos juntas.
+    await expect(page.getByRole('button', { name: /^borrar$/i })).toHaveCount(2);
+
+    const cardA = page.getByRole('article').filter({ hasText: chairA.subjectName });
+    const cardB = page.getByRole('article').filter({ hasText: chairB.subjectName });
+
+    await cardA.getByRole('button', { name: /^borrar$/i }).click();
+    await expect(cardA.getByText(/sus respuestas dejan de contar/i)).toBeVisible();
+    await cardA.getByRole('button', { name: /sí, borrarla/i }).click();
+
+    // Solo esa se fue: la otra sigue con su propia tarjeta y su propio botón, intacta.
+    await expect(page.getByRole('heading', { name: chairA.subjectName })).toHaveCount(0, {
+      timeout: 30_000,
+    });
+    await expect(cardB.getByRole('heading', { name: chairB.subjectName })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^borrar$/i })).toHaveCount(1);
+  });
 });

@@ -130,4 +130,17 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await dialog.getByRole('button', { name: /cancelar/i }).click();
     await expect(dialog).not.toBeVisible();
   });
+
+  /**
+   * US-166 E3: antes de tocar el botón final, la pantalla dice con esas palabras qué implica la
+   * baja (SC-016): el nombre y el mail se anonimizan, lo que reseñó sigue contando en los conteos
+   * de su cátedra sin nada que lleve a ella, y la acción es irreversible. "Hash" es jerga de
+   * ADR-0044 y no se le pide a la pantalla.
+   */
+  test('antes de confirmar, la pantalla dice qué implica la baja', async ({ page }) => {
+    await expect(page.getByText(/nombre[\s\S]*?anonimiz/i)).toBeVisible();
+    await expect(page.getByText(/sigue contando en los conteos de su cátedra/i)).toBeVisible();
+    await expect(page.getByText(/sin nada que lleve a vos/i)).toBeVisible();
+    await expect(page.getByText(/irreversible/i)).toBeVisible();
+  });
 });

@@ -96,6 +96,32 @@ describe('DeactivateAccountButton', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('no llama al action al cancelar, ni con el email ya matcheando (US-166 N6)', async () => {
+    const user = userEvent.setup();
+    render(<DeactivateAccountButton email="lucia@unsta.edu.ar" />);
+    await user.click(screen.getByRole('button', { name: /dar de baja mi cuenta/i }));
+
+    await user.type(screen.getByLabelText(/tu email/i), 'lucia@unsta.edu.ar');
+    expect(screen.getByRole('button', { name: /dar de baja la cuenta/i })).toBeEnabled();
+
+    await user.click(screen.getByRole('button', { name: /cancelar/i }));
+
+    expect(actionMock).not.toHaveBeenCalled();
+  });
+
+  it('no llama al action al cerrar con ESC, ni con el email ya matcheando (US-166 N6)', async () => {
+    const user = userEvent.setup();
+    render(<DeactivateAccountButton email="lucia@unsta.edu.ar" />);
+    await user.click(screen.getByRole('button', { name: /dar de baja mi cuenta/i }));
+
+    await user.type(screen.getByLabelText(/tu email/i), 'lucia@unsta.edu.ar');
+    expect(screen.getByRole('button', { name: /dar de baja la cuenta/i })).toBeEnabled();
+
+    await user.keyboard('{Escape}');
+
+    expect(actionMock).not.toHaveBeenCalled();
+  });
+
   it('no llama al action cuando el email no matchea (botón disabled)', async () => {
     const user = userEvent.setup();
     render(<DeactivateAccountButton email="lucia@unsta.edu.ar" />);
