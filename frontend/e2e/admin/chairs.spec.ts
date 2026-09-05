@@ -48,6 +48,11 @@ async function createTeacher(page: Page, suffix: string): Promise<string> {
 }
 
 test.describe('Cargar una cátedra desde el backoffice (US-196)', () => {
+  // El recorrido pasa por cuatro pantallas del backoffice y la ficha pública; sobre el dev
+  // server, que compila cada ruta la primera vez, tarda entre 20 y 40 segundos solo y agota los
+  // 60 por default cuando corre con la suite entera.
+  test.setTimeout(120_000);
+
   test('se carga una cátedra, se le suma y se le cierra un integrante, y la ficha pública la muestra', async ({
     page,
   }) => {
