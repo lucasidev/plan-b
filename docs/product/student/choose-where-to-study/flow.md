@@ -6,7 +6,7 @@
 flowchart TD
   A([Llega por un link, un buscador o Inicio: sin cuenta, US-168]) --> B[Explorar: dos lentes, carreras y universidades]
   A --> S[Buscar: materia, carrera, docente o institución en una sola búsqueda, US-132]
-  S -->|el nombre de un docente| S1[Ficha de cátedra: un docente no es una ficha, la cátedra sí]
+  S -->|el nombre de un docente| S1[Docente: quién es y qué cátedras integra, sin conteos sobre la persona]
   S -->|no está| S2[Buscar explica por qué: no la cargamos / cargada sin voces / cargada con cobertura parcial, US-139]
   S2 --> S3[Pedir, opcional → Pedir una carrera]
   S1 --> E2

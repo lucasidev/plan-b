@@ -65,34 +65,35 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 | [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
 | [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
 
-91 stories (86 en tramos y 5 garantías) y 33 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
+91 stories (86 en tramos y 5 garantías) y 34 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
-## Las 33 pantallas
+## Las 34 pantallas
 
-Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo el índice por ID y slug de URL, que es lo único que no se deduce de la estructura de carpetas (los slugs se verificaron contra `frontend/src/app/` el 2026-08-19). **Una pantalla se nombra por lo que dice arriba**, en español; la URL es código, en inglés, y se fija al construirla.
+Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo el índice por ID y slug de URL, que es lo único que no se deduce de la estructura de carpetas (los slugs se verificaron contra `frontend/src/app/` el 2026-09-05). **Una pantalla se nombra por lo que dice arriba**, en español; la URL es código, en inglés, y se fija al construirla.
 
 | ID | Épica dueña | Pantalla | Slug hoy |
 |---|---|---|---|
-| `SC-001` | Elegir dónde estudiar | [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) | sin slug hoy |
-| `SC-002` |  | [Ficha de cátedra](student/choose-where-to-study/screens/SC-002-chair/README.md) | sin slug hoy |
+| `SC-001` | Elegir dónde estudiar | [Ficha de carrera](student/choose-where-to-study/screens/SC-001-career/README.md) | `/careers/[id]` |
+| `SC-002` |  | [Ficha de cátedra](student/choose-where-to-study/screens/SC-002-chair/README.md) | `/chairs/[id]` |
 | `SC-003` |  | [Explorar](student/choose-where-to-study/screens/SC-003-explore/README.md) | `/universities` |
 | `SC-004` |  | [La entrada](student/choose-where-to-study/screens/SC-004-entrance/README.md) | `/` |
 | `SC-005` |  | [Ficha de institución](reviewed/reply/screens/SC-005-institution/README.md) | `/universities/[slug]/careers` |
 | `SC-006` |  | [Buscar](student/choose-where-to-study/screens/SC-006-search/README.md) | sin slug hoy |
 | `SC-007` |  | [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md) | `/subjects/[id]` |
 | `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
+| `SC-035` |  | [Docente](student/choose-where-to-study/screens/SC-035-teacher/README.md) | `/teachers/[id]` |
 | `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
 | `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
 | `SC-011` | Entrar | [Inicio](student/enter/screens/SC-011-home/README.md) | `/home` |
 | `SC-013` | Reseñar | [Anonimato](student/write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
 | `SC-014` |  | [Mi situación](student/write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
-| `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/write` |
+| `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/new` |
 | `SC-016` | Deshacer | [Baja](student/undo/screens/SC-016-delete-account/README.md) | sin slug hoy |
 | `SC-017` |  | [Editar](student/undo/screens/SC-017-edit/README.md) | sin slug hoy |
-| `SC-018` |  | [Mis aportes](student/undo/screens/SC-018-my-contributions/README.md) | `/reviews` |
+| `SC-018` |  | [Mis aportes](student/undo/screens/SC-018-my-contributions/README.md) | `/reviews/mine` |
 | `SC-019` |  | [Mi perfil](student/undo/screens/SC-019-my-profile/README.md) | `/my-profile` |
 | `SC-020` | Responder | [Responder](reviewed/reply/screens/SC-020-respond/README.md) | sin slug hoy |
-| `SC-021` | Llevarse el dato | [Método](student/take-the-data/screens/SC-021-method/README.md) | sin slug hoy |
+| `SC-021` | Llevarse el dato | [Método](student/take-the-data/screens/SC-021-method/README.md) | `/method` |
 | `SC-022` | Cuidar lo publicado | [Verificar](student/care-for-what-is-published/screens/SC-022-verify/README.md) | sin slug hoy |
 | `SC-023` | Entrar | [Error](student/enter/screens/SC-023-error/README.md) | sin slug hoy |
 | `SC-024` |  | [Recuperar](student/enter/screens/SC-024-forgot-password/README.md) | `/forgot-password` |
@@ -100,9 +101,9 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-026` |  | [Registro](student/enter/screens/SC-026-sign-up/README.md) | `/sign-up` |
 | `SC-027` | Sostener el catálogo | [Catálogo](team/sustain-the-catalog/screens/SC-027-catalog/README.md) | `/admin/universities` |
 | `SC-028` |  | [Correcciones](team/sustain-the-catalog/screens/SC-028-corrections/README.md) | sin slug hoy |
-| `SC-029` |  | [Frases](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | sin slug hoy |
+| `SC-029` |  | [Frases](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | `/admin/items` |
 | `SC-030` |  | [Pedidos](team/sustain-the-catalog/screens/SC-030-requests/README.md) | sin slug hoy |
-| `SC-031` | Moderar sin romper el producto | [Reportes](team/moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | `/admin/moderacion/reportes` |
+| `SC-031` | Moderar sin romper el producto | [Reportes](team/moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | sin slug hoy |
 | `SC-032` |  | [Verificaciones](team/moderate-without-breaking-the-product/screens/SC-032-verifications/README.md) | sin slug hoy |
 | `SC-033` | Cortar los accesos | [Equipo](team/cut-the-access/screens/SC-033-team/README.md) | sin slug hoy |
 | `SC-034` | Avisos | [Avisos](notices/screens/SC-034-mail/README.md) | sin slug hoy |

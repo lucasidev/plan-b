@@ -4,7 +4,7 @@ import Link from 'next/link';
  * Las cátedras que un docente integra, con link a la ficha de cada una (US-132).
  *
  * Existe porque lo que el producto publica es de la **cátedra**, no del docente (ADR-0083): la
- * ficha de una persona tiene que poder llevar a donde están los conteos, o el que busca un apellido
+ * pantalla de una persona tiene que poder llevar a donde están los conteos, o el que busca un apellido
  * queda en una pantalla que no le contesta lo que vino a preguntar.
  *
  * Las que ya no integra se listan aparte y marcadas. Borrarlas de la vista sería contar mal su

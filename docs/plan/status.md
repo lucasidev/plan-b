@@ -49,7 +49,7 @@ Desde el 2026-08-16 esto no es la continuación del planificador: es su reemplaz
 
 ## Contra qué se planifica
 
-103 stories en 13 épicas, todas con sus escenarios ejecutables ([`docs/product/`](../product/README.md)), 34 pantallas con ficha y boceto (hoy 32: dos se retiraron con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)), y un catálogo de 46 frases semilla (7 de exigencia y 39 de gestión: el desbalance está sin resolver). Eso es el producto ideado. Lo que sigue es cuánto de lo construido sirve.
+103 stories en 13 épicas, todas con sus escenarios ejecutables ([`docs/product/`](../product/README.md)), 34 pantallas con ficha y boceto (dos se retiraron con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) y la pantalla de docente entró el 2026-09-05; el índice está en [`product/README.md`](../product/README.md)), y un catálogo de 46 frases semilla (7 de exigencia y 39 de gestión: el desbalance está sin resolver). Eso es el producto ideado. Lo que sigue es cuánto de lo construido sirve.
 
 ## El inventario: qué hay hoy
 

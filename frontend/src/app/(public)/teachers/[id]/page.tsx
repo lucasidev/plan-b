@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 
 /**
- * /teachers/[id] (US-003, US-132). Ficha pública de un docente: quién es y qué cátedras integra,
+ * /teachers/[id] (US-132, SC-035). La pantalla pública de un docente: quién es y qué cátedras integra,
  * cada una con link a sus conteos.
  *
  * **No publica nada sobre la persona**: lo que se reseña y se publica es la cátedra (ADR-0083), así

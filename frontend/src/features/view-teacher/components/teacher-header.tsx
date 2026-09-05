@@ -1,7 +1,7 @@
 import type { TeacherDetail } from '../types';
 
 /**
- * Encabezado de la ficha de un docente (US-003): avatar (foto o iniciales) + "Docente" + nombre +
+ * Encabezado de la pantalla de un docente (SC-035): avatar (foto o iniciales) + "Docente" + nombre +
  * título + bio. Los nombres llegan ya capitalizados de la API (en la base están en minúscula).
  *
  * Sin fila de estadísticas: lo que el producto publica es de la cátedra (ADR-0083), y las cátedras
