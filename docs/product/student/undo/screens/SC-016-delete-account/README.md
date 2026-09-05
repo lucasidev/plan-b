@@ -12,7 +12,7 @@ US-166 (dueña): los aportes se borran de a uno antes, en [Editar](../SC-017-edi
 
 ## Qué muestra
 
-- **Qué pasa, con esas palabras**: tu nombre se borra y tu mail se convierte en un hash irreversible (ADR-0044): queda solo para detectar cuentas repetidas, nadie puede volver de ahí a tu mail. Tus reseñas (sus respuestas y sus conteos) quedan publicadas exactas, sin vos atrás. Es irreversible: si volvés, es con una cuenta nueva.
+- **Qué pasa, con esas palabras**: tu nombre y tu mail se anonimizan y no se recuperan (por dentro el mail queda como un hash, ADR-0044, solo para detectar cuentas repetidas; eso no se le dice al lector). Lo que reseñaste sigue contando en los conteos de su cátedra, sin nada que lleve a vos. Es irreversible: si volvés, es con una cuenta nueva.
 - **Confirmar**: una acción explícita (no un solo click apurado) que repite que no se puede deshacer, antes del botón final.
 
 ## Estados

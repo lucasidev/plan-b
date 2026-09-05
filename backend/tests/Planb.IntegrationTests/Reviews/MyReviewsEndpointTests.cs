@@ -136,6 +136,53 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         review.FreeText.ShouldBeNull();
     }
 
+    /// <summary>US-165 E3, N2</summary>
+    [Fact]
+    public async Task Revising_free_text_saves_instantly_even_when_it_names_someone()
+    {
+        var auth = await StudentAsync("freetext-revise");
+        var id = await PublishAsync(auth, Term2024_1c, freeText: "algo original");
+
+        var sentinel = $"SENTINEL-{Guid.NewGuid():N}";
+        var mentionsSomeone = $"El ayudante Juan Pérez nunca contestaba nada. {sentinel}";
+
+        // Guarda de nuevo, reenviando las MISMAS dos respuestas de la publicación: lo único que
+        // cambia es el campo libre, y menciona a alguien por fuera de su rol público.
+        var revised = await auth.Client.PutAsJsonAsync(
+            $"/api/reviews/courses/{id}",
+            new
+            {
+                answers = new[]
+                {
+                    new { itemCode = "COURSE_OUTCOME", optionValue = 2 },
+                    new { itemCode = "CHAIR_ANSWERS_IN_CLASS", optionValue = 3 },
+                },
+                freeText = mentionsSomeone,
+            });
+
+        // Se guarda al instante: 200 y nada de un estado intermedio a la espera de un chequeo.
+        revised.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var mine = await auth.Client.GetFromJsonAsync<List<MyReviewView>>(
+            "/api/reviews/courses/me");
+        var review = mine!.Single();
+
+        review.FreeText.ShouldBe(mentionsSomeone);
+        // Las respuestas que había dado siguen contando igual: la edición del campo libre no las
+        // tocó.
+        review.Answers.Count.ShouldBe(2);
+        review.Answers.ShouldContain(a => a.ItemCode == "COURSE_OUTCOME" && a.OptionValue == 2);
+        review.Answers.ShouldContain(a => a.ItemCode == "CHAIR_ANSWERS_IN_CLASS" && a.OptionValue == 3);
+
+        // Nunca se publica, así que no hay nada que moderar antes de nada: ni la mención ni el
+        // resto del texto aparecen en la ficha pública.
+        var anonymous = _fixture.Factory.CreateClient();
+        var factsResponse = await anonymous.GetAsync($"/api/reviews/chairs/{ChairPerez}/facts");
+        var factsBody = await factsResponse.Content.ReadAsStringAsync();
+        factsBody.ShouldNotContain(sentinel);
+        factsBody.ShouldNotContain("Juan Pérez");
+    }
+
     [Fact]
     public async Task Deleting_takes_the_review_out_of_the_counts()
     {
@@ -158,6 +205,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         republished.ShouldNotBe(id);
     }
 
+    /// <summary>US-165 N1</summary>
     [Fact]
     public async Task Someone_elses_review_answers_404_and_never_403()
     {
