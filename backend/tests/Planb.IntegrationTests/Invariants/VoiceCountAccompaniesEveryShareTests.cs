@@ -111,7 +111,7 @@ public class FameStatesItsOwnVoiceCountTests : IClassFixture<RegisterApiFixture>
     /// bajar al detalle; si hay que ir a buscar el conteo a otro bloque de la ficha, el porcentaje
     /// quedó solo.
     /// </summary>
-    [Fact(Skip = "Roto: #439")]
+    [Fact]
     public async Task Fame_never_states_a_percentage_without_its_own_voice_count()
     {
         // Diez cursadas marcan la opción negativa de tres frases de conducta distintas: las tres

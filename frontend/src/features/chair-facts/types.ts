@@ -44,6 +44,7 @@ export interface FameItem {
   text: string;
   negativeLabel: string;
   percent: number;
+  total: number;
 }
 
 /** De cada diez que la cursan, cuántas llegan. Solo agregada, nunca por persona. */

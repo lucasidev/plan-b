@@ -30,18 +30,21 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
           text: '¿Se dictaron las clases?',
           negativeLabel: 'Faltaron muchas',
           percent: 80,
+          total: 37,
         },
         {
           code: 'CHAIR_ANSWERS_IN_CLASS',
           text: '¿Contestaba las preguntas que le hacían en clase?',
           negativeLabel: 'Casi nunca',
           percent: 85,
+          total: 37,
         },
         {
           code: 'CHAIR_PRACTICE_MATCHES_THEORY',
           text: '¿El práctico daba lo mismo que el teórico?',
           negativeLabel: 'Eran dos materias distintas',
           percent: 90,
+          total: 37,
         },
       ],
     },
@@ -59,12 +62,8 @@ describe('ChairFactsSheet', () => {
    * de cada frase que converge ("el 80 %"); tiene que poder verificarse sin bajar al detalle, y
    * eso incluye saber sobre cuántas voces sale ese porcentaje ahí mismo, no en otro bloque de la
    * misma ficha.
-   * Roto: #439, hasta 2026-09-30.
    */
-  it.skip('cada hecho de la fama dice sobre cuántas voces sale, no solo el porcentaje', () => {
-    // Roto: pendiente de número de issue (ver reporte de la barrida #407). La fama muestra el
-    // porcentaje sin su "de N": Fame() en chair-facts-sheet.tsx no lo trae, y FameItemView
-    // tampoco lo tiene en el backend (GetChairFactsResponse.cs).
+  it('cada hecho de la fama dice sobre cuántas voces sale, no solo el porcentaje', () => {
     render(
       <QueryClientProvider client={new QueryClient()}>
         <ChairFactsSheet facts={facts()} />
@@ -75,7 +74,9 @@ describe('ChairFactsSheet', () => {
     const section = heading.closest('section');
     expect(section).not.toBeNull();
 
-    expect(within(section as HTMLElement).getByText(/80 %/)).toBeInTheDocument();
-    expect(within(section as HTMLElement).getByText(/de \d+/)).toBeInTheDocument();
+    // Pegado al mismo porcentaje, no en cualquier parte de la sección: las tres frases traen su
+    // propio "de N" en su propio <li>, así que un regex separado para "de \d+" matchea a las tres
+    // a la vez y le rompe a getByText la unicidad que pide.
+    expect(within(section as HTMLElement).getByText(/80 % de \d+/)).toBeInTheDocument();
   });
 });

@@ -94,7 +94,8 @@ public static class GetChairFactsQueryHandler
                             code,
                             text(code),
                             negativeLabel(code),
-                            NegativePercent(counted.Tallies, code)))
+                            NegativePercent(counted.Tallies, code),
+                            TallyTotal(counted.Tallies, code)))
                         .ToList()),
             ChairConduct: facts.ChairConduct.Select(i => ToView(i, text)).ToList(),
             StudentExperience: facts.StudentExperience.Select(i => ToView(i, text)).ToList(),
@@ -146,6 +147,19 @@ public static class GetChairFactsQueryHandler
         return tally is null || tally.Total == 0
             ? 0
             : (int)Math.Round(100d * tally.NegativeCount / tally.Total, MidpointRounding.AwayFromZero);
+    }
+
+    /// <summary>
+    /// Sobre cuántas voces se calcula esa frase de la fama: el mismo total que ya usa
+    /// <see cref="NegativePercent"/> para sacar el porcentaje, expuesto aparte porque la fama
+    /// tiene que publicarlo al lado (US-131 N2): un porcentaje sin su "de N" se lee como puntaje.
+    /// </summary>
+    private static int TallyTotal(IReadOnlyList<ItemTally> tallies, string code)
+    {
+        var tally = tallies.FirstOrDefault(t =>
+            string.Equals(t.ItemCode, code, StringComparison.Ordinal));
+
+        return tally?.Total ?? 0;
     }
 
     private static string? FullName(ChairDetailItem chair) =>

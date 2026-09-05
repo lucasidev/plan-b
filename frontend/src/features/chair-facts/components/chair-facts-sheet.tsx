@@ -127,7 +127,7 @@ function Fame({ facts }: { facts: ChairFacts }) {
           {fame.items.map((item) => (
             <li key={item.code} className="text-[12.5px] leading-relaxed text-ink-3">
               {item.text} <span className="text-ink-2">{item.negativeLabel}</span>, el{' '}
-              {item.percent} %.
+              {item.percent} % de {item.total}.
             </li>
           ))}
         </ul>

@@ -11,13 +11,13 @@ No construido: el buscador devuelve materias, cátedras y docentes (`SearchResul
 
 **E2.** Dado que alguien escribe "Claudia Fernández" en Buscar
 Cuando se ejecuta la búsqueda
-Entonces el resultado lleva directo a la Ficha de Cátedra Pérez, la cátedra de la que Claudia es titular, no a una ficha de "docente" que no existe.
+Entonces el resultado la lleva a la pantalla de Claudia, que no publica ningún conteo sobre ella: lista las cátedras que integra, la Cátedra Pérez entre ellas, y desde ahí se entra a los conteos de cada una.
 
 ## Negativos
 
-**N1.** Dado ese mismo resultado de buscar "Claudia Fernández"
-Cuando se arma la respuesta
-Entonces nunca se genera una ficha propia de la persona Claudia Fernández: el destino siempre es la cátedra.
+**N1.** Dado ese mismo resultado
+Cuando se arma la pantalla de la docente
+Entonces no aparece ningún porcentaje, moda, conteo ni puntaje atribuido a la persona: lo publicado es de cada cátedra y vive en su ficha.
 
 ## Edge cases
 
