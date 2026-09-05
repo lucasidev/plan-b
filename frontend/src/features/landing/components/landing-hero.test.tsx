@@ -16,7 +16,8 @@ describe('LandingHero', () => {
   });
 
   // Los dos CTA de la entrada son de lectura y ninguno de registro: quien llega todavía no sabe
-  // qué es esto, y pedirle cuenta antes de mostrarle un dato invierte el orden de la tesis.
+  // qué es esto, y pedirle cuenta antes de mostrarle un dato invierte el orden de la tesis. El
+  // link a Método no es un tercer CTA: es la regla detrás del número, en el propio párrafo.
   it('sus dos CTA llevan a leer, no a registrarse', () => {
     renderHero();
     expect(screen.getByRole('link', { name: /explorar carreras y materias/i })).toHaveAttribute(
@@ -27,6 +28,7 @@ describe('LandingHero', () => {
       'href',
       '#sample',
     );
+    expect(screen.getByRole('link', { name: /método/i })).toHaveAttribute('href', '/method');
     expect(screen.queryByRole('link', { name: /crear cuenta/i })).not.toBeInTheDocument();
   });
 

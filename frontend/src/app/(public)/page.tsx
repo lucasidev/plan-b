@@ -24,8 +24,8 @@ export const dynamic = 'force-dynamic';
  *
  * Se renderea igual para anónimos y logueados; lo único que cambia con la sesión es el topbar.
  *
- * **Dos bloques de SC-004 no están**: el link a Método y el de Pedir que carguemos una facultad.
- * Sus pantallas todavía no existen, y un link a una pantalla inexistente es peor que no ofrecerla.
+ * **Un bloque de SC-004 no está**: el de Pedir que carguemos una facultad. Su pantalla todavía no
+ * existe, y un link a una pantalla inexistente es peor que no ofrecerla.
  */
 export default async function LandingPage() {
   const [session, sample] = await Promise.all([getSession(), fetchSampleChairFactsServer()]);

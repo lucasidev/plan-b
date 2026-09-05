@@ -60,10 +60,7 @@ test.describe('La entrada (US-221)', () => {
    * US-221 E3: el bloque "qué es plan-b" explica el producto sin vocabulario de tesis, y desde ahí
    * se llega a Explorar y a Método.
    */
-  // Roto: #440, hasta 2026-09-30. La entrada no tiene
-  // ningún link a Método en ningún bloque (frontend/src/app/(public)/page.tsx documenta la
-  // omisión como deliberada, "sus pantallas todavía no existen", pero /method ya existe).
-  test.fixme('el bloque "qué es esto" no usa jerga de producto y lleva a explorar y a método', async ({
+  test('el bloque "qué es esto" no usa jerga de producto y lleva a explorar y a método', async ({
     page,
   }) => {
     await page.goto('/');
