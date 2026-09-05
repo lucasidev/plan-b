@@ -136,6 +136,12 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     await page.getByRole('button', { name: /enviar la reseña/i }).click();
     await expect(page).toHaveURL(/\/reviews\/mine\?published=1$/, { timeout: 30_000 });
 
+    // Ficha SC-018: el acuse dice que quedó contada y adónde lleva desde acá, como role="status".
+    await expect(page.getByRole('status')).toContainText(/listo, quedó contada/i);
+    await expect(page.getByRole('status')).toContainText(
+      /acá la podés corregir o sacar cuando quieras/i,
+    );
+
     // Aterriza en Mis aportes, con lo suyo a la vista y sus dos salidas.
     await expect(page.getByRole('heading', { name: chair.subjectName })).toBeVisible();
     await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible();
