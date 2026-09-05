@@ -28,6 +28,11 @@ const TERMS = [
 ];
 const CHAIR_PEREZ = '00000008-0000-4000-a000-000000000001';
 
+// La carrera de la materia 211 (TUDCS UNSTA) y su plan: cobertura de /careers/[id] y de las
+// páginas de catálogo (universidades, carreras, planes, materias) que suma el guard anti-puntaje.
+const TUDCS_CAREER_ID = '00000002-0000-4000-a000-000000000003';
+const TUDCS_PLAN_ID = '00000003-0000-4000-a000-000000000003';
+
 /**
  * Lleva a Pérez sobre el piso por API. Es fixture, no el flujo bajo prueba: lo que se prueba es
  * que el camino de lectura llegue, y sin una cátedra publicando no habría nada a lo que llegar.
@@ -81,6 +86,23 @@ async function visibleText(page: Page): Promise<string> {
     }
     return clone.textContent ?? '';
   });
+}
+
+/**
+ * Dos frases legítimas que nombran "ranking" para negarlo, no para mostrarlo
+ * (`landing-hero.tsx` y `method-sheet.tsx`, ambos fuera del `#faq` que ya descarta `visibleText`).
+ * Se descuentan del texto antes de buscar la palabra suelta: así el patrón sigue discriminando una
+ * reaparición real (que usaría otra redacción) sin tropezar con su propia negación. Si el copy
+ * cambia de forma que ya no matchea ninguna de las dos, el chequeo vuelve a fallar sobre la frase
+ * nueva y hay que mirarlo, no quedó aflojado en silencio.
+ */
+const KNOWN_RANKING_NEGATIONS = [
+  'ni un ranking, porque un puntaje se discute y un conteo no.',
+  'ni un puntaje, ni un ranking.',
+];
+
+function withoutKnownRankingNegations(body: string): string {
+  return KNOWN_RANKING_NEGATIONS.reduce((text, phrase) => text.replaceAll(phrase, ''), body);
 }
 
 test.describe('El camino a la ficha, sin cuenta (R2)', () => {
@@ -159,16 +181,32 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
   test('ninguna pantalla pública muestra un promedio, una estrella ni un testimonio', async ({
     page,
     context,
+    request,
   }) => {
+    // Diez voces sobre Pérez, igual que el primer test: sin esto, /careers/{id} mide una carrera
+    // con cobertura en cero y el guard no llega a mirar el bloque con números reales.
+    for (let i = 0; i < 10; i++) {
+      const student = await createStudent(request, { emailPrefix: `e2e-guard-${i}` });
+      students.push(student);
+      await publishByApi(request, student, TERMS[i % TERMS.length], i < 7 ? 1 : 3);
+    }
+
     await context.clearCookies();
 
-    // Las cuatro superficies públicas del producto. Es el chequeo que protege la poda: si alguien
-    // reintroduce un puntaje en cualquiera de ellas, esto lo agarra.
+    // Todas las superficies públicas del producto: las tres fichas, Método, el docente, la entrada
+    // y los listados del catálogo. Es el chequeo que protege la poda: si alguien reintroduce un
+    // puntaje en cualquiera de ellas, esto lo agarra.
     const publicPages = [
       '/',
       `/subjects/${SUBJECT_ID}`,
       `/chairs/${CHAIR_PEREZ}`,
       '/teachers/00000006-0000-4000-a000-00000000000b',
+      `/careers/${TUDCS_CAREER_ID}`,
+      '/method',
+      '/universities',
+      '/universities/unsta/careers',
+      `/careers/${TUDCS_CAREER_ID}/plans`,
+      `/plans/${TUDCS_PLAN_ID}/subjects`,
     ];
 
     for (const path of publicPages) {
@@ -197,6 +235,19 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
       // Un testimonio es texto de una reseña individual. El producto vigente no publica ninguno:
       // el campo libre no se publica nunca (ADR-0084) y la ficha solo muestra conteos.
       expect(body, `${path} muestra un testimonio entrecomillado`).not.toMatch(/[«"“].{40,}[»"”]/);
+
+      // Una nota tipo "4/5" o "7/10": otra forma de puntaje, sin la palabra "sobre" de por medio.
+      expect(body, `${path} muestra una nota tipo "4/5" o "7/10"`).not.toMatch(
+        /\b\d+([,.]\d+)?\s*\/\s*(5|10)\b/,
+      );
+
+      // "Ranking" y "estrella(s)" sueltas: el mecanismo puede reaparecer como palabra sin ninguno
+      // de los formatos numéricos de arriba (un badge, un orden "por ranking"). Antes de buscar se
+      // descuentan las dos negaciones legítimas conocidas (ver withoutKnownRankingNegations).
+      expect(
+        withoutKnownRankingNegations(body),
+        `${path} muestra "ranking" o "estrella(s)" sueltos`,
+      ).not.toMatch(/\b(estrellas?|ranking)\b/i);
     }
   });
 });
