@@ -58,6 +58,7 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText(/ninguna materia junta todavía/i)).toBeInTheDocument();
   });
 
+  /** US-134 E1: la cobertura se lee como fracción y porcentaje, con lo que falta explicado. */
   it('la cobertura parcial dice cuántas materias restantes no llegan al piso', () => {
     renderSheet({ ...BASE, coveredSubjects: 1, coveragePercent: 5 });
 
@@ -95,6 +96,11 @@ describe('CareerFactsSheet', () => {
     expect(container.textContent).not.toMatch(/★|puntaje|promedio de|\/ 5/i);
   });
 
+  /**
+   * US-127 E1, E3: "dura en la realidad" no tiene campo propio y se publica como nota del equipo
+   * (US-127 README); la ficha la muestra fechada y con su procedencia siempre al lado, nunca un
+   * porcentaje o número suelto sin decir de dónde sale.
+   */
   it('publica la nota del equipo con su procedencia y su fecha', () => {
     renderSheet({
       ...BASE,

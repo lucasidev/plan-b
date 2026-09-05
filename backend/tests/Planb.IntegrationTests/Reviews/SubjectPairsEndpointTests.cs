@@ -47,6 +47,12 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
         Guid.Parse("00000004-0000-4000-a000-000000000009");
     private static readonly Guid SubjectCrowdedB =
         Guid.Parse("00000004-0000-4000-a000-000000000010");
+    // Par propio para el piso (ninguna otra prueba de esta clase lo toca): siete cuentas, ni una
+    // décima.
+    private static readonly Guid SubjectBelowFloorA =
+        Guid.Parse("00000004-0000-4000-a000-000000000004");
+    private static readonly Guid SubjectBelowFloorB =
+        Guid.Parse("00000004-0000-4000-a000-000000000006");
     // 312 y 314, que no son correlativa de ninguna: archivar una materia de la que otra depende lo
     // rechaza el catálogo, y lo que se prueba acá es el par, no esa regla.
     private static readonly Guid SubjectArchivedSide =
@@ -109,6 +115,9 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
     /// <summary>
     /// El recorrido en un test y no en tres: los pares son globales por materia, así que dos tests
     /// que publiquen sobre las mismas se contaminan según el orden en que xUnit los corra.
+    ///
+    /// US-143 N2: el tramo "apart" es la cuenta que llevó las dos materias en períodos distintos, y
+    /// el conteo del par no se mueve un solo voto por ella.
     /// </summary>
     [Fact]
     public async Task Pairs_come_from_the_same_account_in_the_same_term_and_respect_their_own_floor()
@@ -179,6 +188,42 @@ public class SubjectPairsEndpointTests : IClassFixture<RegisterApiFixture>
 
         (await FactsAsync(SubjectDeletedSide)).TakenWith.ShouldBeEmpty();
         (await FactsAsync(SubjectSurvivingSide)).TakenWith.ShouldBeEmpty();
+    }
+
+    /// <summary>
+    /// US-143 N1: bajo el piso, el par no publica el conteo de las que dejaron una (el mismo
+    /// problema de denominador que el piso existe para evitar), pero sigue diciendo cuánto le
+    /// falta, igual que cualquier otra ficha bajo el piso.
+    ///
+    /// <para>
+    /// Con tres de las siete cuentas dejando una de las dos materias de verdad: si el conteo
+    /// escondido fuera en realidad 0 porque nadie dejó nada, este test no distinguiría "se
+    /// esconde" de "no hay nada que esconder". Por eso hace falta un abandono real.
+    /// </para>
+    /// </summary>
+    [Fact]
+    public async Task Below_the_floor_the_pair_hides_how_many_dropped_but_still_says_how_many_are_missing()
+    {
+        const int reviewers = 7;
+        const int dropped = 3;
+
+        for (var i = 0; i < reviewers; i++)
+        {
+            var auth = await AccountAsync();
+            var outcome = i < dropped ? 3 : 1;
+            await ReviewAsync(auth, SubjectBelowFloorA, TermA, outcome);
+            await ReviewAsync(auth, SubjectBelowFloorB, TermA);
+        }
+
+        var facts = await FactsAsync(SubjectBelowFloorA);
+        var pair = facts.TakenWith.ShouldHaveSingleItem();
+
+        pair.SubjectId.ShouldBe(SubjectBelowFloorB);
+        pair.IsPublished.ShouldBeFalse();
+        pair.MissingToPublish.ShouldBe(PublishingRules.SubjectPairMinimumReviews - reviewers);
+
+        // El conteo de los que dejaron alguna no viaja bajo el piso, aunque de verdad hayan sido 3.
+        pair.DroppedCount.ShouldBe(0);
     }
 
     /// <summary>

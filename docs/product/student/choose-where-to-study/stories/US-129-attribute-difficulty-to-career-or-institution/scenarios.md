@@ -11,10 +11,12 @@ Entonces ese dato queda en el bloque de conducta observable, atribuible a esta c
 **E2.** Dado que en la Ficha de carrera de Ingeniería en Sistemas (UNT) "Análisis Matemático II" aparece en "qué frena la cursada" con 2,1 intentos promedio y 111 voces, sumando las tres cátedras que la dictan
 Cuando alguien compara ese dato contra el 41 % de "faltaron muchas clases" de Cátedra Pérez
 Entonces puede distinguir que el primero describe a toda la materia (estructural, no depende de una cátedra) y el segundo describe solo a Pérez (conducta observable de esa cátedra), porque cada ficha dice de qué voces está hecha.
+No construido: la ficha de carrera no publica "qué frena la cursada" ni datos por cohorte; la respuesta lo excluye hasta que haya un corpus (GetCareerFactsResponse)
 
 **E3.** Dado que la Ficha de carrera muestra "plan vigente: 2016" y "egresan por cohorte: 14 %" como datos oficiales con fuente
 Cuando alguien busca a qué cátedra atribuir esos números
 Entonces no puede: son datos de la carrera y la institución en su conjunto, sin ninguna cátedra puntual detrás.
+No construido: la ficha de carrera no publica "qué frena la cursada" ni datos por cohorte; la respuesta lo excluye hasta que haya un corpus (GetCareerFactsResponse)
 
 ## Negativos
 
