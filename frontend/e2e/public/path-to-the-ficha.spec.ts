@@ -95,7 +95,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     students.length = 0;
   });
 
-  test('de la entrada a los conteos de una cátedra, sin sesión en ningún momento', async ({
+  test('US-170 E2: de la entrada a los conteos de una cátedra, sin sesión en ningún momento', async ({
     page,
     context,
     request,

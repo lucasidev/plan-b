@@ -302,7 +302,63 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
         body.ShouldContain(secondLead.ToString());
     }
 
-    private async Task<Guid> CreateTeacherAsync(AuthenticatedClient admin, Guid? universityId = null)
+    /// <summary>
+    /// E3 de US-196: el equipo cargado (titular, adjunto y ayudantes) queda distinguible por nombre
+    /// y rol en Catálogo, que es contra lo que se compara un pedido de verificación de cargo: "Camila
+    /// compara el nombre declarado contra el nombre del adjunto que ya está cargado en Catálogo, la
+    /// verificación se hace contra ese dato, nunca contra lo que la persona declara de sí misma".
+    /// </summary>
+    [Fact]
+    public async Task The_loaded_team_is_distinguishable_by_role_and_name_for_verification()
+    {
+        var admin = await AdminAsync();
+
+        var created = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/subjects/{Subject211}/chairs", new { name = UniqueName() });
+        created.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var chair = (await created.Content.ReadFromJsonAsync<CreateChairResponse>())!;
+
+        var lead = await CreateTeacherAsync(admin, firstName: "Rodrigo", lastName: "Dominguez");
+        var associate = await CreateTeacherAsync(admin, firstName: "Elena", lastName: "Suarez");
+        var assistantOne = await CreateTeacherAsync(admin, firstName: "Marcos", lastName: "Ibanez");
+        var assistantTwo = await CreateTeacherAsync(admin, firstName: "Julia", lastName: "Vega");
+
+        foreach (var (teacherId, role) in new[]
+        {
+            (lead, "Lead"),
+            (associate, "Associate"),
+            (assistantOne, "Assistant"),
+            (assistantTwo, "Assistant"),
+        })
+        {
+            var added = await admin.Client.PostAsJsonAsync(
+                $"/api/academic/chairs/{chair.Id}/members",
+                new { teacherId, role, sinceTermId = UnstaTerm });
+            added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+        }
+
+        var listed = await admin.Client.GetFromJsonAsync<List<AdminChairListItem>>(
+            $"/api/academic/chairs?subjectId={Subject211}");
+        var team = listed!.Single(c => c.Id == chair.Id).Members;
+        team.Count.ShouldBe(4);
+
+        // El adjunto se distingue por nombre y rol de los dos ayudantes y del titular: es
+        // exactamente el dato contra el que se compara un pedido de verificación de cargo.
+        // El storage normaliza el nombre a minúsculas (ver DapperCatalogSearchReader, que lo
+        // capitaliza recién al leer para búsqueda): la comparación es case-insensitive porque lo
+        // que importa acá es que el nombre distinga al adjunto, no su capitalización.
+        var associateMember = team.Single(m => m.Role == "Associate");
+        associateMember.TeacherId.ShouldBe(associate);
+        associateMember.FirstName.ShouldBe("Elena", StringComparer.OrdinalIgnoreCase);
+        associateMember.LastName.ShouldBe("Suarez", StringComparer.OrdinalIgnoreCase);
+
+        team.Single(m => m.Role == "Lead").TeacherId.ShouldBe(lead);
+        team.Where(m => m.Role == "Assistant").Select(m => m.TeacherId)
+            .ShouldBe([assistantOne, assistantTwo], ignoreOrder: true);
+    }
+
+    private async Task<Guid> CreateTeacherAsync(
+        AuthenticatedClient admin, Guid? universityId = null, string? firstName = null, string? lastName = null)
     {
         universityId ??= Unsta;
 
@@ -311,8 +367,8 @@ public class AdminChairsEndpointTests : IClassFixture<RegisterApiFixture>
             new
             {
                 universityId,
-                firstName = $"Ana{Guid.NewGuid():N}"[..12],
-                lastName = $"Perez{Guid.NewGuid():N}"[..12],
+                firstName = firstName ?? $"Ana{Guid.NewGuid():N}"[..12],
+                lastName = lastName ?? $"Perez{Guid.NewGuid():N}"[..12],
             });
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 

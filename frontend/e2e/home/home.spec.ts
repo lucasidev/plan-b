@@ -70,6 +70,10 @@ test.describe('Inicio (US-231)', () => {
   /**
    * US-231 E3: Matías reseñó una sola cursada, de una cátedra que junta 9 reseñas. La ve con "le
    * falta una" y puede reseñar otra cursada desde ahí: la acción está donde está el motivo.
+   *
+   * US-170 N2: la reseña se publica por API y Matías entra recién después, como quien volvió
+   * días más tarde. El sign-in aterriza directo en `/home` (lo afirma `signInByUi`): nada lo
+   * manda a completar un dato de más antes de dejarlo ver lo que ya reseñó.
    */
   test('la cátedra que no llega al piso ofrece reseñar otra cursada desde ahí mismo', async ({
     page,

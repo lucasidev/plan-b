@@ -129,4 +129,13 @@ describe('ReviewedChairsCard', () => {
     // X2: de una cátedra reseñada se ve el conteo, nunca qué se contestó.
     expect(screen.queryByText(/respondiste|tu respuesta|contestaste/i)).not.toBeInTheDocument();
   });
+
+  it('US-231 X3: no sugiere qué cursar, ni horarios, ni un orden de cursada', () => {
+    const { container } = render(
+      <ReviewedChairsCard chairs={[chair(), chair({ chairId: 'b', chairName: 'Ruiz' })]} />,
+    );
+    expect(container.textContent).not.toMatch(
+      /te recomendamos|te sugerimos|deberías cursar|orden sugerido|horario sugerido/i,
+    );
+  });
 });

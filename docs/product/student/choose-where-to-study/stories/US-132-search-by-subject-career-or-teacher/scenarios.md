@@ -7,6 +7,7 @@
 **E1.** Dado que alguien escribe "Análisis Matemático II" en Buscar
 Cuando se ejecuta la búsqueda
 Entonces los resultados mezclan los cuatro tipos de sujeto que coinciden: la materia Análisis Matemático II, la Cátedra Pérez y la Cátedra Gómez que la dictan, la carrera Ingeniería en Sistemas de UNSTA que la incluye, y UNSTA como institución, cada resultado con su tipo a la vista.
+No construido: el buscador devuelve materias, cátedras y docentes (`SearchResultItem`); carreras e instituciones no entran todavía
 
 **E2.** Dado que alguien escribe "Claudia Fernández" en Buscar
 Cuando se ejecuta la búsqueda

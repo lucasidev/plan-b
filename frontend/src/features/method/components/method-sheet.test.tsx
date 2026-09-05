@@ -92,7 +92,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/todavía no hay un cuestionario publicado/i)).toBeInTheDocument();
   });
 
-  it('E1: publica cómo se arma un conteo, para que se pueda reproducir sin pedir nada', () => {
+  it('US-130 E1: publica cómo se arma un conteo, para que se pueda reproducir sin pedir nada', () => {
     render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
 
     // La moda es la opción literal más marcada, y la distribución que la sostiene es el resto del
@@ -102,7 +102,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/con los ceros incluidos/)).toBeInTheDocument();
   });
 
-  it('E2: la convergencia se sostiene con sus preguntas a la vista, nunca con un promedio', () => {
+  it('US-130 E2: la convergencia se sostiene con sus preguntas a la vista, nunca con un promedio', () => {
     render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
 
     expect(
@@ -112,7 +112,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/Nada se promedia/)).toBeInTheDocument();
   });
 
-  it('E3: la comparación se explica entera, incluido que una cátedra sola no se compara', () => {
+  it('US-130 E3: la comparación se explica entera, incluido que una cátedra sola no se compara', () => {
     render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
 
     expect(screen.getByText(/intervalo de Wilson/)).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/la única de su materia/)).toBeInTheDocument();
   });
 
-  it('E4: cada pregunta se lista con su capa y con todas sus opciones', () => {
+  it('US-130 E4: cada pregunta se lista con su capa y con todas sus opciones', () => {
     render(<MethodSheet instrument={INSTRUMENT} chairFloor={7} pairFloor={4} />);
 
     // Las tres capas, cada una nombrada y con lo suyo.
@@ -135,7 +135,7 @@ describe('MethodSheet', () => {
     expect(screen.getByText(/Casi todas · Faltaron algunas · Faltaron muchas/)).toBeInTheDocument();
   });
 
-  it('E5: los datos oficiales citan su fuente y el período que relevan', () => {
+  it('US-130 E5: los datos oficiales citan su fuente y el período que relevan', () => {
     render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
 
     expect(screen.getByText(/la fuente y el período relevado/)).toBeInTheDocument();

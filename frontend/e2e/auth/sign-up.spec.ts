@@ -68,7 +68,9 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     createdStudent = null;
   });
 
-  test('alumno nuevo se registra, verifica el mail y aterriza en /home', async ({ page }) => {
+  test('US-170 E1: alumno nuevo se registra, verifica el mail y aterriza en /home', async ({
+    page,
+  }) => {
     const email = uniqueEmail('e2e-signup');
     const password = 'e2e-test-pw-1234';
     createdStudent = { email, password };

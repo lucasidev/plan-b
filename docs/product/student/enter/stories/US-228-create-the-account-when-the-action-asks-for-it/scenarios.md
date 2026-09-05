@@ -7,6 +7,7 @@
 **E1.** Dado que Matías leyó la Ficha de Cátedra Pérez sin cuenta y quiere reseñar esa cursada, y llegó a Registro desde ahí.
 Cuando completa mail y contraseña, marca que cursa, y manda el formulario.
 Entonces la cuenta se crea y el consentimiento informado estaba a la vista antes de mandar, en una línea con el link al aviso de privacidad (Ley 25.326).
+No construido: el consentimiento informado y el aviso de privacidad quedan para el sprint con personas reales, como N1; el registro de hoy pide mail, contraseña y carrera (ADR-0086), sin marcar que cursa
 
 **E2.** Dado que Ana pidió que carguen Licenciatura en Psicología de UNSTA, confirmó el mail, y le avisaron que ya está cargada (US-142), y entra a Registro desde ese aviso.
 Cuando llega al formulario.

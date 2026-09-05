@@ -31,6 +31,12 @@ test.describe('Reseñar una cursada (US-146)', () => {
     student = null;
   });
 
+  /**
+   * US-170 N1: la cuenta llega a Reseñar con lo único que declaró al registrarse (la carrera,
+   * ADR-0086, vía `createStudent`, que pega al mismo `POST /api/identity/register` que usa el
+   * formulario). Nunca pasa por Mi perfil, y nada acá le pide completar un dato de más antes de
+   * dejarla reseñar.
+   */
   test('publica una reseña con lo que se contestó, y saltear no cuenta', async ({
     page,
     context,

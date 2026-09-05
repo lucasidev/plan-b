@@ -31,7 +31,7 @@ describe('CareerCoverageCard', () => {
     expect(screen.getByText(/10 reseñas del piso/i)).toBeInTheDocument();
   });
 
-  it('la carrera sin nada medido no es impecable, es desconocida, y lo dice', () => {
+  it('US-231 N2: la carrera sin nada medido no es impecable, es desconocida, y lo dice', () => {
     render(<CareerCoverageCard facts={facts({ coveredSubjects: 0, coveragePercent: 0 })} />);
     expect(screen.getByText(/ninguna materia junta todavía/i)).toBeInTheDocument();
   });
@@ -54,6 +54,13 @@ describe('CareerCoverageCard', () => {
     const { container } = render(<CareerCoverageCard facts={facts()} />);
     expect(container.textContent).not.toMatch(
       /llevás|tu progreso|lograste|completaste|nivel|racha|★|puntaje/i,
+    );
+  });
+
+  it('US-231 X3: no sugiere qué cursar, ni horarios, ni un orden de cursada', () => {
+    const { container } = render(<CareerCoverageCard facts={facts()} />);
+    expect(container.textContent).not.toMatch(
+      /te recomendamos|te sugerimos|deberías cursar|orden sugerido|horario sugerido/i,
     );
   });
 });

@@ -7,10 +7,12 @@
 **E1.** Dado que Explorar lista carreras y universidades,
 Cuando Valentina elige cómo ordenarlas,
 Entonces solo puede elegir entre alfabético o por voces (nunca "recomendado" ni "destacado"), y ninguna institución aparece remarcada ni fija arriba de la lista por haber pagado algo.
+No construido: Explorar no ofrece elegir el orden; universidades y carreras salen por nombre, y que no exista un destacado lo afirma N2
 
 **E2.** Dado que "Ingeniería en Sistemas" está cargada en dos instituciones, con la Cátedra Pérez de UNSTA mostrando "Casi nunca · 59 %" en "¿Contestaba las preguntas en clase?" sobre 40 voces, y la cátedra equivalente de Siglo 21 mostrando "A veces · 44 %" sobre 62 voces (ADR-0083),
 Cuando Valentina abre Dónde estudiarla para compararlas,
 Entonces las dos ofertas aparecen ordenadas alfabético o por voces, nunca por cuál moda es más alta o más baja, y ninguna lleva una etiqueta de "mejor opción" ni aparece remarcada.
+No construido: la pantalla Dónde estudiarla (SC-008) no está construida
 
 ## Negativos
 

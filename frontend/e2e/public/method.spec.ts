@@ -59,7 +59,7 @@ test.describe('Método (US-130)', () => {
     ).toBeVisible();
   });
 
-  test('N1: la ficha no repite la fórmula, linkea a Método', async ({ page }) => {
+  test('US-130 N1: la ficha no repite la fórmula, linkea a Método', async ({ page }) => {
     await page.goto(`/subjects/${SUBJECT_211}`);
 
     const ficha = (await page.locator('body').textContent()) ?? '';

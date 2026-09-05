@@ -177,7 +177,10 @@ public class GetSampleChairFactsEndpointDrawsVariablyTests : IClassFixture<Regis
         }
     }
 
-    /// <summary>US-221 E2</summary>
+    /// <summary>
+    /// US-221 E2, US-171 N1: el sorteo no depende de qué cátedra tiene el número más alto o más
+    /// bajo, ni de cuál tiene más voces, sino que es al azar entre las que pasan el piso.
+    /// </summary>
     [Fact]
     public async Task The_draw_varies_between_more_than_one_publishing_chair()
     {
