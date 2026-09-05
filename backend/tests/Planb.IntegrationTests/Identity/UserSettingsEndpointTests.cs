@@ -140,6 +140,12 @@ public class UserSettingsEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         body.AllowTeacherContact.ShouldBeTrue();
     }
 
+    /// <summary>
+    /// Un row por cuenta lo sostiene <c>ux_user_settings_user_id</c>, único por <c>user_id</c> sin
+    /// filtro (UserSettingsConfiguration.cs:26-28). Este test prueba la secuencia (tres PATCH uno
+    /// atrás del otro); la constraint en DB es la que ataja el race que un test secuencial no puede
+    /// simular (dos PATCH concurrentes de una cuenta sin row previo).
+    /// </summary>
     [Fact]
     public async Task Patch_does_not_create_duplicate_rows_on_multiple_updates()
     {

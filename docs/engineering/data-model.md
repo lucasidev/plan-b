@@ -51,12 +51,12 @@ erDiagram
 
 | Context              | Entidades                                                                                                   | Propósito                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Identity             | User, StudentProfile, VerificationToken                                                     | Cuentas, roles, identidades académicas                          |
+| Identity             | User, StudentProfile, UserSettings, UserDeletionLog, VerificationToken                      | Cuentas, roles, identidades académicas, ajustes, bajas         |
 | Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Chair, ChairMember, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
 
 ## Context: Identity
 
-Cuentas, roles y perfiles que capturan identidad del usuario en la plataforma. Ver [ADR-0008](../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md) para la separación entre rol y profile.
+Cuentas, roles y perfiles que capturan identidad del usuario en la plataforma. Ver [ADR-0008](../decisions/0008-exclusive-roles-with-profiles-as-capability-unlockers.md) para la separación entre rol y profile. El perfil docente y su claim se borraron en R4: hoy solo hay identidad de alumno.
 
 ```mermaid
 ---
@@ -65,72 +65,123 @@ config:
 ---
 erDiagram
     User ||--o{ StudentProfile : "(member) has"
+    User ||--o{ VerificationToken : issues
+    User ||--o| UserSettings : "has (lazy)"
     User }o--o| User : "disabled_by (self-ref)"
-    User }o--o| User : "verified_by (self-ref)"
 ```
 
 ### Entity: User
 
-| Campo               | Tipo             | Constraints                  | Notas                               |
-| ------------------- | ---------------- | ---------------------------- | ----------------------------------- |
-| `id`                | UUID             | PK                           |                                     |
-| `email`             | TEXT             | NOT NULL, UNIQUE             |                                     |
-| `password_hash`     | TEXT             | NOT NULL                     | bcrypt/argon2                       |
-| `email_verified_at` | TIMESTAMPTZ      | NULL                         | Null = cuenta pendiente             |
-| `role`              | ENUM `user_role` | NOT NULL, DEFAULT `'member'` | Ver [Apéndice A](#apéndice-a-enums) |
-| `disabled_at`       | TIMESTAMPTZ      | NULL                         | Soft suspend                        |
-| `disabled_reason`   | TEXT             | NULL                         |                                     |
-| `disabled_by`       | UUID             | FK → User, NULL              | Self-ref                            |
-| `created_at`        | TIMESTAMPTZ      | NOT NULL, DEFAULT `now()`    |                                     |
-| `updated_at`        | TIMESTAMPTZ      | NOT NULL, DEFAULT `now()`    |                                     |
-
-### Entity: StudentProfile
-
-Vincula un User con un CareerPlan. Un User `member` puede tener múltiples StudentProfiles (una por carrera).
-
-| Campo             | Tipo                  | Constraints                  | Notas                           |
-| ----------------- | --------------------- | ---------------------------- | ------------------------------- |
-| `id`              | UUID                  | PK                           |                                 |
-| `user_id`         | UUID                  | FK → User, NOT NULL          |                                 |
-| `career_id`       | UUID                  | FK → CareerPlan, NOT NULL    | Apunta al plan, no a la carrera |
-| `enrollment_year` | INT                   | NOT NULL                     | Año de ingreso                  |
-| `status`          | ENUM `student_status` | NOT NULL, DEFAULT `'active'` |                                 |
-| `graduated_at`    | DATE                  | NULL                         |                                 |
-| `created_at`      | TIMESTAMPTZ           | NOT NULL                     |                                 |
-| `updated_at`      | TIMESTAMPTZ           | NOT NULL                     |                                 |
-
-Constraints adicionales:
-
-- `UNIQUE(user_id, career_id)`: un user no puede tener dos profiles en la misma carrera-plan.
-- CHECK: `status = 'graduated'` → `graduated_at NOT NULL`.
-- CHECK: `status IN ('active', 'abandoned')` → `graduated_at IS NULL`.
-
-### Entity: VerificationToken (child de User)
-
-Token opaco que un User consume para verificar su email o para resetear su contraseña (purpose=`user_email_verification` o `password_reset`). Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).
-
-| Campo               | Tipo                              | Constraints                              | Notas                                              |
-| ------------------- | --------------------------------- | ---------------------------------------- | -------------------------------------------------- |
-| `id`                | UUID                              | PK                                       |                                                    |
-| `owner_id`          | UUID                              | NOT NULL                                 | FK a `user.id` (UNIQUE por purpose) |
-| `purpose`           | ENUM `verification_token_purpose` | NOT NULL                                 | `user_email_verification`, `password_reset` |
-| `value`             | TEXT                              | NOT NULL, UNIQUE                         | Opaque, 256-bit base64url                          |
-| `issued_at`         | TIMESTAMPTZ                       | NOT NULL                                 |                                                    |
-| `expires_at`        | TIMESTAMPTZ                       | NOT NULL                                 | TTL típicamente 24h                                |
-| `consumed_at`       | TIMESTAMPTZ                       | NULL                                     | Set cuando se consume; terminal                    |
-| `invalidated_at`    | TIMESTAMPTZ                       | NULL                                     | Set cuando se invalida (por resend o force expiry) |
+| Campo                    | Tipo                      | Constraints | Notas                                                                                                      |
+| ------------------------ | ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
+| `id`                     | UUID                      | PK          |                                                                                                             |
+| `email`                  | VARCHAR(254)              | NOT NULL    | Único mientras la cuenta está activa (ver índice abajo)                                                     |
+| `password_hash`          | TEXT                      | NOT NULL    | bcrypt. Sentinel `DEACTIVATED` tras una baja (ADR-0044)                                                      |
+| `email_verified_at`      | TIMESTAMPTZ               | NULL        | Null = registro pendiente de verificar                                                                      |
+| `role`                   | ENUM `identity.user_role` | NOT NULL    | `member`, `moderator`, `admin`, `university_staff` (ADR-0008). Sin default en DB: lo fija `User.Register`   |
+| `disabled_at`            | TIMESTAMPTZ               | NULL        | Soft suspend                                                                                                |
+| `disabled_reason`        | TEXT                      | NULL        |                                                                                                             |
+| `disabled_by`            | UUID                      | NULL        | Self-ref a `User.id`, sin FK                                                                                 |
+| `expired_at`             | TIMESTAMPTZ               | NULL        | Registro sin verificar, vencido (US-022)                                                                    |
+| `deactivated_at`         | TIMESTAMPTZ               | NULL        | Baja propia con anonimización del email (ADR-0044)                                                          |
+| `pending_career_plan_id` | UUID                      | NULL        | Carrera declarada en el registro, antes de verificar el mail                                                |
+| `pending_career_id`      | UUID                      | NULL        | `CareerId` denormalizado del plan pendiente                                                                  |
+| `created_at`             | TIMESTAMPTZ               | NOT NULL    |                                                                                                             |
+| `updated_at`             | TIMESTAMPTZ               | NOT NULL    |                                                                                                             |
 
 Constraints:
 
-- `UNIQUE(owner_id, purpose) WHERE consumed_at IS NULL AND invalidated_at IS NULL`: un solo token activo por purpose por owner.
-- CHECK: `consumed_at IS NULL OR invalidated_at IS NULL`: un token no puede estar consumido E invalidado simultáneamente.
-- CHECK: `expires_at > issued_at`.
+- `UNIQUE(email) WHERE expired_at IS NULL AND deactivated_at IS NULL` (`ux_users_email_active`): un registro expirado o una cuenta dada de baja no bloquean que el mismo email se vuelva a registrar.
+
+### Entity: StudentProfile (child de User)
+
+Vincula un User con un CareerPlan y, opcionalmente, su año de ingreso. Vive como owned entity de `User` (tabla `student_profiles`), sin lifecycle propio: nace y se borra con el aggregate que lo contiene.
+
+| Campo             | Tipo         | Constraints              | Notas                                                                                          |
+| ------------------ | ------------ | ------------------------- | -------------------------------------------------------------------------------------------------- |
+| `id`               | UUID         | PK                        |                                                                                                     |
+| `user_id`          | UUID         | NOT NULL                  | Owner de la owned entity                                                                            |
+| `career_plan_id`   | UUID         | NOT NULL                  | Ref a CareerPlan sin FK (cross-schema, ADR-0017)                                                    |
+| `career_id`        | UUID         | NOT NULL                  | Denormalizado del plan: compara carreras sin JOIN cross-schema                                     |
+| `enrollment_year`  | INT          | NULL                      | Nullable: el profile que materializa `VerifyEmail` desde una declaración de carrera todavía no tiene año |
+| `status`           | VARCHAR(20)  | NOT NULL                  | Hoy el único valor es `Active`                                                                      |
+| `display_name`     | VARCHAR(80)  | NULL                      | Editable desde Mi perfil (US-047)                                                                    |
+| `year_of_study`    | INT          | NULL                      |                                                                                                     |
+| `legajo`           | VARCHAR(32)  | NULL                      |                                                                                                     |
+| `regular_student`  | BOOLEAN      | NOT NULL, DEFAULT `true`  |                                                                                                     |
+| `created_at`       | TIMESTAMPTZ  | NOT NULL                  |                                                                                                     |
+| `updated_at`       | TIMESTAMPTZ  | NULL                      |                                                                                                     |
+
+Constraints:
+
+- `UNIQUE(user_id) WHERE status = 'Active'` (`ux_student_profiles_user_active`): a lo sumo un profile activo por cuenta, sin importar la carrera. El invariante es la cuenta, no la carrera: para pasarse a otra hay que dar de baja el activo primero.
+
+### Entity: VerificationToken (child de User)
+
+Token opaco que un User consume para verificar su email o para resetear su contraseña. Es **child entity**, no aggregate independiente: vive dentro del aggregate root que lo posee. Ver [ADR-0033](../decisions/0033-verification-token-as-a-child-entity.md).
+
+| Campo             | Tipo         | Constraints       | Notas                                                                                |
+| ------------------ | ------------ | ------------------ | ---------------------------------------------------------------------------------------- |
+| `id`               | UUID         | PK                 |                                                                                           |
+| `user_id`          | UUID         | NOT NULL           | Owner                                                                                     |
+| `purpose`          | VARCHAR(64)  | NOT NULL           | `UserEmailVerification`, `PasswordReset`                                                  |
+| `token`            | VARCHAR(128) | NOT NULL, UNIQUE    | Opaco                                                                                     |
+| `issued_at`        | TIMESTAMPTZ  | NOT NULL           |                                                                                           |
+| `expires_at`       | TIMESTAMPTZ  | NOT NULL           | 24h para verificación de email, 30min para reset de contraseña                            |
+| `consumed_at`      | TIMESTAMPTZ  | NULL               | Set al consumirse; terminal                                                              |
+| `invalidated_at`   | TIMESTAMPTZ  | NULL               | Set al invalidarse (token nuevo del mismo purpose, resend, o expiración de registro)      |
+
+Constraints:
+
+- `UNIQUE(token)` (`ux_verification_tokens_token`).
+- `UNIQUE(user_id, purpose) WHERE consumed_at IS NULL AND invalidated_at IS NULL` (`ux_verification_tokens_user_purpose_active`): un solo token activo por purpose por user.
+
+### Entity: UserSettings
+
+Configuración personal del user (US-072): notificaciones, privacidad, idioma, tema. Aggregate root propio, no child de `User`: el row nace lazy en el primer PATCH, no en el registro. Sin row, el GET devuelve los defaults sin persistir nada.
+
+| Campo                          | Tipo         | Constraints | Notas                                                     |
+| ------------------------------- | ------------ | ----------- | ------------------------------------------------------------ |
+| `id`                            | UUID         | PK          |                                                               |
+| `user_id`                       | UUID         | NOT NULL    |                                                               |
+| `notifications_in_app`          | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `notifications_email`           | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `notify_review_response`        | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `notify_new_review_in_followed` | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `notify_academic_calendar`      | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `notify_draft_promotion_nudge`  | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `show_display_name_in_reviews`  | BOOLEAN      | NOT NULL    | Default `true`                                                |
+| `allow_teacher_contact`         | BOOLEAN      | NOT NULL    | Default `false`: único opt-in de privacidad, no se asume       |
+| `language`                      | VARCHAR(32)  | NOT NULL    | `EsRioplatense` (default), `EsNeutro`, `En`                    |
+| `theme`                         | VARCHAR(16)  | NOT NULL    | `Auto` (default), `Light`, `Dark`                              |
+| `created_at`                    | TIMESTAMPTZ  | NOT NULL    |                                                               |
+| `updated_at`                    | TIMESTAMPTZ  | NOT NULL    | Se actualiza en cada PATCH                                    |
+
+Constraints:
+
+- `UNIQUE(user_id)` (`ux_user_settings_user_id`): un settings row por cuenta.
+
+### Entity: UserDeletionLog
+
+Fila de auditoría inmutable que queda cuando un user borra su cuenta (UC-038, derecho de supresión, Ley 25.326 art. 6). Guarda el hash del email, no el email: alcanza para responder "¿esta cuenta existió?" y "¿este email ya se borró antes?" sin retener el dato identificable que el borrado pide suprimir.
+
+| Campo        | Tipo         | Constraints | Notas                                                        |
+| ------------- | ------------ | ----------- | ---------------------------------------------------------------- |
+| `id`          | UUID         | PK          |                                                                   |
+| `user_id`     | UUID         | NOT NULL    | Sin FK: el user ya se está borrando en la misma transacción       |
+| `email_hash`  | VARCHAR(64)  | NOT NULL    | SHA-256 hex del email en minúsculas                                |
+| `deleted_at`  | TIMESTAMPTZ  | NOT NULL    |                                                                   |
+
+Índices (ninguno único: si una cuenta se recrea con el mismo email y se vuelve a borrar, tanto el `user_id` como el `email_hash` pueden repetirse):
+
+- `ix_user_deletion_log_user_id`.
+- `ix_user_deletion_log_email_hash`.
 
 ### Invariantes cross-table (enforced en app)
 
-- Si `User.role != 'member'` → no puede existir `StudentProfile` con ese `user_id`.
-- `verified_by` apunta a un User con `role = 'admin'`.
-- `disabled_by` apunta a un User con `role IN ('moderator', 'admin')`.
+- `User.Role != Member` → no puede tener ningún `StudentProfile` (lo rechaza `AddStudentProfile` con el error `OnlyMembersCanHaveProfiles`).
+- Un `User` con `Role = Member` tiene a lo sumo un `StudentProfile` activo, sin importar la carrera (`ux_student_profiles_user_active`).
+- `PendingCareerPlanId` / `PendingCareerId` solo existen mientras el registro no verificó el mail: `VerifyEmail` los materializa en un `StudentProfile` y los limpia (con o sin éxito), y `Deactivate` / `ExpireRegistration` también los limpian.
 
 ## Context: Academic Catalog
 
@@ -488,13 +539,12 @@ Nombres y valores de todos los enums del modelo.
 | Enum                          | Valores                                                                               |
 | ----------------------------- | ------------------------------------------------------------------------------------- |
 | `user_role`                   | `member`, `moderator`, `admin`, `university_staff`                                    |
-| `student_status`              | `active`, `graduated`, `abandoned`                                                    |
 | `career_degree_type`          | `grado`, `posgrado`, `tecnicatura`                                                    |
 | `career_plan_status`          | `active`, `deprecated`                                                                |
 | `term_kind`                   | `bimestral`, `cuatrimestral`, `semestral`, `anual`                                    |
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
-| `verification_token_purpose`  | `user_email_verification`, `password_reset`                                           |
+| `verification_token_purpose`  | `UserEmailVerification`, `PasswordReset` (persistido como texto, no como enum de Postgres) |
 
 ## Apéndice B: Invariantes transversales
 
