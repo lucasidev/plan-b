@@ -57,8 +57,8 @@ public sealed record SpanView(int FromYear, int ToYear, DateTimeOffset? LastRevi
 /// </summary>
 public sealed record FameView(int ItemsAgreeing, IReadOnlyList<FameItemView> Items);
 
-/// <summary>Una frase de la convergencia: qué se preguntó, qué se eligió y cuántos.</summary>
-public sealed record FameItemView(string Code, string Text, string NegativeLabel, int Percent);
+/// <summary>Una frase de la convergencia: qué se preguntó, qué se eligió, cuántos lo eligieron y sobre cuántos.</summary>
+public sealed record FameItemView(string Code, string Text, string NegativeLabel, int Percent, int Total);
 
 /// <summary>
 /// Una frase publicada: qué se preguntó, qué contestó la mayoría y cómo se repartió el resto.

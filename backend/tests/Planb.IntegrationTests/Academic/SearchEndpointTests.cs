@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Planb.Academic.Application.Features.Search;
 using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
@@ -175,40 +176,15 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         body!.Items.ShouldContain(i => i.Type == "chair" && i.Label == "González");
     }
 
-    /// <summary>
-    /// Roto: pendiente de issue, hasta 2026-09-30.
-    ///
-    /// <para>
-    /// US-132 E2, N1: la letra pide que buscar el nombre de una docente lleve directo a la cátedra
-    /// de la que es titular ("no a una ficha de 'docente' que no existe... el destino siempre es la
-    /// cátedra"). Hoy sí existe una ficha de docente (<c>/teachers/[id]</c>, que su propio docstring
-    /// cita como resolución de US-132 y US-003, y que <c>path-to-the-ficha.spec.ts:163</c> lista
-    /// entre "las cuatro superficies públicas del producto"), y el branch <c>teacher</c> de
-    /// <c>DapperCatalogSearchReader</c> no redirige a la cátedra que esa persona integra: busca
-    /// por nombre de la docente y no encuentra la cátedra si su nombre no coincide con el de
-    /// la cátedra (que es exactamente el caso del ejemplo de la letra, "Claudia Fernández" titular
-    /// de "Cátedra Pérez"). <see cref="SearchEndpointTests.Finds_a_chair_by_its_name_with_its_subject_as_sublabel"/>
-    /// ya prueba, y a propósito, el diseño contrario: buscar "perez" (que matchea el NOMBRE de la
-    /// cátedra) devuelve la cátedra y la docente juntas ("son cosas distintas, la persona y el
-    /// equipo que dicta").
-    /// </para>
-    ///
-    /// <para>
-    /// Caso exacto: se crea una docente ("Delfina Aranda") como titular de una cátedra nueva
-    /// (nombre al azar, sin relación con "Delfina Aranda"). <c>GET /api/search?q=Delfina Aranda</c>
-    /// responde con un item <c>type=teacher</c> (la ficha de la persona) y ninguno <c>type=chair</c>
-    /// para la cátedra que integra. Lo esperado por la letra es lo inverso: ningún <c>teacher</c>,
-    /// sí un <c>chair</c> apuntando a esa cátedra.
-    /// </para>
-    /// </summary>
-    [Fact(Skip = "Roto: pendiente de issue, hasta 2026-09-30")]
-    public async Task Searching_a_teacher_by_name_leads_to_her_chair_not_a_person_ficha()
+    /// <summary>US-132 E2, N1: buscar el nombre de una docente lleva a sus cátedras y no publica nada sobre ella.</summary>
+    [Fact]
+    public async Task Searching_a_teacher_by_name_leads_to_her_chairs_and_publishes_nothing_about_her()
     {
         var admin = await AuthenticatedClient.CreateAsync(
             _fixture, $"search.admin.{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
 
-        // Nombre de cátedra al azar, sin relación con el nombre de la docente: es el mismo caso que
-        // describe la letra ("Cátedra Pérez" no tiene nada que ver con "Claudia Fernández").
+        // Nombre de cátedra al azar, sin relación con el nombre de la docente: la pantalla de la
+        // docente tiene que poder llevar a sus cátedras aunque los nombres no coincidan.
         var chairName = $"Cátedra {Guid.NewGuid():N}"[..24];
         var createdChair = await admin.Client.PostAsJsonAsync(
             $"/api/academic/subjects/{Subject211}/chairs", new { name = chairName });
@@ -227,14 +203,56 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         added.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
         using var anonymous = _fixture.Factory.CreateClient();
+
+        // E2: buscar su nombre la encuentra a ella, que es la puerta a sus cátedras y no una ficha
+        // propia con conteos.
         var response = await anonymous.GetAsync("/api/search?q=Delfina Aranda");
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<SearchResponse>();
+        body!.Items.ShouldContain(i => i.Type == "teacher" && i.Id == teacher.Id);
 
-        // Lo que la letra pide: la cátedra aparece, y nunca se genera una ficha propia de la persona.
-        body!.Items.ShouldNotContain(i => i.Type == "teacher");
-        body.Items.ShouldContain(i => i.Type == "chair" && i.Id == chair.Id);
+        // N1: su pantalla lista la cátedra creada entre las que integra, y nada de lo que ese JSON
+        // publica habla de ella: ni porcentaje, ni moda, ni conteo, ni puntaje.
+        var chairsResponse = await anonymous.GetAsync($"/api/academic/teachers/{teacher.Id}/chairs");
+        chairsResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var chairsJson = await chairsResponse.Content.ReadAsStringAsync();
+        using var chairsDocument = JsonDocument.Parse(chairsJson);
+
+        chairsDocument.RootElement.EnumerateArray().ToList()
+            .ShouldContain(c => c.GetProperty("chairId").GetGuid() == chair.Id);
+
+        AssertPublishesNothingAboutThePerson(chairsDocument.RootElement);
     }
+
+    /// <summary>
+    /// Recorre el documento buscando una propiedad cuyo nombre delate un dato de la persona: lo que
+    /// se publica es de la cátedra, nunca un porcentaje, moda, conteo, promedio o puntaje atribuido
+    /// a quien la integra.
+    /// </summary>
+    private static void AssertPublishesNothingAboutThePerson(JsonElement element)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                foreach (var property in element.EnumerateObject())
+                {
+                    var name = property.Name.ToLowerInvariant();
+                    ForbiddenPropertyNameFragments.Any(name.Contains).ShouldBeFalse(
+                        $"la propiedad \"{property.Name}\" publica algo sobre la persona, y su ficha no puede");
+                    AssertPublishesNothingAboutThePerson(property.Value);
+                }
+                break;
+            case JsonValueKind.Array:
+                foreach (var item in element.EnumerateArray())
+                {
+                    AssertPublishesNothingAboutThePerson(item);
+                }
+                break;
+        }
+    }
+
+    private static readonly string[] ForbiddenPropertyNameFragments =
+        ["percent", "mode", "score", "average", "voices", "reviewcount"];
 
     private static readonly Guid AcademicSeedUnstaId = Guid.Parse("00000001-0000-4000-a000-000000000001");
 
