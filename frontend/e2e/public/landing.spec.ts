@@ -58,12 +58,12 @@ test.describe('La entrada (US-221)', () => {
 
   /**
    * US-221 E3: el bloque "qué es plan-b" explica el producto sin vocabulario de tesis, y desde ahí
-   * se llega a Explorar, a Buscar y a Método.
+   * se llega a Explorar y a Método.
    */
   // Roto: #440, hasta 2026-09-30. La entrada no tiene
   // ningún link a Método en ningún bloque (frontend/src/app/(public)/page.tsx documenta la
   // omisión como deliberada, "sus pantallas todavía no existen", pero /method ya existe).
-  test.fixme('el bloque "qué es esto" no usa jerga de producto y lleva a explorar, buscar y método', async ({
+  test.fixme('el bloque "qué es esto" no usa jerga de producto y lleva a explorar y a método', async ({
     page,
   }) => {
     await page.goto('/');
@@ -72,7 +72,6 @@ test.describe('La entrada (US-221)', () => {
     expect(bodyText).not.toMatch(/instrumento de presión|convergencia|piso de publicación|wilson/i);
 
     await expect(page.getByRole('link', { name: /explorar carreras y materias/i })).toBeVisible();
-    await expect(page.getByRole('combobox', { name: /buscar materia/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /método/i })).toBeVisible();
   });
 });

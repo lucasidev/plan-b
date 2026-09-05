@@ -19,7 +19,7 @@
 Su identidad visual se diseña con criterio propio: lo que sigue es la estructura de bloques que tiene que estar, no la identidad visual (tipografía, tono) que va a tener la landing.
 
 1. **Qué es plan-b, en palabras de lector**: lo que los alumnos ya saben porque lo vivieron, hoy disperso en grupos y pasillos, convertido en un dato que aguanta una discusión. Sin vocabulario de producto ni de tesis. Dicho también en tres pasos cortos: explorar o buscar, leer la ficha con sus voces, reseñar si cursaste.
-2. **La entrada a [Explorar](../SC-003-explore/README.md) y [Buscar](../SC-006-search/README.md)**: los dos caminos para llegar a una ficha.
+2. **La entrada a [Explorar](../SC-003-explore/README.md)**: el camino a una ficha. [Buscar](../SC-006-search/README.md) vive en el catálogo, no en la entrada.
 3. **Una muestra honesta**: una [ficha real](../SC-002-chair/README.md), con sus voces, no un número inventado para la ocasión ("Cátedra Pérez, Análisis Matemático II · UNT: de cada 10 que la cursan, llegan 4 · 42 voces"). Nada de hechos elegidos a mano ni instituciones destacadas (US-171): la muestra es una ficha entera, no un ranking de lo mejor ni de lo peor.
 4. **El método al alcance**: link a [Método](../../../take-the-data/screens/SC-021-method/README.md), para quien quiere saber cómo se calculó eso antes de creerlo.
 5. **Pedir si no está**: link a [Pedir](../../../request-a-career/screens/SC-010-request/README.md), para quien ya intuye que su facultad no va a estar cargada.
@@ -43,7 +43,7 @@ Es la puerta de entrada: no llega desde ninguna otra pantalla del producto, sino
 
 ## Lo construido (R2, 2026-08-27)
 
-Están los bloques 1, 2, 3 y 6: qué es plan-b, los dos caminos (Explorar hacia el catálogo público y el mismo buscador que usa el producto adentro), la muestra sorteada con su ficha real, los tres pasos, y que leer no pide cuenta dicho en el hero.
+Están los bloques 1, 2, 3 y 6: qué es plan-b, la salida a Explorar (el buscador se encuentra en el catálogo), la muestra sorteada con su ficha real, y los tres pasos, donde el primero dice que explorar y buscar no piden cuenta; el hero no lo repite en una línea aparte.
 
 **El sorteo es por visita** y lo hace la base (`ORDER BY random()` sobre las cátedras que cruzaron el piso), no la pantalla: dejarlo del lado del llamador permitiría ordenarlo «por las mejores» sin que se note. De la ficha sorteada se enfrentan la finalización y las dos primeras frases **en el orden de la ficha** (alfabético por código), no una selección; el resto se ve entrando.
 
