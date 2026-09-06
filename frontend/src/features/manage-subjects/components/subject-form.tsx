@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { TERM_KIND_LABELS } from '@/lib/academic-terms';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createSubjectAction, updateSubjectAction } from '../actions';
 import { SUBJECT_LIMITS } from '../schema';
@@ -53,13 +54,13 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
 
   const listHref = `/admin/universities/${universityId}/careers/${careerId}/plans/${planId}/subjects`;
 
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
   useEffect(() => {
     if (state.status !== 'success') return;
-    // Solo `push`: el `refresh()` que había acá apuntaba a la ruta actual (el form) y competía con
-    // la navegación recién iniciada, así que a veces se comía el redirect y el admin se quedaba en
-    // el form creyendo que no se guardó nada. No hace falta: el listado es `force-dynamic`.
-    router.push(listHref);
-  }, [state, router, listHref]);
+    navigateAfterMutation(listHref);
+  }, [state, listHref]);
 
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-5">
