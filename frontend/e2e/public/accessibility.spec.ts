@@ -5,11 +5,10 @@ import { CHAIR_PEREZ, publishByApi, SUBJECT_211 } from '../helpers/reviews';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
- * Accesibilidad WCAG 2.2 AA sobre las rutas públicas (#412), con axe (`@axe-core/playwright`).
+ * Accesibilidad WCAG 2.2 AA sobre las rutas públicas, con axe (`@axe-core/playwright`).
  *
  * Una `test` por ruta, no un loop dentro de un solo test: cada ruta necesita su propio
- * pass/fail y su propia cuarentena si hace falta (ver más abajo), y un loop escondería cuál
- * ruta falló detrás de un solo resultado.
+ * pass/fail y un loop escondería cuál ruta falló detrás de un solo resultado.
  *
  * El fixture (diez voces sobre Pérez, materia 211) es compartido por las ocho rutas: sin una
  * cátedra publicando, la ficha de cátedra y de materia rendereían un esqueleto vacío en vez del
@@ -17,12 +16,9 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  * arma una sola vez en `beforeAll` (modo `serial`: si corriera en paralelo, cada worker que tocara
  * este archivo repetiría las diez altas).
  *
- * Las ocho rutas tienen violaciones de verdad hoy, y no se excluyen con `disableRules`: eso
- * escondería exactamente lo que este spec existe para encontrar. Dos hallazgos, en las ocho: el
- * color `text-ink-3` no llega al contraste mínimo contra su fondo (aparece en textos de todas las
- * fichas) y el atajo `⌘K` de `CatalogTopbar` tampoco (aparece en toda ruta que lleva ese topbar).
- * Cada `test` queda en cuarentena con `test.fixme` hasta que el hallazgo tenga su propio arreglo
- * (#451).
+ * Una violación real no se apaga con `disableRules`: eso escondería exactamente lo que este spec
+ * existe para encontrar. Se documenta y la `test` de esa ruta pasa a cuarentena con `test.fixme`,
+ * la marca `hasta YYYY-MM-DD` y el issue (`#NNN`), como pide `docs/engineering/testing.md`.
  */
 
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -100,67 +96,49 @@ test.describe('Accesibilidad WCAG 2.2 AA en las rutas públicas', () => {
     }
   });
 
-  // Roto: color-contrast en text-ink-3 (varios nodos del hero y la muestra). Pendiente de issue,
-  // hasta 2026-09-30 (#451).
-  test.fixme('/ no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/ no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto('/');
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: color-contrast en text-ink-3 (los párrafos del cuestionario). Pendiente de issue,
-  // hasta 2026-09-30 (#451).
-  test.fixme('/method no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/method no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto('/method');
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: color-contrast en el atajo ⌘K de CatalogTopbar y en text-ink-3 de la ficha. Pendiente
-  // de issue, hasta 2026-09-30 (#451).
-  test.fixme('/subjects/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/subjects/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto(`/subjects/${SUBJECT_211}`);
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: mismo color-contrast (⌘K de CatalogTopbar + text-ink-3) que /subjects/[id]. Pendiente
-  // de issue, hasta 2026-09-30 (#451).
-  test.fixme('/chairs/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/chairs/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto(`/chairs/${CHAIR_PEREZ}`);
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: mismo color-contrast (⌘K de CatalogTopbar + text-ink-3) que /subjects/[id]. Pendiente
-  // de issue, hasta 2026-09-30 (#451).
-  test.fixme('/careers/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/careers/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto(`/careers/${CAREER_TUDCS}`);
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: mismo color-contrast (⌘K de CatalogTopbar + text-ink-3) que /subjects/[id]. Pendiente
-  // de issue, hasta 2026-09-30 (#451).
-  test.fixme('/teachers/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/teachers/[id] no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto(`/teachers/${TEACHER_PEREZ}`);
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: color-contrast en el atajo ⌘K de CatalogTopbar y en text-ink-3 del encabezado. Pendiente
-  // de issue, hasta 2026-09-30 (#451).
-  test.fixme('/universities no tiene violaciones de accesibilidad', async ({ page }) => {
+  test('/universities no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto('/universities');
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);
   });
 
-  // Roto: mismo color-contrast (⌘K de CatalogTopbar + text-ink-3) que /universities. Pendiente de
-  // issue, hasta 2026-09-30 (#451).
-  test.fixme('/universities/[slug]/careers no tiene violaciones de accesibilidad', async ({
-    page,
-  }) => {
+  test('/universities/[slug]/careers no tiene violaciones de accesibilidad', async ({ page }) => {
     await page.goto(`/universities/${UNIVERSITY_SLUG}/careers`);
     const violations = await auditRoute(page);
     expect(violations.length, describeViolations(violations)).toBe(0);

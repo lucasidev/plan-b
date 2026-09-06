@@ -18,7 +18,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 | `--color-bg-card` | `#fffefb` | Tarjeta. |
 | `--color-ink` | `#191b1f` | Texto principal. |
 | `--color-ink-2` | `#494e57` | Texto secundario. |
-| `--color-ink-3` | `#7b8089` | Labels, eyebrows, metadatos. |
+| `--color-ink-3` | `#62676f` | Labels, eyebrows, metadatos. |
 | `--color-ink-4` | `#a7adb5` | Disabled / placeholder. |
 | `--color-line` | `#e2dfd6` | Borde primario (1px). |
 | `--color-line-2` | `#eae7de` | Divisor sutil. |
@@ -26,6 +26,8 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 | `--color-alarm-soft` | `#f5e4e0` | Fondo suave de la alarma. |
 | `--color-alarm-ink` | `#6e1c12` | Alarma como texto sobre soft. |
 | `--color-alarm-hover` | `#741d10` | Hover de acciones alarma. |
+
+`--color-ink-3` es el tono más claro con el que se escribe texto: llega a 4,5:1 (WCAG AA) sobre los tres fondos (`--color-bg`, `--color-bg-card`, `--color-bg-elev`). `--color-ink-4` no es para texto legible: solo deshabilitado, placeholder y relleno no textual de barras.
 
 Los estados del dominio (`--color-st-*`: aprobada, regular, cursando, desaprobada, pendiente) conservan su taxonomía actual de `globals.css`; se rearmonizan contra el papel frío cuando aterricen los tokens (misma lightness/chroma en oklch, hues como están).
 

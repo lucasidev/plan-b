@@ -152,7 +152,7 @@ function Attempts({ attempts }: { attempts: Distribution }) {
         ))}
       </div>
 
-      <p className="text-[11px] text-ink-4" style={{ fontFamily: 'var(--font-mono)' }}>
+      <p className="text-[11px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
         {attempts.options.map((o) => `${o.label.toLowerCase()} ${o.percent}`).join(' · ')} · de{' '}
         {attempts.total}
       </p>
@@ -165,7 +165,7 @@ function Cell({ label, value, note }: { label: string; value: string; note: stri
     <div className="rounded-xl border border-line bg-bg-card p-4">
       <p className="mb-1 text-[12px] text-ink-3">{label}</p>
       <p className="mb-1 font-serif text-[20px] font-medium text-ink">{value}</p>
-      <p className="text-[11px] leading-snug text-ink-4">{note}</p>
+      <p className="text-[11px] leading-snug text-ink-3">{note}</p>
     </div>
   );
 }
@@ -203,7 +203,7 @@ function SubjectOrChair({ facts }: { facts: SubjectFacts }) {
                   />
                 </span>
                 <span
-                  className="w-[70px] shrink-0 whitespace-nowrap text-right text-[11px] text-ink-4"
+                  className="w-[70px] shrink-0 whitespace-nowrap text-right text-[11px] text-ink-3"
                   style={{ fontFamily: 'var(--font-mono)' }}
                 >
                   {chair.percent}% de {chair.total}
@@ -314,7 +314,7 @@ function Chairs({ facts }: { facts: SubjectFacts }) {
           <ChairRow key={chair.chairId} chair={chair} last={index === facts.chairs.length - 1} />
         ))}
       </div>
-      <p className="mt-1.5 text-[11px] text-ink-4">
+      <p className="mt-1.5 text-[11px] text-ink-3">
         ordenadas por cantidad de voces, nunca por sus números
       </p>
     </section>

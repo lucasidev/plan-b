@@ -36,7 +36,7 @@ export function CatalogBreadcrumb({ items }: { items: CrumbItem[] }) {
             ) : (
               <b className="font-semibold text-ink">{item.label}</b>
             )}
-            {!isLast && <span className="mx-1.5 text-ink-4">/</span>}
+            {!isLast && <span className="mx-1.5 text-ink-3">/</span>}
           </span>
         );
       })}

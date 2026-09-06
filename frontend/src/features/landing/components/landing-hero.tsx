@@ -65,9 +65,9 @@ export function LandingHero() {
           href="/universities"
           prefetch
           className={cn(
-            'inline-flex items-center justify-center font-medium rounded-pill shadow-card transition-colors',
-            'bg-accent text-white border border-accent hover:bg-accent-hover',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
+            'inline-flex items-center justify-center font-medium rounded-pill transition-colors',
+            'bg-ink text-white border border-ink shadow-card hover:bg-[#1a110a] hover:shadow-card-h',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-3',
           )}
           style={{ padding: '11px 22px', fontSize: 14 }}
         >

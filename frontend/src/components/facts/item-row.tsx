@@ -98,7 +98,7 @@ function Stretch({ item }: { item: PublishedItem }) {
         ))}
       </div>
 
-      <p className="mt-[5px] text-[10px] text-ink-4" style={{ fontFamily: 'var(--font-mono)' }}>
+      <p className="mt-[5px] text-[10px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
         {item.distribution.map((s) => `${s.label.toLowerCase()} ${s.percent}`).join(' · ')} · de{' '}
         {item.total}
       </p>
