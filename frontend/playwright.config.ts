@@ -29,8 +29,14 @@ const CAPTURE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_CAPTURE === '1' ? [] : ['*
  * worker alcanza para sacar la ventana de carrera consigo mismo; que corra recién cuando
  * `parallel` terminó (incluida `admin/curation.spec.ts`, que también destila una frase, una sola
  * vez) la saca contra cualquier otro spec también.
+ *
+ * `public/path-to-the-ficha.spec.ts`: sus dos tests comparten una fixture que publica diez
+ * reseñas con diez altas de alumno. Cada alta cuesta un bcrypt (~2s de CPU en el runner de CI):
+ * en la fase `parallel`, con tres workers, esas altas compiten por CPU con todos los demás specs,
+ * y los que dependen de una server action rápida vencen su timeout por quedarse sin CPU. Corriendo
+ * solo, después de `parallel`, no le quita CPU a nadie.
  */
-const SERIAL_SPECS = ['**/admin/items.spec.ts'];
+const SERIAL_SPECS = ['**/admin/items.spec.ts', '**/public/path-to-the-ficha.spec.ts'];
 
 /**
  * Playwright config: E2E suite del frontend.
