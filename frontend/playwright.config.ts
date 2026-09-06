@@ -80,15 +80,17 @@ export default defineConfig({
   // y el tag `@flaky`. Ver docs/engineering/testing.md.
   retries: 0,
 
-  // Sin fijar en local: Playwright usa la mitad de los cores. El runner de CI tiene 4 cores y los
+  // Sin fijar en local: Playwright usa la mitad de los cores. El runner de CI tiene 4 vCPU y las
   // comparte con Postgres, el backend y el frontend corriendo al lado (`scripts/run-e2e.ts`
-  // levanta los tres antes de esto); 3 es el valor a confirmar contra 2 en una corrida real de CI
-  // (no se pudo comparar desde acá, ver docs/engineering/testing.md).
+  // levanta los tres antes de esto). Con 3 workers, la corrida de `main` del 2026-09-06 y dos
+  // corridas de PR cayeron en specs de escritura y en una navegación con `Link`, por acciones y
+  // navegaciones que no llegaban dentro de su timeout (15 a 30s), siempre en la fase `parallel`.
+  // Con 2, quedan dos CPU para el stack que atiende a esos dos workers.
   //
   // PLAYWRIGHT_ALL_BROWSERS no lleva la partición `parallel`/`serial` (ver `projects`): ese modo
   // es manual y local, y sumarle la partición multiplicaría cada proyecto por navegador. Un
   // worker ahí es lo que evita la carrera de `SERIAL_SPECS` sin la partición para sacarla.
-  workers: process.env.PLAYWRIGHT_ALL_BROWSERS ? 1 : process.env.CI ? 3 : undefined,
+  workers: process.env.PLAYWRIGHT_ALL_BROWSERS ? 1 : process.env.CI ? 2 : undefined,
 
   // El reporter json alimenta scripts/check-flaky.ts (#422): lista la cuarentena (status
   // "flaky") sin romper el build.
@@ -152,7 +154,8 @@ export default defineConfig({
           testMatch: /public\//,
           fullyParallel: true,
           // Corre última, estrictamente. A la vez que `parallel` duplicaba la carga y en CI
-          // (2 vCPU, #452) dejaba sin CPU a las server actions de los specs de escritura. Y a la
+          // (4 vCPU compartidas con el stack, #452) dejaba sin CPU a las server actions de los
+          // specs de escritura. Y a la
           // vez que `serial` chocaba: el camino a la ficha corre también acá (matchea
           // `public/`) y publica sobre Pérez mientras `admin/items.spec.ts` destila un ítem sobre
           // la misma cátedra, que es justo el corte de serie que ese spec provoca a propósito.
