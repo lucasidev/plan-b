@@ -166,6 +166,14 @@ frontend-test-e2e *args:
 frontend-test-e2e-show *args:
     bun scripts/run-e2e-show.ts {{args}}
 
+# Presupuesto de rendimiento con Lighthouse CI (#412): mide y avisa, nunca gatea (los umbrales de
+# frontend/lighthouserc.cjs son `warn`). A diferencia de `frontend-test-e2e`, esta receta NO levanta
+# ningún stack: corre contra uno que ya esté arriba (`just dev`, o `bun scripts/run-scratch.ts` /
+# `bun scripts/run-e2e.ts --build` dejado corriendo a mano). El reporte queda en
+# `frontend/lighthouse-report/`.
+frontend-lighthouse:
+    cd frontend && bunx lhci autorun --config=lighthouserc.cjs
+
 # Levanta el stack completo (backend + frontend) contra una base efímera propia (`planb_scratch`)
 # para recorrer la app a mano sin ensuciar la base de dev. Usalo en vez de `just dev` cuando solo
 # querés mirar/probar algo y no te interesa que quede guardado.

@@ -18,6 +18,9 @@ reports/
 playwright-report/
 test-results/
 .playwright-mcp/
+# Lighthouse CI (#412): reporte local y el estado que lhci arma para correrlo
+lighthouse-report/
+.lighthouseci/
 
 # Next.js / TypeScript generated
 next-env.d.ts

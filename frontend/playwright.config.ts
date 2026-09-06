@@ -48,9 +48,10 @@ const SERIAL_SPECS = ['**/admin/items.spec.ts', '**/public/path-to-the-ficha.spe
  *     (`scripts/run-e2e.ts`, mismo patrón que el job de CI), así que el stack de dev tiene que
  *     estar ABAJO. Solo hace falta la infra: `just infra-up`.
  *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
- *   - Dos proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global, y
- *     `serial` corre después, con un worker. La regla de aislamiento completa (qué hace que un
- *     spec pueda vivir en `parallel`) está en `docs/engineering/testing.md`.
+ *   - Tres proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global,
+ *     `serial` corre después con un worker, y `mobile` repite `e2e/public/**` con un viewport de
+ *     celular chico (#412). La regla de aislamiento completa (qué hace que un spec pueda vivir en
+ *     `parallel`) está en `docs/engineering/testing.md`.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -133,6 +134,16 @@ export default defineConfig({
           // Corre recién cuando `parallel` terminó entero: ver docstring de `SERIAL_SPECS`.
           dependencies: ['parallel'],
           use: { ...devices['Desktop Chrome'] },
+        },
+        {
+          // Lo público (#412) corre además en un viewport de celular chico: es la única
+          // superficie sin cuenta, y ahí es donde un buscador inalcanzable o un overflow
+          // horizontal le pegan a alguien de verdad. Pixel 5 (393px) es angosto sin ser el caso
+          // límite de 320px, que ninguna pantalla del producto apunta a soportar todavía.
+          name: 'mobile',
+          testMatch: /public\//,
+          fullyParallel: true,
+          use: { ...devices['Pixel 5'] },
         },
       ],
 });

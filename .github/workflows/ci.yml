@@ -465,6 +465,23 @@ jobs:
           CI: 'true'
         run: bunx playwright test
 
+      # Presupuesto de rendimiento (#412): mide y avisa, no gatea (lighthouserc.cjs tiene los
+      # umbrales en `warn`, nunca `error`). Corre pase lo que pase Playwright, contra el mismo
+      # `next start` que la suite ya dejó arriba (Pérez ya publica para entonces: la ficha de
+      # cátedra no se audita vacía).
+      - name: Lighthouse CI
+        if: always()
+        working-directory: frontend
+        run: bunx lhci autorun --config=lighthouserc.cjs
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-report
+          path: frontend/lighthouse-report
+          retention-days: 14
+
       # Corre pase lo que pase Playwright: la cuarentena vencida gatea, y la lista de flaky de
       # esta corrida (reporter json) es la señal de #422 aunque el resto haya salido verde.
       - name: Flaky tests
