@@ -1,4 +1,5 @@
-import { type APIRequestContext, expect, type Page, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
+import { CHAIR_PEREZ, publishByApi, SUBJECT_211 } from '../helpers/reviews';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
@@ -14,7 +15,6 @@ import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/st
  */
 
 const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
-const SUBJECT_ID = '00000004-0000-4000-a000-000000000012';
 const CHAIR_PEREZ_NAME = 'Pérez';
 
 // Un período por reseña: la unidad es cuenta × materia × período.
@@ -26,43 +26,11 @@ const TERMS = [
   '00000005-0000-4000-a000-000000000005',
   '00000005-0000-4000-a000-000000000006',
 ];
-const CHAIR_PEREZ = '00000008-0000-4000-a000-000000000001';
 
 // La carrera de la materia 211 (TUDCS UNSTA) y su plan: cobertura de /careers/[id] y de las
 // páginas de catálogo (universidades, carreras, planes, materias) que suma el guard anti-puntaje.
 const TUDCS_CAREER_ID = '00000002-0000-4000-a000-000000000003';
 const TUDCS_PLAN_ID = '00000003-0000-4000-a000-000000000003';
-
-/**
- * Lleva a Pérez sobre el piso por API. Es fixture, no el flujo bajo prueba: lo que se prueba es
- * que el camino de lectura llegue, y sin una cátedra publicando no habría nada a lo que llegar.
- */
-async function publishByApi(
-  request: APIRequestContext,
-  student: CreatedStudent,
-  termId: string,
-  outcome: number,
-): Promise<void> {
-  const signIn = await request.post('/api/identity/sign-in', {
-    data: { email: student.email, password: student.password },
-  });
-  expect(signIn.ok(), `sign-in de ${student.email}`).toBeTruthy();
-
-  const published = await request.post('/api/reviews/courses', {
-    data: {
-      subjectId: SUBJECT_ID,
-      termId,
-      chairId: CHAIR_PEREZ,
-      answers: [
-        { itemCode: 'COURSE_OUTCOME', optionValue: outcome },
-        { itemCode: 'CHAIR_ANSWERS_IN_CLASS', optionValue: 3 },
-        { itemCode: 'CHAIR_CLASSES_HELD', optionValue: 3 },
-      ],
-      freeText: null,
-    },
-  });
-  expect(published.status(), `publicar para ${student.email}`).toBe(201);
-}
 
 /**
  * El texto que la página le muestra a una persona: todo el body menos los scripts y estilos, y
@@ -158,7 +126,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     });
     await page.getByRole('combobox', { name: /buscar materia/i }).fill('Fundamentos');
     await page.getByRole('option', { name: new RegExp(SUBJECT_NAME, 'i') }).click();
-    await expect(page).toHaveURL(new RegExp(`/subjects/${SUBJECT_ID}$`), { timeout: 30_000 });
+    await expect(page).toHaveURL(new RegExp(`/subjects/${SUBJECT_211}$`), { timeout: 30_000 });
 
     // 3) La ficha de materia muestra sus cátedras por separado, que es la pregunta que contesta:
     // si lo que pasó es de la materia o de la cátedra que te tocó.
@@ -193,7 +161,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     // puntaje en cualquiera de ellas, esto lo agarra.
     const publicPages = [
       '/',
-      `/subjects/${SUBJECT_ID}`,
+      `/subjects/${SUBJECT_211}`,
       `/chairs/${CHAIR_PEREZ}`,
       '/teachers/00000006-0000-4000-a000-00000000000b',
       `/careers/${TUDCS_CAREER_ID}`,

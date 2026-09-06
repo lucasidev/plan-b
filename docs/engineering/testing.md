@@ -479,6 +479,14 @@ Una pregunta recurrente: ¿está bien que `e2e/helpers/mailpit.ts` lea Mailpit H
 
 **Atajos que aceptamos deliberadamente**: ningún E2E es 100% fiel al user real. Siempre hay alguno (el "click humano" del mail, el "esperar TTL" del rate limit, el tiempo físico). La regla práctica: que los atajos sean en la **interacción con sistemas externos** (mail provider, clock), no en el **comportamiento del producto**.
 
+#### Las restricciones del producto
+
+Tres restricciones cross-cutting sobre lo público (`/`, `/method`, `/subjects/[id]`, `/chairs/[id]`, `/careers/[id]`, `/teachers/[id]`, `/universities`, `/universities/[slug]/careers`), ninguna gatea el merge:
+
+- **Accesibilidad (WCAG 2.2 AA).** `frontend/e2e/public/accessibility.spec.ts`, proyecto `parallel`: una `test` por ruta, cada una corre `@axe-core/playwright` con los tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`. Una violación real no se apaga con `disableRules`: se documenta y la `test` de esa ruta queda en cuarentena (`test.fixme`, con la misma marca `hasta YYYY-MM-DD` + `#NNN` que cualquier flake, [scripts/check-flaky.ts](../../scripts/check-flaky.ts) la exige igual).
+- **Un viewport de celular.** Proyecto `mobile` (`devices['Pixel 5']`, 393px) corre TODO `e2e/public/**` de nuevo, sin cambios de producción: si un spec ahí falla por layout, el hallazgo se arregla en el producto, no en el test. `accessibility.spec.ts` además afirma que ninguna ruta pública tiene scroll horizontal (`document.documentElement.scrollWidth <= window.innerWidth`), que es lo que WCAG 2.2 AA 1.4.10 (Reflow) pide y axe no puede chequear con análisis estático.
+- **Presupuesto de rendimiento.** `frontend/lighthouserc.cjs` (Lighthouse CI) corre `/`, `/method`, una ficha de materia y una de cátedra, dos corridas cada una, mobile (el preset real: más lento que desktop, y sumarle una segunda pasada desktop no entraba en el presupuesto de tiempo del job). Umbrales `warn` únicamente (`categories:performance >= 0.8`, `accessibility >= 0.9`, `best-practices >= 0.9`, `seo >= 0.8`): mide y avisa, no gatea, hasta que haya corridas de CI reales para leer si son realistas. Local: `just frontend-lighthouse` contra un stack ya levantado. CI: paso "Lighthouse CI" del job `e2e`, después de Playwright (para que la cátedra ya esté publicando), con el reporte como artefacto (`lighthouse-report/`, 14 días).
+
 ## Changelog
 
 No hay nada que testear: la automatización se retiró ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)). `CHANGELOG.md` está congelado y se genera de una pasada desde los commits el día que haya quien lo lea. Lo que sí sigue enforceado localmente es el formato del commit (lefthook `commit-msg`), que es lo que hace posible generarlo después.
