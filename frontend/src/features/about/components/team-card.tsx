@@ -43,7 +43,7 @@ export function TeamCard() {
         ))}
       </ul>
       <p
-        className="text-ink-4"
+        className="text-ink-3"
         style={{
           fontSize: 11.5,
           lineHeight: 1.5,

@@ -31,7 +31,7 @@ export function ItemQuestion({ item, value, onAnswer, onSkip }: ItemQuestionProp
           <button
             type="button"
             onClick={() => onSkip(item.code)}
-            className="shrink-0 font-mono text-[10.5px] text-ink-4 underline decoration-dashed underline-offset-2 hover:text-ink-3"
+            className="shrink-0 font-mono text-[10.5px] text-ink-3 underline decoration-dashed underline-offset-2 hover:text-ink-2"
           >
             borrar
           </button>

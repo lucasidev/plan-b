@@ -217,7 +217,7 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
               {c.negativeLabel}: <b className="font-medium">{c.herePercent} %</b> acá,{' '}
               {c.siblingsPercent} % en las otras.
               <span
-                className="ml-1 text-[10.5px] text-ink-4"
+                className="ml-1 text-[10.5px] text-ink-3"
                 style={{ fontFamily: 'var(--font-mono)' }}
               >
                 de {c.hereTotal} y {c.siblingsTotal}

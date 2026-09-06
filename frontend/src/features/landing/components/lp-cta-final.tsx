@@ -36,8 +36,8 @@ export function LpCtaFinal() {
           href="/sign-up"
           prefetch
           className={cn(
-            'inline-flex items-center justify-center font-medium rounded-pill shadow-card transition-colors',
-            'bg-accent text-white border border-accent hover:bg-accent-hover',
+            'inline-flex items-center justify-center font-medium rounded-pill transition-colors',
+            'bg-bg-card text-ink border border-line shadow-card hover:bg-bg-elev hover:shadow-card-h',
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft',
           )}
           style={{ padding: '12px 24px', fontSize: 14 }}
