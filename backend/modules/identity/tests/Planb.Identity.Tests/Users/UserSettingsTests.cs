@@ -115,12 +115,10 @@ public class UserSettingsTests
     }
 
     /// <summary>
-    /// Roto: un PATCH sin ningún campo no es una actualización, así que no debería mover
-    /// <see cref="UserSettings.UpdatedAt"/>. <see cref="UserSettings.Update"/> lo bumpea igual,
-    /// pase lo que pase: el guard de "al menos un campo" vive solo en el validator del endpoint,
-    /// no en el dominio.
+    /// Un PATCH sin ningún campo no es una actualización: no debería mover
+    /// <see cref="UserSettings.UpdatedAt"/>.
     /// </summary>
-    [Fact(Skip = "Roto: #447")]
+    [Fact]
     public void Update_WithAllNull_DoesNotBumpUpdatedAt()
     {
         var settings = Defaults();
@@ -136,6 +134,31 @@ public class UserSettingsTests
             allowTeacherContact: null,
             language: null,
             theme: null,
+            clock: new FixedClock(T0.AddDays(1)));
+
+        settings.UpdatedAt.ShouldBe(T0);
+    }
+
+    /// <summary>
+    /// Mandar los mismos valores que ya tenía tampoco es un cambio: <see cref="UserSettings.UpdatedAt"/>
+    /// no se mueve aunque el PATCH traiga los diez campos.
+    /// </summary>
+    [Fact]
+    public void Update_WithTheSameValues_DoesNotBumpUpdatedAt()
+    {
+        var settings = Defaults();
+
+        settings.Update(
+            notificationsInApp: true,
+            notificationsEmail: true,
+            notifyReviewResponse: true,
+            notifyNewReviewInFollowed: true,
+            notifyAcademicCalendar: true,
+            notifyDraftPromotionNudge: true,
+            showDisplayNameInReviews: true,
+            allowTeacherContact: false,
+            language: Language.EsRioplatense,
+            theme: ThemePreference.Auto,
             clock: new FixedClock(T0.AddDays(1)));
 
         settings.UpdatedAt.ShouldBe(T0);
