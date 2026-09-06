@@ -75,9 +75,8 @@ public sealed class UserSettings : Entity<UserSettingsId>, IAggregateRoot
 
     /// <summary>
     /// PATCH parcial. Cada parámetro nullable: si viene null, no se toca; si viene con valor,
-    /// se aplica. <c>UpdatedAt</c> se rebumpea siempre que entre acá (aunque el call termine
-    /// sin tocar nada), porque el endpoint solo invoca este método si el body trae al menos
-    /// un campo.
+    /// se aplica solo cuando difiere del actual (mandar el mismo valor que ya tenía no cuenta
+    /// como cambio). <c>UpdatedAt</c> se mueve únicamente si algún campo cambió de verdad.
     /// </summary>
     public void Update(
         bool? notificationsInApp,
@@ -94,17 +93,38 @@ public sealed class UserSettings : Entity<UserSettingsId>, IAggregateRoot
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (notificationsInApp.HasValue) NotificationsInApp = notificationsInApp.Value;
-        if (notificationsEmail.HasValue) NotificationsEmail = notificationsEmail.Value;
-        if (notifyReviewResponse.HasValue) NotifyReviewResponse = notifyReviewResponse.Value;
-        if (notifyNewReviewInFollowed.HasValue) NotifyNewReviewInFollowed = notifyNewReviewInFollowed.Value;
-        if (notifyAcademicCalendar.HasValue) NotifyAcademicCalendar = notifyAcademicCalendar.Value;
-        if (notifyDraftPromotionNudge.HasValue) NotifyDraftPromotionNudge = notifyDraftPromotionNudge.Value;
-        if (showDisplayNameInReviews.HasValue) ShowDisplayNameInReviews = showDisplayNameInReviews.Value;
-        if (allowTeacherContact.HasValue) AllowTeacherContact = allowTeacherContact.Value;
-        if (language.HasValue) Language = language.Value;
-        if (theme.HasValue) Theme = theme.Value;
+        var changed = false;
+        changed |= ApplyIfChanged(NotificationsInApp, notificationsInApp, v => NotificationsInApp = v);
+        changed |= ApplyIfChanged(NotificationsEmail, notificationsEmail, v => NotificationsEmail = v);
+        changed |= ApplyIfChanged(NotifyReviewResponse, notifyReviewResponse, v => NotifyReviewResponse = v);
+        changed |= ApplyIfChanged(NotifyNewReviewInFollowed, notifyNewReviewInFollowed, v => NotifyNewReviewInFollowed = v);
+        changed |= ApplyIfChanged(NotifyAcademicCalendar, notifyAcademicCalendar, v => NotifyAcademicCalendar = v);
+        changed |= ApplyIfChanged(NotifyDraftPromotionNudge, notifyDraftPromotionNudge, v => NotifyDraftPromotionNudge = v);
+        changed |= ApplyIfChanged(ShowDisplayNameInReviews, showDisplayNameInReviews, v => ShowDisplayNameInReviews = v);
+        changed |= ApplyIfChanged(AllowTeacherContact, allowTeacherContact, v => AllowTeacherContact = v);
+        changed |= ApplyIfChanged(Language, language, v => Language = v);
+        changed |= ApplyIfChanged(Theme, theme, v => Theme = v);
 
-        UpdatedAt = clock.UtcNow;
+        if (changed)
+        {
+            UpdatedAt = clock.UtcNow;
+        }
+    }
+
+    /// <summary>
+    /// Aplica <paramref name="incoming"/> vía <paramref name="apply"/> solo si trae valor y
+    /// difiere de <paramref name="current"/>. Devuelve si hubo cambio, para que <see cref="Update"/>
+    /// sepa si tiene que mover <c>UpdatedAt</c>.
+    /// </summary>
+    private static bool ApplyIfChanged<T>(T current, T? incoming, Action<T> apply)
+        where T : struct
+    {
+        if (!incoming.HasValue || EqualityComparer<T>.Default.Equals(current, incoming.Value))
+        {
+            return false;
+        }
+
+        apply(incoming.Value);
+        return true;
     }
 }
