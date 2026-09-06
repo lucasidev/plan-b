@@ -59,7 +59,11 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     await page.getByRole('button', { name: /editar/i }).click();
 
     const nameInput = page.getByLabel(/nombre para mostrar/i);
-    await nameInput.fill('Lucía Mansilla');
+
+    // El perfil persiste entre repeticiones dentro de la misma corrida: si el nombre fuera
+    // fijo, la aserción de esta vuelta pasaría con el guardado de la anterior, no con el propio.
+    const savedName = `Lucía Mansilla ${test.info().repeatEachIndex + 1}`;
+    await nameInput.fill(savedName);
 
     const yearSelect = page.getByLabel(/año cursando/i);
     await yearSelect.selectOption('3');
@@ -69,7 +73,7 @@ test.describe('Mi perfil (US-047 + US-038-bis modal)', () => {
     // Timeout generoso (#436): el guardado dispara router.refresh(), que vuelve a pedirle el
     // profile al servidor. En la suite completa con 3 workers, 5000ms no siempre le alcanza a
     // esa vuelta bajo la carga concurrente de la corrida; aislado sobra.
-    await expect(page.getByRole('heading', { name: /lucía mansilla/i, level: 2 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: savedName, level: 2 })).toBeVisible({
       timeout: 15_000,
     });
     await expect(page.getByText(/3° año/i)).toBeVisible();
