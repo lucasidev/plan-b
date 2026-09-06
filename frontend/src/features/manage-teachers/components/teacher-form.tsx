@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { createTeacherAction, updateTeacherAction } from '../actions';
 import { initialManageTeacherState, type TeacherDetail, type University } from '../types';
 
@@ -42,12 +43,13 @@ export function TeacherForm({ mode, universities, teacher }: Props) {
     photo: useId(),
   };
 
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
   useEffect(() => {
     if (state.status !== 'success') return;
-    // Solo `push`: el `refresh()` apuntaba a la ruta actual y competía con la navegación, comiéndose
-    // el redirect a veces. El listado es `force-dynamic`, así que no hace falta.
-    router.push('/admin/teachers');
-  }, [state, router]);
+    navigateAfterMutation('/admin/teachers');
+  }, [state]);
 
   const universityName =
     universities.find((u) => u.id === teacher?.universityId)?.name ?? 'Universidad';
