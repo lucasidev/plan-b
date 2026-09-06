@@ -396,7 +396,7 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 
 **Por qué este hilo.** Tres sprints construyeron la máquina que convierte reseñas en fichas, y nadie la usó todavía: seguimos pre-deploy y no existe una reseña de una persona real. Antes de personas reales, un stage: el producto entero en una URL, con el corpus sintético, recorrible por Lucas y por Copas. Y la retrospectiva de R3 pidió mirar la calidad con lentes de QA: la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) encontró una suite grande y verde pero desbalanceada (el dominio bien cubierto, la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, y 9 de 75 escenarios citados por un test), y una sola línea que explica casi todo el costo de CI (cada clase de integración levanta su base, corre 57 migraciones y siembra, 50 veces en serie). **R4 no recorta: entran los doce hallazgos y las ocho propuestas de eficiencia.**
 
-### Pista 1 · El stage, con datos de prueba (14 pts)
+### Pista 1 · El stage, con datos de prueba (15 pts)
 
 | # | Tarea | Pts | Quién |
 |---|---|---|---|
@@ -407,6 +407,7 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 | [#404](https://github.com/lucasidev/plan-b/issues/404) · 5 | **El recorrido para Copas**, al final del doc: Pérez publica con 14 voces, Ruiz bajo el piso con 6, la co-cursada que publica y la que no, Método, registrarse y verificar desde Mailpit, reseñar y ver que contó, cargar una cátedra y curar una frase. **Al 2026-09-04**: escrito al final de la sección Stage y caminado sobre el stage en sus pasos 1 a 4 con los números del corpus. El par de co-cursada que publica es con Desarrollo de Software (111): el id del corpus siempre fue el de 111, y el nombre 121 que llevaban el código y el recorrido era el equivocado. Faltan los pasos 5 a 8 | 1 | Claude |
 | [#405](https://github.com/lucasidev/plan-b/issues/405) · 6 | **Barrida `ítem` → frase** (335 en docs, 77 en código) y el gate: `check-docs` falla con un término prohibido del glosario fuera de `history/` y de los ADRs. **Hecho el 2026-09-03**: 341 reemplazos en 83 archivos de docs y 294 líneas en 85 de código, con la concordancia revisada; el gate rechaza `ítem` en prosa fuera de `history/` y de los ADRs | 3 | Claude |
 | [#406](https://github.com/lucasidev/plan-b/issues/406) · 7 | **Orden**: cerrar los 5 issues de R0 que siguen abiertos, la entrada de la retro en `lessons-learned.md`, y decidir los 15 issues US-2xx sin milestone. **Al 2026-09-04**: R0 vacío, la retro escrita, y los US-2xx en Backlog (los cuatro de moderación de texto publicado, cerrados); y el 2026-09-04, los 73 issues del catálogo US-127 a US-199 (fuera del alcance original): las construidas bajo el gate cerradas como completadas, las 55 sin sprint a Backlog, ninguna marcada muerta, y dos reabiertas el mismo día porque el código no las tiene (US-197, US-155); cero issues sin milestone | 1 | Claude; lo último, Lucas |
+| [#455](https://github.com/lucasidev/plan-b/issues/455) · 8 | **El stage sigue a main**: cada merge a `main` publica las imágenes (el sha y el tag móvil `main`) y redespliega el stage por la API de Dokploy; producción se promueve desde un Release de GitHub cuando exista su servicio (ADR-0089, que reemplaza a ADR-0038). **Hecho el 2026-09-06**: el workflow *Publish images* dispara en cada push a `main` y a mano para cualquier ref, el compose corre `main` por defecto con `pull_policy: always`, y el redeploy va por la API con tres secrets que carga Lucas; sin ellos el workflow publica y avisa. La primera corrida real es el primer merge a `main` con los secrets cargados | 1 | Claude; los secrets, Lucas |
 
 **Decidido el 2026-09-03**: el stage va con HTTPS, `sslip.io` sobre la IP del servidor y certificado de Let's Encrypt emitido desde Dokploy, porque corre en un servidor y no en una máquina local. Los 73 issues del catálogo (US-127 a US-199) se decidieron el 2026-09-04: construidas cerradas, el resto a Backlog. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
 
@@ -465,7 +466,7 @@ La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va prime
 ### Lo que R4 deja afuera a propósito
 
 - Personas reales y todo lo que solo ellas exigen: mail y dominio reales, consentimiento (US-228, Ley 25.326), Anonimato (SC-013), el piso en el contrato antes de enviar (US-159). Es lo primero del sprint en que las haya.
-- El hardening de Production, que ya está escrito y espera su propio deploy; y la política de versionado que ADR-0038 dice revisar al primer deploy.
+- El hardening de Production, que ya está escrito y espera su propio deploy.
 
 ## Lo anterior: el producto en retiro
 

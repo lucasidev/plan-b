@@ -1,4 +1,4 @@
-# El contexto de build es la raíz del repo (context: . en release.yml). Sin esto, COPY
+# El contexto de build es la raíz del repo (context: . en publish-images.yml). Sin esto, COPY
 # frontend/ ./ del stage build de frontend/Dockerfile trae el node_modules y el .next locales
 # del checkout (si ya corriste bun install/bun run build en el host) y tapa el node_modules
 # recién instalado en el stage deps: el bug se vio como "next: Permission denied" al buildear

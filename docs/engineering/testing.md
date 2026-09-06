@@ -504,4 +504,4 @@ No hay nada que testear: la automatización se retiró ([ADR-0074](../decisions/
 - [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md): integration tests pattern.
 - [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): pirámide de testing cross-stack.
 - [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): changelog auto-append.
-- [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy (pre-deploy = no versiones; tags narrativos permitidos).
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): el stage sigue a `main`; sin versiones hasta producción; tags narrativos permitidos.

@@ -292,7 +292,7 @@ No silenciar la regla "porque sí".
 
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): la decisión arquitectónica detrás de Rebase + Conventional Commits.
 - [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera cuando hay quien lo lea, no en cada push.
-- [ADR-0038](../decisions/0038-release-and-versioning-policy.md): release & versioning policy.
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): el stage sigue a `main`; producción se promueve desde un Release.
 - [docs/engineering/rollback.md](rollback.md): qué hacer cuando algo entra a main y rompe.
 - `.github/workflows/{commits,pr-title}.yml`: enforcement automatizado.
 - `lefthook.yml`: enforcement local (commit-msg, pre-commit format).

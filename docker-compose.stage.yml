@@ -2,8 +2,9 @@
 # Compose). Corre como Development hospedado porque el perfil Production de Wolverine exige
 # codegen estático y migraciones aplicadas a mano, que un stage con datos de prueba no necesita.
 # Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
-# SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH, PLANB_SEED_PASSWORD,
-# PLANB_API_TAG, PLANB_WEB_TAG.
+# SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH, PLANB_SEED_PASSWORD.
+# PLANB_API_TAG y PLANB_WEB_TAG son opcionales: sin valor corren main (el tag móvil que publica
+# cada push a main); un sha corto en esas variables pinea el stage a esa versión.
 # El reset es `down -v` y volver a desplegar: migraciones y siembras corren solas al arrancar.
 
 services:
@@ -64,7 +65,8 @@ services:
       - dokploy-network
 
   api:
-    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG}
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    pull_policy: always
     expose: ["8080"]
     depends_on:
       postgres:
@@ -98,7 +100,8 @@ services:
       - internal
 
   web:
-    image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG}
+    image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG:-main}
+    pull_policy: always
     expose: ["3000"]
     depends_on:
       api:
