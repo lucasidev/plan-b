@@ -35,8 +35,16 @@ const CAPTURE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_CAPTURE === '1' ? [] : ['*
  * en la fase `parallel`, con tres workers, esas altas compiten por CPU con todos los demás specs,
  * y los que dependen de una server action rápida vencen su timeout por quedarse sin CPU. Corriendo
  * solo, después de `parallel`, no le quita CPU a nadie.
+ *
+ * `public/accessibility.spec.ts`: mismo costo de fixture que `path-to-the-ficha.spec.ts` (diez
+ * altas de alumno y diez reseñas publicadas en `beforeAll`), sumado a que cada uno de sus tests
+ * corre axe sobre una ruta entera. Corriendo solo, después de `parallel`, no le quita CPU a nadie.
  */
-const SERIAL_SPECS = ['**/admin/items.spec.ts', '**/public/path-to-the-ficha.spec.ts'];
+const SERIAL_SPECS = [
+  '**/admin/items.spec.ts',
+  '**/public/path-to-the-ficha.spec.ts',
+  '**/public/accessibility.spec.ts',
+];
 
 /**
  * Playwright config: E2E suite del frontend.
