@@ -29,13 +29,7 @@ test.describe('Pantallas de sistema', () => {
     page,
   }) => {
     const response = await page.goto('/design-check');
-    // Hallazgo (no se arregla acá): debería ser 404 (la guarda llama a notFound()), pero Next
-    // preoptimiza esta ruta como estática (no depende de nada dinámico) y sirve el not-found
-    // prerenderizado sin el status real: da 200 tanto en dev como en un build de producción
-    // (verificado con --build, igual que corre CI). `export const dynamic = 'force-dynamic'` en
-    // frontend/src/app/(dev)/design-check/page.tsx:26 haría que notFound() corra por request y
-    // devuelva el 404 real. Lo que sí es real y se afirma acá es que el muestrario no se ve.
-    expect(response?.status()).toBe(200);
+    expect(response?.status()).toBe(404);
     await expect(page.getByRole('heading', { name: /no encontramos eso/i })).toBeVisible();
     await expect(page.getByText(/design system check/i)).not.toBeVisible();
   });

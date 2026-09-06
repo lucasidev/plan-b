@@ -27,17 +27,27 @@ const nextConfig: NextConfig = {
   // Server actions siguen usando `apiFetch` con la URL absoluta vía
   // NEXT_PUBLIC_API_URL — eso evita el doble hop server → next → backend.
   async rewrites() {
-    return [
-      // En el stage solo el frontend tiene dominio: /health es cómo se verifica el backend desde afuera.
-      {
-        source: '/health',
-        destination: `${backendUrl}/health`,
-      },
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
+    return {
+      // beforeFiles corre antes de que Next resuelva /design-check como página estática del
+      // filesystem. El muestrario existe solo con la variable puesta: sin ella, un rewrite a una
+      // ruta inexistente es la única forma de que el 404 llegue al status (un notFound desde la
+      // página se sirve con 200).
+      beforeFiles:
+        process.env.NEXT_PUBLIC_DESIGN_CHECK !== '1'
+          ? [{ source: '/design-check', destination: '/design-check/hidden' }]
+          : [],
+      afterFiles: [
+        // En el stage solo el frontend tiene dominio: /health es cómo se verifica el backend desde afuera.
+        {
+          source: '/health',
+          destination: `${backendUrl}/health`,
+        },
+        {
+          source: '/api/:path*',
+          destination: `${backendUrl}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 
