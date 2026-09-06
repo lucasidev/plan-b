@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useId } from 'react';
 import { Button } from '@/components/ui/button';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { useHydrated } from '@/lib/use-hydrated';
 import { createCareerAction, updateCareerAction } from '../actions';
 import { type CareerDetail, initialManageCareerState } from '../types';
@@ -62,12 +63,13 @@ export function CareerForm({ mode, universityId, career }: Props) {
 
   const listHref = `/admin/universities/${universityId}/careers`;
 
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring.
   useEffect(() => {
     if (state.status !== 'success') return;
-    // Solo `push`: el `refresh()` apuntaba a la ruta actual y competía con la navegación, comiéndose
-    // el redirect a veces. El listado es `force-dynamic`, así que no hace falta.
-    router.push(listHref);
-  }, [state, router, listHref]);
+    navigateAfterMutation(listHref);
+  }, [state, listHref]);
 
   return (
     <form action={formAction} className="flex max-w-2xl flex-col gap-5">
