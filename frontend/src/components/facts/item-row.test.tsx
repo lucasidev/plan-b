@@ -105,6 +105,23 @@ describe('ItemRow', () => {
     expect(screen.getByText(/no se comparan/)).toBeInTheDocument();
   });
 
+  /**
+   * La opacidad sobre texto rompe el contraste mínimo (design-system.md): la serie anterior se
+   * distingue por el divisor y por el tono del enunciado, nunca atenuando la tarjeta entera.
+   */
+  it('la serie anterior no se atenúa con opacidad', () => {
+    const { container } = render(
+      <ItemRow item={{ ...base, previousSeries: previous }} last={false} />,
+    );
+
+    for (const node of container.querySelectorAll<HTMLElement>('*')) {
+      expect(node.style.opacity).toBe('');
+    }
+
+    const previousQuestion = screen.getByText('¿Se dictaron las clases?');
+    expect(previousQuestion).toHaveClass('text-ink-2');
+  });
+
   /** El badge lleva la etiqueta literal elegida, nunca un número inventado (ADR-0083). */
   it('cada tramo lleva su propia moda con su etiqueta literal', () => {
     const { container } = render(
