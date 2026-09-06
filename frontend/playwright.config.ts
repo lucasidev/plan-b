@@ -48,10 +48,10 @@ const SERIAL_SPECS = ['**/admin/items.spec.ts', '**/public/path-to-the-ficha.spe
  *     (`scripts/run-e2e.ts`, mismo patrón que el job de CI), así que el stack de dev tiene que
  *     estar ABAJO. Solo hace falta la infra: `just infra-up`.
  *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
- *   - Tres proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global,
- *     `serial` corre después con un worker, y `mobile` repite `e2e/public/**` con un viewport de
- *     celular chico (#412). La regla de aislamiento completa (qué hace que un spec pueda vivir en
- *     `parallel`) está en `docs/engineering/testing.md`.
+ *   - Tres proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global;
+ *     `serial` y `mobile` corren después de que `parallel` termina, y `mobile` repite
+ *     `e2e/public/**` con un viewport de celular chico (#412). La regla de aislamiento completa
+ *     (qué hace que un spec pueda vivir en `parallel`) está en `docs/engineering/testing.md`.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -143,6 +143,12 @@ export default defineConfig({
           name: 'mobile',
           testMatch: /public\//,
           fullyParallel: true,
+          // Corre última, estrictamente. A la vez que `parallel` duplicaba la carga y en CI
+          // (2 vCPU, #452) dejaba sin CPU a las server actions de los specs de escritura. Y a la
+          // vez que `serial` chocaba: el camino a la ficha corre también acá (matchea
+          // `public/`) y publica sobre Pérez mientras `admin/items.spec.ts` destila un ítem sobre
+          // la misma cátedra, que es justo el corte de serie que ese spec provoca a propósito.
+          dependencies: ['parallel', 'serial'],
           use: { ...devices['Pixel 5'] },
         },
       ],
