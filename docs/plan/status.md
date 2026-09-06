@@ -396,7 +396,7 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 
 **Por qué este hilo.** Tres sprints construyeron la máquina que convierte reseñas en fichas, y nadie la usó todavía: seguimos pre-deploy y no existe una reseña de una persona real. Antes de personas reales, un stage: el producto entero en una URL, con el corpus sintético, recorrible por Lucas y por Copas. Y la retrospectiva de R3 pidió mirar la calidad con lentes de QA: la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) encontró una suite grande y verde pero desbalanceada (el dominio bien cubierto, la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, y 9 de 75 escenarios citados por un test), y una sola línea que explica casi todo el costo de CI (cada clase de integración levanta su base, corre 57 migraciones y siembra, 50 veces en serie). **R4 no recorta: entran los doce hallazgos y las ocho propuestas de eficiencia.**
 
-### Pista 1 · El stage, con datos de prueba (15 pts)
+### Pista 1 · El stage, con datos de prueba (14 pts)
 
 | # | Tarea | Pts | Quién |
 |---|---|---|---|
@@ -407,7 +407,6 @@ Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/mileston
 | [#404](https://github.com/lucasidev/plan-b/issues/404) · 5 | **El recorrido para Copas**, al final del doc: Pérez publica con 14 voces, Ruiz bajo el piso con 6, la co-cursada que publica y la que no, Método, registrarse y verificar desde Mailpit, reseñar y ver que contó, cargar una cátedra y curar una frase. **Al 2026-09-04**: escrito al final de la sección Stage y caminado sobre el stage en sus pasos 1 a 4 con los números del corpus. El par de co-cursada que publica es con Desarrollo de Software (111): el id del corpus siempre fue el de 111, y el nombre 121 que llevaban el código y el recorrido era el equivocado. Faltan los pasos 5 a 8 | 1 | Claude |
 | [#405](https://github.com/lucasidev/plan-b/issues/405) · 6 | **Barrida `ítem` → frase** (335 en docs, 77 en código) y el gate: `check-docs` falla con un término prohibido del glosario fuera de `history/` y de los ADRs. **Hecho el 2026-09-03**: 341 reemplazos en 83 archivos de docs y 294 líneas en 85 de código, con la concordancia revisada; el gate rechaza `ítem` en prosa fuera de `history/` y de los ADRs | 3 | Claude |
 | [#406](https://github.com/lucasidev/plan-b/issues/406) · 7 | **Orden**: cerrar los 5 issues de R0 que siguen abiertos, la entrada de la retro en `lessons-learned.md`, y decidir los 15 issues US-2xx sin milestone. **Al 2026-09-04**: R0 vacío, la retro escrita, y los US-2xx en Backlog (los cuatro de moderación de texto publicado, cerrados); y el 2026-09-04, los 73 issues del catálogo US-127 a US-199 (fuera del alcance original): las construidas bajo el gate cerradas como completadas, las 55 sin sprint a Backlog, ninguna marcada muerta, y dos reabiertas el mismo día porque el código no las tiene (US-197, US-155); cero issues sin milestone | 1 | Claude; lo último, Lucas |
-| [#455](https://github.com/lucasidev/plan-b/issues/455) · 8 | **El stage sigue a main**: cada merge a `main` publica las imágenes (el sha y el tag móvil `main`) y redespliega el stage por la API de Dokploy; producción se promueve desde un Release de GitHub cuando exista su servicio (ADR-0089, que reemplaza a ADR-0038). **Hecho el 2026-09-06**: el workflow *Publish images* dispara en cada push a `main` y a mano para cualquier ref, el compose corre `main` por defecto con `pull_policy: always`, y el redeploy va por la API con tres secrets que carga Lucas; sin ellos el workflow publica y avisa. La primera corrida real es el primer merge a `main` con los secrets cargados | 1 | Claude; los secrets, Lucas |
 
 **Decidido el 2026-09-03**: el stage va con HTTPS, `sslip.io` sobre la IP del servidor y certificado de Let's Encrypt emitido desde Dokploy, porque corre en un servidor y no en una máquina local. Los 73 issues del catálogo (US-127 a US-199) se decidieron el 2026-09-04: construidas cerradas, el resto a Backlog. Sin MCP ni proveedor de IA de Dokploy: se opera a mano.
 
@@ -448,6 +447,22 @@ Línea de base medida el 2026-09-02: el job de backend tarda 489 s (354 s de tes
 
 Descartado con razón: compartir el build entre jobs por artefactos (los jobs corren en paralelo; encadenarlos le suma al E2E la espera del build ajeno) y la cola de merge (exige repo público de una organización; este es de usuario).
 
+### Pista 4 · Operar el stage (12 pts)
+
+Lo que dejaron la evaluación del CI/CD y la comparación con `pin-equipo4` y `pokedex-api` (2026-09-06): el stage se opera con ojos, no a ciegas. El gate de entorno para producción queda para cuando exista producción.
+
+| # | Tarea | Pts | Quién |
+|---|---|---|---|
+| [#455](https://github.com/lucasidev/plan-b/issues/455) · 1 | **El stage sigue a main**: cada merge a `main` publica las imágenes (el sha y el tag móvil `main`) y redespliega el stage por la API de Dokploy; producción se promueve desde un Release de GitHub cuando exista su servicio (ADR-0089, que reemplaza a ADR-0038). **Hecho el 2026-09-06**: el workflow *Publish images* dispara en cada push a `main` y a mano para cualquier ref, el compose corre `main` por defecto con `pull_policy: always`, y el redeploy va por la API con tres secrets que carga Lucas; sin ellos el workflow publica y avisa. La primera corrida real es el primer merge a `main` con los secrets cargados | 1 | Claude; los secrets, Lucas |
+| [#456](https://github.com/lucasidev/plan-b/issues/456) · 2 | **`/health` chequea Postgres y Redis y devuelve el sha**: health checks con latencia por dependencia, 503 si una falla, `version` con el sha horneado en la imagen; el healthcheck del compose y el `HEALTHCHECK` del Dockerfile pegan a `/health`; el job del stage espera a que el stage devuelva el sha nuevo | 2 | Claude |
+| [#457](https://github.com/lucasidev/plan-b/issues/457) · 3 | **Métricas Prometheus y tablero Grafana en el stage**: `/metrics` con las señales de oro y contadores del dominio; Prometheus y Grafana bajo un perfil del compose, provisionados como código; reglas de alerta con un canal | 3 | Claude |
+| [#458](https://github.com/lucasidev/plan-b/issues/458) · 4 | **Contenedores endurecidos e imágenes con procedencia**: usuario no root y `HEALTHCHECK` en los dos Dockerfiles, labels OCI, atestaciones de SBOM y procedencia, Trivy como aviso, limpieza semanal de GHCR | 2 | Claude |
+| [#459](https://github.com/lucasidev/plan-b/issues/459) · 5 | **Runbook del stage e inventario de secretos**: los casos de operación (crash loop tras un deploy exitoso, pinear un sha, disco, certificado, Dokploy caído, reset) y una sola tabla de secretos con quién carga cada uno | 1 | Claude; probarlos contra el stage, Lucas |
+| [#460](https://github.com/lucasidev/plan-b/issues/460) · 6 | **Los switches de seguridad del repo**: alertas de Dependabot y CodeQL encendidos, base al día y los checks de docs y escenarios obligatorios en el ruleset, merge commit apagado, política para los PRs de Dependabot | 0,5 | Lucas, en Settings |
+| [#461](https://github.com/lucasidev/plan-b/issues/461) · 7 | **Actions pinneadas por sha y zizmor en CI** | 1 | Claude |
+| [#462](https://github.com/lucasidev/plan-b/issues/462) · 8 | **Límites de memoria y rotación de logs en el compose del stage**, con valores medidos contra el consumo real | 0,5 | Claude |
+| [#464](https://github.com/lucasidev/plan-b/issues/464) · 9 | **k6 con umbrales contra el stage**: un script de lectura y uno de escritura con p95 y tasa de error como umbrales, `just load` contra el stage o un build local, y la medición en `deploy.md` (VUs que aguanta y qué se degrada primero) | 1 | Claude |
+
 ### Secuencia
 
 La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va primero, porque la regla gobierna los tests que se escriben después; #408, #417 y #418 no dependen de nada y son los que más rompen, así que van temprano. La pista 1 corre en paralelo: sus tareas 1 a 3 son del repo y no dependen de nada; la 4 es de Lucas con el guion.
@@ -462,6 +477,7 @@ La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va prime
 6. El job de unit y arquitectura queda bajo 120 s, el de integración bajo 5 minutos en CI y la integración local bajo 10 minutos, con el antes y el después escritos en `testing.md`. Reescrito el 2026-09-04 con los números reales: el corte original (489 s a menos de 180 s, y 25 minutos a menos de 8) se midió con 325 tests de integración; hoy son 642 y el job de unit tarda 83 s, el de integración entre 203 y 286 s, y la integración local 9 minutos. El escalón que sigue, el arranque del host por clase, queda para cuando la suite duela.
 7. No queda ningún `fixme` sin fecha, `retries` en CI es 0, y ningún test pasa al segundo intento sin quedar contado.
 8. Ninguna pantalla pública dice `ítem`, y `check-docs` falla si vuelve.
+9. `/health` del stage devuelve el sha del último merge a `main` y chequea sus dependencias; el tablero muestra las señales de oro y una alerta dispara; las imágenes corren sin root y con procedencia; el runbook cubre los casos del stage; k6 tiene una corrida con sus umbrales en verde y sus números en el doc; el repo tiene Dependabot, CodeQL y el ruleset al día.
 
 ### Lo que R4 deja afuera a propósito
 
