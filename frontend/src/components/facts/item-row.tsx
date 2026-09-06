@@ -40,10 +40,10 @@ export function ItemRow({ item, last }: { item: PublishedItem; last: boolean }) 
             <span className="h-px flex-1 bg-line" />
           </div>
 
-          {/* Atenuado, no escondido: sigue siendo dato de esta cátedra, pero es de otra pregunta. */}
-          <div style={{ opacity: 0.72 }}>
-            <Stretch item={previous} />
-          </div>
+          {/* La serie anterior se distingue por el divisor de arriba y por el tono: acá el
+              enunciado va en ink-2 en vez de ink; el resto de la tarjeta queda con sus colores
+              normales, porque sigue siendo dato de esta cátedra. */}
+          <Stretch item={previous} tone="previous" />
         </>
       )}
     </div>
@@ -51,14 +51,22 @@ export function ItemRow({ item, last }: { item: PublishedItem; last: boolean }) 
 }
 
 /** Un tramo: su enunciado, su moda, su distribución y su total. */
-function Stretch({ item }: { item: PublishedItem }) {
+function Stretch({
+  item,
+  tone = 'current',
+}: {
+  item: PublishedItem;
+  tone?: 'current' | 'previous';
+}) {
+  const questionClass = tone === 'previous' ? 'text-ink-2' : 'text-ink';
+
   // Total en cero solo llega en un caso: la pregunta se estrenó recién, al cortarse la serie, y
   // todavía no la contestó nadie. No hay moda que mostrar, y una barra vacía con un badge sin
   // etiqueta parecería un dato roto en vez de una pregunta nueva.
   if (item.total === 0) {
     return (
       <>
-        <p className="mb-[3px] text-[13.5px] text-ink">{item.text}</p>
+        <p className={`mb-[3px] text-[13.5px] ${questionClass}`}>{item.text}</p>
         <p className="text-[11.5px] text-ink-3">Todavía nadie respondió esta pregunta.</p>
       </>
     );
@@ -67,7 +75,7 @@ function Stretch({ item }: { item: PublishedItem }) {
   return (
     <>
       <div className="mb-[7px] flex items-baseline justify-between gap-2.5">
-        <span className="text-[13.5px] text-ink">{item.text}</span>
+        <span className={`text-[13.5px] ${questionClass}`}>{item.text}</span>
         <span
           className="whitespace-nowrap rounded-[6px] px-[9px] py-[3px] text-[11.5px]"
           style={
