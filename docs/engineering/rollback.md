@@ -92,7 +92,7 @@ dotnet ef migrations remove \
 
 ## Hitos narrativos como anchor de rollback
 
-ADR-0038 permite tags manuales para hitos. Si vas a hacer un cambio grande y querés un punto de retorno:
+ADR-0089 permite tags narrativos para hitos. Si vas a hacer un cambio grande y querés un punto de retorno:
 
 ```bash
 # Antes del cambio
@@ -133,4 +133,4 @@ Después de revertir un commit problemático, antes de cerrar el incidente:
 - [ADR-0034](../decisions/0034-redis-as-cache-and-ephemeral-state.md): refresh token revocation (rollback de auth state).
 - [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): testing layers que protegen pre-merge.
 - [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera bajo demanda, así que un revert no necesita nada extra.
-- [ADR-0038](../decisions/0038-release-and-versioning-policy.md): tags narrativos como anchor.
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): tags narrativos como anchor.

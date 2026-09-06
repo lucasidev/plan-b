@@ -77,4 +77,4 @@ Sin verificar, porque necesita la infra real: la publicación a GHCR, el pull de
 - [`docs/engineering/deploy.md`](../engineering/deploy.md): el runbook con los comandos.
 - [`docs/engineering/rollback.md`](../engineering/rollback.md): qué hacer cuando algo entra y rompe.
 - [ADR-0035](0035-environment-configuration.md): una sola casa por valor de configuración.
-- [ADR-0038](0038-release-and-versioning-policy.md): por qué la publicación de imágenes es manual.
+- [ADR-0089](0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): cuándo se publican las imágenes: cada push a `main` para el stage, un Release para producción.

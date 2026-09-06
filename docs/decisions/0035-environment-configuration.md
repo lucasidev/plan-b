@@ -65,7 +65,7 @@ Mover incluso los no-secrets a un manager (Vault, Doppler, AWS Secrets Manager, 
 
 CI corriendo con la misma configuración que prod. Encuentra production-only issues antes del deploy. Requiere un paso previo de `dotnet run -- codegen write` (Wolverine) y migrations bundle pre-generado. La doc oficial de Wolverine recomienda este patrón para deploys, pero como step de CD, no de CI rápido. Adoptar antes de tener pipeline de deploy es invertir en infra que aún no necesitamos.
 
-**Migración prevista**: en F6 (focus group cerrado, primer deploy real a Dokploy), separar `ci.yml` (Development, fast feedback) de `release.yml` (Production, prod parity con codegen pre-generado).
+**Migración prevista**: en F6 (focus group cerrado, primer deploy real a Dokploy), separar `ci.yml` (Development, fast feedback) de `publish-images.yml` (Production, prod parity con codegen pre-generado).
 
 ### E. Env "Testing" propio con `appsettings.Testing.json` (rechazada por ahora)
 
@@ -90,4 +90,4 @@ Microsoft documenta este patrón en el ejemplo de `WebApplicationFactory.UseEnvi
 
 - Antes del primer deploy a Dokploy (F6): definir cómo se inyectan secrets en prod (env vars de Dokploy vs secret store dedicado).
 - Cuando aterricen integration tests con `WebApplicationFactory` (F3+): evaluar si los tests necesitan un env "Testing" con su propio `appsettings.Testing.json`, o si dev defaults alcanzan.
-- Cuando aparezca CD: separar `release.yml` con `ASPNETCORE_ENVIRONMENT=Production` y paso explícito de `dotnet run -- codegen write` antes del build de imagen Docker.
+- Cuando aparezca CD: separar `publish-images.yml` con `ASPNETCORE_ENVIRONMENT=Production` y paso explícito de `dotnet run -- codegen write` antes del build de imagen Docker.

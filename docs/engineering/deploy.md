@@ -20,7 +20,7 @@ Traducido: una imagen construida sin el paso de codegen, apuntada a una base sin
 
 ## Las dos mitades
 
-**Automático (GitHub Actions):** construir y publicar las imágenes. Lo hace [`release.yml`](../../.github/workflows/release.yml), a mano (`workflow_dispatch`), eligiendo el ref y qué componente. Publica a GHCR con dos tags: el sha corto y `latest`.
+**Automático (GitHub Actions):** construir y publicar las imágenes. Lo hace [`publish-images.yml`](../../.github/workflows/publish-images.yml) en cada push a `main` (tags: el sha corto y `main`; después redespliega el stage) y a mano (`workflow_dispatch`) para cualquier ref, eligiendo qué componente y con qué `api_url` (tag: solo el sha corto).
 
 **Manual (en el host del deploy):** aplicar el schema y apuntar el servicio a la imagen nueva. No está en el workflow por una razón concreta: aplicar el schema desde un runner de GitHub exige exponer la base de producción a internet. El precio de esa exposición es peor que el de dos comandos a mano.
 
@@ -30,7 +30,7 @@ Los pasos 2 a 5 corren en el host del deploy, con acceso a la red interna donde 
 
 ### 1. Publicar la imagen
 
-Actions → *Release images* → Run workflow. Ref: el commit o tag que se publica. Anotá el sha corto: es el tag inmutable al que se vuelve si hay que revertir. `api_url` es la URL con la que el frontend de ese deploy llega al backend; dos builds del mismo commit con `api_url` distinta pisan el mismo tag `<sha>`, así que producción necesita su propio valor y su propia corrida.
+Actions → *Publish images* → Run workflow. Ref: el commit o tag que se publica. Anotá el sha corto: es el tag inmutable al que se vuelve si hay que revertir. Cuando exista el servicio de producción, esta corrida la dispara el Release ([ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md)). `api_url` es la URL con la que el frontend de ese deploy llega al backend; dos builds del mismo commit con `api_url` distinta pisan el mismo tag `<sha>`, así que producción necesita su propio valor y su propia corrida.
 
 ### 2. Backup de la base
 
@@ -68,7 +68,7 @@ Crea las tablas del outbox durable en el schema `wolverine`. También idempotent
 
 ### 5. Apuntar el servicio a la imagen nueva
 
-En Dokploy, cambiar el tag de la imagen al sha del paso 1 y redeployar. Usar el sha y no `latest`: `latest` se mueve, y un restart del contenedor semanas después traería una versión que nadie decidió publicar en ese momento.
+En Dokploy, cambiar el tag de la imagen al sha del paso 1 y redeployar. Usar el sha y no un tag móvil: `main` es el del stage y se mueve con cada merge, y un restart del contenedor semanas después traería una versión que nadie decidió publicar en ese momento.
 
 ### 6. Verificar
 
@@ -140,8 +140,8 @@ El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en l
 | `SMTP_FROM_EMAIL` | Remitente de los mails que manda `api`, recibidos por Mailpit. |
 | `SMTP_FROM_NAME` | Nombre de remitente de esos mismos mails. |
 | `WEB_HOST` | El host del frontend, sin `https://` (`planb.olisar.com.ar`). Arma los links de verificación y de reset, y es el dominio que se da de alta en Dokploy. |
-| `PLANB_API_TAG` | El sha corto que publicó *Release images* para `planb-api`. |
-| `PLANB_WEB_TAG` | El sha corto que publicó *Release images* para `planb-web`. |
+| `PLANB_API_TAG` | Opcional. Sin definir, el stage corre `main`, que *Publish images* mueve en cada merge; un sha corto pinea `planb-api` hasta que se borre la variable. |
+| `PLANB_WEB_TAG` | Opcional, igual que la anterior, para `planb-web`. |
 
 Bloque listo para pegar en la pestaña Environment del servicio, con placeholders:
 
@@ -161,22 +161,36 @@ PLANB_WEB_TAG=<sha corto>
 
 ### El guion de clics
 
-1. **Publicar las imágenes**: Actions → *Release images* → Run workflow. Ref `main`, component `both`, `api_url` `http://api:8080`. Anotar el sha corto. La primera corrida crea los dos paquetes de GHCR como privados: desde la página de cada paquete en GitHub (Package settings → Change visibility) se hacen públicos y Dokploy los baja sin credencial. El repo es público y las imágenes no llevan secretos, así que no hay nada que proteger ahí.
+1. **Las imágenes**: cada push a `main` las publica (*Publish images*, tags sha y `main`); a mano se publica cualquier ref (Run workflow, component `both`, `api_url` `http://api:8080`). La primera corrida crea los dos paquetes de GHCR como privados: desde la página de cada paquete en GitHub (Package settings → Change visibility) se hacen públicos y Dokploy los baja sin credencial. El repo es público y las imágenes no llevan secretos, así que no hay nada que proteger ahí.
 2. **Registro**, solo si las imágenes fueran privadas: Dokploy → Settings → Registry → Add Registry. Registry Name `ghcr`, Username `lucasidev`, Password un PAT clásico con el scope `read:packages` (alcanza para pull), Registry URL `ghcr.io`. Test, Save.
-3. **El servicio**: Project → Create Service → Compose. Name, App Name (lo genera Dokploy con la forma `<proyecto>-<servicio>-<sufijo>`, y es el nombre del proyecto de compose que usa el reset del paso 8), Compose Type `Docker Compose`. Provider GitHub, con un GitHub App instalado sobre la cuenta dueña del repo: el GitHub de Dokploy es por cuenta, y un app instalado sobre otra cuenta no lista `lucasidev/plan-b`; la alternativa sin app es el provider Git con la URL pública del repo. Repositorio `lucasidev/plan-b`, branch `main`, Compose Path `./docker-compose.stage.yml`. Save. **Autodeploy** viene encendido y se apaga: el stage se despliega a mano cambiando los tags, no en cada merge. "Isolated Deployments" queda desactivado: el compose declara sus dos redes. "Preview Compose" muestra lo que Dokploy va a correr; mirarlo antes del primer Deploy.
+3. **El servicio**: Project → Create Service → Compose. Name, App Name (lo genera Dokploy con la forma `<proyecto>-<servicio>-<sufijo>`, y es el nombre del proyecto de compose que usa el reset del paso 8), Compose Type `Docker Compose`. Provider GitHub, con un GitHub App instalado sobre la cuenta dueña del repo: el GitHub de Dokploy es por cuenta, y un app instalado sobre otra cuenta no lista `lucasidev/plan-b`; la alternativa sin app es el provider Git con la URL pública del repo. Repositorio `lucasidev/plan-b`, branch `main`, Compose Path `./docker-compose.stage.yml`. Save. **Autodeploy** viene encendido y se apaga: el redeploy lo pide *Publish images* por la API cuando las imágenes ya están publicadas (ver "El stage sigue a main"); el Autodeploy dispararía con el push, antes de que existan. "Isolated Deployments" queda desactivado: el compose declara sus dos redes. "Preview Compose" muestra lo que Dokploy va a correr; mirarlo antes del primer Deploy.
 4. **Environment**: pegar el bloque de la sección anterior con los valores reales. El editor enmascara los valores (el ojo los destapa) y guarda un `.env` que el compose lee con `${VAR}`.
 5. **Domains → Add Domain, dos veces**: el selector de servicio queda vacío hasta que el ícono de refrescar de al lado trae el compose del repo. `planb.olisar.com.ar` (service `web`, container port `3000`, HTTPS activado, certificado Let's Encrypt) y `mail.olisar.com.ar` (service `mailpit`, container port `8025`, HTTPS igual), los dos con registro A a la IP del servidor; Dokploy marca "DNS Valid" cuando el registro resuelve.
 6. **Deploy**, confirmar, y esperar: la pestaña Deployments muestra la corrida y *View* abre su log. Bajar las cinco imágenes y levantarlas lleva unos dos minutos y termina en `Docker Compose Deployed`. *Healthy* en el `api` significa que escucha; las migraciones y las siembras siguen un minuto más. Antes de abrir la entrada, en Logs del servicio, contenedor `api`, esperar la línea `CorpusSeeder: inserted N reviews`, que es la última siembra (Logs muestra 100 líneas por default; "Limit to" lo sube).
 7. **Verificar**: `https://planb.olisar.com.ar/health` (el rewrite del frontend lo lleva al `api`) devuelve `{"status":"ok",...}`; `https://planb.olisar.com.ar/` muestra la entrada con el corpus; `https://mail.olisar.com.ar/` pide el usuario y la password de `MAILPIT_UI_AUTH`.
 8. **Reset**: desde la terminal del servidor, `docker compose -p <App Name> down -v` con el App Name que muestra la cabecera del servicio, y volver a Deploy. Todo se rearma igual desde cero.
 
+### El stage sigue a main
+
+Cada push a `main` corre *Publish images*: construye las dos imágenes con el tag del sha y el tag móvil `main`, y con las dos publicadas le pide a Dokploy por su API que redespliegue el servicio ([ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md)). El compose corre `main` por defecto y vuelve a bajar la imagen en cada deploy (`pull_policy: always`), así que no hay tag que cambiar ni botón que apretar: la pestaña Deployments muestra la corrida que disparó la API un par de minutos después del merge.
+
+Tres secrets del repo (Settings → Secrets and variables → Actions), cargados a mano y nunca en el código:
+
+| Secret | Qué es | De dónde sale |
+|---|---|---|
+| `DOKPLOY_URL` | El origen del panel, sin barra final. | La URL con la que se entra al panel. |
+| `DOKPLOY_API_KEY` | Una API key del panel. | Dokploy → Settings → Profile → API Keys → Generate. |
+| `DOKPLOY_STAGE_COMPOSE_ID` | El id del servicio Compose del stage. | El último segmento de la URL del servicio en el panel (`.../services/compose/<id>`). |
+
+Sin alguno de los tres, el workflow publica igual y deja un aviso de que no redesplegó. Para pinear una versión en el stage: `PLANB_API_TAG` y `PLANB_WEB_TAG` con un sha corto en Environment, y Deploy; borrar las variables y Deploy vuelve a `main`.
+
 ### Qué está verificado y qué no
 
 **Verificado en local** (podman, las dos imágenes construidas en esta rama): `docker compose ... config` resuelve las cinco imágenes; con `PLANB_API_TAG` y `PLANB_WEB_TAG` apuntando a las imágenes locales, `api` llega a *healthy*, `/health` responde a través del rewrite del frontend, `/` devuelve 200, y `/api/academic/universities` devuelve el catálogo sembrado. Los logs de `api` muestran las migraciones de los tres módulos y las siembras (personas, catálogo académico, catálogo de frases, corpus) corriendo solas al arrancar. Un build de la imagen del frontend sin el `--build-arg` falla con el mensaje; con `HOSTNAME` definido, el web escucha en `0.0.0.0:3000`; el admin entra con la password de `PLANB_SEED_PASSWORD` y no con la de `personas.json`; la UI de Mailpit responde 401 sin auth y 200 con `MAILPIT_UI_AUTH`.
 
-**Verificado sobre el Dokploy real** (2026-09-04, imágenes `71375b7`): la primera corrida de *Release images* publicó las dos imágenes en GHCR; con los paquetes públicos, Dokploy bajó las cinco imágenes sin registro configurado; Let's Encrypt emitió los certificados de los dos subdominios y Traefik enruta `web` y `mailpit` por `dokploy-network`; `postgres` y `redis` llegaron a *healthy* antes que `api`, y `api` antes de que arrancara `web`; el log del `api` muestra `CorpusSeeder: inserted 49 reviews`; `/health` responde a través del rewrite, la entrada sortea una cátedra que publica, la ficha de materia 211 muestra sus tres cátedras y sus dos pares de co-cursada, la de Ruiz dice "Junta 6 reseñas: con 4 más se publica." y Método carga; un registro con un mail inventado devuelve 202 y el log del `api` dice `Verification email sent`; la UI de Mailpit responde 401 sin auth.
+**Verificado sobre el Dokploy real** (2026-09-04, imágenes `71375b7`): la primera corrida del workflow (entonces *Release images*, hoy *Publish images*) publicó las dos imágenes en GHCR; con los paquetes públicos, Dokploy bajó las cinco imágenes sin registro configurado; Let's Encrypt emitió los certificados de los dos subdominios y Traefik enruta `web` y `mailpit` por `dokploy-network`; `postgres` y `redis` llegaron a *healthy* antes que `api`, y `api` antes de que arrancara `web`; el log del `api` muestra `CorpusSeeder: inserted 49 reviews`; `/health` responde a través del rewrite, la entrada sortea una cátedra que publica, la ficha de materia 211 muestra sus tres cátedras y sus dos pares de co-cursada, la de Ruiz dice "Junta 6 reseñas: con 4 más se publica." y Método carga; un registro con un mail inventado devuelve 202 y el log del `api` dice `Verification email sent`; la UI de Mailpit responde 401 sin auth.
 
-**Sin verificar**: el reset por terminal (`down -v` y Deploy) contra el despliegue real, y el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice).
+**Sin verificar**: el reset por terminal (`down -v` y Deploy) contra el despliegue real, el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice), y el redeploy por la API desde el workflow, que verifica el primer merge a `main` después de cargar los secrets.
 
 ### El recorrido para Copas
 
@@ -195,5 +209,5 @@ Diez minutos sobre el stage recién sembrado, en este orden. Los números son lo
 
 - [`rollback.md`](rollback.md): revertir código, schema y tags.
 - [ADR-0059](../decisions/0059-production-startup-does-not-self-repair.md): por qué el orden de estos pasos no es negociable y por qué el arranque falla en vez de repararse.
-- [ADR-0038](../decisions/0038-release-and-versioning-policy.md): por qué el workflow es manual y no dispara en cada merge.
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): el stage sigue a `main`; producción se promueve desde un Release.
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): qué llega a `main` y cómo.

@@ -1,8 +1,11 @@
-name: Release images
+name: Publish images
 
-# Manual a propósito. ADR-0038 dice que pre-deploy no hay versiones ni releases automáticas: el
-# que publica una imagen es alguien que decidió publicarla, no un merge a main.
+# Se publica en cada push a main porque el stage sigue a main, y también a mano para
+# cualquier ref (la corrida manual). El tag del sha es el inmutable; el tag main es
+# el móvil que consume el stage.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       ref:
@@ -25,7 +28,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: publish-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -34,7 +37,7 @@ env:
 jobs:
   backend:
     name: Backend image
-    if: inputs.component == 'both' || inputs.component == 'backend'
+    if: github.event_name == 'push' || inputs.component == 'both' || inputs.component == 'backend'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
@@ -42,15 +45,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.sha }}
 
       - name: Resolve tags
         id: meta
         run: |
           sha="$(git rev-parse --short HEAD)"
           image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-api"
+          tags="${image}:${sha}"
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            tags="${tags},${image}:main"
+          fi
           echo "image=${image}" >> "$GITHUB_OUTPUT"
-          echo "tags=${image}:${sha},${image}:latest" >> "$GITHUB_OUTPUT"
+          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v4
 
@@ -73,7 +80,7 @@ jobs:
 
   frontend:
     name: Frontend image
-    if: inputs.component == 'both' || inputs.component == 'frontend'
+    if: github.event_name == 'push' || inputs.component == 'both' || inputs.component == 'frontend'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
@@ -81,15 +88,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.sha }}
 
       - name: Resolve tags
         id: meta
         run: |
           sha="$(git rev-parse --short HEAD)"
           image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-web"
+          tags="${image}:${sha}"
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            tags="${tags},${image}:main"
+          fi
           echo "image=${image}" >> "$GITHUB_OUTPUT"
-          echo "tags=${image}:${sha},${image}:latest" >> "$GITHUB_OUTPUT"
+          echo "tags=${tags}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-buildx-action@v4
 
@@ -107,9 +118,30 @@ jobs:
           file: frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          build-args: NEXT_PUBLIC_API_URL=${{ inputs.api_url }}
+          build-args: NEXT_PUBLIC_API_URL=${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'http://api:8080' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  stage:
+    name: Redeploy the stage
+    needs: [backend, frontend]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Va por la API de Dokploy, no por su Autodeploy: el Autodeploy dispara con el push
+      # mismo, antes de que las imágenes existan en el registry.
+      - env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_STAGE_COMPOSE_ID: ${{ secrets.DOKPLOY_STAGE_COMPOSE_ID }}
+        run: |
+          if [ -z "$DOKPLOY_URL" ] || [ -z "$DOKPLOY_API_KEY" ] || [ -z "$DOKPLOY_STAGE_COMPOSE_ID" ]; then
+            echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque faltan los secrets de Dokploy."
+            exit 0
+          fi
+          curl --fail --silent --show-error --retry 3 --retry-delay 5 -X POST "$DOKPLOY_URL/api/compose.deploy" -H "x-api-key: $DOKPLOY_API_KEY" -H "Content-Type: application/json" -d "{\"composeId\": \"$DOKPLOY_STAGE_COMPOSE_ID\"}"
+          echo "El stage está redesplegando ${GITHUB_SHA:0:7}."
 
   # Recordatorio en el log de la corrida, no un paso automático. Aplicar el schema desde un runner
   # de GitHub exigiría exponer la base de producción a internet; el paso corre en el host del deploy.
@@ -117,7 +149,7 @@ jobs:
   reminder:
     name: Siguiente paso
     needs: [backend]
-    if: always() && needs.backend.result == 'success'
+    if: github.event_name == 'workflow_dispatch' && needs.backend.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-> Pre-deploy: no hay versiones todavía (ver [ADR-0038](docs/decisions/0038-release-and-versioning-policy.md)).
+> Pre-deploy: no hay versiones todavía (ver [ADR-0089](docs/decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md)).
 > Cada merge a `main` appendea un bullet a `[Unreleased]` automáticamente vía workflow GHA
 > (ver [ADR-0074](docs/decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)). **No editar a mano.**
 
