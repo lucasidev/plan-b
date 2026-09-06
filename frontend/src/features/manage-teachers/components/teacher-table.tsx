@@ -15,6 +15,12 @@ const GRID = 'minmax(0,1.6fr) minmax(0,1fr) minmax(0,0.9fr) 96px 168px';
  * (activos) o Reactivar (inactivos). Mutación pura (ADR-0046): los toggles refrescan la RSC.
  */
 export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [activeOverrides, setActiveOverrides] = useState<Record<string, boolean>>({});
+  const [rowErrors, setRowErrors] = useState<Record<string, string | null>>({});
+
   if (teachers.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-line bg-bg-card px-6 py-12 text-center">
@@ -23,6 +29,28 @@ export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
         </p>
       </div>
     );
+  }
+
+  async function runToggle(teacher: AdminTeacherRow) {
+    const isActive = activeOverrides[teacher.id] ?? teacher.isActive;
+    if (isActive && !window.confirm(`¿Desactivar a ${teacher.firstName} ${teacher.lastName}?`)) {
+      return;
+    }
+    setRowErrors((prev) => ({ ...prev, [teacher.id]: null }));
+    setBusyId(teacher.id);
+    // La fila refleja la respuesta del action apenas llega (busyId/activeOverrides son estado de
+    // la tabla, no del refresh); el refresh de abajo reconcilia el listado completo sin que la
+    // fila dependa de que ese refetch commitee.
+    const result = isActive
+      ? await deactivateTeacherAction(teacher.id)
+      : await reactivateTeacherAction(teacher.id);
+    setBusyId(null);
+    if (result.ok) {
+      setActiveOverrides((prev) => ({ ...prev, [teacher.id]: !isActive }));
+      startTransition(() => router.refresh());
+    } else {
+      setRowErrors((prev) => ({ ...prev, [teacher.id]: result.message }));
+    }
   }
 
   return (
@@ -38,41 +66,36 @@ export function TeacherTable({ teachers }: { teachers: AdminTeacherRow[] }) {
         <div className="text-right">Acciones</div>
       </div>
       {teachers.map((t) => (
-        <TeacherRow key={t.id} teacher={t} />
+        <TeacherRow
+          key={t.id}
+          teacher={t}
+          isActive={activeOverrides[t.id] ?? t.isActive}
+          busy={busyId === t.id}
+          error={rowErrors[t.id] ?? null}
+          onToggle={() => runToggle(t)}
+        />
       ))}
     </div>
   );
 }
 
-function TeacherRow({ teacher }: { teacher: AdminTeacherRow }) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
-  function runToggle() {
-    if (
-      teacher.isActive &&
-      !window.confirm(`¿Desactivar a ${teacher.firstName} ${teacher.lastName}?`)
-    ) {
-      return;
-    }
-    setError(null);
-    startTransition(async () => {
-      const result = teacher.isActive
-        ? await deactivateTeacherAction(teacher.id)
-        : await reactivateTeacherAction(teacher.id);
-      if (result.ok) {
-        router.refresh();
-      } else {
-        setError(result.message);
-      }
-    });
-  }
-
+function TeacherRow({
+  teacher,
+  isActive,
+  busy,
+  error,
+  onToggle,
+}: {
+  teacher: AdminTeacherRow;
+  isActive: boolean;
+  busy: boolean;
+  error: string | null;
+  onToggle: () => void;
+}) {
   return (
     <div className="border-b border-line-2 last:border-b-0">
       <div
-        className={cn('grid items-center gap-3.5 px-3.5 py-2', !teacher.isActive && 'opacity-60')}
+        className={cn('grid items-center gap-3.5 px-3.5 py-2', !isActive && 'opacity-60')}
         style={{ gridTemplateColumns: GRID }}
       >
         <div className="min-w-0">
@@ -86,10 +109,10 @@ function TeacherRow({ teacher }: { teacher: AdminTeacherRow }) {
           {teacher.title || <span className="text-ink-4">sin cargo</span>}
         </div>
         <div>
-          <StatusBadge active={teacher.isActive} />
+          <StatusBadge active={isActive} />
         </div>
         <div className="flex items-center justify-end gap-1">
-          {teacher.isActive && (
+          {isActive && (
             <Link
               href={`/admin/teachers/${teacher.id}/edit`}
               className="rounded-md px-2 py-1 text-[11.5px] text-ink-2 hover:bg-bg-elev hover:text-ink"
@@ -99,16 +122,16 @@ function TeacherRow({ teacher }: { teacher: AdminTeacherRow }) {
           )}
           <button
             type="button"
-            onClick={runToggle}
-            disabled={isPending}
+            onClick={onToggle}
+            disabled={busy}
             className={cn(
               'rounded-md px-2 py-1 text-[11.5px] disabled:opacity-50',
-              teacher.isActive
+              isActive
                 ? 'text-accent-ink hover:bg-accent-soft'
                 : 'text-ink-2 hover:bg-bg-elev hover:text-ink',
             )}
           >
-            {isPending ? '...' : teacher.isActive ? 'Desactivar' : 'Reactivar'}
+            {busy ? '...' : isActive ? 'Desactivar' : 'Reactivar'}
           </button>
         </div>
       </div>
