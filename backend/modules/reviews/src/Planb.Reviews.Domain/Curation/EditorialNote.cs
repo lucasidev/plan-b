@@ -27,6 +27,12 @@ namespace Planb.Reviews.Domain.Curation;
 /// No se borra, se retira. Una nota publicada estuvo en la ficha, y borrarla dejaría a alguien que
 /// la leyó sin forma de saber que ya no vale.
 /// </para>
+///
+/// <para>
+/// <b>Sin nombres.</b> La lista cerrada de personas identificables es el catálogo de docentes de
+/// la universidad de la carrera (activos o no): una nota que nombra a alguno de ellos se rechaza.
+/// Quien no está en el catálogo queda a criterio de quien cura.
+/// </para>
 /// </summary>
 public sealed class EditorialNote : Entity<EditorialNoteId>, IAggregateRoot
 {
@@ -49,8 +55,10 @@ public sealed class EditorialNote : Entity<EditorialNoteId>, IAggregateRoot
     public static Result<EditorialNote> Publish(
         Guid careerId,
         string text,
+        IReadOnlyCollection<PersonName> people,
         IDateTimeProvider clock)
     {
+        ArgumentNullException.ThrowIfNull(people);
         ArgumentNullException.ThrowIfNull(clock);
 
         if (careerId == Guid.Empty)
@@ -67,6 +75,14 @@ public sealed class EditorialNote : Entity<EditorialNoteId>, IAggregateRoot
         if (trimmed.Length > MaxTextLength)
         {
             return EditorialNoteErrors.TextTooLong;
+        }
+
+        foreach (var person in people)
+        {
+            if (person.IsNamedIn(trimmed))
+            {
+                return EditorialNoteErrors.NamesAPerson(person.ToString());
+            }
         }
 
         return new EditorialNote

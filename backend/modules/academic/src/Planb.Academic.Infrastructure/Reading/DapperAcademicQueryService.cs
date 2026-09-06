@@ -481,6 +481,28 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         return new CatalogLabels(subjects, terms, chairs);
     }
 
+    public async Task<IReadOnlyList<TeacherNameItem>> ListTeacherNamesForCareerAsync(
+        Guid careerId, CancellationToken ct = default)
+    {
+        // La lista cerrada de ADR-0084 es la universidad de la carrera, no el catálogo entero: un
+        // docente de otra universidad no es una persona identificable para esta nota. Sin filtro de
+        // is_active en teachers: un docente dado de baja sigue siendo nombrable. Carrera inexistente
+        // no matchea el JOIN y devuelve lista vacía.
+        const string sql = @"
+            SELECT
+                t.id                  AS Id,
+                initcap(t.first_name) AS FirstName,
+                initcap(t.last_name)  AS LastName
+            FROM academic.teachers t
+            JOIN academic.careers c ON c.university_id = t.university_id
+            WHERE c.id = @CareerId;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<TeacherNameItem>(
+            new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
+        return rows.AsList();
+    }
+
     private sealed record SubjectLabelRow(Guid Id, string Name, string Code);
 
     private sealed record TermLabelRow(Guid Id, string Label);

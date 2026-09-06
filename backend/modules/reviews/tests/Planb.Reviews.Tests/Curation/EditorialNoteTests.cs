@@ -1,5 +1,6 @@
 using Planb.Reviews.Domain.Curation;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Primitives;
 using Shouldly;
 using Xunit;
 
@@ -24,12 +25,21 @@ public class EditorialNoteTests
         public DateTimeOffset UtcNow { get; } = now;
     }
 
+    // Wrapper con `people` opcional: la mayoría de los tests de acá no le interesa el nombrado, así
+    // que no repiten una lista vacía en cada llamado.
+    private static Result<EditorialNote> Publish(
+        Guid careerId,
+        string text,
+        IDateTimeProvider clock,
+        IReadOnlyCollection<PersonName>? people = null) =>
+        EditorialNote.Publish(careerId, text, people ?? [], clock);
+
     // ── Nivel: carrera obligatoria ────────────────────────────────────────
 
     [Fact]
     public void Publish_without_a_career_is_rejected()
     {
-        var result = EditorialNote.Publish(Guid.Empty, "Una síntesis.", new FixedClock(T0));
+        var result = Publish(Guid.Empty, "Una síntesis.", new FixedClock(T0));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EditorialNoteErrors.CareerRequired);
@@ -40,7 +50,7 @@ public class EditorialNoteTests
     [Fact]
     public void Publish_stamps_PublishedAt_with_the_clock_it_receives()
     {
-        var result = EditorialNote.Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0));
+        var result = Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0));
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.PublishedAt.ShouldBe(T0);
@@ -49,7 +59,7 @@ public class EditorialNoteTests
     [Fact]
     public void Withdraw_stamps_WithdrawnAt_with_the_clock_it_receives()
     {
-        var note = EditorialNote.Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0)).Value;
+        var note = Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0)).Value;
         var withdrawnAt = T0.AddDays(3);
 
         var result = note.Withdraw(new FixedClock(withdrawnAt));
@@ -65,7 +75,7 @@ public class EditorialNoteTests
     [InlineData("   ")]
     public void Publish_with_blank_text_is_rejected(string text)
     {
-        var result = EditorialNote.Publish(Guid.NewGuid(), text, new FixedClock(T0));
+        var result = Publish(Guid.NewGuid(), text, new FixedClock(T0));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EditorialNoteErrors.TextRequired);
@@ -76,7 +86,7 @@ public class EditorialNoteTests
     {
         var text = new string('a', EditorialNote.MaxTextLength + 1);
 
-        var result = EditorialNote.Publish(Guid.NewGuid(), text, new FixedClock(T0));
+        var result = Publish(Guid.NewGuid(), text, new FixedClock(T0));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(EditorialNoteErrors.TextTooLong);
@@ -87,7 +97,7 @@ public class EditorialNoteTests
     {
         var text = new string('a', EditorialNote.MaxTextLength);
 
-        var result = EditorialNote.Publish(Guid.NewGuid(), text, new FixedClock(T0));
+        var result = Publish(Guid.NewGuid(), text, new FixedClock(T0));
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Text.Length.ShouldBe(EditorialNote.MaxTextLength);
@@ -98,7 +108,7 @@ public class EditorialNoteTests
     [Fact]
     public void Withdraw_twice_fails_the_second_time_and_keeps_the_first_date()
     {
-        var note = EditorialNote.Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0)).Value;
+        var note = Publish(Guid.NewGuid(), "Una síntesis.", new FixedClock(T0)).Value;
         note.Withdraw(new FixedClock(T0.AddDays(1)));
         var firstWithdrawnAt = note.WithdrawnAt;
 
@@ -109,18 +119,23 @@ public class EditorialNoteTests
         note.WithdrawnAt.ShouldBe(firstWithdrawnAt);
     }
 
-    // ── Sin nombres (hallazgo: el dominio no valida el contenido) ──────────
+    // ── Sin nombres ──────────────────────────────────────────────────────
 
     /// <summary>
-    /// Roto: ADR-0084 exige notas sin nombres, pero <see cref="EditorialNote.Publish"/> no valida el
-    /// contenido del texto. Una nota que nombra a una persona se publica igual.
+    /// ADR-0084: una nota que nombra a alguien del catálogo de docentes se rechaza. El código es la
+    /// clave estable; el mensaje trae el nombre completo para que quien cura sepa a quién reescribir.
     /// </summary>
-    [Fact(Skip = "Roto: #446")]
+    [Fact]
     public void Publish_with_a_named_person_in_the_text_is_rejected()
     {
-        var result = EditorialNote.Publish(
-            Guid.NewGuid(), "La cátedra de Martín Pérez no responde nunca.", new FixedClock(T0));
+        var result = Publish(
+            Guid.NewGuid(),
+            "La cátedra de Martín Pérez no responde nunca.",
+            new FixedClock(T0),
+            people: [new PersonName("Martín", "Pérez")]);
 
         result.IsFailure.ShouldBeTrue();
+        result.Error.Code.ShouldBe("reviews.editorial_note.names_a_person");
+        result.Error.Message.ShouldContain("Martín Pérez");
     }
 }

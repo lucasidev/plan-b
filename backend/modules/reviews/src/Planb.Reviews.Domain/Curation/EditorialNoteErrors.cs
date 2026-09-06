@@ -23,4 +23,13 @@ public static class EditorialNoteErrors
 
     public static readonly Error AlreadyWithdrawn =
         Error.Conflict("reviews.editorial_note.already_withdrawn", "That note is already withdrawn.");
+
+    /// <summary>
+    /// El código es la clave estable; <paramref name="fullName"/> viaja en el mensaje porque quien
+    /// cura necesita saber a quién reescribir, no solo que hay que reescribir.
+    /// </summary>
+    public static Error NamesAPerson(string fullName) =>
+        Error.Validation(
+            "reviews.editorial_note.names_a_person",
+            $"The note names {fullName}. A note is published without names.");
 }

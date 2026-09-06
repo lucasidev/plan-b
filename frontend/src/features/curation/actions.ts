@@ -1,6 +1,7 @@
 'use server';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
+import type { ProblemDetails } from '@/lib/api-problem';
 import { getSession } from '@/lib/session';
 import { distilItemSchema } from './schema';
 import type { DistilItemState, EditorialNoteState } from './types';
@@ -128,7 +129,10 @@ export async function publishEditorialNoteAction(
       return { status: 'error', message: NO_PERMISSION };
     }
 
-    const problem = (await response.json().catch(() => null)) as { title?: string } | null;
+    const problem = (await response.json().catch(() => null)) as ProblemDetails | null;
+    if (problem?.title === NAMES_A_PERSON_CODE) {
+      return { status: 'error', message: namesAPersonMessage(problem.detail) };
+    }
     return {
       status: 'error',
       message: NOTE_MESSAGES[problem?.title ?? ''] ?? 'No pudimos publicar la nota.',
@@ -143,3 +147,17 @@ const NOTE_MESSAGES: Record<string, string> = {
   'reviews.editorial_note.text_required': 'Escribí la nota.',
   'reviews.editorial_note.text_too_long': 'La nota es demasiado larga.',
 };
+
+const NAMES_A_PERSON_CODE = 'reviews.editorial_note.names_a_person';
+
+// El nombre no viaja en un campo propio del ProblemDetails: el backend lo arma en `detail`
+// ("The note names {fullName}. A note is published without names."), así que lo sacamos con un
+// regex atado a esa forma. Si el mensaje del backend cambia, esto no matchea y cae al genérico.
+const NAMES_A_PERSON_DETAIL = /^The note names (.+)\. A note is published without names\.$/;
+
+function namesAPersonMessage(detail: string | undefined): string {
+  const fullName = detail?.match(NAMES_A_PERSON_DETAIL)?.[1];
+  return fullName
+    ? `La nota nombra a ${fullName}. Se publica sin nombres: reescribila sin la persona.`
+    : 'La nota nombra a alguien del catálogo de docentes. Se publica sin nombres: reescribila sin la persona.';
+}
