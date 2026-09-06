@@ -106,11 +106,24 @@ function withoutKnownRankingNegations(body: string): string {
 }
 
 test.describe('El camino a la ficha, sin cuenta (R2)', () => {
+  test.describe.configure({ mode: 'serial' });
   test.setTimeout(240_000);
 
   const students: CreatedStudent[] = [];
 
-  test.afterEach(async ({ request }) => {
+  test.beforeAll(async ({ request }) => {
+    // Fixture compartida por los dos tests: diez voces sobre Pérez para que su ficha publique, la
+    // de la materia tenga qué comparar, y /careers/{id} mida una carrera con cobertura real (sin
+    // esto el guard no llega a mirar el bloque con números reales). Van por API porque reseñar ya
+    // tiene su propio spec.
+    for (let i = 0; i < 10; i++) {
+      const student = await createStudent(request, { emailPrefix: `e2e-path-${i}` });
+      students.push(student);
+      await publishByApi(request, student, TERMS[i % TERMS.length], i < 7 ? 1 : 3);
+    }
+  });
+
+  test.afterAll(async ({ request }) => {
     for (const student of students) {
       await deleteStudent(request, student);
     }
@@ -120,16 +133,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
   test('US-170 E2: de la entrada a los conteos de una cátedra, sin sesión en ningún momento', async ({
     page,
     context,
-    request,
   }) => {
-    // Fixture: diez voces sobre Pérez para que su ficha publique y la de la materia tenga qué
-    // comparar. Van por API porque reseñar ya tiene su propio spec.
-    for (let i = 0; i < 10; i++) {
-      const student = await createStudent(request, { emailPrefix: `e2e-path-${i}` });
-      students.push(student);
-      await publishByApi(request, student, TERMS[i % TERMS.length], i < 7 ? 1 : 3);
-    }
-
     // Desde acá, nadie tiene sesión. Es la mitad de la tesis: se recolecta con cuenta y se publica
     // sin ella.
     await context.clearCookies();
@@ -181,16 +185,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
   test('ninguna pantalla pública muestra un promedio, una estrella ni un testimonio', async ({
     page,
     context,
-    request,
   }) => {
-    // Diez voces sobre Pérez, igual que el primer test: sin esto, /careers/{id} mide una carrera
-    // con cobertura en cero y el guard no llega a mirar el bloque con números reales.
-    for (let i = 0; i < 10; i++) {
-      const student = await createStudent(request, { emailPrefix: `e2e-guard-${i}` });
-      students.push(student);
-      await publishByApi(request, student, TERMS[i % TERMS.length], i < 7 ? 1 : 3);
-    }
-
     await context.clearCookies();
 
     // Todas las superficies públicas del producto: las tres fichas, Método, el docente, la entrada
