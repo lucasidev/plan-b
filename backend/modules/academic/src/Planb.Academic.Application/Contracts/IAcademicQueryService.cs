@@ -215,4 +215,8 @@ public interface IAcademicQueryService
         IReadOnlyCollection<Guid> termIds,
         IReadOnlyCollection<Guid> chairIds,
         CancellationToken ct = default);
+
+    /// <summary>Los docentes, activos o no, de la universidad a la que pertenece esa carrera.</summary>
+    Task<IReadOnlyList<TeacherNameItem>> ListTeacherNamesForCareerAsync(
+        Guid careerId, CancellationToken ct = default);
 }

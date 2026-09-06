@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.CareerFacts;
@@ -24,6 +25,11 @@ public class EditorialNoteEndpointsTests : IClassFixture<RegisterApiFixture>
 
     // TUDCS en UNSTA, la carrera del seed.
     private static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
+
+    // Ingeniería en Software en Siglo 21, otra universidad del seed: Martín Pérez es docente de
+    // UNSTA, así que nombrarlo acá no lo identifica a nadie de esta carrera.
+    private static readonly Guid AnotherUniversityCareerId =
+        Guid.Parse("00000002-0000-4000-a000-000000000010");
 
     public EditorialNoteEndpointsTests(RegisterApiFixture fixture)
     {
@@ -153,5 +159,45 @@ public class EditorialNoteEndpointsTests : IClassFixture<RegisterApiFixture>
             new { text = "Sobre una carrera que no existe." });
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    /// <summary>
+    /// El catálogo de docentes (Martín Pérez, sembrado en UNSTA) es la lista cerrada de personas
+    /// identificables (ADR-0084): una nota que nombra a uno de ellos se rechaza, con el código
+    /// estable en el ProblemDetails, que es lo que el frontend usa para elegir el mensaje.
+    /// </summary>
+    [Fact]
+    public async Task Publishing_a_note_that_names_a_teacher_from_the_catalog_is_rejected()
+    {
+        var admin = await AdminAsync();
+
+        var response = await admin.Client.PostAsJsonAsync(
+            $"/api/reviews/curation/careers/{TudcsCareerId}/notes",
+            new { text = "La cátedra de Martín Pérez no responde nunca." });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        var problem = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        problem.ShouldNotBeNull();
+        problem!.Title.ShouldBe("reviews.editorial_note.names_a_person");
+    }
+
+    /// <summary>
+    /// La lista cerrada de ADR-0084 es la de la universidad de la carrera, no el catálogo entero:
+    /// un docente de otra universidad no bloquea la nota.
+    /// </summary>
+    [Fact]
+    public async Task Publishing_a_note_that_names_a_teacher_from_another_university_is_allowed()
+    {
+        var admin = await AdminAsync();
+
+        var response = await admin.Client.PostAsJsonAsync(
+            $"/api/reviews/curation/careers/{AnotherUniversityCareerId}/notes",
+            new
+            {
+                text = "La cátedra de Martín Pérez no responde nunca " +
+                    $"({Guid.NewGuid():N}).",
+            });
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
     }
 }

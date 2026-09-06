@@ -30,7 +30,10 @@ public static class PublishEditorialNoteCommandHandler
             return EditorialNoteErrors.CareerNotFound;
         }
 
-        var result = EditorialNote.Publish(command.CareerId, command.Text, clock);
+        var teachers = await academic.ListTeacherNamesForCareerAsync(command.CareerId, ct);
+        var people = teachers.Select(t => new PersonName(t.FirstName, t.LastName)).ToArray();
+
+        var result = EditorialNote.Publish(command.CareerId, command.Text, people, clock);
         if (result.IsFailure)
         {
             return result.Error;
