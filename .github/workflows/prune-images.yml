@@ -1,0 +1,33 @@
+name: Prune images
+
+# Cada push a main publica dos imágenes (planb-api y planb-web) con tag <sha> y tag main.
+# El sha de las últimas veinte versiones queda en GHCR para pinear un despliegue o revertir a mano;
+# main siempre apunta a la más nueva.
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  prune:
+    name: Prune old versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: plan-b/planb-api
+          package-type: container
+          min-versions-to-keep: 20
+          delete-only-untagged-versions: 'false'
+
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: plan-b/planb-web
+          package-type: container
+          min-versions-to-keep: 20
+          delete-only-untagged-versions: 'false'

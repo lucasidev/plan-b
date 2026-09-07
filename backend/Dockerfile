@@ -47,6 +47,15 @@ WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
-COPY --from=build /app/publish .
+# GIT_SHA llega como build-arg desde el workflow; PLANB_VERSION es lo que expone GET /health.
+ARG GIT_SHA=dev
+ENV PLANB_VERSION=${GIT_SHA}
+
+COPY --from=build --chown=app:app /app/publish .
+
+# La imagen base trae el usuario no root "app": correr con él limita lo que un RCE puede tocar.
+# El healthcheck pega GET /health por el socket crudo (esta imagen no trae curl ni wget) y espera 200 OK.
+USER app
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=12 CMD bash -c "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 && grep -q '200 OK' <&3"
 
 ENTRYPOINT ["dotnet", "Planb.Api.dll"]
