@@ -44,6 +44,10 @@ docker-compose.override.yml
 # Mutation testing (Stryker.NET): reportes e informes de corrida, no entran al repo
 **/StrykerOutput/
 
+# k6 (issue #464): si una corrida se exporta con --summary-export, el resultado es local,
+# no un artefacto del repo. La medición real se anota en docs/engineering/deploy.md.
+k6/summary.json
+
 # Logs / misc
 *.log
 *.bak
