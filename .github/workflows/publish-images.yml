@@ -258,8 +258,11 @@ jobs:
           code=""
           version=""
           status="sin respuesta"
+          # El step corre con set -e: un curl que no conecta (el stage recreando sus contenedores)
+          # cortaría la espera en el primer intento con el exit code de curl. El || true lo
+          # convierte en el "sin respuesta" que el loop ya sabe esperar.
           for _ in $(seq 1 30); do
-            body="$(curl -s --max-time 10 -w '\n%{http_code}' "$STAGE_HEALTH_URL")"
+            body="$(curl -s --max-time 10 -w '\n%{http_code}' "$STAGE_HEALTH_URL" || true)"
             code="${body##*$'\n'}"
             json="${body%$'\n'*}"
             version="$(printf '%s' "$json" | jq -r '.version // empty' 2>/dev/null)"
