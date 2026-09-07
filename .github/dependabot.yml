@@ -50,6 +50,10 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
+    # Siete días entre que sale una versión y que Dependabot la propone: una versión
+    # comprometida suele retirarse en ese lapso.
+    cooldown:
+      default-days: 7
     directory: "/backend"
     schedule:
       interval: "weekly"
@@ -84,6 +88,8 @@ updates:
         update-types: ["minor", "patch"]
 
   - package-ecosystem: "npm"
+    cooldown:
+      default-days: 7
     directory: "/frontend"
     schedule:
       interval: "weekly"
@@ -157,6 +163,8 @@ updates:
   # permite que el SDK se mantenga al día dentro de 10.0.x sin saltar a 11.0
   # sin review humano.
   - package-ecosystem: "dotnet-sdk"
+    cooldown:
+      default-days: 7
     # backend/, no la raíz: dotnet-sdk no escanea recursivo y global.json vive ahí.
     # Con directory "/" esta entrada no encontraba nada y no abrió un solo PR en
     # tres meses, mientras el resto de los ecosystems funcionaba normal.
@@ -179,6 +187,8 @@ updates:
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
@@ -196,6 +206,8 @@ updates:
   # Base images en docker-compose.yml + Dockerfiles del frontend / backend.
   # Dependabot detecta el directorio /, busca Dockerfiles y compose files.
   - package-ecosystem: "docker"
+    cooldown:
+      default-days: 7
     directory: "/"
     schedule:
       interval: "weekly"
