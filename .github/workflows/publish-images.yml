@@ -258,14 +258,15 @@ jobs:
           code=""
           version=""
           status="sin respuesta"
-          # El step corre con set -e: un curl que no conecta (el stage recreando sus contenedores)
-          # cortaría la espera en el primer intento con el exit code de curl. El || true lo
-          # convierte en el "sin respuesta" que el loop ya sabe esperar.
+          # El step corre con set -e y pipefail: mientras Dokploy recrea los contenedores, curl
+          # puede no conectar y Traefik puede contestar HTML, y tanto el exit code de curl como el
+          # de jq al no poder parsearlo cortaban la espera en ese mismo intento. Los || true los
+          # convierten en el "sin respuesta" que el loop ya sabe esperar.
           for _ in $(seq 1 30); do
             body="$(curl -s --max-time 10 -w '\n%{http_code}' "$STAGE_HEALTH_URL" || true)"
             code="${body##*$'\n'}"
             json="${body%$'\n'*}"
-            version="$(printf '%s' "$json" | jq -r '.version // empty' 2>/dev/null)"
+            version="$(printf '%s' "$json" | jq -r '.version // empty' 2>/dev/null || true)"
             if [ "$code" = "200" ] && [ "$version" = "$expected" ]; then
               echo "El stage corre ${expected}."
               exit 0
