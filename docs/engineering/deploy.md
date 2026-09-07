@@ -20,7 +20,7 @@ Traducido: una imagen construida sin el paso de codegen, apuntada a una base sin
 
 ## Las dos mitades
 
-**Automático (GitHub Actions):** construir y publicar las imágenes. Lo hace [`publish-images.yml`](../../.github/workflows/publish-images.yml) en cada push a `main` (tags: el sha corto y `main`; después redespliega el stage) y a mano (`workflow_dispatch`) para cualquier ref, eligiendo qué componente y con qué `api_url` (tag: solo el sha corto).
+**Automático (GitHub Actions):** construir y publicar las imágenes. Lo hace [`publish-images.yml`](../../.github/workflows/publish-images.yml) en cada push a `main` (tags: el sha corto y `main`; después redespliega el stage) y a mano (`workflow_dispatch`) para cualquier ref, eligiendo qué componente y con qué `api_url` (tag: solo el sha corto). Cada imagen lleva labels OCI (origen, revisión, fecha) y atestaciones de SBOM y procedencia, que GHCR muestra en la página del paquete; Trivy las escanea en la misma corrida y avisa sin frenar; [`prune-images.yml`](../../.github/workflows/prune-images.yml) deja las últimas veinte versiones de cada paquete, los lunes. Los contenedores corren sin root (`app` en el api, `bun` en el web) y con `HEALTHCHECK` contra `/health`.
 
 **Manual (en el host del deploy):** aplicar el schema y apuntar el servicio a la imagen nueva. No está en el workflow por una razón concreta: aplicar el schema desde un runner de GitHub exige exponer la base de producción a internet. El precio de esa exposición es peor que el de dos comandos a mano.
 
@@ -126,6 +126,10 @@ Corre como `Development` hospedado a propósito: `Staging` caería en el perfil 
 ### Las piezas
 
 El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en la raíz del repo. Levanta las dos imágenes publicadas en GHCR (`planb-api` y `planb-web`) por su sha corto, nunca `latest`, y cinco servicios: `postgres`, `redis`, `mailpit`, `api` y `web`. Hay dos redes: `internal` (los cinco servicios) y `dokploy-network` (externa, la arma Dokploy). Solo `web` y `mailpit` están en `dokploy-network` y reciben dominio; `api`, `postgres` y `redis` se quedan en `internal` y no son alcanzables desde afuera del compose. Un límite conocido: el rate limit por IP de `forgot-password` y `resend-verification` cuenta la IP del contenedor `web`, porque todo el tráfico al `api` sale de ahí, así que en el stage esos cupos (5 y 3 por hora) son de todo el stage y no por persona; se encara cuando haya personas reales.
+
+### Límites y logs
+
+Cada servicio del compose lleva `mem_limit`: `api` 768 MiB, `web` 256 MiB, `postgres` 512 MiB, `redis` 128 MiB, `mailpit` 128 MiB. Salen del consumo medido en reposo el 2026-09-07 en el Monitoring de Dokploy (`api` 362 MiB, `web` 94 MiB; el resto, decenas) con margen para carga y JIT, y suman menos de la mitad de los 3,82 GiB del servidor. Un contenedor que supera su límite se reinicia solo (`restart: unless-stopped`) y el resto sigue. Los logs rotan en tres archivos de 10 MB por contenedor. Para volver a medir: Monitoring del servicio, un contenedor por vez.
 
 ### Variables que inyecta Dokploy
 

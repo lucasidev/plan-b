@@ -6,11 +6,22 @@
 # PLANB_API_TAG y PLANB_WEB_TAG son opcionales: sin valor corren main (el tag móvil que publica
 # cada push a main); un sha corto en esas variables pinea el stage a esa versión.
 # El reset es `down -v` y volver a desplegar: migraciones y siembras corren solas al arrancar.
+# Los mem_limit salen del consumo medido en reposo (api 362 MiB, web 94 MiB) con margen para
+# carga y JIT; si un contenedor se pasa, Docker lo reinicia solo a él (restart: unless-stopped)
+# y el resto sigue. Los logs rotan con json-file para que no llenen el disco del VPS.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 
 services:
   postgres:
     image: pgvector/pgvector:pg17
     restart: unless-stopped
+    mem_limit: 512m
+    logging: *logging
     environment:
       POSTGRES_USER: planb
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -31,6 +42,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    mem_limit: 128m
+    logging: *logging
     command:
       - redis-server
       - --requirepass
@@ -50,6 +63,8 @@ services:
   mailpit:
     image: axllent/mailpit:v1.29
     restart: unless-stopped
+    mem_limit: 128m
+    logging: *logging
     expose: ["1025", "8025"]
     environment:
       # Mailpit muestra los links de verificación y de reset de todas las cuentas: la UI va con auth (usuario:password).
@@ -74,6 +89,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 768m
+    logging: *logging
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       PLANB_SEED_CORPUS: 1
@@ -107,6 +124,8 @@ services:
       api:
         condition: service_healthy
     restart: unless-stopped
+    mem_limit: 256m
+    logging: *logging
     environment:
       NEXT_PUBLIC_API_URL: http://api:8080
       JWT_SECRET: ${JWT_SECRET}
