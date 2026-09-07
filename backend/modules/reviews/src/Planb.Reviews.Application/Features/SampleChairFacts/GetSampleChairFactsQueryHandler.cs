@@ -2,6 +2,7 @@ using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Application.Features.ChairFacts;
 using Planb.Reviews.Domain.Reviews;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Application.Features.SampleChairFacts;
@@ -28,6 +29,7 @@ public static class GetSampleChairFactsQueryHandler
         GetSampleChairFactsQuery query,
         IAcademicQueryService academic,
         IChairTallyQueryService tallies,
+        IDomainMetrics metrics,
         CancellationToken ct)
     {
         var chairId = await tallies.PickPublishingChairAsync(
@@ -42,7 +44,7 @@ public static class GetSampleChairFactsQueryHandler
         // podría empezar a decir algo distinto de lo que dice la ficha a la que lleva, y ese drift
         // no lo notaría nadie hasta que un lector comparara las dos pantallas.
         return await GetChairFactsQueryHandler.Handle(
-            new GetChairFactsQuery(chairId.Value), academic, tallies, ct);
+            new GetChairFactsQuery(chairId.Value), academic, tallies, metrics, ct);
     }
 }
 

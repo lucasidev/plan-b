@@ -26,7 +26,7 @@ Traducido: una imagen construida sin el paso de codegen, apuntada a una base sin
 
 ## Secuencia de un deploy
 
-Los pasos 2 a 5 corren en el host del deploy, con acceso a la red interna donde vive Postgres.
+Los pasos 2 a 5 corren en el host del deploy, con acceso a la red interna donde vive Postgres: en el servidor de Dokploy es la red `internal` del compose, que Docker nombra `<App Name>_internal` con el App Name que muestra la cabecera del servicio.
 
 ### 1. Publicar la imagen
 
@@ -43,7 +43,7 @@ pg_dump --format=custom --file=planb-$(date +%Y%m%d-%H%M).dump "$PLANB_DB_URL"
 ### 3. Aplicar migraciones de EF Core
 
 ```bash
-docker run --rm --network <red-interna> \
+docker run --rm --network <App Name>_internal \
   -e ASPNETCORE_ENVIRONMENT=Production \
   -e ConnectionStrings__Planb="$PLANB_DB_URL" \
   -e ConnectionStrings__Redis="$PLANB_REDIS_URL" \
@@ -56,7 +56,7 @@ docker run --rm --network <red-interna> \
 ### 4. Aplicar el schema de Wolverine
 
 ```bash
-docker run --rm --network <red-interna> \
+docker run --rm --network <App Name>_internal \
   -e ASPNETCORE_ENVIRONMENT=Production \
   -e ConnectionStrings__Planb="$PLANB_DB_URL" \
   -e ConnectionStrings__Redis="$PLANB_REDIS_URL" \
@@ -68,7 +68,7 @@ Crea las tablas del outbox durable en el schema `wolverine`. También idempotent
 
 ### 5. Apuntar el servicio a la imagen nueva
 
-En Dokploy, cambiar el tag de la imagen al sha del paso 1 y redeployar. Usar el sha y no un tag móvil: `main` es el del stage y se mueve con cada merge, y un restart del contenedor semanas después traería una versión que nadie decidió publicar en ese momento.
+En Dokploy, en el Environment del servicio de producción, poner `PLANB_API_TAG` y `PLANB_WEB_TAG` en el sha del paso 1 y Deploy. Usar el sha y no un tag móvil: `main` es el del stage y se mueve con cada merge, y un restart del contenedor semanas después traería una versión que nadie decidió publicar en ese momento.
 
 ### 6. Verificar
 
@@ -77,6 +77,34 @@ curl -fsS https://<host>/health
 ```
 
 Tiene que responder 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}`: `version` es el sha del build (el build arg `GIT_SHA` del Dockerfile, `dev` fuera de CI) y `checks` lleva Postgres y Redis con su latencia; si alguno falla responde 503 con `status: fail` y el error del que falló. Un 502 sostenido después del redeploy suele ser el host que no arrancó: mirar los logs del contenedor y buscar el mensaje de Wolverine sobre tipos pre-generados faltantes (imagen mal construida) o el error de conexión a Postgres (paso 3 o 4 salteado).
+
+## El compose de producción
+
+Producción es [`docker-compose.prod.yml`](../../docker-compose.prod.yml), en la raíz del repo: otro servicio Compose de Dokploy (Compose Path `./docker-compose.prod.yml`), con las mismas dos imágenes de GHCR que el stage y cuatro diferencias. Corre con `ASPNETCORE_ENVIRONMENT=Production`, así que nada migra ni siembra al arrancar (los pasos 3 y 4 de arriba). No tiene Mailpit: `api` manda los mails por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin `PLANB_API_TAG` y `PLANB_WEB_TAG` el deploy no arranca, porque en producción no existe `main`. Y trae `prometheus` y `grafana` siempre prendidos, con el tablero y las alertas provisionados desde el repo (sección siguiente). Los `mem_limit` y la rotación de logs son los del stage.
+
+### Variables que inyecta Dokploy en producción
+
+| Variable | Para qué |
+|---|---|
+| `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `JWT_SECRET`, `SESSION_SECRET` | Lo mismo que en el stage (tabla de la sección Stage), con valores propios de producción. |
+| `PLANB_API_TAG`, `PLANB_WEB_TAG` | Obligatorias. El sha corto que publicó *Publish images* en el paso 1. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USE_SSL` | El relay SMTP real. `SMTP_USE_SSL` es `true` o `false`. |
+| `SMTP_USERNAME`, `SMTP_PASSWORD` | Solo si el relay pide auth; vacías, `api` no se autentica. |
+| `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME` | Remitente de los mails de verificación y de reset. |
+| `WEB_HOST` | El host del producto, sin `https://`. Arma los links de verificación y de reset, y es el dominio del servicio `web` en Domains. |
+| `GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD` | La cuenta admin de Grafana. |
+| `GRAFANA_HOST` | El host del tablero, sin `https://`. Arma `GF_SERVER_ROOT_URL` y es el dominio del servicio `grafana` en Domains (container port `3000`, HTTPS con Let's Encrypt). |
+| `ALERT_DISCORD_WEBHOOK_URL` | Opcional. El webhook de Discord al que Grafana manda las alertas; sin ella, existen y se ven en Grafana pero no mandan nada. |
+
+### Métricas y tablero
+
+El `api` expone `/metrics` en formato Prometheus en cualquier ambiente, alcanzable solo desde la red interna del compose: el histograma `http_request_duration_seconds` (con el método, la ruta y el código de respuesta), el contador `http_requests_received_total`, `dependency_up{dependency="postgres"|"redis"}` en 1 o 0 (lo mismo que alimenta `/health`), y los contadores de dominio `planb_reviews_published_total{instrument}`, `planb_chair_facts_computed_total{published="true"|"false"}` (cada lectura de una ficha de cátedra, según publique o todavía junte reseñas), `planb_sign_in_attempts_total{result="success"|"failure"}` y `planb_editorial_notes_published_total`. `/health` y `/metrics` quedan afuera de las señales HTTP: son tráfico de probes y scraping, no de producto.
+
+Prometheus scrapea `/metrics` cada 15 segundos y guarda 15 días; Grafana lo lee como datasource y levanta el tablero "planb · producción" y las alertas desde archivos ([`observability/`](../../observability), en la raíz del repo): nada se carga a mano en la UI, un redeploy vuelve a aplicar lo que hay en el repo.
+
+Tres reglas, evaluadas cada minuto, todas al contact point `discord`: `ApiDown` (el api no responde durante 2 minutos, crítica), `DependencyDown` (Postgres o Redis caído durante 2 minutos, crítica, el resumen dice cuál de las dos) y `HighErrorRate` (más del 5 % de las respuestas en 5xx durante 5 minutos, exigiendo tráfico real para no disparar con cero requests, warning).
+
+`/metrics` corrió en local contra Postgres y Redis reales: las rutas se agregan por plantilla (`/api/reviews/chairs/{chairId:guid}/facts`, nunca por id) y dos tests de integración lo cubren. El compose de producción no se levantó todavía en ningún servidor: los archivos de `observability/` parsean y el compose resuelve, pero falta el primer deploy para confirmar que Prometheus scrapea, que el tablero pinta y que una alerta llega a Discord.
 
 ## Variables que necesita el contenedor
 
@@ -111,7 +139,7 @@ Honestidad sobre el estado, para que nadie lea este doc como si estuviera probad
 - `codegen write` no necesita base alcanzable: corre contra un host de Postgres inexistente. Por eso el Dockerfile puede pasarle valores basura y no hace falta ningún secreto real en el build.
 - El contenedor arranca en Production y `/health` devuelve `{"status":"ok"}`. En los logs: `code generation mode is Static with pre-generated types being loaded`, sin tipos faltantes.
 
-**Sin verificar** (necesita la infra de producción): la red interna entre el contenedor y Postgres con el perfil Production, el relay SMTP de producción y el certificado de su dominio. La publicación a GHCR y el pull desde Dokploy están verificados en el stage.
+**Sin verificar** (necesita la infra de producción): la red interna entre el contenedor y Postgres con el perfil Production, el relay SMTP de producción, el certificado de su dominio, y el compose de producción entero, que nunca se levantó, Prometheus y Grafana incluidos. La publicación a GHCR y el pull desde Dokploy están verificados en el stage.
 
 ## Stage
 
@@ -125,23 +153,11 @@ Corre como `Development` hospedado a propósito: `Staging` caería en el perfil 
 
 ### Las piezas
 
-El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en la raíz del repo. Levanta las dos imágenes publicadas en GHCR (`planb-api` y `planb-web`), con el tag `main` por defecto o un sha corto pineado, nunca `latest`, y cinco servicios: `postgres`, `redis`, `mailpit`, `api` y `web`; con el perfil `monitoring` suma `prometheus` y `grafana` (sección "Métricas y tablero"). Hay dos redes: `internal` (todos los servicios) y `dokploy-network` (externa, la arma Dokploy). Solo `web`, `mailpit` y `grafana` están en `dokploy-network` y reciben dominio; `api`, `postgres` y `redis` se quedan en `internal` y no son alcanzables desde afuera del compose. Un límite conocido: el rate limit por IP de `forgot-password` y `resend-verification` cuenta la IP del contenedor `web`, porque todo el tráfico al `api` sale de ahí, así que en el stage esos cupos (5 y 3 por hora) son de todo el stage y no por persona; se encara cuando haya personas reales.
+El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en la raíz del repo. Levanta las dos imágenes publicadas en GHCR (`planb-api` y `planb-web`), con el tag `main` por defecto o un sha corto pineado, nunca `latest`, y cinco servicios: `postgres`, `redis`, `mailpit`, `api` y `web`. Hay dos redes: `internal` (todos los servicios) y `dokploy-network` (externa, la arma Dokploy). Solo `web` y `mailpit` están en `dokploy-network` y reciben dominio; `api`, `postgres` y `redis` se quedan en `internal` y no son alcanzables desde afuera del compose. Un límite conocido: el rate limit por IP de `forgot-password` y `resend-verification` cuenta la IP del contenedor `web`, porque todo el tráfico al `api` sale de ahí, así que en el stage esos cupos (5 y 3 por hora) son de todo el stage y no por persona; se encara cuando haya personas reales.
 
 ### Límites y logs
 
 Cada servicio del compose lleva `mem_limit`: `api` 768 MiB, `web` 256 MiB, `postgres` 512 MiB, `redis` 128 MiB, `mailpit` 128 MiB. Salen del consumo medido en reposo el 2026-09-07 en el Monitoring de Dokploy (`api` 362 MiB, `web` 94 MiB; el resto, decenas) con margen para carga y JIT, y suman menos de la mitad de los 3,82 GiB del servidor. Un contenedor que supera su límite se reinicia solo (`restart: unless-stopped`) y el resto sigue. Los logs rotan en tres archivos de 10 MB por contenedor. Para volver a medir: Monitoring del servicio, un contenedor por vez.
-
-### Métricas y tablero
-
-El `api` expone `/metrics` en formato Prometheus: el histograma `http_request_duration_seconds` (con el método, la ruta y el código de respuesta), el contador `http_requests_received_total`, `dependency_up{dependency="postgres"|"redis"}` en 1 o 0 (lo mismo que alimenta `/health`), y los contadores de dominio `planb_reviews_published_total`, `planb_chairs_crossed_floor_total`, `planb_sign_in_attempts_total{result="success"|"failure"}` y `planb_editorial_notes_published_total`.
-
-Prometheus y Grafana viven bajo el perfil `monitoring` del compose: apagados por defecto, se prenden con `COMPOSE_PROFILES=monitoring` en el Environment de Dokploy. Prometheus scrapea `/metrics` cada 15 segundos y guarda 15 días; Grafana lo lee como datasource y levanta el tablero "planb · stage" y las alertas desde archivos ([`observability/`](../../observability), en la raíz del repo): nada se carga a mano en la UI, un redeploy vuelve a aplicar lo que hay en el repo.
-
-Tres variables nuevas: `GRAFANA_ADMIN_USER` y `GRAFANA_ADMIN_PASSWORD` para entrar a Grafana, y `GRAFANA_HOST` con el host del tablero (sin `https://`), que se da de alta en Domains igual que los otros dos: service `grafana`, container port `3000`, HTTPS con Let's Encrypt. Una cuarta, `ALERT_DISCORD_WEBHOOK_URL`, es opcional: sin ella las tres alertas de abajo existen y se ven en Grafana, pero no mandan nada, porque el contact point interpola esa variable vacía en su URL.
-
-Tres reglas, evaluadas cada minuto, todas al contact point `discord`: `ApiDown` (el api no responde durante 2 minutos, crítica), `DependencyDown` (Postgres o Redis caído durante 2 minutos, crítica, el resumen dice cuál de las dos) y `HighErrorRate` (más del 5 % de las respuestas en 5xx durante 5 minutos, exigiendo tráfico real para no disparar con cero requests, warning).
-
-Nada de esto corrió todavía contra el stage real: los archivos de `observability/` parsean y el compose los resuelve, pero falta un deploy con el perfil prendido para confirmar que Prometheus scrapea, que el tablero pinta y que una alerta llega a Discord.
 
 ### Carga
 
@@ -173,11 +189,6 @@ Hasta 50 lectores el stage responde en menos de 400 ms al p95; con 100 se acerca
 | `WEB_HOST` | El host del frontend, sin `https://` (`planb.olisar.com.ar`). Arma los links de verificación y de reset, y es el dominio que se da de alta en Dokploy. |
 | `PLANB_API_TAG` | Opcional. Sin definir, el stage corre `main`, que *Publish images* mueve en cada merge; un sha corto pinea `planb-api` hasta que se borre la variable. |
 | `PLANB_WEB_TAG` | Opcional, igual que la anterior, para `planb-web`. |
-| `COMPOSE_PROFILES` | Opcional. `monitoring` prende `prometheus` y `grafana`; sin definir, esos dos servicios no corren. |
-| `GRAFANA_ADMIN_USER` | Usuario admin de Grafana. |
-| `GRAFANA_ADMIN_PASSWORD` | Password admin de Grafana. |
-| `GRAFANA_HOST` | El host del tablero, sin `https://`. Arma `GF_SERVER_ROOT_URL` y es el dominio que se da de alta en Dokploy para el servicio `grafana`. |
-| `ALERT_DISCORD_WEBHOOK_URL` | Opcional. La URL del webhook de Discord al que Grafana manda las alertas; sin ella, existen y se ven en Grafana pero no mandan nada. |
 
 Bloque listo para pegar en la pestaña Environment del servicio, con placeholders:
 
@@ -191,15 +202,9 @@ PLANB_SEED_PASSWORD=<password de 12+ caracteres>
 SMTP_FROM_EMAIL=<remitente>
 SMTP_FROM_NAME=<nombre de remitente>
 WEB_HOST=<host sin https://>
-COMPOSE_PROFILES=monitoring
-GRAFANA_ADMIN_USER=<usuario>
-GRAFANA_ADMIN_PASSWORD=<password>
-GRAFANA_HOST=<host sin https://>
 ```
 
 `PLANB_API_TAG` y `PLANB_WEB_TAG` no van en el bloque: sin ellas el stage corre `main`. Se agregan solo para pinear un sha, y se borran para volver.
-
-`ALERT_DISCORD_WEBHOOK_URL` tampoco va en el bloque: sin ella el perfil `monitoring` igual levanta Prometheus y Grafana, solo que las alertas no mandan nada. Se agrega cuando haya un canal de Discord real.
 
 ### El guion de clics
 

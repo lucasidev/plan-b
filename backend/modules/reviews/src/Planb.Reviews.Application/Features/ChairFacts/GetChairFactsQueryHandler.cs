@@ -3,6 +3,7 @@ using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
 using Planb.Reviews.Domain.Reviews;
 using Planb.Reviews.Domain.Publishing;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Application.Features.ChairFacts;
@@ -23,6 +24,7 @@ public static class GetChairFactsQueryHandler
         GetChairFactsQuery query,
         IAcademicQueryService academic,
         IChairTallyQueryService tallies,
+        IDomainMetrics metrics,
         CancellationToken ct)
     {
         var chair = await academic.GetChairByIdAsync(query.ChairId, ct);
@@ -46,6 +48,11 @@ public static class GetChairFactsQueryHandler
             counted.Tallies,
             counted.SiblingTallies,
             counted.Completion);
+
+        // El piso se cruza acá adentro (ChairFactsCalculator.Calculate lo recalcula en cada
+        // lectura, no hay evento de dominio que lo marque), así que la métrica se cuenta en el
+        // mismo lugar: ver el docstring de IDomainMetrics.ChairFactsComputed.
+        metrics.ChairFactsComputed(facts.IsPublished);
 
         // La ventana temporal solo se resuelve si la ficha publica: bajo el piso no viaja nada de
         // los datos, y de cuándo son las tres reseñas que junta es un dato de ellas.

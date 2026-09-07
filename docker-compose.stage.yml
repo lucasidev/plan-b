@@ -9,6 +9,7 @@
 # Los mem_limit salen del consumo medido en reposo (api 362 MiB, web 94 MiB) con margen para
 # carga y JIT; si un contenedor se pasa, Docker lo reinicia solo a él (restart: unless-stopped)
 # y el resto sigue. Los logs rotan con json-file para que no llenen el disco del VPS.
+# Producción es docker-compose.prod.yml.
 
 x-logging: &logging
   driver: json-file

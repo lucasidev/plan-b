@@ -1,0 +1,15 @@
+# Grafana interpola $VAR o ${VAR} en la mayoría de los campos de alerting al arrancar,
+# settings.url incluido (no interpola el modelo de la consulta ni las anotaciones, que
+# viven en rules.yml y usan su propio motor de templates). Sin ALERT_DISCORD_WEBHOOK_URL
+# en el entorno del contenedor, la interpolación deja una cadena vacía: el contact point
+# existe y las alertas se ven en Grafana, pero no se manda ninguna notificación.
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: discord
+    receivers:
+      - uid: planb-discord
+        type: discord
+        settings:
+          url: ${ALERT_DISCORD_WEBHOOK_URL}

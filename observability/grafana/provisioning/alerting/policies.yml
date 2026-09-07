@@ -1,0 +1,6 @@
+# Política por defecto: sin sub-rutas, las tres reglas de rules.yml caen todas acá.
+apiVersion: 1
+
+policies:
+  - orgId: 1
+    receiver: discord

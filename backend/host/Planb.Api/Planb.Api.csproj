@@ -19,6 +19,7 @@
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="DotNetEnv" />
+    <PackageReference Include="prometheus-net.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>

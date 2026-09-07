@@ -1,0 +1,198 @@
+# Producción: el mismo par de imágenes que el stage en otro servicio Compose de Dokploy (Project →
+# Create Service → Compose, Compose Path ./docker-compose.prod.yml), con lo que el stage no tiene.
+# Corre con el perfil Production de Wolverine: codegen estático y nada migra ni siembra al arrancar
+# (los pasos a mano están en docs/engineering/deploy.md, "Secuencia de un deploy"). No hay Mailpit:
+# los mails salen por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin
+# PLANB_API_TAG y PLANB_WEB_TAG el deploy no arranca, porque acá no existe main. Y prometheus y
+# grafana van siempre prendidos, provisionados desde observability/.
+# Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
+# SESSION_SECRET, PLANB_API_TAG, PLANB_WEB_TAG, SMTP_HOST, SMTP_PORT, SMTP_USE_SSL, SMTP_USERNAME,
+# SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, GRAFANA_ADMIN_USER,
+# GRAFANA_ADMIN_PASSWORD, GRAFANA_HOST y, opcional, ALERT_DISCORD_WEBHOOK_URL.
+# Los mem_limit son los del stage, medidos en reposo; los de prometheus y grafana son un techo de
+# arranque, todavía sin medir. Los logs rotan con json-file para que no llenen el disco.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    mem_limit: 512m
+    logging: *logging
+    environment:
+      POSTGRES_USER: planb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD sin definir}
+      POSTGRES_DB: planb
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - planb_prod_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planb -d planb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+
+  # Estado efímero: un reinicio cierra sesiones y nada más.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    mem_limit: 128m
+    logging: *logging
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?REDIS_PASSWORD sin definir}
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--no-auth-warning", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - internal
+
+  # Sin pull_policy: el tag es inmutable (un sha corto), así que la imagen se baja una sola vez.
+  api:
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:?PLANB_API_TAG sin definir, producción corre un tag pineado}
+    expose: ["8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 768m
+    logging: *logging
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
+      JWT__Secret: ${JWT_SECRET:?JWT_SECRET sin definir}
+      Smtp__Host: ${SMTP_HOST:?SMTP_HOST sin definir}
+      Smtp__Port: ${SMTP_PORT:?SMTP_PORT sin definir}
+      Smtp__UseSsl: ${SMTP_USE_SSL:?SMTP_USE_SSL sin definir (true o false)}
+      # Vacías, el api no se autentica contra el relay.
+      Smtp__Username: ${SMTP_USERNAME:-}
+      Smtp__Password: ${SMTP_PASSWORD:-}
+      Smtp__FromEmail: ${SMTP_FROM_EMAIL:?SMTP_FROM_EMAIL sin definir}
+      Smtp__FromName: ${SMTP_FROM_NAME:?SMTP_FROM_NAME sin definir}
+      Identity__Verification__LinkBaseUrl: https://${WEB_HOST:?WEB_HOST sin definir}/verify-email
+      Identity__PasswordReset__LinkBaseUrl: https://${WEB_HOST}/reset-password
+    # La imagen de aspnet no trae curl ni wget, pero sí bash: el pedido HTTP se arma a mano por el socket.
+    # Healthy significa que /health responde 200, o sea que Postgres y Redis también contestan.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    networks:
+      - internal
+
+  web:
+    image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG:?PLANB_WEB_TAG sin definir, producción corre un tag pineado}
+    expose: ["3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 256m
+    logging: *logging
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:8080
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: planb
+      JWT_AUDIENCE: planb
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET sin definir}
+    # /health del web es el rewrite al api, así que healthy en web es toda la cadena.
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - internal
+      - dokploy-network
+
+  # Scrapea /metrics del api cada 15s y guarda 15 días de series. Sin dominio propio: se lee
+  # siempre desde Grafana.
+  prometheus:
+    image: prom/prometheus:v3.14.0
+    restart: unless-stopped
+    mem_limit: 256m
+    logging: *logging
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - planb_prod_prometheus:/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+
+  # El datasource, el tablero y las reglas de alerta se provisionan desde
+  # observability/grafana/provisioning: no se clickea nada en la UI, un redeploy los reaplica.
+  grafana:
+    image: grafana/grafana:12.4.10
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 256m
+    logging: *logging
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER sin definir}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD sin definir}
+      GF_SERVER_ROOT_URL: https://${GRAFANA_HOST:?GRAFANA_HOST sin definir}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      # Sin prefijo GF_: no es configuración de Grafana. Es la variable que el provisioning de
+      # alerting interpola como $ALERT_DISCORD_WEBHOOK_URL en contact-points.yml; vacía, el
+      # contact point queda con una URL vacía y no manda nada (ver deploy.md).
+      ALERT_DISCORD_WEBHOOK_URL: ${ALERT_DISCORD_WEBHOOK_URL:-}
+    expose: ["3000"]
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - planb_prod_grafana:/var/lib/grafana
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - internal
+      - dokploy-network
+
+# Traefik solo alcanza los servicios conectados a dokploy-network: por eso web y grafana están
+# ahí además de internal. postgres, redis, api y prometheus se quedan solo en internal, sin dominio.
+networks:
+  internal:
+  dokploy-network:
+    external: true
+
+volumes:
+  planb_prod_postgres:
+    name: planb_prod_postgres
+  planb_prod_prometheus:
+    name: planb_prod_prometheus
+  planb_prod_grafana:
+    name: planb_prod_grafana
