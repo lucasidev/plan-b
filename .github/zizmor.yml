@@ -1,0 +1,13 @@
+# Config de zizmor (job "Workflows" en ci.yml). Un ignore acá es una decisión
+# consciente, no un silenciador: cada regla lleva por qué el hallazgo no aplica.
+
+rules:
+  dangerous-triggers:
+    ignore:
+      # pull_request_target en dependabot-bun-lockfile.yml es intencional (ver el
+      # header de ese workflow y ADR-0043): el job solo corre si el autor del PR
+      # es dependabot[bot] (gate explícito, no un check de github.actor spoofeable),
+      # nunca ejecuta código del PR más allá de `bun install` sobre su propio
+      # package.json, y pushea con un token de GitHub App de vida corta, no con
+      # un GITHUB_TOKEN con permisos elevados.
+      - dependabot-bun-lockfile.yml
