@@ -34,8 +34,16 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
 
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
-COPY --from=build /app/public ./public
+COPY --from=build --chown=bun:bun /app/.next/standalone ./
+COPY --from=build --chown=bun:bun /app/.next/static ./.next/static
+COPY --from=build --chown=bun:bun /app/public ./public
+
+# El optimizador de imágenes de Next escribe su caché en .next/cache/images en runtime.
+RUN mkdir -p .next/cache && chown -R bun:bun .next
+
+# La imagen base trae el usuario no root "bun": correr con él limita lo que un RCE puede tocar.
+# El healthcheck pega /health (el rewrite de next.config.ts al backend) y espera una respuesta ok.
+USER bun
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 CMD bun -e "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
 CMD ["bun", "server.js"]

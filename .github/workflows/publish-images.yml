@@ -42,6 +42,7 @@ jobs:
     timeout-minutes: 25
     outputs:
       digest: ${{ steps.push.outputs.digest }}
+      sha: ${{ steps.meta.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -50,7 +51,7 @@ jobs:
       - name: Resolve tags
         id: meta
         run: |
-          sha="$(git rev-parse --short HEAD)"
+          sha="$(git rev-parse HEAD | cut -c1-7)"
           image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-api"
           tags="${image}:${sha}"
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
@@ -58,6 +59,17 @@ jobs:
           fi
           echo "image=${image}" >> "$GITHUB_OUTPUT"
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve labels
+        id: labels
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.meta.outputs.image }}
+          labels: |
+            org.opencontainers.image.title=planb-api
+            org.opencontainers.image.description=API de planb, instrumento de presión estudiantil sobre universidades argentinas
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
       - uses: docker/setup-buildx-action@v4
 
@@ -75,6 +87,10 @@ jobs:
           file: backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.labels.outputs.labels }}
+          build-args: GIT_SHA=${{ steps.meta.outputs.sha }}
+          provenance: true
+          sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -85,6 +101,7 @@ jobs:
     timeout-minutes: 25
     outputs:
       digest: ${{ steps.push.outputs.digest }}
+      sha: ${{ steps.meta.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -93,7 +110,7 @@ jobs:
       - name: Resolve tags
         id: meta
         run: |
-          sha="$(git rev-parse --short HEAD)"
+          sha="$(git rev-parse HEAD | cut -c1-7)"
           image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-web"
           tags="${image}:${sha}"
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
@@ -101,6 +118,17 @@ jobs:
           fi
           echo "image=${image}" >> "$GITHUB_OUTPUT"
           echo "tags=${tags}" >> "$GITHUB_OUTPUT"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve labels
+        id: labels
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.meta.outputs.image }}
+          labels: |
+            org.opencontainers.image.title=planb-web
+            org.opencontainers.image.description=Frontend de planb, instrumento de presión estudiantil sobre universidades argentinas
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
       - uses: docker/setup-buildx-action@v4
 
@@ -118,30 +146,126 @@ jobs:
           file: frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.labels.outputs.labels }}
           build-args: NEXT_PUBLIC_API_URL=${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'http://api:8080' }}
+          provenance: true
+          sbom: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  scan:
+    name: Scan the images
+    needs: [backend, frontend]
+    if: always() && needs.backend.result == 'success' && needs.frontend.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Trivy avisa (exit-code 0), no gatea: hasta ver dos corridas reales no hay piso de
+      # severidad decidido para bloquear un merge por esto.
+      - name: Scan planb-api
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/planb-api:${{ needs.backend.outputs.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: '0'
+          output: trivy-backend.txt
+
+      - name: Scan planb-web
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/planb-web:${{ needs.frontend.outputs.sha }}
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          format: table
+          exit-code: '0'
+          output: trivy-frontend.txt
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: trivy-report
+          path: |
+            trivy-backend.txt
+            trivy-frontend.txt
+          retention-days: 14
+
+      - name: Volcar el reporte al summary
+        run: |
+          {
+            echo "## Trivy: planb-api"
+            echo '```'
+            cat trivy-backend.txt
+            echo '```'
+            echo "## Trivy: planb-web"
+            echo '```'
+            cat trivy-frontend.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   stage:
     name: Redeploy the stage
     needs: [backend, frontend]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
+    env:
+      STAGE_HEALTH_URL: https://planb.olisar.com.ar/health
     steps:
       # Va por la API de Dokploy, no por su Autodeploy: el Autodeploy dispara con el push
       # mismo, antes de que las imágenes existan en el registry.
-      - env:
+      - id: deploy
+        env:
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
           DOKPLOY_STAGE_COMPOSE_ID: ${{ secrets.DOKPLOY_STAGE_COMPOSE_ID }}
         run: |
           if [ -z "$DOKPLOY_URL" ] || [ -z "$DOKPLOY_API_KEY" ] || [ -z "$DOKPLOY_STAGE_COMPOSE_ID" ]; then
             echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque faltan los secrets de Dokploy."
+            echo "deployed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           curl --fail --silent --show-error --retry 3 --retry-delay 5 -X POST "$DOKPLOY_URL/api/compose.deploy" -H "x-api-key: $DOKPLOY_API_KEY" -H "Content-Type: application/json" -d "{\"composeId\": \"$DOKPLOY_STAGE_COMPOSE_ID\"}"
           echo "El stage está redesplegando ${GITHUB_SHA:0:7}."
+          echo "deployed=true" >> "$GITHUB_OUTPUT"
+
+      # El deploy se verifica contra el sha que sirve el stage, no contra la
+      # respuesta de Dokploy: esa solo confirma que encoló el redeploy.
+      - name: Wait for the stage to run this sha
+        if: steps.deploy.outputs.deployed == 'true'
+        run: |
+          expected="${GITHUB_SHA:0:7}"
+          code=""
+          version=""
+          status="sin respuesta"
+          for i in $(seq 1 30); do
+            body="$(curl -s --max-time 10 -w '\n%{http_code}' "$STAGE_HEALTH_URL")"
+            code="${body##*$'\n'}"
+            json="${body%$'\n'*}"
+            version="$(printf '%s' "$json" | jq -r '.version // empty' 2>/dev/null)"
+            if [ "$code" = "200" ] && [ "$version" = "$expected" ]; then
+              echo "El stage corre ${expected}."
+              exit 0
+            fi
+            if [ "$code" = "000" ] || [ -z "$code" ]; then
+              status="sin respuesta"
+            else
+              status="${code} ${version}"
+            fi
+            echo "El stage todavía no corre ${expected} (último /health: ${status})."
+            sleep 10
+          done
+          echo "::error::El stage no llegó a ${expected} en 5 minutos (último /health: ${status})."
+          exit 1
 
   # Recordatorio en el log de la corrida, no un paso automático. Aplicar el schema desde un runner
   # de GitHub exigiría exponer la base de producción a internet; el paso corre en el host del deploy.
