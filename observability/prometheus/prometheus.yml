@@ -1,0 +1,14 @@
+# Scrapea el propio Prometheus (para ver que el scraper esté vivo) y el api.
+# Un solo servicio, sin cluster: el intervalo corto no pesa.
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: planb-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8080"]

@@ -3,6 +3,7 @@ using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Catalog;
 using Planb.Reviews.Domain.Reviews;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Application.Features.PublishReview;
@@ -39,6 +40,7 @@ public static class PublishReviewCommandHandler
         IReviewsUnitOfWork unitOfWork,
         IAcademicQueryService academic,
         IDateTimeProvider clock,
+        IDomainMetrics metrics,
         CancellationToken ct)
     {
         // 1) La materia existe.
@@ -120,6 +122,7 @@ public static class PublishReviewCommandHandler
         await reviews.AddAsync(review, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
+        metrics.ReviewPublished(instrument.Code);
         return new PublishReviewResponse(review.Id.Value, review.Answers.Count);
     }
 }

@@ -1,0 +1,88 @@
+# Reglas de alerta de Grafana (no de Prometheus: acá no hay Alertmanager). Cada regla
+# usa una sola consulta PromQL que ya filtra con un operador de comparación, así que la
+# condición apunta directo a esa consulta, sin un paso de reduce ni de threshold aparte.
+# noDataState en OK: un resultado vacío acá significa "la condición dio falsa" (nadie
+# está caído, nadie está en 5xx), no "no hay datos"; con NoData, Grafana dispararía una
+# alerta fantasma apenas la condición fuera falsa.
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: planb
+    folder: planb
+    interval: 1m
+    rules:
+      - uid: planb-api-down
+        title: ApiDown
+        condition: A
+        for: 2m
+        noDataState: OK
+        execErrState: Alerting
+        labels:
+          severity: critical
+        annotations:
+          summary: "El api no responde."
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              refId: A
+              editorMode: code
+              expr: 'up{job="planb-api"} == 0'
+              instant: true
+              range: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+
+      - uid: planb-dependency-down
+        title: DependencyDown
+        condition: A
+        for: 2m
+        noDataState: OK
+        execErrState: Alerting
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.dependency }} está caída."
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              refId: A
+              editorMode: code
+              expr: 'dependency_up == 0'
+              instant: true
+              range: false
+              intervalMs: 1000
+              maxDataPoints: 43200
+
+      - uid: planb-high-error-rate
+        title: HighErrorRate
+        condition: A
+        for: 5m
+        noDataState: OK
+        execErrState: Alerting
+        labels:
+          severity: warning
+        annotations:
+          summary: "Más del 5% de las respuestas son 5xx."
+        data:
+          - refId: A
+            datasourceUid: prometheus
+            relativeTimeRange:
+              from: 300
+              to: 0
+            model:
+              refId: A
+              editorMode: code
+              expr: '(sum(rate(http_requests_received_total{code=~"5.."}[5m])) / sum(rate(http_requests_received_total[5m]))) * 100 > 5 and sum(rate(http_requests_received_total[5m])) > 1'
+              instant: true
+              range: false
+              intervalMs: 1000
+              maxDataPoints: 43200

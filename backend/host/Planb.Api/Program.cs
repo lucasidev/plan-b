@@ -9,6 +9,7 @@ using Planb.Academic.Application;
 using Planb.Academic.Infrastructure;
 using Planb.Api.Health;
 using Planb.Api.Infrastructure;
+using Planb.Api.Metrics;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
 using Planb.Identity.Infrastructure.Persistence;
@@ -18,6 +19,8 @@ using Planb.Reviews.Infrastructure;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Abstractions.Persistence;
 using Planb.SharedKernel.Abstractions.DomainEvents;
+using Planb.SharedKernel.Abstractions.Metrics;
+using Prometheus;
 using Serilog;
 using StackExchange.Redis;
 using Wolverine;
@@ -69,6 +72,10 @@ builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 // explote al levantar y no en el primer request que toque un servicio de lectura.
 builder.Services.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
 builder.Services.AddScoped<IDomainEventPublisher, WolverineDomainEventPublisher>();
+// Contadores de dominio detrás de prometheus-net: singleton porque los colectores de
+// prometheus-net son thread-safe y viven una sola vez por proceso. Wolverine la inyecta en
+// cualquier handler que la pida como parámetro, igual que IDateTimeProvider.
+builder.Services.AddSingleton<IDomainMetrics, PrometheusDomainMetrics>();
 
 var connectionString = builder.Configuration.GetConnectionString("Planb")
     ?? throw new InvalidOperationException("Connection string 'Planb' is not configured.");
@@ -274,6 +281,15 @@ app.UseSerilogRequestLogging();
 app.UseIdentityJwtAuthentication();
 app.MapCarter();
 
+// Señales de oro HTTP: duración + contador de requests por método, ruta con plantilla y status.
+// UseWhen deja afuera /health y /metrics: son tráfico de infraestructura (probes, scraping), no
+// requests de producto, y contarlos infla http_request_duration_seconds sin decirle nada nuevo a
+// un dashboard.
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/health")
+        && !context.Request.Path.StartsWithSegments("/metrics"),
+    branch => branch.UseHttpMetrics());
+
 // GET /health: público, sin sesión. 200 si Postgres y Redis responden, 503 si alguno falla.
 // `version` es el sha del commit que build-empaquetó la imagen (PLANB_VERSION, ver Dockerfile);
 // "dev" fuera de esa imagen (local, tests).
@@ -287,6 +303,9 @@ app.MapHealthChecks("/health", new HealthCheckOptions
         [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
     },
 });
+
+// GET /metrics: scrape target de Prometheus, público y sin sesión, igual que /health.
+app.MapMetrics("/metrics");
 
 // JasperFx command-line: `dotnet run` runs the server, `dotnet run -- db-apply` etc. for
 // administrative operations. See https://wolverinefx.net/guide/command-line.html.

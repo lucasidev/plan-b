@@ -6,6 +6,7 @@ using Planb.Identity.Domain.Users;
 using Planb.Identity.Domain.Users.Events;
 using Planb.Identity.Tests.Users;
 using Planb.SharedKernel.Abstractions.DomainEvents;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 using Shouldly;
 using Xunit;
@@ -52,6 +53,9 @@ public class SignInCommandHandlerTests
         Substitute.For<IDomainEventPublisher>(),
         new FixedClock(T0));
 
+    // NullDomainMetrics: ningún test de este archivo verifica qué se contó, solo que el handler
+    // sigue funcionando con el parámetro nuevo (la cobertura de conteo real vive en
+    // MetricsEndpointTests, a nivel integration).
     private static Task<Result<SignInResponse>> Invoke(Deps deps, SignInCommand command) =>
         SignInCommandHandler.Handle(
             command,
@@ -61,6 +65,7 @@ public class SignInCommandHandlerTests
             deps.RefreshTokens,
             deps.Publisher,
             deps.Clock,
+            new NullDomainMetrics(),
             CancellationToken.None);
 
     [Fact]

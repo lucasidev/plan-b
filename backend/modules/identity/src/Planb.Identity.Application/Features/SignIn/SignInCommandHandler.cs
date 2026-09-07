@@ -3,6 +3,7 @@ using Planb.Identity.Application.Abstractions.Security;
 using Planb.Identity.Domain.Users;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Abstractions.DomainEvents;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Identity.Application.Features.SignIn;
@@ -17,6 +18,7 @@ public static class SignInCommandHandler
         IRefreshTokenStore refreshTokens,
         IDomainEventPublisher publisher,
         IDateTimeProvider clock,
+        IDomainMetrics metrics,
         CancellationToken ct)
     {
         var emailResult = EmailAddress.Create(command.Email);
@@ -25,6 +27,7 @@ public static class SignInCommandHandler
             // Treat malformed emails as bad creds, not validation errors. Anti-enumeration:
             // attackers shouldn't learn that "this email is malformed but exists" is different
             // from "this email is well-formed but unknown".
+            metrics.SignInAttempt(succeeded: false);
             return UserErrors.InvalidCredentials;
         }
 
@@ -36,6 +39,7 @@ public static class SignInCommandHandler
             // el repo y olvida el filter, el sign-in no debería empezar a funcionar para users
             // expired (sería un leak de info silencioso). Anti-enum: misma respuesta que un
             // user no encontrado.
+            metrics.SignInAttempt(succeeded: false);
             return UserErrors.InvalidCredentials;
         }
 
@@ -44,6 +48,7 @@ public static class SignInCommandHandler
             clock);
         if (authResult.IsFailure)
         {
+            metrics.SignInAttempt(succeeded: false);
             return authResult.Error;
         }
 
@@ -53,6 +58,7 @@ public static class SignInCommandHandler
 
         await DomainEventDispatcher.DispatchAsync([user], publisher, ct);
 
+        metrics.SignInAttempt(succeeded: true);
         return new SignInResponse(user.Id.Value, user.Email.Value, user.Role.ToString())
         {
             Tokens = tokens,

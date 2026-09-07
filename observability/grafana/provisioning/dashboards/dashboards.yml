@@ -1,0 +1,14 @@
+# Provider de tableros por archivo: todo lo que haya en /var/lib/grafana/dashboards se
+# carga solo. allowUiUpdates en false porque el tablero se edita en este archivo, no
+# haciendo click en Grafana: un cambio ahí se pierde en el próximo redeploy.
+apiVersion: 1
+
+providers:
+  - name: planb
+    orgId: 1
+    type: file
+    disableDeletion: false
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards

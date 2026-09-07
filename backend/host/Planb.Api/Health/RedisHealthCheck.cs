@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Planb.Api.Metrics;
 using StackExchange.Redis;
 
 namespace Planb.Api.Health;
@@ -7,7 +8,8 @@ namespace Planb.Api.Health;
 /// <summary>
 /// PING contra Redis por el mismo <see cref="IConnectionMultiplexer"/> singleton que usan los
 /// consumidores reales (refresh tokens, rate limiter). Mismo timeout y misma forma de resultado que
-/// <see cref="PostgresHealthCheck"/>.
+/// <see cref="PostgresHealthCheck"/>, incluida la escritura a
+/// <c>dependency_up{dependency="redis"}</c> (<see cref="DependencyUpMetric"/>).
 /// </summary>
 internal sealed class RedisHealthCheck : IHealthCheck
 {
@@ -33,6 +35,7 @@ internal sealed class RedisHealthCheck : IHealthCheck
             // en su protocolo); WaitAsync es lo que hace valer el timeout acá.
             await _connectionMultiplexer.GetDatabase().PingAsync().WaitAsync(cts.Token);
 
+            DependencyUpMetric.Set("redis", up: true);
             return HealthCheckResult.Healthy(data: new Dictionary<string, object>
             {
                 ["latencyMs"] = stopwatch.ElapsedMilliseconds,
@@ -40,6 +43,7 @@ internal sealed class RedisHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
+            DependencyUpMetric.Set("redis", up: false);
             return HealthCheckResult.Unhealthy(ex.Message, ex);
         }
     }

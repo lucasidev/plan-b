@@ -2,6 +2,7 @@ using Planb.Academic.Application.Contracts;
 using Planb.Reviews.Application.Abstractions.Persistence;
 using Planb.Reviews.Domain.Curation;
 using Planb.SharedKernel.Abstractions.Clock;
+using Planb.SharedKernel.Abstractions.Metrics;
 using Planb.SharedKernel.Primitives;
 
 namespace Planb.Reviews.Application.Features.Curation;
@@ -23,6 +24,7 @@ public static class PublishEditorialNoteCommandHandler
         IAcademicQueryService academic,
         IReviewsUnitOfWork unitOfWork,
         IDateTimeProvider clock,
+        IDomainMetrics metrics,
         CancellationToken ct)
     {
         if (await academic.GetCareerByIdAsync(command.CareerId, ct) is null)
@@ -42,6 +44,7 @@ public static class PublishEditorialNoteCommandHandler
         await notes.AddAsync(result.Value, ct);
         await unitOfWork.SaveChangesAsync(ct);
 
+        metrics.EditorialNotePublished();
         return new PublishEditorialNoteResponse(result.Value.Id.Value, result.Value.PublishedAt);
     }
 }
