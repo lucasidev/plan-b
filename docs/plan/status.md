@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
+**Última actualización**: 2026-09-07 (R4 cerrado y R5 planificado: lo construido contra lo deseado, medido sobre el stage rellenado, con cuatro recorridos de persona como E2E y el relevamiento de los datos oficiales que el producto pide). Antes, el 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
 
 ---
 
@@ -29,7 +29,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R1** | 2026-08-24 a 2026-08-27 | **El acto de reseñar, de punta a punta**: una persona reseña una cursada en tres capas, y al cruzar el piso de 10 la ficha de la cátedra publica sus conteos. Milestone [R1](https://github.com/lucasidev/plan-b/milestone/2), issues #355 a #361, 34 pts. | ✓ Hecho (mergeado el 2026-08-27, PR [#362](https://github.com/lucasidev/plan-b/pull/362)) |
 | **R2** | 2026-08-27 a 2026-08-28 | **El producto habla con una voz, y lo que dice se encuentra y se deshace**: la ficha de materia deriva de sus cátedras, se llega a la cátedra desde donde se la busca, se puede corregir y borrar lo aportado, la landing dice lo que el producto hace, y el aggregate de reseña anterior se poda con su moderación. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), issues #363 a #368, 42 pts. | ✓ Hecho (mergeado el 2026-08-28, PR [#369](https://github.com/lucasidev/plan-b/pull/369)) |
 | **R3** | 2026-08-29 a 2026-09-02 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | ✓ Hecho (cerrado el 2026-09-02, PRs #387 a #399; entró además la curaduría entera y US-198) |
-| **R4** | desde 2026-09-02 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | Planificado |
+| **R4** | 2026-09-02 a 2026-09-07 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | ✓ Hecho (cerrado el 2026-09-07 con el merge de la pista 4, PR #467; #403 y #404 pasan a R5) |
+| **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona como E2E contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | En curso |
 
 Convenciones:
 
@@ -392,7 +393,7 @@ US-155 y US-197 salieron de la tabla el 2026-09-04: el código no pregunta el a�
 
 ## R4 · Un stage funcional, y una suite que dice la verdad más rápido
 
-Desde el 2026-09-02. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts en tres pistas.
+Del 2026-09-02 al 2026-09-07. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts en tres pistas.
 
 **Por qué este hilo.** Tres sprints construyeron la máquina que convierte reseñas en fichas, y nadie la usó todavía: seguimos pre-deploy y no existe una reseña de una persona real. Antes de personas reales, un stage: el producto entero en una URL, con el corpus sintético, recorrible por Lucas y por Copas. Y la retrospectiva de R3 pidió mirar la calidad con lentes de QA: la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) encontró una suite grande y verde pero desbalanceada (el dominio bien cubierto, la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, y 9 de 75 escenarios citados por un test), y una sola línea que explica casi todo el costo de CI (cada clase de integración levanta su base, corre 57 migraciones y siembra, 50 veces en serie). **R4 no recorta: entran los doce hallazgos y las ocho propuestas de eficiencia.**
 
@@ -479,10 +480,69 @@ La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va prime
 8. Ninguna pantalla pública dice `ítem`, y `check-docs` falla si vuelve.
 9. `/health` del stage devuelve el sha del último merge a `main` y chequea sus dependencias; `/metrics` expone las señales de oro y el compose de producción trae el tablero y las alertas provisionados; las imágenes corren sin root y con procedencia; el runbook cubre los casos del stage; k6 tiene una corrida con sus umbrales en verde y sus números en el doc; el repo tiene Dependabot, CodeQL y el ruleset al día.
 
+### Cierre (2026-09-07)
+
+Las cuatro pistas mergeadas; la última, la pista 4, en el PR #467, cuyo merge fue la primera corrida real de la espera del sha: falló al minuto con el exit code de curl mientras el stage llegaba a `872c313` igual, y el arreglo entra con R5. De los 51 issues quedan abiertos #403 y #404: el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice) todavía no se corrió contra el stage, y pasa a R5 con `just stage-walk`. Sin medir: `k6/write.js`. Un flake de E2E apareció en la última corrida (dos navegaciones, 1 corrida roja de 4 sobre el mismo código) y queda registrado como issue ([#477](https://github.com/lucasidev/plan-b/issues/477)).
+
 ### Lo que R4 deja afuera a propósito
 
 - Personas reales y todo lo que solo ellas exigen: mail y dominio reales, consentimiento (US-228, Ley 25.326), Anonimato (SC-013), el piso en el contrato antes de enviar (US-159). Es lo primero del sprint en que las haya.
 - El hardening de Production, que ya está escrito y espera su propio deploy.
+
+## R5 · Lo construido contra lo deseado
+
+Desde el 2026-09-08, acotado a una semana. Milestone [R5](https://github.com/lucasidev/plan-b/milestone/7), issues #468 a #477, 62 pts en tres pistas.
+
+**Por qué este hilo.** Cuatro sprints construyeron la máquina que convierte reseñas en fichas y R4 la puso en una URL con el corpus sintético. Nadie midió todavía la distancia entre eso y lo que la tesis y las 91 stories piden. R5 mide esa distancia sobre el stage, que es el hecho, y no sobre el código leído: con norma (la tesis, las stories con sus escenarios, el índice de pantallas, las garantías y las restricciones) y con evidencia (la ruta del stage o el recorrido E2E que la pisa). La revisión es inquisitiva: los recorridos de persona son pruebas manuales simuladas que preguntan si el recorrido se cumple de verdad, no automatizaciones que aprueban lo que el código hace; si la respuesta es que hay que reconstruir, se reconstruye, con el tamaño que tenga. Su salida es el backlog priorizado de R6, no features: un sprint de revisión crece solo, porque todo es hallazgo, y por eso está acotado en tiempo. Y lo que el producto necesita de fuentes oficiales no existe todavía ni en el modelo ni en pantalla, y no se scrapeó nada: la tercera pista releva qué es, dónde está y en qué formato, antes de escribir una línea.
+
+### Pista 1 · El stage rellenado (12 pts)
+
+Hoy el corpus vive en una materia con tres cátedras; una revisión sobre eso mira una materia, no un producto. Ficción declarada, como ya lo es el corpus sintético: sirve para ver cada pantalla en cada estado, nunca para mostrar una tracción que no existe.
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#468](https://github.com/lucasidev/plan-b/issues/468) · 1 | **Catálogo sintético para dos carreras**: la Tecnicatura entera con cátedras en cada materia y docentes con nombre, y la misma carrera canónica en una segunda universidad de las cuatro sembradas, para que "Dónde estudiarla" y las comparaciones tengan contra qué mirar. Listo cuando: cada materia de la Tecnicatura tiene al menos una cátedra con titular, y la segunda carrera existe con su plan. | 5 |
+| [#469](https://github.com/lucasidev/plan-b/issues/469) · 2 | **Corpus que cubre los estados de la ficha**: en varias materias, cátedras arriba y abajo del piso, co-cursadas que publican y que no, una frase retirada con su corte de serie, texto libre en el campo libre para que la curaduría tenga qué leer, notas editoriales de carrera y de institución, y reseñas de las personas sembradas para "Mis reseñas". Listo cuando: cada estado que nombra la ficha de cada pantalla pública tiene al menos un ejemplo en el stage, y el reset (`down -v` y Deploy) lo rearma igual. | 5 |
+| [#470](https://github.com/lucasidev/plan-b/issues/470) · 3 | **El recorrido para Copas sobre el stage rellenado**: `deploy.md` con los números nuevos, `just stage-walk` en verde contra el stage, y #403 y #404 cerrados con eso. | 2 |
+
+### Pista 2 · La revisión (31 pts)
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#471](https://github.com/lucasidev/plan-b/issues/471) · 4 | **Cuatro recorridos de persona como E2E contra el stage**, en `frontend/e2e/_stage/`, junto al de Copas y con su misma regla (nunca en CI; `just stage-walk`): Valentina elige sin cuenta (la entrada, buscar, la materia y sus cátedras hermanas, de qué está hecho cada conteo, Método); Lucía reseña (la cuenta recién cuando la acción la pide, una materia sola en menos de dos minutos, ver que contó, editar y deshacer); Matías dice algo incómodo (el campo libre que no se publica, su nombre en ninguna pantalla, sacar lo suyo e irse); Sofía sostiene el catálogo (cargar una cátedra con su titular, curar una frase en un solo lugar, una nota editorial sin nombres). Son pruebas manuales simuladas, escritas a ciegas: quien las escribe recibe la persona, las stories de su recorrido y la URL del stage, no el código, y cada paso asierta lo que la persona espera (que la reseña contó, que su nombre no está en ninguna pantalla, que tardó menos de dos minutos), no lo que la pantalla hace. Un paso que el producto no cumple falla y queda así: el recorrido no se acomoda al código, y el verde no es el objetivo. Listo cuando: los cuatro corrieron contra el stage y cada paso está en el mapa como cumple o no cumple, con el fallo textual y el ID de la story cuando no cumple. | 13 |
+| [#472](https://github.com/lucasidev/plan-b/issues/472) · 5 | **El mapa**: un registro en `docs/history/reviews/` con las 11 épicas y cada pantalla del índice en tres estados (construido, parcial, no construido), con su evidencia (la ruta del stage o el recorrido que la pisa) y la tabla de escenarios que da `check-scenarios` (hoy 91 escenarios en 20 stories: 73 confirmados, 18 no construidos, 0 rotos). Listo cuando: ninguna épica ni pantalla del índice queda sin estado, y cada "parcial" dice qué falta. | 8 |
+| [#473](https://github.com/lucasidev/plan-b/issues/473) · 6 | **Hallazgos con destino**: cada hallazgo del mapa y de los recorridos termina en una story (nueva o existente, a Backlog), un ADR o una decisión de Lucas, con el índice de revisiones actualizado; y la lista priorizada de R6 en este tracker. Incluye la decisión que la revisión va a destapar primero: cómo llegan las diez primeras voces de una cátedra. Listo cuando: el registro no tiene hallazgos sin destino y R6 tiene su lista. | 5 |
+| [#477](https://github.com/lucasidev/plan-b/issues/477) · 10 | **El click de envío que no dispara la acción**: cuatro corridas rojas de doce en CI el 2026-09-07, en cuatro specs distintos, y las trazas muestran que después del click final la página no emite ningún request (ni el POST del server action, ni navegación) mientras los clicks anteriores del mismo test sí cambian la pantalla. Reproducirlo en local bajo CPU cargada con `--repeat-each` y trazas, encontrar la causa (la hipótesis es un handler que todavía no está montado cuando se clickea, y React 19 no reproduce ese click) y dejar la corrección hecha si es del arnés, o planificada en R6 si es del producto. Es lo que el recorrido de Lucía tiene que atrapar: si clickea "Enviar la reseña" y no pasa nada, la reseña no existió. Listo cuando: hay una reproducción con tasa, la causa está escrita en el issue, y el arreglo está hecho o en la lista de R6. | 5 |
+
+### Pista 3 · Los datos oficiales (19 pts)
+
+La tesis (§5 y el punto 9 de "Qué recabamos") y ADR-0085 piden datos que no se le preguntan a nadie porque son públicos, publicados con fecha y fuente. No hay entidad, tabla ni pantalla para eso, y las stories que los consumen no entraron a ningún sprint; el [recorrido de Valentina](../history/reviews/2026-09-07-valentina-walk.md) lo dejó a la vista (V01, V02, V04). Decidido el 2026-09-07: R6 construye el modelo, la ficha de carrera con los datos y Dónde estudiarla; R5 releva a fondo para que R6 arranque construyendo y no adivinando.
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#474](https://github.com/lucasidev/plan-b/issues/474) · 7 | **Qué pide la tesis, campo por campo**: la tabla de datos oficiales (dura en el papel y dura en la realidad, egreso por cohorte, plan vigente, acreditación, régimen de ingreso; y del relevamiento oficial: actas, presupuesto, nómina docente) con la story que lo consume (US-127, US-128, US-129, US-130, US-133, US-174, US-182) y la pantalla donde se ve. | 3 |
+| [#475](https://github.com/lucasidev/plan-b/issues/475) · 8 | **Las fuentes, una por una**: para cada campo, la fuente (SPU: la Síntesis de Información Universitaria y el sistema de consulta de estadísticas; CONEAU: las acreditaciones; AGN: los informes; el sitio institucional y el plan de estudios en PDF), con el link exacto, el formato real (dataset descargable, API, PDF, HTML), una muestra bajada a mano y guardada, la cadencia de publicación, las condiciones de uso, y el veredicto por campo: automatizable (importación o scraping), a mano, o no está publicado. Y el inventario de lo demás que cada fuente publica y la tesis no pidió (ingresantes y reinscriptos por año, vigencia y resolución de cada acreditación, aranceles, modalidad, sedes, lo que haya): cada dato extra con una línea de a qué persona le serviría y en qué pantalla, sin decisión; entra a un sprint solo cuando Lucas lo elija, y el filtro es la tesis (los datos oficiales van al lado de las voces, la institución no tiene número). Sin scrapear todavía. Listo cuando: ningún campo queda sin fuente ni sin veredicto, cada veredicto tiene su muestra, y el inventario de lo extra está escrito. | 8 |
+| [#476](https://github.com/lucasidev/plan-b/issues/476) · 9 | **Las carreras sembradas, relevadas a mano**: la Tecnicatura en Desarrollo y Calidad de Software en UNSTA y la carrera más cercana en cada una de las otras tres universidades sembradas (UNT, Siglo 21, UTN FRT), con cada campo, su valor, su fecha y su fuente, y la cuenta de "dura en la realidad" y "egreso por cohorte" hecha a mano con su regla escrita (qué se divide por qué, de qué años) y sus sesgos, porque no están publicados como tales. Es la muestra de lo que el modelo de ADR-0085 tiene que guardar y de lo que Método tiene que explicar; de ahí sale, como ADR, la propuesta de modelo, de ficha de carrera y de Dónde estudiarla para R6. El modelo no son cinco columnas fijas: cada dato oficial es una afirmación con valor, unidad, alcance (carrera o institución), fuente, fecha y estado, para que lo que el relevamiento encuentre entre sin migrar el esquema. Listo cuando: las cuatro carreras tienen cada campo con valor, fecha y fuente (o "no publicado", con evidencia), la regla de los derivados está escrita, y el ADR está listo para que R6 arranque construyendo. | 8 |
+
+### Secuencia
+
+La pista 1 va primero: los recorridos y el mapa se hacen sobre el stage rellenado, no sobre el de hoy. En la pista 2, los recorridos (4) y el mapa (5) corren en paralelo y alimentan a 6, que cierra el sprint. La pista 3 es lectura y relevamiento, sin código: corre en paralelo con todo.
+
+### Cómo se sabe que R5 está listo
+
+1. El stage muestra cada pantalla pública en cada estado que su ficha nombra; el recorrido para Copas corre en verde contra él, y los cuatro recorridos de persona corrieron contra él con cada paso en el mapa como cumple o no cumple: ahí el verde no es el objetivo.
+2. El registro de revisión existe con las 11 épicas y todas las pantallas del índice en tres estados con evidencia, la tabla de escenarios, y ningún hallazgo sin destino; el índice de revisiones lo lista.
+3. R6 tiene su lista priorizada en este tracker, y la decisión de las diez primeras voces está tomada o pendiente con dueño.
+4. La tabla de datos oficiales tiene fuente, formato, cadencia, condiciones de uso y una muestra por campo, y el inventario de lo que las fuentes publican de más; las cuatro carreras sembradas están relevadas a mano con valor, fecha y fuente por dato; la regla de los derivados está escrita; y el ADR con la propuesta de modelo, ficha y Dónde estudiarla está listo para R6.
+5. R5 no construyó ninguna feature del producto: lo que la revisión encontró es backlog, no código.
+6. El click que no dispara la acción (#477) tiene reproducción con tasa y causa escrita, y su arreglo está hecho o en la lista de R6.
+
+### Lo que R5 deja afuera a propósito
+
+- El modelo de datos oficiales, la ficha de carrera con ellos y Dónde estudiarla: se construyen en R6 con la muestra y el ADR de la pista 3 (decidido el 2026-09-07).
+- Personas reales y todo lo que solo ellas exigen, lo mismo que dejó afuera R4.
+- El compose de producción, escrito y sin levantar: espera su servidor.
+- Reconstruir lo que los recorridos muestren mal hecho: se planifica en R6 con el tamaño que tenga, aunque sea rehacer una épica entera.
 
 ## Lo anterior: el producto en retiro
 
