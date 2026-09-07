@@ -281,6 +281,10 @@ jobs:
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest
+    # Misma compuerta que backend y frontend: un PR que solo toca docs no levanta el stack. El
+    # check requerido queda en "skipped", que el ruleset acepta igual que a los otros dos.
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true') }}
     # Local típico ≈ 1min para la suite actual (6 specs). Setup de servicios +
     # build backend + build frontend + install browsers + run = ~10-12min en
     # CI sin caches frías. 25 min absorbe el peor escenario.
