@@ -16,6 +16,10 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 // playwright.
 const CAPTURE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_CAPTURE === '1' ? [] : ['**/_capture/**'];
 
+// `_stage/` corre a mano contra el stage real (`just stage-walk`), nunca en CI ni con la suite
+// normal: se ignora salvo `PLAYWRIGHT_INCLUDE_STAGE=1`.
+const STAGE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_STAGE === '1' ? [] : ['**/_stage/**'];
+
 /**
  * Specs que van al proyecto `serial` (ver `projects` más abajo) porque mutan un recurso global
  * sin lock optimista y no toleran correr a la vez que otro spec, ni consigo mismo en otro worker.
@@ -64,7 +68,7 @@ const SERIAL_SPECS = [
 export default defineConfig({
   testDir: './e2e',
   testMatch: /.*\.spec\.ts/,
-  testIgnore: CAPTURE_IGNORE,
+  testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
 
   // Default timeouts: 60s por test (algunos flujos esperan emails en mailpit),
   // 10s para auto-wait de locators.
@@ -132,12 +136,16 @@ export default defineConfig({
     : [
         {
           name: 'parallel',
-          testIgnore: [...CAPTURE_IGNORE, ...SERIAL_SPECS],
+          // Los tres proyectos declaran su propio testIgnore, así que CAPTURE_IGNORE y
+          // STAGE_IGNORE se repiten acá: el testIgnore de un proyecto reemplaza al de la raíz, no
+          // se combina con él.
+          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE, ...SERIAL_SPECS],
           fullyParallel: true,
           use: { ...devices['Desktop Chrome'] },
         },
         {
           name: 'serial',
+          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
           testMatch: SERIAL_SPECS,
           fullyParallel: false,
           workers: 1,
@@ -151,6 +159,7 @@ export default defineConfig({
           // horizontal le pegan a alguien de verdad. Pixel 5 (393px) es angosto sin ser el caso
           // límite de 320px, que ninguna pantalla del producto apunta a soportar todavía.
           name: 'mobile',
+          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
           testMatch: /public\//,
           fullyParallel: true,
           // Corre última, estrictamente. A la vez que `parallel` duplicaba la carga y en CI

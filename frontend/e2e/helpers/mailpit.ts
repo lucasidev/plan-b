@@ -9,9 +9,26 @@
  * borrando la bandeja entera. Con la suite en paralelo, Mailpit es compartido por todos los specs
  * en vuelo: `clearAllMessages()` borraría el mail que otro está esperando. Cada cuenta (sembrada
  * o descartable) es dueña de su propio destinatario, así que buscar por dirección alcanza.
+ *
+ * El Mailpit del stage vive en otro host y detrás de basic auth (`MAILPIT_UI_AUTH` en Dokploy):
+ * cada función acepta un `MailpitOptions` opcional con `baseUrl` y `auth` para ese caso
+ * (`e2e/_stage/walk.spec.ts`). Sin `opts`, el comportamiento es el de siempre: `MAILPIT_URL` o
+ * `localhost:8025`, sin header de auth.
  */
 
 const MAILPIT_BASE = process.env.MAILPIT_URL ?? 'http://localhost:8025';
+
+export interface MailpitOptions {
+  /** Mailpit de otro ambiente (ej. el stage). Default: `MAILPIT_URL` o `localhost:8025`. */
+  baseUrl?: string;
+  /** `usuario:password` de un Mailpit detrás de basic auth. Sin esto, no se manda el header. */
+  auth?: string;
+}
+
+function authHeaders(opts: MailpitOptions): HeadersInit | undefined {
+  if (!opts.auth) return undefined;
+  return { Authorization: `Basic ${Buffer.from(opts.auth).toString('base64')}` };
+}
 
 interface MessageSummary {
   ID: string;
@@ -34,8 +51,12 @@ interface MessagesResponse {
 /**
  * Lista los mensajes en Mailpit. Por default los más recientes primero.
  */
-export async function listMessages(limit = 50): Promise<MessageSummary[]> {
-  const r = await fetch(`${MAILPIT_BASE}/api/v1/messages?limit=${limit}`);
+export async function listMessages(
+  limit = 50,
+  opts: MailpitOptions = {},
+): Promise<MessageSummary[]> {
+  const base = opts.baseUrl ?? MAILPIT_BASE;
+  const r = await fetch(`${base}/api/v1/messages?limit=${limit}`, { headers: authHeaders(opts) });
   if (!r.ok) throw new Error(`Mailpit list failed: ${r.status}`);
   const data = (await r.json()) as MessagesResponse;
   return data.messages;
@@ -50,10 +71,14 @@ export async function listMessages(limit = 50): Promise<MessageSummary[]> {
  * paralelo, una cuenta con reintentos (resend, sign-up duplicado) puede tener más de un mail en
  * vuelo, y quedarse con el más viejo devolvería un token ya usado o de otro paso del flujo.
  */
-export async function waitForMail(recipient: string, timeoutMs = 5000): Promise<MessageDetail> {
+export async function waitForMail(
+  recipient: string,
+  timeoutMs = 5000,
+  opts: MailpitOptions = {},
+): Promise<MessageDetail> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    const list = await listMessages(20);
+    const list = await listMessages(20, opts);
     const matches = list.filter((m) => m.To.some((t) => t.Address === recipient));
     if (matches.length > 0) {
       const newest = matches.reduce((newest, candidate) =>
@@ -61,7 +86,7 @@ export async function waitForMail(recipient: string, timeoutMs = 5000): Promise<
           ? candidate
           : newest,
       );
-      return getMessage(newest.ID);
+      return getMessage(newest.ID, opts);
     }
     await new Promise((r) => setTimeout(r, 200));
   }
@@ -71,8 +96,9 @@ export async function waitForMail(recipient: string, timeoutMs = 5000): Promise<
 /**
  * Lee el cuerpo completo (HTML + Text) de un mensaje por ID.
  */
-export async function getMessage(id: string): Promise<MessageDetail> {
-  const r = await fetch(`${MAILPIT_BASE}/api/v1/message/${id}`);
+export async function getMessage(id: string, opts: MailpitOptions = {}): Promise<MessageDetail> {
+  const base = opts.baseUrl ?? MAILPIT_BASE;
+  const r = await fetch(`${base}/api/v1/message/${id}`, { headers: authHeaders(opts) });
   if (!r.ok) throw new Error(`Mailpit get ${id} failed: ${r.status}`);
   return (await r.json()) as MessageDetail;
 }
@@ -81,8 +107,11 @@ export async function getMessage(id: string): Promise<MessageDetail> {
  * Extrae el primer ?token=... del HTML del último mail enviado a `recipient`.
  * Conveniencia para los flows verify-email + password-reset.
  */
-export async function extractTokenFromLatestMail(recipient: string): Promise<string> {
-  const msg = await waitForMail(recipient);
+export async function extractTokenFromLatestMail(
+  recipient: string,
+  opts: MailpitOptions = {},
+): Promise<string> {
+  const msg = await waitForMail(recipient, 5000, opts);
   const match = msg.HTML.match(/[?&]token=([A-Za-z0-9_-]+)/);
   if (!match) {
     throw new Error(`No ?token= found in mail "${msg.Subject}" for ${recipient}`);
@@ -94,7 +123,11 @@ export async function extractTokenFromLatestMail(recipient: string): Promise<str
  * Borra todos los mensajes en Mailpit. Con la suite en paralelo ningún spec la llama (borraría el
  * mail que otro está esperando en simultáneo); queda para debugging manual local.
  */
-export async function clearAllMessages(): Promise<void> {
-  const r = await fetch(`${MAILPIT_BASE}/api/v1/messages`, { method: 'DELETE' });
+export async function clearAllMessages(opts: MailpitOptions = {}): Promise<void> {
+  const base = opts.baseUrl ?? MAILPIT_BASE;
+  const r = await fetch(`${base}/api/v1/messages`, {
+    method: 'DELETE',
+    headers: authHeaders(opts),
+  });
   if (!r.ok) throw new Error(`Mailpit clear failed: ${r.status}`);
 }

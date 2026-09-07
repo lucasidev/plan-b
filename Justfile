@@ -176,6 +176,11 @@ frontend-test-e2e *args:
 frontend-test-e2e-show *args:
     bun scripts/run-e2e-show.ts {{args}}
 
+# El tramo con cuenta de "El recorrido para Copas" (docs/engineering/deploy.md), a mano contra el stage real: necesita
+# STAGE_MAILPIT_UI_AUTH y STAGE_SEED_PASSWORD en .env, y deja datos que el reset del stage borra.
+stage-walk:
+    bun scripts/run-stage-walk.ts
+
 # Presupuesto de rendimiento con Lighthouse CI (#412): mide y avisa, nunca gatea (los umbrales de
 # frontend/lighthouserc.cjs son `warn`). A diferencia de `frontend-test-e2e`, esta receta NO levanta
 # ningún stack: corre contra uno que ya esté arriba (`just dev`, o `bun scripts/run-scratch.ts` /

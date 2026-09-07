@@ -243,15 +243,15 @@ Sin alguno de los tres, el workflow publica igual y deja un aviso de que no rede
 
 ### El recorrido para Copas
 
-Diez minutos sobre el stage recién sembrado, en este orden. Los números son los del corpus sintético (`CorpusSeedData.cs`): todo vive en Fundamentos de Control de Calidad (materia 211 de la Tecnicatura Universitaria en Desarrollo y Calidad de Software, UNSTA), período 2024-C1, con tres cátedras.
+Diez minutos sobre el stage recién sembrado, en este orden. Los números son los del corpus sintético (`CorpusSeedData.cs`): todo vive en Fundamentos de Control de Calidad (materia 211 de la Tecnicatura Universitaria en Desarrollo y Calidad de Software, UNSTA), período 2024-C1, con tres cátedras. Los pasos 5 a 7 (el tramo con cuenta) los corre `just stage-walk` contra el stage, con `STAGE_MAILPIT_UI_AUTH` y `STAGE_SEED_PASSWORD` en `.env` ([`testing.md`](testing.md)); los demás se miran a mano.
 
 1. **Inicio**, `https://planb.olisar.com.ar/`: la muestra es una ficha real elegida al azar entre las que pasaron el piso. Buscar "Fundamentos de Control de Calidad".
 2. **Ficha de materia**, `/subjects/00000004-0000-4000-a000-000000000012`: tres cátedras. Pérez publica con 14 voces y González con 12; Ruiz dice "6 reseñas · faltan 4". Abajo, la co-cursada: con Desarrollo de Software (111) publica: "12 la llevaron junto con esta. 3 dejaron alguna de las dos."; con Desarrollo Back End (223) dice "5 la llevaron junto con esta: con 5 más se publica cómo les fue.".
 3. **Ficha de Cátedra Pérez**, `/chairs/00000008-0000-4000-a000-000000000001`: cada frase con su moda, su distribución y sus voces; ningún puntaje. **Ficha de Cátedra Ruiz**, `/chairs/00000008-0000-4000-a000-000000000003`: "Junta 6 reseñas: con 4 más se publica."
 4. **Método**, `/method`: la regla de cada conteo, el piso de 10 y la comparación solo contra cátedras hermanas.
 5. **Registrarse**, `/sign-up` con un mail inventado (por ejemplo `copas@planb.local`) y la carrera declarada; en Mailpit, `https://mail.olisar.com.ar/` con el usuario y la password de `MAILPIT_UI_AUTH`, llega "Confirmá tu cuenta en planb" con el link a `/verify-email?token=`. Confirmar.
-6. **Reseñar**, `/reviews/new`: Fundamentos de Control de Calidad, Cátedra Ruiz, período 2024-C1, el formulario de una página. Al publicar, la Ficha de Cátedra Ruiz pasa a "Junta 7 reseñas: con 3 más se publica" y `/reviews/mine` lista el aporte: contó, aunque todavía no publica.
-7. **Backoffice**: cerrar sesión y entrar como `admin@planb.local` con la password de `PLANB_SEED_PASSWORD`. En `/admin/chairs`, cargar una cátedra nueva de Fundamentos de Control de Calidad con su titular; en `/admin/curation`, leer un texto libre del corpus y destilar una frase: en `/admin/items` aparece dentro de la versión nueva del instrumento.
+6. **Reseñar**, `/reviews/new`: Fundamentos de Control de Calidad, Cátedra Ruiz, período 2024-C1, el formulario de una página, con algo escrito en el campo libre (el corpus sembrado no trae texto libre). Al publicar, la Ficha de Cátedra Ruiz pasa a "Junta 7 reseñas: con 3 más se publica" y `/reviews/mine` lista el aporte: contó, aunque todavía no publica.
+7. **Backoffice**: cerrar sesión y entrar como `admin@planb.local` con la password de `PLANB_SEED_PASSWORD`. En `/admin/chairs`, cargar una cátedra nueva de Fundamentos de Control de Calidad con su titular; en `/admin/curation`, leer el texto libre que dejó la reseña del paso 6 y destilar una frase: en `/admin/items` aparece dentro de la versión nueva del instrumento.
 8. **Volver a cero**: el reset del paso 8 del guion de clics deja el stage exactamente como al principio, con las mismas 49 reseñas del corpus (32 de cátedra y 17 de co-cursada) y sin la cuenta de prueba.
 
 ## Refs
