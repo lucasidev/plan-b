@@ -83,6 +83,16 @@ infra-reset:
 container-info:
     @bun scripts/detect-container.ts --info
 
+# Perfil de carga (issue #464) contra BASE_URL con la imagen oficial de k6 (no se instala local).
+# Detecta el runtime igual que infra-up (podman si el daemon responde, si no docker) y monta el script pedido.
+load script="read" vus="10" base_url="https://planb.olisar.com.ar":
+    $runtime = bun scripts/detect-container.ts; \
+    & $runtime run --rm -i \
+        -e "BASE_URL={{ base_url }}" -e "VUS={{ vus }}" \
+        -e "SEED_EMAIL=$env:SEED_EMAIL" -e "SEED_PASSWORD=$env:SEED_PASSWORD" \
+        -v "{{ justfile_directory() }}/k6/{{ script }}.js:/scripts/{{ script }}.js" \
+        grafana/k6:latest run /scripts/{{ script }}.js
+
 # Validate toolchain: dotnet, bun, lefthook, playwright browsers, container runtime.
 # Reads pins from .tool-versions and backend/global.json, compares with installed.
 # Reports drift but does not auto-install (devs decide what to bump).
