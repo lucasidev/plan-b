@@ -482,7 +482,7 @@ La pista 3 va primero: acelera el resto del sprint. En la pista 2, #407 va prime
 
 ### Cierre (2026-09-07)
 
-Las cuatro pistas mergeadas; la última, la pista 4, en el PR #467, cuyo merge fue la primera corrida real de la espera del sha: falló al minuto con el exit code de curl mientras el stage llegaba a `872c313` igual, y el arreglo entra con R5. De los 51 issues quedan abiertos #403 y #404: el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice) todavía no se corrió contra el stage, y pasa a R5 con `just stage-walk`. Sin medir: `k6/write.js`. Un flake de E2E apareció en la última corrida (dos navegaciones, 1 corrida roja de 4 sobre el mismo código) y queda registrado como issue ([#477](https://github.com/lucasidev/plan-b/issues/477)).
+Las cuatro pistas mergeadas; la última, la pista 4, en el PR #467, cuyo merge fue la primera corrida real de la espera del sha: falló en el instante del cambio de contenedores, cuando Traefik contesta HTML y `jq` corta el step con su exit code, mientras el stage llegaba a `872c313` igual; el arreglo entra con R5. De los 51 issues quedan abiertos #403 y #404: el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice) todavía no se corrió contra el stage, y pasa a R5 con `just stage-walk`. Sin medir: `k6/write.js`. Un flake de E2E apareció en la última corrida (dos navegaciones, 1 corrida roja de 4 sobre el mismo código) y queda registrado como issue ([#477](https://github.com/lucasidev/plan-b/issues/477)).
 
 ### Lo que R4 deja afuera a propósito
 
