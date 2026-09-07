@@ -1,10 +1,13 @@
 using Carter;
 using JasperFx;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using JasperFx.CodeGeneration;
 using JasperFx.Resources;
 using Planb.Academic.Application;
 using Planb.Academic.Infrastructure;
+using Planb.Api.Health;
 using Planb.Api.Infrastructure;
 using Planb.Identity.Application;
 using Planb.Identity.Infrastructure;
@@ -254,6 +257,14 @@ builder.Services.AddExceptionHandler<Planb.Api.Infrastructure.UniqueViolationExc
 builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = false);
 
 // ------------------------------------------------------------------
+// Health checks: Postgres (SELECT 1) y Redis (PING). Ver Health/HealthResponseWriter.cs para el
+// shape de /health.
+// ------------------------------------------------------------------
+builder.Services.AddHealthChecks()
+    .AddCheck<PostgresHealthCheck>("postgres")
+    .AddCheck<RedisHealthCheck>("redis");
+
+// ------------------------------------------------------------------
 // HTTP pipeline
 // ------------------------------------------------------------------
 var app = builder.Build();
@@ -263,12 +274,19 @@ app.UseSerilogRequestLogging();
 app.UseIdentityJwtAuthentication();
 app.MapCarter();
 
-app.MapGet("/health", () => Results.Ok(new
+// GET /health: público, sin sesión. 200 si Postgres y Redis responden, 503 si alguno falla.
+// `version` es el sha del commit que build-empaquetó la imagen (PLANB_VERSION, ver Dockerfile);
+// "dev" fuera de esa imagen (local, tests).
+app.MapHealthChecks("/health", new HealthCheckOptions
 {
-    status = "ok",
-    service = "planb-api",
-    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0",
-}));
+    ResponseWriter = HealthResponseWriter.WriteAsync,
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status200OK,
+        [HealthStatus.Degraded] = StatusCodes.Status503ServiceUnavailable,
+        [HealthStatus.Unhealthy] = StatusCodes.Status503ServiceUnavailable,
+    },
+});
 
 // JasperFx command-line: `dotnet run` runs the server, `dotnet run -- db-apply` etc. for
 // administrative operations. See https://wolverinefx.net/guide/command-line.html.

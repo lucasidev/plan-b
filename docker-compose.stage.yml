@@ -88,10 +88,10 @@ services:
       Smtp__FromName: ${SMTP_FROM_NAME}
       Identity__Verification__LinkBaseUrl: https://${WEB_HOST}/verify-email
       Identity__PasswordReset__LinkBaseUrl: https://${WEB_HOST}/reset-password
-    # La imagen de aspnet no trae curl ni wget, pero sí bash: abrir el socket confirma que el api escucha.
-    # Healthy no significa sembrado: las migraciones y las siembras siguen un minuto más y se ven en los logs.
+    # La imagen de aspnet no trae curl ni wget, pero sí bash: el pedido HTTP se arma a mano por el socket.
+    # Healthy significa que /health responde 200, o sea que Postgres y Redis también contestan; las siembras siguen un minuto más.
     healthcheck:
-      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -113,6 +113,13 @@ services:
       JWT_ISSUER: planb
       JWT_AUDIENCE: planb
       SESSION_SECRET: ${SESSION_SECRET}
+    # /health del web es el rewrite al api, así que healthy en web es toda la cadena.
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - internal
       - dokploy-network

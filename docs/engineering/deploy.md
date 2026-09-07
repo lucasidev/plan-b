@@ -76,7 +76,7 @@ En Dokploy, cambiar el tag de la imagen al sha del paso 1 y redeployar. Usar el 
 curl -fsS https://<host>/health
 ```
 
-Tiene que responder `{"status":"ok",...}`. Un 502 sostenido después del redeploy suele ser el host que no arrancó: mirar los logs del contenedor y buscar el mensaje de Wolverine sobre tipos pre-generados faltantes (imagen mal construida) o el error de conexión a Postgres (paso 3 o 4 salteado).
+Tiene que responder 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}`: `version` es el sha del build (el build arg `GIT_SHA` del Dockerfile, `dev` fuera de CI) y `checks` lleva Postgres y Redis con su latencia; si alguno falla responde 503 con `status: fail` y el error del que falló. Un 502 sostenido después del redeploy suele ser el host que no arrancó: mirar los logs del contenedor y buscar el mensaje de Wolverine sobre tipos pre-generados faltantes (imagen mal construida) o el error de conexión a Postgres (paso 3 o 4 salteado).
 
 ## Variables que necesita el contenedor
 
@@ -111,7 +111,7 @@ Honestidad sobre el estado, para que nadie lea este doc como si estuviera probad
 - `codegen write` no necesita base alcanzable: corre contra un host de Postgres inexistente. Por eso el Dockerfile puede pasarle valores basura y no hace falta ningún secreto real en el build.
 - El contenedor arranca en Production y `/health` devuelve `{"status":"ok"}`. En los logs: `code generation mode is Static with pre-generated types being loaded`, sin tipos faltantes.
 
-**Sin verificar** (necesita la infra real): la publicación a GHCR (nunca se corrió el workflow), el pull desde Dokploy, la red interna entre el contenedor y Postgres, el relay SMTP de producción y el certificado del dominio.
+**Sin verificar** (necesita la infra de producción): la red interna entre el contenedor y Postgres con el perfil Production, el relay SMTP de producción y el certificado de su dominio. La publicación a GHCR y el pull desde Dokploy están verificados en el stage.
 
 ## Stage
 
@@ -155,9 +155,9 @@ PLANB_SEED_PASSWORD=<password de 12+ caracteres>
 SMTP_FROM_EMAIL=<remitente>
 SMTP_FROM_NAME=<nombre de remitente>
 WEB_HOST=<host sin https://>
-PLANB_API_TAG=<sha corto>
-PLANB_WEB_TAG=<sha corto>
 ```
+
+`PLANB_API_TAG` y `PLANB_WEB_TAG` no van en el bloque: sin ellas el stage corre `main`. Se agregan solo para pinear un sha, y se borran para volver.
 
 ### El guion de clics
 
@@ -182,7 +182,7 @@ Tres secrets del repo (Settings → Secrets and variables → Actions), cargados
 | `DOKPLOY_API_KEY` | Una API key del panel. | Dokploy → Settings → Profile → API Keys → Generate. |
 | `DOKPLOY_STAGE_COMPOSE_ID` | El id del servicio Compose del stage. | El último segmento de la URL del servicio en el panel (`.../services/compose/<id>`). |
 
-Sin alguno de los tres, el workflow publica igual y deja un aviso de que no redesplegó. Para pinear una versión en el stage: `PLANB_API_TAG` y `PLANB_WEB_TAG` con un sha corto en Environment, y Deploy; borrar las variables y Deploy vuelve a `main`.
+Sin alguno de los tres, el workflow publica igual y deja un aviso de que no redesplegó. Con el deploy pedido, el job espera hasta cinco minutos a que `https://planb.olisar.com.ar/health` devuelva en `version` el sha corto de ese merge, y falla si no llega: el deploy se verifica contra lo que el stage sirve, no contra la respuesta de Dokploy. Para pinear una versión en el stage: `PLANB_API_TAG` y `PLANB_WEB_TAG` con un sha corto en Environment, y Deploy; borrar las variables y Deploy vuelve a `main`. Una variable pineada le gana al default del compose: si quedó de un deploy anterior, cada redeploy vuelve a bajar ese sha.
 
 ### Qué está verificado y qué no
 
@@ -190,7 +190,9 @@ Sin alguno de los tres, el workflow publica igual y deja un aviso de que no rede
 
 **Verificado sobre el Dokploy real** (2026-09-04, imágenes `71375b7`): la primera corrida del workflow (entonces *Release images*, hoy *Publish images*) publicó las dos imágenes en GHCR; con los paquetes públicos, Dokploy bajó las cinco imágenes sin registro configurado; Let's Encrypt emitió los certificados de los dos subdominios y Traefik enruta `web` y `mailpit` por `dokploy-network`; `postgres` y `redis` llegaron a *healthy* antes que `api`, y `api` antes de que arrancara `web`; el log del `api` muestra `CorpusSeeder: inserted 49 reviews`; `/health` responde a través del rewrite, la entrada sortea una cátedra que publica, la ficha de materia 211 muestra sus tres cátedras y sus dos pares de co-cursada, la de Ruiz dice "Junta 6 reseñas: con 4 más se publica." y Método carga; un registro con un mail inventado devuelve 202 y el log del `api` dice `Verification email sent`; la UI de Mailpit responde 401 sin auth.
 
-**Sin verificar**: el reset por terminal (`down -v` y Deploy) contra el despliegue real, el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice), y el redeploy por la API desde el workflow, que verifica el primer merge a `main` después de cargar los secrets.
+**Verificado el 2026-09-07, primer merge con los secrets cargados**: *Publish images* publicó `257b6b9` y `main`, Dokploy respondió `Deployment queued` a `compose.deploy` y el deploy apareció en Deployments en menos de un minuto. Ese primer deploy volvió a bajar `71375b7`: el Environment todavía tenía `PLANB_API_TAG` y `PLANB_WEB_TAG` del primer despliegue, y una variable pineada le gana al default. Borradas las dos y con un Deploy a mano, el log muestra `planb-api:main Pulled`, `api-1` y `web-1` recreados y `Docker Compose Deployed`; la entrada sirve el build nuevo.
+
+**Sin verificar**: el reset por terminal (`down -v` y Deploy) contra el despliegue real, el tramo con cuenta del recorrido (verificar desde Mailpit, reseñar, el backoffice), y la espera del sha en `/health` desde el workflow, que verifica el primer merge después de este cambio.
 
 ### El recorrido para Copas
 
@@ -208,6 +210,7 @@ Diez minutos sobre el stage recién sembrado, en este orden. Los números son lo
 ## Refs
 
 - [`rollback.md`](rollback.md): revertir código, schema y tags.
+- [`runbook.md`](runbook.md): qué hacer cuando el stage se rompe, y el inventario de secretos.
 - [ADR-0059](../decisions/0059-production-startup-does-not-self-repair.md): por qué el orden de estos pasos no es negociable y por qué el arranque falla en vez de repararse.
 - [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): el stage sigue a `main`; producción se promueve desde un Release.
 - [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): qué llega a `main` y cómo.
