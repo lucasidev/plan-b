@@ -34,7 +34,15 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
     private static readonly Guid ChairPerez = Guid.Parse("00000008-0000-4000-a000-000000000001");
     private static readonly Guid ChairGonzalez = Guid.Parse("00000008-0000-4000-a000-000000000002");
     private static readonly Guid ChairRuiz = Guid.Parse("00000008-0000-4000-a000-000000000003");
+    private static readonly Guid ChairIbanez = Guid.Parse("00000008-0000-4000-a000-000000000004");
+    private static readonly Guid ChairDominguez = Guid.Parse("00000008-0000-4000-a000-000000000006");
+    private static readonly Guid ChairAraoz = Guid.Parse("00000008-0000-4000-a000-000000000007");
+    private static readonly Guid ChairBravo = Guid.Parse("00000008-0000-4000-a000-000000000008");
+    private static readonly Guid Subject102 = Guid.Parse("00000004-0000-4000-a000-000000000002");
+    private static readonly Guid Subject103 = Guid.Parse("00000004-0000-4000-a000-000000000003");
+    private static readonly Guid Subject104 = Guid.Parse("00000004-0000-4000-a000-000000000004");
     private static readonly Guid Subject111 = Guid.Parse("00000004-0000-4000-a000-000000000005");
+    private static readonly Guid Subject113 = Guid.Parse("00000004-0000-4000-a000-000000000006");
 
     public CorpusSeedTests(RegisterApiFixture fixture)
     {
@@ -56,6 +64,15 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
         var response = await _anonymous.GetAsync($"/api/reviews/chairs/{chairId}/facts");
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var facts = await response.Content.ReadFromJsonAsync<GetChairFactsResponse>();
+        facts.ShouldNotBeNull();
+        return facts!;
+    }
+
+    private async Task<GetSubjectFactsResponse> SubjectAsync(Guid subjectId)
+    {
+        var response = await _anonymous.GetAsync($"/api/reviews/subjects/{subjectId}/facts");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var facts = await response.Content.ReadFromJsonAsync<GetSubjectFactsResponse>();
         facts.ShouldNotBeNull();
         return facts!;
     }
@@ -149,5 +166,79 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
         under.TogetherCount.ShouldBe(5);
         under.IsPublished.ShouldBeFalse();
         under.MissingToPublish.ShouldBe(5);
+    }
+
+    /// <summary>
+    /// Ibáñez (111) es la cátedra nueva con más voces, hecha a propósito para que tres frases
+    /// converjan del lado malo y la fama aparezca: si el estado desaparece del corpus (por ejemplo
+    /// porque alguna distribución bajó de la mitad), este test cae.
+    /// </summary>
+    [Fact]
+    public async Task The_chair_with_many_voices_has_fame_by_convergence()
+    {
+        var facts = await ChairAsync(ChairIbanez);
+
+        facts.IsPublished.ShouldBeTrue();
+        facts.ReviewCount.ShouldBe(16);
+        facts.Fame.ShouldNotBeNull();
+        facts.Fame!.ItemsAgreeing.ShouldBeGreaterThanOrEqualTo(3);
+        facts.Fame.Items.Select(i => i.Code).ShouldContain("CHAIR_CLASSES_HELD");
+    }
+
+    /// <summary>
+    /// El par del piso exacto (Domínguez, 10 voces) y el que le falta una sola (Bravo, 9) en un solo
+    /// test: si cualquiera de los dos estados desaparece, el test cae acá y no en una lectura suelta.
+    /// </summary>
+    [Fact]
+    public async Task The_chair_exactly_at_the_floor_publishes_and_the_one_short_by_one_does_not()
+    {
+        var atFloor = await ChairAsync(ChairDominguez);
+        atFloor.IsPublished.ShouldBeTrue();
+        atFloor.ReviewCount.ShouldBe(10);
+        atFloor.ReviewsMissingToPublish.ShouldBe(0);
+
+        var oneShort = await ChairAsync(ChairBravo);
+        oneShort.IsPublished.ShouldBeFalse();
+        oneShort.ReviewCount.ShouldBe(9);
+        oneShort.ReviewsMissingToPublish.ShouldBe(1);
+    }
+
+    /// <summary>
+    /// Aráoz (122) es la única cátedra de su materia (sin hermanas, sin contrastes) y donde vive el
+    /// corte de serie: la frase vieja aparece colgada de la nueva, con su propio total y su fecha de
+    /// retiro, sin mezclarse en el mismo conteo (US-198, E3).
+    /// </summary>
+    [Fact]
+    public async Task The_only_chair_of_its_subject_publishes_the_series_cut()
+    {
+        var facts = await ChairAsync(ChairAraoz);
+
+        facts.IsPublished.ShouldBeTrue();
+        facts.ReviewCount.ShouldBe(13);
+        facts.Contrasts.ShouldBeEmpty();
+
+        var successor = facts.ChairConduct.Single(i => i.Code == "CHAIR_SYLLABUS_UPFRONT_V2");
+        successor.Total.ShouldBe(6);
+        successor.PreviousSeries.ShouldNotBeNull();
+        successor.PreviousSeries!.Code.ShouldBe("CHAIR_SYLLABUS_UPFRONT");
+        successor.PreviousSeries.Total.ShouldBe(7);
+        successor.PreviousSeries.RetiredAt.ShouldNotBeNull();
+    }
+
+    /// <summary>
+    /// El par de co-cursada nuevo, de los dos lados del piso, distinto del de 211+111: si cualquiera
+    /// de los dos estados desaparece, cae acá.
+    /// </summary>
+    [Fact]
+    public async Task The_second_pair_lands_on_both_sides_of_the_floor()
+    {
+        var published = (await SubjectAsync(Subject102)).TakenWith.Single(p => p.SubjectId == Subject103);
+        published.TogetherCount.ShouldBe(11);
+        published.IsPublished.ShouldBeTrue();
+
+        var short_ = (await SubjectAsync(Subject104)).TakenWith.Single(p => p.SubjectId == Subject113);
+        short_.TogetherCount.ShouldBe(6);
+        short_.IsPublished.ShouldBeFalse();
+        short_.MissingToPublish.ShouldBe(4);
     }
 }

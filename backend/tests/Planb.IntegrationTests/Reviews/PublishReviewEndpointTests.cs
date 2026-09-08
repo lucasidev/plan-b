@@ -35,7 +35,7 @@ public class PublishReviewEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Subject211 =
         Guid.Parse("00000004-0000-4000-a000-000000000012");
 
-    // 101, sin cátedras: sirve para probar que una cátedra de OTRA materia no pasa.
+    // 101: sirve para probar que una cátedra de OTRA materia (una de 211) no pasa.
     private static readonly Guid Subject101 =
         Guid.Parse("00000004-0000-4000-a000-000000000001");
 
