@@ -252,6 +252,20 @@ public static class AcademicSeedData
             Plan: new CareerPlanRecord(
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000032")),
                 Year: 2023)),
+
+        // La misma carrera canónica que UNSTA, en otra universidad y con plan propio: para que
+        // "Dónde estudiarla" y las comparaciones entre instituciones tengan una segunda
+        // carrera real, no solo la de UNSTA. Ficción declarada: el plan, sus materias y sus
+        // docentes son inventados.
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000033")),
+                UniversityId: UtnFrt.Id,
+                Name: "Tecnicatura Universitaria en Desarrollo y Calidad de Software",
+                Slug: "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software"),
+            Plan: new CareerPlanRecord(
+                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000033")),
+                Year: 2020)),
     };
 
     // ====================================================================
@@ -272,6 +286,10 @@ public static class AcademicSeedData
 
     private static readonly CareerPlanId TudcsPlanId =
         new(Guid.Parse("00000003-0000-4000-a000-000000000003"));
+
+    /// <summary>El plan 2020 de la Tecnicatura de UTN-FRT, ficticio.</summary>
+    private static readonly CareerPlanId UtnFrtDcsPlanId =
+        new(Guid.Parse("00000003-0000-4000-a000-000000000033"));
 
     public static IReadOnlyList<SubjectRecord> Subjects { get; } = new[]
     {
@@ -429,6 +447,124 @@ public static class AcademicSeedData
             // 0 hs semanales es correcto (no es una cursada con horario fijo, ver
             // Subject.Validate): no lo "corrijas" a 1. 350 hs totales.
             WeeklyHours: 0, TotalHours: 350),
+
+        // ---------- UTN-FRT: Tecnicatura Universitaria en Desarrollo y Calidad de Software ----------
+        // Plan 2020, ficticio: 16 materias en tres años, con códigos y nombres
+        // verosímiles pero distintos a los de UNSTA. Convención de código propia (AAII: año +
+        // número de orden) para que a simple vista no se confunda con el plan real de UNSTA.
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000030")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "1101",
+            Name: "Introducción a la Programación",
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000031")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "1102",
+            Name: "Matemática Discreta",
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000032")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "1103",
+            Name: "Inglés Técnico I",
+            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 2, TotalHours: 28),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000033")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "1104",
+            Name: "Arquitectura de Computadoras",
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000034")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "1105",
+            Name: "Bases de Datos I",
+            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000035")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2201",
+            Name: "Programación Orientada a Objetos",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 5, TotalHours: 70),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000036")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2202",
+            Name: "Ingeniería de Software I",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000037")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2203",
+            Name: "Testing y Calidad",
+            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000038")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2204",
+            Name: "Redes de Datos",
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000039")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2205",
+            Name: "Bases de Datos II",
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003a")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "2206",
+            Name: "Inglés Técnico II",
+            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 2, TotalHours: 28),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003b")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "3301",
+            Name: "Ingeniería de Software II",
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 4, TotalHours: 56),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003c")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "3302",
+            Name: "DevOps y Automatización",
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003d")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "3303",
+            Name: "Seguridad Informática",
+            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003e")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "3304",
+            Name: "Gestión de Proyectos",
+            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.FourMonth,
+            WeeklyHours: 3, TotalHours: 42),
+        new SubjectRecord(
+            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003f")),
+            CareerPlanId: UtnFrtDcsPlanId,
+            Code: "3305",
+            Name: "Práctica Profesional Supervisada",
+            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.FourMonth,
+            // 0 hs semanales, mismo criterio que 314 Proyecto Final de UNSTA (ver comentario arriba).
+            WeeklyHours: 0, TotalHours: 300),
     };
 
     // ====================================================================
@@ -546,6 +682,33 @@ public static class AcademicSeedData
             EndDate: new DateOnly(2026, 11, 28),
             EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
             EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
+
+        // UTN-FRT: los tres períodos que hacen falta para las cátedras de su
+        // Tecnicatura, que hasta acá no tenía ningún período lectivo propio.
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000007")),
+            UniversityId: UtnFrt.Id,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 3, 11),
+            EndDate: new DateOnly(2024, 7, 6),
+            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000008")),
+            UniversityId: UtnFrt.Id,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 8, 5),
+            EndDate: new DateOnly(2024, 11, 30),
+            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000009")),
+            UniversityId: UtnFrt.Id,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 3, 10),
+            EndDate: new DateOnly(2025, 7, 5),
+            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
     };
 
     // ====================================================================
@@ -574,6 +737,42 @@ public static class AcademicSeedData
         new TeacherRecord(Tid("0b"), Unsta.Id, "martín", "pérez", "Profesor Titular"),
         new TeacherRecord(Tid("0c"), Unsta.Id, "patricia", "gonzález", "Profesora Titular"),
         new TeacherRecord(Tid("0d"), Unsta.Id, "sergio", "ruiz", "Profesor Titular"),
+
+        // Titulares de las cátedras nuevas de la Tecnicatura UNSTA: una por cada
+        // materia del plan que hasta acá no tenía ninguna cátedra sembrada, más dos auxiliares.
+        // Ningún docente real.
+        new TeacherRecord(Tid("0e"), Unsta.Id, "lucas", "ibáñez", "Profesor Titular"),
+        new TeacherRecord(Tid("0f"), Unsta.Id, "valeria", "vega", "Profesora Titular"),
+        new TeacherRecord(Tid("10"), Unsta.Id, "matías", "domínguez", "Profesor Titular"),
+        new TeacherRecord(Tid("11"), Unsta.Id, "sofía", "aráoz", "Profesora Titular"),
+        new TeacherRecord(Tid("12"), Unsta.Id, "nicolás", "bravo", "Profesor Titular"),
+        new TeacherRecord(Tid("13"), Unsta.Id, "camila", "fernández", "Profesora Titular"),
+        new TeacherRecord(Tid("14"), Unsta.Id, "federico", "molina", "Profesor Titular"),
+        new TeacherRecord(Tid("15"), Unsta.Id, "julieta", "aguirre", "Profesora Titular"),
+        new TeacherRecord(Tid("16"), Unsta.Id, "emiliano", "benítez", "Profesor Titular"),
+        new TeacherRecord(Tid("17"), Unsta.Id, "agustina", "correa", "Profesora Titular"),
+        new TeacherRecord(Tid("18"), Unsta.Id, "ezequiel", "romero", "Profesor Titular"),
+        new TeacherRecord(Tid("19"), Unsta.Id, "daniela", "acosta", "Profesora Titular"),
+        new TeacherRecord(Tid("1a"), Unsta.Id, "maximiliano", "herrera", "Profesor Titular"),
+        new TeacherRecord(Tid("1b"), Unsta.Id, "carolina", "godoy", "Profesora Titular"),
+        new TeacherRecord(Tid("1c"), Unsta.Id, "leandro", "juárez", "Profesor Titular"),
+        new TeacherRecord(Tid("1d"), Unsta.Id, "antonella", "morales", "Profesora Titular"),
+        new TeacherRecord(Tid("1e"), Unsta.Id, "gonzalo", "ortiz", "Profesor Titular"),
+        new TeacherRecord(Tid("1f"), Unsta.Id, "micaela", "luna", "Profesora Titular"),
+        new TeacherRecord(Tid("20"), Unsta.Id, "ramiro", "cabrera", "Profesor Titular"),
+        new TeacherRecord(Tid("21"), Unsta.Id, "tomás", "paz", "Profesor Titular"),
+        new TeacherRecord(Tid("22"), Unsta.Id, "belén", "silva", "Profesora Titular"),
+        new TeacherRecord(Tid("23"), Unsta.Id, "rocío", "franco", "Jefa de Trabajos Prácticos"),
+        new TeacherRecord(Tid("24"), Unsta.Id, "joaquín", "vera", "Jefe de Trabajos Prácticos"),
+
+        // Docentes de la Tecnicatura UTN-FRT. Universidad y docentes propios, ninguno real.
+        new TeacherRecord(Tid("40"), UtnFrt.Id, "santiago", "villalba", "Profesor Titular"),
+        new TeacherRecord(Tid("41"), UtnFrt.Id, "brenda", "gimenez", "Profesora Titular"),
+        new TeacherRecord(Tid("42"), UtnFrt.Id, "ariel", "zabala", "Jefe de Trabajos Prácticos"),
+        new TeacherRecord(Tid("43"), UtnFrt.Id, "melina", "farías", "Profesora Titular"),
+        new TeacherRecord(Tid("44"), UtnFrt.Id, "facundo", "lucero", "Profesor Titular"),
+        new TeacherRecord(Tid("45"), UtnFrt.Id, "yamila", "rojas", "Profesora Titular"),
+        new TeacherRecord(Tid("46"), UtnFrt.Id, "bruno", "toledo", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -586,7 +785,7 @@ public static class AcademicSeedData
         new(Guid.Parse($"00000005-0000-4000-a000-0000000000{nn}"));
 
     // ====================================================================
-    // Chairs (UNSTA): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
+    // Chairs (UNSTA + UTN-FRT): cátedras de prueba para Reseñar (US-196). El mockup de la ficha
     // (SC-002-chair/sketch.html) usa "Análisis Matemático II", que no es una materia del plan real
     // de la TUDCS sembrado acá: se sustituye por Fundamentos de Control de Calidad (211), la
     // primera materia cuatrimestral de 2do año del plan. Tres cátedras con sus titulares, nombradas
@@ -594,6 +793,12 @@ public static class AcademicSeedData
     // usa ese mockup. Ningún docente ya sembrado tiene esos apellidos (ver sección Teachers), así
     // que sus titulares son los tres agregados ahí. since_term_id de cada titular apunta al período
     // más viejo del seed (2024-1c).
+    //
+    // El resto del bloque le suma una cátedra con titular a cada una de las 18
+    // materias restantes de la Tecnicatura UNSTA (211 ya tenía tres, y esto cierra las 21), más
+    // el equipo de seis cátedras de la Tecnicatura nueva de UTN-FRT. El corpus de reseñas
+    // (CorpusSeedData, módulo reviews) responde sobre un subconjunto de estas: el resto queda con
+    // titular y cero reseñas, que es el estado "materia sin ninguna voz todavía".
     //
     // Convención de UUIDs:
     //   - Chairs: 00000008-0000-4000-a000-0000000000NN
@@ -608,6 +813,76 @@ public static class AcademicSeedData
             new[] { new ChairMemberRecord(Tid("0c"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("03"), ControlDeCalidadSubjectId, "Ruiz",
             new[] { new ChairMemberRecord(Tid("0d"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- UNSTA: una cátedra por cada materia sin cátedra sembrada ----------
+        new ChairRecord(Chid("04"), Sid("05"), "Ibáñez",
+            new[]
+            {
+                new ChairMemberRecord(Tid("0e"), ChairMemberRole.Lead, Atid("01")),
+                new ChairMemberRecord(Tid("24"), ChairMemberRole.Assistant, Atid("01")),
+            }),
+        new ChairRecord(Chid("05"), Sid("05"), "Vega",
+            new[] { new ChairMemberRecord(Tid("0f"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("06"), Sid("07"), "Domínguez",
+            new[]
+            {
+                new ChairMemberRecord(Tid("10"), ChairMemberRole.Lead, Atid("01")),
+                new ChairMemberRecord(Tid("23"), ChairMemberRole.Assistant, Atid("01")),
+            }),
+        new ChairRecord(Chid("07"), Sid("08"), "Aráoz",
+            new[] { new ChairMemberRecord(Tid("11"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("08"), Sid("09"), "Bravo",
+            new[] { new ChairMemberRecord(Tid("12"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("09"), Sid("01"), "Fernández",
+            new[] { new ChairMemberRecord(Tid("13"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0a"), Sid("02"), "Molina",
+            new[] { new ChairMemberRecord(Tid("14"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0b"), Sid("03"), "Aguirre",
+            new[] { new ChairMemberRecord(Tid("15"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0c"), Sid("04"), "Benítez",
+            new[] { new ChairMemberRecord(Tid("16"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0d"), Sid("06"), "Correa",
+            new[] { new ChairMemberRecord(Tid("17"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0e"), Sid("10"), "Romero",
+            new[] { new ChairMemberRecord(Tid("18"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("0f"), Sid("11"), "Acosta",
+            new[] { new ChairMemberRecord(Tid("19"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("10"), Sid("13"), "Herrera",
+            new[] { new ChairMemberRecord(Tid("1a"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("11"), Sid("14"), "Godoy",
+            new[] { new ChairMemberRecord(Tid("1b"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("12"), Sid("15"), "Juárez",
+            new[] { new ChairMemberRecord(Tid("1c"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("13"), Sid("16"), "Morales",
+            new[] { new ChairMemberRecord(Tid("1d"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("14"), Sid("17"), "Ortiz",
+            new[] { new ChairMemberRecord(Tid("1e"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("15"), Sid("18"), "Luna",
+            new[] { new ChairMemberRecord(Tid("1f"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("16"), Sid("19"), "Cabrera",
+            new[] { new ChairMemberRecord(Tid("20"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("17"), Sid("20"), "Paz",
+            new[] { new ChairMemberRecord(Tid("21"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("18"), Sid("21"), "Silva",
+            new[] { new ChairMemberRecord(Tid("22"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- UTN-FRT: seis cátedras con titular de las dieciséis materias del plan ----------
+        new ChairRecord(Chid("30"), Sid("30"), "Villalba",
+            new[] { new ChairMemberRecord(Tid("40"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("31"), Sid("34"), "Gimenez",
+            new[]
+            {
+                new ChairMemberRecord(Tid("41"), ChairMemberRole.Lead, Atid("07")),
+                new ChairMemberRecord(Tid("42"), ChairMemberRole.Assistant, Atid("07")),
+            }),
+        new ChairRecord(Chid("32"), Sid("36"), "Farías",
+            new[] { new ChairMemberRecord(Tid("43"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("33"), Sid("37"), "Lucero",
+            new[] { new ChairMemberRecord(Tid("44"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("34"), Sid("3b"), "Rojas",
+            new[] { new ChairMemberRecord(Tid("45"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("35"), Sid("3f"), "Toledo",
+            new[] { new ChairMemberRecord(Tid("46"), ChairMemberRole.Lead, Atid("07")) }),
     };
 
     private static ChairId Chid(string nn) =>

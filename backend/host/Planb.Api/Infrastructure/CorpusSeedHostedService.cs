@@ -1,3 +1,5 @@
+using Planb.Identity.Application.Abstractions.Persistence;
+using Planb.Identity.Domain.Users;
 using Planb.Reviews.Application.Seeding;
 
 namespace Planb.Api.Infrastructure;
@@ -21,6 +23,12 @@ namespace Planb.Api.Infrastructure;
 /// </summary>
 public sealed class CorpusSeedHostedService : IHostedService
 {
+    /// <summary>
+    /// Tiene que matchear el mail de <c>seed-data/personas.json</c>: es la única persona sembrada a
+    /// la que el corpus le suma reseñas propias.
+    /// </summary>
+    private const string LuciaEmail = "lucia.mansilla@gmail.com";
+
     private readonly IServiceProvider _sp;
     private readonly IHostEnvironment _env;
     private readonly ILogger<CorpusSeedHostedService> _log;
@@ -50,8 +58,9 @@ public sealed class CorpusSeedHostedService : IHostedService
         try
         {
             using var scope = _sp.CreateScope();
+            var luciaAccountId = await ResolveLuciaAccountIdAsync(scope.ServiceProvider, ct);
             var seeder = scope.ServiceProvider.GetRequiredService<CorpusSeeder>();
-            await seeder.SeedAsync(ct);
+            await seeder.SeedAsync(luciaAccountId, ct);
         }
         catch (Exception ex)
         {
@@ -60,6 +69,26 @@ public sealed class CorpusSeedHostedService : IHostedService
             _log.LogError(ex, "Corpus seeder failed.");
             throw;
         }
+    }
+
+    /// <summary>
+    /// El id real de lucia.mansilla, sembrada por <c>DevSeedHostedService</c> antes que este
+    /// servicio corra (ver el orden de registro en Program.cs). Nace random al registrarse (
+    /// <c>User.Register</c> no acepta un id determinístico), así que no hay forma de conocerlo de
+    /// antemano: hay que resolverlo contra identity en cada arranque. Null si por algún motivo la
+    /// persona no está sembrada (el corpus sigue igual, solo sin sus dos reseñas propias).
+    /// </summary>
+    private static async Task<Guid?> ResolveLuciaAccountIdAsync(IServiceProvider services, CancellationToken ct)
+    {
+        var emailResult = EmailAddress.Create(LuciaEmail);
+        if (emailResult.IsFailure)
+        {
+            return null;
+        }
+
+        var users = services.GetRequiredService<IUserRepository>();
+        var lucia = await users.FindByEmailAsync(emailResult.Value, ct);
+        return lucia?.Id.Value;
     }
 
     public Task StopAsync(CancellationToken ct) => Task.CompletedTask;

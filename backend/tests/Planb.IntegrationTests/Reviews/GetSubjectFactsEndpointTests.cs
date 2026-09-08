@@ -29,9 +29,11 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Subject211 =
         Guid.Parse("00000004-0000-4000-a000-000000000012");
 
-    // 101: existe en el plan pero no tiene cátedras cargadas.
-    private static readonly Guid Subject101 =
-        Guid.Parse("00000004-0000-4000-a000-000000000001");
+    // 1102 Matemática Discreta (UTN-FRT): existe en el plan pero no tiene cátedras cargadas. 101
+    // UNSTA dejó de servir para esto: el seed le cargó una cátedra con titular (Fernández) a las 21
+    // materias de la Tecnicatura, así que ya no hay ninguna sin cátedra en ese plan.
+    private static readonly Guid SubjectWithoutChairs =
+        Guid.Parse("00000004-0000-4000-a000-000000000031");
 
     private static readonly Guid ChairPerez =
         Guid.Parse("00000008-0000-4000-a000-000000000001");
@@ -104,7 +106,7 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task A_subject_without_chairs_exists_and_publishes_nothing()
     {
-        var response = await _anonymous.GetAsync($"/api/reviews/subjects/{Subject101}/facts");
+        var response = await _anonymous.GetAsync($"/api/reviews/subjects/{SubjectWithoutChairs}/facts");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         var facts = await response.Content.ReadFromJsonAsync<GetSubjectFactsResponse>();
