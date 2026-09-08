@@ -1,0 +1,17 @@
+# UNT, Portal de Transparencia, Transparencia Activa, nomina de personal docente actualizada a marzo 2026 (XLSX), https://www.unt.edu.ar/wp-content/uploads/2026/03/Docentes-18-03-26.xlsx . Bajado el 2026-09-07. Se guardan solo el encabezado y agregados: el archivo lista personas con CUIL y no se copia.
+
+Columnas: cuil | apellido | nombre | ucadem | escal | descrip | dedicacion | agrupamiento | hstrab
+Filas (cargos): 7381; unidades academicas: 30
+
+## Facultad de Ciencias Exactas y Tecnologia (ucadem = FAC. DE CIENCIAS EXACTAS)
+cargos: 821; personas distintas: 700
+por cargo: AUX DOCENTE SEGUNDA 179; JEFE TRABAJOS PRACT. 166; PROFESOR ADJUNTO 152; AUX DOC DE PRIMERA 149; PROFESOR ASOCIADO 115; PROFESOR TITULAR 60
+por dedicacion: SIMP 345; SEMI 266; EXCL 210
+
+No hay columna de condicion del cargo (regular o interino).
+
+# UTN, Unidad de Visibilidad y Transparencia, personal docente julio 2026 (XLSX), https://www.utn.edu.ar/images/UVYT2026/personal/Docentes-07-26.xlsx . Bajado el 2026-09-07. Solo encabezado y conteo: el archivo lista personas con DNI y no se copia.
+
+Columnas: APELLIDO Y NOMBRE | DNI | DESIGNACIÓN
+Filas: 10397
+No hay columna de Facultad Regional, cargo, dedicacion ni condicion.

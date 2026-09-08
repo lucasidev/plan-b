@@ -1,0 +1,30 @@
+# Anuario de Estadisticas Universitarias 2023 (SPU), version XLSX (rv_anuario_finales_todos.zip), bajado el 2026-09-07 de https://www.argentina.gob.ar/educacion/universidades/informacion/publicaciones/anuarios . Filas de las cuatro universidades sembradas en los cuadros de indicadores y de recursos humanos. Los valores se copian tal cual; los encabezados que el libro resuelve por formula quedan como los mostro la celda.
+
+## 1.2 Indicadores, hoja C 1.2.1a: 
+Columnas:  |  |  |  |  |  | 
+Tecnológica Nacional | 108986 | 5.4 | 31463 | 6 | 77523 | 5.2 | 4581 | 5.2 | 27.5 | 29.9 | 26.6 | 34.299999999999997 | 34.200000000000003 | 45.4 | 48.5 | 28.9 | 3.1
+Tucumán | 78964 | 3.9 | 17297 | 3.3 | 61667 | 4.0999999999999996 | 2072 | 2.2999999999999998 | 66 | 67.099999999999994 | 65.599999999999994 | 65.3 | 37.299999999999997 | 36.200000000000003 | 37 | 21.9 | 2.2000000000000002
+
+## 1.2 Indicadores, hoja C 1.2.1b: 
+Columnas:  |  |  |  |  |  | 
+Empresarial Siglo 21 | 99856 | 18 | 39428 | 20.5 | 60428 | 16.600000000000001 | 9828 | 19.3 | 55.1 | 56 | 54.5 | 58.3 | 21.3 | 28.8 | 74.7 | 39.5 | 7.2
+Norte Santo Tomás de Aquino | 7660 | 1.4 | 2313 | 1.2 | 5347 | 1.5 | 488 | 1 | 58.5 | 53.9 | 60.4 | 65.2 | 36.1 | 53.7 | 57.7 | 30.2 | 1.7
+
+## 4. RHUN, hoja 4.4: 
+Bloques leidos del total: dedicacion Exclusiva (total, Titular, Asociado, Adjunto, JTP, Ayudante 1o), Semiexclusiva (idem), Simple (idem mas Ayudante 2o), y otras categorias (Ad Honorem, Jefe de Laboratorio, Jefe Bedel 1o, Jefe Bedel 2o, Bedel, ...). Primera columna: total de cargos.
+Total de las Instituciones | 220581 | 22091 | 4689 | 2351 | 7872 | 5229 | 1950 | 38442 | 4243 | 1442 | 10870 | 14671 | 7216 | 153324 | 9313 | 3075 | 35290 | 44271 | 50120 | 11255 | 6724 | 1624 | 24 | 2 | 7 | 165 | 4250 | 652 |  | 
+Tecnológica | 20899 | 653 | 208 | 76 | 248 | 106 | 15 | 541 | 99 | 49 | 211 | 144 | 38 | 19614 | 1640 | 891 | 7407 | 4577 | 4582 | 517 | 91 | 0 | 24 | 2 | 7 | 58 | 0 | 0 |  | 
+Tucumán | 5895 | 1383 | 201 | 297 | 448 | 358 | 79 | 2464 | 74 | 132 | 566 | 1162 | 530 | 2048 | 40 | 68 | 299 | 572 | 488 | 581 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  | 
+
+## 4. RHUN, hoja 4.18 - Autoridades Sup.: 
+Total de las Instituciones | 4538 | 2748 | 56 | 48 | 521 | 323 | 163 | 1200 | 437 | 801 | 2 | 109 | 43 | 28 | 419 | 200 | 719 | 2 | 36 | 7 | 11 | 409 | 254 | 270 | 227 | 43 | 
+Tecnológica | 275 | 191 | 1 | 1 | 14 | 29 | 0 | 146 | 0 | 53 | 0 | 22 | 0 | 0 | 31 | 0 | 31 | 0 | 0 | 0 | 0 | 31 | 0 | 0 | 0 | 0 | 
+Tucumán | 109 | 103 | 1 | 1 | 23 | 13 | 13 | 52 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 
+
+## 4. RHUN, hoja 4.20 - No Doc: Cuadro 4.20 - Escalafón Personal No Docente: Cantidad de cargos clasificados por categoría, según Universidad. Año 2023
+Total de las Instituciones | 59668 | 4504 | 916 | 3584 | 1 | 3 | 29303 | 7371 | 9003 | 12922 | 3 | 3 | 1 | 22920 | 8661 | 14254 | 4 | 1 | 2941 | 0 | 1 | 5 | 2935
+Tecnológica | 3071 | 211 | 8 | 203 | 0 | 0 | 1533 | 514 | 537 | 482 | 0 | 0 | 0 | 1327 | 841 | 486 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+Tucumán | 2861 | 272 | 63 | 206 | 1 | 2 | 1752 | 582 | 811 | 356 | 0 | 3 | 0 | 813 | 280 | 533 | 0 | 0 | 24 | 0 | 0 | 0 | 24
+
+## 1.2 Indicadores, hoja C 1.2.3 (presupuesto: creditos declarados al 31/12/2023, devengado y % de ejecucion por institucion). Las filas de esta hoja llevan un codigo numerico en vez del nombre de la institucion; el cruce con el nombre pide la hoja de codigos del capitulo 5 (Presupuesto 2023.xls, formato binario, no leido).
+Encabezado: 2 | Créditos Presupuestarios declarados al 31/12/2023 | 264 | 178 | 179 | % de Ejecución (Dev/Cred)

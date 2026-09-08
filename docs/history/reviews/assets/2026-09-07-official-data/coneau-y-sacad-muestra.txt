@@ -1,0 +1,24 @@
+# CONEAU Global, buscador publico de carreras de grado acreditadas, https://global.coneau.gob.ar/coneauglobal/publico/buscadores/acreditacion/ . Bajado el 2026-09-07. Grilla ASP.NET (DevExpress) con busqueda por Institucion, Unidad Academica o Carrera; sin exportacion. Solo grado y posgrado: no lista pregrado (tecnicaturas).
+Paginacion al bajar: 1 de 119 (2959 ítems)
+Columnas: Carrera | Institucion | Unidad academica | Estado | Resolucion
+
+Ingeniería Electrónica | Instituto Tecnológico de Buenos Aires | Departamento de Ingeniería Electrónica | Carrera en funcionamiento (Carrera) | 513/03
+Ingeniería en Petróleo | Instituto Tecnológico de Buenos Aires | Departamento de Ingeniería en Petróleo | Carrera en funcionamiento (Carrera) | 515/03
+Ingeniería Mecánica | Instituto Tecnológico de Buenos Aires | Departamento de Ingeniería Mecánica | Carrera en funcionamiento (Carrera) | 516/03
+Ingeniería Química | Instituto Tecnológico de Buenos Aires | Departamento de Ingeniería Química | Carrera en funcionamiento (Carrera) | 514/03
+Ingeniería Electrónica | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-49747913-APN-CONEAU#MCH
+Ingeniería Mecánica | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-50263077-APN-CONEAU#MCH
+Ingeniería en Petróleo | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-49747994-APN-CONEAU#MCH
+Bioingeniería | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-49747826-APN-CONEAU#MCH
+Ingeniería Industrial | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-49748064-APN-CONEAU#MCH
+Ingeniería Química | Instituto Tecnológico de Buenos Aires | Escuela de Gestión y Tecnología | Carrera en funcionamiento (Carrera) | RS-2025-49748160-APN-CONEAU#MCH
+Ingeniería Industrial | Instituto Tecnológico de Buenos Aires | Escuela de Ingeniería | Carrera en funcionamiento (Carrera) | 087/06
+Ingeniería Química | Instituto Tecnológico de Buenos Aires | Escuela de Ingeniería | Carrera en funcionamiento (Carrera) | 981/10
+
+# UTN, listado de carreras acreditadas por Facultad Regional (SACAD), https://utn.edu.ar/images/Secretarias/SACAD/acreditacion/SACAD-Acreditacion-Academica.pdf (PDF, texto extraido). Lineas de Tucuman:
+
+Ingenier�a Civil                 Tucum�n                      CONEAU                   1195/13                                       05/07/2013                  2019                 *
+Ingenier�a El�ctrica             Tucum�n                      CONEAU                   1187/13                                       23/12/2013                  2016
+Ingenier�a Electr�nica                 Tucum�n                      CONEAU                   1190/13
+Ingenier�a en Sistemas de Informaci�n  Tucum�n                      CONEAU                   678/11                                                                                              *
+Ingenier�a Mec�nica                    Tucum�n                      CONEAU                   1191/13                                            05/07/2013                  2019

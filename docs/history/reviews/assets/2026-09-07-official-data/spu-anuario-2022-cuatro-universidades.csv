@@ -1,0 +1,335 @@
+# Anuario de Estadisticas Universitarias 2022 (SPU), version CSV, cuadros del capitulo 2 (pregrado y grado), filas de las cuatro universidades sembradas. Bajado el 2026-09-07 de https://www.argentina.gob.ar/educacion/universidades/informacion/publicaciones/anuarios (anuario_csv_2022.zip). Columnas: est = estudiantes, ni = nuevos inscriptos, r = reinscriptos, e = egresados; el sufijo es la rama o la disciplina.
+cuadro,descripcion,institucion,columna,valor
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2012,83090
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2013,80052
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2014,81584
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2015,82652
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2016,84387
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2017,86841
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2018,88723
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2019,91510
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2020,94525
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2021,101869
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,_2022,98177
+Cuadro_2_1_1,estudiantes 2012-2022,Tecnológica Nacional,tasa,1.7
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2012,61632
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2013,63524
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2014,63281
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2015,61803
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2016,66199
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2017,67027
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2018,66246
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2019,69273
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2020,68110
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2021,73983
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,_2022,82401
+Cuadro_2_1_1,estudiantes 2012-2022,Tucumán,tasa,2.9
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2012,18329
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2013,16616
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2014,17111
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2015,17085
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2016,18558
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2017,19070
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2018,19455
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2019,21469
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2020,23219
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2021,25087
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,_2022,25543
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tecnológica Nacional,tasa,3.4
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2012,11238
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2013,11399
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2014,12157
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2015,12697
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2016,13371
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2017,13337
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2018,12982
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2019,15432
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2020,14388
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2021,17015
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,_2022,23035
+Cuadro_2_1_2,nuevos inscriptos 2012-2022,Tucumán,tasa,7.4
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2012,4981
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2013,4757
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2014,5210
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2015,5144
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2016,4406
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2017,4382
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2018,4983
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2019,4280
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2020,3018
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2021,3854
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,_2022,3738
+Cuadro_2_1_3,egresados 2012-2022,Tecnológica Nacional,tasa,-2.8
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2012,2252
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2013,2452
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2014,2428
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2015,2475
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2016,2543
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2017,2684
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2018,2255
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2019,2043
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2020,1127
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2021,2206
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,_2022,2370
+Cuadro_2_1_3,egresados 2012-2022,Tucumán,tasa,0.5
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,estudiantes,98177
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,nuevos_inscriptos,25543
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,reinscriptos,72634
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,egresados,3738
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,est_ciencias_aplicadas,91665
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,ni_ciencias_aplicadas,23050
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,r_ciencias_aplicadas,68615
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,e_ciencias_aplicadas,3021
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,est_ciencias_basicas,210
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,ni_ciencias_basicas,35
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,r_ciencias_basicas,175
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,e_ciencias_basicas,140
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,est_ciencias_salud,321
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,ni_ciencias_salud,116
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,r_ciencias_salud,205
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,e_ciencias_salud,38
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,est_ciencias_humanas,933
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,ni_ciencias_humanas,189
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,r_ciencias_humanas,744
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,e_ciencias_humanas,95
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,est_ciencias_sociales,5048
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,ni_ciencias_sociales,2153
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,r_ciencias_sociales,2895
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tecnológica Nacional,e_ciencias_sociales,444
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,estudiantes,82401
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,nuevos_inscriptos,23035
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,reinscriptos,59366
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,egresados,2370
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,est_ciencias_aplicadas,13956
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_ciencias_aplicadas,2646
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_ciencias_aplicadas,11310
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_ciencias_aplicadas,504
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,est_ciencias_basicas,2268
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_ciencias_basicas,507
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_ciencias_basicas,1761
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_ciencias_basicas,58
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,est_ciencias_salud,14161
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_ciencias_salud,3542
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_ciencias_salud,10619
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_ciencias_salud,624
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,est_ciencias_humanas,20364
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_ciencias_humanas,5326
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_ciencias_humanas,15038
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_ciencias_humanas,511
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,est_ciencias_sociales,30120
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_ciencias_sociales,10412
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_ciencias_sociales,19708
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_ciencias_sociales,673
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ma_sin_rama,1532
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,ni_sin_rama,602
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,r_sin_rama,930
+Cuadro_2_1_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Tucumán,e_sin_rama,0
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,est,91665
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,ni,23050
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,r,68615
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,e,3021
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,est_informatica,33472
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,ni_informatica,11966
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,r_informatica,21506
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tecnológica Nacional,e_informatica,680
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,est,13956
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,ni,2646
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,r,11310
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,e,504
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,est_informatica,1543
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,ni_informatica,664
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,r_informatica,879
+Cuadro_2_1_10,"ciencias aplicadas por disciplina (informatica), 2022",Tucumán,e_informatica,19
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,est,98177
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,est_presencial,94373
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,est_distancia,3804
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,ni,25543
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,ni_presencial,23942
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,ni_distancia,1601
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,e,3738
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,e_presencial,3578
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tecnológica Nacional,e_distancia,160
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,est,82401
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,est_presencial,82401
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,ni,23035
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,ni_presencial,23035
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,e,2370
+Cuadro_2_1_20,"por modalidad presencial y a distancia, 2022",Tucumán,e_presencial,2370
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_17,1639
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_18,2040
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_19,1756
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_20,1255
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_21,1642
+Cuadro_2_1_23,egresados 2017-2022,Tecnológica Nacional,e_22,1474
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_17,378
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_18,311
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_19,263
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_20,121
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_21,433
+Cuadro_2_1_23,egresados 2017-2022,Tucumán,e_22,430
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2012,44052
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2013,49949
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2014,57267
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2015,61121
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2016,64697
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2017,67586
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2018,68640
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2019,74311
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2020,73971
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2021,83231
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,_2022,89583
+Cuadro_2_2_1,estudiantes 2012-2022,Empresarial Siglo 21,tasa,7.4
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2012,6981
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2013,6490
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2014,6126
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2015,5793
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2016,5506
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2017,5973
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2018,6121
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2019,6393
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2020,6393
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2021,6393
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,_2022,7479
+Cuadro_2_2_1,estudiantes 2012-2022,Norte Santo Tomás de Aquino,tasa,0.7
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2012,23639
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2013,21791
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2014,24516
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2015,24064
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2016,25225
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2017,28270
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2018,26552
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2019,27214
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2020,25938
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2021,32742
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,_2022,38360
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Empresarial Siglo 21,tasa,5.0
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2012,1432
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2013,1382
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2014,1234
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2015,1313
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2016,1218
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2017,1651
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2018,1774
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2019,1877
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2020,1877
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2021,1877
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,_2022,2398
+Cuadro_2_2_2,nuevos inscriptos 2012-2022,Norte Santo Tomás de Aquino,tasa,5.3
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2012,2002
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2013,2720
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2014,4272
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2015,4483
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2016,4639
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2017,4720
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2018,5596
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2019,8932
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2020,10475
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2021,8639
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,_2022,8717
+Cuadro_2_2_3,egresados 2012-2022,Empresarial Siglo 21,tasa,15.8
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2012,587
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2013,571
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2014,572
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2015,534
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2016,516
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2017,564
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2018,456
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2019,310
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2020,310
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2021,310
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,_2022,401
+Cuadro_2_2_3,egresados 2012-2022,Norte Santo Tomás de Aquino,tasa,-3.7
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est,89583
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni,38360
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r,51223
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e,8717
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est_ciencias_aplicadas,11683
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni_ciencias_aplicadas,6188
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r_ciencias_aplicadas,5495
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e_ciencias_aplicadas,763
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est_ciencias_basicas,1012
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni_ciencias_basicas,483
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r_ciencias_basicas,529
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e_ciencias_basicas,64
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est_ciencias_salud,868
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni_ciencias_salud,696
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r_ciencias_salud,172
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e_ciencias_salud,0
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est_ciencias_humanas,3560
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni_ciencias_humanas,1423
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r_ciencias_humanas,2137
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e_ciencias_humanas,635
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,est_ciencias_sociales,72460
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,ni_ciencias_sociales,29570
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,r_ciencias_sociales,42890
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Empresarial Siglo 21,e_ciencias_sociales,7255
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est,7479
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni,2398
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r,5081
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e,401
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est_ciencias_aplicadas,1143
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni_ciencias_aplicadas,567
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r_ciencias_aplicadas,576
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e_ciencias_aplicadas,29
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est_ciencias_basicas,17
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni_ciencias_basicas,2
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r_ciencias_basicas,15
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e_ciencias_basicas,4
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est_ciencias_salud,1459
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni_ciencias_salud,371
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r_ciencias_salud,1088
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e_ciencias_salud,82
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est_ciencias_humanas,1230
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni_ciencias_humanas,435
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r_ciencias_humanas,795
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e_ciencias_humanas,47
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,est_ciencias_sociales,3630
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,ni_ciencias_sociales,1023
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,r_ciencias_sociales,2607
+Cuadro_2_2_9,"estudiantes, nuevos inscriptos, reinscriptos y egresados por rama, 2022",Norte Santo Tomás de Aquino,e_ciencias_sociales,239
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,est,11683
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,ni,6188
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,r,5495
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,e,763
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,est_informatica,3629
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,ni_informatica,2031
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,r_informatica,1598
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Empresarial Siglo 21,e_informatica,65
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,est,1143
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,ni,567
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,r,576
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,e,29
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,est_informatica,352
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,ni_informatica,232
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,r_informatica,120
+Cuadro_2_2_10,"ciencias aplicadas por disciplina (informatica), 2022",Norte Santo Tomás de Aquino,e_informatica,1
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ma,89583
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ma_presencial,7337
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ma_distancia,82246
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ni,38360
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ni_presencial,2701
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,ni_distancia,35659
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,e,8717
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,e_presencial,813
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Empresarial Siglo 21,e_distancia,7904
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ma,7479
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ma_presencial,7413
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ma_distancia,66
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ni,2398
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ni_presencial,2349
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,ni_distancia,49
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,e,401
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,e_presencial,401
+Cuadro_2_2_20,"por modalidad presencial y a distancia, 2022",Norte Santo Tomás de Aquino,e_distancia,0
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_17,2958
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_18,3522
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_19,3885
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_20,4841
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_21,3069
+Cuadro_2_2_23,egresados 2017-2022,Empresarial Siglo 21,e_22,3991
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_17,31
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_18,20
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_19,14
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_20,14
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_21,14
+Cuadro_2_2_23,egresados 2017-2022,Norte Santo Tomás de Aquino,e_22,2
