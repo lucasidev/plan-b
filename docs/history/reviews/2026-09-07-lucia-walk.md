@@ -28,14 +28,14 @@ Los textos entre comillas son los que la pantalla mostró, copiados por la spec 
 
 | ID | Hallazgo | Story | Estado |
 |---|---|---|---|
-| L01 | El gate no dice el motivo: al llegar a Ingresar desde "Reseñala", la pantalla es la genérica ("Entrá a tu cuenta") y no dice que es para reseñar esa cursada. | US-229 | Pendiente |
-| L02 | El registro no pregunta si cursa o da clases ni muestra el consentimiento informado: pide mail, contraseña y carrera. Ya figura como no construido en los escenarios de la story. | US-228 | Pendiente: es de lo que exigen las personas reales, que R4 y R5 dejan afuera a propósito |
-| L03 | Después de verificar el mail y entrar, aterriza en Inicio y no vuelve a la reseña que había empezado. | US-229 | Pendiente |
-| L04 | El contrato antes de enviar no dice el estado del piso de esa cátedra ("junta N: con M más se publica"): dice que se suma al total, que nunca se muestra una reseña sola y que nadie de la facultad accede a quién respondió. | US-159 | Pendiente: R4 lo dejó afuera a propósito y sigue afuera |
-| L05 | Mis aportes muestra cómo terminó y cuántas preguntas contestó, pero no la opción que eligió en cada frase ni las voces que suma ahora. | US-162 | Pendiente |
-| L06 | La reseña duplicada del mismo período se detecta y se avisa, pero el botón de enviar sigue habilitado: la persona puede enviar igual y recién después descubre que no contó. | US-163 | Pendiente: decisión de Lucas (deshabilitar el envío o llevar a Corregir) |
-| L07 | No existe la reseña a medias: lo contestado se pierde al salir y nada reaparece para retomar. | US-161 | Pendiente: no construida |
-| L08 | Tras confirmar el borrado, la ficha de Ruiz siguió mostrando el mismo conteo. No se pudo saber si el borrado no ocurrió (el click de confirmar es un botón de acción, la clase de #477) o si ocurrió y el conteo no bajó: la spec leyó la ficha sin esperar a que el aporte desapareciera de Mis aportes. | US-165 | Pendiente: reproducir a mano en el stage rellenado ([#469](https://github.com/lucasidev/plan-b/issues/469)) |
+| L01 | El gate no dice el motivo: al llegar a Ingresar desde "Reseñala", la pantalla es la genérica ("Entrá a tu cuenta") y no dice que es para reseñar esa cursada. | US-229 | Pendiente: R6, tarea 12 ([plan](../../plan/status.md)) |
+| L02 | El registro no pregunta si cursa o da clases ni muestra el consentimiento informado: pide mail, contraseña y carrera. Ya figura como no construido en los escenarios de la story. | US-228 | Pendiente: Backlog, con las personas reales (US-228) |
+| L03 | Después de verificar el mail y entrar, aterriza en Inicio y no vuelve a la reseña que había empezado. | US-229 | Pendiente: R6, tarea 12 |
+| L04 | El contrato antes de enviar no dice el estado del piso de esa cátedra ("junta N: con M más se publica"): dice que se suma al total, que nunca se muestra una reseña sola y que nadie de la facultad accede a quién respondió. | US-159 | Pendiente: R6, tarea 13 |
+| L05 | Mis aportes muestra cómo terminó y cuántas preguntas contestó, pero no la opción que eligió en cada frase ni las voces que suma ahora. | US-162 | Pendiente: R6, tarea 14 |
+| L06 | La reseña duplicada del mismo período se detecta y se avisa, pero el botón de enviar sigue habilitado: la persona puede enviar igual y recién después descubre que no contó. | US-163 | Pendiente: R6, tarea 13 |
+| L07 | No existe la reseña a medias: lo contestado se pierde al salir y nada reaparece para retomar. | US-161 | Pendiente: Backlog (US-161) |
+| L08 | Tras confirmar el borrado, la ficha de Ruiz siguió mostrando el mismo conteo. No se pudo saber si el borrado no ocurrió (el click de confirmar es un botón de acción, la clase de #477) o si ocurrió y el conteo no bajó: la spec leyó la ficha sin esperar a que el aporte desapareciera de Mis aportes. | US-165 | Pendiente: R6, tarea 15 |
 
 Confirmaciones (no eran hallazgos): el gate llega en la acción y no en la puerta (US-170); el registro se verifica desde el mail sin pedir nada más; reseñar una materia sola con una sola frase y cómo terminó en un toque, en menos de cinco segundos (US-146, US-147, US-154); saltear vale; el campo libre dice que no se publica; el contrato dice que nunca se muestra una reseña sola y que nadie de la facultad accede a quién respondió; la reseña cuenta en la ficha (6 a 7) y aparece en Inicio con la cobertura de la carrera (US-231); otro período cuenta como otra cursada (US-163); borrar pide confirmación explícita y dice lo que pasa; y sin cuenta la ficha se sigue leyendo (US-168).
 

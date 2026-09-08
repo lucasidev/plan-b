@@ -1,6 +1,6 @@
 # ADR-0090: An official datum is a dated claim with value, source and status
 
-- **Estado**: propuesto (2026-09-07), para que R6 construya sobre esto una vez que Lucas apruebe el modelo y las pantallas
+- **Estado**: aceptado (2026-09-08; propuesto el 2026-09-07). R6 construye sobre esto, y desde R6 el catálogo del stage es real: la única ficción son los alumnos
 - **Fecha**: 2026-09-07
 
 ## Contexto
@@ -16,7 +16,7 @@ El [relevamiento de fuentes](../history/reviews/2026-09-07-official-data-sources
 
 Cinco columnas fijas en `Career` no pueden decir "no publicado", no pueden cargar dos fuentes que no cierran entre sí (la resolución de SIPES y la del sitio de la facultad), y no aguantan un dato nuevo sin migrar.
 
-## Decisión (propuesta)
+## Decisión
 
 **Un dato oficial es una afirmación fechada: un sujeto, un campo, un valor con su unidad, el período al que refiere, la fuente de la que salió, la fecha en que se relevó y el estado que dice cuánto vale.**
 
