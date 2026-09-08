@@ -33,20 +33,20 @@ Dos observaciones de camino: "Ver las 21 materias" en la ficha de carrera lleva 
 
 | ID | Hallazgo | Story | Estado |
 |---|---|---|---|
-| V01 | La ficha de carrera no tiene datos oficiales (duración en el papel y en la realidad, egreso por cohorte) ni "qué frena"; lo declara con "Todavía no tenemos datos oficiales de esta carrera." No hay entidad ni tabla para eso. | US-127, US-133, US-129 | Pendiente: R6 construye el modelo y la ficha con los datos (decidido el 2026-09-07); la pista 3 de R5 releva cada dato con fuente, formato y muestra |
-| V02 | Dónde estudiarla no existe: ningún camino desde la carrera a la misma carrera en otras instituciones. | US-128 | Pendiente: R6 (decidido el 2026-09-07), con el relevamiento de V01 |
-| V03 | Explorar tiene una sola lente, por universidad, y `/careers` y `/subjects` responden 404. Valentina no tiene universidad: tiene, a lo sumo, una carrera. | US-222 | Pendiente: decisión de Lucas (una lente por carrera, o la búsqueda de V04 la cubre) |
-| V04 | El buscador no devuelve carreras ni universidades; su placeholder lo dice. Buscar la carrera que uno quiere estudiar devuelve materias. | US-132 | Pendiente: R6, junto con la ficha de carrera y Dónde estudiarla (decidido el 2026-09-07) |
-| V05 | Arriba de la ficha de Pérez no hay fama por convergencia aunque sus tres frases apuntan al mismo lado, y Método dice que "la ficha lo dice arriba, con las preguntas a la vista". No se sabe desde afuera si la regla pide más frases o si no está construido. | US-221, persona | Pendiente: verificar sobre el stage rellenado ([#469](https://github.com/lucasidev/plan-b/issues/469)) y, si no aparece, es un hueco |
-| V06 | El nombre del docente en la ficha de cátedra es texto sin link; la página del docente solo se alcanza desde el buscador. | SC-035, US-132 | Pendiente |
-| V07 | No hay forma de reportar contenido desde una ficha, con cuenta o sin ella. | US-167 | Pendiente |
-| V08 | Método no tiene descarga: no hay CSV del crudo. | US-180 | Pendiente |
-| V09 | El corpus sintético contesta tres de las catorce frases del cuestionario: la ficha de Pérez publica tres frases y la convergencia (V05) y la comparación entre hermanas no tienen con qué mostrarse. | corpus | Pendiente: [#469](https://github.com/lucasidev/plan-b/issues/469) |
-| V10 | La lista de materias del plan no marca cuáles tienen ficha; la cobertura "1 de 21" de la carrera no se puede ubicar sin entrar materia por materia. | US-134, US-138 | Pendiente |
-| V11 | "Ver las 21 materias" lleva a los planes de estudio y no a las materias: un paso más cuando hay un solo plan. | US-222 | Pendiente (menor) |
-| V12 | La comparación contra las cátedras hermanas no se observa en Pérez ni en González; no se puede distinguir si los intervalos se tocan o si no está construida. | US-129, Método | Pendiente: verificar sobre el stage rellenado ([#469](https://github.com/lucasidev/plan-b/issues/469)) |
-| V13 | En un celular de 393 px la ficha de cátedra desborda 35 px hacia el costado: el buscador del header es más ancho que la pantalla. Método no desborda. | restricción de accesibilidad y celular | Pendiente |
-| V14 | Método no dice la postura de no tener acuerdos con instituciones; la palabra "acuerdo" no aparece. Lo más cercano es "ni instituciones destacadas o patrocinadas", y la respuesta de la entrada ("Las universidades no lo operan ni deciden qué se publica") no está en la pantalla que es dueña de esa story. | US-185 | Pendiente |
+| V01 | La ficha de carrera no tiene datos oficiales (duración en el papel y en la realidad, egreso por cohorte) ni "qué frena"; lo declara con "Todavía no tenemos datos oficiales de esta carrera." No hay entidad ni tabla para eso. | US-127, US-133, US-129 | Pendiente: R6, tarea 4 ([plan](../../plan/status.md)) |
+| V02 | Dónde estudiarla no existe: ningún camino desde la carrera a la misma carrera en otras instituciones. | US-128 | Pendiente: R6, tarea 5 |
+| V03 | Explorar tiene una sola lente, por universidad, y `/careers` y `/subjects` responden 404. Valentina no tiene universidad: tiene, a lo sumo, una carrera. | US-222 | Pendiente: R6, tarea 8 |
+| V04 | El buscador no devuelve carreras ni universidades; su placeholder lo dice. Buscar la carrera que uno quiere estudiar devuelve materias. | US-132 | Pendiente: R6, tarea 7 |
+| V05 | Arriba de la ficha de Pérez no hay fama por convergencia aunque sus tres frases apuntan al mismo lado, y Método dice que "la ficha lo dice arriba, con las preguntas a la vista". No se sabe desde afuera si la regla pide más frases o si no está construido. | US-221, persona | Pendiente: R6, tarea 15 |
+| V06 | El nombre del docente en la ficha de cátedra es texto sin link; la página del docente solo se alcanza desde el buscador. | SC-035, US-132 | Pendiente: R6, tarea 9 |
+| V07 | No hay forma de reportar contenido desde una ficha, con cuenta o sin ella. | US-167 | Pendiente: Backlog (US-167) |
+| V08 | Método no tiene descarga: no hay CSV del crudo. | US-180 | Pendiente: Backlog (US-180) |
+| V09 | El corpus sintético contesta tres de las catorce frases del cuestionario: la ficha de Pérez publica tres frases y la convergencia (V05) y la comparación entre hermanas no tienen con qué mostrarse. | corpus | Resuelto: el corpus de #469, mergeado en #480 |
+| V10 | La lista de materias del plan no marca cuáles tienen ficha; la cobertura "1 de 21" de la carrera no se puede ubicar sin entrar materia por materia. | US-134, US-138 | Pendiente: R6, tarea 9 |
+| V11 | "Ver las 21 materias" lleva a los planes de estudio y no a las materias: un paso más cuando hay un solo plan. | US-222 | Pendiente: R6, tarea 8 |
+| V12 | La comparación contra las cátedras hermanas no se observa en Pérez ni en González; no se puede distinguir si los intervalos se tocan o si no está construida. | US-129, Método | Pendiente: R6, tarea 15 |
+| V13 | En un celular de 393 px la ficha de cátedra desborda 35 px hacia el costado: el buscador del header es más ancho que la pantalla. Método no desborda. | restricción de accesibilidad y celular | Pendiente: R6, tarea 10 |
+| V14 | Método no dice la postura de no tener acuerdos con instituciones; la palabra "acuerdo" no aparece. Lo más cercano es "ni instituciones destacadas o patrocinadas", y la respuesta de la entrada ("Las universidades no lo operan ni deciden qué se publica") no está en la pantalla que es dueña de esa story. | US-185 | Pendiente: R6, tarea 16 |
 
 Confirmaciones (no eran hallazgos): la lectura entera sin cuenta y sin que nada se pida antes (US-168, US-170); ningún puntaje, promedio, estrella, ranking ni patrocinio en ninguna pantalla recorrida (US-171, tesis); la ficha bajo el piso explica el piso y por qué (US-136); moda, distribución con ceros, voces y años en cada frase (US-130, US-131); la co-cursada con sus dos pisos y su aclaración de que no afirma causa (US-143, US-184); la tasa de finalización agregada con denominador y la aclaración de que nadie ve cómo terminó nadie; Método cubre la regla, el piso, Wilson, los sesgos, la postura y el catálogo con la marca de destilada; y Método en celular no tiene scroll horizontal.
 
@@ -153,3 +153,7 @@ La spec corrió dos veces contra el stage el 2026-09-07 (entre las 15:26 y las 1
 ![Método a 393 px: sin desborde](assets/2026-09-07-valentina/12-mobile-method.png)
 
 *12-mobile-method.png: Método a 393 px: sin desborde.*
+
+## Segunda corrida: el stage rellenado (2026-09-08)
+
+La misma spec, sin cambios, contra el stage en `1544eb3` (el corpus de #468 y #469): 40 comprobaciones, 37 completadas. Lo que cambió con el corpus: la cobertura de la carrera pasó de "1 de 21 materias" a "4 de 21", la ficha de materia dice "26 voces en 2 cátedras · 2024", y la entrada sortea cátedras nuevas (Domínguez, Base de datos, 10 voces; la spec leyó vacío el nombre y las voces de la muestra, y la página los muestra: es el localizador de la spec, no el producto). Lo que no cambió, porque no era del corpus: V01, V02, V03, V04, V06, V07, V08, V13 y V14 siguen tal cual, y V05 y V12 quedan por verificar sobre Ibáñez, la cátedra con fama por convergencia, que esta spec no visita. Los veredictos completos están en el reporte de la corrida; la próxima corrida entra a R6 con los recorridos repetidos sobre lo nuevo.

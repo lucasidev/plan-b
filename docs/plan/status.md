@@ -4,7 +4,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 
 **Cadencia**: S1 y S2 fueron de 7 días con cierre flotante (sábado-sábado). **Desde S3 la cadencia se fija a lunes → sábado (6 días útiles)**. Lo hecho hecho está: los rangos de S1/S2 no se reescriben retroactivamente.
 
-**Última actualización**: 2026-09-08 (R5 en curso: el mapa, los tres registros de la pista 3 con el ADR-0090 propuesto, el diagnóstico de #477 y el stage rellenado a verificar). Antes, el 2026-09-07 (R4 cerrado y R5 planificado: lo construido contra lo deseado, medido sobre el stage rellenado, con cuatro recorridos de persona como E2E y el relevamiento de los datos oficiales que el producto pide). Antes, el 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
+**Última actualización**: 2026-09-08 (R5 cerrado y R6 planificado: elegir dónde estudiar con datos reales; desde acá la única ficción son los alumnos). Antes, el 2026-09-07 (R4 cerrado y R5 planificado: lo construido contra lo deseado, medido sobre el stage rellenado, con cuatro recorridos de persona como E2E y el relevamiento de los datos oficiales que el producto pide). Antes, el 2026-09-02 (R3 cerrado y R4 planificado: un stage con datos de prueba, todos los hallazgos de la auditoría de tests de R1 a R3, y la suite y CI más rápidos). Antes, el 2026-08-21 (arranca el rework: R0 planificado sobre el inventario de los 880 archivos del backend y las 41 features del frontend. Todo lo que está debajo de "Lo anterior" es el producto en retiro. Antes, el 2026-08-16, el viraje de tesis:
 
 ---
 
@@ -30,7 +30,8 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R2** | 2026-08-27 a 2026-08-28 | **El producto habla con una voz, y lo que dice se encuentra y se deshace**: la ficha de materia deriva de sus cátedras, se llega a la cátedra desde donde se la busca, se puede corregir y borrar lo aportado, la landing dice lo que el producto hace, y el aggregate de reseña anterior se poda con su moderación. Milestone [R2](https://github.com/lucasidev/plan-b/milestone/3), issues #363 a #368, 42 pts. | ✓ Hecho (mergeado el 2026-08-28, PR [#369](https://github.com/lucasidev/plan-b/pull/369)) |
 | **R3** | 2026-08-29 a 2026-09-02 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | ✓ Hecho (cerrado el 2026-09-02, PRs #387 a #399; entró además la curaduría entera y US-198) |
 | **R4** | 2026-09-02 a 2026-09-07 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | ✓ Hecho (cerrado el 2026-09-07 con el merge de la pista 4, PR #467; #403 y #404 pasan a R5) |
-| **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona como E2E contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | En curso |
+| **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona como E2E contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | ✓ Hecho (cerrado el 2026-09-08 con el merge de #480; #470 y #473 cierran con el plan de R6) |
+| **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, y el click que el router pierde. 64 pts en cuatro pistas. | Planificado |
 
 Convenciones:
 
@@ -547,12 +548,99 @@ La pista 1 va primero: los recorridos y el mapa se hacen sobre el stage rellenad
 5. R5 no construyó ninguna feature del producto: lo que la revisión encontró es backlog, no código.
 6. El click que no dispara la acción (#477) tiene reproducción con tasa y causa escrita, y su arreglo está hecho o en la lista de R6.
 
+### Cierre (2026-09-08)
+
+Las tres pistas mergeadas en dos PRs: #479 (el `jq` de la espera del sha, que en su primer merge real terminó con "Redeploy the stage: success" y el stage en `d5aa283`) y #480 (los seeds, el mapa, los tres registros de la pista 3 y el ADR-0090), con Rebase and merge. El stage sirve `1544eb3` con el corpus nuevo, verificado en lo público: la cobertura de la Tecnicatura pasó de "1 de 21" a "4 de 21 materias", la entrada sortea cátedras nuevas, y la segunda corrida de Valentina sobre el stage rellenado repitió las mismas nueve fallas de la primera, todas del producto y ninguna del corpus. De los diez issues quedan #470 (el tramo con cuenta de `just stage-walk`, que corre Lucas con las credenciales del stage en su shell) y #473, que cierra con este plan: cada hallazgo de R5 tiene su destino en la tabla de R6 y su estado cambiado en su registro. Los cinco puntos de "cómo se sabe que está listo" se cumplen salvo el tramo con cuenta, que queda en la pista 4 de R6.
+
+Lo que R5 decidió (2026-09-08): **desde R6 la única ficción son los alumnos**. Las instituciones, las carreras, los planes y los datos oficiales del stage salen de las fuentes relevadas, no del seed; las reseñas siguen siendo sintéticas y la entrada lo dice. **Las diez primeras voces de una cátedra llegan a mano**, cátedra por cátedra, empezando por la Tecnicatura de UNSTA: el producto no baja el piso ni inventa voces, y la ficha vacía ya explica qué falta (US-136). **El checklist de transparencia es una story nueva** (F01), no una ampliación de US-128 o US-133. **Las cinco rutas sin ficha** se documentan: la curaduría con ficha propia, y las otras cuatro como sub-rutas de las fichas del Catálogo y de la Ficha de carrera (E02). Y el [ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md) pasa a aceptado con su modelo y sus pantallas.
+
 ### Lo que R5 deja afuera a propósito
 
 - El modelo de datos oficiales, la ficha de carrera con ellos y Dónde estudiarla: se construyen en R6 con la muestra y el ADR de la pista 3 (decidido el 2026-09-07).
 - Personas reales y todo lo que solo ellas exigen, lo mismo que dejó afuera R4.
 - El compose de producción, escrito y sin levantar: espera su servidor.
 - Reconstruir lo que los recorridos muestren mal hecho: se planifica en R6 con el tamaño que tenga, aunque sea rehacer una épica entera.
+
+## R6 · Elegir dónde estudiar, con datos reales
+
+Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/lucasidev/plan-b/milestone/8), issues #481 a #497, 64 pts en cuatro pistas.
+
+**Por qué este hilo.** R5 midió la distancia entre la tesis y el stage y encontró que el núcleo está (reseñar, que cuente, que nadie sepa quién fue, leer sin cuenta) y que lo que lo rodea no: Valentina no puede elegir dónde estudiar porque no hay datos oficiales, no hay Dónde estudiarla y el buscador no encuentra carreras (V01, V02, V04). El relevamiento de la pista 3 mostró además que ningún dato de carrera viene de una sola fuente ni con una sola forma, y que los dos que más importan (egreso por cohorte y duración real) no están publicados por carrera. R6 construye lo que la persona para la que el producto existe necesita para elegir, sobre el modelo del [ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md) y sobre el catálogo real de Tucumán: **desde acá la única ficción son los alumnos**. Instituciones, carreras, planes y datos oficiales salen de las fuentes relevadas; las reseñas siguen siendo sintéticas, y la entrada lo dice.
+
+### Pista 1 · Los datos oficiales en el producto (34 pts)
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#481](https://github.com/lucasidev/plan-b/issues/481) · 1 | **El modelo del ADR-0090**: `AcademicUnit` y `OfficialFact` en academic, con migración, read Dapper para las fichas y endpoint de carga con policy de admin y fuente obligatoria (US-194, US-202); `Career.DurationYears` y `CareerPlan.IsOfficial` se retiran cuando sus afirmaciones existen (F03, F04, F06, K04). Listo cuando: una afirmación con cada estado del ADR se guarda, se lee y se ve con su fuente. | 8 |
+| [#482](https://github.com/lucasidev/plan-b/issues/482) · 2 | **El catálogo real de Tucumán**: las seis instituciones de la Guía SIU como entidades reales con su identidad; la oferta de programación con sus planes reales (la Tecnicatura de UNSTA ya lo es; UTN Tucumán con la Tecnicatura Universitaria en Programación y el plan de la Ordenanza 987 hasta que el plan 2024 se pueda bajar; UNT con Programador Universitario y el plan de la FACET; Siglo 21 con el Analista Universitario en Sistemas de Computación); el resto de la oferta de pregrado y grado de la Guía cargada como carreras con su duración y su condición de ingreso; la carrera ficticia de UTN retirada, y la entrada dice que las reseñas son sintéticas (K01, K02, K05, US-195). Listo cuando: ninguna institución, carrera ni plan del stage es inventado, y el reset lo rearma igual. | 8 |
+| [#483](https://github.com/lucasidev/plan-b/issues/483) · 3 | **Las afirmaciones relevadas, cargadas**: los datos de las cuatro ofertas de programación y de las seis instituciones del [relevamiento](../history/reviews/2026-09-07-official-data-survey.md), por seed y por el backoffice, cada uno con su estado y su fecha; el pedido de egreso y duración real al DIU y a las universidades nacionales, registrado como "pedido" con fecha (O01, O07, O10, O11, K07). Listo cuando: cada dato del relevamiento está en el stage con la misma fuente que en el registro. | 3 |
+| [#484](https://github.com/lucasidev/plan-b/issues/484) · 4 | **La ficha de carrera con sus datos**: el bloque de datos oficiales con fuente y período por dato, el régimen de ingreso, y la acreditación o la validez nacional según el nivel (US-127, US-133, US-130; V01, F02, F05, O03), con los escenarios de US-127 y US-133 reescritos con el dato como criterio (E01). Listo cuando: Valentina lee los seis datos de la Tecnicatura de UNSTA con su fuente, y lo no publicado se dice con fecha. | 5 |
+| [#485](https://github.com/lucasidev/plan-b/issues/485) · 5 | **Dónde estudiarla**: la misma carrera canónica en las instituciones de la provincia, seis datos con la misma forma por tarjeta y cada celda con su estado, sin compuesto ni ganador; la carrera canónica la declara el equipo (US-128, US-195; V02, K02, K03). Listo cuando: la Tecnicatura de UNSTA se compara con las ofertas de UNT, UTN y Siglo 21 y la pantalla dice qué es cada una. | 6 |
+| [#486](https://github.com/lucasidev/plan-b/issues/486) · 6 | **La ficha de institución**: cabecera de identidad y checklist de transparencia con una fila por campo y su estado, "no publicado" y "no informado" dichos con fecha, y "Ver fuentes"; la story nueva del checklist (F01), y la AGN por API si entra en el punto (E05, O04, O06, O08, K07). Listo cuando: las seis instituciones tienen su ficha y UNT muestra su nómina, su presupuesto y su boletín con link. | 4 |
+
+### Pista 2 · Elegir de verdad (10 pts)
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#487](https://github.com/lucasidev/plan-b/issues/487) · 7 | **Buscar encuentra carreras e instituciones** (US-132; V04). Listo cuando: "Desarrollo y Calidad de Software" devuelve la carrera y "UNSTA" la institución. | 3 |
+| [#488](https://github.com/lucasidev/plan-b/issues/488) · 8 | **Explorar por carrera**: la segunda lente, y `/careers` y `/subjects` dejan de responder 404 (US-222; V03, V11). | 3 |
+| [#489](https://github.com/lucasidev/plan-b/issues/489) · 9 | **De la ficha al docente y del plan a la ficha**: el nombre del docente lleva a su página, y la lista de materias del plan marca cuáles tienen ficha (US-134; V06, V10). | 3 |
+| [#490](https://github.com/lucasidev/plan-b/issues/490) · 10 | **La ficha no desborda en celular**: el buscador del header entra en 393 px (V13). | 1 |
+
+### Pista 3 · Reseñar sin fisuras (12 pts)
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#491](https://github.com/lucasidev/plan-b/issues/491) · 11 | **El click que el router pierde** ([#477](https://github.com/lucasidev/plan-b/issues/477)): el fallback a `window.location` cuando la navegación no se aplica en una ventana acotada, y el prefetch del shell autenticado apagado, medidos con repeticiones bajo carga antes y después; si la causa aparece en el tracker de Next, se cita. Listo cuando: doce corridas seguidas de los cuatro specs sin la firma. | 5 |
+| [#492](https://github.com/lucasidev/plan-b/issues/492) · 12 | **La puerta dice el motivo y vuelve**: Ingresar desde "Reseñala" dice para qué, y después de verificar el mail aterriza en la reseña que había empezado (US-229; L01, L03). | 3 |
+| [#493](https://github.com/lucasidev/plan-b/issues/493) · 13 | **El contrato dice el piso y el duplicado no se envía** (US-159, US-163; L04, L06). | 2 |
+| [#494](https://github.com/lucasidev/plan-b/issues/494) · 14 | **Mis aportes por frase**: la opción elegida en cada frase y las voces que suma (US-162; L05). | 2 |
+
+### Pista 4 · Verificar y ordenar (8 pts)
+
+| # | Tarea | Pts |
+|---|---|---|
+| [#495](https://github.com/lucasidev/plan-b/issues/495) · 15 | **Los recorridos sobre lo nuevo**: Valentina y Lucía repetidos contra el stage con lo construido, con lo que el arnés dejó sin ejercer (Corregir, cerrar sesión, la baja y el conteo después de borrar: L08) y la fama y la comparación sobre Ibáñez (V05, V12); y el tramo con cuenta de `just stage-walk` sobre el stage rellenado ([#470](https://github.com/lucasidev/plan-b/issues/470)). | 4 |
+| [#496](https://github.com/lucasidev/plan-b/issues/496) · 16 | **Las fichas que faltan y la postura de Método**: SC-036 Curaduría para `/admin/curation`; `/admin/chairs` y `/admin/teachers` documentadas en SC-027, y `/careers/[id]/plans` y `/plans/[id]/subjects` en SC-001 (E02); Método dice que no hay acuerdos con instituciones (US-185, V14). | 2 |
+| [#497](https://github.com/lucasidev/plan-b/issues/497) · 17 | **El cierre de R5 en cada registro** ([#473](https://github.com/lucasidev/plan-b/issues/473)): cada hallazgo de R5 con su estado cambiado en su registro y el índice al día, y el glosario con Cohorte y Datos oficiales al modelo del ADR (F04). | 2 |
+
+### Los hallazgos de R5, con destino
+
+| Destino | Hallazgos |
+|---|---|
+| Tarea 1 | F03, F04, F06, K04 |
+| Tarea 2 | K01, K02, K05, S05 (US-195) |
+| Tarea 3 | O01, O07, O10, O11, K07 |
+| Tarea 4 | V01, E01, F02, F05, O03 |
+| Tarea 5 | V02, K03 |
+| Tarea 6 | E05, F01, O04, O06, O08 |
+| Tareas 7 a 10 | V04; V03 y V11; V06 y V10; V13 |
+| Tareas 11 a 14 | #477; L01 y L03; L04 y L06; L05 |
+| Tareas 15 a 17 | V05, V12, L08 y #470; E02 y V14; E04 |
+| Resuelto | V09 (#469) |
+| Cerrados | O02, O05 |
+| Confirmaciones | O09, K06 |
+| Backlog, con nombre | V07 (US-167), V08 (US-180), L02 (personas reales, US-228), L07 (US-161), S01 (Pedir una carrera y la cola: US-139 a US-142, US-191, US-192, US-200, US-203), S02 (US-196), S03 (US-199), S04 (US-216, US-218), el resto de S05 (US-193, US-194, US-197, US-202, US-204), S06 (con la decisión abierta), E03 (las cuatro épicas), E06 (los mails de producto) |
+
+### Secuencia
+
+La pista 1 manda: 1 y 2 arrancan juntas; 3 detrás de 1; 4, 5 y 6 detrás de 3. La pista 2 corre en paralelo desde el primer día. La 3 también, con 11 primero porque todo E2E depende de él. La 4 cierra el sprint.
+
+### Cómo se sabe que R6 está listo
+
+1. Valentina, sin cuenta, elige entre la Tecnicatura de UNSTA y las ofertas de UNT, UTN y Siglo 21 leyendo datos oficiales con su fuente, y ninguna institución, carrera ni plan del stage es inventado.
+2. Lo no publicado se dice con fecha en cada ficha, y Método explica el proxy de egreso y sus sesgos.
+3. El buscador devuelve carreras e instituciones, y Explorar tiene las dos lentes.
+4. Lucía entra desde la acción con el motivo, vuelve a la reseña, el contrato dice el piso y Mis aportes muestra qué sumó cada frase.
+5. Doce corridas seguidas de los cuatro specs sin la firma de #477.
+6. Los recorridos corrieron sobre lo nuevo y el tramo con cuenta de `just stage-walk` pasó.
+
+### Lo que R6 deja afuera a propósito
+
+- Pedir una carrera y su cola, Responder, Moderar sin romper el producto y Cuidar lo publicado: cuatro épicas enteras, al Backlog con nombre.
+- Los mails de producto (E06), la reseña a medias (L07), el equipo docente desde la pantalla (S02), la cola de revisión de lo destilado (S03) y quién hizo qué en pantalla (S04).
+- Los planes con materias de las 229 ofertas de la provincia: solo los de programación entran; el resto se carga como carrera con su duración y su condición de ingreso.
+- Personas reales, y producción.
 
 ## Lo anterior: el producto en retiro
 
