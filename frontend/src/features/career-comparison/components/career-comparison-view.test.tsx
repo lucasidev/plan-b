@@ -60,6 +60,7 @@ function offering(
     universityId: `uni-${overrides.careerId}`,
     universityName: 'Universidad de prueba',
     academicUnitName: null,
+    localityName: null,
     institutionKind: null,
     facts: sixFacts(overrides.careerId),
     ...overrides,
@@ -201,6 +202,31 @@ describe('CareerComparisonView', () => {
 
     expect(screen.getByText(/provincia de Tucumán/)).toBeInTheDocument();
     expect(screen.getByText(/no pudimos confirmar la ciudad exacta/)).toBeInTheDocument();
+  });
+
+  /**
+   * Decisión de producto del 2026-09-09: la comparación agrupa por aglomeración, no por localidad
+   * suelta, pero eso no puede esconder dónde queda cada oferta puntual (UNSTA en Yerba Buena, UNT
+   * en San Miguel de Tucumán, aunque el título compare "Gran San Miguel de Tucumán").
+   */
+  it('cada tarjeta dice su localidad real aunque el título compare la aglomeración', () => {
+    renderView(
+      comparison({
+        cityLabel: 'Gran San Miguel de Tucumán',
+        offerings: [
+          offering({ careerId: 'unsta', universityName: 'UNSTA', localityName: 'Yerba Buena' }),
+          offering({
+            careerId: 'unt',
+            universityName: 'UNT',
+            localityName: 'San Miguel de Tucumán',
+          }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/Gran San Miguel de Tucumán/)).toBeInTheDocument();
+    expect(screen.getByText('Yerba Buena')).toBeInTheDocument();
+    expect(screen.getByText('San Miguel de Tucumán')).toBeInTheDocument();
   });
 
   /** Contrato de la tarea: el sesgo de un derivado se dice una vez arriba, no repetido por tarjeta. */

@@ -122,6 +122,9 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
     })),
     { field: 'level', fact: levelFact(offering) },
   ];
+  // La aglomeración agrupa, pero cada tarjeta sigue diciendo su localidad real (no puede leer
+  // "San Miguel de Tucumán" arriba y esconder que esta oferta puntual queda en Yerba Buena).
+  const subtitle = [offering.academicUnitName, offering.localityName].filter(Boolean).join(' · ');
 
   return (
     <div className="mb-3 rounded-xl border border-line bg-bg-card p-4">
@@ -133,9 +136,7 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
           >
             {offering.universityName}
           </Link>
-          {offering.academicUnitName && (
-            <p className="truncate text-[12px] text-ink-3">{offering.academicUnitName}</p>
-          )}
+          {subtitle && <p className="truncate text-[12px] text-ink-3">{subtitle}</p>}
         </div>
         {offering.institutionKind && (
           <span className="shrink-0 font-mono text-[11px] text-ink-3">

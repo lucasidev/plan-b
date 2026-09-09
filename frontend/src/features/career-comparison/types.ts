@@ -24,6 +24,8 @@ export interface CareerComparisonOffering {
   universityId: string;
   universityName: string;
   academicUnitName: string | null;
+  /** La localidad real de esta oferta (puede ser distinta de la aglomeración que agrupa la comparación, ver `cityLabel`). Null cuando no resolvió contra Georef. */
+  localityName: string | null;
   /** "Pública" o "Privada". Null cuando ese dato todavía no está publicado. */
   institutionKind: string | null;
   facts: OfficialFact[];

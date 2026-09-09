@@ -89,8 +89,8 @@ function OfficialData({ officialFacts }: { officialFacts: OfficialFact[] }) {
 
 /**
  * Adónde va la ficha después de leer sus datos oficiales (SC-008, US-128): comparar esta misma
- * oferta con las de otras instituciones de su ciudad. Un link de texto, no un botón: no compite
- * con "Reseñá tu cursada", que es la acción principal de esta pantalla.
+ * oferta con las de otras instituciones de su misma aglomeración. Un link de texto, no un botón:
+ * no compite con "Reseñá tu cursada", que es la acción principal de esta pantalla.
  */
 function CompareLink({ careerId }: { careerId: string }) {
   return (
