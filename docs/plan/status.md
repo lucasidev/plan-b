@@ -31,7 +31,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R3** | 2026-08-29 a 2026-09-02 | **El catálogo crece y el número se puede auditar**: la cátedra se carga desde el backoffice (hoy existe solo por el seed), la ficha publica con qué se llevó cada materia, Método explica cómo se calcula todo lo que se publica, y se retira el seguimiento de carrera ([ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)). Milestone [R3](https://github.com/lucasidev/plan-b/milestone/4), issues #370 a #376, 47 pts. | ✓ Hecho (cerrado el 2026-09-02, PRs #387 a #399; entró además la curaduría entera y US-198) |
 | **R4** | 2026-09-02 a 2026-09-07 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | ✓ Hecho (cerrado el 2026-09-07 con el merge de la pista 4, PR #467; #403 y #404 pasan a R5) |
 | **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona como E2E contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | ✓ Hecho (cerrado el 2026-09-08 con el merge de #480; #470 y #473 cierran con el plan de R6) |
-| **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, y el click que el router pierde. 64 pts en cuatro pistas. | Planificado |
+| **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, el click que el router pierde, y las dos APIs de terceros que el producto consume (la AGN y Georef). 70 pts en cuatro pistas. | Planificado |
 
 Convenciones:
 
@@ -563,11 +563,11 @@ Lo que R5 decidió (2026-09-08): **desde R6 la única ficción son los alumnos**
 
 ## R6 · Elegir dónde estudiar, con datos reales
 
-Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/lucasidev/plan-b/milestone/8), issues #481 a #497, 64 pts en cuatro pistas.
+Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/lucasidev/plan-b/milestone/8), issues #481 a #497, #506 y #507, 70 pts en cuatro pistas.
 
 **Por qué este hilo.** R5 midió la distancia entre la tesis y el stage y encontró que el núcleo está (reseñar, que cuente, que nadie sepa quién fue, leer sin cuenta) y que lo que lo rodea no: Valentina no puede elegir dónde estudiar porque no hay datos oficiales, no hay Dónde estudiarla y el buscador no encuentra carreras (V01, V02, V04). El relevamiento de la pista 3 mostró además que ningún dato de carrera viene de una sola fuente ni con una sola forma, y que los dos que más importan (egreso por cohorte y duración real) no están publicados por carrera. R6 construye lo que la persona para la que el producto existe necesita para elegir, sobre el modelo del [ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md) y sobre el catálogo real de Tucumán: **desde acá la única ficción son los alumnos**. Instituciones, carreras, planes y datos oficiales salen de las fuentes relevadas; las reseñas siguen siendo sintéticas, y la entrada lo dice.
 
-### Pista 1 · Los datos oficiales en el producto (34 pts)
+### Pista 1 · Los datos oficiales en el producto (40 pts)
 
 | # | Tarea | Pts |
 |---|---|---|
@@ -575,8 +575,12 @@ Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/luc
 | [#482](https://github.com/lucasidev/plan-b/issues/482) · 2 | **El catálogo real de Tucumán**: las seis instituciones de la Guía SIU como entidades reales con su identidad; la oferta de programación con sus planes reales (la Tecnicatura de UNSTA ya lo es; UTN Tucumán con la Tecnicatura Universitaria en Programación y el plan de la Ordenanza 987 hasta que el plan 2024 se pueda bajar; UNT con Programador Universitario y el plan de la FACET; Siglo 21 con el Analista Universitario en Sistemas de Computación); el resto de la oferta de pregrado y grado de la Guía cargada como carreras con su duración y su condición de ingreso; la carrera ficticia de UTN retirada, y la entrada dice que las reseñas son sintéticas (K01, K02, K05, US-195). Listo cuando: ninguna institución, carrera ni plan del stage es inventado, y el reset lo rearma igual. | 8 |
 | [#483](https://github.com/lucasidev/plan-b/issues/483) · 3 | **Las afirmaciones relevadas, cargadas**: los datos de las cuatro ofertas de programación y de las seis instituciones del [relevamiento](../history/reviews/2026-09-07-official-data-survey.md), por seed y por el backoffice, cada uno con su estado y su fecha; el pedido de egreso y duración real al DIU y a las universidades nacionales, registrado como "pedido" con fecha (O01, O07, O10, O11, K07). Listo cuando: cada dato del relevamiento está en el stage con la misma fuente que en el registro. | 3 |
 | [#484](https://github.com/lucasidev/plan-b/issues/484) · 4 | **La ficha de carrera con sus datos**: el bloque de datos oficiales con fuente y período por dato, el régimen de ingreso, y la acreditación o la validez nacional según el nivel (US-127, US-133, US-130; V01, F02, F05, O03), con los escenarios de US-127 y US-133 reescritos con el dato como criterio (E01). Listo cuando: Valentina lee los seis datos de la Tecnicatura de UNSTA con su fuente, y lo no publicado se dice con fecha. | 5 |
-| [#485](https://github.com/lucasidev/plan-b/issues/485) · 5 | **Dónde estudiarla**: la misma carrera canónica en las instituciones de la provincia, seis datos con la misma forma por tarjeta y cada celda con su estado, sin compuesto ni ganador; la carrera canónica la declara el equipo (US-128, US-195; V02, K02, K03). Listo cuando: la Tecnicatura de UNSTA se compara con las ofertas de UNT, UTN y Siglo 21 y la pantalla dice qué es cada una. | 6 |
-| [#486](https://github.com/lucasidev/plan-b/issues/486) · 6 | **La ficha de institución**: cabecera de identidad y checklist de transparencia con una fila por campo y su estado, "no publicado" y "no informado" dichos con fecha, y "Ver fuentes"; la story nueva del checklist (F01), y la AGN por API si entra en el punto (E05, O04, O06, O08, K07). Listo cuando: las seis instituciones tienen su ficha y UNT muestra su nómina, su presupuesto y su boletín con link. | 4 |
+| [#485](https://github.com/lucasidev/plan-b/issues/485) · 5 | **Dónde estudiarla**: la misma carrera canónica en las instituciones de la ciudad, con la localidad que normaliza la tarea 19 y caída a la provincia cuando no se pudo resolver; seis datos con la misma forma por tarjeta y cada celda con su estado, sin compuesto ni ganador; la carrera canónica la declara el equipo (US-128, US-195; V02, K02, K03). Listo cuando: la Tecnicatura de UNSTA se compara con las ofertas de UNT, UTN y Siglo 21 y la pantalla dice qué es cada una. | 6 |
+| [#486](https://github.com/lucasidev/plan-b/issues/486) · 6 | **La ficha de institución**: cabecera de identidad y checklist de transparencia con una fila por campo y su estado, "no publicado" y "no informado" dichos con fecha, y "Ver fuentes"; la story nueva del checklist (F01), y la auditoría de la AGN que trae la tarea 18 (E05, O04, O06, K07). Listo cuando: las seis instituciones tienen su ficha y UNT muestra su nómina, su presupuesto y su boletín con link. | 4 |
+| [#506](https://github.com/lucasidev/plan-b/issues/506) · 18 | **La auditoría de la AGN, por su API**: paginar `webagnapi.agn.gob.ar/api/views/busqueda_avanzada/informes` entero y filtrar por `organismo_auditado` en local, porque los `filter[...]` de JSON:API no filtran esa vista, y volcar el resultado como afirmaciones del ADR-0090 con su estado y su fecha; sin informes es "no publicado" con la fecha de consulta, y una consulta que falla no deja el dato a medias (O08). Listo cuando: las instituciones del catálogo tienen su afirmación de auditoría con su fuente y su fecha. | 3 |
+| [#507](https://github.com/lucasidev/plan-b/issues/507) · 19 | **Las sedes, normalizadas contra Georef**: el domicilio de la Guía del SIU trae la ciudad adentro de la cadena y escrita como venga, y Dónde estudiarla se define por ciudad; resolver las nueve localidades de las 229 ofertas contra `apis.datos.gob.ar/georef` al cargar (siete por `/localidades`, las dos rurales por `/asentamientos`) y guardar el id y el nombre canónico junto al domicilio crudo. Sin resolución la comparación cae a la provincia y lo dice; es lo que la tarea 5 necesita para comparar por ciudad y no por provincia (V02). Listo cuando: Dónde estudiarla compara las ofertas de San Miguel de Tucumán entre sí sin mezclarlas con las de Concepción. | 3 |
+
+**Las dos APIs que consumimos.** Las tareas 18 y 19 son las únicas del producto que traen datos de un servicio de terceros en vivo, y son la respuesta al pedido del enunciado de consumir APIs. Que sean dos, y que de las once fuentes oficiales que relevó R5 una sola exponga una API, no es una limitación del sprint: es el hecho que la tesis argumenta sobre la opacidad, y va dicho en Método.
 
 ### Pista 2 · Elegir de verdad (10 pts)
 
@@ -613,7 +617,9 @@ Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/luc
 | Tarea 3 | O01, O07, O10, O11, K07 |
 | Tarea 4 | V01, E01, F02, F05, O03 |
 | Tarea 5 | V02, K03 |
-| Tarea 6 | E05, F01, O04, O06, O08 |
+| Tarea 6 | E05, F01, O04, O06 |
+| Tarea 18 | O08 |
+| Tarea 19 | la geografía que V02 necesita |
 | Tareas 7 a 10 | V04; V03 y V11; V06 y V10; V13 |
 | Tareas 11 a 14 | #477; L01 y L03; L04 y L06; L05 |
 | Tareas 15 a 17 | V05, V12, L08 y #470; E02 y V14; E04 |
@@ -624,16 +630,17 @@ Del 2026-09-09 al 2026-09-22, dos semanas. Milestone [R6](https://github.com/luc
 
 ### Secuencia
 
-La pista 1 manda: 1 y 2 arrancan juntas; 3 detrás de 1; 4, 5 y 6 detrás de 3. La pista 2 corre en paralelo desde el primer día. La 3 también, con 11 primero porque todo E2E depende de él. La 4 cierra el sprint.
+La pista 1 manda: 1 y 2 arrancan juntas; 3 detrás de 1; 4, 5 y 6 detrás de 3. Las dos que consumen APIs entran donde las necesita su consumidor: 19 detrás de 2 y antes de 5, porque sin la localidad normalizada la comparación no se puede agrupar; 18 detrás de 1 y junto a 6. La pista 2 corre en paralelo desde el primer día. La 3 también, con 11 primero porque todo E2E depende de él. La 4 cierra el sprint.
 
 ### Cómo se sabe que R6 está listo
 
 1. Valentina, sin cuenta, elige entre la Tecnicatura de UNSTA y las ofertas de UNT, UTN y Siglo 21 leyendo datos oficiales con su fuente, y ninguna institución, carrera ni plan del stage es inventado.
 2. Lo no publicado se dice con fecha en cada ficha, y Método explica el proxy de egreso y sus sesgos.
-3. El buscador devuelve carreras e instituciones, y Explorar tiene las dos lentes.
-4. Lucía entra desde la acción con el motivo, vuelve a la reseña, el contrato dice el piso y Mis aportes muestra qué sumó cada frase.
-5. Doce corridas seguidas de los cuatro specs sin la firma de #477.
-6. Los recorridos corrieron sobre lo nuevo y el tramo con cuenta de `just stage-walk` pasó.
+3. El producto consume dos APIs de terceros: la de la AGN para saber si una institución fue auditada, y Georef para saber en qué ciudad está cada sede. Las dos con su fecha de consulta y sin tumbar la pantalla cuando no responden.
+4. El buscador devuelve carreras e instituciones, y Explorar tiene las dos lentes.
+5. Lucía entra desde la acción con el motivo, vuelve a la reseña, el contrato dice el piso y Mis aportes muestra qué sumó cada frase.
+6. Doce corridas seguidas de los cuatro specs sin la firma de #477.
+7. Los recorridos corrieron sobre lo nuevo y el tramo con cuenta de `just stage-walk` pasó.
 
 ### Lo que R6 deja afuera a propósito
 
