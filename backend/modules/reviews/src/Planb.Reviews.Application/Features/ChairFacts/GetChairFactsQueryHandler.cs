@@ -60,14 +60,21 @@ public static class GetChairFactsQueryHandler
             ? await academic.ListTermYearsAsync(counted.TermIds, ct)
             : [];
 
-        return Present(chair, facts, counted, years);
+        // Mismo gate que la ventana temporal: bajo el piso no hay un solo conteo mostrándose, así
+        // que no hay nada que pudiera leerse como una voz real.
+        var hasDemoCorpusVoices = facts.IsPublished
+            ? await tallies.HasDemoCorpusVoicesAsync(chair.Id, ct)
+            : false;
+
+        return Present(chair, facts, counted, years, hasDemoCorpusVoices);
     }
 
     private static GetChairFactsResponse Present(
         ChairDetailItem chair,
         Domain.Publishing.ChairFacts facts,
         ChairTallies counted,
-        IReadOnlyList<int> years)
+        IReadOnlyList<int> years,
+        bool hasDemoCorpusVoices)
     {
         var text = (string code) =>
             counted.ItemTexts.TryGetValue(code, out var t) ? t : code;
@@ -119,7 +126,8 @@ public static class GetChairFactsQueryHandler
                     c.HereTotal,
                     c.SiblingsPercent,
                     c.SiblingsTotal))
-                .ToList());
+                .ToList(),
+            HasDemoCorpusVoices: hasDemoCorpusVoices);
     }
 
     /// <summary>

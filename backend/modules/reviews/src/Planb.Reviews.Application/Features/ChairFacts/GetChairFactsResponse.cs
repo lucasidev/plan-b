@@ -37,7 +37,14 @@ public sealed record GetChairFactsResponse(
     IReadOnlyList<PublishedItemView> ChairConduct,
     IReadOnlyList<PublishedItemView> StudentExperience,
     CompletionView? Completion,
-    IReadOnlyList<ContrastView> Contrasts);
+    IReadOnlyList<ContrastView> Contrasts,
+    /// <summary>
+    /// True si alguna de las voces contadas viene del corpus de demostración sembrado, no de
+    /// alguien que reseñó de verdad (<see cref="Abstractions.Persistence.IChairTallyQueryService.HasDemoCorpusVoicesAsync"/>).
+    /// Siempre false cuando <see cref="IsPublished"/> es false: bajo el piso no hay conteos que
+    /// pudieran confundirse con reales.
+    /// </summary>
+    bool HasDemoCorpusVoices);
 
 /// <summary>
 /// De cuándo son las voces que esta ficha publica: entre qué años se cursó lo que se reseñó, y

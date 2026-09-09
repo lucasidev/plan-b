@@ -62,6 +62,23 @@ public interface IChairTallyQueryService
     /// </para>
     /// </summary>
     Task<Guid?> PickPublishingChairAsync(int minimumReviews, CancellationToken ct = default);
+
+    /// <summary>
+    /// True si alguna de las reseñas contadas de esta cátedra viene del corpus de demostración
+    /// (<c>CorpusSeedData</c>), no de alguien que la escribió de verdad.
+    ///
+    /// <para>
+    /// El corpus no se distingue por su cuenta autora: dos de sus reseñas cuelgan de personas
+    /// sembradas con cuenta real (<c>lucia.mansilla</c>, <c>matias.ledesma</c>) para poder probar
+    /// "Mis aportes" contra una cuenta que sí puede iniciar sesión. Lo estable es el id de la
+    /// reseña: todo lo que siembra <c>CorpusSeedData</c> nace con <c>ReviewId</c> del rango
+    /// reservado <c>00000021-…</c> (mismo criterio de UUIDs deterministas que el resto del seed,
+    /// ADR-0058). Se recalcula en cada pedido, así que se apaga solo el día que una cátedra publique
+    /// exclusivamente con reseñas fuera de ese rango: no hay bandera que alguien tenga que acordarse
+    /// de sacar.
+    /// </para>
+    /// </summary>
+    Task<bool> HasDemoCorpusVoicesAsync(Guid chairId, CancellationToken ct = default);
 }
 
 /// <summary>

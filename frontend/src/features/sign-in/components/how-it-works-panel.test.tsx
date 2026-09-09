@@ -11,16 +11,43 @@ describe('HowItWorksPanel', () => {
     expect(screen.getByText(/nada se publica con menos de diez voces/i)).toBeInTheDocument();
   });
 
-  it('el demo de la ficha muestra la moda con su etiqueta literal y la distribución', () => {
+  it('el ejemplo de la ficha muestra la moda con su etiqueta literal y la distribución', () => {
     render(<HowItWorksPanel />);
-    expect(screen.getByText('Casi nunca · 59 %')).toBeInTheDocument();
+    expect(screen.getByText('Faltaron muchas · 57 %')).toBeInTheDocument();
     expect(
-      screen.getByText(/casi nunca 59 · a veces 24 · casi siempre 17 · de 34/i),
+      screen.getByText(/casi todas 22 · faltaron algunas 21 · faltaron muchas 57 · de 34/i),
     ).toBeInTheDocument();
   });
 
   it('no promete el producto retirado ni ningún puntaje', () => {
     const { container } = render(<HowItWorksPanel />);
     expect(container.textContent).not.toMatch(/planific|choque|ranking|★|mejores docentes/i);
+  });
+
+  /**
+   * Auditoría R6: la frase, las opciones, la materia y el período del ejemplo tienen que salir del
+   * catálogo vigente (`docs/product/phrases.md`, `CatalogSeedData`, `AcademicSeedData`), nunca de
+   * un tercer cuestionario inventado para esta pantalla.
+   */
+  it('la frase y las opciones del ejemplo son las del instrumento vigente, no uno inventado', () => {
+    render(<HowItWorksPanel />);
+
+    expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
+    expect(
+      screen.getByText('¿Contestaba las preguntas que le hacían en clase?'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Siempre')).toBeInTheDocument();
+    expect(screen.getByText('Nadie preguntaba')).toBeInTheDocument();
+
+    // La frase y las opciones que este panel mostraba antes no pertenecen a ningún instrumento.
+    expect(screen.queryByText(/se dieron todas las clases/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/se cayeron clases sin reprogramar/i)).not.toBeInTheDocument();
+  });
+
+  it('la materia y el período del ejemplo son los del catálogo, no un código inventado', () => {
+    render(<HowItWorksPanel />);
+
+    expect(screen.getByText(/fundamentos de control de calidad · 2025-c2/i)).toBeInTheDocument();
+    expect(screen.queryByText(/isw302/i)).not.toBeInTheDocument();
   });
 });

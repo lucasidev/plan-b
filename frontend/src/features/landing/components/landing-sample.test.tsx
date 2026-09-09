@@ -56,6 +56,7 @@ function facts(overrides: Partial<ChairFacts> = {}): ChairFacts {
     studentExperience: [],
     completion: { outOfTen: 9, reaching: 28, total: 31 },
     contrasts: [],
+    hasDemoCorpusVoices: false,
     ...overrides,
   };
 }
@@ -94,6 +95,18 @@ describe('LandingSample', () => {
     expect(
       screen.queryByText('¿Avisó la fecha del parcial con anticipación?'),
     ).not.toBeInTheDocument();
+  });
+
+  // Auditoría R6: la entrada muestra una institución y una carrera reales con voces que todavía
+  // no existen, y eso tiene que decirse donde se ven los conteos, no solo en un pie de página.
+  it('avisa cuando la muestra sale del corpus de demostración', () => {
+    render(<LandingSample sample={facts({ hasDemoCorpusVoices: true })} />);
+    expect(screen.getByText(/estas voces son de prueba/i)).toBeInTheDocument();
+  });
+
+  it('no avisa nada cuando la muestra no es del corpus de demostración', () => {
+    render(<LandingSample sample={facts({ hasDemoCorpusVoices: false })} />);
+    expect(screen.queryByText(/son de prueba/i)).not.toBeInTheDocument();
   });
 
   it('sin nada publicado lo dice, en vez de inventar un ejemplo', () => {

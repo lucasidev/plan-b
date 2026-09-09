@@ -26,6 +26,8 @@ export interface ChairFacts {
   studentExperience: PublishedItem[];
   completion: Completion | null;
   contrasts: Contrast[];
+  /** True si alguna de las voces contadas viene del corpus de demostración sembrado, no de una reseña real. */
+  hasDemoCorpusVoices: boolean;
 }
 
 /** De cuándo son las voces: entre qué años se cursó y cuándo entró la última reseña. */

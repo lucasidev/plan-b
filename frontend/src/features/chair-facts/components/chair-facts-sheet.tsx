@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ItemRow } from '@/components/facts';
+import { DemoCorpusNotice, ItemRow } from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
 import type { ChairFacts } from '../types';
@@ -99,6 +99,7 @@ function Identity({ facts }: { facts: ChairFacts }) {
             ` · lo último es de ${formatRelativeDate(facts.span.lastReviewedAt)}`}
         </p>
       )}
+      {facts.hasDemoCorpusVoices && <DemoCorpusNotice />}
     </div>
   );
 }

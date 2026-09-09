@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ItemRow } from '@/components/facts';
+import { DemoCorpusNotice, ItemRow } from '@/components/facts';
 import type { ChairFacts } from '@/features/chair-facts';
 
 /**
@@ -60,6 +60,8 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
         {sample.reviewCount} {sample.reviewCount === 1 ? 'voz' : 'voces'}
         {sample.span && ` · de ${sample.span.fromYear} a ${sample.span.toYear}`}
       </p>
+
+      {sample.hasDemoCorpusVoices && <DemoCorpusNotice />}
 
       {sample.completion && (
         <div className="mb-4 rounded-lg bg-bg-elev px-3.5 py-3">

@@ -53,6 +53,7 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
     studentExperience: [],
     completion: null,
     contrasts: [],
+    hasDemoCorpusVoices: false,
     ...over,
   };
 }
@@ -273,6 +274,30 @@ describe('ChairFactsSheet', () => {
 
     expect(screen.getByText(/a cargo de martín pérez/i)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Martín Pérez' })).not.toBeInTheDocument();
+  });
+
+  /**
+   * Auditoría R6: la ficha no puede publicar voces del corpus de demostración sin decirlo, colgadas
+   * de una cátedra e institución con nombre real.
+   */
+  it('avisa cuando las voces contadas son del corpus de demostración', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet facts={facts({ hasDemoCorpusVoices: true })} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/estas voces son de prueba/i)).toBeInTheDocument();
+  });
+
+  it('no avisa nada cuando las voces contadas no son del corpus de demostración', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet facts={facts({ hasDemoCorpusVoices: false })} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.queryByText(/son de prueba/i)).not.toBeInTheDocument();
   });
 
   /**

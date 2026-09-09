@@ -4,8 +4,9 @@
  * completa como barra segmentada y el rojo solo en la opción negativa (ADR-0083, mismas reglas
  * que `components/facts/item-row.tsx`).
  *
- * Datos de EJEMPLO, no del corpus: los códigos, materias y porcentajes son ilustrativos y no salen
- * del backend. Ver `docs/product/language.md` > "datos demo".
+ * La pregunta, las opciones, la materia y el período son reales (`docs/product/phrases.md` y el
+ * catálogo sembrado, `CatalogSeedData`/`AcademicSeedData`): lo único inventado es el conteo que
+ * ilustra la barra, que no sale del backend. Ver `docs/product/language.md` > "datos demo".
  */
 export function HowItWorksPanel() {
   return (
@@ -29,13 +30,13 @@ export function HowItWorksPanel() {
       </div>
 
       <Step n="01" title="Leé lo que ya respondieron los que cursaron">
-        <ItemDemo />
+        <ItemExample />
       </Step>
       <Step n="02" title="Reseñá una cursada que hiciste">
-        <AnswerDemo />
+        <AnswerExample />
       </Step>
       <Step n="03" title="Nada se publica con menos de diez voces">
-        <FloorDemo />
+        <FloorExample />
       </Step>
     </div>
   );
@@ -60,18 +61,22 @@ function Step({ n, title, children }: { n: string; title: string; children: Reac
   );
 }
 
-/** Los tramos de la distribución de la frase demo. El primero es el negativo y es el único con color. */
+/**
+ * Los tramos de la distribución de la frase de ejemplo, en el mismo orden en que el instrumento
+ * ofrece sus opciones (`CatalogSeedData`, CHAIR_CLASSES_HELD): la negativa va última y es la única
+ * con color.
+ */
 const SLICES = [
-  { label: 'Casi nunca', percent: 59, isNegative: true },
-  { label: 'A veces', percent: 24, isNegative: false },
-  { label: 'Casi siempre', percent: 17, isNegative: false },
+  { label: 'Casi todas', percent: 22, isNegative: false },
+  { label: 'Faltaron algunas', percent: 21, isNegative: false },
+  { label: 'Faltaron muchas', percent: 57, isNegative: true },
 ] as const;
 
 /**
  * Una frase publicada, con la anatomía de `ItemRow`: pregunta, moda como badge con su etiqueta
  * literal, distribución completa y los conteos crudos con su "de N". Ningún puntaje.
  */
-function ItemDemo() {
+function ItemExample() {
   return (
     <div
       className="bg-bg-card border border-line"
@@ -79,7 +84,7 @@ function ItemDemo() {
     >
       <div className="mb-[7px] flex items-baseline justify-between" style={{ gap: 10 }}>
         <span className="text-ink" style={{ fontSize: 12.5 }}>
-          ¿Se dieron todas las clases?
+          ¿Se dictaron las clases?
         </span>
         <span
           className="whitespace-nowrap"
@@ -91,7 +96,7 @@ function ItemDemo() {
             color: 'var(--color-alarm-ink)',
           }}
         >
-          Casi nunca · 59 %
+          Faltaron muchas · 57 %
         </span>
       </div>
 
@@ -118,30 +123,30 @@ function ItemDemo() {
   );
 }
 
-const OPTIONS = ['Nunca', 'Alguna vez', 'Varias veces', 'Casi todas'] as const;
+const OPTIONS = ['Siempre', 'A veces', 'Casi nunca', 'Nadie preguntaba'] as const;
 
 /**
  * El acto de reseñar: se marca una opción, no se escribe. La marcada va con el fondo de tinta
  * porque es la elección, no porque sea buena ni mala: mientras se responde ninguna opción se
  * pinta de alarma.
  */
-function AnswerDemo() {
+function AnswerExample() {
   return (
     <div
       className="bg-bg-card border border-line"
       style={{ borderRadius: 10, padding: '12px 14px' }}
     >
       <div className="font-mono uppercase text-ink-3" style={{ fontSize: 9.5, marginBottom: 3 }}>
-        ISW302 · 2025-C2
+        Fundamentos de Control de Calidad · 2025-C2
       </div>
       <div className="text-ink" style={{ fontSize: 12.5, marginBottom: 9 }}>
-        ¿Se cayeron clases sin reprogramar?
+        ¿Contestaba las preguntas que le hacían en clase?
       </div>
       <div className="flex flex-wrap" style={{ gap: 5 }}>
         {OPTIONS.map((option) => (
           <span
             key={option}
-            className={option === 'Varias veces' ? 'bg-ink text-bg-card' : 'bg-bg-elev text-ink-2'}
+            className={option === 'A veces' ? 'bg-ink text-bg-card' : 'bg-bg-elev text-ink-2'}
             style={{ fontSize: 11, borderRadius: 6, padding: '4px 9px' }}
           >
             {option}
@@ -160,7 +165,7 @@ function AnswerDemo() {
  * no exponga a nadie, y por eso cierra el panel: es lo último que alguien necesita saber antes de
  * decidir si crea la cuenta.
  */
-function FloorDemo() {
+function FloorExample() {
   return (
     <div
       className="bg-bg-card border border-line"
