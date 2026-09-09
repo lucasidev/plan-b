@@ -4,6 +4,7 @@ using Planb.Academic.Domain.AcademicTerms;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Chairs;
+using Planb.Academic.Domain.OfficialFacts;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
@@ -50,6 +51,7 @@ public sealed class AcademicSeeder
         await SeedAcademicTermsAsync(now, ct);
         await SeedTeachersAsync(now, ct);
         await SeedChairsAsync(now, ct);
+        await SeedOfficialFactsAsync(now, ct);
 
         if (_db.ChangeTracker.HasChanges())
         {
@@ -312,6 +314,52 @@ public sealed class AcademicSeeder
         if (inserted > 0)
         {
             _logger.LogInformation("AcademicSeeder: inserted {Count} chairs", inserted);
+        }
+    }
+
+    /// <summary>
+    /// Afirmaciones oficiales relevadas a mano (ADR-0090, R6 tarea 3): un ledger de solo alta, así
+    /// que la idempotencia es la misma que el resto del seed, por Id ya asignado en <see
+    /// cref="OfficialFactSeedData"/>, no por la tripla (subject, field) porque varias afirmaciones
+    /// pueden convivir ahí a propósito (K04).
+    /// </summary>
+    private async Task SeedOfficialFactsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existingIds = (await _db.OfficialFacts
+            .AsNoTracking()
+            .Select(f => f.Id)
+            .ToListAsync(ct))
+            .ToHashSet();
+
+        var inserted = 0;
+        foreach (var record in OfficialFactSeedData.Facts)
+        {
+            if (existingIds.Contains(record.Id)) continue;
+
+            _db.OfficialFacts.Add(OfficialFact.Hydrate(
+                record.Id,
+                record.SubjectType,
+                record.SubjectId,
+                record.Field,
+                record.Value,
+                record.Unit,
+                record.Period,
+                record.SourceName,
+                record.SourceUrl,
+                record.SourceDocument,
+                record.SourceRetrievedAt,
+                record.Status,
+                record.DerivationRuleId,
+                record.Note,
+                record.RelievedAt,
+                OfficialFactSeedData.RelievedBy,
+                createdAt: now));
+            inserted++;
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: inserted {Count} official facts", inserted);
         }
     }
 }
