@@ -1,21 +1,25 @@
-# El stage entero: los cinco servicios de un deploy de Dokploy (Project → Create Service →
-# Compose). Corre como Development hospedado porque el perfil Production de Wolverine exige
-# codegen estático y migraciones aplicadas a mano, que un stage con datos de prueba no necesita.
+# El stage entero: los siete servicios de un deploy de Dokploy (Project → Create Service →
+# Compose). Corre como producción (ASPNETCORE_ENVIRONMENT=Production, codegen estático, resources
+# sin auto-create): la única ficción son las personas sembradas y sus reseñas, y esa ficción es
+# dato, no un modo distinto de correr la app. `migrate` y `seed` son servicios de un solo uso que
+# dejan la base lista antes de que `api` arranque (ver ADR-0091); `seed` no existe en
+# docker-compose.prod.yml, que es la protección fuerte contra sembrar producción.
 # Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
 # SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH, PLANB_SEED_PASSWORD.
 # PLANB_API_TAG y PLANB_WEB_TAG son opcionales: sin valor corren main (el tag móvil que publica
 # cada push a main); un sha corto en esas variables pinea el stage a esa versión.
-# El reset es `down -v` y volver a desplegar: migraciones y siembras corren solas al arrancar.
+# El reset es `down -v` y volver a desplegar: `migrate` y `seed` vuelven a correr solos.
 # Los mem_limit salen del consumo medido en reposo (api 362 MiB, web 94 MiB) con margen para
 # carga y JIT; si un contenedor se pasa, Docker lo reinicia solo a él (restart: unless-stopped)
-# y el resto sigue. Los logs rotan con json-file para que no llenen el disco del VPS.
+# y el resto sigue. `migrate` y `seed` no llevan mem_limit: corren una vez y terminan, no hay
+# consumo sostenido que limitar. Los logs rotan con json-file para que no llenen el disco del VPS.
 # Producción es docker-compose.prod.yml.
 
 x-logging: &logging
   driver: json-file
   options:
     max-size: "10m"
-    max-file: "3"
+    max-file: "5"
 
 services:
   postgres:
@@ -80,6 +84,50 @@ services:
       - internal
       - dokploy-network
 
+  # Un solo uso: deja migradas las tres schemas de EF Core y aplicados los recursos de Wolverine
+  # (el schema del outbox durable), y termina. `api` no arranca hasta que esto termine bien: en
+  # Production nadie migra ni crea recursos solo (ver ADR-0091).
+  migrate:
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    pull_policy: always
+    command: ["migrate-db"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *logging
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
+      JWT__Secret: ${JWT_SECRET}
+    networks:
+      - internal
+
+  # Un solo uso: siembra personas, catálogo académico, catálogo de frases y corpus de reseñas, y
+  # termina. Es la única ficción del stage y por eso es la única diferencia real con
+  # docker-compose.prod.yml, que no tiene este servicio (así producción no puede sembrar ni por
+  # error de configuración).
+  seed:
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    pull_policy: always
+    command: ["seed-db"]
+    restart: "no"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    logging: *logging
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PLANB_SEED_PASSWORD: ${PLANB_SEED_PASSWORD}
+      ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
+      JWT__Secret: ${JWT_SECRET}
+    networks:
+      - internal
+
   api:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
     pull_policy: always
@@ -89,13 +137,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      seed:
+        condition: service_completed_successfully
     restart: unless-stopped
     mem_limit: 768m
     logging: *logging
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      PLANB_SEED_CORPUS: 1
-      PLANB_SEED_PASSWORD: ${PLANB_SEED_PASSWORD}
+      ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
       ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
       JWT__Secret: ${JWT_SECRET}
@@ -107,7 +155,7 @@ services:
       Identity__Verification__LinkBaseUrl: https://${WEB_HOST}/verify-email
       Identity__PasswordReset__LinkBaseUrl: https://${WEB_HOST}/reset-password
     # La imagen de aspnet no trae curl ni wget, pero sí bash: el pedido HTTP se arma a mano por el socket.
-    # Healthy significa que /health responde 200, o sea que Postgres y Redis también contestan; las siembras siguen un minuto más.
+    # Healthy significa que /health responde 200, o sea que Postgres y Redis también contestan.
     healthcheck:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080 && printf 'GET /health HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
       interval: 10s

@@ -1,8 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Planb.Academic.Infrastructure.Persistence;
-using Planb.Identity.Infrastructure.Persistence;
-using Planb.Reviews.Infrastructure.Persistence;
-
 namespace Planb.Api.Infrastructure;
 
 /// <summary>
@@ -23,9 +18,10 @@ namespace Planb.Api.Infrastructure;
 /// connection. Running migrations before any request reaches an enum-mapped
 /// column avoids the stale cache.
 ///
-/// Aplica migraciones de TODOS los DbContexts registrados (Identity, Academic, ...).
-/// Cuando aterrice un módulo nuevo con su propio DbContext, agregar otro
-/// <see cref="MigrateAsync{TContext}"/> a <see cref="StartAsync"/>.
+/// Reusa <see cref="EfCoreMigrator"/> para el loop de migración: es el mismo código que corre el
+/// verbo `migrate-db` (<see cref="MigrateDbCommand"/>) del deploy, así que este hosted service y ese
+/// verbo no pueden divergir. Cuando aterrice un módulo nuevo con su propio DbContext, se agrega ahí,
+/// no acá.
 /// </summary>
 public sealed class DevMigrationsHostedService : IHostedService
 {
@@ -48,25 +44,10 @@ public sealed class DevMigrationsHostedService : IHostedService
         if (!_env.IsDevelopment()) return;
 
         using var scope = _sp.CreateScope();
-
-        await MigrateAsync<IdentityDbContext>(scope.ServiceProvider, "Identity", ct);
-        await MigrateAsync<AcademicDbContext>(scope.ServiceProvider, "Academic", ct);
-        await MigrateAsync<ReviewsDbContext>(scope.ServiceProvider, "Reviews", ct);
-    }
-
-    private async Task MigrateAsync<TContext>(
-        IServiceProvider sp, string label, CancellationToken ct)
-        where TContext : DbContext
-    {
-        var db = sp.GetRequiredService<TContext>();
-        var pending = await db.Database.GetPendingMigrationsAsync(ct);
-        var pendingList = pending.ToList();
-        if (pendingList.Count == 0) return;
-
-        _log.LogInformation(
-            "Applying {Count} pending {Label} migrations: {Migrations}",
-            pendingList.Count, label, string.Join(", ", pendingList));
-        await db.Database.MigrateAsync(ct);
+        await EfCoreMigrator.MigrateAllAsync(
+            scope.ServiceProvider,
+            message => _log.LogInformation("{Message}", message),
+            ct);
     }
 
     public Task StopAsync(CancellationToken ct) => Task.CompletedTask;

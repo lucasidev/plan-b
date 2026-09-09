@@ -1,10 +1,13 @@
 # Producción: el mismo par de imágenes que el stage en otro servicio Compose de Dokploy (Project →
 # Create Service → Compose, Compose Path ./docker-compose.prod.yml), con lo que el stage no tiene.
-# Corre con el perfil Production de Wolverine: codegen estático y nada migra ni siembra al arrancar
-# (los pasos a mano están en docs/engineering/deploy.md, "Secuencia de un deploy"). No hay Mailpit:
-# los mails salen por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin
-# PLANB_API_TAG y PLANB_WEB_TAG el deploy no arranca, porque acá no existe main. Y prometheus y
-# grafana van siempre prendidos, provisionados desde observability/.
+# Corre con el perfil Production de Wolverine: codegen estático y resources sin auto-create.
+# `migrate` es un servicio de un solo uso que deja migrado el schema y aplicados los recursos de
+# Wolverine antes de que `api` arranque (el mismo mecanismo que el stage, ver ADR-0091); nada
+# siembra acá, y a propósito: a diferencia del stage, este compose no tiene un servicio `seed`, así
+# que producción no puede sembrar ni por error de configuración. No hay Mailpit: los mails salen
+# por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin PLANB_API_TAG y
+# PLANB_WEB_TAG el deploy no arranca, porque acá no existe main. Y prometheus y grafana van siempre
+# prendidos, provisionados desde observability/.
 # Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
 # SESSION_SECRET, PLANB_API_TAG, PLANB_WEB_TAG, SMTP_HOST, SMTP_PORT, SMTP_USE_SSL, SMTP_USERNAME,
 # SMTP_PASSWORD, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, GRAFANA_ADMIN_USER,
@@ -62,6 +65,28 @@ services:
     networks:
       - internal
 
+  # Un solo uso: deja migradas las tres schemas de EF Core y aplicados los recursos de Wolverine
+  # (el schema del outbox durable), y termina. `api` no arranca hasta que esto termine bien: en
+  # Production nadie migra ni crea recursos solo (ver ADR-0091). Sin pull_policy, igual que `api`:
+  # el tag es inmutable.
+  migrate:
+    image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:?PLANB_API_TAG sin definir, producción corre un tag pineado}
+    command: ["migrate-db"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *logging
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
+      JWT__Secret: ${JWT_SECRET:?JWT_SECRET sin definir}
+    networks:
+      - internal
+
   # Sin pull_policy: el tag es inmutable (un sha corto), así que la imagen se baja una sola vez.
   api:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:?PLANB_API_TAG sin definir, producción corre un tag pineado}
@@ -71,6 +96,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     restart: unless-stopped
     mem_limit: 768m
     logging: *logging

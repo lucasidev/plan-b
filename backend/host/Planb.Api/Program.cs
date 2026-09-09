@@ -22,6 +22,7 @@ using Planb.SharedKernel.Abstractions.DomainEvents;
 using Planb.SharedKernel.Abstractions.Metrics;
 using Prometheus;
 using Serilog;
+using Serilog.Events;
 using StackExchange.Redis;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
@@ -200,18 +201,18 @@ builder.Services.AddHostedService<DevMigrationsHostedService>();
 builder.Services.AddHostedService<UnverifiedRegistrationExpirationScheduler>();
 
 // ------------------------------------------------------------------
-// Dev seed: load personas from a separate JSON file (Options pattern), then
+// Seed data: load personas from a separate JSON file (Options pattern), then
 // register the IdentitySeeder + hosted service that materializes them. The
-// hosted service is gated by IsDevelopment() internally; Configure can stay
-// unconditional because the file is also dev-only (production deploys ship
-// without it). Order: must be registered AFTER DevMigrationsHostedService so
-// it runs against an existing schema.
+// hosted service stays gated by IsDevelopment() (only `just dev` seeds on
+// startup); this load is unconditional because the stage's `seed-db` verb
+// (Infrastructure/SeedDbCommand.cs) runs with ASPNETCORE_ENVIRONMENT=Production
+// and needs SeedPersonasOptions bound the same way. optional: true keeps this a
+// no-op wherever the file is absent (true production ships without it and
+// never invokes the seeder). Order: must be registered AFTER
+// DevMigrationsHostedService so it runs against an existing schema.
 // ------------------------------------------------------------------
-if (builder.Environment.IsDevelopment())
-{
-    builder.Configuration.AddJsonFile(
-        "seed-data/personas.json", optional: true, reloadOnChange: false);
-}
+builder.Configuration.AddJsonFile(
+    "seed-data/personas.json", optional: true, reloadOnChange: false);
 
 builder.Services.AddOptions<Planb.Identity.Application.Seeding.SeedPersonasOptions>()
     .Bind(builder.Configuration.GetSection(
@@ -277,7 +278,30 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 app.UseExceptionHandler();
-app.UseSerilogRequestLogging();
+
+// El healthcheck del compose pega a /health cada 10 segundos (docker-compose.stage.yml y
+// docker-compose.prod.yml): a Information, cada chequeo dejaba una línea que se comía la ventana
+// de diagnóstico antes de que el log rotara. Mismo criterio que la exclusión de UseHttpMetrics más
+// abajo: /health y /metrics son tráfico de infraestructura, no de producto, así que sus pedidos
+// exitosos bajan a Verbose; si alguno empieza a fallar, sigue en Information.
+app.UseSerilogRequestLogging(options =>
+{
+    options.GetLevel = (httpContext, _, ex) =>
+    {
+        if (ex is not null)
+        {
+            return LogEventLevel.Error;
+        }
+
+        var isInfraProbe = httpContext.Request.Path.StartsWithSegments("/health")
+            || httpContext.Request.Path.StartsWithSegments("/metrics");
+
+        return isInfraProbe && httpContext.Response.StatusCode < 400
+            ? LogEventLevel.Verbose
+            : LogEventLevel.Information;
+    };
+});
+
 app.UseIdentityJwtAuthentication();
 app.MapCarter();
 
