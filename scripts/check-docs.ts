@@ -36,6 +36,10 @@ const EMDASH = String.fromCharCode(0x2014);
 type Finding = { file: string; line: number; rule: string; detail: string };
 const findings: Finding[] = [];
 
+// cada worktree de agente es un checkout completo del repo en su propio commit: recorrerlo
+// duplica docs/ con hallazgos que no existen en el checkout real (mismo archivo, otra copia).
+const AGENT_WORKTREES_DIR = join(ROOT, '.claude', 'worktrees');
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
     if (
@@ -52,6 +56,7 @@ function walk(dir: string, out: string[] = []): string[] {
     )
       continue;
     const p = join(dir, name);
+    if (p === AGENT_WORKTREES_DIR) continue;
     if (statSync(p).isDirectory()) walk(p, out);
     else out.push(p);
   }
