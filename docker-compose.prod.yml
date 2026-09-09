@@ -39,7 +39,7 @@ x-hardening: &hardening
 
 services:
   postgres:
-    image: pgvector/pgvector:pg17
+    image: pgvector/pgvector:pg17@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f
     <<: *hardening
     # El entrypoint arranca como root para preparar /var/lib/postgresql/data y recién ahí baja a
     # postgres (gosu): sin estas cinco no arranca, verificado sacándolas una por una (docker-compose.stage.yml).
@@ -70,7 +70,7 @@ services:
 
   # Estado efímero: un reinicio cierra sesiones y nada más.
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
     <<: *hardening
     # El entrypoint también arranca como root para chown-ear /data y bajar a redis (gosu): sin
     # SETUID falla con "setresuid failed", verificado (docker-compose.stage.yml).
@@ -206,7 +206,7 @@ services:
   # Scrapea /metrics del api cada 15s y guarda 15 días de series. Sin dominio propio: se lee
   # siempre desde Grafana.
   prometheus:
-    image: prom/prometheus:v3.14.0
+    image: prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
     <<: *hardening
     # Corre directo con su usuario no root de imagen: no necesita capacidad ni tmpfs, todo lo que
     # escribe va al volumen /prometheus, verificado.
@@ -234,7 +234,7 @@ services:
   # El datasource, el tablero y las reglas de alerta se provisionan desde
   # observability/grafana/provisioning: no se clickea nada en la UI, un redeploy los reaplica.
   grafana:
-    image: grafana/grafana:12.4.10
+    image: grafana/grafana:12.4.10@sha256:c132a683b2430fff9115a29b2a79c8ab97540cdcc90846e3c81878c778ca3596
     <<: *hardening
     # Corre directo con su usuario no root de imagen (472): no necesita capacidad ni tmpfs, todo
     # lo que escribe va al volumen /var/lib/grafana, verificado.

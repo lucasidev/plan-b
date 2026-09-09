@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM oven/bun:1-alpine AS deps
+FROM oven/bun:1-alpine@sha256:d888c0ae6c86d7866ff10c5aafdd9077b36aee6455b33dd270fb93c0dd5cef6f AS deps
 WORKDIR /app
 COPY frontend/package.json frontend/bun.lock ./
 RUN bun install --frozen-lockfile
 
-FROM oven/bun:1-alpine AS build
+FROM oven/bun:1-alpine@sha256:d888c0ae6c86d7866ff10c5aafdd9077b36aee6455b33dd270fb93c0dd5cef6f AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY frontend/ ./
@@ -24,7 +24,7 @@ RUN test -n "$NEXT_PUBLIC_API_URL" || { echo "NEXT_PUBLIC_API_URL build-arg is r
 ENV NEXT_OUTPUT=standalone
 RUN bun run build
 
-FROM oven/bun:1-alpine AS runtime
+FROM oven/bun:1-alpine@sha256:d888c0ae6c86d7866ff10c5aafdd9077b36aee6455b33dd270fb93c0dd5cef6f AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
