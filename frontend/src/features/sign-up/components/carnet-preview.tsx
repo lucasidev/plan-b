@@ -1,14 +1,17 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Panel izquierdo del sign-up (`AuthShell` leftPanel). Port de `CarnetPreview`
- * (docs/design/reference/canvas-mocks/auth.jsx): muestra las dos formas de la
+ * Panel izquierdo del sign-up (`AuthShell` leftPanel): muestra las dos formas de la
  * identidad (privada, solo vos; pública, anónima) que verán los demás cuando
  * reseñes.
  *
  * Visual estático en MVP (US-059-f): no se conecta al estado del form. Copy
  * multi-universidad: sin marca UNSTA hardcodeada (email genérico, "hacia afuera"
  * en vez de "hacia el resto de UNSTA", sin chip de universidad).
+ *
+ * El carnet público no cita texto de ninguna reseña: lo que se vuelve público es la
+ * carrera, el año y el período cursado, nunca una reseña individual ni el campo
+ * libre (THESIS.md).
  */
 export function CarnetPreview() {
   return (
@@ -124,19 +127,6 @@ export function CarnetPreview() {
               Sistemas · 4° año · cursó 2024-C2
             </div>
           </div>
-        </div>
-        <div
-          style={{
-            marginTop: 14,
-            paddingTop: 12,
-            borderTop: '1px solid #1a110a',
-            fontSize: 12.5,
-            color: '#d8c9bc',
-            lineHeight: 1.5,
-            fontStyle: 'italic',
-          }}
-        >
-          "ISW302 con Brandt: exigente pero el TP final te enseña más que cualquier teórica…"
         </div>
       </div>
     </div>
