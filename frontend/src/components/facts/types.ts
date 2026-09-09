@@ -29,3 +29,34 @@ export interface DistributionSlice {
   percent: number;
   isNegative: boolean;
 }
+
+/**
+ * Un dato oficial (ADR-0090), tal como lo publica `GET /api/academic/official-facts`: la
+ * afirmación vigente de un sujeto y campo, con su valor, su fuente y su estado. Comparten esta
+ * forma la ficha de carrera y la de institución (y, después, Dónde estudiarla): el mismo sujeto
+ * nunca se muestra de dos formas distintas.
+ */
+export interface OfficialFact {
+  id: string;
+  /** Código del vocabulario curado (`paper_duration`, `minutes_published`, ...). Ver `OFFICIAL_FACT_LABELS`. */
+  field: string;
+  status: OfficialFactStatus;
+  /** El valor tal como se publica. `null` cuando el estado no trae un dato (todos salvo Published/Derived). */
+  value: string | null;
+  unit: string | null;
+  /** A qué período refiere el dato, distinto de `relievedAt`. */
+  period: string | null;
+  sourceName: string;
+  sourceUrl: string;
+  /** Una frase para la ficha cuando el estado la necesita (la razón de un NotApplicable, el detalle de un NotPublished). */
+  note: string | null;
+  /** Cuándo se relevó esta afirmación (ISO 8601). */
+  relievedAt: string;
+}
+
+export type OfficialFactStatus =
+  | 'Published'
+  | 'Derived'
+  | 'NotPublished'
+  | 'Requested'
+  | 'NotApplicable';

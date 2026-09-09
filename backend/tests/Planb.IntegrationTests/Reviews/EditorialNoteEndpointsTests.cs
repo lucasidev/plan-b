@@ -79,12 +79,12 @@ public class EditorialNoteEndpointsTests : IClassFixture<RegisterApiFixture>
 
     /// <summary>
     /// La nota llega a la ficha de su carrera, que se lee sin cuenta: la síntesis se publica, y el
-    /// texto del que salió no.
+    /// texto del que salió no (ADR-0084). Antes de publicarla, la carrera no tiene ninguna nota, así
+    /// que ningún texto sale inventado.
     ///
-    /// US-127 E1, E3: "dura en la realidad" no tiene un campo propio (es relevamiento oficial que
-    /// hoy no existe como dato estructurado); se publica como una nota del equipo con su fuente y su
-    /// período adentro del texto, y la ficha la muestra fechada. US-127 N1: antes de publicarla, la
-    /// carrera no tiene ninguna nota, así que ningún número sale inventado.
+    /// No cita US-127: con ADR-0090 "dura en la realidad" es un campo propio de <c>OfficialFact</c>
+    /// (<c>real_duration</c>), no una nota del equipo; el texto de acá es solo un ejemplo de
+    /// contenido libre para probar el flujo de curaduría.
     /// </summary>
     [Fact]
     public async Task The_note_reaches_the_career_ficha_and_is_read_without_an_account()

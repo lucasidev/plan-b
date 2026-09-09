@@ -19,3 +19,16 @@ export function formatRelativeDate(iso: string): string {
   if (years === 1) return 'hace 1 año';
   return `hace ${years} años`;
 }
+
+/**
+ * Fecha corta en formato es-AR (dd/mm/aaaa), para una cita fechada donde el día exacto importa:
+ * una nota editorial, un dato oficial relevado o pedido. A diferencia de `formatRelativeDate`, no
+ * envejece con la lectura ("hace 3 días" cambia de significado con el tiempo; "07/09/2026" no).
+ */
+export function formatShortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}

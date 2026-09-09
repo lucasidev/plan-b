@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { fetchOfficialFactsServer } from '@/components/facts';
 import { CareerFactsSheet, fetchCareerFactsServer } from '@/features/career-facts';
 
 // La cobertura cambia con cada reseña nueva: se sirve fresca en vez de prerenderizada.
@@ -17,12 +18,12 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 /**
- * /careers/[id] (SC-001, US-127, US-134). **Pública, sin cuenta.**
+ * /careers/[id] (SC-001, US-127, US-133, US-134, ADR-0090). **Pública, sin cuenta.**
  *
- * Alcance acotado a lo que tiene fuente real hoy: identidad, cuánto dura en el papel y la
- * cobertura. Lo que la ficha completa pide y todavía no entra (los datos oficiales de egreso por
- * cohorte, "qué frena la cursada" y la nota de curaduría) necesita un relevamiento propio o un
- * corpus de reseñas que hoy no existen: no se mockean ni se dejan con números falsos.
+ * Identidad y cobertura salen de reviews (`fetchCareerFactsServer`); los seis datos oficiales
+ * salen aparte de academic (`fetchOfficialFactsServer`, sujeto `Offering`), porque son afirmaciones
+ * con su propia fuente, no un cálculo sobre reseñas. "Qué frena la cursada" y la nota de curaduría
+ * necesitan un corpus de reseñas que hoy no existe: no se mockean ni se dejan con números falsos.
  */
 export default async function CareerPage({ params }: { params: Params }) {
   const { id } = await params;
@@ -32,5 +33,7 @@ export default async function CareerPage({ params }: { params: Params }) {
     notFound();
   }
 
-  return <CareerFactsSheet facts={facts} />;
+  const officialFacts = await fetchOfficialFactsServer('Offering', id);
+
+  return <CareerFactsSheet facts={facts} officialFacts={officialFacts} />;
 }

@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import type { OfficialFact } from '@/components/facts';
 import type { CareerFacts } from '../types';
 import { CareerFactsSheet } from './career-facts-sheet';
 
@@ -22,10 +23,23 @@ const BASE: CareerFacts = {
   editorialNotes: [],
 };
 
-function renderSheet(facts: CareerFacts) {
+const PAPER_DURATION: OfficialFact = {
+  id: 'fact-paper-duration',
+  field: 'paper_duration',
+  status: 'Published',
+  value: '2.5',
+  unit: 'years',
+  period: 'plan vigente',
+  sourceName: 'Sitio UNSTA',
+  sourceUrl: 'https://unsta.edu.ar/tudcs',
+  note: null,
+  relievedAt: '2026-09-07T12:00:00Z',
+};
+
+function renderSheet(facts: CareerFacts, officialFacts: OfficialFact[] = []) {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <CareerFactsSheet facts={facts} />
+      <CareerFactsSheet facts={facts} officialFacts={officialFacts} />
     </QueryClientProvider>,
   );
 }
@@ -38,17 +52,147 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText(BASE.universityName)).toBeInTheDocument();
   });
 
-  it('dice que faltan los datos oficiales cuando no hay duración cargada', () => {
-    renderSheet(BASE);
+  /** US-127 N1: sin ningún dato oficial relevado, el bloque entero lo dice, no un espacio vacío. */
+  it('dice que faltan los datos oficiales cuando todavía no hay ninguno relevado', () => {
+    renderSheet(BASE, []);
 
     expect(screen.getByText(/todavía no tenemos datos oficiales/i)).toBeInTheDocument();
   });
 
-  it('muestra la duración en el papel cuando existe, y avisa lo que todavía falta', () => {
-    renderSheet({ ...BASE, durationYears: 3 });
+  /** US-127 E1, E4: dura en el papel se lee como dato oficial, con su fuente y su período. */
+  it('muestra dura en el papel publicado, con su fuente y su período', () => {
+    renderSheet(BASE, [PAPER_DURATION]);
 
-    expect(screen.getByText(/3 años/)).toBeInTheDocument();
-    expect(screen.getByText(/cuánto dura en la realidad/i)).toBeInTheDocument();
+    expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
+    expect(screen.getByText('2,5 años')).toBeInTheDocument();
+    expect(screen.getByText('Sitio UNSTA · plan vigente')).toBeInTheDocument();
+  });
+
+  /**
+   * US-127 E2, N2: sin relevamiento de "dura en la realidad" (hoy no está publicado por ninguna
+   * fuente para ninguna carrera), el dato lo dice con fecha en vez de calcularlo o dejarlo en
+   * blanco; nunca toma la forma de un valor publicado.
+   */
+  it('dura en la realidad no publicada se dice con su nota y su fecha, no un espacio en blanco', () => {
+    renderSheet(BASE, [
+      PAPER_DURATION,
+      {
+        id: 'fact-real-duration',
+        field: 'real_duration',
+        status: 'NotPublished',
+        value: null,
+        unit: null,
+        period: null,
+        sourceName: 'Ministerio de Educación (SPU)',
+        sourceUrl: 'https://spu.example',
+        note: 'Ninguna fuente pública releva la duración real por carrera.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Dura en la realidad')).toBeInTheDocument();
+    expect(
+      screen.getByText(/No publicado: Ninguna fuente pública releva la duración real/),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/relevado el 07\/09\/2026/)).toBeInTheDocument();
+  });
+
+  /** US-133 E1: el egreso por cohorte no se publica por carrera, se deriva y se etiqueta como tal. */
+  it('egreso por cohorte derivado se etiqueta como tal y linkea a Método, nunca como dato publicado', () => {
+    renderSheet(BASE, [
+      PAPER_DURATION,
+      {
+        id: 'fact-cohort-graduation',
+        field: 'cohort_graduation',
+        status: 'Derived',
+        value: '21.4',
+        unit: 'percent',
+        period: '2022',
+        sourceName: 'Anuario SPU',
+        sourceUrl: 'https://spu.example/anuario',
+        note: 'Proxy de flujo institucional, no es una cohorte real.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
+    expect(screen.getByText('21,4 %')).toBeInTheDocument();
+    expect(screen.getByText('Derivado')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
+      'href',
+      '/method',
+    );
+  });
+
+  /** US-133 E2, N1: sin proxy todavía, "no publicado" con fecha, nunca un cero ni un cálculo propio. */
+  it('egreso por cohorte sin derivar todavía se dice no publicado, nunca un cero', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-cohort-graduation-not-published',
+        field: 'cohort_graduation',
+        status: 'NotPublished',
+        value: null,
+        unit: null,
+        period: null,
+        sourceName: 'Anuario SPU',
+        sourceUrl: 'https://spu.example/anuario',
+        note: 'Todavía no se calculó el proxy de flujo para esta oferta.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
+    expect(
+      screen.getByText(/No publicado: Todavía no se calculó el proxy de flujo/),
+    ).toBeInTheDocument();
+    // Nunca la forma de un valor publicado: nada de serif grande al lado de "Egreso por cohorte".
+    expect(screen.queryByText('0,0 %')).not.toBeInTheDocument();
+    expect(screen.queryByText('0 %', { selector: '.font-serif' })).not.toBeInTheDocument();
+  });
+
+  /** F02: el régimen de ingreso entra a esta ficha, con la misma forma que el resto. */
+  it('muestra el régimen de ingreso cuando está relevado', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-admission-regime',
+        field: 'admission_regime',
+        status: 'Published',
+        value: 'Ingreso directo, sin examen ni curso',
+        unit: null,
+        period: '2026',
+        sourceName: 'Sitio UNSTA',
+        sourceUrl: 'https://unsta.edu.ar/ingreso',
+        note: null,
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Régimen de ingreso')).toBeInTheDocument();
+    expect(screen.getByText('Ingreso directo, sin examen ni curso')).toBeInTheDocument();
+  });
+
+  /** F05, O03: una tecnicatura no tiene acreditación CONEAU, tiene validez nacional. */
+  it('en una tecnicatura muestra validez nacional, no acreditación', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-national-validity',
+        field: 'national_validity',
+        status: 'NotApplicable',
+        value: null,
+        unit: null,
+        period: null,
+        sourceName: 'CONEAU',
+        sourceUrl: 'https://coneau.gob.ar',
+        note: 'Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('Validez nacional')).toBeInTheDocument();
+    expect(screen.queryByText('Acreditación')).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/No aplica: Las tecnicaturas no se acreditan: validez nacional/),
+    ).toBeInTheDocument();
   });
 
   it('la cobertura vacía dice que ninguna materia junta el piso todavía', () => {
@@ -97,9 +241,8 @@ describe('CareerFactsSheet', () => {
   });
 
   /**
-   * US-127 E1, E3: "dura en la realidad" no tiene campo propio y se publica como nota del equipo
-   * (US-127 README); la ficha la muestra fechada y con su procedencia siempre al lado, nunca un
-   * porcentaje o número suelto sin decir de dónde sale.
+   * ADR-0084: una nota de curaduría se muestra fechada y con su procedencia siempre al lado,
+   * nunca un texto suelto sin decir de dónde sale.
    */
   it('publica la nota del equipo con su procedencia y su fecha', () => {
     renderSheet({
