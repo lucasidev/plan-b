@@ -14,6 +14,15 @@ public interface ICareerCoverageQueryService
 {
     Task<CareerCoverage> GetCoverageAsync(
         Guid careerId, int minimumReviews, CancellationToken ct = default);
+
+    /// <summary>
+    /// Qué materias de un plan puntual ya tienen una cátedra que cruzó el piso (V10: la lista de
+    /// materias del plan no marca cuáles tienen ficha). Mismo criterio de "medida" que
+    /// <see cref="GetCoverageAsync"/>, pero acotado a un plan (no a los planes activos de una
+    /// carrera) porque el caller ya está parado sobre una materia de ESE plan.
+    /// </summary>
+    Task<IReadOnlyList<Guid>> GetCoveredSubjectIdsAsync(
+        Guid careerPlanId, int minimumReviews, CancellationToken ct = default);
 }
 
 /// <summary>

@@ -42,7 +42,7 @@ Ningún puntaje ni promedio ([ADR-0083](../../../../../decisions/0083-the-ficha-
 
 ## Adónde va
 
-Llega desde: Ficha de materia (las cátedras de la materia), [Docente](../SC-035-teacher/README.md) (cada cátedra que la persona integra), Ficha de carrera. Va a: Método, Ficha de materia, Ficha de carrera, Reseñar, Responder.
+Llega desde: Ficha de materia (las cátedras de la materia), [Docente](../SC-035-teacher/README.md) (cada cátedra que la persona integra), Ficha de carrera. Va a: Método, Ficha de materia, Ficha de carrera, [Docente](../SC-035-teacher/README.md) (el nombre del titular, cuando el catálogo tiene su id, V06), Reseñar, Responder.
 
 ## Decisiones que aplica
 

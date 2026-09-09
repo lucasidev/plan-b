@@ -7,6 +7,7 @@ import {
 } from '@/features/browse-catalog';
 import {
   fetchCareersByUniversityServer,
+  fetchCoveredSubjectIdsServer,
   fetchPlanServer,
   fetchSubjectsByPlanServer,
   fetchUniversitiesServer,
@@ -32,6 +33,10 @@ export async function generateMetadata({ params }: { params: Params }) {
  * público para universidad ni para carrera, así que se matchean por id contra los listados
  * (`fetchUniversitiesServer` + `fetchCareersByUniversityServer`) que sí existen para otros
  * niveles del catálogo.
+ *
+ * `fetchCoveredSubjectIdsServer` (V10) le dice a `SubjectGrid` cuáles ya tienen ficha: antes la
+ * única forma de ubicar la cobertura que la Ficha de carrera resume ("1 de 21") era entrar a cada
+ * materia una por una.
  */
 export default async function PlanSubjectsPage({ params }: { params: Params }) {
   const { id } = await params;
@@ -41,10 +46,11 @@ export default async function PlanSubjectsPage({ params }: { params: Params }) {
     notFound();
   }
 
-  const [universities, careers, subjects] = await Promise.all([
+  const [universities, careers, subjects, coveredSubjectIds] = await Promise.all([
     fetchUniversitiesServer(),
     fetchCareersByUniversityServer(plan.universityId),
     fetchSubjectsByPlanServer(id),
+    fetchCoveredSubjectIdsServer(id),
   ]);
   const university = universities.find((u) => u.id === plan.universityId);
   const career = careers.find((c) => c.id === plan.careerId);
@@ -71,7 +77,7 @@ export default async function PlanSubjectsPage({ params }: { params: Params }) {
             Plan {plan.year}
           </h1>
         </header>
-        <SubjectGrid subjects={subjects} />
+        <SubjectGrid subjects={subjects} coveredSubjectIds={new Set(coveredSubjectIds)} />
       </main>
     </>
   );

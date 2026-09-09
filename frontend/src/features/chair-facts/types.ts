@@ -15,6 +15,8 @@ export interface ChairFacts {
   subjectName: string;
   subjectCode: string;
   leadTeacherName: string | null;
+  /** A dónde lleva el nombre del titular (V06). Null junto con leadTeacherName: sin titular cargado. */
+  leadTeacherId: string | null;
   isPublished: boolean;
   reviewCount: number;
   reviewsMissingToPublish: number;

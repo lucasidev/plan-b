@@ -18,6 +18,7 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
     subjectName: 'Análisis Matemático II',
     subjectCode: '211',
     leadTeacherName: null,
+    leadTeacherId: null,
     isPublished: true,
     reviewCount: 37,
     reviewsMissingToPublish: 0,
@@ -216,6 +217,39 @@ describe('ChairFactsSheet', () => {
 
     expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
     expect(screen.getByText(/de 37 y 61/)).toBeInTheDocument();
+  });
+
+  /**
+   * V06 (recorrido de Valentina): el nombre del titular lleva a su ficha de docente, no queda
+   * como texto muerto.
+   */
+  it('V06: el nombre del titular es un link a su ficha de docente', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: 'teacher-1' })}
+        />
+      </QueryClientProvider>,
+    );
+
+    const link = screen.getByRole('link', { name: 'Martín Pérez' });
+    expect(link).toHaveAttribute('href', '/teachers/teacher-1');
+  });
+
+  /**
+   * V06, caso defensivo: un titular sin id cargado (no debería pasar en régimen normal, la
+   * cátedra siempre resuelve el id junto con el nombre) se sigue leyendo como texto, sin un link
+   * roto a `/teachers/null`.
+   */
+  it('V06: sin id de titular, el nombre se lee como texto y no arma un link roto', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: null })} />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/a cargo de martín pérez/i)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Martín Pérez' })).not.toBeInTheDocument();
   });
 
   /**

@@ -1,6 +1,8 @@
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { groupSubjectsByYear } from '../lib/group-subjects';
 import type { Subject } from '../types';
+import { SubjectGrid } from './subject-grid';
 
 /**
  * Cubre la lógica pura de agrupamiento/orden de `subject-grid.tsx` (rama "Utils" de la
@@ -87,5 +89,28 @@ describe('groupSubjectsByYear', () => {
     const [year1] = groupSubjectsByYear(subjects);
 
     expect(year1.terms).toHaveLength(2);
+  });
+});
+
+describe('SubjectGrid, cuáles materias tienen ficha (V10)', () => {
+  const covered = subject({ id: 'covered', code: 'A100', name: 'Con ficha' });
+  const uncovered = subject({ id: 'uncovered', code: 'B200', name: 'Sin ficha todavía' });
+
+  it('marca "Medida" solo a la materia cuyo id está en coveredSubjectIds', () => {
+    render(
+      <SubjectGrid subjects={[covered, uncovered]} coveredSubjectIds={new Set(['covered'])} />,
+    );
+
+    const coveredCard = screen.getByRole('link', { name: /con ficha/i });
+    const uncoveredCard = screen.getByRole('link', { name: /sin ficha todavía/i });
+
+    expect(within(coveredCard).getByText('Medida')).toBeInTheDocument();
+    expect(within(uncoveredCard).queryByText('Medida')).not.toBeInTheDocument();
+  });
+
+  it('sin coveredSubjectIds, ninguna materia se marca como medida', () => {
+    render(<SubjectGrid subjects={[covered, uncovered]} />);
+
+    expect(screen.queryByText('Medida')).not.toBeInTheDocument();
   });
 });

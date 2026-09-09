@@ -59,4 +59,29 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                 new { CareerId = careerId, MinimumReviews = minimumReviews },
                 cancellationToken: ct));
     }
+
+    public async Task<IReadOnlyList<Guid>> GetCoveredSubjectIdsAsync(
+        Guid careerPlanId, int minimumReviews, CancellationToken ct = default)
+    {
+        // Mismo cruce que GetCoverageAsync (chairs activos con >= MinimumReviews reseñas), acotado
+        // a las materias de ESE plan en vez de a los planes activos de una carrera entera.
+        const string sql = @"
+            SELECT DISTINCT ch.subject_id
+            FROM academic.chairs ch
+            JOIN academic.subjects s ON s.id = ch.subject_id
+            JOIN reviews.reviews cr ON cr.chair_id = ch.id
+            WHERE ch.is_active = true
+              AND s.is_active = true
+              AND s.career_plan_id = @CareerPlanId
+            GROUP BY ch.id, ch.subject_id
+            HAVING count(*) >= @MinimumReviews;";
+
+        using var db = _connections.Create();
+        var subjectIds = await db.QueryAsync<Guid>(
+            new CommandDefinition(
+                sql,
+                new { CareerPlanId = careerPlanId, MinimumReviews = minimumReviews },
+                cancellationToken: ct));
+        return subjectIds.ToList();
+    }
 }

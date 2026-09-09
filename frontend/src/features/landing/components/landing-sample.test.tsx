@@ -11,6 +11,7 @@ function facts(overrides: Partial<ChairFacts> = {}): ChairFacts {
     subjectName: 'Fundamentos de Control de Calidad',
     subjectCode: '211',
     leadTeacherName: 'Martín Pérez',
+    leadTeacherId: 't-1',
     isPublished: true,
     reviewCount: 31,
     reviewsMissingToPublish: 0,
