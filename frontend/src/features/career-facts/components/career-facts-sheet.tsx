@@ -1,5 +1,12 @@
 import Link from 'next/link';
-import { CAREER_OFFICIAL_FACT_ORDER, type OfficialFact, OfficialFactRow } from '@/components/facts';
+import {
+  CAREER_OFFICIAL_FACT_ORDER,
+  MissingFactRow,
+  OFFICIAL_FACT_FIELDS,
+  OFFICIAL_FACT_LABELS,
+  type OfficialFact,
+  OfficialFactRow,
+} from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatShortDate } from '@/lib/format-date';
 import type { CareerFacts } from '../types';
@@ -49,7 +56,11 @@ function Identity({ facts }: { facts: CareerFacts }) {
   return (
     <div className="mb-[18px]">
       <h1 className="mb-0.5 font-serif text-[24px] font-semibold text-ink">{facts.careerName}</h1>
-      <p className="text-[13px] text-ink-2">{facts.universityName}</p>
+      <p className="text-[13px] text-ink-2">
+        {facts.academicUnitName
+          ? `${facts.academicUnitName} · ${facts.universityName}`
+          : facts.universityName}
+      </p>
     </div>
   );
 }
@@ -57,30 +68,51 @@ function Identity({ facts }: { facts: CareerFacts }) {
 /**
  * Los seis datos oficiales de la oferta (ADR-0090, F02, F05), en el orden fijo de
  * `CAREER_OFFICIAL_FACT_ORDER` (compartido con Dónde estudiarla: la misma oferta se lee igual sola
- * o al lado de otras).
+ * o al lado de otras). Acreditación y validez nacional comparten fila (F05, O03: una oferta releva
+ * una sola de las dos), mismo criterio que `career-comparison-view.tsx`.
  *
  * Sin relevamiento todavía, el bloque entero lo dice en vez de dejar un espacio en blanco; con
- * relevamiento parcial, se muestra lo que hay: ningún campo se completa con un estado que nadie
- * cargó.
+ * relevamiento parcial, cada campo sin afirmación dice que todavía no se relevó, igual que Dónde
+ * estudiarla: ninguna fila se descarta en silencio (ADR-0090).
  */
 function OfficialData({ officialFacts }: { officialFacts: OfficialFact[] }) {
   const byField = new Map(officialFacts.map((fact) => [fact.field, fact]));
-  const ordered = CAREER_OFFICIAL_FACT_ORDER.map((field) => byField.get(field)).filter(
-    (fact): fact is OfficialFact => fact !== undefined,
+  const level =
+    byField.get(OFFICIAL_FACT_FIELDS.accreditation) ??
+    byField.get(OFFICIAL_FACT_FIELDS.nationalValidity);
+  const rows = CAREER_OFFICIAL_FACT_ORDER.filter(
+    (field) => field !== OFFICIAL_FACT_FIELDS.nationalValidity,
+  ).map((field) =>
+    field === OFFICIAL_FACT_FIELDS.accreditation
+      ? { field: 'level', fact: level }
+      : { field, fact: byField.get(field) },
   );
 
   return (
     <section className="mb-5">
       <p className="mb-2 text-[12px] text-ink-3">Datos oficiales</p>
       <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
-        {ordered.length === 0 ? (
+        {officialFacts.length === 0 ? (
           <p className="py-3 text-[13px] leading-relaxed text-ink-3">
             Todavía no tenemos datos oficiales de esta carrera.
           </p>
         ) : (
-          ordered.map((fact, index) => (
-            <OfficialFactRow key={fact.id} fact={fact} last={index === ordered.length - 1} />
-          ))
+          rows.map(({ field, fact }, index) => {
+            const last = index === rows.length - 1;
+            return fact ? (
+              <OfficialFactRow key={fact.id} fact={fact} last={last} />
+            ) : (
+              <MissingFactRow
+                key={field}
+                label={
+                  field === 'level'
+                    ? 'Acreditación o validez nacional'
+                    : OFFICIAL_FACT_LABELS[field]
+                }
+                last={last}
+              />
+            );
+          })
         )}
       </div>
     </section>

@@ -133,6 +133,30 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
+   * SC-007: "sus cátedras" dice, de cada una, sus voces y hace cuánto es la última. Sin esto, una
+   * cátedra que dejó de sumar voces se lee igual que una que sigue activa.
+   */
+  it('SC-007: cada cátedra publicada dice hace cuánto es su última voz', () => {
+    renderSheet(
+      facts({
+        chairs: [
+          {
+            chairId: 'c1',
+            chairName: 'Pérez',
+            reviewCount: 42,
+            isPublished: true,
+            reviewsMissingToPublish: 0,
+            lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+        ],
+      }),
+    );
+
+    const perezRow = screen.getByRole('link', { name: /pérez/i });
+    expect(perezRow).toHaveTextContent('42 voces · última hace 2 meses');
+  });
+
+  /**
    * US-154 (de cada 10 que la cursan, cuántas llegan) y ficha SC-007 (cuánto habilita): los dos
    * números derivan de las cursadas reseñadas y del plan de la carrera, cada uno con su fuente.
    */

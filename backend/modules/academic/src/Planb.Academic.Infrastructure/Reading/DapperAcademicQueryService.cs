@@ -107,15 +107,19 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         Guid careerId, CancellationToken ct = default)
     {
         // Una carrera desactivada no resuelve: su ficha deja de existir para el lector, mismo
-        // criterio que GetSubjectByIdAsync/GetChairByIdAsync.
+        // criterio que GetSubjectByIdAsync/GetChairByIdAsync. El LEFT JOIN a academic_units es el
+        // mismo que usa DapperCanonicalCareerComparisonReader: la ficha sola y la comparación leen
+        // la unidad académica de la misma relación.
         const string sql = @"
             SELECT
                 c.id             AS Id,
                 c.name           AS Name,
                 c.duration_years AS DurationYears,
-                u.name           AS UniversityName
+                u.name           AS UniversityName,
+                au.name          AS AcademicUnitName
             FROM academic.careers c
             JOIN academic.universities u ON u.id = c.university_id
+            LEFT JOIN academic.academic_units au ON au.id = c.academic_unit_id
             WHERE c.id = @CareerId AND c.is_active = true;";
 
         using var db = _connections.Create();

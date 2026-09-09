@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CatalogTopbar } from '@/features/browse-catalog';
+import { formatRelativeDate } from '@/lib/format-date';
 import type { Distribution, SubjectChair, SubjectFacts, TakenWith } from '../types';
 
 /**
@@ -347,7 +348,7 @@ function ChairRow({ chair, last }: { chair: SubjectChair; last: boolean }) {
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           {chair.isPublished
-            ? `${chair.reviewCount} ${chair.reviewCount === 1 ? 'voz' : 'voces'}`
+            ? `${chair.reviewCount} ${chair.reviewCount === 1 ? 'voz' : 'voces'}${chair.lastReviewedAt ? ` · última ${formatRelativeDate(chair.lastReviewedAt)}` : ''}`
             : `${chair.reviewCount} ${chair.reviewCount === 1 ? 'reseña' : 'reseñas'} · faltan ${chair.reviewsMissingToPublish}`}
         </span>
       </Link>

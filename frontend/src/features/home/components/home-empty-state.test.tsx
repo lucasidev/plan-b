@@ -8,6 +8,7 @@ function facts(over: Partial<CareerFacts> = {}): CareerFacts {
     careerId: 'career-1',
     careerName: 'Tecnicatura en Desarrollo y Calidad de Software',
     universityName: 'UNSTA',
+    academicUnitName: null,
     durationYears: 3,
     totalSubjects: 51,
     coveredSubjects: 23,

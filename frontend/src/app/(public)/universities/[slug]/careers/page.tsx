@@ -5,7 +5,13 @@ import {
   fetchCareersByUniversityServer,
   fetchUniversitiesServer,
 } from '@/features/browse-catalog/api.server';
-import { InstitutionIdentity, TransparencyChecklist } from '@/features/institution-facts';
+import {
+  InstitutionIdentity,
+  ReviewCta,
+  TransparencyChecklist,
+} from '@/features/institution-facts';
+import { reviewCtaHref } from '@/features/write-review';
+import { getSession } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,9 +44,10 @@ export default async function UniversityCareersPage({ params }: { params: Params
     notFound();
   }
 
-  const [careers, officialFacts] = await Promise.all([
+  const [careers, officialFacts, session] = await Promise.all([
     fetchCareersByUniversityServer(university.id),
     fetchOfficialFactsServer('Institution', university.id),
+    getSession(),
   ]);
 
   return (
@@ -58,6 +65,7 @@ export default async function UniversityCareersPage({ params }: { params: Params
           <CareerList careers={careers} />
         </section>
         <TransparencyChecklist facts={officialFacts} />
+        <ReviewCta href={reviewCtaHref(session)} />
       </div>
     </div>
   );

@@ -9,4 +9,6 @@ public sealed record CareerDetailItem(
     Guid Id,
     string Name,
     int? DurationYears,
-    string UniversityName);
+    string UniversityName,
+    /// <summary>Null cuando la carrera todavía no tiene unidad académica vinculada en el catálogo.</summary>
+    string? AcademicUnitName);

@@ -15,6 +15,8 @@ public sealed record GetCareerFactsResponse(
     Guid CareerId,
     string CareerName,
     string UniversityName,
+    /// <summary>La facultad o unidad que la dicta. Null cuando el catálogo todavía no la vinculó.</summary>
+    string? AcademicUnitName,
     int? DurationYears,
     int TotalSubjects,
     int CoveredSubjects,

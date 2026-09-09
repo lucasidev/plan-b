@@ -16,6 +16,7 @@ const BASE: CareerFacts = {
   careerId: 'career-1',
   careerName: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
   universityName: 'Universidad del Norte Santo Tomás de Aquino',
+  academicUnitName: null,
   durationYears: null,
   totalSubjects: 21,
   coveredSubjects: 0,
@@ -53,6 +54,19 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText(BASE.universityName)).toBeInTheDocument();
   });
 
+  /**
+   * SC-001: la identidad dice la carrera, su unidad académica y la institución. Sin la unidad
+   * académica, la ficha de carrera queda en desacuerdo con Dónde estudiarla, que sí la muestra
+   * para la misma oferta.
+   */
+  it('con unidad académica cargada, la muestra junto a la institución', () => {
+    renderSheet({ ...BASE, academicUnitName: 'Facultad de Ingeniería' });
+
+    expect(
+      screen.getByText('Facultad de Ingeniería · Universidad del Norte Santo Tomás de Aquino'),
+    ).toBeInTheDocument();
+  });
+
   /** US-127 N1: sin ningún dato oficial relevado, el bloque entero lo dice, no un espacio vacío. */
   it('dice que faltan los datos oficiales cuando todavía no hay ninguno relevado', () => {
     renderSheet(BASE, []);
@@ -67,6 +81,23 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
     expect(screen.getByText('2,5 años')).toBeInTheDocument();
     expect(screen.getByText('Sitio UNSTA · plan vigente')).toBeInTheDocument();
+  });
+
+  /**
+   * ADR-0090: con relevamiento parcial (una sola afirmación de las seis), la ficha dice qué le
+   * falta en vez de esconder las otras cinco filas en silencio, igual que Dónde estudiarla
+   * (career-comparison-view.tsx).
+   */
+  it('con datos oficiales parciales, dice qué le falta en vez de esconder las filas', () => {
+    renderSheet(BASE, [PAPER_DURATION]);
+
+    expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
+    expect(screen.getByText('Dura en la realidad')).toBeInTheDocument();
+    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
+    expect(screen.getByText('Plan vigente')).toBeInTheDocument();
+    expect(screen.getByText('Acreditación o validez nacional')).toBeInTheDocument();
+    expect(screen.getByText('Régimen de ingreso')).toBeInTheDocument();
+    expect(screen.getAllByText('Todavía no se relevó para esta oferta.')).toHaveLength(5);
   });
 
   /**

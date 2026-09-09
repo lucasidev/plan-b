@@ -39,6 +39,7 @@ public static class GetCareerFactsQueryHandler
             CareerId: career.Id,
             CareerName: career.Name,
             UniversityName: career.UniversityName,
+            AcademicUnitName: career.AcademicUnitName,
             DurationYears: career.DurationYears,
             TotalSubjects: counted.TotalSubjects,
             CoveredSubjects: counted.CoveredSubjects,
