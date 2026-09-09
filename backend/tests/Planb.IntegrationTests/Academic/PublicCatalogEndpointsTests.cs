@@ -99,7 +99,7 @@ public class PublicCatalogEndpointsTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task ListCareerPlans_returns_only_plans_of_requested_career()
     {
-        var tudcsCareerId = AcademicSeedData.Careers[2].Career.Id.Value; // TUDCS UNSTA
+        var tudcsCareerId = AcademicSeedData.TudcsUnsta.Career.Id.Value;
 
         var response = await _client.GetAsync(
             $"/api/academic/career-plans?careerId={tudcsCareerId}");

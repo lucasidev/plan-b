@@ -44,7 +44,7 @@ public sealed record AuthenticatedClient(
         {
             var register = await bootstrap.PostAsJsonAsync(
                 "/api/identity/register",
-                new { email, password, careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value });
+                new { email, password, careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value });
             register.EnsureSuccessStatusCode();
 
             // 2) Resolver el id por email y forzar verified via SQL: la respuesta del registro

@@ -30,7 +30,7 @@ public class UpdateMyProfileEndpointTests : IClassFixture<RegisterApiFixture>
     private async Task<AuthenticatedClient> CreateUserWithProfileAsync(string emailLabel)
     {
         var auth = await AuthenticatedClient.CreateAsync(_fixture, FreshEmail(emailLabel));
-        var planId = AcademicSeedData.Careers[2].Plan!.Id.Value;
+        var planId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
         var create = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
             new { careerPlanId = planId, enrollmentYear = 2024 });

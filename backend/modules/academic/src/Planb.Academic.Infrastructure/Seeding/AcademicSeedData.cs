@@ -444,6 +444,31 @@ public static class AcademicSeedData
     // esta tarea abrió por repetirse en varias sedes continúan la numeración del mismo bloque.
     // ====================================================================
 
+    // Nombradas (no inline en el array) porque los tests de integración las referencian por
+    // identidad: la posición dentro de Careers se corre cada vez que se inserta una carrera
+    // nueva en el medio.
+    public static readonly CareerSeed TudcsUnsta = new(
+        Career: new CareerRecord(
+            Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000003")),
+            UniversityId: Unsta.Id,
+            AcademicUnitId: AuFacultadDeIngenieria.Id,
+            Name: "Tecnicatura Universitaria en Desarrollo y Calidad de Software",
+            Slug: "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software"),
+        Plan: new CareerPlanRecord(
+            Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000003")),
+            Year: 2018));
+
+    public static readonly CareerSeed AutomatizacionYRoboticaUnsta = new(
+        Career: new CareerRecord(
+            Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000004")),
+            UniversityId: Unsta.Id,
+            AcademicUnitId: AuFacultadDeIngenieria.Id,
+            Name: "Tecnicatura Universitaria en Automatización y Robótica",
+            Slug: "tecnicatura-universitaria-en-automatizacion-y-robotica"),
+        Plan: new CareerPlanRecord(
+            Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000004")),
+            Year: 2022));
+
     public static IReadOnlyList<CareerSeed> Careers { get; } = new[]
     {
         // ---------- UNSTA ----------
@@ -480,27 +505,9 @@ public static class AcademicSeedData
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000002")),
                 Year: 2022)),
 
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000003")),
-                UniversityId: Unsta.Id,
-                AcademicUnitId: AuFacultadDeIngenieria.Id,
-                Name: "Tecnicatura Universitaria en Desarrollo y Calidad de Software",
-                Slug: "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000003")),
-                Year: 2018)),
+        TudcsUnsta,
 
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000004")),
-                UniversityId: Unsta.Id,
-                AcademicUnitId: AuFacultadDeIngenieria.Id,
-                Name: "Tecnicatura Universitaria en Automatización y Robótica",
-                Slug: "tecnicatura-universitaria-en-automatizacion-y-robotica"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000004")),
-                Year: 2022)),
+        AutomatizacionYRoboticaUnsta,
 
         // ---------- UNT ----------
         new CareerSeed(

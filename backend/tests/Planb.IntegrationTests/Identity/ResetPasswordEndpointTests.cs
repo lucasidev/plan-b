@@ -58,7 +58,7 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
     // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
-    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan!.Id.Value;
+    private static Guid ValidCareerPlanId => AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
 
     /// <summary>
     /// Sign up + verify a fresh user, then trigger forgot-password and read the raw token

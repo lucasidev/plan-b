@@ -27,7 +27,7 @@ public class PublicPrerequisitesEndpointTests : IClassFixture<RegisterApiFixture
     [Fact]
     public async Task ListPrerequisites_returns_edge_with_subject_codes_and_names()
     {
-        var tudcsPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value; // TUDCS UNSTA
+        var tudcsPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
 
         var response = await _client.GetAsync(
             $"/api/academic/prerequisites?careerPlanId={tudcsPlanId}");
