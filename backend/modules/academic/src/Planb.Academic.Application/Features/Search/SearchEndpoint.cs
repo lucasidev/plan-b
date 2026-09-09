@@ -12,8 +12,9 @@ namespace Planb.Academic.Application.Features.Search;
 /// vive en Academic porque busca el catálogo (materias + docentes). Sin auth (catálogo público).
 ///
 /// <para>
-/// Devuelve resultados <c>type=subject</c> y <c>type=teacher</c> en una sola lista rankeada por
-/// relevancia (el contrato discrimina por <c>type</c>; el front deriva el href del par type+id).
+/// Devuelve resultados <c>type=subject</c>, <c>type=teacher</c>, <c>type=chair</c>,
+/// <c>type=career</c> y <c>type=institution</c> en una sola lista rankeada por relevancia (el
+/// contrato discrimina por <c>type</c>; el front deriva el href del par type+id).
 /// </para>
 ///
 /// <para>

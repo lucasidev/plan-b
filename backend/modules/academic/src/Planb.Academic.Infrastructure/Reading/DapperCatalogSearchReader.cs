@@ -5,10 +5,11 @@ using Planb.SharedKernel.Abstractions.Persistence;
 namespace Planb.Academic.Infrastructure.Reading;
 
 /// <summary>
-/// Dapper read de la búsqueda de catálogo (US-004, US-132): materias, docentes y cátedras en una
-/// sola lista rankeada. Cada rama calcula el mismo trío de ranking (exact > prefix > similitud
-/// trigram) y se unen con UNION ALL; el ORDER BY corre sobre el conjunto combinado, así un docente
-/// puede rankear por encima de una materia y viceversa según la relevancia, no por tipo.
+/// Dapper read de la búsqueda de catálogo (US-004, US-132): materias, docentes, cátedras, carreras
+/// e instituciones en una sola lista rankeada. Cada rama calcula el mismo trío de ranking
+/// (exact > prefix > similitud trigram) y se unen con UNION ALL; el ORDER BY corre sobre el
+/// conjunto combinado, así un docente puede rankear por encima de una materia y viceversa según la
+/// relevancia, no por tipo.
 ///
 /// <para>
 /// La rama de cátedras existe porque la cátedra es el sujeto de lo que el producto publica
@@ -17,10 +18,19 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// dos cátedras con el mismo apellido.
 /// </para>
 ///
+/// <para>
+/// Las ramas de carrera e institución (US-132, hallazgo V04: "buscar la carrera que uno quiere
+/// estudiar devuelve materias") resuelven un sujeto que hoy no tiene código propio para un exact
+/// match, salvo la institución por su slug: "unsta" matchea "UNSTA" exacto. La carrera es siempre
+/// una carrera EN una institución (su sublabel es el nombre de la universidad), porque la misma
+/// carrera existe en más de una institución y cada oferta tiene su propia ficha.
+/// </para>
+///
 /// Todo pasa por <c>unaccent()</c> (búsqueda insensible a acentos, clave en español: "veronica"
 /// matchea "Verónica", "anal" matchea "Análisis"). El umbral <c>similarity &gt; 0.2</c> tolera typos.
-/// El índice GIN trigram de subjects (migración AddSubjectSearchTrigram) cubre el lado materia; el
-/// catálogo docente es chico (seq scan barato), un índice análogo se suma si crece.
+/// El índice GIN trigram de subjects (migración AddSubjectSearchTrigram) cubre el lado materia; los
+/// catálogos de docentes, carreras e instituciones son chicos (seq scan barato), un índice análogo
+/// se suma si crecen.
 /// </summary>
 internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
 {
@@ -94,6 +104,51 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                   AND sub.is_active
                   AND (academic.immutable_unaccent(lower(c.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
                        OR academic.immutable_unaccent(lower(c.name)) % academic.immutable_unaccent(lower(@Term)))
+
+                UNION ALL
+
+                SELECT
+                    'career'                                        AS type,
+                    cr.id                                           AS id,
+                    cr.name                                         AS label,
+                    uni.name                                        AS sublabel,
+                    (cr.code IS NOT NULL
+                        AND academic.immutable_unaccent(lower(cr.code)) = academic.immutable_unaccent(lower(@Term)))::int
+                                                                    AS rank_exact,
+                    (academic.immutable_unaccent(lower(cr.name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')::int
+                                                                    AS rank_prefix,
+                    similarity(academic.immutable_unaccent(lower(cr.name)), academic.immutable_unaccent(lower(@Term)))
+                                                                    AS sim
+                FROM academic.careers cr
+                JOIN academic.universities uni ON uni.id = cr.university_id
+                WHERE cr.is_active
+                  AND uni.is_active
+                  AND (academic.immutable_unaccent(lower(cr.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
+                       OR academic.immutable_unaccent(lower(cr.name)) % academic.immutable_unaccent(lower(@Term))
+                       OR (cr.code IS NOT NULL
+                           AND academic.immutable_unaccent(lower(cr.code)) = academic.immutable_unaccent(lower(@Term))))
+
+                UNION ALL
+
+                SELECT
+                    'institution'                                   AS type,
+                    u.id                                            AS id,
+                    u.name                                          AS label,
+                    ''::text                                        AS sublabel,
+                    (academic.immutable_unaccent(lower(u.slug)) = academic.immutable_unaccent(lower(@Term)))::int
+                                                                    AS rank_exact,
+                    (academic.immutable_unaccent(lower(u.slug)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'
+                        OR academic.immutable_unaccent(lower(u.name)) LIKE academic.immutable_unaccent(lower(@Term)) || '%')::int
+                                                                    AS rank_prefix,
+                    GREATEST(similarity(academic.immutable_unaccent(lower(u.name)), academic.immutable_unaccent(lower(@Term))),
+                             similarity(academic.immutable_unaccent(lower(u.slug)), academic.immutable_unaccent(lower(@Term))))
+                                                                    AS sim
+                FROM academic.universities u
+                WHERE u.is_active
+                  AND (academic.immutable_unaccent(lower(u.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
+                       OR academic.immutable_unaccent(lower(u.slug)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'
+                       OR academic.immutable_unaccent(lower(u.name)) % academic.immutable_unaccent(lower(@Term))
+                       OR academic.immutable_unaccent(lower(u.slug)) % academic.immutable_unaccent(lower(@Term)))
             ) combined
             ORDER BY rank_exact DESC, rank_prefix DESC, sim DESC, label ASC
             LIMIT @Limit;";

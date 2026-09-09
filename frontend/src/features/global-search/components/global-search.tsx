@@ -6,34 +6,47 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useDebouncedValue } from '@/lib/use-debounced-value';
 import { cn } from '@/lib/utils';
-import { MIN_SEARCH_LENGTH, searchQueries } from '../api';
-import type { SearchResultItem } from '../types';
+import { MIN_SEARCH_LENGTH, searchQueries, universityDirectoryQuery } from '../api';
+import type { SearchResultItem, UniversityDirectoryEntry } from '../types';
 
 /**
- * Búsqueda global de catálogo (US-004) que reemplaza el `SearchBar` stub del topbar. Combobox
- * liviano sobre las primitivas del design system (sin cmdk): input + dropdown de resultados live,
- * debounce 250ms, navegación por teclado y atajo ⌘K. Pega a `GET /api/search` vía TanStack Query.
+ * Búsqueda global de catálogo (US-004, US-132) que reemplaza el `SearchBar` stub del topbar.
+ * Combobox liviano sobre las primitivas del design system (sin cmdk): input + dropdown de
+ * resultados live, debounce 250ms, navegación por teclado y atajo ⌘K. Pega a `GET /api/search`
+ * vía TanStack Query.
  *
- * Materias, docentes y cátedras en una sola lista rankeada; el href y el badge salen del `type`.
- * La cátedra lleva a su ficha, que es donde vive lo que se publica de cursar con ella.
+ * Materia, docente, cátedra, carrera e institución en una sola lista rankeada; el href y el badge
+ * salen del `type`. La cátedra lleva a su ficha, que es donde vive lo que se publica de cursar con
+ * ella. La institución todavía no tiene ficha propia (SC-005: "la ficha se rehace"); su chasis de
+ * hoy resuelve por slug, no por id, así que su href sale de un segundo fetch chico (el directorio
+ * de universidades) en vez de derivarse solo del id del resultado.
  *
  * Gate `mounted`: la búsqueda vive en el topbar, fuera de cualquier HydrationBoundary; sin el flag
  * la query correría server-side bajo ReactQueryStreamedHydration y el fetch relativo fallaría.
  */
-const HREF_BY_TYPE: Record<SearchResultItem['type'], (id: string) => string> = {
-  subject: (id) => `/subjects/${id}`,
-  teacher: (id) => `/teachers/${id}`,
-  chair: (id) => `/chairs/${id}`,
-};
-
-function hrefFor(item: SearchResultItem): string {
-  return HREF_BY_TYPE[item.type](item.id);
+function hrefFor(item: SearchResultItem, universities: UniversityDirectoryEntry[]): string {
+  switch (item.type) {
+    case 'subject':
+      return `/subjects/${item.id}`;
+    case 'teacher':
+      return `/teachers/${item.id}`;
+    case 'chair':
+      return `/chairs/${item.id}`;
+    case 'career':
+      return `/careers/${item.id}`;
+    case 'institution': {
+      const university = universities.find((u) => u.id === item.id);
+      return university ? `/universities/${university.slug}/careers` : '/universities';
+    }
+  }
 }
 
 const TYPE_LABEL: Record<SearchResultItem['type'], string> = {
   subject: 'Materia',
   teacher: 'Docente',
   chair: 'Cátedra',
+  career: 'Carrera',
+  institution: 'Institución',
 };
 
 export function GlobalSearch() {
@@ -56,6 +69,13 @@ export function GlobalSearch() {
   const showDropdown = open && term.length >= MIN_SEARCH_LENGTH;
   const optionId = (i: number) => `${listboxId}-opt-${i}`;
 
+  // Solo hace falta el directorio de universidades cuando hay al menos un resultado `institution`
+  // para resolver: nada de pegarle a /api/academic/universities en cada búsqueda de materia.
+  const { data: universities } = useQuery({
+    ...universityDirectoryQuery,
+    enabled: mounted && items.some((item) => item.type === 'institution'),
+  });
+
   // ⌘K / Ctrl+K enfoca la búsqueda desde cualquier parte del shell.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -76,7 +96,7 @@ export function GlobalSearch() {
   function select(item: SearchResultItem) {
     setOpen(false);
     setQuery('');
-    router.push(hrefFor(item));
+    router.push(hrefFor(item, universities ?? []));
   }
 
   function onInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -116,8 +136,8 @@ export function GlobalSearch() {
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={showDropdown && items.length > 0 ? optionId(active) : undefined}
-          placeholder="Buscar materia, cátedra o docente..."
-          aria-label="Buscar materia, cátedra o docente"
+          placeholder="Buscar materia, carrera o docente..."
+          aria-label="Buscar materia, carrera o docente"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
