@@ -111,8 +111,8 @@ public sealed class AcademicSeeder
                     seed.Career.Slug,
                     shortName: null,
                     code: null,
-                    degreeType: null,
-                    durationYears: null,
+                    degreeType: seed.Career.DegreeType,
+                    durationYears: seed.Career.DurationYears,
                     cadence: null,
                     description: null,
                     isOfficial: true,
@@ -122,6 +122,10 @@ public sealed class AcademicSeeder
                 careersInserted++;
             }
 
+            // Plan nulo: la carrera entra sin plan detallado (R6, el resto de la oferta de la
+            // Guía SIU). Nada que sembrar del lado del plan para esa carrera.
+            if (seed.Plan is null) continue;
+
             if (!existingPlanIds.Contains(seed.Plan.Id))
             {
                 _db.CareerPlans.Add(CareerPlan.Hydrate(
@@ -130,7 +134,7 @@ public sealed class AcademicSeeder
                     seed.Plan.Year,
                     CareerPlanStatus.Active,
                     isOfficial: true,
-                    label: null,
+                    label: seed.Plan.Label,
                     createdAt: now,
                     updatedAt: now));
                 plansInserted++;

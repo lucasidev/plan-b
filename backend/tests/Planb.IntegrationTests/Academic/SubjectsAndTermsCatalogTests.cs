@@ -199,7 +199,7 @@ public class SubjectsAndTermsCatalogTests : IClassFixture<RegisterApiFixture>
             .First(s => s.CareerPlanId.Value == TudcsPlanId);
 
         // El subject sí existe en DB pero el plan que pasamos no es el suyo.
-        var someOtherPlanId = Guid.Parse("00000003-0000-4000-a000-000000000010"); // Siglo21 Ing.Software
+        var someOtherPlanId = Guid.Parse("00000003-0000-4000-a000-000000000020"); // UNT Ing.Informática
         var result = await queries.IsSubjectInPlanAsync(
             anyTudcsSubject.Id.Value, someOtherPlanId);
 

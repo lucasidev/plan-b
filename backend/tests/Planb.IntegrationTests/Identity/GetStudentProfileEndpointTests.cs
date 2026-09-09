@@ -35,7 +35,7 @@ public class GetStudentProfileEndpointTests
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, $"get-profile-200.{Guid.NewGuid():N}@planb.local");
 
-        var planId = AcademicSeedData.Careers[2].Plan.Id.Value;
+        var planId = AcademicSeedData.Careers[2].Plan!.Id.Value;
         var careerId = AcademicSeedData.Careers[2].Career.Id.Value;
 
         var create = await auth.Client.PostAsJsonAsync(

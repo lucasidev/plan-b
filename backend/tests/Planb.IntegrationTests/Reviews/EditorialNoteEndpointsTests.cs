@@ -26,10 +26,10 @@ public class EditorialNoteEndpointsTests : IClassFixture<RegisterApiFixture>
     // TUDCS en UNSTA, la carrera del seed.
     private static readonly Guid TudcsCareerId = Guid.Parse("00000002-0000-4000-a000-000000000003");
 
-    // Ingeniería en Software en Siglo 21, otra universidad del seed: Martín Pérez es docente de
+    // Ingeniería en Informática en UNT, otra universidad del seed: Martín Pérez es docente de
     // UNSTA, así que nombrarlo acá no lo identifica a nadie de esta carrera.
     private static readonly Guid AnotherUniversityCareerId =
-        Guid.Parse("00000002-0000-4000-a000-000000000010");
+        Guid.Parse("00000002-0000-4000-a000-000000000020");
 
     public EditorialNoteEndpointsTests(RegisterApiFixture fixture)
     {

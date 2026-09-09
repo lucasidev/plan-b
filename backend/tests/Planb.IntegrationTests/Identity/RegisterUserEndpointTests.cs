@@ -30,7 +30,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     private static string FreshEmail(string label) => $"{label}.{Guid.NewGuid():N}@planb.local";
 
     // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
-    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan.Id.Value;
+    private static Guid ValidCareerPlanId => AcademicSeedData.Careers[2].Plan!.Id.Value;
 
     [Fact]
     public async Task Returns_202_with_email_only_and_persists_user_and_token()

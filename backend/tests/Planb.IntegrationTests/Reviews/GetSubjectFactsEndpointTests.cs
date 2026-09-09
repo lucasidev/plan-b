@@ -29,11 +29,11 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Subject211 =
         Guid.Parse("00000004-0000-4000-a000-000000000012");
 
-    // 1102 Matemática Discreta (UTN-FRT): existe en el plan pero no tiene cátedras cargadas. 101
-    // UNSTA dejó de servir para esto: el seed le cargó una cátedra con titular (Fernández) a las 21
-    // materias de la Tecnicatura, así que ya no hay ninguna sin cátedra en ese plan.
+    // 201 Inglés A2 (UNSTA): existe en el plan pero no tiene cátedras cargadas a propósito (R6
+    // retiró la carrera ficticia de UTN-FRT que antes daba este estado, hallazgo K01); es la única
+    // de las 21 materias de la Tecnicatura sin titular.
     private static readonly Guid SubjectWithoutChairs =
-        Guid.Parse("00000004-0000-4000-a000-000000000031");
+        Guid.Parse("00000004-0000-4000-a000-000000000010");
 
     private static readonly Guid ChairPerez =
         Guid.Parse("00000008-0000-4000-a000-000000000001");

@@ -181,8 +181,11 @@ public class CareerPlanImportQueueEndpointTests : IClassFixture<RegisterApiFixtu
 
         var similarImportId = await SeedImportAsync(
             "Ingenieria de Sistemas", CareerPlanImportStatus.Pending, planYear: 2024);
+        // "Contador Público Nacional" servía de nombre sin parecido hasta que R6 cargó el catálogo
+        // real de UNSTA, que sí tiene "Contador Público": el fuzzy match ahora la encuentra, y con
+        // razón. Este nombre no comparte trigramas con ninguna de las carreras reales de UNSTA.
         var unrelatedImportId = await SeedImportAsync(
-            "Contador Público Nacional", CareerPlanImportStatus.Pending, planYear: 2025);
+            "Apicultura y Producción de Miel", CareerPlanImportStatus.Pending, planYear: 2025);
 
         var queue = await admin.Client.GetOkAsync<ImportQueueResponse>(
             "/api/academic/career-plan-imports?pageSize=100");

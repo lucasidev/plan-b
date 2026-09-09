@@ -95,7 +95,7 @@ Lo que cambió el 2026-08-27 es qué dato muestra la landing: dejó de ilustrar 
 
 | Término | Significado |
 |---|---|
-| **University** | Universidad. Entidad raíz del catálogo académico. Ej: UNSTA, SIGLO 21, USPT. |
+| **University** | Universidad. Entidad raíz del catálogo académico. Ej: UNSTA, UNT, USPT. |
 | **institutional_email_domains** | Dominios de email institucional de la universidad, en lowercase. Ej: `['unsta.edu.ar']`. |
 | **Career** | Carrera como concepto institucional estable. Ej: "Tecnicatura Universitaria en Desarrollo y Calidad de Software". |
 | **CareerPlan** | Plan de estudios de una carrera para un año particular (`year`), con materias propias y un `label` editorial opcional. Ej: "Plan 2019", "Plan 2024". |

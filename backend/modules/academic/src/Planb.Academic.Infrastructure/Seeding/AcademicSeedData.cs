@@ -21,8 +21,9 @@ namespace Planb.Academic.Infrastructure.Seeding;
 ///
 /// Convención de UUIDs:
 ///   - Universities: 00000001-0000-4000-a000-0000000000NN
-///   - Careers:      00000002-0000-4000-a000-0000000000NN
-///   - CareerPlans:  00000003-0000-4000-a000-0000000000NN
+///   - Careers:      00000002-0000-4000-a000-0000000000NN (o 0000000NNN para el bulk de R6,
+///     ver el comentario de la sección Careers)
+///   - CareerPlans:  00000003-0000-4000-a000-0000000000NN (mismo NN que su Career)
 /// donde NN es secuencial y agrupa por universidad cuando aplica.
 /// </summary>
 public static class AcademicSeedData
@@ -37,11 +38,10 @@ public static class AcademicSeedData
         Slug: "unsta",
         InstitutionalEmailDomains: new[] { "unsta.edu.ar" });
 
-    public static readonly UniversityRecord Siglo21 = new(
-        Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000002")),
-        Name: "Universidad Siglo 21",
-        Slug: "siglo21",
-        InstitutionalEmailDomains: new[] { "ues21.edu.ar" });
+    // Universidad Siglo 21 salió (R6): la Guía SIU no le lista sede en Tucumán, solo un centro de
+    // aprendizaje a distancia, y R6 dejó la oferta a distancia fuera de alcance (ver el
+    // relevamiento, docs/history/reviews/2026-09-07-official-data-survey.md). El id
+    // 00000001-...-000000000002 queda retirado, no reasignado.
 
     public static readonly UniversityRecord Unt = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000003")),
@@ -55,16 +55,54 @@ public static class AcademicSeedData
         Slug: "utn-frt",
         InstitutionalEmailDomains: new[] { "frt.utn.edu.ar" });
 
+    /// <summary>
+    /// Universidad de San Pablo-T (R6): la Guía SIU la lista con 20 ofertas en la provincia, sin
+    /// programación (su tecnicatura en Ciencia de Datos es a distancia y queda fuera). Dominio de
+    /// mail institucional tomado de las columnas "mail" del CSV (gbravo@, eflores@, wcorrea@uspt.edu.ar).
+    /// </summary>
+    public static readonly UniversityRecord UspT = new(
+        Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000005")),
+        Name: "Universidad de San Pablo-T",
+        Slug: "uspt",
+        InstitutionalEmailDomains: new[] { "uspt.edu.ar" });
+
+    /// <summary>
+    /// Universidad Nacional de Santiago del Estero (R6): no estaba sembrada (K02). La Guía SIU le
+    /// lista 7 ofertas en la provincia, ninguna informática, repartidas en tres sedes/facultades
+    /// distintas (Centro de Estudios del Tucumán, Instituto de Educación Superior Sisaiani, y la
+    /// sede de Villa Quinteros); el catálogo no modela facultad/sede todavía, así que las tres
+    /// cuelgan de esta única University.
+    /// </summary>
+    public static readonly UniversityRecord Unse = new(
+        Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000006")),
+        Name: "Universidad Nacional de Santiago del Estero",
+        Slug: "unse",
+        InstitutionalEmailDomains: new[] { "unse.edu.ar" });
+
     public static IReadOnlyList<UniversityRecord> Universities { get; } = new[]
     {
-        Unsta, Siglo21, Unt, UtnFrt,
+        Unsta, Unt, UtnFrt, UspT, Unse,
     };
 
     // ====================================================================
-    // Careers + CareerPlans (catalog IT)
+    // Careers + CareerPlans: el catálogo real de Tucumán (R6). Universidad, título, tipo y
+    // duración salen de la Guía SIU (docs/history/reviews/assets/2026-09-07-official-data/
+    // guia-siu-tucuman-pregrado-y-grado.csv, 229 ofertas de pregrado y grado, consultada el
+    // 2026-09-08); nada inventado, así que lo que la Guía no da (condición de ingreso, facultad
+    // o sede, y toda "duración real" u otra afirmación con fuente y fecha) no está acá: eso es
+    // OfficialFact (ADR-0090), entidad de otra tarea. Cuatro ofertas llevan CareerPlan real
+    // (UNSTA TUDCS con sus 21 materias, UTN Programación, UNT Programador, y las dos ya
+    // existentes de UTN e UNT); el resto entra sin plan detallado (Plan: null): relevar 229
+    // planes no es esta tarea (K01, K02, K05, US-195).
     //
-    // Cada CareerSeed lleva su Career + el Plan vigente actual. La curaduría de qué entra es
-    // manual (carreras IT exclusivamente). USPT no tiene oferta IT: queda fuera del catálogo.
+    // Slug único por (university, slug): cuando el mismo título se repite en más de una
+    // facultad o sede de la misma universidad (ej. "Abogado" en UNSTA Concepción y en Ingeniería,
+    // "Enfermero" en UNT en cinco convenios), el catálogo carga una sola Career por (universidad,
+    // título): la facultad/sede todavía no es un campo del modelo, y tipo/duración coinciden
+    // entre las filas repetidas en cada caso verificado.
+    //
+    // Bloques de Id para lo nuevo del bulk load (evitan el rango 00-ff que ya usa lo curado a
+    // mano): Unsta 0x100+, Unt 0x200+, UspT 0x300+, Unse 0x400+, UtnFrt 0x500+.
     // ====================================================================
 
     public static IReadOnlyList<CareerSeed> Careers { get; } = new[]
@@ -110,87 +148,6 @@ public static class AcademicSeedData
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000004")),
                 Year: 2022)),
 
-        // ---------- SIGLO 21 ----------
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000010")),
-                UniversityId: Siglo21.Id,
-                Name: "Ingeniería en Software",
-                Slug: "ingenieria-en-software"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000010")),
-                Year: 2005)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000011")),
-                UniversityId: Siglo21.Id,
-                Name: "Licenciatura en Informática",
-                Slug: "licenciatura-en-informatica"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000011")),
-                Year: 2025)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000012")),
-                UniversityId: Siglo21.Id,
-                Name: "Licenciatura en Ciencia de Datos",
-                Slug: "licenciatura-en-ciencia-de-datos"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000012")),
-                Year: 2021)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000013")),
-                UniversityId: Siglo21.Id,
-                Name: "Licenciatura en Seguridad Informática",
-                Slug: "licenciatura-en-seguridad-informatica"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000013")),
-                Year: 2021)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000014")),
-                UniversityId: Siglo21.Id,
-                Name: "Licenciatura en Inteligencia Artificial y Robótica",
-                Slug: "licenciatura-en-inteligencia-artificial-y-robotica"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000014")),
-                Year: 2021)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000015")),
-                UniversityId: Siglo21.Id,
-                Name: "Licenciatura en Administración de Infraestructura Tecnológica",
-                Slug: "licenciatura-en-administracion-de-infraestructura-tecnologica"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000015")),
-                Year: 2021)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000016")),
-                UniversityId: Siglo21.Id,
-                Name: "Tecnicatura Universitaria en Redes Informáticas y Telecomunicaciones",
-                Slug: "tecnicatura-universitaria-en-redes-informaticas-y-telecomunicaciones"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000016")),
-                Year: 2024)),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000017")),
-                UniversityId: Siglo21.Id,
-                Name: "Tecnicatura Universitaria en Diseño y Desarrollo de Videojuegos",
-                Slug: "tecnicatura-universitaria-en-diseno-y-desarrollo-de-videojuegos"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000017")),
-                Year: 2023)),
-
         // ---------- UNT ----------
         new CareerSeed(
             Career: new CareerRecord(
@@ -222,6 +179,25 @@ public static class AcademicSeedData
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000022")),
                 Year: 2009)),
 
+        // Programador Universitario (R6, US-195): la misma carrera canónica que la Tecnicatura
+        // de UNSTA y la de UTN, del lado de UNT. Plan aprobado por Res. HCS 1926/96, modificado
+        // por Res. HCS 307/04 (23 materias más Proyecto Final en dos módulos, sitio de la FACET);
+        // SIPES cita la RM 2013/2020 para el mismo título y esa resolución no aparece en la
+        // página del plan (K04): el modelo hoy no guarda dos fuentes que no cierran, así que
+        // queda solo la del plan.
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000023")),
+                UniversityId: Unt.Id,
+                Name: "Programador Universitario",
+                Slug: "programador-universitario",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: new CareerPlanRecord(
+                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000023")),
+                Year: 1996,
+                Label: "Plan 1996 (mod. Res. HCS 307/04)")),
+
         // ---------- UTN-FRT ----------
         new CareerSeed(
             Career: new CareerRecord(
@@ -233,39 +209,1701 @@ public static class AcademicSeedData
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000030")),
                 Year: 2023)),
 
+        // Tecnicatura Universitaria en Programación (R6, hallazgo K01): reemplaza a la carrera
+        // ficticia que este seed inventaba antes en UTN-FRT. Plan 2024 vigente, en transición
+        // desde el plan 2003 (Ordenanza CS 987): la ordenanza del plan 2024 (Ordenanzas CS 2018
+        // y 2019, diciembre de 2023) no se pudo bajar (el sitio del Consejo Superior de UTN
+        // rechazó la conexión) y el plan 2003 sí está documentado, pero por otra regional (PDF
+        // del Centro Universitario Chivilcoy), no por Tucumán: ninguno de los dos queda cargado
+        // como plan detallado (hallazgo K05). Duración y condición de ingreso vienen de la Guía SIU.
         new CareerSeed(
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000031")),
                 UniversityId: UtnFrt.Id,
                 Name: "Tecnicatura Universitaria en Programación",
-                Slug: "tecnicatura-universitaria-en-programacion"),
+                Slug: "tecnicatura-universitaria-en-programacion",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
             Plan: new CareerPlanRecord(
                 Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000031")),
-                Year: 2023)),
+                Year: 2024,
+                Label: "Plan 2024 (en transición desde 2003, no verificado)")),
 
+        // ---------- UNSTA: resto de la oferta de pregrado y grado de la Guía SIU
+        // (42), sin plan detallado (relevar 42 planes no es esta tarea). ----------
         new CareerSeed(
             Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000032")),
-                UniversityId: UtnFrt.Id,
-                Name: "Tecnicatura Universitaria en Desarrollo y Producción de Videojuegos",
-                Slug: "tecnicatura-universitaria-en-desarrollo-y-produccion-de-videojuegos"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000032")),
-                Year: 2023)),
-
-        // La misma carrera canónica que UNSTA, en otra universidad y con plan propio: para que
-        // "Dónde estudiarla" y las comparaciones entre instituciones tengan una segunda
-        // carrera real, no solo la de UNSTA. Ficción declarada: el plan, sus materias y sus
-        // docentes son inventados.
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000100")),
+                UniversityId: Unsta.Id,
+                Name: "Abogado",
+                Slug: "abogado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
         new CareerSeed(
             Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000033")),
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000101")),
+                UniversityId: Unsta.Id,
+                Name: "Contador Público",
+                Slug: "contador-publico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000102")),
+                UniversityId: Unsta.Id,
+                Name: "Ingeniero Industrial",
+                Slug: "ingeniero-industrial",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000103")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Administración de Empresas",
+                Slug: "licenciado-en-administracion-de-empresas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000104")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Gestión Ambiental y Ecología",
+                Slug: "licenciado-en-gestion-ambiental-y-ecologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000105")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Higiene y Seguridad Laboral",
+                Slug: "licenciado-en-higiene-y-seguridad-laboral",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000106")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Logística y Gestión de Transportes",
+                Slug: "licenciado-en-logistica-y-gestion-de-transportes",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000107")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Nutrición",
+                Slug: "licenciado-en-nutricion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000108")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Psicología",
+                Slug: "licenciado-en-psicologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000109")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Recursos Humanos",
+                Slug: "licenciado-en-recursos-humanos",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010a")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Terapia Ocupacional",
+                Slug: "licenciado-en-terapia-ocupacional",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010b")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Turismo",
+                Slug: "licenciado-en-turismo",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010c")),
+                UniversityId: Unsta.Id,
+                Name: "Notario",
+                Slug: "notario",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010d")),
+                UniversityId: Unsta.Id,
+                Name: "Procurador",
+                Slug: "procurador",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010e")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico en Higiene y Seguridad Laboral",
+                Slug: "tecnico-en-higiene-y-seguridad-laboral",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010f")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Diagnóstico por Imágenes",
+                Slug: "licenciado-en-diagnostico-por-imagenes",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000110")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Gastronomía",
+                Slug: "licenciado-en-gastronomia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000111")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Trabajo Social - Ciclo de Complementación Curricular",
+                Slug: "licenciado-en-trabajo-social-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000112")),
+                UniversityId: Unsta.Id,
+                Name: "Médico",
+                Slug: "medico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000113")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico Universitario en Diagnóstico por Imágenes",
+                Slug: "tecnico-universitario-en-diagnostico-por-imagenes",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000114")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Ciencias Políticas",
+                Slug: "licenciado-en-ciencias-politicas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000115")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Comunicación Social",
+                Slug: "licenciado-en-comunicacion-social",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000116")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Seguridad y Protección Ciudadana - Ciclo de Complementación Curricular",
+                Slug: "licenciado-en-seguridad-y-proteccion-ciudadana-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000117")),
+                UniversityId: Unsta.Id,
+                Name: "Locutor Nacional",
+                Slug: "locutor-nacional",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000118")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico Universitario en Periodismo",
+                Slug: "tecnico-universitario-en-periodismo",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000119")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado/a en Marketing",
+                Slug: "licenciado-a-en-marketing",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011a")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Comercialización",
+                Slug: "licenciado-en-comercializacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011b")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico en Empresas Turísticas",
+                Slug: "tecnico-en-empresas-turisticas",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011c")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado/a en Ciencias Sociales",
+                Slug: "licenciado-a-en-ciencias-sociales",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011d")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado/a en Gestión Cultural- MD",
+                Slug: "licenciado-a-en-gestion-cultural-md",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011e")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado/a en Teoría y Gestión de las Organizaciones - MD",
+                Slug: "licenciado-a-en-teoria-y-gestion-de-las-organizaciones-md",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011f")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Filosofía",
+                Slug: "licenciado-en-filosofia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000120")),
+                UniversityId: Unsta.Id,
+                Name: "Profesor/a de Ciencias Políticas - Ciclo de Complementación Curricular",
+                Slug: "profesor-a-de-ciencias-politicas-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000121")),
+                UniversityId: Unsta.Id,
+                Name: "Profesor/a de Derecho - Ciclo de Complementación Curricular",
+                Slug: "profesor-a-de-derecho-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000122")),
+                UniversityId: Unsta.Id,
+                Name: "Profesor en Filosofía",
+                Slug: "profesor-en-filosofia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000123")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico/a en Gestión Universitaria- MD",
+                Slug: "tecnico-a-en-gestion-universitaria-md",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000124")),
+                UniversityId: Unsta.Id,
+                Name: "Bioingeniero/a",
+                Slug: "bioingeniero-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000125")),
+                UniversityId: Unsta.Id,
+                Name: "Ingeniero/a Ambiental",
+                Slug: "ingeniero-a-ambiental",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000126")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado/a en Diseño de Interiores",
+                Slug: "licenciado-a-en-diseno-de-interiores",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000127")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Diseño Gráfico",
+                Slug: "licenciado-en-diseno-grafico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000128")),
+                UniversityId: Unsta.Id,
+                Name: "Licenciado en Diseño Multimedial",
+                Slug: "licenciado-en-diseno-multimedial",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000129")),
+                UniversityId: Unsta.Id,
+                Name: "Técnico en Diseño Multimedial",
+                Slug: "tecnico-en-diseno-multimedial",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        // ---------- UNT: resto de la oferta de pregrado y grado de la Guía SIU
+        // (105), sin plan detallado (relevar 105 planes no es esta tarea). ----------
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000200")),
+                UniversityId: Unt.Id,
+                Name: "Kinesiólogo",
+                Slug: "kinesiologo",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000201")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Kinesiología",
+                Slug: "licenciado-en-kinesiologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000202")),
+                UniversityId: Unt.Id,
+                Name: "Enfermero",
+                Slug: "enfermero",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000203")),
+                UniversityId: Unt.Id,
+                Name: "Enfermero/a Universitario/a",
+                Slug: "enfermero-a-universitario-a",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000204")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Enfermería",
+                Slug: "licenciado-a-en-enfermeria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000205")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Obstetricia",
+                Slug: "licenciado-a-en-obstetricia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000206")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Enfermería",
+                Slug: "licenciado-en-enfermeria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000207")),
+                UniversityId: Unt.Id,
+                Name: "Técnico en Estadísticas de Salud",
+                Slug: "tecnico-en-estadisticas-de-salud",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000208")),
+                UniversityId: Unt.Id,
+                Name: "Técnico en Instrumentación Quirúrgica",
+                Slug: "tecnico-en-instrumentacion-quirurgica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000209")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Cinematografía",
+                Slug: "licenciado-a-en-cinematografia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020a")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario/a en Medios Audiovisuales",
+                Slug: "tecnico-a-universitario-a-en-medios-audiovisuales",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020b")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario de Gestión en Calidad Alimenticia",
+                Slug: "tecnico-universitario-de-gestion-en-calidad-alimenticia",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020c")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero/a Agrónomo/a",
+                Slug: "ingeniero-a-agronomo-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020d")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero/a Zootecnista",
+                Slug: "ingeniero-a-zootecnista",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020e")),
+                UniversityId: Unt.Id,
+                Name: "Médico Veterinario",
+                Slug: "medico-veterinario",
+                DegreeType: CareerDegreeType.Grado),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020f")),
+                UniversityId: Unt.Id,
+                Name: "Arquitecto",
+                Slug: "arquitecto",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000210")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Diseñador Universitario de Indumentaria y Textil",
+                Slug: "tecnico-disenador-universitario-de-indumentaria-y-textil",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000211")),
+                UniversityId: Unt.Id,
+                Name: "Actor / Actriz",
+                Slug: "actor-actriz",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000212")),
+                UniversityId: Unt.Id,
+                Name: "Bailarín de Danza Contemporánea",
+                Slug: "bailarin-de-danza-contemporanea",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000213")),
+                UniversityId: Unt.Id,
+                Name: "Diseñador de Interiores y Equipamiento",
+                Slug: "disenador-de-interiores-y-equipamiento",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000214")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Artes Visuales",
+                Slug: "licenciado-a-en-artes-visuales",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000215")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Danza Clásica",
+                Slug: "licenciado-a-en-danza-clasica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000216")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Diseño de sonido",
+                Slug: "licenciado-a-en-diseno-de-sonido",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000217")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Luthería",
+                Slug: "licenciado-a-en-lutheria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000218")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Teatro",
+                Slug: "licenciado-a-en-teatro",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000219")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Música - Ciclo de Licenciatura",
+                Slug: "licenciado-en-musica-ciclo-de-licenciatura",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021a")),
+                UniversityId: Unt.Id,
+                Name: "Profesor/a Universitario/a en Teatro",
+                Slug: "profesor-a-universitario-a-en-teatro",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021b")),
+                UniversityId: Unt.Id,
+                Name: "Profesor de Danza Contemporánea",
+                Slug: "profesor-de-danza-contemporanea",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021c")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario/a en Construcción y Restauración de Instrumentos de Cuerdas Pulsadas",
+                Slug: "tecnico-a-universitario-a-en-construccion-y-restauracion-de-instrumentos-de-cuerdas-pulsadas",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021d")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario en Sonorización",
+                Slug: "tecnico-a-universitario-en-sonorizacion",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021e")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Fotografía",
+                Slug: "tecnico-universitario-en-fotografia",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021f")),
+                UniversityId: Unt.Id,
+                Name: "Bioquímico/a",
+                Slug: "bioquimico-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000220")),
+                UniversityId: Unt.Id,
+                Name: "Farmacéutico/a",
+                Slug: "farmaceutico-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000221")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Química",
+                Slug: "licenciado-a-en-quimica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000222")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Biotecnología",
+                Slug: "licenciado-en-biotecnologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000223")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Laboratorista Universitario en Salud",
+                Slug: "tecnico-laboratorista-universitario-en-salud",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000224")),
+                UniversityId: Unt.Id,
+                Name: "Contador Público",
+                Slug: "contador-publico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000225")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Administración",
+                Slug: "licenciado-en-administracion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000226")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Economía",
+                Slug: "licenciado-en-economia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000227")),
+                UniversityId: Unt.Id,
+                Name: "Diseñador de Iluminación",
+                Slug: "disenador-de-iluminacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000228")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero/a en Computación",
+                Slug: "ingeniero-a-en-computacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000229")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero/a Geodesta y Geofísico/a",
+                Slug: "ingeniero-a-geodesta-y-geofisico-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022a")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Agrimensor",
+                Slug: "ingeniero-agrimensor",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022b")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Azucarero",
+                Slug: "ingeniero-azucarero",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022c")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Biomédico",
+                Slug: "ingeniero-biomedico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022d")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Civil",
+                Slug: "ingeniero-civil",
+                DegreeType: CareerDegreeType.Grado),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022e")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Electricista",
+                Slug: "ingeniero-electricista",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022f")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Electrónico",
+                Slug: "ingeniero-electronico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000230")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Industrial",
+                Slug: "ingeniero-industrial",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000231")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Mecánico",
+                Slug: "ingeniero-mecanico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000232")),
+                UniversityId: Unt.Id,
+                Name: "Ingeniero Químico",
+                Slug: "ingeniero-quimico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000233")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Física",
+                Slug: "licenciado-a-en-fisica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000234")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Matemática",
+                Slug: "licenciado-en-matematica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000235")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario/a en Física Ambiental",
+                Slug: "tecnico-a-universitario-a-en-fisica-ambiental",
+                DegreeType: CareerDegreeType.Tecnicatura),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000236")),
+                UniversityId: Unt.Id,
+                Name: "Técnico en Iluminación",
+                Slug: "tecnico-en-iluminacion",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000237")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Física",
+                Slug: "tecnico-universitario-en-fisica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000238")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Tecnología Azucarera e Industrias Derivadas",
+                Slug: "tecnico-universitario-en-tecnologia-azucarera-e-industrias-derivadas",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000239")),
+                UniversityId: Unt.Id,
+                Name: "Arqueólogo",
+                Slug: "arqueologo",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023a")),
+                UniversityId: Unt.Id,
+                Name: "Geólogo/a",
+                Slug: "geologo-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023b")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Ciencias Biológicas",
+                Slug: "licenciado-a-en-ciencias-biologicas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023c")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Ciencias Biológicas",
+                Slug: "profesor-en-ciencias-biologicas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023d")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Documentación y Museología Arqueológica",
+                Slug: "tecnico-universitario-en-documentacion-y-museologia-arqueologica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023e")),
+                UniversityId: Unt.Id,
+                Name: "Abogado",
+                Slug: "abogado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023f")),
+                UniversityId: Unt.Id,
+                Name: "Escribano",
+                Slug: "escribano",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000240")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Seguridad Pública - Ciclo de Complementación Curricular - MD",
+                Slug: "licenciado-a-en-seguridad-publica-ciclo-de-complementacion-curricular-md"),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000241")),
+                UniversityId: Unt.Id,
+                Name: "Procurador",
+                Slug: "procurador",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000242")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Educación Física",
+                Slug: "licenciado-en-educacion-fisica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000243")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Educación Física - Ciclo de Licenciatura",
+                Slug: "licenciado-en-educacion-fisica-ciclo-de-licenciatura",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000244")),
+                UniversityId: Unt.Id,
+                Name: "Profesor de Educación Física",
+                Slug: "profesor-de-educacion-fisica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000245")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Historia",
+                Slug: "licenciado-a-en-historia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000246")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Ciencias de la Comunicación",
+                Slug: "licenciado-en-ciencias-de-la-comunicacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000247")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Ciencias de la Educación",
+                Slug: "licenciado-en-ciencias-de-la-educacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000248")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Filosofía",
+                Slug: "licenciado-en-filosofia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000249")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Francés",
+                Slug: "licenciado-en-frances",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024a")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Geografía",
+                Slug: "licenciado-en-geografia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024b")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Inglés",
+                Slug: "licenciado-en-ingles",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024c")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Letras",
+                Slug: "licenciado-en-letras",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024d")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Trabajo Social",
+                Slug: "licenciado-en-trabajo-social",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024e")),
+                UniversityId: Unt.Id,
+                Name: "Profesor/a de Historia",
+                Slug: "profesor-a-de-historia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024f")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Artes Plásticas - Ciclo de Profesorado",
+                Slug: "profesor-en-artes-plasticas-ciclo-de-profesorado",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000250")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Ciencias de la Educación",
+                Slug: "profesor-en-ciencias-de-la-educacion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000251")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Ciencias Económicas - Ciclo de Profesorado",
+                Slug: "profesor-en-ciencias-economicas-ciclo-de-profesorado",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000252")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Filosofía",
+                Slug: "profesor-en-filosofia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000253")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Francés",
+                Slug: "profesor-en-frances",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000254")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Geografía",
+                Slug: "profesor-en-geografia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000255")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Inglés",
+                Slug: "profesor-en-ingles",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000256")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Letras",
+                Slug: "profesor-en-letras",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000257")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Matemática",
+                Slug: "profesor-en-matematica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000258")),
+                UniversityId: Unt.Id,
+                Name: "Profesor en Química",
+                Slug: "profesor-en-quimica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000259")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Comunicación",
+                Slug: "tecnico-universitario-en-comunicacion",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025a")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Fonoaudiología - Ciclo de Complementación Curricular",
+                Slug: "licenciado-a-en-fonoaudiologia-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025b")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado/a en Kinesiología y Fisiatría",
+                Slug: "licenciado-a-en-kinesiologia-y-fisiatria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025c")),
+                UniversityId: Unt.Id,
+                Name: "Médico",
+                Slug: "medico",
+                DegreeType: CareerDegreeType.Grado),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025d")),
+                UniversityId: Unt.Id,
+                Name: "Odontólogo/a",
+                Slug: "odontologo-a",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025e")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario/a en Asistencia Dental",
+                Slug: "tecnico-a-universitario-a-en-asistencia-dental",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025f")),
+                UniversityId: Unt.Id,
+                Name: "Técnico/a Universitario/a en Prótesis Dental",
+                Slug: "tecnico-a-universitario-a-en-protesis-dental",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000260")),
+                UniversityId: Unt.Id,
+                Name: "Profesor/a en Psicología - Ciclo de Complementación Curricular",
+                Slug: "profesor-a-en-psicologia-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000261")),
+                UniversityId: Unt.Id,
+                Name: "Psicólogo",
+                Slug: "psicologo",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000262")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Universitario en Acompañamiento Terapéutico",
+                Slug: "tecnico-universitario-en-acompanamiento-terapeutico",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000263")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Artes Plásticas",
+                Slug: "licenciado-en-artes-plasticas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000264")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Artes Plásticas (Especialidad: Escultura)",
+                Slug: "licenciado-en-artes-plasticas-especialidad-escultura",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000265")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Artes Plásticas (Especialidad: Grabado)",
+                Slug: "licenciado-en-artes-plasticas-especialidad-grabado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000266")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Artes Plásticas (Especialidad: Pintura)",
+                Slug: "licenciado-en-artes-plasticas-especialidad-pintura",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000267")),
+                UniversityId: Unt.Id,
+                Name: "Licenciado en Gestión Universitaria",
+                Slug: "licenciado-en-gestion-universitaria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000268")),
+                UniversityId: Unt.Id,
+                Name: "Técnico Superior en Gestión Universitaria",
+                Slug: "tecnico-superior-en-gestion-universitaria",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        // ---------- USPT: resto de la oferta de pregrado y grado de la Guía SIU
+        // (20), sin plan detallado (relevar 20 planes no es esta tarea). ----------
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000300")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Ciencia y Tecnología de Alimentos",
+                Slug: "licenciado-en-ciencia-y-tecnologia-de-alimentos",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000301")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Comercio Exterior",
+                Slug: "licenciado-en-comercio-exterior",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000302")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Diseño Industrial",
+                Slug: "licenciado-en-diseno-industrial",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000303")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Diseño Textil y de Indumentaria",
+                Slug: "licenciado-en-diseno-textil-y-de-indumentaria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000304")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Finanzas",
+                Slug: "licenciado-en-finanzas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000305")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Gestión de Empresas Agroindustriales",
+                Slug: "licenciado-en-gestion-de-empresas-agroindustriales",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000306")),
+                UniversityId: UspT.Id,
+                Name: "Técnico en Diseño Industrial",
+                Slug: "tecnico-en-diseno-industrial",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000307")),
+                UniversityId: UspT.Id,
+                Name: "Abogado",
+                Slug: "abogado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000308")),
+                UniversityId: UspT.Id,
+                Name: "Contador Público Nacional",
+                Slug: "contador-publico-nacional",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000309")),
+                UniversityId: UspT.Id,
+                Name: "Corredor Inmobiliario",
+                Slug: "corredor-inmobiliario",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030a")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Ciencia Política",
+                Slug: "licenciado-en-ciencia-politica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030b")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Periodismo",
+                Slug: "licenciado-en-periodismo",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030c")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Relaciones Internacionales",
+                Slug: "licenciado-en-relaciones-internacionales",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030d")),
+                UniversityId: UspT.Id,
+                Name: "Licenciado en Seguridad Ciudadana",
+                Slug: "licenciado-en-seguridad-ciudadana",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030e")),
+                UniversityId: UspT.Id,
+                Name: "Procurador/a",
+                Slug: "procurador-a",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030f")),
+                UniversityId: UspT.Id,
+                Name: "Técnico en Desarrollo Social",
+                Slug: "tecnico-en-desarrollo-social",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000310")),
+                UniversityId: UspT.Id,
+                Name: "Técnico Jurídico de Empresas",
+                Slug: "tecnico-juridico-de-empresas",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000311")),
+                UniversityId: UspT.Id,
+                Name: "Técnico Universitario en Protocolo, Ceremonial y Organización de Eventos",
+                Slug: "tecnico-universitario-en-protocolo-ceremonial-y-organizacion-de-eventos",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000312")),
+                UniversityId: UspT.Id,
+                Name: "Técnico Universitario en Taquigrafía y Estenotipia",
+                Slug: "tecnico-universitario-en-taquigrafia-y-estenotipia",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000313")),
+                UniversityId: UspT.Id,
+                Name: "Médico",
+                Slug: "medico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+
+        // ---------- UNSE: resto de la oferta de pregrado y grado de la Guía SIU
+        // (7), sin plan detallado (relevar 7 planes no es esta tarea). ----------
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000400")),
+                UniversityId: Unse.Id,
+                Name: "Licenciado en Gestión Educativa - MD",
+                Slug: "licenciado-en-gestion-educativa-md"),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000401")),
+                UniversityId: Unse.Id,
+                Name: "Analista en Gestión Educativa",
+                Slug: "analista-en-gestion-educativa",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000402")),
+                UniversityId: Unse.Id,
+                Name: "Licenciado/a en Gestión Educativa - Ciclo de Complementación Curricular - MD",
+                Slug: "licenciado-a-en-gestion-educativa-ciclo-de-complementacion-curricular-md",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000403")),
+                UniversityId: Unse.Id,
+                Name: "Licenciado en Educación Inicial - Ciclo de Licenciatura - MD",
+                Slug: "licenciado-en-educacion-inicial-ciclo-de-licenciatura-md",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000404")),
+                UniversityId: Unse.Id,
+                Name: "Licenciado en Educación Primaria - Ciclo de Licenciatura - MD",
+                Slug: "licenciado-en-educacion-primaria-ciclo-de-licenciatura-md",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000405")),
+                UniversityId: Unse.Id,
+                Name: "Técnico Universitario en Viveros y Plantaciones Forestales",
+                Slug: "tecnico-universitario-en-viveros-y-plantaciones-forestales",
+                DegreeType: CareerDegreeType.Tecnicatura),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000406")),
+                UniversityId: Unse.Id,
+                Name: "Técnico Universitario Fitosanitarista",
+                Slug: "tecnico-universitario-fitosanitarista",
+                DegreeType: CareerDegreeType.Tecnicatura),
+            Plan: null),
+
+        // ---------- UTN-FRT: resto de la oferta de pregrado y grado de la Guía SIU
+        // (14), sin plan detallado (relevar 14 planes no es esta tarea). ----------
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000500")),
                 UniversityId: UtnFrt.Id,
-                Name: "Tecnicatura Universitaria en Desarrollo y Calidad de Software",
-                Slug: "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software"),
-            Plan: new CareerPlanRecord(
-                Id: new CareerPlanId(Guid.Parse("00000003-0000-4000-a000-000000000033")),
-                Year: 2020)),
+                Name: "Analista Universitario de Sistemas",
+                Slug: "analista-universitario-de-sistemas",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000501")),
+                UniversityId: UtnFrt.Id,
+                Name: "Ingeniero/a en Energía Eléctrica",
+                Slug: "ingeniero-a-en-energia-electrica",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000502")),
+                UniversityId: UtnFrt.Id,
+                Name: "Ingeniero Civil",
+                Slug: "ingeniero-civil",
+                DegreeType: CareerDegreeType.Grado),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000503")),
+                UniversityId: UtnFrt.Id,
+                Name: "Ingeniero Electrónico",
+                Slug: "ingeniero-electronico",
+                DegreeType: CareerDegreeType.Grado),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000504")),
+                UniversityId: UtnFrt.Id,
+                Name: "Ingeniero Mecánico",
+                Slug: "ingeniero-mecanico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000505")),
+                UniversityId: UtnFrt.Id,
+                Name: "Licenciado en Gestión Ambiental - Ciclo de Complementación Curricular - MD",
+                Slug: "licenciado-en-gestion-ambiental-ciclo-de-complementacion-curricular-md",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000506")),
+                UniversityId: UtnFrt.Id,
+                Name: "Licenciado en Higiene y Seguridad en el Trabajo - Ciclo de Complementación Curricular",
+                Slug: "licenciado-en-higiene-y-seguridad-en-el-trabajo-ciclo-de-complementacion-curricular",
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000507")),
+                UniversityId: UtnFrt.Id,
+                Name: "Licenciado en Tecnología Educativa - Ciclo de Complementación Curricular",
+                Slug: "licenciado-en-tecnologia-educativa-ciclo-de-complementacion-curricular"),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000508")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Electrónica",
+                Slug: "tecnico-universitario-en-electronica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 4),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000509")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Energías Sustentables",
+                Slug: "tecnico-universitario-en-energias-sustentables",
+                DegreeType: CareerDegreeType.Tecnicatura),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050a")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Higiene y Seguridad en el Trabajo",
+                Slug: "tecnico-universitario-en-higiene-y-seguridad-en-el-trabajo",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050b")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Logística",
+                Slug: "tecnico-universitario-en-logistica",
+                DegreeType: CareerDegreeType.Tecnicatura),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050c")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Mantenimiento Industrial",
+                Slug: "tecnico-universitario-en-mantenimiento-industrial",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050d")),
+                UniversityId: UtnFrt.Id,
+                Name: "Técnico Universitario en Mecatrónica",
+                Slug: "tecnico-universitario-en-mecatronica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
     };
 
     // ====================================================================
@@ -286,10 +1924,6 @@ public static class AcademicSeedData
 
     private static readonly CareerPlanId TudcsPlanId =
         new(Guid.Parse("00000003-0000-4000-a000-000000000003"));
-
-    /// <summary>El plan 2020 de la Tecnicatura de UTN-FRT, ficticio.</summary>
-    private static readonly CareerPlanId UtnFrtDcsPlanId =
-        new(Guid.Parse("00000003-0000-4000-a000-000000000033"));
 
     public static IReadOnlyList<SubjectRecord> Subjects { get; } = new[]
     {
@@ -448,123 +2082,6 @@ public static class AcademicSeedData
             // Subject.Validate): no lo "corrijas" a 1. 350 hs totales.
             WeeklyHours: 0, TotalHours: 350),
 
-        // ---------- UTN-FRT: Tecnicatura Universitaria en Desarrollo y Calidad de Software ----------
-        // Plan 2020, ficticio: 16 materias en tres años, con códigos y nombres
-        // verosímiles pero distintos a los de UNSTA. Convención de código propia (AAII: año +
-        // número de orden) para que a simple vista no se confunda con el plan real de UNSTA.
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000030")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "1101",
-            Name: "Introducción a la Programación",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000031")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "1102",
-            Name: "Matemática Discreta",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000032")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "1103",
-            Name: "Inglés Técnico I",
-            YearInPlan: 1, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 2, TotalHours: 28),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000033")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "1104",
-            Name: "Arquitectura de Computadoras",
-            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000034")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "1105",
-            Name: "Bases de Datos I",
-            YearInPlan: 1, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000035")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2201",
-            Name: "Programación Orientada a Objetos",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 5, TotalHours: 70),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000036")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2202",
-            Name: "Ingeniería de Software I",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000037")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2203",
-            Name: "Testing y Calidad",
-            YearInPlan: 2, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000038")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2204",
-            Name: "Redes de Datos",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 3, TotalHours: 42),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000039")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2205",
-            Name: "Bases de Datos II",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003a")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "2206",
-            Name: "Inglés Técnico II",
-            YearInPlan: 2, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 2, TotalHours: 28),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003b")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "3301",
-            Name: "Ingeniería de Software II",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 4, TotalHours: 56),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003c")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "3302",
-            Name: "DevOps y Automatización",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 3, TotalHours: 42),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003d")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "3303",
-            Name: "Seguridad Informática",
-            YearInPlan: 3, TermInYear: 1, TermKind: TermKind.FourMonth,
-            WeeklyHours: 3, TotalHours: 42),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003e")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "3304",
-            Name: "Gestión de Proyectos",
-            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.FourMonth,
-            WeeklyHours: 3, TotalHours: 42),
-        new SubjectRecord(
-            Id: new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000003f")),
-            CareerPlanId: UtnFrtDcsPlanId,
-            Code: "3305",
-            Name: "Práctica Profesional Supervisada",
-            YearInPlan: 3, TermInYear: 2, TermKind: TermKind.FourMonth,
-            // 0 hs semanales, mismo criterio que 314 Proyecto Final de UNSTA (ver comentario arriba).
-            WeeklyHours: 0, TotalHours: 300),
     };
 
     // ====================================================================
@@ -682,33 +2199,6 @@ public static class AcademicSeedData
             EndDate: new DateOnly(2026, 11, 28),
             EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
             EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
-
-        // UTN-FRT: los tres períodos que hacen falta para las cátedras de su
-        // Tecnicatura, que hasta acá no tenía ningún período lectivo propio.
-        new AcademicTermRecord(
-            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000007")),
-            UniversityId: UtnFrt.Id,
-            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
-            StartDate: new DateOnly(2024, 3, 11),
-            EndDate: new DateOnly(2024, 7, 6),
-            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
-        new AcademicTermRecord(
-            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000008")),
-            UniversityId: UtnFrt.Id,
-            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
-            StartDate: new DateOnly(2024, 8, 5),
-            EndDate: new DateOnly(2024, 11, 30),
-            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
-        new AcademicTermRecord(
-            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000009")),
-            UniversityId: UtnFrt.Id,
-            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
-            StartDate: new DateOnly(2025, 3, 10),
-            EndDate: new DateOnly(2025, 7, 5),
-            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
-            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
     };
 
     // ====================================================================
@@ -764,15 +2254,6 @@ public static class AcademicSeedData
         new TeacherRecord(Tid("22"), Unsta.Id, "belén", "silva", "Profesora Titular"),
         new TeacherRecord(Tid("23"), Unsta.Id, "rocío", "franco", "Jefa de Trabajos Prácticos"),
         new TeacherRecord(Tid("24"), Unsta.Id, "joaquín", "vera", "Jefe de Trabajos Prácticos"),
-
-        // Docentes de la Tecnicatura UTN-FRT. Universidad y docentes propios, ninguno real.
-        new TeacherRecord(Tid("40"), UtnFrt.Id, "santiago", "villalba", "Profesor Titular"),
-        new TeacherRecord(Tid("41"), UtnFrt.Id, "brenda", "gimenez", "Profesora Titular"),
-        new TeacherRecord(Tid("42"), UtnFrt.Id, "ariel", "zabala", "Jefe de Trabajos Prácticos"),
-        new TeacherRecord(Tid("43"), UtnFrt.Id, "melina", "farías", "Profesora Titular"),
-        new TeacherRecord(Tid("44"), UtnFrt.Id, "facundo", "lucero", "Profesor Titular"),
-        new TeacherRecord(Tid("45"), UtnFrt.Id, "yamila", "rojas", "Profesora Titular"),
-        new TeacherRecord(Tid("46"), UtnFrt.Id, "bruno", "toledo", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -843,8 +2324,11 @@ public static class AcademicSeedData
             new[] { new ChairMemberRecord(Tid("16"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("0d"), Sid("06"), "Correa",
             new[] { new ChairMemberRecord(Tid("17"), ChairMemberRole.Lead, Atid("01")) }),
-        new ChairRecord(Chid("0e"), Sid("10"), "Romero",
-            new[] { new ChairMemberRecord(Tid("18"), ChairMemberRole.Lead, Atid("01")) }),
+        // Sid("10") (201 Inglés A2) se queda sin cátedra a propósito: es la materia real que
+        // GetSubjectFactsEndpointTests usa como "existe en el plan, cero cátedras" (antes lo daba
+        // la carrera ficticia de UTN-FRT, retirada en R6). Docente "ezequiel romero" (Tid 18)
+        // sigue en el catálogo, sin cátedra asignada, igual que los diez docentes generales del
+        // arranque de la lista.
         new ChairRecord(Chid("0f"), Sid("11"), "Acosta",
             new[] { new ChairMemberRecord(Tid("19"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("10"), Sid("13"), "Herrera",
@@ -865,24 +2349,6 @@ public static class AcademicSeedData
             new[] { new ChairMemberRecord(Tid("21"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("18"), Sid("21"), "Silva",
             new[] { new ChairMemberRecord(Tid("22"), ChairMemberRole.Lead, Atid("01")) }),
-
-        // ---------- UTN-FRT: seis cátedras con titular de las dieciséis materias del plan ----------
-        new ChairRecord(Chid("30"), Sid("30"), "Villalba",
-            new[] { new ChairMemberRecord(Tid("40"), ChairMemberRole.Lead, Atid("07")) }),
-        new ChairRecord(Chid("31"), Sid("34"), "Gimenez",
-            new[]
-            {
-                new ChairMemberRecord(Tid("41"), ChairMemberRole.Lead, Atid("07")),
-                new ChairMemberRecord(Tid("42"), ChairMemberRole.Assistant, Atid("07")),
-            }),
-        new ChairRecord(Chid("32"), Sid("36"), "Farías",
-            new[] { new ChairMemberRecord(Tid("43"), ChairMemberRole.Lead, Atid("07")) }),
-        new ChairRecord(Chid("33"), Sid("37"), "Lucero",
-            new[] { new ChairMemberRecord(Tid("44"), ChairMemberRole.Lead, Atid("07")) }),
-        new ChairRecord(Chid("34"), Sid("3b"), "Rojas",
-            new[] { new ChairMemberRecord(Tid("45"), ChairMemberRole.Lead, Atid("07")) }),
-        new ChairRecord(Chid("35"), Sid("3f"), "Toledo",
-            new[] { new ChairMemberRecord(Tid("46"), ChairMemberRole.Lead, Atid("07")) }),
     };
 
     private static ChairId Chid(string nn) =>
@@ -893,14 +2359,29 @@ public static class AcademicSeedData
 public sealed record UniversityRecord(
     UniversityId Id, string Name, string Slug, IReadOnlyList<string> InstitutionalEmailDomains);
 
-/// <summary>Datos planos de una Career del seed.</summary>
-public sealed record CareerRecord(CareerId Id, UniversityId UniversityId, string Name, string Slug);
+/// <summary>
+/// Datos planos de una Career del seed. <see cref="DegreeType"/> y <see cref="DurationYears"/> son
+/// opcionales (R6): el catálogo real de Tucumán los completa cuando la Guía SIU los da tal cual
+/// (tipo de título, duración en años enteros); si la fuente no encaja (un ciclo que no es "de cero",
+/// una duración en cuatrimestres o con medio año) quedan sin dato en vez de forzarlo.
+/// </summary>
+public sealed record CareerRecord(
+    CareerId Id,
+    UniversityId UniversityId,
+    string Name,
+    string Slug,
+    CareerDegreeType? DegreeType = null,
+    int? DurationYears = null);
 
 /// <summary>Datos planos de un CareerPlan del seed (Career inferido por contexto).</summary>
-public sealed record CareerPlanRecord(CareerPlanId Id, int Year);
+public sealed record CareerPlanRecord(CareerPlanId Id, int Year, string? Label = null);
 
-/// <summary>Par Career + CareerPlan vigente. Cada entrada del catálogo IT.</summary>
-public sealed record CareerSeed(CareerRecord Career, CareerPlanRecord Plan);
+/// <summary>
+/// Par Career + CareerPlan. <see cref="Plan"/> es nulo para la oferta que R6 carga sin plan
+/// detallado (relevar 229 planes no es esta tarea): la carrera existe, el plan queda para cuando
+/// alguien lo releve.
+/// </summary>
+public sealed record CareerSeed(CareerRecord Career, CareerPlanRecord? Plan);
 
 /// <summary>
 /// Materia del seed. <see cref="CareerPlanId"/> apunta al plan al que pertenece (típicamente
