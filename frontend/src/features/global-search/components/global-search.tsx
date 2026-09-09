@@ -122,12 +122,15 @@ export function GlobalSearch() {
   }
 
   return (
-    <div className="relative" style={{ width: 320 }}>
+    // w-full + min-w-0 (no un width fijo): un flex item con width fijo no se achica por
+    // default (min-width:auto lo frena en su contenido), así que a 393px este buscador
+    // desbordaba el header en vez de ceder el lugar al logo y a "Ingresar" (V13).
+    <div className="relative w-full min-w-0 max-w-[320px]">
       <div
-        className="flex items-center bg-bg-card border border-line rounded-pill shadow-card"
+        className="flex min-w-0 items-center bg-bg-card border border-line rounded-pill shadow-card"
         style={{ padding: '7px 14px', gap: 6 }}
       >
-        <Search size={13} className="text-ink-3" aria-hidden />
+        <Search size={13} className="shrink-0 text-ink-3" aria-hidden />
         <input
           ref={inputRef}
           type="search"
@@ -150,8 +153,10 @@ export function GlobalSearch() {
           className="flex-1 bg-transparent border-0 outline-none text-ink"
           style={{ font: 'inherit', fontSize: 13 }}
         />
+        {/* Sin teclado físico en celular, el atajo no significa nada: se esconde para dejarle
+            el lugar al input en vez de forzar el desborde (V13). */}
         <kbd
-          className="text-ink-3 bg-bg-card border border-line"
+          className="hidden shrink-0 text-ink-3 bg-bg-card border border-line sm:inline"
           style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 10,
