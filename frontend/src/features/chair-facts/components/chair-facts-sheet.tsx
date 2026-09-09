@@ -13,7 +13,18 @@ import type { ChairFacts } from '../types';
  * ninguna reseña individual, ningún desenlace de una persona, y ninguna comparación contra una
  * cátedra que no sea de la misma materia. Lo que no aparece es la regla funcionando, no un hueco.
  */
-export function ChairFactsSheet({ facts }: { facts: ChairFacts }) {
+type Props = {
+  facts: ChairFacts;
+  /**
+   * A dónde manda "¿La cursaste? Reseñala" (US-229): sin sesión, directo al gate con el
+   * motivo, en vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin
+   * decir para qué). Lo decide la página (`reviewCtaHref`, que sabe si hay sesión); el default
+   * acá es el camino directo, para no forzar a cada test a pasarlo.
+   */
+  reviewHref?: string;
+};
+
+export function ChairFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
   return (
     <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
@@ -42,7 +53,7 @@ export function ChairFactsSheet({ facts }: { facts: ChairFacts }) {
           <BelowFloor facts={facts} />
         )}
 
-        <Footer />
+        <Footer reviewHref={reviewHref} />
       </div>
     </div>
   );
@@ -232,7 +243,7 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
  * publicada es "confiá en mí". Falta "Bajar los datos" hacia el CSV, que es otra story de la misma
  * épica y todavía no existe; un link a una pantalla inexistente es peor que no ofrecerla.
  */
-function Footer() {
+function Footer({ reviewHref }: { reviewHref: string }) {
   return (
     <div className="flex items-center justify-between gap-2.5">
       <Link
@@ -242,7 +253,7 @@ function Footer() {
         ¿Cómo calculamos esto?
       </Link>
       <Link
-        href="/reviews/new"
+        href={reviewHref}
         className="whitespace-nowrap rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
         style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
       >

@@ -11,17 +11,30 @@ import { initialSignUpState } from './types';
  * llama `redirect()`, devuelve `{status, redirectTo}` y navega el cliente.
  *
  * Foco: el plan de estudios faltante (Zod), el 400
- * `identity.registration.career_plan_not_found` mapeado al campo `careerPlanId`, y el éxito
- * con su `redirectTo`.
+ * `identity.registration.career_plan_not_found` mapeado al campo `careerPlanId`, el éxito
+ * con su `redirectTo`, y (US-229) que un `from` sano viaje a check-inbox y quede en la cookie
+ * que `/verify-email` va a leer más tarde.
  */
 
 vi.mock('./api', () => ({
   registerUser: vi.fn(),
 }));
 
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(),
+}));
+
+import { cookies } from 'next/headers';
 import { registerUser } from './api';
 
 const registerUserMock = vi.mocked(registerUser);
+const cookiesMock = vi.mocked(cookies);
+
+function fakeCookieStore() {
+  const set = vi.fn();
+  // biome-ignore lint/suspicious/noExplicitAny: minimal cookie shim for the test
+  return { set } as any;
+}
 
 function formData(values: Record<string, string>): FormData {
   const fd = new FormData();
@@ -68,6 +81,43 @@ describe('signUpAction', () => {
       password: VALID_INPUT.password,
       careerPlanId: VALID_INPUT.careerPlanId,
     });
+  });
+
+  it('US-229: un from sano viaja a check-inbox y queda guardado para /verify-email', async () => {
+    registerUserMock.mockResolvedValue(new Response(null, { status: 202 }));
+    const store = fakeCookieStore();
+    cookiesMock.mockResolvedValue(store);
+
+    await expect(
+      signUpAction(initialSignUpState, formData({ ...VALID_INPUT, from: '/reviews/new' })),
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: `/sign-up/check-inbox?email=${encodeURIComponent(VALID_INPUT.email)}&from=%2Freviews%2Fnew`,
+    });
+
+    expect(store.set).toHaveBeenCalledWith(
+      'planb_from',
+      '/reviews/new',
+      expect.objectContaining({ httpOnly: true }),
+    );
+  });
+
+  it('US-229: un from que apunta afuera del producto no viaja ni se guarda (cuidado con lo obvio)', async () => {
+    registerUserMock.mockResolvedValue(new Response(null, { status: 202 }));
+    const store = fakeCookieStore();
+    cookiesMock.mockResolvedValue(store);
+
+    await expect(
+      signUpAction(
+        initialSignUpState,
+        formData({ ...VALID_INPUT, from: 'https://evil.com/phish' }),
+      ),
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: `/sign-up/check-inbox?email=${encodeURIComponent(VALID_INPUT.email)}`,
+    });
+
+    expect(store.set).not.toHaveBeenCalled();
   });
 
   it('400 con code career_plan_not_found aterriza en el campo careerPlanId', async () => {

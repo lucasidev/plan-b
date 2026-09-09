@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { fetchOfficialFactsServer } from '@/components/facts';
 import { CareerFactsSheet, fetchCareerFactsServer } from '@/features/career-facts';
+import { reviewCtaHref } from '@/features/write-review';
+import { getSession } from '@/lib/session';
 
 // La cobertura cambia con cada reseña nueva: se sirve fresca en vez de prerenderizada.
 export const dynamic = 'force-dynamic';
@@ -27,7 +29,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  */
 export default async function CareerPage({ params }: { params: Params }) {
   const { id } = await params;
-  const facts = await fetchCareerFactsServer(id);
+  const [facts, session] = await Promise.all([fetchCareerFactsServer(id), getSession()]);
 
   if (!facts) {
     notFound();
@@ -35,5 +37,11 @@ export default async function CareerPage({ params }: { params: Params }) {
 
   const officialFacts = await fetchOfficialFactsServer('Offering', id);
 
-  return <CareerFactsSheet facts={facts} officialFacts={officialFacts} />;
+  return (
+    <CareerFactsSheet
+      facts={facts}
+      officialFacts={officialFacts}
+      reviewHref={reviewCtaHref(session)}
+    />
+  );
 }

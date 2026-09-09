@@ -12,7 +12,18 @@ import type { Distribution, SubjectChair, SubjectFacts, TakenWith } from '../typ
  * Lo que no muestra nunca: ningún puntaje ni escala, ninguna cátedra remarcada como "la mejor",
  * ningún dato de una cátedra que todavía no llegó a las 10 reseñas, y ningún desenlace individual.
  */
-export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
+type Props = {
+  facts: SubjectFacts;
+  /**
+   * A dónde manda "¿La cursaste? Reseñala" (US-229): sin sesión, directo al gate con el
+   * motivo, en vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin
+   * decir para qué). Lo decide la página (`reviewCtaHref`, que sabe si hay sesión); el default
+   * acá es el camino directo, para no forzar a cada test a pasarlo.
+   */
+  reviewHref?: string;
+};
+
+export function SubjectFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
   return (
     <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
@@ -32,7 +43,7 @@ export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
 
         <TakenWithBlock facts={facts} />
         <Chairs facts={facts} />
-        <Footer />
+        <Footer reviewHref={reviewHref} />
       </div>
     </div>
   );
@@ -344,7 +355,7 @@ function ChairRow({ chair, last }: { chair: SubjectChair; last: boolean }) {
   );
 }
 
-function Footer() {
+function Footer({ reviewHref }: { reviewHref: string }) {
   return (
     <div className="flex items-center justify-between gap-2.5">
       <Link
@@ -354,7 +365,7 @@ function Footer() {
         ¿Cómo calculamos esto?
       </Link>
       <Link
-        href="/reviews/new"
+        href={reviewHref}
         className="whitespace-nowrap rounded-lg px-3.5 py-[9px] text-[13px] font-medium"
         style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
       >

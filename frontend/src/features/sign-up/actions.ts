@@ -1,6 +1,12 @@
 'use server';
 
+import { cookies } from 'next/headers';
 import type { ValidationProblemDetails } from '@/lib/api-problem';
+import {
+  RETURN_TO_COOKIE,
+  RETURN_TO_COOKIE_MAX_AGE_SECONDS,
+  sanitizeInternalRedirect,
+} from '@/lib/internal-redirect';
 import { registerUser } from './api';
 import { signUpSchema } from './schema';
 import type { SignUpFormState } from './types';
@@ -50,9 +56,26 @@ export async function signUpAction(
   // El backend responde 202 exista o no la cuenta (ADR-0076): la pantalla dice "revisá tu
   // casilla" en los dos casos, y la diferencia viaja por mail. Por eso acá no hay rama 409.
   if (response.ok) {
+    const from = sanitizeInternalRedirect(formData.get('from')?.toString());
+    if (from) {
+      // El mail de verificación lo arma el backend con un link fijo (no conoce este destino):
+      // la cookie es lo único que sobrevive el salto a la casilla de correo y vuelve cuando la
+      // persona hace click en el link, minutos u horas después (US-229).
+      const cookieStore = await cookies();
+      cookieStore.set(RETURN_TO_COOKIE, from, {
+        path: '/',
+        maxAge: RETURN_TO_COOKIE_MAX_AGE_SECONDS,
+        httpOnly: true,
+        sameSite: 'lax',
+      });
+    }
+
+    const email = encodeURIComponent(parsed.data.email);
     return {
       status: 'success',
-      redirectTo: `/sign-up/check-inbox?email=${encodeURIComponent(parsed.data.email)}`,
+      redirectTo: from
+        ? `/sign-up/check-inbox?email=${email}&from=${encodeURIComponent(from)}`
+        : `/sign-up/check-inbox?email=${email}`,
     };
   }
 

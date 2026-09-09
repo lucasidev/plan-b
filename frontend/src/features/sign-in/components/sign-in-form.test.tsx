@@ -44,6 +44,31 @@ describe('SignInForm', () => {
     expect(screen.getByRole('link', { name: /olvidaste tu contraseña/i })).toBeInTheDocument();
   });
 
+  it('US-229 E1: con reason, la pantalla dice arriba por qué está ahí', () => {
+    render(
+      <SignInForm from="/reviews/new" reason="Para reseñar una cursada, necesitás una cuenta." />,
+    );
+    expect(screen.getByText(/para rese.ar una cursada, necesit.s una cuenta/i)).toBeInTheDocument();
+  });
+
+  it('US-229 E3: sin reason, no muestra ningún motivo', () => {
+    render(<SignInForm />);
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('US-229: manda el from como campo oculto del form', async () => {
+    actionMock.mockResolvedValue({ status: 'idle' });
+    const user = userEvent.setup();
+    render(<SignInForm from="/reviews/new" />);
+
+    await user.type(screen.getByLabelText(/tu email/i), 'lucia@test.com');
+    await user.type(screen.getByLabelText(/^contraseña$/i), 'doce-chars-1');
+    await user.click(screen.getByRole('button', { name: /entrar/i }));
+
+    const [, fd] = actionMock.mock.calls[0] as [unknown, FormData];
+    expect(fd.get('from')).toBe('/reviews/new');
+  });
+
   it('dispara el action con los valores del form al hacer submit', async () => {
     actionMock.mockResolvedValue({ status: 'idle' });
     const user = userEvent.setup();

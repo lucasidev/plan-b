@@ -15,13 +15,19 @@ import type { CareerFacts } from '../types';
  *
  * Lo que no muestra nunca: ningún puntaje ni escala, ningún dato oficial sin decir que falta.
  */
-export function CareerFactsSheet({
-  facts,
-  officialFacts,
-}: {
+type Props = {
   facts: CareerFacts;
   officialFacts: OfficialFact[];
-}) {
+  /**
+   * A dónde manda "Reseñá tu cursada" (US-229): sin sesión, directo al gate con el motivo, en
+   * vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin decir para
+   * qué). Lo decide la página (`reviewCtaHref`, que sabe si hay sesión); el default acá es el
+   * camino directo, para no forzar a cada test a pasarlo.
+   */
+  reviewHref?: string;
+};
+
+export function CareerFactsSheet({ facts, officialFacts, reviewHref = '/reviews/new' }: Props) {
   return (
     <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
@@ -32,7 +38,7 @@ export function CareerFactsSheet({
         <OfficialData officialFacts={officialFacts} />
         <Coverage facts={facts} />
         <EditorialNotes facts={facts} />
-        <Footer facts={facts} />
+        <Footer facts={facts} reviewHref={reviewHref} />
       </div>
     </div>
   );
@@ -168,7 +174,7 @@ function coverageNote(facts: CareerFacts): string {
   return `Las ${remaining} restantes todavía no juntan las 10 reseñas del piso.`;
 }
 
-function Footer({ facts }: { facts: CareerFacts }) {
+function Footer({ facts, reviewHref }: { facts: CareerFacts; reviewHref: string }) {
   return (
     <div className="flex gap-2">
       <Link
@@ -178,7 +184,7 @@ function Footer({ facts }: { facts: CareerFacts }) {
         Ver las {facts.totalSubjects} {facts.totalSubjects === 1 ? 'materia' : 'materias'}
       </Link>
       <Link
-        href="/reviews/new"
+        href={reviewHref}
         className="flex-1 rounded-lg bg-ink px-3.5 py-[9px] text-center text-[13px] font-medium text-bg-card"
       >
         Reseñá tu cursada

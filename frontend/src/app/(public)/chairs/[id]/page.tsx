@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ChairFactsSheet, fetchChairFactsServer } from '@/features/chair-facts';
+import { reviewCtaHref } from '@/features/write-review';
+import { getSession } from '@/lib/session';
 
 // Los conteos cambian con cada reseña nueva y la ficha es lo que el producto publica: se sirve
 // fresca en vez de prerenderizada.
@@ -30,11 +32,11 @@ export async function generateMetadata({
  */
 export default async function ChairPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const facts = await fetchChairFactsServer(id);
+  const [facts, session] = await Promise.all([fetchChairFactsServer(id), getSession()]);
 
   if (!facts) {
     notFound();
   }
 
-  return <ChairFactsSheet facts={facts} />;
+  return <ChairFactsSheet facts={facts} reviewHref={reviewCtaHref(session)} />;
 }

@@ -93,6 +93,38 @@ describe('signInAction', () => {
     });
   });
 
+  it('E2: con un from sano, vuelve exactamente a lo que estaba haciendo', async () => {
+    signInMock.mockResolvedValue(okResponse('Member'));
+
+    await expect(
+      signInAction(
+        initialSignInState,
+        formData({ email: 'lucia@test.com', password: 'doce-chars-1', from: '/reviews/new' }),
+      ),
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/reviews/new',
+    });
+  });
+
+  it('un from que apunta a un host externo no se usa como destino (cuidado con lo obvio)', async () => {
+    signInMock.mockResolvedValue(okResponse('Member'));
+
+    await expect(
+      signInAction(
+        initialSignInState,
+        formData({
+          email: 'lucia@test.com',
+          password: 'doce-chars-1',
+          from: 'https://evil.com/phish',
+        }),
+      ),
+    ).resolves.toEqual({
+      status: 'success',
+      redirectTo: '/home',
+    });
+  });
+
   it('manda al admin al backoffice, no al área de alumno', async () => {
     // El destino fijo `/home` dejaba al admin rebotando entre el guard de (member), que lo
     // echaba por no ser alumno, y el de (auth), que lo devolvía por tener sesión.

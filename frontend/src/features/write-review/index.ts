@@ -6,6 +6,7 @@ export {
   fetchTermsServer,
 } from './api.server';
 export { ReviewForm } from './components/review-form';
+export { reviewCtaHref } from './review-cta-href';
 export { courseReviewSchema } from './schema';
 export type {
   AnswerDraft,
