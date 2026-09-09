@@ -9,8 +9,9 @@ Como quien está eligiendo, quiero ver cuánto tarda de verdad, para no creerle 
 
 ## Listo cuando
 
-- La ficha muestra dos números uno al lado del otro: cuánto dura en el papel (la duración del plan) y cuánto dura en la realidad.
-- Los dos son datos oficiales, con su fuente y su período dichos al lado, nunca un cálculo propio sobre lo que declaró quien reseñó.
+- La ficha pone cuánto dura en el papel al lado de cuánto dura en la realidad, cada uno con su fuente y su período dichos ahí mismo.
+- Cuando la duración real no está publicada, la ficha lo dice en el lugar donde iría el número, con la fecha en que se buscó y a quién se le pidió. Nunca queda en blanco ni desaparece la fila.
+- Ninguno de los dos sale de lo que declaró quien reseñó.
 - Se muestran aunque la carrera todavía no tenga ninguna cursada reseñada: no dependen de voces.
 
 ## Dónde se resuelve
@@ -20,4 +21,6 @@ Como quien está eligiendo, quiero ver cuánto tarda de verdad, para no creerle 
 
 ## Notas
 
-Ya no depende de US-155 ni de US-156 (preguntar el año de ingreso o si te recibiste): con [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) la duración real es relevamiento oficial (serie SPU/CONEAU), no un cálculo sobre lo que declaró quien reseñó.
+Ya no depende de US-155 ni de US-156 (preguntar el año de ingreso o si te recibiste): con [ADR-0085](../../../../../decisions/0085-three-instruments-and-official-data.md) la duración real es relevamiento oficial, no un cálculo sobre lo que declaró quien reseñó.
+
+Ninguna fuente pública publica la duración real por carrera: la SPU publica flujos por institución y por disciplina, y la cohorte solo existe en los sistemas de cada universidad ([O01](../../../../../history/reviews/2026-09-07-official-data-sources.md)). Por eso el estado normal de este dato hoy es "no publicado" o "pedido", con su fecha, y no un número.

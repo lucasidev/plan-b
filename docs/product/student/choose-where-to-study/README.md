@@ -20,6 +20,7 @@ Las 12 de esta épica. Cada una en su archivo, con su criterio de aceptación; e
 |---|---|
 | [US-221](stories/US-221-see-the-instrument-working-on-arrival/README.md) | Entender qué es esto viendo una ficha real |
 | [US-222](stories/US-222-browse-what-there-is-to-study/README.md) | Ver qué hay para estudiar sin saber qué buscar |
+| [US-232](stories/US-232-see-what-the-institution-publishes/README.md) | Ver qué publica cada institución y qué no |
 | [US-127](stories/US-127-see-how-long-it-really-takes/README.md) | Ver cuánto tarda de verdad la carrera |
 | [US-128](stories/US-128-compare-the-same-career-side-by-side/README.md) | Comparar la misma carrera en varias instituciones |
 | [US-129](stories/US-129-attribute-difficulty-to-career-or-institution/README.md) | Atribuir la dificultad: carrera o facultad |

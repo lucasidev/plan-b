@@ -8,7 +8,7 @@
 
 ## Qué stories resuelve
 
-[US-177](../../stories/US-177-track-change-across-periods/README.md) (la serie de sus propios conteos por período, "si mejoré desde que lo publicaron"). El bloque de la respuesta institucional en sí (con nombre y cargo, o "Sin respuesta · avisada el [fecha]" cuando no hay nada, igual que en la Ficha de cátedra) todavía no tiene story dueña ni lugar dibujado en el boceto: **hueco declarado**, ver "Lo que esta ficha deja abierto".
+[US-177](../../stories/US-177-track-change-across-periods/README.md) (la serie de sus propios conteos por período, "si mejoré desde que lo publicaron") y [US-232](../../../../student/choose-where-to-study/stories/US-232-see-what-the-institution-publishes/README.md) (el checklist de transparencia: qué publica y qué no, con su fecha; la lee quien está eligiendo). El bloque de la respuesta institucional en sí (con nombre y cargo, o "Sin respuesta · avisada el [fecha]" cuando no hay nada, igual que en la Ficha de cátedra) todavía no tiene story dueña ni lugar dibujado en el boceto: **hueco declarado**, ver "Lo que esta ficha deja abierto".
 
 ## Qué muestra
 
