@@ -1,5 +1,6 @@
 export { formatOfficialFactValue } from './format-official-fact-value';
 export { ItemRow } from './item-row';
+export { MissingFactRow } from './missing-fact-row';
 export {
   CAREER_OFFICIAL_FACT_ORDER,
   OFFICIAL_FACT_FIELDS,

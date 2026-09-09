@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ItemRow } from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
+import { formatRelativeDate } from '@/lib/format-date';
 import type { ChairFacts } from '../types';
 
 /**
@@ -94,6 +95,8 @@ function Identity({ facts }: { facts: ChairFacts }) {
           {facts.span.fromYear === facts.span.toYear
             ? ` de ${facts.span.fromYear}`
             : ` repartidas de ${facts.span.fromYear} a ${facts.span.toYear}`}
+          {facts.span.lastReviewedAt &&
+            ` · lo último es de ${formatRelativeDate(facts.span.lastReviewedAt)}`}
         </p>
       )}
     </div>

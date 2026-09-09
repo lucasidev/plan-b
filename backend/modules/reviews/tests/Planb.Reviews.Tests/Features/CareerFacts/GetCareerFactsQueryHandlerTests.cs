@@ -39,9 +39,10 @@ public class GetCareerFactsQueryHandlerTests
             new GetCareerFactsQuery(careerId), deps.Academic, deps.Coverage, deps.Notes,
             CancellationToken.None);
 
-    private static CareerDetailItem Career(Guid id, int? durationYears = null) =>
+    private static CareerDetailItem Career(
+        Guid id, int? durationYears = null, string? academicUnitName = null) =>
         new(id, "Tecnicatura Universitaria en Desarrollo y Calidad de Software", durationYears,
-            "Universidad del Norte Santo Tomás de Aquino");
+            "Universidad del Norte Santo Tomás de Aquino", academicUnitName);
 
     [Fact]
     public async Task Handle_CareerDoesNotExist_ReturnsNotFoundWithoutQueryingCoverage()
@@ -65,7 +66,7 @@ public class GetCareerFactsQueryHandlerTests
         var deps = NewDeps();
         var careerId = Guid.NewGuid();
         deps.Academic.GetCareerByIdAsync(careerId, Arg.Any<CancellationToken>())
-            .Returns(Career(careerId, durationYears: 3));
+            .Returns(Career(careerId, durationYears: 3, academicUnitName: "Facultad de Ingeniería"));
         deps.Coverage.GetCoverageAsync(careerId, PublishingRules.ChairMinimumReviews, Arg.Any<CancellationToken>())
             .Returns(new CareerCoverage(TotalSubjects: 21, CoveredSubjects: 1));
 
@@ -76,11 +77,32 @@ public class GetCareerFactsQueryHandlerTests
         facts.CareerId.ShouldBe(careerId);
         facts.CareerName.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
         facts.UniversityName.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
+        facts.AcademicUnitName.ShouldBe("Facultad de Ingeniería");
         facts.DurationYears.ShouldBe(3);
         facts.TotalSubjects.ShouldBe(21);
         facts.CoveredSubjects.ShouldBe(1);
         // 1/21 = 4,76...%, redondeado hacia arriba (AwayFromZero) da 5.
         facts.CoveragePercent.ShouldBe(5);
+    }
+
+    /// <summary>
+    /// Una carrera todavía sin unidad académica vinculada en el catálogo (columna nullable) no
+    /// inventa una: la ficha la deja en null en vez de repetir la institución.
+    /// </summary>
+    [Fact]
+    public async Task Handle_CareerWithoutAcademicUnit_ReturnsNullWithoutInventingAValue()
+    {
+        var deps = NewDeps();
+        var careerId = Guid.NewGuid();
+        deps.Academic.GetCareerByIdAsync(careerId, Arg.Any<CancellationToken>())
+            .Returns(Career(careerId));
+        deps.Coverage.GetCoverageAsync(careerId, PublishingRules.ChairMinimumReviews, Arg.Any<CancellationToken>())
+            .Returns(new CareerCoverage(TotalSubjects: 0, CoveredSubjects: 0));
+
+        var result = await Invoke(deps, careerId);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.AcademicUnitName.ShouldBeNull();
     }
 
     [Fact]

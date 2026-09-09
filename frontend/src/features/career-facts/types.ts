@@ -10,6 +10,8 @@ export interface CareerFacts {
   careerId: string;
   careerName: string;
   universityName: string;
+  /** La facultad o unidad que dicta la carrera. Null cuando el catálogo todavía no la vinculó. */
+  academicUnitName: string | null;
   durationYears: number | null;
   totalSubjects: number;
   coveredSubjects: number;

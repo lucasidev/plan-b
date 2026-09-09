@@ -59,6 +59,29 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
 
 describe('ChairFactsSheet', () => {
   /**
+   * SC-002: la línea de sustento dice de cuándo son las voces, dispersión temporal incluida. Sin
+   * "hace cuánto es la última", una cátedra con titular cambiado en 2025 y última reseña de 2023
+   * se lee igual que una activa.
+   */
+  it('SC-002: la identidad dice hace cuánto es la última voz', () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChairFactsSheet
+          facts={facts({
+            span: {
+              fromYear: 2023,
+              toYear: 2026,
+              lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+            },
+          })}
+        />
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/lo último es de hace 2 meses/)).toBeInTheDocument();
+  });
+
+  /**
    * US-131 N2: ninguna proporción se publica sin su "de N" al lado. La fama enuncia el porcentaje
    * de cada frase que converge ("el 80 %"); tiene que poder verificarse sin bajar al detalle, y
    * eso incluye saber sobre cuántas voces sale ese porcentaje ahí mismo, no en otro bloque de la
