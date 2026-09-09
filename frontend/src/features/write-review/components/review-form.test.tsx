@@ -215,6 +215,27 @@ function stubChairsFetch(chairs: readonly { id: string; name: string }[]) {
   );
 }
 
+/**
+ * Stubea las dos rutas que el form pide: la lista de cátedras de la materia
+ * (`/api/academic/subjects/.../chairs`) y el piso de la cátedra elegida
+ * (`/api/reviews/chairs/.../facts`, US-159 E3). Cada llamada responde según cuál de las dos URLs
+ * matchea, para poder darle a cada una su propio shape.
+ */
+function stubFetchRoutes(routes: {
+  chairs: readonly { id: string; name: string }[];
+  floor: unknown;
+}) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((url: string) => {
+      if (url.includes('/facts')) {
+        return Promise.resolve({ ok: true, json: async () => routes.floor });
+      }
+      return Promise.resolve({ ok: true, json: async () => routes.chairs });
+    }),
+  );
+}
+
 function keptPaceGroup() {
   return screen.getByRole('group', { name: '¿Pudiste seguir el ritmo?' });
 }
@@ -469,5 +490,126 @@ describe('SC-015: lo que no muestra nunca', () => {
     await screen.findByRole('button', { name: /no me acuerdo/i });
 
     expect(container.textContent).not.toMatch(/★|puntaje|promedio|\/\s*5|\/\s*10/i);
+  });
+});
+
+describe('US-159: que ningún cruce me identifique', () => {
+  /**
+   * US-159 E3: al llegar al contrato del paso 6, además de que las respuestas se suman al total
+   * y que ninguna reseña individual se muestra, la pantalla dice el estado del piso de la
+   * cátedra elegida.
+   */
+  it('el contrato del paso 6 dice el piso de la cátedra elegida', async () => {
+    stubFetchRoutes({
+      chairs: [{ id: 'chair-1', name: 'Cátedra Pérez' }],
+      floor: { isPublished: false, reviewCount: 3, reviewsMissingToPublish: 7 },
+    });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(await screen.findByRole('button', { name: /cátedra pérez/i }));
+
+    expect(await screen.findByText('Junta 3 reseñas: con 7 más se publica.')).toBeInTheDocument();
+    expect(screen.getByText('Tus respuestas se suman al total de la cátedra.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Nunca se muestra una reseña individual, ni cómo terminó nadie.'),
+    ).toBeInTheDocument();
+  });
+
+  /** US-159 E3: una cátedra que ya cruzó el piso dice cuántas voces tiene, no que le siga faltando. */
+  it('cátedra ya publicada: dice sus voces en vez de cuánto le falta', async () => {
+    stubFetchRoutes({
+      chairs: [{ id: 'chair-1', name: 'Cátedra Pérez' }],
+      floor: { isPublished: true, reviewCount: 24, reviewsMissingToPublish: 0 },
+    });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(await screen.findByRole('button', { name: /cátedra pérez/i }));
+
+    expect(await screen.findByText('Esta cátedra ya publica: 24 voces.')).toBeInTheDocument();
+  });
+
+  /** Sin cátedra elegida ("no me acuerdo") no hay una cátedra concreta cuyo piso mostrar. */
+  it('sin cátedra elegida, el contrato no inventa un piso', async () => {
+    stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(await screen.findByRole('button', { name: /no me acuerdo/i }));
+
+    expect(screen.queryByText(/Junta \d/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/ya publica/)).not.toBeInTheDocument();
+  });
+});
+
+describe('US-163: reseñar la misma materia dos veces', () => {
+  /**
+   * US-163 / L06: el 409 de "ya reseñaste esta cursada" no solo avisa, deja el botón
+   * deshabilitado: reenviar la misma cursada volvería a chocar contra el mismo 409, y el camino
+   * que el propio aviso ofrece es corregir desde Mis aportes, no reintentar acá.
+   */
+  it('un 409 por duplicado deshabilita "Enviar la reseña" para esa misma cursada', async () => {
+    stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
+    actionMock.mockResolvedValue({
+      status: 'error',
+      kind: 'duplicate',
+      message: 'Ya reseñaste esta cursada. Podés editar la que tenés desde Mis aportes.',
+    });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(screen.getByRole('button', { name: '2026-C1' }));
+    await user.click(await screen.findByRole('button', { name: /no me acuerdo/i }));
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Cómo terminó?' })).getByRole('button', {
+        name: 'La aprobé',
+      }),
+    );
+    await answerKeptPaceYes(user);
+
+    const submit = screen.getByRole('button', { name: /enviar la reseña/i });
+    expect(submit).toBeEnabled();
+    await user.click(submit);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/ya reseñaste esta cursada/i);
+    expect(submit).toBeDisabled();
+  });
+
+  /**
+   * US-163 N1 / E1: el bloqueo es de ESA cursada (materia × período), no de reseñar en general.
+   * Elegir otra materia es otra cursada, y el botón vuelve a habilitarse.
+   */
+  it('cambiar de materia después de un 409 por duplicado vuelve a habilitar el envío', async () => {
+    stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);
+    actionMock.mockResolvedValue({
+      status: 'error',
+      kind: 'duplicate',
+      message: 'Ya reseñaste esta cursada. Podés editar la que tenés desde Mis aportes.',
+    });
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.click(screen.getByRole('button', { name: /análisis matemático ii/i }));
+    await user.click(screen.getByRole('button', { name: '2026-C1' }));
+    await user.click(await screen.findByRole('button', { name: /no me acuerdo/i }));
+    await user.click(
+      within(screen.getByRole('group', { name: '¿Cómo terminó?' })).getByRole('button', {
+        name: 'La aprobé',
+      }),
+    );
+    await answerKeptPaceYes(user);
+
+    const submit = screen.getByRole('button', { name: /enviar la reseña/i });
+    await user.click(submit);
+    await screen.findByRole('alert');
+    expect(submit).toBeDisabled();
+
+    await user.click(screen.getByRole('button', { name: /programación i/i }));
+    expect(submit).toBeEnabled();
   });
 });
