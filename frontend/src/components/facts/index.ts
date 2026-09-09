@@ -1,3 +1,4 @@
+export { DemoCorpusNotice } from './demo-corpus-notice';
 export { formatOfficialFactValue } from './format-official-fact-value';
 export { ItemRow } from './item-row';
 export { MissingFactRow } from './missing-fact-row';

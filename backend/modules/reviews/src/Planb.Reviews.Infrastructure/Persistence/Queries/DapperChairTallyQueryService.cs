@@ -335,6 +335,26 @@ internal sealed class DapperChairTallyQueryService : IChairTallyQueryService
             ? new DateTimeOffset(DateTime.SpecifyKind(value, DateTimeKind.Utc))
             : null;
 
+    /// <summary>
+    /// Consulta aparte y de una sola sentencia a propósito: no se suma como cuarto resultset de
+    /// <see cref="GetTalliesAsync"/> para no tocar el orden posicional del que depende
+    /// <c>TallyRow</c> (ver su docstring). El prefijo es el mismo rango reservado que
+    /// <c>CorpusSeedData.Reviews</c> usa para todo <c>ReviewId</c> que siembra.
+    /// </summary>
+    public async Task<bool> HasDemoCorpusVoicesAsync(Guid chairId, CancellationToken ct = default)
+    {
+        const string sql = @"
+            SELECT EXISTS (
+                SELECT 1 FROM reviews.reviews
+                WHERE chair_id = @ChairId
+                  AND id::text LIKE '00000021-%'
+            );";
+
+        using var db = _connections.Create();
+        return await db.QuerySingleAsync<bool>(
+            new CommandDefinition(sql, new { ChairId = chairId }, cancellationToken: ct));
+    }
+
     /// <summary>Cuántas reseñas junta una cátedra y cuándo entró la última.</summary>
     private sealed record ChairCountRow(Guid ChairId, int ReviewCount, DateTime? LastReviewedAt);
 
