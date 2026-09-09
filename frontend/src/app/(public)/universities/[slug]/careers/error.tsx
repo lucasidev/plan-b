@@ -15,11 +15,11 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <>
+    <div data-surface="bulletin" className="min-h-screen w-full">
       <CatalogTopbar />
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+      <main className="mx-auto flex max-w-[560px] flex-col gap-6 px-4 py-8">
         <CatalogErrorState onRetry={reset} />
       </main>
-    </>
+    </div>
   );
 }

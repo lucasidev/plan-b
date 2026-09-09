@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
+import { fetchOfficialFactsServer } from '@/components/facts';
 import { CareerList, CatalogBreadcrumb, CatalogTopbar } from '@/features/browse-catalog';
 import {
   fetchCareersByUniversityServer,
   fetchUniversitiesServer,
 } from '@/features/browse-catalog/api.server';
+import { InstitutionIdentity, TransparencyChecklist } from '@/features/institution-facts';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,13 +15,19 @@ export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
   const universities = await fetchUniversitiesServer();
   const university = universities.find((u) => u.slug === slug);
-  return { title: university ? `Carreras · ${university.name} · planb` : 'Carreras · planb' };
+  return { title: university ? `${university.name} · planb` : 'Institución · planb' };
 }
 
 /**
- * /universities/[slug]/careers (US-001). No hay endpoint público "get university by slug": se
- * resuelve fetcheando el listado completo de universidades (barato, MVP con pocas unis) y
- * matcheando por `slug`. 404 si el slug no matchea ninguna.
+ * /universities/[slug]/careers (SC-005, ADR-0090). **Pública, sin cuenta.** No hay endpoint
+ * público "get university by slug": se resuelve fetcheando el listado completo de universidades
+ * (barato, MVP con pocas unis) y matcheando por `slug`. 404 si el slug no matchea ninguna.
+ *
+ * Cabecera de identidad y checklist de transparencia salen de academic
+ * (`fetchOfficialFactsServer`, sujeto `Institution`). La navegación de carreras sigue siendo el
+ * listado simple de US-001: la tarjeta con cantidad de reseñas por carrera que dibuja el boceto
+ * de SC-005 necesita ese conteo agregado, que hoy no expone ningún endpoint, y no es parte de
+ * esta tarea (R6, #486).
  */
 export default async function UniversityCareersPage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -30,23 +38,27 @@ export default async function UniversityCareersPage({ params }: { params: Params
     notFound();
   }
 
-  const careers = await fetchCareersByUniversityServer(university.id);
+  const [careers, officialFacts] = await Promise.all([
+    fetchCareersByUniversityServer(university.id),
+    fetchOfficialFactsServer('Institution', university.id),
+  ]);
 
   return (
-    <>
+    <div data-surface="bulletin" className="min-h-screen w-full">
       <CatalogTopbar />
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-        <CatalogBreadcrumb
-          items={[{ label: 'Universidades', href: '/universities' }, { label: university.name }]}
-        />
-        <header>
-          <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Carreras</p>
-          <h1 className="mt-1.5 font-display text-[26px] font-semibold leading-tight text-ink">
-            {university.name}
-          </h1>
-        </header>
-        <CareerList careers={careers} />
-      </main>
-    </>
+      <div className="mx-auto w-full max-w-[560px] px-4 py-8">
+        <div className="mb-4">
+          <CatalogBreadcrumb
+            items={[{ label: 'Universidades', href: '/universities' }, { label: university.name }]}
+          />
+        </div>
+        <InstitutionIdentity name={university.name} facts={officialFacts} />
+        <section className="mb-5">
+          <p className="mb-2 text-[12px] text-ink-3">Carreras</p>
+          <CareerList careers={careers} />
+        </section>
+        <TransparencyChecklist facts={officialFacts} />
+      </div>
+    </div>
   );
 }
