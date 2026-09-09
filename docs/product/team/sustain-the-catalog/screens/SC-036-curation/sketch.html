@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boceto: Curaduría (épica Sostener el catálogo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f5ef;--elev:#eeece5;--card:#fffefb;--ink:#191b1f;--ink2:#494e57;--ink3:#62676f;--ink4:#a7adb5;--line:#e2dfd6;--line2:#eae7de;--acc:#e07a4d;--accs:#fbe5d6;--acci:#b04a1c}
+  body{margin:0;background:var(--elev);font-family:'Geist',system-ui,sans-serif;color:var(--ink);font-size:14px;line-height:1.5}
+  main{max-width:720px;margin:0 auto;padding:24px 16px 48px}
+  .note{font-size:12px;color:var(--ink3);margin:0 0 16px}
+  h2{font-size:13px;font-weight:500;color:var(--ink3);margin:28px 0 8px;letter-spacing:.02em}
+  .pb{background:var(--bg);border-radius:12px;padding:20px 22px;margin:0 0 20px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+  .title{font-size:16px;font-weight:500;margin:0 0 2px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .field{margin:0 0 10px}
+  .field label{display:block;font-size:12.5px;color:var(--ink2);margin:0 0 4px}
+  .input{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 12px;color:var(--ink3);font-size:13px;width:100%;box-sizing:border-box}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--ink2);background:var(--card)}
+  .btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+  .muted{color:var(--ink3);font-size:12px}
+  .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .list p{padding:0;margin:0}
+  .entry{border-bottom:1px solid var(--line2);padding:10px 0}
+  .entry:last-child{border-bottom:0}
+  .entry .meta{font-size:10.5px;color:var(--ink3);margin:0 0 4px}
+  .entry .meta .m{font-family:'IBM Plex Mono',monospace}
+  .entry .text{font-size:13.5px;color:var(--ink);line-height:1.55}
+  .state{border-style:dashed;background:var(--elev);text-align:left}
+  p{margin:0}
+  .pill{display:inline-block;border-radius:999px;padding:2px 8px;font-size:11px;background:var(--elev);color:var(--ink2);margin-left:6px}
+</style>
+</head>
+<body>
+<main>
+  <p class="note">Boceto mid-fi de <code>/admin/curation</code> (SC-036), escrito sobre la pantalla ya construida en R3 (2026-08-31 y 2026-09-01): documenta lo que el código hace hoy, no una vista nueva. Tokens de <code>frontend/src/app/globals.css</code>. Los datos son ejemplo.</p>
+
+  <h2>Encabezado: qué es y qué no es</h2>
+  <section class="pb" aria-label="Encabezado de Curaduría: el campo libre no se publica">
+    <p class="eyebrow">Backoffice · rol curaduría de frases</p>
+    <p class="title">Curaduría</p>
+    <p style="font-size:13px;color:var(--ink2);margin:6px 0 0;max-width:560px">Lo que la gente escribió al final de su reseña. <strong>No se publica en ninguna ficha</strong>: se lee acá para descubrir qué habría que estar preguntando y no preguntamos, y para escribir notas del equipo sin nombres.</p>
+    <p class="muted" style="margin-top:6px">Quién escribió cada uno no llega hasta acá: el dato no sale de la base.</p>
+  </section>
+
+  <h2>Destilar una pregunta</h2>
+  <section class="pb" aria-label="Convertir el campo libre en una frase nueva del instrumento">
+    <div class="card">
+      <p class="muted" style="margin:0 0 12px">Entra al cuestionario como versión nueva y arranca su propia serie: lo que se responda desde ahora se cuenta bajo esta pregunta, sin compararse con lo de antes, que no la tenía.</p>
+      <div class="row">
+        <div class="field" style="flex:1"><label>Código</label><span class="input">CHAIR_EXAM_SCOPE</span></div>
+        <div class="field" style="flex:1"><label>Capa</label><span class="input">Qué hizo la cátedra</span></div>
+      </div>
+      <div class="field"><label>La pregunta</label><span class="input">¿Sabías con qué se rendía el final?</span></div>
+      <div class="field"><label>De qué habla</label><span class="input">De la cátedra</span></div>
+      <p class="muted" style="margin:0 0 6px">Las opciones, en el orden en que se van a leer. La valencia decide qué se pinta de alarma en la ficha.</p>
+      <div class="row" style="margin:0 0 6px"><span class="input" style="flex:1">Sí</span><span class="input" style="width:110px">buena</span></div>
+      <div class="row" style="margin:0 0 10px"><span class="input" style="flex:1">No</span><span class="input" style="width:110px">mala</span></div>
+      <p><span class="btn">Sumar opción</span> <span class="btn primary">Destilar</span></p>
+    </div>
+    <p class="muted" style="margin-top:8px">US-199: publica directo, en un solo paso; hoy sin la cola de revisión que la story pide.</p>
+  </section>
+
+  <h2>Escribir una nota del equipo</h2>
+  <section class="pb" aria-label="Publicar una síntesis del campo libre en la ficha de una carrera">
+    <div class="card">
+      <p class="muted" style="margin:0 0 12px">Se publica en la ficha de la carrera, con su fecha y diciendo de dónde sale. Va a nivel carrera y nunca de una cátedra: ahí el docente es identificable.</p>
+      <div class="field"><label>Universidad</label><span class="input">UNSTA</span></div>
+      <div class="field"><label>Carrera</label><span class="input">Desarrollo y Calidad de Software</span></div>
+      <div class="field"><label>La nota</label><span class="input" style="height:52px;display:block">Varias cursadas mencionan que no se sabe con qué se rinde el final.</span></div>
+      <p><span class="btn primary">Publicar nota</span></p>
+    </div>
+  </section>
+
+  <h2>El campo libre, sin autor</h2>
+  <section class="pb" aria-label="Los textos leídos, con su contexto y sin quién los escribió">
+    <p class="muted" style="margin:0 0 8px">1 a 2 de 2</p>
+    <div class="card list">
+      <div class="entry">
+        <p class="meta">Fundamentos de Control de Calidad<span class="m"> · Cátedra Ruiz · 2024-C1 · 07/09/2026</span></p>
+        <p class="text">El titular Pérez faltó seis clases seguidas en abril y lo dije en la oficina de alumnos, nadie hizo nada.</p>
+      </div>
+      <div class="entry">
+        <p class="meta">Desarrollo de Software<span class="m"> · sin cátedra declarada · 2024-C1 · 05/09/2026</span></p>
+        <p class="text">No se sabe con qué material se rinde el final, cada cuatrimestre cambia.</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:8px">Anteriores <span style="margin:0 6px">·</span> Siguientes</p>
+  </section>
+
+  <h2>Estado: sin texto libre todavía</h2>
+  <section class="pb" aria-label="Estado vacío: nadie escribió en el campo libre todavía">
+    <div class="card state">
+      <p style="font-weight:500;margin:0 0 4px">Todavía nadie escribió nada.</p>
+      <p class="muted">El campo es opcional al reseñar, así que la mayoría de las reseñas no trae texto.</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>

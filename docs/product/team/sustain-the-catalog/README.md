@@ -47,12 +47,13 @@ Los tres planos del [mapa de producto](../../map.md) (el catálogo lo cargamos n
 
 ## Pantallas
 
-Las cuatro que existen solo para esta épica viven acá, con su ficha y su boceto:
+Las cinco que existen solo para esta épica viven acá, con su ficha y su boceto:
 
 - [**Pedidos**](screens/SC-030-requests/README.md) (backoffice): la cola de carga ordenada por pedidos confirmados, con la institución de origen; [boceto mid-fi](screens/SC-030-requests/sketch.html).
 - [**Catálogo**](screens/SC-027-catalog/README.md) (backoffice): cargar una oferta por huecos, las materias canónicas, las cátedras, la carrera canónica, la reforma del plan y la cola de materias declaradas; [boceto mid-fi](screens/SC-027-catalog/sketch.html) con sus varias vistas.
 - [**Correcciones**](screens/SC-028-corrections/README.md) (backoffice): valor viejo y nuevo a la vista, contrastados contra la fuente antes de aplicar; [boceto mid-fi](screens/SC-028-corrections/sketch.html).
-- [**Frases**](screens/SC-029-phrases/README.md) (backoffice): el catálogo de frases con su texto, sus opciones y su capa, la cola de curaduría de los destilados, y la lectura del campo libre para escribir notas editoriales ([ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)); [boceto mid-fi](screens/SC-029-phrases/sketch.html).
+- [**Frases**](screens/SC-029-phrases/README.md) (backoffice): el catálogo de frases con su texto, sus opciones y su capa, y la cola de curaduría de los destilados antes de ofrecerlos ([ADR-0082](../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md)); [boceto mid-fi](screens/SC-029-phrases/sketch.html).
+- [**Curaduría**](screens/SC-036-curation/README.md) (backoffice, `/admin/curation`): la lectura del campo libre sin autor, destilar una pregunta nueva desde ahí y escribir notas editoriales sin nombres a nivel carrera ([ADR-0084](../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)); [boceto mid-fi](screens/SC-036-curation/sketch.html).
 
 Las que comparte con otras épicas: la [Ficha de cátedra](../../student/choose-where-to-study/screens/SC-002-chair/README.md) (de donde llega una corrección) y la [Ficha de materia](../../student/choose-where-to-study/screens/SC-007-subject/README.md) (a donde va lo cargado), [**Dónde estudiarla**](../../student/choose-where-to-study/screens/SC-008-where-to-study/README.md) (usa la carrera canónica que acá se declara), [**La cola**](../../student/request-a-career/screens/SC-009-queue/README.md) (la vista pública de Pedidos, en [Pedir una carrera](../../student/request-a-career/README.md)), [**Método**](../../student/take-the-data/screens/SC-021-method/README.md) (publica el catálogo de frases entero, en [Llevarse el dato](../../student/take-the-data/README.md)) y los mails de [Avisos](../../notices/README.md) (el aviso al terminar de cargar una oferta).
 

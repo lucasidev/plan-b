@@ -16,6 +16,7 @@ Como quien cura las frases, quiero revisar lo que la destilación propone antes 
 ## Dónde se resuelve
 
 - [Frases](../../screens/SC-029-phrases/README.md): la cola de curaduría de destilados, cada candidato con sus comentarios de origen; aprobar con capa, opciones y código, o descartar sin dejar rastro.
+- [Curaduría](../../screens/SC-036-curation/README.md): donde hoy se arma y se publica una frase destilada, con capa, sujeto, código y opciones; sin la cola de revisión previa que esta story pide, publica directo.
 
 ## Notas
 
