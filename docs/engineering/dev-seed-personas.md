@@ -29,6 +29,21 @@ Alumna avanzada de 3° año Sistemas, con historial cargado. Es la persona con l
 
 **Hubo también un alumno recién entrando (Mateo Giménez), y se fue el 2026-08-30** con el onboarding que cubría. Existía solo para probar "usuario sin profile va a onboarding"; con [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) esa pantalla se retiró (la cuenta se crea en el Registro y desde ahí se lee y se reseña, sin paso intermedio), así que la persona se quedó sin camino que cubrir. Vuelve si aparece un caso de uso real para un alumno recién registrado sin nada más declarado.
 
+## Member personas: R6 (corpus real)
+
+### Matías Ledesma
+
+| | |
+|---|---|
+| Email | `matias.ledesma@gmail.com` |
+| Password | `matias.ledesma.12` |
+| Estado | verified, member |
+| Rol | `member` |
+
+Segunda cuenta real con historial, en una carrera distinta de la de Lucía (Automatización y Robótica, no la Tecnicatura en Desarrollo y Calidad de Software). Reseña la misma cátedra que Lucía (221, Control de Calidad Avanzado): dos cuentas reales sobre la misma cátedra es lo que hace verificable que ninguna respuesta se puede atar a ninguna de las dos, y no solo entre las cuentas sintéticas del corpus.
+
+**La usamos para**: login happy path de una segunda cuenta real, y cualquier recorrido que necesite mostrar el anonimato entre cuentas reales.
+
 ### Paula Suárez (suspendida)
 
 | | |
