@@ -36,7 +36,7 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 13 | 8 |
+| [Elegir dónde estudiar](student/choose-where-to-study/README.md) | O1 (+ US-136, US-138, US-143) | Valentina, Silvia, Lucía, quien lee | 14 | 8 |
 | [Pedir una carrera](student/request-a-career/README.md) | O2 | Ana | 4 | 2 |
 | [Entrar](student/enter/README.md) | el umbral | cualquiera que va a producir | 5 | 5 |
 | [Reseñar](student/write-a-review/README.md) | O4 (+ US-158, US-159, US-160, US-161, US-162, US-163) | Lucía, Matías, Diego | 18 | 3 |
