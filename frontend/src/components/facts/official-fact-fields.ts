@@ -18,6 +18,7 @@ export const OFFICIAL_FACT_FIELDS = {
   institutionalEvaluation: 'institutional_evaluation',
   institutionType: 'institution_type',
   academicUnit: 'academic_unit',
+  agnAudit: 'agn_audit',
 } as const;
 
 /**
@@ -55,4 +56,5 @@ export const OFFICIAL_FACT_LABELS: Record<string, string> = {
   [OFFICIAL_FACT_FIELDS.institutionalEvaluation]: 'Acreditaciones al día',
   [OFFICIAL_FACT_FIELDS.institutionType]: 'Identidad institucional',
   [OFFICIAL_FACT_FIELDS.academicUnit]: 'Unidad académica',
+  [OFFICIAL_FACT_FIELDS.agnAudit]: 'Auditada por la AGN',
 };

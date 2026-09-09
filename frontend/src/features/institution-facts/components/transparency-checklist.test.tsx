@@ -63,6 +63,26 @@ describe('TransparencyChecklist', () => {
     expect(screen.getByText('Nómina docente con condición de cargo')).toBeInTheDocument();
   });
 
+  it('la auditoría de la AGN aparece con su etiqueta en español', () => {
+    render(
+      <TransparencyChecklist
+        facts={[
+          fact({
+            id: 'f-agn',
+            field: 'agn_audit',
+            value: 'Resolución AGN 126/2013',
+            period: '2013',
+            sourceName: 'AGN, Auditoría General de la Nación',
+            relievedAt: '2026-09-08T12:00:00Z',
+          }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Auditada por la AGN')).toBeInTheDocument();
+    expect(screen.getByText('Resolución AGN 126/2013')).toBeInTheDocument();
+  });
+
   it('una fila publicada muestra su valor y su fuente', () => {
     render(<TransparencyChecklist facts={UNT_FACTS} />);
 

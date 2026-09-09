@@ -7,6 +7,7 @@ const CHECKLIST_ORDER = [
   OFFICIAL_FACT_FIELDS.staffRosterPublished,
   OFFICIAL_FACT_FIELDS.interimShare,
   OFFICIAL_FACT_FIELDS.institutionalEvaluation,
+  OFFICIAL_FACT_FIELDS.agnAudit,
 ];
 
 /**

@@ -14,7 +14,7 @@ namespace Planb.Academic.Infrastructure.Seeding;
 /// href="../../../../../../docs/history/reviews/2026-09-07-official-data-survey.md">el
 /// relevamiento</see> y <see
 /// href="../../../../../../docs/history/reviews/2026-09-07-official-data-sources.md">el registro de
-/// fuentes</see>: nada inventado, nada redondeado. Tres decisiones de carga que no son un dato
+/// fuentes</see>: nada inventado, nada redondeado. Cuatro decisiones de carga que no son un dato
 /// literal de una celda y quedan documentadas acá:
 /// </para>
 ///
@@ -42,6 +42,21 @@ namespace Planb.Academic.Infrastructure.Seeding;
 /// </para>
 ///
 /// <para>
+/// <b>El checklist de transparencia institucional (SC-005, R6 tarea 6, issue #486), con sus cinco
+/// campos.</b> Las constancias de "no publicado" del relevamiento para UNSTA y San Pablo-T (ninguna
+/// de las dos publica actas, presupuesto ni nómina, O06) se cargan tal cual. <c>interim_share</c> se
+/// carga <see cref="OfficialFactStatus.NotPublished"/> en las cinco instituciones aunque el
+/// relevamiento no abrió esa cuenta para todas: ninguna nómina releva la condición del cargo (O04),
+/// y para UNSE (sin nómina propia relevada) la afirmación cita esa misma razón estructural en vez de
+/// saltear el campo. <c>institutional_evaluation</c> solo se carga para UNT, la única con una
+/// evaluación institucional de CONEAU en el relevamiento (2021); UNSTA, UTN-FRT y San Pablo-T no
+/// tienen ese dato relevado y quedan sin afirmación. El campo <c>agn_audit</c> no se carga acá: lo
+/// escribe la importación automática de la tarea 18 (issue #506,
+/// <see cref="Planb.Academic.Infrastructure.AgnAudits.AgnAuditImporter"/>), que no corre en este
+/// seed.
+/// </para>
+///
+/// <para>
 /// Egreso por cohorte no aparece como "no publicado" en la ficha de cada oferta: la fila del
 /// relevamiento apunta a la regla derivada ("proxy abajo"), así que esta carga guarda directamente
 /// el <see cref="OfficialFactStatus.Derived"/> con el proxy institucional (nunca por carrera, como
@@ -55,7 +70,7 @@ public static class OfficialFactSeedData
 {
     // ====================================================================
     // Convención de Ids: 00000007-0000-4000-a000-000000000NNN (bloque libre, ningún otro seed de
-    // Academic lo usa). NNN 001-027 es la carga; 000 queda reservado para RelievedBy, fuera de la
+    // Academic lo usa). NNN 001-045 es la carga; 000 queda reservado para RelievedBy, fuera de la
     // secuencia de afirmaciones.
     // ====================================================================
 
@@ -91,6 +106,15 @@ public static class OfficialFactSeedData
     private const string Coneau =
         "https://global.coneau.gob.ar/coneauglobal/publico/buscadores/acreditacion/";
     private const string Diu = "http://pedidosciie.siu.edu.ar";
+
+    // Fuentes del checklist de transparencia institucional (SC-005, R6 tarea 6): los dos portales
+    // de Ley 27.275 y la raíz de los dos sitios institucionales privados, que el relevamiento cita
+    // como "sitio institucional" sin una URL de transparencia propia (O06: no publican).
+    private const string PortalTransparenciaUnt = "https://www.unt.edu.ar/portal-de-transparencia/activa/";
+    private const string PortalTransparenciaUtn =
+        "https://www.utn.edu.ar/es/la-universidad/unidad-de-visibilidad-y-transparencia";
+    private const string SitioUnstaRaiz = "https://www.unsta.edu.ar/";
+    private const string SitioUsptRaiz = "https://www.uspt.edu.ar/";
 
     public static IReadOnlyList<OfficialFactSeed> Facts { get; } = new[]
     {
@@ -458,6 +482,221 @@ public static class OfficialFactSeedData
             Note: "Pedido de información al DIU y, como universidad nacional, por Ley 27.275, " +
                 "sobre duración real por carrera. Sin respuesta al 2026-09-09.",
             RelievedAt: Sep9),
+
+        // ================================================================
+        // Instituciones: el checklist de transparencia (SC-005, R6 tarea 6, #486)
+        // ================================================================
+
+        // ---------- UNSTA: privada, sin transparencia publicada (O06) ----------
+
+        new OfficialFactSeed(
+            Fid("028"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.MinutesPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio UNSTA", SourceUrl: SitioUnstaRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "UNSTA no publica actas de su órgano de gobierno: privada, alcanzada por la Ley " +
+                "27.275 solo por los fondos públicos que recibe (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("029"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.BudgetPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio UNSTA", SourceUrl: SitioUnstaRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "UNSTA no publica presupuesto ejecutado: privada, alcanzada por la Ley 27.275 " +
+                "solo por los fondos públicos que recibe (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("030"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.StaffRosterPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio UNSTA", SourceUrl: SitioUnstaRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "UNSTA no publica nómina docente: privada, alcanzada por la Ley 27.275 solo por " +
+                "los fondos públicos que recibe (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("031"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.InterimShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio UNSTA", SourceUrl: SitioUnstaRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "UNSTA no publica nómina docente, así que no hay de dónde derivar la proporción " +
+                "de interinos (O06).",
+            RelievedAt: Sep8),
+
+        // ---------- UNT: los tres campos publicados, con lo que cada uno no cubre ----------
+
+        new OfficialFactSeed(
+            Fid("032"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.MinutesPublished, OfficialFactStatus.Published,
+            Value: "Boletín Oficial semanal con las resoluciones",
+            Unit: null, Period: "2025 en adelante",
+            SourceName: "Boletín Oficial UNT", SourceUrl: "https://boletinoficial.unt.edu.ar/",
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("033"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.BudgetPublished, OfficialFactStatus.Published,
+            Value: "Presupuesto 2023 y 2024 en PDF; ejecución por resoluciones 2024 a 2026",
+            Unit: null, Period: "2023 a 2026",
+            SourceName: "Portal de transparencia UNT", SourceUrl: PortalTransparenciaUnt,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("034"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.StaffRosterPublished, OfficialFactStatus.Published,
+            Value: "Publicada (XLSX, marzo 2026) con unidad académica, cargo, dedicación y horas; " +
+                "FACET: 821 cargos y 700 personas (345 simples, 266 semiexclusivas, 210 " +
+                "exclusivas); sin condición del cargo",
+            Unit: null, Period: "marzo 2026",
+            SourceName: "Portal de transparencia UNT", SourceUrl: PortalTransparenciaUnt,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "Sin condición del cargo (regular o interino): no permite calcular interim_share " +
+                "(O04).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("035"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.InterimShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Portal de transparencia UNT", SourceUrl: PortalTransparenciaUnt,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "La nómina docente de UNT trae cargo y dedicación pero no la condición del cargo " +
+                "(regular o interina): no permite calcular la proporción de interinos (O04).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("036"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.InstitutionalEvaluation, OfficialFactStatus.Published,
+            Value: "Evaluación externa CONEAU 2021",
+            Unit: null, Period: "2021",
+            SourceName: "Portal de transparencia UNT", SourceUrl: PortalTransparenciaUnt,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ---------- UTN, Facultad Regional Tucumán ----------
+
+        new OfficialFactSeed(
+            Fid("037"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.MinutesPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Consejo Superior UTN", SourceUrl: "https://csu.rec.utn.edu.ar",
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "El sitio del Consejo Superior de UTN (csu.rec.utn.edu.ar) rechazó la conexión " +
+                "el 2026-09-07: no se pudo verificar si publica ordenanzas y resoluciones (O10).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("038"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.BudgetPublished, OfficialFactStatus.Published,
+            Value: "Resoluciones presupuestarias 2022 a 2026 y créditos recibidos",
+            Unit: null, Period: "2022 a 2026",
+            SourceName: "Portal UTN", SourceUrl: PortalTransparenciaUtn,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "No abre por regional: los números son de toda la UTN, no solo de la Facultad " +
+                "Regional Tucumán.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("039"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.StaffRosterPublished, OfficialFactStatus.Published,
+            Value: "Publicada (XLSX, julio 2026) con apellido, DNI y designación; sin regional, " +
+                "cargo ni dedicación",
+            Unit: null, Period: "julio 2026",
+            SourceName: "Portal UTN", SourceUrl: PortalTransparenciaUtn,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "Sin regional, cargo ni dedicación: no permite calcular interim_share ni abrir " +
+                "por Facultad Regional Tucumán (O04).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("040"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.InterimShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Portal UTN", SourceUrl: PortalTransparenciaUtn,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "La nómina docente de UTN no trae cargo, dedicación ni condición del cargo: no " +
+                "permite calcular la proporción de interinos (O04).",
+            RelievedAt: Sep8),
+
+        // ---------- San Pablo-T: privada, sin transparencia publicada (O06) ----------
+
+        new OfficialFactSeed(
+            Fid("041"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.MinutesPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio San Pablo-T", SourceUrl: SitioUsptRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "San Pablo-T no publica actas de su órgano de gobierno: privada, sin " +
+                "transparencia publicada relevada (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("042"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.BudgetPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio San Pablo-T", SourceUrl: SitioUsptRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "San Pablo-T no publica presupuesto ejecutado: privada, sin transparencia " +
+                "publicada relevada (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("043"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.StaffRosterPublished, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio San Pablo-T", SourceUrl: SitioUsptRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "San Pablo-T no publica nómina docente: privada, sin transparencia publicada " +
+                "relevada (O06).",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("044"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.InterimShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "Sitio San Pablo-T", SourceUrl: SitioUsptRaiz,
+            SourceDocument: null, SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "San Pablo-T no publica nómina docente, así que no hay de dónde derivar la " +
+                "proporción de interinos (O06).",
+            RelievedAt: Sep8),
+
+        // ---------- UNSE: solo interim_share, la razón estructural que cubre a las cinco ----------
+
+        new OfficialFactSeed(
+            Fid("045"), OfficialFactSubjectType.Institution, AcademicSeedData.Unse.Id.Value,
+            OfficialFactField.InterimShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: null,
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario, RHUN 4.4 (cargos docentes por dedicación)",
+            SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "El anuario RHUN, visto en UNT y en UTN, clasifica los cargos docentes por " +
+                "dedicación (exclusiva, semiexclusiva, simple), nunca por condición del cargo; " +
+                "UNSE no tuvo su transparencia relevada en este trabajo y no hay nómina propia " +
+                "consultada de la que derivar la proporción de interinos.",
+            RelievedAt: Sep8),
     };
 }
 
