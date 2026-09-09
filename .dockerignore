@@ -12,6 +12,11 @@ frontend/.next
 # un NEXT_PUBLIC_* ahí, este COPY lo horneaba en el bundle sin que nadie lo pidiera.
 frontend/.env*
 
+# El .env de la raíz tampoco llega hoy a ninguna imagen (los dos Dockerfiles copian directorios
+# puntuales, nunca el contexto entero), mismo riesgo que frontend/.env* de arriba: un COPY que
+# algún día se vuelva más ancho lo horneaba con los secretos locales adentro.
+.env
+
 # dotnet restore los regenera: sin este ignore, el contexto carga cientos de MB de bin/obj del checkout.
 backend/**/bin
 backend/**/obj
