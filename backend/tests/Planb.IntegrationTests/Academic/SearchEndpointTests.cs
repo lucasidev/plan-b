@@ -24,6 +24,12 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid Brandt = Guid.Parse("00000006-0000-4000-a000-000000000001");
     private static readonly Guid Ledesma = Guid.Parse("00000006-0000-4000-a000-000000000009");
 
+    // US-132, hallazgo V04: la carrera del catálogo real de Tucumán (R6) y la misma carrera cargada
+    // en dos instituciones a la vez, para el edge case "sin institución devuelve las dos ofertas".
+    private static readonly Guid TudcsCareer = Guid.Parse("00000002-0000-4000-a000-000000000003"); // TUDCS, UNSTA
+    private static readonly Guid UnstaInformatica = Guid.Parse("00000002-0000-4000-a000-000000000001"); // Ingeniería en Informática, UNSTA
+    private static readonly Guid UntInformatica = Guid.Parse("00000002-0000-4000-a000-000000000020"); // Ingeniería en Informática, UNT
+
     private readonly RegisterApiFixture _fixture;
 
     public SearchEndpointTests(RegisterApiFixture fixture)
@@ -172,6 +178,95 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         // Nadie tipea el acento al buscar: "gonzalez" tiene que encontrar a "González".
         var body = await client.GetOkAsync<SearchResponse>("/api/search?q=gonzalez");
         body!.Items.ShouldContain(i => i.Type == "chair" && i.Label == "González");
+    }
+
+    /// <summary>
+    /// US-132, hallazgo V04: "buscar la carrera que uno quiere estudiar devuelve materias". El
+    /// catálogo real de Tucumán (R6) tiene la carrera; el buscador tenía que empezar a encontrarla.
+    /// </summary>
+    [Fact]
+    public async Task Finds_a_career_by_its_name_with_its_institution_as_sublabel()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        var body = await client.GetOkAsync<SearchResponse>(
+            "/api/search?q=Desarrollo y Calidad de Software&limit=50");
+
+        var career = body.Items.SingleOrDefault(i => i.Type == "career");
+        career.ShouldNotBeNull();
+        career!.Id.ShouldBe(TudcsCareer);
+        career.Label.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
+
+        // La institución que la dicta es lo que distingue esta oferta de la misma carrera ofrecida
+        // en otra universidad (ver el edge case de abajo).
+        career.Sublabel.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
+    }
+
+    /// <summary>US-132, hallazgo V04: "el buscador no devuelve carreras ni universidades".</summary>
+    [Fact]
+    public async Task Finds_an_institution_by_its_name()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        var body = await client.GetOkAsync<SearchResponse>("/api/search?q=UNSTA");
+
+        var institution = body.Items.SingleOrDefault(i => i.Type == "institution");
+        institution.ShouldNotBeNull();
+        institution!.Id.ShouldBe(AcademicSeedUnstaId);
+        institution.Label.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
+    }
+
+    [Fact]
+    public async Task Institution_search_is_accent_insensitive()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        // "tomas" sin acento tiene que encontrar "Universidad del Norte Santo Tomás de Aquino".
+        var body = await client.GetOkAsync<SearchResponse>("/api/search?q=tomas");
+
+        body.Items.ShouldContain(i => i.Type == "institution" && i.Id == AcademicSeedUnstaId);
+    }
+
+    /// <summary>
+    /// US-132, edge case: "alguien busca 'Ingeniería en Sistemas' sin especificar institución: la
+    /// búsqueda devuelve las distintas ofertas por institución (UNSTA, UTN) como resultados
+    /// separados, cada una su propia carrera en su institución". El catálogo real (R6) tiene un
+    /// caso verificado de esto: "Ingeniería en Informática" está cargada en UNSTA y en UNT.
+    /// </summary>
+    [Fact]
+    public async Task The_same_career_name_at_two_institutions_returns_both_offerings_separately()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        var body = await client.GetOkAsync<SearchResponse>(
+            "/api/search?q=Ingeniería en Informática&limit=50");
+
+        var careers = body.Items
+            .Where(i => i.Type == "career" && i.Label == "Ingeniería en Informática")
+            .ToList();
+
+        careers.Count.ShouldBe(2);
+        careers.ShouldContain(i =>
+            i.Id == UnstaInformatica && i.Sublabel == "Universidad del Norte Santo Tomás de Aquino");
+        careers.ShouldContain(i =>
+            i.Id == UntInformatica && i.Sublabel == "Universidad Nacional de Tucumán");
+    }
+
+    /// <summary>
+    /// US-132: career e institution suman tipos de resultado, no reemplazan lo que ya devolvía
+    /// (hallazgo V04, "esto suma tipos de resultado, no los reemplaza").
+    /// </summary>
+    [Fact]
+    public async Task Adding_career_and_institution_does_not_remove_the_existing_result_types()
+    {
+        using var client = _fixture.Factory.CreateClient();
+
+        var subjectBody = await client.GetOkAsync<SearchResponse>("/api/search?q=101");
+        subjectBody.Items.ShouldContain(i => i.Type == "subject" && i.Id == Subject101);
+
+        var chairBody = await client.GetOkAsync<SearchResponse>("/api/search?q=perez");
+        chairBody.Items.ShouldContain(i => i.Type == "chair");
+        chairBody.Items.ShouldContain(i => i.Type == "teacher");
     }
 
     /// <summary>US-132 E2, N1: buscar el nombre de una docente lleva a sus cátedras y no publica nada sobre ella.</summary>
