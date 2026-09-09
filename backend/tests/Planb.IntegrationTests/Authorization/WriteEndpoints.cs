@@ -62,8 +62,9 @@ public sealed record WriteEndpointCase(
 }
 
 /// <summary>
-/// El catálogo de los 49 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
-/// declara su *Endpoint.cs. Verificado en el código el 2026-09-02 (issue #417).
+/// El catálogo de los 50 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
+/// declara su *Endpoint.cs. Verificado en el código el 2026-09-02 (issue #417); subió de 49 a 50 al
+/// sumar Academic_CreateOfficialFact (ADR-0090, issue #481).
 ///
 /// <para>
 /// Los ids "reales" son los del seed determinístico de <c>AcademicSeedData</c>, repetidos acá como
@@ -306,6 +307,18 @@ public static class WriteEndpoints
         new WriteEndpointCase("Academic_CloseChairMember", HttpMethod.Post, WriteAccess.Admin,
             ids => $"/api/academic/chairs/{ids[0]}/members/{ids[1]}/close", [ChairPerezId, TeacherCarlosId],
             ValidBody: () => new { untilTermId = Term1Id }),
+
+        // -----------------------------------------------------------------
+        // Academic: datos oficiales (admin, ADR-0090). Ledger de solo alta: "corregir" es cargar
+        // una afirmación nueva, así que no hay Update, y el mismo (subjectType, field) puede
+        // repetirse sin conflicto (varias afirmaciones conviven a propósito).
+        // -----------------------------------------------------------------
+        new WriteEndpointCase("Academic_CreateOfficialFact", HttpMethod.Post, WriteAccess.Admin,
+            _ => "/api/academic/official-facts", [],
+            ValidBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "Published", value = "Privada", unit = (string?)null, period = "2026", sourceName = "Sitio institucional", sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" },
+            LongStringBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "Published", value = "Privada", unit = (string?)null, period = "2026", sourceName = LongString, sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" },
+            InvalidEnumBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "NotAStatus", value = "Privada", unit = (string?)null, period = "2026", sourceName = "Sitio institucional", sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" },
+            NumericEnumBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "9", value = "Privada", unit = (string?)null, period = "2026", sourceName = "Sitio institucional", sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" }),
 
         // -----------------------------------------------------------------
         // Academic: importación de plan (self-service + aprobación admin)

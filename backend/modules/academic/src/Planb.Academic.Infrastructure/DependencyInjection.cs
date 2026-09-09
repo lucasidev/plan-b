@@ -11,12 +11,15 @@ using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
 using Planb.Academic.Application.Features.CareerPlanImportQueue;
+using Planb.Academic.Application.Features.OfficialFacts;
 using Planb.Academic.Application.Features.Search;
 using Planb.Academic.Domain.AcademicTerms;
+using Planb.Academic.Domain.AcademicUnits;
 using Planb.Academic.Domain.CareerPlanImports;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Chairs;
+using Planb.Academic.Domain.OfficialFacts;
 using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
@@ -80,6 +83,11 @@ public static class DependencyInjection
         // US-060: admin CRUD de universidades
         services.AddScoped<IUniversityRepository, UniversityRepository>();
         services.AddSingleton<IPdfTextExtractor, PdfPigPdfTextExtractor>();
+
+        // ADR-0090: unidad académica + datos oficiales
+        services.AddScoped<IAcademicUnitRepository, AcademicUnitRepository>();
+        services.AddScoped<IOfficialFactRepository, OfficialFactRepository>();
+        services.AddScoped<IOfficialFactReader, DapperOfficialFactReader>();
         return services;
     }
 
