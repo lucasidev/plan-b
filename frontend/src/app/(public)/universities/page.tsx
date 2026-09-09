@@ -1,4 +1,4 @@
-import { CatalogTopbar, UniversityList } from '@/features/browse-catalog';
+import { CatalogTopbar, ExploreLensSwitch, UniversityList } from '@/features/browse-catalog';
 import { fetchUniversitiesServer } from '@/features/browse-catalog/api.server';
 
 // Público, per-request: catálogo puede cambiar (admin de universidades). Visitantes anónimos.
@@ -21,6 +21,7 @@ export default async function UniversitiesPage() {
     <>
       <CatalogTopbar />
       <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+        <ExploreLensSwitch active="universities" />
         <header>
           <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Catálogo</p>
           <h1 className="mt-1.5 font-display text-[26px] font-semibold leading-tight text-ink">
