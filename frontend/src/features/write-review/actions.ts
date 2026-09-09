@@ -21,25 +21,33 @@ export async function publishReviewAction(
 ): Promise<PublishReviewResult> {
   const session = await getSession();
   if (!session) {
-    return { status: 'error', message: 'Tu sesión expiró. Volvé a iniciar sesión.' };
+    return {
+      status: 'error',
+      kind: 'unknown',
+      message: 'Tu sesión expiró. Volvé a iniciar sesión.',
+    };
   }
 
   const raw = formData.get('payload');
   if (typeof raw !== 'string') {
-    return { status: 'error', message: 'Faltan datos del formulario.' };
+    return { status: 'error', kind: 'unknown', message: 'Faltan datos del formulario.' };
   }
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return { status: 'error', message: 'No pudimos leer lo que respondiste. Probá de nuevo.' };
+    return {
+      status: 'error',
+      kind: 'unknown',
+      message: 'No pudimos leer lo que respondiste. Probá de nuevo.',
+    };
   }
 
   const result = courseReviewSchema.safeParse(parsed);
   if (!result.success) {
     const first = result.error.issues[0]?.message ?? 'Revisá lo que completaste.';
-    return { status: 'error', message: first };
+    return { status: 'error', kind: 'unknown', message: first };
   }
 
   const { subjectId, termId, chairId, answers, freeText } = result.data;
@@ -66,18 +74,27 @@ export async function publishReviewAction(
   }
 
   if (response.status === 409) {
+    // US-163: cuenta × materia × período ya tiene una reseña. `kind: 'duplicate'` es lo que el
+    // form usa para bloquear el botón en vez de solo mostrar el aviso (L06): reintentar con la
+    // misma cursada elegida siempre va a volver acá.
     return {
       status: 'error',
+      kind: 'duplicate',
       message: 'Ya reseñaste esta cursada. Podés editar la que tenés desde Mis aportes.',
     };
   }
 
   if (response.status === 401) {
-    return { status: 'error', message: 'Tu sesión expiró. Volvé a iniciar sesión.' };
+    return {
+      status: 'error',
+      kind: 'unknown',
+      message: 'Tu sesión expiró. Volvé a iniciar sesión.',
+    };
   }
 
   return {
     status: 'error',
+    kind: 'unknown',
     message: 'No pudimos guardar tu reseña. Probá de nuevo en un rato.',
   };
 }

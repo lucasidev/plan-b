@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useMemo, useState } from 'react';
+import { useActionState, useEffect, useMemo, useRef, useState } from 'react';
 import { ItemQuestion } from '@/components/instrument';
 import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { publishReviewAction } from '../actions';
@@ -40,6 +40,30 @@ const BLOCKS: readonly { layer: ItemLayer; step: string; title: string; note?: s
  */
 const COURSE_OUTCOME_ITEM_CODE = 'COURSE_OUTCOME';
 
+/** El piso de una cátedra, tal como lo necesita el contrato del paso 6 (US-159 E3). */
+type ChairFloorState = {
+  isPublished: boolean;
+  reviewCount: number;
+  reviewsMissingToPublish: number;
+};
+
+/**
+ * "Junta N reseñas: con M más se publica" es la frase del piso tal como la define el glosario
+ * del producto; ya publicada, el contrato dice cuántas voces tiene en vez de repetir el conteo
+ * que ya no cuenta hacia ningún piso.
+ */
+function floorStateLine(floor: ChairFloorState): string {
+  if (floor.isPublished) {
+    return `Esta cátedra ya publica: ${floor.reviewCount} ${floor.reviewCount === 1 ? 'voz' : 'voces'}.`;
+  }
+  return `Junta ${floor.reviewCount} ${floor.reviewCount === 1 ? 'reseña' : 'reseñas'}: con ${floor.reviewsMissingToPublish} más se publica.`;
+}
+
+/** Clave de la cursada elegida: cuenta × materia × período (US-163). La cátedra no entra: es opcional. */
+function cursadaKey(subjectId: string, termId: string): string {
+  return `${subjectId}|${termId}`;
+}
+
 /**
  * La pantalla Reseñar, entera (US-146, SC-015). Un formulario de corrido: elegís la cursada,
  * contestás lo que quieras contestar, y antes de enviar leés qué se publica y qué no.
@@ -58,6 +82,11 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
   const [answers, setAnswers] = useState<AnswerDraft>({});
   const [freeText, setFreeText] = useState('');
   const [query, setQuery] = useState('');
+  const [chairFloorState, setChairFloorState] = useState<ChairFloorState | null>(null);
+  // US-163/L06: la cursada (materia × período) que el backend ya rechazó por duplicada en este
+  // formulario. Se limpia sola en cuanto cambia materia o período: es un bloqueo de ESA cursada,
+  // no de reseñar en general.
+  const [duplicateCursada, setDuplicateCursada] = useState<string | null>(null);
 
   // Las cátedras dependen de la materia: hasta elegirla no se sabe cuáles mirar. Se piden al
   // cliente por eso, no por preferencia de arquitectura.
@@ -92,6 +121,48 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
     navigateAfterMutation('/reviews/mine?published=1');
   }, [state]);
 
+  // La cursada elegida en cada momento, en un ref para que el efecto de abajo pueda leer la que
+  // estaba vigente CUANDO llegó el 409, sin que un cambio posterior de materia o período
+  // dispare de nuevo ese efecto (US-163/L06: el bloqueo es de la cursada que el backend rechazó,
+  // no de la que esté elegida en el momento en que se re-evalúa).
+  const selectedCursadaRef = useRef({ subjectId, termId });
+  useEffect(() => {
+    selectedCursadaRef.current = { subjectId, termId };
+  }, [subjectId, termId]);
+
+  // US-163/L06: un 409 significa que ESTA cursada ya se reseñó. Reintentar con el mismo botón
+  // repetiría el mismo error; el camino que el propio aviso ofrece es corregir desde Mis aportes.
+  useEffect(() => {
+    if (state.status === 'error' && state.kind === 'duplicate') {
+      const { subjectId: sid, termId: tid } = selectedCursadaRef.current;
+      setDuplicateCursada(cursadaKey(sid, tid));
+    }
+  }, [state]);
+
+  // US-159 E3: el contrato del paso 6 dice el piso de la cátedra elegida. Sin cátedra ("no me
+  // acuerdo") no hay una cátedra concreta a la que atribuírselo.
+  useEffect(() => {
+    if (!chairId) {
+      setChairFloorState(null);
+      return;
+    }
+    let alive = true;
+    fetch(`/api/reviews/chairs/${chairId}/facts`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Partial<ChairFloorState> | null) => {
+        if (!alive) return;
+        setChairFloorState(
+          typeof data?.reviewCount === 'number' ? (data as ChairFloorState) : null,
+        );
+      })
+      .catch(() => {
+        if (alive) setChairFloorState(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [chairId]);
+
   const filteredSubjects = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return subjects.slice(0, 8);
@@ -102,11 +173,17 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
 
   const answeredCount = Object.keys(answers).length;
   const chosenSubject = subjects.find((s) => s.id === subjectId);
+  // US-163/L06: la cursada elegida ahora mismo ya se rechazó por duplicada. Reenviarla con el
+  // mismo botón repetiría el mismo 409; el camino que queda es corregir desde Mis aportes, que
+  // ya dice el mensaje de arriba.
+  const isDuplicateOfCurrentCursada =
+    duplicateCursada !== null && duplicateCursada === cursadaKey(subjectId, termId);
   const canSubmit =
     Boolean(subjectId) &&
     Boolean(termId) &&
     answers[COURSE_OUTCOME_ITEM_CODE] !== undefined &&
-    !pending;
+    !pending &&
+    !isDuplicateOfCurrentCursada;
 
   // Sin cátedra elegida no hay a quién atribuirle su conducta (ficha SC-015, "Sin cátedra"): lo
   // que se haya contestado en ese paso mientras hubo una cátedra elegida no viaja si después se
@@ -312,6 +389,7 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
           <li>Tus respuestas se suman al total de la cátedra.</li>
           <li>Nunca se muestra una reseña individual, ni cómo terminó nadie.</li>
           <li>Nadie de la facultad accede a quién respondió.</li>
+          {chairFloorState && <li>{floorStateLine(chairFloorState)}</li>}
         </ul>
 
         {state.status === 'error' ? (

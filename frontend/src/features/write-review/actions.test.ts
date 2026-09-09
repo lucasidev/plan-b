@@ -68,6 +68,7 @@ describe('publishReviewAction', () => {
 
     expect(result).toEqual({
       status: 'error',
+      kind: 'unknown',
       message: 'Tu sesión expiró. Volvé a iniciar sesión.',
     });
     expect(apiFetchMock).not.toHaveBeenCalled();
@@ -76,7 +77,11 @@ describe('publishReviewAction', () => {
   it('sin el campo payload en el formulario, devuelve "Faltan datos del formulario."', async () => {
     const result = await publishReviewAction(initialPublishState, new FormData());
 
-    expect(result).toEqual({ status: 'error', message: 'Faltan datos del formulario.' });
+    expect(result).toEqual({
+      status: 'error',
+      kind: 'unknown',
+      message: 'Faltan datos del formulario.',
+    });
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
@@ -88,6 +93,7 @@ describe('publishReviewAction', () => {
 
     expect(result).toEqual({
       status: 'error',
+      kind: 'unknown',
       message: 'No pudimos leer lo que respondiste. Probá de nuevo.',
     });
     expect(apiFetchMock).not.toHaveBeenCalled();
@@ -99,7 +105,11 @@ describe('publishReviewAction', () => {
       formDataWith({ ...VALID_PAYLOAD, subjectId: '' }),
     );
 
-    expect(result).toEqual({ status: 'error', message: 'Elegí la materia que cursaste.' });
+    expect(result).toEqual({
+      status: 'error',
+      kind: 'unknown',
+      message: 'Elegí la materia que cursaste.',
+    });
     expect(apiFetchMock).not.toHaveBeenCalled();
   });
 
@@ -113,13 +123,14 @@ describe('publishReviewAction', () => {
     expect(result).toEqual({ status: 'success', reviewId: 'review-1', answeredItems: 3 });
   });
 
-  it('409 (ya reseñada) devuelve el mensaje que manda a Mis aportes', async () => {
+  it('US-163: 409 (ya reseñada) devuelve kind: duplicate con el mensaje que manda a Mis aportes', async () => {
     apiFetchMock.mockResolvedValue(new Response(null, { status: 409 }));
 
     const result = await publishReviewAction(initialPublishState, formDataWith(VALID_PAYLOAD));
 
     expect(result).toEqual({
       status: 'error',
+      kind: 'duplicate',
       message: 'Ya reseñaste esta cursada. Podés editar la que tenés desde Mis aportes.',
     });
   });
@@ -131,6 +142,7 @@ describe('publishReviewAction', () => {
 
     expect(result).toEqual({
       status: 'error',
+      kind: 'unknown',
       message: 'Tu sesión expiró. Volvé a iniciar sesión.',
     });
   });
@@ -142,6 +154,7 @@ describe('publishReviewAction', () => {
 
     expect(result).toEqual({
       status: 'error',
+      kind: 'unknown',
       message: 'No pudimos guardar tu reseña. Probá de nuevo en un rato.',
     });
   });
