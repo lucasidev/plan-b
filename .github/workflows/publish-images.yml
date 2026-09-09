@@ -248,8 +248,12 @@ jobs:
 
   stage:
     name: Redeploy the stage
-    needs: [backend, frontend]
-    if: github.event_name == 'push'
+    # scan entra a needs para que el job espere a que termine antes de arrancar. Su resultado no
+    # entra al if: eso saltearía el job entero como "skipped" (default de Actions cuando un needs
+    # no llega a success), sin dejar rastro. always() lo deja correr igual, y el chequeo pasa al
+    # primer step, que es el que puede dejar el ::notice:: de por qué no redespliega.
+    needs: [backend, frontend, scan]
+    if: always() && github.event_name == 'push' && needs.backend.result == 'success' && needs.frontend.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
@@ -262,7 +266,13 @@ jobs:
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
           DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
           DOKPLOY_STAGE_COMPOSE_ID: ${{ secrets.DOKPLOY_STAGE_COMPOSE_ID }}
+          SCAN_RESULT: ${{ needs.scan.result }}
         run: |
+          if [ "$SCAN_RESULT" != "success" ]; then
+            echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque el escaneo de vulnerabilidades no pasó (scan: ${SCAN_RESULT})."
+            echo "deployed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if [ -z "$DOKPLOY_URL" ] || [ -z "$DOKPLOY_API_KEY" ] || [ -z "$DOKPLOY_STAGE_COMPOSE_ID" ]; then
             echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque faltan los secrets de Dokploy."
             echo "deployed=false" >> "$GITHUB_OUTPUT"
