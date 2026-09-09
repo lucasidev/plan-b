@@ -41,7 +41,9 @@ function Body({ fact }: { fact: OfficialFact }) {
         </>
       );
 
-    case 'Derived':
+    case 'Derived': {
+      // Sin regla citada, el link cae a Método a secas: nunca se rompe ni apunta a un fragmento inventado.
+      const methodHref = fact.derivationRuleId ? `/method#${fact.derivationRuleId}` : '/method';
       return (
         <>
           <div className="flex flex-wrap items-baseline gap-1.5">
@@ -53,12 +55,13 @@ function Body({ fact }: { fact: OfficialFact }) {
             </span>
           </div>
           <p className="mt-1 text-[11px] text-ink-3">
-            <Link href="/method" className="text-accent-ink underline-offset-2 hover:underline">
+            <Link href={methodHref} className="text-accent-ink underline-offset-2 hover:underline">
               Ver la regla en Método
             </Link>
           </p>
         </>
       );
+    }
 
     case 'NotPublished':
       return (

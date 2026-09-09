@@ -14,6 +14,7 @@ describe('InstitutionIdentity', () => {
     period: '2023',
     sourceName: 'Anuario de Estadísticas Universitarias (SPU)',
     sourceUrl: 'https://spu.example/anuario',
+    derivationRuleId: null,
     note: null,
     relievedAt: '2026-09-07T12:00:00Z',
   };

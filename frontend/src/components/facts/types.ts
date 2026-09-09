@@ -48,6 +48,8 @@ export interface OfficialFact {
   period: string | null;
   sourceName: string;
   sourceUrl: string;
+  /** La regla de Método que citó el cálculo (ADR-0090). Solo la trae un `Derived`; el link de la ficha usa este id como fragmento (`/method#id`). */
+  derivationRuleId: string | null;
   /** Una frase para la ficha cuando el estado la necesita (la razón de un NotApplicable, el detalle de un NotPublished). */
   note: string | null;
   /** Cuándo se relevó esta afirmación (ISO 8601). */

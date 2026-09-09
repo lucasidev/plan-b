@@ -12,6 +12,7 @@ function fact(overrides: Partial<OfficialFact> & Pick<OfficialFact, 'id' | 'fiel
     period: null,
     sourceName: 'Sitio institucional',
     sourceUrl: 'https://example.edu.ar',
+    derivationRuleId: null,
     note: null,
     relievedAt: '2026-09-07T12:00:00Z',
     ...overrides,
