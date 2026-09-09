@@ -167,7 +167,7 @@ Hasta 50 lectores el stage responde en menos de 400 ms al p95; con 100 se acerca
 | `JWT_SECRET` | Mínimo 32 caracteres. Firma los tokens de sesión: el mismo valor lo usan `api` (`JWT__Secret`) y `web` (`JWT_SECRET`). |
 | `SESSION_SECRET` | Mínimo 32 caracteres. La exige el esquema de entorno del frontend (`env.ts`); hoy el flujo es JWT puro y no firma nada. |
 | `MAILPIT_UI_AUTH` | Usuario y password de la UI de Mailpit, formato `usuario:password`. Mailpit muestra los links de verificación y de reset de todas las cuentas del stage. |
-| `PLANB_SEED_PASSWORD` | Mínimo 12 caracteres. La password con la que se siembran las cuatro personas, incluido el admin: las de `personas.json` son públicas. |
+| `PLANB_SEED_PASSWORD` | Mínimo 12 caracteres, obligatoria. La password con la que se siembran las cuatro personas, incluido el admin: las de `personas.json` son públicas. `seed-db` la exige y corta antes de sembrar si falta. |
 | `SMTP_FROM_EMAIL` | Remitente de los mails que manda `api`, recibidos por Mailpit. |
 | `SMTP_FROM_NAME` | Nombre de remitente de esos mismos mails. |
 | `WEB_HOST` | El host del frontend, sin `https://` (`planb.olisar.com.ar`). Arma los links de verificación y de reset, y es el dominio que se da de alta en Dokploy. |
