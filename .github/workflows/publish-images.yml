@@ -180,8 +180,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Trivy avisa (exit-code 0), no gatea: hasta ver dos corridas reales no hay piso de
-      # severidad decidido para bloquear un merge por esto.
+      # Trivy escanea CRITICAL y HIGH y nunca frena acá (exit-code 0): alimenta el summary y el
+      # artifact de abajo, para que HIGH quede visible sin cortar cada merge por algo que a
+      # veces no es explotable en el uso real de esta imagen. Los dos pasos del final repiten el
+      # escaneo filtrando solo CRITICAL con exit-code 1: eso sí corta el job, porque ahí el
+      # costo de ignorarlo es mayor que el de arreglarlo.
       - name: Scan planb-api
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -222,6 +225,26 @@ jobs:
             cat trivy-frontend.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # El gate: mismo escaneo, filtrado a CRITICAL, con exit-code 1. El reporte de arriba
+      # (CRITICAL y HIGH) ya quedó en el summary y el artifact aunque este paso corte el job.
+      - name: Fail on critical vulnerabilities (planb-api)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/planb-api:${{ needs.backend.outputs.sha }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          format: table
+          exit-code: '1'
+
+      - name: Fail on critical vulnerabilities (planb-web)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}/planb-web:${{ needs.frontend.outputs.sha }}
+          severity: CRITICAL
+          ignore-unfixed: true
+          format: table
+          exit-code: '1'
 
   stage:
     name: Redeploy the stage
