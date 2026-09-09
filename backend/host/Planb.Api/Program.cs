@@ -206,9 +206,11 @@ builder.Services.AddHostedService<UnverifiedRegistrationExpirationScheduler>();
 // hosted service stays gated by IsDevelopment() (only `just dev` seeds on
 // startup); this load is unconditional because the stage's `seed-db` verb
 // (Infrastructure/SeedDbCommand.cs) runs with ASPNETCORE_ENVIRONMENT=Production
-// and needs SeedPersonasOptions bound the same way. optional: true keeps this a
-// no-op wherever the file is absent (true production ships without it and
-// never invokes the seeder). Order: must be registered AFTER
+// and needs SeedPersonasOptions bound the same way. The file ships in the
+// image (Planb.Api.csproj publishes it): stage and production run the exact
+// same image, so optional: true isn't what keeps production from seeding.
+// What does is that nothing there calls seed-db: docker-compose.prod.yml
+// never declares that service. Order: must be registered AFTER
 // DevMigrationsHostedService so it runs against an existing schema.
 // ------------------------------------------------------------------
 builder.Configuration.AddJsonFile(

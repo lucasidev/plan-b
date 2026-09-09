@@ -16,6 +16,14 @@ namespace Planb.Api.Infrastructure;
 /// no hace falta (ni alcanza) un flag interno para protegerla.
 /// </para>
 /// <para>
+/// Exige <see cref="SeedPasswordOverride"/> resuelto y corta antes de sembrar nada si no lo está,
+/// algo que <see cref="DevSeedHostedService"/> no exige: sin el override, cada persona sembrada toma
+/// la password de <c>personas.json</c>, texto plano en un repo público. En Development ese fallback
+/// es intencional (nadie más llega a esa base). Acá el blast radius es un servidor con dominio real,
+/// así que la misma conveniencia sería un backoffice sembrado con una password que cualquiera puede
+/// leer en el repo.
+/// </para>
+/// <para>
 /// Llama a los mismos <c>*Seeder</c> del Application layer de cada módulo que
 /// <see cref="DevSeedHostedService"/>, <see cref="AcademicSeedHostedService"/>,
 /// <see cref="CatalogSeedHostedService"/> y <see cref="CorpusSeedHostedService"/> corren en
@@ -39,6 +47,16 @@ public sealed class SeedDbCommand : JasperFxAsyncCommand<NetCoreInput>
         using var host = input.BuildHost();
         using var scope = host.Services.CreateScope();
         var sp = scope.ServiceProvider;
+
+        var seedPasswordOverride = sp.GetRequiredService<SeedPasswordOverride>();
+        if (seedPasswordOverride.Value is null)
+        {
+            throw new InvalidOperationException(
+                $"{SeedPasswordOverride.EnvironmentVariableName} is required for seed-db: " +
+                "personas.json ships every persona's password in plain text in a public repo, and " +
+                "unlike `just dev`, this verb only runs against a deployed environment reachable " +
+                "from a real domain. Set it before seeding.");
+        }
 
         Console.WriteLine("Identity: sembrando personas...");
         await sp.GetRequiredService<IdentitySeeder>().SeedAsync();
