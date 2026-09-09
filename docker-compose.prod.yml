@@ -14,6 +14,14 @@
 # GRAFANA_ADMIN_PASSWORD, GRAFANA_HOST y, opcional, ALERT_DISCORD_WEBHOOK_URL.
 # Los mem_limit son los del stage, medidos en reposo; los de prometheus y grafana son un techo de
 # arranque, todavía sin medir. Los logs rotan con json-file para que no llenen el disco.
+# `cpus` acota a todos los servicios de vida larga (`migrate` corre una vez y termina); mismo
+# criterio que el stage (docker-compose.stage.yml): cada valor bien por debajo del total de vCPU
+# del VPS para que ningún contenedor pueda solo saturar la máquina, que comparte con otros
+# proyectos. `pids_limit` va en todos, `migrate` incluido, con margen de sobra sobre lo medido en
+# reposo (`podman stats`, ver ADR-0092). Cada servicio corre sin privilegios nuevos, sin
+# capacidades Linux salvo las puntuales que su propio entrypoint necesita, y con el filesystem de
+# la imagen en solo lectura; lo que necesita escribir tiene su `tmpfs` o su volumen, nunca la
+# imagen entera (ver ADR-0092 para el detalle por servicio).
 
 x-logging: &logging
   driver: json-file
@@ -21,11 +29,28 @@ x-logging: &logging
     max-size: "10m"
     max-file: "3"
 
+# security_opt y cap_drop son iguales en los siete servicios: nadie gana privilegios nuevos y
+# arranca sin capacidades Linux. read_only también es igual en los siete: los dos que necesitan
+# escribir algo lo hacen a un tmpfs declarado aparte, nunca a la imagen.
+x-hardening: &hardening
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  read_only: true
+
 services:
   postgres:
     image: pgvector/pgvector:pg17
+    <<: *hardening
+    # El entrypoint arranca como root para preparar /var/lib/postgresql/data y recién ahí baja a
+    # postgres (gosu): sin estas cinco no arranca, verificado sacándolas una por una (docker-compose.stage.yml).
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+    tmpfs:
+      - /var/run/postgresql
+      - /tmp
     restart: unless-stopped
     mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 100
     logging: *logging
     environment:
       POSTGRES_USER: planb
@@ -46,8 +71,16 @@ services:
   # Estado efímero: un reinicio cierra sesiones y nada más.
   redis:
     image: redis:7-alpine
+    <<: *hardening
+    # El entrypoint también arranca como root para chown-ear /data y bajar a redis (gosu): sin
+    # SETUID falla con "setresuid failed", verificado (docker-compose.stage.yml).
+    cap_add: ["CHOWN", "SETUID", "SETGID"]
+    tmpfs:
+      - /data
     restart: unless-stopped
     mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 50
     logging: *logging
     command:
       - redis-server
@@ -71,8 +104,13 @@ services:
   # el tag es inmutable.
   migrate:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:?PLANB_API_TAG sin definir, producción corre un tag pineado}
+    <<: *hardening
+    # Corre directo como el usuario "app" de la imagen (USER app en el Dockerfile): no baja
+    # privilegios ni escribe nada en el filesystem, verificado (docker-compose.stage.yml).
+    cap_add: []
     command: ["migrate-db"]
     restart: "no"
+    pids_limit: 100
     depends_on:
       postgres:
         condition: service_healthy
@@ -90,6 +128,8 @@ services:
   # Sin pull_policy: el tag es inmutable (un sha corto), así que la imagen se baja una sola vez.
   api:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:?PLANB_API_TAG sin definir, producción corre un tag pineado}
+    <<: *hardening
+    cap_add: []
     expose: ["8080"]
     depends_on:
       postgres:
@@ -100,6 +140,8 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
     mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 200
     logging: *logging
     environment:
       ASPNETCORE_ENVIRONMENT: Production
@@ -129,12 +171,20 @@ services:
 
   web:
     image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG:?PLANB_WEB_TAG sin definir, producción corre un tag pineado}
+    <<: *hardening
+    # Corre directo como el usuario "bun" de la imagen: no baja privilegios. El optimizador de
+    # imágenes de Next escribe su caché en .next/cache en runtime, de ahí el tmpfs.
+    cap_add: []
+    tmpfs:
+      - /app/.next/cache
     expose: ["3000"]
     depends_on:
       api:
         condition: service_healthy
     restart: unless-stopped
     mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 100
     logging: *logging
     environment:
       NEXT_PUBLIC_API_URL: http://api:8080
@@ -157,8 +207,14 @@ services:
   # siempre desde Grafana.
   prometheus:
     image: prom/prometheus:v3.14.0
+    <<: *hardening
+    # Corre directo con su usuario no root de imagen: no necesita capacidad ni tmpfs, todo lo que
+    # escribe va al volumen /prometheus, verificado.
+    cap_add: []
     restart: unless-stopped
     mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 50
     logging: *logging
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -179,11 +235,17 @@ services:
   # observability/grafana/provisioning: no se clickea nada en la UI, un redeploy los reaplica.
   grafana:
     image: grafana/grafana:12.4.10
+    <<: *hardening
+    # Corre directo con su usuario no root de imagen (472): no necesita capacidad ni tmpfs, todo
+    # lo que escribe va al volumen /var/lib/grafana, verificado.
+    cap_add: []
     depends_on:
       prometheus:
         condition: service_healthy
     restart: unless-stopped
     mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 100
     logging: *logging
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER sin definir}

@@ -13,6 +13,14 @@
 # carga y JIT; si un contenedor se pasa, Docker lo reinicia solo a él (restart: unless-stopped)
 # y el resto sigue. `migrate` y `seed` no llevan mem_limit: corren una vez y terminan, no hay
 # consumo sostenido que limitar. Los logs rotan con json-file para que no llenen el disco del VPS.
+# `cpus` acota solo a los servicios de vida larga (`migrate` y `seed` corren una vez y terminan);
+# el VPS tiene 2 vCPU (`k6/README.md`) y lo comparte con otros proyectos, así que cada valor queda
+# bien por debajo de esas 2 para que ningún contenedor pueda solo saturar la máquina. `pids_limit`
+# va en todos, `migrate` y `seed` incluidos: acota cuántos procesos/threads puede abrir cada uno,
+# con margen de sobra sobre lo medido en reposo (`podman stats`, ver ADR-0092). Cada servicio corre
+# sin privilegios nuevos, sin capacidades Linux salvo las puntuales que su propio entrypoint
+# necesita, y con el filesystem de la imagen en solo lectura; lo que necesita escribir tiene su
+# `tmpfs` o su volumen, nunca la imagen entera (ver ADR-0092 para el detalle por servicio).
 # Producción es docker-compose.prod.yml.
 
 x-logging: &logging
@@ -21,11 +29,28 @@ x-logging: &logging
     max-size: "10m"
     max-file: "5"
 
+# security_opt y cap_drop son iguales en los nueve servicios: nadie gana privilegios nuevos y
+# arranca sin capacidades Linux. read_only también es igual en los nueve: los tres que necesitan
+# escribir algo lo hacen a un tmpfs o a un volumen declarado aparte, nunca a la imagen.
+x-hardening: &hardening
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  read_only: true
+
 services:
   postgres:
     image: pgvector/pgvector:pg17
+    <<: *hardening
+    # El entrypoint arranca como root para preparar /var/lib/postgresql/data y recién ahí baja a
+    # postgres (gosu): sin estas cinco no arranca, verificado sacándolas una por una.
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+    tmpfs:
+      - /var/run/postgresql
+      - /tmp
     restart: unless-stopped
     mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 100
     logging: *logging
     environment:
       POSTGRES_USER: planb
@@ -46,8 +71,16 @@ services:
   # Estado efímero: un reinicio cierra sesiones y nada más, el reset del stage es down -v igual.
   redis:
     image: redis:7-alpine
+    <<: *hardening
+    # El entrypoint también arranca como root para chown-ear /data y bajar a redis (gosu): sin
+    # SETUID falla con "setresuid failed", verificado.
+    cap_add: ["CHOWN", "SETUID", "SETGID"]
+    tmpfs:
+      - /data
     restart: unless-stopped
     mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 50
     logging: *logging
     command:
       - redis-server
@@ -67,8 +100,14 @@ services:
 
   mailpit:
     image: axllent/mailpit:v1.29
+    <<: *hardening
+    # Sin persistencia configurada (MP_DATABASE) guarda todo en memoria: no necesita capacidad
+    # ni tmpfs, verificado.
+    cap_add: []
     restart: unless-stopped
     mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 50
     logging: *logging
     expose: ["1025", "8025"]
     environment:
@@ -89,9 +128,14 @@ services:
   # Production nadie migra ni crea recursos solo (ver ADR-0091).
   migrate:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    <<: *hardening
+    # Corre directo como el usuario "app" de la imagen (USER app en el Dockerfile): no baja
+    # privilegios ni escribe nada en el filesystem, verificado.
+    cap_add: []
     pull_policy: always
     command: ["migrate-db"]
     restart: "no"
+    pids_limit: 100
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,9 +156,12 @@ services:
   # error de configuración).
   seed:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    <<: *hardening
+    cap_add: []
     pull_policy: always
     command: ["seed-db"]
     restart: "no"
+    pids_limit: 100
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -130,6 +177,8 @@ services:
 
   api:
     image: ghcr.io/lucasidev/plan-b/planb-api:${PLANB_API_TAG:-main}
+    <<: *hardening
+    cap_add: []
     pull_policy: always
     expose: ["8080"]
     depends_on:
@@ -141,6 +190,8 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
     mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 200
     logging: *logging
     environment:
       ASPNETCORE_ENVIRONMENT: Production
@@ -167,6 +218,12 @@ services:
 
   web:
     image: ghcr.io/lucasidev/plan-b/planb-web:${PLANB_WEB_TAG:-main}
+    <<: *hardening
+    # Corre directo como el usuario "bun" de la imagen: no baja privilegios. El optimizador de
+    # imágenes de Next escribe su caché en .next/cache en runtime, de ahí el tmpfs.
+    cap_add: []
+    tmpfs:
+      - /app/.next/cache
     pull_policy: always
     expose: ["3000"]
     depends_on:
@@ -174,6 +231,8 @@ services:
         condition: service_healthy
     restart: unless-stopped
     mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 100
     logging: *logging
     environment:
       NEXT_PUBLIC_API_URL: http://api:8080
