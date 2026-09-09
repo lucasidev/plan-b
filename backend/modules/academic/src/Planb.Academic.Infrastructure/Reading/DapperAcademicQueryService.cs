@@ -1,6 +1,7 @@
 using System.Globalization;
 using Dapper;
 using Planb.Academic.Application.Contracts;
+using Planb.Academic.Domain.OfficialFacts;
 using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
@@ -505,6 +506,58 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
         var rows = await db.QueryAsync<TeacherNameItem>(
             new CommandDefinition(sql, new { CareerId = careerId }, cancellationToken: ct));
         return rows.AsList();
+    }
+
+    public async Task<IReadOnlyList<CareerCatalogItem>> ListAllCareersAsync(CancellationToken ct = default)
+    {
+        // Mismo filtro que ListUniversitiesAsync (is_active de la universidad) más el de la carrera:
+        // una carrera de una institución dada de baja no tiene ficha a la que llevar.
+        const string sql = @"
+            SELECT
+                c.id            AS Id,
+                c.name          AS Name,
+                c.university_id AS UniversityId,
+                u.name          AS UniversityName,
+                c.is_official   AS IsOfficial
+            FROM academic.careers c
+            JOIN academic.universities u ON u.id = c.university_id
+            WHERE c.is_active = true
+              AND u.is_active = true
+            ORDER BY u.name ASC, c.name ASC;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<CareerCatalogItem>(new CommandDefinition(sql, cancellationToken: ct));
+        return rows.AsList();
+    }
+
+    public async Task<IReadOnlySet<Guid>> ListCareersWithOfficialDataAsync(
+        IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default)
+    {
+        // Published/Derived son los dos estados que prometen un valor (OfficialFact.Create); los
+        // otros tres (NotPublished, Requested, NotApplicable) son formas de decir que no hay uno, y
+        // no cuentan como "algo para leer" acá.
+        const string sql = @"
+            SELECT DISTINCT subject_id
+            FROM academic.official_facts
+            WHERE subject_type = @SubjectType
+              AND subject_id = ANY(@CareerIds)
+              AND status = ANY(@LiveStatuses);";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<Guid>(
+            new CommandDefinition(
+                sql,
+                new
+                {
+                    SubjectType = OfficialFactSubjectType.Offering.ToString(),
+                    CareerIds = careerIds.ToArray(),
+                    LiveStatuses = new[]
+                    {
+                        OfficialFactStatus.Published.ToString(), OfficialFactStatus.Derived.ToString(),
+                    },
+                },
+                cancellationToken: ct));
+        return rows.ToHashSet();
     }
 
     private sealed record SubjectLabelRow(Guid Id, string Name, string Code);

@@ -84,4 +84,65 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                 cancellationToken: ct));
         return subjectIds.ToList();
     }
+
+    public async Task<IReadOnlyDictionary<Guid, CareerCoverageBatch>> GetCoverageBatchAsync(
+        IReadOnlyCollection<Guid> careerIds, int minimumReviews, CancellationToken ct = default)
+    {
+        // Mismo cruce que GetCoverageAsync, para varias carreras a la vez: un solo WHERE con
+        // = ANY(@CareerIds) en vez de un viaje por carrera (con 230 carreras, N consultas no es una
+        // opción). covered_subjects se de-duplica en un SELECT DISTINCT aparte (no alcanza con el
+        // GROUP BY ch.id, ch.subject_id de adentro) porque una materia con dos cátedras que cruzan
+        // el piso, cada una, aportaría dos filas con el mismo subject_id: sin de-duplicar, el JOIN
+        // de más abajo las multiplica y VoiceCount queda contado de más.
+        const string sql = @"
+            WITH plan_subjects AS (
+                SELECT s.id AS subject_id, cp.career_id
+                FROM academic.subjects s
+                JOIN academic.career_plans cp ON cp.id = s.career_plan_id
+                WHERE cp.career_id = ANY(@CareerIds)
+                  AND cp.status = 'Active'
+                  AND s.is_active = true
+            ),
+            covered_subjects AS (
+                SELECT DISTINCT subject_id
+                FROM (
+                    SELECT ch.subject_id
+                    FROM academic.chairs ch
+                    JOIN reviews.reviews cr ON cr.chair_id = ch.id
+                    WHERE ch.is_active = true
+                      AND ch.subject_id IN (SELECT subject_id FROM plan_subjects)
+                    GROUP BY ch.id, ch.subject_id
+                    HAVING count(*) >= @MinimumReviews
+                ) qualifying_chairs
+            ),
+            voice_counts AS (
+                SELECT subject_id, count(*) AS review_count
+                FROM reviews.reviews
+                WHERE subject_id IN (SELECT subject_id FROM plan_subjects)
+                GROUP BY subject_id
+            )
+            SELECT
+                ps.career_id                           AS CareerId,
+                count(ps.subject_id)::int              AS TotalSubjects,
+                count(cs.subject_id)::int              AS CoveredSubjects,
+                COALESCE(sum(vc.review_count), 0)::int AS VoiceCount
+            FROM plan_subjects ps
+            LEFT JOIN covered_subjects cs ON cs.subject_id = ps.subject_id
+            LEFT JOIN voice_counts vc ON vc.subject_id = ps.subject_id
+            GROUP BY ps.career_id;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<CareerCoverageBatchRow>(
+            new CommandDefinition(
+                sql,
+                new { CareerIds = careerIds.ToArray(), MinimumReviews = minimumReviews },
+                cancellationToken: ct));
+
+        return rows.ToDictionary(
+            r => r.CareerId,
+            r => new CareerCoverageBatch(r.TotalSubjects, r.CoveredSubjects, r.VoiceCount));
+    }
+
+    private sealed record CareerCoverageBatchRow(
+        Guid CareerId, int TotalSubjects, int CoveredSubjects, int VoiceCount);
 }

@@ -1,5 +1,13 @@
-import { CatalogTopbar, ExploreLensSwitch, UniversityList } from '@/features/browse-catalog';
-import { fetchUniversitiesServer } from '@/features/browse-catalog/api.server';
+import {
+  CatalogTopbar,
+  ExploreLensSwitch,
+  summarizeUniversitiesCoverage,
+  UniversityList,
+} from '@/features/browse-catalog';
+import {
+  fetchCatalogCoverageServer,
+  fetchUniversitiesServer,
+} from '@/features/browse-catalog/api.server';
 
 // Público, per-request: catálogo puede cambiar (admin de universidades). Visitantes anónimos.
 export const dynamic = 'force-dynamic';
@@ -10,12 +18,17 @@ export const metadata = {
 
 /**
  * /universities (US-001). Punto de entrada del catálogo público: todas las universidades
- * soportadas. Sin auth, sin paginación (MVP: pocas unis seedeadas, ver
+ * soportadas, cada una con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222,
+ * ficha de SC-003), antes de entrar. Sin auth, sin paginación (MVP: pocas unis seedeadas, ver
  * `ListUniversitiesEndpoint`). Server-rendered, sin HydrationBoundary (mismo patrón que
  * `app/(public)/subjects/[id]/page.tsx`: server-fetch directo + render).
  */
 export default async function UniversitiesPage() {
-  const universities = await fetchUniversitiesServer();
+  const [universities, careers] = await Promise.all([
+    fetchUniversitiesServer(),
+    fetchCatalogCoverageServer(),
+  ]);
+  const universitiesWithCoverage = summarizeUniversitiesCoverage(universities, careers);
 
   return (
     <>
@@ -31,7 +44,7 @@ export default async function UniversitiesPage() {
             Elegí tu universidad para ver sus carreras, planes de estudio y materias.
           </p>
         </header>
-        <UniversityList universities={universities} />
+        <UniversityList universities={universitiesWithCoverage} />
       </main>
     </>
   );

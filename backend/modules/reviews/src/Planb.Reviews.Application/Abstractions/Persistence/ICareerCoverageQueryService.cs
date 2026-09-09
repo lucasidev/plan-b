@@ -23,7 +23,26 @@ public interface ICareerCoverageQueryService
     /// </summary>
     Task<IReadOnlyList<Guid>> GetCoveredSubjectIdsAsync(
         Guid careerPlanId, int minimumReviews, CancellationToken ct = default);
+
+    /// <summary>
+    /// La cobertura y las voces de varias carreras en un solo viaje (US-222): lo que el catálogo de
+    /// Explorar necesita para decir, antes del clic, dónde hay algo para leer, sin pedir estos
+    /// números carrera por carrera. Mismo criterio de "medida" que <see cref="GetCoverageAsync"/>
+    /// (plan vigente, piso por cátedra), más el conteo de voces (Voces: cuántas personas reseñaron
+    /// algo de esa carrera), sin el piso: una carrera con 3 voces bajo el piso las muestra igual, la
+    /// ficha no.
+    ///
+    /// <para>
+    /// Devuelve una entrada solo para las carreras que tienen materias en su plan vigente: una
+    /// carrera sin plan cargado no tiene nada que medir y el caller la completa con cero.
+    /// </para>
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, CareerCoverageBatch>> GetCoverageBatchAsync(
+        IReadOnlyCollection<Guid> careerIds, int minimumReviews, CancellationToken ct = default);
 }
+
+/// <summary>Una entrada del batch de <see cref="ICareerCoverageQueryService.GetCoverageBatchAsync"/>: los mismos M/N de <see cref="CareerCoverage"/> más el conteo crudo de voces.</summary>
+public sealed record CareerCoverageBatch(int TotalSubjects, int CoveredSubjects, int VoiceCount);
 
 /// <summary>
 /// M (<see cref="TotalSubjects"/>) son las materias del plan vigente de la carrera; N

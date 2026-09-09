@@ -1,8 +1,10 @@
-import { CareerList, CatalogTopbar, ExploreLensSwitch } from '@/features/browse-catalog';
 import {
-  fetchCareersByUniversityServer,
-  fetchUniversitiesServer,
-} from '@/features/browse-catalog/api.server';
+  CareerCoverageList,
+  CatalogTopbar,
+  ExploreLensSwitch,
+  groupCareersByUniversity,
+} from '@/features/browse-catalog';
+import { fetchCatalogCoverageServer } from '@/features/browse-catalog/api.server';
 
 // Público, per-request: el catálogo puede cambiar (crowdsourcing, admin). Visitantes anónimos.
 export const dynamic = 'force-dynamic';
@@ -16,24 +18,18 @@ export const metadata = {
  * links que llevaban acá). La segunda lente de Explorar, por carrera en vez de por institución:
  * Valentina no tiene una universidad, tiene a lo sumo una carrera.
  *
- * No hay "listar todas las carreras" público (el único endpoint es por universidad, US-037
- * cascada): se arma pidiendo las carreras de cada institución del catálogo en paralelo y
- * agrupando por institución. Con las cinco instituciones reales de Tucumán (R6) son 6 requests, no
- * 230: el techo de escalar esto es el número de instituciones, no de carreras.
+ * Un solo viaje (`fetchCatalogCoverageServer`, ficha de SC-003): antes se armaba pidiendo las
+ * carreras de cada institución del catálogo en paralelo (N requests, uno por universidad), lo que
+ * escalaba con la cantidad de instituciones. El nuevo endpoint ya trae identidad + cobertura de
+ * las 230 carreras juntas, así que agrupar por institución es puro trabajo en memoria.
  *
  * Agrupar por institución, y no un único listado plano de 230 carreras, es la respuesta al volumen
  * real: nombra dónde se dicta cada una (US-222 E2) sin repetirlo carrera por carrera, y separa el
  * "institución" de la lente de universidades sin duplicar esa pantalla.
  */
 export default async function CareersPage() {
-  const universities = await fetchUniversitiesServer();
-  const careersByUniversity = await Promise.all(
-    universities.map((university) => fetchCareersByUniversityServer(university.id)),
-  );
-
-  const groups = universities
-    .map((university, index) => ({ university, careers: careersByUniversity[index] }))
-    .filter((group) => group.careers.length > 0);
+  const careers = await fetchCatalogCoverageServer();
+  const groups = groupCareersByUniversity(careers);
 
   return (
     <>
@@ -53,13 +49,13 @@ export default async function CareersPage() {
           <p className="text-[13px] text-ink-3">Todavía no hay carreras cargadas en el catálogo.</p>
         ) : (
           <div className="flex flex-col gap-8">
-            {groups.map(({ university, careers }) => (
-              <section key={university.id} aria-label={university.name}>
+            {groups.map((group) => (
+              <section key={group.universityId} aria-label={group.universityName}>
                 <h2 className="font-display text-[16px] font-semibold text-ink">
-                  {university.name}
+                  {group.universityName}
                 </h2>
                 <div className="mt-3">
-                  <CareerList careers={careers} />
+                  <CareerCoverageList careers={group.careers} />
                 </div>
               </section>
             ))}

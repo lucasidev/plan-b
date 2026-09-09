@@ -42,4 +42,3 @@ Llega desde: [La entrada](../SC-004-entrance/README.md), un link, o vuelve desde
 - **El default de orden.**
 - **Si hay filtros** (provincia, modalidad) **y cuáles.**
 - **Qué lente abre por default**, Carreras o Universidades: ninguna fuente lo fija.
-- **La lente de Carreras todavía no muestra voces ni cobertura por entrada**: no hay un endpoint que liste esos dos números agregados por carrera sin pedirlos carrera por carrera. Hoy agrupa por institución (nombre + el link a la ficha) y ordena alfabético; el orden por voces (US-171) queda para cuando ese dato exista.
