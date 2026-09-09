@@ -86,6 +86,7 @@ public static class GetChairFactsQueryHandler
             SubjectName: chair.SubjectName,
             SubjectCode: chair.SubjectCode,
             LeadTeacherName: FullName(chair),
+            LeadTeacherId: chair.LeadTeacherId,
             IsPublished: facts.IsPublished,
             ReviewCount: facts.ReviewCount,
             ReviewsMissingToPublish: facts.ReviewsMissingToPublish,

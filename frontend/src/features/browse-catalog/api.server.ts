@@ -69,3 +69,19 @@ export async function fetchSubjectsByPlanServer(careerPlanId: string): Promise<S
   }
   return (await response.json()) as Subject[];
 }
+
+/**
+ * Ids de materias del plan que ya tienen una cátedra que cruzó el piso de publicación (US-134,
+ * V10): lo que `SubjectGrid` usa para marcar "Medida" sin que haya que entrar materia por materia
+ * a ubicar la cobertura. Vive en reviews (no en academic): es lo que las reseñas dicen del plan.
+ */
+export async function fetchCoveredSubjectIdsServer(careerPlanId: string): Promise<string[]> {
+  const response = await apiFetchAuthenticated(
+    `/api/reviews/career-plans/${careerPlanId}/covered-subjects`,
+    { cache: 'no-store' },
+  );
+  if (!response.ok) {
+    throw new Error(`Covered subjects fetch failed: ${response.status}`);
+  }
+  return (await response.json()) as string[];
+}

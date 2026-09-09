@@ -73,7 +73,20 @@ function Identity({ facts }: { facts: ChairFacts }) {
         <Link href={`/subjects/${facts.subjectId}`} className="underline underline-offset-2">
           {facts.subjectName}
         </Link>
-        {facts.leadTeacherName ? ` · a cargo de ${facts.leadTeacherName}` : ''}
+        {facts.leadTeacherName &&
+          (facts.leadTeacherId ? (
+            <>
+              {' · a cargo de '}
+              <Link
+                href={`/teachers/${facts.leadTeacherId}`}
+                className="underline underline-offset-2"
+              >
+                {facts.leadTeacherName}
+              </Link>
+            </>
+          ) : (
+            ` · a cargo de ${facts.leadTeacherName}`
+          ))}
       </p>
       {facts.isPublished && facts.span && (
         <p className="text-[11px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>

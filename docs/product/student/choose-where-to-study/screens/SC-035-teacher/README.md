@@ -29,7 +29,7 @@ Ningún conteo, porcentaje, moda ni puntaje atribuido a la persona: lo que se re
 
 ## Adónde va
 
-Llega desde: [Buscar](../SC-006-search/README.md) (el resultado de tipo docente). Va a: [Ficha de cátedra](../SC-002-chair/README.md) (cada cátedra que integra), y a [Explorar](../SC-003-explore/README.md) y Buscar desde la barra del catálogo.
+Llega desde: [Buscar](../SC-006-search/README.md) (el resultado de tipo docente), [Ficha de cátedra](../SC-002-chair/README.md) (el nombre del titular, cuando el catálogo tiene su id, V06). Va a: [Ficha de cátedra](../SC-002-chair/README.md) (cada cátedra que integra), y a [Explorar](../SC-003-explore/README.md) y Buscar desde la barra del catálogo.
 
 ## Decisiones que aplica
 
@@ -37,5 +37,4 @@ Llega desde: [Buscar](../SC-006-search/README.md) (el resultado de tipo docente)
 
 ## Lo que esta ficha deja abierto
 
-- **Si la Ficha de cátedra enlaza a esta pantalla** desde su equipo, o solo Buscar llega acá.
 - **El hi-fi**: el boceto es el mid-fi de lo construido, no una identidad visual decidida.

@@ -24,6 +24,11 @@ public sealed record GetChairFactsResponse(
     string SubjectName,
     string SubjectCode,
     string? LeadTeacherName,
+    /// <summary>
+    /// A dónde lleva el nombre del titular (V06): sin id, la ficha solo podía mostrarlo como
+    /// texto. Null junto con <see cref="LeadTeacherName"/> null: no hay titular cargado.
+    /// </summary>
+    Guid? LeadTeacherId,
     bool IsPublished,
     int ReviewCount,
     int ReviewsMissingToPublish,
