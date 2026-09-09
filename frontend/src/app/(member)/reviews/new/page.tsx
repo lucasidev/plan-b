@@ -42,7 +42,7 @@ export default async function WriteReviewPage() {
   ]);
 
   return (
-    <div data-surface="bulletin" className="mx-auto w-full max-w-[560px] px-4 py-8">
+    <div className="mx-auto w-full max-w-[560px] px-4 py-8">
       {instrument === null ? (
         <div className="rounded-lg border border-line bg-bg-card p-6">
           <h1 className="font-serif text-[22px] font-semibold text-ink">
@@ -61,7 +61,7 @@ export default async function WriteReviewPage() {
 
 function MissingCareerNotice() {
   return (
-    <div data-surface="bulletin" className="mx-auto w-full max-w-[560px] px-4 py-8">
+    <div className="mx-auto w-full max-w-[560px] px-4 py-8">
       <div className="rounded-lg border border-line bg-bg-card p-6">
         <h1 className="font-serif text-[22px] font-semibold text-ink">
           Primero decinos qué cursás

@@ -15,7 +15,7 @@ import type { CareerFacts } from '../types';
  */
 export function CareerFactsSheet({ facts }: { facts: CareerFacts }) {
   return (
-    <div data-surface="bulletin" className="min-h-screen w-full">
+    <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
           búsqueda y no hay cómo seguir buscando ni volver. */}
       <CatalogTopbar />

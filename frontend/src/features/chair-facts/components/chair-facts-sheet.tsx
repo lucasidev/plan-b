@@ -15,10 +15,7 @@ import type { ChairFacts } from '../types';
  */
 export function ChairFactsSheet({ facts }: { facts: ChairFacts }) {
   return (
-    // El data-surface va en el contenedor de ancho completo y no en la columna: si lo lleva solo
-    // la columna, el crema del Boletín pinta 560px y el resto de la página queda con el fondo del
-    // chasis anterior, que es de otra paleta.
-    <div data-surface="bulletin" className="min-h-screen w-full">
+    <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
           búsqueda y no hay cómo seguir buscando ni volver. */}
       <CatalogTopbar />

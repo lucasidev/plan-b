@@ -24,11 +24,6 @@ import { fetchStudentProfile } from '@/lib/student-profile';
  * igual, al pie, porque leer no depende de que reseñes.
  *
  * El guard de `(member)/layout.tsx` ya filtró sesión y rol; esta página asume los dos.
- *
- * `data-surface="bulletin"` va en el contenedor de ancho completo y no en la columna, mismo
- * criterio documentado en `ChairFactsSheet`: el `<main>` del AppShell no lleva la superficie, así
- * que si el atributo lo lleva solo la columna de 560px, el resto del área queda con el fondo del
- * chasis anterior (Apricot), que es otra paleta.
  */
 export default async function HomePage() {
   const [session, profile, reviews, tallies] = await Promise.all([
@@ -47,14 +42,14 @@ export default async function HomePage() {
 
   if (chairs.length === 0) {
     return (
-      <div data-surface="bulletin" className="min-h-full w-full">
+      <div className="min-h-full w-full">
         <HomeEmptyState firstName={firstName} facts={facts} />
       </div>
     );
   }
 
   return (
-    <div data-surface="bulletin" className="min-h-full w-full">
+    <div className="min-h-full w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <div className="mb-[18px]">
           <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Inicio</p>
