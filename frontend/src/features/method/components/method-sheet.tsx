@@ -106,6 +106,61 @@ export function MethodSheet({
           </P>
         </Block>
 
+        <Block title="Qué es un dato Derivado" id="graduation-flow-proxy">
+          <P>
+            Vas a ver esta etiqueta en el egreso por cohorte de cada carrera. Significa que ninguna
+            fuente oficial publica cuánta gente termina esa carrera puntual: el Ministerio de
+            Educación solo publica una serie por institución entera o por un área grande, como
+            informática, nunca por carrera. Con esa serie armamos nosotros una cuenta propia, y por
+            eso el número lleva la etiqueta en vez de mostrarse como si viniera leído directo de una
+            fuente.
+          </P>
+          <P>
+            La cuenta es así: cuánta gente egresó en un año, dividido cuánta gente había entrado
+            unos años antes (tantos años como dura la carrera en el papel, redondeado para arriba).
+            Por ejemplo, para una carrera de dos años y medio comparamos a quienes egresaron en 2022
+            contra quienes entraron en 2019. La hacemos sobre la institución entera o sobre un área
+            grande cuando la fuente lo permite, nunca sobre una carrera sola: a ese nivel, la fuente
+            no llega. Usamos los anuarios que la SPU (Secretaría de Políticas Universitarias, del
+            Ministerio de Educación) publica cada año, del 2020 al 2023.
+          </P>
+          <P>
+            Esta cuenta arrastra seis problemas. Ninguno se corrige: se declaran, y por eso el
+            número puede salir más alto o más bajo de lo que en realidad pasa.
+          </P>
+          <ol className="mb-2.5 flex list-decimal flex-col gap-2 pl-4 last:mb-0">
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              No es la misma gente de punta a punta: quienes egresaron ese año entraron en momentos
+              distintos entre sí, y quienes entraron el año que usamos como base van a egresar, si
+              egresan, en años distintos entre sí.
+            </li>
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              Mezcla carreras que no se parecen: la institución entera junta carreras de dos a seis
+              años, y un área grande junta tecnicaturas con ingenierías.
+            </li>
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              Cuando entra más gente nueva a una carrera, el número de abajo de la cuenta crece y el
+              resultado baja, aunque nada haya empeorado.
+            </li>
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              Una carrera recién abierta todavía no tiene egresados: el número le sale
+              artificialmente bajo hasta que pasen los años que dura.
+            </li>
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              Si la fuente repite el mismo número dos años seguidos en vez de actualizarlo, el año
+              que en realidad estamos usando como base queda corrido hacia atrás sin que se note.
+            </li>
+            <li className="text-[13px] leading-relaxed text-ink-2">
+              Alguien que cambia de carrera o de institución se puede contar dos veces: como quien
+              entró en un lado y como quien egresó en otro.
+            </li>
+          </ol>
+          <P>
+            Por estos seis motivos, el número sirve para tener una idea de orden de magnitud entre
+            instituciones. No sirve para comparar dos carreras entre sí.
+          </P>
+        </Block>
+
         <Block title="Lo que no publicamos nunca">
           <P>
             El texto que alguien escribe al final de una reseña <b>no se publica</b>. Lo lee el
@@ -115,6 +170,14 @@ export function MethodSheet({
             Ninguna reseña se muestra sola, ni con nombre ni sin él. No hay puntajes, ni rankings,
             ni instituciones destacadas o patrocinadas. En ningún lado se afirma una causa: se
             publica qué contestó la gente, no por qué.
+          </P>
+          <P>
+            No tenemos acuerdos con ninguna institución, pagos ni de palabra, y ninguna recibe trato
+            preferencial: la misma cátedra necesita{' '}
+            {chairFloor !== null ? `las mismas ${chairFloor} reseñas` : 'el mismo piso de reseñas'}{' '}
+            para publicar, sea cual sea la universidad, y a nadie le bajamos ese piso ni le subimos
+            su cobertura para que se vea mejor. Eso incluye a UNSTA, la universidad donde arrancó
+            este proyecto: se mide con las mismas reglas que cualquier otra.
           </P>
         </Block>
 
@@ -175,9 +238,18 @@ function FloorBlock({
   );
 }
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({
+  title,
+  children,
+  id,
+}: {
+  title: string;
+  children: React.ReactNode;
+  /** Ancla estable para linkear directo a este bloque desde otra ficha (ej. `/method#graduation-flow-proxy`). */
+  id?: string;
+}) {
   return (
-    <section className="mb-6">
+    <section id={id} className="mb-6">
       <h2 className="mb-2 font-serif text-[18px] font-semibold text-ink">{title}</h2>
       <div className="rounded-xl border border-line bg-bg-card p-4">{children}</div>
     </section>
