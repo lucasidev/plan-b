@@ -66,7 +66,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, FreshEmail("deactivate-cascade"));
 
-        var planId = AcademicSeedData.Careers[2].Plan.Id.Value;
+        var planId = AcademicSeedData.Careers[2].Plan!.Id.Value;
         var create = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
             new { careerPlanId = planId, enrollmentYear = 2024 });
@@ -125,7 +125,7 @@ public class DeactivateAccountEndpointTests : IClassFixture<RegisterApiFixture>
             {
                 email = rawEmail,
                 password = "valid-password-12c",
-                careerPlanId = AcademicSeedData.Careers[2].Plan.Id.Value,
+                careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value,
             });
 
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);

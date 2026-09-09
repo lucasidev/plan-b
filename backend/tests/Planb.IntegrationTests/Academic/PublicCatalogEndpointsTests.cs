@@ -67,7 +67,7 @@ public class PublicCatalogEndpointsTests : IClassFixture<RegisterApiFixture>
         careers!.ShouldNotBeEmpty();
         careers.ShouldAllBe(c => c.UniversityId == unstaId);
 
-        // Match con el seed: 4 carreras de UNSTA (las primeras 4 en AcademicSeedData.Careers).
+        // Match con el seed: todas las carreras de UNSTA (curadas a mano más el bulk de la Guía SIU).
         var unstaSeedIds = AcademicSeedData.Careers
             .Where(c => c.Career.UniversityId == AcademicSeedData.Unsta.Id)
             .Select(c => c.Career.Id.Value)
