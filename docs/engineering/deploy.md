@@ -22,7 +22,7 @@ Traducido: una imagen construida sin el paso de codegen, apuntada a una base sin
 
 **Automático (GitHub Actions):** construir y publicar las imágenes. Lo hace [`publish-images.yml`](../../.github/workflows/publish-images.yml) en cada push a `main` (tags: el sha corto y `main`; después redespliega el stage) y a mano (`workflow_dispatch`) para cualquier ref, eligiendo qué componente y con qué `api_url` (tag: solo el sha corto). Cada imagen lleva labels OCI (origen, revisión, fecha) y atestaciones de SBOM y procedencia, que GHCR muestra en la página del paquete; Trivy las escanea en la misma corrida y avisa sin frenar; [`prune-images.yml`](../../.github/workflows/prune-images.yml) deja las últimas veinte versiones de cada paquete, los lunes. Los contenedores corren sin root (`app` en el api, `bun` en el web) y con `HEALTHCHECK` contra `/health`.
 
-**Manual (en el host del deploy):** aplicar el schema y apuntar el servicio a la imagen nueva. No está en el workflow por una razón concreta: aplicar el schema desde un runner de GitHub exige exponer la base de producción a internet. El precio de esa exposición es peor que el de dos comandos a mano.
+**Manual (en el host del deploy):** apuntar el servicio a la imagen nueva y desplegar. El compose hace el resto: un servicio `migrate` de un solo uso deja migrado el schema de EF Core y aplicados los recursos de Wolverine antes de que `api` arranque (ADR-0091), así que no hace falta correr nada a mano aparte. No está en el workflow de GitHub Actions por una razón concreta: migrar desde un runner de GitHub exige exponer la base de producción a internet. El precio de esa exposición es peor que el de desplegar desde el host.
 
 ## Secuencia de un deploy
 
@@ -40,47 +40,23 @@ Antes de cualquier cambio de schema. Sin backup previo no hay rollback de datos 
 pg_dump --format=custom --file=planb-$(date +%Y%m%d-%H%M).dump "$PLANB_DB_URL"
 ```
 
-### 3. Aplicar migraciones de EF Core
-
-```bash
-docker run --rm --network <App Name>_internal \
-  -e ASPNETCORE_ENVIRONMENT=Production \
-  -e ConnectionStrings__Planb="$PLANB_DB_URL" \
-  -e ConnectionStrings__Redis="$PLANB_REDIS_URL" \
-  -e JWT__Secret="$PLANB_JWT_SECRET" \
-  ghcr.io/<owner>/plan-b/planb-api:<sha> migrate-db
-```
-
-`migrate-db` aplica las migraciones pendientes de los tres DbContexts y termina. Es idempotente: correrlo dos veces no hace nada la segunda.
-
-### 4. Aplicar el schema de Wolverine
-
-```bash
-docker run --rm --network <App Name>_internal \
-  -e ASPNETCORE_ENVIRONMENT=Production \
-  -e ConnectionStrings__Planb="$PLANB_DB_URL" \
-  -e ConnectionStrings__Redis="$PLANB_REDIS_URL" \
-  -e JWT__Secret="$PLANB_JWT_SECRET" \
-  ghcr.io/<owner>/plan-b/planb-api:<sha> db-apply
-```
-
-Crea las tablas del outbox durable en el schema `wolverine`. También idempotente.
-
-### 5. Apuntar el servicio a la imagen nueva
+### 3. Apuntar el servicio a la imagen nueva
 
 En Dokploy, en el Environment del servicio de producción, poner `PLANB_API_TAG` y `PLANB_WEB_TAG` en el sha del paso 1 y Deploy. Usar el sha y no un tag móvil: `main` es el del stage y se mueve con cada merge, y un restart del contenedor semanas después traería una versión que nadie decidió publicar en ese momento.
 
-### 6. Verificar
+El compose (`docker-compose.prod.yml`) trae un servicio `migrate` que corre antes que `api`: espera a que Postgres y Redis estén healthy, corre `migrate-db` (las migraciones pendientes de los tres DbContexts y, después, los recursos de Wolverine: el schema `wolverine` del outbox durable) y termina. `api` no arranca hasta que `migrate` termina bien (`depends_on: condition: service_completed_successfully`); si `migrate` falla, el deploy se corta ahí, con la versión anterior de `api` todavía sirviendo (ADR-0059, ADR-0091). Es idempotente: un redeploy sin migraciones nuevas no hace nada la segunda vez.
+
+### 4. Verificar
 
 ```bash
 curl -fsS https://<host>/health
 ```
 
-Tiene que responder 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}`: `version` es el sha del build (el build arg `GIT_SHA` del Dockerfile, `dev` fuera de CI) y `checks` lleva Postgres y Redis con su latencia; si alguno falla responde 503 con `status: fail` y el error del que falló. Un 502 sostenido después del redeploy suele ser el host que no arrancó: mirar los logs del contenedor y buscar el mensaje de Wolverine sobre tipos pre-generados faltantes (imagen mal construida) o el error de conexión a Postgres (paso 3 o 4 salteado).
+Tiene que responder 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}`: `version` es el sha del build (el build arg `GIT_SHA` del Dockerfile, `dev` fuera de CI) y `checks` lleva Postgres y Redis con su latencia; si alguno falla responde 503 con `status: fail` y el error del que falló. Un 502 sostenido después del redeploy suele ser el host que no arrancó: en Dokploy, mirar primero si el contenedor `migrate` terminó en error (ese es el que corta el deploy antes de que `api` intente arrancar); si `migrate` terminó bien, mirar los logs de `api` y buscar el mensaje de Wolverine sobre tipos pre-generados faltantes (imagen mal construida) o el error de conexión a Postgres.
 
 ## El compose de producción
 
-Producción es [`docker-compose.prod.yml`](../../docker-compose.prod.yml), en la raíz del repo: otro servicio Compose de Dokploy (Compose Path `./docker-compose.prod.yml`), con las mismas dos imágenes de GHCR que el stage y cuatro diferencias. Corre con `ASPNETCORE_ENVIRONMENT=Production`, así que nada migra ni siembra al arrancar (los pasos 3 y 4 de arriba). No tiene Mailpit: `api` manda los mails por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin `PLANB_API_TAG` y `PLANB_WEB_TAG` el deploy no arranca, porque en producción no existe `main`. Y trae `prometheus` y `grafana` siempre prendidos, con el tablero y las alertas provisionados desde el repo (sección siguiente). Los `mem_limit` y la rotación de logs son los del stage.
+Producción es [`docker-compose.prod.yml`](../../docker-compose.prod.yml), en la raíz del repo: otro servicio Compose de Dokploy (Compose Path `./docker-compose.prod.yml`), con las mismas dos imágenes de GHCR que el stage. Corre con `ASPNETCORE_ENVIRONMENT=Production` y comparte con el stage el servicio `migrate` (el paso 3 de arriba), pero no tiene el `seed` del stage: nada siembra acá, ni por error de configuración, porque el servicio que lo haría no existe en este compose (ADR-0091). No tiene Mailpit: `api` manda los mails por un relay SMTP real. Los tags de las dos imágenes son obligatorios: sin `PLANB_API_TAG` y `PLANB_WEB_TAG` el deploy no arranca, porque en producción no existe `main`. Y trae `prometheus` y `grafana` siempre prendidos, con el tablero y las alertas provisionados desde el repo (sección siguiente). Los `mem_limit` y la rotación de logs son los del stage.
 
 ### Variables que inyecta Dokploy en producción
 
@@ -125,6 +101,8 @@ El backend no lee ningún `.env` en producción: la carga de `.env` está gatead
 
 El resto de la configuración no secreta (issuer y audience del JWT, duración de tokens) vive en `appsettings.json` y no hace falta pasarla ([ADR-0035](../decisions/0035-environment-configuration.md)).
 
+El servicio `migrate` no es `api`: no manda mails ni arma links, así que solo necesita `ASPNETCORE_ENVIRONMENT`, `ConnectionStrings__Planb`, `ConnectionStrings__Redis` y `JWT__Secret` (el mismo mínimo que ya usa `codegen write` en el build). Ver `docker-compose.prod.yml` como fuente de verdad de qué variable va en qué servicio.
+
 Los valores los carga Lucas en Dokploy. No están en el repo ni pasan por este doc.
 
 ## Qué está verificado y qué no
@@ -139,25 +117,27 @@ Honestidad sobre el estado, para que nadie lea este doc como si estuviera probad
 - `codegen write` no necesita base alcanzable: corre contra un host de Postgres inexistente. Por eso el Dockerfile puede pasarle valores basura y no hace falta ningún secreto real en el build.
 - El contenedor arranca en Production y `/health` devuelve `{"status":"ok"}`. En los logs: `code generation mode is Static with pre-generated types being loaded`, sin tipos faltantes.
 
-**Sin verificar** (necesita la infra de producción): la red interna entre el contenedor y Postgres con el perfil Production, el relay SMTP de producción, el certificado de su dominio, y el compose de producción entero, que nunca se levantó, Prometheus y Grafana incluidos. La publicación a GHCR y el pull desde Dokploy están verificados en el stage.
+**Verificado local** (Podman, base vacía, contraseñas descartables, 2026-09-08, ADR-0091): `migrate-db` ahora aplica las migraciones de EF Core y los recursos de Wolverine en una sola corrida (antes eran `migrate-db` + `db-apply` por separado); el servicio `migrate` de un solo uso corrió en modo Production, terminó con exit 0, y `api` esperó a que terminara antes de arrancar. Contra el mismo mecanismo probado en el stage (siete servicios, ver la sección de abajo): la segunda corrida contra una base ya migrada no hace nada (`sin migraciones pendientes` en los tres módulos, recursos de Wolverine re-aplicados sin error).
+
+**Sin verificar** (necesita la infra de producción): la red interna entre el contenedor y Postgres con el perfil Production, el relay SMTP de producción, el certificado de su dominio, y el compose de producción entero, que nunca se levantó, Prometheus y Grafana incluidos. La publicación a GHCR y el pull desde Dokploy están verificados en el stage. El servicio `migrate` de `docker-compose.prod.yml` comparte imagen y verbo con el del stage (verificado ahí), pero no corrió nunca dentro del compose de producción en sí.
 
 ## Stage
 
 Un ambiente aparte de producción: el mismo par de imágenes, pero pensado para mostrar el producto andando, no para servir usuarios reales.
 
-### Qué es y por qué corre como Development hospedado
+### Qué es y por qué corre como producción
 
 El stage pone el producto entero atrás de una sola URL, con el corpus sintético ya cargado, para que Lucas y Copas lo vean funcionar de punta a punta antes de que entre gente real. No reemplaza a producción ni la anticipa: es el lugar para revisar una demo completa sin que nadie tenga que levantar nada en su máquina.
 
-Corre como `Development` hospedado a propósito: `Staging` caería en el perfil Production de Wolverine (`GeneratedCodeMode = Static`, `AssertAllPreGeneratedTypesExist = true`, `ResourceAutoCreate = None`) y exigiría los mismos pasos manuales que un deploy real (`migrate-db`, `db-apply`), que un stage con datos de prueba no necesita. Esto implica que las migraciones de EF y las siembras corren solas al arrancar, con `PLANB_SEED_CORPUS=1` puesto, y que Mailpit hace de relay SMTP en vez de un proveedor real: no hay paso de `migrate-db` ni de `db-apply` en este flujo. El stage además corre con HTTPS: dos subdominios propios con registro A a la IP del servidor (`planb.olisar.com.ar` para el producto y `mail.olisar.com.ar` para Mailpit) y certificado de Let's Encrypt emitido desde Dokploy, porque a diferencia de dev corre en un servidor con IP pública, no en una máquina local.
+El stage se trata como producción: corre `ASPNETCORE_ENVIRONMENT=Production`, el mismo perfil de Wolverine (`GeneratedCodeMode = Static`, `AssertAllPreGeneratedTypesExist = true`, `ResourceAutoCreate = None`) y los mismos niveles de log de `appsettings.json`. La única ficción son las personas sembradas y sus reseñas, y esa ficción es dato, no un modo distinto de correr la app: entra por dos servicios de un solo uso que corren antes que `api`. `migrate` deja migrado el schema y aplicados los recursos de Wolverine, igual que en producción. `seed` siembra personas, catálogo académico, catálogo de frases y corpus, y termina: no existe en `docker-compose.prod.yml`, a propósito, y esa ausencia es la protección contra sembrar producción, ni por error de configuración (ADR-0091). Mailpit hace de relay SMTP en vez de un proveedor real. El stage además corre con HTTPS: dos subdominios propios con registro A a la IP del servidor (`planb.olisar.com.ar` para el producto y `mail.olisar.com.ar` para Mailpit) y certificado de Let's Encrypt emitido desde Dokploy, porque a diferencia de dev corre en un servidor con IP pública, no en una máquina local.
 
 ### Las piezas
 
-El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en la raíz del repo. Levanta las dos imágenes publicadas en GHCR (`planb-api` y `planb-web`), con el tag `main` por defecto o un sha corto pineado, nunca `latest`, y cinco servicios: `postgres`, `redis`, `mailpit`, `api` y `web`. Hay dos redes: `internal` (todos los servicios) y `dokploy-network` (externa, la arma Dokploy). Solo `web` y `mailpit` están en `dokploy-network` y reciben dominio; `api`, `postgres` y `redis` se quedan en `internal` y no son alcanzables desde afuera del compose. Un límite conocido: el rate limit por IP de `forgot-password` y `resend-verification` cuenta la IP del contenedor `web`, porque todo el tráfico al `api` sale de ahí, así que en el stage esos cupos (5 y 3 por hora) son de todo el stage y no por persona; se encara cuando haya personas reales.
+El compose es [`docker-compose.stage.yml`](../../docker-compose.stage.yml), en la raíz del repo. Levanta las dos imágenes publicadas en GHCR (`planb-api` y `planb-web`), con el tag `main` por defecto o un sha corto pineado, nunca `latest`, y siete servicios: `postgres`, `redis`, `mailpit`, `migrate`, `seed`, `api` y `web`. Hay dos redes: `internal` (todos los servicios) y `dokploy-network` (externa, la arma Dokploy). Solo `web` y `mailpit` están en `dokploy-network` y reciben dominio; el resto se queda en `internal` y no es alcanzable desde afuera del compose. Un límite conocido: el rate limit por IP de `forgot-password` y `resend-verification` cuenta la IP del contenedor `web`, porque todo el tráfico al `api` sale de ahí, así que en el stage esos cupos (5 y 3 por hora) son de todo el stage y no por persona; se encara cuando haya personas reales.
 
 ### Límites y logs
 
-Cada servicio del compose lleva `mem_limit`: `api` 768 MiB, `web` 256 MiB, `postgres` 512 MiB, `redis` 128 MiB, `mailpit` 128 MiB. Salen del consumo medido en reposo el 2026-09-07 en el Monitoring de Dokploy (`api` 362 MiB, `web` 94 MiB; el resto, decenas) con margen para carga y JIT, y suman menos de la mitad de los 3,82 GiB del servidor. Un contenedor que supera su límite se reinicia solo (`restart: unless-stopped`) y el resto sigue. Los logs rotan en tres archivos de 10 MB por contenedor. Para volver a medir: Monitoring del servicio, un contenedor por vez.
+`api`, `web`, `postgres`, `redis` y `mailpit` llevan `mem_limit`: `api` 768 MiB, `web` 256 MiB, `postgres` 512 MiB, `redis` 128 MiB, `mailpit` 128 MiB. Salen del consumo medido en reposo el 2026-09-07 en el Monitoring de Dokploy (`api` 362 MiB, `web` 94 MiB; el resto, decenas) con margen para carga y JIT, y suman menos de la mitad de los 3,82 GiB del servidor. `migrate` y `seed` no llevan `mem_limit`: corren una vez y terminan, no hay consumo sostenido que limitar. Un contenedor que supera su límite se reinicia solo (`restart: unless-stopped`) y el resto sigue. Los logs rotan en cinco archivos de 10 MB por contenedor; el request logging baja a Verbose los pedidos exitosos a `/health` y `/metrics` en cualquier ambiente (`Program.cs`), así que el healthcheck cada 10 s no llena esa ventana con una línea por chequeo. Para volver a medir: Monitoring del servicio, un contenedor por vez.
 
 ### Carga
 
@@ -233,9 +213,11 @@ Sin alguno de los tres, el workflow publica igual y deja un aviso de que no rede
 
 ### Qué está verificado y qué no
 
-**Verificado en local** (podman, las dos imágenes construidas en esta rama): `docker compose ... config` resuelve las cinco imágenes; con `PLANB_API_TAG` y `PLANB_WEB_TAG` apuntando a las imágenes locales, `api` llega a *healthy*, `/health` responde a través del rewrite del frontend, `/` devuelve 200, y `/api/academic/universities` devuelve el catálogo sembrado. Los logs de `api` muestran las migraciones de los tres módulos y las siembras (personas, catálogo académico, catálogo de frases, corpus) corriendo solas al arrancar. Un build de la imagen del frontend sin el `--build-arg` falla con el mensaje; con `HOSTNAME` definido, el web escucha en `0.0.0.0:3000`; el admin entra con la password de `PLANB_SEED_PASSWORD` y no con la de `personas.json`; la UI de Mailpit responde 401 sin auth y 200 con `MAILPIT_UI_AUTH`.
+**Verificado en local** (2026-09-04, podman, pre-ADR-0091: el stage corría `Development` hospedado, cinco servicios sin `migrate` ni `seed`): `docker compose ... config` resolvía las cinco imágenes; con `PLANB_API_TAG` y `PLANB_WEB_TAG` apuntando a las imágenes locales, `api` llegaba a *healthy*, `/health` respondía a través del rewrite del frontend, `/` devolvía 200, y `/api/academic/universities` devolvía el catálogo sembrado. Los logs de `api` mostraban las migraciones de los tres módulos y las siembras (personas, catálogo académico, catálogo de frases, corpus) corriendo solas al arrancar, dentro del propio contenedor `api`. Un build de la imagen del frontend sin el `--build-arg` fallaba con el mensaje; con `HOSTNAME` definido, el web escuchaba en `0.0.0.0:3000`; el admin entraba con la password de `PLANB_SEED_PASSWORD` y no con la de `personas.json`; la UI de Mailpit respondía 401 sin auth y 200 con `MAILPIT_UI_AUTH`.
 
-**Verificado sobre el Dokploy real** (2026-09-04, imágenes `71375b7`): la primera corrida del workflow (entonces *Release images*, hoy *Publish images*) publicó las dos imágenes en GHCR; con los paquetes públicos, Dokploy bajó las cinco imágenes sin registro configurado; Let's Encrypt emitió los certificados de los dos subdominios y Traefik enruta `web` y `mailpit` por `dokploy-network`; `postgres` y `redis` llegaron a *healthy* antes que `api`, y `api` antes de que arrancara `web`; el log del `api` muestra `CorpusSeeder: inserted 49 reviews`; `/health` responde a través del rewrite, la entrada sortea una cátedra que publica, la ficha de materia 211 muestra sus tres cátedras y sus dos pares de co-cursada, la de Ruiz dice "Junta 6 reseñas: con 4 más se publica." y Método carga; un registro con un mail inventado devuelve 202 y el log del `api` dice `Verification email sent`; la UI de Mailpit responde 401 sin auth.
+**Verificado en local** (2026-09-08, podman, base vacía, contraseñas descartables, ADR-0091, el mecanismo vigente): siete servicios; `migrate` y `seed` corrieron y terminaron bien (exit 0) antes de que `api` arrancara, con `ASPNETCORE_ENVIRONMENT=Production` en los tres. `GET /api/reviews/subjects/00000004-0000-4000-a000-000000000012/facts` devolvió Pérez 14, González 12, Ruiz 6; la entrada pública mostró una ficha real. 43 endpoints distintos ejercitados, terminando en `POST /api/academic/chairs/{chairId}/members` → 204; memoria del proceso `api` (`podman stats` + cgroup): 98,96 MB en reposo, 158,8 MB (154,2 MiB) después del barrido, 19,72 % del `mem_limit` de 768 MiB, contra los 921 a 925 MB que dejaba `Dynamic` en un barrido comparable. `down` sin `-v` y `up` de nuevo: `migrate` reportó sin migraciones pendientes y `seed` no duplicó nada (mismos conteos). Detalle completo en [ADR-0091](../decisions/0091-the-stage-runs-as-production-and-seeding-is-a-deploy-step.md).
+
+**Verificado sobre el Dokploy real** (2026-09-04, imágenes `71375b7`, pre-ADR-0091): la primera corrida del workflow (entonces *Release images*, hoy *Publish images*) publicó las dos imágenes en GHCR; con los paquetes públicos, Dokploy bajó las cinco imágenes sin registro configurado; Let's Encrypt emitió los certificados de los dos subdominios y Traefik enruta `web` y `mailpit` por `dokploy-network`; `postgres` y `redis` llegaron a *healthy* antes que `api`, y `api` antes de que arrancara `web`; el log del `api` muestra `CorpusSeeder: inserted 49 reviews`; `/health` responde a través del rewrite, la entrada sortea una cátedra que publica, la ficha de materia 211 muestra sus tres cátedras y sus dos pares de co-cursada, la de Ruiz dice "Junta 6 reseñas: con 4 más se publica." y Método carga; un registro con un mail inventado devuelve 202 y el log del `api` dice `Verification email sent`; la UI de Mailpit responde 401 sin auth.
 
 **Verificado el 2026-09-07, primer merge con los secrets cargados**: *Publish images* publicó `257b6b9` y `main`, Dokploy respondió `Deployment queued` a `compose.deploy` y el deploy apareció en Deployments en menos de un minuto. Ese primer deploy volvió a bajar `71375b7`: el Environment todavía tenía `PLANB_API_TAG` y `PLANB_WEB_TAG` del primer despliegue, y una variable pineada le gana al default. Borradas las dos y con un Deploy a mano, el log muestra `planb-api:main Pulled`, `api-1` y `web-1` recreados y `Docker Compose Deployed`; la entrada sirve el build nuevo.
 

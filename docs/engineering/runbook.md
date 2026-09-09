@@ -70,7 +70,7 @@ Sin verificar contra el stage real.
 
 ### 7. Reset del stage
 
-Por SSH, `docker compose -p planb-stage-h30ogf down -v` (el App Name que muestra la cabecera del servicio es el nombre del proyecto de compose) y Deploy desde el panel. Migraciones y siembras corren solas al arrancar: personas, catálogo, frases y el corpus sintético.
+Por SSH, `docker compose -p planb-stage-h30ogf down -v` (el App Name que muestra la cabecera del servicio es el nombre del proyecto de compose) y Deploy desde el panel. Los servicios `migrate` y `seed` vuelven a correr solos antes de que `api` arranque: migran el schema, aplican los recursos de Wolverine y siembran personas, catálogo académico, catálogo de frases y el corpus sintético (ADR-0091).
 
 Sin verificar contra el stage real.
 
@@ -79,6 +79,16 @@ Sin verificar contra el stage real.
 Las cuatro personas y el admin (`admin@planb.local`) entran con `PLANB_SEED_PASSWORD`, no con las passwords de `personas.json`, que son públicas. Los mails de verificación y de reset llegan a `https://mail.olisar.com.ar`, que pide el usuario y la password de `MAILPIT_UI_AUTH`.
 
 Mailpit con auth, verificado el 2026-09-04; el recorrido con cuenta, sin verificar.
+
+### 9. El proceso de `api` crece en memoria hasta caerse, o el log se llena de líneas de `/health`
+
+**Síntoma.** En *Monitoring*, la memoria de `api` sube en escalones sin bajar hasta pegar contra el `mem_limit` y el contenedor reinicia solo (`OOMKilled`); o en *Logs*, la ventana de líneas visibles se llena de una entrada por cada chequeo del healthcheck (cada 10 s) antes de que rote, tapando lo que importa diagnosticar.
+
+**Diagnóstico.** Pasó cuando el stage corría `ASPNETCORE_ENVIRONMENT=Development` hospedado: Wolverine compilaba con Roslyn en runtime (`GeneratedCodeMode = Dynamic`) el handler de cada tipo de mensaje la primera vez que se invocaba, y con 87 endpoints Carter la memoria crecía con cada tipo nuevo ejercitado, no con el volumen de pedidos; aparte, el nivel de log Debug de `appsettings.Development.json` sumado al probe cada 10 s se comía la ventana de diagnóstico. Los dos son consecuencia del mismo problema: `Development` traía capacidades que el stage no había pedido (ver ADR-0091).
+
+**Acción.** Ya no debería repetirse: desde ADR-0091 el stage corre `ASPNETCORE_ENVIRONMENT=Production`, con el código de Wolverine pregenerado en el build (`Static`, sin compilar nada en runtime) y los niveles de log de `appsettings.json`, más el filtro que baja a Verbose los pedidos exitosos a `/health` y `/metrics` (`Program.cs`). Si se repite, es una regresión: revisar que el Environment del servicio `api` en Dokploy siga en `Production` y no haya vuelto a `Development`.
+
+Reproducido en local (podman) contra la imagen de esta rama, ver ADR-0091; sin verificar contra el stage real.
 
 ## Secretos
 
