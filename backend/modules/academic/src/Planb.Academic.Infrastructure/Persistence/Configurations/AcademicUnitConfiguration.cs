@@ -34,6 +34,22 @@ internal sealed class AcademicUnitConfiguration : IEntityTypeConfiguration<Acade
             .HasMaxLength(AcademicUnit.MaxSlugLength)
             .IsRequired();
 
+        // Domicilio tal como lo publica la fuente (R6, tarea 19), sin normalizar.
+        builder.Property(u => u.Address)
+            .HasColumnName("address")
+            .HasMaxLength(AcademicUnit.MaxAddressLength)
+            .IsRequired();
+
+        // Localidad normalizada contra Georef. Ambas nullable: se resuelven al sembrar, no al
+        // crear, y una unidad sin resolución es válida (Georef caído no puede romper el catálogo).
+        builder.Property(u => u.LocalityId)
+            .HasColumnName("locality_id")
+            .HasMaxLength(AcademicUnit.MaxLocalityLength);
+
+        builder.Property(u => u.LocalityName)
+            .HasColumnName("locality_name")
+            .HasMaxLength(AcademicUnit.MaxLocalityLength);
+
         // Slug único por universidad (dos universidades pueden tener cada una su "facultad-de-ingenieria").
         // Sin FK a universities (ADR-0017, cross-aggregate), mismo criterio que Career.
         builder.HasIndex(u => new { u.UniversityId, u.Slug })

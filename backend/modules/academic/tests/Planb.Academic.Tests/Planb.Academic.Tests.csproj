@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Planb.Academic.Domain\Planb.Academic.Domain.csproj" />
     <ProjectReference Include="..\..\src\Planb.Academic.Application\Planb.Academic.Application.csproj" />
+    <ProjectReference Include="..\..\src\Planb.Academic.Infrastructure\Planb.Academic.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

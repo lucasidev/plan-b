@@ -1,3 +1,4 @@
+using Planb.Academic.Domain.AcademicUnits;
 using Planb.Academic.Domain.Universities;
 using Planb.SharedKernel.Abstractions.Clock;
 using Planb.SharedKernel.Primitives;
@@ -31,6 +32,14 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
     public const int MaxDescriptionLength = 500;
 
     public UniversityId UniversityId { get; private set; }
+
+    /// <summary>
+    /// Facultad o sede que dicta la oferta (R6, tarea 19). Nullable: el catálogo real de Tucumán
+    /// la completa porque sale de la Guía SIU; el crowdsourcing y el alta de admin no la conocen
+    /// todavía y quedan sin dato en vez de forzarlo.
+    /// </summary>
+    public AcademicUnitId? AcademicUnitId { get; private set; }
+
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
 
@@ -87,7 +96,8 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         CareerDegreeType? degreeType = null,
         int? durationYears = null,
         TermKind? cadence = null,
-        string? description = null)
+        string? description = null,
+        AcademicUnitId? academicUnitId = null)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
@@ -112,6 +122,7 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         {
             Id = CareerId.New(),
             UniversityId = universityId,
+            AcademicUnitId = academicUnitId,
             Name = name.Trim(),
             Slug = slug.Trim().ToLowerInvariant(),
             ShortName = NormalizeOptional(shortName),
@@ -223,11 +234,13 @@ public sealed class Career : Entity<CareerId>, IAggregateRoot
         bool isOfficial,
         bool isActive,
         DateTimeOffset createdAt,
-        DateTimeOffset updatedAt) =>
+        DateTimeOffset updatedAt,
+        AcademicUnitId? academicUnitId = null) =>
         new()
         {
             Id = id,
             UniversityId = universityId,
+            AcademicUnitId = academicUnitId,
             Name = name,
             Slug = slug,
             ShortName = shortName,

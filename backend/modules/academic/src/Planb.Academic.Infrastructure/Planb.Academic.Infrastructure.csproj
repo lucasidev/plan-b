@@ -15,4 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Planb.Academic.Application\Planb.Academic.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- GeorefLocalityResolver es internal (mismo criterio que el resto de los adapters de este
+         proyecto): esto permite testear su comportamiento HTTP con un doble sin volverla pública. -->
+    <InternalsVisibleTo Include="Planb.Academic.Tests" />
+  </ItemGroup>
 </Project>

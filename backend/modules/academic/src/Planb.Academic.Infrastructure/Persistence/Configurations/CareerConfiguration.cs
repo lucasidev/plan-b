@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Planb.Academic.Domain.AcademicUnits;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Universities;
 
@@ -7,6 +9,14 @@ namespace Planb.Academic.Infrastructure.Persistence.Configurations;
 
 internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
 {
+    // Converter explícito para el VO opcional AcademicUnitId. Mismo motivo que UntilTermIdConverter
+    // en ChairConfiguration: sin esto, el compilador C# 13 no resuelve la sobrecarga adecuada de
+    // HasConversion para una propiedad de tipo `AcademicUnitId?` y se va a la versión que recibe un
+    // Type (CS1660).
+    private static readonly ValueConverter<AcademicUnitId?, Guid?> AcademicUnitIdConverter = new(
+        vo => vo.HasValue ? vo.Value.Value : (Guid?)null,
+        raw => raw.HasValue ? new AcademicUnitId(raw.Value) : (AcademicUnitId?)null);
+
     public void Configure(EntityTypeBuilder<Career> builder)
     {
         builder.ToTable("careers");
@@ -23,6 +33,14 @@ internal sealed class CareerConfiguration : IEntityTypeConfiguration<Career>
             .IsRequired();
 
         builder.HasIndex(c => c.UniversityId).HasDatabaseName("ix_careers_university_id");
+
+        // Facultad o sede que dicta la oferta (R6, tarea 19). Nullable y sin FK a academic_units
+        // (ADR-0017, cross-aggregate): mismo criterio que UniversityId.
+        builder.Property(c => c.AcademicUnitId)
+            .HasColumnName("academic_unit_id")
+            .HasConversion(AcademicUnitIdConverter);
+
+        builder.HasIndex(c => c.AcademicUnitId).HasDatabaseName("ix_careers_academic_unit_id");
 
         builder.Property(c => c.Name)
             .HasColumnName("name")
