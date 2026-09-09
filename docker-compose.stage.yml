@@ -39,7 +39,7 @@ x-hardening: &hardening
 
 services:
   postgres:
-    image: pgvector/pgvector:pg17
+    image: pgvector/pgvector:pg17@sha256:cf134a767f474095eeba57e0117be8e568e011a63f33fbf252f14c9b760f8e6f
     <<: *hardening
     # El entrypoint arranca como root para preparar /var/lib/postgresql/data y recién ahí baja a
     # postgres (gosu): sin estas cinco no arranca, verificado sacándolas una por una.
@@ -70,7 +70,7 @@ services:
 
   # Estado efímero: un reinicio cierra sesiones y nada más, el reset del stage es down -v igual.
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
     <<: *hardening
     # El entrypoint también arranca como root para chown-ear /data y bajar a redis (gosu): sin
     # SETUID falla con "setresuid failed", verificado.
@@ -99,7 +99,7 @@ services:
       - internal
 
   mailpit:
-    image: axllent/mailpit:v1.29
+    image: axllent/mailpit:v1.29@sha256:757f22b56c1da03570afdb3d259effe5091018008a81bbedc8158cee7e16fdbc
     <<: *hardening
     # Sin persistencia configurada (MP_DATABASE) guarda todo en memoria: no necesita capacidad
     # ni tmpfs, verificado.

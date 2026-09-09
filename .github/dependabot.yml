@@ -5,7 +5,7 @@
 #   - npm          → frontend (bun lockfile + package.json)
 #   - dotnet-sdk   → backend/global.json (SDK version pin)
 #   - github-actions → versiones de actions usadas en .github/workflows/
-#   - docker       → base images en docker-compose.yml + frontend/Dockerfile
+#   - docker       → imágenes base en los tres composes de la raíz y los Dockerfiles de backend/ y frontend/
 #
 # Política de pinning por tier (ver docs/engineering/testing.md y la mención
 # en `.tool-versions`):
@@ -203,12 +203,19 @@ updates:
       - "dependencies"
       - "ci"
 
-  # Base images en docker-compose.yml + Dockerfiles del frontend / backend.
-  # Dependabot detecta el directorio /, busca Dockerfiles y compose files.
+  # Bases de infra: los tres composes de la raíz (docker-compose.yml, .stage.yml, .prod.yml)
+  # y las imágenes de los Dockerfiles de backend/ y frontend/. Dependabot no escanea
+  # recursivo (mismo motivo que la entrada dotnet-sdk de abajo usa "/backend" en vez de "/"):
+  # con directory "/" a secas esta entrada nunca vio los Dockerfiles, y en todo el historial
+  # de PRs no hubo un solo bump de imagen base (Mailpit sigue en v1.29 con v1.30 y v1.31 ya
+  # publicadas). "directories" (plural) aplica esta misma config a los tres lugares.
   - package-ecosystem: "docker"
     cooldown:
       default-days: 7
-    directory: "/"
+    directories:
+      - "/"
+      - "/backend"
+      - "/frontend"
     schedule:
       interval: "weekly"
       day: "monday"
