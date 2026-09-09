@@ -1,7 +1,14 @@
 import 'server-only';
 
 import { apiFetchAuthenticated } from '@/lib/api-client.server';
-import type { Career, CareerPlan, CareerPlanSummary, Subject, University } from './types';
+import type {
+  Career,
+  CareerCoverage,
+  CareerPlan,
+  CareerPlanSummary,
+  Subject,
+  University,
+} from './types';
 
 /**
  * Server fetchers para el catálogo público (US-001): universidades → carreras → planes →
@@ -84,4 +91,21 @@ export async function fetchCoveredSubjectIdsServer(careerPlanId: string): Promis
     throw new Error(`Covered subjects fetch failed: ${response.status}`);
   }
   return (await response.json()) as string[];
+}
+
+/**
+ * Cobertura, voces y presencia de datos oficiales de TODAS las carreras del catálogo, en un solo
+ * viaje (US-222, ficha de SC-003): lo que las dos lentes de Explorar necesitan para decir, antes
+ * del clic, dónde hay algo para leer, sin pedirlo carrera por carrera. Vive en reviews (no en
+ * academic): cruza lo que las reseñas cuentan con lo que academic publica.
+ */
+export async function fetchCatalogCoverageServer(): Promise<CareerCoverage[]> {
+  const response = await apiFetchAuthenticated('/api/reviews/catalog-coverage', {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error(`Catalog coverage fetch failed: ${response.status}`);
+  }
+  const body = (await response.json()) as { careers: CareerCoverage[] };
+  return body.careers;
 }

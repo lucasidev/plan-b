@@ -219,4 +219,22 @@ public interface IAcademicQueryService
     /// <summary>Los docentes, activos o no, de la universidad a la que pertenece esa carrera.</summary>
     Task<IReadOnlyList<TeacherNameItem>> ListTeacherNamesForCareerAsync(
         Guid careerId, CancellationToken ct = default);
+
+    /// <summary>
+    /// Todas las carreras activas del catálogo, con su universidad ya resuelta. Caller: el catálogo
+    /// de Explorar (US-222), que arma sus dos lentes (por carrera, por institución) sin pedir la
+    /// lista universidad por universidad. Alfabético por universidad y carrera: nunca un orden que
+    /// se lea como ranking (US-171).
+    /// </summary>
+    Task<IReadOnlyList<CareerCatalogItem>> ListAllCareersAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// De la lista dada, qué carreras tienen al menos un dato oficial publicado o derivado
+    /// (ADR-0090): no cuál es la afirmación vigente por campo (eso lo resuelve
+    /// <c>OfficialFactCurrency</c> para la ficha de una sola carrera), solo si hay algo que leer
+    /// antes de entrar. Caller: el catálogo de Explorar, en lote, para no pedirlo carrera por
+    /// carrera.
+    /// </summary>
+    Task<IReadOnlySet<Guid>> ListCareersWithOfficialDataAsync(
+        IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default);
 }

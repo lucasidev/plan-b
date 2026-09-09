@@ -52,3 +52,26 @@ export type Subject = {
   termInYear: number | null;
   termKind: string;
 };
+
+/**
+ * Una carrera del catálogo entero con lo que ayuda a decidir si vale abrirla (US-222, ficha de
+ * SC-003), antes de entrar: si tiene datos oficiales (ADR-0090), sus voces y su cobertura. Espeja
+ * `CareerCoverageView` de `GET /api/reviews/catalog-coverage`.
+ */
+export type CareerCoverage = {
+  careerId: string;
+  careerName: string;
+  universityId: string;
+  universityName: string;
+  isOfficial: boolean;
+  hasOfficialData: boolean;
+  voiceCount: number;
+  totalSubjects: number;
+  coveredSubjects: number;
+};
+
+/** Una universidad con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222). */
+export type UniversityWithCoverage = University & {
+  careerCount: number;
+  careersWithSomethingToRead: number;
+};
