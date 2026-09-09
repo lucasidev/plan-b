@@ -65,5 +65,17 @@ public sealed record MyReviewView(
 /// es la garantía del producto (ADR-0083); que su autor pueda verla es lo que hace posible
 /// corregirla sin tener que contestar todo de nuevo.
 /// </para>
+///
+/// <para>
+/// <see cref="OptionVoices"/> y <see cref="ItemTotalVoices"/> son lo que US-162 agrega: cuántas
+/// voces suma ahora la opción elegida, y sobre cuántas ("ahora 22 de 42 voces", SC-018). Quedan en
+/// null cuando la reseña no declaró cátedra (no hay tally al que atribuírselos) o cuando la frase ya
+/// no está vigente. <see cref="IMyReviewsQueryService"/> los deja siempre en null: no sale del
+/// schema <c>reviews</c> hacia el tally de una cátedra; el handler los completa.
+/// </para>
 /// </summary>
-public sealed record MyAnswerView(string ItemCode, short OptionValue);
+public sealed record MyAnswerView(
+    string ItemCode,
+    short OptionValue,
+    int? OptionVoices = null,
+    int? ItemTotalVoices = null);

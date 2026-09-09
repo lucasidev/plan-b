@@ -99,6 +99,55 @@ function courseOutcomeLabel(review: MyReview, instrument: CurrentInstrument | nu
   return item.options.find((option) => option.value === answer.optionValue)?.label ?? null;
 }
 
+/**
+ * Por cada frase que respondiste en esa cátedra, la opción que elegiste y las voces que suma ahora
+ * (US-162, SC-018: "ahora 22 de 42 voces"). El desenlace (`COURSE_OUTCOME`) ya tiene su propia
+ * línea arriba y no se repite acá: no es una frase de la ficha, es el registro de cómo terminaste.
+ *
+ * Sin cátedra declarada no hay tally al que atribuirle voces a ninguna frase (el backend las deja
+ * en null), así que la lista sale vacía y no se dibuja nada: mejor nada que un número inventado.
+ */
+function VoicesList({
+  review,
+  instrument,
+}: {
+  review: MyReview;
+  instrument: CurrentInstrument | null;
+}) {
+  const lines = review.answers.flatMap((answer) => {
+    if (answer.itemCode === COURSE_OUTCOME_ITEM_CODE) return [];
+    if (answer.optionVoices === null || answer.itemTotalVoices === null) return [];
+
+    const item = instrument?.items.find((i) => i.code === answer.itemCode);
+    const optionLabel = item?.options.find((o) => o.value === answer.optionValue)?.label;
+    if (!item || !optionLabel) return [];
+
+    return [
+      {
+        itemCode: answer.itemCode,
+        text: item.text,
+        optionLabel,
+        optionVoices: answer.optionVoices,
+        itemTotalVoices: answer.itemTotalVoices,
+      },
+    ];
+  });
+
+  if (lines.length === 0) return null;
+
+  return (
+    <ul className="mb-3 flex flex-col gap-1 border-l-2 border-line pl-3">
+      {lines.map((line) => (
+        <li key={line.itemCode} className="text-[12.5px] leading-relaxed text-ink-3">
+          {line.text} <span className="text-ink-2">{line.optionLabel}</span>: ahora suma{' '}
+          {line.optionVoices} de {line.itemTotalVoices}{' '}
+          {line.itemTotalVoices === 1 ? 'voz' : 'voces'}.
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function ReviewCard({
   review,
   instrument,
@@ -168,6 +217,8 @@ function ReviewCard({
           el conteo.
         </p>
       )}
+
+      <VoicesList review={review} instrument={instrument} />
 
       {review.freeText && (
         <p className="mb-3 border-l-2 border-line pl-3 text-[13px] leading-relaxed text-ink-2">

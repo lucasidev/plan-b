@@ -29,6 +29,13 @@ export type MyReview = {
 export type MyAnswer = {
   itemCode: string;
   optionValue: number;
+  /**
+   * Cuántas voces suma ahora la opción elegida, y sobre cuántas (US-162, SC-018: "ahora 22 de 42
+   * voces"). Vienen null sin cátedra declarada (no hay tally al que atribuírselas) o si la frase ya
+   * no está vigente.
+   */
+  optionVoices: number | null;
+  itemTotalVoices: number | null;
 };
 
 export type ActionState =

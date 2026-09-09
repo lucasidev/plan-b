@@ -25,11 +25,12 @@ public sealed class GetMyReviewsEndpoint : ICarterModule
             HttpContext http,
             IMyReviewsQueryService reviews,
             IAcademicQueryService academic,
+            IChairTallyQueryService chairTallies,
             CancellationToken ct) =>
         {
             var userId = CurrentUser.RequireUserId(http);
             var mine = await GetMyReviewsQueryHandler.Handle(
-                userId.Value, reviews, academic, ct);
+                userId.Value, reviews, academic, chairTallies, ct);
             return Results.Ok(mine);
         })
         .WithName("Reviews_GetMyReviews")
