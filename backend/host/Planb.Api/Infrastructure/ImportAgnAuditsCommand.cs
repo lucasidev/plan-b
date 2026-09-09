@@ -9,12 +9,12 @@ namespace Planb.Api.Infrastructure;
 /// href="https://github.com/lucasidev/plan-b/issues/506">#506</see>).
 ///
 /// <para>
-/// Comando aparte, no un paso del seed automático: la API de la AGN es de un tercero (482 páginas
-/// la primera vez que se comprobó, 2026-09-08) que puede tardar, no responder, o cambiar de forma.
-/// Nada de eso puede tumbar <c>just dev</c> (el <see cref="AcademicSeedHostedService"/> corre en
-/// cada arranque de Development) ni el <c>seed-db</c> del stage (corre en cada deploy a main). Se
-/// invoca a mano, cuando alguien del equipo quiere refrescar el checklist de auditorías; no hay
-/// automatización sin supervisión todavía porque no la pidió el issue.
+/// Comando aparte, no un paso del seed automático: la API de la AGN es de un tercero que puede
+/// tardar, no responder, o cambiar de forma. Nada de eso puede tumbar <c>just dev</c> (el
+/// <see cref="AcademicSeedHostedService"/> corre en cada arranque de Development) ni el
+/// <c>seed-db</c> del stage (corre en cada deploy a main). Se invoca a mano, cuando alguien del
+/// equipo quiere refrescar el checklist de auditorías; no hay automatización sin supervisión
+/// todavía porque no la pidió el issue.
 /// </para>
 /// <para>
 /// <see cref="AgnAuditImporter"/> hace todo o nada: si el fetch o la construcción de alguna
@@ -32,7 +32,7 @@ public sealed class ImportAgnAuditsCommand : JasperFxAsyncCommand<NetCoreInput>
         using var host = input.BuildHost();
         using var scope = host.Services.CreateScope();
 
-        Console.WriteLine("AGN: paginando informes y filtrando por organismo...");
+        Console.WriteLine("AGN: consultando informes por organismo...");
         var result = await scope.ServiceProvider
             .GetRequiredService<AgnAuditImporter>()
             .ImportAsync();

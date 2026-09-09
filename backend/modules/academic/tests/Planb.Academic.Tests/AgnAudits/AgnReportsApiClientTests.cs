@@ -8,23 +8,23 @@ namespace Planb.Academic.Tests.AgnAudits;
 
 /// <summary>
 /// <see cref="AgnReportsApiClient"/> contra dobles de <see cref="HttpMessageHandler"/> (issue #506):
-/// nunca pega a la red real. El caso feliz y el de paginación usan una muestra real, relevada el
-/// 2026-09-09 contra <c>webagnapi.agn.gob.ar/api/views/busqueda_avanzada/informes</c> (tres informes
-/// reales: uno de la UNT con <c>fecha_acta</c> nula, y dos con <c>organismo_auditado</c> múltiple y
-/// fecha completa), recortada a los campos que el cliente lee. Los demás casos (status no exitoso,
-/// timeout, JSON roto, meta.count que no cierra) son deliberadamente sintéticos: prueban el manejo
-/// de falla, no el parseo de un payload real.
+/// nunca pega a la red real. Las muestras son informes reales, relevados el 2026-09-09 contra
+/// <c>webagnapi.agn.gob.ar/api/node/informes</c> (el endpoint filtrado, no la vista
+/// <c>busqueda_avanzada/informes</c> que el issue #506 marcaba sin filtros): uno de la UNT (tid
+/// 1140) con <c>fecha_acta</c> nula, y dos de un organismo distinto con <c>organismo_auditado</c>
+/// múltiple y <c>fecha_acta</c> completa, combinados acá en una sola respuesta para ejercitar varios
+/// casos de parseo juntos aunque en la AGN real no compartan organismo. Los demás casos (status no
+/// exitoso, timeout, JSON roto, meta.count que no cierra, respuesta vacía) son deliberadamente
+/// sintéticos: prueban el manejo de falla o de ausencia, no el parseo de un payload real.
 /// </summary>
 public sealed class AgnReportsApiClientTests
 {
-    // Informe real de la UNT (organismo 1140), resolución 126/2013: fecha_acta null en la fuente.
+    // Informe real de la UNT (tid 1140), resolución 126/2013: fecha_acta null en la fuente.
     private const string ItemUnt126 = """
         {
           "type": "node--informes",
-          "id": "cceb2a4e-afa6-4ef9-84fb-aacbedc6a059",
+          "id": "05a432f2-d425-42df-97fe-538728eba546",
           "attributes": {
-            "drupal_internal__nid": 800,
-            "langcode": "es",
             "titulo": "PLAN DE OBRAS PARA LA CONSTRUCCIÓN DE LA CIUDAD UNIVERSITARIA",
             "ano": 2013,
             "resolucion": 126,
@@ -45,7 +45,7 @@ public sealed class AgnReportsApiClientTests
     private const string ItemProsama173 = """
         {
           "type": "node--informes",
-          "id": "f1a2b3c4-1111-4ef9-84fb-aacbedc6a059",
+          "id": "23ef73dd-6483-4ab8-b23c-373896313a98",
           "attributes": {
             "titulo": "Programa de Fortalecimiento de los Servicios de Sanidad Agropecuaria y del Manejo Sustentable de los Recursos Marítimos de Argentina (PROSAMA). Ministerio de Economía",
             "ano": 2026,
@@ -64,39 +64,17 @@ public sealed class AgnReportsApiClientTests
         }
         """;
 
-    // Informe real, un solo organismo, resolución 172/2026: usado para el test de paginación.
-    private const string ItemRiego172 = """
-        {
-          "type": "node--informes",
-          "id": "f1a2b3c4-2222-4ef9-84fb-aacbedc6a059",
-          "attributes": {
-            "titulo": "Programa para el Desarrollo de Nuevas Áreas de Riego en Argentina - Etapa II e Infraestructura Rural. Estados Financieros 2024 Ejercicio Nº 8. Ministerio de Economía",
-            "ano": 2026,
-            "resolucion": 172,
-            "fecha_acta": "2026-08-20",
-            "path": { "alias": "/Informe-172-2026" }
-          },
-          "relationships": {
-            "organismo_auditado": {
-              "data": [
-                { "type": "taxonomy_term--organismo_auditado", "id": "8f866dd3-bce0-49df-8627-a41395144678", "meta": { "drupal_internal__target_id": 2472 } }
-              ]
-            }
-          }
-        }
-        """;
-
-    private const string NextPageUrl =
-        "https://webagnapi.agn.gob.ar/api/views/busqueda_avanzada/informes?page=1";
+    private static readonly Uri ExpectedUntUri = new(
+        $"{AgnReportsApiClient.BaseUrl}/api/node/informes?filter[organismo_auditado.drupal_internal__tid]=1140&page[limit]=50");
 
     [Fact]
-    public async Task FetchAllReportsAsync_RealSamplePage_ParsesKnownFields()
+    public async Task FetchReportsForOrganismoAsync_RealSample_ParsesKnownFields()
     {
-        var page = SinglePageEnvelope([ItemUnt126, ItemProsama173], count: "2");
+        var page = Envelope([ItemUnt126, ItemProsama173], count: 2);
         var handler = new QueueHttpMessageHandler(_ => JsonResponse(page));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(1140);
 
         result.IsSuccess.ShouldBeTrue();
         result.Value.Count.ShouldBe(2);
@@ -121,62 +99,53 @@ public sealed class AgnReportsApiClientTests
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_FollowsLinksNextLiterally_AggregatesAcrossPages()
+    public async Task FetchReportsForOrganismoAsync_FiltersByDrupalInternalTid_NotByIdOrNid()
     {
-        // La AGN reporta el mismo meta.count (el total real, no lo que falta) en cada página: acá
-        // se refleja ese comportamiento real con "2" en ambas.
-        var page0 = PageEnvelope([ItemRiego172], count: "2", nextHref: NextPageUrl);
-        var page1 = PageEnvelope([ItemUnt126], count: "2", nextHref: null);
-        var handler = new QueueHttpMessageHandler(
-            _ => JsonResponse(page0),
-            _ => JsonResponse(page1));
+        // El parámetro correcto es drupal_internal__tid: con "id" la AGN responde 200 con data
+        // vacío (se confunde con "no tiene informes"), y con drupal_internal__nid responde 400. Una
+        // regresión acá cambiaría el filtro real sin que ningún otro test lo note.
+        var handler = new QueueHttpMessageHandler(_ => JsonResponse(Envelope([], count: 0)));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        await client.FetchReportsForOrganismoAsync(1140);
 
-        result.IsSuccess.ShouldBeTrue();
-        result.Value.Count.ShouldBe(2);
-        result.Value[0].Resolucion.ShouldBe(172);
-        result.Value[1].Resolucion.ShouldBe(126);
-
-        // La segunda request pegó exactamente a la URL que mandó links.next.href, no a una
-        // reconstruida a mano con "?page=1".
-        handler.RequestedUris.Count.ShouldBe(2);
-        handler.RequestedUris[1].ShouldBe(NextPageUrl);
+        handler.RequestedUris.Count.ShouldBe(1);
+        new Uri(handler.RequestedUris[0]).ShouldBe(ExpectedUntUri);
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_EmptyDataPage_StopsWithoutFollowingFurther()
+    public async Task FetchReportsForOrganismoAsync_EmptyResult_ReturnsEmptySuccessNotFailure()
     {
-        var page0 = PageEnvelope([ItemRiego172], count: "1", nextHref: NextPageUrl);
-        var emptyPage = PageEnvelope([], count: "1", nextHref: NextPageUrl);
-        var handler = new QueueHttpMessageHandler(
-            _ => JsonResponse(page0),
-            _ => JsonResponse(emptyPage));
+        // Forma real, comprobada el 2026-09-09: un organismo sin informes (o un tid que no existe)
+        // responde 200 con data: [] y meta.count: 0, exactamente igual que un filtro mal armado. El
+        // cliente no puede distinguir esos dos casos por la forma de la respuesta (por eso el nombre
+        // del parámetro queda fijo en AgnReportsApiClient, no es cosa de este test), pero sí tiene
+        // que distinguir "no hay informes" (Success con lista vacía) de una falla real (Failure).
+        var page = Envelope([], count: 0);
+        var handler = new QueueHttpMessageHandler(_ => JsonResponse(page));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(999999);
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Count.ShouldBe(1);
-        handler.RequestedUris.Count.ShouldBe(2);
+        result.Value.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_NonSuccessStatus_ReturnsFailureWithoutThrowing()
+    public async Task FetchReportsForOrganismoAsync_NonSuccessStatus_ReturnsFailureWithoutThrowing()
     {
         var handler = new QueueHttpMessageHandler(
             _ => new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(1140);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Message.ShouldContain("503");
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_HandlerTimesOut_ReturnsFailureWithoutThrowing()
+    public async Task FetchReportsForOrganismoAsync_HandlerTimesOut_ReturnsFailureWithoutThrowing()
     {
         // HttpClient.Timeout cancela con un TaskCanceledException propio: el doble lo simula
         // directo en vez de esperar un timeout real, que haría el test lento.
@@ -184,35 +153,36 @@ public sealed class AgnReportsApiClientTests
             _ => throw new TaskCanceledException("simulated HttpClient.Timeout"));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(1140);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Message.ShouldContain("tiempo de espera agotado");
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_MalformedJson_ReturnsFailureWithoutThrowing()
+    public async Task FetchReportsForOrganismoAsync_MalformedJson_ReturnsFailureWithoutThrowing()
     {
         var handler = new QueueHttpMessageHandler(_ => JsonResponse("esto no es JSON:API {{{"));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(1140);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Message.ShouldContain("JSON inesperado");
     }
 
     [Fact]
-    public async Task FetchAllReportsAsync_FewerReportsThanMetaCountPromised_ReturnsFailure()
+    public async Task FetchReportsForOrganismoAsync_FewerReportsThanMetaCountPromised_ReturnsFailure()
     {
-        // La AGN anuncia más informes de los que después entrega (meta.count no cierra con lo
-        // paginado): mejor cortar acá que publicar un "no auditada" que en realidad es "no
-        // llegamos a traerlo" (ver el comentario de FetchAllReportsAsync).
-        var page = SinglePageEnvelope([ItemUnt126], count: "99");
+        // meta.count refleja el total que matchea el filtro (comprobado contra la API real: el
+        // organismo 2472 tiene 126 informes y sigue reportando 126 aunque page[limit] corte antes),
+        // así que si no cierra con lo recibido, page[limit] se quedó corto. Mejor cortar acá que
+        // publicar un "más reciente" que en realidad quedó afuera de la página.
+        var page = Envelope([ItemUnt126], count: 99);
         var handler = new QueueHttpMessageHandler(_ => JsonResponse(page));
         var client = CreateClient(handler);
 
-        var result = await client.FetchAllReportsAsync();
+        var result = await client.FetchReportsForOrganismoAsync(1140);
 
         result.IsFailure.ShouldBeTrue();
         result.Error.Message.ShouldContain("99");
@@ -226,34 +196,26 @@ public sealed class AgnReportsApiClientTests
     private static HttpResponseMessage JsonResponse(string body) =>
         new(HttpStatusCode.OK) { Content = new StringContent(body) };
 
-    private static string SinglePageEnvelope(IReadOnlyList<string> items, string count) =>
-        PageEnvelope(items, count, nextHref: null);
-
     // Template con placeholders + Replace en vez de un raw string interpolado: mezclar "{{" (escape
     // de llave literal en un raw string interpolado) con el JSON, que ya está lleno de llaves, es
-    // ilegible y frágil. Acá la única interpolación real ("next", chico) es un string común.
-    private const string PageTemplate = """
+    // ilegible y frágil. Acá la única interpolación real (el count, chico) es un string común.
+    private const string EnvelopeTemplate = """
         {
           "data": [__ITEMS__],
-          "meta": { "count": "__COUNT__" },
-          "links": { "self": { "href": "https://webagnapi.agn.gob.ar/api/views/busqueda_avanzada/informes?page=0" }__NEXT__ }
+          "meta": { "count": __COUNT__ }
         }
         """;
 
-    private static string PageEnvelope(IReadOnlyList<string> items, string count, string? nextHref)
-    {
-        var next = nextHref is null ? "" : $", \"next\": {{ \"href\": \"{nextHref}\" }}";
-        return PageTemplate
+    private static string Envelope(IReadOnlyList<string> items, int count) =>
+        EnvelopeTemplate
             .Replace("__ITEMS__", string.Join(",\n", items))
-            .Replace("__COUNT__", count)
-            .Replace("__NEXT__", next);
-    }
+            .Replace("__COUNT__", count.ToString());
 }
 
 /// <summary>
 /// Doble de <see cref="HttpMessageHandler"/> que responde en el orden en que se le encolan las
-/// respuestas (una por cada request que <see cref="AgnReportsApiClient"/> haga), y registra la URI
-/// pedida en cada una para poder afirmar que siguió <c>links.next.href</c> tal cual.
+/// respuestas, y registra la URI pedida en cada una para poder afirmar sobre el filtro que
+/// <see cref="AgnReportsApiClient"/> arma.
 /// </summary>
 internal sealed class QueueHttpMessageHandler : HttpMessageHandler
 {

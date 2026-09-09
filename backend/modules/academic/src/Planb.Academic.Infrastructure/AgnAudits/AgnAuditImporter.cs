@@ -12,14 +12,15 @@ namespace Planb.Academic.Infrastructure.AgnAudits;
 /// auditoría por institución del catálogo (ADR-0090) y la persiste. Standalone: lo invoca el
 /// comando <c>import-agn-audits</c> (host/Planb.Api/Infrastructure/ImportAgnAuditsCommand.cs) a
 /// mano, nunca el seed automático de <c>just dev</c> ni el <c>seed-db</c> del stage. La API de la
-/// AGN es de un tercero (482 páginas la primera vez que se comprobó, 2026-09-08): ni el arranque ni
-/// un seed que corre en cada deploy pueden depender de que responda rápido, o de que responda.
+/// AGN es de un tercero: ni el arranque ni un seed que corre en cada deploy pueden depender de que
+/// responda rápido, o de que responda.
 ///
 /// <para>
-/// Todo o nada: <see cref="AgnAuditFactBuilder.Build"/> arma la lista completa de afirmaciones en
-/// memoria antes de que este método toque la base, así que un fallo del fetch o de la construcción
-/// no deja filas nuevas. <see cref="AcademicDbContext.SaveChangesAsync"/> hace el resto en una sola
-/// transacción: las N afirmaciones entran juntas o ninguna entra.
+/// Todo o nada: hace un fetch por organismo del padrón (<see cref="AgnOrganismoCatalog"/>, hoy dos:
+/// UNT y UTN) y <see cref="AgnAuditFactBuilder.Build"/> arma la lista completa de afirmaciones en
+/// memoria antes de que este método toque la base, así que si cualquier fetch o la construcción
+/// fallan, no queda ninguna fila a medias. <see cref="AcademicDbContext.SaveChangesAsync"/> hace el
+/// resto en una sola transacción: las N afirmaciones entran juntas o ninguna entra.
 /// </para>
 /// </summary>
 public sealed class AgnAuditImporter
@@ -54,15 +55,6 @@ public sealed class AgnAuditImporter
 
     public async Task<Result<int>> ImportAsync(CancellationToken ct = default)
     {
-        var reportsResult = await _client.FetchAllReportsAsync(ct);
-        if (reportsResult.IsFailure)
-        {
-            _logger.LogWarning(
-                "AgnAuditImporter: no se pudo traer los informes de la AGN ({Error}); no se cargó nada.",
-                reportsResult.Error);
-            return Result.Failure<int>(reportsResult.Error);
-        }
-
         var universityIds = await _db.Universities
             .AsNoTracking()
             .Select(u => u.Id)
@@ -72,9 +64,33 @@ public sealed class AgnAuditImporter
             .Select(id => new AgnAuditSubject(id.Value, AgnOrganismoCatalog.TryGetOrganismoId(id.Value)))
             .ToList();
 
+        // Un fetch por organismo distinto del padrón, no por institución: si dos universidades
+        // compartieran organismo (el propio AgnOrganismoCatalog documenta el caso de UTN por
+        // Facultad Regional) no tiene sentido pedirle a la AGN lo mismo dos veces.
+        var organismoIds = subjects
+            .Select(s => s.OrganismoId)
+            .Where(id => id is not null)
+            .Select(id => id!.Value)
+            .Distinct();
+
+        var reports = new List<AgnReport>();
+        foreach (var organismoId in organismoIds)
+        {
+            var reportsResult = await _client.FetchReportsForOrganismoAsync(organismoId, ct);
+            if (reportsResult.IsFailure)
+            {
+                _logger.LogWarning(
+                    "AgnAuditImporter: no se pudo traer los informes del organismo {OrganismoId} ({Error}); no se cargó nada.",
+                    organismoId, reportsResult.Error);
+                return Result.Failure<int>(reportsResult.Error);
+            }
+
+            reports.AddRange(reportsResult.Value);
+        }
+
         var now = _clock.UtcNow;
         var factsResult = AgnAuditFactBuilder.Build(
-            reportsResult.Value, subjects, now, SystemRelievedBy, _clock);
+            reports, subjects, now, SystemRelievedBy, _clock);
         if (factsResult.IsFailure)
         {
             _logger.LogWarning(

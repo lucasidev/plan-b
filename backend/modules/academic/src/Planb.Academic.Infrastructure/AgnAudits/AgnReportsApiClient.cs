@@ -6,18 +6,26 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Academic.Infrastructure.AgnAudits;
 
 /// <summary>
-/// <see cref="IAgnReportsClient"/> contra la API real: <c>GET /api/views/busqueda_avanzada/informes</c>
-/// (JSON:API de Drupal, comprobada el 2026-09-08 contra <c>https://webagnapi.agn.gob.ar</c>: 200,
-/// 4816 informes en páginas de diez). Sigue <c>links.next.href</c> tal como lo manda cada respuesta
-/// en vez de armar <c>?page=N</c> a mano, así que un cambio de esquema de paginación de Drupal no
-/// rompe el recorrido mientras la API lo siga anunciando ahí.
+/// <see cref="IAgnReportsClient"/> contra la API real: <c>GET /api/node/informes</c> (el recurso
+/// JSON:API de Drupal, no la vista <c>busqueda_avanzada/informes</c> que el issue #506 marcaba sin
+/// filtros) filtrado por <c>filter[organismo_auditado.drupal_internal__tid]</c>. Comprobado el
+/// 2026-09-09 contra <c>https://webagnapi.agn.gob.ar</c>: con la UNT (tid 1140) devuelve sus 4
+/// informes reales sin paginar; con la UTN (tid 2409), 1.
+///
+/// <para>
+/// El nombre del parámetro importa: es <c>drupal_internal__tid</c> (el id interno del término de
+/// taxonomía del organismo), no <c>id</c> (el UUID del recurso, que responde 200 con <c>data: []</c>
+/// y <c>meta.count: 0</c>, indistinguible de "este organismo no tiene informes") ni
+/// <c>drupal_internal__nid</c> (responde 400). Queda fijo acá adentro, no configurable, para que un
+/// error de nombre no pueda colarse como el caso legítimo que el producto necesita poder afirmar.
+/// </para>
 ///
 /// <para>
 /// Los DTOs de acá abajo modelan a propósito solo el subconjunto de la respuesta que este cliente
 /// lee (título, año, resolución, fecha del acta, el alias público y el id del organismo auditado):
 /// un campo que la AGN agregue no rompe el parseo, y si le cambia la forma a alguno de los que sí
-/// leemos, <see cref="FetchAllReportsAsync"/> lo corta con <see cref="AgnAuditErrors.FetchFailed"/>
-/// en vez de guardar datos a medias.
+/// leemos, <see cref="FetchReportsForOrganismoAsync"/> lo corta con
+/// <see cref="AgnAuditErrors.FetchFailed"/> en vez de guardar datos a medias.
 /// </para>
 /// </summary>
 public sealed class AgnReportsApiClient : IAgnReportsClient
@@ -25,12 +33,12 @@ public sealed class AgnReportsApiClient : IAgnReportsClient
     /// <summary>Origen de la API JSON:API. El buscador público (agn.gob.ar/auditorias/buscador) es un cliente Angular de esta misma API.</summary>
     public const string BaseUrl = "https://webagnapi.agn.gob.ar";
 
-    private const string InformesPath = "/api/views/busqueda_avanzada/informes?page=0";
-
-    // Tope de páginas como para nunca alcanzarlo con los ~482 de hoy (4816 informes / 10), pero que
-    // corta un loop infinito si `links.next` de la AGN quedara pisado en un ciclo por un bug de su
-    // lado: sin esto, una API que nunca deja de devolver "next" tumba el comando para siempre.
-    private const int MaxPages = 2000;
+    // Generoso para un solo organismo: la UNT, el de más informes de los dos que hoy tiene el
+    // catálogo (ver AgnOrganismoCatalog), tiene 4. Comprobado contra la API real que hay organismos
+    // (no universidades) con más de cien: si alguno de los nuestros lo superara alguna vez,
+    // meta.count no cerraría con lo recibido y el chequeo de abajo lo corta en vez de devolver una
+    // lista truncada.
+    private const int PageLimit = 50;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -46,82 +54,61 @@ public sealed class AgnReportsApiClient : IAgnReportsClient
         _logger = logger;
     }
 
-    public async Task<Result<IReadOnlyList<AgnReport>>> FetchAllReportsAsync(CancellationToken ct = default)
+    public async Task<Result<IReadOnlyList<AgnReport>>> FetchReportsForOrganismoAsync(
+        int organismoId, CancellationToken ct = default)
     {
-        var reports = new List<AgnReport>();
-        string? nextUrl = InformesPath;
-        int? expectedCount = null;
-        var page = 0;
+        var path =
+            $"/api/node/informes?filter[organismo_auditado.drupal_internal__tid]={organismoId}&page[limit]={PageLimit}";
 
-        while (nextUrl is not null)
+        AgnInformesPage parsed;
+        try
         {
-            if (page >= MaxPages)
+            using var response = await _http.GetAsync(path, ct);
+            if (!response.IsSuccessStatusCode)
             {
                 return AgnAuditErrors.FetchFailed(
-                    $"se superaron las {MaxPages} páginas sin que la AGN dejara de anunciar 'next'.");
+                    $"el organismo {organismoId} respondió {(int)response.StatusCode}.");
             }
 
-            AgnInformesPage parsed;
-            try
-            {
-                using var response = await _http.GetAsync(nextUrl, ct);
-                if (!response.IsSuccessStatusCode)
-                {
-                    return AgnAuditErrors.FetchFailed(
-                        $"la página {page} respondió {(int)response.StatusCode}.");
-                }
-
-                await using var stream = await response.Content.ReadAsStreamAsync(ct);
-                parsed = await JsonSerializer.DeserializeAsync<AgnInformesPage>(stream, JsonOptions, ct)
-                    ?? throw new JsonException("el body de la página vino vacío.");
-            }
-            catch (OperationCanceledException) when (!ct.IsCancellationRequested)
-            {
-                // HttpClient.Timeout cancela con un OperationCanceledException propio, distinto del
-                // ct que nos pasó el caller: si el caller no pidió cancelar, es la AGN tardando.
-                return AgnAuditErrors.FetchFailed($"tiempo de espera agotado en la página {page}.");
-            }
-            catch (HttpRequestException ex)
-            {
-                return AgnAuditErrors.FetchFailed($"fallo de red en la página {page}: {ex.Message}");
-            }
-            catch (JsonException ex)
-            {
-                return AgnAuditErrors.FetchFailed($"JSON inesperado en la página {page}: {ex.Message}");
-            }
-
-            if (parsed.Data is null)
-            {
-                return AgnAuditErrors.FetchFailed($"la página {page} no trae 'data'.");
-            }
-
-            expectedCount ??= int.TryParse(parsed.Meta?.Count, out var count) ? count : null;
-
-            foreach (var node in parsed.Data)
-            {
-                reports.Add(ToReport(node));
-            }
-
-            if (parsed.Data.Count == 0)
-            {
-                break;
-            }
-
-            nextUrl = parsed.Links?.Next?.Href;
-            page++;
+            await using var stream = await response.Content.ReadAsStreamAsync(ct);
+            parsed = await JsonSerializer.DeserializeAsync<AgnInformesPage>(stream, JsonOptions, ct)
+                ?? throw new JsonException("el body vino vacío.");
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            // HttpClient.Timeout cancela con un OperationCanceledException propio, distinto del
+            // ct que nos pasó el caller: si el caller no pidió cancelar, es la AGN tardando.
+            return AgnAuditErrors.FetchFailed($"tiempo de espera agotado para el organismo {organismoId}.");
+        }
+        catch (HttpRequestException ex)
+        {
+            return AgnAuditErrors.FetchFailed($"fallo de red para el organismo {organismoId}: {ex.Message}");
+        }
+        catch (JsonException ex)
+        {
+            return AgnAuditErrors.FetchFailed($"JSON inesperado para el organismo {organismoId}: {ex.Message}");
         }
 
-        // Si la AGN corta la paginación antes de lo que su propio meta.count prometía (un bug de
-        // su lado, o un cambio de forma que este cliente no detectó antes), un NotPublished
-        // construido con esta lista incompleta mentiría: mejor cortar acá que publicar un "no
-        // auditada" que en realidad es "no llegamos a traerlo".
-        if (expectedCount is not null && reports.Count != expectedCount)
+        if (parsed.Data is null)
+        {
+            return AgnAuditErrors.FetchFailed($"la respuesta del organismo {organismoId} no trae 'data'.");
+        }
+
+        // meta.count es el total que matchea el filtro (comprobado contra la API real: no es el
+        // total global de los 4816 informes), así que si no cierra con lo recibido, page[limit] se
+        // quedó corto. Mejor cortar acá (todo o nada) que publicar un "más reciente" que no lo es
+        // porque quedó afuera de esta página.
+        if (parsed.Meta?.Count is int expectedCount && parsed.Data.Count != expectedCount)
         {
             return AgnAuditErrors.FetchFailed(
-                $"se esperaban {expectedCount} informes (meta.count) y se trajeron {reports.Count}.");
+                $"el organismo {organismoId} tiene {expectedCount} informes (meta.count) y se trajeron " +
+                $"{parsed.Data.Count}: page[limit]={PageLimit} se quedó corto.");
         }
 
-        _logger.LogInformation("AgnReportsApiClient: {Count} informes traídos en {Pages} páginas.", reports.Count, page);
+        var reports = parsed.Data.Select(ToReport).ToList();
+        _logger.LogInformation(
+            "AgnReportsApiClient: {Count} informes traídos para el organismo {OrganismoId}.",
+            reports.Count, organismoId);
         return reports;
     }
 
@@ -156,14 +143,11 @@ public sealed class AgnReportsApiClient : IAgnReportsClient
 
 internal sealed record AgnInformesPage(
     [property: JsonPropertyName("data")] List<AgnInformeNode>? Data,
-    [property: JsonPropertyName("meta")] AgnPageMeta? Meta,
-    [property: JsonPropertyName("links")] AgnPageLinks? Links);
+    [property: JsonPropertyName("meta")] AgnPageMeta? Meta);
 
-internal sealed record AgnPageMeta([property: JsonPropertyName("count")] string? Count);
-
-internal sealed record AgnPageLinks([property: JsonPropertyName("next")] AgnLink? Next);
-
-internal sealed record AgnLink([property: JsonPropertyName("href")] string? Href);
+// meta.count viene como número JSON en /api/node/informes (a diferencia de la vista
+// busqueda_avanzada/informes, donde venía como string): comprobado contra la API real el 2026-09-09.
+internal sealed record AgnPageMeta([property: JsonPropertyName("count")] int? Count);
 
 internal sealed record AgnInformeNode(
     [property: JsonPropertyName("attributes")] AgnInformeAttributes? Attributes,

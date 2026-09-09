@@ -109,8 +109,8 @@ public static class DependencyInjection
         // único HttpClient para todo el proceso (sin IHttpClientFactory: este proyecto no es
         // Sdk.Web y Microsoft.Extensions.Http no vale la pena solo por el azúcar de AddHttpClient,
         // cuando HttpClient ya es parte del framework). Timeout por request, no total (HttpClient.
-        // Timeout se aplica a cada GetAsync, no a la vida entera del cliente): el import pagina
-        // cientos de páginas, así que un timeout total cortaría la corrida antes de terminar.
+        // Timeout se aplica a cada GetAsync, no a la vida entera del cliente): el import hace un
+        // fetch por organismo del padrón, y uno lento no tiene por qué cortar los demás.
         services.AddSingleton<IAgnReportsClient>(sp => new AgnReportsApiClient(
             new HttpClient
             {
