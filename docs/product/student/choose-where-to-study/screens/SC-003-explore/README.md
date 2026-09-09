@@ -1,6 +1,6 @@
 # Explorar (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos lentes y los tres estados del vacío; revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. Pública, se lee sin cuenta. Slug hoy `/universities` (la lente de carreras no existe todavía; hoy el browse rico es member-only: se adapta). Épicas que la componen: [Elegir dónde estudiar](../../README.md) (el home real: dos lentes, carreras y universidades), [Pedir una carrera](../../../request-a-career/README.md) (el vacío explicado, con Pedir al lado).
+> Ficha de pantalla, dueña: la épica [Elegir dónde estudiar](../../README.md). **Estado**: borrador escrito el 2026-08-19 con su [boceto mid-fi](sketch.html) de las dos lentes y los tres estados del vacío; revisada el 2026-08-19 ([registro](../../../../../history/reviews/2026-08-19-shared-screens.md)); hi-fi pendiente. **Las dos lentes existen desde R6 (V03)**: `/universities` (institución) y `/careers` (carrera), con un switch para pasar de una a otra sin escribir nada. Pública, se lee sin cuenta. Épicas que la componen: [Elegir dónde estudiar](../../README.md) (el home real: dos lentes, carreras y universidades), [Pedir una carrera](../../../request-a-career/README.md) (el vacío explicado, con Pedir al lado).
 
 ## Quién la usa
 
@@ -42,3 +42,4 @@ Llega desde: [La entrada](../SC-004-entrance/README.md), un link, o vuelve desde
 - **El default de orden.**
 - **Si hay filtros** (provincia, modalidad) **y cuáles.**
 - **Qué lente abre por default**, Carreras o Universidades: ninguna fuente lo fija.
+- **La lente de Carreras todavía no muestra voces ni cobertura por entrada**: no hay un endpoint que liste esos dos números agregados por carrera sin pedirlos carrera por carrera. Hoy agrupa por institución (nombre + el link a la ficha) y ordena alfabético; el orden por voces (US-171) queda para cuando ese dato exista.
