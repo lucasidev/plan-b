@@ -45,7 +45,7 @@ public class CreateStudentProfileEndpointTests
             "/api/me/student-profiles",
             new
             {
-                careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value, // TUDCS Plan 2018
+                careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value,
                 enrollmentYear = 2024,
             });
 
@@ -55,8 +55,8 @@ public class CreateStudentProfileEndpointTests
         var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
         var user = await db.Users.SingleAsync(u => u.Id == auth.UserId);
         var profile = user.StudentProfiles.ShouldHaveSingleItem();
-        profile.CareerPlanId.ShouldBe(AcademicSeedData.Careers[2].Plan!.Id.Value);
-        profile.CareerId.ShouldBe(AcademicSeedData.Careers[2].Career.Id.Value);
+        profile.CareerPlanId.ShouldBe(AcademicSeedData.TudcsUnsta.Plan!.Id.Value);
+        profile.CareerId.ShouldBe(AcademicSeedData.TudcsUnsta.Career.Id.Value);
         profile.EnrollmentYear.ShouldBe(2024);
     }
 
@@ -92,7 +92,7 @@ public class CreateStudentProfileEndpointTests
             {
                 email,
                 password = "valid-password-12c",
-                careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value,
+                careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value,
             });
         register.EnsureSuccessStatusCode();
 
@@ -108,7 +108,7 @@ public class CreateStudentProfileEndpointTests
             "/api/me/student-profiles",
             new
             {
-                careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value,
+                careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value,
                 enrollmentYear = 2024,
             });
         unauthedResp.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -120,7 +120,7 @@ public class CreateStudentProfileEndpointTests
         var auth = await AuthenticatedClient.CreateAsync(
             _fixture, $"create-profile-dup.{Guid.NewGuid():N}@planb.local");
 
-        var careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value;
+        var careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
 
         var first = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
@@ -149,12 +149,12 @@ public class CreateStudentProfileEndpointTests
 
         var first = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
-            new { careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value, enrollmentYear = 2024 });
+            new { careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value, enrollmentYear = 2024 });
         first.StatusCode.ShouldBe(HttpStatusCode.Created);
 
         var second = await auth.Client.PostAsJsonAsync(
             "/api/me/student-profiles",
-            new { careerPlanId = AcademicSeedData.Careers[3].Plan!.Id.Value, enrollmentYear = 2024 });
+            new { careerPlanId = AcademicSeedData.AutomatizacionYRoboticaUnsta.Plan!.Id.Value, enrollmentYear = 2024 });
 
         second.StatusCode.ShouldBe(HttpStatusCode.Conflict);
         var body = await second.Content.ReadAsStringAsync();
@@ -171,7 +171,7 @@ public class CreateStudentProfileEndpointTests
             "/api/me/student-profiles",
             new
             {
-                careerPlanId = AcademicSeedData.Careers[2].Plan!.Id.Value,
+                careerPlanId = AcademicSeedData.TudcsUnsta.Plan!.Id.Value,
                 enrollmentYear = 1980, // < MinEnrollmentYear (2010)
             });
 
