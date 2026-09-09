@@ -1301,49 +1301,10 @@ public static class AcademicSeedData
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000206")),
-                UniversityId: Unt.Id,
-                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
-                Name: "Licenciado en Enfermería",
-                Slug: "licenciado-en-enfermeria",
-                DegreeType: CareerDegreeType.Grado,
-                DurationYears: 5),
-            Plan: null),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000270")),
-                UniversityId: Unt.Id,
-                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioBellaVista.Id,
-                Name: "Licenciado en Enfermería",
-                Slug: "licenciado-en-enfermeria-escuela-de-enfermeria-convenio-bella-vista",
-                DegreeType: CareerDegreeType.Grado,
-                DurationYears: 5),
-            Plan: null),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000271")),
-                UniversityId: Unt.Id,
-                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioFamailla.Id,
-                Name: "Licenciado en Enfermería",
-                Slug: "licenciado-en-enfermeria-escuela-de-enfermeria-convenio-famailla",
-                DegreeType: CareerDegreeType.Grado,
-                DurationYears: 5),
-            Plan: null),
-
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000272")),
-                UniversityId: Unt.Id,
-                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
-                Name: "Licenciado en Enfermería",
-                Slug: "licenciado-en-enfermeria-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
-                DegreeType: CareerDegreeType.Grado,
-                DurationYears: 5),
-            Plan: null),
+        // "Licenciado en Enfermería" (sin "/a") no entra en Escuela de Enfermería ni en sus tres
+        // convenios: la Guía SIU lista la misma oferta dos veces, una con el sufijo de género y
+        // otra sin él ("Licenciado/a en Enfermería", arriba, la que se conserva). Mismo bug que
+        // "Ingeniero/a en Computación": duplicaba la institución en Dónde estudiarla.
         new CareerSeed(
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000207")),
@@ -1705,16 +1666,9 @@ public static class AcademicSeedData
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
-        new CareerSeed(
-            Career: new CareerRecord(
-                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000228")),
-                UniversityId: Unt.Id,
-                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
-                Name: "Ingeniero/a en Computación",
-                Slug: "ingeniero-a-en-computacion",
-                DegreeType: CareerDegreeType.Grado,
-                DurationYears: 5),
-            Plan: null),
+        // "Ingeniero/a en Computación" (id ...228) no entra: es la misma oferta que "Ingeniería en
+        // Computación" (arriba, cargada a mano con su CareerPlan), duplicada por el bulk load del
+        // CSV. Sin este dedup, Dónde estudiarla mostraba a UNT dos veces en la misma comparación.
         new CareerSeed(
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000229")),
