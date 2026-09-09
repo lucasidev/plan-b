@@ -128,7 +128,10 @@ function NavItem({
   return (
     <Link
       href={path}
-      prefetch
+      // Sin prefetch: estos seis links viven montados en toda pantalla del área autenticada, y
+      // el auto-prefetch en viewport le compite al router.push/refresh que sigue a guardar un
+      // formulario, perdiendo esa navegación (#477). El costo es la primera visita sin cache tibia.
+      prefetch={false}
       data-active={active}
       className={cn(
         'flex items-center justify-between gap-2 text-left',

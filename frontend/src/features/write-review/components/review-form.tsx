@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useMemo, useState } from 'react';
 import { ItemQuestion } from '@/components/instrument';
+import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { publishReviewAction } from '../actions';
 import { FREE_TEXT_MAX_LENGTH } from '../schema';
 import type {
@@ -49,7 +49,6 @@ const COURSE_OUTCOME_ITEM_CODE = 'COURSE_OUTCOME';
  * borrador retomable es trabajo propio y no entró al alcance.
  */
 export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
-  const router = useRouter();
   const [state, formAction, pending] = useActionState(publishReviewAction, initialPublishState);
 
   const [subjectId, setSubjectId] = useState('');
@@ -85,10 +84,13 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
     };
   }, [subjectId]);
 
+  // ADR-0046: el action es mutación pura y la navegación la hace el cliente al ver el
+  // status. `navigateAfterMutation` y no `router.push`: el porqué está medido en su
+  // docstring, y el issue #477 lo volvió a mostrar acá.
   useEffect(() => {
     if (state.status !== 'success') return;
-    router.push('/reviews/mine?published=1');
-  }, [state, router]);
+    navigateAfterMutation('/reviews/mine?published=1');
+  }, [state]);
 
   const filteredSubjects = useMemo(() => {
     const q = query.trim().toLowerCase();

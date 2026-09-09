@@ -49,7 +49,9 @@ function WriteReviewButton() {
   return (
     <Link
       href="/reviews/new"
-      prefetch
+      // Mismo motivo que el sidebar: siempre montado, y su prefetch en viewport compite con la
+      // navegación posterior a guardar un formulario (#477).
+      prefetch={false}
       className={
         'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap bg-ink text-white border border-ink rounded-pill shadow-card transition-colors hover:bg-[#1a110a] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft'
       }
