@@ -5,7 +5,7 @@ Qué hacer cuando el stage se rompe o hay que intervenirlo. El armado desde cero
 ## Cómo se lee el stage
 
 - **`https://planb.olisar.com.ar/health`**: 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}` cuando el api, Postgres y Redis contestan; 503 con `status: fail` y el `error` de la dependencia que falló. `version` es el sha del build que corre: la forma más corta de saber qué hay desplegado.
-- **Dokploy, servicio `stage`** (proyecto `planb`, environment `development`): *Deployments* lista cada deploy con su log (el pull de cada imagen con su tag, los contenedores recreados, `Healthy`, y `Docker Compose Deployed` al final); *Logs* muestra la salida de cada contenedor (100 líneas por default, "Limit to" trae más); *Monitoring* muestra CPU, memoria, disco y red por contenedor. El servidor tiene 3,82 GiB de memoria.
+- **Dokploy, servicio `stage`** (proyecto `planb`, environment `development`): *Deployments* lista cada deploy con su log (el pull de cada imagen con su tag, los contenedores recreados, `Healthy`, y `Docker Compose Deployed` al final); *Logs* muestra la salida de cada contenedor (100 líneas por default, "Limit to" trae más); *Monitoring* muestra CPU, memoria, disco y red por contenedor. El servidor tiene 3,82 GiB de memoria y 2 vCPU ([`k6/README.md`](../../k6/README.md)).
 - **GitHub, Actions, *Publish images***: la corrida de cada merge a `main`. El job "Redeploy the stage" pide el deploy por la API y después espera hasta cinco minutos a que `/health` responda 200 con el sha del merge; si no llega, ese job falla y dice el último `/health` que vio.
 
 ## Casos
@@ -89,6 +89,16 @@ Mailpit con auth, verificado el 2026-09-04; el recorrido con cuenta, sin verific
 **Acción.** Ya no debería repetirse: desde ADR-0091 el stage corre `ASPNETCORE_ENVIRONMENT=Production`, con el código de Wolverine pregenerado en el build (`Static`, sin compilar nada en runtime) y los niveles de log de `appsettings.json`, más el filtro que baja a Verbose los pedidos exitosos a `/health` y `/metrics` (`Program.cs`). Si se repite, es una regresión: revisar que el Environment del servicio `api` en Dokploy siga en `Production` y no haya vuelto a `Development`.
 
 Reproducido en local (podman) contra la imagen de esta rama, ver ADR-0091; sin verificar contra el stage real.
+
+### 10. Un contenedor no arranca o crashea después de un deploy: `Read-only file system` u `Operation not permitted` en los logs
+
+**Síntoma.** Un contenedor sale (`Exited`) apenas después de crear, o crashea en loop; en *Logs*, un mensaje del tipo `Read-only file system`, `Permission denied` o `Operation not permitted` sobre un path que no es uno de los que ese servicio ya declara como `tmpfs`.
+
+**Diagnóstico.** Desde ADR-0092 los nueve servicios corren con `read_only: true` y `cap_drop: ["ALL"]` (`cap_add` puntual solo en Postgres y Redis). Casi siempre es una versión nueva de la imagen (propia o de terceros) que empezó a escribir en un lugar que antes no tocaba, o que ahora necesita una capacidad Linux que hoy nadie le da.
+
+**Acción.** El log dice el path o la syscall que falló. Si es un path de escritura nuevo y legítimo, sumarlo al `tmpfs:` de ese servicio en el compose, no volverlo escribible entero; si es una capacidad (el mensaje suele nombrar la syscall, como `setresuid` para `SETUID`), sumarla puntual a su `cap_add`. Mientras tanto, pinear el sha anterior (caso 3) para que el servicio vuelva a servir.
+
+Sin verificar contra el stage real: el patrón sale de cómo se armó y probó cada `tmpfs`/`cap_add` en ADR-0092, no de un incidente real.
 
 ## Secretos
 
