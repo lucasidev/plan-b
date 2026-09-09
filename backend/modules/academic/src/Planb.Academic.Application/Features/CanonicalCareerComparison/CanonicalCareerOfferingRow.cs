@@ -14,6 +14,7 @@ public sealed record CanonicalCareerOfferingRow : ILocatedOffering
     public Guid UniversityId { get; init; }
     public string UniversityName { get; init; } = string.Empty;
     public string? AcademicUnitName { get; init; }
+    public string? LocalityId { get; init; }
     public string? LocalityName { get; init; }
     public string Province { get; init; } = string.Empty;
 }

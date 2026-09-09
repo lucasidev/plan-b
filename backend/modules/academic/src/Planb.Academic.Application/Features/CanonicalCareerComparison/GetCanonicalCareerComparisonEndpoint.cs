@@ -11,8 +11,8 @@ namespace Planb.Academic.Application.Features.CanonicalCareerComparison;
 /// <summary>
 /// GET /api/academic/career-comparison?careerId={id}: Dónde estudiarla (SC-008, US-128, ADR-0090,
 /// R6 tarea 5). La misma carrera canónica que <c>careerId</c>, en las instituciones de su misma
-/// ciudad, los mismos datos oficiales con la misma forma por tarjeta, sin compuesto ni ganador.
-/// Pública, sin cuenta, igual que el resto del catálogo.
+/// aglomeración, los mismos datos oficiales con la misma forma por tarjeta, sin compuesto ni
+/// ganador. Pública, sin cuenta, igual que el resto del catálogo.
 ///
 /// <para>
 /// Query, no Command (mismo criterio que <see cref="GetOfficialFactsForSubjectEndpoint"/>): el
@@ -63,6 +63,7 @@ public sealed class GetCanonicalCareerComparisonEndpoint : ICarterModule
                     offering.UniversityId,
                     offering.UniversityName,
                     offering.AcademicUnitName,
+                    offering.LocalityName,
                     InstitutionKind(institutionFacts),
                     OfficialFactResponseMapper.SelectCurrentByField(facts)));
             }

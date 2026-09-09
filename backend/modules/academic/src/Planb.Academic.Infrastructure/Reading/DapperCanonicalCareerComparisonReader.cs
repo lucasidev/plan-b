@@ -33,6 +33,7 @@ internal sealed class DapperCanonicalCareerComparisonReader : ICanonicalCareerCo
                 u.id             AS UniversityId,
                 u.name           AS UniversityName,
                 au.name          AS AcademicUnitName,
+                au.locality_id   AS LocalityId,
                 au.locality_name AS LocalityName,
                 au.address       AS Address
             FROM academic.careers c
@@ -55,6 +56,7 @@ internal sealed class DapperCanonicalCareerComparisonReader : ICanonicalCareerCo
         UniversityId = r.UniversityId,
         UniversityName = r.UniversityName,
         AcademicUnitName = r.AcademicUnitName,
+        LocalityId = r.LocalityId,
         LocalityName = r.LocalityName,
         // Provincia extraída del domicilio crudo: el fallback de agrupamiento cuando LocalityName
         // no resolvió contra Georef (tarea 19). "Sin domicilio" solo puede pasar si la carrera no
@@ -71,6 +73,7 @@ internal sealed class DapperCanonicalCareerComparisonReader : ICanonicalCareerCo
         public Guid UniversityId { get; init; }
         public string UniversityName { get; init; } = string.Empty;
         public string? AcademicUnitName { get; init; }
+        public string? LocalityId { get; init; }
         public string? LocalityName { get; init; }
         public string? Address { get; init; }
     }
