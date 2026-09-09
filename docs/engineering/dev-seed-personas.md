@@ -81,7 +81,7 @@ backend/modules/identity/src/Planb.Identity.Application/Seeding/
 
 El hosted service corre en `StartAsync` *después* de `DevMigrationsHostedService` (orden por registro en Program.cs). Verifica si las personas ya existen vía `IUserRepository.ExistsByEmailAsync`; si sí, salta. Si no, crea cada una llamando al mismo `User.Register(...)` que el endpoint público, después aplica las transiciones específicas (`MarkVerified`, `Disable`) según corresponda.
 
-La variable de entorno `PLANB_SEED_PASSWORD` reemplaza la password de **todas** las personas (mail, rol y estado se conservan) por un único valor de al menos 12 caracteres: protege el backoffice en un ambiente con dominio real, donde `personas.json` (con la password del admin en texto) es público. Dev y los specs de E2E no la definen, así que siguen viendo la password propia de cada persona en `personas.json`.
+En cualquier ambiente (dev, E2E, stage) cada persona se siembra con la password propia que trae `personas.json`: no hay variable que la reemplace. Son elenco de prueba, y su password es pública a propósito, para que cualquiera del equipo entre sin pedir nada, admin incluido. Una credencial de administración real, para un ambiente con dominio y datos reales, es otra cosa: no se siembra, no vive en un archivo del repo, y la provisiona una persona a mano. Hoy no existe porque no hay producción.
 
 ## Cuándo este doc se actualiza
 

@@ -32,8 +32,7 @@ docker run --rm -i -e BASE_URL=https://planb.olisar.com.ar -e VUS=10 \
 ```
 
 `write.js` necesita además `SEED_EMAIL` y `SEED_PASSWORD`, la cuenta sembrada del stage (la
-password sale de `PLANB_SEED_PASSWORD`, la variable que carga Lucas en Dokploy, nunca del
-repo):
+password es la de `personas.json`, pública, pero no se hardcodea en un script commiteado):
 
 ```bash
 podman run --rm -i -e BASE_URL=https://planb.olisar.com.ar -e VUS=3 \
