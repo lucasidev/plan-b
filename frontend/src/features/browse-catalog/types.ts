@@ -65,7 +65,10 @@ export type CareerCoverage = {
   universityName: string;
   isOfficial: boolean;
   hasOfficialData: boolean;
+  /** Ya respeta el piso de publicación: nunca el conteo crudo de una cátedra que no lo cruzó. */
   voiceCount: number;
+  /** Hay reseñas cargadas que todavía no cruzan el piso de alguna cátedra: no dice cuántas. */
+  hasReviewsBelowFloor: boolean;
   totalSubjects: number;
   coveredSubjects: number;
 };

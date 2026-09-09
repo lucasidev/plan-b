@@ -8,11 +8,11 @@ namespace Planb.Reviews.Application.Features.CatalogCoverage;
 public sealed record GetCatalogCoverageResponse(IReadOnlyList<CareerCoverageView> Careers);
 
 /// <summary>
-/// Una carrera con las tres señales que dicen si hay algo para leer, ninguna un puntaje: si tiene
-/// datos oficiales (ADR-0090), sus voces (Voces: cuántas personas reseñaron algo de ella) y su
-/// cobertura (<see cref="CoveredSubjects"/> de <see cref="TotalSubjects"/> materias del plan
-/// vigente). Una carrera sin nada trae los tres en cero/false: sigue en la lista, el vacío es
-/// información (US-139).
+/// Una carrera con las señales que dicen si hay algo para leer, ninguna un puntaje: si tiene datos
+/// oficiales (ADR-0090), sus voces publicadas (Voces: cuántas personas reseñaron algo de ella,
+/// respetando el piso por cátedra) y su cobertura (<see cref="CoveredSubjects"/> de
+/// <see cref="TotalSubjects"/> materias del plan vigente). Una carrera sin nada trae todo en
+/// cero/false: sigue en la lista, el vacío es información (US-139).
 /// </summary>
 public sealed record CareerCoverageView(
     Guid CareerId,
@@ -23,5 +23,11 @@ public sealed record CareerCoverageView(
     bool IsOfficial,
     bool HasOfficialData,
     int VoiceCount,
+    /// <summary>
+    /// Hay reseñas de esta carrera que todavía no cruzan el piso de alguna cátedra: existe
+    /// actividad aunque <see cref="VoiceCount"/> no la sume. Distingue "nadie reseñó" de "están
+    /// reseñando, todavía no publica", sin exponer cuántas son.
+    /// </summary>
+    bool HasReviewsBelowFloor,
     int TotalSubjects,
     int CoveredSubjects);

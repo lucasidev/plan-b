@@ -90,10 +90,11 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
     {
         // Mismo cruce que GetCoverageAsync, para varias carreras a la vez: un solo WHERE con
         // = ANY(@CareerIds) en vez de un viaje por carrera (con 230 carreras, N consultas no es una
-        // opción). covered_subjects se de-duplica en un SELECT DISTINCT aparte (no alcanza con el
-        // GROUP BY ch.id, ch.subject_id de adentro) porque una materia con dos cátedras que cruzan
-        // el piso, cada una, aportaría dos filas con el mismo subject_id: sin de-duplicar, el JOIN
-        // de más abajo las multiplica y VoiceCount queda contado de más.
+        // opción). chair_tallies se pre-agrega a una fila por materia en subject_voices antes de
+        // llegar al join final (mismo motivo que antes: una materia con dos cátedras aportaría dos
+        // filas con su mismo subject_id, y sin des-fanear primero el join de más abajo multiplicaría
+        // TotalSubjects). Esa fila por materia ya decide, cátedra por cátedra, qué reseñas publican
+        // (piso) y cuáles quedan cargando sin cruzarlo todavía.
         const string sql = @"
             WITH plan_subjects AS (
                 SELECT s.id AS subject_id, cp.career_id
@@ -103,32 +104,31 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                   AND cp.status = 'Active'
                   AND s.is_active = true
             ),
-            covered_subjects AS (
-                SELECT DISTINCT subject_id
-                FROM (
-                    SELECT ch.subject_id
-                    FROM academic.chairs ch
-                    JOIN reviews.reviews cr ON cr.chair_id = ch.id
-                    WHERE ch.is_active = true
-                      AND ch.subject_id IN (SELECT subject_id FROM plan_subjects)
-                    GROUP BY ch.id, ch.subject_id
-                    HAVING count(*) >= @MinimumReviews
-                ) qualifying_chairs
+            chair_tallies AS (
+                SELECT ch.subject_id, count(*) AS review_count
+                FROM academic.chairs ch
+                JOIN reviews.reviews cr ON cr.chair_id = ch.id
+                WHERE ch.is_active = true
+                  AND ch.subject_id IN (SELECT subject_id FROM plan_subjects)
+                GROUP BY ch.id, ch.subject_id
             ),
-            voice_counts AS (
-                SELECT subject_id, count(*) AS review_count
-                FROM reviews.reviews
-                WHERE subject_id IN (SELECT subject_id FROM plan_subjects)
+            subject_voices AS (
+                SELECT
+                    subject_id,
+                    COALESCE(sum(review_count) FILTER (WHERE review_count >= @MinimumReviews), 0)
+                        AS published_voice_count,
+                    bool_or(review_count < @MinimumReviews) AS has_activity_below_floor
+                FROM chair_tallies
                 GROUP BY subject_id
             )
             SELECT
-                ps.career_id                           AS CareerId,
-                count(ps.subject_id)::int              AS TotalSubjects,
-                count(cs.subject_id)::int              AS CoveredSubjects,
-                COALESCE(sum(vc.review_count), 0)::int AS VoiceCount
+                ps.career_id                                              AS CareerId,
+                count(ps.subject_id)::int                                 AS TotalSubjects,
+                count(*) FILTER (WHERE sv.published_voice_count > 0)::int AS CoveredSubjects,
+                COALESCE(sum(sv.published_voice_count), 0)::int           AS VoiceCount,
+                bool_or(COALESCE(sv.has_activity_below_floor, false))     AS HasReviewsBelowFloor
             FROM plan_subjects ps
-            LEFT JOIN covered_subjects cs ON cs.subject_id = ps.subject_id
-            LEFT JOIN voice_counts vc ON vc.subject_id = ps.subject_id
+            LEFT JOIN subject_voices sv ON sv.subject_id = ps.subject_id
             GROUP BY ps.career_id;";
 
         using var db = _connections.Create();
@@ -140,9 +140,14 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
 
         return rows.ToDictionary(
             r => r.CareerId,
-            r => new CareerCoverageBatch(r.TotalSubjects, r.CoveredSubjects, r.VoiceCount));
+            r => new CareerCoverageBatch(
+                r.TotalSubjects, r.CoveredSubjects, r.VoiceCount, r.HasReviewsBelowFloor));
     }
 
     private sealed record CareerCoverageBatchRow(
-        Guid CareerId, int TotalSubjects, int CoveredSubjects, int VoiceCount);
+        Guid CareerId,
+        int TotalSubjects,
+        int CoveredSubjects,
+        int VoiceCount,
+        bool HasReviewsBelowFloor);
 }

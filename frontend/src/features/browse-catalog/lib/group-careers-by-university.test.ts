@@ -20,6 +20,7 @@ function career(overrides: Partial<CareerCoverage>): CareerCoverage {
     isOfficial: true,
     hasOfficialData: false,
     voiceCount: 0,
+    hasReviewsBelowFloor: false,
     totalSubjects: 0,
     coveredSubjects: 0,
     ...overrides,

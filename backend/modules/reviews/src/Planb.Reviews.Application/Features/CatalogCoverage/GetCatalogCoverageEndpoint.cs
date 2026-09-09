@@ -50,6 +50,7 @@ public sealed class GetCatalogCoverageEndpoint : ICarterModule
                         c.IsOfficial,
                         HasOfficialData: withOfficialData.Contains(c.Id),
                         VoiceCount: counted?.VoiceCount ?? 0,
+                        HasReviewsBelowFloor: counted?.HasReviewsBelowFloor ?? false,
                         TotalSubjects: counted?.TotalSubjects ?? 0,
                         CoveredSubjects: counted?.CoveredSubjects ?? 0);
                 })
