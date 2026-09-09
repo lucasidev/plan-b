@@ -2,10 +2,11 @@ import { MailCheck } from 'lucide-react';
 import Link from 'next/link';
 import { AuthCard } from '@/components/layout/auth-card';
 import { ResendVerificationButton } from '@/features/resend-verification';
+import { sanitizeInternalRedirect } from '@/lib/internal-redirect';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  searchParams: Promise<{ email?: string }>;
+  searchParams: Promise<{ email?: string; from?: string }>;
 };
 
 /**
@@ -23,7 +24,9 @@ type Props = {
  * mail) → /verify-email → /sign-in.
  */
 export default async function CheckInboxPage({ searchParams }: Props) {
-  const { email } = await searchParams;
+  const { email, from: rawFrom } = await searchParams;
+  const from = sanitizeInternalRedirect(rawFrom);
+  const signInHref = from ? `/sign-in?from=${encodeURIComponent(from)}` : '/sign-in';
 
   return (
     <AuthCard>
@@ -77,7 +80,7 @@ export default async function CheckInboxPage({ searchParams }: Props) {
         </p>
 
         <Link
-          href="/sign-in"
+          href={signInHref}
           prefetch
           className={cn(
             'inline-flex items-center justify-center w-full',

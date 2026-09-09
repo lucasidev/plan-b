@@ -4,6 +4,12 @@ import type { VerifyEmailOutcome } from '../types';
 
 type Props = {
   result: VerifyEmailOutcome;
+  /**
+   * Ruta interna sana a la que volver tras entrar (US-229): la persona ya la eligió antes de
+   * registrarse (el CTA que disparó el gate) y quedó en una cookie porque el link de este mail
+   * no la conoce. Ya viene sanitizada por la página.
+   */
+  from?: string | null;
 };
 
 /**
@@ -12,7 +18,9 @@ type Props = {
  * user back to `/sign-up` to get a fresh link (or, once ResendVerificationButton lands
  * as a CTA here, we can reuse the same email without re-registering).
  */
-export function VerifyEmailResult({ result }: Props) {
+export function VerifyEmailResult({ result, from }: Props) {
+  const signInHref = from ? `/sign-in?from=${encodeURIComponent(from)}` : '/sign-in';
+
   if (result.kind === 'success') {
     return (
       <div className="space-y-6">
@@ -22,7 +30,7 @@ export function VerifyEmailResult({ result }: Props) {
           </DisplayHeading>
           <Lede>Tu cuenta quedó verificada. Ya podés iniciar sesión.</Lede>
         </header>
-        <Link href="/sign-in" prefetch>
+        <Link href={signInHref} prefetch>
           <Button type="button" variant="accent" className="w-full justify-center">
             Iniciar sesión
           </Button>
@@ -42,7 +50,7 @@ export function VerifyEmailResult({ result }: Props) {
           </DisplayHeading>
           <Lede>Este link ya se usó. Andá a iniciar sesión sin vueltas.</Lede>
         </header>
-        <Link href="/sign-in" prefetch>
+        <Link href={signInHref} prefetch>
           <Button type="button" variant="accent" className="w-full justify-center">
             Iniciar sesión
           </Button>
@@ -67,7 +75,7 @@ export function VerifyEmailResult({ result }: Props) {
             Registrarme de nuevo
           </Button>
         </Link>
-        <Link href="/sign-in" prefetch>
+        <Link href={signInHref} prefetch>
           <Button type="button" variant="ghost" className="w-full justify-center">
             Volver a iniciar sesión
           </Button>

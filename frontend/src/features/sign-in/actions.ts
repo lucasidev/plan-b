@@ -2,6 +2,7 @@
 
 import type { ProblemDetails } from '@/lib/api-problem';
 import { forwardSetCookies } from '@/lib/forward-set-cookies';
+import { sanitizeInternalRedirect } from '@/lib/internal-redirect';
 import { roleHomePath } from '@/lib/role-home-path';
 import { normalizeRole } from '@/lib/session';
 import { signIn } from './api';
@@ -37,6 +38,11 @@ export async function signInAction(
     };
   }
 
+  // El campo oculto lo puso la propia pantalla de Ingresar a partir de su query string, pero
+  // sigue siendo entrada del cliente (se puede editar el DOM antes de enviar): se vuelve a
+  // sanitizar acá, en vez de confiar en que ya vino limpio (US-229).
+  const from = sanitizeInternalRedirect(formData.get('from')?.toString());
+
   const response = await signIn({
     email: parsed.data.email,
     password: parsed.data.password,
@@ -61,7 +67,9 @@ export async function signInAction(
     }
 
     await forwardSetCookies(response);
-    return { status: 'success', redirectTo: roleHomePath(role) };
+    // Con un `from` sano, vuelve exactamente a lo que estaba haciendo; si no vino de ninguna
+    // acción (o el valor no pasó la sanitización), al lugar por defecto de su rol (US-229, E2/E3).
+    return { status: 'success', redirectTo: from ?? roleHomePath(role) };
   }
 
   if (response.status === 401) {

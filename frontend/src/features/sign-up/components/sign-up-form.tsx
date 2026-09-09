@@ -12,6 +12,15 @@ import { cn } from '@/lib/utils';
 import { signUpAction } from '../actions';
 import { initialSignUpState, type SignUpFormState } from '../types';
 
+type Props = {
+  /**
+   * Ruta interna sana a la que volver una vez verificado el mail (US-229). Ya la sanitizó la
+   * página (`from` en su query string); acá solo viaja como campo oculto hacia el action, que
+   * la guarda en una cookie porque el link del mail de verificación no la conoce.
+   */
+  from?: string | null;
+};
+
 /**
  * Sign-up form. Renders the registration form for `/sign-up`. Backend
  * endpoint is `POST /api/identity/register`; on 201 the action redirects
@@ -29,7 +38,7 @@ import { initialSignUpState, type SignUpFormState } from '../types';
  *
  * Cross-flow footer link navigates to `/sign-in`.
  */
-export function SignUpForm() {
+export function SignUpForm({ from }: Props) {
   const [state, formAction] = useActionState<SignUpFormState, FormData>(
     signUpAction,
     initialSignUpState,
@@ -62,6 +71,7 @@ export function SignUpForm() {
 
   return (
     <form action={formAction} className="flex flex-col" noValidate>
+      {from && <input type="hidden" name="from" value={from} />}
       <GoogleButton />
       <Divider>o con email</Divider>
 

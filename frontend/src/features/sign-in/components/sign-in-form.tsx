@@ -13,6 +13,17 @@ import { cn } from '@/lib/utils';
 import { signInAction } from '../actions';
 import { initialSignInState, type SignInFormState } from '../types';
 
+type Props = {
+  /**
+   * Ruta interna sana a la que volver tras entrar (US-229). Ya la sanitizó la página (`from`
+   * en su query string) antes de pasarla acá; viaja como campo oculto y el action la vuelve a
+   * validar antes de usarla.
+   */
+  from?: string | null;
+  /** El motivo del gate, para mostrarlo arriba del form cuando `from` es una acción reconocida. */
+  reason?: string | null;
+};
+
 /**
  * Sign-in form. Renders the credentials form for `/sign-in`. Backend
  * endpoint is `POST /api/identity/sign-in`. Field spacing, divider, footer
@@ -23,7 +34,7 @@ import { initialSignInState, type SignInFormState } from '../types';
  *
  * Cross-flow footer links navigate to `/sign-up` and `/forgot-password`.
  */
-export function SignInForm() {
+export function SignInForm({ from, reason }: Props) {
   const [state, formAction] = useActionState<SignInFormState, FormData>(
     signInAction,
     initialSignInState,
@@ -44,6 +55,15 @@ export function SignInForm() {
 
   return (
     <form action={formAction} className="flex flex-col" noValidate>
+      {reason && (
+        <p
+          role="status"
+          className="mb-[18px] rounded-lg border border-line bg-bg-elev px-3.5 py-2.5 text-[13px] leading-relaxed text-ink"
+        >
+          {reason}
+        </p>
+      )}
+      {from && <input type="hidden" name="from" value={from} />}
       <GoogleButton />
       <Divider>o con email</Divider>
 
