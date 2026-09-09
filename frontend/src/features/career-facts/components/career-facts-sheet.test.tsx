@@ -32,6 +32,7 @@ const PAPER_DURATION: OfficialFact = {
   period: 'plan vigente',
   sourceName: 'Sitio UNSTA',
   sourceUrl: 'https://unsta.edu.ar/tudcs',
+  derivationRuleId: null,
   note: null,
   relievedAt: '2026-09-07T12:00:00Z',
 };
@@ -85,6 +86,7 @@ describe('CareerFactsSheet', () => {
         period: null,
         sourceName: 'Ministerio de Educación (SPU)',
         sourceUrl: 'https://spu.example',
+        derivationRuleId: null,
         note: 'Ninguna fuente pública releva la duración real por carrera.',
         relievedAt: '2026-09-07T12:00:00Z',
       },
@@ -110,6 +112,7 @@ describe('CareerFactsSheet', () => {
         period: '2022',
         sourceName: 'Anuario SPU',
         sourceUrl: 'https://spu.example/anuario',
+        derivationRuleId: 'graduation-flow-proxy',
         note: 'Proxy de flujo institucional, no es una cohorte real.',
         relievedAt: '2026-09-07T12:00:00Z',
       },
@@ -120,7 +123,7 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText('Derivado')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
       'href',
-      '/method',
+      '/method#graduation-flow-proxy',
     );
   });
 
@@ -136,6 +139,7 @@ describe('CareerFactsSheet', () => {
         period: null,
         sourceName: 'Anuario SPU',
         sourceUrl: 'https://spu.example/anuario',
+        derivationRuleId: null,
         note: 'Todavía no se calculó el proxy de flujo para esta oferta.',
         relievedAt: '2026-09-07T12:00:00Z',
       },
@@ -162,6 +166,7 @@ describe('CareerFactsSheet', () => {
         period: '2026',
         sourceName: 'Sitio UNSTA',
         sourceUrl: 'https://unsta.edu.ar/ingreso',
+        derivationRuleId: null,
         note: null,
         relievedAt: '2026-09-07T12:00:00Z',
       },
@@ -183,6 +188,7 @@ describe('CareerFactsSheet', () => {
         period: null,
         sourceName: 'CONEAU',
         sourceUrl: 'https://coneau.gob.ar',
+        derivationRuleId: null,
         note: 'Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.',
         relievedAt: '2026-09-07T12:00:00Z',
       },

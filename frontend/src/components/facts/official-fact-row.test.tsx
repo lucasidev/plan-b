@@ -18,6 +18,7 @@ describe('OfficialFactRow', () => {
     period: 'plan vigente',
     sourceName: 'Sitio UNSTA',
     sourceUrl: 'https://unsta.edu.ar/tudcs',
+    derivationRuleId: null,
     note: null,
     // Mediodía UTC, no medianoche: a medianoche, cualquier huso horario negativo (Argentina
     // incluido) corre la fecha local un día para atrás y el assert de "07/09/2026" se vuelve
@@ -61,8 +62,11 @@ describe('OfficialFactRow', () => {
     expect(screen.getByText('Plan de la RM 2495/2018, 21 materias')).toBeInTheDocument();
   });
 
-  /** Un derivado nunca toma la forma de un dato publicado: lleva su etiqueta y el link a Método. */
-  it('derivado: se etiqueta como tal y linkea a Método, no a la fuente original', () => {
+  /**
+   * Un derivado nunca toma la forma de un dato publicado: lleva su etiqueta y el link salta
+   * directo al bloque de su regla en Método (ADR-0090), no a la fuente original ni al tope de la página.
+   */
+  it('derivado: se etiqueta como tal y linkea al bloque de su regla en Método', () => {
     render(
       <OfficialFactRow
         fact={{
@@ -71,12 +75,34 @@ describe('OfficialFactRow', () => {
           status: 'Derived',
           value: '21.4',
           unit: 'percent',
+          derivationRuleId: 'graduation-flow-proxy',
         }}
       />,
     );
 
     expect(screen.getByText('21,4 %')).toBeInTheDocument();
     expect(screen.getByText('Derivado')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
+      'href',
+      '/method#graduation-flow-proxy',
+    );
+  });
+
+  /** Sin una regla citada, el link no se rompe ni inventa un fragmento: cae a Método a secas. */
+  it('derivado sin regla citada: el link cae a Método sin fragmento', () => {
+    render(
+      <OfficialFactRow
+        fact={{
+          ...base,
+          field: 'cohort_graduation',
+          status: 'Derived',
+          value: '21.4',
+          unit: 'percent',
+          derivationRuleId: null,
+        }}
+      />,
+    );
+
     expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
       'href',
       '/method',
