@@ -9,8 +9,9 @@ namespace Planb.IntegrationTests.Reviews;
 /// <summary>
 /// Integration tests de <c>GET /api/reviews/catalog-coverage</c> (US-222, ficha de SC-003) contra
 /// la base real: que el batch cruce academic con reviews de verdad (ADR-0017), que una carrera sin
-/// plan cargado no rompa el conteo y quede en cero en vez de faltar, y que la presencia de datos
-/// oficiales (ADR-0090) viaje independiente de las voces.
+/// plan cargado no rompa el conteo y quede en cero en vez de faltar, que la presencia de datos
+/// oficiales (ADR-0090) viaje independiente de las voces, y que ninguna reseña bajo el piso de
+/// publicación aparezca como número.
 /// </summary>
 public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
 {
@@ -90,6 +91,10 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
     /// US-222 E2: cada entrada trae nombre, institución, voces y cobertura. N1/E3 (orden): esta
     /// respuesta no ordena nada, así que no hay cobertura ni voces "primero" que verificar acá; el
     /// criterio de orden lo prueba quien arma la pantalla.
+    ///
+    /// El tramo bajo el piso es el caso que corrige el hueco original (R6, #486): una cátedra con
+    /// menos reseñas que el piso no puede aportar su conteo a <c>VoiceCount</c>, ni siquiera una vez
+    /// que OTRA cátedra de la misma carrera sí publica.
     /// </summary>
     [Fact]
     public async Task A_career_with_nothing_stays_zero_while_another_gains_voices_and_coverage()
@@ -103,6 +108,7 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         abogado.CareerName.ShouldBe("Abogado");
         abogado.HasOfficialData.ShouldBeFalse();
         abogado.VoiceCount.ShouldBe(0);
+        abogado.HasReviewsBelowFloor.ShouldBeFalse();
         abogado.TotalSubjects.ShouldBe(0);
         abogado.CoveredSubjects.ShouldBe(0);
 
@@ -111,26 +117,32 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         tudcsBefore.UniversityName.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
         tudcsBefore.HasOfficialData.ShouldBeTrue();
         tudcsBefore.VoiceCount.ShouldBe(0);
+        tudcsBefore.HasReviewsBelowFloor.ShouldBeFalse();
         tudcsBefore.TotalSubjects.ShouldBe(21);
         tudcsBefore.CoveredSubjects.ShouldBe(0);
 
-        // ---- Pérez junta 3 (bajo el piso): las voces cuentan, la cobertura todavía no.
+        // ---- Pérez junta 3 (bajo el piso de 10): esa cátedra no publica, así que ni la cobertura
+        // ni las voces se mueven. Lo único que cambia es que ahora hay actividad para señalar, sin
+        // decir cuánta: nunca "3 voces" al lado de una carrera con una sola cátedra bajo el piso.
         await PublishAsync(ChairPerez, from: 0, count: 3);
 
         var underFloor = await _anonymous.GetOkAsync<GetCatalogCoverageResponse>(
             "/api/reviews/catalog-coverage");
         var tudcsUnderFloor = underFloor!.Careers.Single(c => c.CareerId == TudcsCareerId);
-        tudcsUnderFloor.VoiceCount.ShouldBe(3);
+        tudcsUnderFloor.VoiceCount.ShouldBe(0);
+        tudcsUnderFloor.HasReviewsBelowFloor.ShouldBeTrue();
         tudcsUnderFloor.CoveredSubjects.ShouldBe(0);
 
-        // ---- González llega justo a las 10 (el piso): la materia 211 ya cuenta, las voces suman
-        // las dos cátedras (3 + 10 = 13).
+        // ---- González llega justo a las 10 (el piso): la materia 211 ya cuenta, pero las voces
+        // publicadas son solo las de González (10), no la suma con Pérez (3 + 10 = 13): la cátedra
+        // de Pérez sigue bajo su propio piso y sus reseñas no publican, aunque la materia ya mida.
         await PublishAsync(ChairGonzalez, from: 100, count: 10);
 
         var after = await _anonymous.GetOkAsync<GetCatalogCoverageResponse>(
             "/api/reviews/catalog-coverage");
         var tudcsAfter = after!.Careers.Single(c => c.CareerId == TudcsCareerId);
-        tudcsAfter.VoiceCount.ShouldBe(13);
+        tudcsAfter.VoiceCount.ShouldBe(10);
+        tudcsAfter.HasReviewsBelowFloor.ShouldBeTrue();
         tudcsAfter.TotalSubjects.ShouldBe(21);
         tudcsAfter.CoveredSubjects.ShouldBe(1);
         tudcsAfter.HasOfficialData.ShouldBeTrue();
@@ -138,6 +150,7 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         // Abogado no se movió: nadie reseñó ahí.
         var abogadoAfter = after.Careers.Single(c => c.CareerId == AbogadoCareerId);
         abogadoAfter.VoiceCount.ShouldBe(0);
+        abogadoAfter.HasReviewsBelowFloor.ShouldBeFalse();
         abogadoAfter.HasOfficialData.ShouldBeFalse();
     }
 }

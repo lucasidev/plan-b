@@ -7,18 +7,27 @@
 
 export type CareerCoverageMeta = {
   hasOfficialData: boolean;
+  /** Ya respeta el piso de publicación: nunca el conteo crudo de una cátedra que no lo cruzó. */
   voiceCount: number;
+  /** Hay reseñas cargadas que todavía no cruzan el piso de alguna cátedra: no dice cuántas. */
+  hasReviewsBelowFloor: boolean;
   totalSubjects: number;
   coveredSubjects: number;
 };
 
 /**
- * Si hay algo para leer antes de entrar: un dato oficial o al menos una voz. Ninguna de las dos
- * cuenta como "nada" aunque la otra esté vacía (una carrera puede tener duración oficial sin que
- * nadie la haya reseñado todavía).
+ * Si hay algo para leer antes de entrar: un dato oficial o al menos una voz publicada. Ninguna de
+ * las dos cuenta como "nada" aunque la otra esté vacía (una carrera puede tener duración oficial
+ * sin que nadie la haya reseñado todavía). Reseñas bajo el piso no cuentan: existen, pero todavía
+ * no hay nada que leer de ellas.
  */
 export function hasSomethingToRead(career: CareerCoverageMeta): boolean {
   return career.hasOfficialData || career.voiceCount > 0;
+}
+
+/** "sin voces todavía" salvo que ya haya reseñas cargándose sin cruzar el piso: ese caso se nombra aparte, nunca con el número. */
+function noVoicesYetLabel(career: CareerCoverageMeta): string {
+  return career.hasReviewsBelowFloor ? 'todavía sin datos publicables' : 'sin voces todavía';
 }
 
 /**
@@ -27,7 +36,9 @@ export function hasSomethingToRead(career: CareerCoverageMeta): boolean {
  */
 export function describeCareerCoverage(career: CareerCoverageMeta): string {
   if (!hasSomethingToRead(career)) {
-    return 'Todavía no tenemos nada para leer.';
+    return career.hasReviewsBelowFloor
+      ? 'Hay reseñas cargándose: todavía sin datos publicables.'
+      : 'Todavía no tenemos nada para leer.';
   }
 
   const parts: string[] = [];
@@ -45,7 +56,7 @@ export function describeCareerCoverage(career: CareerCoverageMeta): string {
         : voices,
     );
   } else {
-    parts.push('sin voces todavía');
+    parts.push(noVoicesYetLabel(career));
   }
 
   return parts.join(' · ');

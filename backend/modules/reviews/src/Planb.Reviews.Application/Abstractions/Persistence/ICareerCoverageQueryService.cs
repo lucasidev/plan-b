@@ -28,9 +28,10 @@ public interface ICareerCoverageQueryService
     /// La cobertura y las voces de varias carreras en un solo viaje (US-222): lo que el catálogo de
     /// Explorar necesita para decir, antes del clic, dónde hay algo para leer, sin pedir estos
     /// números carrera por carrera. Mismo criterio de "medida" que <see cref="GetCoverageAsync"/>
-    /// (plan vigente, piso por cátedra), más el conteo de voces (Voces: cuántas personas reseñaron
-    /// algo de esa carrera), sin el piso: una carrera con 3 voces bajo el piso las muestra igual, la
-    /// ficha no.
+    /// (plan vigente, piso por cátedra): <see cref="CareerCoverageBatch.VoiceCount"/> también
+    /// respeta el piso, sumando solo lo que aportan las cátedras que lo cruzaron. Lo que hay debajo
+    /// no desaparece del todo: <see cref="CareerCoverageBatch.HasReviewsBelowFloor"/> dice que existe,
+    /// sin decir cuánto.
     ///
     /// <para>
     /// Devuelve una entrada solo para las carreras que tienen materias en su plan vigente: una
@@ -41,8 +42,20 @@ public interface ICareerCoverageQueryService
         IReadOnlyCollection<Guid> careerIds, int minimumReviews, CancellationToken ct = default);
 }
 
-/// <summary>Una entrada del batch de <see cref="ICareerCoverageQueryService.GetCoverageBatchAsync"/>: los mismos M/N de <see cref="CareerCoverage"/> más el conteo crudo de voces.</summary>
-public sealed record CareerCoverageBatch(int TotalSubjects, int CoveredSubjects, int VoiceCount);
+/// <summary>
+/// Una entrada del batch de <see cref="ICareerCoverageQueryService.GetCoverageBatchAsync"/>: los
+/// mismos M/N de <see cref="CareerCoverage"/> más las voces, publicadas nomás (piso por cátedra).
+/// </summary>
+public sealed record CareerCoverageBatch(
+    int TotalSubjects,
+    int CoveredSubjects,
+    int VoiceCount,
+    /// <summary>
+    /// Hay al menos una cátedra de la carrera con reseñas cargadas que todavía no cruzan su piso:
+    /// existe actividad aunque <see cref="VoiceCount"/> no la sume. Distingue "nadie reseñó" de
+    /// "están reseñando, todavía no publica", sin exponer cuántas son.
+    /// </summary>
+    bool HasReviewsBelowFloor);
 
 /// <summary>
 /// M (<see cref="TotalSubjects"/>) son las materias del plan vigente de la carrera; N

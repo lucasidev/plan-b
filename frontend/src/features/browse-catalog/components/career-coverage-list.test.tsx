@@ -18,6 +18,7 @@ function career(overrides: Partial<CareerCoverage>): CareerCoverage {
     isOfficial: true,
     hasOfficialData: false,
     voiceCount: 0,
+    hasReviewsBelowFloor: false,
     totalSubjects: 0,
     coveredSubjects: 0,
     ...overrides,
@@ -60,6 +61,30 @@ describe('CareerCoverageList', () => {
 
     const row = screen.getByRole('link', { name: /contador público/i });
     expect(within(row).getByText('Todavía no tenemos nada para leer.')).toBeInTheDocument();
+  });
+
+  /**
+   * El caso que corrige R6 (#486): una carrera con una sola cátedra bajo el piso (acá, 6 reseñas
+   * contra un piso de 10) no puede mostrar ese conteo crudo. `voiceCount` ya respeta el piso, así
+   * que esta fila prueba que ninguna otra vía (texto libre, número suelto) lo filtra igual.
+   */
+  it('una carrera con reseñas bajo el piso no muestra su conteo, y se distingue del vacío', () => {
+    render(
+      <CareerCoverageList
+        careers={[
+          career({
+            careerId: 'bajo-piso',
+            careerName: 'Bioquímica',
+            voiceCount: 0,
+            hasReviewsBelowFloor: true,
+          }),
+        ]}
+      />,
+    );
+
+    const row = screen.getByRole('link', { name: /bioquímica/i });
+    expect(row).not.toHaveTextContent(/\d/);
+    expect(within(row).queryByText('Todavía no tenemos nada para leer.')).not.toBeInTheDocument();
   });
 
   it('una carrera crowdsourced lleva el badge "No oficial"', () => {

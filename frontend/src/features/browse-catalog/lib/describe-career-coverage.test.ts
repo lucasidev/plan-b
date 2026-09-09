@@ -16,6 +16,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: false,
       voiceCount: 412,
+      hasReviewsBelowFloor: false,
       totalSubjects: 51,
       coveredSubjects: 23,
     });
@@ -28,6 +29,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: false,
       voiceCount: 96,
+      hasReviewsBelowFloor: false,
       totalSubjects: 44,
       coveredSubjects: 10,
     });
@@ -40,6 +42,7 @@ describe('describeCareerCoverage', () => {
       describeCareerCoverage({
         hasOfficialData: false,
         voiceCount: 1,
+        hasReviewsBelowFloor: false,
         totalSubjects: 5,
         coveredSubjects: 1,
       }),
@@ -55,6 +58,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: false,
       voiceCount: 0,
+      hasReviewsBelowFloor: false,
       totalSubjects: 21,
       coveredSubjects: 0,
     });
@@ -67,6 +71,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: true,
       voiceCount: 0,
+      hasReviewsBelowFloor: false,
       totalSubjects: 21,
       coveredSubjects: 0,
     });
@@ -81,6 +86,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: true,
       voiceCount: 0,
+      hasReviewsBelowFloor: false,
       totalSubjects: 21,
       coveredSubjects: 0,
     });
@@ -92,6 +98,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: true,
       voiceCount: 13,
+      hasReviewsBelowFloor: false,
       totalSubjects: 21,
       coveredSubjects: 1,
     });
@@ -107,6 +114,7 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: false,
       voiceCount: 0,
+      hasReviewsBelowFloor: false,
       totalSubjects: 0,
       coveredSubjects: 0,
     });
@@ -115,6 +123,7 @@ describe('describeCareerCoverage', () => {
       hasSomethingToRead({
         hasOfficialData: false,
         voiceCount: 0,
+        hasReviewsBelowFloor: false,
         totalSubjects: 0,
         coveredSubjects: 0,
       }),
@@ -127,11 +136,65 @@ describe('describeCareerCoverage', () => {
     const text = describeCareerCoverage({
       hasOfficialData: false,
       voiceCount: 4,
+      hasReviewsBelowFloor: false,
       totalSubjects: 0,
       coveredSubjects: 0,
     });
 
     expect(text).toBe('4 voces');
+  });
+
+  /**
+   * El caso que corrige R6 (#486): una carrera con una sola cátedra bajo el piso no puede mostrar
+   * su conteo crudo. "Hay reseñas trabajando" es información útil; cuántas son, no, mientras no
+   * publiquen (ninguna cátedra cruzó el piso).
+   */
+  it('con reseñas cargadas bajo el piso y sin nada oficial, no muestra ningún número', () => {
+    const text = describeCareerCoverage({
+      hasOfficialData: false,
+      voiceCount: 0,
+      hasReviewsBelowFloor: true,
+      totalSubjects: 21,
+      coveredSubjects: 0,
+    });
+
+    expect(text).toBe('Hay reseñas cargándose: todavía sin datos publicables.');
+    expect(text).not.toMatch(/\d/);
+  });
+
+  /**
+   * La misma carrera bajo el piso no puede leerse igual que una sin ninguna reseña: son dos
+   * mensajes de texto distintos, aunque ninguno lleve un número.
+   */
+  it('reseñas bajo el piso se distingue de no tener ninguna reseña, sin exponer el conteo', () => {
+    const withActivity = describeCareerCoverage({
+      hasOfficialData: false,
+      voiceCount: 0,
+      hasReviewsBelowFloor: true,
+      totalSubjects: 21,
+      coveredSubjects: 0,
+    });
+    const withNothing = describeCareerCoverage({
+      hasOfficialData: false,
+      voiceCount: 0,
+      hasReviewsBelowFloor: false,
+      totalSubjects: 21,
+      coveredSubjects: 0,
+    });
+
+    expect(withActivity).not.toBe(withNothing);
+  });
+
+  it('con datos oficiales y reseñas bajo el piso, dice las dos cosas por separado, sin número', () => {
+    const text = describeCareerCoverage({
+      hasOfficialData: true,
+      voiceCount: 0,
+      hasReviewsBelowFloor: true,
+      totalSubjects: 21,
+      coveredSubjects: 0,
+    });
+
+    expect(text).toBe('Datos oficiales · todavía sin datos publicables');
   });
 });
 
@@ -141,6 +204,7 @@ describe('hasSomethingToRead', () => {
       hasSomethingToRead({
         hasOfficialData: true,
         voiceCount: 0,
+        hasReviewsBelowFloor: false,
         totalSubjects: 0,
         coveredSubjects: 0,
       }),
@@ -152,10 +216,24 @@ describe('hasSomethingToRead', () => {
       hasSomethingToRead({
         hasOfficialData: false,
         voiceCount: 1,
+        hasReviewsBelowFloor: false,
         totalSubjects: 1,
         coveredSubjects: 0,
       }),
     ).toBe(true);
+  });
+
+  /** Reseñas bajo el piso todavía no publican nada: no alcanzan solas para "algo para leer". */
+  it('reseñas bajo el piso, sin datos oficiales, no cuentan como algo para leer', () => {
+    expect(
+      hasSomethingToRead({
+        hasOfficialData: false,
+        voiceCount: 0,
+        hasReviewsBelowFloor: true,
+        totalSubjects: 1,
+        coveredSubjects: 0,
+      }),
+    ).toBe(false);
   });
 });
 
