@@ -32,11 +32,12 @@ Adoptar el patrón canónico de Microsoft + 12-factor, con seis reglas vinculant
 
 | Entorno | `ASPNETCORE_ENVIRONMENT` | Source de config |
 |---|---|---|
-| Dev local (`dotnet run`, `just dev`) | `Development` | `appsettings.json` ← `appsettings.Development.json` ← `.env` (vía `set dotenv-load` en Justfile) |
+| Dev local (`dotnet run`, `just dev`), integration tests (`WebApplicationFactory`) | `Development` | `appsettings.json` ← `appsettings.Development.json` ← `.env` (vía `set dotenv-load` en Justfile) |
 | CI (`dotnet test` en GHA) | `Development` | `appsettings.json` ← `appsettings.Development.json` ← env vars del workflow |
-| Release / prod | `Production` | `appsettings.json` ← env vars del runtime / secret manager |
+| Stage (Dokploy, sigue a `main`) | `Production` | `appsettings.json` ← env vars de Dokploy; `migrate-db` y `seed-db` corren como pasos de deploy, no al arrancar (ADR-0091) |
+| Release / prod | `Production` | `appsettings.json` ← env vars del runtime / secret manager; `migrate-db` corre como paso de deploy, sin `seed-db` |
 
-`ASPNETCORE_ENVIRONMENT=Development` se fija explícitamente en `.github/workflows/ci.yml` para que CI ejercite el mismo path que dev local (Wolverine `Dynamic` codegen, EF resource auto-create, Mailpit en `localhost:1025`).
+`ASPNETCORE_ENVIRONMENT=Development` se fija explícitamente en `.github/workflows/ci.yml` para que CI ejercite el mismo path que dev local (Wolverine `Dynamic` codegen, EF resource auto-create, Mailpit en `localhost:1025`). `Development` pasa a significar exactamente esto: corriendo desde el código fuente. El stage no es un tercer valor de `ASPNETCORE_ENVIRONMENT`: corre `Production` igual que producción, y su única diferencia (además de los secrets) es que su deploy también corre `seed-db` (ADR-0091).
 
 ### Frontend (Next.js)
 
