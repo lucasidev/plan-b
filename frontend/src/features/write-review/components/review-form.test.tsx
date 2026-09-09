@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -577,7 +577,10 @@ describe('US-163: reseñar la misma materia dos veces', () => {
     await user.click(submit);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/ya reseñaste esta cursada/i);
-    expect(submit).toBeDisabled();
+    // El alert sale del render directo del `state`; el deshabilitado depende de un efecto propio
+    // (guarda la cursada rechazada y recién ahí recalcula `canSubmit`), así que puede completar en
+    // un tick posterior al del alert: se espera la aserción y no se la da por hecha en el mismo tick.
+    await waitFor(() => expect(submit).toBeDisabled());
   });
 
   /**
@@ -607,7 +610,7 @@ describe('US-163: reseñar la misma materia dos veces', () => {
     const submit = screen.getByRole('button', { name: /enviar la reseña/i });
     await user.click(submit);
     await screen.findByRole('alert');
-    expect(submit).toBeDisabled();
+    await waitFor(() => expect(submit).toBeDisabled());
 
     await user.click(screen.getByRole('button', { name: /programación i/i }));
     expect(submit).toBeEnabled();
