@@ -1,19 +1,27 @@
 import Link from 'next/link';
+import { OFFICIAL_FACT_FIELDS, type OfficialFact, OfficialFactRow } from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
+import { formatShortDate } from '@/lib/format-date';
 import type { CareerFacts } from '../types';
 
 /**
- * La ficha de una carrera (SC-001, US-127, US-134, ADR-0085).
+ * La ficha de una carrera (SC-001, US-127, US-133, US-134, ADR-0085, ADR-0090).
  *
- * Alcance acotado a lo que tiene fuente real hoy: identidad, cuánto dura en el papel (la otra
- * mitad de US-127, "dura en la realidad" y el egreso por cohorte, es relevamiento propio que
- * todavía no existe) y la cobertura (US-134, siempre a la vista, nunca oculta detrás de un
- * umbral). "Qué frena la cursada" y la nota de curaduría necesitan un corpus de reseñas que hoy es
- * cero: no se mockean ni se dejan con un placeholder de números falsos.
+ * Identidad y cobertura salen de la ficha de reviews (`CareerFacts`); los seis datos oficiales
+ * (ADR-0090) salen de un endpoint aparte de academic y viajan como prop separada: son afirmaciones
+ * con su propia fuente, no un cálculo sobre reseñas. "Qué frena la cursada" y la nota de curaduría
+ * necesitan un corpus de reseñas que hoy es cero: no se mockean ni se dejan con un placeholder de
+ * números falsos.
  *
  * Lo que no muestra nunca: ningún puntaje ni escala, ningún dato oficial sin decir que falta.
  */
-export function CareerFactsSheet({ facts }: { facts: CareerFacts }) {
+export function CareerFactsSheet({
+  facts,
+  officialFacts,
+}: {
+  facts: CareerFacts;
+  officialFacts: OfficialFact[];
+}) {
   return (
     <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
@@ -21,7 +29,7 @@ export function CareerFactsSheet({ facts }: { facts: CareerFacts }) {
       <CatalogTopbar />
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
-        <OfficialData facts={facts} />
+        <OfficialData officialFacts={officialFacts} />
         <Coverage facts={facts} />
         <EditorialNotes facts={facts} />
         <Footer facts={facts} />
@@ -40,30 +48,43 @@ function Identity({ facts }: { facts: CareerFacts }) {
 }
 
 /**
- * Datos oficiales: hoy solo llega cuánto dura en el papel (US-127). El resto (cuánto dura en la
- * realidad, egreso por cohorte) es relevamiento propio que todavía no existe, así que el bloque lo
- * dice en vez de mostrar un espacio vacío sin explicación.
+ * Los seis datos oficiales de la oferta (ADR-0090, F02, F05): dura en el papel, dura en la
+ * realidad, egreso por cohorte, plan vigente, acreditación (o validez nacional, según el nivel) y
+ * régimen de ingreso, en ese orden fijo. Acreditación y validez nacional comparten posición porque
+ * una oferta releva una sola de las dos: nunca conviven en la misma ficha (F05, O03).
+ *
+ * Sin relevamiento todavía, el bloque entero lo dice en vez de dejar un espacio en blanco; con
+ * relevamiento parcial, se muestra lo que hay: ningún campo se completa con un estado que nadie
+ * cargó.
  */
-function OfficialData({ facts }: { facts: CareerFacts }) {
+const CAREER_OFFICIAL_FACT_ORDER = [
+  OFFICIAL_FACT_FIELDS.paperDuration,
+  OFFICIAL_FACT_FIELDS.realDuration,
+  OFFICIAL_FACT_FIELDS.cohortGraduation,
+  OFFICIAL_FACT_FIELDS.currentPlan,
+  OFFICIAL_FACT_FIELDS.accreditation,
+  OFFICIAL_FACT_FIELDS.nationalValidity,
+  OFFICIAL_FACT_FIELDS.admissionRegime,
+];
+
+function OfficialData({ officialFacts }: { officialFacts: OfficialFact[] }) {
+  const byField = new Map(officialFacts.map((fact) => [fact.field, fact]));
+  const ordered = CAREER_OFFICIAL_FACT_ORDER.map((field) => byField.get(field)).filter(
+    (fact): fact is OfficialFact => fact !== undefined,
+  );
+
   return (
     <section className="mb-5">
       <p className="mb-2 text-[12px] text-ink-3">Datos oficiales</p>
-      <div className="rounded-xl border border-line bg-bg-card p-4">
-        {facts.durationYears !== null ? (
-          <>
-            <p className="mb-1 text-[12px] text-ink-3">Dura en el papel</p>
-            <p className="mb-2 font-serif text-[20px] font-medium text-ink">
-              {facts.durationYears} {facts.durationYears === 1 ? 'año' : 'años'}
-            </p>
-            <p className="text-[12px] leading-relaxed text-ink-3">
-              De fuente oficial, todavía no tenemos cuánto dura en la realidad ni cuánto egresa por
-              cohorte.
-            </p>
-          </>
-        ) : (
-          <p className="text-[13px] leading-relaxed text-ink-3">
+      <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
+        {ordered.length === 0 ? (
+          <p className="py-3 text-[13px] leading-relaxed text-ink-3">
             Todavía no tenemos datos oficiales de esta carrera.
           </p>
+        ) : (
+          ordered.map((fact, index) => (
+            <OfficialFactRow key={fact.id} fact={fact} last={index === ordered.length - 1} />
+          ))
         )}
       </div>
     </section>
@@ -94,22 +115,13 @@ function EditorialNotes({ facts }: { facts: CareerFacts }) {
             <p className="text-[13.5px] leading-relaxed text-ink">{note.text}</p>
             <p className="mt-1.5 text-[11px] text-ink-3">
               Nota del equipo, leída de comentarios que no se publican
-              <span className="font-mono"> · {formatNoteDate(note.publishedAt)}</span>
+              <span className="font-mono"> · {formatShortDate(note.publishedAt)}</span>
             </p>
           </div>
         ))}
       </div>
     </section>
   );
-}
-
-/** La fecha de la nota, al día: la hora no aporta nada a leer una síntesis. */
-function formatNoteDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('es-AR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
 }
 
 function Coverage({ facts }: { facts: CareerFacts }) {

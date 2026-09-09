@@ -100,6 +100,30 @@ Lo que cambió el 2026-08-27 es qué dato muestra la landing: dejó de ilustrar 
 | **Career** | Carrera como concepto institucional estable. Ej: "Tecnicatura Universitaria en Desarrollo y Calidad de Software". |
 | **CareerPlan** | Plan de estudios de una carrera para un año particular (`year`), con materias propias y un `label` editorial opcional. Ej: "Plan 2019", "Plan 2024". |
 | **plan vigente** | `CareerPlan` con `status = Active`. Es el que se le ofrece a nuevos ingresantes; el plan anterior pasa a `Deprecated` pero sigue existiendo para los alumnos que ya lo cursan. |
+| **OfficialFact** | Dato oficial (ver más arriba): la entidad que lo guarda. Una afirmación fechada sobre un sujeto (`University`, `AcademicUnit` u oferta `Career`), con su valor, unidad, período, fuente y estado. Varias pueden convivir para el mismo sujeto y campo; la vigente es la del relevamiento más reciente ([ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)). |
+| **campo (de un dato oficial)** | El código curado que identifica qué afirma un `OfficialFact` (`paper_duration`, `cohort_graduation`, ...): en inglés, fijo en código, abierto a sumar uno nuevo. Cada uno tiene un solo nombre en español, la tabla de abajo. |
+
+Los campos del vocabulario curado ([ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)), con su nombre en español:
+
+| Código | Nombre en español |
+|---|---|
+| `paper_duration` | Dura en el papel |
+| `real_duration` | Dura en la realidad |
+| `cohort_graduation` | Egreso por cohorte |
+| `current_plan` | Plan vigente |
+| `accreditation` | Acreditación |
+| `national_validity` | Validez nacional |
+| `admission_regime` | Régimen de ingreso |
+| `minutes_published` | Actas del órgano de gobierno publicadas |
+| `budget_published` | Presupuesto ejecutado publicado |
+| `staff_roster_published` | Nómina docente con condición de cargo |
+| `interim_share` | Proporción de cargos interinos |
+| `institutional_evaluation` | Acreditaciones al día |
+| `institution_type` | Identidad institucional |
+| `academic_unit` | Unidad académica de la carrera |
+
+| Término | Significado |
+|---|---|
 | **Subject** | Materia. Pertenece a un `CareerPlan`. Tiene `year_in_plan` (año del plan), `term_kind` y `term_in_year`. |
 | **carga horaria semanal** | `weekly_hours`: horas de cursada por semana. Rango 0 a 40. **0 no significa "sin trabajo"**: significa que la materia no tiene horario semanal fijo, como Proyecto Final (0 hs/sem y 350 totales en la TUDCS), una práctica profesional o una tesis. El techo de 40 es una jornada laboral completa; más que eso es un dato cargado mal. |
 | **carga horaria total** | `total_hours`: horas de la materia en todo su período. Siempre positiva (una materia sin horas no existe) y nunca menor que la semanal. Es el número que el plan de estudios publica al lado de cada materia. |

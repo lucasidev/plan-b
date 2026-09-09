@@ -101,7 +101,7 @@ public class GetCareerFactsEndpointTests : IClassFixture<RegisterApiFixture>
     /// <c>GetSubjectFactsEndpointTests</c>).
     ///
     /// US-134 E1: la cobertura cruza de 0 a 1 materia medida cuando una cátedra cruza el piso, sin
-    /// importar que el resto del plan siga sin medir. US-127 E2: el bloque de datos oficiales
+    /// importar que el resto del plan siga sin medir. US-127 E3: el bloque de datos oficiales
     /// (<see cref="GetCareerFactsResponse.DurationYears"/>) se resuelve antes de que exista una sola
     /// reseña, porque no depende de ellas.
     /// </summary>
