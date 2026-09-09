@@ -1,5 +1,6 @@
 using Planb.Academic.Domain;
 using Planb.Academic.Domain.AcademicTerms;
+using Planb.Academic.Domain.AcademicUnits;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Chairs;
@@ -20,10 +21,12 @@ namespace Planb.Academic.Infrastructure.Seeding;
 /// editables.
 ///
 /// Convención de UUIDs:
-///   - Universities: 00000001-0000-4000-a000-0000000000NN
-///   - Careers:      00000002-0000-4000-a000-0000000000NN (o 0000000NNN para el bulk de R6,
+///   - Universities:   00000001-0000-4000-a000-0000000000NN
+///   - Careers:        00000002-0000-4000-a000-0000000000NN (o 0000000NNN para el bulk de R6,
 ///     ver el comentario de la sección Careers)
-///   - CareerPlans:  00000003-0000-4000-a000-0000000000NN (mismo NN que su Career)
+///   - CareerPlans:    00000003-0000-4000-a000-0000000000NN (mismo NN que su Career)
+///   - AcademicUnits:  00000007-0000-4000-a000-0000000000NN (R6, tarea 19), NN secuencial
+///     agrupado por universidad en el mismo orden que Universities
 /// donde NN es secuencial y agrupa por universidad cuando aplica.
 /// </summary>
 public static class AcademicSeedData
@@ -70,8 +73,7 @@ public static class AcademicSeedData
     /// Universidad Nacional de Santiago del Estero (R6): no estaba sembrada (K02). La Guía SIU le
     /// lista 7 ofertas en la provincia, ninguna informática, repartidas en tres sedes/facultades
     /// distintas (Centro de Estudios del Tucumán, Instituto de Educación Superior Sisaiani, y la
-    /// sede de Villa Quinteros); el catálogo no modela facultad/sede todavía, así que las tres
-    /// cuelgan de esta única University.
+    /// sede de Villa Quinteros); cada una cuelga de su propia AcademicUnit (tarea 19).
     /// </summary>
     public static readonly UniversityRecord Unse = new(
         Id: new UniversityId(Guid.Parse("00000001-0000-4000-a000-000000000006")),
@@ -85,24 +87,361 @@ public static class AcademicSeedData
     };
 
     // ====================================================================
-    // Careers + CareerPlans: el catálogo real de Tucumán (R6). Universidad, título, tipo y
-    // duración salen de la Guía SIU (docs/history/reviews/assets/2026-09-07-official-data/
+    // AcademicUnits: una por (universidad, facultad) de la Guia SIU (R6, tarea 19). El
+    // domicilio se guarda tal como lo publica la fuente; la localidad normalizada la completa
+    // el resolvedor de Georef al sembrar (ver AcademicSeeder), no se hardcodea aca.
+    // ====================================================================
+
+    // ---------- UNSTA ----------
+    public static readonly AcademicUnitRecord AuCentroUniversitarioConcepcion = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000001")),
+        UniversityId: Unsta.Id,
+        Name: "Centro Universitario Concepción",
+        Slug: "centro-universitario-concepcion",
+        Address: "Roca 37 - Concepcion - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeCienciasDeLaSalud = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000002")),
+        UniversityId: Unsta.Id,
+        Name: "Facultad de Ciencias de la Salud",
+        Slug: "facultad-de-ciencias-de-la-salud",
+        Address: "Av. Perón 2085 - Yerba Buena - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeCienciasJuridicasPoliticasYSociales = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000003")),
+        UniversityId: Unsta.Id,
+        Name: "Facultad de Ciencias Juridicas, Politicas y Sociales",
+        Slug: "facultad-de-ciencias-juridicas-politicas-y-sociales",
+        Address: "9 de Julio 165 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeEconomiaYAdministracion = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000004")),
+        UniversityId: Unsta.Id,
+        Name: "Facultad de Economía y Administración",
+        Slug: "facultad-de-economia-y-administracion",
+        Address: "9 de Julio 165 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeHumanidades = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000005")),
+        UniversityId: Unsta.Id,
+        Name: "Facultad de Humanidades",
+        Slug: "facultad-de-humanidades",
+        Address: "9 de Julio 165 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeIngenieria = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000006")),
+        UniversityId: Unsta.Id,
+        Name: "Facultad de Ingeniería",
+        Slug: "facultad-de-ingenieria",
+        Address: "Av. Perón 2085 - Yerba Buena - Tucumán");
+
+    // ---------- UNT ----------
+    public static readonly AcademicUnitRecord AuCarreraDeKinesiologiaSedeMonteros = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000007")),
+        UniversityId: Unt.Id,
+        Name: "Carrera de Kinesiología - Sede Monteros",
+        Slug: "carrera-de-kinesiologia-sede-monteros",
+        Address: "Sarmiento y Pje. Día SN - Cap. Caceres - Tucumán");
+
+    public static readonly AcademicUnitRecord AuEscuelaDeEnfermeria = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000008")),
+        UniversityId: Unt.Id,
+        Name: "Escuela de Enfermería",
+        Slug: "escuela-de-enfermeria",
+        Address: "General Paz 875 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuEscuelaDeEnfermeriaConvenioBellaVista = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000009")),
+        UniversityId: Unt.Id,
+        Name: "Escuela de Enfermería Convenio Bella Vista",
+        Slug: "escuela-de-enfermeria-convenio-bella-vista",
+        Address: "General Paz 884 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuEscuelaDeEnfermeriaConvenioFamailla = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000a")),
+        UniversityId: Unt.Id,
+        Name: "Escuela de Enfermería Convenio Famaillá",
+        Slug: "escuela-de-enfermeria-convenio-famailla",
+        Address: "General Paz 884 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuEscuelaUniversitariaDeCineVideoYTelevision = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000b")),
+        UniversityId: Unt.Id,
+        Name: "Escuela Universitaria de Cine, Video y Televisión",
+        Slug: "escuela-universitaria-de-cine-video-y-television",
+        Address: "Avda. Aconquija 729 - Yerba Buena - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeAgronomiaYZootecniaConcepcion = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000c")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Agronomía y Zootecnia - Concepción",
+        Slug: "facultad-de-agronomia-y-zootecnia-concepcion",
+        Address: "Avenida Roca 1900 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeAgronomiaZootecniaYVeterinaria = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000d")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Agronomía, Zootecnia y Veterinaria",
+        Slug: "facultad-de-agronomia-zootecnia-y-veterinaria",
+        Address: "Avda Pte. Nestor Kirchner 1900 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeArquitecturaYUrbanismo = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000e")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Arquitectura y Urbanismo",
+        Slug: "facultad-de-arquitectura-y-urbanismo",
+        Address: "Av. Roca 1800 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeArtes = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000000f")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Artes",
+        Slug: "facultad-de-artes",
+        Address: "Bolivar 700 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeBioquimicaQuimicaYFarmacia = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000010")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Bioquímica, Química y Farmacia",
+        Slug: "facultad-de-bioquimica-quimica-y-farmacia",
+        Address: "Ayacucho 491 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeCienciasEconomicas = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000011")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Ciencias Económicas",
+        Slug: "facultad-de-ciencias-economicas",
+        Address: "Av Independencia 1900 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeCienciasExactasYTecnologia = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000012")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Ciencias Exactas y Tecnología",
+        Slug: "facultad-de-ciencias-exactas-y-tecnologia",
+        Address: "Av. Independencia 1800 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000013")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Ciencias Naturales e Instituto Miguel Lillo",
+        Slug: "facultad-de-ciencias-naturales-e-instituto-miguel-lillo",
+        Address: "Miguel Lillo 209 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeDerechoYCienciasSociales = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000014")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Derecho y Ciencias Sociales",
+        Slug: "facultad-de-derecho-y-ciencias-sociales",
+        Address: "25 de Mayo 471 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeDerechoYCienciasSocialesConvenioBellaVista = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000015")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Derecho y Ciencias Sociales Convenio Bella Vista",
+        Slug: "facultad-de-derecho-y-ciencias-sociales-convenio-bella-vista",
+        Address: "Sarmiento y Marconi -Bella Vista - Amaicha Del Llano - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeDerechoYCienciasSocialesConvenioConcepcion = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000016")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Derecho y Ciencias Sociales Convenio Concepción",
+        Slug: "facultad-de-derecho-y-ciencias-sociales-convenio-concepcion",
+        Address: "9 de Julio 112 - Concepcion - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeDerechoYCienciasSocialesConvenioMonteros = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000017")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Derecho y Ciencias Sociales Convenio Monteros",
+        Slug: "facultad-de-derecho-y-ciencias-sociales-convenio-monteros",
+        Address: "25 de Mayo 261 - Cap. Caceres - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeDerechoYCienciasSocialesConvenioTrancas = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000018")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Derecho y Ciencias Sociales Convenio Trancas",
+        Slug: "facultad-de-derecho-y-ciencias-sociales-convenio-trancas",
+        Address: "Avenida Irigoyen 126 - Leocadio Paz - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeEducacionFisica = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000019")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Educación Física",
+        Slug: "facultad-de-educacion-fisica",
+        Address: "Av. Benjamin Araoz 751 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeFilosofiaYLetras = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001a")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Filosofía y Letras",
+        Slug: "facultad-de-filosofia-y-letras",
+        Address: "Av. Benjamin Araoz 800 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeMedicina = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001b")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Medicina",
+        Slug: "facultad-de-medicina",
+        Address: "Lamadrid 875 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDeOdontologia = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001c")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Odontología",
+        Slug: "facultad-de-odontologia",
+        Address: "Av. Benjamin Araoz 800 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDePsicologia = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001d")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Psicología",
+        Slug: "facultad-de-psicologia",
+        Address: "Av. Benjamin Araoz 800 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuFacultadDePsicologiaConvenioBellaVista = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001e")),
+        UniversityId: Unt.Id,
+        Name: "Facultad de Psicología Convenio Bella Vista",
+        Slug: "facultad-de-psicologia-convenio-bella-vista",
+        Address: "Sarmiento y Marconi-Bella Vista s/n - Amaicha Del Llano - Tucumán");
+
+    public static readonly AcademicUnitRecord AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-00000000001f")),
+        UniversityId: Unt.Id,
+        Name: "Instituto Universitario Multidisciplinario de Aguilares (Artes)",
+        Slug: "instituto-universitario-multidisciplinario-de-aguilares-artes",
+        Address: "General Savio S/N - Aguilares - Tucumán");
+
+    public static readonly AcademicUnitRecord AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000020")),
+        UniversityId: Unt.Id,
+        Name: "Instituto Universitario Multidisciplinario de Aguilares (Enfermería)",
+        Slug: "instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
+        Address: "General Savio S/N - Aguilares - Tucumán");
+
+    public static readonly AcademicUnitRecord AuRectorado = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000021")),
+        UniversityId: Unt.Id,
+        Name: "Rectorado",
+        Slug: "rectorado",
+        Address: "Ayacucho 491 - San Miguel De Tucuman - Tucumán");
+
+    // ---------- UTN-FRT ----------
+    public static readonly AcademicUnitRecord AuFacultadRegionalTucuman = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000022")),
+        UniversityId: UtnFrt.Id,
+        Name: "Facultad Regional Tucumán",
+        Slug: "facultad-regional-tucuman",
+        Address: "Rivadavia 1050 - San Miguel De Tucuman - Tucumán");
+
+    // ---------- USPT ----------
+    public static readonly AcademicUnitRecord AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000023")),
+        UniversityId: UspT.Id,
+        Name: "Instituto de Desarrollo Tecnológico para la Competitividad Territorial",
+        Slug: "instituto-de-desarrollo-tecnologico-para-la-competitividad-territorial",
+        Address: "24 de Septiembre 476 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuInstitutoDeEstudiosSocialesPoliticaYCultura = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000024")),
+        UniversityId: UspT.Id,
+        Name: "Instituto de Estudios Sociales, Politica y Cultura",
+        Slug: "instituto-de-estudios-sociales-politica-y-cultura",
+        Address: "24 de Septiembre 476 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuInstitutoDeSaludYCalidadDeVida = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000025")),
+        UniversityId: UspT.Id,
+        Name: "Instituto de Salud y Calidad de Vida",
+        Slug: "instituto-de-salud-y-calidad-de-vida",
+        Address: "24 de Septiembre 476 - San Miguel De Tucuman - Tucumán");
+
+    // ---------- UNSE ----------
+    public static readonly AcademicUnitRecord AuCentroDeEstudiosDelTucumanCetucTucuman = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000026")),
+        UniversityId: Unse.Id,
+        Name: "Centro de Estudios del Tucumán - CETUC - Tucumán",
+        Slug: "centro-de-estudios-del-tucuman-cetuc-tucuman",
+        Address: "Av. Salta 431 - San Miguel De Tucuman - Tucumán");
+
+    public static readonly AcademicUnitRecord AuInstitutoDeEducacionSuperiorSisaiani = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000027")),
+        UniversityId: Unse.Id,
+        Name: "Instituto de Educacion Superior Sisaiani",
+        Slug: "instituto-de-educacion-superior-sisaiani",
+        Address: "Reconquista 1215 - Tafi Viejo - Tucumán");
+
+    public static readonly AcademicUnitRecord AuTucumanVillaQuinteros = new(
+        Id: new AcademicUnitId(Guid.Parse("00000007-0000-4000-a000-000000000028")),
+        UniversityId: Unse.Id,
+        Name: "Tucuman - Villa Quinteros",
+        Slug: "tucuman-villa-quinteros",
+        Address: "9 de Julio y Florida S/N - Rio Seco - Tucumán");
+
+    public static IReadOnlyList<AcademicUnitRecord> AcademicUnits { get; } = new[]
+    {
+        AuCentroUniversitarioConcepcion,
+        AuFacultadDeCienciasDeLaSalud,
+        AuFacultadDeCienciasJuridicasPoliticasYSociales,
+        AuFacultadDeEconomiaYAdministracion,
+        AuFacultadDeHumanidades,
+        AuFacultadDeIngenieria,
+        AuCarreraDeKinesiologiaSedeMonteros,
+        AuEscuelaDeEnfermeria,
+        AuEscuelaDeEnfermeriaConvenioBellaVista,
+        AuEscuelaDeEnfermeriaConvenioFamailla,
+        AuEscuelaUniversitariaDeCineVideoYTelevision,
+        AuFacultadDeAgronomiaYZootecniaConcepcion,
+        AuFacultadDeAgronomiaZootecniaYVeterinaria,
+        AuFacultadDeArquitecturaYUrbanismo,
+        AuFacultadDeArtes,
+        AuFacultadDeBioquimicaQuimicaYFarmacia,
+        AuFacultadDeCienciasEconomicas,
+        AuFacultadDeCienciasExactasYTecnologia,
+        AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo,
+        AuFacultadDeDerechoYCienciasSociales,
+        AuFacultadDeDerechoYCienciasSocialesConvenioBellaVista,
+        AuFacultadDeDerechoYCienciasSocialesConvenioConcepcion,
+        AuFacultadDeDerechoYCienciasSocialesConvenioMonteros,
+        AuFacultadDeDerechoYCienciasSocialesConvenioTrancas,
+        AuFacultadDeEducacionFisica,
+        AuFacultadDeFilosofiaYLetras,
+        AuFacultadDeMedicina,
+        AuFacultadDeOdontologia,
+        AuFacultadDePsicologia,
+        AuFacultadDePsicologiaConvenioBellaVista,
+        AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes,
+        AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria,
+        AuRectorado,
+        AuFacultadRegionalTucuman,
+        AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial,
+        AuInstitutoDeEstudiosSocialesPoliticaYCultura,
+        AuInstitutoDeSaludYCalidadDeVida,
+        AuCentroDeEstudiosDelTucumanCetucTucuman,
+        AuInstitutoDeEducacionSuperiorSisaiani,
+        AuTucumanVillaQuinteros,
+    };
+
+    // ====================================================================
+    // Careers + CareerPlans: el catálogo real de Tucumán (R6). Universidad, facultad, título,
+    // tipo y duración salen de la Guía SIU (docs/history/reviews/assets/2026-09-07-official-data/
     // guia-siu-tucuman-pregrado-y-grado.csv, 229 ofertas de pregrado y grado, consultada el
-    // 2026-09-08); nada inventado, así que lo que la Guía no da (condición de ingreso, facultad
-    // o sede, y toda "duración real" u otra afirmación con fuente y fecha) no está acá: eso es
-    // OfficialFact (ADR-0090), entidad de otra tarea. Cuatro ofertas llevan CareerPlan real
-    // (UNSTA TUDCS con sus 21 materias, UTN Programación, UNT Programador, y las dos ya
-    // existentes de UTN e UNT); el resto entra sin plan detallado (Plan: null): relevar 229
-    // planes no es esta tarea (K01, K02, K05, US-195).
+    // 2026-09-08); nada inventado, así que lo que la Guía no da (toda "duración real" u otra
+    // afirmación con fuente y fecha) no está acá: eso es OfficialFact (ADR-0090), entidad de otra
+    // tarea. Cuatro ofertas llevan CareerPlan real (UNSTA TUDCS con sus 21 materias, UTN
+    // Programación, UNT Programador, y las dos ya existentes de UTN e UNT); el resto entra sin
+    // plan detallado (Plan: null): relevar 229 planes no es esta tarea (K01, K02, K05, US-195).
     //
-    // Slug único por (university, slug): cuando el mismo título se repite en más de una
-    // facultad o sede de la misma universidad (ej. "Abogado" en UNSTA Concepción y en Ingeniería,
-    // "Enfermero" en UNT en cinco convenios), el catálogo carga una sola Career por (universidad,
-    // título): la facultad/sede todavía no es un campo del modelo, y tipo/duración coinciden
-    // entre las filas repetidas en cada caso verificado.
+    // Cada Career cuelga de su AcademicUnit (tarea 19): cuando el mismo título aparece en más de
+    // una facultad o sede de la misma universidad (ej. "Abogado" en UNSTA Concepción y en
+    // Ciencias Jurídicas, "Enfermero" en UNT en cinco convenios), son ofertas distintas y el
+    // catálogo carga una Career por cada (universidad, facultad, título). Slug único por
+    // (university, slug): la primera oferta de cada título conserva el slug simple; las
+    // adicionales le agregan el slug de su AcademicUnit para no colisionar
+    // (ej. "abogado-facultad-de-ciencias-juridicas-politicas-y-sociales").
     //
     // Bloques de Id para lo nuevo del bulk load (evitan el rango 00-ff que ya usa lo curado a
-    // mano): Unsta 0x100+, Unt 0x200+, UspT 0x300+, Unse 0x400+, UtnFrt 0x500+.
+    // mano): Unsta 0x100+, Unt 0x200+, UspT 0x300+, Unse 0x400+, UtnFrt 0x500+. Las ofertas que
+    // esta tarea abrió por repetirse en varias sedes continúan la numeración del mismo bloque.
     // ====================================================================
 
     public static IReadOnlyList<CareerSeed> Careers { get; } = new[]
@@ -112,6 +451,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000001")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Ingeniería en Informática",
                 Slug: "ingenieria-en-informatica"),
             Plan: new CareerPlanRecord(
@@ -120,8 +460,20 @@ public static class AcademicSeedData
 
         new CareerSeed(
             Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012a")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
+                Name: "Ingeniería en Informática",
+                Slug: "ingenieria-en-informatica-centro-universitario-concepcion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000002")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Ingeniería en Inteligencia Artificial",
                 Slug: "ingenieria-en-inteligencia-artificial"),
             Plan: new CareerPlanRecord(
@@ -132,6 +484,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000003")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Tecnicatura Universitaria en Desarrollo y Calidad de Software",
                 Slug: "tecnicatura-universitaria-en-desarrollo-y-calidad-de-software"),
             Plan: new CareerPlanRecord(
@@ -142,6 +495,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000004")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Tecnicatura Universitaria en Automatización y Robótica",
                 Slug: "tecnicatura-universitaria-en-automatizacion-y-robotica"),
             Plan: new CareerPlanRecord(
@@ -153,6 +507,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000020")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniería en Informática",
                 Slug: "ingenieria-en-informatica"),
             Plan: new CareerPlanRecord(
@@ -163,6 +518,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000021")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniería en Computación",
                 Slug: "ingenieria-en-computacion"),
             Plan: new CareerPlanRecord(
@@ -173,6 +529,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000022")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Licenciatura en Informática",
                 Slug: "licenciatura-en-informatica"),
             Plan: new CareerPlanRecord(
@@ -189,6 +546,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000023")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Programador Universitario",
                 Slug: "programador-universitario",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -203,6 +561,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000030")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Ingeniería en Sistemas de Información",
                 Slug: "ingenieria-en-sistemas-de-informacion"),
             Plan: new CareerPlanRecord(
@@ -220,6 +579,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000031")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Tecnicatura Universitaria en Programación",
                 Slug: "tecnicatura-universitaria-en-programacion",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -235,8 +595,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000100")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Abogado",
                 Slug: "abogado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012b")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
+                Name: "Abogado",
+                Slug: "abogado-facultad-de-ciencias-juridicas-politicas-y-sociales",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -244,8 +616,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000101")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Contador Público",
                 Slug: "contador-publico",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012c")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
+                Name: "Contador Público",
+                Slug: "contador-publico-facultad-de-economia-y-administracion",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -253,8 +637,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000102")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Ingeniero Industrial",
                 Slug: "ingeniero-industrial",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012d")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
+                Name: "Ingeniero Industrial",
+                Slug: "ingeniero-industrial-facultad-de-ingenieria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -262,8 +658,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000103")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Administración de Empresas",
                 Slug: "licenciado-en-administracion-de-empresas",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012e")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
+                Name: "Licenciado en Administración de Empresas",
+                Slug: "licenciado-en-administracion-de-empresas-facultad-de-economia-y-administracion",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -271,8 +679,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000104")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Gestión Ambiental y Ecología",
                 Slug: "licenciado-en-gestion-ambiental-y-ecologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000012f")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
+                Name: "Licenciado en Gestión Ambiental y Ecología",
+                Slug: "licenciado-en-gestion-ambiental-y-ecologia-facultad-de-ingenieria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -280,8 +700,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000105")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Higiene y Seguridad Laboral",
                 Slug: "licenciado-en-higiene-y-seguridad-laboral",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000130")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
+                Name: "Licenciado en Higiene y Seguridad Laboral",
+                Slug: "licenciado-en-higiene-y-seguridad-laboral-facultad-de-ingenieria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -289,8 +721,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000106")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Logística y Gestión de Transportes",
                 Slug: "licenciado-en-logistica-y-gestion-de-transportes",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000131")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
+                Name: "Licenciado en Logística y Gestión de Transportes",
+                Slug: "licenciado-en-logistica-y-gestion-de-transportes-facultad-de-ingenieria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -298,8 +742,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000107")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Nutrición",
                 Slug: "licenciado-en-nutricion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000132")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
+                Name: "Licenciado en Nutrición",
+                Slug: "licenciado-en-nutricion-facultad-de-ciencias-de-la-salud",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -307,8 +763,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000108")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Psicología",
                 Slug: "licenciado-en-psicologia",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000133")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
+                Name: "Licenciado en Psicología",
+                Slug: "licenciado-en-psicologia-facultad-de-ciencias-de-la-salud",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -316,8 +784,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000109")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Recursos Humanos",
                 Slug: "licenciado-en-recursos-humanos",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000134")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
+                Name: "Licenciado en Recursos Humanos",
+                Slug: "licenciado-en-recursos-humanos-facultad-de-economia-y-administracion",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -325,8 +805,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010a")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Terapia Ocupacional",
                 Slug: "licenciado-en-terapia-ocupacional",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000135")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
+                Name: "Licenciado en Terapia Ocupacional",
+                Slug: "licenciado-en-terapia-ocupacional-facultad-de-ciencias-de-la-salud",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -334,8 +826,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010b")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Licenciado en Turismo",
                 Slug: "licenciado-en-turismo",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000136")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
+                Name: "Licenciado en Turismo",
+                Slug: "licenciado-en-turismo-facultad-de-economia-y-administracion",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -343,8 +847,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010c")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Notario",
                 Slug: "notario",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 4),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000137")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
+                Name: "Notario",
+                Slug: "notario-facultad-de-ciencias-juridicas-politicas-y-sociales",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 4),
             Plan: null),
@@ -352,8 +868,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010d")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Procurador",
                 Slug: "procurador",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000138")),
+                UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
+                Name: "Procurador",
+                Slug: "procurador-facultad-de-ciencias-juridicas-politicas-y-sociales",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 3),
             Plan: null),
@@ -361,6 +889,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010e")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuCentroUniversitarioConcepcion.Id,
                 Name: "Técnico en Higiene y Seguridad Laboral",
                 Slug: "tecnico-en-higiene-y-seguridad-laboral",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -370,6 +899,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000010f")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
                 Name: "Licenciado en Diagnóstico por Imágenes",
                 Slug: "licenciado-en-diagnostico-por-imagenes",
                 DegreeType: CareerDegreeType.Grado,
@@ -379,6 +909,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000110")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
                 Name: "Licenciado en Gastronomía",
                 Slug: "licenciado-en-gastronomia",
                 DegreeType: CareerDegreeType.Grado,
@@ -388,6 +919,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000111")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
                 Name: "Licenciado en Trabajo Social - Ciclo de Complementación Curricular",
                 Slug: "licenciado-en-trabajo-social-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -396,6 +928,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000112")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
                 Name: "Médico",
                 Slug: "medico",
                 DegreeType: CareerDegreeType.Grado,
@@ -405,6 +938,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000113")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasDeLaSalud.Id,
                 Name: "Técnico Universitario en Diagnóstico por Imágenes",
                 Slug: "tecnico-universitario-en-diagnostico-por-imagenes",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -414,6 +948,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000114")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
                 Name: "Licenciado en Ciencias Políticas",
                 Slug: "licenciado-en-ciencias-politicas",
                 DegreeType: CareerDegreeType.Grado,
@@ -423,6 +958,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000115")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
                 Name: "Licenciado en Comunicación Social",
                 Slug: "licenciado-en-comunicacion-social",
                 DegreeType: CareerDegreeType.Grado,
@@ -432,6 +968,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000116")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
                 Name: "Licenciado en Seguridad y Protección Ciudadana - Ciclo de Complementación Curricular",
                 Slug: "licenciado-en-seguridad-y-proteccion-ciudadana-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -440,6 +977,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000117")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
                 Name: "Locutor Nacional",
                 Slug: "locutor-nacional",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -449,6 +987,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000118")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeCienciasJuridicasPoliticasYSociales.Id,
                 Name: "Técnico Universitario en Periodismo",
                 Slug: "tecnico-universitario-en-periodismo",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -458,6 +997,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000119")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
                 Name: "Licenciado/a en Marketing",
                 Slug: "licenciado-a-en-marketing",
                 DegreeType: CareerDegreeType.Grado,
@@ -467,6 +1007,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011a")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
                 Name: "Licenciado en Comercialización",
                 Slug: "licenciado-en-comercializacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -476,6 +1017,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011b")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeEconomiaYAdministracion.Id,
                 Name: "Técnico en Empresas Turísticas",
                 Slug: "tecnico-en-empresas-turisticas",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -485,6 +1027,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011c")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Licenciado/a en Ciencias Sociales",
                 Slug: "licenciado-a-en-ciencias-sociales",
                 DegreeType: CareerDegreeType.Grado,
@@ -494,6 +1037,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011d")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Licenciado/a en Gestión Cultural- MD",
                 Slug: "licenciado-a-en-gestion-cultural-md",
                 DegreeType: CareerDegreeType.Grado,
@@ -503,6 +1047,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011e")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Licenciado/a en Teoría y Gestión de las Organizaciones - MD",
                 Slug: "licenciado-a-en-teoria-y-gestion-de-las-organizaciones-md",
                 DegreeType: CareerDegreeType.Grado,
@@ -512,6 +1057,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000011f")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Licenciado en Filosofía",
                 Slug: "licenciado-en-filosofia",
                 DegreeType: CareerDegreeType.Grado,
@@ -521,6 +1067,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000120")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Profesor/a de Ciencias Políticas - Ciclo de Complementación Curricular",
                 Slug: "profesor-a-de-ciencias-politicas-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -529,6 +1076,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000121")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Profesor/a de Derecho - Ciclo de Complementación Curricular",
                 Slug: "profesor-a-de-derecho-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -537,6 +1085,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000122")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Profesor en Filosofía",
                 Slug: "profesor-en-filosofia",
                 DegreeType: CareerDegreeType.Grado,
@@ -546,6 +1095,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000123")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeHumanidades.Id,
                 Name: "Técnico/a en Gestión Universitaria- MD",
                 Slug: "tecnico-a-en-gestion-universitaria-md",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -555,6 +1105,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000124")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Bioingeniero/a",
                 Slug: "bioingeniero-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -564,6 +1115,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000125")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Ingeniero/a Ambiental",
                 Slug: "ingeniero-a-ambiental",
                 DegreeType: CareerDegreeType.Grado,
@@ -573,6 +1125,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000126")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Licenciado/a en Diseño de Interiores",
                 Slug: "licenciado-a-en-diseno-de-interiores",
                 DegreeType: CareerDegreeType.Grado,
@@ -582,6 +1135,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000127")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Licenciado en Diseño Gráfico",
                 Slug: "licenciado-en-diseno-grafico",
                 DegreeType: CareerDegreeType.Grado,
@@ -591,6 +1145,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000128")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Licenciado en Diseño Multimedial",
                 Slug: "licenciado-en-diseno-multimedial",
                 DegreeType: CareerDegreeType.Grado,
@@ -600,6 +1155,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000129")),
                 UniversityId: Unsta.Id,
+                AcademicUnitId: AuFacultadDeIngenieria.Id,
                 Name: "Técnico en Diseño Multimedial",
                 Slug: "tecnico-en-diseno-multimedial",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -612,6 +1168,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000200")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuCarreraDeKinesiologiaSedeMonteros.Id,
                 Name: "Kinesiólogo",
                 Slug: "kinesiologo",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -621,6 +1178,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000201")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuCarreraDeKinesiologiaSedeMonteros.Id,
                 Name: "Licenciado en Kinesiología",
                 Slug: "licenciado-en-kinesiologia",
                 DegreeType: CareerDegreeType.Grado,
@@ -630,8 +1188,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000202")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Enfermero",
                 Slug: "enfermero",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000269")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
+                Name: "Enfermero",
+                Slug: "enfermero-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 3),
             Plan: null),
@@ -639,8 +1209,31 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000203")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Enfermero/a Universitario/a",
                 Slug: "enfermero-a-universitario-a",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026a")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
+                Name: "Enfermero/a Universitario/a",
+                Slug: "enfermero-a-universitario-a-facultad-de-medicina",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026b")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
+                Name: "Enfermero/a Universitario/a",
+                Slug: "enfermero-a-universitario-a-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 3),
             Plan: null),
@@ -648,8 +1241,53 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000204")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Licenciado/a en Enfermería",
                 Slug: "licenciado-a-en-enfermeria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026c")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioBellaVista.Id,
+                Name: "Licenciado/a en Enfermería",
+                Slug: "licenciado-a-en-enfermeria-escuela-de-enfermeria-convenio-bella-vista",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026d")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioFamailla.Id,
+                Name: "Licenciado/a en Enfermería",
+                Slug: "licenciado-a-en-enfermeria-escuela-de-enfermeria-convenio-famailla",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026e")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
+                Name: "Licenciado/a en Enfermería",
+                Slug: "licenciado-a-en-enfermeria-facultad-de-medicina",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000026f")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
+                Name: "Licenciado/a en Enfermería",
+                Slug: "licenciado-a-en-enfermeria-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -657,6 +1295,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000205")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Licenciado/a en Obstetricia",
                 Slug: "licenciado-a-en-obstetricia",
                 DegreeType: CareerDegreeType.Grado,
@@ -666,8 +1305,42 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000206")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Licenciado en Enfermería",
                 Slug: "licenciado-en-enfermeria",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000270")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioBellaVista.Id,
+                Name: "Licenciado en Enfermería",
+                Slug: "licenciado-en-enfermeria-escuela-de-enfermeria-convenio-bella-vista",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000271")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeriaConvenioFamailla.Id,
+                Name: "Licenciado en Enfermería",
+                Slug: "licenciado-en-enfermeria-escuela-de-enfermeria-convenio-famailla",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000272")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
+                Name: "Licenciado en Enfermería",
+                Slug: "licenciado-en-enfermeria-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -675,8 +1348,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000207")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Técnico en Estadísticas de Salud",
                 Slug: "tecnico-en-estadisticas-de-salud",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 3),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000273")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
+                Name: "Técnico en Estadísticas de Salud",
+                Slug: "tecnico-en-estadisticas-de-salud-facultad-de-medicina",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 3),
             Plan: null),
@@ -684,8 +1369,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000208")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaDeEnfermeria.Id,
                 Name: "Técnico en Instrumentación Quirúrgica",
                 Slug: "tecnico-en-instrumentacion-quirurgica",
+                DegreeType: CareerDegreeType.Tecnicatura,
+                DurationYears: 2),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000274")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresEnfermeria.Id,
+                Name: "Técnico en Instrumentación Quirúrgica",
+                Slug: "tecnico-en-instrumentacion-quirurgica-instituto-universitario-multidisciplinario-de-aguilares-enfermeria",
                 DegreeType: CareerDegreeType.Tecnicatura,
                 DurationYears: 2),
             Plan: null),
@@ -693,6 +1390,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000209")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaUniversitariaDeCineVideoYTelevision.Id,
                 Name: "Licenciado/a en Cinematografía",
                 Slug: "licenciado-a-en-cinematografia",
                 DegreeType: CareerDegreeType.Grado,
@@ -702,6 +1400,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuEscuelaUniversitariaDeCineVideoYTelevision.Id,
                 Name: "Técnico/a Universitario/a en Medios Audiovisuales",
                 Slug: "tecnico-a-universitario-a-en-medios-audiovisuales",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -711,6 +1410,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeAgronomiaYZootecniaConcepcion.Id,
                 Name: "Técnico Universitario de Gestión en Calidad Alimenticia",
                 Slug: "tecnico-universitario-de-gestion-en-calidad-alimenticia",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -720,6 +1420,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeAgronomiaZootecniaYVeterinaria.Id,
                 Name: "Ingeniero/a Agrónomo/a",
                 Slug: "ingeniero-a-agronomo-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -729,6 +1430,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeAgronomiaZootecniaYVeterinaria.Id,
                 Name: "Ingeniero/a Zootecnista",
                 Slug: "ingeniero-a-zootecnista",
                 DegreeType: CareerDegreeType.Grado,
@@ -738,6 +1440,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeAgronomiaZootecniaYVeterinaria.Id,
                 Name: "Médico Veterinario",
                 Slug: "medico-veterinario",
                 DegreeType: CareerDegreeType.Grado),
@@ -746,6 +1449,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000020f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArquitecturaYUrbanismo.Id,
                 Name: "Arquitecto",
                 Slug: "arquitecto",
                 DegreeType: CareerDegreeType.Grado,
@@ -755,6 +1459,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000210")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArquitecturaYUrbanismo.Id,
                 Name: "Técnico Diseñador Universitario de Indumentaria y Textil",
                 Slug: "tecnico-disenador-universitario-de-indumentaria-y-textil",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -764,6 +1469,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000211")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Actor / Actriz",
                 Slug: "actor-actriz",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -773,6 +1479,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000212")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Bailarín de Danza Contemporánea",
                 Slug: "bailarin-de-danza-contemporanea",
                 DegreeType: CareerDegreeType.Grado,
@@ -782,6 +1489,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000213")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Diseñador de Interiores y Equipamiento",
                 Slug: "disenador-de-interiores-y-equipamiento",
                 DegreeType: CareerDegreeType.Grado,
@@ -791,8 +1499,20 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000214")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado/a en Artes Visuales",
                 Slug: "licenciado-a-en-artes-visuales",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 5),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000275")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes.Id,
+                Name: "Licenciado/a en Artes Visuales",
+                Slug: "licenciado-a-en-artes-visuales-instituto-universitario-multidisciplinario-de-aguilares-artes",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 5),
             Plan: null),
@@ -800,6 +1520,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000215")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado/a en Danza Clásica",
                 Slug: "licenciado-a-en-danza-clasica",
                 DegreeType: CareerDegreeType.Grado,
@@ -809,6 +1530,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000216")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado/a en Diseño de sonido",
                 Slug: "licenciado-a-en-diseno-de-sonido",
                 DegreeType: CareerDegreeType.Grado,
@@ -818,6 +1540,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000217")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado/a en Luthería",
                 Slug: "licenciado-a-en-lutheria",
                 DegreeType: CareerDegreeType.Grado,
@@ -827,6 +1550,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000218")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado/a en Teatro",
                 Slug: "licenciado-a-en-teatro",
                 DegreeType: CareerDegreeType.Grado,
@@ -836,6 +1560,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000219")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Licenciado en Música - Ciclo de Licenciatura",
                 Slug: "licenciado-en-musica-ciclo-de-licenciatura",
                 DurationYears: 2),
@@ -844,6 +1569,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Profesor/a Universitario/a en Teatro",
                 Slug: "profesor-a-universitario-a-en-teatro",
                 DegreeType: CareerDegreeType.Grado,
@@ -853,6 +1579,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Profesor de Danza Contemporánea",
                 Slug: "profesor-de-danza-contemporanea",
                 DegreeType: CareerDegreeType.Grado,
@@ -862,6 +1589,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Técnico/a Universitario/a en Construcción y Restauración de Instrumentos de Cuerdas Pulsadas",
                 Slug: "tecnico-a-universitario-a-en-construccion-y-restauracion-de-instrumentos-de-cuerdas-pulsadas",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -871,6 +1599,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Técnico/a Universitario en Sonorización",
                 Slug: "tecnico-a-universitario-en-sonorizacion",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -880,6 +1609,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeArtes.Id,
                 Name: "Técnico Universitario en Fotografía",
                 Slug: "tecnico-universitario-en-fotografia",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -889,6 +1619,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000021f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeBioquimicaQuimicaYFarmacia.Id,
                 Name: "Bioquímico/a",
                 Slug: "bioquimico-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -898,6 +1629,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000220")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeBioquimicaQuimicaYFarmacia.Id,
                 Name: "Farmacéutico/a",
                 Slug: "farmaceutico-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -907,6 +1639,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000221")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeBioquimicaQuimicaYFarmacia.Id,
                 Name: "Licenciado/a en Química",
                 Slug: "licenciado-a-en-quimica",
                 DegreeType: CareerDegreeType.Grado,
@@ -916,6 +1649,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000222")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeBioquimicaQuimicaYFarmacia.Id,
                 Name: "Licenciado en Biotecnología",
                 Slug: "licenciado-en-biotecnologia",
                 DegreeType: CareerDegreeType.Grado,
@@ -925,6 +1659,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000223")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeBioquimicaQuimicaYFarmacia.Id,
                 Name: "Técnico Laboratorista Universitario en Salud",
                 Slug: "tecnico-laboratorista-universitario-en-salud",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -934,6 +1669,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000224")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasEconomicas.Id,
                 Name: "Contador Público",
                 Slug: "contador-publico",
                 DegreeType: CareerDegreeType.Grado,
@@ -943,6 +1679,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000225")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasEconomicas.Id,
                 Name: "Licenciado en Administración",
                 Slug: "licenciado-en-administracion",
                 DegreeType: CareerDegreeType.Grado,
@@ -952,6 +1689,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000226")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasEconomicas.Id,
                 Name: "Licenciado en Economía",
                 Slug: "licenciado-en-economia",
                 DegreeType: CareerDegreeType.Grado,
@@ -961,6 +1699,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000227")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Diseñador de Iluminación",
                 Slug: "disenador-de-iluminacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -970,6 +1709,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000228")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero/a en Computación",
                 Slug: "ingeniero-a-en-computacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -979,6 +1719,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000229")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero/a Geodesta y Geofísico/a",
                 Slug: "ingeniero-a-geodesta-y-geofisico-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -988,6 +1729,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Agrimensor",
                 Slug: "ingeniero-agrimensor",
                 DegreeType: CareerDegreeType.Grado,
@@ -997,6 +1739,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Azucarero",
                 Slug: "ingeniero-azucarero",
                 DegreeType: CareerDegreeType.Grado,
@@ -1006,6 +1749,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Biomédico",
                 Slug: "ingeniero-biomedico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1015,6 +1759,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Civil",
                 Slug: "ingeniero-civil",
                 DegreeType: CareerDegreeType.Grado),
@@ -1023,6 +1768,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Electricista",
                 Slug: "ingeniero-electricista",
                 DegreeType: CareerDegreeType.Grado,
@@ -1032,6 +1778,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000022f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Electrónico",
                 Slug: "ingeniero-electronico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1041,6 +1788,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000230")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Industrial",
                 Slug: "ingeniero-industrial",
                 DegreeType: CareerDegreeType.Grado,
@@ -1050,6 +1798,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000231")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Mecánico",
                 Slug: "ingeniero-mecanico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1059,6 +1808,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000232")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Ingeniero Químico",
                 Slug: "ingeniero-quimico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1068,6 +1818,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000233")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Licenciado/a en Física",
                 Slug: "licenciado-a-en-fisica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1077,6 +1828,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000234")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Licenciado en Matemática",
                 Slug: "licenciado-en-matematica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1086,6 +1838,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000235")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Técnico/a Universitario/a en Física Ambiental",
                 Slug: "tecnico-a-universitario-a-en-fisica-ambiental",
                 DegreeType: CareerDegreeType.Tecnicatura),
@@ -1094,6 +1847,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000236")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Técnico en Iluminación",
                 Slug: "tecnico-en-iluminacion",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1103,6 +1857,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000237")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Técnico Universitario en Física",
                 Slug: "tecnico-universitario-en-fisica",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1112,6 +1867,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000238")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasExactasYTecnologia.Id,
                 Name: "Técnico Universitario en Tecnología Azucarera e Industrias Derivadas",
                 Slug: "tecnico-universitario-en-tecnologia-azucarera-e-industrias-derivadas",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1121,6 +1877,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000239")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo.Id,
                 Name: "Arqueólogo",
                 Slug: "arqueologo",
                 DegreeType: CareerDegreeType.Grado,
@@ -1130,6 +1887,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo.Id,
                 Name: "Geólogo/a",
                 Slug: "geologo-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -1139,6 +1897,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo.Id,
                 Name: "Licenciado/a en Ciencias Biológicas",
                 Slug: "licenciado-a-en-ciencias-biologicas",
                 DegreeType: CareerDegreeType.Grado,
@@ -1148,6 +1907,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo.Id,
                 Name: "Profesor en Ciencias Biológicas",
                 Slug: "profesor-en-ciencias-biologicas",
                 DegreeType: CareerDegreeType.Grado,
@@ -1157,6 +1917,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeCienciasNaturalesEInstitutoMiguelLillo.Id,
                 Name: "Técnico Universitario en Documentación y Museología Arqueológica",
                 Slug: "tecnico-universitario-en-documentacion-y-museologia-arqueologica",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1166,8 +1927,53 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSociales.Id,
                 Name: "Abogado",
                 Slug: "abogado",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000276")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSocialesConvenioBellaVista.Id,
+                Name: "Abogado",
+                Slug: "abogado-facultad-de-derecho-y-ciencias-sociales-convenio-bella-vista",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000277")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSocialesConvenioConcepcion.Id,
+                Name: "Abogado",
+                Slug: "abogado-facultad-de-derecho-y-ciencias-sociales-convenio-concepcion",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000278")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSocialesConvenioMonteros.Id,
+                Name: "Abogado",
+                Slug: "abogado-facultad-de-derecho-y-ciencias-sociales-convenio-monteros",
+                DegreeType: CareerDegreeType.Grado,
+                DurationYears: 6),
+            Plan: null),
+
+        new CareerSeed(
+            Career: new CareerRecord(
+                Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000279")),
+                UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSocialesConvenioTrancas.Id,
+                Name: "Abogado",
+                Slug: "abogado-facultad-de-derecho-y-ciencias-sociales-convenio-trancas",
                 DegreeType: CareerDegreeType.Grado,
                 DurationYears: 6),
             Plan: null),
@@ -1175,6 +1981,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000023f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSociales.Id,
                 Name: "Escribano",
                 Slug: "escribano",
                 DegreeType: CareerDegreeType.Grado,
@@ -1184,6 +1991,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000240")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSociales.Id,
                 Name: "Licenciado/a en Seguridad Pública - Ciclo de Complementación Curricular - MD",
                 Slug: "licenciado-a-en-seguridad-publica-ciclo-de-complementacion-curricular-md"),
             Plan: null),
@@ -1191,6 +1999,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000241")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeDerechoYCienciasSociales.Id,
                 Name: "Procurador",
                 Slug: "procurador",
                 DegreeType: CareerDegreeType.Grado,
@@ -1200,6 +2009,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000242")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeEducacionFisica.Id,
                 Name: "Licenciado en Educación Física",
                 Slug: "licenciado-en-educacion-fisica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1209,6 +2019,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000243")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeEducacionFisica.Id,
                 Name: "Licenciado en Educación Física - Ciclo de Licenciatura",
                 Slug: "licenciado-en-educacion-fisica-ciclo-de-licenciatura",
                 DurationYears: 2),
@@ -1217,6 +2028,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000244")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeEducacionFisica.Id,
                 Name: "Profesor de Educación Física",
                 Slug: "profesor-de-educacion-fisica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1226,6 +2038,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000245")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado/a en Historia",
                 Slug: "licenciado-a-en-historia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1235,6 +2048,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000246")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Ciencias de la Comunicación",
                 Slug: "licenciado-en-ciencias-de-la-comunicacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -1244,6 +2058,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000247")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Ciencias de la Educación",
                 Slug: "licenciado-en-ciencias-de-la-educacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -1253,6 +2068,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000248")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Filosofía",
                 Slug: "licenciado-en-filosofia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1262,6 +2078,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000249")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Francés",
                 Slug: "licenciado-en-frances",
                 DegreeType: CareerDegreeType.Grado,
@@ -1271,6 +2088,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Geografía",
                 Slug: "licenciado-en-geografia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1280,6 +2098,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Inglés",
                 Slug: "licenciado-en-ingles",
                 DegreeType: CareerDegreeType.Grado,
@@ -1289,6 +2108,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Letras",
                 Slug: "licenciado-en-letras",
                 DegreeType: CareerDegreeType.Grado,
@@ -1298,6 +2118,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Licenciado en Trabajo Social",
                 Slug: "licenciado-en-trabajo-social",
                 DegreeType: CareerDegreeType.Grado,
@@ -1307,6 +2128,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor/a de Historia",
                 Slug: "profesor-a-de-historia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1316,6 +2138,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000024f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Artes Plásticas - Ciclo de Profesorado",
                 Slug: "profesor-en-artes-plasticas-ciclo-de-profesorado",
                 DurationYears: 2),
@@ -1324,6 +2147,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000250")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Ciencias de la Educación",
                 Slug: "profesor-en-ciencias-de-la-educacion",
                 DegreeType: CareerDegreeType.Grado,
@@ -1333,6 +2157,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000251")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Ciencias Económicas - Ciclo de Profesorado",
                 Slug: "profesor-en-ciencias-economicas-ciclo-de-profesorado",
                 DurationYears: 2),
@@ -1341,6 +2166,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000252")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Filosofía",
                 Slug: "profesor-en-filosofia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1350,6 +2176,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000253")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Francés",
                 Slug: "profesor-en-frances",
                 DegreeType: CareerDegreeType.Grado,
@@ -1359,6 +2186,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000254")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Geografía",
                 Slug: "profesor-en-geografia",
                 DegreeType: CareerDegreeType.Grado,
@@ -1368,6 +2196,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000255")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Inglés",
                 Slug: "profesor-en-ingles",
                 DegreeType: CareerDegreeType.Grado,
@@ -1377,6 +2206,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000256")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Letras",
                 Slug: "profesor-en-letras",
                 DegreeType: CareerDegreeType.Grado,
@@ -1386,6 +2216,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000257")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Matemática",
                 Slug: "profesor-en-matematica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1395,6 +2226,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000258")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Profesor en Química",
                 Slug: "profesor-en-quimica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1404,6 +2236,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000259")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeFilosofiaYLetras.Id,
                 Name: "Técnico Universitario en Comunicación",
                 Slug: "tecnico-universitario-en-comunicacion",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1413,6 +2246,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025a")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
                 Name: "Licenciado/a en Fonoaudiología - Ciclo de Complementación Curricular",
                 Slug: "licenciado-a-en-fonoaudiologia-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -1421,6 +2255,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025b")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
                 Name: "Licenciado/a en Kinesiología y Fisiatría",
                 Slug: "licenciado-a-en-kinesiologia-y-fisiatria",
                 DegreeType: CareerDegreeType.Grado,
@@ -1430,6 +2265,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025c")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeMedicina.Id,
                 Name: "Médico",
                 Slug: "medico",
                 DegreeType: CareerDegreeType.Grado),
@@ -1438,6 +2274,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025d")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeOdontologia.Id,
                 Name: "Odontólogo/a",
                 Slug: "odontologo-a",
                 DegreeType: CareerDegreeType.Grado,
@@ -1447,6 +2284,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025e")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeOdontologia.Id,
                 Name: "Técnico/a Universitario/a en Asistencia Dental",
                 Slug: "tecnico-a-universitario-a-en-asistencia-dental",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1456,6 +2294,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000025f")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDeOdontologia.Id,
                 Name: "Técnico/a Universitario/a en Prótesis Dental",
                 Slug: "tecnico-a-universitario-a-en-protesis-dental",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1465,6 +2304,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000260")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDePsicologia.Id,
                 Name: "Profesor/a en Psicología - Ciclo de Complementación Curricular",
                 Slug: "profesor-a-en-psicologia-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -1473,6 +2313,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000261")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDePsicologia.Id,
                 Name: "Psicólogo",
                 Slug: "psicologo",
                 DegreeType: CareerDegreeType.Grado,
@@ -1482,6 +2323,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000262")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuFacultadDePsicologiaConvenioBellaVista.Id,
                 Name: "Técnico Universitario en Acompañamiento Terapéutico",
                 Slug: "tecnico-universitario-en-acompanamiento-terapeutico",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1491,6 +2333,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000263")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes.Id,
                 Name: "Licenciado en Artes Plásticas",
                 Slug: "licenciado-en-artes-plasticas",
                 DegreeType: CareerDegreeType.Grado,
@@ -1500,6 +2343,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000264")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes.Id,
                 Name: "Licenciado en Artes Plásticas (Especialidad: Escultura)",
                 Slug: "licenciado-en-artes-plasticas-especialidad-escultura",
                 DegreeType: CareerDegreeType.Grado,
@@ -1509,6 +2353,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000265")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes.Id,
                 Name: "Licenciado en Artes Plásticas (Especialidad: Grabado)",
                 Slug: "licenciado-en-artes-plasticas-especialidad-grabado",
                 DegreeType: CareerDegreeType.Grado,
@@ -1518,6 +2363,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000266")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuInstitutoUniversitarioMultidisciplinarioDeAguilaresArtes.Id,
                 Name: "Licenciado en Artes Plásticas (Especialidad: Pintura)",
                 Slug: "licenciado-en-artes-plasticas-especialidad-pintura",
                 DegreeType: CareerDegreeType.Grado,
@@ -1527,6 +2373,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000267")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuRectorado.Id,
                 Name: "Licenciado en Gestión Universitaria",
                 Slug: "licenciado-en-gestion-universitaria",
                 DegreeType: CareerDegreeType.Grado,
@@ -1536,6 +2383,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000268")),
                 UniversityId: Unt.Id,
+                AcademicUnitId: AuRectorado.Id,
                 Name: "Técnico Superior en Gestión Universitaria",
                 Slug: "tecnico-superior-en-gestion-universitaria",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1548,6 +2396,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000300")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Ciencia y Tecnología de Alimentos",
                 Slug: "licenciado-en-ciencia-y-tecnologia-de-alimentos",
                 DegreeType: CareerDegreeType.Grado,
@@ -1557,6 +2406,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000301")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Comercio Exterior",
                 Slug: "licenciado-en-comercio-exterior",
                 DegreeType: CareerDegreeType.Grado,
@@ -1566,6 +2416,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000302")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Diseño Industrial",
                 Slug: "licenciado-en-diseno-industrial",
                 DegreeType: CareerDegreeType.Grado,
@@ -1575,6 +2426,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000303")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Diseño Textil y de Indumentaria",
                 Slug: "licenciado-en-diseno-textil-y-de-indumentaria",
                 DegreeType: CareerDegreeType.Grado,
@@ -1584,6 +2436,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000304")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Finanzas",
                 Slug: "licenciado-en-finanzas",
                 DegreeType: CareerDegreeType.Grado,
@@ -1593,6 +2446,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000305")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Licenciado en Gestión de Empresas Agroindustriales",
                 Slug: "licenciado-en-gestion-de-empresas-agroindustriales",
                 DegreeType: CareerDegreeType.Grado,
@@ -1602,6 +2456,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000306")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeDesarrolloTecnologicoParaLaCompetitividadTerritorial.Id,
                 Name: "Técnico en Diseño Industrial",
                 Slug: "tecnico-en-diseno-industrial",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1611,6 +2466,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000307")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Abogado",
                 Slug: "abogado",
                 DegreeType: CareerDegreeType.Grado,
@@ -1620,6 +2476,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000308")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Contador Público Nacional",
                 Slug: "contador-publico-nacional",
                 DegreeType: CareerDegreeType.Grado,
@@ -1629,6 +2486,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000309")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Corredor Inmobiliario",
                 Slug: "corredor-inmobiliario",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1638,6 +2496,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030a")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Licenciado en Ciencia Política",
                 Slug: "licenciado-en-ciencia-politica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1647,6 +2506,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030b")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Licenciado en Periodismo",
                 Slug: "licenciado-en-periodismo",
                 DegreeType: CareerDegreeType.Grado,
@@ -1656,6 +2516,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030c")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Licenciado en Relaciones Internacionales",
                 Slug: "licenciado-en-relaciones-internacionales",
                 DegreeType: CareerDegreeType.Grado,
@@ -1665,6 +2526,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030d")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Licenciado en Seguridad Ciudadana",
                 Slug: "licenciado-en-seguridad-ciudadana",
                 DegreeType: CareerDegreeType.Grado,
@@ -1674,6 +2536,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030e")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Procurador/a",
                 Slug: "procurador-a",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1683,6 +2546,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000030f")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Técnico en Desarrollo Social",
                 Slug: "tecnico-en-desarrollo-social",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1692,6 +2556,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000310")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Técnico Jurídico de Empresas",
                 Slug: "tecnico-juridico-de-empresas",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1701,6 +2566,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000311")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Técnico Universitario en Protocolo, Ceremonial y Organización de Eventos",
                 Slug: "tecnico-universitario-en-protocolo-ceremonial-y-organizacion-de-eventos",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1710,6 +2576,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000312")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeEstudiosSocialesPoliticaYCultura.Id,
                 Name: "Técnico Universitario en Taquigrafía y Estenotipia",
                 Slug: "tecnico-universitario-en-taquigrafia-y-estenotipia",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1719,6 +2586,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000313")),
                 UniversityId: UspT.Id,
+                AcademicUnitId: AuInstitutoDeSaludYCalidadDeVida.Id,
                 Name: "Médico",
                 Slug: "medico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1731,6 +2599,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000400")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuCentroDeEstudiosDelTucumanCetucTucuman.Id,
                 Name: "Licenciado en Gestión Educativa - MD",
                 Slug: "licenciado-en-gestion-educativa-md"),
             Plan: null),
@@ -1738,6 +2607,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000401")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuInstitutoDeEducacionSuperiorSisaiani.Id,
                 Name: "Analista en Gestión Educativa",
                 Slug: "analista-en-gestion-educativa",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1747,6 +2617,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000402")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuInstitutoDeEducacionSuperiorSisaiani.Id,
                 Name: "Licenciado/a en Gestión Educativa - Ciclo de Complementación Curricular - MD",
                 Slug: "licenciado-a-en-gestion-educativa-ciclo-de-complementacion-curricular-md",
                 DurationYears: 2),
@@ -1755,6 +2626,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000403")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuInstitutoDeEducacionSuperiorSisaiani.Id,
                 Name: "Licenciado en Educación Inicial - Ciclo de Licenciatura - MD",
                 Slug: "licenciado-en-educacion-inicial-ciclo-de-licenciatura-md",
                 DurationYears: 2),
@@ -1763,6 +2635,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000404")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuInstitutoDeEducacionSuperiorSisaiani.Id,
                 Name: "Licenciado en Educación Primaria - Ciclo de Licenciatura - MD",
                 Slug: "licenciado-en-educacion-primaria-ciclo-de-licenciatura-md",
                 DurationYears: 2),
@@ -1771,6 +2644,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000405")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuTucumanVillaQuinteros.Id,
                 Name: "Técnico Universitario en Viveros y Plantaciones Forestales",
                 Slug: "tecnico-universitario-en-viveros-y-plantaciones-forestales",
                 DegreeType: CareerDegreeType.Tecnicatura),
@@ -1779,6 +2653,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000406")),
                 UniversityId: Unse.Id,
+                AcademicUnitId: AuTucumanVillaQuinteros.Id,
                 Name: "Técnico Universitario Fitosanitarista",
                 Slug: "tecnico-universitario-fitosanitarista",
                 DegreeType: CareerDegreeType.Tecnicatura),
@@ -1790,6 +2665,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000500")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Analista Universitario de Sistemas",
                 Slug: "analista-universitario-de-sistemas",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1799,6 +2675,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000501")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Ingeniero/a en Energía Eléctrica",
                 Slug: "ingeniero-a-en-energia-electrica",
                 DegreeType: CareerDegreeType.Grado,
@@ -1808,6 +2685,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000502")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Ingeniero Civil",
                 Slug: "ingeniero-civil",
                 DegreeType: CareerDegreeType.Grado),
@@ -1816,6 +2694,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000503")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Ingeniero Electrónico",
                 Slug: "ingeniero-electronico",
                 DegreeType: CareerDegreeType.Grado),
@@ -1824,6 +2703,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000504")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Ingeniero Mecánico",
                 Slug: "ingeniero-mecanico",
                 DegreeType: CareerDegreeType.Grado,
@@ -1833,6 +2713,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000505")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Licenciado en Gestión Ambiental - Ciclo de Complementación Curricular - MD",
                 Slug: "licenciado-en-gestion-ambiental-ciclo-de-complementacion-curricular-md",
                 DurationYears: 2),
@@ -1841,6 +2722,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000506")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Licenciado en Higiene y Seguridad en el Trabajo - Ciclo de Complementación Curricular",
                 Slug: "licenciado-en-higiene-y-seguridad-en-el-trabajo-ciclo-de-complementacion-curricular",
                 DurationYears: 2),
@@ -1849,6 +2731,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000507")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Licenciado en Tecnología Educativa - Ciclo de Complementación Curricular",
                 Slug: "licenciado-en-tecnologia-educativa-ciclo-de-complementacion-curricular"),
             Plan: null),
@@ -1856,6 +2739,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000508")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Electrónica",
                 Slug: "tecnico-universitario-en-electronica",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1865,6 +2749,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-000000000509")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Energías Sustentables",
                 Slug: "tecnico-universitario-en-energias-sustentables",
                 DegreeType: CareerDegreeType.Tecnicatura),
@@ -1873,6 +2758,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050a")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Higiene y Seguridad en el Trabajo",
                 Slug: "tecnico-universitario-en-higiene-y-seguridad-en-el-trabajo",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1882,6 +2768,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050b")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Logística",
                 Slug: "tecnico-universitario-en-logistica",
                 DegreeType: CareerDegreeType.Tecnicatura),
@@ -1890,6 +2777,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050c")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Mantenimiento Industrial",
                 Slug: "tecnico-universitario-en-mantenimiento-industrial",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -1899,6 +2787,7 @@ public static class AcademicSeedData
             Career: new CareerRecord(
                 Id: new CareerId(Guid.Parse("00000002-0000-4000-a000-00000000050d")),
                 UniversityId: UtnFrt.Id,
+                AcademicUnitId: AuFacultadRegionalTucuman.Id,
                 Name: "Técnico Universitario en Mecatrónica",
                 Slug: "tecnico-universitario-en-mecatronica",
                 DegreeType: CareerDegreeType.Tecnicatura,
@@ -2360,6 +3249,15 @@ public sealed record UniversityRecord(
     UniversityId Id, string Name, string Slug, IReadOnlyList<string> InstitutionalEmailDomains);
 
 /// <summary>
+/// Datos planos de una AcademicUnit del seed (R6, tarea 19). <see cref="Address"/> es el domicilio
+/// tal como lo publica la Guía SIU, sin normalizar: es la evidencia y no se pierde. La localidad
+/// normalizada (id y nombre de Georef) no vive acá porque se resuelve al sembrar, no en el dato
+/// estático (ver <c>IGeorefLocalityResolver</c>).
+/// </summary>
+public sealed record AcademicUnitRecord(
+    AcademicUnitId Id, UniversityId UniversityId, string Name, string Slug, string Address);
+
+/// <summary>
 /// Datos planos de una Career del seed. <see cref="DegreeType"/> y <see cref="DurationYears"/> son
 /// opcionales (R6): el catálogo real de Tucumán los completa cuando la Guía SIU los da tal cual
 /// (tipo de título, duración en años enteros); si la fuente no encaja (un ciclo que no es "de cero",
@@ -2368,6 +3266,7 @@ public sealed record UniversityRecord(
 public sealed record CareerRecord(
     CareerId Id,
     UniversityId UniversityId,
+    AcademicUnitId AcademicUnitId,
     string Name,
     string Slug,
     CareerDegreeType? DegreeType = null,

@@ -10,6 +10,18 @@ public static class AcademicUnitErrors
     public static readonly Error SlugRequired =
         Error.Validation("academic.academic_unit.slug_required", "Academic unit slug is required.");
 
+    public static readonly Error AddressRequired =
+        Error.Validation("academic.academic_unit.address_required", "Academic unit address is required.");
+
+    /// <summary>
+    /// Id y nombre de localidad de Georef viajan juntos (<see cref="AcademicUnit.ResolveLocality"/>):
+    /// no hay un estado válido donde uno esté resuelto y el otro no.
+    /// </summary>
+    public static readonly Error LocalityRequired =
+        Error.Validation(
+            "academic.academic_unit.locality_required",
+            "Locality id and name are both required to resolve a locality.");
+
     public static readonly Error NotFound =
         Error.NotFound("academic.academic_unit.not_found", "Academic unit not found.");
 

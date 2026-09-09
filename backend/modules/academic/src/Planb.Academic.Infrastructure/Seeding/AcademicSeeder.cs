@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Planb.Academic.Domain.AcademicTerms;
+using Planb.Academic.Domain.AcademicUnits;
 using Planb.Academic.Domain.CareerPlans;
 using Planb.Academic.Domain.Careers;
 using Planb.Academic.Domain.Chairs;
@@ -9,6 +10,7 @@ using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
+using Planb.Academic.Infrastructure.Georef;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
 
@@ -28,15 +30,18 @@ public sealed class AcademicSeeder
 {
     private readonly AcademicDbContext _db;
     private readonly IDateTimeProvider _clock;
+    private readonly IGeorefLocalityResolver _georef;
     private readonly ILogger<AcademicSeeder> _logger;
 
     public AcademicSeeder(
         AcademicDbContext db,
         IDateTimeProvider clock,
+        IGeorefLocalityResolver georef,
         ILogger<AcademicSeeder> logger)
     {
         _db = db;
         _clock = clock;
+        _georef = georef;
         _logger = logger;
     }
 
@@ -45,6 +50,7 @@ public sealed class AcademicSeeder
         var now = _clock.UtcNow;
 
         await SeedUniversitiesAsync(now, ct);
+        await SeedAcademicUnitsAsync(now, ct);
         await SeedCareersAndPlansAsync(now, ct);
         await SeedSubjectsAsync(now, ct);
         await SeedPrerequisitesAsync(now, ct);
@@ -85,6 +91,78 @@ public sealed class AcademicSeeder
         }
     }
 
+    /// <summary>
+    /// Siembra las AcademicUnits (R6, tarea 19) y resuelve su localidad contra Georef. Carga los
+    /// rows tracked (no <c>AsNoTracking</c>, a diferencia del resto de los Seed*Async): una unidad
+    /// ya sembrada en un run anterior pero sin localidad (Georef estaba caído esa vez) tiene que
+    /// poder reintentar la resolución en este run, no solo las nuevas.
+    /// </summary>
+    private async Task SeedAcademicUnitsAsync(DateTimeOffset now, CancellationToken ct)
+    {
+        var existing = await _db.AcademicUnits.ToDictionaryAsync(u => u.Id, ct);
+
+        var inserted = 0;
+        var pendingLocality = new List<AcademicUnit>();
+        foreach (var record in AcademicSeedData.AcademicUnits)
+        {
+            if (existing.TryGetValue(record.Id, out var unit))
+            {
+                if (unit.LocalityId is null)
+                {
+                    pendingLocality.Add(unit);
+                }
+                continue;
+            }
+
+            unit = AcademicUnit.Hydrate(
+                record.Id, record.UniversityId, record.Name, record.Slug, record.Address,
+                localityId: null, localityName: null, isActive: true, createdAt: now, updatedAt: now);
+            _db.AcademicUnits.Add(unit);
+            inserted++;
+            pendingLocality.Add(unit);
+        }
+
+        if (inserted > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: inserted {Count} academic units", inserted);
+        }
+
+        await ResolveLocalitiesAsync(pendingLocality, ct);
+    }
+
+    /// <summary>
+    /// Resuelve la localidad de cada unidad pendiente, una llamada a Georef por texto de localidad
+    /// distinto (nueve en la Guía SIU, no una por unidad): varias unidades comparten domicilio.
+    /// Si Georef no responde para un grupo, esas unidades quedan sin localidad y el seed sigue.
+    /// </summary>
+    private async Task ResolveLocalitiesAsync(IReadOnlyList<AcademicUnit> units, CancellationToken ct)
+    {
+        if (units.Count == 0) return;
+
+        var byLocalityText = units
+            .Select(unit => (Unit: unit, LocalityText: GeorefAddressParsing.ExtractLocality(unit.Address)))
+            .Where(x => x.LocalityText is not null)
+            .GroupBy(x => x.LocalityText!, x => x.Unit, StringComparer.OrdinalIgnoreCase);
+
+        var resolved = 0;
+        foreach (var group in byLocalityText)
+        {
+            var found = await _georef.ResolveAsync(group.Key, ct);
+            if (found is null) continue;
+
+            foreach (var unit in group)
+            {
+                unit.ResolveLocality(found.Id, found.Name, _clock);
+                resolved++;
+            }
+        }
+
+        if (resolved > 0)
+        {
+            _logger.LogInformation("AcademicSeeder: resolved {Count} academic unit localities via Georef", resolved);
+        }
+    }
+
     private async Task SeedCareersAndPlansAsync(DateTimeOffset now, CancellationToken ct)
     {
         var existingCareerIds = (await _db.Careers
@@ -120,7 +198,8 @@ public sealed class AcademicSeeder
                     isOfficial: true,
                     isActive: true,
                     createdAt: now,
-                    updatedAt: now));
+                    updatedAt: now,
+                    academicUnitId: seed.Career.AcademicUnitId));
                 careersInserted++;
             }
 

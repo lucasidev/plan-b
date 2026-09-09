@@ -43,7 +43,8 @@ public class CreateOfficialFactCommandHandlerTests
             .Returns(University.Create("UNSTA", "unsta", null, deps.Clock).Value);
         deps.AcademicUnits.FindByIdAsync(Arg.Any<AcademicUnitId>(), Arg.Any<CancellationToken>())
             .Returns(AcademicUnit.Create(
-                new UniversityId(Guid.NewGuid()), "Facultad de Ingeniería", "ingenieria", deps.Clock).Value);
+                new UniversityId(Guid.NewGuid()), "Facultad de Ingeniería", "ingenieria",
+                "Av. Perón 2085 - Yerba Buena - Tucumán", deps.Clock).Value);
         deps.Careers.FindByIdAsync(Arg.Any<CareerId>(), Arg.Any<CancellationToken>())
             .Returns(Career.Create(
                 new UniversityId(Guid.NewGuid()), "Tecnicatura", "tecnicatura", deps.Clock).Value);

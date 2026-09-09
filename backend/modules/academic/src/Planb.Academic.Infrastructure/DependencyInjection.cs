@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
@@ -24,6 +25,7 @@ using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
+using Planb.Academic.Infrastructure.Georef;
 using Planb.Academic.Infrastructure.Pdf;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.Academic.Infrastructure.Persistence.Repositories;
@@ -88,6 +90,20 @@ public static class DependencyInjection
         services.AddScoped<IAcademicUnitRepository, AcademicUnitRepository>();
         services.AddScoped<IOfficialFactRepository, OfficialFactRepository>();
         services.AddScoped<IOfficialFactReader, DapperOfficialFactReader>();
+
+        // R6 tarea 19: resuelve la localidad de cada AcademicUnit contra Georef al sembrar. Un
+        // HttpClient singleton alcanza (el seed hace un puñado de GETs una vez al arrancar, no el
+        // volumen que justificaría IHttpClientFactory). Timeout corto, no el default de 100s: si
+        // Georef no responde, el seed no puede quedar colgado esperando, tiene que seguir sin esa
+        // localidad.
+        services.AddSingleton<IGeorefLocalityResolver>(sp => new GeorefLocalityResolver(
+            new HttpClient
+            {
+                BaseAddress = new Uri("https://apis.datos.gob.ar/georef/api/"),
+                Timeout = TimeSpan.FromSeconds(10),
+            },
+            sp.GetRequiredService<ILogger<GeorefLocalityResolver>>()));
+
         return services;
     }
 

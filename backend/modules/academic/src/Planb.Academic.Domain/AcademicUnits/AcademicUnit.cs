@@ -16,14 +16,31 @@ namespace Planb.Academic.Domain.AcademicUnits;
 public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
 {
     // Mismo largo que las columnas EF (AcademicUnitConfiguration): name varchar(200), slug
-    // varchar(120). Compartida por el aggregate y el validator para que ninguno acepte lo que la
-    // columna despues rechaza con un 500 de Postgres.
+    // varchar(120), address varchar(300), locality_id/locality_name varchar(80). Compartida por
+    // el aggregate y el validator para que ninguno acepte lo que la columna despues rechaza con
+    // un 500 de Postgres.
     public const int MaxNameLength = 200;
     public const int MaxSlugLength = 120;
+    public const int MaxAddressLength = 300;
+    public const int MaxLocalityLength = 80;
 
     public UniversityId UniversityId { get; private set; }
     public string Name { get; private set; } = null!;
     public string Slug { get; private set; } = null!;
+
+    /// <summary>Domicilio tal como lo publica la fuente (R6, tarea 19), sin normalizar: es la evidencia.</summary>
+    public string Address { get; private set; } = null!;
+
+    /// <summary>
+    /// Id de Georef de la localidad que <see cref="Address"/> nombra. Null hasta que
+    /// <see cref="ResolveLocality"/> corre (o si Georef nunca la resolvió): una unidad sin
+    /// localidad resuelta es válida, y se sabe que no se resolvió.
+    /// </summary>
+    public string? LocalityId { get; private set; }
+
+    /// <summary>Nombre canónico de Georef para <see cref="LocalityId"/> (ej. "San Miguel de Tucumán").</summary>
+    public string? LocalityName { get; private set; }
+
     public bool IsActive { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset UpdatedAt { get; private set; }
@@ -34,6 +51,7 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
         UniversityId universityId,
         string name,
         string slug,
+        string address,
         IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
@@ -48,6 +66,11 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
             return AcademicUnitErrors.SlugRequired;
         }
 
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return AcademicUnitErrors.AddressRequired;
+        }
+
         var now = clock.UtcNow;
         return new AcademicUnit
         {
@@ -55,6 +78,7 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
             UniversityId = universityId,
             Name = name.Trim(),
             Slug = slug.Trim().ToLowerInvariant(),
+            Address = address.Trim(),
             IsActive = true,
             CreatedAt = now,
             UpdatedAt = now,
@@ -78,6 +102,26 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
 
         Name = name.Trim();
         Slug = slug.Trim().ToLowerInvariant();
+        UpdatedAt = clock.UtcNow;
+        return Result.Success();
+    }
+
+    /// <summary>
+    /// Guarda la localidad que el resolvedor de Georef encontró para <see cref="Address"/> (tarea
+    /// 19). Id y nombre viajan juntos porque son el mismo hallazgo: no hay estado donde uno esté
+    /// resuelto y el otro no.
+    /// </summary>
+    public Result ResolveLocality(string localityId, string localityName, IDateTimeProvider clock)
+    {
+        ArgumentNullException.ThrowIfNull(clock);
+
+        if (string.IsNullOrWhiteSpace(localityId) || string.IsNullOrWhiteSpace(localityName))
+        {
+            return AcademicUnitErrors.LocalityRequired;
+        }
+
+        LocalityId = localityId.Trim();
+        LocalityName = localityName.Trim();
         UpdatedAt = clock.UtcNow;
         return Result.Success();
     }
@@ -117,6 +161,9 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
         UniversityId universityId,
         string name,
         string slug,
+        string address,
+        string? localityId,
+        string? localityName,
         bool isActive,
         DateTimeOffset createdAt,
         DateTimeOffset updatedAt) =>
@@ -126,6 +173,9 @@ public sealed class AcademicUnit : Entity<AcademicUnitId>, IAggregateRoot
             UniversityId = universityId,
             Name = name,
             Slug = slug,
+            Address = address,
+            LocalityId = localityId,
+            LocalityName = localityName,
             IsActive = isActive,
             CreatedAt = createdAt,
             UpdatedAt = updatedAt,
