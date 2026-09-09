@@ -20,6 +20,11 @@ Para una oferta que se está cargando por primera vez:
 4. **Atar la carrera canónica**: buscar una carrera canónica existente o declarar una nueva; la decisión queda con quién la tomó y cuándo (US-195). Es lo que permite que Dónde estudiarla compare esta oferta con las de otras instituciones.
 5. **Publicar**: bloqueado mientras falte un hueco bloqueante, aunque el resto esté cargado (US-191); resueltos los dos, el botón se habilita.
 
+**Hoy, en el código** (`/admin/chairs`, `/admin/teachers`): el ABM existe, sin el recorrido por huecos que describe arriba.
+
+- **Cátedras** (`/admin/chairs`): se entra buscando la materia (reusa el buscador global, filtrado a materias), no por universidad ni período. Elegida la materia, un formulario carga una cátedra nueva con un solo campo, su nombre (el apellido del titular, que es como el alumno la recuerda); nace sin equipo. La lista de cátedras de esa materia muestra, por cada una, su equipo activo (nombre, rol y desde cuándo) y, aparte, "Integraron antes" con quienes cerraron su tramo; una sin equipo dice "Sin equipo cargado todavía", y una archivada se marca. **No hay ningún control para sumar un integrante al equipo desde la pantalla**: el titular hoy solo entra por seed o por API (S02).
+- **Docentes** (`/admin/teachers`): la lista trae nombre, universidad, cargo (o "sin cargo") y estado, con "Editar" y "Desactivar" (pide confirmación) o "Reactivar" por fila. "+ Nuevo docente" abre el alta: universidad (fija en la edición, no se cambia), nombre, apellido, cargo opcional, bio opcional y una foto por URL con vista previa. Es el insumo de la cátedra (US-196): un docente existe acá antes de poder sumarlo a un equipo, aunque esa segunda parte todavía no tenga pantalla.
+
 **La fuente sin oficializar** (US-202): un campo admite marcarse "fuente: no oficial" cuando la facultad no publica el plan o publica versiones que no coinciden; no bloquea cargar, y la ficha pública lo muestra.
 
 **Editar una oferta publicada** (US-201): cualquier campo se puede corregir después de publicada; guardar dispara el aviso a las cuentas que declararon esa carrera, con qué cambió.

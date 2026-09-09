@@ -54,7 +54,7 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 
 | Tramo | Grupo del mapa | Persona que lo pide | Stories | Pantallas |
 |---|---|---|---|---|
-| [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 4 |
+| [Sostener el catálogo](team/sustain-the-catalog/README.md) | BO1 (+ US-200/2/3/5, US-204) | Sofía, quien cura las frases | 15 | 5 |
 | [Moderar sin romper el producto](team/moderate-without-breaking-the-product/README.md) | BO2 (+ US-211, US-212, US-213, US-214) | Nahuel, Camila | 9 | 2 |
 | [Cortar los accesos](team/cut-the-access/README.md) | BO3 (+ US-218, US-219) | Admin | 5 | 1 |
 
@@ -65,9 +65,9 @@ El orden de cada tabla es el orden del recorrido. El mapa completo, con los esce
 | [Garantías](guarantees/README.md) | valen en toda pantalla; nacieron como O6 y US-167 | 5 | ninguna |
 | [Avisos](notices/README.md) | el canal por el que los tres recorridos escriben | ninguna propia | 1 |
 
-91 stories (86 en tramos y 5 garantías) y 34 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
+92 stories (87 en tramos y 5 garantías) y 35 pantallas en total; las 11 stories cuyo concepto murió con el modelo del 2026-08-25 se borraron ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) a [ADR-0085](../decisions/0085-three-instruments-and-official-data.md)). Las dudas abiertas de esta lectura (si Mi carrera y Cuidar lo publicado son tramos propios, si Llevarse el dato es de otro actor) están anotadas en el [ADR-0077](../decisions/0077-the-product-docs-read-as-journeys.md).
 
-## Las 34 pantallas
+## Las 35 pantallas
 
 Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo el índice por ID y slug de URL, que es lo único que no se deduce de la estructura de carpetas (los slugs se verificaron contra `frontend/src/app/` el 2026-09-05). **Una pantalla se nombra por lo que dice arriba**, en español; la URL es código, en inglés, y se fija al construirla.
 
@@ -103,6 +103,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-028` |  | [Correcciones](team/sustain-the-catalog/screens/SC-028-corrections/README.md) | sin slug hoy |
 | `SC-029` |  | [Frases](team/sustain-the-catalog/screens/SC-029-phrases/README.md) | `/admin/items` |
 | `SC-030` |  | [Pedidos](team/sustain-the-catalog/screens/SC-030-requests/README.md) | sin slug hoy |
+| `SC-036` |  | [Curaduría](team/sustain-the-catalog/screens/SC-036-curation/README.md) | `/admin/curation` |
 | `SC-031` | Moderar sin romper el producto | [Reportes](team/moderate-without-breaking-the-product/screens/SC-031-reports/README.md) | sin slug hoy |
 | `SC-032` |  | [Verificaciones](team/moderate-without-breaking-the-product/screens/SC-032-verifications/README.md) | sin slug hoy |
 | `SC-033` | Cortar los accesos | [Equipo](team/cut-the-access/screens/SC-033-team/README.md) | sin slug hoy |
