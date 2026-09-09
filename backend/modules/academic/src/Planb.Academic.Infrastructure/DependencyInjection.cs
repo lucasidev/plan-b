@@ -11,6 +11,7 @@ using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.AdminSubjects;
 using Planb.Academic.Application.Features.AdminTeachers;
 using Planb.Academic.Application.Features.AdminUniversities;
+using Planb.Academic.Application.Features.CanonicalCareerComparison;
 using Planb.Academic.Application.Features.CareerPlanImportQueue;
 using Planb.Academic.Application.Features.OfficialFacts;
 using Planb.Academic.Application.Features.Search;
@@ -91,6 +92,9 @@ public static class DependencyInjection
         services.AddScoped<IAcademicUnitRepository, AcademicUnitRepository>();
         services.AddScoped<IOfficialFactRepository, OfficialFactRepository>();
         services.AddScoped<IOfficialFactReader, DapperOfficialFactReader>();
+
+        // R6 tarea 5: Dónde estudiarla (la misma carrera canónica, lado a lado por ciudad).
+        services.AddScoped<ICanonicalCareerComparisonReader, DapperCanonicalCareerComparisonReader>();
 
         // R6 tarea 19: resuelve la localidad de cada AcademicUnit contra Georef al sembrar. Un
         // HttpClient singleton alcanza (el seed hace un puñado de GETs una vez al arrancar, no el

@@ -2,7 +2,6 @@ using Carter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Planb.Academic.Domain.OfficialFacts;
 
 namespace Planb.Academic.Application.Features.OfficialFacts;
 
@@ -14,8 +13,8 @@ namespace Planb.Academic.Application.Features.OfficialFacts;
 /// <para>
 /// Query, no Command: no hay CommandHandler separado (mismo criterio que
 /// <c>PublicCatalog/ListCareersEndpoint</c>). El reader trae todas las afirmaciones del sujeto; la
-/// selección de cuál es la vigente por campo corre acá, delegada al dominio
-/// (<see cref="OfficialFactCurrency"/>), nunca en el SQL del reader.
+/// selección de cuál es la vigente por campo corre en <see cref="OfficialFactResponseMapper"/>,
+/// compartida con Dónde estudiarla (R6 tarea 5), nunca en el SQL del reader.
 /// </para>
 /// </summary>
 public sealed class GetOfficialFactsForSubjectEndpoint : ICarterModule
@@ -45,7 +44,8 @@ public sealed class GetOfficialFactsForSubjectEndpoint : ICarterModule
             }
 
             var rows = await reader.ListBySubjectAsync(parsedType.Value, subjectId.Value, ct);
-            return Results.Ok(new GetOfficialFactsForSubjectResponse(SelectCurrentByField(rows)));
+            return Results.Ok(new GetOfficialFactsForSubjectResponse(
+                OfficialFactResponseMapper.SelectCurrentByField(rows)));
         })
         .WithName("Academic_GetOfficialFactsForSubject")
         .WithTags("Academic")
@@ -53,16 +53,4 @@ public sealed class GetOfficialFactsForSubjectEndpoint : ICarterModule
         .Produces<GetOfficialFactsForSubjectResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest);
     }
-
-    private static IReadOnlyList<OfficialFactResponseItem> SelectCurrentByField(
-        IReadOnlyList<OfficialFactListItem> rows) =>
-        rows
-            .GroupBy(r => r.Field)
-            .Select(group => OfficialFactCurrency.SelectCurrent(group.ToList()))
-            .OrderBy(r => r.Field, StringComparer.Ordinal)
-            .Select(r => new OfficialFactResponseItem(
-                r.Id, r.Field, r.Value, r.Unit, r.Period, r.Status,
-                r.SourceName, r.SourceUrl, r.SourceDocument, r.SourceRetrievedAt,
-                r.DerivationRuleId, r.Note, r.RelievedAt))
-            .ToList();
 }

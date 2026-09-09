@@ -35,4 +35,22 @@ public class GeorefAddressParsingTests
 
         locality.ShouldBeNull();
     }
+
+    [Fact]
+    public void ExtractProvince_ThreePartAddress_ReturnsLastPart()
+    {
+        var province = GeorefAddressParsing.ExtractProvince("Av. Perón 2085 - Yerba Buena - Tucumán");
+
+        province.ShouldBe("Tucumán");
+    }
+
+    [Theory]
+    [InlineData("Domicilio sin separador")]
+    [InlineData("Una - Sola - Separacion - De - Mas")]
+    public void ExtractProvince_NotThreeParts_ReturnsNull(string address)
+    {
+        var province = GeorefAddressParsing.ExtractProvince(address);
+
+        province.ShouldBeNull();
+    }
 }

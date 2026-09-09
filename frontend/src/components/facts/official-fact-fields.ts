@@ -20,6 +20,25 @@ export const OFFICIAL_FACT_FIELDS = {
   academicUnit: 'academic_unit',
 } as const;
 
+/**
+ * El orden fijo de los seis datos oficiales de una oferta (ADR-0090, F02, F05): dura en el papel,
+ * dura en la realidad, egreso por cohorte, plan vigente, acreditación (o validez nacional, según
+ * el nivel) y régimen de ingreso. Acreditación y validez nacional comparten posición porque una
+ * oferta releva una sola de las dos: nunca conviven en la misma ficha (F05, O03).
+ *
+ * Lo comparten la ficha de carrera y Dónde estudiarla: la misma oferta se lee en el mismo orden
+ * sola o al lado de otras.
+ */
+export const CAREER_OFFICIAL_FACT_ORDER: readonly string[] = [
+  OFFICIAL_FACT_FIELDS.paperDuration,
+  OFFICIAL_FACT_FIELDS.realDuration,
+  OFFICIAL_FACT_FIELDS.cohortGraduation,
+  OFFICIAL_FACT_FIELDS.currentPlan,
+  OFFICIAL_FACT_FIELDS.accreditation,
+  OFFICIAL_FACT_FIELDS.nationalValidity,
+  OFFICIAL_FACT_FIELDS.admissionRegime,
+];
+
 /** Nombre en español de cada campo, para la etiqueta que va arriba de su valor en la ficha. */
 export const OFFICIAL_FACT_LABELS: Record<string, string> = {
   [OFFICIAL_FACT_FIELDS.paperDuration]: 'Dura en el papel',

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { OFFICIAL_FACT_FIELDS, type OfficialFact, OfficialFactRow } from '@/components/facts';
+import { CAREER_OFFICIAL_FACT_ORDER, type OfficialFact, OfficialFactRow } from '@/components/facts';
 import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatShortDate } from '@/lib/format-date';
 import type { CareerFacts } from '../types';
@@ -36,6 +36,7 @@ export function CareerFactsSheet({ facts, officialFacts, reviewHref = '/reviews/
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
         <OfficialData officialFacts={officialFacts} />
+        <CompareLink careerId={facts.careerId} />
         <Coverage facts={facts} />
         <EditorialNotes facts={facts} />
         <Footer facts={facts} reviewHref={reviewHref} />
@@ -54,25 +55,14 @@ function Identity({ facts }: { facts: CareerFacts }) {
 }
 
 /**
- * Los seis datos oficiales de la oferta (ADR-0090, F02, F05): dura en el papel, dura en la
- * realidad, egreso por cohorte, plan vigente, acreditación (o validez nacional, según el nivel) y
- * régimen de ingreso, en ese orden fijo. Acreditación y validez nacional comparten posición porque
- * una oferta releva una sola de las dos: nunca conviven en la misma ficha (F05, O03).
+ * Los seis datos oficiales de la oferta (ADR-0090, F02, F05), en el orden fijo de
+ * `CAREER_OFFICIAL_FACT_ORDER` (compartido con Dónde estudiarla: la misma oferta se lee igual sola
+ * o al lado de otras).
  *
  * Sin relevamiento todavía, el bloque entero lo dice en vez de dejar un espacio en blanco; con
  * relevamiento parcial, se muestra lo que hay: ningún campo se completa con un estado que nadie
  * cargó.
  */
-const CAREER_OFFICIAL_FACT_ORDER = [
-  OFFICIAL_FACT_FIELDS.paperDuration,
-  OFFICIAL_FACT_FIELDS.realDuration,
-  OFFICIAL_FACT_FIELDS.cohortGraduation,
-  OFFICIAL_FACT_FIELDS.currentPlan,
-  OFFICIAL_FACT_FIELDS.accreditation,
-  OFFICIAL_FACT_FIELDS.nationalValidity,
-  OFFICIAL_FACT_FIELDS.admissionRegime,
-];
-
 function OfficialData({ officialFacts }: { officialFacts: OfficialFact[] }) {
   const byField = new Map(officialFacts.map((fact) => [fact.field, fact]));
   const ordered = CAREER_OFFICIAL_FACT_ORDER.map((field) => byField.get(field)).filter(
@@ -94,6 +84,24 @@ function OfficialData({ officialFacts }: { officialFacts: OfficialFact[] }) {
         )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Adónde va la ficha después de leer sus datos oficiales (SC-008, US-128): comparar esta misma
+ * oferta con las de otras instituciones de su ciudad. Un link de texto, no un botón: no compite
+ * con "Reseñá tu cursada", que es la acción principal de esta pantalla.
+ */
+function CompareLink({ careerId }: { careerId: string }) {
+  return (
+    <p className="mb-5 text-[13px]">
+      <Link
+        href={`/careers/${careerId}/where-to-study`}
+        className="text-accent-ink underline-offset-2 hover:underline"
+      >
+        Comparar con otras instituciones
+      </Link>
+    </p>
   );
 }
 
