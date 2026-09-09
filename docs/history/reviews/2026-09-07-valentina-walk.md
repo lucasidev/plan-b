@@ -33,10 +33,10 @@ Dos observaciones de camino: "Ver las 21 materias" en la ficha de carrera lleva 
 
 | ID | Hallazgo | Story | Estado |
 |---|---|---|---|
-| V01 | La ficha de carrera no tiene datos oficiales (duración en el papel y en la realidad, egreso por cohorte) ni "qué frena"; lo declara con "Todavía no tenemos datos oficiales de esta carrera." No hay entidad ni tabla para eso. | US-127, US-133, US-129 | Pendiente: R6, tarea 4 ([plan](../../plan/status.md)) |
+| V01 | La ficha de carrera no tiene datos oficiales (duración en el papel y en la realidad, egreso por cohorte) ni "qué frena"; lo declara con "Todavía no tenemos datos oficiales de esta carrera." No hay entidad ni tabla para eso. | US-127, US-133, US-129 | Pendiente en parte: los datos oficiales, con fuente y período, se leen en la ficha de carrera (R6, tarea 4, [#484](https://github.com/lucasidev/plan-b/issues/484)); "qué frena la cursada" sigue sin construirse, no era parte de esa tarea |
 | V02 | Dónde estudiarla no existe: ningún camino desde la carrera a la misma carrera en otras instituciones. | US-128 | Pendiente: R6, tarea 5 |
 | V03 | Explorar tiene una sola lente, por universidad, y `/careers` y `/subjects` responden 404. Valentina no tiene universidad: tiene, a lo sumo, una carrera. | US-222 | Pendiente: R6, tarea 8 |
-| V04 | El buscador no devuelve carreras ni universidades; su placeholder lo dice. Buscar la carrera que uno quiere estudiar devuelve materias. | US-132 | Pendiente: R6, tarea 7 |
+| V04 | El buscador no devuelve carreras ni universidades; su placeholder lo dice. Buscar la carrera que uno quiere estudiar devuelve materias. | US-132 | Resuelto: el buscador global devuelve `career` e `institution` además de materia, cátedra y docente (R6, tarea 7, [#487](https://github.com/lucasidev/plan-b/issues/487)) |
 | V05 | Arriba de la ficha de Pérez no hay fama por convergencia aunque sus tres frases apuntan al mismo lado, y Método dice que "la ficha lo dice arriba, con las preguntas a la vista". No se sabe desde afuera si la regla pide más frases o si no está construido. | US-221, persona | Pendiente: R6, tarea 15 |
 | V06 | El nombre del docente en la ficha de cátedra es texto sin link; la página del docente solo se alcanza desde el buscador. | SC-035, US-132 | Pendiente: R6, tarea 9 |
 | V07 | No hay forma de reportar contenido desde una ficha, con cuenta o sin ella. | US-167 | Pendiente: Backlog (US-167) |
