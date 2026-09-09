@@ -12,6 +12,22 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-09 · El router de Next perdía push/refresh sin ningún error, bajo carga
+
+**Síntoma**: cuatro E2E (`my-profile`, `write-review`, `chair-facts`, `undo`) flakeaban de forma intermitente en CI desde el 2026-09-07 (issue #477), siempre con la misma forma: después de guardar un formulario, el click dispara, el server action corre y persiste, `router.push`/`router.refresh` responde 200, y el DOM y la URL no cambian nunca dentro del timeout. 267 corridas locales previas no lo habían reproducido.
+
+**Causa raíz**: en Next 15.5.15 (arquitectura pre-segment-cache), `dispatchAction` en `app-router-instance.ts` deja que una acción NAVIGATE descarte una acción todavía pendiente en la cola sin garantía de reconciliación, y el `router.prefetch()` que dispara un `<Link>` en viewport escribe directo sobre el estado del router por fuera de esa cola. El sidebar y el topbar del shell autenticado montan siempre los mismos seis links (home, reviews/mine, settings, help, about, reviews/new): en la primera reproducción local, una ráfaga de prefetch de esos seis coincidió exacto con el `router.refresh()` posterior a guardar, y el POST y el GET que siguieron respondieron 200 sin que la UI cambiara. Pero apagar ese prefetch (candidato 1) no bajó la tasa medida (1/80 antes, 1/80 después, ambas veinte repeticiones por spec): la segunda reproducción, en un spec distinto y sin ninguna ráfaga de prefetch visible en la traza, confirmó que el prefetch del shell era un factor correlacionado y no la causa entera.
+
+**Fix**: `prefetch={false}` en los `<Link>` de `sidebar.tsx` y `topbar.tsx` (se queda: barato, reversible, y saca un factor medido). Como eso no alcanzó, `ReviewForm` pasa a navegar con `navigateAfterMutation`, el helper que ya existía en `lib/` desde S5 para exactamente este fallo y que otros doce formularios ya usaban: `window.location.assign` saca a React de la ecuación y cambia la URL de forma sincrónica. La primera versión de este fix escribió un helper nuevo que hacía polling sobre `window.location` antes de forzar, sin haber buscado el que ya estaba. Los `router.refresh()` de `MyProfileForm`, `MyReviewsList` (Borrar) y `ReviewEditor` (Corregir) comparten el patrón vulnerable y siguen sin fallback: no hay reproducción directa para ellos, así que quedan listados, no arreglados a ciegas.
+
+**Prevención**:
+
+- Cuando un candidato de fix está basado en correlación (no en un mecanismo probado), medirlo antes de asumir que alcanza. Acá "las trazas se parecen" no bastaba: la segunda medición, con el candidato 1 ya aplicado, fue la que refutó que fuera la causa completa.
+- Antes de escribir una defensa nueva, grepear si el repo ya tiene una para el mismo fallo. `navigateAfterMutation` llevaba meses en `lib/`, con sus mediciones en el docstring y doce consumidores, y aun así se escribió un segundo helper con el mismo propósito. Dos nombres para el mismo remedio obligan a todo el que lee a preguntarse en qué se diferencian.
+- Medir un E2E sospechoso localmente necesita `--repeat-each` alto (20) contra un build de producción, con carga de CPU real (no alcanza con `--workers` bajo): la reproducción limpia con traza de red recién apareció así, después de que 267 corridas sin ese método no encontraran nada.
+
+---
+
 ## 2026-09-02 · Tres sprints de máquina, ninguna persona real, y tests que confirmaban lo que había
 
 **Síntoma**: al cerrar R3 la máquina que convierte reseñas en fichas estaba entera y nadie la había usado: pre-deploy, cero reseñas de una persona real. La suite era grande y verde (más de mil tests) y la auditoría de R1 a R3 la encontró desbalanceada: la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, 9 de 75 escenarios citados por un test. CI tardaba 8 minutos por PR y la integración 25 minutos en local. Y la sesión que construyó la última story lo hizo entera desde el contexto principal, en el tier más caro, hasta compactarse a mitad de tarea.
