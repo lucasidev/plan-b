@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { CurrentInstrument } from '@/components/instrument/types';
 import { MethodSheet } from './method-sheet';
@@ -84,6 +84,9 @@ describe('MethodSheet', () => {
     // Y el resto de Método, que no tiene números, queda entero.
     expect(screen.getByRole('heading', { name: 'Cómo se arma un conteo' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Qué sesgos tiene esto' })).toBeInTheDocument();
+
+    // La postura institucional (US-185) tampoco inventa el piso que no llegó.
+    expect(screen.getByText(/el mismo piso de reseñas/)).toBeInTheDocument();
   });
 
   it('sin cuestionario publicado lo dice, en vez de mostrar un catálogo vacío', () => {
@@ -139,6 +142,88 @@ describe('MethodSheet', () => {
     render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
 
     expect(screen.getByText(/la fuente y el período relevado/)).toBeInTheDocument();
+  });
+
+  /**
+   * US-182 E2 (ADR-0090): el egreso por cohorte se muestra "Derivado" en la ficha de carrera
+   * porque ninguna fuente lo publica por carrera, y un derivado tiene que citar su regla en vez
+   * de mostrarse como si viniera leído de una fuente. El id del bloque es el contrato con el que
+   * la ficha de carrera linkea directo acá (`/method#graduation-flow-proxy`).
+   */
+  it('US-182 E2: el egreso Derivado explica su fórmula, sus años y sus seis sesgos', () => {
+    const { container } = render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
+
+    const anchor = container.querySelector('#graduation-flow-proxy');
+    expect(anchor).not.toBeNull();
+    expect(
+      within(anchor as HTMLElement).getByRole('heading', { name: 'Qué es un dato Derivado' }),
+    ).toBeInTheDocument();
+
+    // El id de la regla es un contrato de link, no copy: nunca aparece como texto en pantalla.
+    expect(screen.queryByText(/graduation-flow-proxy/)).not.toBeInTheDocument();
+
+    // Qué se divide por qué, y a qué nivel (nunca por carrera, porque la fuente no llega ahí).
+    expect(
+      screen.getByText(/cuánta gente egresó en un año, dividido cuánta gente había entrado/),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/nunca sobre una carrera sola/)).toBeInTheDocument();
+
+    // De qué años sale.
+    expect(screen.getByText(/del 2020 al\s+2023/)).toBeInTheDocument();
+
+    // Los seis sesgos declarados, cada uno su propio texto verificable.
+    expect(screen.getByText(/no es la misma gente de punta a punta/i)).toBeInTheDocument();
+    expect(screen.getByText(/mezcla carreras que no se parecen/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/el número de abajo de la cuenta crece y el resultado baja/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/una carrera recién abierta todavía no tiene egresados/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/repite el mismo número dos años seguidos/i)).toBeInTheDocument();
+    expect(screen.getByText(/se puede contar dos veces/i)).toBeInTheDocument();
+
+    // Por qué el número no es solo "aproximado": puede pesar para cualquiera de los dos lados.
+    expect(screen.getByText(/más alto o más bajo de lo que en realidad pasa/i)).toBeInTheDocument();
+  });
+
+  /**
+   * US-185: la postura de no tener acuerdos con instituciones tiene que estar escrita en Método,
+   * no inferirse de "ni instituciones destacadas o patrocinadas" (hallazgo V14, recorrido de
+   * Valentina). Se apoya en el mismo piso que ya gobierna qué publica: si hubiera una excepción
+   * por institución, sería justo ahí donde aparecería.
+   */
+  it('US-185 E1: la postura declara que no hay acuerdos ni trato preferencial con nadie', () => {
+    render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
+
+    expect(screen.getByText(/no tenemos acuerdos con ninguna institución/i)).toBeInTheDocument();
+    expect(screen.getByText(/ninguna recibe\s+trato preferencial/i)).toBeInTheDocument();
+  });
+
+  it('US-185 E2 / N1: el mismo piso rige para todas, sin excepción por convenio', () => {
+    render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
+
+    // El piso que se declara acá es el mismo número que gobierna toda la pantalla (no uno propio
+    // inventado para esta oración): por eso se deriva del mismo prop `chairFloor` que FloorBlock.
+    expect(
+      screen.getByText(
+        /la misma cátedra necesita\s+las mismas 7 reseñas\s+para publicar, sea cual sea la universidad/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a nadie le bajamos ese piso ni le subimos su cobertura/i),
+    ).toBeInTheDocument();
+  });
+
+  it('US-185 edge: UNSTA, la universidad de origen, no tiene trato distinto', () => {
+    render(<MethodSheet instrument={null} chairFloor={7} pairFloor={4} />);
+
+    expect(
+      screen.getByText(/eso incluye a unsta, la universidad donde arrancó este proyecto/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/se mide con las mismas reglas que cualquier otra/i),
+    ).toBeInTheDocument();
   });
 
   it('sin ninguna destilada todavía, lo dice en vez de callarlo', () => {
