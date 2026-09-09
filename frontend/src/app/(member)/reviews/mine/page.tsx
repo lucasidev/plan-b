@@ -31,7 +31,7 @@ export default async function MyReviewsPage({
   ]);
 
   return (
-    <div data-surface="bulletin" className="mx-auto w-full max-w-[560px] px-4 py-8">
+    <div className="mx-auto w-full max-w-[560px] px-4 py-8">
       <div className="mb-[18px]">
         <h1 className="mb-0.5 font-serif text-[24px] font-semibold text-ink">Mis aportes</h1>
         <p className="text-[13px] leading-relaxed text-ink-2">

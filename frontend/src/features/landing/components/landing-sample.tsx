@@ -49,7 +49,7 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
   const items = sample.chairConduct.slice(0, 2);
 
   return (
-    <div data-surface="bulletin" className="rounded-xl border-2 border-ink bg-bg-card p-5">
+    <div className="rounded-xl border-2 border-ink bg-bg-card p-5">
       <h3 className="mb-0.5 font-serif text-[21px] font-semibold leading-tight text-ink">
         Cátedra {sample.chairName}
       </h3>

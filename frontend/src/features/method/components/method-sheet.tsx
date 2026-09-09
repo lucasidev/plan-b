@@ -20,7 +20,7 @@ export function MethodSheet({
   pairFloor: number | null;
 }) {
   return (
-    <div data-surface="bulletin" className="min-h-full w-full">
+    <div className="min-h-full w-full">
       <div className="mx-auto w-full max-w-[640px] px-4 py-8">
         <header className="mb-6">
           <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Método</p>

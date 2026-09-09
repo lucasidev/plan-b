@@ -14,7 +14,7 @@ import type { Distribution, SubjectChair, SubjectFacts, TakenWith } from '../typ
  */
 export function SubjectFactsSheet({ facts }: { facts: SubjectFacts }) {
   return (
-    <div data-surface="bulletin" className="min-h-screen w-full">
+    <div className="min-h-screen w-full">
       {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
           búsqueda y no hay cómo seguir buscando ni volver. */}
       <CatalogTopbar />
