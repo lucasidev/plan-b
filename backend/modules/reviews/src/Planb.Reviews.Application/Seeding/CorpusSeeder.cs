@@ -67,7 +67,13 @@ public sealed class CorpusSeeder
     /// invocar: nace random al registrarse, así que este seeder no lo puede saber de antemano.
     /// Null la deja sin sus dos reseñas propias; el resto del corpus se siembra igual.
     /// </param>
-    public async Task SeedAsync(Guid? luciaAccountId = null, CancellationToken ct = default)
+    /// <param name="matiasAccountId">
+    /// El id real de la persona sembrada <c>matias.ledesma@gmail.com</c>, resuelto de la misma
+    /// forma que <paramref name="luciaAccountId"/>. Null la deja sin su reseña propia; el resto del
+    /// corpus se siembra igual.
+    /// </param>
+    public async Task SeedAsync(
+        Guid? luciaAccountId = null, Guid? matiasAccountId = null, CancellationToken ct = default)
     {
         var instrument = await _catalog.GetCurrentInstrumentAsync(CatalogSeedData.StudentCourseCode, ct);
         if (instrument is null)
@@ -91,6 +97,11 @@ public sealed class CorpusSeeder
         if (luciaAccountId is { } lucia)
         {
             inserted += await InsertReviewsAsync(CorpusSeedData.LuciaReviews(lucia), instrument.Id, now, ct);
+        }
+
+        if (matiasAccountId is { } matias)
+        {
+            inserted += await InsertReviewsAsync(CorpusSeedData.MatiasReviews(matias), instrument.Id, now, ct);
         }
 
         var notePublished = await SeedEditorialNoteAsync(ct);

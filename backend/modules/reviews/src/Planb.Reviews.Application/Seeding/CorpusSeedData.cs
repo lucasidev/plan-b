@@ -74,8 +74,13 @@ namespace Planb.Reviews.Application.Seeding;
 ///   102 Álgebra I + 103 Inglés A1     11 la llevaron juntas   publica
 ///   104 Formación Humanística I + 113 Gestión de RR.HH   6 la llevaron juntas   no publica, le faltan 4
 ///
-///   213 Desarrollo Front End y 221 Control de Calidad Avanzado: dos voces propias de
-///   lucia.mansilla (persona sembrada), para "Mis aportes" e Inicio.
+///   213 Desarrollo Front End: una voz propia de lucia.mansilla (persona sembrada), para
+///   "Mis aportes" e Inicio.
+///
+///   221 Control de Calidad Avanzado: dos voces, lucia.mansilla y matias.ledesma (las dos
+///   personas sembradas verified+active), la misma cátedra: la garantía de anonimato entre dos
+///   cuentas reales y no solo entre sintéticas. Bajo el piso (2 de 10), así que la ficha pública
+///   todavía no muestra nada de esto: el mecanismo no depende de si publica.
 /// </code>
 ///
 /// <para>
@@ -334,9 +339,10 @@ public static class CorpusSeedData
     /// Dos reseñas propias de <c>lucia.mansilla@gmail.com</c> (persona sembrada): para
     /// que "Mis aportes" e Inicio tengan qué mostrar en una cuenta real y no solo en las sintéticas.
     /// <paramref name="luciaAccountId"/> nace random al registrarse (no es determinístico como el
-    /// resto del seed): <see cref="CorpusSeeder"/> lo busca por mail antes de llamar acá. Las dos
-    /// materias que elige (213, 221) no tienen ninguna otra reseña en el corpus, así que no le suma
-    /// voces a ninguna cátedra por encima del piso.
+    /// resto del seed): <see cref="CorpusSeeder"/> lo busca por mail antes de llamar acá. De las dos
+    /// materias que elige, 213 sigue sin otra reseña; 221 suma la de <see cref="MatiasReviews"/>
+    /// (misma cátedra, otra cuenta real): ninguna de las dos pasa el piso, así que no le suma voces
+    /// a ninguna cátedra por encima de él.
     /// </summary>
     public static IReadOnlyList<SeededReview> LuciaReviews(Guid luciaAccountId) =>
     [
@@ -357,6 +363,29 @@ public static class CorpusSeedData
             ChairJuarez,
             [(Outcome, 2), (ClassesHeld, 1)],
             AccountIdOverride: luciaAccountId),
+    ];
+
+    /// <summary>
+    /// Una reseña propia de <c>matias.ledesma@gmail.com</c> (persona sembrada), sobre la misma
+    /// cátedra que una de las de <see cref="LuciaReviews"/> (221 Control de Calidad Avanzado,
+    /// ChairJuarez): dos cuentas reales reseñando la misma cátedra es lo que hace que "nadie pueda
+    /// atar una respuesta a ninguna de las dos" sea un hecho sembrado y no algo que solo se declara
+    /// (Matías, <c>docs/product/personas.md</c>, "reclamó solo y no sirvió de nada"). El campo
+    /// libre reproduce ese reclamo: sirve para verificar que alimenta la curaduría y nunca se
+    /// publica (ADR-0084). <paramref name="matiasAccountId"/> nace random al registrarse, igual que
+    /// el de Lucía: <see cref="CorpusSeeder"/> lo busca por mail antes de llamar acá.
+    /// </summary>
+    public static IReadOnlyList<SeededReview> MatiasReviews(Guid matiasAccountId) =>
+    [
+        new SeededReview(
+            new ReviewId(Guid.Parse("00000021-0000-4000-a000-000000000903")),
+            AccountIndex: 0,
+            Subject221,
+            Term2025C1,
+            ChairJuarez,
+            [(Outcome, 1), (ClassesHeld, 3)],
+            FreeText: "Con Juárez faltaron muchas clases y cuando fui a plantearlo me dijeron que era el único que se quejaba.",
+            AccountIdOverride: matiasAccountId),
     ];
 
     /// <summary>Pisa el campo libre de la reseña en <paramref name="index"/> (posición absoluta en la lista).</summary>

@@ -13,6 +13,17 @@
         }
       },
       {
+        "Email": "matias.ledesma@gmail.com",
+        "Password": "matias.ledesma.12",
+        "State": "VerifiedActive",
+        "DisplayName": "Matías Ledesma",
+        "StudentProfile": {
+          "CareerPlanId": "00000003-0000-4000-a000-000000000004",
+          "CareerId": "00000002-0000-4000-a000-000000000004",
+          "EnrollmentYear": 2022
+        }
+      },
+      {
         "Email": "paula.suspendida@planb.local",
         "Password": "paula.suspendida.12",
         "State": "Disabled",
