@@ -29,8 +29,13 @@ erDiagram
     University ||--o{ Career : offers
     University ||--o{ Teacher : employs
     University ||--o{ AcademicTerm : schedules
+    University ||--o{ AcademicUnit : has
     Career ||--o{ CareerPlan : versions
     CareerPlan ||--o{ Subject : contains
+
+    University ||--o{ OfficialFact : "as institution"
+    AcademicUnit ||--o{ OfficialFact : "as academic_unit"
+    Career ||--o{ OfficialFact : "as offering"
 
     User ||--o{ StudentProfile : has
     StudentProfile }o--|| CareerPlan : "enrolled in"
@@ -52,7 +57,7 @@ erDiagram
 | Context              | Entidades                                                                                                   | Propósito                                                       |
 | -------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Identity             | User, StudentProfile, UserSettings, UserDeletionLog, VerificationToken                      | Cuentas, roles, identidades académicas, ajustes, bajas         |
-| Academic Catalog     | University, Career, CareerPlan, Subject, Prerequisite, Teacher, Chair, ChairMember, AcademicTerm, CareerPlanImport | Datos precargados del dominio académico       |
+| Academic Catalog     | University, AcademicUnit, Career, CareerPlan, Subject, Prerequisite, Teacher, Chair, ChairMember, AcademicTerm, CareerPlanImport, OfficialFact | Datos precargados del dominio académico y los datos oficiales relevados (ADR-0090) |
 
 ## Context: Identity
 
@@ -185,7 +190,7 @@ Fila de auditoría inmutable que queda cuando un user borra su cuenta (UC-038, d
 
 ## Context: Academic Catalog
 
-Datos precargados manualmente por el equipo admin. Modela universidades, carreras, planes de estudio, materias, correlativas, docentes, cátedras y cuatrimestres. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0049](../decisions/0049-career-plan-versions-by-year-and-status.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md).
+Datos precargados manualmente por el equipo admin. Modela universidades, unidades académicas, carreras, planes de estudio, materias, correlativas, docentes, cátedras, cuatrimestres y los datos oficiales relevados contra fuente pública. Ver [ADR-0001](../decisions/0001-multi-university-as-root-domain-from-day-1.md), [ADR-0049](../decisions/0049-career-plan-versions-by-year-and-status.md), [ADR-0003](../decisions/0003-prerequisites-with-two-types.md), [ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md).
 
 ```mermaid
 ---
@@ -196,10 +201,15 @@ erDiagram
     University ||--o{ Career : offers
     University ||--o{ Teacher : employs
     University ||--o{ AcademicTerm : schedules
+    University ||--o{ AcademicUnit : has
     Career ||--o{ CareerPlan : versions
     CareerPlan ||--o{ Subject : contains
     Subject ||--o{ Prerequisite : "as subject_id"
     Subject ||--o{ Prerequisite : "as required_subject_id"
+
+    University ||--o{ OfficialFact : "as institution"
+    AcademicUnit ||--o{ OfficialFact : "as academic_unit"
+    Career ||--o{ OfficialFact : "as offering"
 ```
 
 ### Entity: University
@@ -216,6 +226,24 @@ erDiagram
 | `institutional_email_domains` | TEXT[]      | NOT NULL, DEFAULT `'{}'` | Dominios de email institucional, en lowercase    |
 | `created_at`                  | TIMESTAMPTZ | NOT NULL                 |                                                  |
 | `updated_at`                  | TIMESTAMPTZ | NOT NULL                 |                                                  |
+
+### Entity: AcademicUnit
+
+La facultad: el nivel entre la institución y la carrera ([ADR-0085](../decisions/0085-three-instruments-and-official-data.md), [ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)). Las carreras cuelgan de ella y es uno de los tres sujetos posibles de un `OfficialFact`.
+
+| Campo           | Tipo        | Constraints               | Notas                                            |
+| --------------- | ----------- | -------------------------- | ------------------------------------------------ |
+| `id`            | UUID        | PK                         |                                                  |
+| `university_id` | UUID        | NOT NULL                   | Ref a University sin FK (cross-aggregate, ADR-0017) |
+| `name`          | TEXT        | NOT NULL                   | Ej "Facultad de Ingeniería"                      |
+| `slug`          | TEXT        | NOT NULL                   | Único por universidad                            |
+| `is_active`     | BOOLEAN     | NOT NULL, DEFAULT `true`   | Soft delete                                      |
+| `created_at`    | TIMESTAMPTZ | NOT NULL                   |                                                  |
+| `updated_at`    | TIMESTAMPTZ | NOT NULL                   |                                                  |
+
+Constraints:
+
+- `UNIQUE(university_id, slug)`: slug único por universidad.
 
 ### Entity: Career
 
@@ -398,6 +426,34 @@ Constraints:
 
 El tramo no es adorno: la ficha publica reseñas de varios años y el equipo cambia. Sin `since`/`until`, la ficha le atribuiría al titular de hoy lo que se dictó hace tres años. Los invariantes que el aggregate sostiene (un docente vigente por vez, a lo sumo un titular vigente) no tienen red en la base, porque validar solapamientos de tramos exige ordenar períodos: los valida `Chair`, y `Hydrate` tira si el manifiesto del seeder viene incoherente.
 
+### Entity: OfficialFact
+
+Un dato oficial: una afirmación fechada, con sujeto, campo, valor con su unidad, período, fuente y estado ([ADR-0090](../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)). Ledger de solo alta: no hay Update, "corregir" es cargar una afirmación nueva con una fecha de relevamiento más reciente.
+
+| Campo                 | Tipo         | Constraints | Notas                                                                 |
+| --------------------- | ------------ | ----------- | ---------------------------------------------------------------------- |
+| `id`                  | UUID         | PK          |                                                                        |
+| `subject_type`        | ENUM `official_fact_subject_type` | NOT NULL | `Institution`, `AcademicUnit`, `Offering`. Guardado como string      |
+| `subject_id`          | UUID         | NOT NULL    | Ref a University, AcademicUnit o Career según `subject_type`, sin FK   |
+| `field`               | VARCHAR(60)  | NOT NULL    | Código del vocabulario curado en código (`OfficialFactField`), abierto |
+| `value`               | VARCHAR(2000)| NULL        | El valor tal como se publica, como texto tipado. Null si no hay dato   |
+| `unit`                | VARCHAR(20)  | NULL        | `years`, `percent`, `count`, `currency_ars` cuando el valor es numérico |
+| `period`              | VARCHAR(120) | NULL        | A qué período refiere el dato, distinto de `relieved_at`               |
+| `source_name`         | VARCHAR(200) | NOT NULL    | Obligatoria siempre, incluso con `status = NotPublished`               |
+| `source_url`          | VARCHAR(2000)| NOT NULL    |                                                                        |
+| `source_document`     | VARCHAR(200) | NULL        | Documento o cuadro dentro de la fuente                                 |
+| `source_retrieved_at` | TIMESTAMPTZ  | NOT NULL    | Fecha en que se bajó la muestra de la fuente                           |
+| `status`              | ENUM `official_fact_status` | NOT NULL | `Published`, `Derived`, `NotPublished`, `Requested`, `NotApplicable`. Guardado como string |
+| `derivation_rule_id`  | VARCHAR(60)  | NULL        | Obligatorio cuando `status = Derived`: el id de la regla escrita en Método |
+| `note`                | VARCHAR(1000)| NULL        | Obligatoria cuando `status = NotApplicable` (la razón)                 |
+| `relieved_at`         | TIMESTAMPTZ  | NOT NULL    | Cuándo se relevó el dato                                                |
+| `relieved_by`         | UUID         | NOT NULL    | Ref a User (identity) sin FK cross-módulo                              |
+| `created_at`          | TIMESTAMPTZ  | NOT NULL    |                                                                        |
+
+Índices:
+
+- `ix_official_facts_subject_field (subject_type, subject_id, field)`, **no único**: varias afirmaciones conviven a propósito para el mismo sujeto y campo (dos fuentes que no cierran, dos períodos). Cuál es la vigente lo decide el dominio (`OfficialFactCurrency.SelectCurrent`, la relevada más recientemente), nunca una constraint de la base ni el `ORDER BY` de un read.
+
 ### Invariantes cross-table (enforced en app)
 
 - `Career.university_id = Teacher.university_id` para los teachers que integran (vía `ChairMember`) cátedras de subjects de esa carrera.
@@ -545,6 +601,8 @@ Nombres y valores de todos los enums del modelo.
 | `prerequisite_type`           | `para_cursar`, `para_rendir`                                                          |
 | `career_plan_import_status`   | `pending`, `parsing`, `parsed`, `failed`, `approved`                                  |
 | `verification_token_purpose`  | `UserEmailVerification`, `PasswordReset` (persistido como texto, no como enum de Postgres) |
+| `official_fact_subject_type`  | `Institution`, `AcademicUnit`, `Offering` (persistido como texto, no como enum de Postgres) |
+| `official_fact_status`        | `Published`, `Derived`, `NotPublished`, `Requested`, `NotApplicable` (persistido como texto, no como enum de Postgres) |
 
 ## Apéndice B: Invariantes transversales
 
