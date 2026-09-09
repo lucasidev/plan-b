@@ -76,7 +76,7 @@ Sin verificar contra el stage real.
 
 ### 8. Entrar con las cuentas sembradas
 
-Las cuatro personas y el admin (`admin@planb.local`) entran con `PLANB_SEED_PASSWORD`, no con las passwords de `personas.json`, que son públicas. Los mails de verificación y de reset llegan a `https://mail.olisar.com.ar`, que pide el usuario y la password de `MAILPIT_UI_AUTH`.
+Las cuatro personas, incluido el admin (`admin@planb.local`), entran con las passwords propias de `personas.json`: son públicas a propósito, elenco de prueba ([`dev-seed-personas.md`](dev-seed-personas.md)). Los mails de verificación y de reset llegan a `https://mail.olisar.com.ar`, que pide el usuario y la password de `MAILPIT_UI_AUTH`.
 
 Mailpit con auth, verificado el 2026-09-04; el recorrido con cuenta, sin verificar.
 
@@ -123,7 +123,6 @@ Ningún valor vive en el repo ni se pasa por el chat: solo los nombres. Los carg
 | `JWT_SECRET` | La firma de las sesiones; lo usan `api` y `web`. | Cambiar el valor y Deploy: cierra todas las sesiones abiertas. |
 | `SESSION_SECRET` | Lo exige el esquema de entorno del frontend. | Cambiar el valor y Deploy. |
 | `MAILPIT_UI_AUTH` | La UI de Mailpit, donde se ven los links de verificación y de reset. | Cambiar el valor y Deploy. |
-| `PLANB_SEED_PASSWORD` | La password de las cuentas sembradas, incluido el admin. | La siembra ya corrió: cambiar el valor y hacer el reset (caso 7). |
 
 `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `WEB_HOST`, `PLANB_API_TAG` y `PLANB_WEB_TAG` no son secretos.
 

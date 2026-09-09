@@ -5,7 +5,7 @@
 # dejan la base lista antes de que `api` arranque (ver ADR-0091); `seed` no existe en
 # docker-compose.prod.yml, que es la protección fuerte contra sembrar producción.
 # Dokploy inyecta (pestaña Environment): POSTGRES_PASSWORD, REDIS_PASSWORD, JWT_SECRET,
-# SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH, PLANB_SEED_PASSWORD.
+# SESSION_SECRET, SMTP_FROM_EMAIL, SMTP_FROM_NAME, WEB_HOST, MAILPIT_UI_AUTH.
 # PLANB_API_TAG y PLANB_WEB_TAG son opcionales: sin valor corren main (el tag móvil que publica
 # cada push a main); un sha corto en esas variables pinea el stage a esa versión.
 # El reset es `down -v` y volver a desplegar: `migrate` y `seed` vuelven a correr solos.
@@ -168,7 +168,6 @@ services:
     logging: *logging
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      PLANB_SEED_PASSWORD: ${PLANB_SEED_PASSWORD}
       ConnectionStrings__Planb: Host=postgres;Port=5432;Database=planb;Username=planb;Password=${POSTGRES_PASSWORD}
       ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD}
       JWT__Secret: ${JWT_SECRET}

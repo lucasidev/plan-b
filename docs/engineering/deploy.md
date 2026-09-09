@@ -167,7 +167,6 @@ Hasta 50 lectores el stage responde en menos de 400 ms al p95; con 100 se acerca
 | `JWT_SECRET` | Mínimo 32 caracteres. Firma los tokens de sesión: el mismo valor lo usan `api` (`JWT__Secret`) y `web` (`JWT_SECRET`). |
 | `SESSION_SECRET` | Mínimo 32 caracteres. La exige el esquema de entorno del frontend (`env.ts`); hoy el flujo es JWT puro y no firma nada. |
 | `MAILPIT_UI_AUTH` | Usuario y password de la UI de Mailpit, formato `usuario:password`. Mailpit muestra los links de verificación y de reset de todas las cuentas del stage. |
-| `PLANB_SEED_PASSWORD` | Mínimo 12 caracteres, obligatoria. La password con la que se siembran las cuatro personas, incluido el admin: las de `personas.json` son públicas. `seed-db` la exige y corta antes de sembrar si falta. |
 | `SMTP_FROM_EMAIL` | Remitente de los mails que manda `api`, recibidos por Mailpit. |
 | `SMTP_FROM_NAME` | Nombre de remitente de esos mismos mails. |
 | `WEB_HOST` | El host del frontend, sin `https://` (`planb.olisar.com.ar`). Arma los links de verificación y de reset, y es el dominio que se da de alta en Dokploy. |
@@ -182,7 +181,6 @@ REDIS_PASSWORD=<password>
 JWT_SECRET=<secreto de 32+ caracteres>
 SESSION_SECRET=<secreto de 32+ caracteres>
 MAILPIT_UI_AUTH=<usuario:password>
-PLANB_SEED_PASSWORD=<password de 12+ caracteres>
 SMTP_FROM_EMAIL=<remitente>
 SMTP_FROM_NAME=<nombre de remitente>
 WEB_HOST=<host sin https://>
@@ -239,7 +237,7 @@ Diez minutos sobre el stage recién sembrado, en este orden. Los números son lo
 4. **Método**, `/method`: la regla de cada conteo, el piso de 10 y la comparación solo contra cátedras hermanas.
 5. **Registrarse**, `/sign-up` con un mail inventado (por ejemplo `copas@planb.local`) y la carrera declarada; en Mailpit, `https://mail.olisar.com.ar/` con el usuario y la password de `MAILPIT_UI_AUTH`, llega "Confirmá tu cuenta en planb" con el link a `/verify-email?token=`. Confirmar.
 6. **Reseñar**, `/reviews/new`: Fundamentos de Control de Calidad, Cátedra Ruiz, período 2024-C1, el formulario de una página, con algo escrito en el campo libre (el corpus trae texto libre propio, así que en la curaduría el de esta reseña se distingue por la fecha). Al publicar, la Ficha de Cátedra Ruiz pasa a "Junta 7 reseñas: con 3 más se publica" y `/reviews/mine` lista el aporte: contó, aunque todavía no publica.
-7. **Backoffice**: cerrar sesión y entrar como `admin@planb.local` con la password de `PLANB_SEED_PASSWORD`. En `/admin/chairs`, cargar una cátedra nueva de Fundamentos de Control de Calidad con su titular; en `/admin/curation`, leer el texto libre que dejó la reseña del paso 6 y destilar una frase: en `/admin/items` aparece dentro de la versión nueva del instrumento.
+7. **Backoffice**: cerrar sesión y entrar como `admin@planb.local` con su password de `personas.json` (pública, elenco de prueba: [`dev-seed-personas.md`](dev-seed-personas.md)). En `/admin/chairs`, cargar una cátedra nueva de Fundamentos de Control de Calidad con su titular; en `/admin/curation`, leer el texto libre que dejó la reseña del paso 6 y destilar una frase: en `/admin/items` aparece dentro de la versión nueva del instrumento.
 8. **Volver a cero**: el reset del paso 8 del guion de clics deja el stage exactamente como al principio, con el mismo corpus (el seed es idempotente) y sin la cuenta de prueba.
 
 ## Refs

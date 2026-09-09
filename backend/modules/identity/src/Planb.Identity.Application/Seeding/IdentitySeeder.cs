@@ -19,7 +19,6 @@ public sealed class IdentitySeeder
     private readonly IPasswordHasher _passwords;
     private readonly IDateTimeProvider _clock;
     private readonly IOptions<SeedPersonasOptions> _options;
-    private readonly SeedPasswordOverride _passwordOverride;
     private readonly ILogger<IdentitySeeder> _log;
 
     public IdentitySeeder(
@@ -28,7 +27,6 @@ public sealed class IdentitySeeder
         IPasswordHasher passwords,
         IDateTimeProvider clock,
         IOptions<SeedPersonasOptions> options,
-        SeedPasswordOverride passwordOverride,
         ILogger<IdentitySeeder> log)
     {
         _users = users;
@@ -36,7 +34,6 @@ public sealed class IdentitySeeder
         _passwords = passwords;
         _clock = clock;
         _options = options;
-        _passwordOverride = passwordOverride;
         _log = log;
     }
 
@@ -68,9 +65,7 @@ public sealed class IdentitySeeder
                 continue;
             }
 
-            // Con override definido, todas las personas toman esa password (mail, rol y estado
-            // se conservan): ver SeedPasswordOverride.
-            var password = _passwordOverride.Value ?? persona.Password;
+            var password = persona.Password;
 
             // Staff personas (Admin / Moderator / UniversityStaff) take a distinct provisioning
             // path: created verified via RegisterStaff, no state transitions, no academic profile.
@@ -113,13 +108,6 @@ public sealed class IdentitySeeder
             _log.LogInformation(
                 "Seeded {Count} dev personas (out of {Total} configured).",
                 created, personas.Count);
-
-            if (_passwordOverride.Value is not null)
-            {
-                _log.LogInformation(
-                    "Seeded personas used the {EnvVar} password, not the one in personas.json.",
-                    SeedPasswordOverride.EnvironmentVariableName);
-            }
         }
     }
 
