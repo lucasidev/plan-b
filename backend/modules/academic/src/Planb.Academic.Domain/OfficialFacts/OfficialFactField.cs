@@ -50,6 +50,9 @@ public static class OfficialFactField
     /// <summary>La unidad académica de la que cuelga la carrera.</summary>
     public const string AcademicUnit = "academic_unit";
 
+    /// <summary>Auditoría de la AGN: el informe más reciente que audita a la institución, si existe (issue #506).</summary>
+    public const string AgnAudit = "agn_audit";
+
     /// <summary>
     /// Los códigos que arrancan (ADR-0090). Abierto: sumar un campo es agregar una constante acá y
     /// no pide migración (la columna ya acepta cualquier <c>varchar</c>).
@@ -70,6 +73,7 @@ public static class OfficialFactField
         InstitutionalEvaluation,
         InstitutionType,
         AcademicUnit,
+        AgnAudit,
     ];
 
     /// <summary>True si <paramref name="field"/> es uno de los códigos curados (comparación exacta, case-sensitive: el contrato son los literales en inglés de acá).</summary>

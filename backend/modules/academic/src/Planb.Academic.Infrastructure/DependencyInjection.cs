@@ -25,6 +25,7 @@ using Planb.Academic.Domain.Prerequisites;
 using Planb.Academic.Domain.Subjects;
 using Planb.Academic.Domain.Teachers;
 using Planb.Academic.Domain.Universities;
+using Planb.Academic.Infrastructure.AgnAudits;
 using Planb.Academic.Infrastructure.Georef;
 using Planb.Academic.Infrastructure.Pdf;
 using Planb.Academic.Infrastructure.Persistence;
@@ -103,6 +104,21 @@ public static class DependencyInjection
                 Timeout = TimeSpan.FromSeconds(10),
             },
             sp.GetRequiredService<ILogger<GeorefLocalityResolver>>()));
+
+        // Issue #506: cliente de la API de la AGN + el import de auditorías por institución. Un
+        // único HttpClient para todo el proceso (sin IHttpClientFactory: este proyecto no es
+        // Sdk.Web y Microsoft.Extensions.Http no vale la pena solo por el azúcar de AddHttpClient,
+        // cuando HttpClient ya es parte del framework). Timeout por request, no total (HttpClient.
+        // Timeout se aplica a cada GetAsync, no a la vida entera del cliente): el import pagina
+        // cientos de páginas, así que un timeout total cortaría la corrida antes de terminar.
+        services.AddSingleton<IAgnReportsClient>(sp => new AgnReportsApiClient(
+            new HttpClient
+            {
+                BaseAddress = new Uri(AgnReportsApiClient.BaseUrl),
+                Timeout = TimeSpan.FromSeconds(30),
+            },
+            sp.GetRequiredService<ILogger<AgnReportsApiClient>>()));
+        services.AddScoped<AgnAuditImporter>();
 
         return services;
     }
