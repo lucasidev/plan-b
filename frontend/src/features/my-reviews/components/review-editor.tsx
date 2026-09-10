@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { type CurrentInstrument, ItemQuestion } from '@/components/instrument';
+import { reloadAfterMutation } from '@/lib/reload-after-mutation';
 import { reviseReviewAction } from '../actions';
 import type { MyReview } from '../types';
 
@@ -28,7 +28,6 @@ export function ReviewEditor({
   instrument: CurrentInstrument;
   onClose: () => void;
 }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -63,8 +62,13 @@ export function ReviewEditor({
         setError(result.message);
         return;
       }
+      // La tarjeta detrás de este editor muestra las respuestas y los conteos del `review` que le
+      // pasó `MyReviewsList`, sin estado propio: sin un commit real de la página no hay forma de que
+      // se vea la corrección. `router.refresh()` puede perder ese commit bajo carga (issue #491,
+      // mismo fallo que `router.push`), así que se fuerza un reload real. Ver
+      // `lib/reload-after-mutation.ts`.
       onClose();
-      router.refresh();
+      reloadAfterMutation();
     });
   }
 
