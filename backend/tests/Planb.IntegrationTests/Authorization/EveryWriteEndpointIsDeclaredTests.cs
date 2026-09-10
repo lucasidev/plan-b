@@ -70,15 +70,15 @@ public class EveryWriteEndpointIsDeclaredTests : IClassFixture<RegisterApiFixtur
     }
 
     [Fact]
-    public void The_catalogue_covers_exactly_the_50_write_endpoints_of_the_spec()
+    public void The_catalogue_covers_exactly_the_51_write_endpoints_of_the_spec()
     {
         // Ancla numérica del spec (issue #417, verificado en el código el 2026-09-02; bajó de 52 a
         // 49 al retirarse el claim docente, issue #416; subió de 49 a 50 al sumar
-        // Academic_CreateOfficialFact, ADR-0090, issue #481): si este número se mueve, alguien
-        // agregó o sacó un endpoint de escritura y el catálogo se revisa a mano, no solo se
-        // actualiza el número acá.
-        RealWriteEndpoints().Count.ShouldBe(50);
-        WriteEndpoints.All.Count.ShouldBe(50);
+        // Academic_CreateOfficialFact, ADR-0090, issue #481; subió de 50 a 51 al sumar
+        // Academic_ImportAgnAudits, issue #506): si este número se mueve, alguien agregó o sacó un
+        // endpoint de escritura y el catálogo se revisa a mano, no solo se actualiza el número acá.
+        RealWriteEndpoints().Count.ShouldBe(51);
+        WriteEndpoints.All.Count.ShouldBe(51);
     }
 
     [Theory]
