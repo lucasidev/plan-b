@@ -28,10 +28,18 @@ export function AppShell({ email, contextLabel, children }: Props) {
   return (
     <div
       className="grid"
+      // `position: relative` lo vuelve el containing block de cualquier descendiente
+      // `position: absolute` (los `.sr-only` de labels/legends del formulario, por ejemplo).
+      // Sin esto, un absolute profundo en el árbol se posiciona relativo al documento
+      // entero en vez de a este shell, y su `top` infla `documentElement.scrollHeight`:
+      // el `overflow: hidden` de acá no lo contiene porque ya no es su ancestro
+      // posicionado, así que la página entera queda "scrolleable" aunque este shell no
+      // debería permitirlo nunca (el scroll vive todo adentro del `main`).
       style={{
         gridTemplateColumns: '240px 1fr',
         height: '100vh',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
       <Sidebar footer={<AvatarMenu email={email} />} contextLabel={contextLabel} />
