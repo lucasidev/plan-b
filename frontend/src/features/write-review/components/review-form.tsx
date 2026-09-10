@@ -269,7 +269,9 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
           })}
           {filteredSubjects.length === 0 ? (
             <li className="py-2 text-[13px] text-ink-3">
-              Ninguna materia de tu plan coincide con eso.
+              {subjects.length === 0
+                ? 'Tu plan todavía no tiene materias cargadas.'
+                : 'Ninguna materia de tu plan coincide con eso.'}
             </li>
           ) : null}
         </ul>

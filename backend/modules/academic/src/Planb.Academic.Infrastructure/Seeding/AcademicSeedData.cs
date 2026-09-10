@@ -2987,16 +2987,21 @@ public static class AcademicSeedData
     }
 
     // ====================================================================
-    // AcademicTerms (UNSTA cuatrimestrales 2024-2026)
+    // AcademicTerms (cuatrimestrales 2024-2026, las cinco universidades)
     //
-    // Cobertura: 6 cuatrimestres consecutivos (2024-1c hasta 2026-2c). Cubre las reseñas de
-    // cursada mockeadas (CatalogSeedData) + el cuatrimestre actual donde se cargaría una materia
-    // nueva.
-    // Las fechas son aproximaciones del calendario académico UNSTA típico.
+    // Cobertura: 6 cuatrimestres consecutivos (2024-1c hasta 2026-2c) por universidad. Cubre las
+    // reseñas de cursada mockeadas (CatalogSeedData) + el cuatrimestre actual donde se cargaría
+    // una materia nueva.
+    // Las fechas son aproximaciones del calendario académico típico de una universidad argentina
+    // (cuatrimestre marzo-julio y agosto-noviembre): sin fuente propia por institución, la misma
+    // aproximación que ya usaba UNSTA se repite para Unt, UtnFrt, UspT y Unse. Sin período lectivo,
+    // Reseñar no tenía con qué anclar una cursada de esas cuatro universidades (R6).
     //
     // Convención de UUIDs:
     //   - AcademicTerms: 00000005-0000-4000-a000-YYYYNNQQ00 donde YYYY=año, NN=número (01/02), QQ=cero
-    //   simplificada: ...0000NN donde NN = year_offset*2 + number (2024-1c=01, 2024-2c=02, ...).
+    //   simplificada: ...0000NN, NN secuencial y agrupado por universidad (Unsta 01-06, Unt 07-0c,
+    //   UtnFrt 0d-12, UspT 13-18, Unse 19-1e), cada bloque en el mismo orden de cuatrimestres
+    //   (2024-1c, 2024-2c, ..., 2026-2c).
     // ====================================================================
 
     public static IReadOnlyList<AcademicTermRecord> AcademicTerms { get; } = new[]
@@ -3044,6 +3049,210 @@ public static class AcademicSeedData
         new AcademicTermRecord(
             Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000006")),
             UniversityId: Unsta.Id,
+            Year: 2026, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 8, 3),
+            EndDate: new DateOnly(2026, 11, 28),
+            EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
+
+        // ---------- Unt (mismos seis cuatrimestres que UNSTA, aproximación del
+        // calendario académico típico) ----------
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000007")),
+            UniversityId: Unt.Id,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 3, 11),
+            EndDate: new DateOnly(2024, 7, 6),
+            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000008")),
+            UniversityId: Unt.Id,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 8, 5),
+            EndDate: new DateOnly(2024, 11, 30),
+            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000009")),
+            UniversityId: Unt.Id,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 3, 10),
+            EndDate: new DateOnly(2025, 7, 5),
+            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000a")),
+            UniversityId: Unt.Id,
+            Year: 2025, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 8, 4),
+            EndDate: new DateOnly(2025, 11, 29),
+            EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000b")),
+            UniversityId: Unt.Id,
+            Year: 2026, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 3, 9),
+            EndDate: new DateOnly(2026, 7, 4),
+            EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000c")),
+            UniversityId: Unt.Id,
+            Year: 2026, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 8, 3),
+            EndDate: new DateOnly(2026, 11, 28),
+            EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
+
+        // ---------- UtnFrt (mismos seis cuatrimestres que UNSTA, aproximación del
+        // calendario académico típico) ----------
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000d")),
+            UniversityId: UtnFrt.Id,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 3, 11),
+            EndDate: new DateOnly(2024, 7, 6),
+            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000e")),
+            UniversityId: UtnFrt.Id,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 8, 5),
+            EndDate: new DateOnly(2024, 11, 30),
+            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000000f")),
+            UniversityId: UtnFrt.Id,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 3, 10),
+            EndDate: new DateOnly(2025, 7, 5),
+            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000010")),
+            UniversityId: UtnFrt.Id,
+            Year: 2025, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 8, 4),
+            EndDate: new DateOnly(2025, 11, 29),
+            EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000011")),
+            UniversityId: UtnFrt.Id,
+            Year: 2026, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 3, 9),
+            EndDate: new DateOnly(2026, 7, 4),
+            EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000012")),
+            UniversityId: UtnFrt.Id,
+            Year: 2026, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 8, 3),
+            EndDate: new DateOnly(2026, 11, 28),
+            EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
+
+        // ---------- UspT (mismos seis cuatrimestres que UNSTA, aproximación del
+        // calendario académico típico) ----------
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000013")),
+            UniversityId: UspT.Id,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 3, 11),
+            EndDate: new DateOnly(2024, 7, 6),
+            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000014")),
+            UniversityId: UspT.Id,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 8, 5),
+            EndDate: new DateOnly(2024, 11, 30),
+            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000015")),
+            UniversityId: UspT.Id,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 3, 10),
+            EndDate: new DateOnly(2025, 7, 5),
+            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000016")),
+            UniversityId: UspT.Id,
+            Year: 2025, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 8, 4),
+            EndDate: new DateOnly(2025, 11, 29),
+            EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000017")),
+            UniversityId: UspT.Id,
+            Year: 2026, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 3, 9),
+            EndDate: new DateOnly(2026, 7, 4),
+            EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000018")),
+            UniversityId: UspT.Id,
+            Year: 2026, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 8, 3),
+            EndDate: new DateOnly(2026, 11, 28),
+            EnrollmentOpens: new DateTimeOffset(2026, 7, 13, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 7, 31, 23, 59, 59, TimeSpan.Zero)),
+
+        // ---------- Unse (mismos seis cuatrimestres que UNSTA, aproximación del
+        // calendario académico típico) ----------
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-000000000019")),
+            UniversityId: Unse.Id,
+            Year: 2024, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 3, 11),
+            EndDate: new DateOnly(2024, 7, 6),
+            EnrollmentOpens: new DateTimeOffset(2024, 2, 19, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 3, 8, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000001a")),
+            UniversityId: Unse.Id,
+            Year: 2024, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2024, 8, 5),
+            EndDate: new DateOnly(2024, 11, 30),
+            EnrollmentOpens: new DateTimeOffset(2024, 7, 15, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2024, 8, 2, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000001b")),
+            UniversityId: Unse.Id,
+            Year: 2025, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 3, 10),
+            EndDate: new DateOnly(2025, 7, 5),
+            EnrollmentOpens: new DateTimeOffset(2025, 2, 17, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 3, 7, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000001c")),
+            UniversityId: Unse.Id,
+            Year: 2025, Number: 2, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2025, 8, 4),
+            EndDate: new DateOnly(2025, 11, 29),
+            EnrollmentOpens: new DateTimeOffset(2025, 7, 14, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2025, 8, 1, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000001d")),
+            UniversityId: Unse.Id,
+            Year: 2026, Number: 1, Kind: TermKind.FourMonth,
+            StartDate: new DateOnly(2026, 3, 9),
+            EndDate: new DateOnly(2026, 7, 4),
+            EnrollmentOpens: new DateTimeOffset(2026, 2, 16, 0, 0, 0, TimeSpan.Zero),
+            EnrollmentCloses: new DateTimeOffset(2026, 3, 6, 23, 59, 59, TimeSpan.Zero)),
+        new AcademicTermRecord(
+            Id: new AcademicTermId(Guid.Parse("00000005-0000-4000-a000-00000000001e")),
+            UniversityId: Unse.Id,
             Year: 2026, Number: 2, Kind: TermKind.FourMonth,
             StartDate: new DateOnly(2026, 8, 3),
             EndDate: new DateOnly(2026, 11, 28),

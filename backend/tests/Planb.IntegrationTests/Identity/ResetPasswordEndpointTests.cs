@@ -59,6 +59,7 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
 
     // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
     private static Guid ValidCareerPlanId => AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
+    private static Guid ValidCareerId => AcademicSeedData.TudcsUnsta.Career.Id.Value;
 
     /// <summary>
     /// Sign up + verify a fresh user, then trigger forgot-password and read the raw token
@@ -77,7 +78,7 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
         string email, string password = "valid-password-12c")
     {
         var register = await _client.PostAsJsonAsync(
-            "/api/identity/register", new RegisterUserRequest(email, password, ValidCareerPlanId));
+            "/api/identity/register", new RegisterUserRequest(email, password, ValidCareerId, ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var userId = await UserIdByEmailAsync(email);
 
@@ -164,7 +165,7 @@ public class ResetPasswordEndpointTests : IClassFixture<RegisterApiFixture>, IAs
         var email = FreshEmail("wrong-purpose");
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
         var verifyToken = await ReadActiveTokenAsync(
             await UserIdByEmailAsync(email), TokenPurpose.UserEmailVerification);

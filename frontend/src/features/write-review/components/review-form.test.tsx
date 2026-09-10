@@ -409,11 +409,20 @@ describe('US-147: reseñar una materia sola', () => {
 });
 
 describe('SC-015: estados que dependen de props', () => {
-  it('sin materias en el plan, el paso 1 no ofrece ninguna opción', () => {
+  it('sin materias en el plan, el paso 1 lo dice y no ofrece ninguna opción', () => {
     render(<ReviewForm instrument={INSTRUMENT} subjects={[]} terms={TERMS} />);
 
-    expect(screen.getByText(/ninguna materia de tu plan coincide con eso/i)).toBeInTheDocument();
+    expect(screen.getByText(/tu plan todavía no tiene materias cargadas/i)).toBeInTheDocument();
     expect(screen.queryAllByRole('button', { name: /año$/i })).toHaveLength(0);
+  });
+
+  it('con materias en el plan, una búsqueda sin resultados dice que ninguna coincide', async () => {
+    const user = userEvent.setup();
+    render(<ReviewForm instrument={INSTRUMENT} subjects={SUBJECTS} terms={TERMS} />);
+
+    await user.type(screen.getByLabelText(/buscá la materia que cursaste/i), 'zzz-no-existe');
+
+    expect(screen.getByText(/ninguna materia de tu plan coincide con eso/i)).toBeInTheDocument();
   });
 
   it('sin períodos disponibles, no hay ninguno para elegir y el envío queda bloqueado', async () => {

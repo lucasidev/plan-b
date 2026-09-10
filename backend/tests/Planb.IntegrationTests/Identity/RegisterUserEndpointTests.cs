@@ -31,6 +31,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
     // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
     private static Guid ValidCareerPlanId => AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
+    private static Guid ValidCareerId => AcademicSeedData.TudcsUnsta.Career.Id.Value;
 
     [Fact]
     public async Task Returns_202_with_email_only_and_persists_user_and_token()
@@ -39,7 +40,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
 
         // 202 y solo el email: la respuesta no trae id ni Location porque tiene que ser
         // identica exista o no la cuenta (ADR-0076).
@@ -73,7 +74,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         var summary = await _mailpit.WaitForMessageToAsync(email, TimeSpan.FromSeconds(10));
@@ -100,7 +101,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
         {
             var r = await _client.PostAsJsonAsync(
                 "/api/identity/register",
-                new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+                new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
             if (r.StatusCode != HttpStatusCode.Accepted)
             {
                 distinct = r.StatusCode;
@@ -128,14 +129,14 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
 
         var first = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
         await _mailpit.ClearAsync();
 
         first.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         var second = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "another-password-12", ValidCareerPlanId));
+            new RegisterUserRequest(email, "another-password-12", ValidCareerId, ValidCareerPlanId));
 
         second.StatusCode.ShouldBe(first.StatusCode);
         (await second.Content.ReadAsStringAsync())
@@ -165,7 +166,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     {
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(FreshEmail("short-password"), "short", ValidCareerPlanId));
+            new RegisterUserRequest(FreshEmail("short-password"), "short", ValidCareerId, ValidCareerPlanId));
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -175,7 +176,7 @@ public class RegisterUserEndpointTests : IClassFixture<RegisterApiFixture>, IAsy
     {
         var response = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest("not-an-email", "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest("not-an-email", "valid-password-12c", ValidCareerId, ValidCareerPlanId));
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }

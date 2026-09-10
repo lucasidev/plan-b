@@ -79,7 +79,9 @@ public class RegisterUserCommandHandlerTests
             .Returns((CareerPlanSummary?)null);
 
         var result = await InvokeAsync(
-            deps, new RegisterUserCommand("lucas@unsta.edu.ar", "valid-password-12c", Guid.NewGuid()));
+            deps,
+            new RegisterUserCommand(
+                "lucas@unsta.edu.ar", "valid-password-12c", Guid.NewGuid(), Guid.NewGuid()));
 
         result.IsFailure.ShouldBeTrue();
         result.Error.ShouldBe(UserErrors.RegistrationCareerPlanNotFound);
@@ -99,7 +101,9 @@ public class RegisterUserCommandHandlerTests
             .Returns((CareerPlanSummary?)null);
 
         await InvokeAsync(
-            deps, new RegisterUserCommand("lucas@unsta.edu.ar", "valid-password-12c", Guid.NewGuid()));
+            deps,
+            new RegisterUserCommand(
+                "lucas@unsta.edu.ar", "valid-password-12c", Guid.NewGuid(), Guid.NewGuid()));
 
         await deps.Users.DidNotReceive().ExistsByEmailAsync(
             Arg.Any<EmailAddress>(), Arg.Any<CancellationToken>());
@@ -119,7 +123,8 @@ public class RegisterUserCommandHandlerTests
         deps.Users.When(x => x.Add(Arg.Any<User>())).Do(ci => addedUser = ci.Arg<User>());
 
         var result = await InvokeAsync(
-            deps, new RegisterUserCommand("nueva@unsta.edu.ar", "valid-password-12c", planId));
+            deps,
+            new RegisterUserCommand("nueva@unsta.edu.ar", "valid-password-12c", Guid.NewGuid(), planId));
 
         result.IsSuccess.ShouldBeTrue();
         addedUser.ShouldNotBeNull();
@@ -139,12 +144,60 @@ public class RegisterUserCommandHandlerTests
             .Returns(true);
 
         var result = await InvokeAsync(
-            deps, new RegisterUserCommand("ya-existe@unsta.edu.ar", "valid-password-12c", planId));
+            deps,
+            new RegisterUserCommand(
+                "ya-existe@unsta.edu.ar", "valid-password-12c", Guid.NewGuid(), planId));
 
         result.IsSuccess.ShouldBeTrue();
         deps.Users.DidNotReceive().Add(Arg.Any<User>());
         await deps.EmailSender.Received(1).SendExistingAccountNoticeAsync(
             Arg.Any<EmailAddress>(), Arg.Any<CancellationToken>());
         await deps.UnitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>
+    /// El grueso del catálogo real (R6) no tiene un plan relevado: sin CareerPlanId, el
+    /// handler valida el CareerId directo contra Academic en vez del plan.
+    /// </summary>
+    [Fact]
+    public async Task Handle_returns_registration_career_not_found_when_there_is_no_plan_and_the_career_does_not_exist()
+    {
+        var deps = NewDeps();
+        deps.Academic.GetCareerByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((CareerDetailItem?)null);
+
+        var result = await InvokeAsync(
+            deps,
+            new RegisterUserCommand(
+                "lucas@unsta.edu.ar", "valid-password-12c", Guid.NewGuid(), CareerPlanId: null));
+
+        result.IsFailure.ShouldBeTrue();
+        result.Error.ShouldBe(UserErrors.RegistrationCareerNotFound);
+        await deps.Academic.DidNotReceive().GetCareerPlanByIdAsync(
+            Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Handle_declares_the_career_without_a_plan_when_the_registration_sends_none()
+    {
+        var deps = NewDeps();
+        var careerId = Guid.NewGuid();
+        deps.Academic.GetCareerByIdAsync(careerId, Arg.Any<CancellationToken>())
+            .Returns(new CareerDetailItem(careerId, "Abogado", 5, "UNSTA", null));
+        deps.Users.ExistsByEmailAsync(Arg.Any<EmailAddress>(), Arg.Any<CancellationToken>())
+            .Returns(false);
+        User? addedUser = null;
+        deps.Users.When(x => x.Add(Arg.Any<User>())).Do(ci => addedUser = ci.Arg<User>());
+
+        var result = await InvokeAsync(
+            deps,
+            new RegisterUserCommand(
+                "sin-plan@unsta.edu.ar", "valid-password-12c", careerId, CareerPlanId: null));
+
+        result.IsSuccess.ShouldBeTrue();
+        addedUser.ShouldNotBeNull();
+        addedUser!.PendingCareerPlanId.ShouldBeNull();
+        addedUser.PendingCareerId.ShouldBe(careerId);
+        await deps.UnitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 }

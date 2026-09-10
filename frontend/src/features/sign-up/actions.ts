@@ -26,11 +26,17 @@ export async function signUpAction(
   _prev: SignUpFormState,
   formData: FormData,
 ): Promise<SignUpFormState> {
+  // careerPlanId distingue ausente (null: el select queda disabled porque la carrera no tiene
+  // plan) de presente-vacío (""): con planes para elegir y ninguno elegido, sigue siendo
+  // obligatorio. formData.get(...) ya hace esa distinción sola (un <select> disabled no viaja
+  // en el FormData); acá solo hay que no perderla convirtiendo null en cadena vacía.
+  const rawCareerPlanId = formData.get('careerPlanId');
   const raw = {
     email: formData.get('email')?.toString() ?? '',
     password: formData.get('password')?.toString() ?? '',
     confirm: formData.get('confirm')?.toString() ?? '',
-    careerPlanId: formData.get('careerPlanId')?.toString() ?? '',
+    careerId: formData.get('careerId')?.toString() ?? '',
+    careerPlanId: rawCareerPlanId === null ? null : rawCareerPlanId.toString(),
   };
 
   const parsed = signUpSchema.safeParse(raw);
@@ -41,7 +47,11 @@ export async function signUpAction(
       status: 'error',
       message: issue.message,
       field:
-        path === 'email' || path === 'password' || path === 'confirm' || path === 'careerPlanId'
+        path === 'email' ||
+        path === 'password' ||
+        path === 'confirm' ||
+        path === 'careerId' ||
+        path === 'careerPlanId'
           ? path
           : undefined,
     };
@@ -50,6 +60,7 @@ export async function signUpAction(
   const response = await registerUser({
     email: parsed.data.email,
     password: parsed.data.password,
+    careerId: parsed.data.careerId,
     careerPlanId: parsed.data.careerPlanId,
   });
 
@@ -82,7 +93,7 @@ export async function signUpAction(
   if (response.status === 400) {
     const body = (await response.json().catch(() => null)) as ValidationProblemDetails | null;
 
-    // El plan de estudios no existe (borrado, o un id inventado): el handler lo detecta como
+    // La carrera o el plan no existen (borrado, o un id inventado): el handler lo detecta como
     // regla de dominio (Result<T>.Failure, no shape del command), así que llega como
     // ProblemDetails plano (title = código, detail = copy interna), no en el diccionario
     // `errors` de FluentValidation que maneja la rama genérica de abajo.
@@ -91,6 +102,13 @@ export async function signUpAction(
         status: 'error',
         message: 'No encontramos ese plan de estudios. Volvé a elegirlo.',
         field: 'careerPlanId',
+      };
+    }
+    if (body?.title === 'identity.registration.career_not_found') {
+      return {
+        status: 'error',
+        message: 'No encontramos esa carrera. Volvé a elegirla.',
+        field: 'careerId',
       };
     }
 
@@ -109,7 +127,9 @@ export async function signUpAction(
           ? 'password'
           : lowered?.includes('careerplanid')
             ? 'careerPlanId'
-            : undefined,
+            : lowered?.includes('careerid')
+              ? 'careerId'
+              : undefined,
     };
   }
 

@@ -1,9 +1,9 @@
 namespace Planb.Identity.Domain.Users;
 
 /// <summary>
-/// Child entity de <see cref="User"/> que asocia al user con un CareerPlan + año de ingreso.
-/// Es una "capability" del member (ADR-0008): tener StudentProfile activo desbloquea cargar
-/// historial, simular cuatrimestre, reseñar materias.
+/// Child entity de <see cref="User"/> que asocia al user con una carrera (y, si el catálogo ya
+/// relevó uno, su CareerPlan) + año de ingreso. Es una "capability" del member (ADR-0008): tener
+/// StudentProfile activo desbloquea cargar historial, simular cuatrimestre, reseñar materias.
 ///
 /// Por qué child entity (no aggregate independiente):
 /// <list type="bullet">
@@ -19,16 +19,22 @@ namespace Planb.Identity.Domain.Users;
 /// Postgres (ADR-0017). La validación de que apunten a algo real vive en el handler que llama
 /// <c>IAcademicQueryService.GetCareerPlanByIdAsync</c> antes de invocar este método.
 ///
-/// El <see cref="CareerId"/> se denormaliza acá (a pesar de que se podría derivar via lookup
-/// del plan) para que el constraint UNIQUE(user_id, career_id) en DB sea evaluable sin JOIN
-/// cross-schema. Ese trade-off es aceptable: si el plan migrara a otra carrera (caso degenerado
-/// que no debería pasar) el dato queda stale, y se resuelve con un domain event capturado por
-/// este aggregate cuando Academic exponga edits.
+/// El <see cref="CareerId"/> se guarda acá aparte del plan (cuando hay uno, se podría derivar via
+/// lookup) para que el constraint UNIQUE(user_id, career_id) en DB sea evaluable sin JOIN
+/// cross-schema, y para que una carrera sin plan relevado tenga igual con qué anclar el profile.
+/// Con plan, ese trade-off es aceptable: si el plan migrara a otra carrera (caso degenerado que no
+/// debería pasar) el dato queda stale, y se resuelve con un domain event capturado por este
+/// aggregate cuando Academic exponga edits.
 /// </summary>
 public sealed class StudentProfile
 {
     public StudentProfileId Id { get; private set; }
-    public Guid CareerPlanId { get; private set; }
+
+    /// <summary>
+    /// Null cuando la carrera declarada todavía no tiene un plan relevado (la mayoría del catálogo
+    /// real, R6): el profile existe igual, anclado a <see cref="CareerId"/> únicamente.
+    /// </summary>
+    public Guid? CareerPlanId { get; private set; }
     public Guid CareerId { get; private set; }
     public int? EnrollmentYear { get; private set; }
     public StudentProfileStatus Status { get; private set; }
@@ -47,7 +53,7 @@ public sealed class StudentProfile
 
     internal StudentProfile(
         StudentProfileId id,
-        Guid careerPlanId,
+        Guid? careerPlanId,
         Guid careerId,
         int? enrollmentYear,
         DateTimeOffset createdAt)

@@ -28,12 +28,13 @@ public class VerifyEmailEndpointTests : IClassFixture<RegisterApiFixture>
 
     // Cualquier plan seedeado por Academic sirve: el registro solo necesita que exista.
     private static Guid ValidCareerPlanId => AcademicSeedData.TudcsUnsta.Plan!.Id.Value;
+    private static Guid ValidCareerId => AcademicSeedData.TudcsUnsta.Career.Id.Value;
 
     private async Task<(Guid UserId, string Token)> RegisterAndCaptureTokenAsync(string email)
     {
         var register = await _client.PostAsJsonAsync(
             "/api/identity/register",
-            new RegisterUserRequest(email, "valid-password-12c", ValidCareerPlanId));
+            new RegisterUserRequest(email, "valid-password-12c", ValidCareerId, ValidCareerPlanId));
         register.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
         using var scope = _fixture.Factory.Services.CreateScope();

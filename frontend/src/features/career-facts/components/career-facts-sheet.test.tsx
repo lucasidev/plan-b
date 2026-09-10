@@ -271,6 +271,16 @@ describe('CareerFactsSheet', () => {
     );
   });
 
+  it('sin materias no ofrece el link a verlas, pero sí el de reseñar', () => {
+    renderSheet({ ...BASE, totalSubjects: 0, coveredSubjects: 0, coveragePercent: 0 });
+
+    expect(screen.queryByRole('link', { name: /ver las 0 materias/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /reseñá tu cursada/i })).toHaveAttribute(
+      'href',
+      '/reviews/new',
+    );
+  });
+
   it('no publica ningún puntaje ni escala', () => {
     const { container } = renderSheet(BASE);
 

@@ -37,7 +37,9 @@ export default async function WriteReviewPage() {
 
   const [instrument, subjects, terms] = await Promise.all([
     fetchCurrentInstrumentServer(),
-    fetchPlanSubjectsServer(profile.careerPlanId),
+    // Sin plan relevado (la mayoría del catálogo real) no hay materias que pedir: el mismo
+    // "0 materias" que ve quien sí tiene plan pero está vacío (ReviewForm ya lo dice).
+    profile.careerPlanId ? fetchPlanSubjectsServer(profile.careerPlanId) : Promise.resolve([]),
     profile.universityId ? fetchTermsServer(profile.universityId) : Promise.resolve([]),
   ]);
 

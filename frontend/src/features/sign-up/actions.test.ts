@@ -10,10 +10,11 @@ import { initialSignUpState } from './types';
  * No hace falta mockear `next/navigation`: el action es una mutación pura (ADR-0046), nunca
  * llama `redirect()`, devuelve `{status, redirectTo}` y navega el cliente.
  *
- * Foco: el plan de estudios faltante (Zod), el 400
- * `identity.registration.career_plan_not_found` mapeado al campo `careerPlanId`, el éxito
- * con su `redirectTo`, y (US-229) que un `from` sano viaje a check-inbox y quede en la cookie
- * que `/verify-email` va a leer más tarde.
+ * Foco: la carrera faltante y el plan faltante cuando sí hay planes para elegir (Zod), que una
+ * carrera sin plan relevado registra igual (careerPlanId ausente), los 400
+ * `identity.registration.career_plan_not_found` / `career_not_found` mapeados a su campo, el
+ * éxito con su `redirectTo`, y (US-229) que un `from` sano viaje a check-inbox y quede en la
+ * cookie que `/verify-email` va a leer más tarde.
  */
 
 vi.mock('./api', () => ({
@@ -46,6 +47,7 @@ const VALID_INPUT = {
   email: 'lucia@test.com',
   password: 'doce-caracteres-ok',
   confirm: 'doce-caracteres-ok',
+  careerId: '22222222-2222-4222-a222-222222222222',
   careerPlanId: '33333333-3333-4333-a333-333333333333',
 };
 
@@ -54,7 +56,21 @@ beforeEach(() => {
 });
 
 describe('signUpAction', () => {
-  it('devuelve error en el campo careerPlanId cuando falta el plan, sin llamar al backend', async () => {
+  it('devuelve error en el campo careerId cuando falta la carrera, sin llamar al backend', async () => {
+    const result = await signUpAction(
+      initialSignUpState,
+      formData({ ...VALID_INPUT, careerId: '' }),
+    );
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.field).toBe('careerId');
+      expect(result.message).toBe('Elegí tu carrera');
+    }
+    expect(registerUserMock).not.toHaveBeenCalled();
+  });
+
+  it('devuelve error en el campo careerPlanId cuando hay planes y no se eligió ninguno, sin llamar al backend', async () => {
     const result = await signUpAction(
       initialSignUpState,
       formData({ ...VALID_INPUT, careerPlanId: '' }),
@@ -63,9 +79,24 @@ describe('signUpAction', () => {
     expect(result.status).toBe('error');
     if (result.status === 'error') {
       expect(result.field).toBe('careerPlanId');
-      expect(result.message).toBe('Elegí tu carrera');
+      expect(result.message).toBe('Elegí un plan de estudios');
     }
     expect(registerUserMock).not.toHaveBeenCalled();
+  });
+
+  it('una carrera sin plan relevado (el select de plan queda disabled, no viaja en el form) registra igual', async () => {
+    registerUserMock.mockResolvedValue(new Response(null, { status: 202 }));
+    const { careerPlanId: _careerPlanId, ...withoutPlan } = VALID_INPUT;
+
+    const result = await signUpAction(initialSignUpState, formData(withoutPlan));
+
+    expect(result.status).toBe('success');
+    expect(registerUserMock).toHaveBeenCalledWith({
+      email: VALID_INPUT.email,
+      password: VALID_INPUT.password,
+      careerId: VALID_INPUT.careerId,
+      careerPlanId: null,
+    });
   });
 
   it('202 devuelve /sign-up/check-inbox con el email como destino', async () => {
@@ -79,6 +110,7 @@ describe('signUpAction', () => {
     expect(registerUserMock).toHaveBeenCalledWith({
       email: VALID_INPUT.email,
       password: VALID_INPUT.password,
+      careerId: VALID_INPUT.careerId,
       careerPlanId: VALID_INPUT.careerPlanId,
     });
   });
@@ -141,6 +173,27 @@ describe('signUpAction', () => {
     if (result.status === 'error') {
       expect(result.field).toBe('careerPlanId');
       expect(result.message).toBe('No encontramos ese plan de estudios. Volvé a elegirlo.');
+    }
+  });
+
+  it('400 con code career_not_found (carrera sin plan) aterriza en el campo careerId', async () => {
+    const { careerPlanId: _careerPlanId, ...withoutPlan } = VALID_INPUT;
+    registerUserMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          title: 'identity.registration.career_not_found',
+          detail: 'Career referenced by the registration was not found in the academic catalog.',
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+
+    const result = await signUpAction(initialSignUpState, formData(withoutPlan));
+
+    expect(result.status).toBe('error');
+    if (result.status === 'error') {
+      expect(result.field).toBe('careerId');
+      expect(result.message).toBe('No encontramos esa carrera. Volvé a elegirla.');
     }
   });
 });
