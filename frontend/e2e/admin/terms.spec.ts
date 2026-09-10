@@ -8,10 +8,12 @@ import { ADMIN } from '../helpers/personas';
  * lo encuentra en el listado por su label computado (el label no lo tipea el admin, lo calcula el
  * backend a partir de year/number/kind). A diferencia de careers.spec (que arma un tag random para
  * un campo de texto libre), la unicidad de un período es (universidad, year, number, kind): no hay
- * campo de texto donde insertar un tag, así que el "tag" es un año random dentro del rango válido
- * (año actual + 1..20). UNSTA ya tiene períodos cuatrimestrales sembrados 2024-2026 (AcademicSeeder),
- * así que un año fijo (ej. "el año actual") chocaría con el seed; el offset random evita esa
- * colisión y las de corridas concurrentes en la DB compartida.
+ * campo de texto donde insertar un tag, así que el "tag" es year y number random dentro de sus
+ * rangos válidos (año actual + 1..20, número 1..6). UNSTA ya tiene períodos cuatrimestrales
+ * sembrados 2024-2026 (AcademicSeeder), así que un año fijo (ej. "el año actual") chocaría con el
+ * seed. Solo el año dejaba apenas 20 combinaciones posibles: bajo `--repeat-each` colisionaba
+ * ("ya existe un período con ese año, número y cadencia" en la propia pantalla, no un timeout);
+ * sumar number al sorteo multiplica el espacio por 6.
  *
  * Navegación por `goto` (no click en `<Link>`) para llegar derecho al form. Ya no hace falta
  * esperar la hidratación a mano: el botón de submit arranca deshabilitado y se habilita al hidratar
@@ -42,10 +44,11 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
     });
     const currentYear = new Date().getFullYear();
     const year = currentYear + 1 + Math.floor(Math.random() * 20);
-    const label = `${year}-C1`;
+    const number = 1 + Math.floor(Math.random() * 6);
+    const label = `${year}-C${number}`;
 
     await page.getByLabel(/^año$/i).fill(String(year));
-    await page.getByLabel(/número de período/i).fill('1');
+    await page.getByLabel(/número de período/i).fill(String(number));
     await page.getByLabel(/^cadencia$/i).selectOption('FourMonth');
     await page.getByLabel(/fecha de inicio/i).fill(`${year}-03-01`);
     await page.getByLabel(/fecha de fin/i).fill(`${year}-07-01`);
@@ -54,11 +57,9 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
     await page.getByRole('button', { name: /crear período/i }).click();
 
     // El submit crea el período (server action async). El redirect al listado es un useEffect client
-    // (mutación pura, ADR-0046) que puede no dispararse si Playwright submitea en la ventana de
-    // hidratación de React (el form se procesa como POST nativo); y el alta tarda un toque en
-    // persistir. Reintentamos ir al listado hasta que el período aparezca por su label computado:
-    // robusto contra el flake de hidratación y contra el race del submit async (en CI, más lento, un
-    // solo goto pegaba antes de que el período estuviera persistido).
+    // (mutación pura, ADR-0046) que solo dispara con `state.status === 'success'`; un choque de
+    // (year, number, kind) deja el mismo síntoma de acá abajo (nunca sale de /terms/new) pero por un
+    // error de negocio real, visible como alert en la pantalla, no por falta de tiempo.
     await expect(page).toHaveURL(new RegExp(`/admin/universities/${UNSTA_ID}/terms$`), {
       timeout: 30_000,
     });

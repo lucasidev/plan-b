@@ -28,9 +28,15 @@ async function signIn(page: Page, persona: typeof ADMIN) {
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
-/** La fila de una universidad en la tabla admin, ubicada por su sufijo (único por corrida). */
+/**
+ * La fila de una universidad en la tabla admin, ubicada por su sufijo (único por corrida).
+ * Acotada al contenedor de esa tabla: R6 sumó a esta misma pantalla el panel de auditorías AGN
+ * (issue #506), que lista las mismas instituciones en su propia tabla con la misma clase de fila,
+ * así que un localizador sin acotar resuelve dos elementos por universidad.
+ */
 function universityRow(page: Page, suffix: string) {
-  return page.locator('.border-line-2').filter({ hasText: new RegExp(suffix, 'i') });
+  const table = page.getByText('Dominios institucionales', { exact: true }).locator('xpath=../..');
+  return table.locator('.border-line-2').filter({ hasText: new RegExp(suffix, 'i') });
 }
 
 /** El id de la universidad recién creada, leído del listado admin (no vuelve en el redirect del form). */
@@ -90,9 +96,10 @@ test.describe('Alta de universidades desde el backoffice (US-191, US-203)', () =
     await expect(row.getByText(name, { exact: true })).toBeVisible({ timeout: 15_000 });
     await expect(row.getByText(domain, { exact: true })).toBeVisible();
 
-    // Catálogo público: sigue ordenado por nombre, con la nueva adentro y primera.
+    // Catálogo público: sigue ordenado por nombre, con la nueva adentro y primera. Sin
+    // toHaveText: cada fila también trae la cobertura de carreras (US-222) debajo del nombre.
     await page.goto('/universities');
-    await expect(page.getByRole('listitem').first()).toHaveText(name);
+    await expect(page.getByRole('listitem').first().getByText(name, { exact: true })).toBeVisible();
   });
 
   test('un slug repetido no crea la universidad y la pantalla lo dice', async ({ page }) => {
