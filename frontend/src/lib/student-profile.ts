@@ -10,7 +10,8 @@ export type StudentProfile = {
   id: string;
   userId: string;
   careerId: string;
-  careerPlanId: string;
+  /** Null cuando la carrera declarada todavía no tiene un plan relevado (la mayoría del catálogo real). */
+  careerPlanId: string | null;
   /** ADR-0086: la carrera se declara al registrarse y el año de ingreso ya no se pide ahí,
    * así que puede no estar. */
   enrollmentYear: number | null;

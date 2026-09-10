@@ -26,7 +26,15 @@ internal sealed class RegisterUserValidator : AbstractValidator<RegisterUserComm
             .MinimumLength(MinPasswordLength)
             .MaximumLength(MaxPasswordLength);
 
-        RuleFor(c => c.CareerPlanId)
+        RuleFor(c => c.CareerId)
             .NotEmpty();
+
+        // Nullable a propósito: la mayoría del catálogo real todavía no tiene un plan relevado
+        // (R6), y una carrera sin plan tiene que poder registrarse igual. Cuando SÍ viene un
+        // plan, no puede ser el Guid vacío (un cliente roto mandando default(Guid) en vez de
+        // omitir el campo).
+        RuleFor(c => c.CareerPlanId)
+            .NotEqual(Guid.Empty)
+            .When(c => c.CareerPlanId.HasValue);
     }
 }

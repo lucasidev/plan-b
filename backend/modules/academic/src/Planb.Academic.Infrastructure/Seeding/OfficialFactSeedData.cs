@@ -101,6 +101,9 @@ public static class OfficialFactSeedData
 
     private const string Sipes = "https://sipes.siu.edu.ar/buscar_titulos_form.php";
     private const string GuiaSiu = "https://guiadecarreras.siu.edu.ar/";
+    private const string GuiaSiuName = "Guía de carreras universitarias (SIU)";
+    private const string GuiaSiuDocument =
+        "Filtro Tucumán, pregrado y grado (consultada 2026-09-08)";
     private const string Anuario =
         "https://www.argentina.gob.ar/educacion/universidades/informacion/publicaciones/anuarios";
     private const string Coneau =
@@ -697,6 +700,3599 @@ public static class OfficialFactSeedData
                 "UNSE no tuvo su transparencia relevada en este trabajo y no hay nómina propia " +
                 "consultada de la que derivar la proporción de interinos.",
             RelievedAt: Sep8),
+
+        // ================================================================
+        // El resto de la oferta (222 carreras): duración en el papel y régimen de ingreso,
+        // Guía SIU (R6). Mismo criterio que la carga de arriba: solo lo que la Guía da, sin
+        // completar nada por afuera de la fila de cada oferta.
+        //
+        // PaperDuration: cuando la Guía dice "N Años" (entero o con fracción decimal), el valor
+        // queda como el numeral solo ("N" o "N.N") con Unit "years": lo formatea el frontend
+        // (formatOfficialFactValue), el mismo camino que ya usan los tests de la ficha. Cuando la
+        // Guía mide en cuatrimestres o semestres (no hay Unit para esa cadencia en el catálogo de
+        // ADR-0090), el valor queda en texto libre ("N cuatrimestres"/"N semestres") con Unit
+        // null, igual que Tudcs UNSTA arriba con "2 años y medio".
+        //
+        // Ocho ofertas usan acá un nombre curado (forma de carrera, no de titular: "Ingeniería en
+        // Informática", "Licenciatura en X", "Tecnicatura Universitaria en X") que no matchea
+        // texto a texto con el título que lista la Guía ("Ingeniero/a en X", "Licenciado en X",
+        // "Técnico/a Universitario/a en X") para el mismo puesto: se resolvieron a mano contra la
+        // fila que describe la misma oferta (mismo criterio que ya aplicó la tarea 2 al no forzar
+        // esos ocho a una unica DurationYears entera). Las filas "Licenciado en Enfermería" (sin
+        // "/a") de la Guía no generan afirmación: no tienen Career propia (ver el comentario de
+        // más arriba, "Licenciado/a en Enfermería").
+
+        // ---------------------------------------------------------------
+        // UNSTA: duración en el papel y régimen de ingreso, Guía SIU (bulk)
+        // ---------------------------------------------------------------
+
+        new OfficialFactSeed(
+            Fid("046"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000100"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("047"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000100"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("048"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("049"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("050"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000124"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("051"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000124"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("052"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000101"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("053"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000101"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("054"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("055"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("056"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000001"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("057"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000001"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("058"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("059"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("060"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000002"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("061"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000002"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("062"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000102"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("063"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000102"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("064"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("065"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("066"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000125"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("067"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000125"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("068"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000103"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("069"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000103"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("070"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("071"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("072"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000114"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("073"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000114"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("074"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("075"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("076"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000115"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("077"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000115"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("078"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("079"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("080"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000127"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("081"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000127"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("082"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000128"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("083"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000128"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("084"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("085"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("086"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000110"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("087"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000110"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("088"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000104"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("089"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000104"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("090"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("091"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000012f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("092"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000105"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("093"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000105"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("094"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000130"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("095"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000130"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("096"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000106"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("097"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000106"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("098"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000131"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("099"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000131"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("100"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000107"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("101"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000107"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("102"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000132"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("103"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000132"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("104"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000108"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("105"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000108"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("106"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000133"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("107"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000133"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("108"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000109"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("109"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000109"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("110"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000134"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("111"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000134"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("112"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000116"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("113"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000116"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("114"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("115"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("116"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000135"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("117"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000135"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("118"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000111"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("119"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000111"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("120"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("121"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("122"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000136"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("123"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000136"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("124"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("125"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("126"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000126"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("127"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000126"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("128"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("129"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("130"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000119"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("131"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000119"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("132"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("133"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("134"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000117"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("135"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000117"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Examen de ingreso", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("136"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000112"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("137"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000112"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Examen de ingreso", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("138"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("139"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("140"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000137"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("141"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000137"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("142"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("143"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("144"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000138"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("145"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000138"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("146"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000122"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("147"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000122"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("148"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000120"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("149"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000120"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("150"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000121"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("151"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000121"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("152"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000004"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5 semestres", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("153"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000004"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("154"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000129"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("155"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000129"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("156"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("157"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000011b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("158"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("159"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000010e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("160"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000113"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("161"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000113"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("162"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000118"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("163"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000118"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("164"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000123"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("165"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000123"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ---------------------------------------------------------------
+        // UNT: duración en el papel y régimen de ingreso, Guía SIU (bulk)
+        // ---------------------------------------------------------------
+
+        new OfficialFactSeed(
+            Fid("166"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("167"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("168"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000276"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("169"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000276"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("170"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000277"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("171"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000277"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("172"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000278"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("173"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000278"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("174"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000279"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("175"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000279"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("176"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000211"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("177"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000211"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("178"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000239"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("179"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000239"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("180"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("181"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("182"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000212"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("183"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000212"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("184"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("185"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("186"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000224"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("187"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000224"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("188"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000227"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("189"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000227"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("190"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000213"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("191"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000213"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("192"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000202"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("193"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000202"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("194"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000269"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("195"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000269"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("196"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000203"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("197"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000203"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("198"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("199"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("200"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("201"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("202"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("203"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("204"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000220"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("205"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000220"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("206"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("207"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("208"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000021"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("209"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000021"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("210"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000020"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("211"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000020"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("212"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("213"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("214"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("215"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("216"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("217"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("218"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("219"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("220"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("221"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("222"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("223"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000022f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("224"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000230"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("225"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000230"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("226"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000231"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("227"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000231"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("228"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000232"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("229"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000232"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("230"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("231"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("232"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000229"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("233"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000229"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("234"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("235"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("236"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000200"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("237"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000200"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Examen de ingreso", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("238"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000225"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("239"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000225"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("240"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000263"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("241"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000263"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("242"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000264"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("243"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000264"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("244"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000265"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("245"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000265"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("246"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000266"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("247"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000266"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("248"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000222"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("249"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000222"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("250"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000246"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("251"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000246"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("252"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000247"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("253"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000247"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("254"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000226"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("255"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000226"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("256"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000242"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("257"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000242"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("258"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000243"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("259"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000243"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("260"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000248"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("261"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000248"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("262"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000249"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("263"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000249"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("264"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("265"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("266"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000267"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("267"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000267"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("268"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("269"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("270"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000201"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("271"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000201"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("272"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("273"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("274"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000234"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("275"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000234"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("276"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000219"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("277"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000219"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("278"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("279"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("280"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000214"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("281"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000214"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("282"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000275"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("283"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000275"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("284"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("285"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("286"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000209"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("287"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000209"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("288"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000215"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("289"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000215"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("290"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000216"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("291"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000216"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("292"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000204"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("293"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000204"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("294"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("295"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("296"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("297"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("298"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("299"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("300"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("301"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000026f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("302"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000233"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("303"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000233"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("304"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("305"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("306"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000245"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("307"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000245"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("308"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("309"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("310"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000217"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("311"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000217"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("312"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000205"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("313"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000205"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("314"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000221"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("315"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000221"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("316"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000240"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("317"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000240"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("318"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000218"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("319"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000218"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("320"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000022"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("321"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000022"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("322"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("323"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("324"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("325"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("326"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("327"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("328"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000241"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("329"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000241"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("330"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("331"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("332"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000244"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("333"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000244"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("334"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("335"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("336"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("337"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("338"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000250"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("339"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000250"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("340"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000251"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("341"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000251"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("342"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000252"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("343"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000252"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("344"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000253"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("345"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000253"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("346"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000254"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("347"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000254"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("348"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000255"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("349"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000255"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("350"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000256"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("351"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000256"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("352"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000257"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("353"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000257"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("354"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000258"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("355"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000258"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("356"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("357"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000024e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("358"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000260"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("359"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000260"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("360"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("361"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("362"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000261"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("363"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000261"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("364"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000210"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("365"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000210"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Examen de ingreso", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("366"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000207"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("367"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000207"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("368"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000273"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("369"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000273"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("370"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000236"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("371"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000236"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("372"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000208"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("373"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000208"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("374"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000274"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("375"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000274"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("376"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000223"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("377"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000223"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("378"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000268"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("379"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000268"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("380"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("381"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("382"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000262"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("383"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000262"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("384"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000259"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("385"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000259"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("386"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("387"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000023d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("388"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000237"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("389"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000237"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("390"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("391"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("392"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000238"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("393"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000238"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("394"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("395"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("396"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("397"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("398"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("399"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000021c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("400"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000235"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("401"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000235"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("402"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("403"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000020a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("404"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("405"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000025f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ---------------------------------------------------------------
+        // UTN, Facultad Regional Tucumán: duración en el papel y régimen de ingreso, Guía SIU (bulk)
+        // ---------------------------------------------------------------
+
+        new OfficialFactSeed(
+            Fid("406"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000500"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("407"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000500"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("408"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000030"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("409"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000030"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("410"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000502"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("411"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000502"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("412"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000503"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("413"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000503"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("414"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000504"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("415"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000504"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("416"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000501"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("417"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000501"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia y aprobación a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("418"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000505"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("419"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000505"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("420"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000506"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("421"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000506"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("422"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000507"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3 cuatrimestres", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("423"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000507"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("424"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000508"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("425"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000508"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("426"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000509"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("427"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000509"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("428"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("429"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("430"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("431"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("432"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("433"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("434"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("435"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000050d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ---------------------------------------------------------------
+        // San Pablo-T: duración en el papel y régimen de ingreso, Guía SIU (bulk)
+        // ---------------------------------------------------------------
+
+        new OfficialFactSeed(
+            Fid("436"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000307"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("437"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000307"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("438"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000308"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("439"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000308"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("440"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000309"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("441"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000309"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("442"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030a"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("443"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030a"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("444"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000300"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("445"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000300"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("446"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000301"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("447"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000301"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("448"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000302"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("449"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000302"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("450"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000303"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("451"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000303"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("452"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000304"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("453"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000304"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("454"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000305"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("455"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000305"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("456"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030b"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("457"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030b"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("458"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030c"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("459"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030c"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("460"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030d"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("461"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030d"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("462"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000313"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "6", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("463"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000313"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Examen de ingreso", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("464"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030e"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("465"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030e"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("466"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030f"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("467"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-00000000030f"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("468"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000306"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("469"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000306"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("470"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000310"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "3", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("471"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000310"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("472"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000311"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("473"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000311"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Ingreso directo", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("474"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000312"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("475"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000312"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ---------------------------------------------------------------
+        // UNSE: duración en el papel y régimen de ingreso, Guía SIU (bulk)
+        // ---------------------------------------------------------------
+
+        new OfficialFactSeed(
+            Fid("476"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000401"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("477"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000401"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("478"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000403"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("479"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000403"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("480"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000404"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("481"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000404"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("482"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000400"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "4 cuatrimestres", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("483"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000400"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Consulte con la institución", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("484"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000402"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("485"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000402"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("486"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000405"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("487"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000405"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("488"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000406"),
+            OfficialFactField.PaperDuration, OfficialFactStatus.Published,
+            Value: "2.5", Unit: "years", Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("489"), OfficialFactSubjectType.Offering, Guid.Parse("00000002-0000-4000-a000-000000000406"),
+            OfficialFactField.AdmissionRegime, OfficialFactStatus.Published,
+            Value: "Asistencia a curso de ingreso o nivelación", Unit: null, Period: "oferta vigente",
+            SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
+            SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
     };
 }
 

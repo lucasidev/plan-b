@@ -93,14 +93,16 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     ///
     /// El handler de registro resuelve <paramref name="careerPlanId"/> contra Academic (cross-BC
     /// read, ADR-0017) y deriva <paramref name="careerId"/> del plan antes de llegar acá; el
-    /// aggregate solo valida que ninguno de los dos venga vacío.
+    /// aggregate solo valida que <paramref name="careerId"/> no venga vacío y que, si vino un
+    /// plan, tampoco lo sea. <paramref name="careerPlanId"/> es nullable: la mayoría del catálogo
+    /// real todavía no tiene un plan relevado, y esa carrera se declara igual.
     /// </summary>
     public Result DeclareCareerAtRegistration(
-        Guid careerPlanId, Guid careerId, IDateTimeProvider clock)
+        Guid? careerPlanId, Guid careerId, IDateTimeProvider clock)
     {
         ArgumentNullException.ThrowIfNull(clock);
 
-        if (careerPlanId == Guid.Empty || careerId == Guid.Empty)
+        if (careerId == Guid.Empty || careerPlanId == Guid.Empty)
         {
             return UserErrors.CareerDeclarationInvalid;
         }
@@ -256,11 +258,13 @@ public sealed class User : Entity<UserId>, IAggregateRoot
         // práctica: no puede existir un profile previo antes de esta primera verificación
         // (DuplicateStudentProfile no aplica) y el año viaja null (EnrollmentYearOutOfRange no corre
         // sin año). Los dos pendientes se limpian pase lo que pase, para no reintentar la
-        // materialización en un VerifyEmail idempotente posterior.
-        if (PendingCareerPlanId.HasValue && PendingCareerId.HasValue)
+        // materialización en un VerifyEmail idempotente posterior. Solo PendingCareerId decide si
+        // hay algo que materializar: PendingCareerPlanId puede ser null a propósito (carrera sin
+        // plan relevado) y el profile nace igual, sin plan.
+        if (PendingCareerId.HasValue)
         {
             AddStudentProfile(
-                PendingCareerPlanId.Value, PendingCareerId.Value, enrollmentYear: null, clock);
+                PendingCareerPlanId, PendingCareerId.Value, enrollmentYear: null, clock);
             PendingCareerPlanId = null;
             PendingCareerId = null;
         }
@@ -611,9 +615,11 @@ public sealed class User : Entity<UserId>, IAggregateRoot
     /// <c>IAcademicQueryService</c> (ADR-0017: no FK cross-schema). El <paramref name="careerId"/>
     /// se denormaliza acá desde el plan porque el aggregate necesita comparar carreras sin
     /// JOIN cross-schema (aunque el constraint UNIQUE(user_id) de abajo ya no lo requiera).
+    /// <paramref name="careerPlanId"/> es nullable: la mayoría del catálogo real todavía no tiene
+    /// un plan relevado, y el profile nace igual, sin plan.
     /// </summary>
     public Result<StudentProfile> AddStudentProfile(
-        Guid careerPlanId,
+        Guid? careerPlanId,
         Guid careerId,
         int? enrollmentYear,
         IDateTimeProvider clock)

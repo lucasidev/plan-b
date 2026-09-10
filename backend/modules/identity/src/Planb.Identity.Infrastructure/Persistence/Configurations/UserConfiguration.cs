@@ -171,9 +171,10 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
             profiles.HasIndex("user_id").HasDatabaseName("ix_student_profiles_user_id");
 
+            // Nullable: la mayoría del catálogo real todavía no tiene un plan relevado, y el
+            // profile de esa carrera nace igual, anclado solo a CareerId.
             profiles.Property(p => p.CareerPlanId)
-                .HasColumnName("career_plan_id")
-                .IsRequired();
+                .HasColumnName("career_plan_id");
 
             profiles.Property(p => p.CareerId)
                 .HasColumnName("career_id")

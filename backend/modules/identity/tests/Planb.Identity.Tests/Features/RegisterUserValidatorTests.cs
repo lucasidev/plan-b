@@ -11,8 +11,9 @@ public class RegisterUserValidatorTests
     private static RegisterUserCommand ValidCommand(
         string email = "lucas@unsta.edu.ar",
         string? password = null,
+        Guid? careerId = null,
         Guid? careerPlanId = null) =>
-        new(email, password ?? new string('a', 12), careerPlanId ?? Guid.NewGuid());
+        new(email, password ?? new string('a', 12), careerId ?? Guid.NewGuid(), careerPlanId ?? Guid.NewGuid());
 
     [Fact]
     public void Valid_email_password_and_career_plan_passes()
@@ -67,5 +68,22 @@ public class RegisterUserValidatorTests
         var cmd = ValidCommand(careerPlanId: Guid.Empty);
 
         _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.CareerPlanId);
+    }
+
+    [Fact]
+    public void Missing_career_plan_id_passes()
+    {
+        var cmd = new RegisterUserCommand(
+            "lucas@unsta.edu.ar", new string('a', 12), Guid.NewGuid(), CareerPlanId: null);
+
+        _validator.TestValidate(cmd).ShouldNotHaveValidationErrorFor(c => c.CareerPlanId);
+    }
+
+    [Fact]
+    public void Empty_career_id_fails()
+    {
+        var cmd = ValidCommand(careerId: Guid.Empty);
+
+        _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.CareerId);
     }
 }

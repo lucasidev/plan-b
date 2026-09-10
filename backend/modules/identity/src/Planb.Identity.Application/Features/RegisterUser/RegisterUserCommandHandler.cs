@@ -36,16 +36,34 @@ public static class RegisterUserCommandHandler
         }
         var email = emailResult.Value;
 
-        // El plan se resuelve ANTES del hash y del exists. No es un detalle de orden: es una
-        // defensa de seguridad de la misma clase que la que ADR-0076 ya cerró. Si el plan se
-        // validara después del exists, un plan inválido daría 400 con un mail libre pero 202 con
-        // un mail ocupado (esa rama corta antes de llegar a mirar el plan): mandando un plan
+        // La carrera (o el plan) se resuelve ANTES del hash y del exists. No es un detalle de
+        // orden: es una defensa de seguridad de la misma clase que la que ADR-0076 ya cerró. Si se
+        // validara después del exists, un id inválido daría 400 con un mail libre pero 202 con un
+        // mail ocupado (esa rama corta antes de llegar a mirar la carrera): mandando un id
         // inventado, el status code delataría si esa casilla tiene cuenta. Validar acá hace que un
-        // plan inválido responda siempre 400, sin importar el estado del mail.
-        var plan = await academic.GetCareerPlanByIdAsync(command.CareerPlanId, ct);
-        if (plan is null)
+        // id inválido responda siempre 400, sin importar el estado del mail.
+        //
+        // Con plan: el camino de siempre (el plan valida transitivamente que la carrera existe).
+        // Sin plan (null: la mayoría del catálogo real todavía no tiene uno relevado): se valida
+        // el CareerId directo contra Academic.
+        Guid careerId;
+        if (command.CareerPlanId is { } careerPlanId)
         {
-            return UserErrors.RegistrationCareerPlanNotFound;
+            var plan = await academic.GetCareerPlanByIdAsync(careerPlanId, ct);
+            if (plan is null)
+            {
+                return UserErrors.RegistrationCareerPlanNotFound;
+            }
+            careerId = plan.CareerId;
+        }
+        else
+        {
+            var career = await academic.GetCareerByIdAsync(command.CareerId, ct);
+            if (career is null)
+            {
+                return UserErrors.RegistrationCareerNotFound;
+            }
+            careerId = command.CareerId;
         }
 
         // El hash se computa antes de mirar si el mail existe: BCrypt domina el tiempo de la
@@ -68,7 +86,7 @@ public static class RegisterUserCommandHandler
         }
         var user = userResult.Value;
 
-        var declareResult = user.DeclareCareerAtRegistration(plan.Id, plan.CareerId, clock);
+        var declareResult = user.DeclareCareerAtRegistration(command.CareerPlanId, careerId, clock);
         if (declareResult.IsFailure)
         {
             return declareResult.Error;

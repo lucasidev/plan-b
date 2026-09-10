@@ -273,4 +273,14 @@ public static class UserErrors
         Error.Validation(
             "identity.registration.career_plan_not_found",
             "Career plan referenced by the registration was not found in the academic catalog.");
+
+    /// <summary>
+    /// El CareerId enviado a POST /api/identity/register no existe en el catálogo Academic. Solo se
+    /// mira cuando el registro no trae CareerPlanId (una carrera sin plan relevado todavía): sin
+    /// plan que valide transitivamente la carrera, el handler valida el CareerId directo.
+    /// </summary>
+    public static readonly Error RegistrationCareerNotFound =
+        Error.Validation(
+            "identity.registration.career_not_found",
+            "Career referenced by the registration was not found in the academic catalog.");
 }

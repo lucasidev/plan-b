@@ -217,12 +217,14 @@ function coverageNote(facts: CareerFacts): string {
 function Footer({ facts, reviewHref }: { facts: CareerFacts; reviewHref: string }) {
   return (
     <div className="flex gap-2">
-      <Link
-        href={`/careers/${facts.careerId}/plans`}
-        className="flex-1 rounded-lg border border-line bg-bg-card px-3.5 py-[9px] text-center text-[13px] text-ink"
-      >
-        Ver las {facts.totalSubjects} {facts.totalSubjects === 1 ? 'materia' : 'materias'}
-      </Link>
+      {facts.totalSubjects > 0 && (
+        <Link
+          href={`/careers/${facts.careerId}/plans`}
+          className="flex-1 rounded-lg border border-line bg-bg-card px-3.5 py-[9px] text-center text-[13px] text-ink"
+        >
+          Ver las {facts.totalSubjects} {facts.totalSubjects === 1 ? 'materia' : 'materias'}
+        </Link>
+      )}
       <Link
         href={reviewHref}
         className="flex-1 rounded-lg bg-ink px-3.5 py-[9px] text-center text-[13px] font-medium text-bg-card"
