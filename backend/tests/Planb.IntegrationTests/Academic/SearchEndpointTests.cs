@@ -27,7 +27,8 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     // US-132, hallazgo V04: la carrera del catálogo real de Tucumán (R6) y la misma carrera cargada
     // en dos instituciones a la vez, para el edge case "sin institución devuelve las dos ofertas".
     private static readonly Guid TudcsCareer = Guid.Parse("00000002-0000-4000-a000-000000000003"); // TUDCS, UNSTA
-    private static readonly Guid UnstaInformatica = Guid.Parse("00000002-0000-4000-a000-000000000001"); // Ingeniería en Informática, UNSTA
+    private static readonly Guid UnstaInformatica = Guid.Parse("00000002-0000-4000-a000-000000000001"); // Ingeniería en Informática, UNSTA (Facultad de Ingeniería)
+    private static readonly Guid UnstaInformaticaConcepcion = Guid.Parse("00000002-0000-4000-a000-00000000012a"); // Ingeniería en Informática, UNSTA (Centro Universitario Concepción)
     private static readonly Guid UntInformatica = Guid.Parse("00000002-0000-4000-a000-000000000020"); // Ingeniería en Informática, UNT
 
     private readonly RegisterApiFixture _fixture;
@@ -231,10 +232,14 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     /// US-132, edge case: "alguien busca 'Ingeniería en Sistemas' sin especificar institución: la
     /// búsqueda devuelve las distintas ofertas por institución (UNSTA, UTN) como resultados
     /// separados, cada una su propia carrera en su institución". El catálogo real (R6) tiene un
-    /// caso verificado de esto: "Ingeniería en Informática" está cargada en UNSTA y en UNT.
+    /// caso verificado de esto, más rico que el edge case original: "Ingeniería en Informática"
+    /// está cargada tres veces, dos de ellas en UNSTA (Facultad de Ingeniería y Centro
+    /// Universitario Concepción, dos sedes con oferta propia) y la tercera en UNT. Comparten
+    /// sublabel las dos de UNSTA (el sublabel es la institución, no la sede) y siguen siendo tres
+    /// carreras distintas, cada una con su propio id.
     /// </summary>
     [Fact]
-    public async Task The_same_career_name_at_two_institutions_returns_both_offerings_separately()
+    public async Task The_same_career_name_at_two_institutions_returns_each_offering_separately()
     {
         using var client = _fixture.Factory.CreateClient();
 
@@ -245,9 +250,11 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
             .Where(i => i.Type == "career" && i.Label == "Ingeniería en Informática")
             .ToList();
 
-        careers.Count.ShouldBe(2);
+        careers.Count.ShouldBe(3);
         careers.ShouldContain(i =>
             i.Id == UnstaInformatica && i.Sublabel == "Universidad del Norte Santo Tomás de Aquino");
+        careers.ShouldContain(i =>
+            i.Id == UnstaInformaticaConcepcion && i.Sublabel == "Universidad del Norte Santo Tomás de Aquino");
         careers.ShouldContain(i =>
             i.Id == UntInformatica && i.Sublabel == "Universidad Nacional de Tucumán");
     }

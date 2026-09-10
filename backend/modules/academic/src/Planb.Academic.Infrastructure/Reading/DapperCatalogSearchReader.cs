@@ -27,10 +27,14 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// </para>
 ///
 /// Todo pasa por <c>unaccent()</c> (búsqueda insensible a acentos, clave en español: "veronica"
-/// matchea "Verónica", "anal" matchea "Análisis"). El umbral <c>similarity &gt; 0.2</c> tolera typos.
-/// El índice GIN trigram de subjects (migración AddSubjectSearchTrigram) cubre el lado materia; los
-/// catálogos de docentes, carreras e instituciones son chicos (seq scan barato), un índice análogo
-/// se suma si crecen.
+/// matchea "Verónica", "anal" matchea "Análisis"). El umbral <c>similarity &gt; 0.2</c> (variable de
+/// sesión) tolera typos en materia, docente y cátedra. Carrera e institución no comparten ese
+/// umbral: contra un catálogo real de 225 carreras en 5 universidades, 0.2 resultó floja para texto
+/// largo (dos nombres de carrera distintos que solo comparten una palabra) y para el slug de
+/// institución (un identificador corto, no texto libre); el detalle de cada excepción está en su
+/// rama. El índice GIN trigram de subjects (migración AddSubjectSearchTrigram) cubre el lado
+/// materia; los catálogos de docentes, carreras e instituciones son chicos (seq scan barato), un
+/// índice análogo se suma si crecen.
 /// </summary>
 internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
 {
@@ -124,7 +128,12 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                 WHERE cr.is_active
                   AND uni.is_active
                   AND (academic.immutable_unaccent(lower(cr.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
-                       OR academic.immutable_unaccent(lower(cr.name)) % academic.immutable_unaccent(lower(@Term))
+                       -- 0.3 explícito (el default de pg_trgm), no el 0.2 de sesión: a esta
+                       -- longitud de texto, 0.2 cruza con una carrera distinta que solo comparte
+                       -- una palabra (ej. 'Desarrollo y Calidad de Software' encontraba también
+                       -- 'Técnico en Desarrollo Social'). Un typo real ('ingenaria' por
+                       -- 'ingenieria') sigue por encima de 0.7, lejos del corte.
+                       OR similarity(academic.immutable_unaccent(lower(cr.name)), academic.immutable_unaccent(lower(@Term))) > 0.3
                        OR (cr.code IS NOT NULL
                            AND academic.immutable_unaccent(lower(cr.code)) = academic.immutable_unaccent(lower(@Term))))
 
@@ -147,8 +156,12 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                 WHERE u.is_active
                   AND (academic.immutable_unaccent(lower(u.name)) LIKE '%' || academic.immutable_unaccent(lower(@Term)) || '%'
                        OR academic.immutable_unaccent(lower(u.slug)) LIKE academic.immutable_unaccent(lower(@Term)) || '%'
-                       OR academic.immutable_unaccent(lower(u.name)) % academic.immutable_unaccent(lower(@Term))
-                       OR academic.immutable_unaccent(lower(u.slug)) % academic.immutable_unaccent(lower(@Term)))
+                       -- El slug (ej. 'unsta') no entra al trigram: es un identificador corto, y
+                       -- dos acrónimos de 4-5 letras de instituciones distintas (unsta/unse/unt)
+                       -- comparten suficientes letras seguidas para cruzar cualquier umbral de
+                       -- similitud razonable. Exacto y prefijo (arriba) ya cubren el acrónimo; el
+                       -- nombre completo sigue con trigram normal, una línea abajo.
+                       OR academic.immutable_unaccent(lower(u.name)) % academic.immutable_unaccent(lower(@Term)))
             ) combined
             ORDER BY rank_exact DESC, rank_prefix DESC, sim DESC, label ASC
             LIMIT @Limit;";

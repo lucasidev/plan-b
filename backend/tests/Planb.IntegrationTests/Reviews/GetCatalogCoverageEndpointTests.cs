@@ -1,4 +1,8 @@
+using System.Net;
 using System.Net.Http.Json;
+using Planb.Academic.Application.Features.AdminCareers;
+using Planb.Academic.Infrastructure.Seeding;
+using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
 using Planb.Reviews.Application.Features.CatalogCoverage;
 using Shouldly;
@@ -31,11 +35,10 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
     private static readonly Guid ChairGonzalez =
         Guid.Parse("00000008-0000-4000-a000-000000000002");
 
-    // Abogado (UNSTA, Centro Universitario Concepción): sembrada sin plan (AcademicSeedData,
-    // Plan: null) y sin ninguna fila en OfficialFactSeedData. Es la carrera sin nada del catálogo:
-    // el caso que prueba que el vacío se completa con cero en vez de faltar en la respuesta.
-    private static readonly Guid AbogadoCareerId =
-        Guid.Parse("00000002-0000-4000-a000-000000000100");
+    // Con las 225 carreras reales de R6 (Guía SIU, ADR-0090) ya no queda ninguna sin al menos un
+    // dato oficial relevado: hasta "Abogado", que este test usaba antes, tiene duración y régimen
+    // de ingreso desde R6. El caso "la carrera sin nada del catálogo" se crea en el propio test
+    // (POST admin) en vez de apoyarse en un id fijo del seed.
 
     private static readonly Guid[] Terms =
     [
@@ -99,18 +102,37 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task A_career_with_nothing_stays_zero_while_another_gains_voices_and_coverage()
     {
-        // ---- Sin reseñas: Abogado no tiene plan ni datos oficiales, TUDCS ya tiene datos
-        // oficiales (sembrados) pero todavía ninguna voz.
+        // Nace sin plan y sin ningún dato oficial declarado: es la carrera sin nada del catálogo.
+        var admin = await AuthenticatedClient.CreateAsync(
+            _fixture, $"catalog-coverage-admin.{Guid.NewGuid():N}@planb.local", role: UserRole.Admin);
+        var createCareer = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{AcademicSeedData.Unsta.Id.Value}/careers",
+            new
+            {
+                name = "Carrera Sin Relevar",
+                slug = $"carrera-sin-relevar-{Guid.NewGuid():N}",
+                shortName = (string?)null,
+                code = (string?)null,
+                degreeType = (string?)null,
+                durationYears = (int?)null,
+                cadence = (string?)null,
+                description = (string?)null,
+            });
+        createCareer.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var emptyCareerId = (await createCareer.Content.ReadFromJsonAsync<CreateCareerResponse>())!.Id;
+
+        // ---- Sin reseñas: la carrera recién creada no tiene plan ni datos oficiales, TUDCS ya
+        // tiene datos oficiales (sembrados) pero todavía ninguna voz.
         var before = await _anonymous.GetOkAsync<GetCatalogCoverageResponse>(
             "/api/reviews/catalog-coverage");
 
-        var abogado = before!.Careers.Single(c => c.CareerId == AbogadoCareerId);
-        abogado.CareerName.ShouldBe("Abogado");
-        abogado.HasOfficialData.ShouldBeFalse();
-        abogado.VoiceCount.ShouldBe(0);
-        abogado.HasReviewsBelowFloor.ShouldBeFalse();
-        abogado.TotalSubjects.ShouldBe(0);
-        abogado.CoveredSubjects.ShouldBe(0);
+        var emptyCareer = before!.Careers.Single(c => c.CareerId == emptyCareerId);
+        emptyCareer.CareerName.ShouldBe("Carrera Sin Relevar");
+        emptyCareer.HasOfficialData.ShouldBeFalse();
+        emptyCareer.VoiceCount.ShouldBe(0);
+        emptyCareer.HasReviewsBelowFloor.ShouldBeFalse();
+        emptyCareer.TotalSubjects.ShouldBe(0);
+        emptyCareer.CoveredSubjects.ShouldBe(0);
 
         var tudcsBefore = before.Careers.Single(c => c.CareerId == TudcsCareerId);
         tudcsBefore.CareerName.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
@@ -147,10 +169,10 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         tudcsAfter.CoveredSubjects.ShouldBe(1);
         tudcsAfter.HasOfficialData.ShouldBeTrue();
 
-        // Abogado no se movió: nadie reseñó ahí.
-        var abogadoAfter = after.Careers.Single(c => c.CareerId == AbogadoCareerId);
-        abogadoAfter.VoiceCount.ShouldBe(0);
-        abogadoAfter.HasReviewsBelowFloor.ShouldBeFalse();
-        abogadoAfter.HasOfficialData.ShouldBeFalse();
+        // La carrera recién creada no se movió: nadie reseñó ahí.
+        var emptyCareerAfter = after.Careers.Single(c => c.CareerId == emptyCareerId);
+        emptyCareerAfter.VoiceCount.ShouldBe(0);
+        emptyCareerAfter.HasReviewsBelowFloor.ShouldBeFalse();
+        emptyCareerAfter.HasOfficialData.ShouldBeFalse();
     }
 }

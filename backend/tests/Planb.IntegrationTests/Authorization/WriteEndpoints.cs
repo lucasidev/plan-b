@@ -62,9 +62,10 @@ public sealed record WriteEndpointCase(
 }
 
 /// <summary>
-/// El catálogo de los 50 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
+/// El catálogo de los 51 endpoints de escritura del backend (POST/PUT/PATCH/DELETE), tal como los
 /// declara su *Endpoint.cs. Verificado en el código el 2026-09-02 (issue #417); subió de 49 a 50 al
-/// sumar Academic_CreateOfficialFact (ADR-0090, issue #481).
+/// sumar Academic_CreateOfficialFact (ADR-0090, issue #481); subió de 50 a 51 al sumar
+/// Academic_ImportAgnAudits (issue #506).
 ///
 /// <para>
 /// Los ids "reales" son los del seed determinístico de <c>AcademicSeedData</c>, repetidos acá como
@@ -319,6 +320,10 @@ public static class WriteEndpoints
             LongStringBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "Published", value = "Privada", unit = (string?)null, period = "2026", sourceName = LongString, sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" },
             InvalidEnumBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "NotAStatus", value = "Privada", unit = (string?)null, period = "2026", sourceName = "Sitio institucional", sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" },
             NumericEnumBody: () => new { subjectType = "Institution", subjectId = UnstaId, field = "institution_type", status = "9", value = "Privada", unit = (string?)null, period = "2026", sourceName = "Sitio institucional", sourceUrl = "https://unsta.edu.ar", sourceDocument = (string?)null, sourceRetrievedAt = "2026-09-01T00:00:00Z", derivationRuleId = (string?)null, note = (string?)null, relievedAt = "2026-09-07T00:00:00Z" }),
+
+        // Sin body: dispara la importación para todo el catálogo, no recibe nada del caller.
+        new WriteEndpointCase("Academic_ImportAgnAudits", HttpMethod.Post, WriteAccess.Admin,
+            _ => "/api/academic/agn-audits/import", []),
 
         // -----------------------------------------------------------------
         // Academic: importación de plan (self-service + aprobación admin)
