@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Planb.Academic.Application.Abstractions.AgnAudits;
 using Planb.Academic.Domain.OfficialFacts;
 using Planb.Academic.Infrastructure.Persistence;
 using Planb.SharedKernel.Abstractions.Clock;
@@ -9,11 +10,11 @@ namespace Planb.Academic.Infrastructure.AgnAudits;
 
 /// <summary>
 /// Orquesta la tarea 18 de R6 (issue #506): trae los informes de la AGN, arma una afirmación de
-/// auditoría por institución del catálogo (ADR-0090) y la persiste. Standalone: lo invoca el
-/// comando <c>import-agn-audits</c> (host/Planb.Api/Infrastructure/ImportAgnAuditsCommand.cs) a
-/// mano, nunca el seed automático de <c>just dev</c> ni el <c>seed-db</c> del stage. La API de la
-/// AGN es de un tercero: ni el arranque ni un seed que corre en cada deploy pueden depender de que
-/// responda rápido, o de que responda.
+/// auditoría por institución del catálogo (ADR-0090) y la persiste. La dispara a mano quien sostiene
+/// el catálogo, desde el backoffice (<c>Features/AdminAgnAudits</c>, vía el port
+/// <see cref="IAgnAuditImporter"/>), nunca el seed automático de <c>just dev</c> ni el
+/// <c>seed-db</c> del stage. La API de la AGN es de un tercero: ni el arranque ni un seed que corre
+/// en cada deploy pueden depender de que responda rápido, o de que responda.
 ///
 /// <para>
 /// Todo o nada: hace un fetch por organismo del padrón (<see cref="AgnOrganismoCatalog"/>, hoy dos:
@@ -22,8 +23,15 @@ namespace Planb.Academic.Infrastructure.AgnAudits;
 /// fallan, no queda ninguna fila a medias. <see cref="AcademicDbContext.SaveChangesAsync"/> hace el
 /// resto en una sola transacción: las N afirmaciones entran juntas o ninguna entra.
 /// </para>
+///
+/// <para>
+/// Antes de ese fetch por organismo corre el control (<see cref="AgnAuditSanityCheck"/>, "la
+/// trampa"): la API responde 200 con cero resultados tanto si el filtro está mal armado como si el
+/// organismo no tiene informes, y las dos formas son indistinguibles por la respuesta. Un control
+/// que se sabe positivo (la UNT) vacío corta el import entero antes de escribir nada.
+/// </para>
 /// </summary>
-public sealed class AgnAuditImporter
+public sealed class AgnAuditImporter : IAgnAuditImporter
 {
     /// <summary>
     /// RelievedBy de este import automático. Distinto del RelievedBy del relevamiento a mano de
@@ -55,6 +63,27 @@ public sealed class AgnAuditImporter
 
     public async Task<Result<int>> ImportAsync(CancellationToken ct = default)
     {
+        // La trampa (issue #506): antes de creer cualquier respuesta vacía, se consulta el control
+        // (la UNT: comprobada a mano el 2026-09-08, cuatro informes reales) y se aborta acá, antes
+        // de tocar el catálogo o la base, si ese control no confirma que la consulta es confiable.
+        var controlResult = await _client.FetchReportsForOrganismoAsync(
+            AgnOrganismoCatalog.ControlOrganismoId, ct);
+        if (controlResult.IsFailure)
+        {
+            _logger.LogWarning(
+                "AgnAuditImporter: no se pudo traer el control de la UNT ({Error}); no se cargó nada.",
+                controlResult.Error);
+            return Result.Failure<int>(controlResult.Error);
+        }
+
+        var sanityCheck = AgnAuditSanityCheck.Verify(controlResult.Value);
+        if (sanityCheck.IsFailure)
+        {
+            _logger.LogWarning(
+                "AgnAuditImporter: el control de la UNT volvió vacío; la consulta no es confiable, no se cargó nada.");
+            return Result.Failure<int>(sanityCheck.Error);
+        }
+
         var universityIds = await _db.Universities
             .AsNoTracking()
             .Select(u => u.Id)
@@ -66,14 +95,16 @@ public sealed class AgnAuditImporter
 
         // Un fetch por organismo distinto del padrón, no por institución: si dos universidades
         // compartieran organismo (el propio AgnOrganismoCatalog documenta el caso de UTN por
-        // Facultad Regional) no tiene sentido pedirle a la AGN lo mismo dos veces.
+        // Facultad Regional) no tiene sentido pedirle a la AGN lo mismo dos veces. El organismo de
+        // control queda afuera de este loop: ya se trajo arriba, y sus informes se siembran en
+        // `reports` para no pedirlo dos veces cuando la UNT es, además, uno de los sujetos reales.
         var organismoIds = subjects
             .Select(s => s.OrganismoId)
-            .Where(id => id is not null)
+            .Where(id => id is not null && id != AgnOrganismoCatalog.ControlOrganismoId)
             .Select(id => id!.Value)
             .Distinct();
 
-        var reports = new List<AgnReport>();
+        var reports = new List<AgnReport>(controlResult.Value);
         foreach (var organismoId in organismoIds)
         {
             var reportsResult = await _client.FetchReportsForOrganismoAsync(organismoId, ct);
