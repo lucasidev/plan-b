@@ -35,4 +35,14 @@ public static class AgnOrganismoCatalog
 
     public static int? TryGetOrganismoId(Guid universityId) =>
         OrganismoIdsByUniversityId.TryGetValue(universityId, out var organismoId) ? organismoId : null;
+
+    /// <summary>
+    /// Organismo de control del import (issue #506, "la trampa": ver <see cref="AgnAuditSanityCheck"/>).
+    /// La API responde 200 con cero resultados tanto si el organismo no tiene informes como si el
+    /// filtro quedó mal armado (un id que no existe, un nombre de parámetro con typo), y las dos
+    /// formas son indistinguibles por la respuesta. La UNT es el único organismo del padrón cuyo
+    /// resultado positivo se comprobó a mano (cuatro informes, 2026-09-08): un fetch vacío para este
+    /// id es evidencia de que la consulta se rompió, no de que la UNT perdió sus auditorías.
+    /// </summary>
+    public static int ControlOrganismoId => OrganismoIdsByUniversityId[AcademicSeedData.Unt.Id.Value];
 }

@@ -18,4 +18,14 @@ public static class AgnAuditErrors
         Error.Problem(
             "academic.agn_audit.incomplete_report",
             $"El informe más reciente del organismo {organismoId} no trae título, año o link.");
+
+    /// <summary>
+    /// El control (issue #506, "la trampa"; ver <see cref="AgnAuditSanityCheck"/>) volvió vacío: la
+    /// API respondería igual si el filtro estuviera mal armado, así que no hay forma de distinguir
+    /// eso de que la UNT realmente se quedó sin auditorías. No se cargó nada.
+    /// </summary>
+    public static Error SanityCheckFailed() =>
+        Error.Problem(
+            "academic.agn_audit.sanity_check_failed",
+            "El control (UNT) no devolvió informes: la consulta a la AGN no es confiable ahora mismo, no se cargó nada.");
 }

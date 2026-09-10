@@ -2,10 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Planb.Academic.Application.Abstractions.AgnAudits;
 using Planb.Academic.Application.Abstractions.Pdf;
 using Planb.Academic.Application.Abstractions.Persistence;
 using Planb.Academic.Application.Contracts;
 using Planb.Academic.Application.Features.AdminAcademicTerms;
+using Planb.Academic.Application.Features.AdminAgnAudits;
 using Planb.Academic.Application.Features.AdminCareerPlans;
 using Planb.Academic.Application.Features.AdminCareers;
 using Planb.Academic.Application.Features.AdminSubjects;
@@ -122,7 +124,11 @@ public static class DependencyInjection
                 Timeout = TimeSpan.FromSeconds(30),
             },
             sp.GetRequiredService<ILogger<AgnReportsApiClient>>()));
-        services.AddScoped<AgnAuditImporter>();
+        services.AddScoped<IAgnAuditImporter, AgnAuditImporter>();
+
+        // El backoffice dispara el import (issue #506) y lee, por institución, cuándo se consultó
+        // por última vez y qué encontró (Features/AdminAgnAudits).
+        services.AddScoped<IAdminAgnAuditReader, DapperAdminAgnAuditReader>();
 
         return services;
     }
