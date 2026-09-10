@@ -7,15 +7,15 @@ import { MyProfileForm } from './my-profile-form';
 
 /**
  * Component tests del guardado de Mi perfil (US-047): el guardado tiene que esperar al
- * action y recién ahí cerrar el form y refrescar, en la misma transición, para que la
+ * action y recién ahí cerrar el form y recargar, en la misma transición, para que la
  * vista nunca muestre el nombre viejo ni un guardado fallido cierre el form perdiendo lo
  * tipeado.
  */
 
-const { refreshMock } = vi.hoisted(() => ({ refreshMock: vi.fn() }));
+const { reloadMock } = vi.hoisted(() => ({ reloadMock: vi.fn() }));
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: refreshMock, push: vi.fn() }),
+vi.mock('@/lib/reload-after-mutation', () => ({
+  reloadAfterMutation: reloadMock,
 }));
 
 vi.mock('../actions', () => ({
@@ -50,7 +50,7 @@ beforeEach(() => {
 });
 
 describe('MyProfileForm: guardar', () => {
-  it('espera al action y recién después cierra el form y refresca', async () => {
+  it('espera al action y recién después cierra el form y recarga', async () => {
     let resolveAction: (value: { status: 'success' }) => void = () => {};
     actionMock.mockImplementation(
       () =>
@@ -64,7 +64,7 @@ describe('MyProfileForm: guardar', () => {
     await user.click(screen.getByRole('button', { name: /editar/i }));
     await user.click(screen.getByRole('button', { name: /^guardar$/i }));
 
-    expect(refreshMock).not.toHaveBeenCalled();
+    expect(reloadMock).not.toHaveBeenCalled();
     expect(screen.getByRole('heading', { name: /editar datos académicos/i })).toBeInTheDocument();
 
     await act(async () => {
@@ -72,7 +72,7 @@ describe('MyProfileForm: guardar', () => {
     });
 
     expect(await screen.findByRole('button', { name: /^editar$/i })).toBeInTheDocument();
-    expect(refreshMock).toHaveBeenCalledTimes(1);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
     expect(
       screen.queryByRole('heading', { name: /editar datos académicos/i }),
     ).not.toBeInTheDocument();
@@ -98,7 +98,7 @@ describe('MyProfileForm: guardar', () => {
     ).toBeInTheDocument();
     expect(nameInput).toHaveValue('Lucía Nueva');
     expect(screen.getByRole('heading', { name: /editar datos académicos/i })).toBeInTheDocument();
-    expect(refreshMock).not.toHaveBeenCalled();
+    expect(reloadMock).not.toHaveBeenCalled();
   });
 
   it('el botón Guardar queda deshabilitado mientras el action está en vuelo', async () => {

@@ -1,12 +1,12 @@
 'use client';
 
 import { Pencil } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { TextField } from '@/components/ui/text-field';
 import { displayNameFromEmail } from '@/lib/member-shell';
+import { reloadAfterMutation } from '@/lib/reload-after-mutation';
 import { updateMyProfileAction } from '../actions';
 import { initialUpdateProfileState, type MyProfile } from '../types';
 import { ProfileAvatar } from './profile-avatar';
@@ -28,7 +28,6 @@ type Props = {
 };
 
 export function MyProfileForm({ profile }: Props) {
-  const router = useRouter();
   const [editing, setEditing] = useState(false);
 
   const displayedName = profile.displayName ?? displayNameFromEmail(profile.email);
@@ -59,11 +58,12 @@ export function MyProfileForm({ profile }: Props) {
           profile={profile}
           onCancel={() => setEditing(false)}
           onSaved={() => {
-            // La página es force-dynamic: refrescar trae el profile posta del RSC. Esto
-            // corre adentro de la transición de EditForm, así la vista nunca llega a
-            // mostrar el nombre viejo entre que cerramos el form y llega el profile nuevo.
+            // La página es force-dynamic: refrescar trae el profile posta del RSC. `router.refresh()`
+            // puede perder el commit bajo carga (issue #491, mismo fallo que `router.push`): acá no
+            // hay nada más en pantalla que perder, así que se fuerza un reload real en vez de confiar
+            // en la transición de React. Ver `lib/reload-after-mutation.ts`.
             setEditing(false);
-            router.refresh();
+            reloadAfterMutation();
           }}
         />
       ) : (

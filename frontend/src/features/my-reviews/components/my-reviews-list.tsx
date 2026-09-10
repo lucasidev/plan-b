@@ -177,6 +177,15 @@ function ReviewCard({
       setConfirming(false);
       // Primero se saca de la vista, y después se pide la lista de nuevo: el refresh trae los
       // conteos al día, pero no puede ser lo que decide si la tarjeta desaparece.
+      //
+      // Por eso este sitio se queda con `router.refresh()` y no pasa a `reloadAfterMutation`
+      // (`lib/reload-after-mutation.ts`) como Mi perfil y Corregir, aunque comparte el mismo fallo
+      // bajo carga (issue #491): acá lo que ve la persona (la tarjeta desapareciendo) ya lo decide
+      // el estado local de arriba, no este refresh. Si el commit se pierde, lo único que queda
+      // stale son los conteos de las tarjetas hermanas, no el borrado. Un reload completo forzaría
+      // el commit, pero también volvería a la carrera contra la lectura eventual del backend que
+      // `onRemoved` existe para tapar (ver su comentario): la reseña recién borrada podría
+      // reaparecer un instante, que es justo lo que el E2E del deshacer verificó que no pasara.
       onRemoved();
       router.refresh();
     });
