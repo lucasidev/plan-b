@@ -80,10 +80,21 @@ public class RegisterUserValidatorTests
     }
 
     [Fact]
-    public void Empty_career_id_fails()
+    public void Empty_career_id_fails_when_there_is_no_career_plan_id()
     {
-        var cmd = ValidCommand(careerId: Guid.Empty);
+        var cmd = new RegisterUserCommand(
+            "lucas@unsta.edu.ar", new string('a', 12), Guid.Empty, CareerPlanId: null);
 
         _validator.TestValidate(cmd).ShouldHaveValidationErrorFor(c => c.CareerId);
+    }
+
+    [Fact]
+    public void Empty_career_id_passes_when_a_career_plan_id_is_present()
+    {
+        // El plan identifica la carrera transitivamente: pedir las dos cosas era redundante y
+        // rompía a todo cliente que ya mandaba solo el plan.
+        var cmd = ValidCommand(careerId: Guid.Empty);
+
+        _validator.TestValidate(cmd).ShouldNotHaveValidationErrorFor(c => c.CareerId);
     }
 }

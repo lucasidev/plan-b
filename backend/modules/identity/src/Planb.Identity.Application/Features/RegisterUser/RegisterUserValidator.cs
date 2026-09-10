@@ -26,8 +26,12 @@ internal sealed class RegisterUserValidator : AbstractValidator<RegisterUserComm
             .MinimumLength(MinPasswordLength)
             .MaximumLength(MaxPasswordLength);
 
+        // El plan identifica la carrera transitivamente (el handler la deriva de ahí e ignora
+        // CareerId cuando ambos vienen). Exigir CareerId igual rompía a todo cliente que ya
+        // mandaba el plan solo. Sin plan, la carrera es lo único que ancla la declaración.
         RuleFor(c => c.CareerId)
-            .NotEmpty();
+            .NotEmpty()
+            .When(c => !c.CareerPlanId.HasValue);
 
         // Nullable a propósito: la mayoría del catálogo real todavía no tiene un plan relevado
         // (R6), y una carrera sin plan tiene que poder registrarse igual. Cuando SÍ viene un
