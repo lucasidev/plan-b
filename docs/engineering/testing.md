@@ -461,7 +461,7 @@ corrida sin romper el build.
 
 **Regla cultural** (vive en la disciplina del dev, no en tooling): cuando termines un slice que toque rutas reales (no mocks/ComingSoon), corré `just frontend-test-e2e-show <spec>` local con browser visible y verificá verde antes de declarar la US "lista" o pedir revisión. Esto vale especialmente para el asistente IA: el OK para commit/push viene después de mostrar el output del spec corrido, no antes.
 
-**`_stage/` es la única excepción a "E2E corre siempre en CI".** `frontend/e2e/_stage/walk.spec.ts` automatiza el tramo con cuenta de "El recorrido para Copas" ([`deploy.md`](deploy.md)) contra el stage real (`https://planb.olisar.com.ar` y su Mailpit), nunca contra una base efímera. `playwright.config.ts` lo excluye de los tres proyectos salvo `PLAYWRIGHT_INCLUDE_STAGE=1`, así que ni `just frontend-test-e2e` ni CI lo tocan. Se corre a mano con `just stage-walk`, necesita `STAGE_MAILPIT_UI_AUTH` y `STAGE_SEED_PASSWORD` en `.env`, y deja datos que solo el reset del stage (paso 8 del guion de clics de `deploy.md`) borra.
+**`_stage/` es la única excepción a "E2E corre siempre en CI".** `frontend/e2e/_stage/walk.spec.ts` automatiza el tramo con cuenta de "El recorrido para Copas" ([`deploy.md`](deploy.md)) contra el stage real (`https://planb.olisar.com.ar` y su Mailpit), nunca contra una base efímera. `playwright.config.ts` lo excluye de los tres proyectos salvo `PLAYWRIGHT_INCLUDE_STAGE=1`, así que ni `just frontend-test-e2e` ni CI lo tocan. Se corre a mano con `just stage-walk`, necesita `STAGE_MAILPIT_UI_AUTH` y `STAGE_SEED_PASSWORD` en `.env`, y deja datos que solo el reset del stage (paso 9 del guion de clics de `deploy.md`) borra.
 
 #### Dominio vs infra: cuándo un helper directo está OK
 

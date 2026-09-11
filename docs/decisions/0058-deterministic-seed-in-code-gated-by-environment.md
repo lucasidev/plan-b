@@ -42,7 +42,7 @@ Corolario: **el seeder no actualiza filas existentes**. Cambiar el nombre de una
 
 ### 3. Dos niveles de gate
 
-- **Nivel 1, `IsDevelopment()`**: lo aplican los hosted services que siembran al arrancar. Producción no siembra nada porque nada la invoca ahí: ni un hosted service (gateado a `IsDevelopment()`) ni un verbo del deploy (`docker-compose.prod.yml` no tiene el servicio que correría `seed-db`). El archivo `seed-data/personas.json` se registra en `IConfiguration` en cualquier ambiente: el stage lo necesita cargado para que su verbo `seed-db` lo use corriendo en Production (ADR-0091).
+- **Nivel 1, `IsDevelopment()`**: lo aplican los hosted services que siembran al arrancar. Fuera de Development nada siembra solo: el gate apaga los hosted services, y ningún compose invoca `seed-db`, así que sembrar exige que una persona corra el verbo ([ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)). El archivo `seed-data/personas.json` se registra en `IConfiguration` en cualquier ambiente: el stage lo necesita cargado para que ese verbo lo use corriendo en Production (ADR-0091).
 - **Nivel 2, la variable `PLANB_SEED_CORPUS`**: solo el corpus de demostración (autores fantasma, cursadas y reseñas). Lo prende `just dev` y nadie más. **Está decidido y no construido**: el tooling la manda, y al 2026-08-30 ningún código del backend la lee, así que los dos niveles siembran lo mismo. Lo construye el issue #374.
 
 El segundo nivel existe por una razón que no es obvia: **los integration tests corren en Development**. Sin él recibirían el corpus de demo y cualquier assert de conteo ("esta materia tiene 2 reseñas") se rompería contra los datos de la demo.
@@ -81,6 +81,7 @@ Rechazada. Evita el problema del entorno, pero duplica el modelo: cada cambio de
 
 **A vigilar**
 
+- **La idempotencia por id es más débil que la unicidad de la base, y solo se nota contra datos acumulados.** El seeder saltea por id; la base rechaza por clave natural. Una fila del mismo período lectivo con otro id pasa el chequeo y muere en el `INSERT` contra `ux_academic_terms_uni_year_number_kind`. En desarrollo no aparece nunca, porque la base se tira y se recrea. Tumbó el stage el 2026-09-10 ([ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)).
 - El seeder es el único caller de los métodos `Hydrate` de los aggregates, que saltean validación. Ese es justamente el camino que motivó replicar invariantes como constraints de base ([ADR-0052](0052-database-constraints-as-a-net-under-aggregate-invariants.md)); `Commission.Hydrate` ya se cerró para que valide y tire.
 - Si alguna vez hace falta sembrar en producción (un catálogo real de universidades), esta decisión no cubre ese caso: el gate por `IsDevelopment()` habría que reemplazarlo por algo explícito, y ahí conviene revisar el ADR en vez de sacarle el gate.
 

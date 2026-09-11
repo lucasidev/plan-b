@@ -34,10 +34,10 @@ Adoptar el patrón canónico de Microsoft + 12-factor, con seis reglas vinculant
 |---|---|---|
 | Dev local (`dotnet run`, `just dev`), integration tests (`WebApplicationFactory`) | `Development` | `appsettings.json` ← `appsettings.Development.json` ← `.env` (vía `set dotenv-load` en Justfile) |
 | CI (`dotnet test` en GHA) | `Development` | `appsettings.json` ← `appsettings.Development.json` ← env vars del workflow |
-| Stage (Dokploy, sigue a `main`) | `Production` | `appsettings.json` ← env vars de Dokploy; `migrate-db` y `seed-db` corren como pasos de deploy, no al arrancar (ADR-0091) |
+| Stage (Dokploy, sigue a `main`) | `Production` | `appsettings.json` ← env vars de Dokploy; `migrate-db` corre como paso de deploy y `seed-db` lo corre una persona, nunca al arrancar y nunca el deploy ([ADR-0091](0091-the-stage-runs-as-production-and-seeding-is-a-deploy-step.md), [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)) |
 | Release / prod | `Production` | `appsettings.json` ← env vars del runtime / secret manager; `migrate-db` corre como paso de deploy, sin `seed-db` |
 
-`ASPNETCORE_ENVIRONMENT=Development` se fija explícitamente en `.github/workflows/ci.yml` para que CI ejercite el mismo path que dev local (Wolverine `Dynamic` codegen, EF resource auto-create, Mailpit en `localhost:1025`). `Development` pasa a significar exactamente esto: corriendo desde el código fuente. El stage no es un tercer valor de `ASPNETCORE_ENVIRONMENT`: corre `Production` igual que producción, y su única diferencia (además de los secrets) es que su deploy también corre `seed-db` (ADR-0091).
+`ASPNETCORE_ENVIRONMENT=Development` se fija explícitamente en `.github/workflows/ci.yml` para que CI ejercite el mismo path que dev local (Wolverine `Dynamic` codegen, EF resource auto-create, Mailpit en `localhost:1025`). `Development` pasa a significar exactamente esto: corriendo desde el código fuente. El stage no es un tercer valor de `ASPNETCORE_ENVIRONMENT`: corre `Production` igual que producción, y su única diferencia (además de los secrets) es que alguien le corre `seed-db` a mano para cargar el corpus sintético. Ningún deploy siembra, en ningún ambiente ([ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)).
 
 ### Frontend (Next.js)
 

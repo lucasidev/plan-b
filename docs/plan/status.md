@@ -623,6 +623,7 @@ R6 se planificó por tareas y se cerró caminando el producto, que es lo que un 
 | El conteo de voces del catálogo no respetaba el piso | Publicaba por la ventana lateral el número que el producto se niega a publicar |
 | Once archivos de test referenciaban carreras por posición | R6 insertó carreras en el medio del array y probaban otra cosa que la que decían |
 | El shell dejaba scrollear el documento entero | La barra lateral se arrastraba y quedaba un vacío del alto del formulario |
+| El stage devolvía 404 con cuatro despliegues fallados en fila | El seed encadenado al deploy podía impedir que el producto arrancara, y desde afuera no se notaba porque el contenedor viejo seguía atendiendo ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)) |
 
 ### Los hallazgos de R5, con destino
 
