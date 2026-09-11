@@ -14,11 +14,17 @@ Qué hacer cuando el stage se rompe o hay que intervenirlo. El armado desde cero
 
 **Síntoma.** El job "Redeploy the stage" falla con "El stage no llegó a `<sha>`", o `/health` sigue devolviendo el sha anterior.
 
-**Diagnóstico.** En *Deployments*, el log del último deploy. Si dice `planb-api:<sha viejo> Pulled`, el Environment tiene `PLANB_API_TAG` y `PLANB_WEB_TAG` pineadas: una variable pineada le gana al default `main` del compose. Si no hay deploy nuevo, la llamada a la API no llegó: el job lo dice (secrets faltantes o una respuesta distinta de `Deployment queued`).
+**Diagnóstico.** En *Deployments*, el log del último deploy. Tres causas, en este orden:
 
-**Acción.** Borrar las dos variables en *Environment*, Save y Deploy. Si faltan secrets, cargarlos en GitHub (sección Secretos) y relanzar el workflow desde Actions.
+1. Si dice `planb-api:<sha viejo> Pulled`, el Environment tiene `PLANB_API_TAG` y `PLANB_WEB_TAG` pineadas: una variable pineada le gana al default `main` del compose.
+2. Si un servicio de un solo uso terminó en error, `api` no se recreó y el contenedor anterior siguió atendiendo: desde afuera el stage responde, con la versión vieja. Hoy el único de un solo uso es `migrate`, y sus logs dicen qué migración falló.
+3. Si no hay deploy nuevo, la llamada a la API no llegó: el job lo dice (secrets faltantes o una respuesta distinta de `Deployment queued`).
 
-Verificado el 2026-09-07: fue exactamente lo que pasó en el primer merge con el stage continuo.
+**Acción.** Para (1), borrar las dos variables en *Environment*, Save y Deploy. Para (2), arreglar en `main` con un PR o con `git revert` ([`rollback.md`](rollback.md)); mientras tanto el stage sigue sirviendo la versión anterior. Para (3), cargar los secrets en GitHub (sección Secretos) y relanzar el workflow desde Actions.
+
+Verificado el 2026-09-07 para la causa (1): fue exactamente lo que pasó en el primer merge con el stage continuo.
+
+**Esta falla se acumula en silencio.** El 2026-09-10 se descubrió que los cuatro despliegues anteriores habían fallado en fila desde el 8 de septiembre, y desde afuera el stage seguía contestando con la versión vieja. La única señal es la corrida de *Publish images* en rojo: no hay aviso, hay que mirarla. Ese incidente sacó la siembra de la cadena del deploy ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)), que era lo que fallaba, pero cualquier falla de `migrate` deja el mismo cuadro.
 
 ### 2. Crash loop después de un deploy que Dokploy dio por exitoso
 
@@ -68,11 +74,28 @@ Sin verificar contra el stage real.
 
 Sin verificar contra el stage real.
 
-### 7. Reset del stage
+### 7. Reset del stage, y sembrarlo
 
-Por SSH, `docker compose -p planb-stage-h30ogf down -v` (el App Name que muestra la cabecera del servicio es el nombre del proyecto de compose) y Deploy desde el panel. Los servicios `migrate` y `seed` vuelven a correr solos antes de que `api` arranque: migran el schema, aplican los recursos de Wolverine y siembran personas, catálogo académico, catálogo de frases y el corpus sintético (ADR-0091).
+**El despliegue migra el esquema y no siembra** ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)), así que volver a cero son dos movimientos, no uno.
 
-Sin verificar contra el stage real.
+**Reset.** Por SSH, `docker compose -p planb-stage-h30ogf down -v` (el App Name que muestra la cabecera del servicio es el nombre del proyecto de compose) y Deploy desde el panel. El servicio `migrate` vuelve a correr solo antes de que `api` arranque: migra el schema y aplica los recursos de Wolverine (ADR-0091). La base queda migrada y vacía.
+
+**Sembrar.** El verbo `seed-db` de la misma imagen del `api`, contra la red interna del compose y con las mismas variables de conexión que usa `api`. Los tres valores salen del Environment del servicio:
+
+```bash
+docker run --rm --network planb-stage-h30ogf_internal \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  -e ConnectionStrings__Planb="Host=postgres;Port=5432;Database=planb;Username=planb;Password=<POSTGRES_PASSWORD>" \
+  -e ConnectionStrings__Redis="redis:6379,password=<REDIS_PASSWORD>" \
+  -e JWT__Secret="<JWT_SECRET>" \
+  ghcr.io/lucasidev/plan-b/planb-api:main seed-db
+```
+
+Siembra personas, catálogo académico, catálogo de frases y el corpus sintético; la última línea es `CorpusSeeder: inserted N reviews`. Es el mismo comando para cargar un catálogo nuevo cuando el seed cambie: los datos del stage persisten entre despliegues y van a divergir del seed, y volver a alinearlos es esta corrida, decidida por alguien.
+
+El seed es idempotente por id y no por clave natural, así que contra una base acumulada puede chocar con un unique de la base y cortar. Si pasa, el mensaje dice el índice; el reset de arriba lo resuelve a costa de los datos.
+
+Sin verificar contra el stage real, y sin aplicar todavía: el compose sigue trayendo el servicio `seed`, así que hoy el deploy sigue sembrando solo. El comando de arriba sale de ese mismo servicio (misma imagen, mismas variables) y de que Docker nombra la red `<App Name>_internal`.
 
 ### 8. Entrar con las cuentas sembradas
 

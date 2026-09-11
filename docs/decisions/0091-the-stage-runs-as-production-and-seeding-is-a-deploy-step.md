@@ -1,6 +1,6 @@
 # ADR-0091: The stage runs as production and seeding is a deploy step
 
-- **Estado**: aceptado
+- **Estado**: aceptado, con la siembra fuera de la cadena del deploy por [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md) (ver [Revisión](#revisión-2026-09-10))
 - **Fecha**: 2026-09-08
 
 ## Contexto
@@ -70,8 +70,15 @@ Imagen construida desde `backend/Dockerfile` (podman) y stack completo (`docker-
 - Un módulo nuevo con su propio `DbContext` se agrega en `EfCoreMigrator.MigrateAllAsync`, un solo lugar, no en el hosted service y en el comando por separado.
 - `seed-data/personas.json` ahora se carga a `IConfiguration` en cualquier ambiente (sigue siendo `optional: true`); lo que decide si algo la usa es qué hosted service o verbo corre, no si el archivo llegó a `IConfiguration`.
 
+## Revisión (2026-09-10)
+
+**La sección 3 se retira: sembrar deja de ser un paso del deploy.** El 2026-09-10 el seed falló por un choque de clave única en los períodos lectivos, `api` nunca arrancó y el stage quedó devolviendo 404, con cuatro despliegues fallados en fila desde el 8 de septiembre. El argumento de esta sección ("un stage a medio sembrar es peor que uno que no arrancó") no midió su consecuencia: cualquier falla del seed impide que el producto arranque. El [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md) saca el servicio `seed` de la cadena, deja `seed-db` como un verbo que corre una persona, y explica por qué resembrar en cada despliegue es conducta de entorno de desarrollo.
+
+**Lo demás sigue en pie**, y es el grueso de este ADR: el stage corre `ASPNETCORE_ENVIRONMENT=Production` con codegen estático y recursos sin auto-create (sección 1); `migrate-db` es el único verbo que deja la base lista y corre como servicio de un solo uso antes de `api` en los dos ambientes (sección 2); `docker-compose.prod.yml` no tiene servicio `seed` (sección 3, párrafo final); y la limpieza de logs de la sección 4.
+
 ## Refs
 
+- [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): el despliegue migra el esquema y no siembra datos, en ningún ambiente.
 - [ADR-0059](0059-production-startup-does-not-self-repair.md): por qué el arranque de Production falla en vez de repararse solo, y por qué migrar es una decisión explícita.
 - [ADR-0089](0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): el stage sigue a `main`; producción se promueve desde un Release.
 - [ADR-0035](0035-environment-configuration.md): la matriz de ambientes, con el stage agregado.
