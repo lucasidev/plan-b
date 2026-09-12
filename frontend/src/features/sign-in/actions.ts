@@ -14,7 +14,7 @@ import type { SignInFormState, SignInUserPayload } from './types';
  * POST /api/identity/sign-in, forwards Set-Cookie headers (planb_session,
  * planb_refresh) on 200, then redirects to wherever that rol entra.
  *
- * Per frontend/CLAUDE.md, this file is `'use server'` at the top so it
+ * Per docs/engineering/frontend-conventions.md, this file is `'use server'` at the top so it
  * can only export async functions. Types and the initial state live in
  * ./types.
  */

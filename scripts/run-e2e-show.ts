@@ -6,7 +6,7 @@
  * estás debuggeando un spec flaky no sabés contra qué estado corriste. Un poco más lento (levanta
  * el stack), a cambio de que lo que ves en pantalla arranque siempre del mismo punto.
  *
- * Convención del repo: scripts en TS (`CLAUDE.md` "Scripts en TypeScript, no en bash.
+ * Convención del repo: scripts en TS (`AGENTS.md` "Scripts en TypeScript, no en bash.
  * Consistencia."). El recipe `frontend-test-e2e-show` no puede usar sintaxis bash inline
  * (`PLAYWRIGHT_SLOWMO=300 bunx ...`) porque pwsh, el default windows-shell del Justfile, no la
  * entiende.

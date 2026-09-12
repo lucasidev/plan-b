@@ -13,7 +13,7 @@ import type { ResendVerificationFormState } from './types';
  * the user is already verified. That is why `sent` is set on every 204, and the 60s
  * button cooldown applies uniformly.
  *
- * Per frontend/CLAUDE.md, `'use server'` at the top means only async functions can be
+ * Per docs/engineering/frontend-conventions.md, `'use server'` at the top means only async functions can be
  * exported. The state types live in ./types.
  */
 // react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- resend-verification is public (user has not verified email yet, no session)

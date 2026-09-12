@@ -1,4 +1,16 @@
 {
+  "deniedMcpServers": [
+    { "serverName": "Blender" },
+    { "serverName": "Shadcn UI" },
+    { "serverName": "Gmail" },
+    { "serverName": "claude.ai Gmail" },
+    { "serverName": "Google Drive" },
+    { "serverName": "claude.ai Google Drive" },
+    { "serverName": "Google Calendar" },
+    { "serverName": "claude.ai Google Calendar" },
+    { "serverName": "Notion" },
+    { "serverName": "claude.ai Notion" }
+  ],
   "hooks": {
     "PreToolUse": [
       {
@@ -18,6 +30,27 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-agent-tier.mjs\"",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "WebSearch|WebFetch|mcp__.*(?:playwright|chrome|browser).*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agents/hooks/guard-tool-budget.mjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/check-agent-config.ts\" --sync",
+            "timeout": 20
           }
         ]
       }

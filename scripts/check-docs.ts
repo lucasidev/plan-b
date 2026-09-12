@@ -36,12 +36,20 @@ const EMDASH = String.fromCharCode(0x2014);
 type Finding = { file: string; line: number; rule: string; detail: string };
 const findings: Finding[] = [];
 
-// cada worktree de agente es un checkout completo del repo en su propio commit: recorrerlo
-// duplica docs/ con hallazgos que no existen en el checkout real (mismo archivo, otra copia).
-const AGENT_WORKTREES_DIR = join(ROOT, '.claude', 'worktrees');
+// .claude/worktrees/ guarda checkouts completos: sin este salteo, sus docs.md se cuentan de
+// nuevo y explotan en falsos positivos de link-roto. .claude/skills/ es la copia generada y
+// gitignorada del canónico en .agents/skills/ (ver check-agent-config.ts): recorrerla duplica
+// cada hallazgo sobre el mismo contenido. El resto de .claude/ (rules/, agents/, etc.) está
+// trackeado y check-docs lo sigue mirando.
+const SKIPPED_RELATIVE_DIRS = new Set(['.claude/worktrees', '.claude/skills']);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const name of readdirSync(dir)) {
+    const p = join(dir, name);
+    const relPath = p
+      .slice(ROOT.length + 1)
+      .split(sep)
+      .join('/');
     if (
       [
         'node_modules',
@@ -52,11 +60,10 @@ function walk(dir: string, out: string[] = []): string[] {
         'dist',
         '.stryker-tmp',
         'StrykerOutput',
-      ].includes(name)
+      ].includes(name) ||
+      SKIPPED_RELATIVE_DIRS.has(relPath)
     )
       continue;
-    const p = join(dir, name);
-    if (p === AGENT_WORKTREES_DIR) continue;
     if (statSync(p).isDirectory()) walk(p, out);
     else out.push(p);
   }

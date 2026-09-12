@@ -14,7 +14,7 @@ import type { Career, CareerPlan, University } from './types';
  * endpoints are **públicos**: no requieren sesión, así que el picker funciona igual montado
  * en `/sign-up` (sin cuenta todavía) que en cualquier pantalla autenticada.
  *
- * Conventions (frontend/CLAUDE.md):
+ * Conventions (docs/engineering/frontend-conventions.md):
  *   - Every queryKey starts with the feature namespace (`['career-catalog', ...]`).
  *   - Errors are thrown so TanStack Query surfaces them through `error`.
  *   - `enabled: !!parentId` is set in queryOptions, not at the consumer site.

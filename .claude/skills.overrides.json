@@ -1,0 +1,5 @@
+{
+  "new-adr": { "disable-model-invocation": true },
+  "regen-screenshots": { "disable-model-invocation": true },
+  "ship": { "disable-model-invocation": true }
+}

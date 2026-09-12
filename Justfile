@@ -20,7 +20,7 @@ default:
 # ═══════════════════════════════════════════════════════════════
 
 # First-time setup: generate secrets, start infra, install deps, install hooks
-setup: _ensure-env infra-up backend-restore frontend-install lefthook-install
+setup: _ensure-env infra-up backend-restore frontend-install lefthook-install sync-agent-config
     @echo ""
     @echo "✓ Setup complete. Run 'just dev' to start."
 
@@ -263,6 +263,22 @@ check-docs:
 check-docs-strict:
     bun scripts/check-docs.ts --strict
 
+# Los adaptadores de agentes no driftean: cada agente de .claude/agents tiene su par
+# en .codex/agents con el mismo cuerpo, y la copia local de skills que lee Claude Code
+# (.claude/skills, gitignorada) coincide con la fuente .agents/skills.
+
+# ¿Driftea la config de agentes entre Claude Code y Codex? Señala, no bloquea
+check-agent-config:
+    bun scripts/check-agent-config.ts
+
+# Igual pero cortando: es lo que corre `just ci` y el pre-push
+check-agent-config-strict:
+    bun scripts/check-agent-config.ts --strict
+
+# Genera .claude/skills desde .agents/skills (también lo corre el hook SessionStart)
+sync-agent-config:
+    bun scripts/check-agent-config.ts --sync
+
 # Veredicto por escenario (E, N, X) de las stories bajo el gate: confirmado (un test lo cita), roto (#issue)
 # o no construido. Sin --strict informa (solo un tracker ilegible lo hace fallar); --strict falla
 # ante cualquier hallazgo que gatea (la lista está en testing.md).
@@ -340,5 +356,5 @@ clean:
 # Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
 # ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
 # con ci.yml, docs-links.yml y commits.yml.
-ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck scripts-test check-docs-strict check-scenarios check-flaky frontend-build frontend-test
+ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck scripts-test check-docs-strict check-agent-config-strict check-scenarios check-flaky frontend-build frontend-test
     @echo "✓ All quality gates passed"

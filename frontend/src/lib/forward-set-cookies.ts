@@ -19,7 +19,7 @@ import { cookies } from 'next/headers';
  * not Identity-specific: any feature that issues a server action against a
  * backend that sets cookies will need this same parse-and-forward step.
  * Sitting in lib/ also keeps features/<feature>/ confined to the directory
- * shape that frontend/CLAUDE.md lists (actions.ts, api.ts, schemas/,
+ * shape that docs/engineering/frontend-conventions.md lists (actions.ts, api.ts, schemas/,
  * hooks/, components/, types.ts, index.ts) — no extra ad-hoc files.
  */
 

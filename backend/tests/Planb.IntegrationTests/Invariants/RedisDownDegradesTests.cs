@@ -15,7 +15,7 @@ namespace Planb.IntegrationTests.Invariants;
 /// Redis caído degrada, no rompe (ADR-0034): Postgres es la fuente de verdad, Redis es cache o
 /// estado efímero, y <c>AbortOnConnectFail=false</c> (host/Planb.Api/Program.cs) dice que un
 /// Redis caído no impide levantar el host. Cada consumidor (refresh tokens, rate limiter) tiene
-/// su fallback documentado en backend/CLAUDE.md.
+/// su fallback documentado en docs/engineering/backend-conventions.md.
 /// </summary>
 public class RedisDownDegradesTests : IClassFixture<RedisDownApiFixture>
 {
