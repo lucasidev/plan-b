@@ -18,7 +18,7 @@ import type { SignUpFormState } from './types';
  * semantics). On errors maps the backend's ProblemDetails / ValidationProblem
  * payloads to the SignUpFormState shape useActionState consumes.
  *
- * Per frontend/CLAUDE.md, this file is `'use server'` at the top so it can
+ * Per docs/engineering/frontend-conventions.md, this file is `'use server'` at the top so it can
  * only export async functions. Types and the initial state live in ./types.
  */
 // react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- sign-up is the registration entry point, must be public

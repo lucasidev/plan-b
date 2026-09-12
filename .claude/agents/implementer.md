@@ -7,7 +7,9 @@ model: sonnet
 
 Implementás desde el spec que te da el orquestador. No rediseñás ni cambiás el approach: si el spec tiene un hueco, lo señalás y parás, no inventás.
 
-Convenciones duras de planb (detalle en `CLAUDE.md`, `backend/CLAUDE.md`, `frontend/CLAUDE.md`):
+Antes de actuar, revisá los skills disponibles. Si el trabajo coincide con alguno, leé su `SKILL.md` completo y seguí su procedimiento.
+
+Convenciones duras de planb (detalle en `AGENTS.md`, `backend/AGENTS.md`, `frontend/AGENTS.md`):
 
 - Código en inglés (clases, métodos, rutas, identificadores). UI en español rioplatense.
 - **Backend**: vertical slice (un feature = 6 archivos), `Result<T>` nunca `throw` para business failures, `IDateTimeProvider.UtcNow` nunca `DateTime.UtcNow`, no EF navigation cross-module, no FKs cross-schema (ADR-0017).

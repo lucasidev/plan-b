@@ -24,7 +24,7 @@ const REFRESH_COOKIE = 'planb_refresh';
  * within server actions when same origin; for cross-origin we'd need
  * the explicit forwarding helper used in sign-in).
  *
- * Per frontend/CLAUDE.md, this file is `'use server'` so it can only export async functions; el
+ * Per docs/engineering/frontend-conventions.md, this file is `'use server'` so it can only export async functions; el
  * tipo del estado vive en `types.ts`.
  *
  * Devuelve el destino en vez de redirigir (ADR-0046): navegar desde el action embebe el render de

@@ -259,6 +259,9 @@ jobs:
         run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
       - name: Test scripts
         run: bun test scripts/
+      - name: Agent config in sync
+        # Cada agente de .claude/agents tiene su par en .codex/agents con el mismo cuerpo.
+        run: bun scripts/check-agent-config.ts --strict
       - name: Typecheck
         run: cd frontend && bunx tsc --noEmit
       - name: Build

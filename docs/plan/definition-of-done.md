@@ -13,7 +13,7 @@ El "listo cuando" de la story se suma a estos criterios generales, no los reempl
 - [ ] Cada punto del "listo cuando" de la story, cumplido.
 - [ ] Sin TODO, FIXME ni `Console.WriteLine` / `console.log` de debug.
 - [ ] Sin code smells obvios (variables sin usar, métodos muertos, magic numbers no justificados).
-- [ ] Sigue las convenciones del proyecto (ver `CLAUDE.md`, `backend/CLAUDE.md`, `frontend/CLAUDE.md`).
+- [ ] Sigue las convenciones del proyecto (ver `AGENTS.md`, `backend/AGENTS.md`, `frontend/AGENTS.md`).
 
 ## 2. Tests
 

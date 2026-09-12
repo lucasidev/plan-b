@@ -48,5 +48,5 @@ Las que existen o tienen que existir para este producto, su norma, su cadencia y
 | Seguridad | auth por endpoint, SQL parametrizado, secretos, dependencias | antes de cada deploy y ante cambio en identity o moderación | skill `security-audit` | registro acá |
 | Accesibilidad y celular | WCAG 2.2 AA en todo lo público (Restricciones del [catálogo](README.md)) | por pantalla nueva antes de hi-fi, y antes de cada deploy | Lighthouse y lectura manual con lector de pantalla | registro acá |
 | Datos personales | Ley 25.326: consentimiento, aviso de privacidad, derechos ARCO, destrucción de constancias | antes del primer deploy y ante cambio en identity o verificación | lista de chequeo escrita en la primera auditoría | registro acá |
-| Licencias de lo copiado | la tabla de procedencia de [`.claude/skills/README.md`](../../../.claude/skills/README.md) y las dependencias | al copiar algo de terceros | manual | la tabla misma |
+| Licencias de lo copiado | la tabla de procedencia de [`.agents/skills/README.md`](../../../.agents/skills/README.md) y las dependencias | al copiar algo de terceros | manual | la tabla misma |
 | Estados de los ADRs | la regla del [README de decisiones](../../decisions/README.md) | cada vez que un ADR nuevo supersede a otro | manual, en el mismo commit | el diff del ADR |

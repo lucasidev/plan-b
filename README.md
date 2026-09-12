@@ -52,16 +52,22 @@ Fuera de MVP: firma opcional de reseñas con identidad, modelos predictivos de a
 
 ## Stack técnico
 
-| Capa                          | Tecnología               | Notas                                              |
-| ----------------------------- | ------------------------ | -------------------------------------------------- |
-| **Frontend**                  | Next.js                  | SSR para indexar reseñas y materias                |
-| **Backend**                   | .NET                     | API REST con Clean Architecture                    |
-| **Base de datos**             | PostgreSQL               | JSONB, CTEs recursivos, full-text search           |
-| **Cache / ephemeral state**   | Redis                    | Refresh tokens, rate limiting, hot reads (ADR-0034) |
-| **Autenticación**             | JWT + email verification | Verificación manual para docentes en MVP           |
-| **Reverse proxy**             | Traefik                  | Ruteo y SSL automático                             |
-| **Deploy**                    | Dokploy sobre VPS        | Self-hosted, sin dependencias cloud pagas          |
-| **Dependencia externa única** | SMTP                     | Para emails de verificación                        |
+| Capa | Tecnología |
+|---|---|
+| Backend | .NET 10 + ASP.NET Core (modular monolith) |
+| Messaging | Wolverine (mediator + outbox durable) |
+| Endpoints | Carter |
+| Data | EF Core 10 (writes) + Dapper (reads complejos) |
+| DB | PostgreSQL 17 (la imagen trae pgvector, pero la extensión está sin uso: ver revisión de [ADR-0007](docs/decisions/0007-pgvector-deferred-until-there-is-a-real-consumer.md)) |
+| Cache / ephemeral state | Redis 7 (refresh tokens, rate limiting, hot reads, idempotency). Ver [ADR-0034](docs/decisions/0034-redis-as-cache-and-ephemeral-state.md) |
+| Autenticación | JWT + verificación por email |
+| Frontend | Next.js 15 App Router + React 19.1 |
+| Data fetching | TanStack Query v5 con RSC prefetch + HydrationBoundary |
+| Forms | React 19 primitives + TanStack Form |
+| UI | shadcn/ui + Tailwind CSS 4 + lucide-react |
+| Tooling | Justfile, Lefthook, Bun, Biome, Docker/Podman |
+| Deploy | Dokploy sobre VPS con Traefik: self-hosted, sin dependencias cloud pagas |
+| Dependencia externa única | SMTP, para los emails de verificación |
 
 ## Fases del desarrollo
 
@@ -118,27 +124,36 @@ just db-reset         # borra volume y re-migra
 
 ```
 plan-b/
-├── backend/              .NET 10 modular monolith (6 módulos; planning en retiro: ADR-0063)
-│   ├── libs/shared-kernel/
-│   ├── host/Planb.Api/
-│   ├── modules/
-│   │   ├── identity/
-│   │   ├── academic/
-│   │   ├── enrollments/
-│   │   ├── reviews/
-│   │   └── moderation/
+├── AGENTS.md                Contrato compartido para cualquier agente de código
+├── .agents/                 Skills compartidos, independientes del cliente
+├── .claude/                 Adaptador nativo de Claude Code
+├── .codex/                  Adaptador nativo de Codex
+├── backend/                 Modular monolith (.NET 10)
+│   ├── libs/shared-kernel/  Result<T>, Error, abstractions
+│   ├── host/Planb.Api/      Program.cs, DI, endpoints compose
+│   ├── modules/             3 bounded contexts
+│   │   ├── identity/        User, StudentProfile, TeacherProfile
+│   │   ├── academic/        University, Career, Subject, Teacher, Chair, Commission
+│   │   └── reviews/         Instrument, Item, Review
 │   └── tests/Planb.IntegrationTests/
-├── frontend/             Next.js 15 App Router + TanStack Query + shadcn
-│   └── src/
-│       ├── app/          rutas por route group ((public), (auth), (member), (teacher), (staff))
-│       ├── features/     1:1 con módulos del backend
-│       └── lib/          api-client, session, env
-├── docs/                 34 ADRs + domain + architecture
-├── scripts/
-├── Justfile              task runner
-├── lefthook.yml          pre-commit hooks
-├── docker-compose.yml
-└── .github/workflows/ci.yml
+├── frontend/                Next.js 15 App Router
+│   └── src/{app,features,components,lib}/
+├── docs/                    Cinco carpetas, una pregunta cada una (ADR-0070)
+│   ├── THESIS.md            ¿qué es y qué no hace? La tesis gobierna todo lo demás
+│   ├── product/             ¿qué hace y para quién? Leído como recorridos (ADR-0077):
+│   │                        student/, reviewed/ y team/, cada uno con sus tramos (las épicas)
+│   │                        y cada tramo con TODO lo suyo adentro: sus stories (una carpeta
+│   │                        cada una: letra + escenarios), su flujo y sus pantallas. Al nivel
+│   │                        producto: guarantees/ (valen en toda pantalla) y notices/ (canal)
+│   ├── engineering/         ¿cómo está construido? ERD, Redis, testing, git, rollback, deploy
+│   ├── decisions/           ¿por qué? ADRs (MADR), en orden cronológico
+│   ├── plan/                ¿cuándo? Los sprints con el trabajo de cada story, y el DoD
+│   └── history/             ¿qué fue? El ático de la versión anterior, sin editar
+├── scripts/                 TS scripts (bun): no usar bash. Con su lint y su typecheck
+├── Justfile                 Task runner (todas las operaciones comunes)
+├── biome.json               Lint/format de scripts/ (el del frontend vive en frontend/)
+├── lefthook.yml             Git hooks
+└── docker-compose.yml       Postgres + Redis + Mailpit
 ```
 
 ## Documentación

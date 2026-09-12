@@ -14,17 +14,24 @@ Thumbs.db
 *.swp
 *.swo
 
-# Claude Code workspace: config per-dev ignorada, salvo el tooling inhouse del
-# proyecto (agents = subagentes; skills = procedimientos; rules = reglas
-# path-scoped; workflows = orquestaciones multi-agente). La higiene de IA
-# (em-dash, atribución) es user-level, no del repo.
+# Adaptadores de agentes: el contrato compartido es AGENTS.md y los skills viven
+# en .agents/skills (estándar Agent Skills), la única fuente. De cada cliente
+# entra solo su configuración declarativa (agents = subagentes; rules = reglas
+# path-scoped; workflows = orquestaciones multi-agente; hooks y settings); su
+# estado local, no. .claude/skills es la copia que lee Claude Code, generada por
+# `just sync-agent-config` (la corre el hook SessionStart), así que no entra. La
+# higiene de IA (em-dash, atribución) es user-level, no del repo.
 .claude/*
 !.claude/agents/
-!.claude/skills/
 !.claude/rules/
 !.claude/workflows/
 !.claude/hooks/
 !.claude/settings.json
+!.claude/skills.overrides.json
+.codex/*
+!.codex/agents/
+!.codex/config.toml
+!.codex/hooks.json
 
 # Playwright MCP scratch (snapshots, console logs from interactive debugging)
 .playwright-mcp/

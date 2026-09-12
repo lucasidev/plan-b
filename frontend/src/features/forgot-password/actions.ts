@@ -13,7 +13,7 @@ import type { ForgotPasswordFormState } from './types';
  * 429 returns the form to the page with a `rate_limit` error so the user sees
  * "esperá unos minutos antes de pedir otro link" without a redirect.
  *
- * Per frontend/CLAUDE.md, `'use server'` at the top means only async
+ * Per docs/engineering/frontend-conventions.md, `'use server'` at the top means only async
  * functions can be exported here. Types and initial state live in ./types.
  */
 // react-doctor-disable-next-line server-auth-actions, react-doctor/server-auth-actions -- forgot-password is public; user can't be authenticated when requesting the reset

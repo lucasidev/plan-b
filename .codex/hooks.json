@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "(?:mcp__.*(?:playwright|chrome|browser).*|(?:playwright|chrome|browser).*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.agents/hooks/guard-tool-budget.mjs\"",
+            "commandWindows": "powershell -NoProfile -Command \"$root = (git rev-parse --show-toplevel).Trim(); & node (Join-Path $root '.agents/hooks/guard-tool-budget.mjs')\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
