@@ -29,7 +29,9 @@ import { ADMIN } from '../helpers/personas';
 const CAREER_SOFTWARE_QUALITY_ID = '00000002-0000-4000-a000-000000000003';
 const SUBJECT_FUNDAMENTOS_ID = '00000004-0000-4000-a000-000000000012';
 
-const ASSETS_DIR = resolve(__dirname, '../../../docs/history/reviews/assets/2026-09-07-sofia');
+// Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
+const WALK_DATE = '2026-09-13';
+const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-sofia`);
 
 // Mismo mecanismo que `valentina.spec.ts`: el default cae dentro de `frontend/`, y la corrida real
 // puede redirigirlo con esta variable a un lugar fuera del repo.

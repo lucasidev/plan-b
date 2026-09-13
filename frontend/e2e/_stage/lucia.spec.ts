@@ -42,7 +42,9 @@ const FIRST_TERM_LABEL = '2024-C1';
 
 const STAGE_MAILPIT_URL = process.env.STAGE_MAILPIT_URL ?? 'https://mail.olisar.com.ar';
 
-const ASSETS_DIR = resolve(__dirname, '../../../docs/history/reviews/assets/2026-09-07-lucia');
+// Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
+const WALK_DATE = '2026-09-13';
+const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-lucia`);
 
 // Mismo mecanismo que valentina.spec.ts: el destino real de la tabla lo decide quien corre el
 // spec (no se commitea un path de máquina local escrito adentro del spec).
