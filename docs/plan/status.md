@@ -626,6 +626,7 @@ R6 se planificó por tareas y se cerró caminando el producto, que es lo que un 
 | Once archivos de test referenciaban carreras por posición | R6 insertó carreras en el medio del array y probaban otra cosa que la que decían |
 | El shell dejaba scrollear el documento entero | La barra lateral se arrastraba y quedaba un vacío del alto del formulario |
 | El stage devolvía 404 con cuatro despliegues fallados en fila | El seed encadenado al deploy podía impedir que el producto arrancara, y desde afuera no se notaba porque el contenedor viejo seguía atendiendo ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)) |
+| El stage seguía en un Compose que se redesplegaba entero, sin gate de CI ni prueba de que la migración terminó | Los recorridos de la tarea 15 necesitaban un stage confiable: pasó a Databases y Applications de Dokploy, con Migrate como Application run-once cuya task se verifica por `docker inspect`, API y web por task nueva `healthy` y ruta pública, y `ci-gate` antes de tocar Dokploy ([ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md), #514) |
 
 ### Los hallazgos de R5, con destino
 
