@@ -56,7 +56,9 @@ La API no migra al arrancar. El deploy nunca ejecuta `seed-db`.
 
 **Verificado en el stage con Dokploy 0.26.3:** Swarm rechaza un job que traiga `UpdateConfig` (`Jobs may not have an update config`) y Dokploy manda siempre uno, así que `ReplicatedJob` no es desplegable desde una Application. El run-once con Restart Policy `none` sí: la task corrió una vez, salió con 0 y no se reinició.
 
-**Decidido y todavía no verificado en el stage nuevo:** la espera del exit code de la task de Migrate desde GitHub Actions y el arranque coordinado de las nuevas Applications. El workflow y el cutover tienen que verificarlos contra los recursos reales.
+**Verificado en el stage nuevo (2026-09-13):** el arranque coordinado de las nuevas Applications y el cutover de dominios sobre los recursos reales, con Migrate como run-once y API, web y Mailpit `healthy`.
+
+**Decidido y todavía no verificado:** la espera del exit code de la task de Migrate desde GitHub Actions. La primera corrida del workflow sobre estas Applications es la que lo prueba.
 
 **No operativo:** producción todavía no existe.
 

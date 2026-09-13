@@ -10,7 +10,9 @@ Contrato operativo para publicar planb en Dokploy. El camino de una falla está 
 
 **Verificado por incidente:** Mailpit cayó con filesystem read-only al intentar escribir en `/tmp`. Su Application necesita `/tmp` escribible mediante `tmpfs` o read-only desactivado.
 
-**No verificado en esta pieza:** el cutover completo del stage, la secuencia automatizada de Migrate, API y web, el restore sobre la nueva Database y los dominios sobre las nuevas Applications.
+**Verificado el 2026-09-13 sobre los recursos reales:** el cutover del stage (Databases, Migrate run-once con exit 0, API y web `healthy`, Mailpit, dominios sobre las Applications y la ruta pública respondiendo desde el stack nuevo). La base nueva se migró y se sembró a mano; no hubo restore.
+
+**No verificado todavía:** la secuencia automatizada de Migrate, API y web desde GitHub Actions (su primera corrida es sobre estas Applications) y un restore sobre la Database nueva.
 
 **No operativo:** producción todavía no existe.
 
