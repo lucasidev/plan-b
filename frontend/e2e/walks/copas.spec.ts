@@ -231,7 +231,9 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
 
     await page.reload();
     const chairCard = page.getByRole('listitem').filter({ has: chairHeading });
-    await expect(chairCard.getByText(new RegExp(teacherName))).toBeVisible();
+    // El dominio guarda el nombre del docente en minúscula (`Teacher.Normalize`) y solo la lectura
+    // pública lo capitaliza con `initcap`; el backoffice lo muestra tal cual está guardado.
+    await expect(chairCard.getByText(new RegExp(teacherName, 'i'))).toBeVisible();
     await expect(chairCard.getByText(/titular/i)).toBeVisible();
 
     // 7b. Curaduría: lee el texto libre que dejó la reseña del paso 6 y destila una frase nueva.
