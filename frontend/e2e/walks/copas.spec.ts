@@ -7,8 +7,8 @@ import { ADMIN } from '../helpers/personas';
  * automatizado contra el stage real (`https://planb.olisar.com.ar`, Mailpit en
  * `https://mail.olisar.com.ar`).
  *
- * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
- * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI), y corre a mano con `just stage-walk`. No borra nada
+ * No es E2E de regresión: corre en el proyecto `walks` de `playwright.config.ts`, aparte de
+ * `parallel`, `serial` y `mobile` (nunca en CI), a mano con `just walk copas`. No borra nada
  * al final: el reset destructivo del stage (`docs/engineering/runbook.md`, caso 7) es manual.
  *
  * Corre a 180 s por test (`test.setTimeout`, como el resto de los specs de `admin/`) y sin retries.
@@ -87,7 +87,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
 
   test('5. Se registra, verifica el mail en Mailpit y queda con sesión', async ({ page }) => {
     copasEmail = `copas+${WALK_SUFFIX.toLowerCase()}@planb.local`;
-    copasPassword = 'stage-walk-pw-1234';
+    copasPassword = 'stage-copas-pw-1234';
 
     await page.goto('/sign-up');
     await expect(page.getByRole('heading', { name: /empezá en 30 segundos/i })).toBeVisible();

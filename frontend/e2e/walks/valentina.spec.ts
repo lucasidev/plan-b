@@ -6,8 +6,8 @@ import { expect, type Locator, type Page, test } from '@playwright/test';
  * El recorrido de Valentina (docs/product/personas.md) como prueba manual simulada contra el
  * stage real (`https://planb.olisar.com.ar`). Público, sin cuenta: no crea ni modifica nada.
  *
- * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
- * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI, mismo mecanismo que `walk.spec.ts`), y corre a mano.
+ * No es E2E de regresión: corre en el proyecto `walks` de `playwright.config.ts`, aparte de
+ * `parallel`, `serial` y `mobile` (nunca en CI), a mano con `just walk valentina`.
  *
  * Cada paso asierta lo que Valentina espera según su story, con `expect.soft`: si el producto no
  * lo cumple, ese paso queda en rojo y el recorrido sigue igual hasta el final. Además de la
@@ -23,7 +23,7 @@ const CHAIR_PEREZ_ID = '00000008-0000-4000-a000-000000000001';
 const CHAIR_RUIZ_ID = '00000008-0000-4000-a000-000000000003';
 
 // Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
-const WALK_DATE = '2026-09-13';
+const WALK_DATE = process.env.WALK_DATE ?? new Date().toISOString().slice(0, 10);
 const ASSETS_DIR = resolve(
   __dirname,
   `../../../docs/history/reviews/assets/${WALK_DATE}-valentina`,

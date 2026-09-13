@@ -10,9 +10,8 @@ import { waitForMail } from '../helpers/mailpit';
  * Calidad, Cátedra Ruiz. El paso 8 borra la reseña del paso 3, pero la cuenta y la reseña de otro
  * período (paso 6) quedan en el stage al terminar: no hay reset automático.
  *
- * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
- * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI, mismo mecanismo que `walk.spec.ts` y
- * `valentina.spec.ts`), y corre a mano.
+ * No es E2E de regresión: corre en el proyecto `walks` de `playwright.config.ts`, aparte de
+ * `parallel`, `serial` y `mobile` (nunca en CI), a mano con `just walk lucia`.
  *
  * Cada paso asierta lo que Lucía espera según su story, con `expect.soft`: si el producto no lo
  * cumple, ese paso queda en rojo y el recorrido sigue igual hasta el final. Además de la
@@ -31,7 +30,7 @@ import { waitForMail } from '../helpers/mailpit';
  * 2 (Ingresar, Registro) se verificaron en vivo contra el stage con un spec descartable. Todo lo
  * que necesita una cuenta con el mail verificado (el resto del paso 2 en adelante) no se pudo
  * verificar: no hay forma de leer el mail de confirmación sin Mailpit. Esos selectores siguen el
- * patrón ya probado de `walk.spec.ts` (las tres capas de Reseñar) o son mejor esfuerzo.
+ * patrón ya probado de `copas.spec.ts` (las tres capas de Reseñar) o son mejor esfuerzo.
  *
  * Corre a 300 s (`test.setTimeout`) y sin retries (config global).
  */
@@ -43,7 +42,7 @@ const FIRST_TERM_LABEL = '2024-C1';
 const STAGE_MAILPIT_URL = process.env.STAGE_MAILPIT_URL ?? 'https://mail.olisar.com.ar';
 
 // Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
-const WALK_DATE = '2026-09-13';
+const WALK_DATE = process.env.WALK_DATE ?? new Date().toISOString().slice(0, 10);
 const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-lucia`);
 
 // Mismo mecanismo que valentina.spec.ts: el destino real de la tabla lo decide quien corre el
@@ -129,7 +128,7 @@ function requireEnv(name: string, hint: string): string {
 
 /**
  * La cascada Universidad → Carrera → Plan del `<CareerPicker>` en `/sign-up`. Duplica el helper de
- * `e2e/_stage/walk.spec.ts`: un spec no importa de otro spec.
+ * `e2e/walks/copas.spec.ts`: un spec no importa de otro spec.
  */
 async function fillCareerCascade(page: Page): Promise<void> {
   await page.getByLabel(/^universidad$/i).waitFor();

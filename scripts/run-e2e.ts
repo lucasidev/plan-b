@@ -22,7 +22,7 @@
  *   5. Levanta el frontend y corre Playwright, forwardeando los args que reciba.
  *
  * Sin `PLANB_SEED_CORPUS` en el entorno corre igual que CI, sin corpus. Con `PLANB_SEED_CORPUS=1`
- * el backend siembra el corpus, que es lo que necesitan los recorridos de persona de `frontend/e2e/_stage/`.
+ * el backend siembra el corpus, que es lo que necesitan los recorridos de persona de `frontend/e2e/walks/`.
  *
  * La sonda de puerto, el drop/create de la base, el spawn de backend/frontend y la espera al
  * DevSeed viven en `scripts/lib/dev-stack.ts`: las comparte con `run-scratch.ts`, que levanta el
@@ -110,7 +110,7 @@ async function main(): Promise<number> {
   // ── 3. Backend ───────────────────────────────────────────────────────────────
   console.log(`Levantando el backend en :${BACKEND_PORT} contra ${DB_NAME}...`);
   // Sin la variable sigue igual que CI; con PLANB_SEED_CORPUS=1 en el entorno el backend siembra
-  // el corpus, que es lo que piden los recorridos de persona de `e2e/_stage/`.
+  // el corpus, que es lo que piden los recorridos de persona de `e2e/walks/`.
   const backend = spawnBackend(e2eConnection, process.env.PLANB_SEED_CORPUS ?? '');
   children.push(backend);
 

@@ -10,13 +10,12 @@ import { waitForMail } from '../helpers/mailpit';
  * Pérez y termina dándose de baja. No deshace la reseña que queda sumada a Pérez: eso es parte
  * del recorrido (Matías quiere justamente que el número quede, aun después de irse).
  *
- * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
- * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI, mismo mecanismo que `walk.spec.ts` y
- * `valentina.spec.ts`), y corre a mano.
+ * No es E2E de regresión: corre en el proyecto `walks` de `playwright.config.ts`, aparte de
+ * `parallel`, `serial` y `mobile` (nunca en CI), a mano con `just walk matias`.
  *
  * Requiere `STAGE_MAILPIT_UI_AUTH` en el `.env` de la raíz (la UI de Mailpit del stage, detrás de
  * basic auth): sin eso no hay forma de leer el mail de verificación, y el `beforeAll` corta con
- * un error que dice qué falta (mismo patrón que `walk.spec.ts`).
+ * un error que dice qué falta (mismo patrón que `copas.spec.ts`).
  *
  * Cada paso asierta lo que Matías espera según su story, con `expect.soft`: si el producto no lo
  * cumple, ese paso queda en rojo y el recorrido sigue igual hasta el final. Además de la
@@ -41,7 +40,7 @@ const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
 const TEACHER_PEREZ_ID = '00000006-0000-4000-a000-00000000000b';
 
 // Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
-const WALK_DATE = '2026-09-13';
+const WALK_DATE = process.env.WALK_DATE ?? new Date().toISOString().slice(0, 10);
 const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-matias`);
 const VERDICTS_PATH = resolve(__dirname, '../../test-results/matias-verdicts.md');
 
@@ -137,7 +136,7 @@ async function signIn(page: Page, email: string, password: string): Promise<void
 
 /**
  * La cascada Universidad → Carrera → Plan del `<CareerPicker>` en `/sign-up`. Duplica el helper de
- * `walk.spec.ts` y de `e2e/auth/sign-up.spec.ts`: un spec no importa de otro.
+ * `copas.spec.ts` y de `e2e/auth/sign-up.spec.ts`: un spec no importa de otro.
  */
 async function fillCareerCascade(page: Page): Promise<void> {
   await page.getByLabel(/^universidad$/i).waitFor();
