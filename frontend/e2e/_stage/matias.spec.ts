@@ -40,7 +40,9 @@ const SUBJECT_FUNDAMENTOS_ID = '00000004-0000-4000-a000-000000000012';
 const SUBJECT_NAME = 'Fundamentos de Control de Calidad';
 const TEACHER_PEREZ_ID = '00000006-0000-4000-a000-00000000000b';
 
-const ASSETS_DIR = resolve(__dirname, '../../../docs/history/reviews/assets/2026-09-07-matias');
+// Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
+const WALK_DATE = '2026-09-13';
+const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-matias`);
 const VERDICTS_PATH = resolve(__dirname, '../../test-results/matias-verdicts.md');
 
 /** El bloque de distribución de "¿Se dictaron las clases?" en la ficha publicada de una cátedra. */

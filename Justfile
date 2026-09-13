@@ -177,7 +177,7 @@ frontend-test-e2e-show *args:
     bun scripts/run-e2e-show.ts {{args}}
 
 # El tramo con cuenta de "El recorrido para Copas" (docs/engineering/deploy.md), a mano contra el stage real: necesita
-# STAGE_MAILPIT_UI_AUTH en .env, y deja datos que el reset del stage borra.
+# STAGE_MAILPIT_UI_AUTH en .env.stage.local, y deja datos que el reset del stage borra.
 stage-walk:
     bun scripts/run-stage-walk.ts
 

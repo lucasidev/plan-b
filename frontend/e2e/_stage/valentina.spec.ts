@@ -22,7 +22,12 @@ const SUBJECT_FUNDAMENTOS_ID = '00000004-0000-4000-a000-000000000012';
 const CHAIR_PEREZ_ID = '00000008-0000-4000-a000-000000000001';
 const CHAIR_RUIZ_ID = '00000008-0000-4000-a000-000000000003';
 
-const ASSETS_DIR = resolve(__dirname, '../../../docs/history/reviews/assets/2026-09-07-valentina');
+// Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
+const WALK_DATE = '2026-09-13';
+const ASSETS_DIR = resolve(
+  __dirname,
+  `../../../docs/history/reviews/assets/${WALK_DATE}-valentina`,
+);
 
 // El destino real lo decide quien corre el spec (ver docstring del harness): por default cae
 // dentro de `frontend/`, pero la corrida real lo redirige con esta variable a un lugar fuera del
@@ -103,8 +108,8 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto('/');
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    const sampleHeading = page.getByRole('heading', { name: 'Cátedra Pérez', level: 3 });
-    const sampleVoices = page.getByText('14 voces · de 2024 a 2024');
+    const sampleHeading = page.getByRole('heading', { name: /^Cátedra /, level: 3 }).first();
+    const sampleVoices = page.getByText(/\d+ voces · de \d{4} a \d{4}/);
     const hasHeading = await checkVisible(
       sampleHeading,
       'al llegar, sin cuenta, debe ver una ficha de cátedra real (sorteada)',
@@ -674,6 +679,9 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       'el nombre del docente en la ficha de la cátedra debe llevar a su página',
       4000,
     );
+    // Un locator sigue a `page`: leerlo después de navegar a otra pantalla lo reevalúa ahí y
+    // Playwright espera para siempre. Se captura el href acá, antes de salir de esta ficha.
+    const teacherLinkHref = hasTeacherLink ? await teacherLinkInChair.getAttribute('href') : null;
 
     // Existe por otro camino (el buscador): se confirma para no quedarse solo con la ausencia.
     await page.goto('/universities');
@@ -703,7 +711,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       expected:
         'Desde la ficha de Pérez, el nombre del docente lleva a su página, con sus cátedras y ningún puntaje.',
       observed: hasTeacherLink
-        ? `El nombre "Martín Pérez" es un link en la ficha de la cátedra, hacia ${await teacherLinkInChair.getAttribute('href')}.`
+        ? `El nombre "Martín Pérez" es un link en la ficha de la cátedra, hacia ${teacherLinkHref}.`
         : `En la ficha de la cátedra, "Martín Pérez" es texto plano, no un link. La página del docente sí existe: se llega por el buscador (Enter sobre "Martín Pérez" navegó a ${page.url()}) y ahí muestra "${hasTeacherHeading ? await textOf(teacherHeading) : '(sin heading)'}" y "${hasTeacherChairs ? await textOf(teacherChairsHeading) : '(sin "Sus cátedras")'}", sin puntaje.`,
       verdict: hasTeacherLink
         ? 'cumple'
