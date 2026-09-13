@@ -74,7 +74,6 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
   test.setTimeout(180_000);
 
   let mailpitAuth: string;
-  let seedPassword: string;
   let copasEmail: string;
   let copasPassword: string;
   let freeTextNote: string;
@@ -83,10 +82,6 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     mailpitAuth = requireEnv(
       'STAGE_MAILPIT_UI_AUTH',
       'usuario:password de la UI de Mailpit del stage (el mismo valor que MAILPIT_UI_AUTH en Dokploy).',
-    );
-    seedPassword = requireEnv(
-      'STAGE_SEED_PASSWORD',
-      'la password con la que el stage sembró admin@planb.local y el resto de las personas.',
     );
   });
 
@@ -201,7 +196,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
 
-    await signIn(page, ADMIN.email, seedPassword);
+    await signIn(page, ADMIN.email, ADMIN.password);
     await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 
     // 7a. Cátedra nueva de Fundamentos de Control de Calidad, con su titular. La UI para sumar un
