@@ -26,7 +26,7 @@ import { waitForMail } from '../helpers/mailpit';
  * `VERDICTS_PATH` vive en un `finally` que corre pase lo que pase, así una corrida cortada por
  * `test.setTimeout` deja igual la tabla con los pasos que llegaron a correr.
  *
- * Nivel de confianza de los selectores (2026-09-07, sin STAGE_SEED_PASSWORD ni
+ * Nivel de confianza de los selectores (2026-09-07, sin
  * STAGE_MAILPIT_UI_AUTH en el .env): el paso 1 (la ficha de Ruiz, el gate) y el arranque del paso
  * 2 (Ingresar, Registro) se verificaron en vivo contra el stage con un spec descartable. Todo lo
  * que necesita una cuenta con el mail verificado (el resto del paso 2 en adelante) no se pudo
@@ -263,10 +263,6 @@ test.beforeAll(async () => {
   mailpitAuth = requireEnv(
     'STAGE_MAILPIT_UI_AUTH',
     'usuario:password de la UI de Mailpit del stage (el mismo valor que MAILPIT_UI_AUTH en Dokploy).',
-  );
-  requireEnv(
-    'STAGE_SEED_PASSWORD',
-    'la password con la que el stage sembró admin@planb.local y el resto de las personas (este recorrido no loguea ninguna cuenta sembrada, pero completa el mismo contrato de credenciales que el resto de _stage/).',
   );
   await mkdir(ASSETS_DIR, { recursive: true });
 });

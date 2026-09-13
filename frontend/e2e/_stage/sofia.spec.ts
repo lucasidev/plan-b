@@ -104,14 +104,6 @@ function randomSuffix(): string {
 
 const SUFFIX = randomSuffix();
 
-function requireEnv(name: string, hint: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Falta ${name} en .env: ${hint}`);
-  }
-  return value;
-}
-
 async function signIn(page: Page, email: string, password: string): Promise<void> {
   await page.goto('/sign-in');
   await page.getByLabel(/tu email/i).fill(email);
@@ -133,14 +125,8 @@ async function withAnonymousPage(
   }
 }
 
-let seedPassword: string;
-
 test.beforeAll(async () => {
   await mkdir(ASSETS_DIR, { recursive: true });
-  seedPassword = requireEnv(
-    'STAGE_SEED_PASSWORD',
-    'la password con la que el stage sembró admin@planb.local y el resto de las personas.',
-  );
 });
 
 test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ page, browser }) => {
@@ -172,7 +158,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
       screenshot: '01-access-cut-anonymous.png',
     });
 
-    await signIn(page, ADMIN.email, seedPassword);
+    await signIn(page, ADMIN.email, ADMIN.password);
     const loggedIn = await page
       .waitForURL((url) => !url.pathname.startsWith('/sign-in'), { timeout: 20_000 })
       .then(() => true)
