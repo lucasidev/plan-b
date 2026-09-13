@@ -5,7 +5,7 @@
 
 ## Contexto
 
-La API emite un access token de 15 minutos y un refresh token de 30 días que guarda en Redis con rotación y detección de reuso ([ADR-0023](0023-auth-flow-jwt-cookie-layout-guards.md)). El frontend solo verifica el access token ([`session.ts`](../../frontend/src/lib/session.ts)) y, cuando venció, los guards de layout mandan a Ingresar: nadie llama nunca al refresh, así que la sesión dura 15 minutos aunque el refresh siga vigente (hallazgo L11, [recorrido de Lucía del 2026-09-13](../history/reviews/2026-09-13-lucia-walk.md)).
+La API emite un access token de 15 minutos y un refresh token de 30 días que guarda en Redis con rotación ([ADR-0023](0023-auth-flow-jwt-cookie-layout-guards.md)). El frontend solo verifica el access token ([`session.ts`](../../frontend/src/lib/session.ts)) y, cuando venció, los guards de layout mandan a Ingresar: nadie llama nunca al refresh, así que la sesión dura 15 minutos aunque el refresh siga vigente (hallazgo L11, [recorrido de Lucía del 2026-09-13](../history/reviews/2026-09-13-lucia-walk.md)).
 
 ADR-0023 prometía el refresh silencioso "al renderizar el layout", y esa forma es imposible por dos razones que aparecieron después: la cookie `planb_refresh` nació con `Path=/api/identity`, así que el navegador solo la manda a esa ruta y el servidor de Next nunca la ve cuando sirve una página; y un Server Component no puede escribir cookies en Next 15, solo un Server Action, un Route Handler o el middleware.
 
@@ -16,7 +16,7 @@ Renovar en un middleware con las cookies rotadas por el backend es el patrón ha
 1. **La cookie `planb_refresh` pasa a `Path=/`**, con los mismos atributos (httpOnly, Secure, SameSite=Lax, 30 días). Viaja en cada pedido al servidor de Next, que es el mismo origen: sigue sin ser legible desde JavaScript.
 2. **`frontend/src/middleware.ts` renueva la sesión** en las rutas con cuenta (`/home`, `/reviews/*`, `/my-profile`, `/settings`, `/help`, `/admin/*`): verifica el access token con la misma clave que `session.ts`; si falta o vence en menos de dos minutos y hay refresh, llama a `POST /api/identity/refresh` del backend con esa cookie, reenvía a la respuesta los `Set-Cookie` rotados que el backend emite, y sigue el mismo pedido con el access token nuevo en la cabecera `Cookie`, así el render ya lo ve. Si el refresh falla, no toca nada y el guard manda a Ingresar como hoy.
 3. **El middleware no autoriza.** Los guards de layout y el backend siguen decidiendo quién entra a qué; el middleware solo mantiene viva una sesión que el backend reconoce.
-4. **La rotación y la detección de reuso siguen en el backend**, sin cambios: cada refresh invalida el anterior y un token reusado revoca la cadena.
+4. **La rotación sigue en el backend**, sin cambios: cada refresh invalida el anterior, y un token ya rotado no existe más en Redis y responde 401. No hay detección de reuso que revoque la cadena entera; por eso el middleware no renueva en los prefetch del router, que son la carrera más común entre dos pedidos con el mismo token.
 
 ## Alternativas consideradas
 
