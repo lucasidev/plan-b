@@ -8,9 +8,8 @@ import { ADMIN } from '../helpers/personas';
  * real (`https://planb.olisar.com.ar`). Con la cuenta de equipo sembrada (admin@planb.local):
  * carga el catálogo académico a mano y cura lo que llega del campo libre de las reseñas.
  *
- * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
- * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI, mismo mecanismo que `walk.spec.ts` y
- * `valentina.spec.ts`), y corre a mano.
+ * No es E2E de regresión: corre en el proyecto `walks` de `playwright.config.ts`, aparte de
+ * `parallel`, `serial` y `mobile` (nunca en CI), a mano con `just walk sofia`.
  *
  * Cada paso asierta lo que Sofía espera según su story, con `expect.soft`: si el producto no lo
  * cumple, ese paso queda en rojo y el recorrido sigue igual hasta el final. Además de la aserción,
@@ -21,7 +20,7 @@ import { ADMIN } from '../helpers/personas';
  * amplios: el backoffice autenticado no tiene ningún otro spec de regresión que los cubra, así
  * que un veredicto "no cumple" ahí puede reflejar tanto un hueco real como un wording distinto
  * al buscado. El resto (login, alta de cátedra sin titular, destilar en curaduría, catálogo de
- * items, Método) reusa selectores ya verificados contra este mismo stage por `walk.spec.ts`.
+ * items, Método) reusa selectores ya verificados contra este mismo stage por `copas.spec.ts`.
  *
  * Corre a 300 s (`test.setTimeout`) y sin retries (config global).
  */
@@ -30,7 +29,7 @@ const CAREER_SOFTWARE_QUALITY_ID = '00000002-0000-4000-a000-000000000003';
 const SUBJECT_FUNDAMENTOS_ID = '00000004-0000-4000-a000-000000000012';
 
 // Sella la carpeta de capturas de esta corrida: separada de las históricas de otras fechas.
-const WALK_DATE = '2026-09-13';
+const WALK_DATE = process.env.WALK_DATE ?? new Date().toISOString().slice(0, 10);
 const ASSETS_DIR = resolve(__dirname, `../../../docs/history/reviews/assets/${WALK_DATE}-sofia`);
 
 // Mismo mecanismo que `valentina.spec.ts`: el default cae dentro de `frontend/`, y la corrida real
@@ -235,7 +234,7 @@ test('Sofía carga el catálogo y cura lo que llega de las reseñas', async ({ p
       screenshot: '03-chair-created.png',
     });
 
-    // walk.spec.ts (paso 7a) ya documentó que la UI para sumar un integrante no existe todavía y
+    // copas.spec.ts (paso 7a) ya documentó que la UI para sumar un integrante no existe todavía y
     // lo carga por API; acá se busca igual, sin usar la API, porque lo que se mide es la pantalla.
     const teamControl = page
       .getByRole('button', { name: /titular|integrante del equipo|sumar docente|agregar docente/i })

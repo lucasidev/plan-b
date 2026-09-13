@@ -461,8 +461,6 @@ corrida sin romper el build.
 
 **Regla cultural** (vive en la disciplina del dev, no en tooling): cuando termines un slice que toque rutas reales (no mocks/ComingSoon), corré `just frontend-test-e2e-show <spec>` local con browser visible y verificá verde antes de declarar la US "lista" o pedir revisión. Esto vale especialmente para el asistente IA: el OK para commit/push viene después de mostrar el output del spec corrido, no antes.
 
-**`_stage/` es la única excepción a "E2E corre siempre en CI".** `frontend/e2e/_stage/walk.spec.ts` automatiza el tramo con cuenta del recorrido para Copas (registrarse, reseñar y el backoffice) contra el stage real (`https://planb.olisar.com.ar` y su Mailpit), nunca contra una base efímera. `playwright.config.ts` lo excluye de los tres proyectos salvo `PLAYWRIGHT_INCLUDE_STAGE=1`, así que ni `just frontend-test-e2e` ni CI lo tocan. Se corre a mano con `just stage-walk`, necesita `STAGE_MAILPIT_UI_AUTH` en `.env.stage.local` (las cuentas sembradas usan las contraseñas públicas de `frontend/e2e/helpers/personas.ts`), y deja datos que solo el reset destructivo del stage ([`runbook.md`](runbook.md), caso 7) borra.
-
 #### Dominio vs infra: cuándo un helper directo está OK
 
 Una pregunta recurrente: ¿está bien que `e2e/helpers/mailpit.ts` lea Mailpit HTTP directo en vez de pasar por un endpoint del backend? ¿Y `e2e/helpers/redis.ts` que borra keys de rate limit? La regla es:
@@ -488,6 +486,14 @@ Tres restricciones cross-cutting sobre lo público (`/`, `/method`, `/subjects/[
 - **Accesibilidad (WCAG 2.2 AA).** `frontend/e2e/public/accessibility.spec.ts`, proyecto `parallel`: una `test` por ruta, cada una corre `@axe-core/playwright` con los tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`. Una violación real no se apaga con `disableRules`: se documenta y la `test` de esa ruta queda en cuarentena (`test.fixme`, con la misma marca `hasta YYYY-MM-DD` + `#NNN` que cualquier flake, [scripts/check-flaky.ts](../../scripts/check-flaky.ts) la exige igual).
 - **Un viewport de celular.** Proyecto `mobile` (`devices['Pixel 5']`, 393px) corre TODO `e2e/public/**` de nuevo, sin cambios de producción: si un spec ahí falla por layout, el hallazgo se arregla en el producto, no en el test. `accessibility.spec.ts` además afirma que ninguna ruta pública tiene scroll horizontal (`document.documentElement.scrollWidth <= window.innerWidth`), que es lo que WCAG 2.2 AA 1.4.10 (Reflow) pide y axe no puede chequear con análisis estático.
 - **Presupuesto de rendimiento.** `frontend/lighthouserc.cjs` (Lighthouse CI) corre `/`, `/method`, una ficha de materia y una de cátedra, dos corridas cada una, mobile (el preset real: más lento que desktop, y sumarle una segunda pasada desktop no entraba en el presupuesto de tiempo del job). Umbrales `warn` únicamente (`categories:performance >= 0.8`, `accessibility >= 0.9`, `best-practices >= 0.9`, `seo >= 0.8`): mide y avisa, no gatea, hasta que haya corridas de CI reales para leer si son realistas. Local: `just frontend-lighthouse` contra un stack ya levantado. CI: paso "Lighthouse CI" del job `e2e`, después de Playwright (para que la cátedra ya esté publicando), con el reporte como artefacto (`lighthouse-report/`, 14 días).
+
+### Recorridos de persona
+
+Un recorrido de persona es la revisión del producto: camina un recorrido de [`docs/product/`](../product/README.md) como una persona concreta, contra el stage real (`https://planb.olisar.com.ar`), nunca contra una base efímera. Las specs viven en `frontend/e2e/walks/<persona>.spec.ts` (`valentina`, `lucia`, `matias`, `sofia`, `copas`), en el proyecto `walks` de `playwright.config.ts`: `parallel`, `serial` y `mobile` lo excluyen siempre, y viceversa.
+
+Cada paso termina en un veredicto (cumple, parcial, no cumple), en una tabla que la spec vuelca a `frontend/test-results/<persona>-verdicts.md`. Lo que no cumple es un hallazgo con ID estable: va a un registro en [`docs/history/reviews/`](../history/reviews/README.md) y de ahí a planificación.
+
+Se corre a mano con `just walk <persona>`; sus secretos (hoy, la UI de Mailpit del stage) viven en `.env.stage.local` (`.env.stage.local.example`), nunca en el `.env` de dev. **Nunca corre en CI y su rojo no es un bug ni gatea**: el E2E de regresión (arriba) es otra cosa, contra una base efímera y con aserciones que no toleran un hallazgo.
 
 ## Changelog
 

@@ -12,7 +12,7 @@
  *
  * El Mailpit del stage vive en otro host y detrás de basic auth (`MAILPIT_UI_AUTH` en Dokploy):
  * cada función acepta un `MailpitOptions` opcional con `baseUrl` y `auth` para ese caso
- * (`e2e/_stage/walk.spec.ts`). Sin `opts`, el comportamiento es el de siempre: `MAILPIT_URL` o
+ * (`e2e/walks/copas.spec.ts`). Sin `opts`, el comportamiento es el de siempre: `MAILPIT_URL` o
  * `localhost:8025`, sin header de auth.
  */
 

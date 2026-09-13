@@ -16,9 +16,9 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 // playwright.
 const CAPTURE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_CAPTURE === '1' ? [] : ['**/_capture/**'];
 
-// `_stage/` corre a mano contra el stage real (`just stage-walk`), nunca en CI ni con la suite
-// normal: se ignora salvo `PLAYWRIGHT_INCLUDE_STAGE=1`.
-const STAGE_IGNORE = process.env.PLAYWRIGHT_INCLUDE_STAGE === '1' ? [] : ['**/_stage/**'];
+// `walks/` son los recorridos de persona contra el stage real (proyecto `walks`, más abajo):
+// nunca corren junto a la suite de regresión, en ningún proyecto.
+const WALKS_IGNORE = ['**/walks/**'];
 
 /**
  * Specs que van al proyecto `serial` (ver `projects` más abajo) porque mutan un recurso global
@@ -60,15 +60,17 @@ const SERIAL_SPECS = [
  *     (`scripts/run-e2e.ts`, mismo patrón que el job de CI), así que el stack de dev tiene que
  *     estar ABAJO. Solo hace falta la infra: `just infra-up`.
  *   - CI: job `e2e` dentro de `.github/workflows/ci.yml` corre siempre en cada PR.
- *   - Tres proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global;
+ *   - Cuatro proyectos (ver `projects`): `parallel` corre todo lo que no muta estado global;
  *     `serial` y `mobile` corren después de que `parallel` termina, y `mobile` repite
  *     `e2e/public/**` con un viewport de celular chico (#412). La regla de aislamiento completa
  *     (qué hace que un spec pueda vivir en `parallel`) está en `docs/engineering/testing.md`.
+ *     `walks` corre aparte, a mano contra el stage real: no es parte de la suite de regresión
+ *     ("Recorridos de persona" en `docs/engineering/testing.md`).
  */
 export default defineConfig({
   testDir: './e2e',
   testMatch: /.*\.spec\.ts/,
-  testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
+  testIgnore: [...CAPTURE_IGNORE, ...WALKS_IGNORE],
 
   // Default timeouts: 60s por test (algunos flujos esperan emails en mailpit),
   // 10s para auto-wait de locators.
@@ -136,16 +138,16 @@ export default defineConfig({
     : [
         {
           name: 'parallel',
-          // Los tres proyectos declaran su propio testIgnore, así que CAPTURE_IGNORE y
-          // STAGE_IGNORE se repiten acá: el testIgnore de un proyecto reemplaza al de la raíz, no
+          // Los proyectos de regresión declaran su propio testIgnore, así que CAPTURE_IGNORE y
+          // WALKS_IGNORE se repiten acá: el testIgnore de un proyecto reemplaza al de la raíz, no
           // se combina con él.
-          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE, ...SERIAL_SPECS],
+          testIgnore: [...CAPTURE_IGNORE, ...WALKS_IGNORE, ...SERIAL_SPECS],
           fullyParallel: true,
           use: { ...devices['Desktop Chrome'] },
         },
         {
           name: 'serial',
-          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
+          testIgnore: [...CAPTURE_IGNORE, ...WALKS_IGNORE],
           testMatch: SERIAL_SPECS,
           fullyParallel: false,
           workers: 1,
@@ -159,7 +161,7 @@ export default defineConfig({
           // horizontal le pegan a alguien de verdad. Pixel 5 (393px) es angosto sin ser el caso
           // límite de 320px, que ninguna pantalla del producto apunta a soportar todavía.
           name: 'mobile',
-          testIgnore: [...CAPTURE_IGNORE, ...STAGE_IGNORE],
+          testIgnore: [...CAPTURE_IGNORE, ...WALKS_IGNORE],
           testMatch: /public\//,
           fullyParallel: true,
           // Corre última, estrictamente. A la vez que `parallel` duplicaba la carga y en CI
@@ -170,6 +172,18 @@ export default defineConfig({
           // la misma cátedra, que es justo el corte de serie que ese spec provoca a propósito.
           dependencies: ['parallel', 'serial'],
           use: { ...devices['Pixel 5'] },
+        },
+        {
+          // Los recorridos de persona ("Recorridos de persona", docs/engineering/testing.md)
+          // contra el stage real, nunca contra la suite de regresión: un worker, más tiempo por
+          // test, y su propio testIgnore (no WALKS_IGNORE, que se excluiría a sí mismo).
+          name: 'walks',
+          testMatch: 'walks/**/*.spec.ts',
+          testIgnore: CAPTURE_IGNORE,
+          workers: 1,
+          retries: 0,
+          timeout: 300_000,
+          use: { baseURL: process.env.WALK_BASE_URL ?? 'https://planb.olisar.com.ar' },
         },
       ],
 });
