@@ -12,6 +12,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/cleanup-agent-branches.ts\" --hook",
+            "commandWindows": "powershell -NoProfile -Command \"$root = (git rev-parse --show-toplevel).Trim(); & bun (Join-Path $root 'scripts/cleanup-agent-branches.ts') --hook\"",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

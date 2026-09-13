@@ -1,21 +1,26 @@
 # Skills del repo
 
-Los skills viven acá, en el directorio estándar que leen Codex y los demás clientes, y en ningún otro lado del repo; `.claude/skills/` es la copia local que lee Claude Code, gitignorada y generada por `just sync-agent-config` (la corre el hook `SessionStart`). Los propios del proyecto (`slice-*`, `dapper-read`, `integration-event`, `new-adr`, `ship`, `regen-screenshots`) se escribieron para planb (`sync-notion` se retiró el 2026-08-18 con Notion). Los de UX/UI son de terceros, copiados como archivos (sin CLI ni ejecución de instaladores) y revisados antes de entrar. Se listan acá con procedencia para que la copia sea auditable.
+`.agents/skills/` contiene skills en el formato abierto Agent Skills cuyas instrucciones sirven en Codex sin depender de nombres de herramientas, hooks o convenciones exclusivas de otro cliente. No es un espejo de `.claude/skills/` y no existe ningún proceso de sincronización entre ambos catálogos.
 
-## UX/UI (terceros, instalados 2026-08-16)
+## Propios de planb
 
-| Skill | Origen | Licencia | Rol en planb | Cambios locales |
-|---|---|---|---|---|
-| `bencium-controlled-ux-designer` | [bencium/bencium-claude-code-design-skill](https://github.com/bencium/bencium-claude-code-design-skill) | MIT | **Default de UX/UI.** Sistemático, WCAG 2.1 AA, escalas matemáticas, y pregunta antes de decidir. Se dispara al construir pantallas. | Cuerpo partido en `SKILL.md` corto + `references/` |
-| `bencium-innovative-ux-designer` | ídem | MIT | Alternativa estilizada para vitrina/campañas. Solo por nombre. | Trigger acotado para que no compita con el default; cuerpo partido en `SKILL.md` corto + `references/` |
-| `bencium-impact-designer` | ídem | MIT | Alternativa anti-slop (adaptación del frontend-design de Anthropic). Solo por nombre. | Trigger acotado; cuerpo partido en `SKILL.md` corto + `references/` |
-| `design-audit` | ídem | MIT | Auditoría visual de lo que ya existe, produce plan por fases. Solo visual, no funcionalidad. | Ninguno |
-| `ui-typography` | ídem (`typography`) | MIT | Tipografía correcta en toda UI generada (comillas, guiones, espaciado, jerarquía). Modo enforcement silencioso. | Renombrado el directorio a `ui-typography` (coincide con su `name`) |
-| `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | Revisor de código UI contra las Web Interface Guidelines (100+ reglas de accesibilidad, foco, formularios, estados). Consulta las reglas desde GitHub con la herramienta web disponible: depende de red para refrescarlas. | Ninguno |
-| `design-taste-frontend` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (`skills/taste-skill`) | MIT | Anti-slop para landing pages. **Solo la landing pública**: el propio skill se declara fuera de alcance para dashboards, tablas y UI de producto. | Trigger acotado a la landing; incluye su LICENSE; cuerpo partido en `SKILL.md` corto + `references/` |
+| Skill | Uso |
+|---|---|
+| `browser-repro` | Reproducir un síntoma renderizado concreto con un presupuesto acotado. |
+| `source-research` | Investigar una cuestión ordinaria con fuentes primarias y pocas consultas. |
+| `slice-backend` | Construir un vertical slice de escritura en el backend. |
+| `slice-frontend` | Construir un feature slice del frontend. |
+| `dapper-read` | Implementar reads complejos o cross-schema con Dapper. |
+| `integration-event` | Emitir y consumir eventos de integración entre módulos. |
+| `new-adr` | Redactar una decisión estructural en el formato vigente del proyecto. |
+| `regen-screenshots` | Regenerar evidencia visual desde el canvas histórico. |
+| `ship` | Verificar, commitear y completar el ciclo de PR con aprobaciones separadas. |
 
-De bencium se dejaron afuera a propósito: `relationship-design` (interfaces AI-first con memoria: chatbots, no aplica) y todo lo que no es diseño (marketing, productividad, el hook de estado emocional).
+## Terceros revisados
 
-## Cómo conviven
+| Skill | Origen | Licencia | Alcance local |
+|---|---|---|---|
+| `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | Auditoría de interfaces contra las Web Interface Guidelines. |
+| `design-taste-frontend` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | MIT | Solo landing pública y piezas de vitrina, nunca pantallas de producto. |
 
-Un solo default se dispara al construir (`controlled`); `ui-typography` corre siempre en silencio; `web-design-guidelines` y `design-audit` son revisores que se invocan sobre algo que ya existe; `innovative`, `impact` y `design-taste-frontend` solo por pedido explícito. La UX/UI de cada pantalla se decide desde su user story y su persona (`docs/product/`), con los tokens de `docs/product/design-system.md`; el mapa mid-fi es orientativo. Ningún skill decide qué se construye: eso lo dicen las stories.
+Los skills visuales escritos específicamente para Claude Code permanecen en `.claude/skills/`. Si una capacidad no tiene una versión válida para Codex, no se porta ni se copia acá.

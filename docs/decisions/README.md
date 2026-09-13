@@ -37,7 +37,7 @@ Decidido el 2026-07-30. Hasta ese día 42 de los 59 títulos estaban en español
 Cada ADR con:
 
 ```markdown
-# NNNN: Título
+# ADR-NNNN: Título
 
 - **Estado**: propuesto | aceptado
 - **Fecha**: YYYY-MM-DD

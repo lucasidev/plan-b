@@ -47,11 +47,14 @@ El contexto principal orquesta: decide, especifica, integra, verifica lo entrega
 - No delegar por reflejo: delegar solo cuando aísla contexto, permite trabajo realmente paralelo o ejecuta una suite larga.
 - Máximo dos agentes simultáneos. Más concurrencia exige una razón explícita y tareas sin archivos ni estado compartidos; un workflow de revisión de solo lectura la declara en su propio script.
 - Toda delegación fija rol, alcance, entregable, criterio de éxito y archivos prohibidos. El agente no pushea, no mergea y no integra otros worktrees.
+- Los worktrees de subagentes quedan en detached HEAD cuando el cliente lo permite: no crean ramas `worktree-agent-*`. Si un cliente necesita una rama auxiliar, el contexto principal la borra después de integrar su commit y retirar el worktree. Terminar con una rama auxiliar ya integrada es trabajo incompleto.
 - `.agents/skills` contiene skills agnósticas útiles para Codex; `.claude/skills` conserva skills nativas o propias de Claude y no se sincroniza automáticamente.
 - Si una tarea coincide con un skill de `.agents/skills/`, ese skill se carga completo antes de actuar y se pasa explícitamente al subagente. Nombrarlo en prosa no reemplaza cargarlo.
-- Browser y web tienen presupuesto por sesión y subagente: los guards permiten 12 llamadas browser y 6 web por default; al agotarlo se detiene y reporta, salvo override explícito.
+- Browser tiene un guard de 12 llamadas en Codex y Claude. Web tiene un guard de 6 llamadas en Claude; el WebSearch alojado de Codex no pasa por hooks y `source-research` aplica ese presupuesto por instrucción. El contador se separa por subagente cuando el cliente informa su id.
 - El contexto principal espera eventos de finalización; no hace polling corto ni mantiene agentes sin trabajo útil.
 - Los modelos y el esfuerzo viven en el adaptador de cada cliente, nunca en este contrato compartido. El default de subagentes debe ser barato; un tier superior se gana por la tarea.
+
+Al integrar trabajo auxiliar, el contexto principal verifica primero que no queden cambios sin commitear, retira el worktree y ejecuta `bun scripts/cleanup-agent-branches.ts --base HEAD --apply`. El script solo borra ramas `worktree-agent-*` inactivas sin parches únicos respecto de la base; una rama activa o con trabajo único nunca se borra automáticamente.
 
 La excepción histórica que originó este reparto y los controles específicos de Claude Code están en [ADR-0088](docs/decisions/0088-the-main-context-orchestrates-and-two-hooks-enforce-it.md).
 

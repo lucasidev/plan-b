@@ -1,4 +1,4 @@
-# 0087: A module reads another module's data through its contract
+# ADR-0087: A module reads another module's data through its contract
 
 - **Estado**: aceptado
 - **Fecha**: 2026-08-31

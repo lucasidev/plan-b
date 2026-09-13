@@ -1,4 +1,4 @@
-# 0088: The main context orchestrates, and two hooks enforce it
+# ADR-0088: The main context orchestrates, and two hooks enforce it
 
 - **Estado**: aceptado
 - **Fecha**: 2026-09-02

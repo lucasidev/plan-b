@@ -7,7 +7,7 @@ Next.js 15 App Router, React 19.1, Bun, TanStack Query, shadcn/ui y Tailwind 4. 
 - Un caso de uso vive en `src/features/<use-case>/` con `api`, `actions`, `schema`, `types`, `components` e `index` solo cuando los necesita.
 - Las rutas en `src/app/` componen features. No alojan lógica de negocio.
 - Las server actions que mutan son puras: devuelven estado o destino; no llaman `redirect()` ni `revalidatePath()` dentro de la mutación.
-- Para un feature o interacción nueva usá `slice-frontend`. Para decisiones visuales usá `bencium-controlled-ux-designer`; la landing puede usar sus alternativas solo cuando Lucas las pida o el skill lo habilite.
+- Para un feature o interacción nueva usá `slice-frontend`. Las decisiones visuales salen de la story, la persona y el design system. `design-taste-frontend` aplica solo a la landing y `web-design-guidelines` a una auditoría pedida.
 
 ## Producto y UI
 

@@ -43,17 +43,6 @@
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"$CLAUDE_PROJECT_DIR/scripts/check-agent-config.ts\" --sync",
-            "timeout": 20
-          }
-        ]
-      }
     ]
   }
 }

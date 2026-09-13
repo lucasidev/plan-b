@@ -15,7 +15,8 @@
  *  6. Las pantallas: una carpeta `SC-NNN-slug` con ficha y boceto, ID único, los headings del
  *     contrato (docs/plan/screen-template.md), y trazabilidad simétrica con las stories: si una
  *     story dice resolverse en una pantalla, esa ficha tiene que listarla, y al revés.
- *  7. El filename y el título de un ADR van en inglés, como todo identificador del repo.
+ *  7. El filename y el título de un ADR van en inglés, como todo identificador del repo, y
+ *     el heading usa `# ADR-NNNN: Title` con el mismo número del filename.
  *  8. Toda pantalla la pide una story de su propia épica. La simetría del 6 no alcanza: una
  *     pantalla citada solo por stories de otras épicas existe sin que nadie la haya pedido.
  *  9. "ítem" como palabra en prosa, fuera de docs/history/ y docs/decisions/: el glosario fija
@@ -37,10 +38,10 @@ type Finding = { file: string; line: number; rule: string; detail: string };
 const findings: Finding[] = [];
 
 // .claude/worktrees/ guarda checkouts completos: sin este salteo, sus docs.md se cuentan de
-// nuevo y explotan en falsos positivos de link-roto. .claude/skills/ es la copia generada y
-// gitignorada del canónico en .agents/skills/ (ver check-agent-config.ts): recorrerla duplica
-// cada hallazgo sobre el mismo contenido. El resto de .claude/ (rules/, agents/, etc.) está
-// trackeado y check-docs lo sigue mirando.
+// nuevo y explotan en falsos positivos de link-roto. .claude/skills/ es el catálogo nativo e
+// independiente de Claude Code, no documentación del producto; sus links y convenciones se
+// validan en ese cliente. El resto de .claude/ (rules/, agents/, etc.) está trackeado y
+// check-docs lo sigue mirando.
 const SKIPPED_RELATIVE_DIRS = new Set(['.claude/worktrees', '.claude/skills']);
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -509,15 +510,31 @@ for (const [sc, ubicacion] of screenIds) {
   }
 }
 
-// 7. el filename y el título de un ADR son identificadores: van en inglés
+// 7. el filename y el título de un ADR son identificadores: van en inglés y el heading usa
+//    `# ADR-NNNN: Title`, con el mismo número que el filename
 //    (docs/decisions/README.md; el cuerpo va en español). Los 60 que estaban en
 //    español se migraron el 2026-08-21, así que acá no hay excepciones ni número
 //    de corte: si un ADR nuevo sale en español, se canta.
-const ADR = /^\d{4}-[a-z0-9-]+\.md$/;
+const ADR = /^(\d{4})-[a-z0-9-]+\.md$/;
 const decisionsDir = join(ROOT, 'docs', 'decisions');
-for (const f of readdirSync(decisionsDir).filter((x) => ADR.test(x))) {
+for (const f of readdirSync(decisionsDir)) {
+  const fileMatch = f.match(ADR);
+  if (!fileMatch) continue;
+
   const slug = f.replace(/^\d+-/, '').replace(/\.md$/, '').replace(/-/g, ' ');
-  const title = readFileSync(join(decisionsDir, f), 'utf-8').match(/^# ADR-\d+: (.*)$/m)?.[1] ?? '';
+  const lines = readFileSync(join(decisionsDir, f), 'utf-8').split(/\r?\n/);
+  const headingLine = lines.findIndex((line) => line.startsWith('# '));
+  const heading = headingLine >= 0 ? lines[headingLine] : '';
+  const expectedPrefix = `# ADR-${fileMatch[1]}: `;
+  const title = heading.startsWith(expectedPrefix) ? heading.slice(expectedPrefix.length) : '';
+  if (!title) {
+    findings.push({
+      file: `docs/decisions/${f}`,
+      line: headingLine >= 0 ? headingLine + 1 : 1,
+      rule: 'adr-titulo-mal-formado',
+      detail: `el título tiene que usar \`${expectedPrefix}Title\``,
+    });
+  }
   if (detectLanguage(slug) === 'es') {
     findings.push({
       file: `docs/decisions/${f}`,

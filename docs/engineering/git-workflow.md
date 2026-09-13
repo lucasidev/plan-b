@@ -25,7 +25,7 @@ Las reglas de merge ya no son solo culturales: el ruleset `main` de GitHub las e
 cualquier actor, sin bypass de admin. Motivación: un merge entró con E2E rojo por un bug de proceso;
 lo que debe pasar siempre va a enforcement determinístico, no a disciplina.
 
-- **PRs-only** (no push directo a main), no force-push, no borrar la branch.
+- **PRs-only** (no push directo a main), no force-push y no borrar `main`.
 - **Merge solo Squash o Rebase** (el "Create a merge commit" de ADR-0026 queda bloqueado por plataforma).
 - **Required checks**: Backend, Frontend, **E2E (Playwright)**, commit messages, PR title. CI rojo = merge imposible.
 - **0 approving reviews requeridos** (decisión de Lucas, 2026-07-10): el flujo real es solo-dev con OK
@@ -206,6 +206,10 @@ git pull origin main
 git branch -d <tu-branch>           # local
 # Remoto se borra automáticamente si tenés "Automatically delete head branches" en repo settings.
 ```
+
+Cuando el merge se hace por CLI, usar `gh pr merge --rebase --delete-branch` después del OK explícito. Si Rebase o Squash dejaron el commit con otro hash y `git branch -d` no reconoce la rama como ancestro, verificar primero que `git cherry origin/main <tu-branch>` no devuelva ninguna línea con `+`; recién entonces corresponde `git branch -D <tu-branch>`. Una rama con un parche único se conserva y se investiga.
+
+Los subagentes no necesitan una rama: trabajan en detached HEAD y entregan el SHA del commit. Si el cliente creó una rama `worktree-agent-*`, el contexto principal retira el worktree y ejecuta `bun scripts/cleanup-agent-branches.ts --base HEAD --apply` después de integrar el commit. El PR no queda cerrado hasta que su rama y las ramas auxiliares integradas desaparecen del listado local.
 
 ## Workflow completo: ejemplo
 
