@@ -33,6 +33,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | ✓ Hecho (cerrado el 2026-09-08 con el merge de #480; #470 y #473 cierran con el plan de R6) |
 | **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, el click que el router pierde, y las dos APIs de terceros que el producto consume (la AGN y Georef). 70 pts en cuatro pistas. | ✓ Hecho (cerrado el 2026-09-13, antes de las dos semanas planificadas, con los recorridos de la tarea 15, que cierran #495 y #470; el stage pasó a Databases y Applications de Dokploy en el camino, #514) |
 | **R7** | 2026-09-14 a 2026-09-18 | **La demo muestra la tesis**: la sesión que no muere, volver a la reseña desde cualquier dispositivo, la cobertura en la ficha de materia, Editar, el nombre del docente como se tipeó, Mi perfil sin la versión anterior; la revisión del design system y los tokens del boletín; la falla intermitente que bloquea los deploys, la regla de los recorridos y el jueves de reset, el guion de la demo, y la tesis y los docs diciendo lo que hay. Milestone [R7](https://github.com/lucasidev/plan-b/milestone/9), issues #517 a #529, 38 pts en tres pistas. | Planificado |
+| **R8** | desde 2026-09-21 | **El catálogo del país**: el corpus con cuentas que existen en identity, el catálogo del país entero desde la Guía SIU con Georef y el anuario SPU, la universidad cargada entera desde el backoffice (identidad, logo, URL, ubicación, unidades y sus conteos), la modalidad y las veces en la reseña, y la poda del rol sin cliente. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), issues #530 a #534, 36 pts. Lo que avance rápido se trae a R7. | Planificado |
 
 Convenciones:
 
@@ -739,9 +740,44 @@ Lunes: 1, 3, 4, 6 y 11. Martes: 2, 5, 8 y 13. Miércoles: 7 y 9. Jueves: 10 y 12
 
 - Personas reales y producción.
 - Los cuatro PR de Dependabot (#501 a #504): después del viernes, de a uno y con CI; la alerta media de vitest es de tooling de tests, no del producto.
-- Los dos roles del enum sin pantalla (`Moderator`, `UniversityStaff`): la poda que el glosario espera.
-- La modalidad y cuántas veces la cursaste: story nueva de Reseñar, para R8.
+- El rol sin cliente (`UniversityStaff`): su poda va a R8 ([#534](https://github.com/lucasidev/plan-b/issues/534)); `Moderator` se queda porque Moderar sin romper el producto lo espera.
+- La modalidad y cuántas veces la cursaste: story nueva de Reseñar, en R8 ([#533](https://github.com/lucasidev/plan-b/issues/533)).
 - L02, L07 y el resto del Backlog con nombre.
+
+## R8 · El catálogo del país
+
+Desde el 2026-09-21, después de la demo, con el tamaño que tenga: 36 pts. Milestone [R8](https://github.com/lucasidev/plan-b/milestone/10), issues #530 a #534. Lo que avance rápido durante R7 se trae adelante.
+
+**Por qué este hilo.** La demo muestra Tucumán con un corpus cuyas cuentas no existen y una universidad que el backoffice apenas nombra. Un seed sintético no es un seed hecho mal: el sistema tiene que ser coherente por dentro y no solo en pantalla. Por eso el corpus pasa a ser gente que existe en identity, el catálogo pasa a ser el del país y no el de una provincia relevada a mano, y la institución pasa a cargarse entera desde el backoffice, con su identidad, su ubicación y sus unidades.
+
+### Tareas (36 pts)
+
+| # | Tarea | Pts | Estado |
+|---|---|---|---|
+| [#530](https://github.com/lucasidev/plan-b/issues/530) · 1 | **Las cuentas del corpus, reales**: el seed crea en identity las cuentas del corpus (hoy ids sueltos del rango `00000020-…`): miembros verificados, con perfil en el plan de la carrera que reseñan, fecha de registro anterior a su reseña y repartida en el tiempo, mail con forma real en un dominio reservado y sin contraseña usable; las reseñas quedan atadas a esas cuentas y `dev-seed-personas.md` documenta el conjunto. Listo cuando: `seed-db` sobre una base vacía deja cada reseña con su cuenta existente, los conteos de las fichas no cambian y ninguna cuenta del corpus puede iniciar sesión. | 5 | Planificado |
+| [#531](https://github.com/lucasidev/plan-b/issues/531) · 2 | **El catálogo del país desde la Guía SIU**: un importador de la Guía de carreras del SIU para el país entero (instituciones, sedes, unidades académicas, ofertas, tipo, duración en el papel, régimen de ingreso), con Georef resolviendo la localidad de cada sede y la identidad institucional del anuario SPU por institución; lo que la tesis exige a mano queda "sin datos" con fecha, como hoy en 222 de las 225 carreras tucumanas. Empieza por la investigación de la fuente. Listo cuando: el stage lista las instituciones del país con sus ofertas, cada ficha de carrera dice qué dato tiene y cuál no, Dónde estudiarla agrupa por aglomeración fuera de Tucumán, y el seed de Tucumán no cambia de números. | 13 | Planificado |
+| [#532](https://github.com/lucasidev/plan-b/issues/532) · 3 | **La universidad en el backoffice**: la ficha de institución para Sofía: identidad (nombre, slug, URL oficial, logo), ubicación (dirección y la localidad de Georef), dominios de mail, sus unidades académicas y, derivados, cuántas facultades, carreras y planes tiene; y los datos oficiales de la institución editables ahí y no solo por seed. La ficha pública muestra logo, URL y ubicación. El mecanismo del logo (archivo por slug en el repo, o carga con almacenamiento) se decide en una ADR corta. Stories nuevas en Sostener el catálogo y SC-027 al día. Listo cuando: una institución se carga entera desde el backoffice sin tocar el seed y su ficha pública la muestra. | 13 | Planificado |
+| [#533](https://github.com/lucasidev/plan-b/issues/533) · 4 | **La modalidad y cuántas veces la cursaste** ([ADR-0082](../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) §3): story nueva de Reseñar; el formulario las pide como contexto que no se publica, el dominio y el seed las llevan, y la tesis y el glosario dicen lo que hay. Listo cuando: la reseña las pide con saltear válido, ninguna ficha las publica y check-scenarios las cubre. | 3 | Planificado |
+| [#534](https://github.com/lucasidev/plan-b/issues/534) · 5 | **La poda del rol sin cliente**: `UniversityStaff` sale del enum y del glosario; `Moderator` se queda. Listo cuando: el enum, el glosario y los tests coinciden y ningún dato del stage referencia el rol retirado. | 2 | Planificado |
+
+### Decisiones que R8 necesita antes de arrancar
+
+- Si alguna cuenta del corpus tiene que poder entrar, y el dominio de sus mails (tarea 1).
+- Si la Guía SIU exporta el país entero, en qué formato y con qué términos: la investigación corrió el 2026-09-13 y su resultado va en #531 (tarea 2).
+- El mecanismo del logo: archivo por slug en el repo, o carga con almacenamiento (tarea 3).
+
+### Cómo se sabe que R8 está listo
+
+1. `seed-db` deja cada reseña del corpus con su cuenta existente, y ninguna de esas cuentas puede entrar.
+2. El stage lista las instituciones del país con sus ofertas, y cada ficha dice qué dato tiene y cuál no.
+3. Una institución se carga entera desde el backoffice y su ficha pública la muestra con logo, URL y ubicación.
+4. La reseña pide la modalidad y las veces, y ninguna ficha las publica.
+5. El enum de roles y el glosario coinciden.
+
+### Lo que R8 deja afuera a propósito
+
+- Los datos que la tesis exige a mano para cada carrera del país (dura en la realidad, egreso por cohorte, acreditación, transparencia): se relevan por institución a medida que alguien los pide, no todos de una.
+- Personas reales y producción.
 
 ## Lo anterior: el producto en retiro
 
