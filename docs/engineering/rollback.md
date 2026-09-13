@@ -1,136 +1,141 @@
 # Rollback playbook
 
-Cuándo y cómo deshacer un cambio que rompió main.
+Cómo volver a un artefacto sano y cómo recuperar datos. El deploy normal está en [`deploy.md`](deploy.md); el diagnóstico, en [`runbook.md`](runbook.md).
 
-Living doc. Cuando aterrice deploy (Fase 6+) se va a expandir con sección "rollback de deploy" + "rollback de DB en prod". Por ahora cubre sólo lo aplicable pre-deploy.
+## Política
 
-Decisión que la motiva: estamos pre-deploy, sin branch protection estricta histórica, y CI corre tanto en PR como post-merge (push:main). Eso significa que **un PR con CI pre-merge verde puede aterrizar en main y romper el CI post-merge** (e.g. Squash que cambia el commit final, race conditions, workflows que no corren en PR como `e2e.yml` on-demand).
+Hay tres acciones distintas y no se intercambian:
 
-## Política: revert first, investigate after
-
-Cuando CI **post-merge** queda en rojo en main:
-
-1. **Notificación**: GitHub te manda mail + el badge de Actions queda rojo.
-2. **Decidir**: ¿bug obvio que arreglo en 5 min o complicado?
-3. **Si es chico** → forward fix. PR nuevo con el arreglo, mergear ese.
-4. **Si NO es chico** → revertir primero. Volvemos main a verde, investigamos tranquilo, y abrimos PR nuevo con la solución cuando esté lista.
-
-La regla por default cuando dudás: **revert**. Main verde es el estado por default. Mantenerlo así protege a quien venga después y haga `git pull origin main`.
-
-## Rollback de código
-
-### Caso típico: revertir el merge de un PR
-
-```bash
-# 1. Identificar el merge commit en main que querés revertir
-git fetch origin main
-git log origin/main --oneline | head -5
-# ej: af4a527 feat(test): playwright e2e infra (US-T02)
-
-# 2. Estar en main al día
-git checkout main
-git pull origin main
-
-# 3. Revertir
-git revert <sha> --no-edit
-# Si fue Rebase merge con N commits, revert te pide ir uno por uno con
-# `git revert <sha-base>..<sha-tip>` o iterar manualmente. Si fue Squash,
-# es un solo revert.
-
-# 4. Push directo a main
-git push origin main
-```
-
-Esto crea un commit nuevo `Revert "<original title>"` que **deshace los cambios sin reescribir historia**. Auditable, reversible (podés revertir el revert para reaplicar el cambio).
-
-El commit del revert tiene que seguir Conventional Commits (`revert: <subject original>`). Si quedó como `Revert "feat(test): ..."` que genera git por default, corregilo antes de pushear: de esos commits sale el changelog cuando se genere ([ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)).
-
-```bash
-git commit --amend -m "revert: feat(test): playwright e2e infra (US-T02)" --no-edit
-```
-
-### Rollback parcial con `git revert <range>`
-
-Si varios commits seguidos en main rompieron algo y querés revertir todos:
-
-```bash
-git revert <sha-anterior-al-problema>..HEAD --no-edit
-```
-
-Cada commit se revierte como uno nuevo. Si hay conflicts en algún paso, `git revert --abort` y resolver de a uno.
-
-### Si el revert tiene conflicts
-
-Pasa cuando alguien mergeó algo encima del PR que querés revertir y hay overlap. `git revert --abort` y considerá si:
-- El commit más reciente DEBE quedar (resolver el conflict manualmente).
-- O si conviene revertir ambos (`git revert <both>`).
-
-## Rollback de DB schema (migraciones EF Core)
-
-```bash
-cd backend
-
-# Ver migraciones aplicadas
-dotnet ef migrations list \
-  --project modules/identity/src/Planb.Identity.Infrastructure \
-  --startup-project host/Planb.Api
-
-# Volver a una migración previa (corre los Down() en orden inverso)
-dotnet ef database update <migration-anterior> \
-  --project modules/identity/src/Planb.Identity.Infrastructure \
-  --startup-project host/Planb.Api
-
-# Si la migración rota todavía no se commiteó / no aterrizó en otros DBs:
-dotnet ef migrations remove \
-  --project modules/identity/src/Planb.Identity.Infrastructure \
-  --startup-project host/Planb.Api
-```
-
-**Caveat**: si el `Down()` de la migración está mal escrito (no es rollback-safe), `database update <previa>` falla. `MigrationRollbackTests` revierte y reaplica la migración **más nueva** de cada módulo en cada corrida de CI, así que un `Down()` roto se caza el día que se escribe. Lo que ese test no re-verifica son las viejas: una vez que otra migración se apila encima, su `Down()` deja de ser el que se ejercita.
-
-**En dev local**: si todo se rompió y querés empezar de cero, `just infra-reset` (volca volúmenes + relevanta containers + recrea DB).
-
-## Hitos narrativos como anchor de rollback
-
-ADR-0089 permite tags narrativos para hitos. Si vas a hacer un cambio grande y querés un punto de retorno:
-
-```bash
-# Antes del cambio
-git tag pre-academic-refactor -m "Snapshot estable antes de mover Academic BC"
-git push origin pre-academic-refactor
-
-# Si después necesitás volver
-git diff pre-academic-refactor HEAD            # ver qué cambió
-git revert pre-academic-refactor..HEAD --no-edit  # revertir todo desde el tag
-git push origin main
-```
-
-Estos tags **no son releases**.
-
-## Lo que NO podemos rollbackear (todavía)
-
-| Cosa | Por qué |
+| Problema | Acción por default |
 |---|---|
-| Deploy en prod a versión previa | No hay deploy. Llega con Fase 6 (Dokploy). |
-| DB de prod desde backup | No hay prod DB todavía. |
-| Feature toggles sin redeploy | No hay deploy ni feature flags. Considerar GrowthBook cuando aterrice deploy. |
-| Cookies / sessions emitidas a usuarios | Mitigado parcialmente con `IRefreshTokenStore.RevokeAllForUserAsync` (ADR-0034 + US-033 infra). Si una vulnerabilidad aterriza, podemos invalidar todas las sesiones de un user. |
+| API o web defectuosa | Volver la Application al último SHA sano. |
+| Schema incompatible, sin corrupción ni pérdida | Roll-forward con una migración correctiva. |
+| Datos corruptos o perdidos | Restore desde un backup verificado. |
 
-## Checklist post-rollback
+Un rollback de aplicación no retrocede automáticamente el schema. Un restore no se usa para deshacer un bug de código.
 
-Después de revertir un commit problemático, antes de cerrar el incidente:
+## Rollback de Application por SHA
 
-- [ ] CI volvió a verde en main.
-- [ ] `git log origin/main` muestra el revert claramente attribuido.
-- [ ] Si el cambio rollbackeado era de migration: corrió `just migrate` localmente y la DB queda consistente.
-- [ ] El commit del revert sigue Conventional Commits (`revert:`), que es de donde va a salir el changelog cuando se genere.
-- [ ] Issue / PR / nota para investigar la causa raíz. El revert NO es la solución, sólo gana tiempo.
+Stage y producción, cuando exista, consumen imágenes identificadas por SHA. `main` y `latest` no son targets válidos.
+
+### Secuencia
+
+1. Identificar el último SHA sano desde `/health`, GitHub Actions y el historial de deploys de Dokploy.
+2. Confirmar que las imágenes API y web de ese SHA existen. El web tiene que ser el artefacto construido para ese destino.
+3. Revisar si el schema actual sigue siendo compatible con la versión anterior. Las migraciones deben seguir expand/contract para que este paso sea posible.
+4. Actualizar la referencia de imagen de API al SHA sano.
+5. Actualizar la referencia de web al SHA sano del mismo destino.
+6. No volver a ejecutar una migración vieja y no usar `Down()` por default.
+7. Desplegar API y web.
+8. Verificar `/health`, el SHA servido y una ruta pública.
+9. Abrir un PR de revert o de corrección para que `main` deje de apuntar al cambio roto.
+
+En stage, volver una Application por SHA restaura servicio, pero no cambia qué commit sigue `main`. Sin el PR correctivo, el próximo deploy intentará publicar otra vez el estado roto.
+
+En producción, cuando exista, el rollback apunta las Applications al SHA del Release sano anterior. No se mueve ni se reescribe el Release roto para ocultar lo ocurrido.
+
+## Revert del código en Git
+
+El repositorio sigue un flujo PR-only. No se pushea un revert directo a `main`.
+
+```bash
+git fetch origin main
+git switch -c revert/<scope-description> origin/main
+git revert <sha> --no-edit
+```
+
+Si el PR original entró con Rebase and merge y contiene varios commits, revertir el rango o los commits afectados en orden inverso. Si hay conflictos, abortar y resolver con alcance explícito:
+
+```bash
+git revert --abort
+```
+
+El commit usa Conventional Commits, por ejemplo `revert(scope): remove broken change`. Después se abre PR y se espera CI.
+
+## Schema: roll-forward por default
+
+Migrate corre antes de API como Application run-once: una task por deploy, sin reinicio. Si falla, el deploy se corta antes de mover API y web. La respuesta normal es una migración nueva que lleve el schema desde el estado observable al estado compatible.
+
+No correr `dotnet ef database update <migración-anterior>` ni un `Down()` sobre stage o producción por default. Aunque el `Down()` compile, puede borrar datos que la aplicación vieja y la nueva todavía necesitan.
+
+### Secuencia de corrección
+
+1. Detener el deploy nuevo y conservar los logs de Migrate.
+2. Inspeccionar qué migraciones figuran aplicadas en cada módulo.
+3. Escribir una migración correctiva compatible con la versión que sigue sirviendo.
+4. Publicar una nueva imagen API por SHA.
+5. Ejecutar Migrate con esa imagen y esperar éxito.
+6. Desplegar API y web solo después.
+
+Las migraciones deben diseñarse con expand/contract: primero agregar o tolerar, después mover lectores y escritores, y recién en otro deploy retirar lo viejo.
+
+## Restore de PostgreSQL
+
+Restore se reserva a corrupción o pérdida confirmada. No es el rollback normal de una migración ni de una Application.
+
+### Precondiciones
+
+- backup externo identificado y dentro de la retención;
+- hora o punto de recuperación elegido;
+- alcance de la pérdida entendido;
+- escrituras detenidas;
+- recurso de destino confirmado por id y ambiente.
+
+### Secuencia
+
+1. Mantener la Database dañada sin más escrituras.
+2. Restaurar preferentemente sobre una PostgreSQL Database nueva, no encima de la única copia.
+3. Verificar integridad y conteos antes de apuntar Applications.
+4. Ejecutar Migrate con el SHA que se va a servir.
+5. Configurar API y Migrate con el endpoint restaurado.
+6. Desplegar API y web.
+7. Verificar `/health` y los recorridos críticos.
+8. Conservar la Database anterior hasta una decisión explícita de borrado.
+
+El procedimiento exacto del proveedor y la retención todavía no existen para producción. Son requisitos previos a crearla, no una capacidad que este documento afirme disponible.
+
+## Redis
+
+Redis guarda estado efímero. Si se pierde, se recrea el recurso y se actualiza el endpoint de API y Migrate. El efecto esperado incluye sesiones o rate limits perdidos. No se restaura PostgreSQL para compensar una pérdida de Redis.
+
+## Reset de development local
+
+Development local es descartable. Ahí sí corresponde recrear infraestructura y datos:
+
+```bash
+just infra-reset
+```
+
+Ese comando no se usa contra stage ni producción.
+
+## Checklist
+
+### Después de volver por SHA
+
+- [ ] `/health` sirve el SHA elegido.
+- [ ] API y web usan artefactos del mismo destino.
+- [ ] PostgreSQL y Redis aparecen sanos.
+- [ ] El workflow o deploy deja evidencia del cambio.
+- [ ] Existe PR correctivo o de revert para `main`.
+
+### Después de un roll-forward de schema
+
+- [ ] Migrate completó exactamente una ejecución.
+- [ ] La versión que seguía sirviendo fue compatible durante el cambio.
+- [ ] API y web nuevas pasaron health.
+- [ ] No se ejecutó seed como parte de la recuperación.
+
+### Después de un restore
+
+- [ ] El backup y su fecha quedaron registrados fuera del repo.
+- [ ] Se verificó integridad antes de mover tráfico.
+- [ ] El endpoint nuevo se actualizó en API y Migrate.
+- [ ] La copia anterior no se borró sin una decisión explícita.
 
 ## Refs
 
-- [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): git workflow.
-- [ADR-0027](../decisions/0027-integration-tests-shared-postgres.md): cómo se manejan DBs en tests (no aplicable a prod, pero relevante para entender el modelo).
-- [ADR-0034](../decisions/0034-redis-as-cache-and-ephemeral-state.md): refresh token revocation (rollback de auth state).
-- [ADR-0036](../decisions/0036-testing-pyramid-cross-stack.md): testing layers que protegen pre-merge.
-- [ADR-0074](../decisions/0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera bajo demanda, así que un revert no necesita nada extra.
-- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): tags narrativos como anchor.
+- [ADR-0026](../decisions/0026-git-workflow-github-flow-with-rebase.md): flujo PR-only.
+- [ADR-0059](../decisions/0059-production-startup-does-not-self-repair.md): Production no repara schema al arrancar.
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): promoción por SHA y Release.
+- [ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): migración antes del deploy y seed manual.
+- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): Applications como unidad de ciclo de vida.

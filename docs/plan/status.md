@@ -396,6 +396,8 @@ US-155 y US-197 salieron de la tabla el 2026-09-04: el código no pregunta el a�
 
 Del 2026-09-02 al 2026-09-07. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts en tres pistas.
 
+> **Nota histórica (2026-09-12):** las filas de este sprint registran el Compose con el que se desplegó entonces. Los dos Compose de deploy fueron retirados y la topología vigente usa Databases y Applications de Dokploy según [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md). [`deploy.md`](../engineering/deploy.md) contiene la operación actual.
+
 **Por qué este hilo.** Tres sprints construyeron la máquina que convierte reseñas en fichas, y nadie la usó todavía: seguimos pre-deploy y no existe una reseña de una persona real. Antes de personas reales, un stage: el producto entero en una URL, con el corpus sintético, recorrible por Lucas y por Copas. Y la retrospectiva de R3 pidió mirar la calidad con lentes de QA: la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) encontró una suite grande y verde pero desbalanceada (el dominio bien cubierto, la aplicación probada solo con Postgres, las pantallas del corazón en 0 % en vitest, y 9 de 75 escenarios citados por un test), y una sola línea que explica casi todo el costo de CI (cada clase de integración levanta su base, corre 57 migraciones y siembra, 50 veces en serie). **R4 no recorta: entran los doce hallazgos y las ocho propuestas de eficiencia.**
 
 ### Pista 1 · El stage, con datos de prueba (14 pts)

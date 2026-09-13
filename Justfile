@@ -238,6 +238,10 @@ scripts-lint-fix:
 scripts-typecheck:
     ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
 
+# Tests de scripts/ (bun test, sin infra): los *.test.ts al lado de cada script
+scripts-test:
+    bun test scripts/
+
 # ═══════════════════════════════════════════════════════════════
 
 # Coherencia de la documentación de producto (ADR-0070): links, em-dashes,
@@ -336,5 +340,5 @@ clean:
 # Todo lo que gatea un PR salvo E2E, que necesita el stack levantado y tarda
 # ~10 min: ese corre con `just frontend-test-e2e`. El resto es paridad real
 # con ci.yml, docs-links.yml y commits.yml.
-ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck check-docs-strict check-scenarios check-flaky frontend-build frontend-test
+ci: backend-lint backend-build check-migrations backend-test frontend-lint frontend-typecheck scripts-lint scripts-typecheck scripts-test check-docs-strict check-scenarios check-flaky frontend-build frontend-test
     @echo "✓ All quality gates passed"

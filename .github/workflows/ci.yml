@@ -257,6 +257,8 @@ jobs:
         run: ./frontend/node_modules/.bin/biome check scripts
       - name: Typecheck scripts
         run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
+      - name: Test scripts
+        run: bun test scripts/
       - name: Typecheck
         run: cd frontend && bunx tsc --noEmit
       - name: Build

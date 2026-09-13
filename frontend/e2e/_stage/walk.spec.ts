@@ -3,13 +3,13 @@ import { waitForMail } from '../helpers/mailpit';
 import { ADMIN } from '../helpers/personas';
 
 /**
- * El tramo con cuenta de "El recorrido para Copas" (pasos 5 a 7, `docs/engineering/deploy.md`),
+ * El tramo con cuenta del recorrido para Copas (pasos 5 a 7: registrarse, reseñar y el backoffice),
  * automatizado contra el stage real (`https://planb.olisar.com.ar`, Mailpit en
  * `https://mail.olisar.com.ar`).
  *
  * No es E2E de regresión: `playwright.config.ts` la excluye de la suite salvo
  * `PLAYWRIGHT_INCLUDE_STAGE=1` (nunca en CI), y corre a mano con `just stage-walk`. No borra nada
- * al final: el reset (paso 8 del guion de clics) es manual.
+ * al final: el reset destructivo del stage (`docs/engineering/runbook.md`, caso 7) es manual.
  *
  * Corre a 180 s por test (`test.setTimeout`, como el resto de los specs de `admin/`) y sin retries.
  */
@@ -69,7 +69,7 @@ async function fillCareerCascade(page: Page): Promise<void> {
   await page.getByLabel(/plan de estudios/i).selectOption({ index: 1 });
 }
 
-test.describe('El recorrido para Copas: cuenta, reseña y backoffice (docs/engineering/deploy.md)', () => {
+test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
   test.describe.configure({ mode: 'serial' });
   test.setTimeout(180_000);
 
@@ -134,7 +134,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice (docs/engin
     await belowFloor.waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
     if ((await belowFloor.count()) === 0) {
       throw new Error(
-        'La Cátedra Ruiz ya publica: el recorrido arranca sobre el stage recién sembrado (paso 8 del guion de clics de deploy.md).',
+        'La Cátedra Ruiz ya publica: el recorrido arranca sobre el stage recién sembrado (runbook.md, casos 7 y 6: reset y seed-db).',
       );
     }
     const beforeText = (await belowFloor.textContent()) ?? '';
@@ -193,7 +193,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice (docs/engin
   });
 
   test('7. Backoffice: cátedra nueva y una frase destilada del campo libre', async ({ page }) => {
-    // Cierra la sesión de Copas antes de entrar como admin, tal cual el guion de clics.
+    // Cierra la sesión de Copas antes de entrar como admin, tal cual el recorrido.
     await signIn(page, copasEmail, copasPassword);
     await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
     await page.getByRole('button', { name: /copas/i }).click();
