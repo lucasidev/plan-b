@@ -8,8 +8,8 @@ import { cookies } from 'next/headers';
  * Why this exists: server actions call the backend server-side, so any
  * Set-Cookie the backend emits never reaches the browser unless we
  * explicitly re-set it on the action's own response. The sign-in flow
- * relies on this to land `planb_session` and `planb_refresh` (httpOnly,
- * Path-scoped) on the user's browser.
+ * relies on this to land `planb_session` and `planb_refresh` (both
+ * httpOnly) on the user's browser.
  *
  * The parser handles the cookie attributes the backend uses today
  * (Path, Expires, Max-Age, Domain, SameSite, Secure, HttpOnly). It is

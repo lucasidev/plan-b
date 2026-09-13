@@ -12,10 +12,9 @@ namespace Planb.Identity.Application.Features.SignOut;
 /// cookies on the way out. Always returns 204. Idempotent: callable with no cookies, with
 /// an unknown refresh, or with one already revoked.
 ///
-/// The access cookie is cleared with `Path=/` and the refresh cookie with
-/// `Path=/api/identity` to match what <see cref="SignInEndpoint"/> set; without matching
-/// paths the browser would refuse to delete the entries and they'd linger until natural
-/// expiry. See ADR-0023 for the cookie-shape contract.
+/// Both cookies are cleared with `Path=/`, matching what <see cref="SignInEndpoint"/> set;
+/// without matching paths the browser would refuse to delete the entries and they'd linger
+/// until natural expiry. See ADR-0023 for the cookie-shape contract.
 /// </summary>
 public sealed class SignOutEndpoint : ICarterModule
 {

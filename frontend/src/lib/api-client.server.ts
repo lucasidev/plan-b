@@ -16,8 +16,8 @@ const ACCESS_COOKIE = 'planb_session';
  * marker throws an early error if a client component imports it by accident.
  *
  * If the caller needs to forward extra cookies (e.g. delete-account, which forwards
- * `planb_refresh` with `Path=/api/identity`), they can pass `extraCookies`; the entries
- * are merged with planb_session in the `Cookie` header.
+ * `planb_refresh`), they can pass `extraCookies`; the entries are merged with
+ * planb_session in the `Cookie` header.
  */
 export async function apiFetchAuthenticated(
   path: string,

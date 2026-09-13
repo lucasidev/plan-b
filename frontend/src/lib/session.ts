@@ -13,7 +13,9 @@ export type Session = {
   role: 'member' | 'admin';
 };
 
-const ACCESS_COOKIE = 'planb_session';
+// Exportada porque frontend/src/middleware.ts (ADR-0095) necesita leer esta misma cookie
+// para decidir si renueva la sesión antes de renderizar.
+export const ACCESS_COOKIE = 'planb_session';
 
 // .NET's JwtSecurityTokenHandler maps ClaimTypes.Role onto this URL on the
 // wire unless OutboundClaimTypeMap is cleared. The backend keeps the default
