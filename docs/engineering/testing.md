@@ -489,7 +489,7 @@ Tres restricciones cross-cutting sobre lo público (`/`, `/method`, `/subjects/[
 
 ### Recorridos de persona
 
-Un recorrido de persona es la revisión del producto: camina un recorrido de [`docs/product/`](../product/README.md) como una persona concreta, contra el stage real (`https://planb.olisar.com.ar`), nunca contra una base efímera. Las specs viven en `frontend/e2e/walks/<persona>.spec.ts` (`valentina`, `lucia`, `matias`, `sofia`, `copas`), en el proyecto `walks` de `playwright.config.ts`: `parallel`, `serial` y `mobile` lo excluyen siempre, y viceversa.
+Un recorrido de persona es la revisión del producto: camina un recorrido de [`docs/product/`](../product/README.md) como una persona concreta, contra el stage real (`https://planb.olisar.com.ar`), nunca contra una base efímera. Las specs viven en `frontend/e2e/walks/<persona>.spec.ts` (`valentina`, `lucia`, `matias`, `sofia`, `copas`), en el proyecto `walks` de `playwright.config.ts`, que existe solo con `PLAYWRIGHT_INCLUDE_WALKS=1` (lo fija `scripts/run-walk.ts`): `parallel`, `serial` y `mobile` lo excluyen siempre, y una corrida sin `--project`, CI incluida, no lo ve.
 
 Cada paso termina en un veredicto (cumple, parcial, no cumple), en una tabla que la spec vuelca a `frontend/test-results/<persona>-verdicts.md`. Lo que no cumple es un hallazgo con ID estable: va a un registro en [`docs/history/reviews/`](../history/reviews/README.md) y de ahí a planificación.
 

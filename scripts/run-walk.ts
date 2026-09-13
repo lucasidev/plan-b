@@ -69,6 +69,8 @@ const result = spawnSync(
       ...process.env,
       ...stageEnv,
       WALK_DATE: walkDate,
+      // El proyecto `walks` existe solo con este flag: así ninguna corrida sin `--project` lo toca.
+      PLAYWRIGHT_INCLUDE_WALKS: '1',
     },
     stdio: 'inherit',
     shell: true,
