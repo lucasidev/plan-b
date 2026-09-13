@@ -173,17 +173,23 @@ export default defineConfig({
           dependencies: ['parallel', 'serial'],
           use: { ...devices['Pixel 5'] },
         },
-        {
-          // Los recorridos de persona ("Recorridos de persona", docs/engineering/testing.md)
-          // contra el stage real, nunca contra la suite de regresión: un worker, más tiempo por
-          // test, y su propio testIgnore (no WALKS_IGNORE, que se excluiría a sí mismo).
-          name: 'walks',
-          testMatch: 'walks/**/*.spec.ts',
-          testIgnore: CAPTURE_IGNORE,
-          workers: 1,
-          retries: 0,
-          timeout: 300_000,
-          use: { baseURL: process.env.WALK_BASE_URL ?? 'https://planb.olisar.com.ar' },
-        },
+        // Los recorridos de persona ("Recorridos de persona", docs/engineering/testing.md) contra
+        // el stage real, solo cuando `scripts/run-walk.ts` lo pide con PLAYWRIGHT_INCLUDE_WALKS=1:
+        // sin el flag el proyecto no existe, así que una corrida sin `--project` (CI incluida) no
+        // lo toca. Un worker, más tiempo por test, y su propio testIgnore (no WALKS_IGNORE, que
+        // se excluiría a sí mismo).
+        ...(process.env.PLAYWRIGHT_INCLUDE_WALKS === '1'
+          ? [
+              {
+                name: 'walks',
+                testMatch: 'walks/**/*.spec.ts',
+                testIgnore: CAPTURE_IGNORE,
+                workers: 1,
+                retries: 0,
+                timeout: 300_000,
+                use: { baseURL: process.env.WALK_BASE_URL ?? 'https://planb.olisar.com.ar' },
+              },
+            ]
+          : []),
       ],
 });
