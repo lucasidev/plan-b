@@ -51,7 +51,7 @@ export default async function StaffLayout({ children }) {
 }
 ```
 
-4. **Refresh silencioso**: al renderizar el layout, si el access token está a <2 minutos de expirar, el helper llama al endpoint de refresh del backend con el refresh token, y rota las cookies. Todo server-side, sin round-trip al cliente.
+4. **Refresh silencioso**: si el access token está a <2 minutos de expirar, el servidor llama al endpoint de refresh del backend con el refresh token y rota las cookies. Todo server-side, sin round-trip al cliente. Dónde vive y por qué no en el layout: [ADR-0095](0095-the-session-renews-itself-in-the-middleware.md).
 
 5. **Logout**: Server Action que invoca el endpoint de logout del backend (invalida el refresh token server-side) y borra cookies locales via `cookies().delete()`.
 
