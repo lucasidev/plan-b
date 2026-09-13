@@ -36,6 +36,15 @@ public sealed class SignOutEndpoint : ICarterModule
         .Produces(StatusCodes.Status204NoContent);
     }
 
+    /// <summary>
+    /// Path de planb_refresh antes de ADR-0095. Quien entró antes del deploy tiene esa
+    /// cookie vieja en el navegador; sin este segundo Delete, sign-out la deja viva ahí y
+    /// su refresh token le sobrevive hasta 30 días en Redis aunque haya "cerrado sesión".
+    /// Retirar esta constante y el Delete que la usa en una release futura, cuando ya no
+    /// queden sesiones anteriores al cambio de Path.
+    /// </summary>
+    private const string LegacyRefreshCookiePath = "/api/identity";
+
     private static void ClearAuthCookies(HttpResponse response, bool isHttps)
     {
         // Cookie deletion requires the same Path / Secure / SameSite the cookie was set with;
@@ -53,6 +62,13 @@ public sealed class SignOutEndpoint : ICarterModule
             Secure = isHttps,
             SameSite = SameSiteMode.Lax,
             Path = SignInEndpoint.RefreshCookiePath,
+        });
+        response.Cookies.Delete(SignInEndpoint.RefreshCookieName, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = isHttps,
+            SameSite = SameSiteMode.Lax,
+            Path = LegacyRefreshCookiePath,
         });
     }
 }
