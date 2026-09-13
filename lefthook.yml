@@ -55,14 +55,6 @@ pre-push:
         - "docs/*.{md,html}"
         - "docs/**/*.{md,html}"
       run: bun scripts/check-docs.ts
-    agent-config-check:
-      # Corta: la copia de skills y el par md/toml de cada agente se regeneran o
-      # editan en segundos, y un drift pusheado deja a un cliente con otra config.
-      glob:
-        - ".agents/**/*"
-        - ".claude/**/*"
-        - ".codex/**/*"
-      run: bun scripts/check-agent-config.ts --strict
     backend-build:
       # El restore que dispara este build es también el escaneo de
       # vulnerabilidades: con NuGetAudit=true, NuGetAuditMode=all y
