@@ -4,7 +4,7 @@
 
 ## Qué es
 
-El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en primera persona y que, aun así, tienen que cumplirse en toda pantalla nueva. No se construyen (no hay una US que las cierre): se verifican, pantalla por pantalla, contra un checklist. Son la decisión 3 de la tesis dicha como lista de chequeo (leer no pide cuenta), más que nada ya declarado se vuelva a preguntar, que nada se pida antes de dejar leer o reseñar, y que nada esté destacado ni patrocinado. Recuperar la contraseña estaba acá como una quinta garantía y salió el 2026-08-20: no es transversal, es una acción con su pantalla, así que vive como story propia de Entrar ([US-220](../student/enter/stories/US-220-recover-the-password-by-mail/README.md)).
+El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en primera persona y que, aun así, tienen que cumplirse en toda pantalla nueva. No se construyen (no hay una US que las cierre): se verifican, pantalla por pantalla, contra un checklist. Son la posición de la tesis dicha como lista de chequeo (leer no pide cuenta, producir sí), más que nada ya declarado se vuelva a preguntar, que nada se pida antes de dejar leer o reseñar, y que nada esté destacado ni patrocinado. Recuperar la contraseña estaba acá como una quinta garantía y salió el 2026-08-20: no es transversal, es una acción con su pantalla, así que vive como story propia de Entrar ([US-220](../student/enter/stories/US-220-recover-the-password-by-mail/README.md)).
 
 ## Para quién
 
@@ -14,7 +14,7 @@ El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en 
 
 Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y sus escenarios; el estado y el sprint viven en [`docs/plan/`](../../plan/README.md), que las cita por ID.
 
-> Garantías, como O5. US-168 es la decisión 3 de la tesis dicha como checklist.
+> Garantías, como O5. US-168 es la posición de la tesis ("leer no pide cuenta; producir sí") dicha como checklist.
 
 | ID | De qué trata |
 |---|---|
@@ -29,7 +29,7 @@ Las cinco del producto. Cada una en su carpeta, con su criterio de aceptación y
 
 ## Decisiones que aplica
 
-[THESIS.md](../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (el producto no marca el plan ni sabe por dónde va tu carrera: nada de eso se pregunta antes de dejar leer o reseñar), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
+[THESIS.md](../../THESIS.md) (Posición tomada: leer no pide cuenta, producir sí; la puerta llega en la acción, no antes de leer), [ADR-0086](../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) (el producto no marca el plan ni sabe por dónde va tu carrera: nada de eso se pregunta antes de dejar leer o reseñar), [ADR-0063](../../decisions/0063-the-product-is-a-pressure-instrument.md) (rankings y acuerdos con instituciones quedan fuera por tesis: no hay lugar para destacar ni patrocinar), [Definition of Done](../../plan/definition-of-done.md), sección 7 "Restricciones del producto" (que a su vez cita las restricciones del [catálogo](../README.md): accesibilidad, datos personales, política de moderación pública, rendimiento). Que el reenganche por mail sea una vez al año y con una sola pregunta, y que "entré" se pregunte una sola vez, son reglas del producto que hoy no fija ningún ADR vigente.
 
 ## Pantallas
 

@@ -4,7 +4,7 @@
 
 ## Qué es
 
-Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), decisión 3). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además viven acá las dos pantallas que son chasis y no un paso de ningún recorrido: Error, que sostiene a todas las demás cuando algo falla, e Inicio, donde se aterriza después de cruzar el umbral. Ninguna le pertenece a otra épica en particular.
+Leer no pide cuenta; producir sí ([THESIS.md](../../../THESIS.md), Posición tomada). Esta épica es el umbral que separa las dos cosas y que **no se cruza en la puerta sino en la acción**: nadie ve un login por entrar, lo ve cuando va a reseñar, corregir un dato o responder, con el motivo a la vista y con la vuelta a donde estaba. Además viven acá las dos pantallas que son chasis y no un paso de ningún recorrido: Error, que sostiene a todas las demás cuando algo falla, e Inicio, donde se aterriza después de cruzar el umbral. Ninguna le pertenece a otra épica en particular.
 
 Sostiene garantías de otras épicas ([Que no me molesten](../../guarantees/README.md): US-168 el gate en la acción, US-169 no repreguntar; y la garantía de recuperar la contraseña, que antes era O5-3) y sirve a los que producen.
 
@@ -33,7 +33,7 @@ Además de la suya, esta épica sostiene stories de otras, que viven allá y se 
 
 ## Decisiones que aplica
 
-[THESIS.md](../../../THESIS.md) (decisión 3: leer sin cuenta, producir con cuenta), [ADR-0048](../../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (verificarse es opt-in y nunca por el mail: el registro no verifica a nadie), y las Restricciones del [catálogo](../../README.md) (consentimiento informado, Ley 25.326).
+[THESIS.md](../../../THESIS.md) (Posición tomada: leer sin cuenta, producir con cuenta), [ADR-0048](../../../decisions/0048-standing-is-opt-in-and-decoupled-from-email.md) (verificarse es opt-in y nunca por el mail: el registro no verifica a nadie), y las Restricciones del [catálogo](../../README.md) (consentimiento informado, Ley 25.326).
 
 ## Pantallas
 
