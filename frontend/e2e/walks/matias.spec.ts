@@ -269,12 +269,15 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
 
       await cta.click({ timeout: 15_000 });
       await page.waitForURL(/\/(sign-in|sign-up)/, { timeout: 15_000 }).catch(() => {});
-      await page.waitForLoadState('networkidle').catch(() => {});
+      // Ingresar se arma en el cliente: `networkidle` llega antes que el formulario y su motivo.
+      await page
+        .getByLabel(/tu email/i)
+        .waitFor({ state: 'visible', timeout: 15_000 })
+        .catch(() => {});
       const gateUrl = page.url();
       const gateBodyText = await page.locator('body').innerText();
-      const showsReason = /para rese[ñn]ar esta cursada|necesit[aá]s una cuenta para rese/i.test(
-        gateBodyText,
-      );
+      const showsReason =
+        /para rese[ñn]ar (esta|una) cursada|necesit[aá]s una cuenta para rese/i.test(gateBodyText);
       record({
         step: 1,
         story: 'US-229',
@@ -418,7 +421,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         contractText,
       );
       const mentionsNoName =
-        /sin tu nombre|no.*(accede|sabe).*qui[eé]n|nadie.*sabe qui[eé]n|tu nombre no aparece/i.test(
+        /sin tu nombre|(no|nadie).*(accede|sabe).*qui[eé]n|tu nombre no aparece/i.test(
           contractText,
         );
       expect
@@ -726,10 +729,15 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
       });
       await shot(page, '12-delete-account.png');
 
-      // SC-016 describe una acción explícita antes del botón final, no un solo clic apurado: se
-      // intenta confirmar hasta dos veces por si hay un paso intermedio de "sí, estoy seguro".
+      // SC-016 describe una acción explícita antes del botón final, no un solo clic apurado: hay
+      // que escribir el propio mail (sin eso el botón queda deshabilitado) y después se intenta
+      // confirmar hasta dos veces por si hay un paso intermedio de "sí, estoy seguro".
+      const confirmEmail = page.getByLabel(/tu email/i);
+      if (await isVisible(confirmEmail, 3000)) {
+        await confirmEmail.fill(MATIAS_EMAIL, { timeout: 15_000 });
+      }
       const confirmPattern =
-        /confirmar|s[ií], dar de baja|dar de baja definitivamente|s[ií], quiero darme de baja/i;
+        /confirmar|s[ií], dar de baja|dar de baja (la cuenta|definitivamente)|s[ií], quiero darme de baja/i;
       if (await isVisible(page.getByRole('button', { name: confirmPattern }), 3000)) {
         await page.getByRole('button', { name: confirmPattern }).first().click({ timeout: 15_000 });
       }
