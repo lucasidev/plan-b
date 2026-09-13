@@ -19,12 +19,15 @@ public sealed class SignInEndpoint : ICarterModule
     public const string AccessCookieName = "planb_session";
 
     /// <summary>
-    /// Cookie carrying the opaque refresh token. Same flags as access; Path scoped to
-    /// /api/identity so it's only sent on auth endpoints (smaller surface for CSRF).
+    /// Cookie que lleva el refresh token opaco. Mismos flags que el access token.
     /// </summary>
     public const string RefreshCookieName = "planb_refresh";
 
-    public const string RefreshCookiePath = "/api/identity";
+    /// <summary>
+    /// Path=/: el middleware de Next.js necesita leerla en cualquier pedido de página, no
+    /// solo en las rutas de auth, para poder renovar la sesión antes de renderizar (ADR-0095).
+    /// </summary>
+    public const string RefreshCookiePath = "/";
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {

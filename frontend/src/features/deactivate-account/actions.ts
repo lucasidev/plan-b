@@ -50,9 +50,8 @@ export async function deactivateAccountAction(
   try {
     response = await apiFetchAuthenticated('/api/me/account', {
       method: 'DELETE',
-      // apiFetchAuthenticated forwards planb_session (JwtBearer middleware auth); we
-      // pass planb_refresh via extraCookies because it has Path=/api/identity and
-      // would not be included automatically.
+      // apiFetchAuthenticated only forwards planb_session (JwtBearer middleware auth)
+      // automatically; planb_refresh still needs extraCookies to get there.
       extraCookies: refreshToken ? { [REFRESH_COOKIE]: refreshToken } : undefined,
     });
   } catch {
