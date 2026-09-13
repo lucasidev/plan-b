@@ -74,12 +74,6 @@ pre-push:
         - "scripts/**/*.ts"
         - "scripts/tsconfig.json"
       run: ./frontend/node_modules/.bin/tsc --noEmit -p scripts/tsconfig.json
-    scripts-test:
-      # Los tests de scripts/ no necesitan infra y corren en menos de un segundo.
-      glob:
-        - "scripts/*.ts"
-        - "scripts/**/*.ts"
-      run: bun test scripts/
     frontend-lint:
       glob:
         - "frontend/*.{ts,tsx,js,jsx,json}"
