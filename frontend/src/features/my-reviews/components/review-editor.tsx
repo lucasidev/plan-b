@@ -7,11 +7,11 @@ import { reviseReviewAction } from '../actions';
 import type { MyReview } from '../types';
 
 /**
- * Corregir una reseña propia (US-165, SC-017).
+ * Editar una reseña propia (US-165, SC-017).
  *
  * No deja cambiar materia, período ni cátedra: esa terna **es** la identidad de la reseña (una voz
- * por cuenta, materia y período), así que cambiarla no sería corregir sino reseñar otra cursada.
- * Lo que se corrige son las respuestas.
+ * por cuenta, materia y período), así que cambiarla no sería editar sino reseñar otra cursada.
+ * Lo que se edita son las respuestas.
  *
  * Saltear sigue valiendo, y acá vale doble: se puede contestar algo que se había salteado, y
  * también **dejar de contestar** algo. En ese caso la respuesta desaparece y su frase vuelve a no
@@ -32,8 +32,8 @@ export function ReviewEditor({
   const [error, setError] = useState<string | null>(null);
 
   // Arranca con lo que ya había contestado. El read que sirve esta pantalla es el único que
-  // devuelve respuestas de a una, y solo hacia su autor: sin eso, corregir una sola obligaría a
-  // contestar las catorce de nuevo, y nadie corrige nada con ese precio.
+  // devuelve respuestas de a una, y solo hacia su autor: sin eso, editar una sola obligaría a
+  // contestar las catorce de nuevo, y nadie edita nada con ese precio.
   const [answers, setAnswers] = useState<Record<string, number>>(() =>
     Object.fromEntries(review.answers.map((a) => [a.itemCode, a.optionValue])),
   );
@@ -64,7 +64,7 @@ export function ReviewEditor({
       }
       // La tarjeta detrás de este editor muestra las respuestas y los conteos del `review` que le
       // pasó `MyReviewsList`, sin estado propio: sin un commit real de la página no hay forma de que
-      // se vea la corrección. `router.refresh()` puede perder ese commit bajo carga (issue #491,
+      // se vean los cambios. `router.refresh()` puede perder ese commit bajo carga (issue #491,
       // mismo fallo que `router.push`), así que se fuerza un reload real. Ver
       // `lib/reload-after-mutation.ts`.
       onClose();
@@ -131,7 +131,7 @@ export function ReviewEditor({
           className="rounded-lg px-3.5 py-[9px] text-[13px] font-medium disabled:opacity-50"
           style={{ background: 'var(--color-ink)', color: 'var(--color-bg-card)' }}
         >
-          {pending ? 'Guardando...' : 'Guardar la corrección'}
+          {pending ? 'Guardando...' : 'Guardar los cambios'}
         </button>
         <button
           type="button"

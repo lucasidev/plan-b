@@ -41,7 +41,7 @@ export function MethodSheet({
             cursadas que les pertenecen.
           </P>
           <P>
-            Nadie responde dos veces la misma cursada. Corregir una reseña reemplaza lo anterior, y
+            Nadie responde dos veces la misma cursada. Editar una reseña reemplaza lo anterior, y
             borrarla la saca de todos los conteos donde sumó.
           </P>
         </Block>

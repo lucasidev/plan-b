@@ -4,18 +4,18 @@ import { apiFetchAuthenticated } from '@/lib/api-client.server';
 import type { ActionState } from './types';
 
 /**
- * Server Actions de corregir y borrar lo aportado (US-165, ADR-0046).
+ * Server Actions de editar y borrar lo aportado (US-165, ADR-0046).
  *
  * Mutaciones puras: hacen el write y devuelven el estado. No llaman `revalidatePath` ni `redirect`
  * adentro; de eso se encarga el cliente cuando ve el `status`.
  */
 
 /**
- * Corrige una reseña propia.
+ * Edita una reseña propia.
  *
  * `answers` es el set **completo** de lo que queda respondido: lo que no viene deja de contarse.
- * Eso es deliberado y es la mitad de por qué alguien edita, porque dejar de contestar algo es una
- * corrección tan válida como cambiar la respuesta.
+ * Eso es deliberado y es la mitad de por qué alguien edita, porque dejar de contestar algo es un
+ * cambio tan válido como cambiar la respuesta.
  */
 export async function reviseReviewAction(
   reviewId: string,
@@ -47,7 +47,7 @@ export async function reviseReviewAction(
 
   return {
     status: 'error',
-    message: 'No pudimos guardar la corrección. Probá de nuevo en un rato.',
+    message: 'No pudimos guardar los cambios. Probá de nuevo en un rato.',
   };
 }
 

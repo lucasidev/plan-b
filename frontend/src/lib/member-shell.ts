@@ -38,7 +38,7 @@ export const memberRoutes: readonly MemberRoute[] = [
     section: 'community',
     shortcut: '⌘1',
   },
-  // Mis aportes: lo que esta cuenta reseñó, para poder corregirlo o borrarlo (US-165).
+  // Mis aportes: lo que esta cuenta reseñó, para poder editarlo o borrarlo (US-165).
   {
     path: '/reviews/mine',
     label: 'Mis aportes',

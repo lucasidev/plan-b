@@ -19,7 +19,7 @@
  * | my-profile.spec.ts (editar y guardar)     | 1/80 (medido el 2026-09-09)      | 0/20    |
  *
  * El precio es un reload completo, aceptable donde el commit tiene que verse sí o sí y no hay nada
- * más en pantalla que perder (Mi perfil, Corregir una reseña). No es un reemplazo general de
+ * más en pantalla que perder (Mi perfil, Editar una reseña). No es un reemplazo general de
  * `router.refresh()`: donde el resultado visible ya no depende del commit (por ejemplo, Borrar en
  * `my-reviews-list.tsx`, que saca la tarjeta con estado local antes de llamarlo), forzar un reload
  * completo tira una protección existente sin necesidad. Ver el comentario ahí.

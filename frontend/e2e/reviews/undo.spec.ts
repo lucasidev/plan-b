@@ -3,7 +3,7 @@ import { type CreatedChair, createChair } from '../helpers/chairs';
 import { type CreatedStudent, createStudent, deleteStudent } from '../helpers/students';
 
 /**
- * E2E de deshacer lo aportado (criterio de salida de R2, punto 3): corregir y borrar una reseña, y
+ * E2E de deshacer lo aportado (criterio de salida de R2, punto 3): editar y borrar una reseña, y
  * ver que los conteos de la ficha se mueven en consecuencia.
  *
  * Lo que protege, y ningún unit test puede: que el ciclo de vida del dato **cierre**. Un producto
@@ -97,7 +97,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     students.length = 0;
   });
 
-  test('corregir mueve los conteos y borrar los devuelve bajo el piso', async ({
+  test('editar mueve los conteos y borrar los devuelve bajo el piso', async ({
     page,
     context,
     request,
@@ -139,12 +139,12 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     // Ficha SC-018: el acuse dice que quedó contada y adónde lleva desde acá, como role="status".
     await expect(page.getByRole('status')).toContainText(/listo, quedó contada/i);
     await expect(page.getByRole('status')).toContainText(
-      /acá la podés corregir o sacar cuando quieras/i,
+      /acá la podés editar o sacar cuando quieras/i,
     );
 
     // Aterriza en Mis aportes, con lo suyo a la vista y sus dos salidas.
     await expect(page.getByRole('heading', { name: chair.subjectName })).toBeVisible();
-    await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^editar$/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /^borrar$/i })).toBeVisible();
 
     // El desenlace que declaró queda como registro propio en la tarjeta, nunca público (US-148).
@@ -156,16 +156,16 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
       timeout: 30_000,
     });
 
-    // ── 2. Corregir el desenlace, y el conteo se mueve ────────────────────────────────────
+    // ── 2. Editar el desenlace, y el conteo se mueve ────────────────────────────────────
     await page.goto('/reviews/mine');
-    await page.getByRole('button', { name: /^corregir$/i }).click();
+    await page.getByRole('button', { name: /^editar$/i }).click();
     await expect(page.getByText(/está cargado lo que contestaste/i)).toBeVisible();
 
-    // Lo contestado viene precargado: por eso corregir una sola respuesta no obliga a rehacer las
+    // Lo contestado viene precargado: por eso editar una sola respuesta no obliga a rehacer las
     // catorce. Se cambia el desenlace y nada más.
     await page.getByRole('button', { name: /^La aprob/ }).click();
-    await page.getByRole('button', { name: /guardar la corrección/i }).click();
-    await expect(page.getByRole('button', { name: /^corregir$/i })).toBeVisible({
+    await page.getByRole('button', { name: /guardar los cambios/i }).click();
+    await expect(page.getByRole('button', { name: /^editar$/i })).toBeVisible({
       timeout: 30_000,
     });
 

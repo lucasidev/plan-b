@@ -22,7 +22,7 @@ const FAQ_ITEMS = [
   {
     question: '¿Puedo borrar mi reseña?',
     answer:
-      'Sí, en Mis aportes, y también corregirlo. Lo que saques deja de contar y los conteos de la ficha se mueven hacia atrás.',
+      'Sí, en Mis aportes, y también editarlo. Lo que saques deja de contar y los conteos de la ficha se mueven hacia atrás.',
   },
 ] as const;
 

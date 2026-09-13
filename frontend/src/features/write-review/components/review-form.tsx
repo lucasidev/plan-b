@@ -131,7 +131,7 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
   }, [subjectId, termId]);
 
   // US-163/L06: un 409 significa que ESTA cursada ya se reseñó. Reintentar con el mismo botón
-  // repetiría el mismo error; el camino que el propio aviso ofrece es corregir desde Mis aportes.
+  // repetiría el mismo error; el camino que el propio aviso ofrece es editar desde Mis aportes.
   useEffect(() => {
     if (state.status === 'error' && state.kind === 'duplicate') {
       const { subjectId: sid, termId: tid } = selectedCursadaRef.current;
@@ -174,7 +174,7 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
   const answeredCount = Object.keys(answers).length;
   const chosenSubject = subjects.find((s) => s.id === subjectId);
   // US-163/L06: la cursada elegida ahora mismo ya se rechazó por duplicada. Reenviarla con el
-  // mismo botón repetiría el mismo 409; el camino que queda es corregir desde Mis aportes, que
+  // mismo botón repetiría el mismo 409; el camino que queda es editar desde Mis aportes, que
   // ya dice el mensaje de arriba.
   const isDuplicateOfCurrentCursada =
     duplicateCursada !== null && duplicateCursada === cursadaKey(subjectId, termId);

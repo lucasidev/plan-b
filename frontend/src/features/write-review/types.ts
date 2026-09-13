@@ -3,7 +3,7 @@
  * cuestionario vigente, las materias del plan del alumno, sus períodos y las cátedras de la
  * materia elegida.
  *
- * Los tipos del cuestionario se reexportan de `components/instrument`: los comparte con corregir
+ * Los tipos del cuestionario se reexportan de `components/instrument`: los comparte con editar
  * una reseña, que dibuja las mismas preguntas.
  */
 
