@@ -32,6 +32,7 @@ Tracking operativo del avance por sprints. La cadencia real del proyecto es **sp
 | **R4** | 2026-09-02 a 2026-09-07 | **Un stage funcional, y una suite que dice la verdad más rápido**: el producto entero en una URL de Dokploy con el corpus sintético; todos los hallazgos de la [auditoría de tests de R1 a R3](../history/reviews/2026-09-02-audit-tests-r1-r3.md) convertidos en tareas; y la integración, el E2E y CI acelerados con cambios medidos antes y después. Milestone [R4](https://github.com/lucasidev/plan-b/milestone/5), issues #400 a #423, 61 pts. | ✓ Hecho (cerrado el 2026-09-07 con el merge de la pista 4, PR #467; #403 y #404 pasan a R5) |
 | **R5** | desde 2026-09-08 | **Lo construido contra lo deseado**: la distancia entre lo que la tesis y las 91 stories piden y lo que el stage hace, medida con un mapa por épica y por pantalla en tres estados, cuatro recorridos de persona contra el stage rellenado con corpus sintético, y el relevamiento de qué datos oficiales pide el producto, dónde están y en qué formato. Y el diagnóstico del click de envío que CI pierde una de cada tres corridas. La salida es el backlog priorizado de R6, no features. | ✓ Hecho (cerrado el 2026-09-08 con el merge de #480; #470 y #473 cierran con el plan de R6) |
 | **R6** | 2026-09-09 a 2026-09-22 | **Elegir dónde estudiar, con datos reales**: el modelo de datos oficiales del ADR-0090, el catálogo real de Tucumán (instituciones, carreras y planes desde las fuentes; la única ficción, los alumnos), la ficha de carrera con sus datos y Dónde estudiarla, el buscador que encuentra carreras, la puerta y el contrato de Reseñar arreglados, el click que el router pierde, y las dos APIs de terceros que el producto consume (la AGN y Georef). 70 pts en cuatro pistas. | ✓ Hecho (cerrado el 2026-09-13, antes de las dos semanas planificadas, con los recorridos de la tarea 15, que cierran #495 y #470; el stage pasó a Databases y Applications de Dokploy en el camino, #514) |
+| **R7** | 2026-09-14 a 2026-09-18 | **La demo muestra la tesis**: la sesión que no muere, volver a la reseña desde cualquier dispositivo, la cobertura en la ficha de materia, Editar, el nombre del docente como se tipeó, Mi perfil sin la versión anterior; la revisión del design system y los tokens del boletín; la falla intermitente que bloquea los deploys, la regla de los recorridos y el jueves de reset, el guion de la demo, y la tesis y los docs diciendo lo que hay. Milestone [R7](https://github.com/lucasidev/plan-b/milestone/9), issues #517 a #529, 38 pts en tres pistas. | Planificado |
 
 Convenciones:
 
@@ -606,7 +607,7 @@ Del 2026-09-09 al 2026-09-13: planificado a dos semanas, cerrado en cinco días.
 
 | # | Tarea | Pts | Estado |
 |---|---|---|---|
-| [#495](https://github.com/lucasidev/plan-b/issues/495) · 15 | **Los recorridos sobre lo nuevo**: Valentina y Lucía repetidos contra el stage con lo construido, con lo que el arnés dejó sin ejercer (Corregir, cerrar sesión, la baja y el conteo después de borrar: L08) y la fama y la comparación sobre Ibáñez (V05, V12); y el tramo con cuenta de `just walk copas` sobre el stage rellenado ([#470](https://github.com/lucasidev/plan-b/issues/470)). | 4 | Hecho: [Valentina](../history/reviews/2026-09-13-valentina-walk.md) y [Lucía](../history/reviews/2026-09-13-lucia-walk.md) repetidas sobre el stage de R6, con Corregir, Cerrar sesión y la baja con su conteo hechos a mano (L08 resuelto en el producto); V05 y V12 cerrados por regla (V16: ninguna cátedra del corpus converge ni difiere); y el tramo con cuenta de [Copas](../history/reviews/2026-09-13-copas-walk.md) en verde con `just walk copas`; [Matías](../history/reviews/2026-09-13-matias-walk.md) corrió además, por primera vez contra el stage real, y confirmó la baja entera (US-166). Quedan para decidir V15, V16, L10, P01 y P02, y para planificar L09 (el término es "Editar": el producto cambia el botón) y L11 (la sesión dura 15 minutos: el refresh silencioso de la ADR-0023 no existe) |
+| [#495](https://github.com/lucasidev/plan-b/issues/495) · 15 | **Los recorridos sobre lo nuevo**: Valentina y Lucía repetidos contra el stage con lo construido, con lo que el arnés dejó sin ejercer (Corregir, cerrar sesión, la baja y el conteo después de borrar: L08) y la fama y la comparación sobre Ibáñez (V05, V12); y el tramo con cuenta de `just walk copas` sobre el stage rellenado ([#470](https://github.com/lucasidev/plan-b/issues/470)). | 4 | Hecho: [Valentina](../history/reviews/2026-09-13-valentina-walk.md) y [Lucía](../history/reviews/2026-09-13-lucia-walk.md) repetidas sobre el stage de R6, con Corregir, Cerrar sesión y la baja con su conteo hechos a mano (L08 resuelto en el producto); V05 y V12 cerrados por regla (V16: ninguna cátedra del corpus converge ni difiere); y el tramo con cuenta de [Copas](../history/reviews/2026-09-13-copas-walk.md) en verde con `just walk copas`; [Matías](../history/reviews/2026-09-13-matias-walk.md) corrió además, por primera vez contra el stage real, y confirmó la baja entera (US-166). V15, L09, L10, L11, P01 y P02 pasan a R7 con destino; V16 descartado: la fama y la comparación sí se publican (Ibáñez y Pérez), la spec de Valentina miraba mal y se corrige en R7 |
 | [#496](https://github.com/lucasidev/plan-b/issues/496) · 16 | **Las fichas que faltan y la postura de Método**: SC-036 Curaduría para `/admin/curation`; `/admin/chairs` y `/admin/teachers` documentadas en SC-027, y `/careers/[id]/plans` y `/plans/[id]/subjects` en SC-001 (E02); Método dice que no hay acuerdos con instituciones (US-185, V14). | 2 | Hecho: SC-036 y las sub-rutas quedaron documentadas (E02), y Método ya declara en pantalla que no hay acuerdos con instituciones, con lo que V14 cierra |
 | [#497](https://github.com/lucasidev/plan-b/issues/497) · 17 | **El cierre de R5 en cada registro** ([#473](https://github.com/lucasidev/plan-b/issues/473)): cada hallazgo de R5 con su estado cambiado en su registro y el índice al día, y el glosario con Cohorte y Datos oficiales al modelo del ADR (F04). | 2 | Hecho |
 
@@ -668,6 +669,79 @@ La pista 1 manda: 1 y 2 arrancan juntas; 3 detrás de 1; 4, 5 y 6 detrás de 3. 
 - Los mails de producto (E06), la reseña a medias (L07), el equipo docente desde la pantalla (S02), la cola de revisión de lo destilado (S03) y quién hizo qué en pantalla (S04).
 - Los planes con materias de las 229 ofertas de la provincia: solo los de programación entran; el resto se carga como carrera con su duración y su condición de ingreso.
 - Personas reales, y producción.
+
+## R7 · La demo muestra la tesis
+
+Del 2026-09-14 al 2026-09-18: cuatro días de trabajo y el viernes para mostrar. Milestone [R7](https://github.com/lucasidev/plan-b/milestone/9), issues #517 a #529, 38 pts en tres pistas.
+
+**Por qué este hilo.** R6 cerró caminando el stage, y los recorridos dijeron qué le falta a la demo más que al producto: la sesión muere a los 15 minutos, volver a la reseña depende del navegador donde se empezó, la ficha de materia no dice su cobertura, el backoffice escribe los docentes en minúscula, y el papel describe la poda como pendiente y algunas cosas como hechas ([la revisión](../history/reviews/2026-09-13-thesis-and-docs-vs-product.md)). El corpus ya tiene lo que la tesis promete: la fama en Ibáñez, la comparación en Pérez, el corte de serie en Aráoz y una cátedra a una del piso (Bravo). R7 hace que se vea, que la sesión aguante, y que el diseño y los docs digan lo que hay.
+
+### Pista 1 · Lo que la demo necesita (17 pts)
+
+| # | Tarea | Pts | Estado |
+|---|---|---|---|
+| [#517](https://github.com/lucasidev/plan-b/issues/517) · 1 | **El refresh silencioso** (L11, US-229): `middleware.ts` renueva el access token con la cookie de refresh contra `/api/identity/refresh` y rota las cookies en la respuesta; al mergear se borra `JWT__AccessTokenMinutes` de la Application API del stage. Listo cuando: una sesión de una hora sobre el stage no pide entrar de nuevo, sin la variable de Dokploy, y un test cubre el vencimiento con refresh vigente y sin él. | 5 | Planificado |
+| [#518](https://github.com/lucasidev/plan-b/issues/518) · 2 | **Volver a la reseña desde cualquier dispositivo** (L10, US-229): el destino de retorno viaja en el link del mail de verificación, saneado como hoy. Listo cuando: el link abierto en un contexto sin cookies termina en la reseña, y la spec de Lucía entra por ese link. | 3 | Planificado |
+| [#519](https://github.com/lucasidev/plan-b/issues/519) · 3 | **La cobertura en la ficha de materia** (V15, US-134): cuántas de sus cátedras publican y cuántas faltan, con la regla de la ficha de carrera; el dato ya está en el read model. Listo cuando: la ficha de 211 lo dice y el recorrido de Valentina lo lee. | 2 | Planificado |
+| [#520](https://github.com/lucasidev/plan-b/issues/520) · 4 | **Editar** (L09, US-165): el botón de Mis aportes, el glosario y la spec de Lucía. Listo cuando: Mis aportes dice Editar en el stage y check-docs pasa. | 1 | Planificado |
+| [#521](https://github.com/lucasidev/plan-b/issues/521) · 5 | **El nombre del docente como se tipeó** (P01, US-196): `Teacher` guarda el nombre tal cual y compara con una clave normalizada aparte; las lecturas dejan `initcap`. Listo cuando: el backoffice y la ficha muestran "Sergio Ruiz" igual, "De Stage" no sale "Destage", y la spec de Copas compara sin ignorar mayúsculas. | 3 | Planificado |
+| [#522](https://github.com/lucasidev/plan-b/issues/522) · 6 | **Valentina mira la fama, la comparación, el corte y el piso**: la spec verifica la fama en Ibáñez, "Comparada con las otras cátedras" en Pérez, el corte de serie en Aráoz y la cátedra a una del piso (Bravo); V16 queda descartado con esa evidencia. Listo cuando: `just walk valentina` da cumple en esos cuatro pasos sobre el stage recién sembrado. | 1 | Planificado |
+| [#527](https://github.com/lucasidev/plan-b/issues/527) · 11 | **Mi perfil sin los campos de la versión anterior** (T01): sacar Legajo, Año cursando y Estado, que ningún doc pide y [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md) retira de espíritu; el año de ingreso se queda. Listo cuando: Mi perfil muestra solo lo que SC-019 describe y los tests del formulario pasan. | 2 | Planificado |
+
+### Pista 2 · El diseño (13 pts)
+
+| # | Tarea | Pts | Estado |
+|---|---|---|---|
+| [#523](https://github.com/lucasidev/plan-b/issues/523) · 7 | **La revisión del design system**: las pantallas públicas (la entrada, carrera, Dónde estudiarla, materia, cátedra, docente, Método) y el shell con cuenta, con `design-audit` contra [`design-system.md`](../product/design-system.md) y [ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md); un registro en `docs/history/reviews/` con hallazgos con ID, y los arreglos chicos en el mismo sprint. Listo cuando: el registro está en el índice y cada hallazgo tiene destino. | 8 | Planificado |
+| [#524](https://github.com/lucasidev/plan-b/issues/524) · 8 | **Los tokens del boletín**: retirar la paleta Apricot (`--color-accent*`) de `globals.css`, decidir qué reemplaza al acento en links y CTAs (la ADR dice sin acento decorativo, solo alarma), migrar los usos (161 en unos 40 archivos) y actualizar `design-system.md`. Listo cuando: no queda `accent` fuera de la alarma y las pantallas públicas se ven iguales o mejor en el stage. | 5 | Planificado |
+
+### Pista 3 · La demo y lo que la bloquea (8 pts)
+
+| # | Tarea | Pts | Estado |
+|---|---|---|---|
+| [#525](https://github.com/lucasidev/plan-b/issues/525) · 9 | **La falla intermitente de `admin/terms`** ([#510](https://github.com/lucasidev/plan-b/issues/510)): medir la tasa con `--repeat-each` bajo carga y arreglar la causa; hoy bloqueó dos deploys del stage. Listo cuando: doce corridas seguidas sin la firma, en local y en CI. | 3 | Planificado |
+| [#526](https://github.com/lucasidev/plan-b/issues/526) · 10 | **La regla y el jueves** (P02): en el runbook, los recorridos con cuenta corren antes del reset y nunca sobre el stage que se muestra; el jueves a la tarde, reset y seed, la importación de la AGN desde el backoffice y una pasada de los recorridos sin cuenta. Listo cuando: el runbook lo dice y el stage del viernes arranca sembrado: Ruiz en 6, Bravo en 9, Ibáñez con fama, Método sin frases de prueba. | 1 | Planificado |
+| [#528](https://github.com/lucasidev/plan-b/issues/528) · 12 | **El guion de la demo**: un doc en `docs/plan/` con el camino exacto (la entrada, la carrera y Dónde estudiarla, la materia 211, la fama en Ibáñez, la comparación en Pérez, el corte en Aráoz, Ruiz bajo el piso y Bravo a una, Método; la cuenta, la reseña, Mis aportes, Editar y Borrar; el backoffice con la cátedra y la destilada), con las URL, las cuentas de prueba y el checklist previo (reset, seed, AGN, Mailpit, el tag narrativo sobre el SHA que se muestra). Listo cuando: el guion se camina de punta a punta sobre el stage del jueves sin sorpresas. | 1 | Planificado |
+| [#529](https://github.com/lucasidev/plan-b/issues/529) · 13 | **La tesis y los docs dicen lo que hay** (T01 a T08 de [la revisión](../history/reviews/2026-09-13-thesis-and-docs-vs-product.md)): la cabecera de la tesis sin la poda pendiente y con el puntero al mapa como estado; el glosario corregido; las cuatro fichas con slug viejo y SC-031; SC-029 y SC-027 diciendo que describen el destino; y `.agents/skills/README.md` diciendo dónde viven los skills. Listo cuando: check-docs pasa y el registro tiene cada hallazgo resuelto con el commit. | 3 | Planificado |
+
+### Los hallazgos de R6, con destino
+
+| Destino | Hallazgos |
+|---|---|
+| Tarea 1 | L11 |
+| Tarea 2 | L10 |
+| Tarea 3 | V15 |
+| Tarea 4 | L09 |
+| Tarea 5 | P01 |
+| Tarea 6 | V16, descartado con evidencia |
+| Tarea 10 | P02, T09 |
+| Tareas 11 y 13 | T01 |
+| Tarea 13 | T02 (la tesis apunta al mapa), T03, T04, T05, T06, T07, T08 |
+| R8, como story nueva de Reseñar | la modalidad y cuántas veces la cursaste (T02, ADR-0082 §3) |
+| Backlog, con nombre | V07 (US-167), V08 (US-180), L02 (US-228), L07 (US-161) |
+
+### Secuencia
+
+Lunes: 1, 3, 4, 6 y 11. Martes: 2, 5, 8 y 13. Miércoles: 7 y 9. Jueves: 10 y 12, y nada de código nuevo: reset y seed, la AGN, el tag, el guion caminado. Viernes: la demo.
+
+### Cómo se sabe que R7 está listo
+
+1. Una sesión de una hora sobre el stage no vuelve a pedir entrar, sin la variable de Dokploy.
+2. El link del mail de verificación vuelve a la reseña desde otro navegador.
+3. La ficha de materia dice cuántas cátedras publican.
+4. Mis aportes dice Editar, y el backoffice muestra "Sergio Ruiz".
+5. El recorrido de Valentina ve la fama en Ibáñez, la comparación en Pérez, el corte en Aráoz y a Bravo a una del piso.
+6. Las pantallas públicas sin Apricot, y la revisión del design system con cada hallazgo con destino.
+7. Doce corridas de `admin/terms` sin la firma, y el deploy del jueves sin relanzar nada.
+8. El jueves, el stage sembrado, la AGN importada, el tag puesto y el guion caminado.
+
+### Lo que R7 deja afuera a propósito
+
+- Personas reales y producción.
+- Los cuatro PR de Dependabot (#501 a #504): después del viernes, de a uno y con CI; la alerta media de vitest es de tooling de tests, no del producto.
+- Los dos roles del enum sin pantalla (`Moderator`, `UniversityStaff`): la poda que el glosario espera.
+- La modalidad y cuántas veces la cursaste: story nueva de Reseñar, para R8.
+- L02, L07 y el resto del Backlog con nombre.
 
 ## Lo anterior: el producto en retiro
 
@@ -1330,8 +1404,7 @@ Ninguna está planificada todavía. Cuando la primera entre a un sprint, su secc
 
 Además del producto, hay trabajo técnico pendiente que no tiene story porque no describe nada que el usuario haga:
 
-- **La poda de la versión anterior**: el módulo `planning`, `/plan` en el frontend y lo que cuelga de ellos siguen en el código ([ADR-0063](../decisions/0063-the-product-is-a-pressure-instrument.md)).
-- **Los tokens del boletín en `globals.css`**: hoy sigue la paleta Apricot sirviendo al chasis en retiro ([ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md)).
+- **Los tokens del boletín en `globals.css`**: hoy sigue la paleta Apricot sirviendo al chasis en retiro ([ADR-0071](../decisions/0071-the-visual-language-is-a-bulletin.md)); entra en R7 (#524).
 
 ## Cómo seguir el avance
 
