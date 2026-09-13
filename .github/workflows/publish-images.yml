@@ -71,6 +71,44 @@ jobs:
           esac
           echo "target=$target" >> "$GITHUB_OUTPUT"
 
+  ci-gate:
+    name: Require green CI before deploy
+    needs: [resolve]
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish-and-deploy')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Wait for the CI run of this SHA
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RESOLVED_SHA: ${{ needs.resolve.outputs.sha }}
+        run: |
+          for attempt in $(seq 1 120); do
+            run_id=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow ci.yml \
+              --event push \
+              --commit "$RESOLVED_SHA" \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId // empty')
+            if [ -n "$run_id" ]; then
+              gh run watch "$run_id" --repo "$GITHUB_REPOSITORY" --exit-status
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "::error::No apareció una corrida de CI para $RESOLVED_SHA."
+          exit 1
+
   backend:
     name: Backend image
     needs: [resolve]
@@ -294,13 +332,14 @@ jobs:
 
   deploy-stage:
     name: Deploy stage
-    needs: [resolve, backend, frontend, scan]
+    needs: [resolve, backend, frontend, scan, ci-gate]
     if: >-
       always() &&
       needs.resolve.result == 'success' &&
       needs.backend.result == 'success' &&
       needs.frontend.result == 'success' &&
       needs.scan.result == 'success' &&
+      needs.ci-gate.result == 'success' &&
       (github.event_name == 'push' ||
       (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish-and-deploy' && inputs.target == 'stage'))
     runs-on: ubuntu-latest
@@ -309,13 +348,14 @@ jobs:
       DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
       DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
       DOKPLOY_DEPLOY_TARGET: stage
-      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_MIGRATE_APPLICATION_ID }}
-      DOKPLOY_API_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_API_APPLICATION_ID }}
-      DOKPLOY_WEB_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_WEB_APPLICATION_ID }}
+      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ vars.DOKPLOY_STAGE_MIGRATE_APPLICATION_ID }}
+      DOKPLOY_API_APPLICATION_ID: ${{ vars.DOKPLOY_STAGE_API_APPLICATION_ID }}
+      DOKPLOY_WEB_APPLICATION_ID: ${{ vars.DOKPLOY_STAGE_WEB_APPLICATION_ID }}
       DOKPLOY_MIGRATE_IMAGE: ${{ needs.backend.outputs.image }}
       DOKPLOY_API_IMAGE: ${{ needs.backend.outputs.image }}
       DOKPLOY_WEB_IMAGE: ${{ needs.frontend.outputs.image }}
       DOKPLOY_HEALTH_URL: https://planb.olisar.com.ar/health
+      DOKPLOY_WEB_URL: https://planb.olisar.com.ar
       DOKPLOY_EXPECTED_SHA: ${{ needs.resolve.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -332,13 +372,14 @@ jobs:
 
   deploy-production:
     name: Deploy production
-    needs: [resolve, backend, frontend, scan]
+    needs: [resolve, backend, frontend, scan, ci-gate]
     if: >-
       always() &&
       needs.resolve.result == 'success' &&
       needs.backend.result == 'success' &&
       needs.frontend.result == 'success' &&
       needs.scan.result == 'success' &&
+      needs.ci-gate.result == 'success' &&
       (github.event_name == 'release' ||
       (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish-and-deploy' && inputs.target == 'production'))
     runs-on: ubuntu-latest
@@ -347,13 +388,14 @@ jobs:
       DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
       DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
       DOKPLOY_DEPLOY_TARGET: production
-      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_MIGRATE_APPLICATION_ID }}
-      DOKPLOY_API_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_API_APPLICATION_ID }}
-      DOKPLOY_WEB_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_WEB_APPLICATION_ID }}
+      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ vars.DOKPLOY_PRODUCTION_MIGRATE_APPLICATION_ID }}
+      DOKPLOY_API_APPLICATION_ID: ${{ vars.DOKPLOY_PRODUCTION_API_APPLICATION_ID }}
+      DOKPLOY_WEB_APPLICATION_ID: ${{ vars.DOKPLOY_PRODUCTION_WEB_APPLICATION_ID }}
       DOKPLOY_MIGRATE_IMAGE: ${{ needs.backend.outputs.image }}
       DOKPLOY_API_IMAGE: ${{ needs.backend.outputs.image }}
       DOKPLOY_WEB_IMAGE: ${{ needs.frontend.outputs.image }}
       DOKPLOY_HEALTH_URL: ${{ secrets.DOKPLOY_PRODUCTION_HEALTH_URL || vars.DOKPLOY_PRODUCTION_HEALTH_URL }}
+      DOKPLOY_WEB_URL: ${{ secrets.DOKPLOY_PRODUCTION_WEB_URL || vars.DOKPLOY_PRODUCTION_WEB_URL }}
       DOKPLOY_EXPECTED_SHA: ${{ needs.resolve.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

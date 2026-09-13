@@ -99,19 +99,20 @@ Dos builds web del mismo commit pueden diferir si apuntan a API internas distint
 
 ## Deploy automático de stage
 
-Un push a `main` despliega solo cuando cambia una superficie desplegable. Un cambio exclusivamente documental termina sin build ni deploy.
+Un push a `main` despliega solo cuando cambia una superficie desplegable y la CI del mismo SHA termina verde. Un cambio exclusivamente documental termina sin build ni deploy. Una imagen publicada o escaneada con éxito no autoriza por sí sola a tocar Dokploy.
 
 Secuencia:
 
 1. Resolver el SHA del commit.
 2. Construir y publicar API y web con referencias inmutables por SHA. Web usa el hostname interno real de la API de stage.
-3. Escanear las imágenes. Un gate crítico corta antes de tocar Dokploy.
+3. Escanear las imágenes y esperar la corrida de CI del mismo SHA. Un gate crítico o una CI que no terminó verde corta antes de tocar Dokploy.
 4. Actualizar Migrate para usar exactamente la imagen API del SHA.
-5. Desplegar Migrate (run-once). Esperar el deployment de Dokploy y después su task nueva, leída con `docker.getConfig`: pertenece al `appName` de Migrate, corre la imagen del SHA, está en `exited` con `ExitCode` 0 y terminó después de iniciado el deploy. `applicationStatus=done` por sí solo no prueba que la task terminó.
+5. Desplegar Migrate (run-once). Esperar un deployment nuevo de Dokploy y después su task nueva, leída con `docker.getConfig`: pertenece al `appName` de Migrate, corre la imagen del SHA, está en `exited` con `ExitCode` 0 y terminó después de iniciado el deploy. Un `done` anterior ni `applicationStatus=done` prueban esta ejecución.
 6. Si Migrate falla, terminar en rojo. No desplegar API ni web.
-7. Actualizar y desplegar API y web con las imágenes del SHA.
-8. Verificar `/health`, incluido el SHA servido, y una ruta pública de web.
-9. Si cualquier verificación falla, terminar en rojo y seguir [`runbook.md`](runbook.md).
+7. Desplegar API. Esperar un deployment y una task nuevos; la task debe correr la imagen del SHA y quedar `running` y `healthy`.
+8. Desplegar web con la misma prueba. Su health interno debe alcanzar la API nueva.
+9. Verificar desde afuera `/health`, incluido el SHA servido a través de web, y una ruta pública de web.
+10. Si cualquier verificación falla, terminar en rojo y seguir [`runbook.md`](runbook.md).
 
 El rojo del workflow es la señal operativa mínima del stage. No se interpreta una publicación exitosa de imágenes como un deploy exitoso.
 
@@ -158,7 +159,7 @@ Antes de correrlo:
 
 1. Confirmar ambiente, Database y SHA.
 2. Hacer backup si la Database contiene datos que importan.
-3. Saber que el seed saltea lo que la base ya tiene y no actualiza ni renumera filas existentes: una carga nueva contra una base acumulada suma lo que falta y avisa lo que no puede alinear.
+3. Saber que el seed reconoce lo existente por la clave natural protegida por cada índice único y no actualiza ni renumera filas existentes: una carga nueva contra una base acumulada suma lo que falta y avisa los ids que no puede alinear.
 4. Ejecutar `seed-db` como acción manual, no como Application persistente ni dependencia de API.
 5. Revisar el resultado. Una falla del seed no dispara rollback de aplicación.
 

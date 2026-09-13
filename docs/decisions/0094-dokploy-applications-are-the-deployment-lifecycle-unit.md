@@ -41,11 +41,12 @@ Las conexiones a Databases también usan los endpoints generados por Dokploy. No
 
 ### Orden de deploy
 
-1. Publicar API y web con identidad de SHA. Migrate referencia exactamente la imagen API de ese SHA.
+1. Publicar API y web con identidad de SHA y exigir que la CI de ese SHA esté verde. Migrate referencia exactamente la imagen API de ese SHA.
 2. Actualizar y ejecutar Migrate como service Replicated de una réplica con Restart Policy `none`: la task corre una vez y no se reinicia, y cada deploy dispara una ejecución nueva.
 3. Esperar el deployment de Dokploy y después la task del job: el contenedor nuevo etiquetado con el `appName` de Migrate, con la imagen del SHA, tiene que quedar en `exited` con `ExitCode` 0 y `FinishedAt` posterior al inicio del deploy, leído con `docker.getConfig` (`docker inspect`). `applicationStatus=done` no prueba que la task terminó. Si la task sale con otro código o no termina, cortar el deploy y dejar la corrida en rojo. Dokploy 0.26.3 no expone los logs de un contenedor por API, así que `Wolverine: listo.` queda para la lectura humana en el panel.
-4. Actualizar y desplegar API y web.
-5. Verificar el health de API y la ruta pública de web.
+4. Actualizar y desplegar API. Esperar un deployment nuevo y una task nueva que use la imagen del SHA y quede `running` y `healthy`.
+5. Actualizar y desplegar web con la misma prueba de deployment y task nueva. Su health interno tiene que alcanzar la API nueva.
+6. Verificar desde afuera que `/health` publica el SHA esperado a través de web y que una ruta pública de web responde.
 
 La API no migra al arrancar. El deploy nunca ejecuta `seed-db`.
 
