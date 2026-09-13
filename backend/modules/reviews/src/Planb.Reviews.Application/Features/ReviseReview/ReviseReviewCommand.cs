@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Application.Features.ReviseReview;
 
 /// <summary>
-/// Corregir una reseña propia. La cuenta sale del token: nadie edita la reseña de otro.
+/// Editar una reseña propia. La cuenta sale del token: nadie edita la reseña de otro.
 ///
 /// <para>
 /// <see cref="Answers"/> es el set COMPLETO de lo que queda respondido, no un delta. Un delta no

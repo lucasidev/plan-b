@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Planb.IntegrationTests.Reviews;
 
-// Corregir y borrar mueven los conteos publicados de la ficha, frase por frase (US-165). Cada
+// Editar y borrar mueven los conteos publicados de la ficha, frase por frase (US-165). Cada
 // escenario tiene su propia clase (y su propia base, vía RegisterApiFixture) para que la cátedra
 // arranque sin una sola voz: mezclar varios en la misma clase contaminaría los conteos exactos
 // que estos tests afirman con lo que publicó otro test de la misma clase.
@@ -95,7 +95,7 @@ file static class Fixture
 }
 
 /// <summary>
-/// Corregir una sola respuesta mueve solo la frase tocada; la cursada sigue contando como una voz
+/// Editar una sola respuesta mueve solo la frase tocada; la cursada sigue contando como una voz
 /// más y la otra frase, sin tocar, no se mueve.
 /// </summary>
 public class CorrectingOneAnswerMovesOnlyThatItemsCountsTests : IClassFixture<RegisterApiFixture>
@@ -138,7 +138,7 @@ public class CorrectingOneAnswerMovesOnlyThatItemsCountsTests : IClassFixture<Re
         Fixture.PercentOf(before, "CHAIR_CLASSES_HELD", "Casi todas").ShouldBe(60);
         Fixture.PercentOf(before, "CHAIR_ANSWERS_IN_CLASS", "Siempre").ShouldBe(100);
 
-        // El autor corrige SOLO la respuesta de "¿Se dictaron las clases?": de "Faltaron muchas" a
+        // El autor edita SOLO la respuesta de "¿Se dictaron las clases?": de "Faltaron muchas" a
         // "Faltaron algunas". Reenvía la misma respuesta de CHAIR_ANSWERS_IN_CLASS: no la toca.
         var revised = await author.Client.PutAsJsonAsync(
             $"/api/reviews/courses/{reviewId}",

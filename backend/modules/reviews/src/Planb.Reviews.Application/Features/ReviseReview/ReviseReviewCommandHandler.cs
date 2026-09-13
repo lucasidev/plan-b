@@ -7,7 +7,7 @@ using Planb.SharedKernel.Primitives;
 namespace Planb.Reviews.Application.Features.ReviseReview;
 
 /// <summary>
-/// Corregir una reseña de cursada propia (US-165, ADR-0082).
+/// Editar una reseña de cursada propia (US-165, ADR-0082).
 ///
 /// <para>
 /// Editar es reemplazar lo respondido, no parchearlo: se puede cambiar una respuesta, agregar una
@@ -46,7 +46,7 @@ public static class ReviseReviewCommandHandler
         }
 
         // Se valida contra el cuestionario con el que se respondió, no contra el vigente: si el
-        // catálogo cambió desde entonces, corregir una respuesta vieja no puede exigirle al autor
+        // catálogo cambió desde entonces, editar una respuesta vieja no puede exigirle al autor
         // que conteste preguntas que no le hicieron.
         var instrument = await catalog.GetInstrumentByIdAsync(review.InstrumentId, ct);
         if (instrument is null)

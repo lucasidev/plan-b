@@ -4,7 +4,7 @@
 
 ## Quién la usa
 
-Quien ya aportó y quiere sacar o corregir lo que dijo antes de que le pese: **Matías** (se expuso más de lo que quería), **Lucía** (corrige una respuesta apurada), **Diego** (corrige cómo terminó una cursada). El flujo completo: [`flow.md`](../../flow.md).
+Quien ya aportó y quiere sacar o editar lo que dijo antes de que le pese: **Matías** (se expuso más de lo que quería), **Lucía** (edita una respuesta apurada), **Diego** (edita cómo terminó una cursada). El flujo completo: [`flow.md`](../../flow.md).
 
 ## Qué stories resuelve
 

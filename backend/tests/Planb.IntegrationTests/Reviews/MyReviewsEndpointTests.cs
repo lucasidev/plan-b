@@ -8,7 +8,7 @@ using Xunit;
 namespace Planb.IntegrationTests.Reviews;
 
 /// <summary>
-/// Integration tests de corregir y borrar lo aportado (US-165, US-166):
+/// Integration tests de editar y borrar lo aportado (US-165, US-166):
 ///   - <c>GET /api/reviews/courses/me</c>
 ///   - <c>PUT /api/reviews/courses/{id}</c>
 ///   - <c>DELETE /api/reviews/courses/{id}</c>
@@ -90,7 +90,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         review.ChairName.ShouldBe("Pérez");
         review.AnsweredItems.ShouldBe(2);
 
-        // Las respuestas de a una viajan SOLO acá y solo hacia su autor: sin ellas, corregir una
+        // Las respuestas de a una viajan SOLO acá y solo hacia su autor: sin ellas, editar una
         // obligaría a contestar las catorce preguntas de nuevo.
         review.Answers.Count.ShouldBe(2);
         review.Answers.ShouldContain(a => a.ItemCode == "COURSE_OUTCOME" && a.OptionValue == 2);
@@ -129,7 +129,7 @@ public class MyReviewsEndpointTests : IClassFixture<RegisterApiFixture>
         review.Answers.ShouldContain(a => a.ItemCode == "STUDENT_COULD_ASK");
 
         // La que se dejó de contestar DESAPARECE: vuelve a no contar en el denominador de su frase,
-        // que es la mitad de por qué alguien corrige.
+        // que es la mitad de por qué alguien edita.
         review.Answers.ShouldNotContain(a => a.ItemCode == "CHAIR_ANSWERS_IN_CLASS");
 
         // Y el texto se soltó.
