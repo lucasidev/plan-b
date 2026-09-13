@@ -7,6 +7,7 @@ import {
   rmdirSync,
   rmSync,
   symlinkSync,
+  unlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -431,7 +432,12 @@ test('--sync no escribe si .claude/skills es un symlink', (t) => {
   assert.deepEqual(result, { copied: [], deleted: [] });
   assert.equal(existsSync(join(target, 'marker.txt')), true);
   assert.equal(existsSync(join(target, 'demo')), false);
-  // borra el enlace, no lo que apunta: rmSync recursivo sobre un junction de Windows falla (EFAULT)
-  rmdirSync(copyDir);
+  // borra el enlace, no lo que apunta: un junction de Windows se saca con rmdir (rmSync recursivo
+  // falla con EFAULT) y un symlink de Linux con unlink (rmdir da ENOTDIR).
+  if (process.platform === 'win32') {
+    rmdirSync(copyDir);
+  } else {
+    unlinkSync(copyDir);
+  }
   rmSync(root, { recursive: true, force: true });
 });
