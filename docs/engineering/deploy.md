@@ -12,7 +12,9 @@ Contrato operativo para publicar planb en Dokploy. El camino de una falla está 
 
 **Verificado el 2026-09-13 sobre los recursos reales:** el cutover del stage (Databases, Migrate run-once con exit 0, API y web `healthy`, Mailpit, dominios sobre las Applications y la ruta pública respondiendo desde el stack nuevo). La base nueva se migró y se sembró a mano; no hubo restore.
 
-**No verificado todavía:** la secuencia automatizada de Migrate, API y web desde GitHub Actions (su primera corrida es sobre estas Applications) y un restore sobre la Database nueva.
+**Verificado el 2026-09-13 desde GitHub Actions:** la secuencia automatizada de Migrate, API y web corrió dos veces en verde sobre estas Applications (`292ad759` y `4e4aaee3`), con `ci-gate` reteniendo el despliegue mientras CI estaba en rojo y `/health` publicando el SHA nuevo al terminar.
+
+**No verificado todavía:** un restore sobre la Database nueva.
 
 **No operativo:** producción todavía no existe.
 
