@@ -113,7 +113,7 @@ function BelowFloor({ facts }: { facts: ChairFacts }) {
   const none = facts.reviewCount === 0;
 
   return (
-    <div className="rounded-xl border border-line bg-bg-card p-4">
+    <div className="mb-5 rounded-xl border border-line bg-bg-card p-4">
       <p className="mb-1.5 font-serif text-[19px] font-semibold leading-tight text-ink">
         {none
           ? 'Todavía nadie reseñó cómo es cursar acá.'
