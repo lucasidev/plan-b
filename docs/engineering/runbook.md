@@ -15,7 +15,7 @@ Qué mirar y qué hacer cuando el stage no actualiza o un recurso de Dokploy fal
 
 ## Fuentes de verdad
 
-1. **GitHub Actions:** la corrida del commit muestra si publicó imágenes, si la task de Migrate terminó con exit 0, si desplegó API y web y si pasó health. Un cambio solo de docs debe figurar como omitido, no como deploy.
+1. **GitHub Actions:** la corrida del commit muestra si CI habilitó el deploy, si publicó imágenes, si la task de Migrate terminó con exit 0, si desplegó tasks nuevas de API y web y si pasó health. Un cambio solo de docs debe figurar como omitido, no como deploy.
 2. **`/health`:** devuelve el estado de API, PostgreSQL y Redis y el SHA servido. Una imagen publicada no está desplegada hasta que ese SHA aparece.
 3. **Dokploy Applications:** Deployment y Logs de Migrate, API, web y Mailpit. Se busca por el prefijo humano, pero se opera el recurso por su id y `appName` reales.
 4. **Dokploy Databases:** estado, endpoint, almacenamiento y backups de PostgreSQL y Redis.
@@ -30,9 +30,9 @@ Qué mirar y qué hacer cuando el stage no actualiza o un recurso de Dokploy fal
 **Diagnóstico:**
 
 1. Confirmar que el cambio no sea exclusivamente documental. En ese caso no debe existir deploy.
-2. Revisar si falló publicación o escaneo. Si fue así, Dokploy no debería haber sido tocado.
+2. Revisar si falló CI, publicación o escaneo. Si fue así, Dokploy no debería haber sido tocado.
 3. Revisar Migrate. `applicationStatus=done` solo confirma el deployment de Dokploy; si la task nueva del job no termina en `exited` con `ExitCode` 0 (`docker.getConfig`), API y web no deben desplegarse. En el panel, los logs de esa ejecución terminan en `Wolverine: listo.` cuando salió bien.
-4. Si Migrate terminó bien, revisar el deploy y health de API y web.
+4. Si Migrate terminó bien, revisar que API y web tengan deployments y tasks nuevos, con la imagen del SHA y health sano.
 5. Confirmar que los ids de Applications y hostnames internos guardados sigan coincidiendo con los recursos actuales.
 
 **Acción:** corregir la causa con un PR y relanzar la corrida permitida. No ejecutar `seed-db` para destrabar un deploy.
@@ -98,7 +98,7 @@ No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una in
 1. Confirmar visualmente que el destino es stage.
 2. Registrar el SHA de la imagen API que se va a ejecutar.
 3. Hacer backup si hay datos que importan.
-4. Recordar que la idempotencia es por ids y puede chocar con claves naturales.
+4. Recordar que la idempotencia consulta ids y claves naturales: no reescribe filas existentes ni corrige ids que ya difieren del seed.
 
 **Acción:** ejecutar `seed-db` una vez con la misma imagen inmutable de API, dentro de la red del destino y contra los endpoints reales. Revisar el exit code y los logs. No crear una Application de seed de larga vida y no agregarla al workflow.
 

@@ -25,7 +25,7 @@ Los ambientes son:
 
 Cada imagen desplegable se referencia por un tag derivado del SHA inmutable. `main` y `latest` no se publican ni se consumen como tags de deploy.
 
-Para stage, GitHub Actions construye y publica las imágenes del SHA, actualiza las Applications de Dokploy, ejecuta primero la Application de migración como one-shot y espera su éxito. Recién entonces despliega API y web y verifica `/health`. Una corrida que solo cambia documentación no construye ni despliega.
+Para stage, GitHub Actions construye y publica las imágenes del SHA, pero no toca Dokploy hasta que la corrida de CI de ese mismo SHA termina verde. Después ejecuta primero la Application de migración como one-shot y espera su éxito. Recién entonces despliega API y web, exige tasks nuevas y sanas y verifica `/health` más una ruta pública. Una corrida que solo cambia documentación no construye ni despliega.
 
 Para producción, un GitHub Release dispara la misma secuencia contra recursos propios de producción. Hasta que producción exista, no se afirma que esa promoción esté operativa.
 
@@ -49,6 +49,7 @@ Los nombres ingresados al crear Applications son prefijos humanos. Dokploy v0.26
 
 - El SHA servido por `/health` y el SHA configurado en cada Application son la fuente de verdad de una versión desplegada.
 - La Application de migración usa la misma imagen inmutable que la API y su éxito es un gate del deploy, no del arranque del proceso web.
+- Publicar y escanear imágenes no autoriza el deploy: el SHA también tiene que haber pasado CI.
 - El pipeline necesita los identificadores de las Applications y los hostnames internos generados por Dokploy. Los hostnames son variables no sensibles, pero mutables al recrear un recurso.
 - El workflow rojo es la señal mínima de un deploy fallido en stage. Una notificación activa de ese rojo es requisito previo a producción.
 - Los tags narrativos sin prefijo `v` siguen permitidos como hitos. No son Releases ni disparan producción.
