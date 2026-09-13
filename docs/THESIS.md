@@ -74,6 +74,10 @@ Al que elige, para no decidir con un folleto. Al que está adentro, para saber s
 
 Y a la institución: lo atractivo para ella es exactamente la amenaza que plan-b representa. El mismo dato que la expone es el que le dice dónde arreglar. La que lo ignora queda expuesta; la que lo usa mejora. Las dos rompen la asimetría, una a la fuerza y la otra por decisión.
 
+## Dónde rinde más
+
+plan-b rinde donde hay elección: en las universidades grandes, con muchas carreras, muchas cátedras por materia y muchas opciones, como la UBA, la UNC o la UNT. Ahí una misma materia se dicta con varias cátedras y "¿con cuál me conviene?" es una pregunta con respuesta; ahí hay estudiantes de sobra para que cada cátedra cruce el piso y para sostener una serie por período; ahí la carrera se compara entre facultades e instituciones con datos que existen. Una institución chica, como UNSTA o buena parte de la oferta de Tucumán, es donde el producto nace y se prueba, no donde más rinde: con una cátedra por materia y cohortes cortas, la comparación entre hermanas no existe y el piso tarda en cruzarse. El catálogo se carga por el país entero para llegar a ese terreno.
+
 ## Fin último
 
 Ayudar al estudiante y a la comunidad universitaria a saber cómo es, de verdad, estudiar donde estudian. El día que las instituciones abandonen la postura de que son perfectas, ese día plan-b ganó, aunque deje de hacer falta.
