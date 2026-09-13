@@ -5,19 +5,19 @@ export const metadata = {
   title: 'Mis aportes · planb',
 };
 
-// Depende de la sesión y cambia con cada corrección: se sirve fresca.
+// Depende de la sesión y cambia con cada edición: se sirve fresca.
 export const dynamic = 'force-dynamic';
 
 /**
- * Mis aportes (SC-017, US-165, US-166): lo que esta cuenta reseñó, para poder corregirlo o borrarlo.
+ * Mis aportes (SC-017, US-165, US-166): lo que esta cuenta reseñó, para poder editarlo o borrarlo.
  *
  * El cuestionario baja acá porque el editor lo necesita para dibujar las preguntas. Si todavía no
- * hay uno publicado, la lista se ve igual pero sin poder corregir: mostrar lo aportado no depende
+ * hay uno publicado, la lista se ve igual pero sin poder editar: mostrar lo aportado no depende
  * de que exista un cuestionario vigente.
  *
  * Es también donde aterriza quien acaba de reseñar una cursada (`?published=1`): el acuse va acá y
  * no en la pantalla de reseñar porque lo que confirma es que la reseña ya está en la lista, con su
- * botón de corregir al lado.
+ * botón de editar al lado.
  */
 export default async function MyReviewsPage({
   searchParams,
@@ -45,7 +45,7 @@ export default async function MyReviewsPage({
           role="status"
           className="mb-3 rounded-lg border border-line bg-bg-elev px-3.5 py-2.5 text-[13px] leading-relaxed text-ink"
         >
-          Listo, quedó contada. Se suma a los conteos de su cátedra; acá la podés corregir o sacar
+          Listo, quedó contada. Se suma a los conteos de su cátedra; acá la podés editar o sacar
           cuando quieras.
         </p>
       )}

@@ -51,7 +51,7 @@ export type RoadmapItem = {
 export const ABOUT_ROADMAP: readonly RoadmapItem[] = [
   {
     when: 'Ahora',
-    what: 'Fichas de cátedra, materia y carrera con sus conteos, que se leen sin cuenta. Reseñar una cursada, y corregir o borrar lo que aportaste.',
+    what: 'Fichas de cátedra, materia y carrera con sus conteos, que se leen sin cuenta. Reseñar una cursada, y editar o borrar lo que aportaste.',
   },
   {
     when: 'Próximo',

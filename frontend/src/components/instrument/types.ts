@@ -1,9 +1,9 @@
 /**
  * El cuestionario tal como lo dibuja la UI, compartido por las dos pantallas que lo usan: reseñar
- * una cursada por primera vez y corregir lo que se reseñó.
+ * una cursada por primera vez y editar lo que se reseñó.
  *
  * Vive acá y no en un feature porque los dos lo necesitan idéntico, y a esta altura el tipo no
- * sabe nada de publicar ni de corregir: es solo qué se pregunta y qué se puede contestar.
+ * sabe nada de publicar ni de editar: es solo qué se pregunta y qué se puede contestar.
  */
 
 /** Una opción de respuesta. No trae valencia: la recolección va sin alarma (ADR-0071). */

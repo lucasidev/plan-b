@@ -559,7 +559,7 @@ describe('US-163: reseñar la misma materia dos veces', () => {
   /**
    * US-163 / L06: el 409 de "ya reseñaste esta cursada" no solo avisa, deja el botón
    * deshabilitado: reenviar la misma cursada volvería a chocar contra el mismo 409, y el camino
-   * que el propio aviso ofrece es corregir desde Mis aportes, no reintentar acá.
+   * que el propio aviso ofrece es editar desde Mis aportes, no reintentar acá.
    */
   it('un 409 por duplicado deshabilita "Enviar la reseña" para esa misma cursada', async () => {
     stubChairsFetch([{ id: 'chair-1', name: 'Cátedra Pérez' }]);

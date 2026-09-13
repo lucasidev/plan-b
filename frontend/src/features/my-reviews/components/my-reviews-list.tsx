@@ -9,7 +9,7 @@ import type { MyReview } from '../types';
 import { ReviewEditor } from './review-editor';
 
 /**
- * Mis aportes (US-165, US-166): lo que esta cuenta reseñó, para poder corregirlo o borrarlo.
+ * Mis aportes (US-165, US-166): lo que esta cuenta reseñó, para poder editarlo o borrarlo.
  *
  * Es el único lugar del producto donde una reseña se ve de a una, y solo la ve quien la escribió.
  * Todo lo que se publica es agregado: la ficha nunca muestra una reseña individual, ni siquiera
@@ -179,7 +179,7 @@ function ReviewCard({
       // conteos al día, pero no puede ser lo que decide si la tarjeta desaparece.
       //
       // Por eso este sitio se queda con `router.refresh()` y no pasa a `reloadAfterMutation`
-      // (`lib/reload-after-mutation.ts`) como Mi perfil y Corregir, aunque comparte el mismo fallo
+      // (`lib/reload-after-mutation.ts`) como Mi perfil y Editar, aunque comparte el mismo fallo
       // bajo carga (issue #491): acá lo que ve la persona (la tarjeta desapareciendo) ya lo decide
       // el estado local de arriba, no este refresh. Si el commit se pierde, lo único que queda
       // stale son los conteos de las tarjetas hermanas, no el borrado. Un reload completo forzaría
@@ -273,7 +273,7 @@ function ReviewCard({
             disabled={!canEdit}
             className="rounded-lg border border-line px-3 py-1.5 text-[12.5px] text-ink disabled:opacity-50"
           >
-            Corregir
+            Editar
           </button>
           <button
             type="button"

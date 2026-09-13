@@ -23,7 +23,7 @@ export type MyReview = {
 /** Estado de los dos actions de esta pantalla. */
 /**
  * Una respuesta propia. Solo la ve quien la escribió: que nadie más pueda ver una respuesta
- * individual es la garantía del producto, y que su autor sí es lo que hace posible corregir una
+ * individual es la garantía del producto, y que su autor sí es lo que hace posible editar una
  * sola sin recontestar todo.
  */
 export type MyAnswer = {
