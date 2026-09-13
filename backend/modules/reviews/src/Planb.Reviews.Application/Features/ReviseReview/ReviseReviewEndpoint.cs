@@ -10,7 +10,7 @@ using Wolverine;
 namespace Planb.Reviews.Application.Features.ReviseReview;
 
 /// <summary>
-/// PUT /api/reviews/courses/{id} (US-165): corregir una reseña propia.
+/// PUT /api/reviews/courses/{id} (US-165): editar una reseña propia.
 ///
 /// <para>
 /// Es PUT y no PATCH porque el body reemplaza lo respondido entero: dejar de contestar algo es una

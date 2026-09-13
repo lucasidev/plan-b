@@ -87,6 +87,7 @@ describe('MyReviewsList', () => {
       '/chairs/chair-1',
     );
     expect(screen.getByText(/3 preguntas contestadas/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
   });
 
   /**

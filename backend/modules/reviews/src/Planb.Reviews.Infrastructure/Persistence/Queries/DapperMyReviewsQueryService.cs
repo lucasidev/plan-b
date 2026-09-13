@@ -5,7 +5,7 @@ using Planb.SharedKernel.Abstractions.Persistence;
 namespace Planb.Reviews.Infrastructure.Persistence.Queries;
 
 /// <summary>
-/// Dapper read de las reseñas de una cuenta (US-165, US-166): lo que aportó, para poder corregirlo
+/// Dapper read de las reseñas de una cuenta (US-165, US-166): lo que aportó, para poder editarlo
 /// o borrarlo.
 ///
 /// <para>

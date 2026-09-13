@@ -33,7 +33,7 @@ public static class DependencyInjection
         // El instrumento vigente, que es lo que la pantalla de reseñar pregunta (US-146).
         services.AddScoped<ICurrentInstrumentQueryService, DapperCurrentInstrumentQueryService>();
 
-        // Lo que una cuenta aportó, para poder corregirlo o borrarlo (US-165, US-166).
+        // Lo que una cuenta aportó, para poder editarlo o borrarlo (US-165, US-166).
         services.AddScoped<IMyReviewsQueryService, DapperMyReviewsQueryService>();
         services.AddScoped<IFreeTextQueryService, DapperFreeTextQueryService>();
         services.AddScoped<IEditorialNoteRepository, EditorialNoteRepository>();

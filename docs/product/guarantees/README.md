@@ -8,7 +8,7 @@ El contrapeso de todos los tramos: cinco garantías que ninguna persona pide en 
 
 ## Para quién
 
-**Quien lee** (Valentina, Silvia, Rocío, y cualquiera sin cuenta), **quien vuelve** (cualquier cuenta, cuando vuelve a leer o a corregir), y **Matías**: por él el gate llega en la acción y no en la puerta, y nada le pide completar algo antes de leer o reseñar.
+**Quien lee** (Valentina, Silvia, Rocío, y cualquiera sin cuenta), **quien vuelve** (cualquier cuenta, cuando vuelve a leer o a editar), y **Matías**: por él el gate llega en la acción y no en la puerta, y nada le pide completar algo antes de leer o reseñar.
 
 ## Las garantías
 

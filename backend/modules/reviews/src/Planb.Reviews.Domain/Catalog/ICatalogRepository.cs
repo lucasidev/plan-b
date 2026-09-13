@@ -44,7 +44,7 @@ public interface ICatalogRepository
     ///
     /// <para>
     /// Lo pide editar una reseña (US-165): se valida contra el cuestionario con el que se
-    /// respondió y no contra el de hoy, porque si el catálogo cambió desde entonces, corregir una
+    /// respondió y no contra el de hoy, porque si el catálogo cambió desde entonces, editar una
     /// respuesta vieja no puede exigirle al autor que conteste preguntas que no le hicieron.
     /// </para>
     /// </summary>

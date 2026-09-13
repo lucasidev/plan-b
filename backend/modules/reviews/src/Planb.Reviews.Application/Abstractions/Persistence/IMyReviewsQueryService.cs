@@ -1,7 +1,7 @@
 namespace Planb.Reviews.Application.Abstractions.Persistence;
 
 /// <summary>
-/// Lo que una cuenta aportó, para que pueda verlo, corregirlo o borrarlo (US-165, US-166).
+/// Lo que una cuenta aportó, para que pueda verlo, editarlo o borrarlo (US-165, US-166).
 ///
 /// <para>
 /// Devuelve reseñas de a una y solo se lo puede pedir su autor. Todo lo que el producto
@@ -63,7 +63,7 @@ public sealed record MyReviewView(
 /// <para>
 /// Viaja solo acá, y solo hacia quien la escribió. Que nadie más pueda ver una respuesta individual
 /// es la garantía del producto (ADR-0083); que su autor pueda verla es lo que hace posible
-/// corregirla sin tener que contestar todo de nuevo.
+/// editarla sin tener que contestar todo de nuevo.
 /// </para>
 ///
 /// <para>
