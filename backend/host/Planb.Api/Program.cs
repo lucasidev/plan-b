@@ -204,14 +204,14 @@ builder.Services.AddHostedService<UnverifiedRegistrationExpirationScheduler>();
 // Seed data: load personas from a separate JSON file (Options pattern), then
 // register the IdentitySeeder + hosted service that materializes them. The
 // hosted service stays gated by IsDevelopment() (only `just dev` seeds on
-// startup); this load is unconditional because the stage's `seed-db` verb
+// startup); this load is unconditional because the `seed-db` verb
 // (Infrastructure/SeedDbCommand.cs) runs with ASPNETCORE_ENVIRONMENT=Production
 // and needs SeedPersonasOptions bound the same way. The file ships in the
 // image (Planb.Api.csproj publishes it): stage and production run the exact
 // same image, so optional: true isn't what keeps production from seeding.
-// What does is that nothing there calls seed-db: docker-compose.prod.yml
-// never declares that service. Order: must be registered AFTER
-// DevMigrationsHostedService so it runs against an existing schema.
+// What does is that no deploy runs seed-db, in any environment (ADR-0093).
+// Order: must be registered AFTER DevMigrationsHostedService so it runs
+// against an existing schema.
 // ------------------------------------------------------------------
 builder.Configuration.AddJsonFile(
     "seed-data/personas.json", optional: true, reloadOnChange: false);
@@ -272,8 +272,8 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 
-// El healthcheck del compose pega a /health cada 10 segundos (docker-compose.stage.yml y
-// docker-compose.prod.yml): a Information, cada chequeo dejaba una línea que se comía la ventana
+// El HEALTHCHECK de la imagen (backend/Dockerfile) pega a /health cada 10 segundos: a
+// Information, cada chequeo dejaba una línea que se comía la ventana
 // de diagnóstico antes de que el log rotara. Mismo criterio que la exclusión de UseHttpMetrics más
 // abajo: /health y /metrics son tráfico de infraestructura, no de producto, así que sus pedidos
 // exitosos bajan a Verbose; si alguno empieza a fallar, sigue en Information.

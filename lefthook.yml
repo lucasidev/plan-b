@@ -42,6 +42,12 @@ commit-msg:
 pre-push:
   parallel: true
   commands:
+    scripts-test:
+      # Los tests de scripts/ no necesitan infra y corren en menos de un segundo.
+      glob:
+        - "scripts/*.ts"
+        - "scripts/**/*.ts"
+      run: bun test scripts/
     docs-check:
       # Señala, no bloquea (exit 0 sin --strict): coherencia de docs de producto
       # (links, em-dashes, períodos codificados, una story por épica, mermaid). ADR-0070.

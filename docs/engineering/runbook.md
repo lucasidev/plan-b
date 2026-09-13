@@ -1,154 +1,182 @@
-# Runbook del stage
+# Runbook de stage y deploy
 
-Qué hacer cuando el stage se rompe o hay que intervenirlo. El armado desde cero está en [`deploy.md`](deploy.md); el revert de código y de schema, en [`rollback.md`](rollback.md). Cada caso lleva síntoma, diagnóstico y acción, y dice si se probó contra el stage real o no.
+Qué mirar y qué hacer cuando el stage no actualiza o un recurso de Dokploy falla. El armado y el cutover están en [`deploy.md`](deploy.md); la política de reversión, en [`rollback.md`](rollback.md).
 
-## Cómo se lee el stage
+## Estado conocido
 
-- **`https://planb.olisar.com.ar/health`**: 200 con `{"status":"ok","service":"planb-api","version":"<sha corto>","checks":[...]}` cuando el api, Postgres y Redis contestan; 503 con `status: fail` y el `error` de la dependencia que falló. `version` es el sha del build que corre: la forma más corta de saber qué hay desplegado.
-- **Dokploy, servicio `stage`** (proyecto `planb`, environment `development`): *Deployments* lista cada deploy con su log (el pull de cada imagen con su tag, los contenedores recreados, `Healthy`, y `Docker Compose Deployed` al final); *Logs* muestra la salida de cada contenedor (100 líneas por default, "Limit to" trae más); *Monitoring* muestra CPU, memoria, disco y red por contenedor. El servidor tiene 3,82 GiB de memoria y 2 vCPU ([`k6/README.md`](../../k6/README.md)).
-- **GitHub, Actions, *Publish images***: la corrida de cada merge a `main`. El job "Redeploy the stage" pide el deploy por la API y después espera hasta cinco minutos a que `/health` responda 200 con el sha del merge; si no llega, ese job falla y dice el último `/health` que vio.
+- Stage se define como ambiente persistente con perfil Production y datos persistentes.
+- La topología decidida usa PostgreSQL y Redis Databases, más API, web, Migrate y Mailpit Applications.
+- Migrate es una Application run-once: Swarm Mode Replicated con 1 réplica y Restart Policy `none`; su task corre una vez por deploy y no se reinicia.
+- Producción todavía no existe.
+- El cutover completo a Applications no fue verificado en esta pieza.
+- En Dokploy v0.26.3 se verificó que el prefijo `planb-stage-api` generó `appName` `planb-stage-api-7mmcdb`. El sufijo es mutable y ese valor no se usa como convención estable.
+- Se verificó por incidente que Mailpit necesita `/tmp` escribible.
+- Se verificó por incidente que un redeploy de una Database con el default `start-first` de Dokploy corre dos PostgreSQL sobre el mismo volumen (caso 8): las Databases llevan `stop-first`.
+
+## Fuentes de verdad
+
+1. **GitHub Actions:** la corrida del commit muestra si publicó imágenes, si la task de Migrate terminó con exit 0, si desplegó API y web y si pasó health. Un cambio solo de docs debe figurar como omitido, no como deploy.
+2. **`/health`:** devuelve el estado de API, PostgreSQL y Redis y el SHA servido. Una imagen publicada no está desplegada hasta que ese SHA aparece.
+3. **Dokploy Applications:** Deployment y Logs de Migrate, API, web y Mailpit. Se busca por el prefijo humano, pero se opera el recurso por su id y `appName` reales.
+4. **Dokploy Databases:** estado, endpoint, almacenamiento y backups de PostgreSQL y Redis.
+5. **Variables no sensibles:** ids de Applications y hostnames internos generados que usa el workflow. Si un recurso se recrea, se actualizan antes de desplegar.
 
 ## Casos
 
-### 1. El merge terminó y el stage no cambió
+### 1. El merge terminó y stage no cambió
 
-**Síntoma.** El job "Redeploy the stage" falla con "El stage no llegó a `<sha>`", o `/health` sigue devolviendo el sha anterior.
+**Síntoma:** `/health` sirve el SHA anterior o la corrida terminó en rojo.
 
-**Diagnóstico.** En *Deployments*, el log del último deploy. Tres causas, en este orden:
+**Diagnóstico:**
 
-1. Si dice `planb-api:<sha viejo> Pulled`, el Environment tiene `PLANB_API_TAG` y `PLANB_WEB_TAG` pineadas: una variable pineada le gana al default `main` del compose.
-2. Si un servicio de un solo uso terminó en error, `api` no se recreó y el contenedor anterior siguió atendiendo: desde afuera el stage responde, con la versión vieja. Hoy el único de un solo uso es `migrate`, y sus logs dicen qué migración falló.
-3. Si no hay deploy nuevo, la llamada a la API no llegó: el job lo dice (secrets faltantes o una respuesta distinta de `Deployment queued`).
+1. Confirmar que el cambio no sea exclusivamente documental. En ese caso no debe existir deploy.
+2. Revisar si falló publicación o escaneo. Si fue así, Dokploy no debería haber sido tocado.
+3. Revisar Migrate. `applicationStatus=done` solo confirma el deployment de Dokploy; si la task nueva del job no termina en `exited` con `ExitCode` 0 (`docker.getConfig`), API y web no deben desplegarse. En el panel, los logs de esa ejecución terminan en `Wolverine: listo.` cuando salió bien.
+4. Si Migrate terminó bien, revisar el deploy y health de API y web.
+5. Confirmar que los ids de Applications y hostnames internos guardados sigan coincidiendo con los recursos actuales.
 
-**Acción.** Para (1), borrar las dos variables en *Environment*, Save y Deploy. Para (2), arreglar en `main` con un PR o con `git revert` ([`rollback.md`](rollback.md)); mientras tanto el stage sigue sirviendo la versión anterior. Para (3), cargar los secrets en GitHub (sección Secretos) y relanzar el workflow desde Actions.
+**Acción:** corregir la causa con un PR y relanzar la corrida permitida. No ejecutar `seed-db` para destrabar un deploy.
 
-Verificado el 2026-09-07 para la causa (1): fue exactamente lo que pasó en el primer merge con el stage continuo.
+**Señal:** el workflow rojo es la señal mínima de stage. Cuatro fallas consecutivas ya quedaron ocultas una vez detrás de una versión vieja que seguía respondiendo, así que no se da por sano un deploy porque la URL contesta.
 
-**Esta falla se acumula en silencio.** El 2026-09-10 se descubrió que los cuatro despliegues anteriores habían fallado en fila desde el 8 de septiembre, y desde afuera el stage seguía contestando con la versión vieja. La única señal es la corrida de *Publish images* en rojo: no hay aviso, hay que mirarla. Ese incidente sacó la siembra de la cadena del deploy ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)), que era lo que fallaba, pero cualquier falla de `migrate` deja el mismo cuadro.
+### 2. Migrate falla
 
-### 2. Crash loop después de un deploy que Dokploy dio por exitoso
+**Síntoma:** la task de Migrate sale con código distinto de 0 o no termina, y API/web no reciben el SHA nuevo.
 
-**Síntoma.** `/health` responde 502 o 503 sostenido; en *Monitoring* el contenedor `api` reinicia; Dokploy no avisa, porque el deploy terminó bien y el contenedor se cayó después.
+**Diagnóstico:** abrir los logs de la Application cuyo prefijo es `planb-stage-migrate`. Confirmar:
 
-**Diagnóstico.** *Logs* del contenedor `api`: una migración que falla, una variable de Environment que falta (`JWT__Secret`, la connection string), o Wolverine pidiendo tipos pregenerados que la imagen no trae.
+- imagen API con el SHA esperado;
+- Command `dotnet Planb.Api.dll migrate-db`;
+- Replicated 1 y Restart Policy `none`;
+- endpoints y credenciales de PostgreSQL y Redis;
+- error exacto de EF Core o Wolverine.
 
-**Acción.** Pinear el sha anterior (caso 3) para que el stage vuelva a servir, y arreglar en `main` con un PR o con `git revert` ([`rollback.md`](rollback.md)). Con el arreglo mergeado, borrar el pin.
+**Acción:** no ejecutar la migración desde API ni convertir Migrate en servicio de larga vida. Preparar una migración correctiva y volver a desplegar Migrate. El default de schema es roll-forward, no `Down()` sobre un ambiente persistente.
 
-Sin verificar contra el stage real.
+### 3. Migrate termina, pero API o web no quedan sanos
 
-### 3. Pinear un sha y volver a `main`
+**Síntoma:** Migrate completó y `/health` da 502, 503 o un SHA distinto; web no sirve la ruta pública.
 
-**Pinear.** En *Environment*: `PLANB_API_TAG=<sha corto>` y `PLANB_WEB_TAG=<sha corto>`, Save, Deploy. El sha corto es el tag de la imagen que publicó *Publish images* (la pestaña *Packages* del repo lista los tags).
+**Diagnóstico:**
 
-**Volver.** Borrar las dos variables, Save, Deploy: el compose vuelve a `main` y a partir de ahí cada merge redespliega.
+- API: revisar configuración Production, conexiones, JWT, SMTP, tipos pregenerados y health check.
+- Web: revisar que la imagen sea la específica de stage y que `NEXT_PUBLIC_API_URL` haya sido horneada con el hostname interno real de API.
+- Ambos: comparar el SHA configurado en Dokploy con el SHA de la corrida.
 
-Verificado el 2026-09-07 en las dos direcciones.
+**Acción:** si el arreglo no es inmediato, volver API y web al último SHA sano según [`rollback.md`](rollback.md). No retroceder schema por default.
 
-### 4. Disco lleno
+### 4. Una Application fue recreada
 
-**Síntoma.** Un deploy falla al bajar imágenes con `no space left on device`, o Postgres deja de escribir y el api responde 500.
+**Síntoma:** la Application existe, pero web no llega a API, API no llega a Mailpit o Actions recibe not found al desplegar.
 
-**Diagnóstico.** Dokploy → *Monitoring* (el del servidor, no el del servicio) muestra el disco; por SSH, `df -h` y `docker system df`.
+**Diagnóstico:** comparar id, `appName` y hostname interno actuales con las variables no sensibles de GitHub y Dokploy. El prefijo solicitado no alcanza: Dokploy agrega un sufijo aleatorio.
 
-**Acción.** Por SSH, `docker image prune -a -f`: borra las imágenes que ningún contenedor usa, y las vigentes se vuelven a bajar en el próximo deploy. Si el espacio se lo llevan los logs de los contenedores, la rotación la fija el compose (`logging` con `max-size` y `max-file`). El prune semanal de GHCR no libera disco en el servidor: mantiene chico el catálogo del registro.
+**Acción:**
 
-Sin verificar contra el stage real.
+1. Actualizar el id de la Application donde lo consume Actions.
+2. Actualizar el hostname interno real en GitHub y Dokploy.
+3. Si se recreó API, reconstruir web porque `NEXT_PUBLIC_API_URL` queda horneada.
+4. Si se recreó Mailpit, actualizar el host SMTP de API.
+5. Desplegar y repetir health y flujo de correo.
 
-### 5. El certificado no renueva
+No copiar `planb-stage-api-7mmcdb` como si fuera patrón. Es evidencia de una instancia, no DNS contractual.
 
-**Síntoma.** El navegador avisa que el certificado venció; `curl -vI https://planb.olisar.com.ar` muestra la fecha.
+### 5. Mailpit cae con `Read-only file system`
 
-**Diagnóstico.** El registro A del dominio tiene que seguir apuntando al servidor (Dokploy marca "DNS Valid" en *Domains*); los certificados que Traefik emitió están en Dokploy → *Traefik File System*; los logs de Traefik, en Dokploy → *Docker*, contenedor `traefik`.
+**Síntoma:** la Application de Mailpit no queda sana y sus logs muestran una escritura fallida en `/tmp`.
 
-**Acción.** Corregir el DNS si cambió. Para forzar una emisión nueva, en *Domains* del servicio desactivar y volver a activar HTTPS en ese dominio y Deploy. Let's Encrypt limita las emisiones por dominio a cinco por semana: no repetir a ciegas.
+**Diagnóstico:** revisar si `/tmp` es escribible. El stage real ya confirmó que la imagen lo necesita.
 
-Sin verificar contra el stage real.
+**Acción:** configurar `/tmp` como `tmpfs`. Si Dokploy no permite ese mount puntual en la Application, desactivar read-only solo para Mailpit y volver a desplegar. No afirmar que quedó endurecido hasta verificar arranque, health y recepción de un mail.
 
-### 6. Dokploy caído
+### 6. Ejecutar `seed-db` a mano
 
-**Síntoma.** El panel no responde. El stage sigue sirviendo: los contenedores del compose no dependen del panel.
+**Cuándo:** una persona decide cargar o actualizar los datos del stage. No se usa para reparar un deploy.
 
-**Diagnóstico.** Por SSH, `docker service ls` muestra el servicio `dokploy` y sus réplicas; `docker service logs dokploy --tail 100` dice por qué no levanta.
+**Antes:**
 
-**Acción.** `docker service update --force dokploy` lo relanza. Si el servidor entero está caído, es el proveedor del VPS. Mientras el panel no responde no hay deploys: el job "Redeploy the stage" falla en la llamada a la API y lo dice; cuando el panel vuelve, relanzar el workflow desde Actions.
+1. Confirmar visualmente que el destino es stage.
+2. Registrar el SHA de la imagen API que se va a ejecutar.
+3. Hacer backup si hay datos que importan.
+4. Recordar que la idempotencia es por ids y puede chocar con claves naturales.
 
-Sin verificar contra el stage real.
+**Acción:** ejecutar `seed-db` una vez con la misma imagen inmutable de API, dentro de la red del destino y contra los endpoints reales. Revisar el exit code y los logs. No crear una Application de seed de larga vida y no agregarla al workflow.
 
-### 7. Reset del stage, y sembrarlo
+**Si falla:** conservar el error. No resetear automáticamente. La aplicación sigue desplegada porque seed no es parte de su health.
 
-**El despliegue migra el esquema y no siembra** ([ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md)), así que volver a cero son dos movimientos, no uno.
+### 7. Reset destructivo de stage
 
-**Reset.** Por SSH, `docker compose -p planb-stage-h30ogf down -v` (el App Name que muestra la cabecera del servicio es el nombre del proyecto de compose) y Deploy desde el panel. El servicio `migrate` vuelve a correr solo antes de que `api` arranque: migra el schema y aplica los recursos de Wolverine (ADR-0091). La base queda migrada y vacía.
+**Autorización:** un reset requiere una decisión explícita. No se infiere de un seed fallido, un deploy fallido ni un cutover exitoso.
 
-**Sembrar.** El verbo `seed-db` de la misma imagen del `api`, contra la red interna del compose y con las mismas variables de conexión que usa `api`. Los tres valores salen del Environment del servicio:
+**Acción:**
 
-```bash
-docker run --rm --network planb-stage-h30ogf_internal \
-  -e ASPNETCORE_ENVIRONMENT=Production \
-  -e ConnectionStrings__Planb="Host=postgres;Port=5432;Database=planb;Username=planb;Password=<POSTGRES_PASSWORD>" \
-  -e ConnectionStrings__Redis="redis:6379,password=<REDIS_PASSWORD>" \
-  -e JWT__Secret="<JWT_SECRET>" \
-  ghcr.io/lucasidev/plan-b/planb-api:main seed-db
-```
+1. Confirmar nombre, id y ambiente de la PostgreSQL Database. Tiene que ser stage.
+2. Hacer un backup y guardar su ubicación antes de borrar datos.
+3. Detener o bloquear escrituras.
+4. Vaciar o recrear la Database desde Dokploy.
+5. Si cambió el endpoint, actualizar API y Migrate.
+6. Ejecutar Migrate y esperar una finalización exitosa.
+7. Desplegar API y web y verificar `/health`.
+8. Ejecutar `seed-db` solo si una persona decide cargar el corpus.
 
-Siembra personas, catálogo académico, catálogo de frases y el corpus sintético; la última línea es `CorpusSeeder: inserted N reviews`. Es el mismo comando para cargar un catálogo nuevo cuando el seed cambie: los datos del stage persisten entre despliegues y van a divergir del seed, y volver a alinearlos es esta corrida, decidida por alguien.
+No hay comando Compose de reset: los Compose de stage y producción fueron retirados del repo.
 
-El seed es idempotente por id y no por clave natural, así que contra una base acumulada puede chocar con un unique de la base y cortar. Si pasa, el mensaje dice el índice; el reset de arriba lo resuelve a costa de los datos.
+### 8. PostgreSQL perdió o corrompió datos
 
-Sin verificar contra el stage real, y sin aplicar todavía: el compose sigue trayendo el servicio `seed`, así que hoy el deploy sigue sembrando solo. El comando de arriba sale de ese mismo servicio (misma imagen, mismas variables) y de que Docker nombra la red `<App Name>_internal`.
+**Síntoma:** faltan filas, hay corrupción confirmada o la Database no puede recuperar su estado.
 
-### 8. Entrar con las cuentas sembradas
+**Acción:** detener escrituras y seguir la restauración de [`rollback.md`](rollback.md). Un bug de código o una migración incompatible sin pérdida de datos no autoriza restore: se corrige por roll-forward.
 
-Las cuatro personas, incluido el admin (`admin@planb.local`), entran con las passwords propias de `personas.json`: son públicas a propósito, elenco de prueba ([`dev-seed-personas.md`](dev-seed-personas.md)). Los mails de verificación y de reset llegan a `https://mail.olisar.com.ar`, que pide el usuario y la password de `MAILPIT_UI_AUTH`.
+**Causa conocida:** un redeploy de la Database con el Update Config default de Dokploy (`start-first`) arranca la instancia nueva mientras la vieja sigue viva sobre el mismo volumen; la nueva hace recovery sobre un clúster en uso, la vieja pisa `postmaster.pid` y el control file al apagarse, y lo escrito en el medio se pierde o queda inconsistente. Toda Database lleva `{"Parallelism": 1, "Order": "stop-first"}`, y un redeploy nunca se dispara mientras Migrate o `seed-db` están escribiendo.
 
-Mailpit con auth, verificado el 2026-09-04; el recorrido con cuenta, sin verificar.
+### 9. Certificado o dominio falla
 
-### 9. El proceso de `api` crece en memoria hasta caerse, o el log se llena de líneas de `/health`
+**Síntoma:** TLS vencido, DNS inválido o tráfico apuntando al recurso viejo.
 
-**Síntoma.** En *Monitoring*, la memoria de `api` sube en escalones sin bajar hasta pegar contra el `mem_limit` y el contenedor reinicia solo (`OOMKilled`); o en *Logs*, la ventana de líneas visibles se llena de una entrada por cada chequeo del healthcheck (cada 10 s) antes de que rote, tapando lo que importa diagnosticar.
+**Diagnóstico:** comparar DNS público y dominio de Dokploy con la Application nueva. Durante el cutover, confirmar que no se retiró el recurso anterior antes de validar el nuevo.
 
-**Diagnóstico.** Pasó cuando el stage corría `ASPNETCORE_ENVIRONMENT=Development` hospedado: Wolverine compilaba con Roslyn en runtime (`GeneratedCodeMode = Dynamic`) el handler de cada tipo de mensaje la primera vez que se invocaba, y con 87 endpoints Carter la memoria crecía con cada tipo nuevo ejercitado, no con el volumen de pedidos; aparte, el nivel de log Debug de `appsettings.Development.json` sumado al probe cada 10 s se comía la ventana de diagnóstico. Los dos son consecuencia del mismo problema: `Development` traía capacidades que el stage no había pedido (ver ADR-0091).
+**Acción:** corregir DNS o el dominio en Dokploy, verificar desde afuera y mantener el recurso anterior hasta que el cambio esté sano. No borrar el Compose viejo como parte automática del cutover.
 
-**Acción.** Ya no debería repetirse: desde ADR-0091 el stage corre `ASPNETCORE_ENVIRONMENT=Production`, con el código de Wolverine pregenerado en el build (`Static`, sin compilar nada en runtime) y los niveles de log de `appsettings.json`, más el filtro que baja a Verbose los pedidos exitosos a `/health` y `/metrics` (`Program.cs`). Si se repite, es una regresión: revisar que el Environment del servicio `api` en Dokploy siga en `Production` y no haya vuelto a `Development`.
+### 10. Dokploy o el host se queda sin recursos
 
-Reproducido en local (podman) contra la imagen de esta rama, ver ADR-0091; sin verificar contra el stage real.
+**Síntoma:** deploys que no inician, tareas rechazadas, OOM o falta de espacio.
 
-### 10. Un contenedor no arranca o crashea después de un deploy: `Read-only file system` u `Operation not permitted` en los logs
+**Diagnóstico:** revisar Monitoring del host y los límites de cada Application y Database. En Dokploy, memoria se expresa en bytes y CPU en nanoCPUs.
 
-**Síntoma.** Un contenedor sale (`Exited`) apenas después de crear, o crashea en loop; en *Logs*, un mensaje del tipo `Read-only file system`, `Permission denied` o `Operation not permitted` sobre un path que no es uno de los que ese servicio ya declara como `tmpfs`.
+**Acción:** liberar solo recursos no usados y ajustar límites con evidencia. No desactivar globalmente los controles de [ADR-0092](../decisions/0092-containers-run-least-privilege-and-the-image-chain-is-pinned-and-gated.md).
 
-**Diagnóstico.** Desde ADR-0092 los nueve servicios corren con `read_only: true` y `cap_drop: ["ALL"]` (`cap_add` puntual solo en Postgres y Redis). Casi siempre es una versión nueva de la imagen (propia o de terceros) que empezó a escribir en un lugar que antes no tocaba, o que ahora necesita una capacidad Linux que hoy nadie le da.
+## Configuración sensible y no sensible
 
-**Acción.** El log dice el path o la syscall que falló. Si es un path de escritura nuevo y legítimo, sumarlo al `tmpfs:` de ese servicio en el compose, no volverlo escribible entero; si es una capacidad (el mensaje suele nombrar la syscall, como `setresuid` para `SETUID`), sumarla puntual a su `cap_add`. Mientras tanto, pinear el sha anterior (caso 3) para que el servicio vuelva a servir.
+### GitHub
 
-Sin verificar contra el stage real: el patrón sale de cómo se armó y probó cada `tmpfs`/`cap_add` en ADR-0092, no de un incidente real.
+**Secretos:** origen y API key de Dokploy, más cualquier credencial necesaria para el registry.
 
-## Secretos
+**Variables no sensibles:** ids de Applications, health URL y hostname interno real de API para el build web. Se actualizan si un recurso se recrea.
 
-Ningún valor vive en el repo ni se pasa por el chat: solo los nombres. Los carga Lucas.
+### Dokploy
 
-### En GitHub (Settings → Secrets and variables → Actions, repository secrets)
+**Secretos:** credenciales de PostgreSQL y Redis, JWT, credenciales SMTP y cualquier autenticación de Mailpit.
 
-| Nombre | Qué protege | Cómo se rota |
-|---|---|---|
-| `DOKPLOY_URL` | El origen del panel de Dokploy. | Cambia solo si cambia el panel. |
-| `DOKPLOY_API_KEY` | Una API key del panel con los permisos del admin: el job del stage la usa para pedir el redeploy. | Dokploy → Settings → Profile → API Keys: generar una nueva, reemplazar el secret, revocar la anterior. |
-| `DOKPLOY_STAGE_COMPOSE_ID` | El id del servicio Compose del stage. | Cambia solo si el servicio se recrea (último segmento de la URL del servicio). |
-| `LOCKFILE_BOT_APP_ID`, `LOCKFILE_BOT_PRIVATE_KEY` | El GitHub App `planb-ci-bot`, que regenera `bun.lock` en los PRs de Dependabot para que los workflows se disparen ([ADR-0043](../decisions/0043-github-app-for-bot-pushes-that-trigger-workflows.md)). | En la página del App, generar una private key nueva, reemplazar el secret y borrar la anterior. |
-| `GITHUB_TOKEN` | Lo emite GitHub por corrida; publica las imágenes en GHCR. | No se rota: nace y muere con cada corrida. |
+**Variables no sensibles:** `ASPNETCORE_ENVIRONMENT`, bases de links, hostnames internos generados y configuración de health.
 
-### En Dokploy (servicio `stage`, pestaña Environment)
+Ningún valor sensible vive en el repo ni en este documento.
 
-| Nombre | Qué protege | Cómo se rota |
-|---|---|---|
-| `POSTGRES_PASSWORD` | La base del stage. | Postgres guarda la password en su volumen: cambiar el valor y hacer el reset (caso 7). |
-| `REDIS_PASSWORD` | Redis del stage. | Cambiar el valor y Deploy. |
-| `JWT_SECRET` | La firma de las sesiones; lo usan `api` y `web`. | Cambiar el valor y Deploy: cierra todas las sesiones abiertas. |
-| `SESSION_SECRET` | Lo exige el esquema de entorno del frontend. | Cambiar el valor y Deploy. |
-| `MAILPIT_UI_AUTH` | La UI de Mailpit, donde se ven los links de verificación y de reset. | Cambiar el valor y Deploy. |
+## Producción
 
-`SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `WEB_HOST`, `PLANB_API_TAG` y `PLANB_WEB_TAG` no son secretos.
+Producción todavía no existe. Antes de crearla deben estar resueltos y probados:
 
-### En el panel
+- backups externos de PostgreSQL;
+- retención definida;
+- restore ensayado;
+- notificación activa de deploy fallido;
+- artefactos web específicos por destino sin colisión de identidad.
 
-La cuenta de Lucas (admin de Dokploy), las llaves SSH del servidor (Dokploy → SSH Keys) y el GitHub App `lucasidev-ops`, que es el provider con el que el servicio lee el compose del repo.
+## Refs
+
+- [`deploy.md`](deploy.md): recursos, configuración y cutover.
+- [`rollback.md`](rollback.md): SHA rollback, roll-forward de schema y restore.
+- [ADR-0089](../decisions/0089-the-stage-follows-main-and-production-is-promoted-from-a-release.md): promoción.
+- [ADR-0092](../decisions/0092-containers-run-least-privilege-and-the-image-chain-is-pinned-and-gated.md): hardening.
+- [ADR-0093](../decisions/0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): Migrate y seed.
+- [ADR-0094](../decisions/0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): recursos nativos de Dokploy.
+- [Dokploy, Applications, Advanced, Mode](https://docs.dokploy.com/docs/core/applications/advanced).

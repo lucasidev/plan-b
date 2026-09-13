@@ -10,10 +10,10 @@ namespace Planb.Api.Infrastructure;
 /// frases y corpus de reseñas) y termina.
 ///
 /// <para>
-/// Solo lo invoca el stage (<c>docker-compose.stage.yml</c>), después de <see cref="MigrateDbCommand"/>
-/// y contra el schema que ese verbo dejó listo. Producción no lo corre nunca, ni por error de
-/// configuración: el servicio que lo invocaría no existe en <c>docker-compose.prod.yml</c>, así que
-/// no hace falta (ni alcanza) un flag interno para protegerla.
+/// Lo corre una persona, a mano, contra un destino identificado y después de
+/// <see cref="MigrateDbCommand"/>, sobre el schema que ese verbo dejó listo. Ningún deploy lo
+/// invoca, en ningún ambiente (ADR-0093): nada en el código impide correrlo contra producción, y
+/// lo que lo evita es que ningún workflow ni Application lo dispara.
 /// </para>
 /// <para>
 /// Llama a los mismos <c>*Seeder</c> del Application layer de cada módulo que
@@ -21,8 +21,8 @@ namespace Planb.Api.Infrastructure;
 /// <see cref="CatalogSeedHostedService"/> y <see cref="CorpusSeedHostedService"/> corren en
 /// Development: la lógica de siembra vive en esas clases, no acá, así que no hay dos copias que
 /// puedan divergir. A diferencia de <see cref="DevSeedHostedService"/>, que traga un fallo de la
-/// siembra de personas para no tumbar `just dev`, acá cualquier fallo se propaga: es un paso de
-/// deploy sin supervisión, y un stage a medio sembrar es peor que uno que no arrancó.
+/// siembra de personas para no tumbar `just dev`, acá cualquier fallo se propaga: quien lo corre
+/// necesita el exit code, y una siembra a medias no puede pasar por completa.
 /// </para>
 /// <para>
 /// Todos los seeders son idempotentes por identidad semántica (no por "la tabla está vacía"), así

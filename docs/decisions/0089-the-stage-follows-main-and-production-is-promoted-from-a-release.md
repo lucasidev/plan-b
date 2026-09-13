@@ -2,46 +2,62 @@
 
 - **Estado**: aceptado
 - **Fecha**: 2026-09-06
+- **Revisado**: 2026-09-12
 
 ## Contexto
 
-El stage existe desde el 2026-09-04: un servicio Compose de Dokploy con las imágenes de GHCR. Hasta hoy las imágenes se publicaban a mano (`workflow_dispatch`) y el stage se desplegaba cambiando dos tags en Dokploy. Dos días después del primer deploy, `main` tenía cinco PRs más que el stage, y quien lo abría veía una versión que nadie decidió dejar ahí.
+El primer stage se desplegaba como un servicio Compose de Dokploy y consumía tags móviles. Ese mecanismo dejó dos fuentes de deriva: `main` podía avanzar sin que el stage cambiara, y un reinicio podía traer bytes distintos bajo el mismo tag. Además, usar ramas largas para representar ambientes mezclaría promoción con desarrollo.
 
-La política de releases vigente (ADR-0038, del 2026-04-30) se escribió para un repo sin deploy y pedía revisarse al primer deploy. Este ADR la reemplaza y consolida lo que de ella sigue vigente.
+La decisión central sigue vigente: el stage muestra lo que llegó a `main` y producción representa una promoción deliberada. La topología y la identidad de las imágenes cambian por [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md).
 
 ## Decisión
 
-**El stage sigue a `main`; producción se promueve desde un Release de GitHub. No hay rama de release.**
+**El stage persistente sigue a `main`; producción persistente se promueve desde un Release de GitHub. No hay rama `development` ni rama de release.**
 
-1. **Cada push a `main` publica las imágenes y redespliega el stage.** El workflow *Publish images* construye `planb-api` y `planb-web` con dos tags: el sha corto (inmutable) y `main` (móvil). Con las dos imágenes publicadas, un último paso le pide a Dokploy por su API que redespliegue el servicio Compose del stage. El compose del stage corre `main` por defecto y vuelve a bajar la imagen en cada deploy (`pull_policy: always`). El Autodeploy de Dokploy queda apagado: dispara con el push, antes de que existan las imágenes.
-2. **`main` es lo que el stage muestra, y CI en cada PR es lo que lo protege.** Un merge que rompe el stage es exactamente lo que el stage existe para mostrar: se arregla con un PR o se revierte ([`rollback.md`](../engineering/rollback.md)).
-3. **Producción se promueve desde un Release de GitHub** cuando exista su servicio: el tag dispara el mismo workflow con la URL de producción, y ese sha es lo que se apunta, a mano hasta que producción tenga su propio paso. Un Release lleva versión semver (`v0.1.0` el primero) y su changelog generado desde los commits ([ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md)); la cadencia es por deploy a producción. Hasta que haya producción no hay Releases ni versiones: la pestaña Releases queda vacía.
-4. **La corrida manual del workflow sigue existiendo** para publicar cualquier ref con el tag del sha: una prueba, o una imagen de producción antes de que exista el disparo por Release. No publica `main` ni `latest`: nada consume un `latest`.
-5. **Los tags narrativos siguen permitidos para hitos** (una presentación, una demo, un punto de retorno): manuales, pusheables, sin `v`, fuera del changelog y sin Release. `v*` queda reservado a versiones.
+Los ambientes son:
 
-Para el primer corte, la versión sale de los commits desde el último Release: `feat` sube MINOR, `fix` y `perf` suben PATCH, `BREAKING CHANGE` sube MINOR mientras la versión sea `0.x`, y el resto no sube nada.
+| Ambiente | Vida | Fuente |
+|---|---|---|
+| Development local | Descartable | El checkout local y [`docker-compose.yml`](../../docker-compose.yml), solo para infraestructura de desarrollo. |
+| Preview de PR | Opcional y efímera | El commit del PR. No es una rama ni un ambiente persistente. |
+| Stage | Persistente | Cada merge a `main` que cambia algo desplegable. |
+| Production | Persistente | El commit señalado por un GitHub Release. Producción todavía no existe. |
+
+Cada imagen desplegable se referencia por un tag derivado del SHA inmutable. `main` y `latest` no se publican ni se consumen como tags de deploy.
+
+Para stage, GitHub Actions construye y publica las imágenes del SHA, actualiza las Applications de Dokploy, ejecuta primero la Application de migración como one-shot y espera su éxito. Recién entonces despliega API y web y verifica `/health`. Una corrida que solo cambia documentación no construye ni despliega.
+
+Para producción, un GitHub Release dispara la misma secuencia contra recursos propios de producción. Hasta que producción exista, no se afirma que esa promoción esté operativa.
+
+El frontend sigue siendo específico del destino mientras `NEXT_PUBLIC_API_URL` se hornee durante el build. Stage y producción requieren builds web separados, cada uno con el hostname interno real de su API. Ese costo y el riesgo de colisión entre artefactos del mismo commit deben resolverse en el workflow antes del primer deploy a producción. No se reemplaza esa identidad con tags móviles.
+
+Los nombres ingresados al crear Applications son prefijos humanos. Dokploy v0.26.3 agrega un sufijo aleatorio al `appName`, que es el hostname interno efectivo. El hostname generado se guarda como dato no sensible en GitHub y en el Environment de Dokploy, y se actualiza en ambos lugares si la Application se recrea. No se deriva DNS interno desde el prefijo.
 
 ## Alternativas consideradas
 
-**Seguir a mano** (lo decidido en ADR-0038 para el pre-deploy): correr el workflow, anotar el sha, cambiar dos tags, Deploy. Cada paso es corto y la suma dejó el stage viejo desde el segundo día. Descartada.
+**Seguir desplegando a mano.** El primer stage quedó atrás de `main` a los dos días. Descartada: la promoción manual no daba una señal confiable de qué commit se estaba viendo.
 
-**Autodeploy de Dokploy sobre el repo.** Dispara en el push, cuando las imágenes todavía no existen: relanzaría el compose con los tags viejos. Descartada.
+**Autodeploy de Dokploy sobre el repositorio.** Puede dispararse antes de que las imágenes del commit estén publicadas y no expresa el orden migración, API, web y health. Descartada.
 
-**Una rama de release aparte de `main`.** Sostiene con merges entre ramas lo mismo que da un tag, y agrega la pregunta de qué va a cada rama. Descartada: `main` es el stage y el tag es producción.
+**Una rama por ambiente.** Duplica estados y obliga a merges entre ramas para representar una promoción que ya puede identificar un SHA o un Release. Descartada.
 
-**Versión y tag en cada merge a `main`** (release-please, semantic-release). Asume release continuo a producción. El stage se redespliega en cada merge, pero un Release es una decisión, y hasta que haya producción no hay ninguna que tomar. Descartada.
+**Tags móviles `main` o `latest`.** Hacen que un restart pueda cambiar los bytes sin una decisión de deploy y vuelven ambiguo el rollback. Descartada.
+
+**Versionar cada merge a `main`.** Confunde la actualización continua del stage con una promoción a producción. Descartada: una versión nace cuando existe un Release y un destino productivo.
 
 ## Consecuencias
 
-- Tres secrets del repo, cargados a mano y nunca en el código: la URL del panel, una API key de Dokploy y el id del servicio Compose del stage. Sin ellos el workflow publica igual y avisa que no redesplegó.
-- [`deploy.md`](../engineering/deploy.md) describe el camino continuo del stage y conserva el manual para pinear un sha.
-- `CHANGELOG.md` sigue como una sola sección hasta el primer Release, que se genera de una pasada (ADR-0074).
-- El hardening de Production ([ADR-0059](0059-production-startup-does-not-self-repair.md)) queda intacto: producción no se repara sola al arrancar, y por eso su promoción es una decisión y no un merge.
+- El SHA servido por `/health` y el SHA configurado en cada Application son la fuente de verdad de una versión desplegada.
+- La Application de migración usa la misma imagen inmutable que la API y su éxito es un gate del deploy, no del arranque del proceso web.
+- El pipeline necesita los identificadores de las Applications y los hostnames internos generados por Dokploy. Los hostnames son variables no sensibles, pero mutables al recrear un recurso.
+- El workflow rojo es la señal mínima de un deploy fallido en stage. Una notificación activa de ese rojo es requisito previo a producción.
+- Los tags narrativos sin prefijo `v` siguen permitidos como hitos. No son Releases ni disparan producción.
+- El primer Release usa SemVer. Mientras la versión sea `0.x`, `feat` sube MINOR, `fix` y `perf` suben PATCH, `BREAKING CHANGE` sube MINOR y los demás tipos no cambian la versión.
 
 ## Refs
 
-- [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): git workflow y Conventional Commits.
-- [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera cuando hay quien lo lea.
-- [ADR-0059](0059-production-startup-does-not-self-repair.md): producción no se repara sola al arrancar.
+- [ADR-0026](0026-git-workflow-github-flow-with-rebase.md): flujo Git y Conventional Commits.
+- [ADR-0074](0074-the-changelog-is-generated-on-demand-not-appended-on-every-push.md): el changelog se genera para un Release.
+- [ADR-0093](0093-the-deploy-migrates-the-schema-and-never-seeds-data.md): migrar es parte del deploy y sembrar no.
+- [ADR-0094](0094-dokploy-applications-are-the-deployment-lifecycle-unit.md): recursos y unidad de ciclo de vida en Dokploy.
 - [`docs/engineering/deploy.md`](../engineering/deploy.md) y [`docs/engineering/rollback.md`](../engineering/rollback.md).
-- Semver: https://semver.org/spec/v2.0.0.html

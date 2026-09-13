@@ -1,27 +1,33 @@
 name: Publish images
 
-# Se publica en cada push a main porque el stage sigue a main, y también a mano para
-# cualquier ref (la corrida manual). El tag del sha es el inmutable; el tag main es
-# el móvil que consume el stage.
 on:
   push:
     branches: [main]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/publish-images.yml'
+      - 'scripts/deploy-dokploy-applications.ts'
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       ref:
         description: 'Commit, branch o tag a publicar'
         required: true
         default: 'main'
-      component:
-        description: 'Qué publicar'
+      operation:
+        description: 'Solo publicar imágenes o también desplegar el target'
         required: true
-        default: 'both'
+        default: 'publish-only'
         type: choice
-        options: [both, backend, frontend]
-      api_url:
-        description: 'URL del backend que el frontend hornea en el build; interna al compose del stage'
+        options: [publish-only, publish-and-deploy]
+      target:
+        description: 'Target que define la imagen web y, si corresponde, el despliegue'
         required: true
-        default: 'http://api:8080'
+        default: 'stage'
+        type: choice
+        options: [stage, production]
 
 permissions:
   contents: read
@@ -34,9 +40,40 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  resolve:
+    name: Resolve source and target
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      target: ${{ steps.target.outputs.target }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.event_name == 'release' && github.event.release.tag_name || github.sha }}
+          persist-credentials: false
+
+      - name: Resolve full SHA
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve target
+        id: target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TARGET: ${{ inputs.target }}
+        run: |
+          case "$EVENT_NAME" in
+            push) target="stage" ;;
+            release) target="production" ;;
+            workflow_dispatch) target="$INPUT_TARGET" ;;
+            *) echo "::error::Evento no soportado: $EVENT_NAME"; exit 1 ;;
+          esac
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+
   backend:
     name: Backend image
-    if: github.event_name == 'push' || inputs.component == 'both' || inputs.component == 'backend'
+    needs: [resolve]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -44,27 +81,22 @@ jobs:
       packages: write
     outputs:
       digest: ${{ steps.push.outputs.digest }}
-      sha: ${{ steps.meta.outputs.sha }}
+      image: ${{ steps.meta.outputs.image_ref }}
+      sha: ${{ needs.resolve.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.sha }}
+          ref: ${{ needs.resolve.outputs.sha }}
           persist-credentials: false
 
-      - name: Resolve tags
+      - name: Resolve image
         id: meta
+        env:
+          RESOLVED_SHA: ${{ needs.resolve.outputs.sha }}
         run: |
-          sha="$(git rev-parse HEAD | cut -c1-7)"
           image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-api"
-          tags="${image}:${sha}"
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            tags="${tags},${image}:main"
-          fi
-          {
-            echo "image=${image}"
-            echo "tags=${tags}"
-            echo "sha=${sha}"
-          } >> "$GITHUB_OUTPUT"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "image_ref=${image}:${RESOLVED_SHA}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve labels
         id: labels
@@ -91,9 +123,9 @@ jobs:
           context: .
           file: backend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.image_ref }}
           labels: ${{ steps.labels.outputs.labels }}
-          build-args: GIT_SHA=${{ steps.meta.outputs.sha }}
+          build-args: GIT_SHA=${{ needs.resolve.outputs.sha }}
           provenance: true
           sbom: true
           cache-from: type=gha
@@ -101,35 +133,49 @@ jobs:
 
   frontend:
     name: Frontend image
-    if: github.event_name == 'push' || inputs.component == 'both' || inputs.component == 'frontend'
+    needs: [resolve]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
       contents: read
       packages: write
+    env:
+      STAGE_INTERNAL_API_URL: ${{ vars.DOKPLOY_STAGE_API_INTERNAL_URL }}
+      PRODUCTION_INTERNAL_API_URL: ${{ vars.DOKPLOY_PRODUCTION_API_INTERNAL_URL }}
+      INTERNAL_API_URL: ${{ needs.resolve.outputs.target == 'stage' && vars.DOKPLOY_STAGE_API_INTERNAL_URL || vars.DOKPLOY_PRODUCTION_API_INTERNAL_URL }}
     outputs:
       digest: ${{ steps.push.outputs.digest }}
-      sha: ${{ steps.meta.outputs.sha }}
+      image: ${{ steps.meta.outputs.image_ref }}
+      sha: ${{ needs.resolve.outputs.sha }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.sha }}
+          ref: ${{ needs.resolve.outputs.sha }}
           persist-credentials: false
 
-      - name: Resolve tags
-        id: meta
+      - name: Validate target configuration
+        env:
+          TARGET: ${{ needs.resolve.outputs.target }}
         run: |
-          sha="$(git rev-parse HEAD | cut -c1-7)"
-          image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-web"
-          tags="${image}:${sha}"
-          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
-            tags="${tags},${image}:main"
+          case "$TARGET" in
+            stage) required_url="$STAGE_INTERNAL_API_URL" ;;
+            production) required_url="$PRODUCTION_INTERNAL_API_URL" ;;
+            *) echo "::error::Target no soportado: $TARGET"; exit 1 ;;
+          esac
+          if [ -z "$required_url" ]; then
+            echo "::error::Falta la variable DOKPLOY_${TARGET^^}_API_INTERNAL_URL."
+            exit 1
           fi
-          {
-            echo "image=${image}"
-            echo "tags=${tags}"
-            echo "sha=${sha}"
-          } >> "$GITHUB_OUTPUT"
+
+      - name: Resolve image
+        id: meta
+        env:
+          RESOLVED_SHA: ${{ needs.resolve.outputs.sha }}
+          TARGET: ${{ needs.resolve.outputs.target }}
+        run: |
+          image="${REGISTRY}/${GITHUB_REPOSITORY,,}/planb-web"
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "image_ref=${image}:${RESOLVED_SHA}-${TARGET}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve labels
         id: labels
@@ -156,9 +202,9 @@ jobs:
           context: .
           file: frontend/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.image_ref }}
           labels: ${{ steps.labels.outputs.labels }}
-          build-args: NEXT_PUBLIC_API_URL=${{ github.event_name == 'workflow_dispatch' && inputs.api_url || 'http://api:8080' }}
+          build-args: NEXT_PUBLIC_API_URL=${{ env.INTERNAL_API_URL }}
           provenance: true
           sbom: true
           cache-from: type=gha
@@ -188,7 +234,7 @@ jobs:
       - name: Scan planb-api
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}/planb-api:${{ needs.backend.outputs.sha }}
+          image-ref: ${{ needs.backend.outputs.image }}
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           format: table
@@ -198,7 +244,7 @@ jobs:
       - name: Scan planb-web
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}/planb-web:${{ needs.frontend.outputs.sha }}
+          image-ref: ${{ needs.frontend.outputs.image }}
           severity: CRITICAL,HIGH
           ignore-unfixed: true
           format: table
@@ -231,7 +277,7 @@ jobs:
       - name: Fail on critical vulnerabilities (planb-api)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}/planb-api:${{ needs.backend.outputs.sha }}
+          image-ref: ${{ needs.backend.outputs.image }}
           severity: CRITICAL
           ignore-unfixed: true
           format: table
@@ -240,94 +286,84 @@ jobs:
       - name: Fail on critical vulnerabilities (planb-web)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: ghcr.io/${{ github.repository }}/planb-web:${{ needs.frontend.outputs.sha }}
+          image-ref: ${{ needs.frontend.outputs.image }}
           severity: CRITICAL
           ignore-unfixed: true
           format: table
           exit-code: '1'
 
-  stage:
-    name: Redeploy the stage
-    # scan entra a needs para que el job espere a que termine antes de arrancar. Su resultado no
-    # entra al if: eso saltearía el job entero como "skipped" (default de Actions cuando un needs
-    # no llega a success), sin dejar rastro. always() lo deja correr igual, y el chequeo pasa al
-    # primer step, que es el que puede dejar el ::notice:: de por qué no redespliega.
-    needs: [backend, frontend, scan]
-    if: always() && github.event_name == 'push' && needs.backend.result == 'success' && needs.frontend.result == 'success'
+  deploy-stage:
+    name: Deploy stage
+    needs: [resolve, backend, frontend, scan]
+    if: >-
+      always() &&
+      needs.resolve.result == 'success' &&
+      needs.backend.result == 'success' &&
+      needs.frontend.result == 'success' &&
+      needs.scan.result == 'success' &&
+      (github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish-and-deploy' && inputs.target == 'stage'))
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 45
     env:
-      STAGE_HEALTH_URL: https://planb.olisar.com.ar/health
+      DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+      DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+      DOKPLOY_DEPLOY_TARGET: stage
+      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_MIGRATE_APPLICATION_ID }}
+      DOKPLOY_API_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_API_APPLICATION_ID }}
+      DOKPLOY_WEB_APPLICATION_ID: ${{ secrets.DOKPLOY_STAGE_WEB_APPLICATION_ID }}
+      DOKPLOY_MIGRATE_IMAGE: ${{ needs.backend.outputs.image }}
+      DOKPLOY_API_IMAGE: ${{ needs.backend.outputs.image }}
+      DOKPLOY_WEB_IMAGE: ${{ needs.frontend.outputs.image }}
+      DOKPLOY_HEALTH_URL: https://planb.olisar.com.ar/health
+      DOKPLOY_EXPECTED_SHA: ${{ needs.resolve.outputs.sha }}
     steps:
-      # Va por la API de Dokploy, no por su Autodeploy: el Autodeploy dispara con el push
-      # mismo, antes de que las imágenes existan en el registry.
-      - id: deploy
-        env:
-          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
-          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
-          DOKPLOY_STAGE_COMPOSE_ID: ${{ secrets.DOKPLOY_STAGE_COMPOSE_ID }}
-          SCAN_RESULT: ${{ needs.scan.result }}
-        run: |
-          if [ "$SCAN_RESULT" != "success" ]; then
-            echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque el escaneo de vulnerabilidades no pasó (scan: ${SCAN_RESULT})."
-            echo "deployed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if [ -z "$DOKPLOY_URL" ] || [ -z "$DOKPLOY_API_KEY" ] || [ -z "$DOKPLOY_STAGE_COMPOSE_ID" ]; then
-            echo "::notice::Las imágenes quedaron publicadas; el stage no se redespliega porque faltan los secrets de Dokploy."
-            echo "deployed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          curl --fail --silent --show-error --retry 3 --retry-delay 5 -X POST "$DOKPLOY_URL/api/compose.deploy" -H "x-api-key: $DOKPLOY_API_KEY" -H "Content-Type: application/json" -d "{\"composeId\": \"$DOKPLOY_STAGE_COMPOSE_ID\"}"
-          echo "El stage está redesplegando ${GITHUB_SHA:0:7}."
-          echo "deployed=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+          persist-credentials: false
 
-      # El deploy se verifica contra el sha que sirve el stage, no contra la
-      # respuesta de Dokploy: esa solo confirma que encoló el redeploy.
-      - name: Wait for the stage to run this sha
-        if: steps.deploy.outputs.deployed == 'true'
-        run: |
-          expected="${GITHUB_SHA:0:7}"
-          code=""
-          version=""
-          status="sin respuesta"
-          # El step corre con set -e y pipefail: mientras Dokploy recrea los contenedores, curl
-          # puede no conectar y Traefik puede contestar HTML, y tanto el exit code de curl como el
-          # de jq al no poder parsearlo cortaban la espera en ese mismo intento. Los || true los
-          # convierten en el "sin respuesta" que el loop ya sabe esperar.
-          for _ in $(seq 1 30); do
-            body="$(curl -s --max-time 10 -w '\n%{http_code}' "$STAGE_HEALTH_URL" || true)"
-            code="${body##*$'\n'}"
-            json="${body%$'\n'*}"
-            version="$(printf '%s' "$json" | jq -r '.version // empty' 2>/dev/null || true)"
-            if [ "$code" = "200" ] && [ "$version" = "$expected" ]; then
-              echo "El stage corre ${expected}."
-              exit 0
-            fi
-            if [ "$code" = "000" ] || [ -z "$code" ]; then
-              status="sin respuesta"
-            else
-              status="${code} ${version}"
-            fi
-            echo "El stage todavía no corre ${expected} (último /health: ${status})."
-            sleep 10
-          done
-          echo "::error::El stage no llegó a ${expected} en 5 minutos (último /health: ${status})."
-          exit 1
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.5
 
-  # Recordatorio en el log de la corrida, no un paso automático. Aplicar el schema desde un runner
-  # de GitHub exigiría exponer la base de producción a internet; el paso corre en el host del deploy.
-  # Runbook: docs/engineering/deploy.md
-  reminder:
-    name: Siguiente paso
-    needs: [backend]
-    if: github.event_name == 'workflow_dispatch' && needs.backend.result == 'success'
+      - name: Deploy applications
+        run: bun scripts/deploy-dokploy-applications.ts
+
+  deploy-production:
+    name: Deploy production
+    needs: [resolve, backend, frontend, scan]
+    if: >-
+      always() &&
+      needs.resolve.result == 'success' &&
+      needs.backend.result == 'success' &&
+      needs.frontend.result == 'success' &&
+      needs.scan.result == 'success' &&
+      (github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && inputs.operation == 'publish-and-deploy' && inputs.target == 'production'))
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 45
+    env:
+      DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+      DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+      DOKPLOY_DEPLOY_TARGET: production
+      DOKPLOY_MIGRATE_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_MIGRATE_APPLICATION_ID }}
+      DOKPLOY_API_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_API_APPLICATION_ID }}
+      DOKPLOY_WEB_APPLICATION_ID: ${{ secrets.DOKPLOY_PRODUCTION_WEB_APPLICATION_ID }}
+      DOKPLOY_MIGRATE_IMAGE: ${{ needs.backend.outputs.image }}
+      DOKPLOY_API_IMAGE: ${{ needs.backend.outputs.image }}
+      DOKPLOY_WEB_IMAGE: ${{ needs.frontend.outputs.image }}
+      DOKPLOY_HEALTH_URL: ${{ secrets.DOKPLOY_PRODUCTION_HEALTH_URL || vars.DOKPLOY_PRODUCTION_HEALTH_URL }}
+      DOKPLOY_EXPECTED_SHA: ${{ needs.resolve.outputs.sha }}
     steps:
-      - run: |
-          echo "Para el stage estos pasos no aplican: el api migra y siembra solo al arrancar (sección Stage de docs/engineering/deploy.md)."
-          echo "Imagen publicada. Antes de levantar la versión nueva:"
-          echo "  1. db-apply con la imagen recién publicada (migraciones EF + schema de Wolverine)"
-          echo "  2. recién ahí, apuntar el servicio a la imagen nueva"
-          echo "Pasos exactos en docs/engineering/deploy.md"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.5
+
+      - name: Deploy applications
+        run: bun scripts/deploy-dokploy-applications.ts
