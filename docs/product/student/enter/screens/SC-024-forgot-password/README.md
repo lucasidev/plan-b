@@ -31,7 +31,7 @@ Llega desde Ingresar ("¿olvidaste tu contraseña?"). Al guardar la contraseña 
 
 ## Decisiones que aplica
 
-[Que no me molesten](../../../../guarantees/README.md) (la garantía, dicha en su propio texto), [THESIS.md](../../../../../THESIS.md) (decisión 3: producir pide cuenta, y esta pantalla sostiene esa cuenta sin fricción).
+[Que no me molesten](../../../../guarantees/README.md) (la garantía, dicha en su propio texto), [THESIS.md](../../../../../THESIS.md) (Posición tomada: producir pide cuenta, y esta pantalla sostiene esa cuenta sin fricción).
 
 ## Lo que esta ficha deja abierto
 

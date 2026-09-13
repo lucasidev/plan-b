@@ -34,7 +34,7 @@ Llega desde: cualquier acción con cuenta que se dispara sin tenerla (reseñar, 
 
 ## Decisiones que aplica
 
-[THESIS.md](../../../../../THESIS.md) (decisión 3: leer no pide cuenta, producir sí; el gate está en la acción, no en la puerta), [Que no me molesten](../../../../guarantees/README.md) (el checklist de las cuatro garantías, y cómo se verifica en cada ficha nueva).
+[THESIS.md](../../../../../THESIS.md) (Posición tomada: leer no pide cuenta, producir sí; la puerta llega en la acción, no antes de leer), [Que no me molesten](../../../../guarantees/README.md) (el checklist de las cuatro garantías, y cómo se verifica en cada ficha nueva).
 
 ## Lo que esta ficha deja abierto
 

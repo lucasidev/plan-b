@@ -33,7 +33,7 @@ Llega desde: Ingresar ("¿no tenés cuenta?"), el mail "cargamos lo que pediste"
 
 ## Decisiones que aplica
 
-[THESIS.md](../../../../../THESIS.md) (decisión 3: producir pide cuenta), [Que no me molesten](../../../../guarantees/README.md) (US-169), [Pedir una carrera](../../../request-a-career/README.md) (US-142), [Reseñar](../../../write-a-review/README.md) (US-155), Restricciones del [catálogo](../../../../README.md) (consentimiento informado, Ley 25.326).
+[THESIS.md](../../../../../THESIS.md) (Posición tomada: producir pide cuenta), [Que no me molesten](../../../../guarantees/README.md) (US-169), [Pedir una carrera](../../../request-a-career/README.md) (US-142), [Reseñar](../../../write-a-review/README.md) (US-155), Restricciones del [catálogo](../../../../README.md) (consentimiento informado, Ley 25.326).
 
 ## Lo que esta ficha deja abierto
 
