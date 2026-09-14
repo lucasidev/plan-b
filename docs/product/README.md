@@ -80,7 +80,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-005` |  | [Ficha de institución](reviewed/reply/screens/SC-005-institution/README.md) | `/universities/[slug]/careers` |
 | `SC-006` |  | [Buscar](student/choose-where-to-study/screens/SC-006-search/README.md) | sin slug hoy |
 | `SC-007` |  | [Ficha de materia](student/choose-where-to-study/screens/SC-007-subject/README.md) | `/subjects/[id]` |
-| `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | sin slug hoy |
+| `SC-008` |  | [Dónde estudiarla](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | `/careers/[id]/where-to-study` |
 | `SC-035` |  | [Docente](student/choose-where-to-study/screens/SC-035-teacher/README.md) | `/teachers/[id]` |
 | `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
 | `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |

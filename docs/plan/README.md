@@ -7,6 +7,7 @@
 | [`status.md`](status.md) | Los sprints: cadencia, foco, qué entró y qué quedó, y el trabajo de cada story planificada. El estado del proyecto se lee acá. |
 | [`story-template.md`](story-template.md) | Cómo se escribe una story y cómo se planifica: el formato de las dos cosas y las reglas del ID. |
 | [`definition-of-done.md`](definition-of-done.md) | Cuándo una story está terminada. Vale para todas, incluidas las restricciones que se sostienen siempre. |
+| [`demo-script.md`](demo-script.md) | El guion de la demo de R7: el checklist previo del jueves, el camino con sus URL sobre el stage y qué promesa de la tesis enseña cada paso. |
 
 ## La separación, en una línea
 

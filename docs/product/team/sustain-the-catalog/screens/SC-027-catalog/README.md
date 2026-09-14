@@ -14,7 +14,7 @@ US-191 (dueña: la pantalla abre por huecos, y entre ellos los dos que bloquean 
 
 Para una oferta que se está cargando por primera vez:
 
-1. **Huecos primero**: la pantalla abre listando las ofertas por cuántos campos les faltan, no por las que ya están casi listas; entre los huecos, dos bloquean publicar y se marcan aparte, la duración nominal del plan y la carrera canónica (US-191).
+1. **Huecos primero** (describe el destino: es US-191, en el Backlog; hoy el backoffice lista sin priorizar): la pantalla abre listando las ofertas por cuántos campos les faltan, no por las que ya están casi listas; entre los huecos, dos bloquean publicar y se marcan aparte, la duración nominal del plan y la carrera canónica (US-191).
 2. **Cargar el plan**: duración nominal (sin ella no hay brecha ni cohorte cerrada, ADR-0085) y materias canónicas del plan, con su año; el contador de huecos baja a medida que se completa.
 3. **Cátedras**: se cargan como entidad propia, el equipo docente a cargo de una materia con su titular, no como comisión; persisten entre períodos (US-196).
 4. **Atar la carrera canónica**: buscar una carrera canónica existente o declarar una nueva; la decisión queda con quién la tomó y cuándo (US-195). Es lo que permite que Dónde estudiarla compare esta oferta con las de otras instituciones.

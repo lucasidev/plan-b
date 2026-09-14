@@ -13,7 +13,7 @@ US-198 (dueña: el catálogo de frases se edita en un lugar, cada cambio con aut
 ## Qué muestra
 
 - **El catálogo entero** de [`phrases.md`](../../../../phrases.md) en una sola tabla: texto, capa (contexto, qué hizo la cátedra, o qué te pasó a vos), opciones con la negativa marcada, código, y autor y fecha del último cambio; se edita ahí mismo. Editar el texto de una frase sin cambiar su significado guarda en el mismo código, misma serie. Si el cambio altera el significado, pide confirmar que abre un código nuevo: la pantalla dice que la serie va a declarar un corte antes de aplicar (US-198).
-- **La cola de curaduría**: cada candidata que la destilación propuso, con los comentarios del campo libre de los que salió, y dos salidas. **Aprobar**, asignándole capa, opciones y un código estable: recién ahí se ofrece para responder, marcada como destilada (US-199, US-187). **Descartar**: no se ofrece nunca, y no queda rastro público.
+- **La cola de curaduría** (describe el destino: es US-199, en el Backlog; hoy destilar publica en un solo paso, como dice [Curaduría](../SC-036-curation/README.md)): cada candidata que la destilación propuso, con los comentarios del campo libre de los que salió, y dos salidas. **Aprobar**, asignándole capa, opciones y un código estable: recién ahí se ofrece para responder, marcada como destilada (US-199, US-187). **Descartar**: no se ofrece nunca, y no queda rastro público.
 - **Notas editoriales**: la lectura del campo libre también alimenta síntesis a nivel carrera o institución, nunca cátedra, sin nombres y con su procedencia dicha ("leída de comentarios que no se publican"), fechadas ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
 
 ## Estados
