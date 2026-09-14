@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { fetchSubjectsByPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchSubjectFactsServer, SubjectFactsSheet } from '@/features/subject-facts';
 import { reviewCtaHref } from '@/features/write-review';
 import { getSession } from '@/lib/session';
@@ -36,5 +37,15 @@ export default async function SubjectPage({ params }: { params: Params }) {
     notFound();
   }
 
-  return <SubjectFactsSheet facts={facts} reviewHref={reviewCtaHref(session)} />;
+  // Las otras materias del mismo año del plan (columna derecha): un segundo pedido, ya con el
+  // careerPlanId que la ficha trae, igual que hace el catálogo público para su propio breadcrumb.
+  const planSubjects = await fetchSubjectsByPlanServer(facts.careerPlanId);
+
+  return (
+    <SubjectFactsSheet
+      facts={facts}
+      planSubjects={planSubjects}
+      reviewHref={reviewCtaHref(session)}
+    />
+  );
 }

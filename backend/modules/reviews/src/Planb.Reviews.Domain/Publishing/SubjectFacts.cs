@@ -16,36 +16,10 @@ public sealed record SubjectFacts(
     int TotalVoices,
     int PublishingChairs,
     int ChairsBelowFloor,
-    ItemDistribution? Attempts,
     CompletionRate? Completion,
     IReadOnlyList<ChairSpread> Spread,
     IReadOnlyList<SharedTrait> Shared,
     IReadOnlyList<ChairListing> Chairs);
-
-/// <summary>
-/// La distribución de una frase agregada sobre las cátedras que publican.
-///
-/// <para>
-/// Es distribución y no promedio a propósito. El boceto de la pantalla pedía "2,1 intentos", y esa
-/// forma no sobrevive por dos razones distintas: en una escala de opiniones el promedio no
-/// significa nada (lo que ADR-0083 descarta como "2,4 sobre 3"), y acá, donde la aritmética sí
-/// sería válida, la última opción es abierta ("tres o más"), así que el promedio subestima siempre
-/// y por un margen que nadie puede recalcular.
-/// </para>
-///
-/// <para>
-/// <see cref="OpenEnded"/> es esa opción abierta, cuando la frase tiene una. Viaja aparte del resto
-/// de la distribución para que la ficha pueda decirla sola: es la gente a la que le costó, o sea
-/// justo la que el dato existe para hacer visible.
-/// </para>
-/// </summary>
-public sealed record ItemDistribution(
-    string ItemCode,
-    string ModeLabel,
-    int ModePercent,
-    int Total,
-    IReadOnlyList<PublishedOption> Options,
-    PublishedOption? OpenEnded);
 
 /// <summary>
 /// Una frase donde las cátedras difieren de verdad: la respuesta depende de con quién te toque.
@@ -76,9 +50,9 @@ public sealed record SharedTrait(
     int ChairCount);
 
 /// <summary>
-/// Una cátedra en la lista de la materia. Las que no llegan al piso aparecen igual, con su cuenta
-/// y lo que les falta, pero sin un solo conteo: esconderlas seria mentir sobre lo que hay, y
-/// adelantar sus números delataría a los pocos que ya reseñaron.
+/// Una cátedra en la lista de la materia. Las que no llegan al piso aparecen igual, con su cuenta,
+/// pero sin un solo conteo: esconderlas sería mentir sobre lo que hay, y adelantar sus números
+/// delataría a los pocos que ya reseñaron.
 /// </summary>
 public sealed record ChairListing(
     Guid ChairId,
@@ -86,4 +60,22 @@ public sealed record ChairListing(
     int ReviewCount,
     bool IsPublished,
     int ReviewsMissingToPublish,
-    DateTimeOffset? LastReviewedAt);
+    DateTimeOffset? LastReviewedAt,
+    /// <summary>
+    /// La frase de conducta con la moda más marcada de esta cátedra
+    /// (<see cref="SubjectChairHeadlineCalculator"/>). Null si no publica, si publica sin una sola
+    /// respuesta de conducta, o si ninguna frase de conducta junta el piso de respuestas.
+    /// </summary>
+    SubjectChairHeadline? Headline);
+
+/// <summary>
+/// La frase de conducta con la moda más marcada de una cátedra publicada: el ítem de la capa
+/// ChairConduct cuya opción más marcada pesa más, con su denominador (US-129).
+///
+/// <para>
+/// Es la misma frase, opción y porcentaje que la ficha de esa cátedra ya publica como su moda y
+/// "de N voces" (ADR-0083): esto no calcula nada nuevo, elige cuál de los que ya existen mostrar
+/// en la lista de cátedras de la materia.
+/// </para>
+/// </summary>
+public sealed record SubjectChairHeadline(string ItemCode, short OptionValue, int Percent, int Respondents);

@@ -150,7 +150,7 @@ test.describe('La ficha de cátedra publica al cruzar el piso (US-147)', () => {
     await context.clearCookies();
     await page.goto(`/chairs/${chair.chairId}`);
 
-    await expect(page.getByText(/10 voces/i)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(/10 reseñas/i)).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText(/con 1 más se publica/i)).toHaveCount(0);
 
     // La moda como badge, con su etiqueta literal y su porcentaje: nunca un promedio.

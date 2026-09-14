@@ -4,9 +4,9 @@
 
 ## Camino feliz
 
-**E1.** Dado que "Análisis Matemático II" tiene tres cátedras que pasaron el piso (Pérez, Ruiz y González, sumando 111 voces) y una cuarta, Paz, con solo 3 reseñas
+**E1.** Dado que "Análisis Matemático II" tiene tres cátedras que pasaron el piso (Pérez, Ruiz y González, sumando 111 reseñas) y una cuarta, Paz, con solo 3 reseñas
 Cuando se muestra la Ficha de materia
-Entonces el dato de Paz no aparece en ninguno de los cuatro números de la materia (intentos, habilita, llegan, libre) ni en la dispersión entre cátedras: se lista aparte, en "sus cátedras", con su propia cuenta y cuánto le falta ("3 reseñas · con 7 más se publica").
+Entonces el dato de Paz no aparece en ninguno de los números de la materia (habilita, llegan) ni en la dispersión entre cátedras: se lista aparte, en "sus cátedras", con su propia cuenta y sin conclusión ("3 reseñas, todavía sin conclusiones."); cuánto le falta para publicar lo dice su propia ficha ("junta 3 reseñas: con 7 más se publica").
 
 **E2.** Dado que Ingeniería en Sistemas en UNT tiene 23 de 51 materias con al menos una cátedra que pasó el piso
 Cuando se muestra "qué frena la cursada" en la Ficha de carrera

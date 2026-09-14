@@ -427,39 +427,55 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto(`/subjects/${SUBJECT_FUNDAMENTOS_ID}`);
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    const perezRow = page.getByRole('link', { name: 'Pérez 14 voces' });
-    const gonzalezRow = page.getByRole('link', { name: 'González 12 voces' });
-    const ruizRow = page.getByRole('link', { name: 'Ruiz 6 reseñas · faltan 4' });
-    const hasPerez = await checkVisible(perezRow, 'Pérez debe figurar publicando con 14 voces');
+    // El conteo ya no vive en el nombre del link (V15, #519): cada fila trae el nombre solo, y
+    // debajo su frase de conclusión ("La cátedra {nombre} {frase}: lo dice el N % de sus M
+    // reseñas.") o, sin conclusión todavía, "N reseñas, todavía sin conclusiones."; las cátedras
+    // sin ninguna reseña se pliegan en "K cátedras más · sin reseñas todavía".
+    const perezRow = page.getByRole('link', { name: 'Pérez', exact: true });
+    const gonzalezRow = page.getByRole('link', { name: 'González', exact: true });
+    const ruizRow = page.getByRole('link', { name: 'Ruiz', exact: true });
+    const perezConclusion = page.getByText(
+      /La cátedra Pérez|^\d+ reseñas, todavía sin conclusiones/,
+    );
+    const gonzalezConclusion = page.getByText(
+      /La cátedra González|^\d+ reseñas, todavía sin conclusiones/,
+    );
+    const ruizConclusion = page.getByText(/La cátedra Ruiz|^\d+ reseñas, todavía sin conclusiones/);
+    const foldedLine = page.getByText(/cátedras? más · sin reseñas todavía/);
+    const hasPerez = await checkVisible(
+      perezRow,
+      'Pérez debe figurar entre las cátedras con reseñas',
+    );
     const hasGonzalez = await checkVisible(
       gonzalezRow,
-      'González debe figurar publicando con 12 voces',
+      'González debe figurar entre las cátedras con reseñas',
     );
     const hasRuiz = await checkVisible(
       ruizRow,
-      'Ruiz debe figurar juntando 6 reseñas, con 4 faltantes',
+      'Ruiz debe figurar entre las cátedras con reseñas (junta 6, bajo el piso de 10)',
     );
+    const hasFolded = await isVisible(foldedLine, 2000);
     record({
       step: 6,
       story: 'US-131',
       expected:
-        'Tres cátedras con su estado: Pérez publica con 14 voces, González con 12, Ruiz junta 6 y le faltan 4.',
-      observed: `"${await textOf(perezRow)}" · "${await textOf(gonzalezRow)}" · "${await textOf(ruizRow)}"`,
+        'Tres cátedras listadas por nombre, cada una con su conclusión (o "todavía sin conclusiones"); las que no tienen ninguna reseña se pliegan en una sola línea.',
+      observed: `Pérez: "${await textOf(perezConclusion)}". González: "${await textOf(gonzalezConclusion)}". Ruiz: "${await textOf(ruizConclusion)}".${hasFolded ? ` Plegado: "${await textOf(foldedLine)}".` : ' Sin cátedras plegadas en esta materia.'}`,
       verdict: combineVerdict([hasPerez, hasGonzalez, hasRuiz]),
       screenshot: '06-subject-fiche.png',
     });
 
-    const voicesLine = page.getByText(/\d+ voces en \d+ cátedras/);
+    const voicesLine = page.getByText(/\d+ reseñas en \d+ cátedras/);
     const hasVoicesLine = await checkVisible(
       voicesLine,
-      'debe decir sobre cuántas voces y en cuántas cátedras se calcula',
+      'debe decir sobre cuántas reseñas y en cuántas cátedras se calcula',
     );
     const coverageWord = page.getByText(/cobertura/i);
     const hasCoverageWord = await isVisible(coverageWord, 2000);
     record({
       step: 6,
       story: 'US-134',
-      expected: 'Sobre cuántas voces se calcula la materia, y su cobertura.',
+      expected: 'Sobre cuántas reseñas se calcula la materia, y su cobertura.',
       observed: `"${await textOf(voicesLine)}". La palabra "cobertura" ${hasCoverageWord ? 'sí aparece' : 'no aparece'} en esta ficha (a diferencia de la ficha de carrera, que sí la nombra): lo que hay es esa línea, con en cuántas cátedras hay datos.`,
       verdict: hasVoicesLine ? (hasCoverageWord ? 'cumple' : 'parcial') : 'no cumple',
       screenshot: '06-subject-fiche.png',

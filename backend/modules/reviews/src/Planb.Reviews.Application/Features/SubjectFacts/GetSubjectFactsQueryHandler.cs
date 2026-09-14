@@ -30,9 +30,27 @@ public static class GetSubjectFactsQueryHandler
             return SubjectFactsErrors.SubjectNotFound;
         }
 
+        // La carrera y la universidad son identidad, no conteo: se piden por contrato igual que en
+        // ChairFacts/CareerFacts. El plan ya lo trae subject; de ahí a la carrera y su universidad
+        // es la misma cadena que CareerFacts resuelve para su propia ficha. Que no resuelvan es
+        // lectura pública contra un catálogo que cambia (la carrera se puede desactivar): el mismo
+        // 404 que da una materia inexistente, no un 500.
+        var careerPlan = await academic.GetCareerPlanByIdAsync(subject.CareerPlanId, ct);
+        if (careerPlan is null)
+        {
+            return SubjectFactsErrors.SubjectNotFound;
+        }
+
+        var career = await academic.GetCareerByIdAsync(careerPlan.CareerId, ct);
+        if (career is null)
+        {
+            return SubjectFactsErrors.SubjectNotFound;
+        }
+
         var chairs = await academic.ListChairsBySubjectAsync(subject.Id, ct);
         var counted = await tallies.GetPerChairAsync(
             chairs.Select(c => (c.Id, c.Name)).ToList(), ct);
+        var leadTeacherNames = chairs.ToDictionary(c => c.Id, FullName);
 
         var facts = SubjectFactsCalculator.Calculate(counted.Chairs);
 
@@ -65,17 +83,19 @@ public static class GetSubjectFactsQueryHandler
             [],
             ct);
 
-        return Present(subject, facts, counted, enables, years, takenWith, labels);
+        return Present(subject, career, facts, counted, enables, years, takenWith, labels, leadTeacherNames);
     }
 
     private static GetSubjectFactsResponse Present(
         SubjectDetailItem subject,
+        CareerDetailItem career,
         Domain.Publishing.SubjectFacts facts,
         SubjectTallies counted,
         int enables,
         IReadOnlyList<int> years,
         IReadOnlyList<SubjectPairCalculator.PairFacts> takenWith,
-        CatalogLabels labels)
+        CatalogLabels labels,
+        IReadOnlyDictionary<Guid, string?> leadTeacherNames)
     {
         var text = (string code) => counted.ItemTexts.TryGetValue(code, out var t) ? t : code;
 
@@ -84,27 +104,15 @@ public static class GetSubjectFactsQueryHandler
             SubjectCode: subject.Code,
             SubjectName: subject.Name,
             YearInPlan: subject.YearInPlan,
+            CareerPlanId: subject.CareerPlanId,
+            CareerId: career.Id,
+            CareerName: career.Name,
+            UniversityName: career.UniversityName,
             IsPublished: facts.IsPublished,
             TotalVoices: facts.TotalVoices,
             PublishingChairs: facts.PublishingChairs,
             ChairsBelowFloor: facts.ChairsBelowFloor,
             Span: years.Count == 0 ? null : new SubjectSpanView(years[0], years[^1]),
-            Attempts: facts.Attempts is { } a
-                ? new DistributionView(
-                    a.ItemCode,
-                    text(a.ItemCode),
-                    a.ModeLabel,
-                    a.ModePercent,
-                    a.Total,
-                    a.Options
-                        .Select(o => new SliceView(
-                            o.Label, o.Percent, o.Valence == OptionValence.Negative))
-                        .ToList(),
-                    a.OpenEnded is { } tail
-                        ? new SliceView(
-                            tail.Label, tail.Percent, tail.Valence == OptionValence.Negative)
-                        : null)
-                : null,
             Completion: facts.Completion is { } c
                 ? new SubjectCompletionView(c.OutOfTen, c.Reaching, c.Total)
                 : null,
@@ -144,9 +152,18 @@ public static class GetSubjectFactsQueryHandler
                     c.ReviewCount,
                     c.IsPublished,
                     c.ReviewsMissingToPublish,
-                    c.LastReviewedAt))
+                    c.LastReviewedAt,
+                    leadTeacherNames.GetValueOrDefault(c.ChairId),
+                    c.Headline is { } h
+                        ? new SubjectChairHeadlineView(h.ItemCode, h.OptionValue, h.Percent, h.Respondents)
+                        : null))
                 .ToList());
     }
+
+    private static string? FullName(ChairListItem chair) =>
+        chair.LeadFirstName is null && chair.LeadLastName is null
+            ? null
+            : $"{chair.LeadFirstName} {chair.LeadLastName}".Trim();
 }
 
 /// <summary>Los errores de leer una ficha de materia. Es lectura pública: el único caso es que no exista.</summary>
