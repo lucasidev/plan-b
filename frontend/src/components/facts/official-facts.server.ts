@@ -28,3 +28,31 @@ export async function fetchOfficialFactsServer(
   const body = (await response.json()) as { facts: OfficialFact[] };
   return body.facts;
 }
+
+/** Las afirmaciones vigentes de UN sujeto, dentro de la respuesta agrupada por tipo (ADR-0090, ADR-0096). */
+export type SubjectOfficialFacts = {
+  subjectId: string;
+  facts: OfficialFact[];
+};
+
+/**
+ * Fetcher server-side de los datos oficiales de TODOS los sujetos de un tipo, agrupados por sujeto
+ * (ADR-0090, ADR-0096): lo que Explorar necesita para interpretar el relevamiento por institución u
+ * oferta sin pedirlo sujeto por sujeto. Mismo patrón que `fetchOfficialFactsServer`: pública, sin
+ * cuenta, nunca 404 (un tipo sin relevamiento todavía devuelve `subjects: []`).
+ */
+export async function fetchOfficialFactsBySubjectTypeServer(
+  subjectType: 'Institution' | 'Offering',
+): Promise<SubjectOfficialFacts[]> {
+  const response = await apiFetch(
+    `/api/academic/official-facts/by-subject-type?subjectType=${subjectType}`,
+    { cache: 'no-store' },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Official facts by subject type fetch failed: ${response.status}`);
+  }
+
+  const body = (await response.json()) as { subjects: SubjectOfficialFacts[] };
+  return body.subjects;
+}

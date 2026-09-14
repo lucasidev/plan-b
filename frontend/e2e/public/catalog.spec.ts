@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 /**
  * E2E del catálogo público (US-001): universidades → carreras → planes → materias, sin login.
@@ -15,6 +15,16 @@ const UNSTA_SLUG = 'unsta';
 const TUDCS_CAREER_ID = '00000002-0000-4000-a000-000000000003';
 const TUDCS_PLAN_2018_ID = '00000003-0000-4000-a000-000000000003';
 
+/**
+ * El link de una universidad en la lista de `/universities`, acotado al `listitem` que la
+ * contiene (ADR-0096): la columna "Lo que los datos dicen" puede nombrar a la misma universidad
+ * en sus propios links (la más elegida, quien más avanza), así que buscar por nombre en toda la
+ * página resuelve más de un elemento (mismo patrón que 87c05bf8).
+ */
+function universityLink(page: Page, name: string | RegExp) {
+  return page.getByRole('listitem').filter({ hasText: name }).getByRole('link');
+}
+
 test.describe('Catálogo público (US-001)', () => {
   test.setTimeout(120_000);
 
@@ -24,7 +34,7 @@ test.describe('Catálogo público (US-001)', () => {
       timeout: 30_000,
     });
     await expect(
-      page.getByRole('link', { name: /universidad del norte santo tomás de aquino/i }),
+      universityLink(page, /universidad del norte santo tomás de aquino/i),
     ).toBeVisible();
 
     await page.goto(`/universities/${UNSTA_SLUG}/careers`);
@@ -61,7 +71,7 @@ test.describe('Catálogo público (US-001)', () => {
 
   test('el link de la lista de universidades navega a sus carreras', async ({ page }) => {
     await page.goto('/universities');
-    await page.getByRole('link', { name: /universidad del norte santo tomás de aquino/i }).click();
+    await universityLink(page, /universidad del norte santo tomás de aquino/i).click();
     await expect(page).toHaveURL(new RegExp(`/universities/${UNSTA_SLUG}/careers$`), {
       timeout: 30_000,
     });
@@ -90,5 +100,51 @@ test.describe('Catálogo público (US-001)', () => {
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}/plans$`), {
       timeout: 30_000,
     });
+  });
+
+  test('US-222: la lente de Carreras agrupa lo que se dicta en más de una institución (ADR-0096)', async ({
+    page,
+  }) => {
+    // La Tecnicatura de UNSTA comparte carrera canónica con UNT y UTN-FRT
+    // (CanonicalCareerGroupings.cs, "Tecnicatura o técnico en programación"): dato determinístico
+    // del seed, no depende de que alguien haya reseñado nada.
+    await page.goto('/careers');
+    await expect(page.getByRole('heading', { name: 'Carreras', level: 1 })).toBeVisible({
+      timeout: 30_000,
+    });
+    await expect(
+      page.getByRole('heading', { name: 'En más de una institución', level: 2 }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Tecnicatura o técnico en programación', level: 3 }),
+    ).toBeVisible();
+
+    const tudcsLink = page.getByRole('link', {
+      name: /tecnicatura universitaria en desarrollo y calidad de software/i,
+    });
+    await expect(tudcsLink).toBeVisible();
+    await tudcsLink.click();
+    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
+  });
+
+  test('US-222: /careers muestra primero "en más de una institución" y no mezcla sus grupos con "en una sola"', async ({
+    page,
+  }) => {
+    await page.goto('/careers');
+    await expect(page.getByRole('heading', { name: 'Carreras', level: 1 })).toBeVisible({
+      timeout: 30_000,
+    });
+
+    const sectionHeadings = await page.getByRole('heading', { level: 2 }).allTextContents();
+    expect(sectionHeadings).toEqual(['En más de una institución', 'En una sola institución']);
+
+    // El grupo canónico multi-institución (Tecnicatura o técnico en programación) no puede
+    // reaparecer como encabezado adentro de la lista compacta de "en una sola institución".
+    const singleSection = page.locator('section', {
+      has: page.getByRole('heading', { name: 'En una sola institución' }),
+    });
+    await expect(
+      singleSection.getByRole('heading', { name: 'Tecnicatura o técnico en programación' }),
+    ).toHaveCount(0);
   });
 });

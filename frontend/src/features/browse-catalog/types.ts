@@ -90,8 +90,8 @@ export type CareerCoverage = {
   canonicalGroupName: string | null;
 };
 
-/** Una universidad con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222). */
+/** Una universidad con cuántas carreras tiene y cuántas de esas tienen reseñas, ver `hasReviews` (US-222, ADR-0096). */
 export type UniversityWithCoverage = University & {
   careerCount: number;
-  careersWithSomethingToRead: number;
+  careersWithReviews: number;
 };
