@@ -19,7 +19,7 @@ test.describe('el refresh silencioso renueva la sesión', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     const refreshBefore = (await context.cookies()).find(
       (cookie) => cookie.name === 'planb_refresh',
@@ -28,7 +28,7 @@ test.describe('el refresh silencioso renueva la sesión', () => {
     await context.clearCookies({ name: 'planb_session' });
 
     await page.goto('/home');
-    await expect(page).toHaveURL(/\/home$/);
+    await expect(page).toHaveURL(/\/reviews\/mine$/);
 
     const cookiesAfter = await context.cookies();
     const sessionAfter = cookiesAfter.find((cookie) => cookie.name === 'planb_session');
@@ -49,7 +49,7 @@ test.describe('el refresh silencioso renueva la sesión', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     const revokedRefresh = (await context.cookies()).find(
       (cookie) => cookie.name === 'planb_refresh',

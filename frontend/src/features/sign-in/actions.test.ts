@@ -74,7 +74,7 @@ describe('signInAction', () => {
     });
   }
 
-  it('manda al alumno a su inicio', async () => {
+  it('manda al alumno a Mis aportes', async () => {
     signInMock.mockResolvedValue(okResponse('Member'));
 
     await expect(
@@ -84,7 +84,7 @@ describe('signInAction', () => {
       ),
     ).resolves.toEqual({
       status: 'success',
-      redirectTo: '/home',
+      redirectTo: '/reviews/mine',
     });
 
     expect(signInMock).toHaveBeenCalledWith({
@@ -121,7 +121,7 @@ describe('signInAction', () => {
       ),
     ).resolves.toEqual({
       status: 'success',
-      redirectTo: '/home',
+      redirectTo: '/reviews/mine',
     });
   });
 

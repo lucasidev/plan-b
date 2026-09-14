@@ -49,8 +49,8 @@ export async function signInAction(
   });
 
   if (response.status === 200) {
-    // El destino sale del rol, no de una constante: `/home` es solo el del alumno, y mandar
-    // ahí a cualquier otro lo deja rebotando entre el guard de `(member)` y el de `(auth)`.
+    // El destino sale del rol, no de una constante: `/reviews/mine` es solo el del alumno, y
+    // mandar ahí a cualquier otro lo deja rebotando entre el guard de `(member)` y el de `(auth)`.
     const payload = (await response.json().catch(() => null)) as SignInUserPayload | null;
     const role = payload?.role ? normalizeRole(payload.role) : null;
 

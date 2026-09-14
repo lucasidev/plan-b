@@ -5,7 +5,6 @@ import {
   OFFICIAL_FACT_LABELS,
   OfficialFactRow,
 } from '@/components/facts';
-import { CatalogTopbar } from '@/features/browse-catalog';
 import type { CareerComparison, CareerComparisonOffering } from '../types';
 
 /**
@@ -31,8 +30,7 @@ export function CareerComparisonView({ comparison }: { comparison: CareerCompari
   );
 
   return (
-    <div className="min-h-screen w-full">
-      <CatalogTopbar />
+    <div className="w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Header
           title={title}
@@ -136,6 +134,8 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
         <div className="min-w-0">
           <Link
             href={`/careers/${offering.careerId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
             className="text-[15px] font-medium text-ink hover:underline"
           >
             {offering.universityName}
@@ -183,7 +183,14 @@ function DerivedNote() {
     <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
       Un dato marcado "Derivado" es un cálculo con una regla propia, no lo que la fuente publica
       directamente.{' '}
-      <Link href="/method" className="text-accent-ink underline-offset-2 hover:underline">
+      <Link
+        href="/method"
+        // Sin prefetch: /method es `force-dynamic` sin loading.tsx, y con el middleware de
+        // ADR-0095 cubriéndola el prefetch por default rompe la navegación del click (ver
+        // subject-grid.tsx para el detalle completo).
+        prefetch={false}
+        className="text-accent-ink underline-offset-2 hover:underline"
+      >
         Mirá Método
       </Link>{' '}
       para la fórmula y sus sesgos.

@@ -14,7 +14,7 @@ Renovar en un middleware con las cookies rotadas por el backend es el patrón ha
 ## Decisión
 
 1. **La cookie `planb_refresh` pasa a `Path=/`**, con los mismos atributos (httpOnly, Secure, SameSite=Lax, 30 días). Viaja en cada pedido al servidor de Next, que es el mismo origen: sigue sin ser legible desde JavaScript.
-2. **`frontend/src/middleware.ts` renueva la sesión** en las rutas con cuenta (`/home`, `/reviews/*`, `/my-profile`, `/settings`, `/help`, `/admin/*`): verifica el access token con la misma clave que `session.ts`; si falta o vence en menos de dos minutos y hay refresh, llama a `POST /api/identity/refresh` del backend con esa cookie, reenvía a la respuesta los `Set-Cookie` rotados que el backend emite, y sigue el mismo pedido con el access token nuevo en la cabecera `Cookie`, así el render ya lo ve. Si el refresh falla, no toca nada y el guard manda a Ingresar como hoy.
+2. **`frontend/src/middleware.ts` renueva la sesión** en las rutas con cuenta (`/home`, `/reviews/*`, `/my-profile`, `/settings`, `/admin/*`): verifica el access token con la misma clave que `session.ts`; si falta o vence en menos de dos minutos y hay refresh, llama a `POST /api/identity/refresh` del backend con esa cookie, reenvía a la respuesta los `Set-Cookie` rotados que el backend emite, y sigue el mismo pedido con el access token nuevo en la cabecera `Cookie`, así el render ya lo ve. Si el refresh falla, no toca nada y el guard manda a Ingresar como hoy.
 3. **El middleware no autoriza.** Los guards de layout y el backend siguen decidiendo quién entra a qué; el middleware solo mantiene viva una sesión que el backend reconoce.
 4. **La rotación se reclama de forma atómica en el backend**: Redis consume el refresh token viejo antes de emitir el par nuevo, así que dos pedidos concurrentes no pueden ganar la misma rotación. Dentro de un mismo proceso de Next, los pedidos reales con el mismo token comparten una sola llamada; los prefetch no renuevan porque no deben gastar una rotación. No hay detección de reuso que revoque la cadena entera: un token consumido y uno inventado siguen siendo indistinguibles y responden 401.
 
@@ -29,7 +29,7 @@ Renovar en un middleware con las cookies rotadas por el backend es el patrón ha
 - El refresh token viaja en cada pedido de página. Mismo origen, httpOnly, SameSite=Lax: no lo lee JavaScript ni lo manda un formulario cruzado.
 - Las cookies emitidas con el `Path` viejo no sirven para renovar: quien entró antes de este cambio vuelve a entrar una vez.
 - La variable `JWT__AccessTokenMinutes` de la Application API del stage se borra al desplegar esto; el default vuelve a 15 minutos.
-- El matcher del middleware excluye lo público, `/api` y los estáticos: una lectura sin cuenta no paga nada.
+- El matcher del middleware excluye `/api` y los estáticos, pero suma el catálogo y las fichas (públicos, sin guard): el shell les dibuja el avatar o "Ingresar" según haya sesión, y sin renovarla ahí una cuenta de visita podría verse desloguearse aunque el refresh siguiera vivo. `decideRefresh` devuelve 'skip' sin cookie de refresh, así que una lectura sin cuenta sigue sin pagar nada.
 - Lo que se prueba: el decisor puro y la coordinación de pedidos concurrentes en vitest; el consumo único del refresh viejo contra Redis en integración; y en E2E que una sesión sin `planb_session` y con `planb_refresh` sigue adentro al cargar una página con cuenta, mientras que sin ninguna de las dos va a Ingresar.
 
 ## Refs

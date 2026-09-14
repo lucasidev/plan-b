@@ -43,6 +43,8 @@ function Row({ chair, last }: { chair: ReviewedChair; last: boolean }) {
       <div className="min-w-0 flex-1">
         <Link
           href={`/chairs/${chair.chairId}`}
+          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          prefetch={false}
           className="text-[14px] text-ink underline-offset-2 hover:underline"
         >
           Cátedra {chair.chairName}

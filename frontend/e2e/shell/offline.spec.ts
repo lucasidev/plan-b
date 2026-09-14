@@ -18,7 +18,7 @@ test.describe('estado offline (US-039-f)', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     // Con conexión: sin banner.
     await expect(page.getByText(/sin conexión/i)).toHaveCount(0);

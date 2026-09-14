@@ -122,13 +122,17 @@ export function GlobalSearch() {
   }
 
   return (
-    // w-full + min-w-0 (no un width fijo): un flex item con width fijo no se achica por
-    // default (min-width:auto lo frena en su contenido), así que a 393px este buscador
-    // desbordaba el header en vez de ceder el lugar al logo y a "Ingresar" (V13).
-    <div className="relative w-full min-w-0 max-w-[320px]">
+    // flex-1 (no w-full): `width: 100%` como flex-basis compite por casi todo el ancho del
+    // topbar contra sus hermanos de ancho fijo, y en el reparto de encogimiento este buscador
+    // absorbía casi toda la resta y quedaba en 0px a 393px (V13). flex-1 arranca de un
+    // flex-basis chico y crece con lo que sobra, min-w-0 lo deja seguir achicándose si hace
+    // falta, y max-w-[320px] lo tapa para que no crezca de más en desktop.
+    <div className="relative flex-1 min-w-0 max-w-[320px]">
       <div
         className="flex min-w-0 items-center bg-bg-card border border-line rounded-pill shadow-card"
-        style={{ padding: '7px 14px', gap: 6 }}
+        // Alto fijo: sin esto, el box se estiraba con el line-height real del input y podía
+        // variar un par de px entre navegadores, rompiendo el alto fijo de 56px del topbar.
+        style={{ height: 34, padding: '0 14px', gap: 6 }}
       >
         <Search size={13} className="shrink-0 text-ink-3" aria-hidden />
         <input
@@ -150,7 +154,9 @@ export function GlobalSearch() {
           // Delay para que el onMouseDown de un resultado dispare antes de cerrar.
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onInputKeyDown}
-          className="flex-1 bg-transparent border-0 outline-none text-ink"
+          // truncate: cuando el sidebar angosto le deja poco lugar, el placeholder se corta con
+          // "…" en vez de desbordar el box y romperle el alto fijo al topbar.
+          className="flex-1 min-w-0 truncate bg-transparent border-0 outline-none text-ink"
           style={{ font: 'inherit', fontSize: 13 }}
         />
         {/* Sin teclado físico en celular, el atajo no significa nada: se esconde para dejarle

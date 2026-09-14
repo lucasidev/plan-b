@@ -13,7 +13,7 @@ import { UniversitiesCard } from './universities-card';
 
 export function AboutShell() {
   return (
-    <div className="bg-bg" style={{ minHeight: '100vh', padding: '40px 24px' }}>
+    <div className="bg-bg" style={{ padding: '40px 24px' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
         <AboutHero />
 

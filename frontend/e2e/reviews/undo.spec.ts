@@ -124,7 +124,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     await page.getByLabel(/tu email/i).fill(author.email);
     await page.getByLabel(/^contraseña$/i).fill(author.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     // ── 1. La décima, por la pantalla real, con un desenlace que no llega ──────────────────
     await page.goto('/reviews/new');
@@ -220,7 +220,7 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     await page.getByLabel(/tu email/i).fill(author.email);
     await page.getByLabel(/^contraseña$/i).fill(author.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     await page.goto('/reviews/mine');
     await expect(page.getByRole('heading', { name: chairA.subjectName })).toBeVisible({

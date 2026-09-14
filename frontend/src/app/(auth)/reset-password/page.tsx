@@ -25,7 +25,7 @@ const BACK_TO_SIGNIN = (
 /**
  * /reset-password?token=... (US-033-f). Server component que lee el token de la
  * URL y lo pasa al form (client). Sin token renderea el estado "link roto" sin el
- * form. Si ya hay sesión, el guard del `(auth)` layout redirige a `/home` antes.
+ * form. Si ya hay sesión, el guard del `(auth)` layout redirige a donde entra ese rol antes.
  *
  * Migrado al `AuthShell` v2 (paso final del flujo de recuperación, `FlowSteps
  * active={3}`) en US-059-f; el comportamiento (token, redirect, guard) no cambia.

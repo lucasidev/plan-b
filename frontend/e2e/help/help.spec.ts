@@ -21,7 +21,7 @@ test.describe('Ayuda (US-073)', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     // Centinela para distinguir cómo llegó: un `location.assign` (el fallback de ShellLink)
     // recarga el documento entero y se lo lleva puesto; una transición del router lo deja.

@@ -3,7 +3,7 @@ import { LUCIA, MARTIN, PAULA } from '../helpers/personas';
 
 /**
  * Sample E2E para sign-in (US-028). Cubre:
- *   - happy path: Lucía (verified) → /home
+ *   - happy path: Lucía (verified) → Mis aportes
  *   - cuenta no verificada: Martín → el MISMO error genérico que una credencial mala
  *     (ADR-0076: distinguir "sin verificar" dejaba averiguar si un mail tiene cuenta),
  *     con el reenvío de verificación colgando del error que ven todos (US-021)
@@ -18,14 +18,14 @@ import { LUCIA, MARTIN, PAULA } from '../helpers/personas';
  */
 
 test.describe('sign-in (US-028)', () => {
-  test('Lucía entra con credenciales válidas y aterriza en /home', async ({ page }) => {
+  test('Lucía entra con credenciales válidas y aterriza en Mis aportes', async ({ page }) => {
     await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
 
-    // El layout (member) hace redirect a /home tras autenticar.
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    // roleHomePath('member') manda a Mis aportes tras autenticar.
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
   });
 
   test('Martín (no verificado) recibe el error genérico, con el reenvío a mano', async ({

@@ -1,10 +1,10 @@
 # Elegir dónde estudiar: el flujo
 
-> Reemplaza a las filas 01 (Valentina tiene que elegir en dos meses) y 11 (Buscar, cuando te recomiendan una persona) de la tabla de flujos del [mapa](../../map.md). Personas: Valentina, Silvia, quien lee. Disparador: un link, un buscador, una recomendación, o Inicio. Stories que cubre: US-127 a US-134, US-136, US-138, US-139, US-168, US-171.
+> Reemplaza a las filas 01 (Valentina tiene que elegir en dos meses) y 11 (Buscar, cuando te recomiendan una persona) de la tabla de flujos del [mapa](../../map.md). Personas: Valentina, Silvia, quien lee. Disparador: un link, un buscador, una recomendación, o La entrada. Stories que cubre: US-127 a US-134, US-136, US-138, US-139, US-168, US-171.
 
 ```mermaid
 flowchart TD
-  A([Llega por un link, un buscador o Inicio: sin cuenta, US-168]) --> B[Explorar: dos lentes, carreras y universidades]
+  A([Llega por un link, un buscador o La entrada: sin cuenta, US-168]) --> B[Explorar: dos lentes, carreras y universidades]
   A --> S[Buscar: materia, carrera, docente o institución en una sola búsqueda, US-132]
   S -->|el nombre de un docente| S1[Docente: quién es y qué cátedras integra, sin conteos sobre la persona]
   S -->|no está| S2[Buscar explica por qué: no la cargamos / cargada sin voces / cargada con cobertura parcial, US-139]

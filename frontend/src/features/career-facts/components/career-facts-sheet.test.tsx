@@ -1,16 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
 import type { CareerFacts } from '../types';
 import { CareerFactsSheet } from './career-facts-sheet';
-
-// La ficha monta el topbar del catálogo, que a su vez monta el buscador global (router +
-// QueryClient). Mismo patrón que landing-hero.test.tsx: se le dan los dos en vez de mockear el
-// topbar entero, porque lo que se prueba acá es el contenido de la ficha.
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
-}));
 
 const BASE: CareerFacts = {
   careerId: 'career-1',
@@ -40,11 +32,7 @@ const PAPER_DURATION: OfficialFact = {
 };
 
 function renderSheet(facts: CareerFacts, officialFacts: OfficialFact[] = []) {
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
-      <CareerFactsSheet facts={facts} officialFacts={officialFacts} />
-    </QueryClientProvider>,
-  );
+  return render(<CareerFactsSheet facts={facts} officialFacts={officialFacts} />);
 }
 
 describe('CareerFactsSheet', () => {

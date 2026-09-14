@@ -21,6 +21,8 @@ export function CareerList({ careers }: { careers: Career[] }) {
         <li key={career.id}>
           <Link
             href={`/careers/${career.id}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
             className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
           >
             <span className="flex items-center gap-2 text-[14px] font-medium text-ink">

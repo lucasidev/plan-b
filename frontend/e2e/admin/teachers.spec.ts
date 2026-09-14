@@ -204,9 +204,9 @@ test.describe('Backoffice de docentes: alta, edición, baja y acceso', () => {
   }) => {
     // El guard de `(staff)` manda a `/sign-in`, pero la sesión de member ya está activa: el
     // guard de `(auth)` la ve ahí y rebota de nuevo, a `roleHomePath('member')` (ADR-0019). El
-    // encadenado termina en `/home`, no en `/sign-in`.
+    // encadenado termina en Mis aportes, no en `/sign-in`.
     await signIn(page, LUCIA);
     await page.goto('/admin/teachers');
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
   });
 });
