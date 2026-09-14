@@ -6,9 +6,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useOnlineStatus } from '@/lib/use-online-status';
 
 /**
- * Banner global de estado offline (US-039-f). Aparece en el top del shell `(member)` cuando
- * `navigator.onLine === false`; cuando vuelve la red muestra 3s "Conexión restablecida" en
- * verde y se retira. Warm warning, no rojo: offline es temporal, no un error fatal.
+ * Banner global de estado offline (US-039-f). Aparece en el top del shell de la aplicación (con o
+ * sin sesión) cuando `navigator.onLine === false`; cuando vuelve la red muestra 3s "Conexión
+ * restablecida" en verde y se retira. Warm warning, no rojo: offline es temporal, no un error
+ * fatal.
  *
  * Presentational: solo avisa. Qué acciones se deshabilitan mientras dura lo maneja cada feature
  * consumiendo `useOnlineStatus()`; ese barrido de `disabled` por mutación es incremental y queda

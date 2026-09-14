@@ -6,7 +6,7 @@ import { deleteStudent } from '../helpers/students';
  * E2E happy chain de sign-up + verify + first sign-in (US-010 + US-011 + US-028).
  *
  * Cubre el flujo completo del alumno nuevo desde registrarse hasta entrar
- * a /home por primera vez, que es la pieza más visible para el evaluador.
+ * a Mis aportes por primera vez, que es la pieza más visible para el evaluador.
  *
  * El flujo no usa personas pre-seedeadas: cada test crea un email único
  * con timestamp para evitar choques con runs anteriores y con la DB
@@ -68,7 +68,7 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     createdStudent = null;
   });
 
-  test('US-170 E1: alumno nuevo se registra, verifica el mail y aterriza en /home', async ({
+  test('US-170 E1: alumno nuevo se registra, verifica el mail y aterriza en Mis aportes', async ({
     page,
   }) => {
     const email = uniqueEmail('e2e-signup');
@@ -104,14 +104,14 @@ test.describe('sign-up + verify + first sign-in chain (US-010 + US-011 + US-028)
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 15_000 });
     await expect(page.getByRole('heading', { name: /entrá a tu cuenta/i })).toBeVisible();
 
-    // 7. Login con la cuenta recién creada, que aterriza directo en /home: la
+    // 7. Login con la cuenta recién creada, que aterriza directo en Mis aportes: la
     //    carrera se declaró en el alta y el StudentProfile ya nació al verificar
     //    el mail, así que no hay pantalla intermedia que completar. Es la
     //    garantía US-170 verificada de punta a punta.
     await page.getByLabel(/tu email/i).fill(email);
     await page.getByLabel(/^contraseña$/i).fill(password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
   });
 
   test('email duplicado en sign-up responde igual que uno libre (ADR-0076)', async ({ page }) => {

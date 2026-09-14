@@ -49,7 +49,7 @@ test.describe('Reseñar una cursada (US-146)', () => {
     await page.getByLabel(/tu email/i).fill(student.email);
     await page.getByLabel(/^contraseña$/i).fill(student.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     // Se llega como llega un alumno: por el botón que vive en el topbar de toda pantalla.
     await page.getByRole('link', { name: /escribir reseña/i }).click();
@@ -112,7 +112,7 @@ test.describe('Reseñar una cursada (US-146)', () => {
     await page.getByLabel(/tu email/i).fill(student.email);
     await page.getByLabel(/^contraseña$/i).fill(student.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 30_000 });
 
     await page.goto('/reviews/new');
     await expect(page.getByRole('button', { name: /enviar la reseña/i })).toBeDisabled();

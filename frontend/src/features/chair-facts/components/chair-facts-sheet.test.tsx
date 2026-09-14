@@ -1,14 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { ChairFacts } from '../types';
 import { ChairFactsSheet } from './chair-facts-sheet';
-
-// La ficha monta CatalogTopbar, que monta el buscador global: necesita router y QueryClient. Se le
-// dan los dos en vez de mockear el buscador entero, mismo criterio que landing-hero.test.tsx.
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
-}));
 
 function facts(over: Partial<ChairFacts> = {}): ChairFacts {
   return {
@@ -66,17 +59,15 @@ describe('ChairFactsSheet', () => {
    */
   it('SC-002: la identidad dice hace cuánto es la última voz', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({
-            span: {
-              fromYear: 2023,
-              toYear: 2026,
-              lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-            },
-          })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({
+          span: {
+            fromYear: 2023,
+            toYear: 2026,
+            lastReviewedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+          },
+        })}
+      />,
     );
 
     expect(screen.getByText(/lo último es de hace 2 meses/)).toBeInTheDocument();
@@ -89,11 +80,7 @@ describe('ChairFactsSheet', () => {
    * misma ficha.
    */
   it('cada hecho de la fama dice sobre cuántas voces sale, no solo el porcentaje', () => {
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts()} />
-      </QueryClientProvider>,
-    );
+    render(<ChairFactsSheet facts={facts()} />);
 
     const heading = screen.getByText('Los hechos que la marcan');
     const section = heading.closest('section');
@@ -112,11 +99,9 @@ describe('ChairFactsSheet', () => {
    */
   it('US-136 E1: sin voces, la ficha dice que arranca vacía y nunca un 0 %', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({ isPublished: false, reviewCount: 0, reviewsMissingToPublish: 10 })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({ isPublished: false, reviewCount: 0, reviewsMissingToPublish: 10 })}
+      />,
     );
 
     expect(screen.getByText('Todavía nadie reseñó cómo es cursar acá.')).toBeInTheDocument();
@@ -130,11 +115,9 @@ describe('ChairFactsSheet', () => {
    */
   it('US-136 E2: bajo el piso, dice cuántas junta y cuántas faltan sin adelantar conteos', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({ isPublished: false, reviewCount: 3, reviewsMissingToPublish: 7 })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({ isPublished: false, reviewCount: 3, reviewsMissingToPublish: 7 })}
+      />,
     );
 
     expect(screen.getByText('Junta 3 reseñas: con 7 más se publica.')).toBeInTheDocument();
@@ -151,41 +134,39 @@ describe('ChairFactsSheet', () => {
    */
   it('US-131 N1: cada bloque lleva su propio "de N", uno no se completa con el otro', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({
-            chairConduct: [
-              {
-                code: 'CHAIR_CLASSES_HELD',
-                text: '¿Se dictaron las clases?',
-                modeLabel: 'Faltaron muchas',
-                modePercent: 41,
-                modeIsNegative: true,
-                total: 37,
-                distribution: [
-                  { label: 'Casi todas', percent: 27, isNegative: false },
-                  { label: 'Faltaron algunas', percent: 32, isNegative: false },
-                  { label: 'Faltaron muchas', percent: 41, isNegative: true },
-                ],
-              },
-            ],
-            studentExperience: [
-              {
-                code: 'STUDENT_COULD_ASK',
-                text: '¿Podías preguntar sin quedar mal?',
-                modeLabel: 'No',
-                modePercent: 66,
-                modeIsNegative: true,
-                total: 34,
-                distribution: [
-                  { label: 'Sí', percent: 34, isNegative: false },
-                  { label: 'No', percent: 66, isNegative: true },
-                ],
-              },
-            ],
-          })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({
+          chairConduct: [
+            {
+              code: 'CHAIR_CLASSES_HELD',
+              text: '¿Se dictaron las clases?',
+              modeLabel: 'Faltaron muchas',
+              modePercent: 41,
+              modeIsNegative: true,
+              total: 37,
+              distribution: [
+                { label: 'Casi todas', percent: 27, isNegative: false },
+                { label: 'Faltaron algunas', percent: 32, isNegative: false },
+                { label: 'Faltaron muchas', percent: 41, isNegative: true },
+              ],
+            },
+          ],
+          studentExperience: [
+            {
+              code: 'STUDENT_COULD_ASK',
+              text: '¿Podías preguntar sin quedar mal?',
+              modeLabel: 'No',
+              modePercent: 66,
+              modeIsNegative: true,
+              total: 34,
+              distribution: [
+                { label: 'Sí', percent: 34, isNegative: false },
+                { label: 'No', percent: 66, isNegative: true },
+              ],
+            },
+          ],
+        })}
+      />,
     );
 
     const conduct = screen.getByText('Qué hizo la cátedra').closest('section');
@@ -205,11 +186,7 @@ describe('ChairFactsSheet', () => {
    * contraste que mostrar contra hermanas.
    */
   it('ficha SC-002, "sin base para comparar": sin hermanas, no hay contraste', () => {
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts({ contrasts: [] })} />
-      </QueryClientProvider>,
-    );
+    render(<ChairFactsSheet facts={facts({ contrasts: [] })} />);
 
     expect(screen.queryByText(/comparada con las otras cátedras de/i)).not.toBeInTheDocument();
   });
@@ -220,23 +197,21 @@ describe('ChairFactsSheet', () => {
    */
   it('US-131: el contraste contra hermanas lleva su "de N" en cada lado', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({
-            contrasts: [
-              {
-                itemCode: 'CHAIR_CLASSES_HELD',
-                itemText: '¿Se dictaron las clases?',
-                negativeLabel: 'Faltaron muchas',
-                herePercent: 56,
-                hereTotal: 37,
-                siblingsPercent: 14,
-                siblingsTotal: 61,
-              },
-            ],
-          })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({
+          contrasts: [
+            {
+              itemCode: 'CHAIR_CLASSES_HELD',
+              itemText: '¿Se dictaron las clases?',
+              negativeLabel: 'Faltaron muchas',
+              herePercent: 56,
+              hereTotal: 37,
+              siblingsPercent: 14,
+              siblingsTotal: 61,
+            },
+          ],
+        })}
+      />,
     );
 
     expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
@@ -249,11 +224,9 @@ describe('ChairFactsSheet', () => {
    */
   it('V06: el nombre del titular es un link a su ficha de docente', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet
-          facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: 'teacher-1' })}
-        />
-      </QueryClientProvider>,
+      <ChairFactsSheet
+        facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: 'teacher-1' })}
+      />,
     );
 
     const link = screen.getByRole('link', { name: 'Martín Pérez' });
@@ -267,9 +240,7 @@ describe('ChairFactsSheet', () => {
    */
   it('V06: sin id de titular, el nombre se lee como texto y no arma un link roto', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: null })} />
-      </QueryClientProvider>,
+      <ChairFactsSheet facts={facts({ leadTeacherName: 'Martín Pérez', leadTeacherId: null })} />,
     );
 
     expect(screen.getByText(/a cargo de martín pérez/i)).toBeInTheDocument();
@@ -281,21 +252,13 @@ describe('ChairFactsSheet', () => {
    * de una cátedra e institución con nombre real.
    */
   it('avisa cuando las voces contadas son del corpus de demostración', () => {
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts({ hasDemoCorpusVoices: true })} />
-      </QueryClientProvider>,
-    );
+    render(<ChairFactsSheet facts={facts({ hasDemoCorpusVoices: true })} />);
 
     expect(screen.getByText(/estas voces son de prueba/i)).toBeInTheDocument();
   });
 
   it('no avisa nada cuando las voces contadas no son del corpus de demostración', () => {
-    render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts({ hasDemoCorpusVoices: false })} />
-      </QueryClientProvider>,
-    );
+    render(<ChairFactsSheet facts={facts({ hasDemoCorpusVoices: false })} />);
 
     expect(screen.queryByText(/son de prueba/i)).not.toBeInTheDocument();
   });
@@ -305,9 +268,7 @@ describe('ChairFactsSheet', () => {
    */
   it('US-148 E1: la finalización es agregada, nunca el desenlace de una persona', () => {
     render(
-      <QueryClientProvider client={new QueryClient()}>
-        <ChairFactsSheet facts={facts({ completion: { outOfTen: 7, reaching: 7, total: 10 } })} />
-      </QueryClientProvider>,
+      <ChairFactsSheet facts={facts({ completion: { outOfTen: 7, reaching: 7, total: 10 } })} />,
     );
 
     expect(screen.getByText(/de cada 10 que la cursan, llegan 7/i)).toBeInTheDocument();

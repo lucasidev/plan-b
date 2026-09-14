@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { DemoCorpusNotice, ItemRow } from '@/components/facts';
-import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
 import type { ChairFacts } from '../types';
 
@@ -27,10 +26,7 @@ type Props = {
 
 export function ChairFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
   return (
-    <div className="min-h-screen w-full">
-      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
-          búsqueda y no hay cómo seguir buscando ni volver. */}
-      <CatalogTopbar />
+    <div className="w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
 
@@ -71,7 +67,12 @@ function Identity({ facts }: { facts: ChairFacts }) {
         Cátedra {facts.chairName}
       </h1>
       <p className="mb-1 text-[13px] text-ink-2">
-        <Link href={`/subjects/${facts.subjectId}`} className="underline underline-offset-2">
+        <Link
+          href={`/subjects/${facts.subjectId}`}
+          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          prefetch={false}
+          className="underline underline-offset-2"
+        >
           {facts.subjectName}
         </Link>
         {facts.leadTeacherName &&
@@ -80,6 +81,7 @@ function Identity({ facts }: { facts: ChairFacts }) {
               {' · a cargo de '}
               <Link
                 href={`/teachers/${facts.leadTeacherId}`}
+                prefetch={false}
                 className="underline underline-offset-2"
               >
                 {facts.leadTeacherName}
@@ -265,6 +267,8 @@ function Footer({ reviewHref }: { reviewHref: string }) {
     <div className="flex items-center justify-between gap-2.5">
       <Link
         href="/method"
+        // Sin prefetch: /method es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+        prefetch={false}
         className="text-[12px] text-accent-ink underline-offset-2 hover:underline"
       >
         ¿Cómo calculamos esto?

@@ -18,7 +18,7 @@ Treinta y cuatro, más dos acciones inline que pasan adentro de una ficha (Repor
 
 | Pantalla | Ficha | Acceso | Slug hoy | Qué es | Quién más le aporta | Estado |
 |---|---|---|---|---|---|---|
-| La entrada | [`entrance/`](student/choose-where-to-study/screens/SC-004-entrance/README.md) | pública | `/` | La vitrina: qué es plan-b y la puerta a Explorar y Buscar. No se llama Inicio: Inicio es `/home`, el aterrizaje de la aplicación con cuenta. | identidad visual propia (ADR-0071) | mid-fi, revisada |
+| La entrada | [`entrance/`](student/choose-where-to-study/screens/SC-004-entrance/README.md) | pública | `/` | La vitrina: qué es plan-b y la puerta a Explorar y Buscar. No se llama Inicio: con cuenta se entra a Mis aportes, y el catálogo vive adentro de la aplicación con el mismo shell con o sin cuenta. | identidad visual propia (ADR-0071) | mid-fi, revisada |
 | Explorar | [`explore/`](student/choose-where-to-study/screens/SC-003-explore/README.md) | pública | `/universities` (la lente de carreras no existe todavía) | El home real: dos lentes, carreras y universidades; el vacío en sus tres estados. | Pedir una carrera (el vacío explicado) | mid-fi, revisada |
 | Buscar | [`search/`](student/choose-where-to-study/screens/SC-006-search/README.md) | pública | sin slug (el topbar busca y no lleva a ninguna pantalla) | Los cuatro sujetos con ficha; un docente lleva a su pantalla y de ahí a sus cátedras; si no está, explica por qué. | Pedir una carrera | mid-fi, revisada |
 | Dónde estudiarla | [`where-to-study/`](student/choose-where-to-study/screens/SC-008-where-to-study/README.md) | pública | sin slug | Comparar las ofertas de la misma carrera canónica, lado a lado, sin ganador. | Llevarse el dato (el CSV para ordenar) | **hi-fi Boletín** |
@@ -159,7 +159,7 @@ Lo que el repo ya tiene, mapeado contra las pantallas. "Existe" significa que el
 
 | Carril | Existe (chasis) | Adaptar | Nuevo de cero |
 |---|---|---|---|
-| Públicas | Inicio, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (no hay implementación en el código todavía) | La cola, Error |
+| Públicas | La entrada, Dónde estudiarla, Ficha de institución, Ficha de carrera, Ficha de materia, Ficha de cátedra (fichas públicas del catálogo actual) | Explorar (hoy el browse rico es member-only), Método (hoy sección de la landing), Anonimato (about existe, habla de otra cosa), Pedir (no hay implementación en el código todavía) | La cola, Error |
 | Umbral | Ingresar, Registro, Recuperar (auth completo) | | |
 | Con cuenta | Mis aportes, Mi perfil (Empezar y Mi carrera se retiran: [ADR-0086](../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)) | Reseñar (existe el editor texto-libre; el acto de tres capas es otro modelo), Verificar (existe solo para docentes) | |
 | Backoffice | Catálogo (backoffice) (ABM completo), Reportes (backoffice) (cola de moderación) | Pedidos (backoffice) (el endpoint de cola existe; la pantalla no) | Correcciones (backoffice), Verificaciones (backoffice), Equipo (backoffice), Frases (backoffice) |

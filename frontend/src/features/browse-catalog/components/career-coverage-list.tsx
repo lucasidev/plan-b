@@ -26,6 +26,8 @@ export function CareerCoverageList({ careers }: { careers: CareerCoverage[] }) {
         <li key={career.careerId}>
           <Link
             href={`/careers/${career.careerId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
             className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
           >
             <span className="min-w-0 flex-1">

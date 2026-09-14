@@ -20,7 +20,7 @@ const NAV_LINK_CLASSES = cn(
  * `onClick preventDefault` del mock.
  *
  * `isLoggedIn` decide los CTAs: anónimo ve "Ingresar" / "Crear cuenta"; con
- * sesión ve un único "Ir a mi inicio →" hacia /home. La landing nunca
+ * sesión ve un único "Ir a mi inicio →" hacia /reviews/mine. La landing nunca
  * redirige sola a los usuarios logueados (ver US-054-f, notas de
  * implementación): este topbar es la única adaptación por sesión.
  */
@@ -45,7 +45,7 @@ export function LpTopbar({ isLoggedIn }: Props) {
       </nav>
       {isLoggedIn ? (
         <Link
-          href="/home"
+          href="/reviews/mine"
           prefetch
           className={cn(
             'inline-flex items-center justify-center font-medium rounded-pill shadow-card transition-colors',

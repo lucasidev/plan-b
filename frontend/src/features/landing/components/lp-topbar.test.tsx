@@ -16,9 +16,12 @@ describe('LpTopbar', () => {
     expect(screen.queryByRole('link', { name: /ir a mi inicio/i })).toBeNull();
   });
 
-  it('logueado: muestra "Ir a mi inicio" hacia /home y oculta los CTAs anónimos', () => {
+  it('logueado: muestra "Ir a mi inicio" hacia /reviews/mine y oculta los CTAs anónimos', () => {
     render(<LpTopbar isLoggedIn={true} />);
-    expect(screen.getByRole('link', { name: /ir a mi inicio/i })).toHaveAttribute('href', '/home');
+    expect(screen.getByRole('link', { name: /ir a mi inicio/i })).toHaveAttribute(
+      'href',
+      '/reviews/mine',
+    );
     expect(screen.queryByRole('link', { name: 'Ingresar' })).toBeNull();
     expect(screen.queryByRole('link', { name: 'Crear cuenta' })).toBeNull();
   });

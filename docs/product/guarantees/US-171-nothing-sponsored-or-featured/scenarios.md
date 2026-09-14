@@ -16,7 +16,7 @@ No construido: la pantalla Dónde estudiarla (SC-008) no está construida
 
 ## Negativos
 
-**N1.** Dado que Inicio elige al azar una ficha real para mostrar como muestra, por ejemplo "Análisis Matemático II, Cátedra Pérez, UNSTA: 'Casi nunca · 59 %' en si contestaba las preguntas en clase, 40 voces", cuando se hace ese sorteo, entonces NO depende de cuál cátedra tiene el número más alto, más bajo o más voces: es al azar entre las que pasan el gate de cobertura, nunca por el valor del número.
+**N1.** Dado que La entrada elige al azar una ficha real para mostrar como muestra, por ejemplo "Análisis Matemático II, Cátedra Pérez, UNSTA: 'Casi nunca · 59 %' en si contestaba las preguntas en clase, 40 voces", cuando se hace ese sorteo, entonces NO depende de cuál cátedra tiene el número más alto, más bajo o más voces: es al azar entre las que pasan el gate de cobertura, nunca por el valor del número.
 
 **N2.** Dado que una institución (UNSTA, Siglo 21, UTN Facultad Regional Tucumán, UNT o USPT) le paga o le propone un acuerdo a plan-b, cuando se renderiza cualquier listado del producto, entonces esa institución NO aparece remarcada, con una marca de "destacado" ni ordenada por delante de las demás por esa razón: no existe ningún mecanismo de eso en el producto.
 

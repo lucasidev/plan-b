@@ -195,7 +195,12 @@ function ReviewCard({
     <article className="rounded-xl border border-line bg-bg-card p-4">
       <div className="mb-1 flex items-baseline justify-between gap-3">
         <h2 className="font-serif text-[17px] font-semibold text-ink">
-          <Link href={`/subjects/${review.subjectId}`} className="underline underline-offset-2">
+          <Link
+            href={`/subjects/${review.subjectId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
+            className="underline underline-offset-2"
+          >
             {review.subjectName}
           </Link>
         </h2>
@@ -209,7 +214,12 @@ function ReviewCard({
 
       <p className="mb-3 text-[12.5px] text-ink-3">
         {review.chairId && review.chairName ? (
-          <Link href={`/chairs/${review.chairId}`} className="underline underline-offset-2">
+          <Link
+            href={`/chairs/${review.chairId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
+            className="underline underline-offset-2"
+          >
             Cátedra {review.chairName}
           </Link>
         ) : (

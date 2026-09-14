@@ -38,6 +38,8 @@ export function CareerCoverageCard({ facts }: { facts: CareerFacts }) {
 
         <Link
           href={`/careers/${facts.careerId}`}
+          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          prefetch={false}
           className="mt-3 inline-block text-[12.5px] text-accent-ink underline-offset-2 hover:underline"
         >
           Ver la ficha de {facts.careerName}

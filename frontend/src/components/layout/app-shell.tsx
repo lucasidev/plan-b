@@ -1,33 +1,42 @@
+import type { Session } from '@/lib/session';
+import { AnonymousFooter } from './anonymous-footer';
 import { AvatarMenu } from './avatar-menu';
-import { Sidebar } from './sidebar';
+import { BackofficeFooterLink, Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 
+export type ShellSession = Session | null;
+
 type Props = {
-  /** Logged-in user email, comes from the session read in the RSC layout. */
-  email: string;
-  /** "Universidad · Carrera" del student profile, resuelto en el layout RSC. */
-  contextLabel?: string;
+  /** Sesión leída en el layout RSC. `null` cuando se navega sin cuenta (el catálogo se lee así). */
+  session: ShellSession;
   children: React.ReactNode;
 };
 
 /**
- * Chrome for the `(member)` area: sidebar (with AvatarMenu in the footer) + topbar +
- * scrollable content area.
+ * Chrome de toda la aplicación: sidebar (con `AvatarMenu`, `BackofficeFooterLink` o
+ * `AnonymousFooter` en el pie) + topbar + área de contenido con scroll. Un solo shell para leer
+ * sin cuenta y para lo que pide cuenta: antes el catálogo público tenía su propio header mínimo,
+ * separado de este.
  *
- * Server component (no `'use client'`): only receives the session email and composes
- * the three blocks. Interactivity lives in the children (Sidebar, Topbar, AvatarMenu
- * each mark `'use client'` where needed).
+ * El pie y la nav de `member` (Mis aportes, Ajustes gateado) son del alumno, no de cualquier
+ * sesión: un admin que entra a leer el catálogo antes de ir al backoffice vería, con
+ * `role !== 'member'`, links que el guard de `(member)` solo rebota, así que en su lugar el pie
+ * es un único link a `/admin`.
  *
- * Layout: two-column grid (240px fixed sidebar + 1fr main). Mobile keeps the sidebar
- * visible for now; when we add a collapsable drawer, this component decides whether
- * to render the desktop or mobile shell based on the breakpoint via CSS, not JS.
+ * Server component (no `'use client'`): solo recibe la sesión (o `null`) resuelta en el layout y
+ * compone los tres bloques. La interactividad vive en los hijos (Sidebar, Topbar, AvatarMenu
+ * marcan `'use client'` donde hace falta).
+ *
+ * Layout: grid de dos columnas (240px + 1fr) desde `lg` (1024px); por debajo, una sola columna
+ * sin sidebar (`Sidebar` se esconde con `hidden lg:flex`). La maqueta era de escritorio: por
+ * debajo de `lg` el topbar compensa con su propia versión angosta (ver `Topbar`).
  *
  * Per `docs/design/reference/styles.css::.app`.
  */
-export function AppShell({ email, contextLabel, children }: Props) {
+export function AppShell({ session, children }: Props) {
   return (
     <div
-      className="grid"
+      className="grid grid-cols-1 lg:grid-cols-[240px_1fr]"
       // `position: relative` lo vuelve el containing block de cualquier descendiente
       // `position: absolute` (los `.sr-only` de labels/legends del formulario, por ejemplo).
       // Sin esto, un absolute profundo en el árbol se posiciona relativo al documento
@@ -36,17 +45,28 @@ export function AppShell({ email, contextLabel, children }: Props) {
       // posicionado, así que la página entera queda "scrolleable" aunque este shell no
       // debería permitirlo nunca (el scroll vive todo adentro del `main`).
       style={{
-        gridTemplateColumns: '240px 1fr',
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
       }}
     >
-      <Sidebar footer={<AvatarMenu email={email} />} contextLabel={contextLabel} />
+      <Sidebar footer={footerFor(session)} role={session?.role ?? null} />
       <div className="flex flex-col overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto bg-bg">{children}</main>
+        <Topbar session={session} />
+        {/* tabIndex: un `main` con scroll propio tiene que llegar por teclado (WCAG 2.1.1 /
+            axe scrollable-region-focusable), no solo con el mouse. */}
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: el main es la única región con scroll
+            del shell; sin tabIndex, un lector de pantalla no puede alcanzarla con el teclado. */}
+        <main className="flex-1 overflow-y-auto bg-bg" tabIndex={0}>
+          {children}
+        </main>
       </div>
     </div>
   );
+}
+
+function footerFor(session: ShellSession): React.ReactNode {
+  if (!session) return <AnonymousFooter />;
+  if (session.role === 'member') return <AvatarMenu email={session.email} />;
+  return <BackofficeFooterLink />;
 }

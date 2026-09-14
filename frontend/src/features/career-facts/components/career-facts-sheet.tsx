@@ -7,7 +7,6 @@ import {
   type OfficialFact,
   OfficialFactRow,
 } from '@/components/facts';
-import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatShortDate } from '@/lib/format-date';
 import type { CareerFacts } from '../types';
 
@@ -36,10 +35,7 @@ type Props = {
 
 export function CareerFactsSheet({ facts, officialFacts, reviewHref = '/reviews/new' }: Props) {
   return (
-    <div className="min-h-screen w-full">
-      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
-          búsqueda y no hay cómo seguir buscando ni volver. */}
-      <CatalogTopbar />
+    <div className="w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
         <OfficialData officialFacts={officialFacts} />
@@ -129,6 +125,9 @@ function CompareLink({ careerId }: { careerId: string }) {
     <p className="mb-5 text-[13px]">
       <Link
         href={`/careers/${careerId}/where-to-study`}
+        // Sin prefetch: la ficha es `force-dynamic` y no tiene loading.tsx (ver subject-grid.tsx
+        // para el detalle completo).
+        prefetch={false}
         className="text-accent-ink underline-offset-2 hover:underline"
       >
         Comparar con otras instituciones

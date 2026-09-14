@@ -11,7 +11,21 @@ import {
 const REFRESH_COOKIE = 'planb_refresh';
 
 export const config = {
-  matcher: ['/home', '/reviews/:path*', '/my-profile', '/settings', '/help', '/admin/:path*'],
+  matcher: [
+    '/home',
+    '/reviews/:path*',
+    '/my-profile',
+    '/settings',
+    '/admin/:path*',
+    '/universities/:path*',
+    '/careers/:path*',
+    '/subjects/:path*',
+    '/chairs/:path*',
+    '/teachers/:path*',
+    '/plans/:path*',
+    '/method',
+    '/about',
+  ],
 };
 
 /**
@@ -19,6 +33,11 @@ export const config = {
  * story US-229): sin esto el access token de 15 minutos vence y el guard de layout manda a
  * Ingresar aunque el refresh siga vivo. El middleware no autoriza nada, solo mantiene viva
  * una sesión que el backend reconoce; los guards siguen decidiendo quién entra a qué.
+ *
+ * El matcher suma el catálogo y las fichas (públicos, sin guard): el shell les dibuja el avatar
+ * o "Ingresar" según haya sesión, y sin esto una cuenta cuyo access token vence de visita ahí se
+ * vería desloguearse en el shell aunque el refresh siguiera vivo. `decideRefresh` devuelve
+ * 'skip' sin cookie de refresh, así que un visitante anónimo no paga nada nuevo.
  *
  * Nunca lanza ni deja el pedido a medio construir: todo el cuerpo corre bajo un solo
  * try/catch, así que una env mal configurada, un fetch que tira o un timeout terminan

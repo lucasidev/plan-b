@@ -1,14 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { SubjectFacts } from '../types';
 import { SubjectFactsSheet } from './subject-facts-sheet';
-
-// La ficha monta CatalogTopbar, que monta el buscador global: necesita router y QueryClient. Mismo
-// criterio que chair-facts-sheet.test.tsx.
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
-}));
 
 function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
   return {
@@ -33,11 +26,7 @@ function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
 }
 
 function renderSheet(f: SubjectFacts) {
-  render(
-    <QueryClientProvider client={new QueryClient()}>
-      <SubjectFactsSheet facts={f} />
-    </QueryClientProvider>,
-  );
+  render(<SubjectFactsSheet facts={f} />);
 }
 
 describe('SubjectFactsSheet', () => {
@@ -268,30 +257,28 @@ describe('SubjectFactsSheet', () => {
    */
   it('ninguna cátedra se remarca como "mejor" entre las que se comparan', () => {
     const { container } = render(
-      <QueryClientProvider client={new QueryClient()}>
-        <SubjectFactsSheet
-          facts={facts({
-            chairs: [
-              {
-                chairId: 'c1',
-                chairName: 'Pérez',
-                reviewCount: 80,
-                isPublished: true,
-                reviewsMissingToPublish: 0,
-                lastReviewedAt: null,
-              },
-              {
-                chairId: 'c2',
-                chairName: 'Ruiz',
-                reviewCount: 31,
-                isPublished: true,
-                reviewsMissingToPublish: 0,
-                lastReviewedAt: null,
-              },
-            ],
-          })}
-        />
-      </QueryClientProvider>,
+      <SubjectFactsSheet
+        facts={facts({
+          chairs: [
+            {
+              chairId: 'c1',
+              chairName: 'Pérez',
+              reviewCount: 80,
+              isPublished: true,
+              reviewsMissingToPublish: 0,
+              lastReviewedAt: null,
+            },
+            {
+              chairId: 'c2',
+              chairName: 'Ruiz',
+              reviewCount: 31,
+              isPublished: true,
+              reviewsMissingToPublish: 0,
+              lastReviewedAt: null,
+            },
+          ],
+        })}
+      />,
     );
 
     expect(container.textContent).not.toMatch(/mejor|recomendad|top|★/i);

@@ -70,6 +70,8 @@ function ChairRow({ chair, last }: { chair: TeacherChair; last: boolean }) {
   return (
     <Link
       href={`/chairs/${chair.chairId}`}
+      // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+      prefetch={false}
       className={`flex items-baseline justify-between gap-3 px-4 py-3 ${
         last ? '' : 'border-b border-line'
       }`}

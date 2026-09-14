@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { CatalogTopbar } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
 import type { Distribution, SubjectChair, SubjectFacts, TakenWith } from '../types';
 
@@ -26,10 +25,7 @@ type Props = {
 
 export function SubjectFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
   return (
-    <div className="min-h-screen w-full">
-      {/* Con el topbar, porque una ficha sin él es una calle sin salida: se llega desde la
-          búsqueda y no hay cómo seguir buscando ni volver. */}
-      <CatalogTopbar />
+    <div className="w-full">
       <div className="mx-auto w-full max-w-[560px] px-4 py-8">
         <Identity facts={facts} />
 
@@ -289,6 +285,8 @@ function TakenWithRow({ pair, last }: { pair: TakenWith; last: boolean }) {
       <div className="flex items-baseline justify-between gap-2.5">
         <Link
           href={`/subjects/${pair.subjectId}`}
+          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          prefetch={false}
           className="text-[13.5px] text-ink underline-offset-2 hover:underline"
         >
           {pair.subjectName}
@@ -338,6 +336,8 @@ function ChairRow({ chair, last }: { chair: SubjectChair; last: boolean }) {
     <div style={{ padding: '10px 0', borderBottom: last ? 0 : '1px solid var(--color-line-2)' }}>
       <Link
         href={`/chairs/${chair.chairId}`}
+        // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+        prefetch={false}
         className="flex items-baseline justify-between gap-2.5"
       >
         <span className="text-[13.5px] text-ink underline underline-offset-2">
@@ -361,6 +361,10 @@ function Footer({ reviewHref }: { reviewHref: string }) {
     <div className="flex items-center justify-between gap-2.5">
       <Link
         href="/method"
+        // Sin prefetch: /method es `force-dynamic` y no tiene loading.tsx. Con el middleware de
+        // ADR-0095 cubriéndola, el prefetch por default de un Link hacia ahí nunca llega a
+        // completarse y el click que sigue queda sin navegar.
+        prefetch={false}
         className="text-[12px] text-accent-ink underline-offset-2 hover:underline"
       >
         ¿Cómo calculamos esto?

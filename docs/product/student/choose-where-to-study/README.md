@@ -56,4 +56,4 @@ Las que comparte con otras épicas: [**La entrada**](screens/SC-004-entrance/REA
 - **Qué acciones de lectura entran además de reseñar**: corregir un dato (de otra épica) todavía no están bocetadas en la Ficha de cátedra ni en la Ficha de materia, aunque sus stories dueñas las sigan pidiendo ahí.
 - **Dónde estudiarla con más de tres ofertas**: cuántas entran lado a lado en un celular y qué pasa con el resto (alfabético o por voces; el que quiere ordenar baja el CSV).
 - **Qué muestra Explorar** además de las dos lentes: si lista por cobertura, por voces o alfabético (US-171 prohíbe cualquier orden por conveniencia).
-- **Inicio** entra por esta épica (es la puerta a Explorar y Buscar) pero su identidad visual se diseña con criterio propio, aparte del producto.
+- **La entrada** entra por esta épica (es la puerta a Explorar y Buscar) pero su identidad visual se diseña con criterio propio, aparte del producto.

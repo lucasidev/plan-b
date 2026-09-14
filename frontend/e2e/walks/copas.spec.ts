@@ -115,7 +115,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
 
     // La verificación no abre sesión sola: entra por sign-in, como hace el link de esa pantalla.
     await signIn(page, copasEmail, copasPassword);
-    await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 20_000 });
 
     console.log(`5: cuenta ${copasEmail} verificada`);
   });
@@ -141,7 +141,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
     const missing = Number(beforeMatch[2]);
 
     await signIn(page, copasEmail, copasPassword);
-    await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 20_000 });
 
     await page.getByRole('link', { name: /escribir reseña/i }).click();
     await expect(page).toHaveURL(/\/reviews\/new$/, { timeout: 20_000 });
@@ -190,7 +190,7 @@ test.describe('El recorrido para Copas: cuenta, reseña y backoffice', () => {
   test('7. Backoffice: cátedra nueva y una frase destilada del campo libre', async ({ page }) => {
     // Cierra la sesión de Copas antes de entrar como admin, tal cual el recorrido.
     await signIn(page, copasEmail, copasPassword);
-    await expect(page).toHaveURL(/\/home$/, { timeout: 20_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 20_000 });
     await page.getByRole('button', { name: /copas/i }).click();
     await expect(page.getByRole('menu')).toBeVisible();
     await page.getByRole('menuitem', { name: /cerrar sesión/i }).click();

@@ -1,15 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
 import type { CareerComparison, CareerComparisonOffering } from '../types';
 import { CareerComparisonView } from './career-comparison-view';
-
-// La pantalla monta el topbar del catálogo, que monta el buscador global (router + QueryClient).
-// Mismo patrón que career-facts-sheet.test.tsx.
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
-}));
 
 function fact(overrides: Partial<OfficialFact> & Pick<OfficialFact, 'id' | 'field'>): OfficialFact {
   return {
@@ -80,11 +73,7 @@ function comparison(overrides: Partial<CareerComparison> = {}): CareerComparison
 }
 
 function renderView(data: CareerComparison) {
-  return render(
-    <QueryClientProvider client={new QueryClient()}>
-      <CareerComparisonView comparison={data} />
-    </QueryClientProvider>,
-  );
+  return render(<CareerComparisonView comparison={data} />);
 }
 
 describe('CareerComparisonView', () => {

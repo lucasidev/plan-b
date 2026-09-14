@@ -33,7 +33,7 @@ test.describe('La entrada (US-221)', () => {
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText(/una anécdota/i);

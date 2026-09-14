@@ -28,17 +28,17 @@ test.describe('layout guards (ADR-0023)', () => {
     await expect(page).toHaveURL(/\/sign-in(\?|$)/, { timeout: 10_000 });
   });
 
-  test('con sesión activa, /sign-in redirige a /home', async ({ page }) => {
+  test('con sesión activa, /sign-in redirige a Mis aportes', async ({ page }) => {
     // Login primero
     await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     // Intentar volver a /sign-in con sesión activa
     await page.goto('/sign-in');
-    await expect(page).toHaveURL(/\/home$/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 10_000 });
   });
 
   test('el admin entra y aterriza en el backoffice, no en el área de alumno', async ({ page }) => {

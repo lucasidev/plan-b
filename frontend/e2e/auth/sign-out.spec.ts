@@ -22,12 +22,12 @@ test.describe('sign-out (US-029)', () => {
   test('Lucía cierra sesión desde el avatar y queda fuera del área autenticada', async ({
     page,
   }) => {
-    // 1. Login → /home
+    // 1. Login → Mis aportes
     await page.goto('/sign-in');
     await page.getByLabel(/tu email/i).fill(LUCIA.email);
     await page.getByLabel(/^contraseña$/i).fill(LUCIA.password);
     await page.getByRole('button', { name: /^entrar$/i }).click();
-    await expect(page).toHaveURL(/\/home$/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     // 2. Abrir el avatar dropdown del sidebar. El button tiene aria-haspopup="menu"
     // y muestra el display name + email. Validamos que el menú abra antes de
