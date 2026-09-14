@@ -53,16 +53,6 @@ public class SubjectFactsCalculatorTests
                 new OptionTally(3, 3, "La recursé", OptionValence.None, total - reaching),
             ]);
 
-    private static ItemTally Attempts(int once, int twice, int more) =>
-        new(
-            "COURSE_ATTEMPTS",
-            ItemLayer.Context,
-            [
-                new OptionTally(1, 1, "Una", OptionValence.None, once),
-                new OptionTally(2, 2, "Dos", OptionValence.None, twice),
-                new OptionTally(3, 3, "Tres o más", OptionValence.None, more),
-            ]);
-
     [Fact]
     public void A_subject_whose_chairs_are_all_below_the_floor_publishes_nothing()
     {
@@ -80,7 +70,6 @@ public class SubjectFactsCalculatorTests
         // Ni un conteo, ni una diferencia: una cátedra bajo el piso no aporta a nada.
         facts.Spread.ShouldBeEmpty();
         facts.Shared.ShouldBeEmpty();
-        facts.Attempts.ShouldBeNull();
         facts.Completion.ShouldBeNull();
 
         // Pero las cátedras se listan igual, con lo que les falta: esconderlas seria mentir.
@@ -106,6 +95,15 @@ public class SubjectFactsCalculatorTests
         facts.PublishingChairs.ShouldBe(1);
         facts.ChairsBelowFloor.ShouldBe(1);
         facts.Chairs.Count.ShouldBe(2);
+
+        // La cátedra publicada trae su frase con la moda más marcada; la que sigue bajo el piso, ninguna.
+        var perez = facts.Chairs.Single(c => c.ChairName == "Pérez");
+        perez.Headline.ShouldNotBeNull();
+        perez.Headline!.ItemCode.ShouldBe(Conduct);
+        perez.Headline.Percent.ShouldBe(75);
+        perez.Headline.Respondents.ShouldBe(40);
+
+        facts.Chairs.Single(c => c.ChairName == "Paz").Headline.ShouldBeNull();
     }
 
     [Fact]
@@ -224,59 +222,6 @@ public class SubjectFactsCalculatorTests
         facts.Completion!.Reaching.ShouldBe(56);
         facts.Completion.Total.ShouldBe(80);
         facts.Completion.OutOfTen.ShouldBe(7);
-    }
-
-    [Fact]
-    public void Attempts_travel_as_a_distribution_never_as_an_average()
-    {
-        var perez = new ChairContribution(
-            Guid.NewGuid(), "Pérez", 40, [Attempts(once: 24, twice: 10, more: 6)], null);
-
-        var facts = SubjectFactsCalculator.Calculate([perez]);
-
-        facts.Attempts.ShouldNotBeNull();
-        facts.Attempts!.Total.ShouldBe(40);
-        facts.Attempts.ModeLabel.ShouldBe("Una");
-        facts.Attempts.ModePercent.ShouldBe(60);
-
-        // La distribución entera, en el orden en que se ofreció: es lo que reemplaza al promedio.
-        facts.Attempts.Options.Count.ShouldBe(3);
-        facts.Attempts.Options[0].Label.ShouldBe("Una");
-        facts.Attempts.Options[2].Label.ShouldBe("Tres o más");
-        facts.Attempts.Options[2].Percent.ShouldBe(15);
-    }
-
-    [Fact]
-    public void The_open_ended_option_travels_apart_so_the_ficha_can_say_it_alone()
-    {
-        var perez = new ChairContribution(
-            Guid.NewGuid(), "Pérez", 40, [Attempts(once: 24, twice: 10, more: 6)], null);
-
-        var facts = SubjectFactsCalculator.Calculate([perez]);
-
-        // "Tres o más" es la opción abierta: quien la cursó cinco veces y quien la cursó tres
-        // marcan lo mismo. Viaja separada del resto para que la ficha la diga sola, porque es
-        // justo la gente a la que le costó y la que un promedio taparía.
-        facts.Attempts!.OpenEnded.ShouldNotBeNull();
-        facts.Attempts.OpenEnded!.Label.ShouldBe("Tres o más");
-        facts.Attempts.OpenEnded.Percent.ShouldBe(15);
-
-        // Y sigue estando en la distribución: se dice dos veces a propósito, una en la afirmación
-        // y otra en el detalle auditable.
-        facts.Attempts.Options.ShouldContain(o => o.Label == "Tres o más" && o.Percent == 15);
-    }
-
-    [Fact]
-    public void An_item_without_an_open_ended_option_carries_no_tail()
-    {
-        // La conducta de la cátedra no tiene categoría abierta: ninguna opción dice "o más".
-        var facts = SubjectFactsCalculator.Calculate(
-        [
-            Chair("Pérez", reviewCount: 40, (Conduct, 30, 40)),
-        ]);
-
-        // Y la frase de intentos ni siquiera se contestó acá, así que no hay distribución alguna.
-        facts.Attempts.ShouldBeNull();
     }
 
     [Fact]

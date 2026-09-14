@@ -25,33 +25,58 @@ type Props = {
 };
 
 export function ChairFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
+  const hasContrasts = facts.contrasts.length > 0;
+  const wide = facts.isPublished && hasContrasts;
+
   return (
     <div className="w-full">
-      <div className="mx-auto w-full max-w-[560px] px-4 py-8">
+      <div
+        className={
+          wide
+            ? 'mx-auto w-full max-w-[560px] px-4 py-8 lg:max-w-[960px]'
+            : 'mx-auto w-full max-w-[560px] px-4 py-8'
+        }
+      >
         <Identity facts={facts} />
 
         {facts.isPublished ? (
-          <>
-            {facts.fame && <Fame facts={facts} />}
-            {facts.completion && <Completion facts={facts} />}
-            <Block
-              label="Qué hizo la cátedra"
-              items={facts.chairConduct}
-              emptyNote="Todavía nadie contestó estas preguntas."
-            />
-            <Block
-              label="Qué les pasó a los que cursaron"
-              items={facts.studentExperience}
-              emptyNote="Todavía nadie contestó estas preguntas."
-            />
-            {facts.contrasts.length > 0 && <Contrasts facts={facts} />}
-          </>
+          hasContrasts ? (
+            <div className="grid grid-cols-1 gap-x-10 gap-y-5 lg:grid-cols-[1fr_300px]">
+              <MainColumn facts={facts} />
+              <Contrasts facts={facts} />
+            </div>
+          ) : (
+            <MainColumn facts={facts} />
+          )
         ) : (
           <BelowFloor facts={facts} />
         )}
 
         <Footer reviewHref={reviewHref} />
       </div>
+    </div>
+  );
+}
+
+/**
+ * Fama, finalización y los dos bloques de conducta/vivencia: todo lo que hoy vive en la columna
+ * principal, haya o no "Las hermanas" al lado.
+ */
+function MainColumn({ facts }: { facts: ChairFacts }) {
+  return (
+    <div className="min-w-0">
+      {facts.fame && <Fame facts={facts} />}
+      {facts.completion && <Completion facts={facts} />}
+      <Block
+        label="Qué hizo la cátedra"
+        items={facts.chairConduct}
+        emptyNote="Todavía nadie contestó estas preguntas."
+      />
+      <Block
+        label="Qué les pasó a los que cursaron"
+        items={facts.studentExperience}
+        emptyNote="Todavía nadie contestó estas preguntas."
+      />
     </div>
   );
 }
@@ -93,10 +118,10 @@ function Identity({ facts }: { facts: ChairFacts }) {
       </p>
       {facts.isPublished && facts.span && (
         <p className="text-[11px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
-          {facts.reviewCount} {facts.reviewCount === 1 ? 'voz' : 'voces'}
+          {facts.reviewCount} {facts.reviewCount === 1 ? 'reseña' : 'reseñas'}
           {facts.span.fromYear === facts.span.toYear
-            ? ` de ${facts.span.fromYear}`
-            : ` repartidas de ${facts.span.fromYear} a ${facts.span.toYear}`}
+            ? `, de ${facts.span.fromYear}`
+            : `, de ${facts.span.fromYear} a ${facts.span.toYear}`}
           {facts.span.lastReviewedAt &&
             ` · lo último es de ${formatRelativeDate(facts.span.lastReviewedAt)}`}
         </p>

@@ -53,14 +53,15 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
 
 describe('ChairFactsSheet', () => {
   /**
-   * SC-002: la línea de sustento dice de cuándo son las voces, dispersión temporal incluida. Sin
-   * "hace cuánto es la última", una cátedra con titular cambiado en 2025 y última reseña de 2023
-   * se lee igual que una activa.
+   * SC-002: la línea de sustento cuenta reseñas (no voces) y dice el rango de años, con
+   * "hace cuánto es la última" al final. Sin eso, una cátedra con titular cambiado en 2025 y
+   * última reseña de 2023 se lee igual que una activa.
    */
-  it('SC-002: la identidad dice hace cuánto es la última voz', () => {
+  it('SC-002: con rango de años, la identidad dice "N reseñas, de X a Y · lo último es de..."', () => {
     render(
       <ChairFactsSheet
         facts={facts({
+          reviewCount: 37,
           span: {
             fromYear: 2023,
             toYear: 2026,
@@ -70,7 +71,24 @@ describe('ChairFactsSheet', () => {
       />,
     );
 
-    expect(screen.getByText(/lo último es de hace 2 meses/)).toBeInTheDocument();
+    expect(
+      screen.getByText('37 reseñas, de 2023 a 2026 · lo último es de hace 2 meses'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/\bvoces\b/i)).not.toBeInTheDocument();
+  });
+
+  /** Con un solo año, dice "de {año}" una sola vez, sin "a {año}" repetido. */
+  it('SC-002: con un solo año, dice "de X" sin repetirlo como rango', () => {
+    render(
+      <ChairFactsSheet
+        facts={facts({
+          reviewCount: 12,
+          span: { fromYear: 2026, toYear: 2026, lastReviewedAt: null },
+        })}
+      />,
+    );
+
+    expect(screen.getByText('12 reseñas, de 2026')).toBeInTheDocument();
   });
 
   /**

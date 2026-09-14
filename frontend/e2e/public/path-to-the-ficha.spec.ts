@@ -131,7 +131,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     // 3) La ficha de materia muestra sus cátedras por separado, que es la pregunta que contesta:
     // si lo que pasó es de la materia o de la cátedra que te tocó.
     await expect(page.getByRole('heading', { name: new RegExp(SUBJECT_NAME, 'i') })).toBeVisible();
-    // En la ficha de materia las cátedras se listan por su nombre, con sus voces al lado.
+    // En la ficha de materia las cátedras se listan por su nombre, con su conclusión al lado.
     const chairLink = page
       .getByRole('link', { name: new RegExp(`^${CHAIR_PEREZ_NAME}`, 'i') })
       .first();
@@ -142,7 +142,10 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     await expect(page).toHaveURL(new RegExp(`/chairs/${CHAIR_PEREZ}$`), { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /cátedra pérez/i })).toBeVisible();
     await expect(page.getByText(/¿Se dictaron las clases\?/)).toBeVisible();
-    await expect(page.getByText(/voces/).first()).toBeVisible();
+    // Pineado a la línea de sustento de la cabecera ("N reseñas, de AAAA..."): un /reseñas/ suelto
+    // también matchea "cursadas reseñadas" más abajo en la ficha, y no prueba que la cabecera diga
+    // lo que tiene que decir.
+    await expect(page.getByText(/\d+ reseñas, de \d{4}/).first()).toBeVisible();
 
     // Nunca hubo sesión: si el camino hubiera pedido login, alguna de las páginas habría
     // redirigido a /sign-in y este assert no llegaría hasta acá.

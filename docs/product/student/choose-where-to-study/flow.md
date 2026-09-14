@@ -13,9 +13,9 @@ flowchart TD
   B --> C[Ficha de carrera en una institución]
   C -->|ninguna cátedra pasó el piso todavía| C3[La ficha vacía dice que arranca sin nada, US-136]
   C --> C1[Datos oficiales con fuente: dura en el papel y en la realidad, plan vigente, egresan por cohorte, US-127, US-133]
-  C1 --> C2[Qué frena la cursada según reseñas, cada tapón con sus voces e intentos, y la cobertura siempre a la vista, US-134, US-138]
+  C1 --> C2[Qué frena la cursada según reseñas, cada tapón con sus reseñas, y la cobertura siempre a la vista, US-134, US-138]
   C2 --> D[Ver las materias del plan]
-  D --> E[Ficha de materia: intentos, qué habilita, la dispersión entre sus cátedras, sus cátedras por voces]
+  D --> E[Ficha de materia: qué habilita, la dispersión entre sus cátedras, sus cátedras con una conclusión cada una, por reseñas]
   E --> E2[Ficha de cátedra: los hechos que la marcan, cómo termina la cursada, qué hizo la cátedra / qué les pasó a los que cursaron, cada frase con sus voces, US-129, US-131]
   E2 -->|bajo el piso| E1[Junta N reseñas: con M más se publica, US-136, US-138]
   C2 --> F[Dónde estudiarla: la misma carrera canónica lado a lado, datos oficiales medidos igual para todas y señales de reseñas por institución sin cruzarse, US-128]
@@ -32,7 +32,7 @@ flowchart TD
 - [Buscar](screens/SC-006-search/README.md): la única búsqueda que devuelve los cuatro sujetos con ficha (nodo S).
 - [Ficha de cátedra](screens/SC-002-chair/README.md): destino de buscar un docente (nodo S1), y la ficha a la que se llega a leer cátedra por cátedra (nodo E2).
 - [Ficha de carrera](screens/SC-001-career/README.md): la identidad, los datos oficiales con fuente, qué frena la cursada según reseñas y la cobertura siempre a la vista (nodo C).
-- [Ficha de materia](screens/SC-007-subject/README.md): intentos, qué habilita, la dispersión entre sus cátedras y sus cátedras ordenadas por voces (nodo E).
+- [Ficha de materia](screens/SC-007-subject/README.md): qué habilita, la dispersión entre sus cátedras y sus cátedras con una conclusión cada una, ordenadas por reseñas (nodo E).
 - [Dónde estudiarla](screens/SC-008-where-to-study/README.md): la comparación lado a lado, sin ganador (nodo F).
 - [Método](../take-the-data/screens/SC-021-method/README.md): la moda, la distribución, el catálogo de frases y los sesgos, dueña de [Llevarse el dato](../take-the-data/README.md) (nodos F2, G).
 

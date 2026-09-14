@@ -32,6 +32,21 @@ async function signIn(page: Page, email: string, password: string) {
   await expect(page).not.toHaveURL(/\/sign-in$/, { timeout: 30_000 });
 }
 
+/**
+ * Cuántas cátedras plegó "Sus cátedras" ("K cátedras más · sin reseñas todavía", SC-007), o 0 si
+ * no hay ninguna plegada. El test no borra la cátedra que crea, así que de la segunda corrida en
+ * adelante la materia ya arranca con una plegada de antes: comparar contra un número fijo
+ * flaquearía, contra el valor leído antes y después de crear no.
+ */
+async function foldedChairCount(page: Page): Promise<number> {
+  const line = page.getByText(/cátedras? más · sin reseñas todavía/);
+  if ((await line.count()) === 0) {
+    return 0;
+  }
+  const text = (await line.textContent()) ?? '';
+  return Number(text.match(/^(\d+)/)?.[1] ?? 0);
+}
+
 test.describe('Cargar una cátedra y verla llegar hasta el alumno (#376)', () => {
   test.setTimeout(120_000);
 
@@ -49,6 +64,13 @@ test.describe('Cargar una cátedra y verla llegar hasta el alumno (#376)', () =>
     const student = await createStudent(request, { emailPrefix: 'e2e-cycle' });
 
     try {
+      // 0. Cuánto pliega la ficha antes de cargar nada: el punto de comparación de más abajo, no
+      // un número fijo (ver el docstring de foldedChairCount).
+      await context.clearCookies();
+      await page.goto(`/subjects/${SUBJECT_211}`);
+      await expect(page.getByText('Sus cátedras')).toBeVisible({ timeout: 15_000 });
+      const foldedBefore = await foldedChairCount(page);
+
       // 1. El alta, por la pantalla real del backoffice.
       await context.clearCookies();
       await signIn(page, ADMIN.email, ADMIN.password);
@@ -72,11 +94,17 @@ test.describe('Cargar una cátedra y verla llegar hasta el alumno (#376)', () =>
         timeout: 15_000,
       });
 
-      // 3. Y cualquiera la lee en la ficha pública de la materia, sin cuenta.
+      // 3. Y cualquiera la lee en la ficha pública de la materia, sin cuenta. Sin una sola
+      // reseña, esta cátedra recién cargada se pliega junto con las demás ("K cátedras más ·
+      // sin reseñas todavía", SC-007): sigue siendo visible, solo que como parte del conteo y
+      // no con un link a su nombre, que es lo que le pasa a cualquier cátedra sin voces. El
+      // conteo plegado subió en uno respecto de antes de cargarla (paso 0): no se puede afirmar
+      // un número fijo porque esta cátedra no se borra al final.
       await context.clearCookies();
       await page.goto(`/subjects/${SUBJECT_211}`);
       await expect(page.getByText('Sus cátedras')).toBeVisible({ timeout: 15_000 });
-      await expect(page.getByRole('link', { name: new RegExp(chairName, 'i') })).toBeVisible();
+      await expect(page.getByText(/cátedras? más · sin reseñas todavía/)).toBeVisible();
+      expect(await foldedChairCount(page)).toBe(foldedBefore + 1);
     } finally {
       await deleteStudent(request, student);
     }
