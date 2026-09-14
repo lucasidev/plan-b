@@ -19,10 +19,11 @@ public interface IRefreshTokenStore
     Task StoreAsync(string refreshToken, UserId userId, DateTimeOffset expiresAt, CancellationToken ct = default);
 
     /// <summary>
-    /// Looks up the user a refresh token belongs to. Returns null if not present (revoked,
-    /// expired, or never issued — all indistinguishable to the caller, which is the point).
+    /// Consume de forma atómica un refresh token y devuelve su usuario. Solo una llamada
+    /// concurrente puede obtener el dueño; las demás reciben null. Revocado, vencido o nunca
+    /// emitido son indistinguibles para quien llama, a propósito.
     /// </summary>
-    Task<UserId?> FindUserAsync(string refreshToken, CancellationToken ct = default);
+    Task<UserId?> ConsumeAsync(string refreshToken, CancellationToken ct = default);
 
     /// <summary>
     /// Revokes a single refresh token. Idempotent: deleting an absent key is a no-op.

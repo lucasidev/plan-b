@@ -77,23 +77,43 @@ public sealed class RedisRefreshTokenStore : IRefreshTokenStore
         }
     }
 
-    public async Task<UserId?> FindUserAsync(string refreshToken, CancellationToken ct = default)
+    public async Task<UserId?> ConsumeAsync(string refreshToken, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(refreshToken)) return null;
+
+        var hash = HashFor(refreshToken);
+        RedisValue owner;
 
         try
         {
             var db = _redis.GetDatabase();
-            var value = await db.StringGetAsync(KeyPrefix + HashFor(refreshToken));
-            if (value.IsNullOrEmpty) return null;
-            if (!Guid.TryParse(value.ToString(), out var id)) return null;
-            return new UserId(id);
+            owner = await db.StringGetDeleteAsync(KeyPrefix + hash);
         }
         catch (RedisException ex)
         {
-            _log.LogWarning(ex, "Redis unavailable when validating refresh token; treating as revoked.");
+            _log.LogWarning(ex, "Redis unavailable when consuming refresh token; treating as revoked.");
             return null;
         }
+
+        if (owner.IsNullOrEmpty || !Guid.TryParse(owner.ToString(), out var id)) return null;
+
+        var userId = new UserId(id);
+
+        try
+        {
+            // GETDEL ya consumió el token. Limpiar el índice es secundario: si Redis falla acá,
+            // devolver null haría perder una rotación que ya ganó y el miembro huérfano no puede
+            // revivir la clave primaria.
+            var db = _redis.GetDatabase();
+            await db.SetRemoveAsync(UserIndexPrefix + userId.Value, hash);
+        }
+        catch (RedisException ex)
+        {
+            _log.LogWarning(ex,
+                "Redis unavailable when cleaning the consumed refresh token index. The token remains revoked.");
+        }
+
+        return userId;
     }
 
     public async Task RevokeAsync(string refreshToken, CancellationToken ct = default)

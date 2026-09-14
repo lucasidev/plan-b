@@ -19,18 +19,18 @@ public static class RefreshCommandHandler
             return UserErrors.InvalidCredentials;
         }
 
-        var userId = await refreshTokens.FindUserAsync(command.RefreshToken, ct);
+        var userId = await refreshTokens.ConsumeAsync(command.RefreshToken, ct);
         if (userId is null)
         {
-            // Token revoked, expired, or never issued — all indistinguishable on purpose.
+            // Revocado, vencido, nunca emitido o ya consumido por otro pedido concurrente son
+            // indistinguibles a propósito.
             return UserErrors.InvalidCredentials;
         }
 
         var user = await users.FindByIdAsync(userId.Value, ct);
         if (user is null)
         {
-            // Token referenced a user that no longer exists. Clean up the orphan.
-            await refreshTokens.RevokeAsync(command.RefreshToken, ct);
+            // El token ya fue consumido de forma atómica; no queda un huérfano activo que limpiar.
             return UserErrors.InvalidCredentials;
         }
 
@@ -49,9 +49,8 @@ public static class RefreshCommandHandler
         if (user.IsDisabled) return UserErrors.AccountDisabled;
         if (!user.IsEmailVerified) return UserErrors.EmailNotVerified;
 
-        // Token rotation: revoke the old refresh, issue a new pair. Reduces the window where a
-        // leaked refresh token is useful.
-        await refreshTokens.RevokeAsync(command.RefreshToken, ct);
+        // La rotación empieza con el consumo atómico de arriba: solo quien reclamó el token viejo
+        // puede emitir el par nuevo.
         var fresh = jwt.IssueTokens(user);
         await refreshTokens.StoreAsync(
             fresh.RefreshToken, user.Id, fresh.RefreshTokenExpiresAt, ct);

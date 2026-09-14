@@ -1,5 +1,7 @@
 import { jwtVerify } from 'jose';
 
+const refreshesInFlight = new Map<string, Promise<Response>>();
+
 export type DecideRefreshInput = {
   accessToken: string | undefined;
   hasRefresh: boolean;
@@ -40,6 +42,31 @@ export async function decideRefresh(input: DecideRefreshInput): Promise<'skip' |
   } catch {
     return 'refresh';
   }
+}
+
+/**
+ * Comparte el refresh entre pedidos simultáneos de este proceso que todavía presentan el
+ * mismo token. El backend conserva la garantía real al consumirlo atómicamente; esto evita
+ * que una navegación paralela pierda innecesariamente la rotación y termine sin las cookies
+ * nuevas. La entrada se libera tanto en éxito como en falla para permitir un intento posterior.
+ */
+export function refreshSessionOnce(
+  refreshToken: string,
+  request: () => Promise<Response>,
+): Promise<Response> {
+  const pending = refreshesInFlight.get(refreshToken);
+  if (pending) return pending;
+
+  const started = (async () => {
+    try {
+      return await request();
+    } finally {
+      refreshesInFlight.delete(refreshToken);
+    }
+  })();
+
+  refreshesInFlight.set(refreshToken, started);
+  return started;
 }
 
 /**

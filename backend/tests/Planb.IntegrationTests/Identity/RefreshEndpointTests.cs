@@ -66,6 +66,38 @@ public class RefreshEndpointTests : IClassFixture<RegisterApiFixture>
     }
 
     [Fact]
+    public async Task Concurrent_refreshes_consume_the_old_token_once()
+    {
+        var client = NewClient();
+
+        var loginResponse = await client.PostAsJsonAsync(
+            "/api/identity/sign-in",
+            new SignInRequest(TestPersonas.LuciaEmail, TestPersonas.LuciaPassword));
+        loginResponse.StatusCode.ShouldBe(HttpStatusCode.OK);
+        var oldRefreshCookie = ExtractCookie(loginResponse, "planb_refresh");
+
+        // Doce pedidos atraviesan la sección crítica a la vez. Con lookup y revoke separados,
+        // varios llegan a leer el mismo token antes de que cualquiera lo borre.
+        var attempts = Enumerable.Range(0, 12).Select(async _ =>
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/refresh");
+            request.Headers.Add("Cookie", oldRefreshCookie);
+            return await client.SendAsync(request);
+        });
+
+        var responses = await Task.WhenAll(attempts);
+        try
+        {
+            responses.Count(response => response.StatusCode == HttpStatusCode.OK).ShouldBe(1);
+            responses.Count(response => response.StatusCode == HttpStatusCode.Unauthorized).ShouldBe(11);
+        }
+        finally
+        {
+            foreach (var response in responses) response.Dispose();
+        }
+    }
+
+    [Fact]
     public async Task Returns_401_when_no_refresh_cookie_present()
     {
         var client = NewClient();
