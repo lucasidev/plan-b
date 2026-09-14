@@ -1,12 +1,16 @@
 import { notFound } from 'next/navigation';
 import { fetchOfficialFactsServer } from '@/components/facts';
-import { CareerList, CatalogBreadcrumb } from '@/features/browse-catalog';
+import { CatalogBreadcrumb } from '@/features/browse-catalog';
 import {
   fetchCareersByUniversityServer,
+  fetchCatalogCoverageServer,
   fetchUniversitiesServer,
 } from '@/features/browse-catalog/api.server';
 import {
+  CareersByFaculty,
+  CareersStartHere,
   InstitutionIdentity,
+  InstitutionNumbers,
   ReviewCta,
   TransparencyChecklist,
 } from '@/features/institution-facts';
@@ -29,11 +33,11 @@ export async function generateMetadata({ params }: { params: Params }) {
  * público "get university by slug": se resuelve fetcheando el listado completo de universidades
  * (barato, MVP con pocas unis) y matcheando por `slug`. 404 si el slug no matchea ninguna.
  *
- * Cabecera de identidad y checklist de transparencia salen de academic
- * (`fetchOfficialFactsServer`, sujeto `Institution`). La navegación de carreras sigue siendo el
- * listado simple de US-001: la tarjeta con cantidad de reseñas por carrera que dibuja el boceto
- * de SC-005 necesita ese conteo agregado, que hoy no expone ningún endpoint, y no es parte de
- * esta tarea (R6, #486).
+ * Cabecera (eyebrow, nombre, cantidad de unidades académicas) y el dato completo de identidad
+ * institucional salen de academic (`fetchOfficialFactsServer`, sujeto `Institution`). Cuántas
+ * carreras tienen reseñas por unidad académica y "Por dónde empezar" cruzan las carreras de
+ * academic (`fetchCareersByUniversityServer`) con `fetchCatalogCoverageServer` (reviews), filtrado
+ * por esta universidad: sí hay endpoint para el conteo de reseñas por carrera, es `catalog-coverage`.
  */
 export default async function UniversityCareersPage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -44,27 +48,54 @@ export default async function UniversityCareersPage({ params }: { params: Params
     notFound();
   }
 
-  const [careers, officialFacts, session] = await Promise.all([
+  const [careers, officialFacts, catalogCoverage, session] = await Promise.all([
     fetchCareersByUniversityServer(university.id),
     fetchOfficialFactsServer('Institution', university.id),
+    fetchCatalogCoverageServer(),
     getSession(),
   ]);
 
+  const universityCoverage = catalogCoverage.filter((c) => c.universityId === university.id);
+  const academicUnitCount = new Set(
+    careers.map((c) => c.academicUnitName).filter((name): name is string => name !== null),
+  ).size;
+  const careersWithReviews = universityCoverage.filter(
+    (c) => c.voiceCount > 0 || c.hasReviewsBelowFloor,
+  ).length;
+
   return (
-    <div data-surface="bulletin" className="w-full">
-      <div className="mx-auto w-full max-w-[560px] px-4 py-8">
+    <div className="w-full">
+      <div className="mx-auto w-full max-w-4xl px-4 py-8">
         <div className="mb-4">
           <CatalogBreadcrumb
             items={[{ label: 'Universidades', href: '/universities' }, { label: university.name }]}
           />
         </div>
-        <InstitutionIdentity name={university.name} facts={officialFacts} />
-        <section className="mb-5">
-          <p className="mb-2 text-[12px] text-ink-3">Carreras</p>
-          <CareerList careers={careers} />
-        </section>
-        <TransparencyChecklist facts={officialFacts} />
-        <ReviewCta href={reviewCtaHref(session)} />
+        <InstitutionIdentity
+          name={university.name}
+          facts={officialFacts}
+          academicUnitCount={academicUnitCount}
+        />
+        <InstitutionNumbers
+          facts={officialFacts}
+          totalCareers={careers.length}
+          careersWithReviews={careersWithReviews}
+        />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
+          <div className="min-w-0">
+            <section className="mb-5">
+              <p className="mb-2 text-[12px] text-ink-3">Facultades y carreras</p>
+              <CareersByFaculty careers={careers} coverage={universityCoverage} />
+            </section>
+          </div>
+          <div className="flex flex-col gap-5">
+            <CareersStartHere coverage={universityCoverage} />
+            <TransparencyChecklist facts={officialFacts} />
+          </div>
+        </div>
+        <div className="mt-5">
+          <ReviewCta href={reviewCtaHref(session)} />
+        </div>
       </div>
     </div>
   );

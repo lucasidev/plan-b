@@ -1,9 +1,6 @@
 export type { CrumbItem } from './components/breadcrumb';
 export { CatalogBreadcrumb } from './components/breadcrumb';
-// ADR-0096: Explorar interpreta los datos oficiales por institución y por carrera. Al final del
-// barrel para no interferir con el resto de los exports, que otro implementer toca en paralelo.
 export { CanonicalCareerGroups } from './components/canonical-career-groups';
-export { CareerList } from './components/career-list';
 export { CareerReviewsPill } from './components/career-reviews-pill';
 export { CatalogErrorState } from './components/catalog-error-state';
 export { CatalogLoadingSkeleton } from './components/catalog-loading-skeleton';

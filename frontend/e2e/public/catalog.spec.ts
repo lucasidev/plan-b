@@ -44,10 +44,14 @@ test.describe('Catálogo público (US-001)', () => {
         level: 1,
       }),
     ).toBeVisible({ timeout: 30_000 });
+    // .first(): "Facultades y carreras" siempre la lista; si además junta reseñas suficientes
+    // para "Por dónde empezar", el mismo nombre aparece dos veces en la página.
     await expect(
-      page.getByRole('link', {
-        name: /tecnicatura universitaria en desarrollo y calidad de software/i,
-      }),
+      page
+        .getByRole('link', {
+          name: /tecnicatura universitaria en desarrollo y calidad de software/i,
+        })
+        .first(),
     ).toBeVisible();
 
     await page.goto(`/careers/${TUDCS_CAREER_ID}/plans`);
@@ -77,15 +81,17 @@ test.describe('Catálogo público (US-001)', () => {
     });
   });
 
-  test('desde la lista de carreras se llega a la ficha, y de ahí a sus planes', async ({
+  test('desde la lista de carreras se llega a la ficha, y ahí ve el plan inline', async ({
     page,
   }) => {
     // La ficha de carrera se construyó después que la lista, y la lista seguía saltándosela para
     // ir directo a los planes: una pantalla a la que solo se llega tipeando la URL es una que
     // nadie lee. Este test es el que sostiene que esté enganchada.
     await page.goto(`/universities/${UNSTA_SLUG}/careers`);
+    // .first(): mismo motivo que el test de arriba, "Facultades y carreras" antes que "Por dónde empezar".
     await page
       .getByRole('link', { name: /tecnicatura universitaria en desarrollo y calidad de software/i })
+      .first()
       .click();
 
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
@@ -96,10 +102,10 @@ test.describe('Catálogo público (US-001)', () => {
       }),
     ).toBeVisible();
 
-    await page.getByRole('link', { name: /ver las \d+ materias/i }).click();
-    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}/plans$`), {
-      timeout: 30_000,
-    });
+    // El plan vigente se lee inline en la ficha (ya no hace falta salir a /careers/[id]/plans).
+    await expect(page.getByText('El plan 2018')).toBeVisible();
+    await expect(page.getByText('Año 1')).toBeVisible();
+    await expect(page.getByRole('link', { name: '101 Algoritmos y Paradigmas' })).toBeVisible();
   });
 
   test('US-222: la lente de Carreras agrupa lo que se dicta en más de una institución (ADR-0096)', async ({

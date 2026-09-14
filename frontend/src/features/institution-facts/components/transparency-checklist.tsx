@@ -1,7 +1,12 @@
 import { OFFICIAL_FACT_FIELDS, type OfficialFact, OfficialFactRow } from '@/components/facts';
 import { formatShortDate } from '@/lib/format-date';
 
-const CHECKLIST_ORDER = [
+/**
+ * Los seis campos posibles del checklist, en orden fijo. Exportado: la tira de la ficha cuenta
+ * contra la misma lista, así el denominador de "publicado de N" es cuántos de estos seis tienen
+ * afirmación cargada (no siempre seis), los mismos que el checklist efectivamente muestra.
+ */
+export const CHECKLIST_ORDER = [
   OFFICIAL_FACT_FIELDS.minutesPublished,
   OFFICIAL_FACT_FIELDS.budgetPublished,
   OFFICIAL_FACT_FIELDS.staffRosterPublished,
@@ -41,7 +46,12 @@ export function TransparencyChecklist({ facts }: { facts: OfficialFact[] }) {
       </p>
       <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
         {ordered.map((fact, index) => (
-          <OfficialFactRow key={fact.id} fact={fact} last={index === ordered.length - 1} />
+          <OfficialFactRow
+            key={fact.id}
+            fact={fact}
+            subject="institution"
+            last={index === ordered.length - 1}
+          />
         ))}
       </div>
       <ChecklistFooter relievedAt={mostRecent(ordered)} sources={dedupeSources(ordered)} />

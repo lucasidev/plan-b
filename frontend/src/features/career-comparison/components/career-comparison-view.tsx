@@ -157,7 +157,7 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
         rows.map(({ field, fact }, index) => {
           const last = index === rows.length - 1;
           return fact ? (
-            <OfficialFactRow key={fact.id} fact={fact} last={last} />
+            <OfficialFactRow key={fact.id} fact={fact} subject="career" last={last} />
           ) : (
             <MissingFactRow
               key={field}
@@ -181,7 +181,7 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
 function DerivedNote() {
   return (
     <p className="mt-2 text-[11px] leading-relaxed text-ink-3">
-      Un dato marcado "Derivado" es un cálculo con una regla propia, no lo que la fuente publica
+      Un dato marcado "derivado" es un cálculo con una regla propia, no lo que la fuente publica
       directamente.{' '}
       <Link
         href="/method"

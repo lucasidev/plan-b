@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
+import type { CareerCoverage, Subject, SubjectCoverage } from '@/features/browse-catalog';
 import type { CareerFacts } from '../types';
 import { CareerFactsSheet } from './career-facts-sheet';
 
@@ -31,28 +32,99 @@ const PAPER_DURATION: OfficialFact = {
   relievedAt: '2026-09-07T12:00:00Z',
 };
 
-function renderSheet(facts: CareerFacts, officialFacts: OfficialFact[] = []) {
-  return render(<CareerFactsSheet facts={facts} officialFacts={officialFacts} />);
+function renderSheet(
+  facts: CareerFacts,
+  officialFacts: OfficialFact[] = [],
+  overrides: {
+    catalogCoverage?: CareerCoverage[];
+    academicUnitName?: string | null;
+    activePlan?: { year: number; subjects: Subject[]; subjectCoverage: SubjectCoverage[] } | null;
+  } = {},
+) {
+  return render(
+    <CareerFactsSheet
+      facts={facts}
+      officialFacts={officialFacts}
+      catalogCoverage={overrides.catalogCoverage ?? []}
+      academicUnitName={overrides.academicUnitName ?? null}
+      activePlan={overrides.activePlan ?? null}
+    />,
+  );
+}
+
+function coverage(overrides: Partial<CareerCoverage> & { careerId: string }): CareerCoverage {
+  return {
+    careerName: 'Carrera',
+    universityId: 'uni-1',
+    universityName: 'Universidad',
+    isOfficial: true,
+    hasOfficialData: false,
+    voiceCount: 0,
+    hasReviewsBelowFloor: false,
+    totalSubjects: 0,
+    coveredSubjects: 0,
+    canonicalGroupName: null,
+    ...overrides,
+  };
+}
+
+function subject(overrides: Partial<Subject> & { id: string }): Subject {
+  return {
+    careerPlanId: 'plan-1',
+    code: '101',
+    name: 'Materia',
+    yearInPlan: 1,
+    termInYear: 1,
+    termKind: 'FourMonth',
+    ...overrides,
+  };
 }
 
 describe('CareerFactsSheet', () => {
-  it('muestra el nombre de la carrera y su institución', () => {
+  it('muestra el nombre de la carrera como título', () => {
     renderSheet(BASE);
 
     expect(screen.getByRole('heading', { level: 1, name: BASE.careerName })).toBeInTheDocument();
-    expect(screen.getByText(BASE.universityName)).toBeInTheDocument();
   });
 
-  /**
-   * SC-001: la identidad dice la carrera, su unidad académica y la institución. Sin la unidad
-   * académica, la ficha de carrera queda en desacuerdo con Dónde estudiarla, que sí la muestra
-   * para la misma oferta.
-   */
-  it('con unidad académica cargada, la muestra junto a la institución', () => {
-    renderSheet({ ...BASE, academicUnitName: 'Facultad de Ingeniería' });
+  /** El eyebrow es la jerarquía completa: carrera, universidad, facultad (si se resolvió) y plan vigente. */
+  it('el eyebrow dice la carrera, la universidad, la facultad y el plan vigente', () => {
+    renderSheet(BASE, [], {
+      academicUnitName: 'Facultad de Ingeniería',
+      activePlan: { year: 2024, subjects: [], subjectCoverage: [] },
+    });
 
     expect(
-      screen.getByText('Facultad de Ingeniería · Universidad del Norte Santo Tomás de Aquino'),
+      screen.getByText(
+        'Carrera · Universidad del Norte Santo Tomás de Aquino · Facultad de Ingeniería · plan 2024',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('sin facultad ni plan resueltos, el eyebrow no inventa esos segmentos', () => {
+    renderSheet(BASE);
+
+    expect(
+      screen.getByText('Carrera · Universidad del Norte Santo Tomás de Aquino'),
+    ).toBeInTheDocument();
+  });
+
+  /** SC-001: la línea bajo el título dice la facultad y la universidad, en prosa. */
+  it('con facultad resuelta, la línea bajo el título la nombra en una oración', () => {
+    renderSheet(BASE, [], { academicUnitName: 'Facultad de Ingeniería' });
+
+    expect(
+      screen.getByText(
+        'Se dicta en la Facultad de Ingeniería de la Universidad del Norte Santo Tomás de Aquino.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('sin facultad resuelta, la línea nombra solo la universidad', () => {
+    renderSheet(BASE);
+
+    expect(
+      screen.getByText('Se dicta en la Universidad del Norte Santo Tomás de Aquino.'),
     ).toBeInTheDocument();
   });
 
@@ -67,8 +139,10 @@ describe('CareerFactsSheet', () => {
   it('muestra dura en el papel publicado, con su fuente y su período', () => {
     renderSheet(BASE, [PAPER_DURATION]);
 
-    expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
-    expect(screen.getByText('2,5 años')).toBeInTheDocument();
+    // La etiqueta y el valor aparecen dos veces: la tira de números (vistazo) y "Datos oficiales"
+    // (detalle con fuente). Solo el detalle dice la fuente junto al período.
+    expect(screen.getAllByText('Dura en el papel').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('2,5 años').length).toBeGreaterThan(0);
     expect(screen.getByText('Sitio UNSTA · plan vigente')).toBeInTheDocument();
   });
 
@@ -80,9 +154,9 @@ describe('CareerFactsSheet', () => {
   it('con datos oficiales parciales, dice qué le falta en vez de esconder las filas', () => {
     renderSheet(BASE, [PAPER_DURATION]);
 
-    expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
+    expect(screen.getAllByText('Dura en el papel').length).toBeGreaterThan(0);
     expect(screen.getByText('Dura en la realidad')).toBeInTheDocument();
-    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
+    expect(screen.getAllByText('Egreso por cohorte').length).toBeGreaterThan(0);
     expect(screen.getByText('Plan vigente')).toBeInTheDocument();
     expect(screen.getByText('Acreditación o validez nacional')).toBeInTheDocument();
     expect(screen.getByText('Régimen de ingreso')).toBeInTheDocument();
@@ -91,10 +165,10 @@ describe('CareerFactsSheet', () => {
 
   /**
    * US-127 E2, N2: sin relevamiento de "dura en la realidad" (hoy no está publicado por ninguna
-   * fuente para ninguna carrera), el dato lo dice con fecha en vez de calcularlo o dejarlo en
-   * blanco; nunca toma la forma de un valor publicado.
+   * fuente para ninguna carrera), el dato lo dice con la etiqueta fija y la fecha, nunca calculado
+   * ni en blanco; nunca toma la forma de un valor publicado.
    */
-  it('dura en la realidad no publicada se dice con su nota y su fecha, no un espacio en blanco', () => {
+  it('dura en la realidad no publicada se dice con la etiqueta fija, la nota y la fecha', () => {
     renderSheet(BASE, [
       PAPER_DURATION,
       {
@@ -114,13 +188,18 @@ describe('CareerFactsSheet', () => {
     ]);
 
     expect(screen.getByText('Dura en la realidad')).toBeInTheDocument();
+    expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
     expect(
-      screen.getByText(/No publicado: Ninguna fuente pública releva la duración real/),
+      screen.getByText('Ninguna fuente pública releva la duración real por carrera.'),
     ).toBeInTheDocument();
     expect(screen.getByText(/relevado el 07\/09\/2026/)).toBeInTheDocument();
   });
 
-  /** US-133 E1: el egreso por cohorte no se publica por carrera, se deriva y se etiqueta como tal. */
+  /**
+   * US-133 E1: el egreso por cohorte no se publica por carrera, se deriva y se etiqueta como tal.
+   * El chip de la tira linkea a la regla igual que la fila de "Datos oficiales": dos links al
+   * mismo bloque de Método, uno por altura.
+   */
   it('egreso por cohorte derivado se etiqueta como tal y linkea a Método, nunca como dato publicado', () => {
     renderSheet(BASE, [
       PAPER_DURATION,
@@ -140,16 +219,16 @@ describe('CareerFactsSheet', () => {
       },
     ]);
 
-    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
-    expect(screen.getByText('21,4 %')).toBeInTheDocument();
-    expect(screen.getByText('Derivado')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
-      'href',
-      '/method#graduation-flow-proxy',
-    );
+    expect(screen.getAllByText('Egreso por cohorte').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('21,4 %').length).toBeGreaterThan(0);
+    const derivedLinks = screen.getAllByRole('link', { name: /derivado|ver la regla en método/i });
+    expect(derivedLinks.length).toBeGreaterThan(1);
+    for (const link of derivedLinks) {
+      expect(link).toHaveAttribute('href', '/method#graduation-flow-proxy');
+    }
   });
 
-  /** US-133 E2, N1: sin proxy todavía, "no publicado" con fecha, nunca un cero ni un cálculo propio. */
+  /** US-133 E2, N1: sin proxy todavía, la etiqueta fija con fecha, nunca un cero ni un cálculo propio. */
   it('egreso por cohorte sin derivar todavía se dice no publicado, nunca un cero', () => {
     renderSheet(BASE, [
       {
@@ -168,10 +247,13 @@ describe('CareerFactsSheet', () => {
       },
     ]);
 
-    expect(screen.getByText('Egreso por cohorte')).toBeInTheDocument();
+    expect(screen.getAllByText('Egreso por cohorte').length).toBeGreaterThan(0);
+    expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
+    // La nota corta aparece también en la tira (el mismo criterio que la ficha de institución
+    // aplica a estudiantes/egresados): no es un dato roto, es el mismo hecho en dos alturas.
     expect(
-      screen.getByText(/No publicado: Todavía no se calculó el proxy de flujo/),
-    ).toBeInTheDocument();
+      screen.getAllByText('Todavía no se calculó el proxy de flujo para esta oferta.').length,
+    ).toBeGreaterThan(0);
     // Nunca la forma de un valor publicado: nada de serif grande al lado de "Egreso por cohorte".
     expect(screen.queryByText('0,0 %')).not.toBeInTheDocument();
     expect(screen.queryByText('0 %', { selector: '.font-serif' })).not.toBeInTheDocument();
@@ -221,12 +303,66 @@ describe('CareerFactsSheet', () => {
 
     expect(screen.getByText('Validez nacional')).toBeInTheDocument();
     expect(screen.queryByText('Acreditación')).not.toBeInTheDocument();
+    expect(screen.getByText('No aplica a esta carrera')).toBeInTheDocument();
     expect(
-      screen.getByText(/No aplica: Las tecnicaturas no se acreditan: validez nacional/),
+      screen.getByText('Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.'),
     ).toBeInTheDocument();
   });
 
-  it('la cobertura vacía dice que ninguna materia junta el piso todavía', () => {
+  /**
+   * Sin grupo canónico la celda no se dibuja: el agrupamiento es una lista curada incompleta
+   * (Procurador y Psicología quedaron afuera a propósito), y "Solo acá" afirmaría algo que no se
+   * sabe.
+   */
+  it('instituciones que la dictan: sin grupo canónico, la celda no se dibuja', () => {
+    renderSheet(BASE, [], {
+      catalogCoverage: [coverage({ careerId: BASE.careerId, canonicalGroupName: null })],
+    });
+
+    expect(screen.queryByText(/instituciones que la dictan/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('Solo acá')).not.toBeInTheDocument();
+  });
+
+  /** Sin ninguna entrada de catalogCoverage para esta carrera, tampoco se dibuja (mismo caso: sin dato, no se inventa). */
+  it('instituciones que la dictan: sin cobertura para esta carrera, la celda no se dibuja', () => {
+    renderSheet(BASE);
+
+    expect(screen.queryByText(/instituciones que la dictan/i)).not.toBeInTheDocument();
+  });
+
+  /** Con grupo canónico, cuenta las universidades distintas del grupo, esta incluida. */
+  it('instituciones que la dictan: con grupo canónico, cuenta las universidades del grupo', () => {
+    renderSheet(BASE, [], {
+      catalogCoverage: [
+        coverage({
+          careerId: BASE.careerId,
+          universityId: 'unsta',
+          canonicalGroupName: 'Desarrollo de Software',
+        }),
+        coverage({
+          careerId: 'career-2',
+          universityId: 'unt',
+          canonicalGroupName: 'Desarrollo de Software',
+        }),
+        coverage({
+          careerId: 'career-3',
+          universityId: 'utn',
+          canonicalGroupName: 'Desarrollo de Software',
+        }),
+      ],
+    });
+
+    expect(screen.getByText('3 instituciones')).toBeInTheDocument();
+  });
+
+  /** "Materias medidas" no se dibuja con denominador 0: la carrera todavía no tiene plan cargado. */
+  it('materias medidas: sin materias cargadas, la celda no se dibuja', () => {
+    renderSheet({ ...BASE, totalSubjects: 0, coveredSubjects: 0, coveragePercent: 0 });
+
+    expect(screen.queryByText(/materias medidas/i)).not.toBeInTheDocument();
+  });
+
+  it('la cobertura vacía dice que ninguna materia junta reseñas suficientes', () => {
     renderSheet(BASE);
 
     expect(screen.getByText(/0 de 21 materias/)).toBeInTheDocument();
@@ -234,13 +370,13 @@ describe('CareerFactsSheet', () => {
   });
 
   /** US-134 E1: la cobertura se lee como fracción y porcentaje, con lo que falta explicado. */
-  it('la cobertura parcial dice cuántas materias restantes no llegan al piso', () => {
+  it('la cobertura parcial dice cuántas materias restantes todavía no juntan reseñas suficientes', () => {
     renderSheet({ ...BASE, coveredSubjects: 1, coveragePercent: 5 });
 
     expect(screen.getByText(/1 de 21 materias/)).toBeInTheDocument();
     expect(screen.getByText('5 %')).toBeInTheDocument();
     expect(
-      screen.getByText(/las 20 restantes todavía no juntan las 10 reseñas del piso/i),
+      screen.getByText(/las 20 restantes todavía no juntan reseñas suficientes/i),
     ).toBeInTheDocument();
   });
 
@@ -248,27 +384,89 @@ describe('CareerFactsSheet', () => {
     renderSheet({ ...BASE, coveredSubjects: 21, coveragePercent: 100 });
 
     expect(
-      screen.getByText(/todas sus materias ya juntan las 10 reseñas del piso/i),
+      screen.getByText(/todas sus materias ya juntan reseñas suficientes/i),
     ).toBeInTheDocument();
   });
 
-  it('enlaza a las materias del plan y a reseñar', () => {
+  /** El plan vigente se muestra inline, agrupado por año (US-134, SC-018). */
+  it('con plan vigente, muestra "El plan {año}" con sus materias agrupadas por año', () => {
+    renderSheet(BASE, [], {
+      activePlan: {
+        year: 2018,
+        subjects: [subject({ id: 'subj-1', code: '101', name: 'Algoritmos y Paradigmas' })],
+        subjectCoverage: [],
+      },
+    });
+
+    expect(screen.getByText('El plan 2018')).toBeInTheDocument();
+    expect(screen.getByText('Año 1')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /algoritmos y paradigmas/i })).toHaveAttribute(
+      'href',
+      '/subjects/subj-1',
+    );
+    expect(screen.queryByRole('link', { name: /ver los planes/i })).not.toBeInTheDocument();
+  });
+
+  /** Sin plan vigente, el único camino a las materias de un plan histórico es la lista completa. */
+  it('sin plan vigente, ofrece "Ver los planes" en el lugar del plan', () => {
     renderSheet(BASE);
 
-    expect(screen.getByRole('link', { name: /ver las 21 materias/i })).toHaveAttribute(
+    expect(screen.queryByText(/^El plan /)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /ver los planes/i })).toHaveAttribute(
       'href',
       `/careers/${BASE.careerId}/plans`,
     );
-    expect(screen.getByRole('link', { name: /reseñá tu cursada/i })).toHaveAttribute(
-      'href',
-      '/reviews/new',
-    );
   });
 
-  it('sin materias no ofrece el link a verlas, pero sí el de reseñar', () => {
-    renderSheet({ ...BASE, totalSubjects: 0, coveredSubjects: 0, coveragePercent: 0 });
+  /**
+   * "Por dónde empezar": las materias que ya publican (cruzaron el piso), de más a menos reseñas.
+   * Una con carga bajo el piso, o sin ninguna reseña, no entra: todavía no hay nada publicado ahí.
+   */
+  it('"Por dónde empezar" lista las materias que ya publican, de más a menos', () => {
+    renderSheet(BASE, [], {
+      activePlan: {
+        year: 2018,
+        subjects: [
+          subject({ id: 'subj-1', name: 'Álgebra I' }),
+          subject({ id: 'subj-2', name: 'Programación I' }),
+          subject({ id: 'subj-3', name: 'Física I' }),
+          subject({ id: 'subj-4', name: 'Bases de Datos' }),
+        ],
+        subjectCoverage: [
+          { subjectId: 'subj-1', reviewCount: 5, chairCount: 1, isCovered: false },
+          { subjectId: 'subj-2', reviewCount: 30, chairCount: 3, isCovered: true },
+          { subjectId: 'subj-4', reviewCount: 45, chairCount: 4, isCovered: true },
+        ],
+      },
+    });
 
-    expect(screen.queryByRole('link', { name: /ver las 0 materias/i })).not.toBeInTheDocument();
+    const section = screen
+      .getByText('Por dónde empezar · las materias con reseñas')
+      .closest('section');
+    if (!section) throw new Error('no se encontró la sección "Por dónde empezar"');
+    const links = within(section).getAllByRole('link');
+    expect(links.map((l) => l.textContent)).toEqual(['Bases de Datos', 'Programación I']);
+    // Álgebra I junta reseñas pero todavía no cruzó el piso: no es "por dónde empezar" todavía.
+    expect(within(section).queryByText('Álgebra I')).not.toBeInTheDocument();
+    // Física I no tiene ninguna reseña.
+    expect(within(section).queryByText('Física I')).not.toBeInTheDocument();
+  });
+
+  it('sin ninguna materia que publique, "Por dónde empezar" no se dibuja', () => {
+    renderSheet(BASE, [], {
+      activePlan: {
+        year: 2018,
+        subjects: [subject({ id: 'subj-1', name: 'Álgebra I' })],
+        subjectCoverage: [{ subjectId: 'subj-1', reviewCount: 5, chairCount: 1, isCovered: false }],
+      },
+    });
+
+    expect(screen.queryByText(/por dónde empezar/i)).not.toBeInTheDocument();
+  });
+
+  it('enlaza a reseñar la cursada', () => {
+    renderSheet(BASE);
+
     expect(screen.getByRole('link', { name: /reseñá tu cursada/i })).toHaveAttribute(
       'href',
       '/reviews/new',

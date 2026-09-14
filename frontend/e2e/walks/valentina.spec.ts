@@ -243,9 +243,13 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '02-explore-university.png',
     });
 
-    const careerLink = page.getByRole('link', {
-      name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
-    });
+    // .first(): "Facultades y carreras" siempre lista la carrera; si además junta reseñas
+    // suficientes para "Por dónde empezar", el mismo nombre aparece ahí también.
+    const careerLink = page
+      .getByRole('link', {
+        name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+      })
+      .first();
     await checkVisible(
       careerLink,
       'desde la universidad, debe poder llegar a la carrera sin buscar nada',
@@ -303,7 +307,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       coverageText,
       'debe poder ver la cobertura de la carrera',
     );
-    const restText = page.getByText(/todavía no juntan las 10 reseñas del piso/i);
+    const restText = page.getByText(/todavía no juntan reseñas suficientes/i);
     record({
       step: 3,
       story: 'US-134',

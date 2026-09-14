@@ -116,8 +116,9 @@ describe('TransparencyChecklist', () => {
     );
 
     expect(screen.getByText('Presupuesto ejecutado publicado')).toBeInTheDocument();
+    expect(screen.getByText('La institución no lo publica')).toBeInTheDocument();
     expect(
-      screen.getByText(/No publicado: La institución no publica su presupuesto ejecutado/),
+      screen.getByText('La institución no publica su presupuesto ejecutado.'),
     ).toBeInTheDocument();
   });
 
