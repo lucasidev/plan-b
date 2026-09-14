@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/ui';
 import { memberRoutes, memberSections } from '@/lib/member-shell';
 import { cn } from '@/lib/utils';
+import { ShellLink } from './shell-link';
 
 type Props = {
   /** Slot rendered below the nav (see `<AvatarMenu />`). */
@@ -126,7 +126,7 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <Link
+    <ShellLink
       href={path}
       // Sin prefetch: estos seis links viven montados en toda pantalla del área autenticada, y
       // el auto-prefetch en viewport le compite al router.push/refresh que sigue a guardar un
@@ -161,7 +161,7 @@ function NavItem({
           {shortcut}
         </span>
       )}
-    </Link>
+    </ShellLink>
   );
 }
 

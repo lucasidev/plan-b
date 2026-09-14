@@ -1,12 +1,12 @@
 'use client';
 
 import { ChevronUp } from 'lucide-react';
-import Link from 'next/link';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import { initialSignOutState, signOutAction } from '@/features/sign-out';
 import { displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
 import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
+import { ShellLink } from './shell-link';
 
 type Props = {
   email: string;
@@ -218,9 +218,12 @@ function MenuLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link
+    <ShellLink
       href={href}
       onClick={onClick}
+      // Mismo motivo que el sidebar y el topbar (#477): el prefetch en viewport compite con la
+      // navegación real, y acá pega más fuerte porque abrir el menú monta los tres links a la vez.
+      prefetch={false}
       role="menuitem"
       className={cn('block w-full text-left text-ink-2 hover:bg-bg-elev', 'transition-colors')}
       style={{
@@ -231,6 +234,6 @@ function MenuLink({
       }}
     >
       {children}
-    </Link>
+    </ShellLink>
   );
 }
