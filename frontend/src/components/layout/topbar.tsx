@@ -1,10 +1,10 @@
 'use client';
 
 import { Plus } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { GlobalSearch } from '@/features/global-search';
 import { breadcrumbsForPath } from '@/lib/member-shell';
+import { ShellLink } from './shell-link';
 
 /**
  * `(member)` area topbar per `docs/design/reference/components/shell.jsx::Topbar`.
@@ -47,7 +47,7 @@ export function Topbar() {
  */
 function WriteReviewButton() {
   return (
-    <Link
+    <ShellLink
       href="/reviews/new"
       // Mismo motivo que el sidebar: siempre montado, y su prefetch en viewport compite con la
       // navegación posterior a guardar un formulario (#477).
@@ -59,7 +59,7 @@ function WriteReviewButton() {
     >
       <Plus size={13} aria-hidden />
       Escribir reseña
-    </Link>
+    </ShellLink>
   );
 }
 

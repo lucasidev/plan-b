@@ -36,8 +36,16 @@ test.describe('Ajustes (US-072 + US-079-i modal)', () => {
     await page.getByRole('button', { name: /^entrar$/i }).click();
     await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
 
+    // Centinela para distinguir cómo llegó: un `location.assign` (el fallback de ShellLink)
+    // recarga el documento entero y se lo lleva puesto; una transición del router lo deja.
+    await page.evaluate(() => {
+      (window as typeof window & { __planbNav?: string }).__planbNav = 'router';
+    });
     await page.getByRole('link', { name: /^ajustes$/i }).click();
     await expect(page).toHaveURL(/\/settings$/, { timeout: 30_000 });
+    expect(
+      await page.evaluate(() => (window as typeof window & { __planbNav?: string }).__planbNav),
+    ).toBe('router');
     await expect(page.getByRole('heading', { name: /^ajustes$/i, level: 1 })).toBeVisible({
       timeout: 15_000,
     });

@@ -12,6 +12,30 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-14 · El click de un link del shell se perdía igual que el push/refresh de un formulario
+
+**Síntoma**: tres E2E (`settings.spec.ts`, `help.spec.ts`, `write-review.spec.ts`) flakeaban de forma intermitente en CI con la firma de la entrada del 2026-09-09, ahora en el click de un `<Link>` del shell en vez del `router.push`/`refresh` posterior a guardar un formulario (issue #525, con #510 adentro, dos avistajes previos en `help.spec.ts`; antecedente en `admin/chairs.spec.ts`, #477): después de entrar, el click en un link del sidebar o el topbar no navegaba nunca y `expect(page).toHaveURL(...)` vencía sus 30s. En `main` fallaron 2 de 3 corridas el 2026-09-14.
+
+**Causa raíz**: la traza de una falla real de CI (corrida 34803080787, commit `fb62a5c`, `settings.spec.ts`) lo confirma con datos, no con hipótesis. El click en "Ajustes" dispara el fetch RSC real de `/settings` (sin el header `next-router-prefetch`, a diferencia de un prefetch de fondo) y ese fetch responde 200 en 12ms, con el chunk JS de la pantalla servido 38ms después: nada se pierde en la red. Lo que se pierde es el commit: la URL nunca cambia en los 30s que dura el timeout. 223ms antes del click, dos `<Link>` de `/home` sin `prefetch={false}` (el CTA de `HomeEmptyState` hacia `/reviews/new` y el de `CareerCoverageCard` hacia `/careers/[id]`, ninguno de los dos tocado por el fix del 09-09 porque ese fix solo apagó el prefetch del sidebar y el topbar) dispararon su propio prefetch (`next-router-prefetch: 1`). Es el mismo mecanismo que la entrada del 2026-09-09: Next 15.5 (arquitectura pre-segment-cache) puede descartar una acción NAVIGATE pendiente bajo una ráfaga de acciones de router concurrentes, sin ningún error; acá la ráfaga la arma un link de la pantalla de origen, no el propio link clickeado. 660 corridas locales (`--repeat-each=20` y después `=40`, con 2 y luego 6 procesos saturando el resto de una máquina de 12 cores) no reprodujeron la firma: depende de un timing de scheduler que un runner de CI de 4 vCPU, compartido con Postgres, el backend y el frontend, toca seguido, y esta máquina, con cores de sobra aun bajo la carga sintética, no.
+
+**Fix**: `ShellLink` (`frontend/src/components/layout/shell-link.tsx`) envuelve `next/link` para los seis-siete links que quedan montados en toda pantalla del shell del alumno (los `NavItem` de `sidebar.tsx`, "Escribir reseña" de `topbar.tsx`, los links de `avatar-menu.tsx`); el backoffice queda fuera a propósito, con la misma familia de falla pendiente. En el `onClick` de un click primario sin modificadores hacia un href interno arma un plazo de 2000ms a nivel de módulo, no en el componente: el menú del avatar cierra su dropdown en el mismo click que navega (`onClick={onClose}`), así que un timer en un `useRef` se limpiaba al desmontar antes de tener la chance de disparar, y en esos tres links el fallback nunca corría. Si al vencer el plazo `window.location.pathname` sigue siendo el de origen y Next no reporta una navegación en vuelo para ese href (`useLinkStatus`), fuerza con `navigateAfterMutation` (`window.location.assign`, la misma vía de escape que ya usan doce formularios). Si hay una navegación en vuelo, da un segundo plazo antes de forzar, para no pisar una carga lenta con el backend frío. Nunca hay más de un plazo pendiente para toda la app: el último click gana, y un segundo click sobre el mismo destino no reinicia el que ya está corriendo. El fix ataca el síntoma (la URL no cambió) y no la fuente puntual de la ráfaga: apagar el prefetch de los dos links de `/home` taparía esta corrida en particular, pero cualquier pantalla puede montar mañana un link sin `prefetch={false}` que compita con el click real del shell.
+
+`bun scripts/run-e2e.ts --build --repeat-each=N --workers=2`, contra un build de producción, con procesos ocupando el resto de los cores al lado, midió la tasa de **reproducción local** (no la del arreglo: los tres specs nunca fallaron localmente, ni antes ni después del fix, así que esta tabla no es la evidencia de que funciona, esa evidencia es la traza de arriba):
+
+| spec (click) | reproducción local, sin el fix (rep=20, 2 procesos) | reproducción local, sin el fix (rep=40, 6 procesos) | reproducción local, con el fix (rep=20, 2 procesos) |
+|---|---|---|---|
+| settings.spec.ts (sidebar → Ajustes) | 0/120 | 0/240 | 0/120 |
+| help.spec.ts (sidebar → Ayuda) | 0/60 | 0/120 | 0/60 |
+| write-review.spec.ts (topbar → Escribir reseña) | 0/40 | 0/80 | 0/40 |
+
+**Prevención**:
+
+- Cuando la reproducción local no alcanza pero CI sí falló, bajar la traza de la corrida real (`gh run list --workflow ci.yml`, `gh run download <id> -n playwright-report`) en vez de escalar `--repeat-each` sin techo: la traza real, no 660 corridas en verde, fue lo que confirmó el mecanismo (el request sin prefetch respondiendo 200 en 12ms, la URL sin cambiar en 30s, y los dos prefetches competidores 223ms antes).
+- Antes de escribir una defensa nueva, grepear si el repo ya tiene una para el mismo fallo (repetido de la lección del 09-09, y por eso repetido acá): `ShellLink` llama a `navigateAfterMutation`, no reimplementa `window.location.assign`.
+- El síntoma ("la URL no cambió") tiene más de una fuente de ráfaga posible (prefetch del propio link, prefetch de un link vecino, lo que sea que Next agregue después). Defender el síntoma en el punto de click, como hace `ShellLink`, escala mejor que apagar `prefetch` en cada nuevo link que resulte competir.
+
+---
+
 ## 2026-09-09 · El router de Next perdía push/refresh sin ningún error, bajo carga
 
 **Síntoma**: cuatro E2E (`my-profile`, `write-review`, `chair-facts`, `undo`) flakeaban de forma intermitente en CI desde el 2026-09-07 (issue #477), siempre con la misma forma: después de guardar un formulario, el click dispara, el server action corre y persiste, `router.push`/`router.refresh` responde 200, y el DOM y la URL no cambian nunca dentro del timeout. 267 corridas locales previas no lo habían reproducido.
