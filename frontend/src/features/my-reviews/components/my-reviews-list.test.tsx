@@ -67,7 +67,7 @@ describe('MyReviewsList', () => {
     render(<MyReviewsList reviews={[]} instrument={null} />);
 
     expect(screen.getByText('Todavía no reseñaste ninguna cursada.')).toBeInTheDocument();
-    expect(screen.getByText(/lo que reseñes acá se publica solo en conteos/i)).toBeInTheDocument();
+    expect(screen.getByText(/a partir de (diez|10) rese/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /reseñar una cursada/i })).toHaveAttribute(
       'href',
       '/reviews/new',
@@ -279,5 +279,82 @@ describe('MyReviewsList', () => {
 
     expect(screen.getByRole('heading', { name: 'Análisis Matemático II' })).toBeInTheDocument();
     expect(screen.queryByText(/ahora suma/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * US-231 E1: cada fila con cátedra declarada dice cuántas reseñas junta hoy esa cátedra.
+   */
+  it('US-231 E1: con el conteo de su cátedra disponible, dice "junta N reseñas"', () => {
+    render(
+      <MyReviewsList
+        reviews={[review()]}
+        instrument={null}
+        tallies={
+          new Map([
+            [
+              'chair-1',
+              {
+                chairId: 'chair-1',
+                reviewCount: 12,
+                isPublished: true,
+                reviewsMissingToPublish: 0,
+              },
+            ],
+          ])
+        }
+      />,
+    );
+
+    expect(screen.getByText(/junta 12 reseñas/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Si el conteo no llegó (cátedra sin tally en el Map), la fila se dibuja sin él: nunca con un
+   * cero inventado.
+   */
+  it('sin conteo para su cátedra, la fila no dice "junta" nada', () => {
+    render(<MyReviewsList reviews={[review()]} instrument={null} tallies={new Map()} />);
+
+    expect(screen.queryByText(/junta/i)).not.toBeInTheDocument();
+  });
+
+  it('sin cátedra declarada, tampoco dice "junta"', () => {
+    render(
+      <MyReviewsList
+        reviews={[review({ chairId: null, chairName: null })]}
+        instrument={null}
+        tallies={
+          new Map([
+            [
+              'chair-1',
+              {
+                chairId: 'chair-1',
+                reviewCount: 12,
+                isPublished: true,
+                reviewsMissingToPublish: 0,
+              },
+            ],
+          ])
+        }
+      />,
+    );
+
+    expect(screen.queryByText(/junta/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Borrar es una acción destructiva (design-system.md: "alarma como texto y borde, nunca
+   * relleno"): Editar queda neutro con borde, Borrar lleva la alarma como texto y borde.
+   */
+  it('Borrar lleva la alarma como texto y borde; Editar queda neutro', () => {
+    render(<MyReviewsList reviews={[review()]} instrument={null} />);
+
+    const editButton = screen.getByRole('button', { name: 'Editar' });
+    const deleteButton = screen.getByRole('button', { name: 'Borrar' });
+
+    expect(deleteButton).toHaveClass('text-alarm-ink');
+    expect(deleteButton).toHaveClass('border-alarm-line');
+    expect(editButton).not.toHaveClass('text-alarm-ink');
+    expect(editButton).not.toHaveClass('border-alarm-line');
   });
 });

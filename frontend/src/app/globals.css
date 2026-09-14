@@ -47,6 +47,7 @@
   --color-alarm-soft: #f5e4e0;
   --color-alarm-ink: #6e1c12;
   --color-alarm-hover: #741d10;
+  --color-alarm-line: #e6c3bc;
 
   /* Subject lifecycle states (oklch: keep these intact for perceptual
    * uniformity across hues). */

@@ -43,11 +43,17 @@ const WALKS_IGNORE = ['**/walks/**'];
  * `public/accessibility.spec.ts`: mismo costo de fixture que `path-to-the-ficha.spec.ts` (diez
  * altas de alumno y diez reseñas publicadas en `beforeAll`), sumado a que cada uno de sus tests
  * corre axe sobre una ruta entera. Corriendo solo, después de `parallel`, no le quita CPU a nadie.
+ *
+ * `reviews/my-contributions.spec.ts`: sus tests de cátedras a una reseña del piso siembran hasta
+ * 12 altas de alumno cada uno (una cátedra en 12 y otra en 9 comparten el mismo pool de fillers,
+ * pero igual son más altas que `path-to-the-ficha.spec.ts`). Mismo motivo: en `parallel` esas
+ * altas compiten por CPU con server actions que corren contra su propio timeout.
  */
 const SERIAL_SPECS = [
   '**/admin/items.spec.ts',
   '**/public/path-to-the-ficha.spec.ts',
   '**/public/accessibility.spec.ts',
+  '**/reviews/my-contributions.spec.ts',
 ];
 
 /**

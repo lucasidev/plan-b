@@ -10,7 +10,7 @@ namespace Planb.IntegrationTests.Reviews;
 /// <summary>
 /// Integration tests de <c>GET /api/reviews/careers/{careerId}/chairs-near-floor</c> (US-134):
 /// qué cátedras están a exactamente una reseña de cruzar el piso. Mismo seed que
-/// <see cref="GetCoveredSubjectsEndpointTests"/>: TUDCS (UNSTA), materia 211 Fundamentos de
+/// <see cref="GetPlanSubjectCoverageEndpointTests"/>: TUDCS (UNSTA), materia 211 Fundamentos de
 /// Control de Calidad con tres cátedras (Pérez, González, Ruiz) y el resto de las materias del
 /// plan con una sola cátedra cada una.
 /// </summary>

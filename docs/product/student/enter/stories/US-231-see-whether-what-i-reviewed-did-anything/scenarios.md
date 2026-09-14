@@ -38,6 +38,6 @@ Entonces los bloques de la carrera no se dibujan, en vez de mostrar "0 de 0": no
 
 **X1.** En ningún estado aparece un puntaje, un promedio, una racha, un porcentaje de completitud como logro de la cuenta, ni un ranking de quién aportó más ([ADR-0083](../../../../../decisions/0083-the-ficha-publishes-counts-not-scores.md)).
 
-**X2.** En ningún estado se muestra una respuesta concreta, ni propia ni ajena: de las cátedras reseñadas se ve el conteo de voces, nunca qué se contestó.
+**X2.** En ningún estado se muestra una respuesta concreta ajena: de las cátedras que reseñaste se ve cuántas reseñas juntan, nunca qué contestó otra persona; las tuyas se ven en tu propia reseña ([US-162](../../../write-a-review/stories/US-162-see-the-impact-of-my-review/README.md)).
 
 **X3.** En ningún estado se sugieren materias para cursar, horarios ni orden de cursada ([ADR-0086](../../../../../decisions/0086-the-product-informs-it-does-not-track-your-degree.md)).

@@ -1,28 +1,30 @@
 import Link from 'next/link';
 import { Pill } from '@/components/ui';
 import { formatTermKind, formatTermOfYear } from '@/lib/academic-terms';
+import { describeSubjectCoverage } from '../lib/describe-career-coverage';
 import { groupSubjectsByYear } from '../lib/group-subjects';
-import type { Subject } from '../types';
+import type { Subject, SubjectCoverage } from '../types';
 
 /**
  * Grilla de materias de un plan (US-001, `/plans/[id]/subjects`), agrupada por año y término.
  * Sin estados de alumno (aprobada/regular/etc.): eso es Mi carrera (US-045), logueado. Acá solo
  * el listado público code + name + termKind, cada uno linkeando al detalle público (US-002).
  *
- * `coveredSubjectIds` marca cuáles ya tienen ficha (V10: antes había que entrar materia por
- * materia para ubicar la cobertura que la Ficha de carrera resume en "1 de 21"). Opcional: un
- * caller que todavía no resolvió la cobertura (o no la necesita, como el admin) no tiene que
- * armar un Set vacío a mano.
+ * `subjectCoverage` trae cuántas cátedras y reseñas junta cada materia (US-134, SC-018): antes
+ * había que entrar materia por materia para ubicar la cobertura que la Ficha de carrera resume en
+ * "23 de 51". Opcional: un caller que todavía no la resolvió (o no la necesita, como el admin) no
+ * tiene que armar un Map vacío a mano. Ausente para una materia sin ninguna reseña con cátedra:
+ * se lee "sin reseñas".
  *
  * TODO(US-001): correlativas (para_cursar / para_rendir) cuando el catálogo público las exponga.
  * `SubjectListItem` (GET /api/academic/subjects) hoy no las trae; requiere extender el backend.
  */
 export function SubjectGrid({
   subjects,
-  coveredSubjectIds,
+  subjectCoverage,
 }: {
   subjects: Subject[];
-  coveredSubjectIds?: ReadonlySet<string>;
+  subjectCoverage?: ReadonlyMap<string, SubjectCoverage>;
 }) {
   if (subjects.length === 0) {
     return (
@@ -50,7 +52,7 @@ export function SubjectGrid({
                     <SubjectCard
                       key={subject.id}
                       subject={subject}
-                      hasFicha={coveredSubjectIds?.has(subject.id) ?? false}
+                      coverage={subjectCoverage?.get(subject.id)}
                     />
                   ))}
                 </div>
@@ -63,7 +65,7 @@ export function SubjectGrid({
   );
 }
 
-function SubjectCard({ subject, hasFicha }: { subject: Subject; hasFicha: boolean }) {
+function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: SubjectCoverage }) {
   return (
     <Link
       href={`/subjects/${subject.id}`}
@@ -77,7 +79,13 @@ function SubjectCard({ subject, hasFicha }: { subject: Subject; hasFicha: boolea
       <span className="text-[13.5px] font-medium leading-snug text-ink">{subject.name}</span>
       <span className="flex items-center gap-1.5">
         <Pill>{formatTermKind(subject.termKind)}</Pill>
-        {hasFicha && <Pill tone="good">Medida</Pill>}
+      </span>
+      <span
+        className={
+          coverage?.isCovered ? 'text-[11px] font-semibold text-ink' : 'text-[11px] text-ink-3'
+        }
+      >
+        {describeSubjectCoverage(coverage)}
       </span>
     </Link>
   );

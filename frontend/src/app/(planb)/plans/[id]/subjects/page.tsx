@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation';
 import { CatalogBreadcrumb, type CrumbItem, SubjectGrid } from '@/features/browse-catalog';
 import {
   fetchCareersByUniversityServer,
-  fetchCoveredSubjectIdsServer,
   fetchPlanServer,
+  fetchPlanSubjectCoverageServer,
   fetchSubjectsByPlanServer,
   fetchUniversitiesServer,
 } from '@/features/browse-catalog/api.server';
@@ -29,9 +29,9 @@ export async function generateMetadata({ params }: { params: Params }) {
  * (`fetchUniversitiesServer` + `fetchCareersByUniversityServer`) que sí existen para otros
  * niveles del catálogo.
  *
- * `fetchCoveredSubjectIdsServer` (V10) le dice a `SubjectGrid` cuáles ya tienen ficha: antes la
- * única forma de ubicar la cobertura que la Ficha de carrera resume ("1 de 21") era entrar a cada
- * materia una por una.
+ * `fetchPlanSubjectCoverageServer` (US-134) le dice a `SubjectGrid` cuánto junta cada materia:
+ * antes la única forma de ubicar la cobertura que la Ficha de carrera resume ("1 de 21") era
+ * entrar a cada materia una por una.
  */
 export default async function PlanSubjectsPage({ params }: { params: Params }) {
   const { id } = await params;
@@ -41,11 +41,11 @@ export default async function PlanSubjectsPage({ params }: { params: Params }) {
     notFound();
   }
 
-  const [universities, careers, subjects, coveredSubjectIds] = await Promise.all([
+  const [universities, careers, subjects, subjectCoverage] = await Promise.all([
     fetchUniversitiesServer(),
     fetchCareersByUniversityServer(plan.universityId),
     fetchSubjectsByPlanServer(id),
-    fetchCoveredSubjectIdsServer(id),
+    fetchPlanSubjectCoverageServer(id),
   ]);
   const university = universities.find((u) => u.id === plan.universityId);
   const career = careers.find((c) => c.id === plan.careerId);
@@ -70,7 +70,10 @@ export default async function PlanSubjectsPage({ params }: { params: Params }) {
           Plan {plan.year}
         </h1>
       </header>
-      <SubjectGrid subjects={subjects} coveredSubjectIds={new Set(coveredSubjectIds)} />
+      <SubjectGrid
+        subjects={subjects}
+        subjectCoverage={new Map(subjectCoverage.map((c) => [c.subjectId, c]))}
+      />
     </div>
   );
 }

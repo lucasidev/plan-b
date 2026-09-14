@@ -618,10 +618,10 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
       await page.waitForLoadState('networkidle').catch(() => {});
       await shot(page, '04-home.png');
 
-      const chairRow = page.getByText(/ruiz/i);
+      const chairRow = page.getByRole('article').filter({ hasText: /ruiz/i });
       const hasChairRow = await checkVisible(
-        chairRow,
-        'Inicio debe mostrar la cátedra que reseñó, con sus voces y si publica o cuánto le falta',
+        chairRow.getByText(/junta \d+ rese/i),
+        'Mis aportes debe mostrar la fila de la Cátedra Ruiz con "junta N reseñas"',
       );
       const coverageText = page.getByText(/\d+ de \d+ materias/i);
       const hasCoverage = await isVisible(coverageText, 5000);
@@ -630,8 +630,8 @@ test('Lucía crea la cuenta en la acción, reseña en dos minutos y deshace lo q
         step: 4,
         story: 'US-231',
         expected:
-          'Inicio muestra las cátedras reseñadas (voces, si publica o cuánto le falta) y cuántas materias de la carrera están medidas.',
-        observed: `${hasChairRow ? 'Fila de Ruiz encontrada.' : 'No se encontró ninguna fila de la Cátedra Ruiz en Inicio.'} Cobertura: ${hasCoverage ? await textOf(coverageText) : 'no se encontró ninguna línea de cobertura.'}`,
+          'Mis aportes muestra las cátedras reseñadas (cuántas reseñas junta cada una) y cuántas materias de la carrera están medidas.',
+        observed: `${hasChairRow ? 'Fila de Ruiz encontrada.' : 'No se encontró ninguna fila de la Cátedra Ruiz en Mis aportes.'} Cobertura: ${hasCoverage ? await textOf(coverageText) : 'no se encontró ninguna línea de cobertura.'}`,
         verdict: combineVerdict([hasChairRow, hasCoverage]),
         screenshot: '04-home.png',
       });

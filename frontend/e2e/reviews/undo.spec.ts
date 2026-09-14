@@ -97,6 +97,10 @@ test.describe('Deshacer lo aportado (US-165, US-166)', () => {
     students.length = 0;
   });
 
+  /**
+   * US-231 N3: borrar la única reseña de una cátedra la saca de la lista, y si con eso la
+   * cátedra queda bajo el piso, su ficha vuelve a decir cuánto le falta en vez de publicar.
+   */
   test('editar mueve los conteos y borrar los devuelve bajo el piso', async ({
     page,
     context,

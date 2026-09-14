@@ -92,25 +92,51 @@ describe('groupSubjectsByYear', () => {
   });
 });
 
-describe('SubjectGrid, cuáles materias tienen ficha (V10)', () => {
+describe('SubjectGrid, cuánto junta cada materia (US-134, SC-018)', () => {
   const covered = subject({ id: 'covered', code: 'A100', name: 'Con ficha' });
   const uncovered = subject({ id: 'uncovered', code: 'B200', name: 'Sin ficha todavía' });
 
-  it('marca "Medida" solo a la materia cuyo id está en coveredSubjectIds', () => {
+  function coverageMap(
+    entries: [string, { reviewCount: number; chairCount: number; isCovered: boolean }][],
+  ) {
+    return new Map(entries.map(([id, c]) => [id, { subjectId: id, ...c }]));
+  }
+
+  it('la materia con cobertura dice cuántas cátedras y reseñas junta, en negrita', () => {
     render(
-      <SubjectGrid subjects={[covered, uncovered]} coveredSubjectIds={new Set(['covered'])} />,
+      <SubjectGrid
+        subjects={[covered, uncovered]}
+        subjectCoverage={coverageMap([
+          ['covered', { reviewCount: 28, chairCount: 3, isCovered: true }],
+        ])}
+      />,
     );
 
     const coveredCard = screen.getByRole('link', { name: /con ficha/i });
     const uncoveredCard = screen.getByRole('link', { name: /sin ficha todavía/i });
 
-    expect(within(coveredCard).getByText('Medida')).toBeInTheDocument();
-    expect(within(uncoveredCard).queryByText('Medida')).not.toBeInTheDocument();
+    expect(within(coveredCard).getByText('28 reseñas en 3 cátedras')).toHaveClass('font-semibold');
+    expect(within(uncoveredCard).getByText('sin reseñas')).toBeInTheDocument();
   });
 
-  it('sin coveredSubjectIds, ninguna materia se marca como medida', () => {
+  it('con reseñas pero sin cruzar el piso, dice el conteo sin negrita', () => {
+    render(
+      <SubjectGrid
+        subjects={[covered, uncovered]}
+        subjectCoverage={coverageMap([
+          ['covered', { reviewCount: 4, chairCount: 1, isCovered: false }],
+        ])}
+      />,
+    );
+
+    const coveredCard = screen.getByRole('link', { name: /con ficha/i });
+    const text = within(coveredCard).getByText('4 reseñas en 1 cátedra');
+    expect(text).not.toHaveClass('font-semibold');
+  });
+
+  it('sin subjectCoverage, todas las materias dicen "sin reseñas"', () => {
     render(<SubjectGrid subjects={[covered, uncovered]} />);
 
-    expect(screen.queryByText('Medida')).not.toBeInTheDocument();
+    expect(screen.getAllByText('sin reseñas')).toHaveLength(2);
   });
 });
