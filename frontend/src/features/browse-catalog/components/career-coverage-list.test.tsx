@@ -21,6 +21,7 @@ function career(overrides: Partial<CareerCoverage>): CareerCoverage {
     hasReviewsBelowFloor: false,
     totalSubjects: 0,
     coveredSubjects: 0,
+    canonicalGroupName: null,
     ...overrides,
   };
 }

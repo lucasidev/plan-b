@@ -2,6 +2,7 @@ using System.Globalization;
 using Dapper;
 using Planb.Academic.Application.Contracts;
 using Planb.Academic.Domain.OfficialFacts;
+using Planb.Academic.Infrastructure.Seeding;
 using Planb.SharedKernel.Abstractions.Persistence;
 
 namespace Planb.Academic.Infrastructure.Reading;
@@ -526,9 +527,23 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             ORDER BY u.name ASC, c.name ASC;";
 
         using var db = _connections.Create();
-        var rows = await db.QueryAsync<CareerCatalogItem>(new CommandDefinition(sql, cancellationToken: ct));
-        return rows.AsList();
+        var rows = await db.QueryAsync<CareerCatalogRow>(new CommandDefinition(sql, cancellationToken: ct));
+        return rows.Select(ToCareerCatalogItem).ToList();
     }
+
+    // La carrera canónica (CanonicalCareerGroupings, US-195) no tiene columna ni JOIN: es un lookup
+    // en memoria contra el archivo que el equipo cura a mano, no un dato que viva en la tabla.
+    // Internal para que el mapeo se pueda testear sin pegarle a la base (InternalsVisibleTo a
+    // Planb.Academic.Tests).
+    internal static CareerCatalogItem ToCareerCatalogItem(CareerCatalogRow row) => new(
+        row.Id,
+        row.Name,
+        row.UniversityId,
+        row.UniversityName,
+        row.IsOfficial,
+        CanonicalCareerGroupings.All
+            .FirstOrDefault(g => g.CareerIds.Any(id => id.Value == row.Id))
+            ?.Name);
 
     public async Task<IReadOnlySet<Guid>> ListCareersWithOfficialDataAsync(
         IReadOnlyCollection<Guid> careerIds, CancellationToken ct = default)
@@ -559,6 +574,9 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 cancellationToken: ct));
         return rows.ToHashSet();
     }
+
+    internal sealed record CareerCatalogRow(
+        Guid Id, string Name, Guid UniversityId, string UniversityName, bool IsOfficial);
 
     private sealed record SubjectLabelRow(Guid Id, string Name, string Code);
 
