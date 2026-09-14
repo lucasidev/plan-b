@@ -1,6 +1,4 @@
-import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { Pill } from '@/components/ui';
 import {
   describeUniversityCareerCount,
   describeUniversityReviewsPill,
@@ -14,11 +12,12 @@ export type UniversityListItem = UniversityWithCoverage & {
 };
 
 /**
- * Listado de universidades del catálogo (US-001, `/universities`, ADR-0096, maqueta aprobada).
- * Cada fila navega a `/universities/{slug}/careers` y dice, antes del clic: su tipo institucional
- * cuando lo relevamos, cuántas carreras tiene, y con una pill, cuántas de esas ya tienen reseñas
- * (US-222, ficha de SC-003). La fila con reseñas se destaca; la que no, se atenúa (`row dim` de la
- * maqueta): no hay estado "vacío" real esperado (el catálogo siempre tiene al menos las
+ * Listado de universidades del catálogo (US-001, `/universities`, ADR-0096, maqueta aprobada):
+ * filas `.pb-row` (sin chevron), la pill oscura `.pb-pill.pb-pub` cuando tiene reseñas, la clara
+ * `.pb-pill` cuando no, y `.pb-row.pb-dim` atenúa el nombre de la fila sin reseñas. Cada fila
+ * navega a `/universities/{slug}/careers` y dice, antes del clic: su tipo institucional cuando lo
+ * relevamos, cuántas carreras tiene, y cuántas de esas ya tienen reseñas (US-222, ficha de
+ * SC-003). No hay estado "vacío" real esperado (el catálogo siempre tiene al menos las
  * universidades seedeadas), pero lo contemplamos igual: MVP sin admin de universidades activo,
  * esto puede pasar en un ambiente recién levantado.
  */
@@ -32,7 +31,7 @@ export function UniversityList({ universities }: { universities: UniversityListI
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="pb-list">
       {universities.map((university) => {
         const careerCount = describeUniversityCareerCount(university.careerCount);
         const meta =
@@ -45,25 +44,16 @@ export function UniversityList({ universities }: { universities: UniversityListI
           <li key={university.id}>
             <Link
               href={`/universities/${university.slug}/careers`}
-              className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
+              className={reviewed ? 'pb-row' : 'pb-row pb-dim'}
             >
-              <span className="min-w-0 flex-1">
-                <span
-                  className={
-                    reviewed
-                      ? 'block text-[14px] font-medium text-ink'
-                      : 'block text-[14px] font-normal text-ink-3'
-                  }
-                >
-                  {university.name}
-                </span>
-                <span className="mt-0.5 block text-[12px] text-ink-3">{meta}</span>
+              <span>
+                <span className="pb-name">{university.name}</span>
+                <span className="pb-sub">{meta}</span>
               </span>
-              <span className="flex shrink-0 items-center gap-2">
-                <Pill tone={reviewed ? 'ink' : 'neutral'}>
+              <span className="pb-right">
+                <span className={reviewed ? 'pb-pill pb-pub' : 'pb-pill'}>
                   {describeUniversityReviewsPill(university.careersWithReviews)}
-                </Pill>
-                <ChevronRight size={16} className="text-ink-3" aria-hidden />
+                </span>
               </span>
             </Link>
           </li>

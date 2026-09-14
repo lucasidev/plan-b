@@ -5,8 +5,8 @@ import { SingleInstitutionCareerList } from './single-institution-career-list';
 
 /**
  * "En una sola institución" (US-222, ADR-0096, maqueta aprobada): filas compactas, las primeras
- * doce, sin pill por fila (eso lo cubría `CareerReviewsPill`; en una lista de cientos, "sin
- * reseñas todavía" repetido en casi todas las filas no suma nada).
+ * doce, sin pill por fila: en una lista de cientos, "sin reseñas todavía" repetido en casi todas
+ * las filas no suma nada.
  */
 
 function career(overrides: Partial<CareerCoverage>): CareerCoverage {

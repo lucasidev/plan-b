@@ -27,6 +27,7 @@ export {
   describeUniversityReviewsPill,
   hasReviews,
   institutionTypeLabel,
+  numberInWords,
   universityShortName,
 } from './lib/describe-career-coverage';
 export type {

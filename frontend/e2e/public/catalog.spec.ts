@@ -120,8 +120,10 @@ test.describe('Catálogo público (US-001)', () => {
       timeout: 30_000,
     });
     await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
+    // El h2 es un solo `.pb-eyebrow` ("En más de una institución · para comparar lado a lado",
+    // ADR-0096, maqueta aprobada): regex por prefijo, no el texto completo.
     await expect(
-      page.getByRole('heading', { name: 'En más de una institución', level: 2 }),
+      page.getByRole('heading', { name: /^En más de una institución/, level: 2 }),
     ).toBeVisible();
 
     // Una fila por carrera canónica, no un heading por grupo: la institución dentro de esa fila es
@@ -145,13 +147,17 @@ test.describe('Catálogo público (US-001)', () => {
     });
     await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
 
+    // Cada h2 es un solo `.pb-eyebrow` con su conteo pegado (ADR-0096, maqueta aprobada): el
+    // prefijo, no el texto completo (que incluye "· para comparar lado a lado" y "· N carreras").
     const sectionHeadings = await page.getByRole('heading', { level: 2 }).allTextContents();
-    expect(sectionHeadings).toEqual(['En más de una institución', 'En una sola institución']);
+    expect(sectionHeadings).toHaveLength(2);
+    expect(sectionHeadings[0]).toMatch(/^En más de una institución/);
+    expect(sectionHeadings[1]).toMatch(/^En una sola institución/);
 
     // El grupo canónico multi-institución (Tecnicatura o técnico en programación) no puede
     // reaparecer adentro de la lista compacta de "en una sola institución".
     const singleSection = page.locator('section', {
-      has: page.getByRole('heading', { name: 'En una sola institución' }),
+      has: page.getByRole('heading', { name: /^En una sola institución/ }),
     });
     await expect(singleSection.getByText('Tecnicatura o técnico en programación')).toHaveCount(0);
   });

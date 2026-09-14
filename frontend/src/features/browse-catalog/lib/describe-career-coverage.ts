@@ -152,6 +152,29 @@ export function universityShortName(university: Pick<University, 'slug'>): strin
   return university.slug.toUpperCase();
 }
 
+const NUMBER_WORDS = [
+  'cero',
+  'uno',
+  'dos',
+  'tres',
+  'cuatro',
+  'cinco',
+  'seis',
+  'siete',
+  'ocho',
+  'nueve',
+  'diez',
+];
+
+/**
+ * Un número chico en palabras (ADR-0096, maqueta aprobada: "Cinco instituciones con oferta en
+ * Tucumán", "en tres instituciones cada una"), o el dígito tal cual si no está en la lista (0 a
+ * 10): un total de carreras no se escribe en palabras.
+ */
+export function numberInWords(n: number): string {
+  return NUMBER_WORDS[n] ?? String(n);
+}
+
 /**
  * El tipo institucional de una universidad (ADR-0096): el primer segmento antes del ";" del
  * `institution_type` Published (ej. "Privada" de "Privada; 7479 estudiantes..."), o null sin dato

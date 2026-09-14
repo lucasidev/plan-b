@@ -6,8 +6,7 @@ import { CanonicalCareerGroups } from './canonical-career-groups';
 
 /**
  * "En más de una institución" (US-222, ADR-0096, maqueta aprobada): una fila por carrera
- * canónica, nunca una tarjeta por oferta (eso lo cubría `CareerReviewsPill`, que esta fila
- * reemplaza).
+ * canónica, nunca una tarjeta por oferta.
  */
 
 function offering(overrides: Partial<CareerCoverage>): CareerCoverage {
@@ -139,6 +138,55 @@ describe('CanonicalCareerGroups', () => {
     );
 
     expect(screen.getByText('con reseñas')).toBeInTheDocument();
+  });
+
+  it('el orden de la maqueta: primero con reseñas, después más instituciones, a igual cantidad alfabético', () => {
+    const noReviewsThree = group({
+      canonicalGroupName: 'Sin reseñas, tres instituciones',
+      offerings: [
+        offering({ careerId: 'a1', universityId: 'u1' }),
+        offering({ careerId: 'a2', universityId: 'u2' }),
+        offering({ careerId: 'a3', universityId: 'u3' }),
+      ],
+    });
+    const reviewsTwo = group({
+      canonicalGroupName: 'Con reseñas, dos instituciones',
+      offerings: [
+        offering({ careerId: 'b1', universityId: 'u1', voiceCount: 5 }),
+        offering({ careerId: 'b2', universityId: 'u2' }),
+      ],
+    });
+    const noReviewsTwoZ = group({
+      canonicalGroupName: 'Zoología',
+      offerings: [
+        offering({ careerId: 'c1', universityId: 'u1' }),
+        offering({ careerId: 'c2', universityId: 'u2' }),
+      ],
+    });
+    const noReviewsTwoA = group({
+      canonicalGroupName: 'Agronomía',
+      offerings: [
+        offering({ careerId: 'd1', universityId: 'u1' }),
+        offering({ careerId: 'd2', universityId: 'u2' }),
+      ],
+    });
+
+    render(
+      <CanonicalCareerGroups
+        groups={[noReviewsThree, reviewsTwo, noReviewsTwoZ, noReviewsTwoA]}
+        universityShortNames={new Map()}
+      />,
+    );
+
+    const names = screen.getAllByText(
+      /Sin reseñas, tres instituciones|Con reseñas, dos instituciones|Zoología|Agronomía/,
+    );
+    expect(names.map((el) => el.textContent)).toEqual([
+      'Con reseñas, dos instituciones',
+      'Sin reseñas, tres instituciones',
+      'Agronomía',
+      'Zoología',
+    ]);
   });
 
   it('sin grupos, no renderiza nada', () => {

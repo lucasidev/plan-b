@@ -73,8 +73,8 @@ describe('UniversityList', () => {
     expect(within(row).getByText('sin reseñas todavía')).toBeInTheDocument();
   });
 
-  /** Maqueta aprobada: la fila con reseñas se destaca, la que no, se atenúa ("row dim"). */
-  it('con reseñas, el nombre se ve normal; sin reseñas, se atenúa (texto ink-3)', () => {
+  /** Maqueta aprobada: la fila con reseñas se destaca ("pb-row"), la que no, se atenúa ("pb-row pb-dim"). */
+  it('con reseñas, la fila es "pb-row"; sin reseñas, suma "pb-dim"', () => {
     render(
       <UniversityList
         universities={[
@@ -84,8 +84,9 @@ describe('UniversityList', () => {
       />,
     );
 
-    expect(screen.getByText('UNSTA')).toHaveClass('text-ink');
-    expect(screen.getByText('UNT')).toHaveClass('text-ink-3');
+    expect(screen.getByRole('link', { name: /unsta/i })).toHaveClass('pb-row');
+    expect(screen.getByRole('link', { name: /unsta/i })).not.toHaveClass('pb-dim');
+    expect(screen.getByRole('link', { name: /^unt/i })).toHaveClass('pb-row', 'pb-dim');
   });
 
   it('una institución sin carreras cargadas sigue en la lista y lo dice con palabras', () => {

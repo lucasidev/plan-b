@@ -1,10 +1,12 @@
 import { OFFICIAL_FACT_FIELDS } from '@/components/facts';
 import { fetchOfficialFactsBySubjectTypeServer } from '@/components/facts/official-facts.server';
+import { PageFrame } from '@/components/layout/page-frame';
 import {
   computeDataHighlights,
   DataHighlights,
   ExploreLensSwitch,
   institutionTypeLabel,
+  numberInWords,
   summarizeUniversitiesCoverage,
   UniversityList,
 } from '@/features/browse-catalog';
@@ -21,11 +23,13 @@ export const metadata = {
 };
 
 /**
- * /universities (US-001, ADR-0096). Punto de entrada del catálogo público: todas las
- * universidades soportadas, cada una con su tipo institucional, cuántas carreras tiene y cuántas
- * de esas ya tienen reseñas (US-222, ficha de SC-003), antes de entrar. A la derecha, "Lo que los
- * datos dicen" interpreta el relevamiento oficial por institución y por carrera: un hecho de un
- * solo dato con su fuente, nunca un compuesto (THESIS, "Qué publicamos" 3 y 8).
+ * /universities (US-001, ADR-0096, maqueta aprobada: `V.explore`, lente Universidades). Punto de
+ * entrada del catálogo público: todas las universidades soportadas, cada una con su tipo
+ * institucional, cuántas carreras tiene y cuántas de esas ya tienen reseñas (US-222, ficha de
+ * SC-003), antes de entrar. A la derecha, "Lo que los datos dicen" interpreta el relevamiento
+ * oficial por institución y por carrera: un hecho de un solo dato con su fuente, nunca un
+ * compuesto (THESIS, "Qué publicamos" 3 y 8). Va en las dos lentes de Explorar, con los mismos
+ * datos.
  *
  * Sin auth, sin paginación (MVP: pocas unis seedeadas). Server-rendered, sin HydrationBoundary
  * (mismo patrón que `app/(public)/subjects/[id]/page.tsx`: server-fetch directo + render).
@@ -57,22 +61,28 @@ export default async function UniversitiesPage() {
     offeringFacts,
   });
 
+  // "Cinco instituciones..." (ADR-0096, maqueta aprobada: números chicos en palabras, mayúscula
+  // inicial porque abre la frase).
+  const institutionsWord = numberInWords(universities.length);
+  const institutionsWordCapitalized =
+    institutionsWord.charAt(0).toUpperCase() + institutionsWord.slice(1);
+
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <header>
-        <h1 className="font-display text-[28px] font-semibold leading-tight text-ink">Explorar</h1>
-        <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-2">
-          {universities.length} instituciones con oferta en Tucumán, {careers.length} carreras, y lo
-          que ya se puede leer de cada una.
-        </p>
-        <div className="mt-3.5">
-          <ExploreLensSwitch active="universities" />
-        </div>
-      </header>
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <UniversityList universities={universitiesWithCoverage} />
-        <DataHighlights highlights={highlights} />
-      </div>
-    </div>
+    <PageFrame
+      head={
+        <>
+          <h1 className="pb-serif">Explorar</h1>
+          <p className="pb-h-sub">
+            {institutionsWordCapitalized} instituciones con oferta en Tucumán, {careers.length}{' '}
+            carreras, y lo que ya se puede leer de cada una.
+          </p>
+          <div style={{ marginTop: 14 }}>
+            <ExploreLensSwitch active="universities" />
+          </div>
+        </>
+      }
+      main={<UniversityList universities={universitiesWithCoverage} />}
+      aside={<DataHighlights highlights={highlights} />}
+    />
   );
 }
