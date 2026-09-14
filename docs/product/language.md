@@ -125,6 +125,9 @@ Los campos del vocabulario curado ([ADR-0090](../decisions/0090-an-official-datu
 | `institution_type` | Identidad institucional |
 | `academic_unit` | Unidad académica de la carrera |
 | `agn_audit` | Auditada por la AGN |
+| `students` | Estudiantes |
+| `graduates` | Egresados |
+| `advancing_share` | Reinscriptos con dos o más materias aprobadas |
 
 | Término | Significado |
 |---|---|

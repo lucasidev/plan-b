@@ -53,6 +53,15 @@ public static class OfficialFactField
     /// <summary>Auditoría de la AGN: el informe más reciente que audita a la institución, si existe (issue #506).</summary>
     public const string AgnAudit = "agn_audit";
 
+    /// <summary>Estudiantes: cantidad total de la institución en el período relevado (Anuario SPU).</summary>
+    public const string Students = "students";
+
+    /// <summary>Egresados: cantidad total de la institución en el período relevado (Anuario SPU).</summary>
+    public const string Graduates = "graduates";
+
+    /// <summary>Reinscriptos con dos o más materias aprobadas: proporción sobre el total de reinscriptos (Anuario SPU).</summary>
+    public const string AdvancingShare = "advancing_share";
+
     /// <summary>
     /// Los códigos que arrancan (ADR-0090). Abierto: sumar un campo es agregar una constante acá y
     /// no pide migración (la columna ya acepta cualquier <c>varchar</c>).
@@ -74,6 +83,9 @@ public static class OfficialFactField
         InstitutionType,
         AcademicUnit,
         AgnAudit,
+        Students,
+        Graduates,
+        AdvancingShare,
     ];
 
     /// <summary>True si <paramref name="field"/> es uno de los códigos curados (comparación exacta, case-sensitive: el contrato son los literales en inglés de acá).</summary>
