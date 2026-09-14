@@ -12,10 +12,9 @@ namespace Planb.Reviews.Application.Features.PlanSubjectCoverage;
 /// al menos una reseña, cuántas cátedras y cuántas reseñas hay detrás y si ya cruzó el piso.
 ///
 /// <para>
-/// Distinto de <see cref="GetCoveredSubjectsEndpoint"/> (que solo trae el id de las que ya
-/// publican): este trae el conteo que sostiene esa decisión, para poder mostrar el estado
-/// intermedio ("junta 3, con 7 más publica") en vez de nada. Un plan inexistente o sin ninguna
-/// reseña devuelve lista vacía, no 404: mismo criterio que <c>covered-subjects</c>.
+/// Trae el conteo que sostiene la decisión de cobertura, para poder mostrar el estado intermedio
+/// ("junta 3, con 7 más publica") en vez de nada. Un plan inexistente o sin ninguna reseña
+/// devuelve lista vacía, no 404: mismo criterio que el resto del catálogo público.
 /// </para>
 /// </summary>
 public sealed class GetPlanSubjectCoverageEndpoint : ICarterModule

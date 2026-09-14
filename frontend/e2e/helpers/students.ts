@@ -48,6 +48,13 @@ export interface CreateStudentOptions {
    */
   emailPrefix?: string;
   careerPlanId?: string;
+  /**
+   * Declara solo la carrera, sin plan (ignorado si viene `careerPlanId`). Camino real: la
+   * mayoría del catálogo todavía no tiene un plan relevado, y `RegisterUserValidator` exige
+   * `CareerId` justamente para ese caso (lo pide solo cuando no viene `CareerPlanId`). Sirve para
+   * dejar una cuenta con perfil pero sin plan vigente (US-231 N4).
+   */
+  careerId?: string;
 }
 
 function uniqueEmail(prefix: string): string {
@@ -95,7 +102,10 @@ export async function createStudent(
   const password = STUDENT_PASSWORD;
 
   const registerResp = await request.post('/api/identity/register', {
-    data: { email, password, careerPlanId: opts.careerPlanId ?? DEFAULT_CAREER_PLAN_ID },
+    data:
+      opts.careerId && !opts.careerPlanId
+        ? { email, password, careerId: opts.careerId }
+        : { email, password, careerPlanId: opts.careerPlanId ?? DEFAULT_CAREER_PLAN_ID },
   });
   await ensureOk(registerResp, 'register', email);
 

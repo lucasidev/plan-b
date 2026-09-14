@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   describeCareerCoverage,
+  describeSubjectCoverage,
   describeUniversityCoverage,
   hasSomethingToRead,
 } from './describe-career-coverage';
@@ -248,5 +249,27 @@ describe('describeUniversityCoverage', () => {
 
   it('sin ninguna carrera cargada: lo dice con palabras, no "0 carreras"', () => {
     expect(describeUniversityCoverage(0, 0)).toBe('Todavía sin carreras cargadas.');
+  });
+});
+
+describe('describeSubjectCoverage', () => {
+  it('dice las reseñas y en cuántas cátedras, en esa forma (no "N cátedras" a secas)', () => {
+    expect(describeSubjectCoverage({ reviewCount: 28, chairCount: 3 })).toBe(
+      '28 reseñas en 3 cátedras',
+    );
+  });
+
+  it('una sola cátedra y una sola reseña usan el singular', () => {
+    expect(describeSubjectCoverage({ reviewCount: 1, chairCount: 1 })).toBe(
+      '1 reseña en 1 cátedra',
+    );
+  });
+
+  it('sin cobertura (undefined), dice "sin reseñas" en vez de "0 cátedras"', () => {
+    expect(describeSubjectCoverage(undefined)).toBe('sin reseñas');
+  });
+
+  it('con reviewCount en cero, también dice "sin reseñas"', () => {
+    expect(describeSubjectCoverage({ reviewCount: 0, chairCount: 0 })).toBe('sin reseñas');
   });
 });

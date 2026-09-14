@@ -54,10 +54,10 @@ function note(facts: CareerFacts, remaining: number): string {
     return 'Todavía no tenemos materias cargadas para esta carrera.';
   }
   if (facts.coveredSubjects === 0) {
-    return 'Ninguna materia junta todavía las 10 reseñas del piso. Leer no depende de que reseñes, pero acá todavía no hay nada que leer.';
+    return 'Ninguna materia junta todavía reseñas suficientes. Leer no depende de que reseñes, pero acá todavía no hay nada que leer.';
   }
   if (remaining === 0) {
-    return 'Todas sus materias ya juntan las 10 reseñas del piso.';
+    return 'Todas sus materias ya juntan reseñas suficientes.';
   }
-  return `Las ${remaining} restantes todavía no juntan las 10 reseñas del piso en ninguna de sus cátedras.`;
+  return `Las ${remaining} restantes todavía no juntan reseñas suficientes en ninguna de sus cátedras.`;
 }

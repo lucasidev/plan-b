@@ -9,7 +9,7 @@ namespace Planb.IntegrationTests.Reviews;
 /// <summary>
 /// Integration tests de <c>GET /api/reviews/career-plans/{careerPlanId}/subject-coverage</c>
 /// (US-134): el conteo detrás de la cobertura de cada materia con al menos una reseña, cubierta o
-/// no. Mismo seed que <see cref="GetCoveredSubjectsEndpointTests"/>: TUDCS (UNSTA), 211 Fundamentos
+/// no. Mismo seed que <see cref="GetChairsNearFloorEndpointTests"/>: TUDCS (UNSTA), 211 Fundamentos
 /// de Control de Calidad con tres cátedras (Pérez, González, Ruiz) y el resto de las materias del
 /// plan con una sola cátedra cada una.
 /// </summary>

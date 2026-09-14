@@ -26,6 +26,7 @@ Documento canónico del lenguaje visual de plan-b: paleta, tipografía, forma y 
 | `--color-alarm-soft` | `#f5e4e0` | Fondo suave de la alarma. |
 | `--color-alarm-ink` | `#6e1c12` | Alarma como texto sobre soft. |
 | `--color-alarm-hover` | `#741d10` | Hover de acciones alarma. |
+| `--color-alarm-line` | `#e6c3bc` | Borde de una acción destructiva (Borrar, Dar de baja). |
 
 `--color-ink-3` es el tono más claro con el que se escribe texto: llega a 4,5:1 (WCAG AA) sobre los tres fondos (`--color-bg`, `--color-bg-card`, `--color-bg-elev`). `--color-ink-4` no es para texto legible: solo deshabilitado, placeholder y relleno no textual de barras.
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import type { CurrentInstrument } from '@/components/instrument';
 import { deleteReviewAction } from '../actions';
+import type { MyReviewedChairTally } from '../api.server';
 import type { MyReview } from '../types';
 import { ReviewEditor } from './review-editor';
 
@@ -22,9 +23,13 @@ import { ReviewEditor } from './review-editor';
 export function MyReviewsList({
   reviews,
   instrument,
+  tallies = new Map(),
 }: {
   reviews: MyReview[];
   instrument: CurrentInstrument | null;
+  /** Cuántas reseñas junta hoy cada cátedra reseñada (US-231, "junta 12 reseñas"). Ausente en vez
+   * de cero cuando el conteo no llegó: nunca se inventa un cero. */
+  tallies?: ReadonlyMap<string, MyReviewedChairTally>;
 }) {
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -36,6 +41,10 @@ export function MyReviewsList({
   // no pasó nada, y lo más probable es que lo intente otra vez y reciba «esa reseña ya no está».
   // Lo vio el E2E del deshacer, con el 204 y el read siguiente en el log del backend.
   const [removed, setRemoved] = useState<string[]>([]);
+
+  // El orden (por la reseña más reciente, SC-018) lo pone el backend
+  // (`DapperMyReviewsQueryService`, `ORDER BY created_at DESC`): acá solo se saca lo borrado, sin
+  // tocar el orden que ya llegó.
   const visible = reviews.filter((review) => !removed.includes(review.id));
 
   if (visible.length === 0) {
@@ -45,8 +54,8 @@ export function MyReviewsList({
           Todavía no reseñaste ninguna cursada.
         </p>
         <p className="mb-4 text-[13px] leading-relaxed text-ink-3">
-          Lo que reseñes acá se publica solo en conteos, junto con lo de los demás. Nunca se muestra
-          una reseña sola, ni con tu nombre ni sin él.
+          Una cátedra publica sus conteos a partir de diez reseñas. Hasta ahí, lo que se sabe de
+          ella queda en cero.
         </p>
         <Link
           href="/reviews/new"
@@ -75,6 +84,7 @@ export function MyReviewsList({
             review={review}
             instrument={instrument}
             canEdit={instrument !== null}
+            reviewCount={review.chairId ? (tallies.get(review.chairId)?.reviewCount ?? null) : null}
             onEdit={() => setEditing(review.id)}
             onRemoved={() => setRemoved((prev) => [...prev, review.id])}
           />
@@ -152,12 +162,16 @@ function ReviewCard({
   review,
   instrument,
   canEdit,
+  reviewCount,
   onEdit,
   onRemoved,
 }: {
   review: MyReview;
   instrument: CurrentInstrument | null;
   canEdit: boolean;
+  /** Cuántas reseñas junta hoy la cátedra de esta fila, o `null` sin cátedra declarada o sin
+   * conteo disponible: nunca un cero inventado. */
+  reviewCount: number | null;
   onEdit: () => void;
   onRemoved: () => void;
 }) {
@@ -225,6 +239,8 @@ function ReviewCard({
         ) : (
           'Sin cátedra declarada'
         )}
+        {reviewCount !== null &&
+          ` · junta ${reviewCount} ${reviewCount === 1 ? 'reseña' : 'reseñas'}`}
         {' · '}
         {review.answeredItems}{' '}
         {review.answeredItems === 1 ? 'pregunta contestada' : 'preguntas contestadas'}
@@ -288,7 +304,7 @@ function ReviewCard({
           <button
             type="button"
             onClick={() => setConfirming(true)}
-            className="rounded-lg px-3 py-1.5 text-[12.5px] text-ink-3 hover:text-alarm-ink"
+            className="rounded-lg border border-alarm-line px-3 py-1.5 text-[12.5px] text-alarm-ink hover:bg-alarm-soft"
           >
             Borrar
           </button>

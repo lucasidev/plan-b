@@ -25,10 +25,11 @@ describe('CareerCoverageCard', () => {
     );
   });
 
-  it('dice cuántas faltan y por qué, no solo el número', () => {
-    render(<CareerCoverageCard facts={facts()} />);
+  it('dice cuántas faltan y por qué, sin nombrar el piso ni su número', () => {
+    const { container } = render(<CareerCoverageCard facts={facts()} />);
     expect(screen.getByText(/las 28 restantes/i)).toBeInTheDocument();
-    expect(screen.getByText(/10 reseñas del piso/i)).toBeInTheDocument();
+    expect(screen.getByText(/todavía no juntan reseñas suficientes/i)).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/\bpiso\b|\b10\b/i);
   });
 
   it('US-231 N2: la carrera sin nada medido no es impecable, es desconocida, y lo dice', () => {

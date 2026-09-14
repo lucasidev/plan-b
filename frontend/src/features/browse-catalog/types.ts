@@ -56,6 +56,19 @@ export type Subject = {
 };
 
 /**
+ * Cuánto junta una materia del plan (US-134, SC-018): cuántas cátedras y reseñas tiene detrás, y
+ * si alguna ya cruzó el piso. Espeja `PlanSubjectCoverageView` de
+ * `GET /api/reviews/career-plans/{id}/subject-coverage`. Una materia sin ninguna reseña con
+ * cátedra no tiene entrada: se lee "sin reseñas".
+ */
+export type SubjectCoverage = {
+  subjectId: string;
+  reviewCount: number;
+  chairCount: number;
+  isCovered: boolean;
+};
+
+/**
  * Una carrera del catálogo entero con lo que ayuda a decidir si vale abrirla (US-222, ficha de
  * SC-003), antes de entrar: si tiene datos oficiales (ADR-0090), sus voces y su cobertura. Espeja
  * `CareerCoverageView` de `GET /api/reviews/catalog-coverage`.

@@ -62,6 +62,29 @@ export function describeCareerCoverage(career: CareerCoverageMeta): string {
   return parts.join(' · ');
 }
 
+/** Lo que junta una materia del plan (US-134, SC-018): cuántas cátedras y reseñas, o ninguna
+ * todavía. Ausente en vez de cero cuando la materia no tiene ninguna reseña con cátedra. */
+export type SubjectCoverageMeta = {
+  reviewCount: number;
+  chairCount: number;
+};
+
+/**
+ * La línea de meta de una materia en la grilla del plan: "28 reseñas en 3 cátedras" o "sin
+ * reseñas". Misma forma que usa la ficha de materia (que lista TODAS sus cátedras, publiquen o
+ * no): "N cátedras" a secas se leía como el total de cátedras de la materia, y acá es solo las
+ * que tienen al menos una reseña.
+ */
+export function describeSubjectCoverage(coverage?: SubjectCoverageMeta): string {
+  if (!coverage || coverage.reviewCount === 0) {
+    return 'sin reseñas';
+  }
+
+  const reviews = `${coverage.reviewCount} ${coverage.reviewCount === 1 ? 'reseña' : 'reseñas'}`;
+  const chairs = `${coverage.chairCount} ${coverage.chairCount === 1 ? 'cátedra' : 'cátedras'}`;
+  return `${reviews} en ${chairs}`;
+}
+
 /** La línea de meta de una institución: cuántas carreras tiene y cuántas de esas tienen algo para leer. */
 export function describeUniversityCoverage(
   careerCount: number,

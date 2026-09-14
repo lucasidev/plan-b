@@ -45,6 +45,6 @@ export const FAQ: readonly FaqEntry[] = [
     id: 'shortcuts',
     question: 'Atajos del teclado',
     answer:
-      '⌘1 va a Inicio y ⌘2 a Mi carrera. ⌘K abre la búsqueda global (cuando aterrice). Esc cierra cualquier cosa que esté abierta.',
+      '⌘K abre la búsqueda global desde cualquier parte. Esc cierra cualquier cosa que esté abierta.',
   },
 ] as const;

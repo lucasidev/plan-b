@@ -9,7 +9,11 @@ export { ExploreLensSwitch } from './components/explore-lens-switch';
 export { PlanList } from './components/plan-list';
 export { SubjectGrid } from './components/subject-grid';
 export { UniversityList } from './components/university-list';
-export { describeCareerCoverage, describeUniversityCoverage } from './lib/describe-career-coverage';
+export {
+  describeCareerCoverage,
+  describeSubjectCoverage,
+  describeUniversityCoverage,
+} from './lib/describe-career-coverage';
 export type { CareerUniversityGroup } from './lib/group-careers-by-university';
 export {
   groupCareersByUniversity,
@@ -23,6 +27,7 @@ export type {
   CareerPlan,
   CareerPlanSummary,
   Subject,
+  SubjectCoverage,
   University,
   UniversityWithCoverage,
 } from './types';
