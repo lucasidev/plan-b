@@ -38,6 +38,8 @@ export interface DistributionSlice {
  */
 export interface OfficialFact {
   id: string;
+  /** El sujeto de la afirmación. Presente aunque el caller ya lo conozca: la misma forma sirve cuando la respuesta trae varios sujetos juntos (sin `subjectId` en la query). */
+  subjectId: string;
   /** Código del vocabulario curado (`paper_duration`, `minutes_published`, ...). Ver `OFFICIAL_FACT_LABELS`. */
   field: string;
   status: OfficialFactStatus;

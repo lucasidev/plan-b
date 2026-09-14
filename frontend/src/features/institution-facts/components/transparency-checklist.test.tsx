@@ -6,6 +6,7 @@ import { TransparencyChecklist } from './transparency-checklist';
 
 function fact(overrides: Partial<OfficialFact> & Pick<OfficialFact, 'id' | 'field'>): OfficialFact {
   return {
+    subjectId: 'institution-1',
     status: 'Published',
     value: 'Publicado',
     unit: null,

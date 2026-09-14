@@ -7,6 +7,7 @@ import { InstitutionIdentity } from './institution-identity';
 describe('InstitutionIdentity', () => {
   const IDENTITY: OfficialFact = {
     id: 'fact-institution-type',
+    subjectId: 'institution-1',
     field: 'institution_type',
     status: 'Published',
     value: 'Privada · Tucumán · 7 facultades · 7.660 estudiantes',

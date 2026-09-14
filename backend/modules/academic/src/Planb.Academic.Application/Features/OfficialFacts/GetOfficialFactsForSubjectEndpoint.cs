@@ -7,8 +7,17 @@ namespace Planb.Academic.Application.Features.OfficialFacts;
 
 /// <summary>
 /// GET /api/academic/official-facts?subjectType={type}&amp;subjectId={id}: las afirmaciones
-/// vigentes de un sujeto, listas para el bloque de datos oficiales de una ficha (ADR-0090).
+/// vigentes de UN sujeto, listas para el bloque de datos oficiales de una ficha (ADR-0090).
 /// Público (lectura sin cuenta): sin autorización, igual que el resto del catálogo.
+///
+/// <para>
+/// <c>subjectId</c> es obligatorio: la ficha siempre sabe de qué sujeto está hablando. Para
+/// comparar varios sujetos de un tipo a la vez (el checklist de transparencia de las cinco
+/// instituciones, por ejemplo) está <see cref="GetOfficialFactsBySubjectTypeEndpoint"/>, que
+/// agrupa por sujeto en vez de devolver una lista plana: los consumidores de este endpoint
+/// (<c>TransparencyChecklist</c>, <c>CareerFactsSheet</c>) indexan por <c>field</c> nomás, y una
+/// lista plana con varios sujetos colapsaría sus afirmaciones entre sí.
+/// </para>
 ///
 /// <para>
 /// Query, no Command: no hay CommandHandler separado (mismo criterio que

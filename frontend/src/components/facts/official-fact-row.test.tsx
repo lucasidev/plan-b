@@ -11,6 +11,7 @@ import type { OfficialFact } from './types';
 describe('OfficialFactRow', () => {
   const base: OfficialFact = {
     id: 'fact-1',
+    subjectId: 'career-1',
     field: 'paper_duration',
     status: 'Published',
     value: '2.5',
