@@ -144,6 +144,41 @@ internal sealed class DapperCareerCoverageQueryService : ICareerCoverageQuerySer
                 r.TotalSubjects, r.CoveredSubjects, r.VoiceCount, r.HasReviewsBelowFloor));
     }
 
+    public async Task<IReadOnlyList<PlanSubjectCoverageView>> GetSubjectCoverageAsync(
+        Guid careerPlanId, int minimumReviews, CancellationToken ct = default)
+    {
+        // Mismo cruce que GetCoveredSubjectIdsAsync (chairs activos de ESE plan con sus reseñas),
+        // pero sin el HAVING: acá interesa el conteo detrás de la decisión, no solo quién la cruzó.
+        // El INNER JOIN a reviews.reviews ya excluye una cátedra sin ninguna reseña antes del GROUP
+        // BY, así que una materia sin ninguna cátedra reseñada no llega a tener fila.
+        const string sql = @"
+            WITH chair_tallies AS (
+                SELECT ch.subject_id, ch.id AS chair_id, count(*) AS review_count
+                FROM academic.chairs ch
+                JOIN academic.subjects s ON s.id = ch.subject_id
+                JOIN reviews.reviews cr ON cr.chair_id = ch.id
+                WHERE ch.is_active = true
+                  AND s.is_active = true
+                  AND s.career_plan_id = @CareerPlanId
+                GROUP BY ch.id, ch.subject_id
+            )
+            SELECT
+                subject_id                              AS SubjectId,
+                sum(review_count)::int                   AS ReviewCount,
+                count(*)::int                            AS ChairCount,
+                bool_or(review_count >= @MinimumReviews) AS IsCovered
+            FROM chair_tallies
+            GROUP BY subject_id;";
+
+        using var db = _connections.Create();
+        var rows = await db.QueryAsync<PlanSubjectCoverageView>(
+            new CommandDefinition(
+                sql,
+                new { CareerPlanId = careerPlanId, MinimumReviews = minimumReviews },
+                cancellationToken: ct));
+        return rows.ToList();
+    }
+
     private sealed record CareerCoverageBatchRow(
         Guid CareerId,
         int TotalSubjects,
