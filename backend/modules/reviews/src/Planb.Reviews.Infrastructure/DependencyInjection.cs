@@ -54,6 +54,9 @@ public static class DependencyInjection
         // Con qué otras materias se llevó una, para su ficha (US-143).
         services.AddScoped<ISubjectPairQueryService, DapperSubjectPairQueryService>();
 
+        // Qué cátedras de una carrera están a una reseña de publicarse (US-134, agregado público).
+        services.AddScoped<IChairsNearFloorQueryService, DapperChairsNearFloorQueryService>();
+
         return services;
     }
 
