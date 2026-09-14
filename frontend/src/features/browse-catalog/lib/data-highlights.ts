@@ -7,7 +7,7 @@ import { OFFICIAL_FACT_FIELDS } from '@/components/facts/official-fact-fields';
 import type { SubjectOfficialFacts } from '@/components/facts/official-facts.server';
 import type { OfficialFact } from '@/components/facts/types';
 import type { CareerCoverage, University } from '../types';
-import { universityShortName } from './describe-career-coverage';
+import { numberInWords, universityShortName } from './describe-career-coverage';
 import { groupCareersByCanonical } from './group-careers-by-canonical';
 
 /**
@@ -61,6 +61,10 @@ export type DataHighlightsInput = {
 
 /** No es un dato oficial (ADR-0090): es la fuente fija del catálogo académico, tal como la nombra el relevamiento. */
 const CAREER_GUIDE_SOURCE = 'Guía de carreras universitarias (SIU)';
+/** Nombre corto de `CAREER_GUIDE_SOURCE` para la tira compacta (ADR-0096, maqueta aprobada). */
+const CAREER_GUIDE_SOURCE_SHORT = 'Guía de carreras SIU';
+/** El único `sourceName` que la tira compacta acorta (ADR-0096): "SPU, Anuario..." a "SPU, anuario {período}". */
+const SPU_ANUARIO_SOURCE = 'SPU, Anuario de Estadísticas Universitarias';
 
 function bySubjectId(list: readonly SubjectOfficialFacts[]): Map<string, OfficialFact[]> {
   return new Map(list.map((subject) => [subject.subjectId, subject.facts]));
@@ -103,6 +107,64 @@ function joinSpanish(items: readonly string[]): string {
 /** Une fuente + lo secundario en una sola línea chica (ADR-0096), sin tramos vacíos. */
 function joinSource(parts: readonly (string | null | undefined)[]): string {
   return parts.filter((part): part is string => Boolean(part)).join(' · ');
+}
+
+/** El nombre corto de una fuente citada en la tira compacta (ADR-0096, maqueta aprobada): "SPU, Anuario de Estadísticas Universitarias" a "SPU, anuario {período}"; cualquier otra fuente, tal cual. */
+function shortSourceCitation(
+  sourceName: string | null | undefined,
+  period: string | null | undefined,
+): string | null {
+  if (!sourceName) return null;
+  if (sourceName === SPU_ANUARIO_SOURCE) {
+    return period ? `SPU, anuario ${period}` : 'SPU, anuario';
+  }
+  return sourceName;
+}
+
+/**
+ * Un hecho institucional cuyo período o nota dice "toda la UTN" (UTN-FRT: el anuario no abre por
+ * regional) no es de esa facultad regional sola: en la tira compacta se atribuye a "UTN", nunca a
+ * "UTN-FRT" (ADR-0096, maqueta aprobada).
+ */
+function isUtnAggregate(fact: OfficialFact): boolean {
+  const haystack = `${fact.period ?? ''} ${fact.note ?? ''}`.toLowerCase();
+  return haystack.includes('toda la utn');
+}
+
+/** El nombre corto de una institución para la tira compacta, con la salvedad de `isUtnAggregate`. */
+function shortNameFor(university: University, fact: OfficialFact): string {
+  return isUtnAggregate(fact) ? 'UTN' : universityShortName(university);
+}
+
+/** El primer número de 4 o más dígitos en un texto, o null si no hay ninguno (ADR-0096, maqueta aprobada). */
+function firstBigNumber(text: string | null | undefined): number | null {
+  if (!text) return null;
+  const match = text.match(/\d{4,}/);
+  return match ? Number(match[0]) : null;
+}
+
+/** Un entero con separador de miles es-AR ("108986" a "108.986"). */
+function formatThousands(n: number): string {
+  return n.toLocaleString('es-AR');
+}
+
+/**
+ * La línea de un hecho `NotPublished` sin dato propio, para la tira compacta (ADR-0096, maqueta
+ * aprobada): si la nota trae un número grande, lo cita formateado ("UTN suma 108.986 pero es el
+ * total nacional de sus regionales"); si no, dice que no informa ("USPT no informa").
+ */
+function nonReportingSummaryLine(university: University, fact: OfficialFact): string {
+  const name = shortNameFor(university, fact);
+  const bigNumber = firstBigNumber(fact.note);
+  if (bigNumber !== null) {
+    return `${name} suma ${formatThousands(bigNumber)} pero es el total nacional de sus regionales`;
+  }
+  return `${name} no informa`;
+}
+
+/** La primera letra en minúscula, para citar el valor de un hecho a mitad de frase (ADR-0096, maqueta aprobada). */
+function lowerFirst(text: string): string {
+  return text.length === 0 ? text : text.charAt(0).toLowerCase() + text.slice(1);
 }
 
 /** La etiqueta "derivado" con su link a la regla en Método (ADR-0090), solo cuando el hecho es Derived. */
@@ -162,7 +224,9 @@ function mostChosenUniversity(
         name: 'Ninguna institución publica cuántos estudiantes tiene.',
         href: null,
         annotation: '',
-        source: joinSource(nonReportingLines.map((line) => line.text)),
+        source: joinSource(
+          notPublished.map(({ university, fact }) => nonReportingSummaryLine(university, fact)),
+        ),
       },
     };
   }
@@ -190,8 +254,8 @@ function mostChosenUniversity(
       href: winners.length === 1 ? universityHref(primaryWinner.university) : null,
       annotation: `${formatOfficialFactValue(primaryWinner.fact.value ?? '', primaryWinner.fact.unit)} estudiantes${primaryWinner.fact.period ? ` en ${primaryWinner.fact.period}` : ''}`,
       source: joinSource([
-        joinSource([primaryWinner.fact.sourceName, primaryWinner.fact.period]),
-        ...nonReportingLines.map((line) => line.text),
+        shortSourceCitation(primaryWinner.fact.sourceName, primaryWinner.fact.period),
+        ...notPublished.map(({ university, fact }) => nonReportingSummaryLine(university, fact)),
       ]),
     },
   };
@@ -221,7 +285,7 @@ function mostOfferedCareer(careers: readonly CareerCoverage[]): DataHighlight {
         name: 'Todavía ninguna carrera se dicta en más de una institución.',
         href: null,
         annotation: '',
-        source: CAREER_GUIDE_SOURCE,
+        source: CAREER_GUIDE_SOURCE_SHORT,
       },
     };
   }
@@ -253,8 +317,8 @@ function mostOfferedCareer(careers: readonly CareerCoverage[]): DataHighlight {
     summary: {
       name: joinSpanish(winners.map((winner) => winner.group.canonicalGroupName)),
       href: null,
-      annotation: `en ${max} ${max === 1 ? 'institución' : 'instituciones'}${winners.length > 1 ? ' cada una' : ''}`,
-      source: CAREER_GUIDE_SOURCE,
+      annotation: `en ${numberInWords(max)} ${max === 1 ? 'institución' : 'instituciones'}${winners.length > 1 ? ' cada una' : ''}`,
+      source: joinSource([CAREER_GUIDE_SOURCE_SHORT, `${careers.length} ofertas en Tucumán`]),
     },
   };
 }
@@ -322,6 +386,38 @@ function bestGraduationRate(
     return university ? universityShortName(university) : career.universityName;
   };
 
+  /**
+   * "16 de cada 100 en UTN-FRT y 15 en UNT para la misma carrera" (ADR-0096, maqueta aprobada): la
+   * primera hermana repite "de cada 100", las siguientes no (ya quedó dicho); todas juntas en
+   * español, con el cierre solo si hay al menos una.
+   */
+  const siblingsClause =
+    siblings.length === 0
+      ? null
+      : `${joinSpanish(
+          siblings.map((sibling, index) => {
+            const shortName = shortUniversityName(sibling.career);
+            return index === 0
+              ? `${Math.round(sibling.value)} de cada 100 en ${shortName}`
+              : `${Math.round(sibling.value)} en ${shortName}`;
+          }),
+        )} para la misma carrera`;
+
+  /**
+   * Cuando NINGUNA oferta del grupo (no solo las que tienen `cohort_graduation`) publica
+   * `real_duration`, la tira compacta lo dice: es la salvedad que compensa comparar por un proxy
+   * en vez de la duración real (ADR-0096, maqueta aprobada).
+   */
+  const groupCareers = best.career.canonicalGroupName
+    ? careers.filter((c) => c.canonicalGroupName === best.career.canonicalGroupName)
+    : [best.career];
+  const noGroupMemberPublishesRealDuration = groupCareers.every((c) => {
+    const fact = (offeringFacts.get(c.careerId) ?? []).find(
+      (f) => f.field === OFFICIAL_FACT_FIELDS.realDuration,
+    );
+    return fact?.status === 'NotPublished';
+  });
+
   return {
     id: 'best-graduation-rate',
     label: 'La carrera con mejor tiempo de salida',
@@ -352,13 +448,11 @@ function bestGraduationRate(
       name: `${best.career.careerName}, ${shortUniversityName(best.career)}`,
       href: careerHref(best.career.careerId),
       annotation: `egresan ${Math.round(best.value)} de cada 100`,
+      // El link "egreso por cohorte, derivado" (derivedTagFor) va aparte, antes de esta línea: el
+      // componente lo arma leyendo `facts[0].derivedTag`, para que sea un link de verdad.
       source: joinSource([
-        joinSource([best.fact.sourceName, periodOrNote(best.fact)]),
-        `Entre las ${totalLabel} con el dato.`,
-        ...siblings.map(
-          (sibling) =>
-            `${Math.round(sibling.value)} de cada 100 en ${shortUniversityName(sibling.career)}`,
-        ),
+        siblingsClause,
+        noGroupMemberPublishesRealDuration ? 'la duración real no la publica ninguna fuente' : null,
       ]),
     },
   };
@@ -374,12 +468,6 @@ function bestGraduationRate(
 function advancingAttribution(university: University, fact: OfficialFact): string {
   if (fact.note && fact.period) return fact.period;
   return university.name;
-}
-
-/** Misma regla que `advancingAttribution`, con el nombre corto de la institución (ADR-0096) para la tira compacta. */
-function shortAdvancingAttribution(university: University, fact: OfficialFact): string {
-  if (fact.note && fact.period) return fact.period;
-  return universityShortName(university);
 }
 
 /**
@@ -443,30 +531,35 @@ function mostAdvancingUniversity(
       })),
     ],
     summary: {
-      name: shortAdvancingAttribution(best.university, best.fact),
+      name: shortNameFor(best.university, best.fact),
       href: universityHref(best.university),
       annotation: `${formatOfficialFactValue(best.fact.value ?? '', best.fact.unit)} avanza dos materias o más por año`,
       source: joinSource([
-        joinSource([best.fact.sourceName, periodOrNote(best.fact)]),
-        ...rest.map(
-          (entry) =>
-            `${formatOfficialFactValue(entry.fact.value ?? '', entry.fact.unit)} en ${shortAdvancingAttribution(entry.university, entry.fact)}`,
-        ),
+        shortSourceCitation(best.fact.sourceName, best.fact.period),
+        rest.length === 0
+          ? null
+          : rest
+              .map(
+                (entry) =>
+                  `${formatOfficialFactValue(entry.fact.value ?? '', entry.fact.unit)} en ${shortNameFor(entry.university, entry.fact)}`,
+              )
+              .join(', '),
       ]),
     },
   };
 }
 
 /**
- * 5. La evaluación de la entidad auditora: instituciones con `institutional_evaluation` Published.
- * Con una sola, se dice que es la única; con varias, se listan con su año, todas `primary` (sin
- * decir "mejor": no hay puntaje que comparar). Cada una cita su propia fuente (el portal de
- * transparencia de esa institución, no un nombre fijo).
+ * 5. La universidad con mejor valoración de la entidad auditora: instituciones con
+ * `institutional_evaluation` Published. Con una sola, se dice que es la única; con varias, se
+ * listan con su año, todas `primary` (sin decir "mejor": no hay puntaje que comparar). Cada una
+ * cita su propia fuente (el portal de transparencia de esa institución, no un nombre fijo).
  */
 function auditedByConeau(
   universities: readonly University[],
   institutionFacts: Map<string, OfficialFact[]>,
 ): DataHighlight {
+  const label = 'La universidad con mejor valoración de la entidad auditora';
   const withData: { university: University; fact: OfficialFact }[] = [];
 
   for (const university of universities) {
@@ -476,10 +569,18 @@ function auditedByConeau(
     if (fact && fact.status === 'Published') withData.push({ university, fact });
   }
 
+  /** "las otras cuatro, sin acreditación institucional relevada" (ADR-0096, maqueta aprobada): nada si ya están todas evaluadas. */
+  const othersClause = (evaluatedCount: number): string | null => {
+    const rest = universities.length - evaluatedCount;
+    return rest > 0
+      ? `las otras ${numberInWords(rest)}, sin acreditación institucional relevada`
+      : null;
+  };
+
   if (withData.length === 0) {
     return {
       id: 'institutional-evaluation',
-      label: 'La evaluación de la entidad auditora',
+      label,
       facts: [
         {
           text: 'Ninguna institución tiene evaluación institucional de CONEAU publicada.',
@@ -500,7 +601,7 @@ function auditedByConeau(
     const { university, fact } = withData[0];
     return {
       id: 'institutional-evaluation',
-      label: 'La evaluación de la entidad auditora',
+      label,
       facts: [
         {
           text: `La única con evaluación institucional de CONEAU publicada: ${university.name}${
@@ -515,7 +616,7 @@ function auditedByConeau(
         name: universityShortName(university),
         href: universityHref(university),
         annotation: 'acreditaciones al día',
-        source: joinSource([fact.sourceName, fact.period]),
+        source: joinSource([lowerFirst(fact.value ?? ''), fact.sourceName, othersClause(1)]),
       },
     };
   }
@@ -525,7 +626,7 @@ function auditedByConeau(
   );
   return {
     id: 'institutional-evaluation',
-    label: 'La evaluación de la entidad auditora',
+    label,
     facts: sorted.map(({ university, fact }) => ({
       text: `${university.name}${fact.period ? ` (${fact.period})` : ''}`,
       href: universityHref(university),
@@ -536,7 +637,10 @@ function auditedByConeau(
       name: joinSpanish(sorted.map(({ university }) => universityShortName(university))),
       href: null,
       annotation: 'acreditaciones al día',
-      source: joinSource(sorted.map(({ fact }) => joinSource([fact.sourceName, fact.period]))),
+      source: joinSource([
+        ...sorted.map(({ fact }) => joinSource([lowerFirst(fact.value ?? ''), fact.sourceName])),
+        othersClause(sorted.length),
+      ]),
     },
   };
 }

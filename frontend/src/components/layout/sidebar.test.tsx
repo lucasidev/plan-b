@@ -38,6 +38,18 @@ describe('Sidebar', () => {
     expect(screen.getByRole('link', { name: /^Explorar/ })).toHaveAttribute('data-active', 'true');
   });
 
+  /** Maqueta aprobada (.sidebar nav button.on, línea 142): fondo bg-elev, sin tarjeta ni sombra. */
+  it('el item activo suma la clase "pb-on" (fondo bg-elev de la maqueta, no tarjeta con sombra)', () => {
+    renderWithPathname('/universities', null);
+
+    const activeLink = screen.getByRole('link', { name: /^Explorar/ });
+    expect(activeLink).toHaveClass('pb-on');
+    expect(activeLink).not.toHaveClass('bg-bg-card', 'shadow-card');
+
+    const inactiveLink = screen.getByRole('link', { name: 'Método' });
+    expect(inactiveLink).not.toHaveClass('pb-on');
+  });
+
   it('/careers-foo no enciende Explorar: el prefijo exige un / después, no cualquier texto', () => {
     renderWithPathname('/careers-foo', null);
 

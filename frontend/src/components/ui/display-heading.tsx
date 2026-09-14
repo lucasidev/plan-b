@@ -11,7 +11,7 @@ type Props = {
 
 /**
  * Hero-class headline. Tight tracking, slight negative letter-spacing,
- * `<em>` inside renders as italic Instrument Serif (the "rhetorical pause"
+ * `<em>` inside renders as italic Newsreader (the "rhetorical pause"
  * pattern from the mockup: "Cinco decisiones <em>esta semana</em>").
  *
  * Use for the top of a route/view, not for inline section titles. For

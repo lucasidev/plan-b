@@ -2,18 +2,17 @@ import Link from 'next/link';
 import type { DataHighlight } from '../lib/data-highlights';
 
 /**
- * "Lo que los datos dicen" (ADR-0096, maqueta aprobada): la tira compacta `kv` de Explorar, una
- * línea por highlight con su etiqueta, el nombre corto (institución o carrera) con su aclaración
- * atenuada al lado, y una sola línea chica de fuente + lo secundario. Nunca un número compuesto ni
- * un promedio (THESIS, "Qué publicamos" 3 y 8).
+ * "Lo que los datos dicen" (ADR-0096, maqueta aprobada, `V.explore().aside`): `.pb-section` con
+ * el título como `.pb-eyebrow` y una `.pb-kv` de cinco líneas `k`/`v`/`src`. Va en las dos lentes
+ * de Explorar, con los mismos datos.
  */
 export function DataHighlights({ highlights }: { highlights: DataHighlight[] }) {
   return (
-    <aside aria-labelledby="data-highlights-heading" className="flex flex-col gap-1">
-      <h2 id="data-highlights-heading" className="font-display text-[15px] font-semibold text-ink">
+    <aside className="pb-section" aria-labelledby="data-highlights-heading">
+      <h2 id="data-highlights-heading" className="pb-eyebrow">
         Lo que los datos dicen
       </h2>
-      <dl className="flex flex-col">
+      <dl className="pb-kv">
         {highlights.map((highlight) => (
           <HighlightRow key={highlight.id} highlight={highlight} />
         ))}
@@ -23,8 +22,8 @@ export function DataHighlights({ highlights }: { highlights: DataHighlight[] }) 
 }
 
 /**
- * Una línea `k`/`v`/`src`: el link a la regla de un derivado (ADR-0090) se busca en la fact
- * primaria porque `summary` es texto plano, no JSX con links embebidos.
+ * Una línea `k`/`v`/`src`. El link a la regla de un derivado (ADR-0090) va antes de `summary.source`
+ * (`facts[0].derivedTag`, no `summary`, porque `summary` es texto plano sin links embebidos).
  */
 function HighlightRow({ highlight }: { highlight: DataHighlight }) {
   const { summary } = highlight;
@@ -33,36 +32,32 @@ function HighlightRow({ highlight }: { highlight: DataHighlight }) {
   )?.derivedTag;
 
   return (
-    <div className="border-t border-line-2 py-2.5 first:border-t-0 first:pt-0">
-      <dt className="text-[11px] text-ink-3">{highlight.label}</dt>
-      <dd className="mt-0.5 font-serif text-[17px] leading-snug text-ink">
+    <div>
+      <dt className="pb-k">{highlight.label}</dt>
+      <dd className="pb-v">
         {summary.href ? (
-          <Link href={summary.href} prefetch={false} className="hover:underline">
+          <Link href={summary.href} prefetch={false} className="pb-link">
             {summary.name}
           </Link>
         ) : (
           summary.name
         )}
         {summary.annotation && (
-          <span className="ml-1.5 font-sans text-[13px] text-ink-3">{summary.annotation}</span>
+          <small className="pb-muted font-sans text-[13px]"> {summary.annotation}</small>
         )}
       </dd>
       {(summary.source || derivedTag) && (
-        <p className="mt-0.5 text-[11px] text-ink-3">
-          {summary.source}
+        <div className="pb-src pb-meta">
           {derivedTag && (
             <>
-              {summary.source ? ' · ' : ''}
-              <Link
-                href={derivedTag.href}
-                prefetch={false}
-                className="text-accent-ink underline-offset-2 hover:underline"
-              >
+              <Link href={derivedTag.href} prefetch={false} className="pb-link">
                 {derivedTag.label}
               </Link>
+              {summary.source ? ' · ' : ''}
             </>
           )}
-        </p>
+          {summary.source}
+        </div>
       )}
     </div>
   );

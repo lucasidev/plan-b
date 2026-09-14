@@ -5,6 +5,7 @@ import { Logo } from '@/components/ui';
 import { type MemberRoute, memberRoutes, memberSections } from '@/lib/member-shell';
 import type { Session } from '@/lib/session';
 import { cn } from '@/lib/utils';
+import './planb.css';
 import { ShellLink } from './shell-link';
 
 type Props = {
@@ -15,15 +16,18 @@ type Props = {
 };
 
 /**
- * Sidebar del shell entero (con o sin sesión), per `docs/design/reference/components/shell.jsx::Sidebar`.
+ * Sidebar del shell entero (con o sin sesión): markup y clases `pb-` de `.sidebar` en la maqueta
+ * aprobada (planb-catalogo-adentro.html, `frameApp`).
  *
  * Agrupa la navegación en dos secciones: la primaria sin encabezado y "Otros" al pie. El item
  * activo se resalta contra `usePathname()`, con `activePrefixes` para las rutas del catálogo
  * (Explorar queda encendido en `/careers/[id]`, `/subjects/[id]`, etc., no solo en `/universities`).
  *
  * Por debajo de `lg` (1024px) no se renderiza (`hidden lg:flex`): la maqueta era de escritorio, y
- * a 393px de ancho un sidebar fijo de 240px no deja lugar ni para el buscador. El topbar
- * compensa con su propia versión angosta.
+ * a 393px de ancho un sidebar fijo de 232px no deja lugar ni para el buscador. El topbar compensa
+ * con su propia versión angosta. `.pb-shell`/`.pb-sidebar` traen su propio `@media (max-width:
+ * 760px)` (portado de la maqueta), pero `hidden lg:flex` decide el breakpoint real: las utilities
+ * de Tailwind ganan por cascada de layers sobre `@layer components`.
  *
  * Client porque necesita `usePathname`. Si el streaming de RSC importa acá en el futuro, separar
  * en un shell server + un sub-componente cliente que solo lea el pathname para el resaltado.
@@ -33,21 +37,12 @@ export function Sidebar({ footer, role }: Props) {
   const isMember = role === 'member';
 
   return (
-    <aside
-      className="hidden lg:flex flex-col bg-bg border-r border-line p-4 gap-4 overflow-y-auto"
-      style={{ width: 240, height: '100vh' }}
-    >
-      <ShellLink
-        href="/"
-        aria-label="Ir a la entrada"
-        prefetch={false}
-        className="flex items-baseline gap-1.5 pb-3 border-b border-line"
-        style={{ padding: '4px 6px 12px' }}
-      >
+    <aside className="pb-sidebar hidden lg:flex">
+      <ShellLink href="/" aria-label="Ir a la entrada" prefetch={false} className="pb-brandrow">
         <Logo size={22} />
       </ShellLink>
 
-      <nav className="flex flex-col gap-px">
+      <nav>
         {memberSections.map((section) => (
           <SectionGroup
             key={section.key}
@@ -79,25 +74,9 @@ function SectionGroup({
 }) {
   return (
     <>
-      {/* Sin label no hay encabezado ni su espacio: un div vacío dejaría el hueco de 26px que
-          separaba los grupos, y la navegación primaria arrancaría flotando bajo el logo. */}
-      {label && (
-        <div
-          // text-ink-3, no text-ink-4: el design system reserva ink-4 para disabled/placeholder,
-          // nunca para texto legible (docs/product/design-system.md), y "Otros" es justo la
-          // etiqueta de una sección (el mismo uso documentado de ink-3).
-          className="text-ink-3"
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            padding: '14px 6px 6px',
-          }}
-        >
-          {label}
-        </div>
-      )}
+      {/* Sin label no hay encabezado ni su espacio: un div vacío dejaría el hueco que separaba
+          los grupos, y la navegación primaria arrancaría flotando bajo el logo. */}
+      {label && <div className="pb-sec">{label}</div>}
       {items.map((item) => (
         <NavItem
           key={item.path}
@@ -139,37 +118,10 @@ function NavItem({
       // formulario, perdiendo esa navegación (#477). El costo es la primera visita sin cache tibia.
       prefetch={false}
       data-active={active}
-      className={cn(
-        'flex items-center justify-between gap-2 text-left',
-        'transition-colors',
-        active
-          ? 'bg-bg-card text-ink shadow-card'
-          : 'bg-transparent text-ink-2 hover:bg-line-2 hover:text-ink',
-      )}
-      style={{
-        padding: '7px 8px',
-        borderRadius: 'var(--radius-sm)',
-        fontSize: 13.5,
-      }}
+      className={cn(active && 'pb-on')}
     >
       <span>{label}</span>
-      {shortcut && (
-        <span
-          // text-ink-2, no text-ink-3: contra `bg-line` (el fondo del estado inactivo) ink-3 no
-          // llega a 4,5:1 (WCAG AA); el design system solo garantiza ese mínimo para ink-3 contra
-          // bg/bg-card/bg-elev, no contra line (que es un color de borde, no de relleno de texto).
-          className={cn('text-ink-2', active ? 'bg-bg-elev' : 'bg-line')}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 10,
-            padding: '1px 5px',
-            borderRadius: 3,
-            letterSpacing: '0.04em',
-          }}
-        >
-          {shortcut}
-        </span>
-      )}
+      {shortcut && <span className="pb-sc">{shortcut}</span>}
     </ShellLink>
   );
 }

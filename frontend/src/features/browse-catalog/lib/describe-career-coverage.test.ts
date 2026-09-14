@@ -9,6 +9,7 @@ import {
   hasReviews,
   hasSomethingToRead,
   institutionTypeLabel,
+  numberInWords,
   universityShortName,
 } from './describe-career-coverage';
 
@@ -362,6 +363,19 @@ describe('universityShortName', () => {
 
   it('San Pablo-T: el slug "uspt" da "USPT"', () => {
     expect(universityShortName({ slug: 'uspt' })).toBe('USPT');
+  });
+});
+
+describe('numberInWords', () => {
+  it('cero a diez, en palabras', () => {
+    expect(numberInWords(0)).toBe('cero');
+    expect(numberInWords(3)).toBe('tres');
+    expect(numberInWords(5)).toBe('cinco');
+    expect(numberInWords(10)).toBe('diez');
+  });
+
+  it('más allá de la lista, el dígito tal cual', () => {
+    expect(numberInWords(225)).toBe('225');
   });
 });
 

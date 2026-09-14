@@ -701,15 +701,25 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
     name: 'Universidad Tecnológica Nacional - Facultad Regional Tucumán',
     slug: 'utn-frt',
   });
+  const uspt = university({ id: 'uspt', name: 'Universidad de San Pablo-T', slug: 'uspt' });
+  const unse = university({
+    id: 'unse',
+    name: 'Universidad Nacional de Santiago del Estero',
+    slug: 'unse',
+  });
+  /** El único `sourceName` que la tira compacta acorta (ver `shortSourceCitation`). */
+  const SPU = 'SPU, Anuario de Estadísticas Universitarias';
 
-  it('la universidad más elegida: nombre corto (por slug) como link, con el número y el período en la aclaración', () => {
+  it('la universidad más elegida: nombre corto (por slug) como link, con el número y la fuente acortada en la aclaración y la línea de fuente', () => {
     const result = pick(
       {
         universities: [unsta, unt],
         institutionFacts: [
-          subjectFacts('unsta', [fact({ subjectId: 'unsta', value: '7660', period: '2023' })]),
+          subjectFacts('unsta', [
+            fact({ subjectId: 'unsta', value: '7660', period: '2023', sourceName: SPU }),
+          ]),
           subjectFacts('unt', [
-            fact({ subjectId: 'unt', value: '78964', period: '2023', sourceName: 'SPU, Anuario' }),
+            fact({ subjectId: 'unt', value: '78964', period: '2023', sourceName: SPU }),
           ]),
         ],
       },
@@ -720,8 +730,60 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
       name: 'UNT',
       href: '/universities/unt/careers',
       annotation: '78.964 estudiantes en 2023',
-      source: 'SPU, Anuario · 2023',
+      source: 'SPU, anuario 2023',
     });
+  });
+
+  it('quien no informa con un número grande en la nota lo resume formateado, atribuido a "UTN" (no "UTN-FRT")', () => {
+    const result = pick(
+      {
+        universities: [unsta, utnFrt],
+        institutionFacts: [
+          subjectFacts('unsta', [
+            fact({ subjectId: 'unsta', value: '7660', period: '2023', sourceName: SPU }),
+          ]),
+          subjectFacts('utn-frt', [
+            fact({
+              subjectId: 'utn-frt',
+              status: 'NotPublished',
+              value: null,
+              sourceName: SPU,
+              note: 'El anuario no abre por Facultad Regional: toda la UTN tiene 108986 estudiantes en 2023.',
+            }),
+          ]),
+        ],
+      },
+      'most-chosen-university',
+    );
+
+    expect(result.summary.source).toBe(
+      'SPU, anuario 2023 · UTN suma 108.986 pero es el total nacional de sus regionales',
+    );
+  });
+
+  it('quien no informa sin ningún número en la nota dice que no informa, con su nombre corto', () => {
+    const result = pick(
+      {
+        universities: [unsta, uspt],
+        institutionFacts: [
+          subjectFacts('unsta', [
+            fact({ subjectId: 'unsta', value: '7660', period: '2023', sourceName: SPU }),
+          ]),
+          subjectFacts('uspt', [
+            fact({
+              subjectId: 'uspt',
+              status: 'NotPublished',
+              value: null,
+              sourceName: SPU,
+              note: 'La institución no informó al anuario: sus filas están en cero.',
+            }),
+          ]),
+        ],
+      },
+      'most-chosen-university',
+    );
+
+    expect(result.summary.source).toBe('SPU, anuario 2023 · USPT no informa');
   });
 
   it('empate: el nombre corto une las ganadoras en español y no hay un único link', () => {
@@ -780,8 +842,8 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
     expect(result.summary).toEqual({
       name: 'Abogacía, Medicina y Tecnicatura o técnico en programación',
       href: null,
-      annotation: 'en 3 instituciones cada una',
-      source: 'Guía de carreras universitarias (SIU)',
+      annotation: 'en tres instituciones cada una',
+      source: 'Guía de carreras SIU · 11 ofertas en Tucumán',
     });
   });
 
@@ -839,6 +901,139 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
     expect(result.summary.name).toBe('Tecnicatura en Desarrollo y Calidad de Software, UNSTA');
   });
 
+  it('la carrera con mejor tiempo de salida: las hermanas del grupo en la línea de fuente, y la salvedad cuando ninguna publica la duración real', () => {
+    const group = 'Tecnicatura o técnico en programación';
+    const tudcsUnsta = career({
+      careerId: 'unsta-tudcs',
+      careerName: 'Tecnicatura en Desarrollo y Calidad de Software',
+      universityId: 'unsta',
+      universityName: 'UNSTA',
+      canonicalGroupName: group,
+    });
+    const progUnt = career({
+      careerId: 'unt-prog',
+      careerName: 'Programador Universitario',
+      universityId: 'unt',
+      universityName: 'UNT',
+      canonicalGroupName: group,
+    });
+    const progUtnFrt = career({
+      careerId: 'utn-frt-prog',
+      careerName: 'Tecnicatura en Programación',
+      universityId: 'utn-frt',
+      universityName: 'UTN-FRT',
+      canonicalGroupName: group,
+    });
+
+    const result = pick(
+      {
+        universities: [unsta, unt, utnFrt],
+        careers: [tudcsUnsta, progUnt, progUtnFrt],
+        offeringFacts: [
+          subjectFacts('unsta-tudcs', [
+            fact({
+              subjectId: 'unsta-tudcs',
+              field: 'cohort_graduation',
+              status: 'Derived',
+              value: '21,4 %',
+            }),
+            fact({
+              subjectId: 'unsta-tudcs',
+              field: 'real_duration',
+              status: 'NotPublished',
+              value: null,
+            }),
+          ]),
+          subjectFacts('unt-prog', [
+            fact({
+              subjectId: 'unt-prog',
+              field: 'cohort_graduation',
+              status: 'Derived',
+              value: '15,4 %',
+            }),
+            fact({
+              subjectId: 'unt-prog',
+              field: 'real_duration',
+              status: 'NotPublished',
+              value: null,
+            }),
+          ]),
+          subjectFacts('utn-frt-prog', [
+            fact({
+              subjectId: 'utn-frt-prog',
+              field: 'cohort_graduation',
+              status: 'Derived',
+              value: '16,1 %',
+            }),
+            fact({
+              subjectId: 'utn-frt-prog',
+              field: 'real_duration',
+              status: 'NotPublished',
+              value: null,
+            }),
+          ]),
+        ],
+      },
+      'best-graduation-rate',
+    );
+
+    expect(result.summary.source).toBe(
+      '16 de cada 100 en UTN-FRT y 15 en UNT para la misma carrera · la duración real no la publica ninguna fuente',
+    );
+  });
+
+  it('la carrera con mejor tiempo de salida: si alguna oferta del grupo sí publica la duración real, no agrega la salvedad', () => {
+    const group = 'Tecnicatura o técnico en programación';
+    const tudcsUnsta = career({
+      careerId: 'unsta-tudcs',
+      careerName: 'Tecnicatura en Desarrollo y Calidad de Software',
+      universityId: 'unsta',
+      universityName: 'UNSTA',
+      canonicalGroupName: group,
+    });
+    const progUnt = career({
+      careerId: 'unt-prog',
+      careerName: 'Programador Universitario',
+      universityId: 'unt',
+      universityName: 'UNT',
+      canonicalGroupName: group,
+    });
+
+    const result = pick(
+      {
+        universities: [unsta, unt],
+        careers: [tudcsUnsta, progUnt],
+        offeringFacts: [
+          subjectFacts('unsta-tudcs', [
+            fact({
+              subjectId: 'unsta-tudcs',
+              field: 'cohort_graduation',
+              status: 'Derived',
+              value: '21,4 %',
+            }),
+            fact({
+              subjectId: 'unsta-tudcs',
+              field: 'real_duration',
+              status: 'Published',
+              value: '2 años',
+            }),
+          ]),
+          subjectFacts('unt-prog', [
+            fact({
+              subjectId: 'unt-prog',
+              field: 'cohort_graduation',
+              status: 'Derived',
+              value: '15,4 %',
+            }),
+          ]),
+        ],
+      },
+      'best-graduation-rate',
+    );
+
+    expect(result.summary.source).toBe('15 de cada 100 en UNT para la misma carrera');
+  });
+
   it('la universidad donde más alumnos avanzan: la aclaración dice "avanza dos materias o más por año"', () => {
     const result = pick(
       {
@@ -861,7 +1056,7 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
     expect(result.summary.name).toBe('UNSTA');
   });
 
-  it('la universidad donde más alumnos avanzan: con nota "toda la UTN", el nombre usa el período, no el nombre corto', () => {
+  it('la universidad donde más alumnos avanzan: con la salvedad "toda la UTN", el nombre corto es "UTN", no "UTN-FRT"', () => {
     const result = pick(
       {
         universities: [utnFrt],
@@ -881,13 +1076,49 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
       'most-advancing-university',
     );
 
-    expect(result.summary.name).toBe('2023, toda la UTN');
+    expect(result.summary.name).toBe('UTN');
   });
 
-  it('la evaluación de la entidad auditora: con una sola, la aclaración es fija ("acreditaciones al día")', () => {
+  it('la universidad donde más alumnos avanzan: las secundarias van separadas por coma, no "y"', () => {
     const result = pick(
       {
-        universities: [unt],
+        universities: [unsta, utnFrt, unt],
+        institutionFacts: [
+          subjectFacts('unsta', [
+            fact({
+              subjectId: 'unsta',
+              field: 'advancing_share',
+              value: '53,7 %',
+              unit: 'percent',
+              period: '2023',
+              sourceName: SPU,
+            }),
+          ]),
+          subjectFacts('utn-frt', [
+            fact({
+              subjectId: 'utn-frt',
+              field: 'advancing_share',
+              value: '45,4 %',
+              unit: 'percent',
+              period: '2023, toda la UTN',
+              note: 'Toda la UTN: el anuario no abre por Facultad Regional.',
+            }),
+          ]),
+          subjectFacts('unt', [
+            fact({ subjectId: 'unt', field: 'advancing_share', value: '36,2 %', unit: 'percent' }),
+          ]),
+        ],
+      },
+      'most-advancing-university',
+    );
+
+    expect(result.summary.source).toBe('SPU, anuario 2023 · 45,4 % en UTN, 36,2 % en UNT');
+  });
+
+  it('la evaluación de la entidad auditora: con una sola, la aclaración es fija ("acreditaciones al día") y la fuente dice el valor y cuántas otras quedan sin relevar', () => {
+    const result = pick(
+      {
+        universities: [unsta, unt, utnFrt, uspt, unse],
         institutionFacts: [
           subjectFacts('unt', [
             fact({
@@ -908,7 +1139,8 @@ describe('computeDataHighlights: summary (la tira compacta de Explorar)', () => 
       name: 'UNT',
       href: '/universities/unt/careers',
       annotation: 'acreditaciones al día',
-      source: 'Portal de transparencia UNT · 2021',
+      source:
+        'evaluación externa CONEAU 2021 · Portal de transparencia UNT · las otras cuatro, sin acreditación institucional relevada',
     });
   });
 

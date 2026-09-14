@@ -1,6 +1,7 @@
 import type { Session } from '@/lib/session';
 import { AnonymousFooter } from './anonymous-footer';
 import { AvatarMenu } from './avatar-menu';
+import './planb.css';
 import { BackofficeFooterLink, Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 
@@ -27,16 +28,17 @@ type Props = {
  * compone los tres bloques. La interactividad vive en los hijos (Sidebar, Topbar, AvatarMenu
  * marcan `'use client'` donde hace falta).
  *
- * Layout: grid de dos columnas (240px + 1fr) desde `lg` (1024px); por debajo, una sola columna
- * sin sidebar (`Sidebar` se esconde con `hidden lg:flex`). La maqueta era de escritorio: por
- * debajo de `lg` el topbar compensa con su propia versión angosta (ver `Topbar`).
- *
- * Per `docs/design/reference/styles.css::.app`.
+ * Layout: grid de dos columnas (232px + 1fr, `.pb-shell` de la maqueta aprobada) desde `lg`
+ * (1024px); por debajo, una sola columna sin sidebar (`Sidebar` se esconde con `hidden lg:flex`).
+ * La maqueta era de escritorio: por debajo de `lg` el topbar compensa con su propia versión
+ * angosta (ver `Topbar`). Las utilities de Tailwind (`grid-cols-1 lg:grid-cols-[...]`) conviven
+ * con `.pb-shell` y ganan por cascada de layers: fijan el breakpoint real (1024px), no los 760px
+ * que trae `@media` portado de la maqueta (calibrado a su propio breakpoint de demo).
  */
 export function AppShell({ session, children }: Props) {
   return (
     <div
-      className="grid grid-cols-1 lg:grid-cols-[240px_1fr]"
+      className="pb-shell grid grid-cols-1 lg:grid-cols-[232px_minmax(0,1fr)]"
       // `position: relative` lo vuelve el containing block de cualquier descendiente
       // `position: absolute` (los `.sr-only` de labels/legends del formulario, por ejemplo).
       // Sin esto, un absolute profundo en el árbol se posiciona relativo al documento
