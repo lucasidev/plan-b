@@ -8,7 +8,7 @@ Qué mirar y qué hacer cuando el stage no actualiza o un recurso de Dokploy fal
 - La topología decidida usa PostgreSQL y Redis Databases, más API, web, Migrate y Mailpit Applications.
 - Migrate es una Application run-once: Swarm Mode Replicated con 1 réplica y Restart Policy `none`; su task corre una vez por deploy y no se reinicia.
 - Producción todavía no existe.
-- El cutover del stage a Databases y Applications se hizo el 2026-09-13: Migrate run-once, API, web construida para el hostname interno real, Mailpit y los dos dominios, verificados desde afuera. La secuencia automatizada desde GitHub Actions todavía no corrió contra estos recursos.
+- El cutover del stage a Databases y Applications se hizo el 2026-09-13: Migrate run-once, API, web construida para el hostname interno real, Mailpit y los dos dominios, verificados desde afuera. La secuencia automatizada desde GitHub Actions corrió dos veces en verde sobre estos recursos, para los SHA `292ad759` y `4e4aaee3`.
 - En Dokploy v0.26.3 se verificó que el prefijo `planb-stage-api` generó `appName` `planb-stage-api-7mmcdb`. El sufijo es mutable y ese valor no se usa como convención estable.
 - Se verificó por incidente que Mailpit necesita `/tmp` escribible.
 - Se verificó por incidente que un redeploy de una Database con el default `start-first` de Dokploy corre dos PostgreSQL sobre el mismo volumen (caso 8): las Databases llevan `stop-first`.

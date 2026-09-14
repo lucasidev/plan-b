@@ -58,7 +58,7 @@ La API no migra al arrancar. El deploy nunca ejecuta `seed-db`.
 
 **Verificado en el stage nuevo (2026-09-13):** el arranque coordinado de las nuevas Applications y el cutover de dominios sobre los recursos reales, con Migrate como run-once y API, web y Mailpit `healthy`.
 
-**Decidido y todavía no verificado:** la espera del exit code de la task de Migrate desde GitHub Actions. La primera corrida del workflow sobre estas Applications es la que lo prueba.
+**Verificado desde GitHub Actions el 2026-09-13:** la secuencia automatizada esperó una task nueva de Migrate en `exited` con `ExitCode` 0 antes de desplegar API y web. Corrió dos veces en verde sobre las Applications reales, para los SHA `292ad759` y `4e4aaee3`.
 
 **No operativo:** producción todavía no existe.
 
