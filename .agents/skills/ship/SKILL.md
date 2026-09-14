@@ -13,7 +13,7 @@ Preparás el cambio actual para shippear. Cada aprobación habilita una sola acc
    - O `just ci` si tocó ambos.
    Si algo falla, **PARÁ** y reportá la falla. No sigas.
 2. **Commit** con Conventional Commits: `type(scope): descripción`, subject en minúscula, sin atribución a IA. Body con las US si aplica.
-3. **PARAR. NO hacer push.** Lucas aprueba antes de pushear (regla dura, ver `feedback_no_push_without_ok`).
+3. **PARAR. NO hacer push.** Lucas aprueba explícitamente antes de cada push.
 
 Mostrá el diff/summary y esperá el OK explícito para push + PR (aclarando merge strategy: Rebase por default, Squash si hay commits WIP).
 

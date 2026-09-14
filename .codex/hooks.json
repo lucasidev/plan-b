@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "(?:mcp__.*(?:playwright|chrome|browser).*|(?:playwright|chrome|browser).*)",
+        "matcher": "(?:mcp__.*(?:playwright|chrome|browser|cua_repl).*|(?:playwright|chrome|browser|cua_repl).*|web__run|mcp__web__.*)",
         "hooks": [
           {
             "type": "command",

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const hook = fileURLToPath(new URL('./guard-tool-budget.mjs', import.meta.url));
+const codexHooks = fileURLToPath(new URL('../../.codex/hooks.json', import.meta.url));
 
 function invoke(stateDir, input, env = {}) {
   const result = spawnSync(process.execPath, [hook], {
@@ -36,6 +37,13 @@ test('permite N llamadas browser y deniega N+1', () => withState((stateDir) => {
   assert.equal(output.hookSpecificOutput.permissionDecision, 'deny');
 }));
 
+test('cuenta el browser real de Codex', () => withState((stateDir) => {
+  const input = { session_id: 'cua-session', tool_name: 'mcp__cua_repl__js' };
+  assert.equal(invoke(stateDir, input, { PLANB_BROWSER_TOOL_LIMIT: '1' }), '');
+  const output = JSON.parse(invoke(stateDir, input, { PLANB_BROWSER_TOOL_LIMIT: '1' }));
+  assert.equal(output.hookSpecificOutput.permissionDecision, 'deny');
+}));
+
 test('mantiene el presupuesto web separado del browser', () => withState((stateDir) => {
   const browser = { session_id: 'shared-session', tool_name: 'mcp__playwright__browser_navigate' };
   const web = { session_id: 'shared-session', tool_name: 'WebSearch' };
@@ -44,6 +52,22 @@ test('mantiene el presupuesto web separado del browser', () => withState((stateD
   assert.equal(JSON.parse(invoke(stateDir, browser, { PLANB_BROWSER_TOOL_LIMIT: '1' })).hookSpecificOutput.permissionDecision, 'deny');
   assert.equal(JSON.parse(invoke(stateDir, web, { PLANB_WEB_TOOL_LIMIT: '1' })).hookSpecificOutput.permissionDecision, 'deny');
 }));
+
+test('cuenta las llamadas web de code mode en Codex', () => withState((stateDir) => {
+  const input = { session_id: 'codex-web-session', tool_name: 'web__run' };
+  assert.equal(invoke(stateDir, input, { PLANB_WEB_TOOL_LIMIT: '1' }), '');
+  const output = JSON.parse(invoke(stateDir, input, { PLANB_WEB_TOOL_LIMIT: '1' }));
+  assert.equal(output.hookSpecificOutput.permissionDecision, 'deny');
+}));
+
+test('el matcher de Codex envía sus herramientas reales al guard', () => {
+  const config = JSON.parse(readFileSync(codexHooks, 'utf8'));
+  const matcher = new RegExp(config.hooks.PreToolUse[0].matcher);
+
+  assert.equal(matcher.test('mcp__cua_repl__js'), true);
+  assert.equal(matcher.test('web__run'), true);
+  assert.equal(matcher.test('mcp__codex_app__list_threads'), false);
+});
 
 test('deja pasar una herramienta irrelevante', () => withState((stateDir) => {
   assert.equal(invoke(stateDir, { session_id: 'irrelevant-session', tool_name: 'Read' }), '');

@@ -24,8 +24,15 @@ const sessionId = typeof input?.session_id === 'string' ? input.session_id : '';
 const agentId = typeof input?.agent_id === 'string' ? input.agent_id : '';
 
 function categoryFor(name) {
-  if (/(?:playwright|chrome|browser)/i.test(name)) return 'browser';
-  if (name === 'WebSearch' || name === 'WebFetch') return 'web';
+  if (/(?:playwright|chrome|browser|cua_repl)/i.test(name)) return 'browser';
+  if (
+    name === 'WebSearch'
+    || name === 'WebFetch'
+    || name === 'web__run'
+    || /^mcp__web__/.test(name)
+  ) {
+    return 'web';
+  }
   return null;
 }
 
