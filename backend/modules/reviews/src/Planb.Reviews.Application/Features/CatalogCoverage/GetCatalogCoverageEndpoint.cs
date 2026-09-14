@@ -52,7 +52,8 @@ public sealed class GetCatalogCoverageEndpoint : ICarterModule
                         VoiceCount: counted?.VoiceCount ?? 0,
                         HasReviewsBelowFloor: counted?.HasReviewsBelowFloor ?? false,
                         TotalSubjects: counted?.TotalSubjects ?? 0,
-                        CoveredSubjects: counted?.CoveredSubjects ?? 0);
+                        CoveredSubjects: counted?.CoveredSubjects ?? 0,
+                        CanonicalGroupName: c.CanonicalGroupName);
                 })
                 .ToList();
 

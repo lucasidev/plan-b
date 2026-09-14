@@ -133,6 +133,8 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         emptyCareer.HasReviewsBelowFloor.ShouldBeFalse();
         emptyCareer.TotalSubjects.ShouldBe(0);
         emptyCareer.CoveredSubjects.ShouldBe(0);
+        // Recién creada por este test: no pertenece a ningún grupo de CanonicalCareerGroupings.
+        emptyCareer.CanonicalGroupName.ShouldBeNull();
 
         var tudcsBefore = before.Careers.Single(c => c.CareerId == TudcsCareerId);
         tudcsBefore.CareerName.ShouldBe("Tecnicatura Universitaria en Desarrollo y Calidad de Software");
@@ -142,6 +144,8 @@ public class GetCatalogCoverageEndpointTests : IClassFixture<RegisterApiFixture>
         tudcsBefore.HasReviewsBelowFloor.ShouldBeFalse();
         tudcsBefore.TotalSubjects.ShouldBe(21);
         tudcsBefore.CoveredSubjects.ShouldBe(0);
+        // Primer id del grupo "Tecnicatura o técnico en programación" (CanonicalCareerGroupings.cs).
+        tudcsBefore.CanonicalGroupName.ShouldBe("Tecnicatura o técnico en programación");
 
         // ---- Pérez junta 3 (bajo el piso de 10): esa cátedra no publica, así que ni la cobertura
         // ni las voces se mueven. Lo único que cambia es que ahora hay actividad para señalar, sin

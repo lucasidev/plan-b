@@ -71,6 +71,8 @@ export type CareerCoverage = {
   hasReviewsBelowFloor: boolean;
   totalSubjects: number;
   coveredSubjects: number;
+  /** Nombre del grupo de carrera canónica (US-195) si esta oferta está agrupada con otras; null si no. */
+  canonicalGroupName: string | null;
 };
 
 /** Una universidad con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222). */

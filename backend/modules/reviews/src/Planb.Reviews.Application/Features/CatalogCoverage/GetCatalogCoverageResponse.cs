@@ -30,4 +30,6 @@ public sealed record CareerCoverageView(
     /// </summary>
     bool HasReviewsBelowFloor,
     int TotalSubjects,
-    int CoveredSubjects);
+    int CoveredSubjects,
+    /// <summary>El nombre del grupo de carrera canónica (US-195) si esta oferta está agrupada con otras; null si no.</summary>
+    string? CanonicalGroupName);
