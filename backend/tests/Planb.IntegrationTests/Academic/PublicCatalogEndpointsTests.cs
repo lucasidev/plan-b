@@ -73,6 +73,11 @@ public class PublicCatalogEndpointsTests : IClassFixture<RegisterApiFixture>
             .Select(c => c.Career.Id.Value)
             .ToHashSet();
         careers.Select(c => c.Id).ShouldBe(unstaSeedIds, ignoreOrder: true);
+
+        // TUDCS cuelga de la Facultad de Ingeniería (AcademicSeedData.AuFacultadDeIngenieria):
+        // el LEFT JOIN a academic_units trae ese nombre sin que el caller lo pida aparte.
+        var tudcs = careers.Single(c => c.Id == AcademicSeedData.TudcsUnsta.Career.Id.Value);
+        tudcs.AcademicUnitName.ShouldBe("Facultad de Ingeniería");
     }
 
     [Fact]
@@ -224,6 +229,34 @@ public class PublicCatalogListingsIntegrityTests : IClassFixture<RegisterApiFixt
         mine.Count.ShouldBe(2);
         mine[0].Name.ShouldBe(official.Name, "is_official ordena antes que el nombre");
         mine[1].Name.ShouldBe(unofficial.Name);
+    }
+
+    /// <summary>
+    /// El LEFT JOIN a academic_units por el lado que no matchea: una carrera sin
+    /// <c>academic_unit_id</c> (todas las 225 del seed lo tienen; esta se crea sin uno a
+    /// propósito) trae <c>academicUnitName</c> null en vez de romper la fila entera.
+    /// </summary>
+    [Fact]
+    public async Task ListCareers_a_career_without_an_academic_unit_has_a_null_academic_unit_name()
+    {
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AcademicDbContext>();
+        var clock = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+        var unstaId = new UniversityId(AcademicSeedData.Unsta.Id.Value);
+
+        var unique = Guid.NewGuid().ToString("N")[..8];
+        var withoutUnit = Career.Create(
+            unstaId, $"Sin Unidad Académica {unique}", $"sin-unidad-academica-{unique}", clock,
+            isOfficial: true).Value;
+        db.Careers.Add(withoutUnit);
+        await db.SaveChangesAsync();
+
+        var response = await _client.GetAsync($"/api/academic/careers?universityId={unstaId.Value}");
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var careers = await response.Content.ReadFromJsonAsync<List<CareerListItem>>();
+        var mine = careers!.Single(c => c.Id == withoutUnit.Id.Value);
+        mine.AcademicUnitName.ShouldBeNull();
     }
 
     /// <summary>

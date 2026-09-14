@@ -13,4 +13,6 @@ public sealed record CareerListItem(
     Guid UniversityId,
     string Name,
     string Slug,
-    bool IsOfficial);
+    bool IsOfficial,
+    /// <summary>La facultad o sede que dicta la oferta (R6, tarea 19); null si la carrera no tiene una asignada.</summary>
+    string? AcademicUnitName);
