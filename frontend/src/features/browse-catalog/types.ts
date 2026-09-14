@@ -17,6 +17,8 @@ export type Career = {
   slug: string;
   /** US-088: carreras cargadas por alumnos (crowdsourced) tienen isOfficial=false. */
   isOfficial: boolean;
+  /** La facultad o sede que dicta la oferta; null si la carrera no tiene una asignada. */
+  academicUnitName: string | null;
 };
 
 /**

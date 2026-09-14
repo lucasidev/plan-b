@@ -87,17 +87,21 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     public async Task<IReadOnlyList<CareerListItem>> ListCareersByUniversityAsync(
         Guid universityId, CancellationToken ct = default)
     {
+        // LEFT JOIN a academic_units: mismo patrón que GetCareerByIdAsync y
+        // DapperCanonicalCareerComparisonReader (AcademicUnitId es nullable, ix_careers_academic_unit_id).
         const string sql = @"
             SELECT
-                id            AS Id,
-                university_id AS UniversityId,
-                name          AS Name,
-                slug          AS Slug,
-                is_official   AS IsOfficial
-            FROM academic.careers
-            WHERE university_id = @UniversityId
-              AND is_active
-            ORDER BY is_official DESC, name ASC;";
+                c.id             AS Id,
+                c.university_id  AS UniversityId,
+                c.name           AS Name,
+                c.slug           AS Slug,
+                c.is_official    AS IsOfficial,
+                au.name          AS AcademicUnitName
+            FROM academic.careers c
+            LEFT JOIN academic.academic_units au ON au.id = c.academic_unit_id
+            WHERE c.university_id = @UniversityId
+              AND c.is_active
+            ORDER BY c.is_official DESC, c.name ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<CareerListItem>(

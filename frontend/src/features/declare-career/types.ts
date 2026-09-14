@@ -18,6 +18,8 @@ export type Career = {
   // US-088: crowdsourced careers (uploaded by students) have isOfficial=false.
   // The frontend displays them with a "No oficial" badge.
   isOfficial: boolean;
+  // La facultad o sede que dicta la oferta; null si la carrera no tiene una asignada.
+  academicUnitName: string | null;
 };
 
 export type CareerPlan = {
