@@ -73,6 +73,21 @@ describe('UniversityList', () => {
     expect(within(row).getByText('sin reseñas todavía')).toBeInTheDocument();
   });
 
+  /** Maqueta aprobada: la fila con reseñas se destaca, la que no, se atenúa ("row dim"). */
+  it('con reseñas, el nombre se ve normal; sin reseñas, se atenúa (texto ink-3)', () => {
+    render(
+      <UniversityList
+        universities={[
+          university({ id: 'a', name: 'UNSTA', careerCount: 56, careersWithReviews: 1 }),
+          university({ id: 'b', name: 'UNT', careerCount: 93, careersWithReviews: 0 }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('UNSTA')).toHaveClass('text-ink');
+    expect(screen.getByText('UNT')).toHaveClass('text-ink-3');
+  });
+
   it('una institución sin carreras cargadas sigue en la lista y lo dice con palabras', () => {
     render(
       <UniversityList

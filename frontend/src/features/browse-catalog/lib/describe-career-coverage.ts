@@ -1,4 +1,5 @@
 import type { OfficialFact } from '@/components/facts/types';
+import type { University } from '../types';
 
 /**
  * El copy de cobertura del catálogo (US-222, ficha de SC-003): lo mínimo honesto de una carrera
@@ -140,6 +141,15 @@ export function describeUniversityReviewsPill(careersWithReviews: number): strin
   }
   const careers = careersWithReviews === 1 ? 'carrera' : 'carreras';
   return `${careersWithReviews} ${careers} con reseñas`;
+}
+
+/**
+ * El nombre corto de una institución para Explorar (ADR-0096, maqueta aprobada): el slug en
+ * mayúsculas (UNSTA, UNT, UTN-FRT, USPT, UNSE), hasta que el catálogo tenga un nombre corto
+ * propio. Compartido entre "Lo que los datos dicen" y la lente de Carreras: no se duplica.
+ */
+export function universityShortName(university: Pick<University, 'slug'>): string {
+  return university.slug.toUpperCase();
 }
 
 /**

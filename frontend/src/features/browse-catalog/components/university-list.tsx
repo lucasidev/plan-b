@@ -14,10 +14,11 @@ export type UniversityListItem = UniversityWithCoverage & {
 };
 
 /**
- * Listado de universidades del catálogo (US-001, `/universities`, ADR-0096). Cada fila navega a
- * `/universities/{slug}/careers` y dice, antes del clic: su tipo institucional cuando lo relevamos,
- * cuántas carreras tiene, y con una pill, cuántas de esas ya tienen reseñas (US-222, ficha de
- * SC-003). No hay estado "vacío" real esperado (el catálogo siempre tiene al menos las
+ * Listado de universidades del catálogo (US-001, `/universities`, ADR-0096, maqueta aprobada).
+ * Cada fila navega a `/universities/{slug}/careers` y dice, antes del clic: su tipo institucional
+ * cuando lo relevamos, cuántas carreras tiene, y con una pill, cuántas de esas ya tienen reseñas
+ * (US-222, ficha de SC-003). La fila con reseñas se destaca; la que no, se atenúa (`row dim` de la
+ * maqueta): no hay estado "vacío" real esperado (el catálogo siempre tiene al menos las
  * universidades seedeadas), pero lo contemplamos igual: MVP sin admin de universidades activo,
  * esto puede pasar en un ambiente recién levantado.
  */
@@ -38,6 +39,7 @@ export function UniversityList({ universities }: { universities: UniversityListI
           university.careerCount > 0 && university.institutionType
             ? `${university.institutionType} · ${careerCount}`
             : careerCount;
+        const reviewed = university.careersWithReviews > 0;
 
         return (
           <li key={university.id}>
@@ -46,11 +48,19 @@ export function UniversityList({ universities }: { universities: UniversityListI
               className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
             >
               <span className="min-w-0 flex-1">
-                <span className="block text-[14px] font-medium text-ink">{university.name}</span>
+                <span
+                  className={
+                    reviewed
+                      ? 'block text-[14px] font-medium text-ink'
+                      : 'block text-[14px] font-normal text-ink-3'
+                  }
+                >
+                  {university.name}
+                </span>
                 <span className="mt-0.5 block text-[12px] text-ink-3">{meta}</span>
               </span>
               <span className="flex shrink-0 items-center gap-2">
-                <Pill tone={university.careersWithReviews > 0 ? 'good' : 'neutral'}>
+                <Pill tone={reviewed ? 'ink' : 'neutral'}>
                   {describeUniversityReviewsPill(university.careersWithReviews)}
                 </Pill>
                 <ChevronRight size={16} className="text-ink-3" aria-hidden />

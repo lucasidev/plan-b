@@ -7,6 +7,7 @@ import { OFFICIAL_FACT_FIELDS } from '@/components/facts/official-fact-fields';
 import type { SubjectOfficialFacts } from '@/components/facts/official-facts.server';
 import type { OfficialFact } from '@/components/facts/types';
 import type { CareerCoverage, University } from '../types';
+import { universityShortName } from './describe-career-coverage';
 import { groupCareersByCanonical } from './group-careers-by-canonical';
 
 /**
@@ -21,6 +22,21 @@ export type DataHighlight = {
   id: string;
   label: string;
   facts: DataHighlightFact[];
+  /**
+   * La tira compacta de Explorar (ADR-0096, maqueta aprobada): una línea por highlight, siempre
+   * derivada de `facts`, nunca una segunda fuente de verdad.
+   */
+  summary: DataHighlightSummary;
+};
+
+export type DataHighlightSummary = {
+  /** El nombre corto (institución o carrera) del hecho principal, o varios empatados unidos ("Abogacía, Medicina y Contador Público"). */
+  name: string;
+  href: string | null;
+  /** La aclaración corta y atenuada al lado del nombre ("78.964 estudiantes en 2023"). Cadena vacía sin dato que aclarar. */
+  annotation: string;
+  /** Fuente + lo secundario, ya unidos con " · ", para la línea compacta debajo del nombre. Cadena vacía sin nada que citar. */
+  source: string;
 };
 
 export type DataHighlightFact = {
@@ -77,6 +93,18 @@ function periodOrNote(fact: OfficialFact): string | null {
   return fact.period ?? fact.note ?? null;
 }
 
+/** Lista en español para la tira compacta: "A", "A y B", "A, B y C" (nunca coma antes del último). */
+function joinSpanish(items: readonly string[]): string {
+  if (items.length === 0) return '';
+  if (items.length === 1) return items[0];
+  return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+}
+
+/** Une fuente + lo secundario en una sola línea chica (ADR-0096), sin tramos vacíos. */
+function joinSource(parts: readonly (string | null | undefined)[]): string {
+  return parts.filter((part): part is string => Boolean(part)).join(' · ');
+}
+
 /** La etiqueta "derivado" con su link a la regla en Método (ADR-0090), solo cuando el hecho es Derived. */
 function derivedTagFor(fact: OfficialFact): DataHighlightFact['derivedTag'] {
   if (fact.status !== 'Derived') return null;
@@ -130,6 +158,12 @@ function mostChosenUniversity(
         },
         ...nonReportingLines,
       ],
+      summary: {
+        name: 'Ninguna institución publica cuántos estudiantes tiene.',
+        href: null,
+        annotation: '',
+        source: joinSource(nonReportingLines.map((line) => line.text)),
+      },
     };
   }
 
@@ -146,10 +180,20 @@ function mostChosenUniversity(
     period: periodOrNote(fact),
   }));
 
+  const primaryWinner = winners[0];
   return {
     id: 'most-chosen-university',
     label: 'La universidad más elegida',
     facts: [...winnerLines, ...nonReportingLines],
+    summary: {
+      name: joinSpanish(winners.map((winner) => universityShortName(winner.university))),
+      href: winners.length === 1 ? universityHref(primaryWinner.university) : null,
+      annotation: `${formatOfficialFactValue(primaryWinner.fact.value ?? '', primaryWinner.fact.unit)} estudiantes${primaryWinner.fact.period ? ` en ${primaryWinner.fact.period}` : ''}`,
+      source: joinSource([
+        joinSource([primaryWinner.fact.sourceName, primaryWinner.fact.period]),
+        ...nonReportingLines.map((line) => line.text),
+      ]),
+    },
   };
 }
 
@@ -173,6 +217,12 @@ function mostOfferedCareer(careers: readonly CareerCoverage[]): DataHighlight {
           sourceName: CAREER_GUIDE_SOURCE,
         },
       ],
+      summary: {
+        name: 'Todavía ninguna carrera se dicta en más de una institución.',
+        href: null,
+        annotation: '',
+        source: CAREER_GUIDE_SOURCE,
+      },
     };
   }
 
@@ -200,6 +250,12 @@ function mostOfferedCareer(careers: readonly CareerCoverage[]): DataHighlight {
           href: careerHref(offering.careerId),
         })),
     })),
+    summary: {
+      name: joinSpanish(winners.map((winner) => winner.group.canonicalGroupName)),
+      href: null,
+      annotation: `en ${max} ${max === 1 ? 'institución' : 'instituciones'}${winners.length > 1 ? ' cada una' : ''}`,
+      source: CAREER_GUIDE_SOURCE,
+    },
   };
 }
 
@@ -213,6 +269,7 @@ function mostOfferedCareer(careers: readonly CareerCoverage[]): DataHighlight {
 function bestGraduationRate(
   careers: readonly CareerCoverage[],
   offeringFacts: Map<string, OfficialFact[]>,
+  universityById: Map<string, University>,
 ): DataHighlight {
   const withData: { career: CareerCoverage; fact: OfficialFact; value: number }[] = [];
 
@@ -236,6 +293,12 @@ function bestGraduationRate(
           tier: 'primary',
         },
       ],
+      summary: {
+        name: 'Ninguna fuente publica el egreso por cohorte de ninguna carrera.',
+        href: null,
+        annotation: '',
+        source: '',
+      },
     };
   }
 
@@ -252,6 +315,12 @@ function bestGraduationRate(
         )
         .sort((a, b) => b.value - a.value)
     : [];
+
+  /** El nombre corto de la institución de una oferta (ADR-0096): por su id en el catálogo cuando lo tenemos, si no el nombre tal cual llega. */
+  const shortUniversityName = (career: CareerCoverage): string => {
+    const university = universityById.get(career.universityId);
+    return university ? universityShortName(university) : career.universityName;
+  };
 
   return {
     id: 'best-graduation-rate',
@@ -279,6 +348,19 @@ function bestGraduationRate(
         derivedTag: derivedTagFor(sibling.fact),
       })),
     ],
+    summary: {
+      name: `${best.career.careerName}, ${shortUniversityName(best.career)}`,
+      href: careerHref(best.career.careerId),
+      annotation: `egresan ${Math.round(best.value)} de cada 100`,
+      source: joinSource([
+        joinSource([best.fact.sourceName, periodOrNote(best.fact)]),
+        `Entre las ${totalLabel} con el dato.`,
+        ...siblings.map(
+          (sibling) =>
+            `${Math.round(sibling.value)} de cada 100 en ${shortUniversityName(sibling.career)}`,
+        ),
+      ]),
+    },
   };
 }
 
@@ -292,6 +374,12 @@ function bestGraduationRate(
 function advancingAttribution(university: University, fact: OfficialFact): string {
   if (fact.note && fact.period) return fact.period;
   return university.name;
+}
+
+/** Misma regla que `advancingAttribution`, con el nombre corto de la institución (ADR-0096) para la tira compacta. */
+function shortAdvancingAttribution(university: University, fact: OfficialFact): string {
+  if (fact.note && fact.period) return fact.period;
+  return universityShortName(university);
 }
 
 /**
@@ -324,6 +412,12 @@ function mostAdvancingUniversity(
           tier: 'primary',
         },
       ],
+      summary: {
+        name: 'Ninguna institución publica su proporción de reinscriptos con dos o más materias aprobadas.',
+        href: null,
+        annotation: '',
+        source: '',
+      },
     };
   }
 
@@ -348,6 +442,18 @@ function mostAdvancingUniversity(
         period: periodOrNote(entry.fact),
       })),
     ],
+    summary: {
+      name: shortAdvancingAttribution(best.university, best.fact),
+      href: universityHref(best.university),
+      annotation: `${formatOfficialFactValue(best.fact.value ?? '', best.fact.unit)} avanza dos materias o más por año`,
+      source: joinSource([
+        joinSource([best.fact.sourceName, periodOrNote(best.fact)]),
+        ...rest.map(
+          (entry) =>
+            `${formatOfficialFactValue(entry.fact.value ?? '', entry.fact.unit)} en ${shortAdvancingAttribution(entry.university, entry.fact)}`,
+        ),
+      ]),
+    },
   };
 }
 
@@ -381,6 +487,12 @@ function auditedByConeau(
           tier: 'primary',
         },
       ],
+      summary: {
+        name: 'Ninguna institución tiene evaluación institucional de CONEAU publicada.',
+        href: null,
+        annotation: '',
+        source: '',
+      },
     };
   }
 
@@ -399,6 +511,12 @@ function auditedByConeau(
           sourceName: fact.sourceName,
         },
       ],
+      summary: {
+        name: universityShortName(university),
+        href: universityHref(university),
+        annotation: 'acreditaciones al día',
+        source: joinSource([fact.sourceName, fact.period]),
+      },
     };
   }
 
@@ -414,6 +532,12 @@ function auditedByConeau(
       tier: 'primary',
       sourceName: fact.sourceName,
     })),
+    summary: {
+      name: joinSpanish(sorted.map(({ university }) => universityShortName(university))),
+      href: null,
+      annotation: 'acreditaciones al día',
+      source: joinSource(sorted.map(({ fact }) => joinSource([fact.sourceName, fact.period]))),
+    },
   };
 }
 
@@ -424,11 +548,14 @@ function auditedByConeau(
 export function computeDataHighlights(input: DataHighlightsInput): DataHighlight[] {
   const institutionFacts = bySubjectId(input.institutionFacts);
   const offeringFacts = bySubjectId(input.offeringFacts);
+  const universityById = new Map(
+    input.universities.map((university) => [university.id, university]),
+  );
 
   return [
     mostChosenUniversity(input.universities, institutionFacts),
     mostOfferedCareer(input.careers),
-    bestGraduationRate(input.careers, offeringFacts),
+    bestGraduationRate(input.careers, offeringFacts, universityById),
     mostAdvancingUniversity(input.universities, institutionFacts),
     auditedByConeau(input.universities, institutionFacts),
   ];

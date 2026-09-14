@@ -59,15 +59,15 @@ export default async function UniversitiesPage() {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <ExploreLensSwitch active="universities" />
       <header>
-        <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Explorar</p>
-        <h1 className="mt-1.5 font-display text-[26px] font-semibold leading-tight text-ink">
-          Universidades
-        </h1>
+        <h1 className="font-display text-[28px] font-semibold leading-tight text-ink">Explorar</h1>
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-2">
-          Cada universidad, con sus carreras y lo que ya se puede leer de cada una.
+          {universities.length} instituciones con oferta en Tucumán, {careers.length} carreras, y lo
+          que ya se puede leer de cada una.
         </p>
+        <div className="mt-3.5">
+          <ExploreLensSwitch active="universities" />
+        </div>
       </header>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <UniversityList universities={universitiesWithCoverage} />

@@ -3,14 +3,16 @@ import { cn } from '@/lib/utils';
 type Props = {
   children: React.ReactNode;
   className?: string;
-  tone?: 'neutral' | 'warm' | 'good' | 'danger';
+  tone?: 'neutral' | 'warm' | 'good' | 'danger' | 'ink';
 };
 
 /**
  * Compact metadata tag. Mono-font, ~10.5px, low-contrast background.
  * Tones map to subject-state foregrounds + accent for product moments
  * (the "warm" tone is what the mockup uses for "recomendado", urgentes,
- * etc.).
+ * etc.). "ink" es la `pill pub` de la maqueta de Explorar (ADR-0096): fondo
+ * oscuro, texto claro, para lo que ya tiene reseñas (no es un estado del
+ * dominio como "good", que queda reservado a `--color-st-approved`).
  */
 export function Pill({ children, className, tone = 'neutral' }: Props) {
   return (
@@ -21,6 +23,7 @@ export function Pill({ children, className, tone = 'neutral' }: Props) {
         tone === 'warm' && 'bg-accent-soft text-accent-ink',
         tone === 'good' && 'bg-st-approved-bg text-st-approved-fg',
         tone === 'danger' && 'bg-st-failed-bg text-st-failed-fg',
+        tone === 'ink' && 'bg-ink text-bg-card',
         className,
       )}
     >

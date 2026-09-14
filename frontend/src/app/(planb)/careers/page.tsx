@@ -3,8 +3,12 @@ import {
   ExploreLensSwitch,
   groupCareersByCanonical,
   SingleInstitutionCareerList,
+  universityShortName,
 } from '@/features/browse-catalog';
-import { fetchCatalogCoverageServer } from '@/features/browse-catalog/api.server';
+import {
+  fetchCatalogCoverageServer,
+  fetchUniversitiesServer,
+} from '@/features/browse-catalog/api.server';
 
 // Público, per-request: el catálogo puede cambiar (crowdsourcing, admin). Visitantes anónimos.
 export const dynamic = 'force-dynamic';
@@ -27,29 +31,44 @@ export const metadata = {
  * compara lado a lado ("En más de una institución"), el resto queda en una lista compacta ("En una
  * sola institución"). Antes agrupaba por institución, duplicando la lente de Universidades sin
  * decir nada que esa lente no dijera ya.
+ *
+ * `fetchUniversitiesServer` se suma solo para armar el nombre corto de cada institución (ADR-0096,
+ * maqueta aprobada: `universityShortName`, por slug): las carreras no lo traen.
  */
 export default async function CareersPage() {
-  const careers = await fetchCatalogCoverageServer();
+  const [careers, universities] = await Promise.all([
+    fetchCatalogCoverageServer(),
+    fetchUniversitiesServer(),
+  ]);
   const { multiInstitution, singleInstitution } = groupCareersByCanonical(careers);
+  const universityShortNames = new Map(
+    universities.map((university) => [university.id, universityShortName(university)]),
+  );
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-8 sm:px-6">
-      <ExploreLensSwitch active="careers" />
       <header>
-        <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Explorar</p>
-        <h1 className="mt-1.5 font-display text-[26px] font-semibold leading-tight text-ink">
-          Carreras
-        </h1>
+        <h1 className="font-display text-[28px] font-semibold leading-tight text-ink">Explorar</h1>
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-2">
-          Cada carrera, se dicte en una institución o en varias.
+          Las que se dictan en más de una institución, para comparar lado a lado, y las que se
+          dictan en una sola.
         </p>
+        <div className="mt-3.5">
+          <ExploreLensSwitch active="careers" />
+        </div>
       </header>
       {careers.length === 0 ? (
         <p className="text-[13px] text-ink-3">Todavía no hay carreras cargadas en el catálogo.</p>
       ) : (
         <>
-          <CanonicalCareerGroups groups={multiInstitution} />
-          <SingleInstitutionCareerList careers={singleInstitution} />
+          <CanonicalCareerGroups
+            groups={multiInstitution}
+            universityShortNames={universityShortNames}
+          />
+          <SingleInstitutionCareerList
+            careers={singleInstitution}
+            universityShortNames={universityShortNames}
+          />
         </>
       )}
     </div>

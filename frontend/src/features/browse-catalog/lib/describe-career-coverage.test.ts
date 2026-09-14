@@ -9,6 +9,7 @@ import {
   hasReviews,
   hasSomethingToRead,
   institutionTypeLabel,
+  universityShortName,
 } from './describe-career-coverage';
 
 /**
@@ -347,6 +348,20 @@ describe('institutionTypeLabel', () => {
         officialFact({ status: 'NotPublished', value: null, note: 'No informó.' }),
       ),
     ).toBeNull();
+  });
+});
+
+describe('universityShortName', () => {
+  it('el slug en mayúsculas, para un slug simple', () => {
+    expect(universityShortName({ slug: 'unsta' })).toBe('UNSTA');
+  });
+
+  it('preserva el guion de un slug compuesto', () => {
+    expect(universityShortName({ slug: 'utn-frt' })).toBe('UTN-FRT');
+  });
+
+  it('San Pablo-T: el slug "uspt" da "USPT"', () => {
+    expect(universityShortName({ slug: 'uspt' })).toBe('USPT');
   });
 });
 

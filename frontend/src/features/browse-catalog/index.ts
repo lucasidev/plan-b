@@ -1,7 +1,6 @@
 export type { CrumbItem } from './components/breadcrumb';
 export { CatalogBreadcrumb } from './components/breadcrumb';
 export { CanonicalCareerGroups } from './components/canonical-career-groups';
-export { CareerReviewsPill } from './components/career-reviews-pill';
 export { CatalogErrorState } from './components/catalog-error-state';
 export { CatalogLoadingSkeleton } from './components/catalog-loading-skeleton';
 export { DataHighlights } from './components/data-highlights';
@@ -15,6 +14,7 @@ export { UniversityList } from './components/university-list';
 export type {
   DataHighlight,
   DataHighlightFact,
+  DataHighlightSummary,
   DataHighlightsInput,
 } from './lib/data-highlights';
 export { computeDataHighlights } from './lib/data-highlights';
@@ -27,6 +27,7 @@ export {
   describeUniversityReviewsPill,
   hasReviews,
   institutionTypeLabel,
+  universityShortName,
 } from './lib/describe-career-coverage';
 export type {
   CanonicalCareerGroup,

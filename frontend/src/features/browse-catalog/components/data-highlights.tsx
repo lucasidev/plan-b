@@ -1,90 +1,69 @@
 import Link from 'next/link';
-import type { DataHighlight, DataHighlightFact } from '../lib/data-highlights';
+import type { DataHighlight } from '../lib/data-highlights';
 
 /**
- * "Lo que los datos dicen" (ADR-0096): la columna derecha de la lente de Universidades. Cinco
- * hechos de un solo dato oficial o de catálogo, cada uno con su fuente; nunca un número compuesto
- * ni un promedio (THESIS, "Qué publicamos" 3 y 8).
+ * "Lo que los datos dicen" (ADR-0096, maqueta aprobada): la tira compacta `kv` de Explorar, una
+ * línea por highlight con su etiqueta, el nombre corto (institución o carrera) con su aclaración
+ * atenuada al lado, y una sola línea chica de fuente + lo secundario. Nunca un número compuesto ni
+ * un promedio (THESIS, "Qué publicamos" 3 y 8).
  */
 export function DataHighlights({ highlights }: { highlights: DataHighlight[] }) {
   return (
-    <aside aria-labelledby="data-highlights-heading" className="flex flex-col gap-4">
+    <aside aria-labelledby="data-highlights-heading" className="flex flex-col gap-1">
       <h2 id="data-highlights-heading" className="font-display text-[15px] font-semibold text-ink">
         Lo que los datos dicen
       </h2>
-      {highlights.map((highlight) => (
-        <div key={highlight.id} className="rounded-xl border border-line bg-bg-card p-4">
-          <p className="mb-1.5 text-[11px] text-ink-3">{highlight.label}</p>
-          <div className="flex flex-col gap-2">
-            {highlight.facts.map((fact) => (
-              <HighlightLine key={fact.text} fact={fact} />
-            ))}
-          </div>
-        </div>
-      ))}
+      <dl className="flex flex-col">
+        {highlights.map((highlight) => (
+          <HighlightRow key={highlight.id} highlight={highlight} />
+        ))}
+      </dl>
     </aside>
   );
 }
 
 /**
- * Una línea de un highlight. `tier` decide el estilo (nunca la posición en el array: dos hechos
- * empatados en el máximo se ven igual, ninguno "ganador" del otro). El período o la nota, y el
- * link a la regla cuando el hecho es derivado, van chicos debajo, como el resto de las fichas.
+ * Una línea `k`/`v`/`src`: el link a la regla de un derivado (ADR-0090) se busca en la fact
+ * primaria porque `summary` es texto plano, no JSX con links embebidos.
  */
-function HighlightLine({ fact }: { fact: DataHighlightFact }) {
-  const textClassName =
-    fact.tier === 'primary'
-      ? 'font-serif text-[15px] font-medium leading-snug text-ink'
-      : 'text-[12px] leading-relaxed text-ink-3';
-  const footer = [fact.sourceName, fact.period].filter(Boolean).join(' · ');
+function HighlightRow({ highlight }: { highlight: DataHighlight }) {
+  const { summary } = highlight;
+  const derivedTag = highlight.facts.find(
+    (fact) => fact.tier === 'primary' && fact.derivedTag,
+  )?.derivedTag;
 
   return (
-    <div>
-      <p className={textClassName}>
-        {fact.href ? (
-          <Link href={fact.href} prefetch={false} className="hover:underline">
-            {fact.text}
+    <div className="border-t border-line-2 py-2.5 first:border-t-0 first:pt-0">
+      <dt className="text-[11px] text-ink-3">{highlight.label}</dt>
+      <dd className="mt-0.5 font-serif text-[17px] leading-snug text-ink">
+        {summary.href ? (
+          <Link href={summary.href} prefetch={false} className="hover:underline">
+            {summary.name}
           </Link>
         ) : (
-          fact.text
+          summary.name
         )}
-        {fact.links && <FactLinks links={fact.links} />}
-      </p>
-      {fact.derivedTag && (
+        {summary.annotation && (
+          <span className="ml-1.5 font-sans text-[13px] text-ink-3">{summary.annotation}</span>
+        )}
+      </dd>
+      {(summary.source || derivedTag) && (
         <p className="mt-0.5 text-[11px] text-ink-3">
-          {'('}
-          <Link
-            href={fact.derivedTag.href}
-            prefetch={false}
-            className="text-accent-ink underline-offset-2 hover:underline"
-          >
-            {fact.derivedTag.label}
-          </Link>
-          {')'}
+          {summary.source}
+          {derivedTag && (
+            <>
+              {summary.source ? ' · ' : ''}
+              <Link
+                href={derivedTag.href}
+                prefetch={false}
+                className="text-accent-ink underline-offset-2 hover:underline"
+              >
+                {derivedTag.label}
+              </Link>
+            </>
+          )}
         </p>
       )}
-      {footer && <p className="mt-0.5 text-[11px] text-ink-3">{footer}</p>}
     </div>
-  );
-}
-
-/** Las instituciones de un grupo canónico, cada una linkeada a su propia oferta: "en A, B y C" (US-171: alfabético, ya lo trae `links`). */
-function FactLinks({ links }: { links: { label: string; href: string }[] }) {
-  return (
-    <>
-      {' '}
-      {links.map((link, index) => (
-        <span key={link.href}>
-          <Link
-            href={link.href}
-            prefetch={false}
-            className="text-accent-ink underline-offset-2 hover:underline"
-          >
-            {link.label}
-          </Link>
-          {index < links.length - 2 ? ', ' : index === links.length - 2 ? ' y ' : ''}
-        </span>
-      ))}
-    </>
   );
 }
