@@ -171,9 +171,22 @@ public class OfficialFactsEndpointTests : IClassFixture<RegisterApiFixture>
     [Fact]
     public async Task Reading_without_a_subject_id_is_400()
     {
+        // subjectId es obligatorio en este endpoint: comparar varios sujetos a la vez es
+        // GetOfficialFactsBySubjectTypeEndpoint (by-subject-type), no este.
         using var anon = _fixture.Factory.CreateClient();
 
         var read = await anon.GetAsync("/api/academic/official-facts?subjectType=Institution");
+
+        read.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task Reading_with_an_empty_subject_id_is_400()
+    {
+        using var anon = _fixture.Factory.CreateClient();
+
+        var read = await anon.GetAsync(
+            $"/api/academic/official-facts?subjectType=Institution&subjectId={Guid.Empty}");
 
         read.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
     }
@@ -209,12 +222,16 @@ public class OfficialFactsEndpointTests : IClassFixture<RegisterApiFixture>
         current.Value.ShouldBe("Presencial y a distancia");
         current.SourceName.ShouldBe("Sitio UNSTA");
         current.Status.ShouldBe("Published");
+        // Con subjectId en la query, la respuesta sigue igual que antes de sumar el listado por
+        // tipo: el subjectId que trae cada afirmación es el mismo que se pidió.
+        current.SubjectId.ShouldBe(Unsta);
     }
 
     private sealed record CreatedDto(Guid Id);
     private sealed record ReadDto(IReadOnlyList<FactDto> Facts);
     private sealed record FactDto(
-        Guid Id, string Field, string? Value, string? Unit, string? Period, string Status,
-        string SourceName, string SourceUrl, string? SourceDocument, DateTimeOffset SourceRetrievedAt,
-        string? DerivationRuleId, string? Note, DateTimeOffset RelievedAt);
+        Guid Id, Guid SubjectId, string Field, string? Value, string? Unit, string? Period,
+        string Status, string SourceName, string SourceUrl, string? SourceDocument,
+        DateTimeOffset SourceRetrievedAt, string? DerivationRuleId, string? Note,
+        DateTimeOffset RelievedAt);
 }

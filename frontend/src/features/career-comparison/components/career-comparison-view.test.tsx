@@ -13,6 +13,7 @@ vi.mock('next/navigation', () => ({
 
 function fact(overrides: Partial<OfficialFact> & Pick<OfficialFact, 'id' | 'field'>): OfficialFact {
   return {
+    subjectId: 'career-1',
     status: 'Published',
     value: null,
     unit: null,

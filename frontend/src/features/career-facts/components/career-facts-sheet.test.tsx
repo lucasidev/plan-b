@@ -26,6 +26,7 @@ const BASE: CareerFacts = {
 
 const PAPER_DURATION: OfficialFact = {
   id: 'fact-paper-duration',
+  subjectId: 'career-1',
   field: 'paper_duration',
   status: 'Published',
   value: '2.5',
@@ -110,6 +111,7 @@ describe('CareerFactsSheet', () => {
       PAPER_DURATION,
       {
         id: 'fact-real-duration',
+        subjectId: 'career-1',
         field: 'real_duration',
         status: 'NotPublished',
         value: null,
@@ -136,6 +138,7 @@ describe('CareerFactsSheet', () => {
       PAPER_DURATION,
       {
         id: 'fact-cohort-graduation',
+        subjectId: 'career-1',
         field: 'cohort_graduation',
         status: 'Derived',
         value: '21.4',
@@ -163,6 +166,7 @@ describe('CareerFactsSheet', () => {
     renderSheet(BASE, [
       {
         id: 'fact-cohort-graduation-not-published',
+        subjectId: 'career-1',
         field: 'cohort_graduation',
         status: 'NotPublished',
         value: null,
@@ -190,6 +194,7 @@ describe('CareerFactsSheet', () => {
     renderSheet(BASE, [
       {
         id: 'fact-admission-regime',
+        subjectId: 'career-1',
         field: 'admission_regime',
         status: 'Published',
         value: 'Ingreso directo, sin examen ni curso',
@@ -212,6 +217,7 @@ describe('CareerFactsSheet', () => {
     renderSheet(BASE, [
       {
         id: 'fact-national-validity',
+        subjectId: 'career-1',
         field: 'national_validity',
         status: 'NotApplicable',
         value: null,

@@ -11,4 +11,8 @@ public interface IOfficialFactReader
 {
     Task<IReadOnlyList<OfficialFactListItem>> ListBySubjectAsync(
         OfficialFactSubjectType subjectType, Guid subjectId, CancellationToken ct = default);
+
+    /// <summary>Todas las afirmaciones de todos los sujetos de <paramref name="subjectType"/>, sin elegir la vigente (ese criterio sigue corriendo en <see cref="OfficialFactCurrency"/>, agrupado por sujeto y campo).</summary>
+    Task<IReadOnlyList<OfficialFactListItem>> ListBySubjectTypeAsync(
+        OfficialFactSubjectType subjectType, CancellationToken ct = default);
 }
