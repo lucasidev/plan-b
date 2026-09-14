@@ -84,7 +84,7 @@ Cada una vive en su épica dueña, con su ficha y su boceto. Esta tabla es solo 
 | `SC-035` |  | [Docente](student/choose-where-to-study/screens/SC-035-teacher/README.md) | `/teachers/[id]` |
 | `SC-009` | Pedir una carrera | [La cola](student/request-a-career/screens/SC-009-queue/README.md) | sin slug hoy |
 | `SC-010` |  | [Pedir](student/request-a-career/screens/SC-010-request/README.md) | sin slug hoy |
-| `SC-011` | Entrar | [Inicio](student/enter/screens/SC-011-home/README.md) | `/home` |
+| `SC-011` | Entrar | [Inicio](student/enter/screens/SC-011-home/README.md) | retirada: `/home` va a `/reviews/mine` |
 | `SC-013` | Reseñar | [Anonimato](student/write-a-review/screens/SC-013-anonymity/README.md) | `/about` |
 | `SC-014` |  | [Mi situación](student/write-a-review/screens/SC-014-my-status/README.md) | sin slug hoy |
 | `SC-015` |  | [Reseñar](student/write-a-review/screens/SC-015-write-review/README.md) | `/reviews/new` |

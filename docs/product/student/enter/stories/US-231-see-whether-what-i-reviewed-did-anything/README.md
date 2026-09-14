@@ -18,7 +18,8 @@ Como quien ya reseñó, quiero ver al entrar si lo que dije ya publica o qué le
 
 ## Dónde se resuelve
 
-- [Inicio](../../screens/SC-011-home/README.md): la pantalla entera, sus dos estados y lo que no muestra.
+- [Mis aportes](../../../undo/screens/SC-018-my-contributions/README.md): desde el 2026-09-14, la pantalla entera, sus estados y lo que no muestra; es adonde entra la cuenta.
+- [Inicio](../../screens/SC-011-home/README.md): la pantalla que lo resolvía hasta esa fecha, retirada; queda como registro.
 
 ## Notas
 
