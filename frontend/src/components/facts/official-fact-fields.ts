@@ -19,6 +19,9 @@ export const OFFICIAL_FACT_FIELDS = {
   institutionType: 'institution_type',
   academicUnit: 'academic_unit',
   agnAudit: 'agn_audit',
+  students: 'students',
+  graduates: 'graduates',
+  advancingShare: 'advancing_share',
 } as const;
 
 /**
@@ -57,4 +60,7 @@ export const OFFICIAL_FACT_LABELS: Record<string, string> = {
   [OFFICIAL_FACT_FIELDS.institutionType]: 'Identidad institucional',
   [OFFICIAL_FACT_FIELDS.academicUnit]: 'Unidad académica',
   [OFFICIAL_FACT_FIELDS.agnAudit]: 'Auditada por la AGN',
+  [OFFICIAL_FACT_FIELDS.students]: 'Estudiantes',
+  [OFFICIAL_FACT_FIELDS.graduates]: 'Egresados',
+  [OFFICIAL_FACT_FIELDS.advancingShare]: 'Reinscriptos con dos o más materias aprobadas',
 };

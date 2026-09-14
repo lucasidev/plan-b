@@ -4293,6 +4293,139 @@ public static class OfficialFactSeedData
             SourceName: GuiaSiuName, SourceUrl: GuiaSiu,
             SourceDocument: GuiaSiuDocument, SourceRetrievedAt: Sep8,
             DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        // ================================================================
+        // Instituciones: estudiantes, egresados y reinscriptos con dos o más materias aprobadas.
+        // Mismos números y misma fuente que ya cita el texto de institution_type para cada
+        // institución: acá quedan como afirmación propia, no solo mencionados dentro del valor de
+        // otro campo.
+        // ================================================================
+
+        new OfficialFactSeed(
+            Fid("490"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.Students, OfficialFactStatus.Published,
+            Value: "7660", Unit: "count", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("491"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.Graduates, OfficialFactStatus.Published,
+            Value: "488", Unit: "count", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("492"), OfficialFactSubjectType.Institution, AcademicSeedData.Unsta.Id.Value,
+            OfficialFactField.AdvancingShare, OfficialFactStatus.Published,
+            Value: "53,7 %", Unit: "percent", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2023, indicadores", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("493"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.Students, OfficialFactStatus.Published,
+            Value: "78964", Unit: "count", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("494"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.Graduates, OfficialFactStatus.Published,
+            Value: "2072", Unit: "count", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("495"), OfficialFactSubjectType.Institution, AcademicSeedData.Unt.Id.Value,
+            OfficialFactField.AdvancingShare, OfficialFactStatus.Published,
+            Value: "36,2 %", Unit: "percent", Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2023, indicadores", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("496"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.Students, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "El anuario no abre por Facultad Regional: toda la UTN tiene 108986 estudiantes " +
+                "en 2023.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("497"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.Graduates, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: "2023",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022 y 2023, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "El anuario no abre por Facultad Regional: toda la UTN tiene 4581 egresados en " +
+                "2023.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("498"), OfficialFactSubjectType.Institution, AcademicSeedData.UtnFrt.Id.Value,
+            OfficialFactField.AdvancingShare, OfficialFactStatus.Published,
+            Value: "45,4 %", Unit: "percent", Period: "2023, toda la UTN",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2023, indicadores", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "Toda la UTN: el anuario no abre por Facultad Regional.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("499"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.Students, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: "2020 a 2022",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2020 a 2022, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "La institución no informó al anuario: sus filas están en cero.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("500"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.Graduates, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: "2020 a 2022",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2020 a 2022, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "La institución no informó al anuario: sus filas están en cero.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("501"), OfficialFactSubjectType.Institution, AcademicSeedData.UspT.Id.Value,
+            OfficialFactField.AdvancingShare, OfficialFactStatus.NotPublished,
+            Value: null, Unit: null, Period: "2020 a 2022",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2020 a 2022, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null,
+            Note: "La institución no informó al anuario: sus filas están en cero.",
+            RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("502"), OfficialFactSubjectType.Institution, AcademicSeedData.Unse.Id.Value,
+            OfficialFactField.Students, OfficialFactStatus.Published,
+            Value: "18066", Unit: "count", Period: "2022",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
+
+        new OfficialFactSeed(
+            Fid("503"), OfficialFactSubjectType.Institution, AcademicSeedData.Unse.Id.Value,
+            OfficialFactField.Graduates, OfficialFactStatus.Published,
+            Value: "444", Unit: "count", Period: "2022",
+            SourceName: "SPU, Anuario de Estadísticas Universitarias", SourceUrl: Anuario,
+            SourceDocument: "Anuario 2022, capítulo 2", SourceRetrievedAt: Sep7,
+            DerivationRuleId: null, Note: null, RelievedAt: Sep8),
     };
 }
 
