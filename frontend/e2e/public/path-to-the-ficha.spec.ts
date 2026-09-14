@@ -121,7 +121,7 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     await expect(page).toHaveURL(/\/universities$/, { timeout: 30_000 });
     // El estado de carga del catálogo monta su propia barra con un buscador que la página
     // descarta al llegar: tipear ahí se pierde con él. El título solo existe en la página.
-    await expect(page.getByRole('heading', { level: 1, name: /universidades/i })).toBeVisible({
+    await expect(page.getByRole('heading', { level: 1, name: /explorar/i })).toBeVisible({
       timeout: 30_000,
     });
     await page.getByRole('combobox', { name: /buscar materia/i }).fill('Fundamentos');

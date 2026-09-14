@@ -30,9 +30,10 @@ test.describe('Catálogo público (US-001)', () => {
 
   test('visitante anónimo navega de universidades a materias', async ({ page }) => {
     await page.goto('/universities');
-    await expect(page.getByRole('heading', { name: 'Universidades', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole('tab', { name: 'Universidades', selected: true })).toBeVisible();
     await expect(
       universityLink(page, /universidad del norte santo tomás de aquino/i),
     ).toBeVisible();
@@ -115,21 +116,23 @@ test.describe('Catálogo público (US-001)', () => {
     // (CanonicalCareerGroupings.cs, "Tecnicatura o técnico en programación"): dato determinístico
     // del seed, no depende de que alguien haya reseñado nada.
     await page.goto('/careers');
-    await expect(page.getByRole('heading', { name: 'Carreras', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
     await expect(
       page.getByRole('heading', { name: 'En más de una institución', level: 2 }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: 'Tecnicatura o técnico en programación', level: 3 }),
-    ).toBeVisible();
 
-    const tudcsLink = page.getByRole('link', {
-      name: /tecnicatura universitaria en desarrollo y calidad de software/i,
-    });
-    await expect(tudcsLink).toBeVisible();
-    await tudcsLink.click();
+    // Una fila por carrera canónica, no un heading por grupo: la institución dentro de esa fila es
+    // el link a su propia oferta (ADR-0096, maqueta aprobada), con su nombre corto.
+    const tecnicaturaGroup = page
+      .getByRole('listitem')
+      .filter({ hasText: 'Tecnicatura o técnico en programación' });
+    await expect(tecnicaturaGroup).toBeVisible();
+    const unstaLink = tecnicaturaGroup.getByRole('link', { name: 'UNSTA' });
+    await expect(unstaLink).toBeVisible();
+    await unstaLink.click();
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
   });
 
@@ -137,20 +140,19 @@ test.describe('Catálogo público (US-001)', () => {
     page,
   }) => {
     await page.goto('/careers');
-    await expect(page.getByRole('heading', { name: 'Carreras', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.getByRole('tab', { name: 'Carreras', selected: true })).toBeVisible();
 
     const sectionHeadings = await page.getByRole('heading', { level: 2 }).allTextContents();
     expect(sectionHeadings).toEqual(['En más de una institución', 'En una sola institución']);
 
     // El grupo canónico multi-institución (Tecnicatura o técnico en programación) no puede
-    // reaparecer como encabezado adentro de la lista compacta de "en una sola institución".
+    // reaparecer adentro de la lista compacta de "en una sola institución".
     const singleSection = page.locator('section', {
       has: page.getByRole('heading', { name: 'En una sola institución' }),
     });
-    await expect(
-      singleSection.getByRole('heading', { name: 'Tecnicatura o técnico en programación' }),
-    ).toHaveCount(0);
+    await expect(singleSection.getByText('Tecnicatura o técnico en programación')).toHaveCount(0);
   });
 });

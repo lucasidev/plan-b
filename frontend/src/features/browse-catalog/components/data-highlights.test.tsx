@@ -4,106 +4,138 @@ import type { DataHighlight } from '../lib/data-highlights';
 import { DataHighlights } from './data-highlights';
 
 /**
- * ADR-0096: "Lo que los datos dicen" nunca infiere de la posición en el array quién es el
- * "ganador": el tier lo decide la función que arma el highlight, no el componente.
+ * ADR-0096, maqueta aprobada: "Lo que los datos dicen" es una tira compacta `kv`, una línea por
+ * highlight. El componente solo renderiza `summary` (más el link a la regla de un derivado, que
+ * vive en `facts`): la lógica de qué gana y cómo se arma el nombre corto vive en
+ * `lib/data-highlights.ts`, con sus propios tests.
  */
 
+function highlight(overrides: Partial<DataHighlight>): DataHighlight {
+  return {
+    id: 'most-chosen-university',
+    label: 'La universidad más elegida',
+    facts: [],
+    summary: { name: 'UNT', href: '/universities/unt/careers', annotation: '', source: '' },
+    ...overrides,
+  };
+}
+
 describe('DataHighlights', () => {
-  it('dos hechos empatados (tier primary) se ven igual, sin importar su posición', () => {
-    const highlight: DataHighlight = {
-      id: 'most-offered-career',
-      label: 'La carrera más ofrecida',
-      facts: [
-        {
-          text: 'Abogacía: en',
-          href: null,
-          tier: 'primary',
-          links: [{ label: 'UNSTA', href: '/careers/a' }],
-        },
-        {
-          text: 'Medicina: en',
-          href: null,
-          tier: 'primary',
-          links: [{ label: 'UNT', href: '/careers/b' }],
-        },
-      ],
-    };
+  it('la etiqueta, el nombre como link y la aclaración atenuada al lado', () => {
+    render(
+      <DataHighlights
+        highlights={[
+          highlight({
+            summary: {
+              name: 'UNT',
+              href: '/universities/unt/careers',
+              annotation: '78.964 estudiantes en 2023',
+              source: '',
+            },
+          }),
+        ]}
+      />,
+    );
 
-    render(<DataHighlights highlights={[highlight]} />);
-
-    const abogacia = screen.getByText('Abogacía: en', { exact: false });
-    const medicina = screen.getByText('Medicina: en', { exact: false });
-    expect(abogacia.className).toBe(medicina.className);
+    expect(screen.getByText('La universidad más elegida')).toBeInTheDocument();
+    const link = screen.getByRole('link', { name: 'UNT' });
+    expect(link).toHaveAttribute('href', '/universities/unt/careers');
+    expect(screen.getByText('78.964 estudiantes en 2023')).toBeInTheDocument();
   });
 
-  it('una línea secundaria muestra su período (o su nota) debajo, chico', () => {
-    const highlight: DataHighlight = {
-      id: 'best-graduation-rate',
-      label: 'La carrera con mejor tiempo de salida',
-      facts: [
-        { text: 'Ganadora', href: '/careers/x', tier: 'primary' },
-        {
-          text: '16 de cada 100 en UTN-FRT',
-          href: '/careers/y',
-          tier: 'secondary',
-          period: 'egresados 2022 sobre nuevos inscriptos 2019',
-        },
-      ],
-    };
+  it('sin href (varias ganadoras empatadas), el nombre se muestra sin link', () => {
+    render(
+      <DataHighlights
+        highlights={[
+          highlight({
+            id: 'most-offered-career',
+            label: 'La carrera más ofrecida',
+            summary: {
+              name: 'Abogacía, Medicina y Tecnicatura o técnico en programación',
+              href: null,
+              annotation: 'en 3 instituciones cada una',
+              source: 'Guía de carreras universitarias (SIU)',
+            },
+          }),
+        ]}
+      />,
+    );
 
-    render(<DataHighlights highlights={[highlight]} />);
-
-    expect(screen.getByText('egresados 2022 sobre nuevos inscriptos 2019')).toBeInTheDocument();
+    expect(
+      screen.getByText('Abogacía, Medicina y Tecnicatura o técnico en programación'),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('la fuente se muestra por línea, no una sola vez por highlight (instituciones con fuentes distintas)', () => {
-    const highlight: DataHighlight = {
-      id: 'institutional-evaluation',
-      label: 'La evaluación de la entidad auditora',
-      facts: [
-        {
-          text: 'UNSTA (2020)',
-          href: '/universities/unsta/careers',
-          tier: 'primary',
-          sourceName: 'Portal de transparencia UNSTA',
-        },
-        {
-          text: 'UNT (2021)',
-          href: '/universities/unt/careers',
-          tier: 'primary',
-          sourceName: 'Portal de transparencia UNT',
-        },
-      ],
-    };
+  it('la fuente y lo secundario ya vienen unidos: una sola línea chica', () => {
+    render(
+      <DataHighlights
+        highlights={[
+          highlight({
+            summary: {
+              name: 'UNT',
+              href: '/universities/unt/careers',
+              annotation: '78.964 estudiantes en 2023',
+              source:
+                'SPU, anuario 2023 · UTN suma 108.986 pero es el total nacional de sus regionales',
+            },
+          }),
+        ]}
+      />,
+    );
 
-    render(<DataHighlights highlights={[highlight]} />);
-
-    expect(screen.getByText('Portal de transparencia UNSTA')).toBeInTheDocument();
-    expect(screen.getByText('Portal de transparencia UNT')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'SPU, anuario 2023 · UTN suma 108.986 pero es el total nacional de sus regionales',
+      ),
+    ).toBeInTheDocument();
   });
 
-  it('un hecho derivado muestra su etiqueta como link aparte, a la regla en Método', () => {
-    const highlight: DataHighlight = {
-      id: 'best-graduation-rate',
-      label: 'La carrera con mejor tiempo de salida',
-      facts: [
-        {
-          text: 'Ganadora',
-          href: '/careers/x',
-          tier: 'primary',
-          derivedTag: {
-            label: 'egreso por cohorte, derivado de la institución entera',
-            href: '/method#graduation-flow-proxy',
-          },
-        },
-      ],
-    };
+  it('un hecho derivado agrega, al final de la línea de fuente, un link a la regla en Método', () => {
+    render(
+      <DataHighlights
+        highlights={[
+          highlight({
+            id: 'best-graduation-rate',
+            label: 'La carrera con mejor tiempo de salida',
+            facts: [
+              {
+                text: 'texto interno, no se renderiza',
+                href: '/careers/x',
+                tier: 'primary',
+                derivedTag: {
+                  label: 'egreso por cohorte, derivado',
+                  href: '/method#graduation-flow-proxy',
+                },
+              },
+            ],
+            summary: {
+              name: 'Tecnicatura en Desarrollo y Calidad de Software, UNSTA',
+              href: '/careers/x',
+              annotation: 'egresan 21 de cada 100',
+              source: 'SPU, Anuario 2022',
+            },
+          }),
+        ]}
+      />,
+    );
 
-    render(<DataHighlights highlights={[highlight]} />);
+    const derivedLink = screen.getByRole('link', { name: 'egreso por cohorte, derivado' });
+    expect(derivedLink).toHaveAttribute('href', '/method#graduation-flow-proxy');
+  });
 
-    const link = screen.getByRole('link', {
-      name: /egreso por cohorte, derivado de la institución entera/i,
-    });
-    expect(link).toHaveAttribute('href', '/method#graduation-flow-proxy');
+  it('sin fuente ni secundario ni derivado, no agrega una línea vacía', () => {
+    render(
+      <DataHighlights
+        highlights={[
+          highlight({
+            summary: { name: 'UNT', href: '/universities/unt/careers', annotation: '', source: '' },
+          }),
+        ]}
+      />,
+    );
+
+    // Solo un link (el del nombre): ninguna línea de fuente/derivado que agregar sin contenido.
+    expect(screen.getAllByRole('link')).toHaveLength(1);
   });
 });

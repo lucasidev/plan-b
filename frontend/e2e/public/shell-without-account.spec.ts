@@ -26,7 +26,7 @@ test.describe('El shell del catálogo, con y sin cuenta', () => {
     await context.clearCookies();
 
     await page.goto('/universities');
-    await expect(page.getByRole('heading', { name: 'Universidades', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
     // "Explorar" tiene un camino siempre visible: el item del sidebar (desktop) o el link fijo
@@ -60,7 +60,7 @@ test.describe('El shell del catálogo, con y sin cuenta', () => {
     await expect(page).toHaveURL(/\/reviews\/mine$/, { timeout: 15_000 });
 
     await page.goto('/universities');
-    await expect(page.getByRole('heading', { name: 'Universidades', level: 1 })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Explorar', level: 1 })).toBeVisible({
       timeout: 30_000,
     });
     if (hasSidebar(page)) {

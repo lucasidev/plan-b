@@ -1,13 +1,22 @@
 import Link from 'next/link';
+import { Pill } from '@/components/ui';
+import { hasReviews } from '../lib/describe-career-coverage';
 import type { CanonicalCareerGroup } from '../lib/group-careers-by-canonical';
-import { CareerReviewsPill } from './career-reviews-pill';
 
 /**
- * "En más de una institución" (US-222, ADR-0096): un bloque por carrera canónica dictada en dos o
- * más instituciones, para comparar lado a lado. Cada oferta lleva el nombre con el que esa
- * institución la dicta (puede variar entre instituciones), su institución, y su estado de reseñas.
+ * "En más de una institución" (US-222, ADR-0096, maqueta aprobada): una fila por carrera canónica
+ * dictada en dos o más instituciones, para comparar lado a lado. El nombre canónico va arriba;
+ * cada institución (nombre corto) es su propio link a su oferta, porque un grupo no tiene una
+ * única carrera a la que mandar el click. Las pills a la derecha resumen el grupo entero, nunca
+ * una por oferta (eso vivía en `CareerReviewsPill`, que esta fila reemplaza).
  */
-export function CanonicalCareerGroups({ groups }: { groups: CanonicalCareerGroup[] }) {
+export function CanonicalCareerGroups({
+  groups,
+  universityShortNames,
+}: {
+  groups: CanonicalCareerGroup[];
+  universityShortNames: ReadonlyMap<string, string>;
+}) {
   if (groups.length === 0) {
     return null;
   }
@@ -18,34 +27,46 @@ export function CanonicalCareerGroups({ groups }: { groups: CanonicalCareerGroup
         En más de una institución
       </h2>
       <p className="mt-0.5 text-[12px] text-ink-3">para comparar lado a lado</p>
-      <div className="mt-3 flex flex-col gap-5">
-        {groups.map((group) => (
-          <div key={group.canonicalGroupName}>
-            <h3 className="text-[13px] font-medium text-ink-2">{group.canonicalGroupName}</h3>
-            <ul className="mt-2 flex flex-col gap-2">
-              {group.offerings.map((offering) => (
-                <li key={offering.careerId}>
-                  <Link
-                    href={`/careers/${offering.careerId}`}
-                    prefetch={false}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-line bg-bg-card px-4 py-3 transition-colors hover:bg-bg-elev"
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[14px] font-medium text-ink">
-                        {offering.careerName}
+      <ul className="mt-3 flex flex-col gap-2">
+        {groups.map((group) => {
+          const anyReviewed = group.offerings.some(hasReviews);
+
+          return (
+            <li
+              key={group.canonicalGroupName}
+              className="rounded-lg border border-line bg-bg-card px-4 py-3"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[14px] font-medium text-ink">{group.canonicalGroupName}</p>
+                  <p className="mt-0.5 text-[12px] text-ink-3">
+                    {group.offerings.map((offering, index) => (
+                      <span key={offering.careerId}>
+                        {index > 0 && ' · '}
+                        <Link
+                          href={`/careers/${offering.careerId}`}
+                          prefetch={false}
+                          className="hover:text-ink hover:underline"
+                        >
+                          {universityShortNames.get(offering.universityId) ??
+                            offering.universityName}
+                        </Link>
                       </span>
-                      <span className="mt-0.5 block text-[12px] text-ink-3">
-                        {offering.universityName}
-                      </span>
-                    </span>
-                    <CareerReviewsPill career={offering} />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+                    ))}
+                  </p>
+                </div>
+                <span className="flex shrink-0 items-center gap-2">
+                  {anyReviewed && <Pill tone="ink">con reseñas</Pill>}
+                  <Pill>
+                    {group.offerings.length}{' '}
+                    {group.offerings.length === 1 ? 'institución' : 'instituciones'}
+                  </Pill>
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
