@@ -1,6 +1,6 @@
 # Skills del repo
 
-`.agents/skills/` contiene skills en el formato abierto Agent Skills cuyas instrucciones sirven en Codex sin depender de nombres de herramientas, hooks o convenciones exclusivas de otro cliente. No es un espejo de `.claude/skills/` y no existe ningún proceso de sincronización entre ambos catálogos.
+`.agents/skills/` contiene skills en el formato abierto Agent Skills cuyas instrucciones sirven en Codex sin depender de nombres de herramientas, hooks o convenciones exclusivas de otro cliente. Es el único catálogo del repo: `.claude/skills/` es la copia que lee Claude Code, generada por `just sync-agent-config` (la corre el hook de inicio de sesión) y fuera de git.
 
 ## Propios de planb
 
@@ -23,4 +23,4 @@
 | `web-design-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | Auditoría de interfaces contra las Web Interface Guidelines. |
 | `design-taste-frontend` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) | MIT | Solo landing pública y piezas de vitrina, nunca pantallas de producto. |
 
-Los skills visuales escritos específicamente para Claude Code permanecen en `.claude/skills/`. Si una capacidad no tiene una versión válida para Codex, no se porta ni se copia acá.
+Los skills visuales (`bencium-controlled-ux-designer`, `bencium-impact-designer`, `bencium-innovative-ux-designer`, `design-audit`, `ui-typography`) viven también acá y llegan a Claude Code por la misma copia generada. Si una capacidad no tiene una versión válida para Codex, no se porta ni se copia acá.

@@ -1,6 +1,6 @@
 # Reseñar (la pantalla)
 
-> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: reescrita el 2026-08-26 al modelo de tres capas de [ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (el boceto [sketch.html](sketch.html) ya venía reescrito desde el 2026-08-25 a los seis pasos, en la dirección Boletín, [ADR-0071](../../../../../decisions/0071-the-visual-language-is-a-bulletin.md); el anterior por temas quedó en git). Con cuenta: el gate está en la acción (Ingresar / Registro con el motivo a la vista y vuelta), no en la lectura. Slug hoy `/reviews/write` (existe el editor texto-libre de la versión anterior; el chasis se rehace).
+> Ficha de pantalla, dueña: la épica [Reseñar](../../README.md). **Estado**: reescrita el 2026-08-26 al modelo de tres capas de [ADR-0082](../../../../../decisions/0082-the-review-captures-the-cursada-in-three-layers.md) (el boceto [sketch.html](sketch.html) ya venía reescrito desde el 2026-08-25 a los seis pasos, en la dirección Boletín, [ADR-0071](../../../../../decisions/0071-the-visual-language-is-a-bulletin.md); el anterior por temas quedó en git). Con cuenta: el gate está en la acción (Ingresar / Registro con el motivo a la vista y vuelta), no en la lectura. Slug `/reviews/new`, construida con los seis pasos del modelo de tres capas.
 
 ## Quién la usa
 
