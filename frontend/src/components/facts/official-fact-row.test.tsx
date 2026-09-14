@@ -5,8 +5,9 @@ import type { OfficialFact } from './types';
 
 /**
  * El render de una afirmación oficial, en sus cinco estados (ADR-0090). Lo que estos tests
- * protegen: que nunca haya un espacio en blanco, que un valor nunca se muestre sin su fuente, y
- * que un dato "no publicado" no pueda confundirse a simple vista con uno publicado.
+ * protegen: que nunca haya un espacio en blanco, que un valor nunca se muestre sin su fuente, que
+ * un dato "no publicado" no pueda confundirse a simple vista con uno publicado, y que la etiqueta
+ * de los estados sin valor hable en el idioma del sujeto que la ficha muestra.
  */
 describe('OfficialFactRow', () => {
   const base: OfficialFact = {
@@ -28,7 +29,7 @@ describe('OfficialFactRow', () => {
   };
 
   it('publicado: muestra la etiqueta en español, el valor con su unidad, y la fuente con el período', () => {
-    render(<OfficialFactRow fact={base} />);
+    render(<OfficialFactRow fact={base} subject="career" />);
 
     expect(screen.getByText('Dura en el papel')).toBeInTheDocument();
     expect(screen.getByText('2,5 años')).toBeInTheDocument();
@@ -36,7 +37,7 @@ describe('OfficialFactRow', () => {
   });
 
   it('publicado sin período: la fuente se muestra igual, sin un separador colgado', () => {
-    render(<OfficialFactRow fact={{ ...base, period: null }} />);
+    render(<OfficialFactRow fact={{ ...base, period: null }} subject="career" />);
 
     expect(screen.getByText('Sitio UNSTA')).toBeInTheDocument();
     expect(screen.queryByText(/Sitio UNSTA ·/)).not.toBeInTheDocument();
@@ -46,6 +47,7 @@ describe('OfficialFactRow', () => {
     const { rerender } = render(
       <OfficialFactRow
         fact={{ ...base, field: 'cohort_graduation', value: '21.4', unit: 'percent' }}
+        subject="career"
       />,
     );
     expect(screen.getByText('21,4 %')).toBeInTheDocument();
@@ -58,16 +60,18 @@ describe('OfficialFactRow', () => {
           value: 'Plan de la RM 2495/2018, 21 materias',
           unit: null,
         }}
+        subject="career"
       />,
     );
     expect(screen.getByText('Plan de la RM 2495/2018, 21 materias')).toBeInTheDocument();
   });
 
   /**
-   * Un derivado nunca toma la forma de un dato publicado: lleva su etiqueta y el link salta
-   * directo al bloque de su regla en Método (ADR-0090), no a la fuente original ni al tope de la página.
+   * Un derivado nunca toma la forma de un dato publicado: lleva su etiqueta en minúscula (maqueta
+   * aprobada) y el link salta directo al bloque de su regla en Método (ADR-0090), no a la fuente
+   * original ni al tope de la página.
    */
-  it('derivado: se etiqueta como tal y linkea al bloque de su regla en Método', () => {
+  it('derivado: se etiqueta en minúscula y linkea al bloque de su regla en Método', () => {
     render(
       <OfficialFactRow
         fact={{
@@ -78,11 +82,13 @@ describe('OfficialFactRow', () => {
           unit: 'percent',
           derivationRuleId: 'graduation-flow-proxy',
         }}
+        subject="career"
       />,
     );
 
     expect(screen.getByText('21,4 %')).toBeInTheDocument();
-    expect(screen.getByText('Derivado')).toBeInTheDocument();
+    expect(screen.getByText('derivado')).toBeInTheDocument();
+    expect(screen.queryByText('Derivado')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /ver la regla en método/i })).toHaveAttribute(
       'href',
       '/method#graduation-flow-proxy',
@@ -101,6 +107,7 @@ describe('OfficialFactRow', () => {
           unit: 'percent',
           derivationRuleId: null,
         }}
+        subject="career"
       />,
     );
 
@@ -110,37 +117,63 @@ describe('OfficialFactRow', () => {
     );
   });
 
-  /** No publicado: qué se buscó y cuándo, nunca un espacio vacío ni un cero inventado. */
-  it('no publicado: dice la nota y la fecha de relevamiento, sin mostrar ningún valor', () => {
-    render(
-      <OfficialFactRow
-        fact={{
-          ...base,
-          field: 'real_duration',
-          status: 'NotPublished',
-          value: null,
-          unit: null,
-          period: null,
-          note: 'Ninguna fuente pública publica la duración real por carrera.',
-        }}
-      />,
-    );
+  describe('no publicado: etiqueta fija por sujeto, la nota nunca la reemplaza', () => {
+    it('carrera: "No publicado por falta de datos", con la nota debajo y la fecha de relevamiento', () => {
+      render(
+        <OfficialFactRow
+          fact={{
+            ...base,
+            field: 'real_duration',
+            status: 'NotPublished',
+            value: null,
+            unit: null,
+            period: null,
+            note: 'Ninguna fuente pública publica la duración real por carrera.',
+          }}
+          subject="career"
+        />,
+      );
 
-    expect(
-      screen.getByText(/No publicado: Ninguna fuente pública publica la duración real/),
-    ).toBeInTheDocument();
-    expect(screen.getByText(/relevado el 07\/09\/2026/)).toBeInTheDocument();
-    expect(screen.queryByText('2,5 años')).not.toBeInTheDocument();
-  });
+      expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
+      expect(
+        screen.getByText('Ninguna fuente pública publica la duración real por carrera.'),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/relevado el 07\/09\/2026/)).toBeInTheDocument();
+      expect(screen.queryByText('2,5 años')).not.toBeInTheDocument();
+    });
 
-  it('no publicado sin nota: igual dice dónde se buscó, nunca deja la fila muda', () => {
-    render(
-      <OfficialFactRow
-        fact={{ ...base, status: 'NotPublished', value: null, unit: null, note: null }}
-      />,
-    );
+    it('institución: "La institución no lo publica", con la nota debajo', () => {
+      render(
+        <OfficialFactRow
+          fact={{
+            ...base,
+            field: 'budget_published',
+            status: 'NotPublished',
+            value: null,
+            unit: null,
+            note: 'La institución no publica su presupuesto ejecutado.',
+          }}
+          subject="institution"
+        />,
+      );
 
-    expect(screen.getByText(/No publicado en Sitio UNSTA/)).toBeInTheDocument();
+      expect(screen.getByText('La institución no lo publica')).toBeInTheDocument();
+      expect(
+        screen.getByText('La institución no publica su presupuesto ejecutado.'),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('No publicado por falta de datos')).not.toBeInTheDocument();
+    });
+
+    it('sin nota, la etiqueta fija alcanza sola: nunca deja la fila muda', () => {
+      render(
+        <OfficialFactRow
+          fact={{ ...base, status: 'NotPublished', value: null, unit: null, note: null }}
+          subject="career"
+        />,
+      );
+
+      expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
+    });
   });
 
   /** Pedido: a quién y cuándo, sin fingir que ya está publicado. */
@@ -156,6 +189,7 @@ describe('OfficialFactRow', () => {
           sourceName: 'Universidad Nacional de Tucumán',
           note: 'Pedido de acceso a la información por Ley 27.275.',
         }}
+        subject="career"
       />,
     );
 
@@ -165,38 +199,64 @@ describe('OfficialFactRow', () => {
     expect(screen.getByText(/Ley 27.275/)).toBeInTheDocument();
   });
 
-  /** No aplica: la razón, sin fecha (es una razón estructural, no algo que pueda "llegar" después). */
-  it('no aplica: dice la razón', () => {
-    render(
-      <OfficialFactRow
-        fact={{
-          ...base,
-          field: 'accreditation',
-          status: 'NotApplicable',
-          value: null,
-          unit: null,
-          note: 'Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.',
-        }}
-      />,
-    );
+  describe('no aplica: etiqueta fija por sujeto, la razón debajo', () => {
+    it('carrera: "No aplica a esta carrera", con la razón debajo', () => {
+      render(
+        <OfficialFactRow
+          fact={{
+            ...base,
+            field: 'accreditation',
+            status: 'NotApplicable',
+            value: null,
+            unit: null,
+            note: 'Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.',
+          }}
+          subject="career"
+        />,
+      );
 
-    expect(
-      screen.getByText(/No aplica: Las tecnicaturas no se acreditan: validez nacional/),
-    ).toBeInTheDocument();
+      expect(screen.getByText('No aplica a esta carrera')).toBeInTheDocument();
+      expect(
+        screen.getByText('Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.'),
+      ).toBeInTheDocument();
+    });
+
+    it('institución: "No aplica a esta institución", con la razón debajo', () => {
+      render(
+        <OfficialFactRow
+          fact={{
+            ...base,
+            field: 'agn_audit',
+            status: 'NotApplicable',
+            value: null,
+            unit: null,
+            note: 'Todavía no le tocó turno de auditoría a la AGN.',
+          }}
+          subject="institution"
+        />,
+      );
+
+      expect(screen.getByText('No aplica a esta institución')).toBeInTheDocument();
+      expect(
+        screen.getByText('Todavía no le tocó turno de auditoría a la AGN.'),
+      ).toBeInTheDocument();
+    });
   });
 
   /** Un campo sin nombre en el glosario todavía no rompe la ficha: se ve su código crudo. */
   it('un campo sin etiqueta conocida cae al código, en vez de romper', () => {
-    render(<OfficialFactRow fact={{ ...base, field: 'unmapped_field' }} />);
+    render(<OfficialFactRow fact={{ ...base, field: 'unmapped_field' }} subject="career" />);
 
     expect(screen.getByText('unmapped_field')).toBeInTheDocument();
   });
 
   it('sin "last", separa la fila con un borde; con "last", no', () => {
-    const { container: withBorder } = render(<OfficialFactRow fact={base} />);
+    const { container: withBorder } = render(<OfficialFactRow fact={base} subject="career" />);
     expect(withBorder.firstElementChild).toHaveClass('border-b');
 
-    const { container: withoutBorder } = render(<OfficialFactRow fact={base} last />);
+    const { container: withoutBorder } = render(
+      <OfficialFactRow fact={base} subject="career" last />,
+    );
     expect(withoutBorder.firstElementChild).not.toHaveClass('border-b');
   });
 
@@ -207,7 +267,7 @@ describe('OfficialFactRow', () => {
   it('un estado sin dato nunca usa la tipografía de valor publicado', () => {
     for (const status of ['NotPublished', 'Requested', 'NotApplicable'] as const) {
       const { container, unmount } = render(
-        <OfficialFactRow fact={{ ...base, status, value: null, unit: null }} />,
+        <OfficialFactRow fact={{ ...base, status, value: null, unit: null }} subject="career" />,
       );
       expect(container.querySelector('.font-serif')).not.toBeInTheDocument();
       unmount();
