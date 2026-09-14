@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { clientEnv, serverEnv } from '@/lib/env';
 import { ACCESS_COOKIE } from '@/lib/session';
-import { decideRefresh, mergeCookieHeader, nameAndValueOf } from '@/lib/session-refresh';
+import {
+  decideRefresh,
+  mergeCookieHeader,
+  nameAndValueOf,
+  refreshSessionOnce,
+} from '@/lib/session-refresh';
 
 const REFRESH_COOKIE = 'planb_refresh';
 
@@ -21,11 +26,9 @@ export const config = {
  */
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   try {
-    // Next dispara un prefetch en paralelo con la navegación real (mismo link, dos
-    // pedidos a la vez). Si los dos ven el mismo access token vencido, refrescan juntos;
-    // el backend rota el refresh una sola vez y el que pierde la carrera se queda con un
-    // refresh ya revocado. Ignorar el prefetch entero evita la carrera sin tener que
-    // coordinar quién ganó.
+    // Un prefetch no debe gastar una rotación. Los pedidos reales simultáneos se agrupan más
+    // abajo dentro de este proceso y el backend consume el token de forma atómica como defensa
+    // final si llegan desde procesos distintos.
     if (request.headers.get('next-router-prefetch')) {
       return NextResponse.next();
     }
@@ -48,14 +51,16 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       return NextResponse.next();
     }
 
-    const backendResponse = await fetch(`${clientEnv.NEXT_PUBLIC_API_URL}/api/identity/refresh`, {
-      method: 'POST',
-      headers: { cookie: `${REFRESH_COOKIE}=${refreshToken}` },
-      cache: 'no-store',
-      // Sin deadline, una API viva pero con Redis degradado (o simplemente lenta) deja
-      // colgado cada pedido a una ruta con cuenta hasta que el fetch resuelva solo.
-      signal: AbortSignal.timeout(2000),
-    });
+    const backendResponse = await refreshSessionOnce(refreshToken, () =>
+      fetch(`${clientEnv.NEXT_PUBLIC_API_URL}/api/identity/refresh`, {
+        method: 'POST',
+        headers: { cookie: `${REFRESH_COOKIE}=${refreshToken}` },
+        cache: 'no-store',
+        // Sin deadline, una API viva pero con Redis degradado (o simplemente lenta) deja
+        // colgado cada pedido a una ruta con cuenta hasta que el fetch resuelva solo.
+        signal: AbortSignal.timeout(2000),
+      }),
+    );
 
     if (!backendResponse.ok) {
       return NextResponse.next();

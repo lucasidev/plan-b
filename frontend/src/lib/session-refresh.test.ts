@@ -5,8 +5,13 @@
 // valor sea estructuralmente un Uint8Array. Este modulo no toca el DOM, asi que corre en
 // node sin perder nada.
 import { SignJWT } from 'jose';
-import { describe, expect, it } from 'vitest';
-import { decideRefresh, mergeCookieHeader, nameAndValueOf } from './session-refresh';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  decideRefresh,
+  mergeCookieHeader,
+  nameAndValueOf,
+  refreshSessionOnce,
+} from './session-refresh';
 
 const SECRET = 'a-test-secret-that-is-at-least-32-bytes-long';
 const OTHER_SECRET = 'a-different-test-secret-also-32-bytes-long';
@@ -148,5 +153,62 @@ describe('nameAndValueOf', () => {
 
   it('null si no tiene forma name=value', () => {
     expect(nameAndValueOf('sin-igual')).toBeNull();
+  });
+});
+
+describe('refreshSessionOnce', () => {
+  it('dos pedidos simultáneos con el mismo token comparten una sola llamada', async () => {
+    let release: ((response: Response) => void) | undefined;
+    let calls = 0;
+    const request = () => {
+      calls += 1;
+      return new Promise<Response>((resolve) => {
+        release = resolve;
+      });
+    };
+
+    const first = refreshSessionOnce('same-token', request);
+    const second = refreshSessionOnce('same-token', request);
+
+    expect(calls).toBe(1);
+    const response = new Response(null, { status: 200 });
+    release?.(response);
+    await expect(Promise.all([first, second])).resolves.toEqual([response, response]);
+  });
+
+  it('al terminar permite un refresh posterior del mismo token', async () => {
+    const request = vi.fn(async () => new Response(null, { status: 200 }));
+
+    await refreshSessionOnce('reusable-key', request);
+    await refreshSessionOnce('reusable-key', request);
+
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
+  it('una falla libera el token para volver a intentar', async () => {
+    const request = vi
+      .fn<() => Promise<Response>>()
+      .mockRejectedValueOnce(new Error('backend unavailable'))
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+
+    await expect(refreshSessionOnce('failed-token', request)).rejects.toThrow(
+      'backend unavailable',
+    );
+    await expect(refreshSessionOnce('failed-token', request)).resolves.toHaveProperty(
+      'status',
+      200,
+    );
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
+  it('tokens distintos no se bloquean entre sí', async () => {
+    const request = vi.fn(async () => new Response(null, { status: 200 }));
+
+    await Promise.all([
+      refreshSessionOnce('token-a', request),
+      refreshSessionOnce('token-b', request),
+    ]);
+
+    expect(request).toHaveBeenCalledTimes(2);
   });
 });

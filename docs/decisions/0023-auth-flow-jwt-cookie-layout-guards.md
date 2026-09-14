@@ -104,7 +104,7 @@ Servicios externos. Descartados porque: (1) costo (el proyecto explícitamente n
 
 **Refresh token rotation:**
 
-- Al refreshear, el backend invalida el refresh token viejo y emite uno nuevo.
+- Al refreshear, el backend consume de forma atómica el refresh token viejo y recién entonces emite uno nuevo. Dos pedidos concurrentes no pueden ganar la misma rotación.
 - Un refresh token ya rotado no existe más en Redis y responde 401. La detección de reuso que revoque toda la cadena de la sesión (defensa contra robo del token) no está construida: `RefreshCommandHandler` no distingue un token rotado de uno inventado, a propósito, y solo cambiar contraseña, recuperarla, dar de baja o borrar la cuenta revocan todos los tokens de una persona.
 
 **Cuándo revisitar:**
