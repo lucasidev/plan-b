@@ -1,24 +1,42 @@
 export type { CrumbItem } from './components/breadcrumb';
 export { CatalogBreadcrumb } from './components/breadcrumb';
-export { CareerCoverageList } from './components/career-coverage-list';
+// ADR-0096: Explorar interpreta los datos oficiales por institución y por carrera. Al final del
+// barrel para no interferir con el resto de los exports, que otro implementer toca en paralelo.
+export { CanonicalCareerGroups } from './components/canonical-career-groups';
 export { CareerList } from './components/career-list';
+export { CareerReviewsPill } from './components/career-reviews-pill';
 export { CatalogErrorState } from './components/catalog-error-state';
 export { CatalogLoadingSkeleton } from './components/catalog-loading-skeleton';
+export { DataHighlights } from './components/data-highlights';
 export type { ExploreLens } from './components/explore-lens-switch';
 export { ExploreLensSwitch } from './components/explore-lens-switch';
 export { PlanList } from './components/plan-list';
+export { SingleInstitutionCareerList } from './components/single-institution-career-list';
 export { SubjectGrid } from './components/subject-grid';
+export type { UniversityListItem } from './components/university-list';
 export { UniversityList } from './components/university-list';
+export type {
+  DataHighlight,
+  DataHighlightFact,
+  DataHighlightsInput,
+} from './lib/data-highlights';
+export { computeDataHighlights } from './lib/data-highlights';
+export type { CareerReviewsState } from './lib/describe-career-coverage';
 export {
+  careerReviewsState,
   describeCareerCoverage,
   describeSubjectCoverage,
-  describeUniversityCoverage,
+  describeUniversityCareerCount,
+  describeUniversityReviewsPill,
+  hasReviews,
+  institutionTypeLabel,
 } from './lib/describe-career-coverage';
-export type { CareerUniversityGroup } from './lib/group-careers-by-university';
-export {
-  groupCareersByUniversity,
-  summarizeUniversitiesCoverage,
-} from './lib/group-careers-by-university';
+export type {
+  CanonicalCareerGroup,
+  CareersByCanonical,
+} from './lib/group-careers-by-canonical';
+export { groupCareersByCanonical } from './lib/group-careers-by-canonical';
+export { summarizeUniversitiesCoverage } from './lib/group-careers-by-university';
 export type { SubjectYearGroup } from './lib/group-subjects';
 export { groupSubjectsByYear } from './lib/group-subjects';
 export type {

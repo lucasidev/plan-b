@@ -41,7 +41,7 @@ const TEACHER_PEREZ = '00000006-0000-4000-a000-00000000000b';
 // Universidad UNSTA: la que declaran los alumnos del fixture (helpers/students.ts).
 const UNIVERSITY_SLUG = 'unsta';
 
-/** Las ocho rutas que estas restricciones miden, con la etiqueta que usa cada `test`. */
+/** Las nueve rutas que estas restricciones miden, con la etiqueta que usa cada `test`. */
 const PUBLIC_ROUTES: { label: string; path: string }[] = [
   { label: '/', path: '/' },
   { label: '/method', path: '/method' },
@@ -51,6 +51,7 @@ const PUBLIC_ROUTES: { label: string; path: string }[] = [
   { label: '/teachers/[id]', path: `/teachers/${TEACHER_PEREZ}` },
   { label: '/universities', path: '/universities' },
   { label: '/universities/[slug]/careers', path: `/universities/${UNIVERSITY_SLUG}/careers` },
+  { label: '/careers', path: '/careers' },
 ];
 
 /**

@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import type { OfficialFact } from '@/components/facts/types';
 import {
+  careerReviewsState,
   describeCareerCoverage,
   describeSubjectCoverage,
-  describeUniversityCoverage,
+  describeUniversityCareerCount,
+  describeUniversityReviewsPill,
+  hasReviews,
   hasSomethingToRead,
+  institutionTypeLabel,
 } from './describe-career-coverage';
 
 /**
@@ -238,17 +243,110 @@ describe('hasSomethingToRead', () => {
   });
 });
 
-describe('describeUniversityCoverage', () => {
-  it('institución con carreras cargadas: cuenta el total y cuántas tienen algo para leer', () => {
-    expect(describeUniversityCoverage(12, 4)).toBe('12 carreras · 4 con algo para leer');
+describe('describeUniversityCareerCount', () => {
+  it('cuenta las carreras de la institución', () => {
+    expect(describeUniversityCareerCount(12)).toBe('12 carreras');
   });
 
   it('una sola carrera usa el singular', () => {
-    expect(describeUniversityCoverage(1, 0)).toBe('1 carrera · 0 con algo para leer');
+    expect(describeUniversityCareerCount(1)).toBe('1 carrera');
   });
 
   it('sin ninguna carrera cargada: lo dice con palabras, no "0 carreras"', () => {
-    expect(describeUniversityCoverage(0, 0)).toBe('Todavía sin carreras cargadas.');
+    expect(describeUniversityCareerCount(0)).toBe('Todavía sin carreras cargadas.');
+  });
+});
+
+describe('describeUniversityReviewsPill', () => {
+  it('con carreras que tienen reseñas, las cuenta', () => {
+    expect(describeUniversityReviewsPill(4)).toBe('4 carreras con reseñas');
+  });
+
+  it('una sola carrera usa el singular', () => {
+    expect(describeUniversityReviewsPill(1)).toBe('1 carrera con reseñas');
+  });
+
+  it('sin ninguna carrera con reseñas, lo dice con palabras, no "0 carreras"', () => {
+    expect(describeUniversityReviewsPill(0)).toBe('sin reseñas todavía');
+  });
+});
+
+describe('hasReviews', () => {
+  it('voces publicadas cuentan como reseñas', () => {
+    expect(hasReviews({ voiceCount: 3, hasReviewsBelowFloor: false })).toBe(true);
+  });
+
+  it('reseñas cargándose bajo el piso cuentan como reseñas, aunque no haya voces publicadas', () => {
+    expect(hasReviews({ voiceCount: 0, hasReviewsBelowFloor: true })).toBe(true);
+  });
+
+  /** El bug que este test fija: un dato oficial solo (sin ninguna reseña) no es "con reseñas". */
+  it('sin voces ni reseñas bajo el piso, no cuenta como reseñas, aunque haya datos oficiales', () => {
+    expect(hasReviews({ voiceCount: 0, hasReviewsBelowFloor: false })).toBe(false);
+  });
+});
+
+describe('careerReviewsState', () => {
+  it('con voces publicadas, el estado es "reviewed" con el conteo real', () => {
+    expect(careerReviewsState({ voiceCount: 3, hasReviewsBelowFloor: false })).toEqual({
+      kind: 'reviewed',
+      label: '3 reseñas',
+    });
+  });
+
+  it('una sola voz usa el singular', () => {
+    expect(careerReviewsState({ voiceCount: 1, hasReviewsBelowFloor: false })).toEqual({
+      kind: 'reviewed',
+      label: '1 reseña',
+    });
+  });
+
+  it('sin voces pero con reseñas bajo el piso, el estado es "pending" (sin decir cuántas)', () => {
+    expect(careerReviewsState({ voiceCount: 0, hasReviewsBelowFloor: true })).toEqual({
+      kind: 'pending',
+    });
+  });
+
+  it('sin voces ni reseñas bajo el piso, el estado es "none"', () => {
+    expect(careerReviewsState({ voiceCount: 0, hasReviewsBelowFloor: false })).toEqual({
+      kind: 'none',
+    });
+  });
+});
+
+describe('institutionTypeLabel', () => {
+  function officialFact(overrides: Partial<OfficialFact>): OfficialFact {
+    return {
+      id: 'fact-id',
+      subjectId: 'uni-id',
+      field: 'institution_type',
+      status: 'Published',
+      value: 'Privada; 7479 estudiantes en 2022 y 7660 en 2023',
+      unit: null,
+      period: '2023',
+      sourceName: 'Fuente',
+      sourceUrl: 'https://example.edu.ar',
+      derivationRuleId: null,
+      note: null,
+      relievedAt: '2026-09-01T00:00:00Z',
+      ...overrides,
+    };
+  }
+
+  it('extrae el primer segmento antes del ";" del valor Published', () => {
+    expect(institutionTypeLabel(officialFact({}))).toBe('Privada');
+  });
+
+  it('sin ningún hecho, no hay tipo', () => {
+    expect(institutionTypeLabel(undefined)).toBeNull();
+  });
+
+  it('con un hecho que no es Published (todavía no informa), no hay tipo', () => {
+    expect(
+      institutionTypeLabel(
+        officialFact({ status: 'NotPublished', value: null, note: 'No informó.' }),
+      ),
+    ).toBeNull();
   });
 });
 

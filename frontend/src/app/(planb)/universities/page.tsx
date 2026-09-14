@@ -1,5 +1,10 @@
+import { OFFICIAL_FACT_FIELDS } from '@/components/facts';
+import { fetchOfficialFactsBySubjectTypeServer } from '@/components/facts/official-facts.server';
 import {
+  computeDataHighlights,
+  DataHighlights,
   ExploreLensSwitch,
+  institutionTypeLabel,
   summarizeUniversitiesCoverage,
   UniversityList,
 } from '@/features/browse-catalog';
@@ -16,32 +21,58 @@ export const metadata = {
 };
 
 /**
- * /universities (US-001). Punto de entrada del catálogo público: todas las universidades
- * soportadas, cada una con cuántas carreras tiene y cuántas de esas tienen algo para leer (US-222,
- * ficha de SC-003), antes de entrar. Sin auth, sin paginación (MVP: pocas unis seedeadas, ver
- * `ListUniversitiesEndpoint`). Server-rendered, sin HydrationBoundary (mismo patrón que
- * `app/(public)/subjects/[id]/page.tsx`: server-fetch directo + render).
+ * /universities (US-001, ADR-0096). Punto de entrada del catálogo público: todas las
+ * universidades soportadas, cada una con su tipo institucional, cuántas carreras tiene y cuántas
+ * de esas ya tienen reseñas (US-222, ficha de SC-003), antes de entrar. A la derecha, "Lo que los
+ * datos dicen" interpreta el relevamiento oficial por institución y por carrera: un hecho de un
+ * solo dato con su fuente, nunca un compuesto (THESIS, "Qué publicamos" 3 y 8).
+ *
+ * Sin auth, sin paginación (MVP: pocas unis seedeadas). Server-rendered, sin HydrationBoundary
+ * (mismo patrón que `app/(public)/subjects/[id]/page.tsx`: server-fetch directo + render).
  */
 export default async function UniversitiesPage() {
-  const [universities, careers] = await Promise.all([
+  const [universities, careers, institutionFacts, offeringFacts] = await Promise.all([
     fetchUniversitiesServer(),
     fetchCatalogCoverageServer(),
+    fetchOfficialFactsBySubjectTypeServer('Institution'),
+    fetchOfficialFactsBySubjectTypeServer('Offering'),
   ]);
-  const universitiesWithCoverage = summarizeUniversitiesCoverage(universities, careers);
+
+  const institutionFactsById = new Map(institutionFacts.map((s) => [s.subjectId, s.facts]));
+  const universitiesWithCoverage = summarizeUniversitiesCoverage(universities, careers).map(
+    (university) => ({
+      ...university,
+      institutionType: institutionTypeLabel(
+        institutionFactsById
+          .get(university.id)
+          ?.find((fact) => fact.field === OFFICIAL_FACT_FIELDS.institutionType),
+      ),
+    }),
+  );
+
+  const highlights = computeDataHighlights({
+    universities,
+    careers,
+    institutionFacts,
+    offeringFacts,
+  });
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+    <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
       <ExploreLensSwitch active="universities" />
       <header>
-        <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Catálogo</p>
+        <p className="font-mono text-[11px] tracking-[0.04em] text-ink-3">Explorar</p>
         <h1 className="mt-1.5 font-display text-[26px] font-semibold leading-tight text-ink">
           Universidades
         </h1>
         <p className="mt-2 max-w-2xl text-[14px] leading-relaxed text-ink-2">
-          Elegí tu universidad para ver sus carreras, planes de estudio y materias.
+          Cada universidad, con sus carreras y lo que ya se puede leer de cada una.
         </p>
       </header>
-      <UniversityList universities={universitiesWithCoverage} />
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <UniversityList universities={universitiesWithCoverage} />
+        <DataHighlights highlights={highlights} />
+      </div>
     </div>
   );
 }
