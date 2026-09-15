@@ -2,24 +2,34 @@
 
 import { Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { GlobalSearch } from '@/features/global-search';
 // Import directo al archivo, no al barrel `@/features/write-review`: ese barrel también
 // reexporta `api.server.ts` (marcado `server-only`), y este topbar es un Client Component.
 import { reviewCtaHref } from '@/features/write-review/review-cta-href';
-import { breadcrumbsForPath, displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
+import { displayNameFromEmail, genericCrumbs, getInitialsFromEmail } from '@/lib/member-shell';
 import type { ShellSession } from './app-shell';
 import './planb.css';
 import { ShellLink } from './shell-link';
 
 type Props = {
   session: ShellSession;
+  /**
+   * Las migas de una de las cuatro fichas con nombre real (US-129, US-147, SC-001, SC-005), del
+   * slot `@crumbs` de `(planb)`. `undefined` en `(member)` (sin ese slot) y en cualquier pantalla
+   * de `(planb)` que no sea una ficha: ahí el topbar arma las migas genéricas de `usePathname()`.
+   */
+  crumbsSlot?: React.ReactNode;
 };
 
 /**
  * Topbar del shell entero: markup y clases `pb-` de `.topbar` en la maqueta aprobada
  * (planb-catalogo-adentro.html, `frameApp`).
  *
- * Client porque deriva las migas de `usePathname()`.
+ * Las migas son `crumbsSlot` cuando el layout las pasa (las cuatro fichas de `(planb)`, resueltas
+ * server-side en `@crumbs`); si no, se calculan genéricas de `usePathname()` (todo `(member)`, y
+ * el resto de `(planb)`). Client porque igual necesita el pathname para el resto del topbar
+ * (buscador, CTA, el link de Ingresar con `?from=`).
  *
  * La barra de búsqueda (`GlobalSearch`) es funcional (pega a `GET /api/search`): la maqueta la
  * dibuja como una caja inerte (`searchBox()`), así que acá no se porta su markup, solo convive
@@ -41,16 +51,19 @@ type Props = {
  * texto por debajo de `md` (768px) y queda solo el ícono, con `aria-label` para que el nombre
  * accesible no cambie.
  *
- * Los tres links son `ShellLink`, no `Link`: viven montados en toda pantalla y son los que el
- * router puede descartar bajo una ráfaga de acciones (issue #525); el fallback vive ahí.
+ * Los tres links propios (Explorar móvil, Escribir reseña, Ingresar) son `ShellLink`, no `Link`:
+ * viven montados en toda pantalla y son los que el router puede descartar bajo una ráfaga de
+ * acciones (issue #525); el fallback vive ahí. Las migas usan `Link` (contenido de página, no del
+ * shell persistente).
  */
-export function Topbar({ session }: Props) {
+export function Topbar({ session, crumbsSlot }: Props) {
   const pathname = usePathname();
-  const crumbs = breadcrumbsForPath(pathname);
 
   return (
     <div className="pb-topbar">
-      <Crumbs items={crumbs} />
+      <div className="hidden min-w-0 lg:block">
+        {crumbsSlot ?? <Breadcrumbs items={genericCrumbs(pathname)} />}
+      </div>
       <MobileExploreLink />
       <div className="flex-1" />
       <GlobalSearch />
@@ -131,33 +144,5 @@ function SignInLink({ from }: { from: string }) {
     >
       Ingresar
     </ShellLink>
-  );
-}
-
-function Crumbs({ items }: { items: ReadonlyArray<string> }) {
-  if (items.length === 0) return null;
-
-  // El crumb activo (último) siempre se muestra; los de sección (prefijo) se ocultan en viewports
-  // angostos (< lg) para que el activo no se trunque a media palabra. min-w-0 + truncate quedan
-  // como red de seguridad si hasta el activo no entra: una sola línea, nunca wrap (lo que rompía
-  // el alto fijo del topbar). El sequence es estable por pathname, así que `crumb` como key
-  // alcanza (nunca se repiten dentro de una cadena).
-  //
-  // El bloque entero (no solo el prefijo) se esconde por debajo de `lg`: ahí lo reemplaza
-  // `MobileExploreLink`, porque sin sidebar visible el crumb solo no alcanza para volver al
-  // catálogo.
-  const active = items[items.length - 1];
-  const prefix = items.slice(0, -1);
-
-  return (
-    <div className="pb-where hidden lg:block">
-      {prefix.map((crumb) => (
-        <span key={crumb} className="hidden lg:inline">
-          {crumb}
-          <span style={{ margin: '0 6px', color: 'var(--color-ink-4)' }}>/</span>
-        </span>
-      ))}
-      <b>{active}</b>
-    </div>
   );
 }

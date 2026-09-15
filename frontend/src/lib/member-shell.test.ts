@@ -31,8 +31,8 @@ describe('memberRoutes', () => {
 
 describe('breadcrumbsForPath', () => {
   it.each([
-    ['/universities', ['Explorar', 'Universidades']],
-    ['/careers', ['Explorar', 'Carreras']],
+    ['/universities', ['Explorar']],
+    ['/careers', ['Explorar']],
     ['/universities/unsta/careers', ['Explorar', 'Universidad']],
     ['/careers/career-1', ['Explorar', 'Carrera']],
     ['/careers/career-1/plans', ['Explorar', 'Planes de estudio']],

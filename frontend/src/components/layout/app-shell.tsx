@@ -11,6 +11,8 @@ type Props = {
   /** Sesión leída en el layout RSC. `null` cuando se navega sin cuenta (el catálogo se lee así). */
   session: ShellSession;
   children: React.ReactNode;
+  /** El slot `@crumbs` de `(planb)`, si el layout que llama lo tiene (ver `Topbar`). */
+  crumbsSlot?: React.ReactNode;
 };
 
 /**
@@ -35,7 +37,7 @@ type Props = {
  * con `.pb-shell` y ganan por cascada de layers: fijan el breakpoint real (1024px), no los 760px
  * que trae `@media` portado de la maqueta (calibrado a su propio breakpoint de demo).
  */
-export function AppShell({ session, children }: Props) {
+export function AppShell({ session, children, crumbsSlot }: Props) {
   return (
     <div
       className="pb-shell grid grid-cols-1 lg:grid-cols-[232px_minmax(0,1fr)]"
@@ -54,7 +56,7 @@ export function AppShell({ session, children }: Props) {
     >
       <Sidebar footer={footerFor(session)} role={session?.role ?? null} />
       <div className="flex flex-col overflow-hidden">
-        <Topbar session={session} />
+        <Topbar session={session} crumbsSlot={crumbsSlot} />
         {/* tabIndex: un `main` con scroll propio tiene que llegar por teclado (WCAG 2.1.1 /
             axe scrollable-region-focusable), no solo con el mouse. */}
         {/* biome-ignore lint/a11y/noNoninteractiveTabindex: el main es la única región con scroll
