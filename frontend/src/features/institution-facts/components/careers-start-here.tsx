@@ -3,8 +3,9 @@ import type { CareerCoverage } from '@/features/browse-catalog';
 import { describeCareerReviews } from '../lib/describe-institution-careers';
 
 /**
- * "Por dónde empezar" (SC-005): las carreras de la institución con reseñas, de más a menos (dato,
- * no conveniencia). Si ninguna tiene reseñas todavía, la sección no se dibuja.
+ * "Por dónde empezar" (SC-005, `V.university().aside` de la maqueta aprobada): las carreras de la
+ * institución con reseñas, de más a menos (dato, no conveniencia). Si ninguna tiene reseñas
+ * todavía, la sección no se dibuja.
  */
 export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
   const withReviews = coverage
@@ -14,26 +15,27 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
   if (withReviews.length === 0) return null;
 
   return (
-    <section>
-      <p className="mb-2 text-[12px] text-ink-3">Por dónde empezar</p>
-      <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
-        {withReviews.map((career, index) => (
-          <div
+    <div className="pb-section min-w-0">
+      <div className="pb-eyebrow">Por dónde empezar</div>
+      <div className="pb-list">
+        {withReviews.map((career) => (
+          <Link
             key={career.careerId}
-            className={`py-2.5 ${index === withReviews.length - 1 ? '' : 'border-b border-line-2'}`}
+            href={`/careers/${career.careerId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
+            className="pb-row"
           >
-            <Link
-              href={`/careers/${career.careerId}`}
-              // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
-              prefetch={false}
-              className="text-[13.5px] text-ink underline-offset-2 hover:underline"
-            >
-              {career.careerName}
-            </Link>
-            <p className="mt-1 text-[11px] text-ink-3">{describeCareerReviews(career)}</p>
-          </div>
+            <span>
+              <span className="pb-name">{career.careerName}</span>
+              <span className="pb-sub">{describeCareerReviews(career)}</span>
+            </span>
+            <span className="pb-right pb-muted" aria-hidden="true">
+              →
+            </span>
+          </Link>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

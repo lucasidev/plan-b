@@ -31,11 +31,13 @@ describe('CareersStartHere', () => {
       />,
     );
 
+    // La fila entera es el link (nombre + cobertura + flecha), como el resto de las fichas
+    // portadas: el nombre solo ya no alcanza para distinguir las filas por accessible name.
     const links = screen.getAllByRole('link');
     expect(links.map((l) => l.textContent)).toEqual([
-      'Ingeniería en Sistemas',
-      'Ingeniería Civil',
-      'Abogacía',
+      'Ingeniería en Sistemas412 reseñas→',
+      'Ingeniería Civil187 reseñas→',
+      'Abogacía94 reseñas→',
     ]);
     expect(screen.getByText('412 reseñas')).toBeInTheDocument();
   });
@@ -55,8 +57,8 @@ describe('CareersStartHere', () => {
       />,
     );
 
-    expect(screen.getByRole('link', { name: 'Ingeniería en Sistemas' })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Abogacía' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Ingeniería en Sistemas/ })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Abogacía/ })).not.toBeInTheDocument();
   });
 
   it('sin ninguna carrera con reseñas, la sección no se dibuja', () => {
