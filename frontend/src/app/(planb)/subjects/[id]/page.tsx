@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { fetchSubjectsByPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchSubjectFactsServer, SubjectFactsSheet } from '@/features/subject-facts';
-import { reviewCtaHref } from '@/features/write-review';
-import { getSession } from '@/lib/session';
 
 // Los conteos cambian con cada reseña nueva: se sirve fresca en vez de prerenderizada.
 export const dynamic = 'force-dynamic';
@@ -31,7 +29,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
  */
 export default async function SubjectPage({ params }: { params: Params }) {
   const { id } = await params;
-  const [facts, session] = await Promise.all([fetchSubjectFactsServer(id), getSession()]);
+  const facts = await fetchSubjectFactsServer(id);
 
   if (!facts) {
     notFound();
@@ -41,11 +39,5 @@ export default async function SubjectPage({ params }: { params: Params }) {
   // careerPlanId que la ficha trae, igual que hace el catálogo público para su propio breadcrumb.
   const planSubjects = await fetchSubjectsByPlanServer(facts.careerPlanId);
 
-  return (
-    <SubjectFactsSheet
-      facts={facts}
-      planSubjects={planSubjects}
-      reviewHref={reviewCtaHref(session)}
-    />
-  );
+  return <SubjectFactsSheet facts={facts} planSubjects={planSubjects} />;
 }

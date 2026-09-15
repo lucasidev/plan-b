@@ -20,8 +20,6 @@ function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
     span: { fromYear: 2023, toYear: 2026 },
     completion: null,
     enablesCount: 4,
-    spread: [],
-    shared: [],
     takenWith: [],
     chairs: [],
     ...over,
@@ -90,23 +88,12 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
-   * SC-007, estado "una sola cátedra": sin otra cátedra con qué contrastar, la sección "¿es la
-   * materia o es una cátedra?" no tiene sentido y no aparece.
-   */
-  it('estado "una sola cátedra": sin otra con qué contrastar, no hay sección de dispersión', () => {
-    renderSheet(facts({ spread: [], shared: [] }));
-
-    expect(screen.queryByText('¿Es la materia o es una cátedra?')).not.toBeInTheDocument();
-  });
-
-  /**
    * Con una sola cátedra reseñada no hay con qué comparar, así que la línea de sustento no promete
    * un contraste que la ficha no tiene: termina en el rango de años, sin "Depende de cuál te toque."
    */
   it('con una sola cátedra reseñada, la línea de sustento no dice "depende de cuál te toque"', () => {
     renderSheet(
       facts({
-        spread: [],
         chairs: [chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 15 })],
       }),
     );
@@ -144,7 +131,8 @@ describe('SubjectFactsSheet', () => {
 
   /**
    * US-154 (de cada 10 que la cursan, cuántas llegan) y ficha SC-007 (cuánto habilita): los dos
-   * números derivan de las cursadas reseñadas y del plan de la carrera, cada uno con su fuente.
+   * números derivan de las cursadas reseñadas y del plan de la carrera, uno en la tarjeta de
+   * finalización (con su fuente al lado) y el otro en la tira de stats de la cabecera.
    */
   it('US-154: la tasa de finalización y cuánto habilita, cada una con su fuente', () => {
     renderSheet(
@@ -156,8 +144,8 @@ describe('SubjectFactsSheet', () => {
 
     expect(screen.getByText('6 de 10')).toBeInTheDocument();
     expect(screen.getByText(/sobre 120 cursadas reseñadas/i)).toBeInTheDocument();
-    expect(screen.getByText('9 materias')).toBeInTheDocument();
-    expect(screen.getByText(/según el plan de la carrera/i)).toBeInTheDocument();
+    expect(screen.getByText('9')).toBeInTheDocument();
+    expect(screen.getByText('materias habilita')).toBeInTheDocument();
   });
 
   /**
@@ -181,7 +169,7 @@ describe('SubjectFactsSheet', () => {
       }),
     );
 
-    expect(screen.getByText('Con qué se llevó')).toBeInTheDocument();
+    expect(screen.getByText('Co-cursada · sale solo de las reseñas')).toBeInTheDocument();
     expect(screen.getByText(/23 la llevaron junto con esta/i)).toBeInTheDocument();
     expect(screen.getByText(/6 dejaron alguna de las dos/i)).toBeInTheDocument();
   });
@@ -328,7 +316,8 @@ describe('SubjectFactsSheet', () => {
 
     expect(screen.getByRole('link', { name: /pérez/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /sin voces/i })).not.toBeInTheDocument();
-    expect(screen.getByText('3 cátedras más · sin reseñas todavía')).toBeInTheDocument();
+    expect(screen.getByText('3 cátedras más')).toBeInTheDocument();
+    expect(screen.getByText('sin reseñas todavía')).toBeInTheDocument();
   });
 
   it('el plegado usa el singular cuando es una sola cátedra sin reseñas', () => {
@@ -341,7 +330,7 @@ describe('SubjectFactsSheet', () => {
       }),
     );
 
-    expect(screen.getByText('1 cátedra más · sin reseñas todavía')).toBeInTheDocument();
+    expect(screen.getByText('1 cátedra más')).toBeInTheDocument();
   });
 
   /**

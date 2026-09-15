@@ -21,8 +21,6 @@ export interface SubjectFacts {
   span: SubjectSpan | null;
   completion: SubjectCompletion | null;
   enablesCount: number;
-  spread: Spread[];
-  shared: Shared[];
   takenWith: TakenWith[];
   chairs: SubjectChair[];
 }
@@ -36,31 +34,6 @@ export interface SubjectCompletion {
   outOfTen: number;
   reaching: number;
   total: number;
-}
-
-/** Una frase donde las cátedras difieren: la respuesta depende de con quién te toque. */
-export interface Spread {
-  itemCode: string;
-  itemText: string;
-  negativeLabel: string;
-  byChair: ChairShare[];
-}
-
-export interface ChairShare {
-  chairId: string;
-  chairName: string;
-  percent: number;
-  total: number;
-}
-
-/** Una frase que todas las cátedras marcan parejo: es de la materia, no de quien la dicta. */
-export interface Shared {
-  itemCode: string;
-  itemText: string;
-  negativeLabel: string;
-  lowestPercent: number;
-  highestPercent: number;
-  chairCount: number;
 }
 
 export interface SubjectChair {

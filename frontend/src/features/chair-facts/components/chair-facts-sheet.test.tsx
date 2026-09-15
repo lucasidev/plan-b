@@ -200,13 +200,14 @@ describe('ChairFactsSheet', () => {
   });
 
   /**
-   * SC-002, estado "sin base para comparar": si es la única cátedra de su materia, no hay
-   * contraste que mostrar contra hermanas.
+   * SC-002, estado "sin base para comparar": si es la única cátedra de su materia, la sección
+   * sigue mostrándose (la maqueta la muestra siempre) con el estado honesto de que no hay base.
    */
-  it('ficha SC-002, "sin base para comparar": sin hermanas, no hay contraste', () => {
+  it('ficha SC-002, "sin base para comparar": sin hermanas, dice que no hay base todavía', () => {
     render(<ChairFactsSheet facts={facts({ contrasts: [] })} />);
 
-    expect(screen.queryByText(/comparada con las otras cátedras de/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
+    expect(screen.getByText(/sin base comparable todavía/i)).toBeInTheDocument();
   });
 
   /**
