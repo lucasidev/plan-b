@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { fetchSubjectsByPlanServer } from '@/features/browse-catalog/api.server';
+import { fetchPlanServer, fetchSubjectsByPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchSubjectFactsServer, SubjectFactsSheet } from '@/features/subject-facts';
 
 // Los conteos cambian con cada reseña nueva: se sirve fresca en vez de prerenderizada.
@@ -37,7 +37,14 @@ export default async function SubjectPage({ params }: { params: Params }) {
 
   // Las otras materias del mismo año del plan (columna derecha): un segundo pedido, ya con el
   // careerPlanId que la ficha trae, igual que hace el catálogo público para su propio breadcrumb.
-  const planSubjects = await fetchSubjectsByPlanServer(facts.careerPlanId);
+  // El año del plan es un tercero, independiente: si falla, el eyebrow se queda sin "del plan
+  // {año}" en vez de tirar abajo la ficha entera por un dato que no es el centro de la pantalla.
+  const [planSubjects, careerPlan] = await Promise.all([
+    fetchSubjectsByPlanServer(facts.careerPlanId),
+    fetchPlanServer(facts.careerPlanId).catch(() => null),
+  ]);
 
-  return <SubjectFactsSheet facts={facts} planSubjects={planSubjects} />;
+  return (
+    <SubjectFactsSheet facts={facts} planSubjects={planSubjects} planYear={careerPlan?.year} />
+  );
 }

@@ -3,7 +3,7 @@ import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import type { Subject } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
 import { chairHeadlineSentence } from '../lib/chair-headlines';
-import type { SubjectChair, SubjectFacts, TakenWith } from '../types';
+import type { Shared, Spread, SubjectChair, SubjectFacts, TakenWith } from '../types';
 
 /**
  * La ficha de una materia (SC-007, US-129, ADR-0085), markup literal de la maqueta aprobada
@@ -19,15 +19,17 @@ type Props = {
   facts: SubjectFacts;
   /** Las materias del plan, sin filtrar: la ficha arma "Las otras materias de Nº año" a partir de esta lista. */
   planSubjects?: Subject[];
+  /** El año del plan vigente (US-129), para el eyebrow "del plan {año}". Ausente si ese pedido falla. */
+  planYear?: number;
 };
 
-export function SubjectFactsSheet({ facts, planSubjects = [] }: Props) {
+export function SubjectFactsSheet({ facts, planSubjects = [], planYear }: Props) {
   const subjectsOfYear = subjectsInSameYear(facts, planSubjects);
   const hasSiblings = subjectsOfYear.length > 1;
 
   return (
     <PageFrame
-      head={<Head facts={facts} />}
+      head={<Head facts={facts} planYear={planYear} />}
       stats={subjectStats(facts)}
       main={<Main facts={facts} />}
       aside={
@@ -68,16 +70,17 @@ function subjectStats(facts: SubjectFacts): PageFrameStat[] {
   return stats;
 }
 
-function Head({ facts }: { facts: SubjectFacts }) {
+function Head({ facts, planYear }: { facts: SubjectFacts; planYear?: number }) {
   const { totalReviews, chairsWithReviews } = reviewTotals(facts);
-  // "Depende de cuál te toque" solo tiene sentido con dos o más cátedras que ya reseñaron: con
-  // una sola no hay con qué contrastar, y la línea termina en el rango de años.
-  const hasComparison = chairsWithReviews >= 2;
+  // "Depende de cuál te toque" tiene sentido con dos o más cátedras que ya reseñaron, o con una
+  // diferencia real ya publicada entre ellas (facts.spread): con una sola cátedra y sin spread no
+  // hay con qué contrastar, y la línea termina en el rango de años.
+  const hasComparison = chairsWithReviews >= 2 || facts.spread.length > 0;
 
   return (
     <>
       <div className="pb-eyebrow">
-        Materia · {facts.yearInPlan}º año ·{' '}
+        Materia · {facts.yearInPlan}º año{planYearSuffix(planYear)} ·{' '}
         <Link href={`/careers/${facts.careerId}`} prefetch={false}>
           {facts.careerName}
         </Link>
@@ -92,6 +95,11 @@ function Head({ facts }: { facts: SubjectFacts }) {
   );
 }
 
+/** " del plan {año}", o vacío si el pedido del plan falló: el eyebrow no promete un dato que no llegó. */
+function planYearSuffix(planYear?: number): string {
+  return planYear === undefined ? '' : ` del plan ${planYear}`;
+}
+
 function subjectSpanSuffix(facts: SubjectFacts): string {
   if (!facts.span) return '';
   return facts.span.fromYear === facts.span.toYear
@@ -104,8 +112,13 @@ function Main({ facts }: { facts: SubjectFacts }) {
     <div className="min-w-0">
       {!facts.isPublished && <Empty facts={facts} />}
       <ChairsSection facts={facts} />
+      <SubjectOrChair facts={facts} />
       {facts.completion && (
-        <CompletionCard outOfTen={facts.completion.outOfTen} total={facts.completion.total} />
+        <CompletionCard
+          outOfTen={facts.completion.outOfTen}
+          reaching={facts.completion.reaching}
+          total={facts.completion.total}
+        />
       )}
       <TakenWithSection facts={facts} />
     </div>
@@ -134,8 +147,16 @@ function Empty({ facts }: { facts: SubjectFacts }) {
   );
 }
 
-/** De cada 10 que la cursan, cuántas llegan: la misma tarjeta que usa la ficha de cátedra. */
-function CompletionCard({ outOfTen, total }: { outOfTen: number; total: number }) {
+/** De cada 10 que la cursan, cuántas llegan, con el conteo completo (US-154): cuántas de cuántas. */
+function CompletionCard({
+  outOfTen,
+  reaching,
+  total,
+}: {
+  outOfTen: number;
+  reaching: number;
+  total: number;
+}) {
   return (
     <div className="pb-card">
       <p className="pb-serif" style={{ fontSize: 18, fontWeight: 500 }}>
@@ -146,8 +167,8 @@ function CompletionCard({ outOfTen, total }: { outOfTen: number; total: number }
         <span style={{ flex: 10 - outOfTen, background: 'var(--color-alarm-soft)' }} />
       </div>
       <p className="pb-muted" style={{ fontSize: 12.5 }}>
-        Aprobada o regular, sobre {total} cursadas reseñadas. Ninguna reseña muestra cómo terminó
-        nadie: esto es el conteo.
+        Aprobada o regular, {reaching} de {total} cursadas reseñadas. Ninguna reseña muestra cómo
+        terminó nadie: esto es el conteo.
       </p>
     </div>
   );
@@ -246,6 +267,74 @@ function chairFooter(chair: SubjectChair): string {
   ]
     .filter((part): part is string => part !== null)
     .join(' · ');
+}
+
+/**
+ * La sección que da sentido a toda la pantalla: si algo que pasó es de la materia, o de la cátedra
+ * que tocó. Con una sola cátedra publicando no hay con qué contrastar, y afirmar que algo "es de la
+ * materia" sería una afirmación sin base: por eso no aparece hasta que el backend publica spread o
+ * shared.
+ */
+function SubjectOrChair({ facts }: { facts: SubjectFacts }) {
+  if (facts.spread.length === 0 && facts.shared.length === 0) return null;
+
+  return (
+    <section className="pb-section">
+      <div className="pb-eyebrow">¿Es la materia o es una cátedra?</div>
+      <div className="pb-card" style={{ padding: '4px 16px' }}>
+        {facts.spread.map((item) => (
+          <SpreadItem key={item.itemCode} item={item} />
+        ))}
+        {facts.shared.length > 0 && <SharedItem shared={facts.shared} />}
+      </div>
+    </section>
+  );
+}
+
+/** Una frase donde las cátedras difieren: la moda negativa y cuánto la marca cada una. */
+function SpreadItem({ item }: { item: Spread }) {
+  return (
+    <div className="pb-item">
+      <div className="pb-q">
+        <span className="pb-t">{item.itemText}</span>
+        <span className="pb-mode pb-neg">
+          Depende de la cátedra: «{item.negativeLabel.toLowerCase()}»
+        </span>
+      </div>
+      <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+        {item.byChair.map((chair) => (
+          <li key={chair.chairId} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ width: 88, flexShrink: 0, fontSize: 12.5, color: 'var(--color-ink-2)' }}>
+              {chair.chairName}
+            </span>
+            <span className="pb-bar" style={{ flex: 1, margin: 0 }}>
+              <span className="pb-neg" style={{ width: `${chair.percent}%` }} />
+            </span>
+            <span className="pb-meta" style={{ flexShrink: 0, textAlign: 'right' }}>
+              {chair.percent} % de {chair.total}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Las frases que todas las cátedras marcan parejo: son de la materia, no de quien la dicta. */
+function SharedItem({ shared }: { shared: Shared[] }) {
+  return (
+    <div className="pb-item">
+      <div className="pb-eyebrow">Lo que sí es de la materia</div>
+      <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6 }}>
+        {shared.map((item) => (
+          <li key={item.itemCode} style={{ fontSize: 13, color: 'var(--color-ink-2)' }}>
+            {item.itemText} «{item.negativeLabel.toLowerCase()}» lo marcan entre el{' '}
+            {item.lowestPercent} % y el {item.highestPercent} % en las {item.chairCount} cátedras.
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 /**
