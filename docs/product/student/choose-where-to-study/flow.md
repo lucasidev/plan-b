@@ -47,4 +47,4 @@ flowchart TD
 
 ## Lo que el flujo no dibuja y la ficha de la pantalla decide
 
-Qué lentes y qué orden ofrece Explorar; cómo se ven las materias del plan detrás de "Ver las materias"; el layout de Dónde estudiarla en celular con muchas ofertas; qué muestra la Ficha de institución además de sus carreras y su transparencia relevada (US-174, US-177, en [Responder](../../reviewed/reply/README.md)).
+Qué lentes y qué orden ofrece Explorar; cómo se ven las materias del plan adentro de la Ficha de carrera; el layout de Dónde estudiarla en celular con muchas ofertas; qué muestra la Ficha de institución además de sus carreras y su transparencia relevada (US-174, US-177, en [Responder](../../reviewed/reply/README.md)).
