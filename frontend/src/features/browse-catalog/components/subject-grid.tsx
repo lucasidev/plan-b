@@ -43,7 +43,13 @@ export function SubjectGrid({
           </h2>
           <div className="mt-3 flex flex-col gap-5">
             {yearGroup.terms.map((term) => (
-              <div key={term.key}>
+              // El grupo sin cadencia no tiene título (no hay con qué nombrarlo): sin este borde
+              // sus materias quedan pegadas debajo del título del grupo anterior y se leen como
+              // parte de él (ej. como si fueran anuales).
+              <div
+                key={term.key}
+                className={term.termKind === null ? 'border-t border-line pt-4' : undefined}
+              >
                 {term.termKind !== null && (
                   <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
                     {formatTermOfYear(term.termKind, term.termInYear)}

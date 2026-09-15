@@ -53,7 +53,13 @@ export function groupSubjectsByYear(subjects: readonly Subject[]): SubjectYearGr
     group.subjects.push(subject);
   }
 
-  const termOrder = (term: SubjectTermGroup) => term.termInYear ?? Number.MAX_SAFE_INTEGER;
+  // Anual (termKind 'FullYear') y sin cadencia (termKind null) comparten termInYear null, así que
+  // no alcanza con ese campo para ordenarlos: sin cadencia va último, después de todo lo numerado
+  // y de Anual, porque no hay dato que lo ubique en el año.
+  const termOrder = (term: SubjectTermGroup) => {
+    if (term.termInYear !== null) return term.termInYear;
+    return term.termKind === null ? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER - 1;
+  };
 
   return [...years.entries()]
     .sort(([yearA], [yearB]) => yearA - yearB)

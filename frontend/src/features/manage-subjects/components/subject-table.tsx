@@ -6,6 +6,7 @@ import { useState, useTransition } from 'react';
 import { formatTermOfYear } from '@/lib/academic-terms';
 import { cn } from '@/lib/utils';
 import { deactivateSubjectAction, reactivateSubjectAction } from '../actions';
+import { compareByCodeThenName } from '../lib/compare-by-code';
 import type { AdminSubjectRow, SubjectDependent } from '../types';
 
 const GRID = 'minmax(0,90px) minmax(0,1fr) 64px minmax(0,120px) 96px 168px';
@@ -209,5 +210,5 @@ function byYearThenTermThenCode(a: AdminSubjectRow, b: AdminSubjectRow): number 
   const termA = a.termInYear ?? 0;
   const termB = b.termInYear ?? 0;
   if (termA !== termB) return termA - termB;
-  return (a.code ?? '').localeCompare(b.code ?? '');
+  return compareByCodeThenName(a, b);
 }

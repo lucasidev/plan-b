@@ -14,7 +14,7 @@ export type SearchResultItem = {
   type: SearchResultType;
   id: string;
   label: string;
-  sublabel: string;
+  sublabel: string | null;
 };
 
 export type SearchResponse = {

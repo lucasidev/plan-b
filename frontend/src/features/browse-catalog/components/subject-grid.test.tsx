@@ -109,6 +109,23 @@ describe('groupSubjectsByYear', () => {
     const withoutKind = year1.terms.find((t) => t.termKind === null);
     expect(withoutKind?.subjects.map((s) => s.id)).toEqual(['sin-cadencia']);
   });
+
+  /**
+   * Anual y sin cadencia comparten `termInYear: null`, así que ese campo solo no alcanza para
+   * ordenarlos entre sí. El grupo sin cadencia va último: no hay dato que lo ubique en el año,
+   * ni siquiera "corre todo el año" como el anual.
+   */
+  it('ubica el grupo sin cadencia después del anual, sin importar el orden del input', () => {
+    const subjects = [
+      subject({ id: 'sin-cadencia', code: null, yearInPlan: 1, termInYear: null, termKind: null }),
+      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'FullYear' }),
+      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'FourMonth' }),
+    ];
+
+    const [year1] = groupSubjectsByYear(subjects);
+
+    expect(year1.terms.map((t) => t.termKind)).toEqual(['FourMonth', 'FullYear', null]);
+  });
 });
 
 describe('SubjectGrid, cuánto junta cada materia (US-134, SC-018)', () => {
