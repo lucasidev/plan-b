@@ -205,6 +205,18 @@
     color: var(--color-ink);
     font-weight: 500;
   }
+  /* Solo el segmento de la carrera (issue de las migas a tres líneas, 1280px): las demás migas
+   * siguen haciendo wrap. 200px deja "Explorar / {universidad} / {carrera}" en su propia línea
+   * con margen, y a la carrera un tramo legible antes del recorte (el nombre completo va al
+   * `title`). */
+  .pb-crumbs .pb-crumb-truncate {
+    display: inline-block;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
 
   .pb-list {
     display: flex;

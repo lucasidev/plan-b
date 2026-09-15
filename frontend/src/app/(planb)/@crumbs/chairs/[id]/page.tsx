@@ -12,6 +12,9 @@ type Params = Promise<{ id: string }>;
  * materia más "Cátedra {nombre}". Pide la ficha de materia con `chairFacts.subjectId`, el mismo
  * dato que usa la columna "Las hermanas" de la página (memoizado por Next dentro del mismo render).
  *
+ * La carrera lleva `truncate` (la única miga sin nombre corto en el backend): sin recortarla, a
+ * 1280px estas migas ocupan tres líneas en vez de dos (ver `Breadcrumbs`).
+ *
  * Sin catch acá, un pedido que falla (no 404) tiraría abajo la página entera: el slot cae a las
  * migas genéricas en cualquiera de los tres casos (cátedra o materia inexistente, universidad sin
  * coincidencia, pedido que falla), nunca a un 500.
@@ -43,6 +46,7 @@ export default async function ChairCrumbs({ params }: { params: Params }) {
         {
           label: subjectFacts.careerName,
           href: `/careers/${subjectFacts.careerId}`,
+          truncate: true,
         },
         {
           label: `${subjectFacts.subjectCode} · ${subjectFacts.subjectName}`,

@@ -11,6 +11,9 @@ type Params = Promise<{ id: string }>;
  * {universidad corta} / {carrera} / {código} · {materia}, sin facultad. Mismo fetch que la página
  * (`fetchSubjectFactsServer`), memoizado por Next dentro del mismo render.
  *
+ * La carrera lleva `truncate` (la única miga sin nombre corto en el backend): sin recortarla, a
+ * 1280px estas migas ocupan tres líneas en vez de dos (ver `Breadcrumbs`).
+ *
  * Sin catch acá, un pedido que falla (no 404) tiraría abajo la página entera: el slot cae a las
  * migas genéricas en cualquiera de los tres casos (materia inexistente, universidad sin
  * coincidencia, pedido que falla), nunca a un 500.
@@ -34,7 +37,7 @@ export default async function SubjectCrumbs({ params }: { params: Params }) {
       items={[
         { label: 'Explorar', href: '/universities' },
         university,
-        { label: facts.careerName, href: `/careers/${facts.careerId}` },
+        { label: facts.careerName, href: `/careers/${facts.careerId}`, truncate: true },
         { label: `${facts.subjectCode} · ${facts.subjectName}` },
       ]}
     />

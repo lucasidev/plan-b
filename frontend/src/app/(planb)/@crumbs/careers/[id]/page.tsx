@@ -34,9 +34,9 @@ export default async function CareerCrumbs({ params }: { params: Params }) {
   if (facts.academicUnitName) {
     items.push({ label: facts.academicUnitName, href: university.href });
   }
-  // La carrera no tiene nombre corto en el backend: va entera, y si no entra en la línea
-  // `.pb-crumbs` hace wrap (CSS) en vez de recortarla.
-  items.push({ label: facts.careerName });
+  // La carrera no tiene nombre corto en el backend: va entera pero recortada (`truncate`), para
+  // que estas migas entren en dos líneas a 1280px como el resto de las fichas (ver `Breadcrumbs`).
+  items.push({ label: facts.careerName, truncate: true });
 
   return <ActiveCrumbs pathname={pathname} items={items} />;
 }
