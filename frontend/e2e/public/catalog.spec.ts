@@ -107,7 +107,9 @@ test.describe('Catálogo público (US-001)', () => {
     // compacto por año y sin agrupar por cuatrimestre (V.career de la maqueta aprobada): "Primer
     // año", no "Año 1" (esa etiqueta es de /plans/[id]/subjects, que sigue agrupando por término).
     await expect(page.getByText('El plan 2018')).toBeVisible();
-    await expect(page.getByText('Primer año')).toBeVisible();
+    // getByText('Primer año') viola strict mode: también matchea el dato oficial "Plan vigente"
+    // ("...9 en primer año..."). El h3 del plan es el único heading con ese nombre.
+    await expect(page.getByRole('heading', { name: 'Primer año', level: 3 })).toBeVisible();
     await expect(page.getByRole('link', { name: '101 Algoritmos y Paradigmas' })).toBeVisible();
   });
 

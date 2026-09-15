@@ -46,10 +46,11 @@ test.describe('El shell del catálogo, con y sin cuenta', () => {
     await page.goto(`/careers/${TUDCS_CAREER_ID}`);
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`));
     // Acá adentro, las migas del topbar agregan su propio "Explorar" (US-129/US-147): el locator
-    // se acota al camino de vuelta del shell (sidebar o link fijo del topbar), afuera de las migas.
-    await expect(
-      page.locator('aside, .pb-topbar > a').getByRole('link', { name: 'Explorar' }),
-    ).toBeVisible();
+    // se acota al camino de vuelta del shell, afuera de las migas. En desktop, adentro de aside;
+    // en mobile, dentro de .pb-topbar (las migas quedan `hidden` ahí y no entran al árbol de
+    // accesibilidad, así que no hace falta acotar más).
+    const explorerScope = hasSidebar(page) ? page.locator('aside') : page.locator('.pb-topbar');
+    await expect(explorerScope.getByRole('link', { name: 'Explorar' })).toBeVisible();
     await expect(page.getByRole('link', { name: /^ingresar$/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /^ingresar$/i })).toBeInViewport();
   });
