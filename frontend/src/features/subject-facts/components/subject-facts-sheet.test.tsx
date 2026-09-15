@@ -20,6 +20,8 @@ function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
     span: { fromYear: 2023, toYear: 2026 },
     completion: null,
     enablesCount: 4,
+    spread: [],
+    shared: [],
     takenWith: [],
     chairs: [],
     ...over,
@@ -88,18 +90,52 @@ describe('SubjectFactsSheet', () => {
   });
 
   /**
-   * Con una sola cátedra reseñada no hay con qué comparar, así que la línea de sustento no promete
-   * un contraste que la ficha no tiene: termina en el rango de años, sin "Depende de cuál te toque."
+   * SC-007, estado "una sola cátedra": sin otra cátedra con qué contrastar, la sección "¿es la
+   * materia o es una cátedra?" no tiene sentido y no aparece.
+   */
+  it('estado "una sola cátedra": sin otra con qué contrastar, no hay sección de dispersión', () => {
+    renderSheet(facts({ spread: [], shared: [] }));
+
+    expect(screen.queryByText('¿Es la materia o es una cátedra?')).not.toBeInTheDocument();
+  });
+
+  /**
+   * Con una sola cátedra reseñada y sin spread no hay con qué comparar, así que la línea de
+   * sustento no promete un contraste que la ficha no tiene: termina en el rango de años, sin
+   * "Depende de cuál te toque."
    */
   it('con una sola cátedra reseñada, la línea de sustento no dice "depende de cuál te toque"', () => {
     renderSheet(
       facts({
+        spread: [],
         chairs: [chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 15 })],
       }),
     );
 
     expect(screen.getByText('15 reseñas en 1 cátedra, de 2023 a 2026.')).toBeInTheDocument();
     expect(screen.queryByText(/depende de cuál te toque/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Con spread publicado sí hay con qué contrastar, aunque una sola cátedra haya juntado reseñas:
+   * la diferencia entre cátedras ya está probada, no hace falta esperar a la segunda.
+   */
+  it('con spread publicado, la línea de sustento dice "depende de cuál te toque" con una sola cátedra', () => {
+    renderSheet(
+      facts({
+        spread: [
+          {
+            itemCode: 'CHAIR_CLASSES_HELD',
+            itemText: '¿Se dictaron las clases?',
+            negativeLabel: 'Faltaron muchas',
+            byChair: [{ chairId: 'c1', chairName: 'Pérez', percent: 56, total: 16 }],
+          },
+        ],
+        chairs: [chair({ chairId: 'c1', chairName: 'Pérez', reviewCount: 15 })],
+      }),
+    );
+
+    expect(screen.getByText(/depende de cuál te toque/i)).toBeInTheDocument();
   });
 
   /**
@@ -143,9 +179,79 @@ describe('SubjectFactsSheet', () => {
     );
 
     expect(screen.getByText('6 de 10')).toBeInTheDocument();
-    expect(screen.getByText(/sobre 120 cursadas reseñadas/i)).toBeInTheDocument();
+    expect(screen.getByText(/62 de 120 cursadas reseñadas/i)).toBeInTheDocument();
     expect(screen.getByText('9')).toBeInTheDocument();
     expect(screen.getByText('materias habilita')).toBeInTheDocument();
+  });
+
+  /**
+   * Eyebrow "Materia · Nº año del plan {año}" (US-129): el año del plan es un pedido aparte del de
+   * la ficha, así que si ese pedido falla, el eyebrow se queda sin "del plan {año}" en vez de
+   * inventar un año o tirar abajo la ficha entera.
+   */
+  it('el eyebrow dice el año del plan cuando llega, y lo omite si no', () => {
+    const { container, rerender } = render(<SubjectFactsSheet facts={facts()} planYear={2018} />);
+    const eyebrow = () => container.querySelector('.pb-eyebrow');
+    expect(eyebrow()?.textContent).toMatch(/materia · 2º año del plan 2018 ·/i);
+
+    rerender(<SubjectFactsSheet facts={facts()} />);
+    expect(eyebrow()?.textContent).toMatch(/materia · 2º año ·/i);
+    expect(eyebrow()?.textContent).not.toMatch(/del plan/i);
+  });
+
+  /**
+   * SC-007, "¿es la materia o es una cátedra?" (la propuesta aprobada sobre la ficha de materia):
+   * una frase donde las cátedras difieren lista la moda negativa de cada una con su "de N".
+   */
+  it('spread publicado: cada cátedra que difiere lista su moda con su bar y su "de N"', () => {
+    renderSheet(
+      facts({
+        spread: [
+          {
+            itemCode: 'CHAIR_CLASSES_HELD',
+            itemText: '¿Se dictaron las clases?',
+            negativeLabel: 'Faltaron muchas',
+            byChair: [
+              { chairId: 'c1', chairName: 'Pérez', percent: 56, total: 16 },
+              { chairId: 'c2', chairName: 'González', percent: 19, total: 12 },
+            ],
+          },
+        ],
+      }),
+    );
+
+    expect(screen.getByText('¿Es la materia o es una cátedra?')).toBeInTheDocument();
+    expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
+    expect(screen.getByText('Depende de la cátedra: «faltaron muchas»')).toBeInTheDocument();
+    expect(screen.getByText('Pérez')).toBeInTheDocument();
+    expect(screen.getByText('56 % de 16')).toBeInTheDocument();
+    expect(screen.getByText('González')).toBeInTheDocument();
+    expect(screen.getByText('19 % de 12')).toBeInTheDocument();
+  });
+
+  /** Lo que todas las cátedras marcan parejo se publica aparte, como un rasgo de la materia. */
+  it('shared publicado: la frase pareja se lee como un rasgo de la materia, con su rango', () => {
+    renderSheet(
+      facts({
+        shared: [
+          {
+            itemCode: 'STUDENT_COULD_ASK',
+            itemText: '¿Podías preguntar sin quedar mal?',
+            negativeLabel: 'No',
+            lowestPercent: 61,
+            highestPercent: 74,
+            chairCount: 3,
+          },
+        ],
+      }),
+    );
+
+    expect(screen.getByText('Lo que sí es de la materia')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /¿podías preguntar sin quedar mal\? «no» lo marcan entre el 61 % y el 74 % en las 3 cátedras\./i,
+      ),
+    ).toBeInTheDocument();
   });
 
   /**

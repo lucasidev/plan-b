@@ -108,6 +108,7 @@ function Main({ facts, reviewHref }: { facts: ChairFacts; reviewHref: string }) 
           {facts.completion && (
             <CompletionSection
               outOfTen={facts.completion.outOfTen}
+              reaching={facts.completion.reaching}
               total={facts.completion.total}
             />
           )}
@@ -195,10 +196,19 @@ function Fame({ facts }: { facts: ChairFacts }) {
 }
 
 /**
- * La tasa de finalización, agregada y nada más. La pregunta que abre es para la universidad, no
- * para el que no terminó: por eso el dato se publica sin señalar a nadie (US-148).
+ * La tasa de finalización, agregada y nada más, con el conteo completo (US-154). La pregunta que
+ * abre es para la universidad, no para el que no terminó: por eso el dato se publica sin señalar a
+ * nadie (US-148).
  */
-function CompletionSection({ outOfTen, total }: { outOfTen: number; total: number }) {
+function CompletionSection({
+  outOfTen,
+  reaching,
+  total,
+}: {
+  outOfTen: number;
+  reaching: number;
+  total: number;
+}) {
   return (
     <section className="pb-section">
       <div className="pb-eyebrow">Cómo termina la cursada acá</div>
@@ -211,8 +221,8 @@ function CompletionSection({ outOfTen, total }: { outOfTen: number; total: numbe
           <span style={{ flex: 10 - outOfTen, background: 'var(--color-alarm-soft)' }} />
         </div>
         <p className="pb-muted" style={{ fontSize: 12.5 }}>
-          Aprobada o regular, sobre {total} cursadas reseñadas. Ninguna reseña muestra cómo terminó
-          nadie: esto es el conteo.
+          Aprobada o regular, {reaching} de {total} cursadas reseñadas. Ninguna reseña muestra cómo
+          terminó nadie: esto es el conteo.
         </p>
       </div>
     </section>
