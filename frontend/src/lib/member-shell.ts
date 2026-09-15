@@ -84,6 +84,10 @@ export const memberSections: ReadonlyArray<{
  * que es honesto mientras una ruta se está construyendo).
  */
 export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
+  // Las dos lentes de Explorar (US-222) son la raíz del catálogo, no una página "adentro" de
+  // Explorar: la miga no repite lo que la propia pestaña de la pantalla ya dice.
+  if (pathname === '/universities' || pathname === '/careers') return ['Explorar'];
+
   const exploreLabel = breadcrumbForExplorePath(pathname);
   if (exploreLabel) return ['Explorar', exploreLabel];
 
@@ -113,14 +117,20 @@ export function breadcrumbsForPath(pathname: string): ReadonlyArray<string> {
 }
 
 /**
+ * `breadcrumbsForPath` sin `href`: lo que usa el slot `@crumbs` de `(planb)` (catch-all y
+ * `default`) para las pantallas que no son una de las cuatro fichas con nombres reales.
+ */
+export function genericCrumbs(pathname: string): ReadonlyArray<{ label: string }> {
+  return breadcrumbsForPath(pathname).map((label) => ({ label }));
+}
+
+/**
  * La miga de segundo nivel de cada pantalla del catálogo (bajo "Explorar"). `null` si el
  * pathname no es ninguna de sus rutas. El orden de los `if` importa: las rutas anidadas
  * (`/careers/<id>/plans`) tienen que resolverse antes que su prefijo genérico
  * (`/careers/<id>`).
  */
 function breadcrumbForExplorePath(pathname: string): string | null {
-  if (pathname === '/universities') return 'Universidades';
-  if (pathname === '/careers') return 'Carreras';
   if (/^\/universities\/[^/]+\/careers$/.test(pathname)) return 'Universidad';
   // Distinta del plan puntual (`/plans/[id]/subjects`, más abajo): esta es la lista de planes de
   // la carrera, y el h1 de la página dice "Planes de estudio", no "Plan {año}".
