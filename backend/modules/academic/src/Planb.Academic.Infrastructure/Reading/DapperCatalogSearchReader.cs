@@ -30,7 +30,7 @@ namespace Planb.Academic.Infrastructure.Reading;
 /// Las ramas de carrera e institución (US-132, hallazgo V04: "buscar la carrera que uno quiere
 /// estudiar devuelve materias") resuelven un sujeto que hoy no tiene código propio para un exact
 /// match, salvo la institución por su slug: "unsta" matchea "UNSTA" exacto. La carrera es siempre
-/// una carrera EN una institución (su sublabel es el nombre de la universidad), porque la misma
+/// una carrera EN una institución (su sublabel es la sigla de la universidad), porque la misma
 /// carrera existe en más de una institución y cada oferta tiene su propia ficha.
 /// </para>
 ///
@@ -61,7 +61,10 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                     'subject'                                       AS type,
                     s.id                                            AS id,
                     s.name                                          AS label,
-                    uni.name || ' · ' || cr.name
+                    -- upper(uni.slug): la sigla de la universidad (UNSTA, UNT, UTN-FRT), el mismo
+                    -- criterio que `universityShortName` en
+                    -- frontend/src/features/browse-catalog/lib/describe-career-coverage.ts.
+                    upper(uni.slug) || ' · ' || cr.name
                         || CASE WHEN s.code IS NOT NULL THEN ' · ' || s.code ELSE '' END
                                                                     AS sublabel,
                     (s.code IS NOT NULL
@@ -134,7 +137,7 @@ internal sealed class DapperCatalogSearchReader : ICatalogSearchReader
                     'career'                                        AS type,
                     cr.id                                           AS id,
                     cr.name                                         AS label,
-                    uni.name                                        AS sublabel,
+                    upper(uni.slug)                                 AS sublabel, -- sigla, ídem rama subject
                     (cr.code IS NOT NULL
                         AND academic.immutable_unaccent(lower(cr.code)) = academic.immutable_unaccent(lower(@Term)))::int
                                                                     AS rank_exact,

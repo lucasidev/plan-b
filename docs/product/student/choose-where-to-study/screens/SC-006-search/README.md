@@ -12,7 +12,7 @@ Quien lee, con un nombre suelto en la cabeza y no una carrera ("lo que me recomi
 
 ## Qué muestra
 
-1. **Una sola búsqueda**: un campo de texto que devuelve los cuatro sujetos con ficha (materia, cátedra, carrera en una institución, institución), mezclados y cada uno con su tipo a la vista.
+1. **Una sola búsqueda**: un campo de texto que devuelve los cuatro sujetos con ficha (materia, cátedra, carrera en una institución, institución), mezclados y cada uno con su tipo a la vista. Cada resultado va en dos líneas: el nombre arriba y, abajo, dónde está. Una materia lleva el nombre corto de su institución, su carrera y su código si lo tiene; una carrera, el nombre corto de su institución.
 2. **El nombre de un docente lleva a su pantalla**: [Docente](../SC-035-teacher/README.md) no publica nada sobre la persona y lista las cátedras que integra, cada una con link a su ficha (depende de que la cátedra exista como entidad, US-196).
 3. **Sin cuenta** (US-168): buscar y abrir cualquier resultado desde acá no pide login.
 
