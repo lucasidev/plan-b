@@ -8,12 +8,10 @@ import { ADMIN } from '../helpers/personas';
  * lo encuentra en el listado por su label computado (el label no lo tipea el admin, lo calcula el
  * backend a partir de year/number/kind). A diferencia de careers.spec (que arma un tag random para
  * un campo de texto libre), la unicidad de un período es (universidad, year, number, kind): no hay
- * campo de texto donde insertar un tag, así que el "tag" es year y number random dentro de sus
- * rangos válidos (año actual + 1..20, número 1..6). UNSTA ya tiene períodos cuatrimestrales
- * sembrados 2024-2026 (AcademicSeeder), así que un año fijo (ej. "el año actual") chocaría con el
- * seed. Solo el año dejaba apenas 20 combinaciones posibles: bajo `--repeat-each` colisionaba
- * ("ya existe un período con ese año, número y cadencia" en la propia pantalla, no un timeout);
- * sumar number al sorteo multiplica el espacio por 6.
+ * campo de texto donde insertar un tag. La combinación sale de `repeatEachIndex`, dentro de sus
+ * rangos válidos (año actual + 1..20, número 1..6): una corrida normal usa siempre la primera y
+ * `--repeat-each` recorre combinaciones distintas sin depender del azar. UNSTA ya tiene períodos
+ * cuatrimestrales sembrados 2024-2026 (AcademicSeeder), por eso empiezan el año siguiente al actual.
  *
  * Navegación por `goto` (no click en `<Link>`) para llegar derecho al form. Ya no hace falta
  * esperar la hidratación a mano: el botón de submit arranca deshabilitado y se habilita al hidratar
@@ -35,7 +33,7 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
 
   test('el admin crea un período lectivo y lo encuentra en el listado por su label', async ({
     page,
-  }) => {
+  }, testInfo) => {
     await signIn(page, ADMIN);
 
     await page.goto(`/admin/universities/${UNSTA_ID}/terms/new`);
@@ -43,8 +41,8 @@ test.describe('Backoffice de períodos lectivos (US-064)', () => {
       timeout: 30_000,
     });
     const currentYear = new Date().getFullYear();
-    const year = currentYear + 1 + Math.floor(Math.random() * 20);
-    const number = 1 + Math.floor(Math.random() * 6);
+    const year = currentYear + 1 + Math.floor(testInfo.repeatEachIndex / 6);
+    const number = 1 + (testInfo.repeatEachIndex % 6);
     const label = `${year}-C${number}`;
 
     await page.getByLabel(/^año$/i).fill(String(year));
