@@ -46,7 +46,7 @@ public class MigrationRollbackTests : IClassFixture<RegisterApiFixture>
         using var scope = _fixture.Factory.Services.CreateScope();
 
         await RoundTripAsync<IdentityDbContext>(scope);
-        await RoundTripAsync<AcademicDbContext>(scope);
+        await RoundTripAsync<AcademicDbContext>(scope, BackfillSubjectsBeforeRollbackAsync);
         await RoundTripAsync<ReviewsDbContext>(scope);
     }
 
@@ -54,7 +54,8 @@ public class MigrationRollbackTests : IClassFixture<RegisterApiFixture>
     /// Revierte hasta la anteúltima migración (lo que corre el <c>Down()</c> de la última) y vuelve
     /// a aplicar. Si el <c>Down()</c> está mal escrito, la primera llamada tira.
     /// </summary>
-    private static async Task RoundTripAsync<TContext>(IServiceScope scope)
+    private static async Task RoundTripAsync<TContext>(
+        IServiceScope scope, Func<TContext, IReadOnlyList<string>, Task>? beforeRollback = null)
         where TContext : DbContext
     {
         var db = scope.ServiceProvider.GetRequiredService<TContext>();
@@ -65,6 +66,11 @@ public class MigrationRollbackTests : IClassFixture<RegisterApiFixture>
         migrations.Count.ShouldBeGreaterThan(
             1, $"{typeof(TContext).Name} tendría que tener más de una migración");
 
+        if (beforeRollback is not null)
+        {
+            await beforeRollback(db, migrations);
+        }
+
         var previous = migrations[^2];
         var migrator = db.Database.GetService<IMigrator>();
 
@@ -74,5 +80,34 @@ public class MigrationRollbackTests : IClassFixture<RegisterApiFixture>
         // Y quedó donde estaba: la última aplicada vuelve a ser la última definida.
         var applied = await db.Database.GetAppliedMigrationsAsync();
         applied.Last().ShouldBe(migrations[^1]);
+    }
+
+    /// <summary>
+    /// El <c>Down()</c> de <c>SubjectFieldsOptional</c> frena a propósito en vez de inventar código,
+    /// cadencia u horas que la fuente oficial nunca publicó (ADR-0097), y el seed carga materias así.
+    /// Para que el round trip llegue a ejercitar ese <c>Down()</c>, completamos antes con valores
+    /// sintéticos que solo necesitan sobrevivir el schema anterior (NOT NULL, el CHECK viejo de
+    /// cadencia y cuatrimestre, el índice único por plan y código): esta base es propia de esta clase
+    /// de test, así que no afecta a otros. El paso se apaga solo cuando <c>SubjectFieldsOptional</c>
+    /// deja de ser la migración más nueva de Academic.
+    /// </summary>
+    private static async Task BackfillSubjectsBeforeRollbackAsync(
+        AcademicDbContext db, IReadOnlyList<string> migrations)
+    {
+        if (migrations[^1] != "20260915154516_SubjectFieldsOptional")
+        {
+            return;
+        }
+
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            UPDATE academic.subjects
+            SET
+                code = COALESCE(code, id::text),
+                term_kind = COALESCE(term_kind, 'FullYear'),
+                weekly_hours = COALESCE(weekly_hours, 0),
+                total_hours = COALESCE(total_hours, 1)
+            WHERE code IS NULL OR term_kind IS NULL OR weekly_hours IS NULL OR total_hours IS NULL
+            """);
     }
 }
