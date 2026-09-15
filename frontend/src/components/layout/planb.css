@@ -335,7 +335,10 @@
     flex-direction: column;
     gap: 4px;
   }
-  .pb-plan li button {
+  /* button y a: la maqueta navega con data-go (JS); el producto usa Link (issue #525, ver
+   * shell-link.tsx y el mismo criterio en .pb-sidebar nav / .pb-lens de más arriba). */
+  .pb-plan li button,
+  .pb-plan li a {
     display: flex;
     justify-content: space-between;
     gap: 8px;
@@ -345,7 +348,8 @@
     text-align: left;
     font-size: 13px;
   }
-  .pb-plan li button:hover {
+  .pb-plan li button:hover,
+  .pb-plan li a:hover {
     background: var(--color-bg-elev);
   }
   .pb-plan li .pb-code {
@@ -355,7 +359,8 @@
     width: 30px;
     flex-shrink: 0;
   }
-  .pb-plan li.pb-measured button {
+  .pb-plan li.pb-measured button,
+  .pb-plan li.pb-measured a {
     font-weight: 500;
   }
   .pb-plan li.pb-measured .pb-dot {
