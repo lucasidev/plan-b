@@ -38,14 +38,19 @@ function group(overrides: Partial<CanonicalCareerGroup>): CanonicalCareerGroup {
 }
 
 describe('CanonicalCareerGroups', () => {
-  it('el nombre canónico arriba, las instituciones abajo como links a su propia oferta', () => {
+  it('el nombre canónico arriba, las instituciones abajo como texto plano unidas por " · "', () => {
     render(<CanonicalCareerGroups groups={[group({})]} universityShortNames={new Map()} />);
 
     expect(screen.getByText('Tecnicatura o técnico en programación')).toBeInTheDocument();
-    const unstaLink = screen.getByRole('link', { name: 'UNSTA' });
-    expect(unstaLink).toHaveAttribute('href', '/careers/unsta-tudcs');
-    const untLink = screen.getByRole('link', { name: 'UNT' });
-    expect(untLink).toHaveAttribute('href', '/careers/unt-prog');
+    expect(screen.getByText('UNSTA · UNT')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'UNSTA' })).not.toBeInTheDocument();
+  });
+
+  it('la fila entera lleva a /where-to-study de la primera oferta del grupo', () => {
+    render(<CanonicalCareerGroups groups={[group({})]} universityShortNames={new Map()} />);
+
+    const row = screen.getByRole('link', { name: /tecnicatura o técnico en programación/i });
+    expect(row).toHaveAttribute('href', '/careers/unsta-tudcs/where-to-study');
   });
 
   it('usa el nombre corto del mapa cuando lo tiene; si no, cae al nombre de la oferta', () => {
@@ -66,7 +71,7 @@ describe('CanonicalCareerGroups', () => {
       />,
     );
 
-    expect(screen.getByRole('link', { name: 'UNSTA' })).toBeInTheDocument();
+    expect(screen.getByText('UNSTA')).toBeInTheDocument();
     expect(
       screen.queryByText('Universidad del Norte Santo Tomás de Aquino'),
     ).not.toBeInTheDocument();
@@ -84,7 +89,7 @@ describe('CanonicalCareerGroups', () => {
       />,
     );
 
-    expect(screen.getByRole('link', { name: 'UNSE' })).toBeInTheDocument();
+    expect(screen.getByText('UNSE')).toBeInTheDocument();
   });
 
   it('con alguna oferta con reseñas, muestra la pill oscura "con reseñas" además de la de instituciones', () => {
@@ -197,14 +202,11 @@ describe('CanonicalCareerGroups', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('cada grupo es su propia fila: el nombre no es un link (no hay una única oferta a la que ir)', () => {
+  it('cada grupo es su propia fila, con el nombre y las instituciones adentro del mismo link', () => {
     render(<CanonicalCareerGroups groups={[group({})]} universityShortNames={new Map()} />);
 
-    const row = screen.getByText('Tecnicatura o técnico en programación').closest('li');
-    expect(row).not.toBeNull();
-    if (row) {
-      const heading = within(row).getByText('Tecnicatura o técnico en programación');
-      expect(heading.tagName.toLowerCase()).not.toBe('a');
-    }
+    const row = screen.getByRole('link', { name: /tecnicatura o técnico en programación/i });
+    expect(within(row).getByText('Tecnicatura o técnico en programación')).toBeInTheDocument();
+    expect(within(row).getByText('UNSTA · UNT')).toBeInTheDocument();
   });
 });

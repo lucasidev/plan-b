@@ -19,12 +19,13 @@ function sortForDisplay(groups: readonly CanonicalCareerGroup[]): CanonicalCaree
 }
 
 /**
- * "En más de una institución" (US-222, ADR-0096, maqueta aprobada): una fila `.pb-row` por
- * carrera canónica dictada en dos o más instituciones, para comparar lado a lado. El nombre
- * canónico va arriba; cada institución (nombre corto) es su propio link a su oferta, porque un
- * grupo no tiene una única carrera a la que mandar el click (la maqueta sí, porque no tiene
- * rutas reales: ahí la fila entera es un botón a un solo destino de demo). Las pills a la derecha
- * resumen el grupo entero, nunca una por oferta (eso vivía en `CareerReviewsPill`).
+ * "En más de una institución" (US-222, ADR-0096, maqueta aprobada, línea 446): una fila `.pb-row`
+ * por carrera canónica dictada en dos o más instituciones, para comparar lado a lado. El nombre
+ * canónico va arriba; las instituciones (nombre corto) son texto plano unido por " · ", sin link
+ * propio. La fila entera lleva a `/careers/{id}/where-to-study` con la primera oferta del grupo:
+ * esa pantalla resuelve el grupo canónico entero a partir de cualquiera de sus ofertas, así que no
+ * hace falta un destino distinto por institución. Las pills a la derecha resumen el grupo entero,
+ * nunca una por oferta (eso vivía en `CareerReviewsPill`).
  */
 export function CanonicalCareerGroups({
   groups,
@@ -45,33 +46,32 @@ export function CanonicalCareerGroups({
       <ul className="pb-list">
         {sortForDisplay(groups).map((group) => {
           const anyReviewed = group.offerings.some(hasReviews);
+          const institutionNames = group.offerings
+            .map(
+              (offering) =>
+                universityShortNames.get(offering.universityId) ?? offering.universityName,
+            )
+            .join(' · ');
 
           return (
-            <li key={group.canonicalGroupName} className={anyReviewed ? 'pb-row' : 'pb-row pb-dim'}>
-              <span>
-                <span className="pb-name">{group.canonicalGroupName}</span>
-                <span className="pb-sub">
-                  {group.offerings.map((offering, index) => (
-                    <span key={offering.careerId}>
-                      {index > 0 && ' · '}
-                      <Link
-                        href={`/careers/${offering.careerId}`}
-                        prefetch={false}
-                        className="pb-link"
-                      >
-                        {universityShortNames.get(offering.universityId) ?? offering.universityName}
-                      </Link>
-                    </span>
-                  ))}
+            <li key={group.canonicalGroupName}>
+              <Link
+                href={`/careers/${group.offerings[0].careerId}/where-to-study`}
+                prefetch={false}
+                className={anyReviewed ? 'pb-row' : 'pb-row pb-dim'}
+              >
+                <span>
+                  <span className="pb-name">{group.canonicalGroupName}</span>
+                  <span className="pb-sub">{institutionNames}</span>
                 </span>
-              </span>
-              <span className="pb-right">
-                {anyReviewed && <span className="pb-pill pb-pub">con reseñas</span>}
-                <span className="pb-pill">
-                  {group.offerings.length}{' '}
-                  {group.offerings.length === 1 ? 'institución' : 'instituciones'}
+                <span className="pb-right">
+                  {anyReviewed && <span className="pb-pill pb-pub">con reseñas</span>}
+                  <span className="pb-pill">
+                    {group.offerings.length}{' '}
+                    {group.offerings.length === 1 ? 'institución' : 'instituciones'}
+                  </span>
                 </span>
-              </span>
+              </Link>
             </li>
           );
         })}

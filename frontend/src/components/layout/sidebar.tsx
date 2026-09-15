@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/ui';
 import { type MemberRoute, memberRoutes, memberSections } from '@/lib/member-shell';
 import type { Session } from '@/lib/session';
 import { cn } from '@/lib/utils';
@@ -39,7 +38,10 @@ export function Sidebar({ footer, role }: Props) {
   return (
     <aside className="pb-sidebar hidden lg:flex">
       <ShellLink href="/" aria-label="Ir a la entrada" prefetch={false} className="pb-brandrow">
-        <Logo size={22} />
+        <span className="pb-brand">
+          plan-b
+          <span style={{ color: 'var(--color-alarm)' }}>.</span>
+        </span>
       </ShellLink>
 
       <nav>
