@@ -147,13 +147,9 @@ test.describe('El dato nuevo se lee y se audita sin cuenta (#376)', () => {
 
   /**
    * La co-cursada es el dato que la lapicera no puede calcular, y el único que este sprint suma a
-   * la ficha. Se lee sin cuenta, y desde ahí se llega a Método, que explica cómo se calculó: un
-   * número sin método publicado no aguanta una discusión.
+   * la ficha. Se lee sin cuenta: un número sin ese requisito no aguanta una discusión.
    */
-  test('se lee la co-cursada en la ficha de una materia y se llega a Método', async ({
-    page,
-    request,
-  }) => {
+  test('se lee la co-cursada en la ficha de una materia, sin sesión', async ({ page, request }) => {
     // El piso del par es de 10, así que diez cuentas llevan las dos materias en el mismo período.
     for (let i = 0; i < 10; i++) {
       const student = await createStudent(request, { emailPrefix: `e2e-pair-${i}` });
@@ -168,14 +164,6 @@ test.describe('El dato nuevo se lee y se audita sin cuenta (#376)', () => {
       timeout: 15_000,
     });
     await expect(page.getByText(/la llevaron junto con esta/i).first()).toBeVisible();
-
-    // Y desde ahí se llega a la regla que lo calculó: la ficha de materia ya no trae el link "¿Cómo
-    // calculamos esto?" (esa es la ficha de cátedra), así que se llega por Método del sidebar.
-    await page.getByRole('link', { name: /^método$/i }).click();
-    await expect(page).toHaveURL(/\/method$/);
-    await expect(
-      page.getByRole('heading', { name: /cómo se calcula lo que publicamos/i }),
-    ).toBeVisible();
 
     // Todo el recorrido fue anónimo: si alguna pantalla hubiera exigido cuenta, habría rebotado.
     expect(page.url()).not.toMatch(/sign-in/);

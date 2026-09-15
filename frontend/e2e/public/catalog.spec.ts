@@ -136,6 +136,11 @@ test.describe('Catálogo público (US-001)', () => {
     await expect(tecnicaturaRow).toContainText('UNSTA');
     await tecnicaturaRow.click();
     await expect(page).toHaveURL(/\/careers\/[^/]+\/where-to-study$/, { timeout: 30_000 });
+    // La URL sola no alcanza: si la comparación llamara notFound(), la URL no cambia (queda
+    // resuelta por el router, el 404 se pinta encima). El h1 confirma que la pantalla real cargó.
+    await expect(
+      page.getByRole('heading', { name: /tecnicatura o técnico en programación/i, level: 1 }),
+    ).toBeVisible();
   });
 
   test('US-222: /careers muestra primero "en más de una institución" y no mezcla sus grupos con "en una sola"', async ({
@@ -149,7 +154,11 @@ test.describe('Catálogo público (US-001)', () => {
 
     // Cada h2 es un solo `.pb-eyebrow` con su conteo pegado (ADR-0096, maqueta aprobada): el
     // prefijo, no el texto completo (que incluye "· para comparar lado a lado" y "· N carreras").
-    const sectionHeadings = await page.getByRole('heading', { level: 2 }).allTextContents();
+    // Hay un tercer h2 en la columna derecha ("Lo que los datos dicen", `DataHighlights`), que no
+    // es parte de la lente: se descarta antes de afirmar el orden de los dos que sí lo son.
+    const sectionHeadings = (
+      await page.getByRole('heading', { level: 2 }).allTextContents()
+    ).filter((heading) => !heading.startsWith('Lo que los datos dicen'));
     expect(sectionHeadings).toHaveLength(2);
     expect(sectionHeadings[0]).toMatch(/^En más de una institución/);
     expect(sectionHeadings[1]).toMatch(/^En una sola institución/);

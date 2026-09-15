@@ -143,10 +143,10 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     await expect(page).toHaveURL(new RegExp(`/chairs/${CHAIR_PEREZ}$`), { timeout: 30_000 });
     await expect(page.getByRole('heading', { name: /cátedra pérez/i })).toBeVisible();
     await expect(page.getByText(/¿Se dictaron las clases\?/)).toBeVisible();
-    // Pineado a la línea de sustento de la cabecera ("N reseñas, de AAAA..."): un /reseñas/ suelto
+    // Pineado a la línea de sustento de la cabecera ("N reseñas de AAAA..."): un /reseñas/ suelto
     // también matchea "cursadas reseñadas" más abajo en la ficha, y no prueba que la cabecera diga
     // lo que tiene que decir.
-    await expect(page.getByText(/\d+ reseñas, de \d{4}/).first()).toBeVisible();
+    await expect(page.getByText(/\d+ reseñas de \d{4}/).first()).toBeVisible();
 
     // Nunca hubo sesión: si el camino hubiera pedido login, alguna de las páginas habría
     // redirigido a /sign-in y este assert no llegaría hasta acá.
