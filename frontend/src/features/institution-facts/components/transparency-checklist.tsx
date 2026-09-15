@@ -1,4 +1,9 @@
-import { OFFICIAL_FACT_FIELDS, type OfficialFact, OfficialFactRow } from '@/components/facts';
+import {
+  OFFICIAL_FACT_FIELDS,
+  OFFICIAL_FACT_LABELS,
+  type OfficialFact,
+  officialFactCellContent,
+} from '@/components/facts';
 import { formatShortDate } from '@/lib/format-date';
 
 /**
@@ -16,11 +21,11 @@ export const CHECKLIST_ORDER = [
 ];
 
 /**
- * El checklist de transparencia institucional (SC-005, ADR-0090): una fila por campo con su
- * estado y su fecha. Que una privada no publique nómina ni presupuesto es exactamente lo que esta
- * sección tiene que decir, no un hueco: cada fila usa el mismo render que el resto de los datos
- * oficiales, así que "no publicado" nunca es una celda vacía y se distingue a simple vista de una
- * fila con dato.
+ * El checklist de transparencia institucional (SC-005, ADR-0090, `V.university().aside` de la
+ * maqueta aprobada): una fila por campo, con su estado siempre en una pill (el valor cuando está
+ * publicado, "La institución no lo publica" cuando no) y su nota o su fuente debajo. Que una
+ * privada no publique nómina ni presupuesto es exactamente lo que esta sección tiene que decir,
+ * no un hueco.
  */
 export function TransparencyChecklist({ facts }: { facts: OfficialFact[] }) {
   const byField = new Map(facts.map((fact) => [fact.field, fact]));
@@ -30,32 +35,43 @@ export function TransparencyChecklist({ facts }: { facts: OfficialFact[] }) {
 
   if (ordered.length === 0) {
     return (
-      <section className="mb-5">
-        <p className="mb-2 text-[12px] text-ink-3">Transparencia institucional</p>
-        <p className="text-[13px] leading-relaxed text-ink-3">
+      <div className="pb-section">
+        <div className="pb-eyebrow">Transparencia · verificado a fuente pública</div>
+        <p className="pb-muted" style={{ fontSize: 13 }}>
           Todavía no relevamos la transparencia de esta institución.
         </p>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="mb-5">
-      <p className="mb-2 text-[12px] text-ink-3">
-        Transparencia institucional · verificado a fuente pública
-      </p>
-      <div className="rounded-xl border border-line bg-bg-card px-4 py-[5px]">
-        {ordered.map((fact, index) => (
-          <OfficialFactRow
-            key={fact.id}
-            fact={fact}
-            subject="institution"
-            last={index === ordered.length - 1}
-          />
+    <div className="pb-section">
+      <div className="pb-eyebrow">Transparencia · verificado a fuente pública</div>
+      <div className="pb-kv">
+        {ordered.map((fact) => (
+          <ChecklistRow key={fact.id} fact={fact} />
         ))}
       </div>
       <ChecklistFooter relievedAt={mostRecent(ordered)} sources={dedupeSources(ordered)} />
-    </section>
+    </div>
+  );
+}
+
+/** Una fila: etiqueta, pill con el estado, y la nota o (sin ella) la fuente con su período. */
+function ChecklistRow({ fact }: { fact: OfficialFact }) {
+  const label = OFFICIAL_FACT_LABELS[fact.field] ?? fact.field;
+  const cell = officialFactCellContent(fact);
+  const pillText = fact.status === 'NotPublished' ? 'La institución no lo publica' : cell.value;
+  const caption = fact.note ?? [fact.sourceName, fact.period].filter(Boolean).join(' · ');
+
+  return (
+    <div>
+      <div className="pb-k">{label}</div>
+      <div className="pb-v pb-small">
+        <span className="pb-pill">{pillText}</span>
+      </div>
+      <div className="pb-src pb-meta">{caption}</div>
+    </div>
   );
 }
 
@@ -86,21 +102,17 @@ function dedupeSources(facts: OfficialFact[]): Source[] {
  */
 function ChecklistFooter({ relievedAt, sources }: { relievedAt: string; sources: Source[] }) {
   return (
-    <div className="mt-2 text-[11px] text-ink-3">
-      <span>Relevado el {formatShortDate(relievedAt)} · </span>
+    // div, no p: <details> es de bloque y un <p> no puede contenerlo (rompería la hidratación).
+    <div className="pb-meta" style={{ marginTop: 8 }}>
+      Relevado el {formatShortDate(relievedAt)} ·{' '}
       <details className="inline">
-        <summary className="inline cursor-pointer underline underline-offset-2">
+        <summary className="pb-link" style={{ display: 'inline', cursor: 'pointer' }}>
           Ver fuentes
         </summary>
-        <ul className="m-0 mt-1.5 list-none space-y-1 p-0">
+        <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 6 }}>
           {sources.map((source) => (
             <li key={source.url}>
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-accent-ink underline-offset-2 hover:underline"
-              >
+              <a href={source.url} target="_blank" rel="noreferrer" className="pb-link">
                 {source.name}
               </a>
             </li>
