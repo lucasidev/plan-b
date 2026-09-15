@@ -211,7 +211,7 @@ function ReviewCard({
         <h2 className="font-serif text-[17px] font-semibold text-ink">
           <Link
             href={`/subjects/${review.subjectId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="underline underline-offset-2"
           >
@@ -230,7 +230,7 @@ function ReviewCard({
         {review.chairId && review.chairName ? (
           <Link
             href={`/chairs/${review.chairId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="underline underline-offset-2"
           >

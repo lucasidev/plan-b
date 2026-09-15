@@ -134,7 +134,7 @@ function OfferingCard({ offering }: { offering: CareerComparisonOffering }) {
         <div className="min-w-0">
           <Link
             href={`/careers/${offering.careerId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="text-[15px] font-medium text-ink hover:underline"
           >
@@ -185,9 +185,7 @@ function DerivedNote() {
       directamente.{' '}
       <Link
         href="/method"
-        // Sin prefetch: /method es `force-dynamic` sin loading.tsx, y con el middleware de
-        // ADR-0095 cubriéndola el prefetch por default rompe la navegación del click (ver
-        // subject-grid.tsx para el detalle completo).
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="text-accent-ink underline-offset-2 hover:underline"
       >

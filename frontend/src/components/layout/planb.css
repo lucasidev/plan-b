@@ -607,7 +607,7 @@
   .pb-dossier {
     display: grid;
     /* minmax(0, 320px), no 320px a secas: un track fijo sigue heredando el min-width automático
-     * de su contenido (el ancho mínimo de una pill o de un valor largo, US-005/UTN-FRT), y esa
+     * de su contenido (el ancho mínimo de una pill o de un valor largo, SC-005/UTN-FRT), y esa
      * columna crecía más allá de sus 320px y empujaba el resto a scroll horizontal. */
     grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
     gap: 32px;

@@ -69,7 +69,7 @@ function Siblings({ siblings }: { siblings: ChairSibling[] }) {
           <Link
             key={sibling.chairId}
             href={`/chairs/${sibling.chairId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="pb-row"
             style={{ padding: '8px 12px' }}
@@ -116,7 +116,7 @@ function Head({ facts }: { facts: ChairFacts }) {
         Cátedra · {facts.subjectCode} ·{' '}
         <Link
           href={`/subjects/${facts.subjectId}`}
-          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
         >
           {facts.subjectName}
@@ -386,7 +386,7 @@ function Footer({ reviewHref }: { reviewHref: string }) {
     <div className="pb-foot">
       <Link
         href="/method"
-        // Sin prefetch: /method es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="pb-link"
         style={{ fontSize: 12 }}

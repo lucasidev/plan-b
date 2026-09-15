@@ -397,7 +397,7 @@ function PlanSection({ activePlan }: { activePlan: ActivePlan }) {
                   <li key={subject.id} className={isCovered ? 'pb-measured' : ''}>
                     <Link
                       href={`/subjects/${subject.id}`}
-                      // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+                      // Sin prefetch: ver el porqué en subject-grid.tsx.
                       prefetch={false}
                     >
                       <span className="pb-code">{subject.code}</span>
@@ -429,7 +429,7 @@ function PlanFallback({ careerId }: { careerId: string }) {
     <p className="pb-section" style={{ fontSize: 13 }}>
       <Link
         href={`/careers/${careerId}/plans`}
-        // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="pb-link"
       >
@@ -494,7 +494,7 @@ function StartHere({ activePlan }: { activePlan: ActivePlan }) {
           <Link
             key={subject.id}
             href={`/subjects/${subject.id}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             style={{ padding: '8px 12px' }}
             className={coverage.isCovered ? 'pb-row' : 'pb-row pb-dim'}
@@ -540,7 +540,7 @@ function WhereToStudy({
           <Link
             key={offering.careerId}
             href={`/careers/${offering.careerId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="pb-row"
             style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}
