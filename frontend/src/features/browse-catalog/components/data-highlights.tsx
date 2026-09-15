@@ -12,11 +12,11 @@ export function DataHighlights({ highlights }: { highlights: DataHighlight[] }) 
       <h2 id="data-highlights-heading" className="pb-eyebrow">
         Lo que los datos dicen
       </h2>
-      <dl className="pb-kv">
+      <div className="pb-kv">
         {highlights.map((highlight) => (
           <HighlightRow key={highlight.id} highlight={highlight} />
         ))}
-      </dl>
+      </div>
     </aside>
   );
 }
@@ -33,8 +33,8 @@ function HighlightRow({ highlight }: { highlight: DataHighlight }) {
 
   return (
     <div>
-      <dt className="pb-k">{highlight.label}</dt>
-      <dd className="pb-v">
+      <div className="pb-k">{highlight.label}</div>
+      <div className="pb-v">
         {summary.href ? (
           <Link href={summary.href} prefetch={false} className="pb-link">
             {summary.name}
@@ -45,7 +45,7 @@ function HighlightRow({ highlight }: { highlight: DataHighlight }) {
         {summary.annotation && (
           <small className="pb-muted font-sans text-[13px]"> {summary.annotation}</small>
         )}
-      </dd>
+      </div>
       {(summary.source || derivedTag) && (
         <div className="pb-src pb-meta">
           {derivedTag && (

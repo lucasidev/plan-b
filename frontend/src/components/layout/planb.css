@@ -492,7 +492,8 @@
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-ink-4);
+    /* ink-4 sobre bg no llega a 4.5:1 (WCAG AA, texto chico): ink-3 sí (5,22:1). */
+    color: var(--color-ink-3);
     padding: 14px 8px 4px;
   }
   /* button y a: la maqueta navega con data-go (JS); el producto usa ShellLink (<a>) para los
@@ -523,7 +524,9 @@
   .pb-sidebar nav a .pb-sc {
     font-family: var(--font-mono);
     font-size: 10px;
-    color: var(--color-ink-3);
+    /* ink-3 sobre line (el fondo de esta pastilla) da 4,27:1: no llega al 4.5:1 de WCAG AA para
+     * texto chico. ink-2 sobre line sí (6,28:1). El fondo de la pastilla queda igual. */
+    color: var(--color-ink-2);
     background: var(--color-line);
     border-radius: 4px;
     padding: 1px 5px;

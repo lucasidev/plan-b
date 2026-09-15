@@ -21,8 +21,10 @@ export function RoadmapCard() {
       >
         {ABOUT_ROADMAP.map((item) => (
           <div key={item.when} style={{ display: 'contents' }}>
+            {/* accent-ink, no accent: accent sobre bg-card da ~2,95:1 (falla WCAG AA para texto
+                chico). Mismo criterio que about-hero.tsx. */}
             <dt
-              className="text-accent"
+              className="text-accent-ink"
               style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: 10.5,
