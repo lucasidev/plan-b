@@ -86,7 +86,7 @@ function careerHref(careerId: string): string {
  */
 export function parseNumericValue(value: string | null): number | null {
   if (!value) return null;
-  const normalized = value.replace(/\./g, '').replace(',', '.').replace('%', '').trim();
+  const normalized = value.replace(/\./g, '').replace(',', '.').replace(/%/g, '').trim();
   if (normalized === '') return null;
   const parsed = Number(normalized);
   return Number.isNaN(parsed) ? null : parsed;
