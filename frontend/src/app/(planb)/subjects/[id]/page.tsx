@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { fetchPlanServer, fetchSubjectsByPlanServer } from '@/features/browse-catalog/api.server';
 import { fetchSubjectFactsServer, SubjectFactsSheet } from '@/features/subject-facts';
+import { subjectLabel } from '@/lib/subject-label';
 
 // Los conteos cambian con cada reseña nueva: se sirve fresca en vez de prerenderizada.
 export const dynamic = 'force-dynamic';
@@ -13,7 +14,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const facts = await fetchSubjectFactsServer(id);
 
   return {
-    title: facts ? `${facts.subjectCode} · ${facts.subjectName} · planb` : 'Materia · planb',
+    title: facts
+      ? `${subjectLabel(facts.subjectCode, facts.subjectName)} · planb`
+      : 'Materia · planb',
   };
 }
 

@@ -16,7 +16,7 @@ export type {
 
 export type SubjectOption = {
   id: string;
-  code: string;
+  code: string | null;
   name: string;
   yearInPlan: number;
 };

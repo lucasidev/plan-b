@@ -113,7 +113,7 @@ function Head({ facts }: { facts: ChairFacts }) {
   return (
     <>
       <div className="pb-eyebrow">
-        Cátedra · {facts.subjectCode} ·{' '}
+        Cátedra · {facts.subjectCode && `${facts.subjectCode} · `}
         <Link
           href={`/subjects/${facts.subjectId}`}
           // Sin prefetch: ver el porqué en subject-grid.tsx.

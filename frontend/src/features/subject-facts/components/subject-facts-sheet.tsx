@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
-import type { Subject } from '@/features/browse-catalog';
+import { compareSubjectsByCode, type Subject } from '@/features/browse-catalog';
 import { formatRelativeDate } from '@/lib/format-date';
 import { chairHeadlineSentence } from '../lib/chair-headlines';
 import type { Shared, Spread, SubjectChair, SubjectFacts, TakenWith } from '../types';
@@ -50,7 +50,7 @@ function reviewTotals(facts: SubjectFacts): { totalReviews: number; chairsWithRe
 function subjectsInSameYear(facts: SubjectFacts, planSubjects: Subject[]): Subject[] {
   return planSubjects
     .filter((subject) => subject.yearInPlan === facts.yearInPlan)
-    .sort((a, b) => a.code.localeCompare(b.code));
+    .sort(compareSubjectsByCode);
 }
 
 /** La tira `.pb-stats` de la cabecera (`V.subject().stats` en la maqueta). */
@@ -370,7 +370,7 @@ function TakenWithRow({ pair }: { pair: TakenWith }) {
   return (
     <div>
       <div className="pb-k">
-        {pair.subjectCode} ·{' '}
+        {pair.subjectCode && `${pair.subjectCode} · `}
         <Link
           href={`/subjects/${pair.subjectId}`}
           // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -416,9 +416,11 @@ function OtherSubjectsOfYear({ facts, subjects }: { facts: SubjectFacts; subject
                 className={isCurrent ? 'pb-row' : 'pb-row pb-dim'}
               >
                 <span className="pb-name" style={{ fontSize: 13 }}>
-                  <span className="pb-meta" style={{ marginRight: 8 }}>
-                    {subject.code}
-                  </span>
+                  {subject.code && (
+                    <span className="pb-meta" style={{ marginRight: 8 }}>
+                      {subject.code}
+                    </span>
+                  )}
                   {subject.name}
                 </span>
               </Link>

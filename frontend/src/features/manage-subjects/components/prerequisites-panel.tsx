@@ -129,7 +129,7 @@ function AddPrerequisiteForm({
           <option value="">Elegí una materia</option>
           {subjects.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.code} · {s.name}
+              {s.code ? `${s.code} · ${s.name}` : s.name}
             </option>
           ))}
         </select>
@@ -150,7 +150,7 @@ function AddPrerequisiteForm({
           <option value="">Elegí la materia correlativa</option>
           {candidateRequired.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.code} · {s.name}
+              {s.code ? `${s.code} · ${s.name}` : s.name}
             </option>
           ))}
         </select>

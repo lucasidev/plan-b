@@ -90,6 +90,25 @@ describe('groupSubjectsByYear', () => {
 
     expect(year1.terms).toHaveLength(2);
   });
+
+  /**
+   * Contrato: una materia puede venir sin `termKind` (además de sin `termInYear`, ya cubierto por
+   * las anuales). Va a un grupo propio dentro de su año, sin título de cuatrimestre: distinto del
+   * grupo anual (`termKind: 'FullYear'`), que sí tiene su propio título ("anual").
+   */
+  it('agrupa las materias sin tipo de cursada en un grupo propio, aparte del anual', () => {
+    const subjects = [
+      subject({ id: 'sin-cadencia', code: null, yearInPlan: 1, termInYear: null, termKind: null }),
+      subject({ id: 'anual', code: 'Z900', yearInPlan: 1, termInYear: null, termKind: 'FullYear' }),
+      subject({ id: 'c1', code: 'A100', yearInPlan: 1, termInYear: 1, termKind: 'FourMonth' }),
+    ];
+
+    const [year1] = groupSubjectsByYear(subjects);
+
+    expect(year1.terms).toHaveLength(3);
+    const withoutKind = year1.terms.find((t) => t.termKind === null);
+    expect(withoutKind?.subjects.map((s) => s.id)).toEqual(['sin-cadencia']);
+  });
 });
 
 describe('SubjectGrid, cuánto junta cada materia (US-134, SC-018)', () => {

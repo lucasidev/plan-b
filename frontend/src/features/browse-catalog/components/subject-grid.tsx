@@ -44,9 +44,11 @@ export function SubjectGrid({
           <div className="mt-3 flex flex-col gap-5">
             {yearGroup.terms.map((term) => (
               <div key={term.key}>
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
-                  {formatTermOfYear(term.termKind, term.termInYear)}
-                </h3>
+                {term.termKind !== null && (
+                  <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
+                    {formatTermOfYear(term.termKind, term.termInYear)}
+                  </h3>
+                )}
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {term.subjects.map((subject) => (
                     <SubjectCard
@@ -74,11 +76,15 @@ function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: Subje
       prefetch={false}
       className="flex flex-col gap-1.5 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
     >
-      <span className="font-mono text-[10.5px] tracking-wide text-ink-3">{subject.code}</span>
+      {subject.code && (
+        <span className="font-mono text-[10.5px] tracking-wide text-ink-3">{subject.code}</span>
+      )}
       <span className="text-[13.5px] font-medium leading-snug text-ink">{subject.name}</span>
-      <span className="flex items-center gap-1.5">
-        <Pill>{formatTermKind(subject.termKind)}</Pill>
-      </span>
+      {subject.termKind && (
+        <span className="flex items-center gap-1.5">
+          <Pill>{formatTermKind(subject.termKind)}</Pill>
+        </span>
+      )}
       <span
         className={
           coverage?.isCovered ? 'text-[11px] font-semibold text-ink' : 'text-[11px] text-ink-3'

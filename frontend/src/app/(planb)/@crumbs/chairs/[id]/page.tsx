@@ -2,6 +2,7 @@ import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fetchChairFactsServer } from '@/features/chair-facts';
 import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { genericCrumbs } from '@/lib/member-shell';
+import { subjectLabel } from '@/lib/subject-label';
 import { ActiveCrumbs } from '../../_lib/active-crumbs';
 import { universityCrumbByPlan } from '../../_lib/resolve-university';
 
@@ -49,7 +50,7 @@ export default async function ChairCrumbs({ params }: { params: Params }) {
           truncate: true,
         },
         {
-          label: `${subjectFacts.subjectCode} · ${subjectFacts.subjectName}`,
+          label: subjectLabel(subjectFacts.subjectCode, subjectFacts.subjectName),
           href: `/subjects/${subjectFacts.subjectId}`,
         },
         { label: `Cátedra ${chairFacts.chairName}` },

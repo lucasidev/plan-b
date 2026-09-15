@@ -24,10 +24,11 @@ const inputClass =
 
 /**
  * Form de alta/edición de materia (US-062 admin). React 19 primitives + Zod en el action, mismo
- * patrón que CareerForm/TermForm. El campo "Cuatrimestre / bimestre" se deshabilita cuando la
- * cadencia es Anual: un input disabled no viaja en el FormData, así el invariante del backend
- * (anual ⇒ term_in_year null) se cumple solo con el estado del <select>, sin lógica extra en el
- * submit. Mutación pura (ADR-0046): en success redirige al listado de materias del plan.
+ * patrón que CareerForm/TermForm. Código, cadencia, cuatrimestre y horas son opcionales. El campo
+ * "Cuatrimestre / bimestre" se deshabilita sin cadencia elegida o con cadencia Anual: un input
+ * disabled no viaja en el FormData, así el invariante del backend (sin cadencia o anual ⇒
+ * term_in_year null) se cumple solo con el estado del <select>, sin lógica extra en el submit.
+ * Mutación pura (ADR-0046): en success redirige al listado de materias del plan.
  */
 export function SubjectForm({ mode, universityId, careerId, planId, subject }: Props) {
   const router = useRouter();
@@ -40,6 +41,8 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
   );
   const [termKind, setTermKind] = useState(subject?.termKind ?? '');
   const isAnnual = termKind === 'FullYear';
+  const noCadence = termKind === '';
+  const termInYearDisabled = isAnnual || noCadence;
 
   const ids = {
     code: useId(),
@@ -86,12 +89,11 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
         <Field
           label="Código"
           htmlFor={ids.code}
-          hint="Único dentro del plan. El que figura en el plan de estudios."
+          hint="Opcional. Único dentro del plan si se carga. El que figura en el plan de estudios."
         >
           <input
             id={ids.code}
             name="code"
-            required
             maxLength={SUBJECT_LIMITS.code.maxLength}
             defaultValue={subject?.code ?? ''}
             className={inputClass}
@@ -112,16 +114,15 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             className={inputClass}
           />
         </Field>
-        <Field label="Cadencia" htmlFor={ids.termKind}>
+        <Field label="Cadencia" htmlFor={ids.termKind} hint="Opcional.">
           <select
             id={ids.termKind}
             name="termKind"
-            required
             defaultValue={subject?.termKind ?? ''}
             onChange={(e) => setTermKind(e.target.value)}
             className={inputClass}
           >
-            <option value="">Elegí una cadencia</option>
+            <option value="">Sin cadencia</option>
             {Object.entries(TERM_KIND_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -135,7 +136,9 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
           hint={
             isAnnual
               ? 'No aplica: la materia es anual.'
-              : `Entre ${SUBJECT_LIMITS.termInYear.min} y ${SUBJECT_LIMITS.termInYear.max}, según la cadencia.`
+              : noCadence
+                ? 'Elegí una cadencia para poder indicarlo.'
+                : `Entre ${SUBJECT_LIMITS.termInYear.min} y ${SUBJECT_LIMITS.termInYear.max}, según la cadencia.`
           }
         >
           <input
@@ -144,8 +147,8 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
             type="number"
             min={SUBJECT_LIMITS.termInYear.min}
             max={SUBJECT_LIMITS.termInYear.max}
-            required={!isAnnual}
-            disabled={isAnnual}
+            required={!termInYearDisabled}
+            disabled={termInYearDisabled}
             defaultValue={subject?.termInYear ?? ''}
             className={inputClass}
           />
@@ -156,13 +159,12 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
         <Field
           label="Carga horaria semanal"
           htmlFor={ids.weeklyHours}
-          hint={`En horas. Entre ${SUBJECT_LIMITS.weeklyHours.min} y ${SUBJECT_LIMITS.weeklyHours.max}; 0 si no tiene horario semanal fijo.`}
+          hint={`Opcional. En horas, entre ${SUBJECT_LIMITS.weeklyHours.min} y ${SUBJECT_LIMITS.weeklyHours.max}; 0 si no tiene horario semanal fijo.`}
         >
           <input
             id={ids.weeklyHours}
             name="weeklyHours"
             type="number"
-            required
             min={SUBJECT_LIMITS.weeklyHours.min}
             max={SUBJECT_LIMITS.weeklyHours.max}
             defaultValue={subject?.weeklyHours ?? ''}
@@ -172,13 +174,12 @@ export function SubjectForm({ mode, universityId, careerId, planId, subject }: P
         <Field
           label="Carga horaria total"
           htmlFor={ids.totalHours}
-          hint="En horas. Tiene que ser al menos la semanal."
+          hint="Opcional. En horas; si se carga, tiene que ser al menos la semanal."
         >
           <input
             id={ids.totalHours}
             name="totalHours"
             type="number"
-            required
             min={SUBJECT_LIMITS.totalHours.min}
             defaultValue={subject?.totalHours ?? ''}
             className={inputClass}

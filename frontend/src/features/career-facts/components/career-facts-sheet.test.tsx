@@ -554,6 +554,20 @@ describe('CareerFactsSheet', () => {
     expect(screen.queryByRole('link', { name: /ver los planes/i })).not.toBeInTheDocument();
   });
 
+  /** Contrato: `code` de una materia del plan es opcional. */
+  it('sin código, la materia del plan muestra solo el nombre, sin badge vacío', () => {
+    renderSheet(BASE, [], {
+      activePlan: {
+        year: 2018,
+        subjects: [subject({ id: 'subj-1', code: null, name: 'Proyecto Final' })],
+        subjectCoverage: [],
+      },
+    });
+
+    const link = screen.getByRole('link', { name: 'Proyecto Final' });
+    expect(link.querySelector('.pb-code')).toBeNull();
+  });
+
   /** Sin plan vigente, el único camino a las materias de un plan histórico es la lista completa. */
   it('sin plan vigente, ofrece "Ver los planes" en el lugar del plan', () => {
     renderSheet(BASE);
@@ -604,6 +618,26 @@ describe('CareerFactsSheet', () => {
     // La que está bajo el piso lleva .pb-dim; las publicadas, no.
     const dimmedLink = within(section).getByRole('link', { name: /álgebra i/i });
     expect(dimmedLink.className).toContain('pb-dim');
+  });
+
+  /** Contrato: `code` de una materia del plan es opcional; "Por dónde empezar" también la nombra sin él. */
+  it('"Por dónde empezar": una materia sin código muestra solo el nombre', () => {
+    renderSheet(BASE, [], {
+      activePlan: {
+        year: 2018,
+        subjects: [subject({ id: 'subj-1', code: null, name: 'Proyecto Final' })],
+        subjectCoverage: [{ subjectId: 'subj-1', reviewCount: 5, chairCount: 1, isCovered: true }],
+      },
+    });
+
+    const section = screen
+      .getByText('Por dónde empezar · las materias con reseñas')
+      .closest<HTMLElement>('.pb-section');
+    if (!section) throw new Error('no se encontró la sección "Por dónde empezar"');
+
+    expect(within(section).getByRole('link', { name: /proyecto final/i }).textContent).toBe(
+      'Proyecto Final5 reseñas · 1 cátedra→',
+    );
   });
 
   it('sin ninguna materia con reseñas, "Por dónde empezar" no se dibuja', () => {

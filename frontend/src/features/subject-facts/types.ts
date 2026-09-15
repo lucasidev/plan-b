@@ -7,7 +7,7 @@
 
 export interface SubjectFacts {
   subjectId: string;
-  subjectCode: string;
+  subjectCode: string | null;
   subjectName: string;
   yearInPlan: number;
   careerPlanId: string;
@@ -97,7 +97,7 @@ export interface SubjectChairHeadline {
 export type TakenWith = {
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   togetherCount: number;
   /** Cuántas cuentas dejaron al menos una de las dos. Solo viaja si el par publica. */
   droppedCount: number;

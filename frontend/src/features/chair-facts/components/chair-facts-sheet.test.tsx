@@ -52,6 +52,23 @@ function facts(over: Partial<ChairFacts> = {}): ChairFacts {
 }
 
 describe('ChairFactsSheet', () => {
+  /** Contrato: `subjectCode` es opcional (una materia puede no tener código cargado). */
+  describe('eyebrow: subjectCode opcional', () => {
+    it('con código, antepone "código · " antes del link a la materia', () => {
+      render(<ChairFactsSheet facts={facts({ subjectCode: '211' })} />);
+
+      const link = screen.getByRole('link', { name: 'Análisis Matemático II' });
+      expect(link.parentElement?.textContent).toBe('Cátedra · 211 · Análisis Matemático II');
+    });
+
+    it('sin código, no antepone separador colgando', () => {
+      render(<ChairFactsSheet facts={facts({ subjectCode: null })} />);
+
+      const link = screen.getByRole('link', { name: 'Análisis Matemático II' });
+      expect(link.parentElement?.textContent).toBe('Cátedra · Análisis Matemático II');
+    });
+  });
+
   /**
    * SC-002: la línea de sustento cuenta reseñas (no voces) y dice el rango de años, con
    * "hace cuánto es la última" al final. Sin eso, una cátedra con titular cambiado en 2025 y

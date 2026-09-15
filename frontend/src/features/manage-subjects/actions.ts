@@ -26,10 +26,10 @@ async function requireAdmin(): Promise<string | null> {
 }
 
 /**
- * Arma el payload de materia compartido por alta y edición. `termInYear`/`description` vacíos los
- * colapsa el schema a undefined, y `JSON.stringify` los omite: el backend los recibe como ausentes
- * (no aplica para materias anuales / sin descripción cargada). `termKind` viaja como string; el
- * backend lo parsea a enum.
+ * Arma el payload de materia compartido por alta y edición. Los campos opcionales (`code`,
+ * `termKind`, `termInYear`, `weeklyHours`, `totalHours`, `description`) vacíos los colapsa el
+ * schema a undefined, y `JSON.stringify` los omite: el backend los recibe como ausentes. `termKind`,
+ * cuando viaja, lo hace como string; el backend lo parsea a enum.
  */
 function parseSubjectFields(formData: FormData) {
   return subjectFieldsSchema.safeParse({
