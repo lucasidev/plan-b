@@ -356,8 +356,9 @@ public sealed class AcademicSeeder
 
     private async Task SeedSubjectsAsync(DateTimeOffset now, CancellationToken ct)
     {
-        // ux_subjects_plan_code.
-        var ledger = new SeedLedger<SubjectId, (CareerPlanId, string)>(
+        // ux_subjects_plan_code. Code es nullable en la tabla: el tuple key lo refleja aunque el
+        // seed actual siempre lo completa (no carga materias sin código).
+        var ledger = new SeedLedger<SubjectId, (CareerPlanId, string?)>(
             "materia",
             (await _db.Subjects
                 .AsNoTracking()

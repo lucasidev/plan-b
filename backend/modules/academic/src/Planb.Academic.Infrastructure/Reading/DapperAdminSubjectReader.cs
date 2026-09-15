@@ -35,7 +35,7 @@ internal sealed class DapperAdminSubjectReader : IAdminSubjectReader
                 s.is_active    AS IsActive
             FROM academic.subjects s
             WHERE s.career_plan_id = @CareerPlanId
-            ORDER BY s.year_in_plan ASC, s.term_in_year ASC NULLS LAST, s.code ASC;";
+            ORDER BY s.year_in_plan ASC, s.term_in_year ASC NULLS LAST, s.code ASC NULLS LAST, s.name ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<AdminSubjectListItem>(

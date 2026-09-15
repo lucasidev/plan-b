@@ -7,8 +7,8 @@ namespace Planb.Academic.Application.Features.AdminSubjects;
 
 /// <summary>
 /// Handler del PATCH /api/academic/subjects/{id} (admin). Carga el aggregate, valida que el nuevo
-/// code (si cambió) no colisione con otra materia del mismo plan, aplica Update y persiste. 404 si
-/// la materia no existe.
+/// code (si vino y cambió) no colisione con otra materia del mismo plan, aplica Update y persiste.
+/// 404 si la materia no existe.
 /// </summary>
 public static class UpdateSubjectCommandHandler
 {
@@ -25,8 +25,9 @@ public static class UpdateSubjectCommandHandler
             return SubjectErrors.NotFound;
         }
 
-        var trimmedCode = command.Code.Trim();
-        if (await subjects.ExistsByCodeAsync(subject.CareerPlanId, trimmedCode, subject.Id, ct))
+        var trimmedCode = command.Code?.Trim();
+        if (!string.IsNullOrWhiteSpace(trimmedCode)
+            && await subjects.ExistsByCodeAsync(subject.CareerPlanId, trimmedCode, subject.Id, ct))
         {
             return SubjectErrors.CodeAlreadyExists;
         }

@@ -46,7 +46,7 @@ public sealed record MyReviewView(
     Guid Id,
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     Guid TermId,
     string TermLabel,
     Guid? ChairId,

@@ -25,13 +25,14 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
 
         builder.HasIndex(s => s.CareerPlanId).HasDatabaseName("ix_subjects_career_plan_id");
 
+        // Opcional: la fuente oficial del plan no siempre lo publica.
         builder.Property(s => s.Code)
             .HasColumnName("code")
-            .HasMaxLength(40)
-            .IsRequired();
+            .HasMaxLength(40);
 
         // UNIQUE(career_plan_id, code): el código identifica la materia dentro del plan. Dos
-        // planes distintos pueden tener "MAT101" sin conflicto.
+        // planes distintos pueden tener "MAT101" sin conflicto. Sin filtro: Postgres ya trata cada
+        // NULL como distinto de los demás, así que varias materias sin código conviven sin chocar.
         builder.HasIndex(s => new { s.CareerPlanId, s.Code })
             .IsUnique()
             .HasDatabaseName("ux_subjects_plan_code");
@@ -48,19 +49,18 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
         builder.Property(s => s.TermInYear)
             .HasColumnName("term_in_year");
 
+        // Opcional: sin cadencia no hay cuatrimestre (CHECK más abajo).
         builder.Property(s => s.TermKind)
             .HasColumnName("term_kind")
             .HasConversion<string>()
-            .HasMaxLength(20)
-            .IsRequired();
+            .HasMaxLength(20);
 
+        // Opcionales: la fuente oficial del plan no siempre publica la carga horaria.
         builder.Property(s => s.WeeklyHours)
-            .HasColumnName("weekly_hours")
-            .IsRequired();
+            .HasColumnName("weekly_hours");
 
         builder.Property(s => s.TotalHours)
-            .HasColumnName("total_hours")
-            .IsRequired();
+            .HasColumnName("total_hours");
 
         builder.Property(s => s.Description)
             .HasColumnName("description");
@@ -86,11 +86,14 @@ internal sealed class SubjectConfiguration : IEntityTypeConfiguration<Subject>
             .HasColumnName("updated_at")
             .IsRequired();
 
-        // CHECK app-level del data-model: term_kind='FullYear' ↔ term_in_year IS NULL. Lo replicamos
-        // en DB como defensa adicional (los inserts via seed bypassean Subject.Create).
+        // CHECK app-level del data-model: sin cadencia no hay cuatrimestre, anual tampoco lo lleva,
+        // y cualquier otra cadencia lo exige. Lo replicamos en DB como defensa adicional (los
+        // inserts via seed bypassean Subject.Create).
         builder.ToTable(t => t.HasCheckConstraint(
             "ck_subjects_term_kind_year_consistency",
-            "(term_kind = 'FullYear' AND term_in_year IS NULL) OR (term_kind <> 'FullYear' AND term_in_year IS NOT NULL)"));
+            "(term_kind IS NULL AND term_in_year IS NULL) " +
+            "OR (term_kind = 'FullYear' AND term_in_year IS NULL) " +
+            "OR (term_kind IS NOT NULL AND term_kind <> 'FullYear' AND term_in_year IS NOT NULL)"));
 
         builder.Ignore(s => s.DomainEvents);
     }

@@ -197,6 +197,71 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         detail.TotalHours.ShouldBe(128);
     }
 
+    /// <summary>
+    /// Una materia solo publica lo que su fuente oficial trae: la mayoría de las universidades no
+    /// publican código, tipo de cursada ni carga horaria. Crear y editar sin esos campos tiene que
+    /// responder bien y devolverlos en null, tanto en el detalle admin como en el catálogo público.
+    /// </summary>
+    [Fact]
+    public async Task Admin_creates_and_updates_subject_without_code_term_kind_or_hours()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        var create = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var detail = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created!.Id}");
+        detail!.Code.ShouldBeNull();
+        detail.TermKind.ShouldBeNull();
+        detail.TermInYear.ShouldBeNull();
+        detail.WeeklyHours.ShouldBeNull();
+        detail.TotalHours.ShouldBeNull();
+
+        var update = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/subjects/{created.Id}",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código Editada",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        update.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var afterUpdate = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created.Id}");
+        afterUpdate!.Name.ShouldBe("Materia Sin Código Editada");
+        afterUpdate.Code.ShouldBeNull();
+        afterUpdate.TermKind.ShouldBeNull();
+        afterUpdate.WeeklyHours.ShouldBeNull();
+        afterUpdate.TotalHours.ShouldBeNull();
+
+        var publicList = await admin.Client.GetOkAsync<List<PublicSubjectDto>>(
+            $"/api/academic/subjects?careerPlanId={planId}");
+        var publicRow = publicList!.Single(s => s.Id == created.Id);
+        publicRow.Code.ShouldBeNull();
+        publicRow.TermKind.ShouldBeNull();
+    }
+
     [Fact]
     public async Task Delete_with_dependents_returns_409_with_dependents_list()
     {
@@ -315,11 +380,11 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
     private sealed record StatusDto(Guid Id, bool IsActive);
     private sealed record ListDto(IReadOnlyList<SubjectDto> Items);
     private sealed record SubjectDto(
-        Guid Id, string Code, string Name, int YearInPlan, int? TermInYear, string TermKind,
-        int WeeklyHours, int TotalHours, string? Description, bool IsOfficial, bool IsActive);
+        Guid Id, string? Code, string Name, int YearInPlan, int? TermInYear, string? TermKind,
+        int? WeeklyHours, int? TotalHours, string? Description, bool IsOfficial, bool IsActive);
     private sealed record PublicSubjectDto(
-        Guid Id, Guid CareerPlanId, string Code, string Name, int YearInPlan, int? TermInYear,
-        string TermKind);
+        Guid Id, Guid CareerPlanId, string? Code, string Name, int YearInPlan, int? TermInYear,
+        string? TermKind);
     private sealed record DependentDto(Guid Id, string Code, string Name);
     private sealed record HasDependentsDto(string Code, IReadOnlyList<DependentDto> Dependents);
 }

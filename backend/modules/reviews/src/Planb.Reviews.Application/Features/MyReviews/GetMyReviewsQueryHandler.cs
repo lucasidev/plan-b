@@ -69,7 +69,7 @@ public static class GetMyReviewsQueryHandler
                     r.Id,
                     r.SubjectId,
                     subject?.Name ?? Unknown,
-                    subject?.Code ?? string.Empty,
+                    subject?.Code,
                     r.TermId,
                     labels.Terms.GetValueOrDefault(r.TermId) ?? Unknown,
                     r.ChairId,

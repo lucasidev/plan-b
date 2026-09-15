@@ -1,7 +1,7 @@
 namespace Planb.Academic.Application.Features.AdminSubjects;
 
 /// <summary>Materia que declara a la desactivada como correlativa (US-062, para el 409 has_dependents).</summary>
-public sealed record SubjectDependentItem(Guid Id, string Code, string Name);
+public sealed record SubjectDependentItem(Guid Id, string? Code, string Name);
 
 /// <summary>
 /// Resultado del intento de desactivar una materia (US-062). Cuando <see cref="Deactivated"/> es

@@ -33,9 +33,8 @@ public sealed class CreateSubjectEndpoint : ICarterModule
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            // TermKind es obligatorio (a diferencia de DegreeType/Cadence de Career), pero un
-            // string no-vacío inválido se rechaza con 400 (no null silencioso): un typo del admin
-            // no se traga.
+            // TermKind es opcional, pero un string no-vacío inválido se rechaza con 400: un typo
+            // del admin ("Trimestral") no se traga como si no hubiera mandado nada.
             var termKind = SubjectEnumParsing.ParseTermKind(body.TermKind);
             if (termKind.IsFailure)
             {
@@ -91,16 +90,16 @@ public sealed class CreateSubjectEndpoint : ICarterModule
 }
 
 /// <summary>
-/// Body del POST. Code/name/yearInPlan/termKind/weeklyHours/totalHours requeridos; termInYear
-/// (obligatorio salvo kind=FullYear, lo valida el dominio) y description opcionales. TermKind viaja
-/// como string (el endpoint lo parsea).
+/// Body del POST. Solo name/yearInPlan requeridos: la fuente oficial del plan no siempre publica
+/// code, termKind, weeklyHours ni totalHours. termInYear depende de termKind (lo valida el
+/// dominio); TermKind viaja como string (el endpoint lo parsea).
 /// </summary>
 public sealed record CreateSubjectRequest(
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
     string? TermKind,
-    int WeeklyHours,
-    int TotalHours,
+    int? WeeklyHours,
+    int? TotalHours,
     string? Description);
