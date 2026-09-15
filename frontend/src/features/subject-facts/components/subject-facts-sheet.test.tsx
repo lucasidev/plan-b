@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import type { Subject } from '@/features/browse-catalog';
 import type { SubjectChair, SubjectFacts } from '../types';
 import { SubjectFactsSheet } from './subject-facts-sheet';
 
@@ -280,6 +281,51 @@ describe('SubjectFactsSheet', () => {
     expect(screen.getByText(/6 dejaron alguna de las dos/i)).toBeInTheDocument();
   });
 
+  /** Contrato: `subjectCode` de un par de co-cursada es opcional (una materia puede no tener código). */
+  describe('co-cursada con y sin código', () => {
+    it('con código, la fila antepone "código · " antes del link', () => {
+      renderSheet(
+        facts({
+          takenWith: [
+            {
+              subjectId: 'subject-2',
+              subjectName: 'Álgebra I',
+              subjectCode: '111',
+              togetherCount: 23,
+              droppedCount: 6,
+              isPublished: true,
+              missingToPublish: 0,
+            },
+          ],
+        }),
+      );
+
+      const link = screen.getByRole('link', { name: 'Álgebra I' });
+      expect(link.parentElement?.textContent).toBe('111 · Álgebra I');
+    });
+
+    it('sin código, la fila muestra solo el link, sin separador colgando', () => {
+      renderSheet(
+        facts({
+          takenWith: [
+            {
+              subjectId: 'subject-9',
+              subjectName: 'Química General',
+              subjectCode: null,
+              togetherCount: 12,
+              droppedCount: 2,
+              isPublished: true,
+              missingToPublish: 0,
+            },
+          ],
+        }),
+      );
+
+      const link = screen.getByRole('link', { name: 'Química General' });
+      expect(link.parentElement?.textContent).toBe('Química General');
+    });
+  });
+
   /**
    * US-143 N1: el par bajo su propio piso (10 por par y período) dice cuánto le falta, sin
    * publicar ningún conteo todavía.
@@ -456,5 +502,68 @@ describe('SubjectFactsSheet', () => {
     );
 
     expect(container.textContent).not.toMatch(/mejor|recomendad|top|★/i);
+  });
+});
+
+/** Contrato: `code` de una materia del plan (aside "Las otras materias de Nº año") es opcional. */
+describe('SubjectFactsSheet: "Las otras materias de Nº año" con y sin código', () => {
+  const siblingSubjects: Subject[] = [
+    {
+      id: 'subject-1',
+      careerPlanId: 'plan-1',
+      code: '211',
+      name: 'Análisis Matemático II',
+      yearInPlan: 2,
+      termInYear: 1,
+      termKind: 'FourMonth',
+    },
+    {
+      id: 'subject-9',
+      careerPlanId: 'plan-1',
+      code: null,
+      name: 'Química General',
+      yearInPlan: 2,
+      termInYear: 1,
+      termKind: 'FourMonth',
+    },
+  ];
+
+  function facts(over: Partial<SubjectFacts> = {}): SubjectFacts {
+    return {
+      subjectId: 'subject-1',
+      subjectCode: '211',
+      subjectName: 'Análisis Matemático II',
+      yearInPlan: 2,
+      careerPlanId: 'plan-1',
+      careerId: 'career-1',
+      careerName: 'Ingeniería en Sistemas',
+      universityName: 'UNT',
+      isPublished: true,
+      totalVoices: 0,
+      publishingChairs: 0,
+      chairsBelowFloor: 0,
+      span: null,
+      completion: null,
+      enablesCount: 0,
+      spread: [],
+      shared: [],
+      takenWith: [],
+      chairs: [],
+      ...over,
+    };
+  }
+
+  it('con código, la fila trae el código como badge aparte del nombre', () => {
+    render(<SubjectFactsSheet facts={facts()} planSubjects={siblingSubjects} />);
+
+    const link = screen.getByRole('link', { name: /análisis matemático ii/i });
+    expect(link.querySelector('.pb-meta')?.textContent).toBe('211');
+  });
+
+  it('sin código, la fila muestra solo el nombre, sin badge vacío', () => {
+    render(<SubjectFactsSheet facts={facts()} planSubjects={siblingSubjects} />);
+
+    const link = screen.getByRole('link', { name: 'Química General' });
+    expect(link.querySelector('.pb-meta')).toBeNull();
   });
 });

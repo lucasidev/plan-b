@@ -13,7 +13,7 @@ export interface ChairFacts {
   chairName: string;
   subjectId: string;
   subjectName: string;
-  subjectCode: string;
+  subjectCode: string | null;
   leadTeacherName: string | null;
   /** A dónde lleva el nombre del titular (V06). Null junto con leadTeacherName: sin titular cargado. */
   leadTeacherId: string | null;

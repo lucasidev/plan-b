@@ -1,6 +1,7 @@
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { genericCrumbs } from '@/lib/member-shell';
+import { subjectLabel } from '@/lib/subject-label';
 import { ActiveCrumbs } from '../../_lib/active-crumbs';
 import { universityCrumbByPlan } from '../../_lib/resolve-university';
 
@@ -38,7 +39,7 @@ export default async function SubjectCrumbs({ params }: { params: Params }) {
         { label: 'Explorar', href: '/universities' },
         university,
         { label: facts.careerName, href: `/careers/${facts.careerId}`, truncate: true },
-        { label: `${facts.subjectCode} · ${facts.subjectName}` },
+        { label: subjectLabel(facts.subjectCode, facts.subjectName) },
       ]}
     />
   );

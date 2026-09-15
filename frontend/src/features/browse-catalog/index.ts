@@ -37,7 +37,7 @@ export type {
 export { groupCareersByCanonical } from './lib/group-careers-by-canonical';
 export { summarizeUniversitiesCoverage } from './lib/group-careers-by-university';
 export type { SubjectYearGroup } from './lib/group-subjects';
-export { groupSubjectsByYear } from './lib/group-subjects';
+export { compareSubjectsByCode, groupSubjectsByYear } from './lib/group-subjects';
 export type {
   Career,
   CareerCoverage,

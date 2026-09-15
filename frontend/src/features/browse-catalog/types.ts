@@ -48,11 +48,11 @@ export type CareerPlanSummary = {
 export type Subject = {
   id: string;
   careerPlanId: string;
-  code: string;
+  code: string | null;
   name: string;
   yearInPlan: number;
   termInYear: number | null;
-  termKind: string;
+  termKind: string | null;
 };
 
 /**

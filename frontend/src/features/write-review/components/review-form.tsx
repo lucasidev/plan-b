@@ -167,7 +167,9 @@ export function ReviewForm({ instrument, subjects, terms }: ReviewFormProps) {
     const q = query.trim().toLowerCase();
     if (!q) return subjects.slice(0, 8);
     return subjects
-      .filter((s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q))
+      .filter(
+        (s) => s.name.toLowerCase().includes(q) || (s.code?.toLowerCase().includes(q) ?? false),
+      )
       .slice(0, 8);
   }, [subjects, query]);
 

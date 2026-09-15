@@ -17,6 +17,7 @@ import {
 } from '@/features/browse-catalog';
 import type { CareerComparison, CareerComparisonOffering } from '@/features/career-comparison';
 import { formatShortDate } from '@/lib/format-date';
+import { subjectLabel } from '@/lib/subject-label';
 import {
   careerSustentoSentence,
   describeSubjectReviewsDot,
@@ -400,7 +401,7 @@ function PlanSection({ activePlan }: { activePlan: ActivePlan }) {
                       // Sin prefetch: ver el porqué en subject-grid.tsx.
                       prefetch={false}
                     >
-                      <span className="pb-code">{subject.code}</span>
+                      {subject.code && <span className="pb-code">{subject.code}</span>}
                       <span style={{ flex: 1 }}>{subject.name}</span>
                       {!isCovered && coverage && coverage.reviewCount > 0 && (
                         <span className="pb-meta" style={{ fontSize: 10 }}>
@@ -501,7 +502,7 @@ function StartHere({ activePlan }: { activePlan: ActivePlan }) {
           >
             <span>
               <span className="pb-name" style={{ fontSize: 13.5 }}>
-                {subject.code} · {subject.name}
+                {subjectLabel(subject.code, subject.name)}
               </span>
               <span className="pb-sub">{describeSubjectReviewsDot(coverage)}</span>
             </span>

@@ -1,4 +1,4 @@
-import type { Subject } from '@/features/browse-catalog';
+import { compareSubjectsByCode, type Subject } from '@/features/browse-catalog';
 
 export type SubjectsOfYear = {
   yearInPlan: number;
@@ -22,6 +22,6 @@ export function groupSubjectsByYearOnly(subjects: readonly Subject[]): SubjectsO
     .sort(([a], [b]) => a - b)
     .map(([yearInPlan, list]) => ({
       yearInPlan,
-      subjects: [...list].sort((a, b) => a.code.localeCompare(b.code)),
+      subjects: [...list].sort(compareSubjectsByCode),
     }));
 }
