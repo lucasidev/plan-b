@@ -2,7 +2,8 @@ import type { Crumb } from '@/components/layout/breadcrumbs';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fetchCareerFactsServer } from '@/features/career-facts';
 import { genericCrumbs } from '@/lib/member-shell';
-import { universityCrumb } from '../../_lib/resolve-university';
+import { ActiveCrumbs } from '../../_lib/active-crumbs';
+import { universityCrumbByCareer } from '../../_lib/resolve-university';
 
 type Params = Promise<{ id: string }>;
 
@@ -11,17 +12,22 @@ type Params = Promise<{ id: string }>;
  * {universidad corta} / {facultad} / {carrera}. La facultad sale de `academicUnitName` y no va si
  * viene null; cuando va, lleva al mismo link que la universidad (la maqueta no tiene ficha propia
  * de facultad). Mismo fetch que la página (`fetchCareerFactsServer`), memoizado por Next.
+ *
+ * Sin catch acá, un pedido que falla (no 404) tiraría abajo la página entera: el slot cae a las
+ * migas genéricas en cualquiera de los tres casos (carrera inexistente, universidad sin
+ * coincidencia, pedido que falla), nunca a un 500.
  */
 export default async function CareerCrumbs({ params }: { params: Params }) {
   const { id } = await params;
-  const facts = await fetchCareerFactsServer(id);
+  const pathname = `/careers/${id}`;
+  const facts = await fetchCareerFactsServer(id).catch(() => null);
   if (!facts) {
-    return <Breadcrumbs items={genericCrumbs(`/careers/${id}`)} />;
+    return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
 
-  const university = await universityCrumb(facts.universityName);
+  const university = await universityCrumbByCareer(facts.careerId);
   if (!university) {
-    return <Breadcrumbs items={genericCrumbs(`/careers/${id}`)} />;
+    return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
 
   const items: Crumb[] = [{ label: 'Explorar', href: '/universities' }, university];
@@ -32,5 +38,5 @@ export default async function CareerCrumbs({ params }: { params: Params }) {
   // nombre largo no le haga crecer el alto al topbar.
   items.push({ label: facts.careerName, truncate: true });
 
-  return <Breadcrumbs items={items} />;
+  return <ActiveCrumbs pathname={pathname} items={items} />;
 }
