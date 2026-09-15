@@ -75,7 +75,7 @@ function parseLeadingYears(raw: string): { whole: number; half: boolean } | null
 /** El egreso por cohorte como cuenta de cada 100 (`21,4 %` → 21): redondeado, para la oración de sustento. */
 export function cohortGraduationCount(fact: OfficialFact): number | null {
   if (!fact.value) return null;
-  const parsed = Number(fact.value.replace(',', '.').replace('%', '').trim());
+  const parsed = Number(fact.value.replace(',', '.').replace(/%/g, '').trim());
   return Number.isNaN(parsed) ? null : Math.round(parsed);
 }
 
