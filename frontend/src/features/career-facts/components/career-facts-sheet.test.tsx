@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
 import type { CareerCoverage, Subject, SubjectCoverage } from '@/features/browse-catalog';
+import type { CareerComparison } from '@/features/career-comparison';
 import type { CareerFacts } from '../types';
 import { CareerFactsSheet } from './career-facts-sheet';
 
@@ -10,7 +11,6 @@ const BASE: CareerFacts = {
   careerName: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
   universityName: 'Universidad del Norte Santo Tomás de Aquino',
   academicUnitName: null,
-  durationYears: null,
   totalSubjects: 21,
   coveredSubjects: 0,
   coveragePercent: 0,
@@ -39,6 +39,8 @@ function renderSheet(
     catalogCoverage?: CareerCoverage[];
     academicUnitName?: string | null;
     activePlan?: { year: number; subjects: Subject[]; subjectCoverage: SubjectCoverage[] } | null;
+    universityShort?: string | null;
+    comparison?: CareerComparison | null;
   } = {},
 ) {
   return render(
@@ -48,6 +50,8 @@ function renderSheet(
       catalogCoverage={overrides.catalogCoverage ?? []}
       academicUnitName={overrides.academicUnitName ?? null}
       activePlan={overrides.activePlan ?? null}
+      universityShort={overrides.universityShort ?? null}
+      comparison={overrides.comparison ?? null}
     />,
   );
 }
