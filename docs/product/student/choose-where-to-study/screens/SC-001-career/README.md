@@ -12,21 +12,22 @@
 
 ## Qué muestra
 
-- **Cabecera**: el eyebrow con la universidad, la facultad y el plan vigente (links), el nombre de la carrera y una línea ("Se dicta en la Facultad de Ingeniería de la UNSTA.").
-- **La tira de números**: años en el papel, egreso por cohorte (marcado "derivado" cuando lo es), materias medidas ("4 de 21") e instituciones que la dictan (cuántas dictan la misma carrera canónica; "solo acá" si ninguna otra).
-- **Datos oficiales**, con fuente y período, cada uno en el estado que tiene ([ADR-0090](../../../../../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)): publicado (el valor), derivado (el valor con el chip "derivado" y el link a su regla en Método), "No publicado por falta de datos" y "No aplica a esta carrera", con la explicación del relevamiento debajo. No sale de reseñas: es relevamiento propio contra la fuente pública, y nunca se muestra sin decir de dónde sale ([US-127](../../stories/US-127-see-how-long-it-really-takes/README.md), [US-133](../../stories/US-133-see-if-it-leads-to-graduation/README.md)).
-- **Cuánto de esta carrera está medido**: "4 de 21 materias" con su porcentaje y una barra, y el texto que dice qué pasa con el resto ("las 17 restantes todavía no juntan reseñas suficientes") ([US-134](../../stories/US-134-check-the-coverage-behind-the-card/README.md), [US-138](../../stories/US-138-understand-why-weight-differs-by-level/README.md)).
-- **El plan vigente, por año**: cada materia con link a su ficha; en negrita las que ya publican, con "28 reseñas en 3 cátedras" cuando juntaron alguna y "sin reseñas" cuando no.
-- **De la curaduría**: una nota editorial del equipo, sin nombres, con su procedencia dicha ("nota del equipo, leída de comentarios que no se publican") y su fecha ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
-- **A la derecha** (en pantalla ancha; debajo, en celular): "Por dónde empezar", las materias con reseñas de más a menos, y "Dónde estudiarla", la comparación con las otras instituciones que dictan la misma carrera.
-- **Salidas**: pedir si falta algo, reseñar.
+- **Cabecera**: el eyebrow con la universidad, la facultad y el plan vigente ("Carrera · UNSTA · Facultad de Ingeniería · plan 2018"), el nombre de la carrera y una línea armada con sus datos oficiales ("Dura 2 años y medio en el papel. En la realidad, ninguna fuente lo publica. De cada 100 que entran, egresan 21 (derivado de la institución entera)."), cada oración solo cuando su dato está. Las migas del topbar llevan a Explorar y a la institución.
+- **La tira de números**: años en el papel ("2 ½"), egreso por cohorte ("derivado" cuando lo es), materias medidas ("4 de 21") y cuántas instituciones más dictan la misma carrera canónica, esta última solo cuando otra la dicta.
+- **Datos oficiales, con su fuente al lado**, cada uno en el estado que tiene ([ADR-0090](../../../../../decisions/0090-an-official-datum-is-a-dated-claim-with-value-source-and-status.md)): publicado (el valor, y debajo la fuente con su período, precedidas por la nota del relevamiento cuando la hay), derivado (el valor con el chip "derivado", que lleva a su regla en Método, y debajo "Derivado · la regla está en Método"), "No publicado por falta de datos" y "No aplica a esta carrera", con la explicación del relevamiento debajo. Un campo sin relevar dice "Todavía no se relevó para esta oferta". No sale de reseñas: es relevamiento propio contra la fuente pública, y nunca se muestra sin decir de dónde sale ([US-127](../../stories/US-127-see-how-long-it-really-takes/README.md), [US-133](../../stories/US-133-see-if-it-leads-to-graduation/README.md)).
+- **Cuánto de esta carrera está medido**: "4 de 21 materias" con su porcentaje y una barra, y el texto que dice qué pasa con el resto ("Las 17 restantes todavía no juntan reseñas suficientes.") ([US-134](../../stories/US-134-check-the-coverage-behind-the-card/README.md), [US-138](../../stories/US-138-understand-why-weight-differs-by-level/README.md)).
+- **El plan vigente**, compacto y en una columna por año ("El plan 2018 · 21 materias · las medidas en negrita"): cada materia con su código y el link a su ficha, en negrita las medidas y con "9 reseñas" al lado de las que juntaron alguna sin llegar a medirse.
+- **La nota del equipo**: entre comillas, sin nombres, con su procedencia y su fecha arriba ("Nota del equipo · leída de comentarios que no se publican · 13/09/2026") ([ADR-0084](../../../../../decisions/0084-free-text-feeds-curation-and-is-never-published.md)).
+- **A la derecha** (en pantalla ancha; debajo, en celular): "Por dónde empezar", las materias con reseñas ("28 reseñas · 3 cátedras"), primero las medidas y atenuadas las que todavía no, cada grupo de más a menos reseñas; y "Dónde estudiarla", las otras instituciones que dictan la misma carrera, con su facultad, su localidad, su tipo y cuánto dura en el papel, sin ganador, y el link para compararlas lado a lado.
+- **Sin pie**: Escribir reseña queda en el topbar.
 
 ## Estados
 
-- **Vacía**: la carrera está cargada pero ninguna cursada la sostiene todavía; los datos oficiales se muestran igual (no dependen de reseñas), la cobertura dice que arranca vacía y el plan se ve sin negritas ni conteos ([US-136](../../stories/US-136-understand-being-the-first-voice/README.md)).
+- **Vacía**: la carrera está cargada pero ninguna cursada la sostiene todavía; los datos oficiales se muestran igual (no dependen de reseñas), la cobertura dice que ninguna materia junta todavía reseñas suficientes, el plan se ve sin negritas ni conteos y "Por dónde empezar" no se dibuja ([US-136](../../stories/US-136-understand-being-the-first-voice/README.md)).
 - **Cobertura parcial**: se muestra el número real de materias medidas, aunque sea bajo; ninguna materia se marca como medida con menos de 10 reseñas en alguna de sus cátedras ([US-134](../../stories/US-134-check-the-coverage-behind-the-card/README.md)).
-- **Sin plan vigente**: la sección del plan y "Por dónde empezar" no se dibujan; el resto de la ficha sí.
-- **Sin datos oficiales todavía**: si el relevamiento no llegó a esa carrera, el bloque lo dice en vez de mostrar un espacio en blanco sin explicación.
+- **Sin plan vigente**: la sección del plan y "Por dónde empezar" no se dibujan; en su lugar queda el link a los planes de la carrera ("Ver los planes").
+- **Sin datos oficiales todavía**: el bloque lo dice ("Todavía no tenemos datos oficiales de esta carrera.") en vez de mostrar un espacio en blanco.
+- **Sola en el catálogo**: si ninguna otra institución dicta la misma carrera, la tira no lleva esa cuenta y "Dónde estudiarla" no se dibuja.
 - **No cargada**: no es un estado de esta ficha, la ficha no existe todavía; ese vacío se explica en Explorar o Buscar.
 
 ## Lo que no muestra nunca
@@ -35,7 +36,7 @@ Ningún puntaje ni escala 1 a 5 ([ADR-0083](../../../../../decisions/0083-the-fi
 
 ## Adónde va
 
-Llega desde: Explorar, Buscar, La cola (cuando se carga lo que alguien pidió), Registro (precarga institución y carrera), la Ficha de materia (subir a su carrera), Mis aportes y Dónde estudiarla. Va a: la Ficha de materia de cada materia del plan, [Dónde estudiarla](../SC-008-where-to-study/README.md) (comparar instituciones), la [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md), [Pedir](../../../request-a-career/screens/SC-010-request/README.md) (si algo falta), Reseñar (con cuenta) y [Método](../../../take-the-data/screens/SC-021-method/README.md) (cómo se calcula cada derivado).
+Llega desde: Explorar, Buscar, La cola (cuando se carga lo que alguien pidió), Registro (precarga institución y carrera), la Ficha de materia (subir a su carrera), Mis aportes y Dónde estudiarla. Va a: la Ficha de materia de cada materia del plan y de "Por dónde empezar", la ficha de la misma carrera en otra institución y [Dónde estudiarla](../SC-008-where-to-study/README.md) (comparar lado a lado), la [Ficha de institución](../../../../reviewed/reply/screens/SC-005-institution/README.md) (por las migas), los planes de la carrera cuando no hay uno vigente y [Método](../../../take-the-data/screens/SC-021-method/README.md) (cómo se calcula cada derivado).
 
 ## Decisiones que aplica
 
