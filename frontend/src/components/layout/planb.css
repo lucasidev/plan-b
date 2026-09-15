@@ -585,6 +585,10 @@
     font-size: 32px;
     line-height: 1.1;
     margin: 6px 0 8px;
+    /* La maqueta no fija el peso: el h1 usa la negrita del navegador, que con Newsreader cargada
+     * solo en 400/500/600 (src/lib/fonts.ts) resuelve en 600. El reset de Tailwind deja los
+     * headings en `font-weight: inherit`, así que acá se fija a mano. */
+    font-weight: 600;
   }
   /* La maqueta usa `.h-sub`/`.h-meta` (pensadas para `.pb-page`, los frames A/B/C) también dentro
    * de `.pb-content` (`V.explore().head`, frameApp): sin esto, esas dos clases no tendrían efecto

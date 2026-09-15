@@ -11,14 +11,13 @@ import './planb.css';
 export type Crumb = {
   label: string;
   href?: string;
-  /** Trunca ese segmento con ellipsis (US-129/US-147): la carrera no tiene nombre corto en el
-   * backend y va entera, así que sin esto un nombre largo hace crecer el alto del topbar. */
-  truncate?: boolean;
 };
 
 /**
  * Migas del topbar (`frameApp` línea 640 y `crumbs()` 418-424 de la maqueta aprobada): con una
- * sola, `.pb-where`; con más, `.pb-crumbs` con separadores y la última en negrita.
+ * sola, `.pb-where`; con más, `.pb-crumbs` con separadores y la última en negrita. `.pb-crumbs`
+ * hace wrap (línea 88 de la maqueta): un segmento largo (la carrera no tiene nombre corto en el
+ * backend) baja a su propia línea en vez de recortarse.
  */
 export function Breadcrumbs({ items }: { items: ReadonlyArray<Crumb> }) {
   if (items.length === 0) return null;
@@ -26,9 +25,7 @@ export function Breadcrumbs({ items }: { items: ReadonlyArray<Crumb> }) {
   if (items.length === 1) {
     return (
       <span className="pb-where">
-        <b>
-          <CrumbLabel crumb={items[0]} />
-        </b>
+        <b>{items[0].label}</b>
       </span>
     );
   }
@@ -41,40 +38,17 @@ export function Breadcrumbs({ items }: { items: ReadonlyArray<Crumb> }) {
           <Fragment key={item.label}>
             {index > 0 && <span aria-hidden="true">/</span>}
             {isLast ? (
-              <b>
-                <CrumbLabel crumb={item} />
-              </b>
+              <b>{item.label}</b>
             ) : item.href ? (
               <Link href={item.href} prefetch={false}>
-                <CrumbLabel crumb={item} />
+                {item.label}
               </Link>
             ) : (
-              <span>
-                <CrumbLabel crumb={item} />
-              </span>
+              <span>{item.label}</span>
             )}
           </Fragment>
         );
       })}
     </nav>
-  );
-}
-
-function CrumbLabel({ crumb }: { crumb: Crumb }) {
-  if (!crumb.truncate) return <>{crumb.label}</>;
-
-  return (
-    <span
-      style={{
-        display: 'inline-block',
-        maxWidth: 260,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        verticalAlign: 'bottom',
-      }}
-    >
-      {crumb.label}
-    </span>
   );
 }

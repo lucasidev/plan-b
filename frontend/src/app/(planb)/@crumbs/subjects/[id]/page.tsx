@@ -34,7 +34,7 @@ export default async function SubjectCrumbs({ params }: { params: Params }) {
       items={[
         { label: 'Explorar', href: '/universities' },
         university,
-        { label: facts.careerName, href: `/careers/${facts.careerId}`, truncate: true },
+        { label: facts.careerName, href: `/careers/${facts.careerId}` },
         { label: `${facts.subjectCode} · ${facts.subjectName}` },
       ]}
     />
