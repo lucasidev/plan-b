@@ -80,4 +80,59 @@ describe('Breadcrumbs', () => {
     const separator = container.querySelector('[aria-hidden="true"]');
     expect(separator).toHaveTextContent('/');
   });
+
+  /**
+   * `truncate` (la carrera, sin nombre corto en el backend): se recorta con ellipsis en vez de
+   * hacer wrap, y el nombre completo va al `title` para no perderlo. Las otras migas no lo llevan.
+   */
+  it('un segmento con truncate lleva la clase de recorte y el nombre completo en el title', () => {
+    render(
+      <Breadcrumbs
+        items={[
+          { label: 'Explorar', href: '/universities' },
+          { label: 'UNSTA', href: '/universities/unsta/careers' },
+          {
+            label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+            href: '/careers/career-1',
+            truncate: true,
+          },
+          { label: '101 · Álgebra I' },
+        ]}
+      />,
+    );
+
+    const career = screen.getByRole('link', {
+      name: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    });
+    expect(career).toHaveClass('pb-crumb-truncate');
+    expect(career).toHaveAttribute(
+      'title',
+      'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    );
+
+    const university = screen.getByRole('link', { name: 'UNSTA' });
+    expect(university).not.toHaveClass('pb-crumb-truncate');
+    expect(university).not.toHaveAttribute('title');
+  });
+
+  /** La última miga (activa, en negrita) también puede llevar truncate: es el caso de /careers/[id]. */
+  it('la miga activa (última, en negrita) también puede llevar truncate', () => {
+    render(
+      <Breadcrumbs
+        items={[
+          { label: 'Explorar', href: '/universities' },
+          {
+            label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+            truncate: true,
+          },
+        ]}
+      />,
+    );
+
+    const career = screen.getByText(
+      'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    );
+    expect(career.tagName).toBe('B');
+    expect(career).toHaveClass('pb-crumb-truncate');
+  });
 });
