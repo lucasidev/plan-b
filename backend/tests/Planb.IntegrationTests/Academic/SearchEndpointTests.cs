@@ -235,7 +235,8 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         using var client = _fixture.Factory.CreateClient();
 
         // El seed tiene tres cátedras sobre 211 Fundamentos de Control de Calidad: Pérez,
-        // González y Ruiz.
+        // González y Ruiz. La búsqueda tolera errores de tipeo, así que una cátedra de apellido
+        // parecido (Peralta) también aparece: la que coincide por prefijo tiene que ir primera.
         var response = await client.GetAsync("/api/search?q=perez");
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -244,7 +245,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         // Buscar un apellido tiene que poder llevar a la cátedra y no solo a la persona: lo que el
         // producto publica es de la cátedra (ADR-0083), así que si la búsqueda no la devuelve, su
         // ficha es inalcanzable salvo tipeando un UUID.
-        var chair = body!.Items.SingleOrDefault(i => i.Type == "chair");
+        var chair = body!.Items.FirstOrDefault(i => i.Type == "chair");
         chair.ShouldNotBeNull();
         chair!.Label.ShouldBe("Pérez");
 
