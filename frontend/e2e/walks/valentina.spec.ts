@@ -431,13 +431,13 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
     await page.goto(`/subjects/${SUBJECT_FUNDAMENTOS_ID}`);
     await page.waitForLoadState('networkidle').catch(() => {});
 
-    // El conteo ya no vive en el nombre del link (V15, #519): cada fila trae el nombre solo, y
-    // debajo su frase de conclusión ("La cátedra {nombre} {frase}: lo dice el N % de sus M
-    // reseñas.") o, sin conclusión todavía, "N reseñas, todavía sin conclusiones."; las cátedras
-    // sin ninguna reseña se pliegan en "K cátedras más · sin reseñas todavía".
-    const perezRow = page.getByRole('link', { name: 'Pérez', exact: true });
-    const gonzalezRow = page.getByRole('link', { name: 'González', exact: true });
-    const ruizRow = page.getByRole('link', { name: 'Ruiz', exact: true });
+    // El link es la fila entera, "Cátedra {nombre}" como texto de apertura, y debajo su frase de
+    // conclusión ("La cátedra {nombre} {frase}: lo dice el N % de sus M reseñas.") o, sin
+    // conclusión todavía, "N reseñas, todavía sin conclusiones."; las cátedras sin ninguna reseña
+    // se pliegan en "K cátedras más" + "sin reseñas todavía".
+    const perezRow = page.getByRole('link', { name: /^Cátedra Pérez/ });
+    const gonzalezRow = page.getByRole('link', { name: /^Cátedra González/ });
+    const ruizRow = page.getByRole('link', { name: /^Cátedra Ruiz/ });
     const perezConclusion = page.getByText(
       /La cátedra Pérez|^\d+ reseñas, todavía sin conclusiones/,
     );
@@ -445,7 +445,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       /La cátedra González|^\d+ reseñas, todavía sin conclusiones/,
     );
     const ruizConclusion = page.getByText(/La cátedra Ruiz|^\d+ reseñas, todavía sin conclusiones/);
-    const foldedLine = page.getByText(/cátedras? más · sin reseñas todavía/);
+    const foldedLine = page.getByText(/^\d+ cátedras? más$/);
     const hasPerez = await checkVisible(
       perezRow,
       'Pérez debe figurar entre las cátedras con reseñas',
@@ -596,7 +596,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '07-chair-publishing.png',
     });
 
-    const denominatorLine = page.getByText('Aprobada o regular, sobre 14 cursadas reseñadas.');
+    const denominatorLine = page.getByText(/Aprobada o regular, \d+ de 14 cursadas reseñadas\./);
     const hasDenominator = await isVisible(denominatorLine, 3000);
     record({
       step: 7,

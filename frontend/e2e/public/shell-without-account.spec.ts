@@ -30,8 +30,10 @@ test.describe('El shell del catálogo, con y sin cuenta', () => {
       timeout: 30_000,
     });
     // "Explorar" tiene un camino siempre visible: el item del sidebar (desktop) o el link fijo
-    // del topbar por debajo de `lg` (mobile), nunca los dos a la vez.
-    await expect(page.getByRole('link', { name: 'Explorar' })).toBeVisible();
+    // del topbar por debajo de `lg` (mobile), nunca los dos a la vez. En una ficha, además, las
+    // migas del topbar agregan su propio "Explorar" (US-129/US-147): `.first()` alcanza, lo que
+    // importa acá es que haya un camino de vuelta, no cuál de ellos es.
+    await expect(page.getByRole('link', { name: 'Explorar' }).first()).toBeVisible();
     if (hasSidebar(page)) {
       await expect(page.getByRole('link', { name: 'Método' })).toBeVisible();
       await expect(page.getByRole('link', { name: 'Mis aportes' })).toHaveCount(0);
@@ -45,7 +47,7 @@ test.describe('El shell del catálogo, con y sin cuenta', () => {
     // ningún redirect ni modal a Ingresar: el shell se muestra igual, con Ingresar como link.
     await page.goto(`/careers/${TUDCS_CAREER_ID}`);
     await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`));
-    await expect(page.getByRole('link', { name: 'Explorar' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Explorar' }).first()).toBeVisible();
     await expect(page.getByRole('link', { name: /^ingresar$/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /^ingresar$/i })).toBeInViewport();
   });

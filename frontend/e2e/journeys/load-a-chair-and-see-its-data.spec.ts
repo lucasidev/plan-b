@@ -33,13 +33,13 @@ async function signIn(page: Page, email: string, password: string) {
 }
 
 /**
- * Cuántas cátedras plegó "Sus cátedras" ("K cátedras más · sin reseñas todavía", SC-007), o 0 si
- * no hay ninguna plegada. El test no borra la cátedra que crea, así que de la segunda corrida en
- * adelante la materia ya arranca con una plegada de antes: comparar contra un número fijo
- * flaquearía, contra el valor leído antes y después de crear no.
+ * Cuántas cátedras plegó "Sus cátedras" ("K cátedras más" y "sin reseñas todavía" en dos spans
+ * separados, SC-007), o 0 si no hay ninguna plegada. El test no borra la cátedra que crea, así que
+ * de la segunda corrida en adelante la materia ya arranca con una plegada de antes: comparar
+ * contra un número fijo flaquearía, contra el valor leído antes y después de crear no.
  */
 async function foldedChairCount(page: Page): Promise<number> {
-  const line = page.getByText(/cátedras? más · sin reseñas todavía/);
+  const line = page.getByText(/^\d+ cátedras? más$/);
   if ((await line.count()) === 0) {
     return 0;
   }
@@ -103,7 +103,8 @@ test.describe('Cargar una cátedra y verla llegar hasta el alumno (#376)', () =>
       await context.clearCookies();
       await page.goto(`/subjects/${SUBJECT_211}`);
       await expect(page.getByText('Sus cátedras')).toBeVisible({ timeout: 15_000 });
-      await expect(page.getByText(/cátedras? más · sin reseñas todavía/)).toBeVisible();
+      await expect(page.getByText(/^\d+ cátedras? más$/)).toBeVisible();
+      await expect(page.getByText('sin reseñas todavía')).toBeVisible();
       expect(await foldedChairCount(page)).toBe(foldedBefore + 1);
     } finally {
       await deleteStudent(request, student);
@@ -163,11 +164,14 @@ test.describe('El dato nuevo se lee y se audita sin cuenta (#376)', () => {
     await page.goto(`/subjects/${SUBJECT_211}`);
 
     // Sin sesión: en ningún momento aparece un pedido de cuenta para leer.
-    await expect(page.getByText('Con qué se llevó')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Co-cursada · sale solo de las reseñas')).toBeVisible({
+      timeout: 15_000,
+    });
     await expect(page.getByText(/la llevaron junto con esta/i).first()).toBeVisible();
 
-    // Y desde el número se llega a la regla que lo calculó.
-    await page.getByRole('link', { name: /cómo calculamos esto/i }).click();
+    // Y desde ahí se llega a la regla que lo calculó: la ficha de materia ya no trae el link "¿Cómo
+    // calculamos esto?" (esa es la ficha de cátedra), así que se llega por Método del sidebar.
+    await page.getByRole('link', { name: /^método$/i }).click();
     await expect(page).toHaveURL(/\/method$/);
     await expect(
       page.getByRole('heading', { name: /cómo se calcula lo que publicamos/i }),

@@ -126,16 +126,16 @@ test.describe('Catálogo público (US-001)', () => {
       page.getByRole('heading', { name: /^En más de una institución/, level: 2 }),
     ).toBeVisible();
 
-    // Una fila por carrera canónica, no un heading por grupo: la institución dentro de esa fila es
-    // el link a su propia oferta (ADR-0096, maqueta aprobada), con su nombre corto.
-    const tecnicaturaGroup = page
-      .getByRole('listitem')
-      .filter({ hasText: 'Tecnicatura o técnico en programación' });
-    await expect(tecnicaturaGroup).toBeVisible();
-    const unstaLink = tecnicaturaGroup.getByRole('link', { name: 'UNSTA' });
-    await expect(unstaLink).toBeVisible();
-    await unstaLink.click();
-    await expect(page).toHaveURL(new RegExp(`/careers/${TUDCS_CAREER_ID}$`), { timeout: 30_000 });
+    // Una fila por carrera canónica, no un heading por grupo: las instituciones son texto plano
+    // adentro de la fila (sin link propio), y la fila entera lleva a compararlas lado a lado
+    // (ADR-0096, maqueta aprobada).
+    const tecnicaturaRow = page.getByRole('link', {
+      name: /tecnicatura o técnico en programación/i,
+    });
+    await expect(tecnicaturaRow).toBeVisible();
+    await expect(tecnicaturaRow).toContainText('UNSTA');
+    await tecnicaturaRow.click();
+    await expect(page).toHaveURL(/\/careers\/[^/]+\/where-to-study$/, { timeout: 30_000 });
   });
 
   test('US-222: /careers muestra primero "en más de una institución" y no mezcla sus grupos con "en una sola"', async ({
