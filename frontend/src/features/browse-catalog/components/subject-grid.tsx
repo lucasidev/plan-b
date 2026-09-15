@@ -42,13 +42,17 @@ export function SubjectGrid({
             Año {yearGroup.yearInPlan}
           </h2>
           <div className="mt-3 flex flex-col gap-5">
-            {yearGroup.terms.map((term) => (
-              // El grupo sin cadencia no tiene título (no hay con qué nombrarlo): sin este borde
-              // sus materias quedan pegadas debajo del título del grupo anterior y se leen como
-              // parte de él (ej. como si fueran anuales).
+            {yearGroup.terms.map((term, termIndex) => (
+              // El grupo sin cadencia no tiene título (no hay con qué nombrarlo): el borde lo
+              // separa del grupo anterior del mismo año para que sus materias no se lean como
+              // parte de él (ej. como si fueran anuales). Solo cuando hay grupo anterior: si es
+              // el único del año (todo el plan sin cuatrimestres, como UNSTA y UTN), el borde
+              // quedaría pegado debajo de "Año N" sin separar nada.
               <div
                 key={term.key}
-                className={term.termKind === null ? 'border-t border-line pt-4' : undefined}
+                className={
+                  term.termKind === null && termIndex > 0 ? 'border-t border-line pt-4' : undefined
+                }
               >
                 {term.termKind !== null && (
                   <h3 className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-3">
