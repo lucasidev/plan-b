@@ -1,9 +1,16 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Planb.Academic.Application.Features.Search;
+using Planb.Academic.Domain.CareerPlans;
+using Planb.Academic.Domain.Careers;
+using Planb.Academic.Domain.Subjects;
+using Planb.Academic.Domain.Universities;
+using Planb.Academic.Infrastructure.Persistence;
 using Planb.Identity.Domain.Users;
 using Planb.IntegrationTests.Infrastructure;
+using Planb.SharedKernel.Abstractions.Clock;
 using Shouldly;
 using Xunit;
 
@@ -51,7 +58,84 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         body!.Items.ShouldNotBeEmpty();
         body.Items[0].Type.ShouldBe("subject");
         body.Items[0].Id.ShouldBe(Subject101);
-        body.Items[0].Sublabel.ShouldBe("101");
+        // Universidad y carrera, que es lo que distingue dos materias iguales en catálogos
+        // distintos; el código va al final porque esta materia lo tiene.
+        body.Items[0].Sublabel.ShouldBe(
+            "Universidad del Norte Santo Tomás de Aquino · Tecnicatura Universitaria en Desarrollo y Calidad de Software · 101");
+    }
+
+    /// <summary>
+    /// ADR-0097, hallazgo de revisión: con code null, rank_exact y rank_prefix daban NULL, y el
+    /// ORDER BY ... DESC de Postgres pone los NULL primero, así que una materia sin código
+    /// terminaba arriba de una con match de nombre real. Prueba también el sublabel: universidad y
+    /// carrera siempre, código al final solo cuando la materia lo tiene.
+    /// </summary>
+    [Fact]
+    public async Task A_subject_without_code_never_outranks_a_real_prefix_match_and_shows_university_and_career_as_sublabel()
+    {
+        var term = $"Zzzterm{Guid.NewGuid():N}"[..20];
+        var (withCodeId, withoutCodeId, universityName, careerName) =
+            await SeedSubjectsWithAndWithoutCodeAsync(term);
+
+        using var client = _fixture.Factory.CreateClient();
+        var body = await client.GetOkAsync<SearchResponse>(
+            $"/api/search?q={Uri.EscapeDataString(term)}&limit=50");
+
+        var subjects = body.Items.Where(i => i.Type == "subject").ToList();
+        var withCodeIndex = subjects.FindIndex(i => i.Id == withCodeId);
+        var withoutCodeIndex = subjects.FindIndex(i => i.Id == withoutCodeId);
+        withCodeIndex.ShouldBeGreaterThanOrEqualTo(0);
+        withoutCodeIndex.ShouldBeGreaterThanOrEqualTo(0);
+
+        // El prefix match real (nombre que arranca con el término) va antes que la coincidencia
+        // solo por substring de una materia sin código: antes del fix, el NULL de rank_prefix la
+        // mandaba arriba de todo sin importar la relevancia.
+        withCodeIndex.ShouldBeLessThan(withoutCodeIndex);
+
+        subjects[withCodeIndex].Sublabel.ShouldBe($"{universityName} · {careerName} · ZT-01");
+        subjects[withoutCodeIndex].Sublabel.ShouldBe($"{universityName} · {careerName}");
+    }
+
+    /// <summary>
+    /// Arma Career + CareerPlan + dos materias bajo UNSTA directo por DbContext (mismo idiom que
+    /// <c>AdminSubjectsEndpointTests.CreateCareerPlanAsync</c>): una con código cuyo nombre arranca
+    /// con <paramref name="term"/> (prefix match real) y una sin código que solo lo tiene en el
+    /// medio del nombre (substring, nunca prefix). Esto prueba el read de búsqueda, no el alta.
+    /// </summary>
+    private async Task<(Guid WithCodeId, Guid WithoutCodeId, string UniversityName, string CareerName)>
+        SeedSubjectsWithAndWithoutCodeAsync(string term)
+    {
+        using var scope = _fixture.Factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AcademicDbContext>();
+        var clock = scope.ServiceProvider.GetRequiredService<IDateTimeProvider>();
+
+        var unique = Guid.NewGuid().ToString("N")[..8];
+        var career = Career.Create(
+            new UniversityId(AcademicSeedUnstaId),
+            $"Carrera de Búsqueda {unique}",
+            $"carrera-busqueda-{unique}",
+            clock,
+            isOfficial: true).Value;
+        db.Careers.Add(career);
+
+        var plan = CareerPlan.Create(career.Id, 2020, clock, isOfficial: true).Value;
+        db.CareerPlans.Add(plan);
+
+        var withCode = Subject.Create(
+            plan.Id, code: "ZT-01", name: $"{term} Cursada", yearInPlan: 1,
+            termInYear: null, termKind: null, weeklyHours: null, totalHours: null,
+            description: null, clock: clock, isOfficial: true).Value;
+        var withoutCode = Subject.Create(
+            plan.Id, code: null, name: $"Materia sobre {term}", yearInPlan: 1,
+            termInYear: null, termKind: null, weeklyHours: null, totalHours: null,
+            description: null, clock: clock, isOfficial: true).Value;
+        db.Subjects.AddRange(withCode, withoutCode);
+
+        await db.SaveChangesAsync();
+
+        var university = await db.Universities.FindAsync(new UniversityId(AcademicSeedUnstaId));
+
+        return (withCode.Id.Value, withoutCode.Id.Value, university!.Name, career.Name);
     }
 
     [Fact]
