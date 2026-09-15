@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { OfficialFact } from '@/components/facts';
 import type { CareerCoverage, Subject, SubjectCoverage } from '@/features/browse-catalog';
-import type { CareerComparison } from '@/features/career-comparison';
+import type { CareerComparison, CareerComparisonOffering } from '@/features/career-comparison';
 import type { CareerFacts } from '../types';
 import { CareerFactsSheet } from './career-facts-sheet';
 
@@ -22,7 +22,7 @@ const PAPER_DURATION: OfficialFact = {
   subjectId: 'career-1',
   field: 'paper_duration',
   status: 'Published',
-  value: '2.5',
+  value: '2 años y medio',
   unit: 'years',
   period: 'plan vigente',
   sourceName: 'Sitio UNSTA',
@@ -84,6 +84,20 @@ function subject(overrides: Partial<Subject> & { id: string }): Subject {
   };
 }
 
+function offering(
+  overrides: Partial<CareerComparisonOffering> & { careerId: string; universityName: string },
+): CareerComparisonOffering {
+  return {
+    careerName: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    universityId: 'university-1',
+    academicUnitName: null,
+    localityName: null,
+    institutionKind: null,
+    facts: [],
+    ...overrides,
+  };
+}
+
 describe('CareerFactsSheet', () => {
   it('muestra el nombre de la carrera como título', () => {
     renderSheet(BASE);
@@ -91,45 +105,99 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByRole('heading', { level: 1, name: BASE.careerName })).toBeInTheDocument();
   });
 
-  /** El eyebrow es la jerarquía completa: carrera, universidad, facultad (si se resolvió) y plan vigente. */
-  it('el eyebrow dice la carrera, la universidad, la facultad y el plan vigente', () => {
+  /** El eyebrow es la jerarquía completa: carrera, universidad corta, facultad (si se resolvió) y plan vigente. */
+  it('el eyebrow dice la carrera, la universidad corta, la facultad y el plan vigente', () => {
     renderSheet(BASE, [], {
       academicUnitName: 'Facultad de Ingeniería',
       activePlan: { year: 2024, subjects: [], subjectCoverage: [] },
+      universityShort: 'UNSTA',
     });
 
     expect(
-      screen.getByText(
-        'Carrera · Universidad del Norte Santo Tomás de Aquino · Facultad de Ingeniería · plan 2024',
-      ),
+      screen.getByText('Carrera · UNSTA · Facultad de Ingeniería · plan 2024'),
     ).toBeInTheDocument();
   });
 
-  it('sin facultad ni plan resueltos, el eyebrow no inventa esos segmentos', () => {
-    renderSheet(BASE);
-
-    expect(
-      screen.getByText('Carrera · Universidad del Norte Santo Tomás de Aquino'),
-    ).toBeInTheDocument();
-  });
-
-  /** SC-001: la línea bajo el título dice la facultad y la universidad, en prosa. */
-  it('con facultad resuelta, la línea bajo el título la nombra en una oración', () => {
+  /** `universityShort` es un pedido nuevo de esta pantalla: si falla (null), ese segmento no se inventa. */
+  it('sin universityShort resuelto, el eyebrow no inventa ese segmento', () => {
     renderSheet(BASE, [], { academicUnitName: 'Facultad de Ingeniería' });
 
+    expect(screen.getByText('Carrera · Facultad de Ingeniería')).toBeInTheDocument();
+  });
+
+  it('sin ningún segmento resuelto, el eyebrow dice solo "Carrera"', () => {
+    renderSheet(BASE);
+
+    expect(screen.getByText('Carrera')).toBeInTheDocument();
+  });
+
+  /** US-127: la línea de sustento se arma con los datos oficiales, una oración por dato presente. */
+  it('la línea de sustento dice la duración en el papel, que la real no la publica nadie, y el egreso derivado', () => {
+    renderSheet(BASE, [
+      PAPER_DURATION,
+      {
+        id: 'fact-real-duration',
+        subjectId: 'career-1',
+        field: 'real_duration',
+        status: 'NotPublished',
+        value: null,
+        unit: null,
+        period: null,
+        sourceName: 'SPU',
+        sourceUrl: 'https://spu.example',
+        derivationRuleId: null,
+        note: 'Ninguna fuente pública releva la duración real por carrera.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+      {
+        id: 'fact-cohort-graduation',
+        subjectId: 'career-1',
+        field: 'cohort_graduation',
+        status: 'Derived',
+        value: '21,4 %',
+        unit: 'percent',
+        period: '2022',
+        sourceName: 'Anuario SPU',
+        sourceUrl: 'https://spu.example/anuario',
+        derivationRuleId: 'graduation-flow-proxy',
+        note: 'Proxy de flujo institucional.',
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
     expect(
       screen.getByText(
-        'Se dicta en la Facultad de Ingeniería de la Universidad del Norte Santo Tomás de Aquino.',
+        'Dura 2 años y medio en el papel. En la realidad, ninguna fuente lo publica. De cada 100 que entran, egresan 21 (derivado de la institución entera).',
       ),
     ).toBeInTheDocument();
   });
 
-  it('sin facultad resuelta, la línea nombra solo la universidad', () => {
+  /** Publicado (no derivado), el egreso no lleva el paréntesis. */
+  it('con el egreso por cohorte publicado (no derivado), la oración no lleva el paréntesis', () => {
+    renderSheet(BASE, [
+      {
+        id: 'fact-cohort-graduation',
+        subjectId: 'career-1',
+        field: 'cohort_graduation',
+        status: 'Published',
+        value: '21,4 %',
+        unit: 'percent',
+        period: '2022',
+        sourceName: 'Anuario SPU',
+        sourceUrl: 'https://spu.example/anuario',
+        derivationRuleId: null,
+        note: null,
+        relievedAt: '2026-09-07T12:00:00Z',
+      },
+    ]);
+
+    expect(screen.getByText('De cada 100 que entran, egresan 21.')).toBeInTheDocument();
+  });
+
+  it('sin ningún dato oficial relevado, no dibuja la línea de sustento', () => {
     renderSheet(BASE);
 
-    expect(
-      screen.getByText('Se dicta en la Universidad del Norte Santo Tomás de Aquino.'),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/dura .* en el papel\./)).not.toBeInTheDocument();
   });
 
   /** US-127 N1: sin ningún dato oficial relevado, el bloque entero lo dice, no un espacio vacío. */
@@ -143,17 +211,14 @@ describe('CareerFactsSheet', () => {
   it('muestra dura en el papel publicado, con su fuente y su período', () => {
     renderSheet(BASE, [PAPER_DURATION]);
 
-    // La etiqueta y el valor aparecen dos veces: la tira de números (vistazo) y "Datos oficiales"
-    // (detalle con fuente). Solo el detalle dice la fuente junto al período.
     expect(screen.getAllByText('Dura en el papel').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('2,5 años').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('2 años y medio').length).toBeGreaterThan(0);
     expect(screen.getByText('Sitio UNSTA · plan vigente')).toBeInTheDocument();
   });
 
   /**
    * ADR-0090: con relevamiento parcial (una sola afirmación de las seis), la ficha dice qué le
-   * falta en vez de esconder las otras cinco filas en silencio, igual que Dónde estudiarla
-   * (career-comparison-view.tsx).
+   * falta en vez de esconder las otras cinco filas en silencio, igual que Dónde estudiarla.
    */
   it('con datos oficiales parciales, dice qué le falta en vez de esconder las filas', () => {
     renderSheet(BASE, [PAPER_DURATION]);
@@ -168,11 +233,12 @@ describe('CareerFactsSheet', () => {
   });
 
   /**
-   * US-127 E2, N2: sin relevamiento de "dura en la realidad" (hoy no está publicado por ninguna
-   * fuente para ninguna carrera), el dato lo dice con la etiqueta fija y la fecha, nunca calculado
-   * ni en blanco; nunca toma la forma de un valor publicado.
+   * US-127 E2, N2: sin relevamiento de "dura en la realidad", el dato lo dice con la etiqueta fija
+   * y la nota, nunca calculado ni en blanco; nunca toma la forma de un valor publicado. Sin la
+   * fecha de relevamiento: el markup literal de la maqueta no la repite fila por fila (a
+   * diferencia del checklist de transparencia institucional, que sí la muestra una vez al pie).
    */
-  it('dura en la realidad no publicada se dice con la etiqueta fija, la nota y la fecha', () => {
+  it('dura en la realidad no publicada se dice con la etiqueta fija y la nota, nunca con la forma de un valor', () => {
     renderSheet(BASE, [
       PAPER_DURATION,
       {
@@ -196,13 +262,11 @@ describe('CareerFactsSheet', () => {
     expect(
       screen.getByText('Ninguna fuente pública releva la duración real por carrera.'),
     ).toBeInTheDocument();
-    expect(screen.getByText(/relevado el 07\/09\/2026/)).toBeInTheDocument();
   });
 
   /**
-   * US-133 E1: el egreso por cohorte no se publica por carrera, se deriva y se etiqueta como tal.
-   * El chip de la tira linkea a la regla igual que la fila de "Datos oficiales": dos links al
-   * mismo bloque de Método, uno por altura.
+   * US-133 E1: el egreso por cohorte no se publica por carrera, se deriva y se etiqueta como tal,
+   * con un único link a la regla en Método (la tira ya no lleva un segundo link: es texto llano).
    */
   it('egreso por cohorte derivado se etiqueta como tal y linkea a Método, nunca como dato publicado', () => {
     renderSheet(BASE, [
@@ -212,7 +276,7 @@ describe('CareerFactsSheet', () => {
         subjectId: 'career-1',
         field: 'cohort_graduation',
         status: 'Derived',
-        value: '21.4',
+        value: '21,4 %',
         unit: 'percent',
         period: '2022',
         sourceName: 'Anuario SPU',
@@ -225,14 +289,11 @@ describe('CareerFactsSheet', () => {
 
     expect(screen.getAllByText('Egreso por cohorte').length).toBeGreaterThan(0);
     expect(screen.getAllByText('21,4 %').length).toBeGreaterThan(0);
-    const derivedLinks = screen.getAllByRole('link', { name: /derivado|ver la regla en método/i });
-    expect(derivedLinks.length).toBeGreaterThan(1);
-    for (const link of derivedLinks) {
-      expect(link).toHaveAttribute('href', '/method#graduation-flow-proxy');
-    }
+    const derivedLink = screen.getByRole('link', { name: 'derivado' });
+    expect(derivedLink).toHaveAttribute('href', '/method#graduation-flow-proxy');
   });
 
-  /** US-133 E2, N1: sin proxy todavía, la etiqueta fija con fecha, nunca un cero ni un cálculo propio. */
+  /** US-133 E2, N1: sin proxy todavía, la etiqueta fija, nunca un cero ni un cálculo propio. */
   it('egreso por cohorte sin derivar todavía se dice no publicado, nunca un cero', () => {
     renderSheet(BASE, [
       {
@@ -253,14 +314,10 @@ describe('CareerFactsSheet', () => {
 
     expect(screen.getAllByText('Egreso por cohorte').length).toBeGreaterThan(0);
     expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
-    // La nota corta aparece también en la tira (el mismo criterio que la ficha de institución
-    // aplica a estudiantes/egresados): no es un dato roto, es el mismo hecho en dos alturas.
     expect(
-      screen.getAllByText('Todavía no se calculó el proxy de flujo para esta oferta.').length,
-    ).toBeGreaterThan(0);
-    // Nunca la forma de un valor publicado: nada de serif grande al lado de "Egreso por cohorte".
+      screen.getByText('Todavía no se calculó el proxy de flujo para esta oferta.'),
+    ).toBeInTheDocument();
     expect(screen.queryByText('0,0 %')).not.toBeInTheDocument();
-    expect(screen.queryByText('0 %', { selector: '.font-serif' })).not.toBeInTheDocument();
   });
 
   /** F02: el régimen de ingreso entra a esta ficha, con la misma forma que el resto. */
@@ -286,8 +343,8 @@ describe('CareerFactsSheet', () => {
     expect(screen.getByText('Ingreso directo, sin examen ni curso')).toBeInTheDocument();
   });
 
-  /** F05, O03: una tecnicatura no tiene acreditación CONEAU, tiene validez nacional. */
-  it('en una tecnicatura muestra validez nacional, no acreditación', () => {
+  /** F05, O03: una tecnicatura no tiene acreditación CONEAU, tiene validez nacional: su propia etiqueta, no la genérica. */
+  it('en una tecnicatura muestra la etiqueta específica "Validez nacional", no la genérica ni "Acreditación"', () => {
     renderSheet(BASE, [
       {
         id: 'fact-national-validity',
@@ -307,35 +364,40 @@ describe('CareerFactsSheet', () => {
 
     expect(screen.getByText('Validez nacional')).toBeInTheDocument();
     expect(screen.queryByText('Acreditación')).not.toBeInTheDocument();
+    expect(screen.queryByText('Acreditación o validez nacional')).not.toBeInTheDocument();
     expect(screen.getByText('No aplica a esta carrera')).toBeInTheDocument();
     expect(
       screen.getByText('Las tecnicaturas no se acreditan: validez nacional por RM 2495/2018.'),
     ).toBeInTheDocument();
   });
 
+  /** Sin ninguna de las dos, la fila usa el placeholder genérico: no se sabe cuál falta. */
+  it('sin acreditación ni validez nacional relevadas, la fila usa la etiqueta genérica', () => {
+    renderSheet(BASE, [PAPER_DURATION]);
+
+    expect(screen.getByText('Acreditación o validez nacional')).toBeInTheDocument();
+  });
+
   /**
-   * Sin grupo canónico la celda no se dibuja: el agrupamiento es una lista curada incompleta
-   * (Procurador y Psicología quedaron afuera a propósito), y "Solo acá" afirmaría algo que no se
-   * sabe.
+   * Sin grupo canónico la celda no se dibuja: el agrupamiento es una lista curada incompleta, y
+   * "instituciones más la dictan" afirmaría algo que no se sabe.
    */
   it('instituciones que la dictan: sin grupo canónico, la celda no se dibuja', () => {
     renderSheet(BASE, [], {
       catalogCoverage: [coverage({ careerId: BASE.careerId, canonicalGroupName: null })],
     });
 
-    expect(screen.queryByText(/instituciones que la dictan/i)).not.toBeInTheDocument();
-    expect(screen.queryByText('Solo acá')).not.toBeInTheDocument();
+    expect(screen.queryByText(/instituciones más la dictan/i)).not.toBeInTheDocument();
   });
 
-  /** Sin ninguna entrada de catalogCoverage para esta carrera, tampoco se dibuja (mismo caso: sin dato, no se inventa). */
   it('instituciones que la dictan: sin cobertura para esta carrera, la celda no se dibuja', () => {
     renderSheet(BASE);
 
-    expect(screen.queryByText(/instituciones que la dictan/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/instituciones más la dictan/i)).not.toBeInTheDocument();
   });
 
-  /** Con grupo canónico, cuenta las universidades distintas del grupo, esta incluida. */
-  it('instituciones que la dictan: con grupo canónico, cuenta las universidades del grupo', () => {
+  /** Con grupo canónico, cuenta las universidades del grupo MENOS esta (US-195, ADR-0090): "más la dictan". */
+  it('instituciones que la dictan: con grupo canónico, cuenta el grupo menos esta institución', () => {
     renderSheet(BASE, [], {
       catalogCoverage: [
         coverage({
@@ -356,7 +418,23 @@ describe('CareerFactsSheet', () => {
       ],
     });
 
-    expect(screen.getByText('3 instituciones')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText('instituciones más la dictan')).toBeInTheDocument();
+  });
+
+  /** Cuando el grupo entero es solo esta institución, "0 instituciones más" no informa nada: no se dibuja. */
+  it('instituciones que la dictan: sin ninguna otra universidad en el grupo, la celda no se dibuja', () => {
+    renderSheet(BASE, [], {
+      catalogCoverage: [
+        coverage({
+          careerId: BASE.careerId,
+          universityId: 'unsta',
+          canonicalGroupName: 'Desarrollo de Software',
+        }),
+      ],
+    });
+
+    expect(screen.queryByText(/instituciones más la dictan/i)).not.toBeInTheDocument();
   });
 
   /** "Materias medidas" no se dibuja con denominador 0: la carrera todavía no tiene plan cargado. */
@@ -392,8 +470,8 @@ describe('CareerFactsSheet', () => {
     ).toBeInTheDocument();
   });
 
-  /** El plan vigente se muestra inline, agrupado por año (US-134, SC-018). */
-  it('con plan vigente, muestra "El plan {año}" con sus materias agrupadas por año', () => {
+  /** El plan vigente se muestra inline, compacto por año (sin agrupar por cuatrimestre, US-134, SC-018). */
+  it('con plan vigente, muestra "El plan {año}" con sus materias agrupadas por año, ordinal en español', () => {
     renderSheet(BASE, [], {
       activePlan: {
         year: 2018,
@@ -402,8 +480,11 @@ describe('CareerFactsSheet', () => {
       },
     });
 
-    expect(screen.getByText('El plan 2018')).toBeInTheDocument();
-    expect(screen.getByText('Año 1')).toBeInTheDocument();
+    expect(
+      screen.getByText('El plan 2018 · 1 materias · las medidas en negrita'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Primer año')).toBeInTheDocument();
+    expect(screen.queryByText('Año 1')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /algoritmos y paradigmas/i })).toHaveAttribute(
       'href',
       '/subjects/subj-1',
@@ -423,10 +504,11 @@ describe('CareerFactsSheet', () => {
   });
 
   /**
-   * "Por dónde empezar": las materias que ya publican (cruzaron el piso), de más a menos reseñas.
-   * Una con carga bajo el piso, o sin ninguna reseña, no entra: todavía no hay nada publicado ahí.
+   * "Por dónde empezar": las materias con reseñas, isCovered primero, ordenadas por reseñas
+   * dentro de cada grupo (US-134). Distinto de la ficha de institución: acá SÍ entran las que
+   * juntan reseñas pero todavía no cruzan el piso, marcadas aparte (.pb-dim).
    */
-  it('"Por dónde empezar" lista las materias que ya publican, de más a menos', () => {
+  it('"Por dónde empezar" lista las materias con reseñas, isCovered primero y por reseñas dentro de cada grupo', () => {
     renderSheet(BASE, [], {
       activePlan: {
         year: 2018,
@@ -446,35 +528,127 @@ describe('CareerFactsSheet', () => {
 
     const section = screen
       .getByText('Por dónde empezar · las materias con reseñas')
-      .closest('section');
+      .closest<HTMLElement>('.pb-section');
     if (!section) throw new Error('no se encontró la sección "Por dónde empezar"');
     const links = within(section).getAllByRole('link');
-    expect(links.map((l) => l.textContent)).toEqual(['Bases de Datos', 'Programación I']);
-    // Álgebra I junta reseñas pero todavía no cruzó el piso: no es "por dónde empezar" todavía.
-    expect(within(section).queryByText('Álgebra I')).not.toBeInTheDocument();
-    // Física I no tiene ninguna reseña.
-    expect(within(section).queryByText('Física I')).not.toBeInTheDocument();
+    // isCovered primero (Bases de Datos 45, Programación I 30), después la que junta bajo el
+    // piso (Álgebra I, .pb-dim). Física I no tiene ninguna reseña: no entra.
+    expect(links.map((l) => l.textContent)).toEqual([
+      '101 · Bases de Datos45 reseñas · 4 cátedras→',
+      '101 · Programación I30 reseñas · 3 cátedras→',
+      '101 · Álgebra I5 reseñas · 1 cátedra→',
+    ]);
+    expect(within(section).queryByText(/física i/i)).not.toBeInTheDocument();
+    // La que está bajo el piso lleva .pb-dim; las publicadas, no.
+    const dimmedLink = within(section).getByRole('link', { name: /álgebra i/i });
+    expect(dimmedLink.className).toContain('pb-dim');
   });
 
-  it('sin ninguna materia que publique, "Por dónde empezar" no se dibuja', () => {
+  it('sin ninguna materia con reseñas, "Por dónde empezar" no se dibuja', () => {
     renderSheet(BASE, [], {
       activePlan: {
         year: 2018,
         subjects: [subject({ id: 'subj-1', name: 'Álgebra I' })],
-        subjectCoverage: [{ subjectId: 'subj-1', reviewCount: 5, chairCount: 1, isCovered: false }],
+        subjectCoverage: [],
       },
     });
 
     expect(screen.queryByText(/por dónde empezar/i)).not.toBeInTheDocument();
   });
 
-  it('enlaza a reseñar la cursada', () => {
+  /** SC-008, US-128: la misma carrera canónica en otras instituciones, sin la oferta actual. */
+  it('"Dónde estudiarla" lista las otras ofertas de la comparación, sin la actual, con el link a compararlas', () => {
+    renderSheet(BASE, [], {
+      comparison: {
+        groupName: 'Tecnicatura o técnico en programación',
+        cityLabel: 'San Miguel de Tucumán',
+        isProvinceFallback: false,
+        offerings: [
+          offering({
+            careerId: BASE.careerId,
+            universityName: 'UNSTA',
+          }),
+          offering({
+            careerId: 'career-unt',
+            universityName: 'Universidad Nacional de Tucumán',
+            academicUnitName: 'Facultad de Ciencias Exactas y Tecnología',
+            localityName: 'San Miguel de Tucumán',
+            institutionKind: 'Pública',
+            facts: [
+              {
+                id: 'fact-unt-paper-duration',
+                subjectId: 'career-unt',
+                field: 'paper_duration',
+                status: 'Published',
+                value: '3 años',
+                unit: 'years',
+                period: 'plan',
+                sourceName: 'Sitio FACET',
+                sourceUrl: 'https://facet.unt.edu.ar',
+                derivationRuleId: null,
+                note: null,
+                relievedAt: '2026-09-07T12:00:00Z',
+              },
+            ],
+          }),
+        ],
+      },
+    });
+
+    expect(screen.getByText('Dónde estudiarla')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'La misma carrera en otras instituciones de la aglomeración, medidas igual. Sin ganador.',
+      ),
+    ).toBeInTheDocument();
+    // Solo la otra oferta, no UNSTA (que es la carrera actual).
+    expect(screen.queryByRole('link', { name: /^UNSTA/ })).not.toBeInTheDocument();
+    const untRow = screen.getByRole('link', { name: /universidad nacional de tucumán/i });
+    expect(untRow).toHaveAttribute('href', '/careers/career-unt');
+    expect(
+      within(untRow).getByText(
+        'Facultad de Ciencias Exactas y Tecnología · San Miguel de Tucumán · pública',
+      ),
+    ).toBeInTheDocument();
+    expect(within(untRow).getByText('Dura en el papel: 3 años')).toBeInTheDocument();
+    // Dos ofertas en total (esta y UNT): "dos lado a lado".
+    expect(screen.getByRole('link', { name: /comparar las dos lado a lado/i })).toHaveAttribute(
+      'href',
+      `/careers/${BASE.careerId}/where-to-study`,
+    );
+  });
+
+  /** Todo pedido nuevo degrada: sin comparación (pedido que falló o 404), la sección no se dibuja. */
+  it('sin comparación (el pedido falló o no existe), "Dónde estudiarla" no se dibuja', () => {
     renderSheet(BASE);
 
-    expect(screen.getByRole('link', { name: /reseñá tu cursada/i })).toHaveAttribute(
-      'href',
-      '/reviews/new',
-    );
+    expect(screen.queryByText('Dónde estudiarla')).not.toBeInTheDocument();
+  });
+
+  /** Con comparación pero sin ninguna otra oferta (esta carrera es la única), la sección tampoco se dibuja. */
+  it('con comparación pero sin otras ofertas, "Dónde estudiarla" no se dibuja', () => {
+    renderSheet(BASE, [], {
+      comparison: {
+        groupName: null,
+        cityLabel: 'San Miguel de Tucumán',
+        isProvinceFallback: false,
+        offerings: [offering({ careerId: BASE.careerId, universityName: 'UNSTA' })],
+      },
+    });
+
+    expect(screen.queryByText('Dónde estudiarla')).not.toBeInTheDocument();
+  });
+
+  it('sin plan vigente y sin comparación, la columna derecha no se dibuja', () => {
+    const { container } = renderSheet(BASE);
+
+    expect(container.querySelector('.pb-dossier')).not.toBeInTheDocument();
+  });
+
+  it('no ofrece ningún pie para reseñar: el botón de escribir reseña vive en el topbar', () => {
+    renderSheet(BASE);
+
+    expect(screen.queryByRole('link', { name: /reseñá tu cursada/i })).not.toBeInTheDocument();
   });
 
   it('no publica ningún puntaje ni escala', () => {
@@ -485,9 +659,9 @@ describe('CareerFactsSheet', () => {
 
   /**
    * ADR-0084: una nota de curaduría se muestra fechada y con su procedencia siempre al lado,
-   * nunca un texto suelto sin decir de dónde sale.
+   * nunca un texto suelto sin decir de dónde sale, entre comillas tipográficas (maqueta aprobada).
    */
-  it('publica la nota del equipo con su procedencia y su fecha', () => {
+  it('publica la nota del equipo entre comillas, con su procedencia y su fecha', () => {
     renderSheet({
       ...BASE,
       editorialNotes: [
@@ -499,9 +673,9 @@ describe('CareerFactsSheet', () => {
       ],
     });
 
-    expect(screen.getByText(/no se sabe con qué se rinde el final/i)).toBeInTheDocument();
-
-    // La procedencia es lo que la hace legible: una síntesis sin decir de dónde sale es opinión.
+    expect(
+      screen.getByText('“Varias cursadas mencionan que no se sabe con qué se rinde el final.”'),
+    ).toBeInTheDocument();
     expect(screen.getByText(/leída de comentarios que no se publican/i)).toBeInTheDocument();
     expect(screen.getByText(/19\/08\/2026/)).toBeInTheDocument();
   });
@@ -510,5 +684,6 @@ describe('CareerFactsSheet', () => {
     renderSheet(BASE);
 
     expect(screen.queryByText(/de la curaduría/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/nota del equipo/i)).not.toBeInTheDocument();
   });
 });

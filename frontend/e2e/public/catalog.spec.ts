@@ -103,9 +103,11 @@ test.describe('Catálogo público (US-001)', () => {
       }),
     ).toBeVisible();
 
-    // El plan vigente se lee inline en la ficha (ya no hace falta salir a /careers/[id]/plans).
+    // El plan vigente se lee inline en la ficha (ya no hace falta salir a /careers/[id]/plans),
+    // compacto por año y sin agrupar por cuatrimestre (V.career de la maqueta aprobada): "Primer
+    // año", no "Año 1" (esa etiqueta es de /plans/[id]/subjects, que sigue agrupando por término).
     await expect(page.getByText('El plan 2018')).toBeVisible();
-    await expect(page.getByText('Año 1')).toBeVisible();
+    await expect(page.getByText('Primer año')).toBeVisible();
     await expect(page.getByRole('link', { name: '101 Algoritmos y Paradigmas' })).toBeVisible();
   });
 
