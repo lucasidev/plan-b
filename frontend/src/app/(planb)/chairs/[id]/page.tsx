@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ChairFactsSheet, fetchChairFactsServer } from '@/features/chair-facts';
+import { ChairFactsSheet, type ChairSibling, fetchChairFactsServer } from '@/features/chair-facts';
+import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { reviewCtaHref } from '@/features/write-review';
 import { getSession } from '@/lib/session';
 
@@ -38,5 +39,16 @@ export default async function ChairPage({ params }: { params: Promise<{ id: stri
     notFound();
   }
 
-  return <ChairFactsSheet facts={facts} reviewHref={reviewCtaHref(session)} />;
+  // "Las hermanas · misma materia" (columna derecha): la ficha de materia ya trae cada cátedra
+  // con su cantidad de reseñas, así que no hace falta un endpoint aparte.
+  const subjectFacts = await fetchSubjectFactsServer(facts.subjectId);
+  const siblings: ChairSibling[] = (subjectFacts?.chairs ?? [])
+    .filter((chair) => chair.chairId !== facts.chairId && chair.reviewCount > 0)
+    .map((chair) => ({
+      chairId: chair.chairId,
+      chairName: chair.chairName,
+      reviewCount: chair.reviewCount,
+    }));
+
+  return <ChairFactsSheet facts={facts} siblings={siblings} reviewHref={reviewCtaHref(session)} />;
 }

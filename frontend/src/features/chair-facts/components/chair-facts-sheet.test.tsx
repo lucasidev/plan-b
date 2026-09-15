@@ -71,10 +71,11 @@ describe('ChairFactsSheet', () => {
       />,
     );
 
-    expect(
-      screen.getByText('37 reseñas, de 2023 a 2026 · lo último es de hace 2 meses'),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/\bvoces\b/i)).not.toBeInTheDocument();
+    const sustento = screen.getByText('37 reseñas, de 2023 a 2026 · lo último es de hace 2 meses');
+    expect(sustento).toBeInTheDocument();
+    // Acotado a la línea de sustento: "voces" sí aparece en otras partes de la ficha (fama,
+    // contrastes, "de N voces"), pegada a un conteo publicado, como manda el glosario.
+    expect(sustento.textContent).not.toMatch(/\bvoces\b/i);
   });
 
   /** Con un solo año, dice "de {año}" una sola vez, sin "a {año}" repetido. */
@@ -107,7 +108,7 @@ describe('ChairFactsSheet', () => {
     // Pegado al mismo porcentaje, no en cualquier parte de la sección: las tres frases traen su
     // propio "de N" en su propio <li>, así que un regex separado para "de \d+" matchea a las tres
     // a la vez y le rompe a getByText la unicidad que pide.
-    expect(within(section as HTMLElement).getByText(/80 % de \d+/)).toBeInTheDocument();
+    expect(within(section as HTMLElement).getByText(/80 % de \d+ voces\./)).toBeInTheDocument();
   });
 
   /**
@@ -234,7 +235,7 @@ describe('ChairFactsSheet', () => {
     );
 
     expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
-    expect(screen.getByText(/de 37 y 61/)).toBeInTheDocument();
+    expect(screen.getByText(/de 37 y 61 voces/)).toBeInTheDocument();
   });
 
   /**
@@ -294,5 +295,48 @@ describe('ChairFactsSheet', () => {
     expect(
       screen.getByText(/ninguna reseña muestra cómo terminó nadie: esto es el conteo/i),
     ).toBeInTheDocument();
+  });
+
+  /**
+   * SC-002, "Las hermanas · misma materia" (columna derecha, `V.chair().aside`): cada hermana
+   * lista su nombre y cuántas reseñas junta, y lleva a su propia ficha.
+   */
+  it('lista las cátedras hermanas de la misma materia, cada una con sus reseñas', () => {
+    render(
+      <ChairFactsSheet
+        facts={facts()}
+        siblings={[
+          { chairId: 'c2', chairName: 'González', reviewCount: 12 },
+          { chairId: 'c3', chairName: 'Ruiz', reviewCount: 9 },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('Las hermanas · misma materia')).toBeInTheDocument();
+    const gonzalez = screen.getByRole('link', { name: /cátedra gonzález/i });
+    expect(gonzalez).toHaveAttribute('href', '/chairs/c2');
+    expect(within(gonzalez).getByText('12 reseñas')).toBeInTheDocument();
+    const ruiz = screen.getByRole('link', { name: /cátedra ruiz/i });
+    expect(ruiz).toHaveAttribute('href', '/chairs/c3');
+    expect(within(ruiz).getByText('9 reseñas')).toBeInTheDocument();
+  });
+
+  /** Sin ninguna hermana con reseñas, la columna no se dibuja. */
+  it('sin cátedras hermanas, no dibuja la columna', () => {
+    render(<ChairFactsSheet facts={facts()} siblings={[]} />);
+
+    expect(screen.queryByText('Las hermanas · misma materia')).not.toBeInTheDocument();
+  });
+
+  /** El denominador de una hermana pluraliza: "1 reseña" y no "1 reseñas". */
+  it('una hermana con una sola reseña pluraliza en singular', () => {
+    render(
+      <ChairFactsSheet
+        facts={facts()}
+        siblings={[{ chairId: 'c4', chairName: 'Vega', reviewCount: 1 }]}
+      />,
+    );
+
+    expect(screen.getByText('1 reseña')).toBeInTheDocument();
   });
 });

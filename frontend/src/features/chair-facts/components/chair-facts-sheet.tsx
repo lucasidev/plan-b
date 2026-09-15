@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { DemoCorpusNotice, ItemRow } from '@/components/facts';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import { formatRelativeDate } from '@/lib/format-date';
-import type { ChairFacts } from '../types';
+import type { ChairFacts, ChairSibling } from '../types';
 
 /**
  * La ficha de una cátedra (SC-002, US-147, ADR-0083), markup literal de la maqueta aprobada
@@ -10,18 +10,20 @@ import type { ChairFacts } from '../types';
  *
  * De arriba abajo: identidad con su línea de sustento, la fama por convergencia, cómo termina la
  * cursada, qué hizo la cátedra, qué les pasó a los que cursaron, la comparación contra las
- * hermanas, y el pie.
+ * hermanas, el pie, y la columna derecha con las cátedras hermanas de la misma materia.
  *
  * Lo que esta pantalla no muestra nunca, y es la mitad del diseño: ningún puntaje ni promedio,
  * ninguna reseña individual, ningún desenlace de una persona, y ninguna comparación contra una
  * cátedra que no sea de la misma materia. Lo que no aparece es la regla funcionando, no un hueco.
- *
- * La maqueta también trae "Las hermanas · misma materia" como columna derecha (`V.chair().aside`):
- * se omite acá porque `ChairFacts` no trae esa lista (nombre y cantidad de reseñas de las otras
- * cátedras de la materia); haría falta sumarla a `GetChairFactsResponse`, que esta tarea no toca.
  */
 type Props = {
   facts: ChairFacts;
+  /**
+   * Las otras cátedras de la misma materia con al menos una reseña ("Las hermanas · misma
+   * materia", `V.chair().aside`). La página las arma con `chairFacts.subjectId` contra la ficha
+   * de materia: `ChairFacts` no las trae. Sin ninguna, la columna no se dibuja.
+   */
+  siblings?: ChairSibling[];
   /**
    * A dónde manda "¿La cursaste? Reseñala" (US-229): sin sesión, directo al gate con el
    * motivo, en vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin
@@ -31,13 +33,46 @@ type Props = {
   reviewHref?: string;
 };
 
-export function ChairFactsSheet({ facts, reviewHref = '/reviews/new' }: Props) {
+export function ChairFactsSheet({ facts, siblings = [], reviewHref = '/reviews/new' }: Props) {
   return (
     <PageFrame
       head={<Head facts={facts} />}
       stats={chairStats(facts)}
       main={<Main facts={facts} reviewHref={reviewHref} />}
+      aside={siblings.length > 0 ? <Siblings siblings={siblings} /> : undefined}
     />
+  );
+}
+
+/** "Las hermanas · misma materia": las otras cátedras de la materia que ya juntaron una reseña. */
+function Siblings({ siblings }: { siblings: ChairSibling[] }) {
+  return (
+    <div className="pb-section min-w-0">
+      <div className="pb-eyebrow">Las hermanas · misma materia</div>
+      <div className="pb-list">
+        {siblings.map((sibling) => (
+          <Link
+            key={sibling.chairId}
+            href={`/chairs/${sibling.chairId}`}
+            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            prefetch={false}
+            className="pb-row"
+            style={{ padding: '8px 12px' }}
+          >
+            <span>
+              <span className="pb-name" style={{ fontSize: 13.5 }}>
+                Cátedra {sibling.chairName}
+              </span>
+            </span>
+            <span className="pb-right">
+              <span className="pb-meta">
+                {sibling.reviewCount} {sibling.reviewCount === 1 ? 'reseña' : 'reseñas'}
+              </span>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -186,7 +221,7 @@ function Fame({ facts }: { facts: ChairFacts }) {
           {fame.items.map((item) => (
             <li key={item.code} style={{ fontSize: 12.5, color: 'var(--color-ink-3)' }}>
               {item.text} <span style={{ color: 'var(--color-ink-2)' }}>{item.negativeLabel}</span>,
-              el {item.percent} % de {item.total}.
+              el {item.percent} % de {item.total} voces.
             </li>
           ))}
         </ul>
@@ -277,7 +312,7 @@ function Contrasts({ facts }: { facts: ChairFacts }) {
                 {c.negativeLabel}: <b style={{ fontWeight: 500 }}>{c.herePercent} %</b> acá,{' '}
                 {c.siblingsPercent} % en las otras.{' '}
                 <span className="pb-meta" style={{ marginLeft: 4 }}>
-                  de {c.hereTotal} y {c.siblingsTotal}
+                  de {c.hereTotal} y {c.siblingsTotal} voces
                 </span>
               </li>
             ))}
