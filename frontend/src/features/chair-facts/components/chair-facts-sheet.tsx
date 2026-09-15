@@ -25,6 +25,14 @@ type Props = {
    */
   siblings?: ChairSibling[];
   /**
+   * Si alguna cátedra hermana (misma materia) ya cruzó el piso de publicación, para "Comparada
+   * con las otras cátedras": sin contrastes y con esto en `false`, se explica que todavía no hay
+   * base; sin contrastes pero con esto en `true`, la sección calla (sin señal, silencio, línea
+   * 562 de la maqueta). `undefined` cuando no se pudo saber (la ficha de materia falló): tampoco
+   * se muestra, porque no se puede afirmar algo que no se verificó.
+   */
+  hasPublishedSibling?: boolean;
+  /**
    * A dónde manda "¿La cursaste? Reseñala" (US-229): sin sesión, directo al gate con el
    * motivo, en vez de a `/reviews/new` (que el guard de `(member)` redirigiría igual, pero sin
    * decir para qué). Lo decide la página (`reviewCtaHref`, que sabe si hay sesión); el default
@@ -33,12 +41,19 @@ type Props = {
   reviewHref?: string;
 };
 
-export function ChairFactsSheet({ facts, siblings = [], reviewHref = '/reviews/new' }: Props) {
+export function ChairFactsSheet({
+  facts,
+  siblings = [],
+  hasPublishedSibling,
+  reviewHref = '/reviews/new',
+}: Props) {
   return (
     <PageFrame
       head={<Head facts={facts} />}
       stats={chairStats(facts)}
-      main={<Main facts={facts} reviewHref={reviewHref} />}
+      main={
+        <Main facts={facts} hasPublishedSibling={hasPublishedSibling} reviewHref={reviewHref} />
+      }
       aside={siblings.length > 0 ? <Siblings siblings={siblings} /> : undefined}
     />
   );
@@ -123,18 +138,33 @@ function Head({ facts }: { facts: ChairFacts }) {
         <p className="pb-h-meta pb-meta">
           {facts.reviewCount} {facts.reviewCount === 1 ? 'reseña' : 'reseñas'}
           {facts.span.fromYear === facts.span.toYear
-            ? `, de ${facts.span.fromYear}`
-            : `, de ${facts.span.fromYear} a ${facts.span.toYear}`}
+            ? ` de ${facts.span.fromYear}`
+            : ` de ${facts.span.fromYear} a ${facts.span.toYear}`}
           {facts.span.lastReviewedAt &&
             ` · lo último es de ${formatRelativeDate(facts.span.lastReviewedAt)}`}
         </p>
       )}
-      {facts.hasDemoCorpusVoices && <DemoCorpusNotice />}
+      {facts.hasDemoCorpusVoices && (
+        // margin-top 10px puntual de este uso (V.chair, línea 566 de la maqueta): no es parte del
+        // estilo base de DemoCorpusNotice, que también vive sin este margen en la muestra de la
+        // entrada.
+        <div style={{ marginTop: 10 }}>
+          <DemoCorpusNotice />
+        </div>
+      )}
     </>
   );
 }
 
-function Main({ facts, reviewHref }: { facts: ChairFacts; reviewHref: string }) {
+function Main({
+  facts,
+  hasPublishedSibling,
+  reviewHref,
+}: {
+  facts: ChairFacts;
+  hasPublishedSibling?: boolean;
+  reviewHref: string;
+}) {
   return (
     <div className="min-w-0">
       {facts.isPublished ? (
@@ -157,7 +187,7 @@ function Main({ facts, reviewHref }: { facts: ChairFacts; reviewHref: string }) 
             items={facts.studentExperience}
             emptyNote="Todavía nadie contestó estas preguntas."
           />
-          <Contrasts facts={facts} />
+          <Contrasts facts={facts} hasPublishedSibling={hasPublishedSibling} />
         </>
       ) : (
         <BelowFloor facts={facts} />
@@ -294,11 +324,24 @@ function Block({
 /**
  * Los contrastes contra las cátedras hermanas. Solo aparecen los que sobrevivieron la regla de los
  * intervalos separados: si una diferencia no está acá, es porque puede explicarse por el tamaño de
- * la muestra, y publicarla igual sería inventar una distinción. Sin ninguna hermana que llegue al
- * piso, la sección se queda igual (la maqueta la muestra siempre) con el estado honesto de que
- * todavía no hay base para comparar.
+ * la muestra, y publicarla igual sería inventar una distinción.
+ *
+ * Sin contrastes hay dos lecturas posibles, y solo una es honesta de decir: si ninguna hermana
+ * llegó al piso todavía, no hay base para comparar. Si alguna sí llegó pero ningún contraste
+ * sobrevivió la regla, o si no se pudo saber (la ficha de materia falló), la sección calla en vez
+ * de afirmar algo que no se verificó (línea 562 de la maqueta: sin señal, silencio).
  */
-function Contrasts({ facts }: { facts: ChairFacts }) {
+function Contrasts({
+  facts,
+  hasPublishedSibling,
+}: {
+  facts: ChairFacts;
+  hasPublishedSibling?: boolean;
+}) {
+  if (facts.contrasts.length === 0 && hasPublishedSibling !== false) {
+    return null;
+  }
+
   return (
     <section className="pb-section">
       <div className="pb-eyebrow">Comparada con las otras cátedras de la materia</div>

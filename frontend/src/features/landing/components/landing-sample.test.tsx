@@ -101,7 +101,7 @@ describe('LandingSample', () => {
   // no existen, y eso tiene que decirse donde se ven los conteos, no solo en un pie de página.
   it('avisa cuando la muestra sale del corpus de demostración', () => {
     render(<LandingSample sample={facts({ hasDemoCorpusVoices: true })} />);
-    expect(screen.getByText(/estas voces son de prueba/i)).toBeInTheDocument();
+    expect(screen.getByText(/estas reseñas son de prueba/i)).toBeInTheDocument();
   });
 
   it('no avisa nada cuando la muestra no es del corpus de demostración', () => {
