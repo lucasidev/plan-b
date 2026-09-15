@@ -40,8 +40,10 @@ export default async function ChairPage({ params }: { params: Promise<{ id: stri
   }
 
   // "Las hermanas · misma materia" (columna derecha): la ficha de materia ya trae cada cátedra
-  // con su cantidad de reseñas, así que no hace falta un endpoint aparte.
-  const subjectFacts = await fetchSubjectFactsServer(facts.subjectId);
+  // con su cantidad de reseñas, así que no hace falta un endpoint aparte. Sin catch, un pedido que
+  // falla (no 404) tiraría abajo la ficha entera por un dato que no es el centro de la pantalla:
+  // sin ella, la cátedra se ve sin hermanas y con migas genéricas.
+  const subjectFacts = await fetchSubjectFactsServer(facts.subjectId).catch(() => null);
   const siblings: ChairSibling[] = (subjectFacts?.chairs ?? [])
     .filter((chair) => chair.chairId !== facts.chairId && chair.reviewCount > 0)
     .map((chair) => ({

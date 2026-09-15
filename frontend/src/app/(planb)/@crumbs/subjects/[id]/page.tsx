@@ -1,7 +1,8 @@
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { fetchSubjectFactsServer } from '@/features/subject-facts';
 import { genericCrumbs } from '@/lib/member-shell';
-import { universityCrumb } from '../../_lib/resolve-university';
+import { ActiveCrumbs } from '../../_lib/active-crumbs';
+import { universityCrumbByPlan } from '../../_lib/resolve-university';
 
 type Params = Promise<{ id: string }>;
 
@@ -9,21 +10,27 @@ type Params = Promise<{ id: string }>;
  * Migas de la ficha de materia (`V.subject`, línea 538 de la maqueta aprobada): Explorar /
  * {universidad corta} / {carrera} / {código} · {materia}, sin facultad. Mismo fetch que la página
  * (`fetchSubjectFactsServer`), memoizado por Next dentro del mismo render.
+ *
+ * Sin catch acá, un pedido que falla (no 404) tiraría abajo la página entera: el slot cae a las
+ * migas genéricas en cualquiera de los tres casos (materia inexistente, universidad sin
+ * coincidencia, pedido que falla), nunca a un 500.
  */
 export default async function SubjectCrumbs({ params }: { params: Params }) {
   const { id } = await params;
-  const facts = await fetchSubjectFactsServer(id);
+  const pathname = `/subjects/${id}`;
+  const facts = await fetchSubjectFactsServer(id).catch(() => null);
   if (!facts) {
-    return <Breadcrumbs items={genericCrumbs(`/subjects/${id}`)} />;
+    return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
 
-  const university = await universityCrumb(facts.universityName);
+  const university = await universityCrumbByPlan(facts.careerPlanId);
   if (!university) {
-    return <Breadcrumbs items={genericCrumbs(`/subjects/${id}`)} />;
+    return <Breadcrumbs items={genericCrumbs(pathname)} />;
   }
 
   return (
-    <Breadcrumbs
+    <ActiveCrumbs
+      pathname={pathname}
       items={[
         { label: 'Explorar', href: '/universities' },
         university,
