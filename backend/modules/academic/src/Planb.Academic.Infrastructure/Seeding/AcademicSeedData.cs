@@ -3560,6 +3560,21 @@ public static class AcademicSeedData
         new TeacherRecord(Tid("2d"), Unsta.Id, "milagros", "figueroa", "Profesora Titular"),
         new TeacherRecord(Tid("2e"), Unsta.Id, "franco", "carrizo", "Profesor Titular"),
         new TeacherRecord(Tid("2f"), Unsta.Id, "lorena", "gómez", "Profesora Titular"),
+
+        // Titulares de las nueve cátedras que suman a las cinco carreras de R7 (ver sección
+        // Chairs más abajo): una por cátedra, en la universidad de esa cátedra.
+        // Ningún apellido repite el de un docente ya sembrado (ni los diez del arranque, ni los
+        // titulares de 211, ni los de la Tecnicatura UNSTA, ni los once de R7 de arriba) ni el de
+        // las personas sembradas (Mansilla, Ledesma).
+        new TeacherRecord(Tid("30"), Unt.Id, "walter", "moyano", "Profesor Titular"),
+        new TeacherRecord(Tid("31"), UtnFrt.Id, "valentina", "salazar", "Profesora Titular"),
+        new TeacherRecord(Tid("32"), UtnFrt.Id, "ricardo", "peralta", "Profesor Titular"),
+        new TeacherRecord(Tid("33"), Unse.Id, "gabriela", "toledo", "Profesora Titular"),
+        new TeacherRecord(Tid("34"), Unse.Id, "manuel", "escobar", "Profesor Titular"),
+        new TeacherRecord(Tid("35"), Unsta.Id, "ivana", "guzmán", "Profesora Titular"),
+        new TeacherRecord(Tid("36"), Unsta.Id, "santiago", "torres", "Profesor Titular"),
+        new TeacherRecord(Tid("37"), Unsta.Id, "brenda", "díaz", "Profesora Titular"),
+        new TeacherRecord(Tid("38"), Unsta.Id, "ariel", "núñez", "Profesor Titular"),
     };
 
     private static TeacherId Tid(string nn) =>
@@ -3593,6 +3608,11 @@ public static class AcademicSeedData
     // llega en cada carrera. since_term_id apunta al período más viejo de la universidad de esa
     // cátedra (Unt: 2024-1c, UtnFrt: 2024-1c, Unse: 2024-1c, cada una con su propio bloque de
     // AcademicTerms).
+    //
+    // Nueve cátedras más, una en cada materia de las cinco carreras nuevas que hasta acá no tenía
+    // ninguna sembrada (ver CorpusSeedData, módulo reviews, para el corpus completo de las veinte
+    // cátedras). Mismo criterio de since_term_id que el bloque de arriba: el período más viejo de
+    // la universidad de esa cátedra.
     //
     // Convención de UUIDs:
     //   - Chairs: 00000008-0000-4000-a000-0000000000NN
@@ -3694,6 +3714,27 @@ public static class AcademicSeedData
             new[] { new ChairMemberRecord(Tid("2e"), ChairMemberRole.Lead, Atid("01")) }),
         new ChairRecord(Chid("23"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000400")), "Gómez",
             new[] { new ChairMemberRecord(Tid("2f"), ChairMemberRole.Lead, Atid("01")) }),
+
+        // ---------- Nueve cátedras más, una por cada materia sin cátedra sembrada de las cinco
+        // carreras de R7 ----------
+        new ChairRecord(Chid("24"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000100")), "Moyano",
+            new[] { new ChairMemberRecord(Tid("30"), ChairMemberRole.Lead, Atid("07")) }),
+        new ChairRecord(Chid("25"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000020e")), "Salazar",
+            new[] { new ChairMemberRecord(Tid("31"), ChairMemberRole.Lead, Atid("0d")) }),
+        new ChairRecord(Chid("26"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000200")), "Peralta",
+            new[] { new ChairMemberRecord(Tid("32"), ChairMemberRole.Lead, Atid("0d")) }),
+        new ChairRecord(Chid("27"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000502")), "Toledo",
+            new[] { new ChairMemberRecord(Tid("33"), ChairMemberRole.Lead, Atid("19")) }),
+        new ChairRecord(Chid("28"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000509")), "Escobar",
+            new[] { new ChairMemberRecord(Tid("34"), ChairMemberRole.Lead, Atid("19")) }),
+        new ChairRecord(Chid("29"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000301")), "Guzmán",
+            new[] { new ChairMemberRecord(Tid("35"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2a"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000310")), "Torres",
+            new[] { new ChairMemberRecord(Tid("36"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2b"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-00000000040b")), "Díaz",
+            new[] { new ChairMemberRecord(Tid("37"), ChairMemberRole.Lead, Atid("01")) }),
+        new ChairRecord(Chid("2c"), new SubjectId(Guid.Parse("00000004-0000-4000-a000-000000000416")), "Núñez",
+            new[] { new ChairMemberRecord(Tid("38"), ChairMemberRole.Lead, Atid("01")) }),
     };
 
     private static ChairId Chid(string nn) =>
