@@ -49,6 +49,12 @@ async function visibleText(page: Page): Promise<string> {
   return page.evaluate(() => {
     const clone = document.body.cloneNode(true) as HTMLElement;
     clone.querySelector('#faq')?.remove();
+    // La nota del equipo (career-facts-sheet.tsx) va entre comillas tipográficas por la maqueta:
+    // es una síntesis (ADR-0084), no una reseña, y si no se descarta acá dispara el patrón de
+    // testimonio de abajo sin serlo.
+    for (const node of clone.querySelectorAll('.pb-note')) {
+      node.remove();
+    }
     for (const node of clone.querySelectorAll('script, style, noscript')) {
       node.remove();
     }

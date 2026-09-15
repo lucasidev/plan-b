@@ -4,6 +4,7 @@ import {
   careerSustentoSentence,
   cohortGraduationCount,
   describeSubjectReviewsDot,
+  paperDurationStat,
   yearLabel,
 } from './describe-career-header';
 
@@ -129,6 +130,115 @@ describe('careerSustentoSentence', () => {
     expect(careerSustentoSentence(byField)).toBe(
       'Dura 2 años y medio en el papel. En la realidad, ninguna fuente lo publica. De cada 100 que entran, egresan 21 (derivado de la institución entera).',
     );
+  });
+});
+
+describe('paperDurationStat', () => {
+  it('"2 años y medio" da valor "2 ½" y etiqueta plural', () => {
+    expect(
+      paperDurationStat(
+        fact({
+          field: 'paper_duration',
+          status: 'Published',
+          value: '2 años y medio',
+          unit: 'years',
+        }),
+      ),
+    ).toEqual(['2 ½', 'años en el papel']);
+  });
+
+  it('un texto sin fracción da el número solo, plural', () => {
+    expect(
+      paperDurationStat(
+        fact({
+          field: 'paper_duration',
+          status: 'Published',
+          value: '3 años: 6 módulos cuatrimestrales, 2112 horas, más certificación de inglés',
+          unit: 'years',
+        }),
+      ),
+    ).toEqual(['3', 'años en el papel']);
+  });
+
+  it('"2 años" da "2"', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '2 años', unit: 'years' }),
+      ),
+    ).toEqual(['2', 'años en el papel']);
+  });
+
+  it('"5" a secas da "5"', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '5', unit: 'years' }),
+      ),
+    ).toEqual(['5', 'años en el papel']);
+  });
+
+  it('"4,5" da "4 ½"', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '4,5', unit: 'years' }),
+      ),
+    ).toEqual(['4 ½', 'años en el papel']);
+  });
+
+  it('"4.5" da "4 ½"', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '4.5', unit: 'years' }),
+      ),
+    ).toEqual(['4 ½', 'años en el papel']);
+  });
+
+  it('con 1 entero y sin medio, la etiqueta es singular', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '1 año', unit: 'years' }),
+      ),
+    ).toEqual(['1', 'año en el papel']);
+  });
+
+  it('con 1 entero y medio, la etiqueta sigue plural', () => {
+    expect(
+      paperDurationStat(
+        fact({
+          field: 'paper_duration',
+          status: 'Published',
+          value: '1 año y medio',
+          unit: 'years',
+        }),
+      ),
+    ).toEqual(['1 ½', 'años en el papel']);
+  });
+
+  /** Caso real (OfficialFactSeedData.cs, Fid 152): "5 semestres" no son 5 años. */
+  it('con unit distinto de "years" (o null), cae al valor genérico: 5 semestres no son 5 años', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: '5 semestres', unit: null }),
+      ),
+    ).toEqual(['5 semestres', 'en el papel']);
+  });
+
+  it('sin número al principio, cae al valor genérico con la etiqueta de siempre', () => {
+    expect(
+      paperDurationStat(
+        fact({ field: 'paper_duration', status: 'Published', value: 'Un semestre largo' }),
+      ),
+    ).toEqual(['Un semestre largo', 'en el papel']);
+  });
+
+  it('sin dato Published (no publicado), cae al valor genérico de officialFactCellContent', () => {
+    expect(paperDurationStat(fact({ field: 'paper_duration', status: 'NotPublished' }))).toEqual([
+      'No publicado',
+      'en el papel',
+    ]);
+  });
+
+  it('sin ningún dato, cae a "Sin relevar" con la etiqueta de siempre', () => {
+    expect(paperDurationStat(undefined)).toEqual(['Sin relevar', 'en el papel']);
   });
 });
 

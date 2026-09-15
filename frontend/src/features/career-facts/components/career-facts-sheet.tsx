@@ -5,6 +5,7 @@ import {
   OFFICIAL_FACT_FIELDS,
   OFFICIAL_FACT_LABELS,
   type OfficialFact,
+  officialFactCaption,
   officialFactCellContent,
 } from '@/components/facts';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
@@ -19,6 +20,7 @@ import { formatShortDate } from '@/lib/format-date';
 import {
   careerSustentoSentence,
   describeSubjectReviewsDot,
+  paperDurationStat,
   yearLabel,
 } from '../lib/describe-career-header';
 import { groupSubjectsByYearOnly } from '../lib/group-subjects-by-year';
@@ -157,8 +159,7 @@ function careerStats(
 ): PageFrameStat[] {
   const stats: PageFrameStat[] = [];
 
-  const paperDuration = byField.get(OFFICIAL_FACT_FIELDS.paperDuration);
-  stats.push([officialFactCellContent(paperDuration).value, 'en el papel']);
+  stats.push(paperDurationStat(byField.get(OFFICIAL_FACT_FIELDS.paperDuration)));
 
   const cohortGraduation = byField.get(OFFICIAL_FACT_FIELDS.cohortGraduation);
   const cohortCell = officialFactCellContent(cohortGraduation);
@@ -291,15 +292,13 @@ function OfficialDataRow({ label, fact }: { label: string; fact: OfficialFact | 
     );
   }
 
-  const caption = fact.note ?? [fact.sourceName, fact.period].filter(Boolean).join(' · ');
-
   return (
     <div>
       <div className="pb-k">{label}</div>
       <div className={fact.status === 'Published' ? 'pb-v' : 'pb-v pb-small'}>
         <OfficialDataValue fact={fact} />
       </div>
-      <div className="pb-src pb-meta">{caption}</div>
+      <div className="pb-src pb-meta">{officialFactCaption(fact)}</div>
     </div>
   );
 }
