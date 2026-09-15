@@ -262,6 +262,93 @@ public class AdminSubjectsEndpointTests : IClassFixture<RegisterApiFixture>
         publicRow.TermKind.ShouldBeNull();
     }
 
+    /// <summary>
+    /// Dos materias sin código en el mismo plan no chocan contra UNIQUE(career_plan_id, code):
+    /// Postgres no hace chocar los NULL entre sí (mismo criterio que <see cref="Subject"/>). El
+    /// handler tiene que reflejar eso y no llamar a <c>ExistsByCodeAsync</c> con null, o la segunda
+    /// alta fallaría con un falso 409.
+    /// </summary>
+    [Fact]
+    public async Task Two_subjects_without_code_in_the_same_plan_are_both_created()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        static object SubjectWithoutCode(string name) => new
+        {
+            code = (string?)null,
+            name,
+            yearInPlan = 1,
+            termInYear = (int?)null,
+            termKind = (string?)null,
+            weeklyHours = (int?)null,
+            totalHours = (int?)null,
+            description = (string?)null,
+        };
+
+        var first = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", SubjectWithoutCode("Primera Sin Código"));
+        first.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var firstCreated = await first.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var second = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", SubjectWithoutCode("Segunda Sin Código"));
+        second.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var secondCreated = await second.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var list = await admin.Client.GetOkAsync<ListDto>(
+            $"/api/academic/career-plans/{planId}/subjects");
+        list!.Items.ShouldContain(s => s.Id == firstCreated!.Id);
+        list.Items.ShouldContain(s => s.Id == secondCreated!.Id);
+    }
+
+    /// <summary>
+    /// Una edición puede vaciar lo que la materia tenía, no solo cargarlo: si la fuente se corrige
+    /// (o el dato del alta era un error), código, cadencia, cuatrimestre y horas tienen que poder
+    /// volver a null.
+    /// </summary>
+    [Fact]
+    public async Task Admin_update_clears_code_term_kind_and_hours_from_a_subject_that_had_them()
+    {
+        var admin = await AdminAsync();
+        var planId = await CreateCareerPlanAsync();
+
+        var create = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects", NewSubjectBody());
+        create.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var created = await create.Content.ReadFromJsonAsync<CreatedDto>();
+
+        var before = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created!.Id}");
+        before!.Code.ShouldNotBeNull();
+        before.TermKind.ShouldNotBeNull();
+        before.WeeklyHours.ShouldNotBeNull();
+        before.TotalHours.ShouldNotBeNull();
+
+        var update = await admin.Client.PatchAsJsonAsync(
+            $"/api/academic/subjects/{created.Id}",
+            new
+            {
+                code = (string?)null,
+                name = before.Name,
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        update.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        var after = await admin.Client.GetOkAsync<SubjectDto>(
+            $"/api/academic/career-plans/{planId}/subjects/{created.Id}");
+        after!.Code.ShouldBeNull();
+        after.TermKind.ShouldBeNull();
+        after.TermInYear.ShouldBeNull();
+        after.WeeklyHours.ShouldBeNull();
+        after.TotalHours.ShouldBeNull();
+    }
+
     [Fact]
     public async Task Delete_with_dependents_returns_409_with_dependents_list()
     {
