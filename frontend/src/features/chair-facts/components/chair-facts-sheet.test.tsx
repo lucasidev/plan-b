@@ -57,7 +57,7 @@ describe('ChairFactsSheet', () => {
    * "hace cuánto es la última" al final. Sin eso, una cátedra con titular cambiado en 2025 y
    * última reseña de 2023 se lee igual que una activa.
    */
-  it('SC-002: con rango de años, la identidad dice "N reseñas, de X a Y · lo último es de..."', () => {
+  it('SC-002: con rango de años, la identidad dice "N reseñas de X a Y · lo último es de..."', () => {
     render(
       <ChairFactsSheet
         facts={facts({
@@ -71,7 +71,7 @@ describe('ChairFactsSheet', () => {
       />,
     );
 
-    const sustento = screen.getByText('37 reseñas, de 2023 a 2026 · lo último es de hace 2 meses');
+    const sustento = screen.getByText('37 reseñas de 2023 a 2026 · lo último es de hace 2 meses');
     expect(sustento).toBeInTheDocument();
     // Acotado a la línea de sustento: "voces" sí aparece en otras partes de la ficha (fama,
     // contrastes, "de N voces"), pegada a un conteo publicado, como manda el glosario.
@@ -89,7 +89,7 @@ describe('ChairFactsSheet', () => {
       />,
     );
 
-    expect(screen.getByText('12 reseñas, de 2026')).toBeInTheDocument();
+    expect(screen.getByText('12 reseñas de 2026')).toBeInTheDocument();
   });
 
   /**
@@ -201,14 +201,36 @@ describe('ChairFactsSheet', () => {
   });
 
   /**
-   * SC-002, estado "sin base para comparar": si es la única cátedra de su materia, la sección
-   * sigue mostrándose (la maqueta la muestra siempre) con el estado honesto de que no hay base.
+   * SC-002, estado "sin base para comparar": si ninguna hermana llegó todavía al piso, la sección
+   * se muestra con el estado honesto de que no hay base.
    */
-  it('ficha SC-002, "sin base para comparar": sin hermanas, dice que no hay base todavía', () => {
-    render(<ChairFactsSheet facts={facts({ contrasts: [] })} />);
+  it('ficha SC-002, "sin base para comparar": sin hermanas publicadas, dice que no hay base todavía', () => {
+    render(<ChairFactsSheet facts={facts({ contrasts: [] })} hasPublishedSibling={false} />);
 
     expect(screen.getByText(/comparada con las otras cátedras de/i)).toBeInTheDocument();
     expect(screen.getByText(/sin base comparable todavía/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Sin contrastes pero con alguna hermana ya publicada, ningún contraste sobrevivió la regla de
+   * los intervalos: eso no es "sin base", así que la sección calla en vez de repetir una frase que
+   * no aplica (línea 562 de la maqueta: sin señal, silencio).
+   */
+  it('sin contrastes pero con alguna hermana publicada, la sección calla', () => {
+    render(<ChairFactsSheet facts={facts({ contrasts: [] })} hasPublishedSibling={true} />);
+
+    expect(screen.queryByText(/comparada con las otras cátedras de/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/sin base comparable todavía/i)).not.toBeInTheDocument();
+  });
+
+  /**
+   * Sin poder saber si hay hermanas publicadas (la ficha de materia falló), la sección tampoco
+   * afirma que no hay base: eso sería una afirmación sin verificar.
+   */
+  it('sin poder saber de las hermanas, la sección calla', () => {
+    render(<ChairFactsSheet facts={facts({ contrasts: [] })} />);
+
+    expect(screen.queryByText(/comparada con las otras cátedras de/i)).not.toBeInTheDocument();
   });
 
   /**
@@ -274,7 +296,7 @@ describe('ChairFactsSheet', () => {
   it('avisa cuando las voces contadas son del corpus de demostración', () => {
     render(<ChairFactsSheet facts={facts({ hasDemoCorpusVoices: true })} />);
 
-    expect(screen.getByText(/estas voces son de prueba/i)).toBeInTheDocument();
+    expect(screen.getByText(/estas reseñas son de prueba/i)).toBeInTheDocument();
   });
 
   it('no avisa nada cuando las voces contadas no son del corpus de demostración', () => {

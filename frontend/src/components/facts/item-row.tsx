@@ -78,11 +78,12 @@ function Stretch({
         <span className={`text-[13.5px] ${questionClass}`}>{item.text}</span>
         <span
           className="whitespace-nowrap rounded-[6px] px-[9px] py-[3px] text-[11.5px]"
-          style={
-            item.modeIsNegative
+          style={{
+            fontFamily: 'var(--font-mono)',
+            ...(item.modeIsNegative
               ? { background: 'var(--color-alarm-soft)', color: 'var(--color-alarm-ink)' }
-              : { background: 'var(--color-bg-elev)', color: 'var(--color-ink-2)' }
-          }
+              : { background: 'var(--color-bg-elev)', color: 'var(--color-ink-2)' }),
+          }}
         >
           {item.modeLabel} · {item.modePercent} %
         </span>
@@ -108,7 +109,7 @@ function Stretch({
 
       <p className="mt-[5px] text-[10px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
         {item.distribution.map((s) => `${s.label.toLowerCase()} ${s.percent}`).join(' · ')} · de{' '}
-        {item.total} voces
+        {item.total} {item.total === 1 ? 'voz' : 'voces'}
       </p>
     </>
   );
