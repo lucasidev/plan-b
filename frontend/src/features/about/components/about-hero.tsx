@@ -8,8 +8,11 @@ import { ABOUT_HEADLINE, ABOUT_LEDE } from '../data/content';
 export function AboutHero() {
   return (
     <header style={{ maxWidth: 720, marginBottom: 32 }}>
+      {/* accent-ink, no accent: accent sobre bg da ~2,7:1 (falla WCAG AA para texto chico).
+          accent-ink es la variante pensada para texto, igual que en el resto del sistema
+          (accent-soft/accent-ink, ver avatar-menu.tsx y official-fact-row.tsx). */}
       <div
-        className="text-accent"
+        className="text-accent-ink"
         style={{
           fontFamily: 'var(--font-mono)',
           fontSize: 10.5,
