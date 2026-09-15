@@ -93,7 +93,12 @@ test.describe('Navegación suave entre rutas de (planb)', () => {
     page,
   }) => {
     await page.goto('/universities/unsta/careers');
-    await page
+    // Con reseñas, la Tecnicatura también aparece en "Por dónde empezar" (columna derecha); el
+    // camino de este test es la fila de la carrera en "Facultades y carreras".
+    const careersByFaculty = page
+      .locator('section.pb-section')
+      .filter({ has: page.getByText('Facultades y carreras', { exact: true }) });
+    await careersByFaculty
       .getByRole('link', {
         name: /Tecnicatura Universitaria en Desarrollo y Calidad de Software/i,
       })
