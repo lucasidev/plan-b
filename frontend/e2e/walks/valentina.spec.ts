@@ -557,7 +557,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       'siempre 14 · a veces 29 · casi nunca 57 · nadie preguntaba 0 · de 14',
     );
     const q2Dist = page.getByText(
-      'casi todas 21 · faltaron algunas 29 · faltaron muchas 50 · de 14',
+      'casi todas 19 · faltaron algunas 25 · faltaron muchas 56 · de 16',
     );
     const hasQ1 = await checkVisible(q1, 'cada frase debe estar a la vista');
     const hasQ1Mode = await checkVisible(q1Mode, 'con la opción más marcada y su porcentaje');
@@ -571,7 +571,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       story: 'US-130 / US-131',
       expected:
         'Por cada frase: la opción más marcada con su porcentaje, y la distribución entera con el total de voces.',
-      observed: `"${await textOf(q1)}" -> ${await textOf(q1Mode)} (${await textOf(q1Dist)}). "¿Se dictaron las clases?" -> Faltaron muchas · 50 % (${await textOf(q2Dist)})`,
+      observed: `"${await textOf(q1)}" -> ${await textOf(q1Mode)} (${await textOf(q1Dist)}). "¿Se dictaron las clases?" -> Faltaron muchas · 56 % (${await textOf(q2Dist)})`,
       verdict: combineVerdict([hasQ1, hasQ1Mode, hasQ1Dist, hasQ2Dist]),
       screenshot: '07-chair-publishing.png',
     });
@@ -596,7 +596,7 @@ test('Valentina entra sin cuenta y sigue el rastro hasta el Método', async ({ p
       screenshot: '07-chair-publishing.png',
     });
 
-    const denominatorLine = page.getByText(/Aprobada o regular, \d+ de 14 cursadas reseñadas\./);
+    const denominatorLine = page.getByText(/Aprobada o regular, \d+ de 16 cursadas reseñadas\./);
     const hasDenominator = await isVisible(denominatorLine, 3000);
     record({
       step: 7,

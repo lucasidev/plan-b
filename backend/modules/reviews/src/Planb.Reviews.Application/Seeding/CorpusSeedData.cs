@@ -12,8 +12,8 @@ namespace Planb.Reviews.Application.Seeding;
 /// </para>
 ///
 /// <code>
-///   Cátedra Pérez     14 voces  publica
-///     ¿Se dictaron las clases?          7 faltaron muchas · 4 faltaron algunas · 3 casi todas
+///   Cátedra Pérez     16 voces  publica
+///     ¿Se dictaron las clases?          9 faltaron muchas · 4 faltaron algunas · 3 casi todas
 ///     ¿Contestaba en clase?             8 casi nunca      · 4 a veces          · 2 siempre
 ///     ¿Salías entendiendo?              7 casi nunca      · 5 a veces          · 2 casi siempre
 ///
@@ -48,7 +48,7 @@ namespace Planb.Reviews.Application.Seeding;
 ///
 /// <code>
 ///   211 Fundamentos de Control de Calidad (sin tocar, la citan cuatro registros de revisión)
-///     Pérez     14 voces  publica, sin fama por convergencia
+///     Pérez     16 voces  publica, sin fama por convergencia
 ///     González  12 voces  publica, hermana de Pérez (Wilson separa CHAIR_CLASSES_HELD)
 ///     Ruiz       6 voces  bajo el piso, le faltan 4
 ///
@@ -303,6 +303,18 @@ public static class CorpusSeedData
                 ReviewIdAt(reviews.Count + 1), i, Subject113, Term2024C1, ChairId: null,
                 [(Outcome, 1)]));
         }
+
+        // Dos voces más de Pérez, en cuentas nuevas (33 y 34, libres de todo par de co-cursada) y
+        // al final de la lista para no correr el ReviewId de ninguna fila anterior. Saltear vale
+        // (ADR-0082): solo contestan la frase que mueve el contraste y cómo terminó la cursada, sin
+        // llegar a aprobada ni regular. Es lo que separa CHAIR_CLASSES_HELD de sus hermanas (Wilson
+        // deja de solaparlas) sin tocar ninguna otra frase de Pérez ni el resto del corpus.
+        reviews.Add(new SeededReview(
+            ReviewIdAt(reviews.Count + 1), 33, Subject211, Term2024C1, ChairPerez,
+            [(ClassesHeld, 3), (Outcome, 3)]));
+        reviews.Add(new SeededReview(
+            ReviewIdAt(reviews.Count + 1), 34, Subject211, Term2024C1, ChairPerez,
+            [(ClassesHeld, 3), (Outcome, 4)]));
 
         return reviews;
     }

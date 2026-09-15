@@ -545,7 +545,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         step: 3,
         story: 'US-162',
         expected:
-          'En la ficha de Pérez, "Faltaron muchas" sumó una voz: el total pasa de 14 a 15 y el conteo de esa opción sube en uno.',
+          'En la ficha de Pérez, "Faltaron muchas" sumó una voz: el total pasa de 16 a 17 y el conteo de esa opción sube en uno.',
         observed: comparisonObserved,
         verdict: comparisonVerdict,
         screenshot: '08-chair-after-review.png',
@@ -837,7 +837,7 @@ test('El recorrido de Matías: crea la cuenta recién al reseñar, y se va sin d
         step: 7,
         story: 'US-166',
         expected:
-          'La ficha de Pérez sigue con la voz sumada (15 voces, "faltaron muchas" con su conteo): la baja no descuenta lo ya publicado.',
+          'La ficha de Pérez sigue con la voz sumada (17 voces, "faltaron muchas" con su conteo): la baja no descuenta lo ya publicado.',
         observed: q2Persisted
           ? `Sigue en "faltaron muchas ${q2Persisted.pct} %, de ${q2Persisted.total}" (antes de la baja: ${q2After ? `${q2After.pct} %, de ${q2After.total}` : 'no se pudo leer'}).`
           : 'No se pudo volver a leer la distribución.',
