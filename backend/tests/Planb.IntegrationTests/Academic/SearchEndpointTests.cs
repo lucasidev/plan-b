@@ -61,7 +61,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         // Universidad y carrera, que es lo que distingue dos materias iguales en catálogos
         // distintos; el código va al final porque esta materia lo tiene.
         body.Items[0].Sublabel.ShouldBe(
-            "Universidad del Norte Santo Tomás de Aquino · Tecnicatura Universitaria en Desarrollo y Calidad de Software · 101");
+            "UNSTA · Tecnicatura Universitaria en Desarrollo y Calidad de Software · 101");
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     public async Task A_subject_without_code_never_outranks_a_real_prefix_match_and_shows_university_and_career_as_sublabel()
     {
         var term = $"Zzzterm{Guid.NewGuid():N}"[..20];
-        var (withCodeId, withoutCodeId, universityName, careerName) =
+        var (withCodeId, withoutCodeId, universitySigla, careerName) =
             await SeedSubjectsWithAndWithoutCodeAsync(term);
 
         using var client = _fixture.Factory.CreateClient();
@@ -92,8 +92,8 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
         // mandaba arriba de todo sin importar la relevancia.
         withCodeIndex.ShouldBeLessThan(withoutCodeIndex);
 
-        subjects[withCodeIndex].Sublabel.ShouldBe($"{universityName} · {careerName} · ZT-01");
-        subjects[withoutCodeIndex].Sublabel.ShouldBe($"{universityName} · {careerName}");
+        subjects[withCodeIndex].Sublabel.ShouldBe($"{universitySigla} · {careerName} · ZT-01");
+        subjects[withoutCodeIndex].Sublabel.ShouldBe($"{universitySigla} · {careerName}");
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
     /// con <paramref name="term"/> (prefix match real) y una sin código que solo lo tiene en el
     /// medio del nombre (substring, nunca prefix). Esto prueba el read de búsqueda, no el alta.
     /// </summary>
-    private async Task<(Guid WithCodeId, Guid WithoutCodeId, string UniversityName, string CareerName)>
+    private async Task<(Guid WithCodeId, Guid WithoutCodeId, string UniversitySigla, string CareerName)>
         SeedSubjectsWithAndWithoutCodeAsync(string term)
     {
         using var scope = _fixture.Factory.Services.CreateScope();
@@ -135,7 +135,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
 
         var university = await db.Universities.FindAsync(new UniversityId(AcademicSeedUnstaId));
 
-        return (withCode.Id.Value, withoutCode.Id.Value, university!.Name, career.Name);
+        return (withCode.Id.Value, withoutCode.Id.Value, university!.Slug.ToUpperInvariant(), career.Name);
     }
 
     [Fact]
@@ -284,7 +284,7 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
 
         // La institución que la dicta es lo que distingue esta oferta de la misma carrera ofrecida
         // en otra universidad (ver el edge case de abajo).
-        career.Sublabel.ShouldBe("Universidad del Norte Santo Tomás de Aquino");
+        career.Sublabel.ShouldBe("UNSTA");
     }
 
     /// <summary>US-132, hallazgo V04: "el buscador no devuelve carreras ni universidades".</summary>
@@ -335,12 +335,9 @@ public class SearchEndpointTests : IClassFixture<RegisterApiFixture>
             .ToList();
 
         careers.Count.ShouldBe(3);
-        careers.ShouldContain(i =>
-            i.Id == UnstaInformatica && i.Sublabel == "Universidad del Norte Santo Tomás de Aquino");
-        careers.ShouldContain(i =>
-            i.Id == UnstaInformaticaConcepcion && i.Sublabel == "Universidad del Norte Santo Tomás de Aquino");
-        careers.ShouldContain(i =>
-            i.Id == UntInformatica && i.Sublabel == "Universidad Nacional de Tucumán");
+        careers.ShouldContain(i => i.Id == UnstaInformatica && i.Sublabel == "UNSTA");
+        careers.ShouldContain(i => i.Id == UnstaInformaticaConcepcion && i.Sublabel == "UNSTA");
+        careers.ShouldContain(i => i.Id == UntInformatica && i.Sublabel == "UNT");
     }
 
     /// <summary>

@@ -96,7 +96,7 @@ describe('GlobalSearch: US-132, carrera e institución suman tipos de resultado'
         type: 'career',
         id: 'career-1',
         label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
-        sublabel: UNSTA.name,
+        sublabel: UNSTA.slug.toUpperCase(),
       },
       { type: 'institution', id: UNSTA.id, label: UNSTA.name, sublabel: '' },
     ]);
@@ -117,7 +117,7 @@ describe('GlobalSearch: US-132, carrera e institución suman tipos de resultado'
         type: 'career',
         id: 'career-tudcs',
         label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
-        sublabel: UNSTA.name,
+        sublabel: UNSTA.slug.toUpperCase(),
       },
     ]);
     renderSearch();
@@ -162,20 +162,71 @@ describe('GlobalSearch: US-132, carrera e institución suman tipos de resultado'
         type: 'career',
         id: 'career-unsta',
         label: 'Ingeniería en Informática',
-        sublabel: UNSTA.name,
+        sublabel: UNSTA.slug.toUpperCase(),
       },
-      { type: 'career', id: 'career-unt', label: 'Ingeniería en Informática', sublabel: UNT.name },
+      {
+        type: 'career',
+        id: 'career-unt',
+        label: 'Ingeniería en Informática',
+        sublabel: UNT.slug.toUpperCase(),
+      },
     ]);
     renderSearch();
 
     await search(user, 'ingeniería en informática');
 
     expect(
-      screen.getByRole('option', { name: /ingeniería en informática.*tomás/i }),
+      screen.getByRole('option', { name: /ingeniería en informática.*unsta/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('option', { name: /ingeniería en informática.*tucumán/i }),
+      screen.getByRole('option', { name: /ingeniería en informática.*unt/i }),
     ).toBeInTheDocument();
+  });
+
+  it('el nombre y el subtítulo se renderizan en elementos separados', async () => {
+    const user = userEvent.setup();
+    stubSearch([
+      {
+        type: 'career',
+        id: 'career-tudcs',
+        label: 'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+        sublabel: UNSTA.slug.toUpperCase(),
+      },
+    ]);
+    renderSearch();
+
+    await search(user, 'desarrollo y calidad');
+
+    const nameEl = screen.getByText(
+      'Tecnicatura Universitaria en Desarrollo y Calidad de Software',
+    );
+    const sublabelEl = screen.getByText(UNSTA.slug.toUpperCase());
+    const typeBadgeEl = screen.getByText('Carrera');
+
+    // Nombre y subtítulo comparten un contenedor propio (el bloque de dos líneas), que no es la
+    // opción entera ni incluye la etiqueta de tipo: con la fila de una sola línea los tres eran
+    // hijos directos de la opción y esta aserción no distinguía una estructura de la otra.
+    const container = nameEl.parentElement;
+    expect(container).not.toBeNull();
+    expect(sublabelEl.parentElement).toBe(container);
+    expect(container).not.toBe(container?.closest('[role="option"]'));
+    expect(container?.contains(typeBadgeEl)).toBe(false);
+  });
+
+  it('sin subtítulo (null o vacío) no hay segunda línea', async () => {
+    const user = userEvent.setup();
+    stubSearch([
+      { type: 'institution', id: UNSTA.id, label: UNSTA.name, sublabel: '' },
+      { type: 'teacher', id: 'teacher-sin-titulo', label: 'Ana Paz', sublabel: null },
+    ]);
+    renderSearch();
+
+    await search(user, 'pa');
+
+    // Sin sublabel (vacío o null), el bloque del resultado no tiene una segunda línea: un solo
+    // hijo, el nombre.
+    expect(screen.getByText(UNSTA.name).parentElement?.children).toHaveLength(1);
+    expect(screen.getByText('Ana Paz').parentElement?.children).toHaveLength(1);
   });
 
   it('el placeholder dice que ahora también se puede buscar por carrera', () => {
