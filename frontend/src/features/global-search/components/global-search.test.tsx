@@ -67,7 +67,7 @@ function renderSearch() {
 
 /** Escribe un término y espera a que el dropdown esté abierto con al menos un resultado. */
 async function search(user: ReturnType<typeof userEvent.setup>, term: string) {
-  const input = screen.getByRole('combobox', { name: /buscar materia, carrera o docente/i });
+  const input = screen.getByRole('combobox', { name: /buscar materia, carrera, docente/i });
   await user.type(input, term);
   await waitFor(
     () => {
@@ -183,7 +183,7 @@ describe('GlobalSearch: US-132, carrera e institución suman tipos de resultado'
     renderSearch();
 
     expect(
-      screen.getByRole('combobox', { name: /buscar materia, carrera o docente/i }),
+      screen.getByRole('combobox', { name: /buscar materia, carrera, docente/i }),
     ).toBeInTheDocument();
   });
 });

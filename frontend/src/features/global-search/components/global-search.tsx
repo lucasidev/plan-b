@@ -143,8 +143,8 @@ export function GlobalSearch() {
           aria-controls={listboxId}
           aria-autocomplete="list"
           aria-activedescendant={showDropdown && items.length > 0 ? optionId(active) : undefined}
-          placeholder="Buscar materia, carrera o docente..."
-          aria-label="Buscar materia, carrera o docente"
+          placeholder="Buscar materia, carrera, docente o institución"
+          aria-label="Buscar materia, carrera, docente o institución"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
