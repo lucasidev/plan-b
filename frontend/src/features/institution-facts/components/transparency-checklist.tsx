@@ -23,10 +23,10 @@ export const CHECKLIST_ORDER = [
 
 /**
  * El checklist de transparencia institucional (SC-005, ADR-0090, `V.university().aside` de la
- * maqueta aprobada): una fila por campo, con su estado siempre en una pill (el valor cuando está
- * publicado, "La institución no lo publica" cuando no) y su nota o su fuente debajo. Que una
- * privada no publique nómina ni presupuesto es exactamente lo que esta sección tiene que decir,
- * no un hueco.
+ * maqueta aprobada): una fila por campo, con su nota o su fuente debajo. La pill es para el
+ * estado (no publicado, no aplica), nunca para el valor publicado: un valor largo en una pill
+ * (`white-space: nowrap`) desbordaba la columna (UTN-FRT). Que una privada no publique nómina ni
+ * presupuesto es exactamente lo que esta sección tiene que decir, no un hueco.
  */
 export function TransparencyChecklist({ facts }: { facts: OfficialFact[] }) {
   const byField = new Map(facts.map((fact) => [fact.field, fact]));
@@ -58,21 +58,36 @@ export function TransparencyChecklist({ facts }: { facts: OfficialFact[] }) {
   );
 }
 
-/** Una fila: etiqueta, pill con el estado, y la nota o (sin ella) la fuente con su período. */
+/** Una fila: etiqueta, el valor o el estado, y la nota o (sin ella) la fuente con su período. */
 function ChecklistRow({ fact }: { fact: OfficialFact }) {
   const label = OFFICIAL_FACT_LABELS[fact.field] ?? fact.field;
-  const cell = officialFactCellContent(fact);
-  const pillText = fact.status === 'NotPublished' ? 'La institución no lo publica' : cell.value;
 
   return (
     <div>
       <div className="pb-k">{label}</div>
       <div className="pb-v pb-small">
-        <span className="pb-pill">{pillText}</span>
+        <ChecklistValue fact={fact} />
       </div>
       <div className="pb-src pb-meta">{officialFactCaption(fact)}</div>
     </div>
   );
+}
+
+/**
+ * Publicado, texto normal (parte línea como un dato oficial publicado de la carrera). No
+ * publicado y no aplica, la pill de siempre. Cualquier otro estado, la pill con el valor genérico.
+ */
+function ChecklistValue({ fact }: { fact: OfficialFact }) {
+  switch (fact.status) {
+    case 'Published':
+      return <>{officialFactCellContent(fact).value}</>;
+    case 'NotPublished':
+      return <span className="pb-pill">La institución no lo publica</span>;
+    case 'NotApplicable':
+      return <span className="pb-pill">No aplica a esta institución</span>;
+    default:
+      return <span className="pb-pill">{officialFactCellContent(fact).value}</span>;
+  }
 }
 
 /** La fecha del relevamiento más reciente entre las filas: lo que "al pie" promete leer. */
