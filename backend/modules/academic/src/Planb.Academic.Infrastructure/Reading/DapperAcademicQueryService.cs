@@ -322,7 +322,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
             JOIN academic.subjects s  ON s.id = p.subject_id
             JOIN academic.subjects rs ON rs.id = p.required_subject_id
             WHERE s.career_plan_id = @CareerPlanId
-            ORDER BY s.code ASC, rs.code ASC, p.type ASC;";
+            ORDER BY s.code ASC NULLS LAST, rs.code ASC NULLS LAST, p.type ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<PublicPrerequisiteEdge>(
