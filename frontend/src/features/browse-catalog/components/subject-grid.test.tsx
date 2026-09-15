@@ -176,3 +176,61 @@ describe('SubjectGrid, cuánto junta cada materia (US-134, SC-018)', () => {
     expect(screen.getAllByText('sin reseñas')).toHaveLength(2);
   });
 });
+
+/**
+ * El grupo sin cadencia (termKind null) no tiene título propio para separarse visualmente: el
+ * borde superior es lo único que evita que sus materias se lean como parte del grupo anterior. Sin
+ * grupo anterior en el mismo año (plan entero sin cuatrimestres, como UNSTA y UTN), ese borde
+ * quedaría pegado debajo de "Año N" sin separar nada, así que no va.
+ */
+describe('SubjectGrid, el borde del grupo sin cadencia', () => {
+  it('aparece cuando el grupo sin cadencia tiene otro grupo antes en el mismo año', () => {
+    render(
+      <SubjectGrid
+        subjects={[
+          subject({
+            id: 'con-cadencia',
+            code: 'A100',
+            name: 'Con cadencia',
+            yearInPlan: 1,
+            termInYear: 1,
+            termKind: 'FourMonth',
+          }),
+          subject({
+            id: 'sin-cadencia',
+            code: null,
+            name: 'Sin cadencia',
+            yearInPlan: 1,
+            termInYear: null,
+            termKind: null,
+          }),
+        ]}
+      />,
+    );
+
+    const card = screen.getByRole('link', { name: /sin cadencia/i });
+    const termGroup = card.parentElement?.parentElement;
+    expect(termGroup).toHaveClass('border-t', 'border-line', 'pt-4');
+  });
+
+  it('no aparece cuando el grupo sin cadencia es el único del año', () => {
+    render(
+      <SubjectGrid
+        subjects={[
+          subject({
+            id: 'sin-cadencia',
+            code: null,
+            name: 'Sin cadencia sola',
+            yearInPlan: 1,
+            termInYear: null,
+            termKind: null,
+          }),
+        ]}
+      />,
+    );
+
+    const card = screen.getByRole('link', { name: /sin cadencia sola/i });
+    const termGroup = card.parentElement?.parentElement;
+    expect(termGroup).not.toHaveClass('border-t');
+  });
+});
