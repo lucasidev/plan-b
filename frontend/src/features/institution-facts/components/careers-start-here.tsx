@@ -14,6 +14,8 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
 
   if (withReviews.length === 0) return null;
 
+  const isOnlyOne = withReviews.length === 1;
+
   return (
     <div className="pb-section min-w-0">
       <div className="pb-eyebrow">Por dónde empezar</div>
@@ -28,7 +30,7 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
           >
             <span>
               <span className="pb-name">{career.careerName}</span>
-              <span className="pb-sub">{describeCareerReviews(career)}</span>
+              <span className="pb-sub">{startHereSubtitle(career, isOnlyOne)}</span>
             </span>
             <span className="pb-right pb-muted" aria-hidden="true">
               →
@@ -38,4 +40,18 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
       </div>
     </div>
   );
+}
+
+/**
+ * La línea bajo el nombre (`V.university().aside` línea 495 de la maqueta aprobada): con una
+ * sola carrera con reseñas en toda la institución, "la única carrera con reseñas por ahora"; con
+ * varias, su propio conteo. La parte de materias solo va si la carrera tiene alguna cargada.
+ */
+function startHereSubtitle(career: CareerCoverage, isOnlyOne: boolean): string {
+  const reviewsPart = isOnlyOne
+    ? 'la única carrera con reseñas por ahora'
+    : (describeCareerReviews(career) ?? '');
+
+  if (career.totalSubjects === 0) return reviewsPart;
+  return `${reviewsPart} · ${career.coveredSubjects} de ${career.totalSubjects} materias`;
 }

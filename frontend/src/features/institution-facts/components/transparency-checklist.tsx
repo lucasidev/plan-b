@@ -2,6 +2,7 @@ import {
   OFFICIAL_FACT_FIELDS,
   OFFICIAL_FACT_LABELS,
   type OfficialFact,
+  officialFactCaption,
   officialFactCellContent,
 } from '@/components/facts';
 import { formatShortDate } from '@/lib/format-date';
@@ -62,7 +63,6 @@ function ChecklistRow({ fact }: { fact: OfficialFact }) {
   const label = OFFICIAL_FACT_LABELS[fact.field] ?? fact.field;
   const cell = officialFactCellContent(fact);
   const pillText = fact.status === 'NotPublished' ? 'La institución no lo publica' : cell.value;
-  const caption = fact.note ?? [fact.sourceName, fact.period].filter(Boolean).join(' · ');
 
   return (
     <div>
@@ -70,7 +70,7 @@ function ChecklistRow({ fact }: { fact: OfficialFact }) {
       <div className="pb-v pb-small">
         <span className="pb-pill">{pillText}</span>
       </div>
-      <div className="pb-src pb-meta">{caption}</div>
+      <div className="pb-src pb-meta">{officialFactCaption(fact)}</div>
     </div>
   );
 }

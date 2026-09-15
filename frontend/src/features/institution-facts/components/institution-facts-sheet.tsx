@@ -1,6 +1,7 @@
 import {
   OFFICIAL_FACT_FIELDS,
   type OfficialFact,
+  officialFactCaption,
   officialFactCellContent,
 } from '@/components/facts';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
@@ -99,16 +100,19 @@ function institutionStats(
 ): PageFrameStat[] {
   const stats: PageFrameStat[] = [];
 
+  // Estudiantes y egresados van aunque el estado no sea Published (UTN-FRT, San Pablo-T): la
+  // celda dice "No publicado" en vez de desaparecer. La etiqueta lleva el período del dato, no la
+  // nota (esa va en el detalle, no en la tira).
   const students = byField.get(OFFICIAL_FACT_FIELDS.students);
-  if (students?.status === 'Published') {
-    const cell = officialFactCellContent(students);
-    stats.push([cell.value, `estudiantes${cell.note ? ` en ${cell.note}` : ''}`]);
+  if (students) {
+    const value = officialFactCellContent(students).value;
+    stats.push([value, `estudiantes${students.period ? ` en ${students.period}` : ''}`]);
   }
 
   const graduates = byField.get(OFFICIAL_FACT_FIELDS.graduates);
-  if (graduates?.status === 'Published') {
-    const cell = officialFactCellContent(graduates);
-    stats.push([cell.value, `egresados${cell.note ? ` en ${cell.note}` : ''}`]);
+  if (graduates) {
+    const value = officialFactCellContent(graduates).value;
+    stats.push([value, `egresados${graduates.period ? ` en ${graduates.period}` : ''}`]);
   }
 
   if (totalCareers > 0) {
@@ -132,19 +136,29 @@ function institutionStats(
   return stats;
 }
 
-/** "Identidad institucional" (columna derecha): el valor completo de `institution_type`, con su fuente. */
+/**
+ * "Identidad institucional" (columna derecha): el valor completo de `institution_type`, con su
+ * fuente. Sin afirmación cargada, la sección no se dibuja; con afirmación pero sin publicar (San
+ * Pablo-T), se lee como una fila de datos oficiales de la carrera: la pill fija y la nota o la
+ * fuente debajo.
+ */
 function IdentitySummary({ identity }: { identity: OfficialFact | undefined }) {
-  if (identity?.status !== 'Published' || !identity.value) return null;
+  if (!identity) return null;
+
+  const isPublished = identity.status === 'Published' && identity.value;
 
   return (
     <div className="pb-section">
       <div className="pb-eyebrow">Identidad institucional</div>
       <p className="pb-serif" style={{ fontSize: 16, lineHeight: 1.35 }}>
-        {identity.value}
+        {isPublished ? (
+          identity.value
+        ) : (
+          <span className="pb-pill">No publicado por falta de datos</span>
+        )}
       </p>
       <p className="pb-meta" style={{ marginTop: 4 }}>
-        {identity.sourceName}
-        {identity.period ? ` · ${identity.period}` : ''}
+        {officialFactCaption(identity)}
       </p>
     </div>
   );
