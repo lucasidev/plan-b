@@ -2,9 +2,9 @@ import { expect, type Page, test } from '@playwright/test';
 
 /**
  * E2E del catálogo público (US-001): universidades → carreras → planes → materias, sin login.
- * Recorre UNSTA (seed determinístico, `AcademicSeedData.cs`) porque es la única universidad con
- * datos en los 4 niveles: la Tecnicatura Universitaria en Desarrollo y Calidad de Software
- * (TUDCS) es la única carrera con materias cargadas (plan 2018, `AcademicSeedData.Subjects`).
+ * Recorre UNSTA (seed determinístico, `AcademicSeedData.cs`): la Tecnicatura Universitaria en
+ * Desarrollo y Calidad de Software (TUDCS) tiene materias cargadas (plan 2018,
+ * `AcademicSeedData.Subjects`).
  *
  * Usamos `page.goto` directo a los ids seedeados (determinísticos entre runs) en vez de
  * encadenar clicks: más robusto contra flake de hidratación en navegaciones multi-nivel. Un
