@@ -39,7 +39,7 @@ public class GetSubjectEndpointTests
         body!.Id.ShouldBe(Subject101);
         body.Code.ShouldNotBeNullOrWhiteSpace();
         body.Name.ShouldNotBeNullOrWhiteSpace();
-        body.TotalHours.ShouldBeGreaterThan(0);
+        body.TotalHours!.Value.ShouldBeGreaterThan(0);
     }
 
     [Fact]

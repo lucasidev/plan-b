@@ -15,7 +15,7 @@ public sealed record ChairDetailItem(
     string Name,
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     Guid? LeadTeacherId,
     string? LeadFirstName,
     string? LeadLastName);

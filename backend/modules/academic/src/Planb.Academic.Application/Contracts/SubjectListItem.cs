@@ -13,8 +13,8 @@ namespace Planb.Academic.Application.Contracts;
 public sealed record SubjectListItem(
     Guid Id,
     Guid CareerPlanId,
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
-    string TermKind);
+    string? TermKind);

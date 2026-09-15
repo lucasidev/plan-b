@@ -44,13 +44,57 @@ public class SubjectTests
     [InlineData("")]
     [InlineData("  ")]
     [InlineData(null)]
-    public void Create_BlankCode_ReturnsCodeRequired(string? code)
+    public void Create_BlankCode_NormalizesToNull(string? code)
     {
         var result = Subject.Create(
-            AnyPlan, code!, "Mat", 1, 1, TermKind.FourMonth, 5, 80, null, Clock);
+            AnyPlan, code, "Mat", 1, 1, TermKind.FourMonth, 5, 80, null, Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        result.Value.Code.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Create_OnlyNameAndYear_ReturnsSuccess()
+    {
+        // Todo lo demás es lo que la fuente oficial del plan no siempre publica.
+        var result = Subject.Create(
+            AnyPlan,
+            code: null,
+            name: "Mat",
+            yearInPlan: 1,
+            termInYear: null,
+            termKind: null,
+            weeklyHours: null,
+            totalHours: null,
+            description: null,
+            clock: Clock);
+
+        result.IsSuccess.ShouldBeTrue();
+        var subject = result.Value;
+        subject.Name.ShouldBe("Mat");
+        subject.YearInPlan.ShouldBe(1);
+        subject.Code.ShouldBeNull();
+        subject.TermInYear.ShouldBeNull();
+        subject.TermKind.ShouldBeNull();
+        subject.WeeklyHours.ShouldBeNull();
+        subject.TotalHours.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Create_NullTermKindWithTermInYear_ReturnsInconsistent()
+    {
+        // Sin cadencia no hay cuatrimestre: mismo invariante que anual, pero con termKind ausente
+        // en vez de FullYear.
+        var result = Subject.Create(
+            AnyPlan, "MAT101", "Mat",
+            yearInPlan: 1,
+            termInYear: 1,
+            termKind: null,
+            weeklyHours: 5, totalHours: 80,
+            description: null, clock: Clock);
 
         result.IsFailure.ShouldBeTrue();
-        result.Error.ShouldBe(SubjectErrors.CodeRequired);
+        result.Error.ShouldBe(SubjectErrors.TermInYearInconsistentWithKind);
     }
 
     [Theory]

@@ -9,11 +9,11 @@ namespace Planb.Academic.Application.Features.AdminSubjects;
 /// </summary>
 public sealed record CreateSubjectCommand(
     Guid CareerPlanId,
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
-    TermKind TermKind,
-    int WeeklyHours,
-    int TotalHours,
+    TermKind? TermKind,
+    int? WeeklyHours,
+    int? TotalHours,
     string? Description);

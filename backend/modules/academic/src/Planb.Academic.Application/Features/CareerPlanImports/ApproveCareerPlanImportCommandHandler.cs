@@ -140,7 +140,9 @@ public static class ApproveCareerPlanImportCommandHandler
                 continue;
             }
 
-            if (!seenCodes.Add(subjectResult.Value.Code))
+            // Code es opcional: varias materias sin código no son duplicadas entre sí (mismo
+            // criterio que el UNIQUE de DB, que tampoco choca NULLs). Solo dedupea cuando hay code.
+            if (subjectResult.Value.Code is not null && !seenCodes.Add(subjectResult.Value.Code))
             {
                 continue;
             }

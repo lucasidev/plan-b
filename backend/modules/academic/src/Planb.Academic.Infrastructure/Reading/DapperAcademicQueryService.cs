@@ -192,7 +192,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
                 term_kind      AS TermKind
             FROM academic.subjects
             WHERE career_plan_id = @CareerPlanId AND (@IncludeArchived OR is_active)
-            ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC;";
+            ORDER BY year_in_plan ASC, term_in_year ASC NULLS LAST, code ASC NULLS LAST, name ASC;";
 
         using var db = _connections.Create();
         var rows = await db.QueryAsync<SubjectListItem>(
@@ -582,7 +582,7 @@ internal sealed class DapperAcademicQueryService : IAcademicQueryService
     internal sealed record CareerCatalogRow(
         Guid Id, string Name, Guid UniversityId, string UniversityName, bool IsOfficial);
 
-    private sealed record SubjectLabelRow(Guid Id, string Name, string Code);
+    private sealed record SubjectLabelRow(Guid Id, string Name, string? Code);
 
     private sealed record TermLabelRow(Guid Id, string Label);
 

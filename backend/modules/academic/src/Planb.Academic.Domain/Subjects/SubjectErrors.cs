@@ -4,11 +4,6 @@ namespace Planb.Academic.Domain.Subjects;
 
 public static class SubjectErrors
 {
-    public static readonly Error CodeRequired =
-        Error.Validation(
-            "academic.subject.code_required",
-            "Subject code is required.");
-
     public static readonly Error NameRequired =
         Error.Validation(
             "academic.subject.name_required",
@@ -77,10 +72,4 @@ public static class SubjectErrors
         Error.NotFound(
             "academic.subject.career_plan_not_found",
             "The career plan for this subject does not exist.");
-
-    /// <summary>TermKind es obligatorio en el aggregate (mismo criterio que AcademicTerm.Kind).</summary>
-    public static readonly Error TermKindRequired =
-        Error.Validation(
-            "academic.subject.term_kind_required",
-            "Subject term_kind is required.");
 }

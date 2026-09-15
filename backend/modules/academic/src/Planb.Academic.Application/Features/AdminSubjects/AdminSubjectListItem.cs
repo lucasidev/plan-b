@@ -8,13 +8,13 @@ namespace Planb.Academic.Application.Features.AdminSubjects;
 public sealed record AdminSubjectListItem
 {
     public Guid Id { get; init; }
-    public string Code { get; init; } = string.Empty;
+    public string? Code { get; init; }
     public string Name { get; init; } = string.Empty;
     public int YearInPlan { get; init; }
     public int? TermInYear { get; init; }
-    public string TermKind { get; init; } = string.Empty;
-    public int WeeklyHours { get; init; }
-    public int TotalHours { get; init; }
+    public string? TermKind { get; init; }
+    public int? WeeklyHours { get; init; }
+    public int? TotalHours { get; init; }
     public string? Description { get; init; }
     public bool IsOfficial { get; init; }
     public bool IsActive { get; init; }

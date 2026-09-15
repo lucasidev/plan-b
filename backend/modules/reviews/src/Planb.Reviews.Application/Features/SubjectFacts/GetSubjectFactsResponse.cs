@@ -12,7 +12,7 @@ namespace Planb.Reviews.Application.Features.SubjectFacts;
 /// </summary>
 public sealed record GetSubjectFactsResponse(
     Guid SubjectId,
-    string SubjectCode,
+    string? SubjectCode,
     string SubjectName,
     int YearInPlan,
     /// <summary>El plan al que pertenece, para poder pedir las otras materias del mismo año.</summary>
@@ -45,7 +45,7 @@ public sealed record GetSubjectFactsResponse(
 public sealed record TakenWithView(
     Guid SubjectId,
     string SubjectName,
-    string SubjectCode,
+    string? SubjectCode,
     int TogetherCount,
     int DroppedCount,
     bool IsPublished,

@@ -90,11 +90,11 @@ public sealed class UpdateSubjectEndpoint : ICarterModule
 /// parsea).
 /// </summary>
 public sealed record UpdateSubjectRequest(
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
     string? TermKind,
-    int WeeklyHours,
-    int TotalHours,
+    int? WeeklyHours,
+    int? TotalHours,
     string? Description);

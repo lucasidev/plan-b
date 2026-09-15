@@ -10,12 +10,12 @@ namespace Planb.Academic.Application.Contracts;
 public sealed record SubjectDetailItem(
     Guid Id,
     Guid CareerPlanId,
-    string Code,
+    string? Code,
     string Name,
     int YearInPlan,
     int? TermInYear,
-    string TermKind,
-    int WeeklyHours,
-    int TotalHours,
+    string? TermKind,
+    int? WeeklyHours,
+    int? TotalHours,
     string? Description,
     bool IsOfficial);

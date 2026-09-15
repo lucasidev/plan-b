@@ -162,6 +162,52 @@ public class GetSubjectFactsEndpointTests : IClassFixture<RegisterApiFixture>
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
+    /// <summary>
+    /// Una materia solo publica lo que su fuente oficial trae (feat: a subject records only what
+    /// its source publishes): sin código, la ficha lo dice con null y no con un string vacío ni un
+    /// 404.
+    /// </summary>
+    [Fact]
+    public async Task A_subject_without_a_code_still_publishes_its_facts()
+    {
+        var admin = await AdminAsync();
+        var unique = Guid.NewGuid().ToString("N")[..8];
+
+        var career = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/universities/{Unsta}/careers",
+            new { name = $"Carrera Sin Código {unique}", slug = $"carrera-sin-codigo-{unique}" });
+        career.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var careerId = (await career.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var plan = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/careers/{careerId}/plans", new { year = 2024, label = (string?)null });
+        plan.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var planId = (await plan.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var subject = await admin.Client.PostAsJsonAsync(
+            $"/api/academic/career-plans/{planId}/subjects",
+            new
+            {
+                code = (string?)null,
+                name = "Materia Sin Código",
+                yearInPlan = 1,
+                termInYear = (int?)null,
+                termKind = (string?)null,
+                weeklyHours = (int?)null,
+                totalHours = (int?)null,
+                description = (string?)null,
+            });
+        subject.StatusCode.ShouldBe(HttpStatusCode.Created);
+        var subjectId = (await subject.Content.ReadFromJsonAsync<CreatedDto>())!.Id;
+
+        var response = await _anonymous.GetOkAsync<GetSubjectFactsResponse>(
+            $"/api/reviews/subjects/{subjectId}/facts");
+
+        response!.SubjectCode.ShouldBeNull();
+        response.SubjectName.ShouldBe("Materia Sin Código");
+        response.IsPublished.ShouldBeFalse();
+    }
+
     [Fact]
     public async Task A_subject_without_chairs_exists_and_publishes_nothing()
     {

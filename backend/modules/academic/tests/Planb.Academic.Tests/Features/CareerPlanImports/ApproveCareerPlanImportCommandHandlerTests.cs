@@ -65,9 +65,10 @@ public class ApproveCareerPlanImportCommandHandlerTests
     private static ApproveSubjectItem ValidItem(string code, int yearInPlan = 1) =>
         new(code, $"Materia {code}", yearInPlan, 1, "FourMonth");
 
-    // Code en blanco: Subject.Create rechaza con CodeRequired.
+    // Name en blanco: Subject.Create rechaza con NameRequired (Code ya no alcanza para invalidar:
+    // en blanco se normaliza a null).
     private static ApproveSubjectItem InvalidItem() =>
-        new("", "Materia inválida", 1, 1, "FourMonth");
+        new("COD-X", "", 1, 1, "FourMonth");
 
     // ── Reuse-or-create de Career ────────────────────────────────────────
 

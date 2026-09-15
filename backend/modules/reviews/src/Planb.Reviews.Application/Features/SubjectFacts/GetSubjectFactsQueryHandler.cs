@@ -121,7 +121,7 @@ public static class GetSubjectFactsQueryHandler
                 .Select(p => new TakenWithView(
                     p.OtherSubjectId,
                     labels.Subjects.TryGetValue(p.OtherSubjectId, out var l) ? l.Name : "Sin vincular",
-                    labels.Subjects.TryGetValue(p.OtherSubjectId, out var c) ? c.Code : string.Empty,
+                    labels.Subjects.GetValueOrDefault(p.OtherSubjectId)?.Code,
                     p.TogetherCount,
                     p.DroppedCount,
                     p.IsPublished,
