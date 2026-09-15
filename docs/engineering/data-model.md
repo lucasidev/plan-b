@@ -297,13 +297,13 @@ Materia de un plan específico.
 | ---------------- | ---------------- | ------------------------- | ----------------- |
 | `id`             | UUID             | PK                        |                   |
 | `career_plan_id` | UUID             | FK → CareerPlan, NOT NULL |                   |
-| `code`           | TEXT             | NOT NULL                  | Ej "MAT101"       |
+| `code`           | TEXT             | NULL                      | Ej "MAT101"; null si el plan no lo publica |
 | `name`           | TEXT             | NOT NULL                  | Ej "Matemática I" |
 | `year_in_plan`   | INT              | NOT NULL                  | 1, 2, 3…          |
-| `term_in_year`   | INT              | NULL                      | Null si anual     |
-| `term_kind`      | ENUM `term_kind` | NOT NULL                  |                   |
-| `weekly_hours`   | INT              | NOT NULL                  |                   |
-| `total_hours`    | INT              | NOT NULL                  |                   |
+| `term_in_year`   | INT              | NULL                      | Null si anual o si el plan no publica la cadencia |
+| `term_kind`      | ENUM `term_kind` | NULL                      | Null si el plan no la publica |
+| `weekly_hours`   | INT              | NULL                      | Null si el plan no las publica |
+| `total_hours`    | INT              | NULL                      | Null si el plan no las publica |
 | `description`    | TEXT             | NULL                      |                   |
 | `is_active`      | BOOLEAN          | NOT NULL, DEFAULT `true`  | Soft delete (US-062) |
 | `is_official`    | BOOLEAN          | NOT NULL                  | False si la creó el crowdsourcing |
@@ -312,9 +312,10 @@ Materia de un plan específico.
 
 Constraints:
 
-- `UNIQUE(career_plan_id, code)`.
+- `UNIQUE(career_plan_id, code)`. Los null no chocan: varias materias sin código entran en el mismo plan.
+- CHECK: sin `term_kind`, `term_in_year IS NULL`.
 - CHECK: `term_kind = 'anual'` → `term_in_year IS NULL`.
-- CHECK: `term_kind != 'anual'` → `term_in_year IS NOT NULL`.
+- CHECK: cualquier otro `term_kind` → `term_in_year IS NOT NULL`.
 
 Índices de búsqueda (US-042):
 

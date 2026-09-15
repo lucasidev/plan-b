@@ -131,9 +131,9 @@ Los campos del vocabulario curado ([ADR-0090](../decisions/0090-an-official-datu
 
 | Término | Significado |
 |---|---|
-| **Subject** | Materia. Pertenece a un `CareerPlan`. Tiene `year_in_plan` (año del plan), `term_kind` y `term_in_year`. |
-| **carga horaria semanal** | `weekly_hours`: horas de cursada por semana. Rango 0 a 40. **0 no significa "sin trabajo"**: significa que la materia no tiene horario semanal fijo, como Proyecto Final (0 hs/sem y 350 totales en la TUDCS), una práctica profesional o una tesis. El techo de 40 es una jornada laboral completa; más que eso es un dato cargado mal. |
-| **carga horaria total** | `total_hours`: horas de la materia en todo su período. Siempre positiva (una materia sin horas no existe) y nunca menor que la semanal. Es el número que el plan de estudios publica al lado de cada materia. |
+| **Subject** | Materia. Pertenece a un `CareerPlan` y siempre tiene nombre y `year_in_plan` (año del plan). Código, `term_kind`, `term_in_year` y carga horaria están solo si el plan oficial los publica ([ADR-0097](../decisions/0097-a-subject-records-only-what-its-official-source-publishes.md)). |
+| **carga horaria semanal** | `weekly_hours`: horas de cursada por semana, cuando el plan las publica. Rango 0 a 40. **0 no significa "sin trabajo"**: significa que la materia no tiene horario semanal fijo, como Proyecto Final (0 hs/sem y 350 totales en la TUDCS), una práctica profesional o una tesis. El techo de 40 es una jornada laboral completa; más que eso es un dato cargado mal. Si el plan no la publica queda vacía, que no es lo mismo que 0. |
+| **carga horaria total** | `total_hours`: horas de la materia en todo su período, tal como el plan de estudios la publica al lado de cada materia. Positiva y nunca menor que la semanal. Si el plan no la publica queda vacía, y no se calcula desde la semanal. |
 | **Prerequisite** | Correlativa. Relación entre dos `Subject` del mismo plan con un `type`. |
 | **para_cursar** | Tipo de correlativa: requiere que la materia requerida esté **regularizada** para inscribirse a la dependiente. |
 | **para_rendir** | Tipo de correlativa: requiere que la materia requerida esté **aprobada** para rendir el final de la dependiente. |
