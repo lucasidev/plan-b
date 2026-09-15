@@ -62,6 +62,10 @@
     font-family: var(--font-mono);
     font-size: 11px;
     color: var(--color-ink-3);
+    /* Una fuente, una URL o un token largo sin espacios (institution-facts/transparency-checklist,
+     * career-facts, subject-facts, data-highlights) no tiene dónde partir línea: sin esto, ese
+     * texto empuja a su contenedor en vez de ajustarse a lo que hay. */
+    overflow-wrap: anywhere;
   }
   .pb-serif {
     font-family: var(--font-serif);
@@ -602,7 +606,10 @@
   }
   .pb-dossier {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
+    /* minmax(0, 320px), no 320px a secas: un track fijo sigue heredando el min-width automático
+     * de su contenido (el ancho mínimo de una pill o de un valor largo, US-005/UTN-FRT), y esa
+     * columna crecía más allá de sus 320px y empujaba el resto a scroll horizontal. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
     gap: 32px;
   }
   .pb-content .pb-head {

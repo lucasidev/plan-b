@@ -84,12 +84,17 @@ describe('TransparencyChecklist', () => {
     expect(screen.getByText('Resolución AGN 126/2013')).toBeInTheDocument();
   });
 
-  it('una fila publicada muestra su valor y su fuente', () => {
+  /**
+   * La pill es para el estado, no para un valor largo: envuelto en una pill (`white-space:
+   * nowrap`) no tiene dónde partir línea y desborda la columna (visto con UTN-FRT). Publicado
+   * va como texto normal, que sí parte línea.
+   */
+  it('una fila publicada muestra su valor como texto normal, sin pill, y su fuente', () => {
     render(<TransparencyChecklist facts={UNT_FACTS} />);
 
-    expect(
-      screen.getByText('Publicada en XLSX, con unidad académica, cargo y dedicación'),
-    ).toBeInTheDocument();
+    const value = screen.getByText('Publicada en XLSX, con unidad académica, cargo y dedicación');
+    expect(value).toBeInTheDocument();
+    expect(value.closest('.pb-pill')).not.toBeInTheDocument();
     expect(screen.getByText('Portal de transparencia UNT · marzo 2026')).toBeInTheDocument();
   });
 
@@ -116,9 +121,36 @@ describe('TransparencyChecklist', () => {
     );
 
     expect(screen.getByText('Presupuesto ejecutado publicado')).toBeInTheDocument();
-    expect(screen.getByText('La institución no lo publica')).toBeInTheDocument();
+    const state = screen.getByText('La institución no lo publica');
+    expect(state).toBeInTheDocument();
+    expect(state).toHaveClass('pb-pill');
     expect(
       screen.getByText('La institución no publica su presupuesto ejecutado.'),
+    ).toBeInTheDocument();
+  });
+
+  it('no aplica muestra su propia pill, distinta de la de no publicado', () => {
+    render(
+      <TransparencyChecklist
+        facts={[
+          fact({
+            id: 'f-agn-na',
+            field: 'agn_audit',
+            status: 'NotApplicable',
+            value: null,
+            note: 'Esta institución no está alcanzada por la auditoría de la AGN.',
+            sourceName: 'AGN, Auditoría General de la Nación',
+            relievedAt: '2026-09-07T12:00:00Z',
+          }),
+        ]}
+      />,
+    );
+
+    const state = screen.getByText('No aplica a esta institución');
+    expect(state).toBeInTheDocument();
+    expect(state).toHaveClass('pb-pill');
+    expect(
+      screen.getByText('Esta institución no está alcanzada por la auditoría de la AGN.'),
     ).toBeInTheDocument();
   });
 
