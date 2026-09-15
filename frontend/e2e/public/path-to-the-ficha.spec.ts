@@ -131,9 +131,10 @@ test.describe('El camino a la ficha, sin cuenta (R2)', () => {
     // 3) La ficha de materia muestra sus cátedras por separado, que es la pregunta que contesta:
     // si lo que pasó es de la materia o de la cátedra que te tocó.
     await expect(page.getByRole('heading', { name: new RegExp(SUBJECT_NAME, 'i') })).toBeVisible();
-    // En la ficha de materia las cátedras se listan por su nombre, con su conclusión al lado.
+    // En la ficha de materia las cátedras se listan por su nombre, con su conclusión al lado: el
+    // link es la fila entera, "Cátedra {nombre}" como texto de apertura.
     const chairLink = page
-      .getByRole('link', { name: new RegExp(`^${CHAIR_PEREZ_NAME}`, 'i') })
+      .getByRole('link', { name: new RegExp(`^Cátedra ${CHAIR_PEREZ_NAME}`, 'i') })
       .first();
     await expect(chairLink).toBeVisible();
 
