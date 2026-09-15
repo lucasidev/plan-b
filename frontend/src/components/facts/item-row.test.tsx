@@ -54,9 +54,9 @@ describe('ItemRow', () => {
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
 
     // Cada tramo con su propio "de N": si estuvieran sumados habría un solo 128.
-    expect(screen.getByText(/de 16$/)).toBeInTheDocument();
-    expect(screen.getByText(/de 112$/)).toBeInTheDocument();
-    expect(screen.queryByText(/de 128$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/de 16 voces$/)).toBeInTheDocument();
+    expect(screen.getByText(/de 112 voces$/)).toBeInTheDocument();
+    expect(screen.queryByText(/de 128 voces$/)).not.toBeInTheDocument();
   });
 
   /**
@@ -101,7 +101,7 @@ describe('ItemRow', () => {
 
     expect(screen.getByText('Todavía nadie respondió esta pregunta.')).toBeInTheDocument();
     expect(screen.getByText('¿Se dictaron las clases?')).toBeInTheDocument();
-    expect(screen.getByText(/de 112$/)).toBeInTheDocument();
+    expect(screen.getByText(/de 112 voces$/)).toBeInTheDocument();
     expect(screen.getByText(/no se comparan/)).toBeInTheDocument();
   });
 

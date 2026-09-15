@@ -108,7 +108,7 @@ function Stretch({
 
       <p className="mt-[5px] text-[10px] text-ink-3" style={{ fontFamily: 'var(--font-mono)' }}>
         {item.distribution.map((s) => `${s.label.toLowerCase()} ${s.percent}`).join(' · ')} · de{' '}
-        {item.total}
+        {item.total} voces
       </p>
     </>
   );
