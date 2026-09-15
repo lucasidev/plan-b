@@ -70,4 +70,69 @@ describe('CareersStartHere', () => {
 
     expect(container).toBeEmptyDOMElement();
   });
+
+  /** Maqueta aprobada (V.university().aside línea 495): con una sola carrera medida en toda la institución. */
+  it('con una sola carrera con reseñas, dice "la única carrera con reseñas por ahora" y sus materias', () => {
+    render(
+      <CareersStartHere
+        coverage={[
+          coverage({
+            careerId: 'a',
+            careerName: 'Tecnicatura en Desarrollo y Calidad de Software',
+            voiceCount: 137,
+            totalSubjects: 21,
+            coveredSubjects: 4,
+          }),
+        ]}
+      />,
+    );
+
+    expect(
+      screen.getByText('la única carrera con reseñas por ahora · 4 de 21 materias'),
+    ).toBeInTheDocument();
+  });
+
+  it('con varias carreras con reseñas, cada una dice su propio conteo y sus materias', () => {
+    render(
+      <CareersStartHere
+        coverage={[
+          coverage({
+            careerId: 'a',
+            careerName: 'Abogacía',
+            voiceCount: 67,
+            totalSubjects: 21,
+            coveredSubjects: 4,
+          }),
+          coverage({
+            careerId: 'b',
+            careerName: 'Ingeniería en Sistemas',
+            voiceCount: 412,
+            totalSubjects: 30,
+            coveredSubjects: 10,
+          }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('67 reseñas · 4 de 21 materias')).toBeInTheDocument();
+    expect(screen.getByText('412 reseñas · 10 de 30 materias')).toBeInTheDocument();
+  });
+
+  it('con totalSubjects 0, la línea no suma la parte de materias', () => {
+    render(
+      <CareersStartHere
+        coverage={[
+          coverage({
+            careerId: 'a',
+            careerName: 'Carrera sin plan cargado',
+            voiceCount: 5,
+            totalSubjects: 0,
+          }),
+        ]}
+      />,
+    );
+
+    expect(screen.getByText('la única carrera con reseñas por ahora')).toBeInTheDocument();
+    expect(screen.queryByText(/de \d+ materias/)).not.toBeInTheDocument();
+  });
 });

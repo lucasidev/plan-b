@@ -164,13 +164,37 @@ describe('InstitutionFactsSheet', () => {
     expect(screen.getByText('egresados en 2023')).toBeInTheDocument();
   });
 
-  /** Un dato no publicado (o derivado, o sin relevar) no se dibuja como celda de la tira: no está publicado. */
-  it('estudiantes no publicado no se dibuja en la tira', () => {
+  /**
+   * UTN-FRT y San Pablo-T no publican estudiantes/egresados, pero la celda no desaparece: dice
+   * "No publicado" con el período del dato (nunca la nota, esa vive en el detalle).
+   */
+  it('estudiantes y egresados no publicados no desaparecen de la tira: dicen "No publicado" con el período', () => {
     renderSheet({
-      officialFacts: [fact({ id: 'f1', field: 'students', status: 'NotPublished' })],
+      officialFacts: [
+        fact({ id: 'f1', field: 'students', status: 'NotPublished', period: '2023' }),
+        fact({
+          id: 'f2',
+          field: 'graduates',
+          status: 'NotPublished',
+          period: '2020 a 2022',
+          note: 'Las filas de San Pablo-T en el anuario están en cero: la institución no informó.',
+        }),
+      ],
     });
 
+    expect(screen.getAllByText('No publicado')).toHaveLength(2);
+    expect(screen.getByText('estudiantes en 2023')).toBeInTheDocument();
+    expect(screen.getByText('egresados en 2020 a 2022')).toBeInTheDocument();
+    // La nota no va en la etiqueta de la tira.
+    expect(screen.queryByText(/la institución no informó/i)).not.toBeInTheDocument();
+  });
+
+  /** Sin ninguna afirmación cargada para el campo, la celda no se dibuja: no hay período que decir. */
+  it('estudiantes sin ninguna afirmación cargada, la celda no se dibuja', () => {
+    renderSheet();
+
     expect(screen.queryByText(/estudiantes en/)).not.toBeInTheDocument();
+    expect(screen.queryByText('estudiantes')).not.toBeInTheDocument();
   });
 
   it('carreras con reseñas: con denominador 0, la celda no se dibuja', () => {
@@ -259,11 +283,37 @@ describe('InstitutionFactsSheet', () => {
     ]);
   });
 
-  it('identidad institucional: sin institution_type publicado, no dibuja el bloque', () => {
+  it('identidad institucional: sin ninguna afirmación cargada, no dibuja el bloque', () => {
     const { container } = renderSheet();
 
     expect(container.querySelector('.pb-dossier')).toBeInTheDocument();
     expect(screen.queryByText('Identidad institucional')).not.toBeInTheDocument();
+  });
+
+  /**
+   * San Pablo-T no publica institution_type, pero el bloque no desaparece: se lee como una fila
+   * de datos oficiales de la carrera, con la pill fija y la nota debajo.
+   */
+  it('identidad institucional: con institution_type no publicado, muestra la pill fija y la nota', () => {
+    renderSheet({
+      officialFacts: [
+        fact({
+          id: 'f1',
+          field: 'institution_type',
+          status: 'NotPublished',
+          period: '2020 a 2022',
+          note: 'Las filas de San Pablo-T en el anuario 2020 a 2022 están en cero: la institución no informó.',
+        }),
+      ],
+    });
+
+    expect(screen.getByText('Identidad institucional')).toBeInTheDocument();
+    expect(screen.getByText('No publicado por falta de datos')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Las filas de San Pablo-T en el anuario 2020 a 2022 están en cero: la institución no informó.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('identidad institucional: con institution_type publicado, muestra el valor completo y la fuente', () => {
