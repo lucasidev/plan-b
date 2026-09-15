@@ -41,7 +41,7 @@ export function CareersByFaculty({
                   <Link
                     key={career.id}
                     href={`/careers/${career.id}`}
-                    // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+                    // Sin prefetch: ver el porqué en subject-grid.tsx.
                     prefetch={false}
                     style={{
                       padding: '8px 10px',

@@ -69,9 +69,8 @@ function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: Subje
   return (
     <Link
       href={`/subjects/${subject.id}`}
-      // Sin prefetch: la ficha es `force-dynamic` y no tiene loading.tsx. Con el middleware de
-      // ADR-0095 cubriendo también el catálogo, el prefetch por default de un Link hacia ahí
-      // nunca llega a completarse y el click que sigue queda sin navegar.
+      // Sin prefetch: una precarga en viewport compite con el click real y el router puede
+      // soltar la navegación (ver shell-link.tsx, issue #525).
       prefetch={false}
       className="flex flex-col gap-1.5 rounded-lg border border-line bg-bg-card px-4 py-3.5 transition-colors hover:bg-bg-elev"
     >

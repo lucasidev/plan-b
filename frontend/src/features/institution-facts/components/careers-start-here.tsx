@@ -24,7 +24,7 @@ export function CareersStartHere({ coverage }: { coverage: CareerCoverage[] }) {
           <Link
             key={career.careerId}
             href={`/careers/${career.careerId}`}
-            // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+            // Sin prefetch: ver el porqué en subject-grid.tsx.
             prefetch={false}
             className="pb-row"
           >

@@ -56,7 +56,7 @@ export function LandingHero() {
         tiene su regla escrita en el{' '}
         <Link
           href="/method"
-          // Sin prefetch: /method es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
           className="text-accent-ink underline underline-offset-2"
         >

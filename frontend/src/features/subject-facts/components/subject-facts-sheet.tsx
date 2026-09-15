@@ -215,7 +215,7 @@ function ChairRow({ chair }: { chair: SubjectChair }) {
   return (
     <Link
       href={`/chairs/${chair.chairId}`}
-      // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+      // Sin prefetch: ver el porqué en subject-grid.tsx.
       prefetch={false}
       className={chair.isPublished ? 'pb-row' : 'pb-row pb-dim'}
     >
@@ -373,7 +373,7 @@ function TakenWithRow({ pair }: { pair: TakenWith }) {
         {pair.subjectCode} ·{' '}
         <Link
           href={`/subjects/${pair.subjectId}`}
-          // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+          // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
         >
           {pair.subjectName}
@@ -410,7 +410,7 @@ function OtherSubjectsOfYear({ facts, subjects }: { facts: SubjectFacts; subject
             <li key={subject.id}>
               <Link
                 href={`/subjects/${subject.id}`}
-                // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+                // Sin prefetch: ver el porqué en subject-grid.tsx.
                 prefetch={false}
                 style={{ padding: '7px 10px' }}
                 className={isCurrent ? 'pb-row' : 'pb-row pb-dim'}

@@ -85,7 +85,7 @@ function SampleSheet({ sample }: { sample: ChairFacts }) {
 
       <Link
         href={`/chairs/${sample.chairId}`}
-        // Sin prefetch: la ficha es `force-dynamic` sin loading.tsx (ver subject-grid.tsx).
+        // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
         className="text-[13px] text-ink underline underline-offset-2"
       >
