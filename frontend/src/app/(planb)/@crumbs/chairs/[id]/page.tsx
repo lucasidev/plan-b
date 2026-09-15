@@ -43,7 +43,6 @@ export default async function ChairCrumbs({ params }: { params: Params }) {
         {
           label: subjectFacts.careerName,
           href: `/careers/${subjectFacts.careerId}`,
-          truncate: true,
         },
         {
           label: `${subjectFacts.subjectCode} · ${subjectFacts.subjectName}`,

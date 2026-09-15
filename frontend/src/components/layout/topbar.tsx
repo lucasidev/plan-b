@@ -46,7 +46,10 @@ type Props = {
  * Por debajo de `lg` (1024px) el sidebar no se renderiza (ver `Sidebar`), así que las migas se
  * cambian por un link fijo "Explorar" hacia el catálogo. El buscador es `flex-1` (no `w-full`)
  * para que compita por el espacio como cualquier otro hijo del flex, en vez de reclamar el 100%
- * del contenedor y quedar en 0px cuando no entra (V13, a 393px).
+ * del contenedor y quedar en 0px cuando no entra (V13, a 393px). Desde `lg`, donde conviven con
+ * migas que pueden ser largas, el buscador fija su ancho (`.topbar .search` de la maqueta, 320px)
+ * en vez de seguir compitiendo por el espacio: las migas son las que ceden y bajan de línea
+ * (`.pb-crumbs` ya trae `flex-wrap`).
  *
  * Los tres links propios (Explorar móvil, Escribir reseña, Ingresar) son `ShellLink`, no `Link`:
  * viven montados en toda pantalla y son los que el router puede descartar bajo una ráfaga de
@@ -94,17 +97,22 @@ function MobileExploreLink() {
  * Sin badge de pendientes. El que había contaba cursadas sin reseñar del modelo anterior, y esa
  * cuenta se retiró con él: un checklist de pendientes contradice el modelo vigente, donde reseñar
  * arranca eligiendo una cursada y no tachando una lista.
+ *
+ * Por debajo de `md` el texto se esconde y queda solo el "+": a 393px, con el buscador
+ * compitiendo por el mismo espacio, el texto completo lo empuja a 0px. El `aria-label` fija el
+ * nombre accesible en "Escribir reseña" sin importar el breakpoint.
  */
 function WriteReviewButton({ session }: { session: ShellSession }) {
   return (
     <ShellLink
       href={reviewCtaHref(session)}
+      aria-label="Escribir reseña"
       // Mismo motivo que el sidebar: siempre montado, y su prefetch en viewport compite con la
       // navegación posterior a guardar un formulario (#477).
       prefetch={false}
       className="pb-write shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-soft"
     >
-      + Escribir reseña
+      + <span className="hidden md:inline">Escribir reseña</span>
     </ShellLink>
   );
 }

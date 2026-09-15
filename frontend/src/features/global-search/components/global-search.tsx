@@ -126,8 +126,11 @@ export function GlobalSearch() {
     // topbar contra sus hermanos de ancho fijo, y en el reparto de encogimiento este buscador
     // absorbía casi toda la resta y quedaba en 0px a 393px (V13). flex-1 arranca de un
     // flex-basis chico y crece con lo que sobra, min-w-0 lo deja seguir achicándose si hace
-    // falta, y max-w-[320px] lo tapa para que no crezca de más en desktop.
-    <div className="relative flex-1 min-w-0 max-w-[320px]">
+    // falta, y max-w-[320px] lo tapa para que no crezca de más en desktop. Desde `lg`, donde
+    // conviven con migas que pueden ser largas, `lg:w-[320px] lg:flex-none` lo saca por completo
+    // del reparto de espacio: 320px fijos (`.topbar .search` de la maqueta), nunca menos. Ahí son
+    // las migas las que ceden y bajan de línea, no el buscador el que se achica hasta el ícono.
+    <div className="relative flex-1 min-w-0 max-w-[320px] lg:w-[320px] lg:flex-none">
       <div
         className="flex min-w-0 items-center bg-bg-card border border-line rounded-pill shadow-card"
         // Alto fijo: sin esto, el box se estiraba con el line-height real del input y podía
