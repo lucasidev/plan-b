@@ -16,7 +16,7 @@ namespace Planb.IntegrationTests.Reviews;
 /// <para>
 /// Es lo que lo hace servir para lo que existe: un corpus sirve para demostrar el producto solo si
 /// los números que muestra la ficha se pueden verificar contra lo sembrado. Si el manifiesto dice
-/// "14 voces, 7 faltaron muchas" y la ficha dice otra cosa, el que falla puede ser cualquiera de
+/// "16 voces, 9 faltaron muchas" y la ficha dice otra cosa, el que falla puede ser cualquiera de
 /// los dos, y en una demostración eso no se puede averiguar.
 /// </para>
 ///
@@ -90,12 +90,12 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
             await scope.ServiceProvider.GetRequiredService<CorpusSeeder>().SeedAsync();
         }
 
-        (await ChairAsync(ChairPerez)).ReviewCount.ShouldBe(14);
+        (await ChairAsync(ChairPerez)).ReviewCount.ShouldBe(16);
     }
 
     /// <summary>
-    /// La cátedra que publica dice sus 14 voces y la moda que el manifiesto declara: 7 de 14
-    /// marcaron que faltaron muchas clases, que es el 50 %.
+    /// La cátedra que publica dice sus 16 voces y la moda que el manifiesto declara: 9 de 16
+    /// marcaron que faltaron muchas clases, que es el 56 %.
     /// </summary>
     [Fact]
     public async Task The_chair_over_the_floor_publishes_the_counts_the_corpus_declares()
@@ -103,13 +103,29 @@ public class CorpusSeedTests : IClassFixture<RegisterApiFixture>, IAsyncLifetime
         var facts = await ChairAsync(ChairPerez);
 
         facts.IsPublished.ShouldBeTrue();
-        facts.ReviewCount.ShouldBe(14);
+        facts.ReviewCount.ShouldBe(16);
         facts.ReviewsMissingToPublish.ShouldBe(0);
 
         var item = facts.ChairConduct.Single(i => i.Code == "CHAIR_CLASSES_HELD");
-        item.Total.ShouldBe(14);
+        item.Total.ShouldBe(16);
         item.ModeLabel.ShouldBe("Faltaron muchas");
-        item.ModePercent.ShouldBe(50);
+        item.ModePercent.ShouldBe(56);
+    }
+
+    /// <summary>
+    /// El contraste que la demo recorre: los intervalos de Wilson de Pérez y de sus hermanas
+    /// (González + Ruiz) no se tocan, así que la ficha publica los cuatro números de los dos lados.
+    /// </summary>
+    [Fact]
+    public async Task The_chair_publishes_the_sibling_contrast_the_demo_walks_through()
+    {
+        var facts = await ChairAsync(ChairPerez);
+
+        var contrast = facts.Contrasts.Single(c => c.ItemCode == "CHAIR_CLASSES_HELD");
+        contrast.HerePercent.ShouldBe(56);
+        contrast.HereTotal.ShouldBe(16);
+        contrast.SiblingsPercent.ShouldBe(11);
+        contrast.SiblingsTotal.ShouldBe(18);
     }
 
     /// <summary>
