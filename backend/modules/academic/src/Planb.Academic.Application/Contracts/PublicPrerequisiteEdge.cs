@@ -13,9 +13,9 @@ namespace Planb.Academic.Application.Contracts;
 /// </summary>
 public sealed record PublicPrerequisiteEdge(
     Guid SubjectId,
-    string SubjectCode,
+    string? SubjectCode,
     string SubjectName,
     Guid RequiredSubjectId,
-    string RequiredSubjectCode,
+    string? RequiredSubjectCode,
     string RequiredSubjectName,
     string Type);
