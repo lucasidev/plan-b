@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { Pill } from '@/components/ui';
 import { formatTermKind, formatTermOfYear } from '@/lib/academic-terms';
 import { describeSubjectCoverage } from '../lib/describe-career-coverage';
@@ -79,7 +79,7 @@ export function SubjectGrid({
 
 function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: SubjectCoverage }) {
   return (
-    <Link
+    <FallbackLink
       href={`/subjects/${subject.id}`}
       // Sin prefetch: una precarga en viewport compite con el click real y el router puede
       // soltar la navegación (ver shell-link.tsx, issue #525).
@@ -102,6 +102,6 @@ function SubjectCard({ subject, coverage }: { subject: Subject; coverage?: Subje
       >
         {describeSubjectCoverage(coverage)}
       </span>
-    </Link>
+    </FallbackLink>
   );
 }

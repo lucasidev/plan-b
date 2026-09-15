@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { hasReviews } from '../lib/describe-career-coverage';
 import type { CanonicalCareerGroup } from '../lib/group-careers-by-canonical';
 
@@ -55,7 +55,7 @@ export function CanonicalCareerGroups({
 
           return (
             <li key={group.canonicalGroupName}>
-              <Link
+              <FallbackLink
                 href={`/careers/${group.offerings[0].careerId}/where-to-study`}
                 prefetch={false}
                 className={anyReviewed ? 'pb-row' : 'pb-row pb-dim'}
@@ -71,7 +71,7 @@ export function CanonicalCareerGroups({
                     {group.offerings.length === 1 ? 'institución' : 'instituciones'}
                   </span>
                 </span>
-              </Link>
+              </FallbackLink>
             </li>
           );
         })}

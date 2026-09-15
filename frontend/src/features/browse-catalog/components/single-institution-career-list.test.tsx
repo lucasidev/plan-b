@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import type { ComponentProps } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import type { CareerCoverage } from '../types';
 import { SingleInstitutionCareerList } from './single-institution-career-list';
 
@@ -8,6 +9,21 @@ import { SingleInstitutionCareerList } from './single-institution-career-list';
  * doce, sin pill por fila: en una lista de cientos, "sin reseñas todavía" repetido en casi todas
  * las filas no suma nada.
  */
+
+vi.mock('@/components/layout/fallback-link', () => ({
+  FallbackLink: ({
+    children,
+    prefetch,
+    ...props
+  }: ComponentProps<'a'> & { prefetch?: boolean }) => {
+    void prefetch;
+    return (
+      <a data-navigation-fallback="true" {...props}>
+        {children}
+      </a>
+    );
+  },
+}));
 
 function career(overrides: Partial<CareerCoverage>): CareerCoverage {
   return {
@@ -50,6 +66,20 @@ describe('SingleInstitutionCareerList', () => {
     const link = screen.getByRole('link', { name: /geología/i });
     expect(link).toHaveAttribute('href', '/careers/x');
     expect(link).toHaveTextContent('UNT');
+  });
+
+  it('protege la navegación de cada fila con el fallback medido en CI', () => {
+    render(
+      <SingleInstitutionCareerList
+        careers={[career({ careerId: 'x', careerName: 'Geología' })]}
+        universityShortNames={new Map()}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: /geología/i })).toHaveAttribute(
+      'data-navigation-fallback',
+      'true',
+    );
   });
 
   it('cae al nombre de la oferta si el mapa no tiene esa institución', () => {

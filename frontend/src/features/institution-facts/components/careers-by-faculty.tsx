@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { Career, CareerCoverage } from '@/features/browse-catalog';
 import { describeCareerReviews } from '../lib/describe-institution-careers';
 import { groupCareersByFaculty } from '../lib/group-careers-by-faculty';
@@ -38,7 +38,7 @@ export function CareersByFaculty({
                 const reviews = describeCareerReviews(coverageByCareerId.get(career.id));
                 const hasReviews = reviews !== null;
                 return (
-                  <Link
+                  <FallbackLink
                     key={career.id}
                     href={`/careers/${career.id}`}
                     // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -61,7 +61,7 @@ export function CareersByFaculty({
                     <span className="pb-right">
                       {hasReviews && <span className="pb-pill pb-pub">{reviews}</span>}
                     </span>
-                  </Link>
+                  </FallbackLink>
                 );
               })}
             </div>

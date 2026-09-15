@@ -12,6 +12,33 @@ Formato de cada entrada:
 
 ---
 
+## 2026-09-15 · El click en una fila del catálogo se perdía en CI como el del shell
+
+**Síntoma**: con el catálogo adentro de planb (#536), `soft-navigation.spec.ts:36` falló en el proyecto de celular de CI: el click en la primera fila de "En una sola institución" (`/careers`) no navegó y la URL siguió en `/careers` hasta que venció el `expect`. Contra el build local no falló.
+
+**Causa raíz**: la traza de la corrida 35024385479 muestra la firma de la entrada del 2026-09-14: el click a los 287 ms, un prefetch de fondo de `/universities` a los 326 ms, el RSC real de la ficha de la carrera respondiendo 200 a los 367 ms, el chunk de la página a los 444 ms, y la URL sin cambiar. El respaldo de esa entrada cubría solo los links del shell; las filas del catálogo usaban `next/link` directo.
+
+**Fix**: `ShellLink` pasa a llamarse `FallbackLink` (`frontend/src/components/layout/fallback-link.tsx`) y lo usan también los links del catálogo (migas, Explorar, las fichas, Dónde estudiarla) y los de Mis aportes. Autenticación, backoffice, landing y páginas de error siguen con `next/link`, donde no hay evidencia de la falla. Un test de `single-institution-career-list` falla si esa fila vuelve a `next/link`.
+
+**Prevención**: un link interno nuevo de planb usa `FallbackLink`. Si CI falla con "la URL no cambió" y el build local no lo reproduce, bajar la traza de la corrida antes de tocar código.
+
+---
+
+## 2026-09-15 · Correr los proyectos de E2E por separado escondió un test que dependía del orden de CI
+
+**Síntoma**: `soft-navigation.spec.ts:92` pasó en todas las tandas locales y falló en el proyecto de celular de CI con un locator que resolvía a dos links ("strict mode violation").
+
+**Causa raíz**: en CI los proyectos `parallel`, `serial` y `mobile` corren en ese orden sobre la misma base, y los specs anteriores publican reseñas en la materia 211; con reseñas, la ficha de la UNSTA lista la Tecnicatura también en "Por dónde empezar". Las tandas locales corrían cada proyecto con `--no-deps` sobre una base recién creada, sin esas reseñas.
+
+**Fix**: el test busca el link dentro de "Facultades y carreras".
+
+**Prevención**:
+
+- Antes de pushear, correr los E2E con las dependencias de proyectos de `playwright.config.ts` (sin `--no-deps`): reproduce el orden y los datos de CI.
+- Un locator de E2E se acota a su sección cuando la pantalla puede repetir el mismo link.
+
+---
+
 ## 2026-09-15 · La navegación entre dos fichas de planb se colgaba en producción sin ningún error
 
 **Síntoma**: con el catálogo adentro del shell de planb (#536), dos transiciones por click fallaban de forma intermitente solo contra el build (`bun scripts/run-e2e.ts --build`): de la ficha de cátedra a Método por "¿Cómo calculamos esto?" (`method.spec.ts`) y de Dónde estudiarla a la ficha de la carrera (`soft-navigation.spec.ts`). En la traza, el click dispara el fetch RSC del destino, que responde 200, bajan sus chunks y la URL no cambia en los 10 s del `expect`. En `next dev` no pasó nunca.

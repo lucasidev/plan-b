@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { DemoCorpusNotice, ItemRow } from '@/components/facts';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { PageFrame, type PageFrameStat } from '@/components/layout/page-frame';
 import { formatRelativeDate } from '@/lib/format-date';
 import type { ChairFacts, ChairSibling } from '../types';
@@ -66,7 +66,7 @@ function Siblings({ siblings }: { siblings: ChairSibling[] }) {
       <div className="pb-eyebrow">Las hermanas · misma materia</div>
       <div className="pb-list">
         {siblings.map((sibling) => (
-          <Link
+          <FallbackLink
             key={sibling.chairId}
             href={`/chairs/${sibling.chairId}`}
             // Sin prefetch: ver el porqué en subject-grid.tsx.
@@ -84,7 +84,7 @@ function Siblings({ siblings }: { siblings: ChairSibling[] }) {
                 {sibling.reviewCount} {sibling.reviewCount === 1 ? 'reseña' : 'reseñas'}
               </span>
             </span>
-          </Link>
+          </FallbackLink>
         ))}
       </div>
     </div>
@@ -114,20 +114,24 @@ function Head({ facts }: { facts: ChairFacts }) {
     <>
       <div className="pb-eyebrow">
         Cátedra · {facts.subjectCode && `${facts.subjectCode} · `}
-        <Link
+        <FallbackLink
           href={`/subjects/${facts.subjectId}`}
           // Sin prefetch: ver el porqué en subject-grid.tsx.
           prefetch={false}
         >
           {facts.subjectName}
-        </Link>
+        </FallbackLink>
         {facts.leadTeacherName &&
           (facts.leadTeacherId ? (
             <>
               {' · a cargo de '}
-              <Link href={`/teachers/${facts.leadTeacherId}`} prefetch={false} className="pb-link">
+              <FallbackLink
+                href={`/teachers/${facts.leadTeacherId}`}
+                prefetch={false}
+                className="pb-link"
+              >
                 {facts.leadTeacherName}
-              </Link>
+              </FallbackLink>
             </>
           ) : (
             ` · a cargo de ${facts.leadTeacherName}`
@@ -384,7 +388,7 @@ function Contrasts({
 function Footer({ reviewHref }: { reviewHref: string }) {
   return (
     <div className="pb-foot">
-      <Link
+      <FallbackLink
         href="/method"
         // Sin prefetch: ver el porqué en subject-grid.tsx.
         prefetch={false}
@@ -392,10 +396,10 @@ function Footer({ reviewHref }: { reviewHref: string }) {
         style={{ fontSize: 12 }}
       >
         ¿Cómo calculamos esto?
-      </Link>
-      <Link href={reviewHref} className="pb-cta">
+      </FallbackLink>
+      <FallbackLink href={reviewHref} className="pb-cta">
         ¿La cursaste? Reseñala
-      </Link>
+      </FallbackLink>
     </div>
   );
 }

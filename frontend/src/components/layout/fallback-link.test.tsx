@@ -2,10 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps, MouseEvent } from 'react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ShellLink } from './shell-link';
+import { FallbackLink } from './fallback-link';
 
 /**
- * Component tests de `ShellLink` (issue #525, con #510 adentro): el fallback que fuerza una
+ * Component tests de `FallbackLink` (issue #525, con #510 adentro): el fallback que fuerza una
  * navegación completa cuando el click de un link del shell no se traduce nunca en un cambio de
  * URL. Los tres E2E existentes (settings, help, write-review) son la verificación de que esto
  * resuelve el flake real; acá se prueba el mecanismo aislado, incluido el caso que lo motivó
@@ -52,14 +52,14 @@ vi.mock('@/lib/navigate-after-mutation', () => ({
 }));
 
 // Más que cualquier plazo real que el componente pueda usar: alcanza para vencer sin acoplar el
-// test al número exacto (que se ajusta con la medición, ver el docstring de shell-link.tsx).
+// test al número exacto (que se ajusta con la medición, ver el docstring de fallback-link.tsx).
 const PAST_ANY_DEADLINE_MS = 10_000;
 
 beforeEach(() => {
   vi.useFakeTimers();
   linkStatusMock.mockReturnValue({ pending: false });
   // El plazo compara contra `window.location.pathname` real (así lo hace en producción, ver
-  // shell-link.tsx): sin esto jsdom arranca en otra URL y el chequeo nunca da lo esperado.
+  // fallback-link.tsx): sin esto jsdom arranca en otra URL y el chequeo nunca da lo esperado.
   window.history.pushState({}, '', '/home');
 });
 
@@ -68,9 +68,9 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('ShellLink', () => {
+describe('FallbackLink', () => {
   it('fuerza la navegación si el pathname no cambió cuando venció el plazo', () => {
-    render(<ShellLink href="/settings">Ajustes</ShellLink>);
+    render(<FallbackLink href="/settings">Ajustes</FallbackLink>);
 
     fireEvent.click(screen.getByRole('link', { name: 'Ajustes' }));
     expect(navigateMock).not.toHaveBeenCalled();
@@ -82,7 +82,7 @@ describe('ShellLink', () => {
   });
 
   it('no fuerza nada si el pathname ya llegó al destino antes de que venza el plazo', () => {
-    render(<ShellLink href="/settings">Ajustes</ShellLink>);
+    render(<FallbackLink href="/settings">Ajustes</FallbackLink>);
 
     fireEvent.click(screen.getByRole('link', { name: 'Ajustes' }));
 
@@ -95,7 +95,7 @@ describe('ShellLink', () => {
   });
 
   it('un click con ctrl/cmd o de botón secundario no programa nada', () => {
-    render(<ShellLink href="/settings">Ajustes</ShellLink>);
+    render(<FallbackLink href="/settings">Ajustes</FallbackLink>);
     const link = screen.getByRole('link', { name: 'Ajustes' });
 
     // Ctrl/Cmd-click: el navegador abre una pestaña nueva, no hay push que defender.
@@ -109,7 +109,7 @@ describe('ShellLink', () => {
   });
 
   it('un href externo no programa nada', () => {
-    render(<ShellLink href="https://otro-origen.example/x">Afuera</ShellLink>);
+    render(<FallbackLink href="https://otro-origen.example/x">Afuera</FallbackLink>);
 
     fireEvent.click(screen.getByRole('link', { name: 'Afuera' }));
     vi.advanceTimersByTime(PAST_ANY_DEADLINE_MS);
@@ -122,9 +122,9 @@ describe('ShellLink', () => {
       const [mounted, setMounted] = useState(true);
       if (!mounted) return null;
       return (
-        <ShellLink href="/settings" onClick={() => setMounted(false)}>
+        <FallbackLink href="/settings" onClick={() => setMounted(false)}>
           Ajustes
-        </ShellLink>
+        </FallbackLink>
       );
     }
 
@@ -141,9 +141,9 @@ describe('ShellLink', () => {
   it('sigue llamando al onClick del consumidor', () => {
     const onClick = vi.fn();
     render(
-      <ShellLink href="/settings" onClick={onClick}>
+      <FallbackLink href="/settings" onClick={onClick}>
         Ajustes
-      </ShellLink>,
+      </FallbackLink>,
     );
 
     fireEvent.click(screen.getByRole('link', { name: 'Ajustes' }));
@@ -157,7 +157,7 @@ describe('ShellLink', () => {
 
   it('con una navegación pendiente al vencer el plazo, espera un segundo plazo antes de forzar', () => {
     linkStatusMock.mockReturnValue({ pending: true });
-    render(<ShellLink href="/settings">Ajustes</ShellLink>);
+    render(<FallbackLink href="/settings">Ajustes</FallbackLink>);
 
     fireEvent.click(screen.getByRole('link', { name: 'Ajustes' }));
 
@@ -171,7 +171,7 @@ describe('ShellLink', () => {
   });
 
   it('un segundo click sobre el mismo destino no reinicia el plazo', () => {
-    render(<ShellLink href="/settings">Ajustes</ShellLink>);
+    render(<FallbackLink href="/settings">Ajustes</FallbackLink>);
     const link = screen.getByRole('link', { name: 'Ajustes' });
 
     fireEvent.click(link);

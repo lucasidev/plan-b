@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { DataHighlight } from '../lib/data-highlights';
 
 /**
@@ -36,9 +36,9 @@ function HighlightRow({ highlight }: { highlight: DataHighlight }) {
       <div className="pb-k">{highlight.label}</div>
       <div className="pb-v">
         {summary.href ? (
-          <Link href={summary.href} prefetch={false} className="pb-link">
+          <FallbackLink href={summary.href} prefetch={false} className="pb-link">
             {summary.name}
-          </Link>
+          </FallbackLink>
         ) : (
           summary.name
         )}
@@ -50,9 +50,9 @@ function HighlightRow({ highlight }: { highlight: DataHighlight }) {
         <div className="pb-src pb-meta">
           {derivedTag && (
             <>
-              <Link href={derivedTag.href} prefetch={false} className="pb-link">
+              <FallbackLink href={derivedTag.href} prefetch={false} className="pb-link">
                 {derivedTag.label}
-              </Link>
+              </FallbackLink>
               {summary.source ? ' · ' : ''}
             </>
           )}

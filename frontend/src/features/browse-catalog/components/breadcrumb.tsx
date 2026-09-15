@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 
 export type CrumbItem = {
   label: string;
@@ -30,9 +30,9 @@ export function CatalogBreadcrumb({ items }: { items: CrumbItem[] }) {
         return (
           <span key={item.label}>
             {item.href ? (
-              <Link href={item.href} className="hover:text-ink hover:underline">
+              <FallbackLink href={item.href} className="hover:text-ink hover:underline">
                 {item.label}
-              </Link>
+              </FallbackLink>
             ) : (
               <b className="font-semibold text-ink">{item.label}</b>
             )}

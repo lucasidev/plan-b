@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import { formatOfficialFactValue } from './format-official-fact-value';
 import type { OfficialFact } from './types';
 
@@ -30,12 +30,12 @@ export function NumberCell({
       <div className="flex flex-wrap items-baseline gap-1.5">
         <p className="font-serif text-[20px] font-medium text-ink">{value}</p>
         {isDerived && (
-          <Link
+          <FallbackLink
             href={methodHref}
             className="rounded-[4px] bg-bg-elev px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-ink-3 hover:underline"
           >
             derivado
-          </Link>
+          </FallbackLink>
         )}
       </div>
       {note && <p className="mt-1 text-[11px] leading-snug text-ink-3">{note}</p>}

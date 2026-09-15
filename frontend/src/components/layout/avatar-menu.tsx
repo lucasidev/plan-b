@@ -6,7 +6,7 @@ import { initialSignOutState, signOutAction } from '@/features/sign-out';
 import { displayNameFromEmail, getInitialsFromEmail } from '@/lib/member-shell';
 import { navigateAfterMutation } from '@/lib/navigate-after-mutation';
 import { cn } from '@/lib/utils';
-import { ShellLink } from './shell-link';
+import { FallbackLink } from './fallback-link';
 
 type Props = {
   email: string;
@@ -218,7 +218,7 @@ function MenuLink({
   children: React.ReactNode;
 }) {
   return (
-    <ShellLink
+    <FallbackLink
       href={href}
       onClick={onClick}
       // Mismo motivo que el sidebar y el topbar (#477): el prefetch en viewport compite con la
@@ -234,6 +234,6 @@ function MenuLink({
       }}
     >
       {children}
-    </ShellLink>
+    </FallbackLink>
   );
 }

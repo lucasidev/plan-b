@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import {
   describeUniversityCareerCount,
   describeUniversityReviewsPill,
@@ -42,7 +42,7 @@ export function UniversityList({ universities }: { universities: UniversityListI
 
         return (
           <li key={university.id}>
-            <Link
+            <FallbackLink
               href={`/universities/${university.slug}/careers`}
               className={reviewed ? 'pb-row' : 'pb-row pb-dim'}
             >
@@ -55,7 +55,7 @@ export function UniversityList({ universities }: { universities: UniversityListI
                   {describeUniversityReviewsPill(university.careersWithReviews)}
                 </span>
               </span>
-            </Link>
+            </FallbackLink>
           </li>
         );
       })}

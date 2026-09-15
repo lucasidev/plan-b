@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { FallbackLink } from '@/components/layout/fallback-link';
 import type { CareerCoverage } from '../types';
 
 /** Cuántas filas compactas mostrar antes del "Se muestran N de K" (ADR-0096, maqueta aprobada). */
@@ -33,7 +33,7 @@ export function SingleInstitutionCareerList({
       <ul className="pb-list" style={{ gap: 4 }}>
         {visible.map((career) => (
           <li key={career.careerId}>
-            <Link
+            <FallbackLink
               href={`/careers/${career.careerId}`}
               prefetch={false}
               className="pb-row pb-dim"
@@ -49,7 +49,7 @@ export function SingleInstitutionCareerList({
                   {universityShortNames.get(career.universityId) ?? career.universityName}
                 </span>
               </span>
-            </Link>
+            </FallbackLink>
           </li>
         ))}
       </ul>
